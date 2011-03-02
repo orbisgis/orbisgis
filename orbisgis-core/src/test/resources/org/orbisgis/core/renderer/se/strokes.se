@@ -729,7 +729,7 @@
                 <MarkGraphic>
                     <!--<OnlineResource ns4:href="http://bitbucket.org/ovnicraft/ogcserver/raw/649d8bf42a09/haiti/fonts/ERS_v2_Incidents_txt.ttf" />-->
 		    <OnlineResource ns4:href="file:///usr/share/fonts/TTF/luximb.ttf" />
-                    <MarkIndex>97</MarkIndex>
+                    <MarkIndex>98</MarkIndex>
                     <Format>application/x-font-ttf</Format>
                     <ViewBox>
                         <Width>5</Width>
@@ -770,7 +770,7 @@
                 <MarkGraphic>
                     <!--<OnlineResource ns4:href="http://bitbucket.org/ovnicraft/ogcserver/raw/649d8bf42a09/haiti/fonts/ERS_v2_Incidents_txt.ttf" />-->
 		    <OnlineResource ns4:href="file:///usr/share/fonts/TTF/luximb.ttf" />
-                    <MarkIndex>97</MarkIndex>
+                    <MarkIndex>99</MarkIndex>
                     <Format>application/x-font-ttf</Format>
                     <ViewBox>
                         <Width>5</Width>
@@ -812,7 +812,7 @@
                 <MarkGraphic>
                     <!--<OnlineResource ns4:href="http://bitbucket.org/ovnicraft/ogcserver/raw/649d8bf42a09/haiti/fonts/ERS_v2_Incidents_txt.ttf" />-->
 		    <OnlineResource ns4:href="file:///usr/share/fonts/TTF/luximb.ttf" />
-                    <MarkIndex>97</MarkIndex>
+                    <MarkIndex>100</MarkIndex>
                     <Format>application/x-font-ttf</Format>
                     <ViewBox>
                         <Width>5</Width>
@@ -854,7 +854,7 @@
                 <MarkGraphic>
                     <!--<OnlineResource ns4:href="http://bitbucket.org/ovnicraft/ogcserver/raw/649d8bf42a09/haiti/fonts/ERS_v2_Incidents_txt.ttf" />-->
 		    <OnlineResource ns4:href="file:///usr/share/fonts/TTF/luximb.ttf" />
-                    <MarkIndex>97</MarkIndex>
+                    <MarkIndex>101</MarkIndex>
                     <Format>application/x-font-ttf</Format>
                     <ViewBox>
                         <Width>5</Width>
@@ -933,12 +933,12 @@
           <WellKnownName>square</WellKnownName>
           <ViewBox>
 	    <Width>100</Width>
-	    <Height>20</Height>
+	    <Height>10</Height>
           </ViewBox>
           <Transform>
             <Translate>
               <X>70</X>
-              <Y>-10</Y>
+              <Y>-15</Y>
             </Translate>
           </Transform>
 		<CompoundStroke>
@@ -1384,6 +1384,85 @@
           </Translate>
          </Transform>
         </TextGraphic>
+
+
+        <MarkGraphic>
+          <WellKnownName>circle</WellKnownName>
+          <ViewBox>
+	    <Width>20</Width>
+          </ViewBox>
+	  <PerpendicularOffset>3</PerpendicularOffset>
+	  <PenStroke>
+	   <DashArray>3</DashArray>
+	  </PenStroke>
+          <Transform>
+            <Translate>
+              <Y>55</Y>
+	      <X>105</X>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+
+        <MarkGraphic>
+          <WellKnownName>circle</WellKnownName>
+          <ViewBox>
+	    <Width>20</Width>
+          </ViewBox>
+	  <PerpendicularOffset>3</PerpendicularOffset>
+	  <PenStroke>
+	   <SolidFill>
+	      <Color>#ff0000</Color>
+	   </SolidFill>
+	   <Width>1</Width>
+	   <DashArray>3</DashArray>
+	  </PenStroke>
+          <Transform>
+            <Translate>
+              <Y>55</Y>
+	      <X>105</X>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+
+        <MarkGraphic>
+          <WellKnownName>circle</WellKnownName>
+          <ViewBox>
+	    <Width>20</Width>
+          </ViewBox>
+	  <PerpendicularOffset>-3</PerpendicularOffset>
+	  <PenStroke>
+	   <SolidFill>
+	      <Color>#0000ff</Color>
+	   </SolidFill>
+	   <Width>1</Width>
+	   <DashArray>3</DashArray>
+	  </PenStroke>
+          <Transform>
+            <Translate>
+              <Y>55</Y>
+	      <X>105</X>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+
+
+
+        <TextGraphic>
+         <StyledLabel>
+           <LabelText>Dash: Offset + linear rapport</LabelText>
+         </StyledLabel>
+         <Transform>
+          <Translate>
+	    <Y>70</Y>
+	    <X>100</X>
+          </Translate>
+         </Transform>
+        </TextGraphic>
+
+
 
 
 

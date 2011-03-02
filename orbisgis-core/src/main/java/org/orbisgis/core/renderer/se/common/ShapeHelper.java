@@ -38,6 +38,7 @@
 package org.orbisgis.core.renderer.se.common;
 
 import java.awt.Shape;
+import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 
 import java.awt.geom.PathIterator;
@@ -46,6 +47,8 @@ import java.awt.geom.Rectangle2D;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -57,7 +60,6 @@ public class ShapeHelper {
     private static final boolean _DEBUG_ = false;
     private static final boolean ENABLE_QUAD = true;
     private static final double FLATNESS = 1e-5;
-
 
     /**
      * Compute the perimeter of the shape
@@ -104,6 +106,38 @@ public class ShapeHelper {
         return getAreaPerimeterLength(line);
     }
 
+    public static void printvertices(Shape shp) {
+        if (_DEBUG_) {
+            PathIterator it = shp.getPathIterator(null, FLATNESS);
+            Logger logger = Logger.getLogger(ShapeHelper.class.getName());
+
+            double coords[] = new double[6];
+
+            while (!it.isDone()) {
+                int type = it.currentSegment(coords);
+
+                switch (type) {
+                    case PathIterator.SEG_CLOSE:
+                        logger.log(Level.INFO, "CLOSE");
+                        break;
+                    case PathIterator.SEG_CUBICTO:
+                        logger.log(Level.INFO, "CUBIC TO {0};{1}", new Object[]{coords[0], coords[1]});
+                        break;
+                    case PathIterator.SEG_LINETO:
+                        logger.log(Level.INFO, "LINE TO {0};{1}", new Object[]{coords[0], coords[1]});
+                        break;
+                    case PathIterator.SEG_MOVETO:
+                        logger.log(Level.INFO, "MOVE TO {0};{1}", new Object[]{coords[0], coords[1]});
+                        break;
+                    case PathIterator.SEG_QUADTO:
+                        logger.log(Level.INFO, "QUAD TO {0};{1}", new Object[]{coords[0], coords[1]});
+                        break;
+                }
+                it.next();
+            }
+        }
+    }
+
     /**
      * Split a line into two lines. The first line length equals firstLineLenght parameter
      * The sum of the two line length equals the length of the initial line.
@@ -118,6 +152,11 @@ public class ShapeHelper {
     public static ArrayList<Shape> splitLine(Shape line, double firstLineLength) {
 
         ArrayList<Shape> shapes = new ArrayList<Shape>();
+
+        if (ShapeHelper.getLineLength(line) < firstLineLength) {
+            shapes.add(line);
+            return shapes;
+        }
 
         PathIterator it = line.getPathIterator(null, FLATNESS);
         double coords[] = new double[6];
@@ -183,7 +222,7 @@ public class ShapeHelper {
             }
         }
         //last segment end with last point
-        segment.lineTo(x1, y1);
+        //segment.lineTo(x1, y1);
 
         shapes.add(segment);
 
@@ -201,12 +240,10 @@ public class ShapeHelper {
         ArrayList<Shape> shapes = new ArrayList<Shape>();
         double totalLength = ShapeHelper.getLineLength(line);
 
-        if (segLength <= 0.0 || segLength >= totalLength){
+        if (segLength <= 0.0 || segLength >= totalLength) {
             shapes.add(line);
             return shapes;
         }
-
-        System.out.println ("SegLength: " + segLength);
 
         PathIterator it = line.getPathIterator(null, FLATNESS);
         double coords[] = new double[6];
@@ -269,7 +306,7 @@ public class ShapeHelper {
             }
         }
         //last segment end with last point
-        segment.lineTo(x1, y1);
+        //segment.lineTo(x1, y1);
 
         shapes.add(segment);
 
@@ -349,7 +386,7 @@ public class ShapeHelper {
             }
         }
         //last segment end with last point
-        segment.lineTo(x1, y1);
+        //segment.lineTo(x1, y1);
 
         shapes.add(segment);
 
@@ -431,19 +468,11 @@ public class ShapeHelper {
                 x1 = x2;
                 y1 = y2;
             }
-
         }
 
-
         if (distance < 0.0) {
-            //System.out.println("  Negative Distance");
             return new Point2D.Double(xF, yF);
-        //} else if (distance > p) {
-            //System.out.println ("  AfterLine: " + (distance - p  + segLength));
-            //    return getPointAt(x1, y1, x2, y2, distance - p + segLength);
-        //    return new Point2D.Double(x2, y2);
         } else {
-            //System.out.println ("  Default: " + (segLength -p + distance));
             return getPointAt(x1, y1, x2, y2, segLength - p + distance);
         }
     }
@@ -1282,11 +1311,30 @@ public class ShapeHelper {
      *      /
      *     o (x1, y1)
      *
+     * @param x1 seg first point x coord
+     * @param y1 seg first point y coord
+     * @param x2 seg second point x coord
+     * @param y2 seg second point y coord
+     * @param x3 the point to check x coord
+     * @param y3 the point to check y coord
+     *
      */
     static double crossProduct(double x1, double y1, double x2, double y2, double x3, double y3) {
         return (x2 - x1) * (y3 - y1) - (x3 - x1) * (y2 - y1);
     }
 
+    /**
+     * Is (x1y1)(x2y2) (strictly) intersects (x3y3)(x4y4) ?
+     * @param x1
+     * @param y1
+     * @param x2
+     * @param y2
+     * @param x3
+     * @param y3
+     * @param x4
+     * @param y4
+     * @return
+     */
     private static boolean isSegIntersect(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4) {
         double cp1, cp2, cp3, cp4;
 
@@ -1299,14 +1347,16 @@ public class ShapeHelper {
     }
 
     private static Point2D.Double computeSegmentIntersection(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4) {
+        /*
         double cp1, cp2, cp3, cp4;
 
         cp1 = crossProduct(x1, y1, x2, y2, x3, y3);
         cp2 = crossProduct(x1, y1, x2, y2, x4, y4);
         cp3 = crossProduct(x3, y3, x4, y4, x1, y1);
         cp4 = crossProduct(x3, y3, x4, y4, x2, y2);
+        */
 
-        if (cp1 * cp2 < 0 && cp3 * cp4 < 0) {
+        if (isSegIntersect(x1, y1, x2, y2, x3, y3, x4, y4)) {
             // 1 intersection point !
             return getLineIntersection(x1, y1, x2, y2, x3, y3, x4, y4);
         } else {
@@ -1315,6 +1365,20 @@ public class ShapeHelper {
         }
     }
 
+    /**
+     * Compute intersection between two line.
+     * The first line is passing by points (x1,y1) & (x2, y2). The second by (x3,y3) and (x4,y4)
+     *
+     * @param x1
+     * @param y1
+     * @param x2
+     * @param y2
+     * @param x3
+     * @param y3
+     * @param x4
+     * @param y4
+     * @return null if lines are parallel, the intersection point otherwise
+     */
     private static Point2D.Double getLineIntersection(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4) {
 
         double denom1 = x2 - x1;
@@ -1375,5 +1439,43 @@ public class ShapeHelper {
 
         return contourParallelShape(shp, offset);
         //return perpendicularOffsetForLine(shp, offset);
+    }
+
+    public static Line2D.Double intersection(Line2D.Double line, Rectangle2D.Double bounds){
+        //line.x1, line.y1, line.x2, line.y2
+        Point2D.Double bottom = computeSegmentIntersection(line.x1, line.y1, line.x2, line.y2,
+                bounds.getMinX(), bounds.getMaxY(), bounds.getMaxX(), bounds.getMaxY());
+
+        Point2D.Double right = computeSegmentIntersection(line.x1, line.y1, line.x2, line.y2,
+                bounds.getMaxX(), bounds.getMaxY(), bounds.getMaxX(), bounds.getMinY());
+
+        Point2D.Double top = computeSegmentIntersection(line.x1, line.y1, line.x2, line.y2,
+                bounds.getMinX(), bounds.getMinY(), bounds.getMaxX(), bounds.getMinY());
+
+        Point2D.Double left = computeSegmentIntersection(line.x1, line.y1, line.x2, line.y2,
+                bounds.getMinX(), bounds.getMinY(), bounds.getMinX(), bounds.getMaxY());
+
+        ArrayList<Point2D.Double> pts = new ArrayList<Point2D.Double>();
+        if (bottom != null){
+            pts.add(bottom);
+        }
+
+        if (right != null){
+            pts.add(right);
+        }
+
+        if (top != null){
+            pts.add(top);
+        }
+
+        if (left != null){
+            pts.add(left);
+        }
+
+        if (pts.size() != 2){
+            return null;
+        } else {
+            return new Line2D.Double(pts.get(0), pts.get(1));
+        }
     }
 }

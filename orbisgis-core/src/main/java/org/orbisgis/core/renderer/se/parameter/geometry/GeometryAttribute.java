@@ -3,7 +3,6 @@ package org.orbisgis.core.renderer.se.parameter.geometry;
 import com.vividsolutions.jts.geom.Geometry;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.feature.Feature;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.persistance.ogc.PropertyNameType;
 import org.orbisgis.core.renderer.persistance.se.GeometryType;

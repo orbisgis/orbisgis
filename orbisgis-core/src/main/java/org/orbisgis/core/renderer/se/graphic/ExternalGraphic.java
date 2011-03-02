@@ -178,7 +178,7 @@ public final class ExternalGraphic extends Graphic {
         Shape atShp = at.createTransformedShape(bounds);
         Rectangle2D imageSize = atShp.getBounds2D();
 
-        RenderableGraphics rg = Graphic.getNewRenderableGraphics(imageSize, 0);
+        RenderableGraphics rg = Graphic.getNewRenderableGraphics(imageSize, 0, mt);
 
         if (halo != null) {
             halo.draw(rg, sds, fid, atShp, mt);

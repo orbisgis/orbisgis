@@ -512,8 +512,8 @@
                 <ogc:Literal>10</ogc:Literal>
 	        <Sqrt>
 		  <ogc:Div>
-                    <Log10><ogc:Literal>0</ogc:Literal></Log10>
-               	    <Log10><ogc:Literal>25000</ogc:Literal></Log10>
+                    <Log><ogc:Literal>0</ogc:Literal></Log>
+               	    <Log><ogc:Literal>25000</ogc:Literal></Log>
 		  </ogc:Div>
 	        </Sqrt>
               </ogc:Mul>
@@ -542,8 +542,8 @@
                 <ogc:Literal>10</ogc:Literal>
 	        <Sqrt>
 		  <ogc:Div>
-                    <Log10><ogc:Literal>2500</ogc:Literal></Log10>
-               	    <Log10><ogc:Literal>25000</ogc:Literal></Log10>
+                    <Log><ogc:Literal>2500</ogc:Literal></Log>
+               	    <Log><ogc:Literal>25000</ogc:Literal></Log>
 		  </ogc:Div>
 	        </Sqrt>
               </ogc:Mul>
@@ -570,8 +570,8 @@
                 <ogc:Literal>10</ogc:Literal>
 	        <Sqrt>
 		  <ogc:Div>
-                    <Log10><ogc:Literal>5000</ogc:Literal></Log10>
-               	    <Log10><ogc:Literal>25000</ogc:Literal></Log10>
+                    <Log><ogc:Literal>5000</ogc:Literal></Log>
+               	    <Log><ogc:Literal>25000</ogc:Literal></Log>
 		  </ogc:Div>
 	        </Sqrt>
               </ogc:Mul>
@@ -598,8 +598,8 @@
                 <ogc:Literal>10</ogc:Literal>
 	        <Sqrt>
 		  <ogc:Div>
-                    <Log10><ogc:Literal>7500</ogc:Literal></Log10>
-               	    <Log10><ogc:Literal>25000</ogc:Literal></Log10>
+                    <Log><ogc:Literal>7500</ogc:Literal></Log>
+               	    <Log><ogc:Literal>25000</ogc:Literal></Log>
 		  </ogc:Div>
 	        </Sqrt>
               </ogc:Mul>
@@ -627,8 +627,8 @@
                 <ogc:Literal>10</ogc:Literal>
 	        <Sqrt>
 		  <ogc:Div>
-                    <Log10><ogc:Literal>10000</ogc:Literal></Log10>
-               	    <Log10><ogc:Literal>25000</ogc:Literal></Log10>
+                    <Log><ogc:Literal>10000</ogc:Literal></Log>
+               	    <Log><ogc:Literal>25000</ogc:Literal></Log>
 		  </ogc:Div>
 	        </Sqrt>
               </ogc:Mul>
@@ -655,8 +655,8 @@
                 <ogc:Literal>10</ogc:Literal>
 	        <Sqrt>
 		  <ogc:Div>
-                    <Log10><ogc:Literal>12500</ogc:Literal></Log10>
-               	    <Log10><ogc:Literal>25000</ogc:Literal></Log10>
+                    <Log><ogc:Literal>12500</ogc:Literal></Log>
+               	    <Log><ogc:Literal>25000</ogc:Literal></Log>
 		  </ogc:Div>
 	        </Sqrt>
               </ogc:Mul>
@@ -685,8 +685,8 @@
                 <ogc:Literal>10</ogc:Literal>
 	        <Sqrt>
 		  <ogc:Div>
-                    <Log10><ogc:Literal>15000</ogc:Literal></Log10>
-               	    <Log10><ogc:Literal>25000</ogc:Literal></Log10>
+                    <Log><ogc:Literal>15000</ogc:Literal></Log>
+               	    <Log><ogc:Literal>25000</ogc:Literal></Log>
 		  </ogc:Div>
 	        </Sqrt>
               </ogc:Mul>
@@ -717,8 +717,8 @@
                 <ogc:Literal>10</ogc:Literal>
 	        <Sqrt>
 		  <ogc:Div>
-                    <Log10><ogc:Literal>17500</ogc:Literal></Log10>
-               	    <Log10><ogc:Literal>25000</ogc:Literal></Log10>
+                    <Log><ogc:Literal>17500</ogc:Literal></Log>
+               	    <Log><ogc:Literal>25000</ogc:Literal></Log>
 		  </ogc:Div>
 	        </Sqrt>
               </ogc:Mul>
@@ -749,8 +749,8 @@
                 <ogc:Literal>10</ogc:Literal>
 	        <Sqrt>
 		  <ogc:Div>
-                    <Log10><ogc:Literal>20000</ogc:Literal></Log10>
-               	    <Log10><ogc:Literal>25000</ogc:Literal></Log10>
+                    <Log><ogc:Literal>20000</ogc:Literal></Log>
+               	    <Log><ogc:Literal>25000</ogc:Literal></Log>
 		  </ogc:Div>
 	        </Sqrt>
               </ogc:Mul>
@@ -781,8 +781,8 @@
                 <ogc:Literal>10</ogc:Literal>
 	        <Sqrt>
 		  <ogc:Div>
-                    <Log10><ogc:Literal>22500</ogc:Literal></Log10>
-               	    <Log10><ogc:Literal>25000</ogc:Literal></Log10>
+                    <Log><ogc:Literal>22500</ogc:Literal></Log>
+               	    <Log><ogc:Literal>25000</ogc:Literal></Log>
 		  </ogc:Div>
 	        </Sqrt>
               </ogc:Mul>
@@ -813,8 +813,8 @@
                 <ogc:Literal>10</ogc:Literal>
 	        <Sqrt>
 		  <ogc:Div>
-                    <Log10><ogc:Literal>25000</ogc:Literal></Log10>
-               	    <Log10><ogc:Literal>25000</ogc:Literal></Log10>
+                    <Log><ogc:Literal>25000</ogc:Literal></Log>
+               	    <Log><ogc:Literal>25000</ogc:Literal></Log>
 		  </ogc:Div>
 	        </Sqrt>
               </ogc:Mul>

@@ -191,12 +191,14 @@ public final class CompoundStroke extends Stroke {
             shapes.add(shape);
         }
 
+        ShapeHelper.printvertices(shape);
 
         for (Shape shp : shapes) {
 
             if (preGap != null) {
                 initGap = Uom.toPixel(preGap.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
                 if (initGap > 0.0) {
+                    //System.out.println ("Remove Global PreGap");
                     shp = ShapeHelper.splitLine(shp, initGap).get(1);
                 }
             }
@@ -204,10 +206,14 @@ public final class CompoundStroke extends Stroke {
             if (postGap != null) {
                 endGap = Uom.toPixel(postGap.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
                 if (endGap > 0.0) {
+                    //System.out.println ("Remove Global PostGap");
                     double lineLength = ShapeHelper.getLineLength(shp);
                     shp = ShapeHelper.splitLine(shp, lineLength - endGap).get(0);
                 }
             }
+
+            //System.out.println ("After removiung gaps:");
+            //ShapeHelper.printvertices(shp);
 
             int nbElem = elements.size();
 
@@ -279,6 +285,7 @@ public final class CompoundStroke extends Stroke {
                 for (i = 0; i < lengths.length; i++) {
                     if (Double.isInfinite(lengths[i])) {
                         lengths[i] = infiniteLength;
+                        //System.out.println ("Set infinite lenght to: " + infiniteLength);
                     }
                 }
             } else { // fixed length pattern
@@ -286,6 +293,7 @@ public final class CompoundStroke extends Stroke {
                     // Scale pattern to lineLength intergral fraction
                     int nbPattern = (int) ((lineLength / patternLength) + 0.5);
                     if (nbPattern < 1) {
+                        // Male sure at least one pattern will be drawn
                         nbPattern = 1;
                     }
                     // Compute factor
@@ -311,14 +319,26 @@ public final class CompoundStroke extends Stroke {
             i = 0; // stroke element iterator
             while (scrap != null) {
 
-                if (preGaps[i] != null) {
+                //if (i==0){
+                    //System.out.println ("NEW PATTERN");
+                //}
+                //System.out.println ("NEW ELEM");
+
+                double scrapLength = ShapeHelper.getLineLength(scrap);
+                if (scrapLength < 1){
+                    break;
+                }
+
+                if (preGaps[i] != null && preGaps[i] > 0) {
                     ArrayList<Shape> splitLine = ShapeHelper.splitLine(scrap, preGaps[i]);
+                    //System.out.println("  preGap: " + preGaps[i]);
                     if (splitLine.size() > 1) {
                         scrap = splitLine.get(1);
                     } else {
+                        scrap = null;
+                        //System.out.println ("  -> End of line !");
                         break;
                     }
-                    //System.out.println("preGap: " + preGaps[i]);
                 }
 
                 if (lengths[i] > 0) {
@@ -327,28 +347,40 @@ public final class CompoundStroke extends Stroke {
                     //System.out.println("Extract: " + lengths[i]);
                     Shape seg = splitLine.remove(0);
 
+                    //System.out.println ("StrokeElement Seg: ");
+                    ShapeHelper.printvertices(seg);
+
+                    strokes[i].draw(g2, sds, fid, seg, selected, mt, offset);
+
                     if (splitLine.size() > 0) {
                         scrap = splitLine.remove(0);
                     } else {
                         scrap = null;
+                        //System.out.println ("  -> End of line !");
+                        break;
                     }
 
-                    strokes[i].draw(g2, sds, fid, seg, selected, mt, offset);
+                    //System.out.println ("StrokeElement SCRAP: ");
+                    ShapeHelper.printvertices(scrap);
+
                     //System.out.println("length: " + lengths[i]);
                 }
 
-                if (postGaps[i] != null) {
+                if (postGaps[i] != null && postGaps[i] > 0) {
                     ArrayList<Shape> splitLine = ShapeHelper.splitLine(scrap, postGaps[i]);
                     //System.out.println("postGap: " + postGaps[i]);
                     if (splitLine.size() > 1) {
                         scrap = splitLine.get(1);
                     } else {
+                        scrap = null;
                         break;
                     }
                 }
 
                 i = (i + 1) % nbElem;
             }
+
+
             ArrayList<Shape> splitLineInSeg = ShapeHelper.splitLineInSeg(shp, patternLength);
             for (Shape seg : splitLineInSeg) {
                 for (StrokeAnnotationGraphic annotation : annotations) {
@@ -385,7 +417,7 @@ public final class CompoundStroke extends Stroke {
                         Point2D.Double ptA = ShapeHelper.getPointAt(seg, pos - gLength / 2.0);
                         Point2D.Double ptB = ShapeHelper.getPointAt(seg, pos + gLength / 2.0);
                         double theta = Math.atan2(ptB.y - ptA.y, ptB.x - ptA.x);
-                        System.out.println("(" + ptA.x + ";" + ptA.y + ")" + "(" + ptB.x + ";" + ptB.y + ")" + "   => Angle: " + (theta / 0.0175));
+                        //System.out.println("(" + ptA.x + ";" + ptA.y + ")" + "(" + ptB.x + ";" + ptB.y + ")" + "   => Angle: " + (theta / 0.0175));
                         switch (rOrient) {
                             case LINE:
                                 theta += 0.5 * Math.PI;

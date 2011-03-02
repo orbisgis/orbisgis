@@ -70,7 +70,7 @@ public class TextGraphic extends Graphic {
 
                 //System.out.println("Bounds: " + atShp.getBounds2D());
 
-                RenderableGraphics rg = Graphic.getNewRenderableGraphics(atShp.getBounds2D(), 0);
+                RenderableGraphics rg = Graphic.getNewRenderableGraphics(atShp.getBounds2D(), 0, mt);
 
                 rg.drawRenderedImage(label.createRendering(mt.getCurrentRenderContext()), at);
                 return rg;

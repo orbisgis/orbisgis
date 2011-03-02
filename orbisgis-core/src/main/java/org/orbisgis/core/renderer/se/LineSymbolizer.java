@@ -181,7 +181,9 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
         this.setJAXBProperty(s);
 
 
-        s.setUnitOfMeasure(this.getUom().toURN());
+        if (this.getUom() != null){
+            s.setUnitOfMeasure(this.getUom().toURN());
+        }
 
         if (transform != null) {
             s.setTransform(transform.getJAXBType());

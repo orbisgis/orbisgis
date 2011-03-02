@@ -38,9 +38,12 @@
 
 package org.orbisgis.core.renderer.se.graphic;
 
+import com.vividsolutions.jts.awt.PolygonShape;
 import java.awt.Polygon;
 import java.awt.Shape;
 import java.awt.geom.Arc2D;
+import java.awt.geom.Area;
+import java.awt.geom.GeneralPath;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -169,7 +172,10 @@ public enum WellKnownName implements MarkGraphicSource {
                 // alpha = 270
                 star.addPoint(0, (int) (cry - 0.5));
 
-                return star;
+                //return star;
+                //return new Area(star);
+                //return new Polygon()
+                return new GeneralPath(star);
             }
             case CROSS:// TODO IMPLEMENT
 

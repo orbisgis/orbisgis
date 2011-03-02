@@ -280,7 +280,7 @@ public final class PieChart extends Graphic implements StrokeNode {
 		if (bounds.isEmpty()){
 			return null;
 		}
-        rg = Graphic.getNewRenderableGraphics(bounds, 0);
+        rg = Graphic.getNewRenderableGraphics(bounds, 0, mt);
 
         // Now, the total is defines, we can compute percentages and slices begin/end angles
         double[] percentages = new double[nSlices];

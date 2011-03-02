@@ -50,6 +50,7 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.DensityFillType;
 import org.orbisgis.core.renderer.persistance.se.DotMapFillType;
 import org.orbisgis.core.renderer.persistance.se.GraphicFillType;
+import org.orbisgis.core.renderer.persistance.se.HatchedFillType;
 import org.orbisgis.core.renderer.persistance.se.SolidFillType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
@@ -85,9 +86,11 @@ public abstract class Fill implements SymbolizerNode {
         else if (f.getDeclaredType() == DotMapFillType.class){
             return new DotMapFill((JAXBElement<DotMapFillType>)f);
         }
+        else if (f.getDeclaredType() == HatchedFillType.class){
+            return new HatchedFill((JAXBElement<HatchedFillType>) f);
+        }
         else{
-			// Will never occurs with a valid XML style
-            return new SolidFill();
+            throw new InvalidStyle("This stroke is not supported: " + f.getDeclaredType());
         }
 
     }

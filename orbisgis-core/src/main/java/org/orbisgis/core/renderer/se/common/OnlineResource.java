@@ -97,7 +97,6 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
     }
 
     public OnlineResource(OnlineResourceType onlineResource) throws MalformedURLException {
-        System.out.println("Read online ressource");
         this.url = new URL(onlineResource.getHref());
     }
 
@@ -141,8 +140,8 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
                 double heightDst = dim.getY();
 
                 if (widthDst > 0 && heightDst > 0) {
-                    img = new BufferedImage((int)(widthDst+0.5), (int)(heightDst + 0.5), BufferedImage.TYPE_4BYTE_ABGR);
-                    icon.setPreferredSize(new Dimension((int)(widthDst + 0.5), (int)(heightDst+0.5)));
+                    img = new BufferedImage((int) (widthDst + 0.5), (int) (heightDst + 0.5), BufferedImage.TYPE_4BYTE_ABGR);
+                    icon.setPreferredSize(new Dimension((int) (widthDst + 0.5), (int) (heightDst + 0.5)));
                     icon.setScaleToFit(true);
                 } else {
                     img = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_4BYTE_ABGR);
@@ -153,7 +152,7 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
             icon.setAntiAlias(true);
             Graphics2D g2 = (Graphics2D) img.getGraphics();
             g2.addRenderingHints(mt.getRenderingHints());
-            icon.paintIcon((Component)null, g2, 0, 0);
+            icon.paintIcon((Component) null, g2, 0, 0);
             return img;
         } catch (URISyntaxException ex) {
             throw new IOException(ex);
@@ -163,9 +162,14 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
     public PlanarImage getJAIImage(ViewBox viewBox, SpatialDataSourceDecorator sds, long fid, MapTransform mt, String mimeType)
             throws IOException, ParameterException {
 
-        if (rawImage == null) {
-            rawImage = JAI.create("url", url);
-            System.out.println("Download external graphic from " + url);
+
+        try {
+            if (rawImage == null) {
+                rawImage = JAI.create("url", url);
+                Logger.getLogger(OnlineResource.class.getName()).log(Level.INFO, "Download ExternalGraphic from: {0}", url);
+            }
+        } catch (Exception ex) {
+            throw new IOException(ex);
         }
 
         PlanarImage img = rawImage;
@@ -176,34 +180,38 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
                 throw new ParameterException("View box depends on feature");
             }
 
-            double width = img.getWidth();
-            double height = img.getHeight();
+            try {
+                double width = img.getWidth();
+                double height = img.getHeight();
 
-            Point2D dim = viewBox.getDimensionInPixel(sds, fid, height, width, mt.getScaleDenominator(), mt.getDpi());
+                Point2D dim = viewBox.getDimensionInPixel(sds, fid, height, width, mt.getScaleDenominator(), mt.getDpi());
 
-            double widthDst = dim.getX();
-            double heightDst = dim.getY();
+                double widthDst = dim.getX();
+                double heightDst = dim.getY();
 
-            if (widthDst > 0 && heightDst > 0) {
-                double ratio_x = widthDst / width;
-                double ratio_y = heightDst / height;
-                ParameterBlock pb = new ParameterBlock();
-                pb.addSource(img);
-                pb.add(ratio_x);
-                pb.add(ratio_y);
-                pb.add(0.0F);
-                pb.add(0.0F);
-                //pb.add(0);
-                //pb.add(InterpolationBilinear.getInstance(InterpolationBilinear.INTERP_BILINEAR));
-                if (ratio_x > 1.0 || ratio_y > 1.0){
-                    return JAI.create("scale", pb, mt.getRenderingHints());
+                if (widthDst > 0 && heightDst > 0) {
+                    double ratio_x = widthDst / width;
+                    double ratio_y = heightDst / height;
+                    ParameterBlock pb = new ParameterBlock();
+                    pb.addSource(img);
+                    pb.add(ratio_x);
+                    pb.add(ratio_y);
+                    pb.add(0.0F);
+                    pb.add(0.0F);
+                    //pb.add(0);
+                    //pb.add(InterpolationBilinear.getInstance(InterpolationBilinear.INTERP_BILINEAR));
+                    if (ratio_x > 1.0 || ratio_y > 1.0) {
+                        return JAI.create("scale", pb, mt.getRenderingHints());
+                    } else {
+                        //return JAI.create("SubsampleAverage", pb, mt.getRenderingHints());
+                        return JAI.create("SubsampleAverage", img, ratio_x, ratio_y, mt.getRenderingHints());
+                    }
                 } else {
-                    //return JAI.create("SubsampleAverage", pb, mt.getRenderingHints());
-                    return JAI.create("SubsampleAverage", img, ratio_x, ratio_y, mt.getRenderingHints());
+                    return img;
                 }
 
-            } else {
-                return img;
+            } catch (Exception ex) {
+                throw new ParameterException(ex);
             }
 
         } else {
@@ -242,8 +250,6 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
             InputStream iStream = url.openStream();
             Font font = Font.createFont(Font.TRUETYPE_FONT, iStream);
             iStream.close();
-
-            System.out.println("Font: " + font.getNumGlyphs());
 
             double value = markIndex.getValue(sds, fid);
 
@@ -333,8 +339,6 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
             InputStream iStream = url.openStream();
             Font font = Font.createFont(Font.TRUETYPE_FONT, iStream);
             iStream.close();
-
-            System.out.println("Font: " + font.getNumGlyphs());
 
             double value = markIndex.getValue(sds, fid);
             char[] data = {(char) value};

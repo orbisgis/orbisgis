@@ -305,13 +305,159 @@
          </Transform>
         </TextGraphic>
 
-<!-- New quadrant -->     
+
+<!-- New line on the left -->
+
+ 
+        <MarkGraphic>
+          <WellKnownName>TRIANGLE</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+            <HatchedFill>
+               <PenStroke>
+	         <SolidFill>
+		   <Color>#ff0000</Color>
+		 </SolidFill>
+                 <Width>1</Width>
+               </PenStroke>
+	       <Distance>2</Distance>
+            </HatchedFill>
+	    <PenStroke />
+          <Transform>
+            <Translate>
+              <X>-125</X>
+              <Y>-20</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        <TextGraphic>
+         <StyledLabel>
+           <LabelText>GF Default</LabelText>
+         </StyledLabel>
+         <Transform>
+          <Translate>
+            <X>-125</X>
+            <Y>-10</Y>
+          </Translate>
+         </Transform>
+        </TextGraphic>
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <GraphicFill>
+	     <MarkGraphic>
+	        <SolidFill />
+		<PenStroke />
+	     </MarkGraphic>
+	     <TileGap />
+	  </GraphicFill>
+          <Transform>
+            <Translate>
+              <X>-105</X>
+              <Y>-20</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        <TextGraphic>
+         <StyledLabel>
+           <LabelText>SG Tilenone</LabelText>
+         </StyledLabel>
+         <Transform>
+          <Translate>
+            <X>-105</X>
+            <Y>-10</Y>
+          </Translate>
+         </Transform>
+        </TextGraphic>
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-85</X>
+              <Y>-20</Y>
+            </Translate>
+          </Transform>
+	  <GraphicFill>
+	     <MarkGraphic>
+	        <SolidFill />
+		<PenStroke />
+	     </MarkGraphic>
+	     <TileGap>
+	        <X>3</X>
+	     </TileGap>
+	  </GraphicFill>
+
+        </MarkGraphic>
+
+        <TextGraphic>
+         <StyledLabel>
+           <LabelText>SG: TileX:3</LabelText>
+         </StyledLabel>
+         <Transform>
+          <Translate>
+            <X>-85</X>
+            <Y>-10</Y>
+          </Translate>
+         </Transform>
+        </TextGraphic>
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	 <GraphicFill>
+	     <MarkGraphic>
+	        <SolidFill />
+		<PenStroke />
+	     </MarkGraphic>
+
+	     <TileGap>
+	        <X>2</X>
+		<Y>2</Y>
+	     </TileGap>
+	  </GraphicFill>
+
+          <Transform>
+            <Translate>
+              <X>-65</X>
+              <Y>-20</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        <TextGraphic>
+         <StyledLabel>
+           <LabelText>SG Tile2x2</LabelText>
+         </StyledLabel>
+         <Transform>
+          <Translate>
+            <X>-65</X>
+            <Y>-10</Y>
+          </Translate>
+         </Transform>
+        </TextGraphic>
+
+
+
+<!-- RIGHT -->     
 
         <TextGraphic>
          <StyledLabel>
            <LabelText>0%</LabelText>
 	   <Font>
-	     <FontSize>24</FontSize>
+             <UnitOfMeasure>urn:ogc:def:uom:se::pt</UnitOfMeasure>
+	     <FontSize>12</FontSize>
 	     <FontWeight>bold</FontWeight>
 	   </Font>
          </StyledLabel>
@@ -326,7 +472,8 @@
          <StyledLabel>
            <LabelText>30%</LabelText>
 	   <Font>
-	     <FontSize>24</FontSize>
+             <UnitOfMeasure>urn:ogc:def:uom:se::pt</UnitOfMeasure>
+	     <FontSize>12</FontSize>
 	     <FontWeight>bold</FontWeight>
 	   </Font>
          </StyledLabel>
@@ -342,7 +489,8 @@
          <StyledLabel>
            <LabelText>50%</LabelText>
 	   <Font>
-	     <FontSize>24</FontSize>
+             <UnitOfMeasure>urn:ogc:def:uom:se::pt</UnitOfMeasure>
+	     <FontSize>12</FontSize>
 	     <FontWeight>bold</FontWeight>
 	   </Font>
          </StyledLabel>
@@ -357,7 +505,8 @@
          <StyledLabel>
            <LabelText>60%</LabelText>
 	   <Font>
-	     <FontSize>24</FontSize>
+             <UnitOfMeasure>urn:ogc:def:uom:se::pt</UnitOfMeasure>
+	     <FontSize>12</FontSize>
 	     <FontWeight>bold</FontWeight>
 	   </Font>
          </StyledLabel>
@@ -372,7 +521,8 @@
          <StyledLabel>
            <LabelText>80%</LabelText>
 	   <Font>
-	     <FontSize>24</FontSize>
+             <UnitOfMeasure>urn:ogc:def:uom:se::pt</UnitOfMeasure>
+	     <FontSize>12</FontSize>
 	     <FontWeight>bold</FontWeight>
 	   </Font>
          </StyledLabel>
@@ -388,7 +538,8 @@
          <StyledLabel>
            <LabelText>100%</LabelText>
 	   <Font>
-	     <FontSize>24</FontSize>
+             <UnitOfMeasure>urn:ogc:def:uom:se::pt</UnitOfMeasure>
+	     <FontSize>12</FontSize>
 	     <FontWeight>bold</FontWeight>
 	   </Font>
          </StyledLabel>

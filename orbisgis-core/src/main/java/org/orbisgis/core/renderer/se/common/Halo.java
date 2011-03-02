@@ -1,15 +1,10 @@
 package org.orbisgis.core.renderer.se.common;
 
-import com.vividsolutions.jts.awt.PolygonShape;
-import com.vividsolutions.jts.geom.Coordinate;
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
-import java.awt.geom.PathIterator;
-import java.awt.geom.Rectangle2D;
+import java.awt.geom.Area;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import org.gdms.data.SpatialDataSourceDecorator;
 
 import org.orbisgis.core.Services;
@@ -24,7 +19,6 @@ import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.color.ColorHelper;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
@@ -122,42 +116,16 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
     public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) throws ParameterException, IOException {
         if (radius != null && fill != null) {
             double r = this.getHaloRadius(sds, fid, mt);
+            Area initialArea = new Area(shp);
 
             if (r > 0.0) {
-                //System.out.println("Halo radius is: " + r);
-
                 for (Shape halo : ShapeHelper.perpendicularOffset(shp, r)) {
 
                     // TODO only fill  (halo - shp) !!!
                     if (halo != null) {
-/*
-                        ArrayList<Coordinate> holeVertex = new ArrayList();
-                        PathIterator it = shp.getPathIterator(null, 1);
-                        double coords[] = new double[6];
-                        while (!it.isDone()){
-                            it.currentSegment(coords);
-                            Coordinate c = new Coordinate(coords[0], coords[1]);
-                            holeVertex.add(c);
-                            it.next();
-                        }
-
-                        ArrayList exterior = new ArrayList();
-                        it = halo.getPathIterator(null, 1);
-                        while (!it.isDone()){
-                            it.currentSegment(coords);
-                            Coordinate c = new Coordinate(coords[0], coords[1]);
-                            exterior.add(c);
-                            it.next();
-                        }
-
-                        Coordinate[] co = (Coordinate[]) exterior.toArray(new Coordinate[0]);
-                        Coordinate[] ho = (Coordinate[]) holeVertex.toArray(new Coordinate[0]);
-                        ArrayList holes = new ArrayList();
-                        holes.add(ho);
-
-                        PolygonShape pHalo = new PolygonShape(co, holes);
-*/
-                        fill.draw(g2, sds, fid, halo, false, mt);
+                        Area aHalo = new Area(halo);
+                        aHalo.subtract(initialArea);
+                        fill.draw(g2, sds, fid, aHalo, false, mt);
 
                     } else {
                         Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.renderer.cannotCreatePerpendicularOffset"));

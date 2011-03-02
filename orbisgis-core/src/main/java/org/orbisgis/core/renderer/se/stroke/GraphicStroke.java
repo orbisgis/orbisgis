@@ -99,42 +99,38 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
 
     @Override
     public double getNaturalLength(SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) throws ParameterException, IOException {
-
         double naturalLength;
-        double lineLength = ShapeHelper.getLineLength(shp);
-
-        RelativeOrientation rOrient = this.getRelativeOrientation();
 
         if (length != null) {
-
-            naturalLength = Uom.toPixel(length.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), lineLength); // TODO 100%
+            double lineLength = ShapeHelper.getLineLength(shp);
+            naturalLength = Uom.toPixel(length.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), lineLength);
             if (naturalLength <= GraphicStroke.MIN_LENGTH || naturalLength > lineLength) {
                 naturalLength = lineLength;
             }
+            return naturalLength;
         } else {
-            RenderableGraphics g;
-            g = graphic.getGraphic(sds, fid, false, mt);
-            double gWidth = g.getWidth();
-            double gHeight = g.getHeight();
-
-            switch (rOrient) {
-                case NORMAL:
-                case NORMAL_UP:
-                    naturalLength = gWidth;
-                    break;
-                case LINE:
-                case LINE_UP:
-                    naturalLength = gHeight;
-                    break;
-                case PORTRAYAL:
-                default:
-                    naturalLength = Math.sqrt(gWidth * gWidth + gHeight * gHeight);
-                    break;
-
-            }
+            return getGraphicWidth(sds, fid, mt);
         }
-        return naturalLength;
+    }
 
+    private double getGraphicWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
+        RenderableGraphics g;
+        RelativeOrientation rOrient = this.getRelativeOrientation();
+        g = graphic.getGraphic(sds, fid, false, mt);
+        double gWidth = g.getWidth();
+        double gHeight = g.getHeight();
+
+        switch (rOrient) {
+            case NORMAL:
+            case NORMAL_UP:
+                return gWidth;
+            case LINE:
+            case LINE_UP:
+                return gHeight;
+            case PORTRAYAL:
+            default:
+                return Math.sqrt(gWidth * gWidth + gHeight * gHeight);
+        }
     }
 
     @Override
@@ -145,23 +141,29 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
         RenderedImage createRendering = g.createRendering(mt.getCurrentRenderContext());
 
         if (g != null) {
-            //System.out.println ("GraphicStroke.draw");
+            //System.out.println("GraphicStroke.draw");
             ArrayList<Shape> shapes;
             // if not using offset rapport, compute perpendiculat offset first
             if (!this.isOffsetRapport() && Math.abs(offset) > 0.0) {
                 shapes = ShapeHelper.perpendicularOffset(shape, offset);
                 // Setting offset to 0.0 let be sure the offset will never been applied twice!
                 offset = 0.0;
+                //System.out.println("Apply offset to graphic stroke!");
             } else {
                 shapes = new ArrayList<Shape>();
                 shapes.add(shape);
             }
 
 
+            int shapeCounter = 1;
             for (Shape shp : shapes) {
+                //System.out.println("Process shape n°" + shapeCounter + "/" + shapes.size());
+                shapeCounter++;
                 double segLength = getNaturalLength(sds, fid, shp, mt);
 
-                double gWidth = g.getWidth();
+                double gWidth = getGraphicWidth(sds, fid, mt);
+
+                //System.out.println("SegLength <-> gWidth: " + segLength + "<->" + gWidth);
                 double lineLength = ShapeHelper.getLineLength(shp);
 
                 RelativeOrientation rOrient = this.getRelativeOrientation();
@@ -174,15 +176,19 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
 
                 if (this.isLengthRapport()) {
                     nbSegments = (int) ((lineLength / segLength) + 0.5);
+                    //System.out.println("  Length Rapport : Split line in " + (int) nbSegments + " parts");
                     segments = ShapeHelper.splitLine(shp, (int) nbSegments);
                     segLength = lineLength / nbSegments;
                     nbToDraw = (int) nbSegments;
                 } else {
                     nbSegments = lineLength / segLength;
-                    segLength = lineLength / nbSegments;
+                    //System.out.println("  No linear rapport: NbSegement: " + nbSegments);
+                    //segLength = lineLength / nbSegments;
+                    //System.out.println("    BUGGY ? (new) SegLength (?): " + (lineLength / nbSegments));
                     // Effective number of graphic to draw (skip the last one if not space left...)
-                    nbToDraw = (int) nbSegments;
-                    if (nbToDraw > 0) {
+                    //nbToDraw = (int) nbSegments;
+                    //if (nbToDraw > 0) {
+                    if (nbSegments > 0) {
                         // TODO remove half of extra space at the beginning of the line
                         //shp = ShapeHelper.splitLine(shp, (nbSegments - nbToDraw)/2.0).get(1);
                         segments = ShapeHelper.splitLineInSeg(shp, segLength);
@@ -192,9 +198,10 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
                 int i = 0;
                 if (segments != null) {
                     for (Shape seg : segments) {
-                        if (i == nbToDraw) {
-                            break;
-                        }
+                        //System.out.println("  DRAW GRAPHIC ON NEW SEG");
+                        /*if (i == nbToDraw) {
+                        break;
+                        }*/
                         i++;
 
                         ArrayList<Shape> oSegs;
@@ -213,17 +220,18 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
                                 Point2D.Double pt = ShapeHelper.getPointAt(oSeg, segLength / 2);
                                 AffineTransform at = AffineTransform.getTranslateInstance(pt.x, pt.y);
 
-
-
                                 if (rOrient != RelativeOrientation.PORTRAYAL) {
                                     //Point2D.Double ptA = ShapeHelper.getPointAt(oSeg, 0.5 * (segLength - gWidth));
                                     //Point2D.Double ptB = ShapeHelper.getPointAt(oSeg, 0.75 * (segLength - gWidth));
+
+                                    //System.out.println("pos ptA: " + (0.5 * (segLength - gWidth)));
+                                    //System.out.println("pos ptB: " + (0.5 * (segLength + gWidth)));
 
                                     Point2D.Double ptA = ShapeHelper.getPointAt(oSeg, 0.5 * (segLength - gWidth));
                                     Point2D.Double ptB = ShapeHelper.getPointAt(oSeg, 0.5 * (segLength + gWidth));
 
                                     double theta = Math.atan2(ptB.y - ptA.y, ptB.x - ptA.x);
-                                    //System.out.println("("+ ptA.x + ";" + ptA.y +")"  + "(" + ptB.x + ";" + ptB.y+ ")" + "   => Angle: " + (theta/0.0175));
+                                    //System.out.println("(" + ptA.x + ";" + ptA.y + ")" + "(" + ptB.x + ";" + ptB.y + ")" + "   => Angle: " + (theta / 0.0175));
 
                                     switch (rOrient) {
                                         case LINE:
@@ -235,6 +243,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
                                             }
                                             break;
                                     }
+                                    //System.out.println("  theta: " + theta);
 
                                     at.concatenate(AffineTransform.getRotateInstance(theta));
                                 }

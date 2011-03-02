@@ -39,7 +39,7 @@ public abstract class Stroke implements SymbolizerNode, UomNode {
 
 
     protected Stroke(){
-        lengthRapport = false;
+        lengthRapport = true;
         offsetRapport = true;
     }
 

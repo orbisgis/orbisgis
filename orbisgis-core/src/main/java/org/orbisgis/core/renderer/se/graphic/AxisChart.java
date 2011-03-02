@@ -35,28 +35,31 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-
-
 package org.orbisgis.core.renderer.se.graphic;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Arc2D;
+import java.awt.geom.Arc2D.Double;
+import java.awt.geom.Area;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
-import java.awt.geom.Point2D.Double;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.driver.shapefile.ShapeHandler;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.AxisChartSubtypeType;
 import org.orbisgis.core.renderer.persistance.se.AxisChartType;
 import org.orbisgis.core.renderer.persistance.se.CategoryType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -145,11 +148,11 @@ public final class AxisChart extends Graphic {
         }
 
         for (CategoryType ct : t.getCategory()) {
-           addCategory(new Category(ct));
+            addCategory(new Category(ct));
         }
     }
 
-    public void addCategory(Category c){
+    public void addCategory(Category c) {
         categories.add(c);
         c.setParent(this);
     }
@@ -273,13 +276,13 @@ public final class AxisChart extends Graphic {
         Rectangle2D.Double bounds = new Rectangle2D.Double(-width / 2, -maxHeight, width, maxHeight + -1 * minHeight);
 
         AffineTransform at = null;
-        if (transform != null){
+        if (transform != null) {
             at = transform.getGraphicalAffineTransform(false, sds, fid, mt, minHeight, minHeight);
             Shape shp = at.createTransformedShape(bounds);
             bounds.setRect(shp.getBounds2D());
         }
 
-        RenderableGraphics g2 = Graphic.getNewRenderableGraphics(bounds, 10);
+        RenderableGraphics g2 = Graphic.getNewRenderableGraphics(bounds, 10, mt);
 
         double currentX = -width / 2 + INITIAL_GAP_PX;
 
@@ -298,17 +301,17 @@ public final class AxisChart extends Graphic {
                 Path2D.Double bar = new Path2D.Double();
                 bar.moveTo(xOffset[i], 0);
                 bar.lineTo(xOffset[i], -heights[i]);
-                bar.lineTo(xOffset[i]+cWidth, -heights[i]);
-                bar.lineTo(xOffset[i]+cWidth, 0);
+                bar.lineTo(xOffset[i] + cWidth, -heights[i]);
+                bar.lineTo(xOffset[i] + cWidth, 0);
                 bar.closePath();
                 Shape shp = bar;
-                if (at != null){
+                if (at != null) {
                     shp = at.createTransformedShape(bar);
                 }
-                if (c.getFill() != null){
+                if (c.getFill() != null) {
                     c.getFill().draw(g2, sds, fid, shp, selected, mt);
                 }
-                if (c.getStroke() != null){
+                if (c.getStroke() != null) {
                     c.getStroke().draw(g2, sds, fid, shp, selected, mt, 0.0);
                 }
             }
@@ -325,14 +328,14 @@ public final class AxisChart extends Graphic {
             area.closePath();
 
             Shape shp = area;
-            if (at != null){
+            if (at != null) {
                 shp = at.createTransformedShape(area);
             }
             areaFill.draw(g2, sds, fid, shp, selected, mt);
         }
 
         if (lineStroke != null) {
-            System.out.println ("lineStroke");
+            System.out.println("lineStroke");
             Path2D line = new Path2D.Double();
             line.moveTo(xOffset[0] + cWidth / 2, -heights[0]);
             for (i = 0; i < nCat; i++) {
@@ -341,7 +344,7 @@ public final class AxisChart extends Graphic {
             //area.lineTo(xOffset[nCat-1]+cWidth/2, 0);
             //area.closePath();
             Shape shp = line;
-            if (at != null){
+            if (at != null) {
                 shp = at.createTransformedShape(line);
             }
             lineStroke.draw(g2, sds, fid, shp, selected, mt, 0.0);
@@ -353,8 +356,8 @@ public final class AxisChart extends Graphic {
                 RenderableGraphics gr = c.getGraphicCollection().getGraphic(sds, fid, selected, mt);
 
                 AffineTransform at2 = AffineTransform.getTranslateInstance(xOffset[i] + cWidth / 2, -heights[i]);
-                if (at != null){
-                   at2.concatenate(at);
+                if (at != null) {
+                    at2.concatenate(at);
                 }
                 g2.drawRenderedImage(gr.createRendering(mt.getCurrentRenderContext()), at2);
             }
@@ -365,8 +368,8 @@ public final class AxisChart extends Graphic {
         Point2D origin = at.transform(new Point2D.Double(0, 0), null);
         Point2D maxX_y0 = at.transform(new Point2D.Double(0, 0), null);
 
-        g2.drawLine((int)bounds.getMinX(), (int)bounds.getMinY(), (int)bounds.getMinX(), (int)bounds.getMaxY());
-        g2.drawLine((int)bounds.getMinX(), (int)origin.getY(), (int)bounds.getMaxX(), (int)maxX_y0.getY());
+        g2.drawLine((int) bounds.getMinX(), (int) bounds.getMinY(), (int) bounds.getMinX(), (int) bounds.getMaxY());
+        g2.drawLine((int) bounds.getMinX(), (int) origin.getY(), (int) bounds.getMaxX(), (int) maxX_y0.getY());
 
 
         /*
@@ -378,7 +381,7 @@ public final class AxisChart extends Graphic {
         arrow.setViewBox(new ViewBox(new RealLiteral(20)));
         RenderableGraphics rArrow = arrow.getRenderableGraphics(sds, fid, selected, mt);
         g2.drawRenderableImage(rArrow, AffineTransform.getTranslateInstance(0, bounds.getMinY()));
-        */
+         */
 
         return g2;
     }
@@ -387,8 +390,158 @@ public final class AxisChart extends Graphic {
         return null;
     }
 
+    /**
+     *
+     * Create polar chart
+     *
+     * @param sds
+     * @param fid
+     * @param selected
+     * @param mt
+     * @return
+     * @throws ParameterException
+     * @throws IOException
+     */
     private RenderableGraphics getPolarChart(SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException {
-        return null;
+        int nCat = categories.size();
+        double heights[] = getMeasuresInPixel(sds, fid, mt);
+
+        double maxHeight = 0;
+        double minHeight = 0;
+
+        for (double h : heights) {
+            if (h > maxHeight) {
+                maxHeight = h;
+            }
+            if (h < minHeight) {
+                minHeight = h;
+            }
+        }
+
+        if (minHeight < 0.0) {
+            throw new ParameterException("Negative measures are not allowed for polar charts!");
+        }
+
+        double cGap = DEFAULT_GAP_PX;
+        if (categoryGap != null) {
+            // Seems unusable
+            cGap = Uom.toPixel(categoryGap.getValue(sds, fid), getUom(), mt.getDpi(),
+                    mt.getScaleDenominator(), null);
+        }
+
+        double cWidth = DEFAULT_WIDTH_PX;
+        if (categoryWidth != null) {
+            // Seen unusable
+            cWidth = Uom.toPixel(categoryWidth.getValue(sds, fid), getUom(), mt.getDpi(),
+                    mt.getScaleDenominator(), null);
+        }
+
+
+        //double width = (nCat - 1) * cGap + nCat * cWidth + INITIAL_GAP_PX;
+        double radius = maxHeight;
+
+        Rectangle2D.Double bounds = new Rectangle2D.Double(-radius, -radius, 2 * radius, 2 * radius);
+
+        AffineTransform at = null;
+        if (transform != null) {
+            at = transform.getGraphicalAffineTransform(false, sds, fid, mt, 2 * radius, 2 * radius);
+            Shape shp = at.createTransformedShape(bounds);
+            bounds.setRect(shp.getBounds2D());
+        }
+
+        RenderableGraphics g2 = Graphic.getNewRenderableGraphics(bounds, 10, mt); // TODO Fetch margin !
+
+        double alphas[] = new double[nCat];
+        double beta = 2*Math.PI / nCat;
+
+        double alpha = Math.PI / 2.0; // The first is vertical !
+
+        double xpos[] = new double[nCat];
+        double ypos[] = new double[nCat];
+
+        int i;
+        for (i = 0; i < nCat; i++) {
+            ypos[i] = Math.sin(alpha) * heights[i];
+            xpos[i] = Math.cos(alpha) * heights[i];
+            alphas[i] = alpha;
+            alpha += beta;
+            System.out.println ("Height n°" + i + ": " + heights[i]  + " @ "+ xpos[i] + ";" + ypos[i]);
+        }
+
+        if (this.areaFill != null || this.lineStroke != null) {
+            Path2D.Double area = new Path2D.Double();
+            area.moveTo(xpos[0], ypos[0]);
+            for (i = 1; i < nCat; i++) {
+                area.lineTo(xpos[i], ypos[i]);
+            }
+            area.closePath();
+            Shape shp = area;
+            if (at != null) {
+                shp = at.createTransformedShape(area);
+            }
+
+            if (this.areaFill != null) {
+                System.out.println (" Fill Area!");
+                areaFill.draw(g2, sds, fid, shp, selected, mt);
+            }
+            if (this.lineStroke != null) {
+                System.out.println (" Stroke line!");
+                lineStroke.draw(g2, sds, fid, shp, selected, mt, 0.0);
+            }
+        }
+
+        for (i = 0; i < nCat; i++) {
+            Category cat = this.categories.get(i);
+            if (cat.getGraphicCollection() != null) {
+                RenderableGraphics rg = cat.getGraphicCollection().getGraphic(sds, fid, selected, mt);
+
+                AffineTransform at2 = AffineTransform.getTranslateInstance(xpos[i], ypos[i]);
+                if (at != null) {
+                    at2.concatenate(at);
+                }
+                g2.drawRenderedImage(rg.createRendering(mt.getCurrentRenderContext()), at2);
+            }
+            Shape shp;
+
+            // TODO::CREATE SLICE
+
+            if (cat.getFill() != null || cat.getStroke() != null){
+                Arc2D.Double slice = new Arc2D.Double(-heights[i], - heights[i],
+                        2 * heights[i], 2 * heights[i], 
+                        (-alphas[i] - beta/2)/ShapeHelper._0_0175, beta/ShapeHelper._0_0175, Arc2D.PIE);
+
+                shp = slice;
+                if (at != null){
+                    shp = at.createTransformedShape(slice);
+                }
+                if (cat.getFill() != null){
+                    cat.getFill().draw(g2, sds, fid, shp, selected, mt);
+                }
+                if (cat.getStroke() != null){
+                    cat.getStroke().draw(g2, sds, fid, shp, selected, mt, 0.0);
+                }
+            }
+
+
+            // DRAW measure:
+            Path2D.Double stick = new Path2D.Double();
+            stick.moveTo(0, 0);
+            stick.lineTo(xpos[i], ypos[i]);
+            shp = stick;
+            if (at != null) {
+                shp = at.createTransformedShape(stick);
+            }
+            g2.setStroke(new BasicStroke(1));
+            //g2.setColor(Color.black);
+            g2.setPaint(Color.GRAY);
+            g2.draw(shp);
+
+        }
+
+
+
+        return g2;
+
     }
 
     @Override
@@ -468,41 +621,42 @@ public final class AxisChart extends Graphic {
     public String dependsOnFeature() {
         String result = "";
 
-        if (areaFill != null){
+        if (areaFill != null) {
             result += " " + this.areaFill.dependsOnFeature();
         }
 
-        if (lineStroke != null)
+        if (lineStroke != null) {
             result += " " + this.lineStroke.dependsOnFeature();
+        }
 
-        if (this.categoryGap != null){
+        if (this.categoryGap != null) {
             result += " " + categoryGap.dependsOnFeature();
         }
 
-        if (categoryWidth != null){
+        if (categoryWidth != null) {
             result += " " + categoryWidth.dependsOnFeature();
         }
 
-        if (axisScale != null){
-            if (axisScale.getAxisLength() != null){
+        if (axisScale != null) {
+            if (axisScale.getAxisLength() != null) {
                 result += " " + axisScale.getAxisLength().dependsOnFeature();
             }
-            if (axisScale.getMeasureValue() != null){
+            if (axisScale.getMeasureValue() != null) {
                 result += " " + axisScale.getMeasureValue().dependsOnFeature();
             }
         }
 
-        for (Category c : categories){
-            if (c.getFill() != null){
+        for (Category c : categories) {
+            if (c.getFill() != null) {
                 result += " " + c.getFill().dependsOnFeature();
             }
-            if (c.getStroke() != null){
-                result += " "  + c.getStroke().dependsOnFeature();
+            if (c.getStroke() != null) {
+                result += " " + c.getStroke().dependsOnFeature();
             }
-            if (c.getGraphicCollection() != null){
+            if (c.getGraphicCollection() != null) {
                 result += " " + c.getGraphicCollection().dependsOnFeature();
             }
-            if (c.getMeasure() != null){
+            if (c.getMeasure() != null) {
                 result += " " + c.getMeasure().dependsOnFeature();
             }
         }

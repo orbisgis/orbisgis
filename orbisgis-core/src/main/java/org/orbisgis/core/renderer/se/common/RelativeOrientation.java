@@ -8,7 +8,6 @@ public enum RelativeOrientation {
 	// TODO NORMAL_REVERSE, LINE_REVERSE ?
 
 	public static RelativeOrientation readFromToken(String token) {
-        System.out.println ("Token: " + token);
 		if (token.equalsIgnoreCase("normal")) {
 			return RelativeOrientation.NORMAL;
 		} else if (token.equalsIgnoreCase("normalup")) {

@@ -286,7 +286,6 @@ public final class DensityFill extends Fill implements GraphicNode {
                     double tHeight = getTextureSize(mHeight, percentage);
                     double tWidth = getTextureSize(mWidth, percentage);
 
-                    System.out.println("DensityFill: " + percentage + " / TextureSize:" + tWidth + "x" + tHeight);
                     RenderedImage rg = g.createRendering(mt.getCurrentRenderContext());
 
                     //Create image to which to paint the marks

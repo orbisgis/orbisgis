@@ -105,11 +105,11 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 		for (i = 0; i < this.getNumClasses(); i++) {
             String r = this.getClassValue(i).dependsOnFeature();
             if (r != null && !r.isEmpty()){
-                result += r;
+                result += " " + r;
 			}
 		}
 
-		return result;
+		return result.trim();
 	}
 
 	public void setFallbackValue(FallbackType fallbackValue) {
@@ -186,10 +186,12 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 	}
 
 	public void setClassValue(int i, ToType value) {
+        System.out.println ("Set Class n° " + i + " value :" + value);
 		if (i == 0) {
 			firstClass = value;
 		} else if (i > 0 && i < getNumClasses() - 1) {
 			//classes.get(i - 1).setClassValue(value);
+            i--; // first class in not in the list
 			classValues.remove(i);
 			classValues.add(i,value);
 		} else {
