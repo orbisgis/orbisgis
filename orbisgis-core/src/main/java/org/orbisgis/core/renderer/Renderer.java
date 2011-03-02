@@ -251,9 +251,13 @@ public class Renderer {
 			int width, int height, Envelope extent, IProgressMonitor pm)
 			throws DriverException, IOException {
 		logger.debug(I18N.getString("orbisgis-core.org.orbisgis.renderer.rasterEnvelope") + layer.getEnvelope()); //$NON-NLS-1$
-		GraphicsConfiguration configuration = GraphicsEnvironment
+		GraphicsConfiguration configuration = null;
+                boolean isHeadLess = GraphicsEnvironment.isHeadless();
+                if (!isHeadLess) {
+                        configuration = GraphicsEnvironment
 				.getLocalGraphicsEnvironment().getDefaultScreenDevice()
 				.getDefaultConfiguration();
+                }
 		RasterLegend[] legends = layer.getRasterLegend();
 		for (RasterLegend legend : legends) {
 			if (!validScale(mt, legend)) {
@@ -264,8 +268,14 @@ public class Renderer {
 			for (int i = 0; i < layer.getSpatialDataSource().getRowCount(); i++) {
 				GeoRaster geoRaster = layer.getSpatialDataSource().getRaster(i);
 				Envelope layerEnvelope = geoRaster.getMetadata().getEnvelope();
-				BufferedImage layerImage = configuration.createCompatibleImage(
-						width, height, BufferedImage.TYPE_INT_ARGB);
+                                BufferedImage layerImage;
+                                if (isHeadLess) {
+                                        layerImage = new BufferedImage(width, height,
+                                                BufferedImage.TYPE_INT_ARGB);
+                                } else {
+                                        layerImage = configuration.createCompatibleImage(width,
+                                                height, BufferedImage.TYPE_INT_ARGB);
+                                }
 
 				// part or all of the GeoRaster is visible
 				Rectangle2DDouble layerPixelEnvelope = mt.toPixel(layerEnvelope);

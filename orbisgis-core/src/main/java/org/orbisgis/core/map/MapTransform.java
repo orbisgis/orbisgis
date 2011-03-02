@@ -218,13 +218,18 @@ public class MapTransform implements PointTransformation {
 	public void resizeImage(int width, int height) {
 		int oldWidth = getWidth();
 		int oldHeight = getHeight();
-		// image = new BufferedImage(width, height,
-		// BufferedImage.TYPE_INT_ARGB);
+                // if there is no graphic device, we build a image by hand
+                // with transparency...
+                if (GraphicsEnvironment.isHeadless()) {
+                        image = new BufferedImage(width, height,
+                        BufferedImage.TYPE_INT_ARGB);
+                } else {
 		GraphicsConfiguration configuration = GraphicsEnvironment
 				.getLocalGraphicsEnvironment().getDefaultScreenDevice()
 				.getDefaultConfiguration();
-		image = configuration.createCompatibleImage(width, height,
-				BufferedImage.TYPE_INT_ARGB);
+                        image = configuration.createCompatibleImage(width, height,
+                                BufferedImage.TYPE_INT_ARGB);
+                }
 		calculateAffineTransform();
 		for (TransformListener listener : listeners) {
 			listener.imageSizeChanged(oldWidth, oldHeight, this);
@@ -307,7 +312,14 @@ public class MapTransform implements PointTransformation {
 		if (adjustedExtent == null) {
 			return 0;
 		} else {
-			int dpi = Toolkit.getDefaultToolkit().getScreenResolution();
+                        int dpi;
+                        // if there is no graphic display
+                        // we use the default Gnome & Windows DPI of 96
+                        if (GraphicsEnvironment.isHeadless()) {
+                                dpi = 96;
+                        } else {
+                                dpi = Toolkit.getDefaultToolkit().getScreenResolution();
+                        }
 			double metersByPixel = 0.0254 / dpi;
 			double imageMeters = getWidth() * metersByPixel;
 
