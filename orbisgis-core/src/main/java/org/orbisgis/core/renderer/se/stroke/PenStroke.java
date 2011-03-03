@@ -40,6 +40,7 @@ package org.orbisgis.core.renderer.se.stroke;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Paint;
 import java.awt.Shape;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -483,26 +484,31 @@ public final class PenStroke extends Stroke implements FillNode {
                             }
                         }
                     }
+                } else {
 
-                    return;
-                }
+                    BasicStroke stroke = null;
 
-                BasicStroke stroke = null;
+                    stroke = this.createBasicStroke(sds, fid, shp, mt, null /*ShapeHelper.getAreaPerimeterLength(shp)*/, true);
 
-                stroke = this.createBasicStroke(sds, fid, shp, mt, null /*ShapeHelper.getAreaPerimeterLength(shp)*/, true);
-
-                if (Math.abs(offset) > 0.0) {
-                    for (Shape oShp : ShapeHelper.perpendicularOffset(shp, offset)) {
-                        if (oShp != null) {
-                            Shape outline = stroke.createStrokedShape(oShp);
+                    if (Math.abs(offset) > 0.0) {
+                        for (Shape oShp : ShapeHelper.perpendicularOffset(shp, offset)) {
+                            if (oShp != null) {
+                                Shape outline = stroke.createStrokedShape(oShp);
+                                fill.draw(g2, sds, fid, outline, selected, mt);
+                            }
+                        }
+                    } else {
+                        Paint paint = fill.getPaint(fid, sds, selected, mt);
+                        if (paint != null){
+                            // Some fill type can be converted to a texture paint or a solid color
+                            g2.setPaint(paint);
+                            g2.draw(shp);
+                        } else {
+                            // Others can't -> create the ares to fill
+                            Shape outline = stroke.createStrokedShape(shp);
                             fill.draw(g2, sds, fid, outline, selected, mt);
                         }
                     }
-                } else {
-                    Shape outline = stroke.createStrokedShape(shp);
-                    fill.draw(g2, sds, fid, outline, selected, mt);
-                    //g2.setPaint(paint);
-                    //g2.draw(shape);
                 }
             }
         }
@@ -517,9 +523,23 @@ public final class PenStroke extends Stroke implements FillNode {
         }
     }
 
-    @Override
-    public double getMinLength(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
-        return 0;
+    //@Override
+    public double getMinLength(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException {
+        double length = 0;
+        if (dashArray != null){
+            String sDash = this.dashArray.getValue(sds, fid);
+            String[] splitedDash = sDash.split(" ");
+
+            for (int i = 0; i < splitedDash.length; i++) {
+                length += Uom.toPixel(Double.parseDouble(splitedDash[i]), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+            }
+        }
+
+        if (dashOffset != null){
+            length += dashOffset.getValue(sds, fid);
+        }
+
+        return length;
     }
 
     @Override

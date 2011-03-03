@@ -163,10 +163,10 @@ public final class CompoundStroke extends Stroke {
         return max;
     }
 
-    @Override
+    /*@Override
     public double getMinLength(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
-    }
+    }*/
 
     @Override
     public double getNaturalLength(SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) throws ParameterException, IOException {

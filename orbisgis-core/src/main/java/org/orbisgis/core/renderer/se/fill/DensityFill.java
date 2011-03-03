@@ -182,6 +182,10 @@ public final class DensityFill extends Fill implements GraphicNode {
             Paint painter = null;
 
             if (isHatched && hatches != null) {
+                if (hatches.getMinLength(sds, fid, mt) > 0){
+                    throw new ParameterException("Dashed hatched aren't supported yet!");
+                }
+
                 double theta = -45.0;
 
                 if (this.orientation != null) {

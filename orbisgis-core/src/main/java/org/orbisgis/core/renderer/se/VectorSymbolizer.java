@@ -35,7 +35,6 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-
 package org.orbisgis.core.renderer.se;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -70,196 +69,262 @@ import org.orbisgis.core.renderer.se.transform.Transform;
  */
 public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 
-	protected Transform transform;
-	protected Uom uom;
+    protected Transform transform;
+    protected Uom uom;
 
-	protected VectorSymbolizer() {
-	}
+    protected VectorSymbolizer() {
+    }
 
-	protected VectorSymbolizer(JAXBElement<? extends SymbolizerType> st) {
-		super(st);
-	}
+    protected VectorSymbolizer(JAXBElement<? extends SymbolizerType> st) {
+        super(st);
+    }
 
-	@Override
-	public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt)
-			throws ParameterException, IOException, DriverException;
+    @Override
+    public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt, Geometry the_geom)
+            throws ParameterException, IOException, DriverException;
 
-	/**
-	 * Convert a spatial feature into a LiteShape, should add parameters to handle
-	 * the scale and to perform a scale dependent generalization !
-	 *
-	 * @param sds the data source
-	 * @param fid the feature id
-	 * @throws ParameterException
-	 * @throws IOException
-	 * @throws DriverException
-	 */
-	public ArrayList<Shape> getShapes(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException, DriverException {
+    /**
+     * Convert a spatial feature into a LiteShape, should add parameters to handle
+     * the scale and to perform a scale dependent generalization !
+     *
+     * @param sds the data source
+     * @param fid the feature id
+     * @throws ParameterException
+     * @throws IOException
+     * @throws DriverException
+     */
+    public ArrayList<Shape> getShapes(SpatialDataSourceDecorator sds, long fid,
+            MapTransform mt, Geometry the_geom) throws ParameterException, IOException, DriverException {
 
-		Geometry geom = this.getTheGeom(sds, fid); // geom + function
+        Geometry geom;
+        if (the_geom == null) {
+            geom = this.getTheGeom(sds, fid); // geom + function
+        } else {
+            geom = the_geom;
+        }
 
-		ArrayList<Shape> shapes = new ArrayList<Shape>();
+        ArrayList<Shape> shapes = new ArrayList<Shape>();
 
-		ArrayList<Geometry> geom2Process = new ArrayList<Geometry>();
+        ArrayList<Geometry> geom2Process = new ArrayList<Geometry>();
 
-		geom2Process.add(geom);
+        geom2Process.add(geom);
 
-		while (!geom2Process.isEmpty()) {
-			geom = geom2Process.remove(0);
-			if (geom instanceof GeometryCollection) {
-				for (int i = 0; i < geom.getNumGeometries(); i++) {
-					geom2Process.add(geom.getGeometryN(i));
-				}
-			} else {
-				Shape shape = mt.getShape(geom);
-				if (shape != null) {
-					if (transform != null) {
-						shape = transform.getGraphicalAffineTransform(false, sds, fid, mt, (double) mt.getWidth(), (double) mt.getHeight()).createTransformedShape(shape); // TODO widht and height?
-					}
-					shapes.add(shape);
-				}
-			}
-		}
+        while (!geom2Process.isEmpty()) {
+            geom = geom2Process.remove(0);
+            if (geom instanceof GeometryCollection) {
+                for (int i = 0; i < geom.getNumGeometries(); i++) {
+                    geom2Process.add(geom.getGeometryN(i));
+                }
+            } else {
+                Shape shape = mt.getShape(geom);
+                if (shape != null) {
+                    if (transform != null) {
+                        shape = transform.getGraphicalAffineTransform(false, sds, fid, mt, (double) mt.getWidth(), (double) mt.getHeight()).createTransformedShape(shape); // TODO widht and height?
+                    }
+                    shapes.add(shape);
+                }
+            }
+        }
 
-		//Rectangle2D bounds2D = shape.getBounds2D();
+        return shapes;
+    }
 
-		/*
-		if (bounds2D.getHeight() + bounds2D.getWidth() < 5){
-		return null;
-		}
-		 */
-		return shapes;
-	}
+    /**
+     * Convert a spatial feature into a set of linear shape
+     *
+     * @param sds the data source
+     * @param fid the feature id
+     * @throws ParameterException
+     * @throws IOException
+     * @throws DriverException
+     */
+    public ArrayList<Shape> getLines(SpatialDataSourceDecorator sds, long fid,
+            MapTransform mt, Geometry the_geom) throws ParameterException, IOException, DriverException {
 
-	/**
-	 * Convert a spatial feature into a set of linear shape
-	 *
-	 * @param sds the data source
-	 * @param fid the feature id
-	 * @throws ParameterException
-	 * @throws IOException
-	 * @throws DriverException
-	 */
-	public ArrayList<Shape> getLines(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException, DriverException {
+        Geometry geom;
+        if (the_geom == null) {
+            geom = this.getTheGeom(sds, fid); // geom + function
+        } else {
+            geom = the_geom;
+        }
 
-		Geometry geom = this.getTheGeom(sds, fid); // geom + function
+        ArrayList<Shape> shapes = new ArrayList<Shape>();
 
-		ArrayList<Shape> shapes = new ArrayList<Shape>();
+        ArrayList<Geometry> geom2Process = new ArrayList<Geometry>();
 
-		ArrayList<Geometry> geom2Process = new ArrayList<Geometry>();
+        geom2Process.add(geom);
 
-		geom2Process.add(geom);
 
-		while (!geom2Process.isEmpty()) {
-			geom = geom2Process.remove(0);
+        AffineTransform at = null;
 
-			// Uncollectionize
-			if (geom instanceof GeometryCollection) {
-				for (int i = 0; i < geom.getNumGeometries(); i++) {
-					geom2Process.add(geom.getGeometryN(i));
-				}
-			} else if (geom instanceof Polygon) {
-				Polygon p = (Polygon) geom;
-				Shape shape = mt.getShape(p.getExteriorRing());
-				if (shape != null) {
-					shapes.add(shape);
-				}
-				int i;
-				// Be aware of polygon holes ! (requiered for
-				for (i = 0; i < p.getNumInteriorRing(); i++) {
-					shape = mt.getShape(p.getInteriorRingN(i));
-					if (shape != null) {
-						shapes.add(shape);
-					}
-				}
-			} else {
-				Shape shape = mt.getShape(geom);
+        if (transform != null) {
+            at = transform.getGraphicalAffineTransform(false, sds, fid,
+                    mt, (double) mt.getWidth(), (double) mt.getHeight());
+        }
 
-				if (shape != null) {
-					if (transform != null) {
-						shape = transform.getGraphicalAffineTransform(false, sds, fid, mt, (double) mt.getWidth(), (double) mt.getHeight()).createTransformedShape(shape); // TODO widht and height?
-					}
-					shapes.add(shape);
-				}
-			}
-		}
+        while (!geom2Process.isEmpty()) {
+            geom = geom2Process.remove(0);
 
-		return shapes;
-	}
+            if (geom instanceof GeometryCollection) {
+                // Uncollectionize
+                for (int i = 0; i < geom.getNumGeometries(); i++) {
+                    geom2Process.add(geom.getGeometryN(i));
+                }
+            } else if (geom instanceof Polygon) {
+                // Separate exterior and interior holes
+                Polygon p = (Polygon) geom;
+                Shape shape = mt.getShape(p.getExteriorRing());
+                if (shape != null) {
+                    if (at != null) {
+                        shape = at.createTransformedShape(shape);
+                    }
+                    shapes.add(shape);
+                }
+                int i;
+                // Be aware of polygon holes !
+                for (i = 0; i < p.getNumInteriorRing(); i++) {
+                    shape = mt.getShape(p.getInteriorRingN(i));
+                    if (shape != null) {
+                        if (at != null) {
+                            shape = at.createTransformedShape(shape);
+                        }
+                        shapes.add(shape);
+                    }
+                }
+            } else {
+                Shape shape = mt.getShape(geom);
 
-	public Point2D getPointShape(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException, DriverException {
-		Geometry geom = this.getTheGeom(sds, fid); // geom + function
+                if (shape != null) {
+                    if (at != null) {
+                        shape = at.createTransformedShape(shape);
+                    }
+                    shapes.add(shape);
+                }
+            }
+        }
 
-		AffineTransform at = mt.getAffineTransform();
+        return shapes;
+    }
 
-		if (transform != null) {
-			at.preConcatenate(transform.getGraphicalAffineTransform(false, sds, fid, mt, (double) mt.getWidth(), (double) mt.getHeight()));
-		}
+    /**
+     * Return one point for each geometry
+     *
+     * @param sds
+     * @param fid
+     * @param mt
+     * @return
+     * @throws ParameterException
+     * @throws IOException
+     * @throws DriverException
+     */
+    public Point2D getPointShape(SpatialDataSourceDecorator sds, long fid, MapTransform mt, Geometry the_geom) throws ParameterException, IOException, DriverException {
+        Geometry geom;
 
-		Point point = geom.getInteriorPoint();
-		//Point point = geom.getCentroid();
+        if (the_geom == null) {
+            geom = this.getTheGeom(sds, fid); // geom + function
+        } else {
+            geom = the_geom;
+        }
 
-		return at.transform(new Point2D.Double(point.getX(), point.getY()), null);
-	}
+        AffineTransform at = mt.getAffineTransform();
 
-	public Point2D getFirstPointShape(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException, DriverException {
-		Geometry geom = this.getTheGeom(sds, fid); // geom + function
+        if (transform != null) {
+            at.preConcatenate(transform.getGraphicalAffineTransform(false, sds, fid, mt, (double) mt.getWidth(), (double) mt.getHeight()));
+        }
 
-		AffineTransform at = mt.getAffineTransform();
-		if (transform != null) {
-			at.preConcatenate(transform.getGraphicalAffineTransform(false, sds, fid, mt, (double) mt.getWidth(), (double) mt.getHeight())); // TODO width and height
-		}
+        Point point = geom.getInteriorPoint();
+        //Point point = geom.getCentroid();
 
-		Coordinate[] coordinates = geom.getCoordinates();
+        return at.transform(new Point2D.Double(point.getX(), point.getY()), null);
+    }
 
-		return at.transform(new Point2D.Double(coordinates[0].x, coordinates[0].y), null);
-	}
+    /**
+     * Return only the first point
+     * @param sds
+     * @param fid
+     * @param mt
+     * @return
+     * @throws ParameterException
+     * @throws IOException
+     * @throws DriverException
+     */
+    public Point2D getFirstPointShape(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException, DriverException {
+        Geometry geom = this.getTheGeom(sds, fid); // geom + function
 
-	public ArrayList<Point2D> getPoints(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException, DriverException {
-		Geometry geom = this.getTheGeom(sds, fid); // geom + function
+        AffineTransform at = mt.getAffineTransform();
+        if (transform != null) {
+            at.preConcatenate(transform.getGraphicalAffineTransform(false, sds, fid, mt, (double) mt.getWidth(), (double) mt.getHeight())); // TODO width and height
+        }
 
-		ArrayList<Point2D> points = new ArrayList<Point2D>();
+        Coordinate[] coordinates = geom.getCoordinates();
 
-		AffineTransform at = mt.getAffineTransform();
-		if (transform != null) {
-			at.preConcatenate(transform.getGraphicalAffineTransform(false, sds, fid, mt, (double) mt.getWidth(), (double) mt.getHeight())); // TODO width and height
-		}
+        return at.transform(new Point2D.Double(coordinates[0].x, coordinates[0].y), null);
+    }
 
-		Coordinate[] coordinates = geom.getCoordinates();
+    /**
+     * Return all vertices of the geometry
+     *
+     * @param sds
+     * @param fid
+     * @param mt
+     * @param the_geom
+     * @return
+     * @throws ParameterException
+     * @throws IOException
+     * @throws DriverException
+     */
+    public ArrayList<Point2D> getPoints(SpatialDataSourceDecorator sds, long fid,
+            MapTransform mt, Geometry the_geom) throws ParameterException, IOException, DriverException {
 
-		int i;
-		for (i = 0; i < coordinates.length; i++) {
-			points.add(at.transform(new Point2D.Double(coordinates[i].x, coordinates[i].y), null));
-		}
+        Geometry geom;
+        if (the_geom == null) {
+            geom = this.getTheGeom(sds, fid); // geom + function
+        } else {
+            geom = the_geom;
+        }
 
-		return points;
-	}
+        ArrayList<Point2D> points = new ArrayList<Point2D>();
 
-	public Transform getTransform() {
-		return transform;
-	}
+        AffineTransform at = mt.getAffineTransform();
+        if (transform != null) {
+            at.preConcatenate(transform.getGraphicalAffineTransform(false, sds, fid, mt, (double) mt.getWidth(), (double) mt.getHeight())); // TODO width and height
+        }
 
-	@Override
-	public Uom getUom() {
-		return uom;
-	}
+        Coordinate[] coordinates = geom.getCoordinates();
 
-	@Override
-	public Uom getOwnUom() {
-		return uom;
-	}
+        int i;
+        for (i = 0; i < coordinates.length; i++) {
+            points.add(at.transform(new Point2D.Double(coordinates[i].x, coordinates[i].y), null));
+        }
 
-	@Override
-	public void setUom(Uom uom) {
-		if (uom != null) {
-			this.uom = uom;
-		} else {
-			this.uom = Uom.MM;
-		}
-	}
+        return points;
+    }
 
-	public void setTransform(Transform transform) {
-		this.transform = transform;
-		transform.setParent(this);
-	}
+    public Transform getTransform() {
+        return transform;
+    }
+
+    @Override
+    public Uom getUom() {
+        return uom;
+    }
+
+    @Override
+    public Uom getOwnUom() {
+        return uom;
+    }
+
+    @Override
+    public void setUom(Uom uom) {
+        if (uom != null) {
+            this.uom = uom;
+        } else {
+            this.uom = Uom.MM;
+        }
+    }
+
+    public void setTransform(Transform transform) {
+        this.transform = transform;
+        transform.setParent(this);
+    }
 }

@@ -110,10 +110,10 @@ public final class TextStroke extends Stroke {
 		return 0;
 	}
 
-    @Override
+    /*@Override
     public double getMinLength(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
         return lineLabel.getLabel().getImage(sds, fid, true, mt).getWidth();
-    }
+    }*/
 
 	@Override
 	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt, double offset) throws ParameterException, IOException {

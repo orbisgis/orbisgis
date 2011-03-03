@@ -37,6 +37,7 @@
  */
 package org.orbisgis.core.renderer.se;
 
+import com.vividsolutions.jts.geom.Geometry;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
@@ -139,34 +140,21 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
      * @todo make sure the geom is a line or an area; implement p_offset
      */
     @Override
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException, DriverException {
+    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt, Geometry the_geom) throws ParameterException, IOException, DriverException {
         if (stroke != null) {
-            ArrayList<Shape> shapes = this.getLines(sds, fid, mt);
+            ArrayList<Shape> shapes = this.getLines(sds, fid, mt, the_geom);
 
 
             double offset = 0.0;
             if (perpendicularOffset != null) {
                 offset = Uom.toPixel(perpendicularOffset.getValue(sds, fid),
-                            getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                        getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
             }
 
             if (shapes != null) {
                 for (Shape shp : shapes) {
                     if (shp != null) {
-                        //if (perpendicularOffset != null) {
-                            /*double offset = Uom.toPixel(perpendicularOffset.getValue(sds, fid),
-                                    getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-                            for (Shape offShp : ShapeHelper.perpendicularOffset(shp, offset)) {
-                                if (offShp == null) {
-                                    Services.getOutputManager().println(I18N.getString("orbisgis.org.orbisgis.renderer.cannotCreatePerpendicularOffset"),
-                                            Color.ORANGE);
-                                } else{
-                                    stroke.draw(g2, sds, fid, offShp, selected, mt, 0.0);
-                                }
-                            }
-                        } else {*/
-                            stroke.draw(g2, sds, fid, shp, selected, mt, offset);
-                        //}
+                        stroke.draw(g2, sds, fid, shp, selected, mt, offset);
                     }
                 }
             }
@@ -181,7 +169,7 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
         this.setJAXBProperty(s);
 
 
-        if (this.getUom() != null){
+        if (this.getUom() != null) {
             s.setUnitOfMeasure(this.getUom().toURN());
         }
 

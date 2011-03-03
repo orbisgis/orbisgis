@@ -38,6 +38,7 @@
 
 package org.orbisgis.core.renderer.se;
 
+import com.vividsolutions.jts.geom.Geometry;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
@@ -124,8 +125,8 @@ public final class TextSymbolizer extends VectorSymbolizer {
 	}
 
 	@Override
-	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException, DriverException {
-		ArrayList<Shape> shapes = this.getShapes(sds, fid, mt);
+	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt, Geometry the_geom) throws ParameterException, IOException, DriverException {
+		ArrayList<Shape> shapes = this.getShapes(sds, fid, mt, the_geom);
 
 		if (shapes != null) {
 			for (Shape shp : shapes) {

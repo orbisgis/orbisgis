@@ -49,6 +49,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.Type;
+import org.gdms.driver.DriverException;
+import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 /**
  *
@@ -1354,7 +1359,7 @@ public class ShapeHelper {
         cp2 = crossProduct(x1, y1, x2, y2, x4, y4);
         cp3 = crossProduct(x3, y3, x4, y4, x1, y1);
         cp4 = crossProduct(x3, y3, x4, y4, x2, y2);
-        */
+         */
 
         if (isSegIntersect(x1, y1, x2, y2, x3, y3, x4, y4)) {
             // 1 intersection point !
@@ -1441,7 +1446,7 @@ public class ShapeHelper {
         //return perpendicularOffsetForLine(shp, offset);
     }
 
-    public static Line2D.Double intersection(Line2D.Double line, Rectangle2D.Double bounds){
+    public static Line2D.Double intersection(Line2D.Double line, Rectangle2D.Double bounds) {
         //line.x1, line.y1, line.x2, line.y2
         Point2D.Double bottom = computeSegmentIntersection(line.x1, line.y1, line.x2, line.y2,
                 bounds.getMinX(), bounds.getMaxY(), bounds.getMaxX(), bounds.getMaxY());
@@ -1456,26 +1461,61 @@ public class ShapeHelper {
                 bounds.getMinX(), bounds.getMinY(), bounds.getMinX(), bounds.getMaxY());
 
         ArrayList<Point2D.Double> pts = new ArrayList<Point2D.Double>();
-        if (bottom != null){
+        if (bottom != null) {
             pts.add(bottom);
         }
 
-        if (right != null){
+        if (right != null) {
             pts.add(right);
         }
 
-        if (top != null){
+        if (top != null) {
             pts.add(top);
         }
 
-        if (left != null){
+        if (left != null) {
             pts.add(left);
         }
 
-        if (pts.size() != 2){
+        if (pts.size() != 2) {
             return null;
         } else {
             return new Line2D.Double(pts.get(0), pts.get(1));
         }
+    }
+
+    /**
+     * Look for a unique Geometry attribute within the data source
+     * @param sds the data source to search geometry attribute in.
+     *
+     * @return field id of the geometry attribute
+     * @throws DriverException If a problem occurs with the data source
+     * @throws ParameterException Is thrown if the number of geometry attribute isn't one
+     */
+    public static int getGeometryFieldId(SpatialDataSourceDecorator sds) throws DriverException, ParameterException {
+        Metadata metadata = sds.getMetadata();
+
+        int fieldId = -1;
+        // /MetadataUtilities (i.e sds.getGeometry(..) return the first encountered geometry
+        // With SE, make sure sds only contains one geometry
+        String available = "";
+        for (int i = 0; i < metadata.getFieldCount(); i++) {
+            int typeCode = metadata.getFieldType(i).getTypeCode();
+            if (typeCode == Type.GEOMETRY || typeCode == Type.RASTER) {
+                if (fieldId == -1) { // -1 means not found yet
+                    fieldId = i;
+                } else {
+                    fieldId = -2; // special value means ambigous
+                    available += " " + metadata.getFieldName(i);
+                }
+            }
+        }
+
+        if (fieldId == -2)
+            throw new ParameterException("Reference to geometry attribute is ambigous. Available are :" + available);
+        if (fieldId == -1)
+            throw new ParameterException("This data source doesn't contains any geometry");
+
+        return fieldId;
     }
 }

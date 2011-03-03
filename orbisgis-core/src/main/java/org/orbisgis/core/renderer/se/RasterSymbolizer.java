@@ -39,6 +39,7 @@
 
 package org.orbisgis.core.renderer.se;
 
+import com.vividsolutions.jts.geom.Geometry;
 import java.awt.Graphics2D;
 import java.io.IOException;
 import javax.xml.bind.JAXBElement;
@@ -66,7 +67,7 @@ import org.orbisgis.core.renderer.se.raster.ContrastEnhancement;
 public class RasterSymbolizer extends Symbolizer {
 
     @Override
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException, DriverException {
+    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt, Geometry the_geom) throws ParameterException, IOException, DriverException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

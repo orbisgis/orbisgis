@@ -116,6 +116,15 @@ public final class DotMapFill extends Fill implements GraphicNode {
         return totalQuantity;
     }
 
+    /**
+     * Return null since an hatched fill cannot be converted into a native java fill
+     * @param fid
+     * @param sds
+     * @param selected
+     * @param mt
+     * @return null
+     * @throws ParameterException
+     */
     @Override
     public Paint getPaint(long fid, SpatialDataSourceDecorator sds,
             boolean selected, MapTransform mt) throws ParameterException {

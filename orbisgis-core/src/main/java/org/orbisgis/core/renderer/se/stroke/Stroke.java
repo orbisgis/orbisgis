@@ -7,6 +7,7 @@ import java.io.IOException;
 import javax.xml.bind.JAXBElement;
 
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.orbisgis.core.Services;
 
 import org.orbisgis.core.renderer.persistance.se.StrokeType;
 
@@ -22,6 +23,7 @@ import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 
 /**
  * Style description for linear features (Area or Line)
@@ -30,6 +32,8 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  * @author maxence
  */
 public abstract class Stroke implements SymbolizerNode, UomNode {
+
+    protected static OutputManager logger = Services.getOutputManager();
 
 	private Uom uom;
     protected SymbolizerNode parent;
@@ -140,7 +144,7 @@ public abstract class Stroke implements SymbolizerNode, UomNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public abstract double getMinLength(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException;
+    //public abstract double getMinLength(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException;
 
     //public abstract void getStroke(DataSource ds, int fid);
     /**

@@ -71,6 +71,18 @@ public class LineLabel extends Label {
             }
         }
 
+        // TODO, is shp a polygon ? Yes so create a line like:
+
+        /**
+         *         ___________
+         *   _____/           \
+         *   \                 \
+         *   /   - - - - - -    \
+         *  /                    \
+         * |_____________________/
+         *
+         */
+
         VerticalAlignment vA = this.vAlign;
         HorizontalAlignment hA = this.hAlign;
 
@@ -98,9 +110,11 @@ public class LineLabel extends Label {
             startAt = 0.0;
         }
 
+        /*
         System.out.println ("LineLength: " + lineLength);
         System.out.println ("TotalWidth: " + totalWidth);
         System.out.println ("StartAt: " + startAt);
+         */
 
         double currentPos = startAt;
 

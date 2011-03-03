@@ -71,7 +71,7 @@ public abstract class Fill implements SymbolizerNode {
      * Create a new fill based on the jaxbelement
      *
      * @param f XML Fill
-     * @return Java Fill
+     * @return Java SE Fill
      */
     public static Fill createFromJAXBElement(JAXBElement<? extends FillType> f) throws InvalidStyle{
         if (f.getDeclaredType() == SolidFillType.class){
@@ -110,10 +110,15 @@ public abstract class Fill implements SymbolizerNode {
         return parent.getUom();
     }
 
-    
+
+    /**
+     * @return space separated list of field the style element depends on
+     */
     public abstract String dependsOnFeature();
 
     /**
+     *
+     * Fill the shape according to this SE Fill
      *
      * @param g2 draw within this graphics2d
      * @param shp fill this shape
@@ -123,10 +128,32 @@ public abstract class Fill implements SymbolizerNode {
      */
     public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException;
 
+    /**
+     * Return a Paint that correspond to the SE Fill type.
+     * If the fill type cannot be converted into a Painter, null is returned
+     *
+     * @param fid current feature id
+     * @param sds data source
+     * @param selected is the feature selected ?
+     * @param mt the map transform
+     * @return the paint that correspond to the SE Fill or null if inconvertible (e.g hatched fill, dot map fill, etc)
+     *
+     * @throws ParameterException
+     */
 	public abstract Paint getPaint(long fid, SpatialDataSourceDecorator sds, boolean selected, MapTransform mt) throws ParameterException;
 
+    /**
+     * Serialise to JAXBElement
+     * @return
+     */
     public abstract JAXBElement<? extends FillType> getJAXBElement();
+
+    /**
+     * Serialise to FillType
+     * @return
+     */
     public abstract FillType getJAXBType();
+
 
     protected SymbolizerNode parent;
 }

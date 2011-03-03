@@ -137,6 +137,15 @@ public final class SolidFill extends Fill {
 		return opacity;
 	}
 
+    /**
+     * Return a Java Color according to this SE Solid Fill
+     * @param fid
+     * @param sds
+     * @param selected
+     * @param mt
+     * @return A java.awt.Color
+     * @throws ParameterException
+     */
 	@Override
 	public Paint getPaint(long fid, SpatialDataSourceDecorator sds, boolean selected, MapTransform mt) throws ParameterException {
 		Color c = new Color(128, 128, 128);

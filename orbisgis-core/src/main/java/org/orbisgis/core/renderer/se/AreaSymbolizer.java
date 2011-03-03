@@ -37,7 +37,7 @@
  */
 package org.orbisgis.core.renderer.se;
 
-import java.awt.Color;
+import com.vividsolutions.jts.geom.Geometry;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
@@ -49,10 +49,8 @@ import org.orbisgis.core.renderer.persistance.se.AreaSymbolizerType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.common.ShapeHelper;
 
 
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -68,7 +66,6 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.renderer.se.transform.Transform;
-import org.orbisgis.utils.I18N;
 
 public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, StrokeNode {
 
@@ -162,15 +159,9 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
      * @throws DriverException
      */
     @Override
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException, DriverException {
+    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt, Geometry the_geom) throws ParameterException, IOException, DriverException {
 
-        ArrayList<Shape> shapes = this.getShapes(sds, fid, mt);
-
-        double offset = 0.0;
-        if (perpendicularOffset != null) {
-            offset = Uom.toPixel(perpendicularOffset.getValue(sds, fid),
-                    getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-        }
+        ArrayList<Shape> shapes = this.getShapes(sds, fid, mt, the_geom);
 
         if (shapes != null) {
             for (Shape shp : shapes) {
@@ -179,19 +170,13 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
                 }
 
                 if (stroke != null && shp != null) {
+                    double offset = 0.0;
+                    if (perpendicularOffset != null) {
+                        offset = Uom.toPixel(perpendicularOffset.getValue(sds, fid),
+                                getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                    }
                     stroke.draw(g2, sds, fid, shp, selected, mt, offset);
                 }
-                    /*if (perpendicularOffset != null) {
-                        for (Shape offShp : ShapeHelper.perpendicularOffset(shp, offset)) {
-                            if (offShp == null) {
-                                Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.renderer.cannotCreatePerpendicularOffset"));
-                            } else {
-                            }
-                        }
-                    } else {
-                        stroke.draw(g2, sds, fid, shp, selected, mt, 0.0);
-                    }
-                }*/
             }
         }
     }

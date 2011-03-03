@@ -287,10 +287,18 @@ public final class HatchedFill extends Fill {
         }
     }
 
+    /**
+     * Hatched fill cannot be converted to a native java fill
+     * @param fid
+     * @param sds
+     * @param selected
+     * @param mt
+     * @return null
+     * @throws ParameterException
+     */
     @Override
     public Paint getPaint(long fid, SpatialDataSourceDecorator sds,
-            boolean selected, MapTransform mt)
-            throws ParameterException {
+            boolean selected, MapTransform mt) throws ParameterException {
         return null;
     }
 

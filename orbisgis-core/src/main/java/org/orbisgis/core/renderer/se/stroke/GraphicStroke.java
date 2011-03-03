@@ -268,14 +268,14 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
         //return Math.max(Math.abs( g.getMinX() ), Math.abs(g.getMinY()));
     }
 
-    @Override
+    /*@Override
     public double getMinLength(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
         if (length != null) {
             return length.getValue(sds, fid);
         } else {
             return graphic.getMaxWidth(sds, fid, mt);
         }
-    }
+    }*/
 
     @Override
     public String dependsOnFeature() {

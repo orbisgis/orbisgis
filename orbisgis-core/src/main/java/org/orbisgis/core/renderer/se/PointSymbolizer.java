@@ -37,6 +37,7 @@
  */
 package org.orbisgis.core.renderer.se;
 
+import com.vividsolutions.jts.geom.Geometry;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
@@ -131,7 +132,7 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
     }
 
     @Override
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws IOException, DriverException {
+    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt, Geometry the_geom) throws IOException, DriverException {
         if (graphic != null && graphic.getNumGraphics() > 0) {
 
             try {
@@ -148,7 +149,7 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
                     //if (cache != null) {
 
                     if (onVertex) {
-                        for (Point2D pt : getPoints(sds, fid, mt)) {
+                        for (Point2D pt : getPoints(sds, fid, mt, the_geom)) {
                             x = pt.getX();
                             y = pt.getY();
 
@@ -156,7 +157,7 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
                             g2.drawRenderedImage(rg.createRendering(mt.getCurrentRenderContext()), AffineTransform.getTranslateInstance(x, y));
                         }
                     } else {
-                        Point2D pt = getPointShape(sds, fid, mt);
+                        Point2D pt = getPointShape(sds, fid, mt, the_geom);
 
 
                         x = pt.getX();
