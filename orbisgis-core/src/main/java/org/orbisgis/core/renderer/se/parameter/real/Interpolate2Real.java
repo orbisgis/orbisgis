@@ -2,11 +2,13 @@ package org.orbisgis.core.renderer.se.parameter.real;
 
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.feature.Feature;
+
 import org.orbisgis.core.renderer.persistance.se.InterpolateType;
 import org.orbisgis.core.renderer.persistance.se.InterpolationPointType;
 import org.orbisgis.core.renderer.persistance.se.ModeType;
+
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+
 import org.orbisgis.core.renderer.se.parameter.Interpolate;
 import org.orbisgis.core.renderer.se.parameter.InterpolationPoint;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -56,15 +58,13 @@ public final class Interpolate2Real extends Interpolate<RealParameter, RealLiter
 
 		double value = this.lookupValue.getValue(sds, fid);
 
-		if (i_points.get(0).getData() > value){
+		if (i_points.get(0).getData() >= value){
 			return i_points.get(0).getValue().getValue(sds, fid);
 		}
 
-		if (i_points.get(i_points.size()-1).getData() < value){
+		if (i_points.get(i_points.size()-1).getData() <= value){
 			return i_points.get(i_points.size()-1).getValue().getValue(sds, fid);
 		}
-
-
 
 		int k = getFirstIP(value);
 
@@ -83,7 +83,7 @@ public final class Interpolate2Real extends Interpolate<RealParameter, RealLiter
 			ip1.getValue().getValue(sds, fid), ip2.getValue().getValue(sds, fid));
 
 		}
-        return 0.0; // TODO compute interpolation
+        return 0.0;
     }
 
 	@Override
