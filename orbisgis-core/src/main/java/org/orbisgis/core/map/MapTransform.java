@@ -100,6 +100,7 @@ public class MapTransform implements PointTransformation {
         screenHints.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
         screenHints.put(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
         screenHints.put(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_NORMALIZE);
+        screenHints.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
 
         screenContext = new RenderContext(AffineTransform.getTranslateInstance(0.0, 0.0), screenHints);
 
@@ -110,10 +111,9 @@ public class MapTransform implements PointTransformation {
         draftHints.put(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED);
         draftHints.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_SPEED);
         draftHints.put(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE);
-        draftHints.put(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_NORMALIZE);
+        draftHints.put(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
         draftHints.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
         draftHints.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-
 
         draftContext = new RenderContext(AffineTransform.getTranslateInstance(0.0, 0.0), draftHints);
 	}
@@ -140,10 +140,12 @@ public class MapTransform implements PointTransformation {
 
 	public void switchToDraft(){
 		this.currentRenderContext = MapTransform.draftContext;
+        Services.getOutputManager().println("Switch to draft!");
 	}
 
 	public void switchToScreen(){
 		this.currentRenderContext = MapTransform.screenContext;
+        Services.getOutputManager().println("Switch to Hign-Quality!");
 	}
 
 	public RenderContext getCurrentRenderContext(){

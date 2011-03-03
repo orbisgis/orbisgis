@@ -434,6 +434,8 @@ public final class PenStroke extends Stroke implements FillNode {
                 shapes.add(shape);
             }
 
+            Paint paint = fill.getPaint(fid, sds, selected, mt);
+
             for (Shape shp : shapes) {
                 if (this.dashArray != null && !this.dashArray.getValue(sds, fid).isEmpty() && Math.abs(offset) > 0.0) {
                     String value = dashArray.getValue(sds, fid);
@@ -479,8 +481,13 @@ public final class PenStroke extends Stroke implements FillNode {
                     for (Shape seg : fragments) {
                         for (Shape oSeg : ShapeHelper.perpendicularOffset(seg, offset)) {
                             if (oSeg != null) {
-                                Shape outline = bs.createStrokedShape(oSeg);
-                                fill.draw(g2, sds, fid, outline, selected, mt);
+                                if (paint != null){
+                                    g2.setPaint(paint);
+                                    g2.draw(oSeg);
+                                } else {
+                                    Shape outline = bs.createStrokedShape(oSeg);
+                                    fill.draw(g2, sds, fid, outline, selected, mt);
+                                }
                             }
                         }
                     }
@@ -489,19 +496,29 @@ public final class PenStroke extends Stroke implements FillNode {
                     BasicStroke stroke = null;
 
                     stroke = this.createBasicStroke(sds, fid, shp, mt, null /*ShapeHelper.getAreaPerimeterLength(shp)*/, true);
+                    g2.setPaint(paint);
+                    g2.setStroke(stroke);
 
                     if (Math.abs(offset) > 0.0) {
                         for (Shape oShp : ShapeHelper.perpendicularOffset(shp, offset)) {
                             if (oShp != null) {
-                                Shape outline = stroke.createStrokedShape(oShp);
-                                fill.draw(g2, sds, fid, outline, selected, mt);
+
+                                if (paint != null){
+                                    //g2.setStroke(stroke);
+                                    //g2.setPaint(paint);
+                                    g2.draw(oShp);
+                                } else {
+                                    Shape outline = stroke.createStrokedShape(oShp);
+                                    fill.draw(g2, sds, fid, outline, selected, mt);
+                                }
                             }
                         }
                     } else {
-                        Paint paint = fill.getPaint(fid, sds, selected, mt);
                         if (paint != null){
                             // Some fill type can be converted to a texture paint or a solid color
-                            g2.setPaint(paint);
+
+                            //g2.setStroke(stroke);
+                            //g2.setPaint(paint);
                             g2.draw(shp);
                         } else {
                             // Others can't -> create the ares to fill

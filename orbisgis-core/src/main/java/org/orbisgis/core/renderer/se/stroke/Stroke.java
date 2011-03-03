@@ -54,6 +54,7 @@ public abstract class Stroke implements SymbolizerNode, UomNode {
      * @return Java Stroke
      */
     public static Stroke createFromJAXBElement(JAXBElement<? extends StrokeType> s) throws InvalidStyle{
+        System.out.println ("Create stroke !");
         if (s.getDeclaredType() == PenStrokeType.class){
             return new PenStroke((JAXBElement<PenStrokeType>)s);
         } else if (s.getDeclaredType() == GraphicStrokeType.class){

@@ -64,6 +64,7 @@ import org.orbisgis.core.renderer.se.FeatureTypeStyle;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 
 /**
  *
@@ -77,14 +78,17 @@ public class StrokeTest extends TestCase {
         super(testName);
     }
 
-	protected FailErrorManager failErrorManager;
+    protected FailErrorManager failErrorManager;
+    protected FailOutputManager failOutput;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
 
-		failErrorManager = new FailErrorManager();
-		Services.registerService(ErrorManager.class, "", failErrorManager);
+        failErrorManager = new FailErrorManager();
+        Services.registerService(ErrorManager.class, "", failErrorManager);
+        failOutput = new FailOutputManager();
+        Services.registerService(OutputManager.class, "", failOutput);
     }
 
     @Override
@@ -176,4 +180,28 @@ public class StrokeTest extends TestCase {
             System.out.println ("WARN: " + userMsg);
 		}
 	}
+
+
+    protected class FailOutputManager implements OutputManager{
+
+        @Override
+        public void print(String out) {
+            System.out.println ("OUTPUT: " + out);
+        }
+
+        @Override
+        public void print(String text, Color color) {
+            System.out.println ("OUTPUT: " + text);
+        }
+
+        @Override
+        public void println(String out) {
+            System.out.println ("OUTPUT: " + out);
+        }
+
+        @Override
+        public void println(String text, Color color) {
+            System.out.println ("OUTPUT: " + text);
+        }
+    }
 }

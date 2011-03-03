@@ -97,7 +97,7 @@ public final class Rule implements SymbolizerNode {
 	}
 
 	public Rule(RuleType rt, ILayer layer) throws InvalidStyle {
-		this(layer);
+		//this(layer);
 
 		if (rt.getName() != null) {
 			this.name = rt.getName();

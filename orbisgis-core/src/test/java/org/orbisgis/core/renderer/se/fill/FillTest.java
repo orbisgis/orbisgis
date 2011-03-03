@@ -35,9 +35,7 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-
 package org.orbisgis.core.renderer.se.fill;
-
 
 import java.awt.image.RenderedImage;
 import org.orbisgis.core.renderer.se.graphic.*;
@@ -64,6 +62,7 @@ import org.orbisgis.core.renderer.se.FeatureTypeStyle;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 
 /**
  *
@@ -77,14 +76,17 @@ public class FillTest extends TestCase {
         super(testName);
     }
 
-	protected FailErrorManager failErrorManager;
+    protected FailErrorManager failErrorManager;
+    protected FailOutputManager failOutput;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
 
-		failErrorManager = new FailErrorManager();
-		Services.registerService(ErrorManager.class, "", failErrorManager);
+        failErrorManager = new FailErrorManager();
+        Services.registerService(ErrorManager.class, "", failErrorManager);
+        failOutput = new FailOutputManager();
+        Services.registerService(OutputManager.class, "", failOutput);
     }
 
     @Override
@@ -110,16 +112,16 @@ public class FillTest extends TestCase {
         GraphicCollection collec = ps.getGraphicCollection();
 
         RenderableGraphics rg;
-		MapTransform mt = new MapTransform();
+        MapTransform mt = new MapTransform();
         rg = collec.getGraphic(null, -1, false, mt);
 
         rg.setPaint(Color.BLACK);
-        rg.drawLine((int)rg.getMinX(), 0, (int)(rg.getMinX() + rg.getWidth()), 0);
-        rg.drawLine(0, (int)rg.getMinY(), 0, (int)(rg.getMinY() + rg.getHeight()));
+        rg.drawLine((int) rg.getMinX(), 0, (int) (rg.getMinX() + rg.getWidth()), 0);
+        rg.drawLine(0, (int) rg.getMinY(), 0, (int) (rg.getMinY() + rg.getHeight()));
 
-        dj.setBounds((int)rg.getMinX(), (int)rg.getMinY(), (int)rg.getWidth(), (int)rg.getHeight());
+        dj.setBounds((int) rg.getMinX(), (int) rg.getMinY(), (int) rg.getWidth(), (int) rg.getHeight());
         RenderedImage r = rg.createRendering(mt.getCurrentRenderContext());
-        dj.set(r, (int)rg.getWidth()/2, (int)rg.getHeight()/2);
+        dj.set(r, (int) rg.getWidth() / 2, (int) rg.getHeight() / 2);
 
         File file = new File("/tmp/fill.png");
         ImageIO.write(r, "png", file);
@@ -133,49 +135,72 @@ public class FillTest extends TestCase {
 
         // Set the closing operation so the application is finished.
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize((int)rg.getWidth(), (int)rg.getHeight()+24); // adjust the frame size.
+        frame.setSize((int) rg.getWidth(), (int) rg.getHeight() + 24); // adjust the frame size.
         frame.setVisible(true); // show the frame.
 
         System.out.print("");
-        
+
         try {
             Thread.sleep(20000);
         } catch (InterruptedException ex) {
             Logger.getLogger(FillTest.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
     }
 
 
-
-	protected class FailErrorManager implements ErrorManager {
-
-        @Override
-		public void addErrorListener(ErrorListener listener) {
-		}
+    protected class FailOutputManager implements OutputManager{
 
         @Override
-		public void error(String userMsg) {
-            System.out.println ("ERR: " + userMsg);
-		}
+        public void print(String out) {
+            System.out.println ("OUTPUT: " + out);
+        }
 
         @Override
-		public void error(String userMsg, Throwable exception) {
-            System.out.println ("ERR: " + userMsg + ": " + exception);
-		}
+        public void print(String text, Color color) {
+            System.out.println ("OUTPUT: " + text);
+        }
 
         @Override
-		public void removeErrorListener(ErrorListener listener) {
-		}
+        public void println(String out) {
+            System.out.println ("OUTPUT: " + out);
+        }
 
         @Override
-		public void warning(String userMsg, Throwable exception) {
-            System.out.println ("WARN: " + userMsg + ": " + exception);
-		}
+        public void println(String text, Color color) {
+            System.out.println ("OUTPUT: " + text);
+        }
+
+    }
+
+    protected class FailErrorManager implements ErrorManager {
 
         @Override
-		public void warning(String userMsg) {
-            System.out.println ("WARN: " + userMsg);
-		}
-	}
+        public void addErrorListener(ErrorListener listener) {
+        }
+
+        @Override
+        public void error(String userMsg) {
+            System.out.println("ERR: " + userMsg);
+        }
+
+        @Override
+        public void error(String userMsg, Throwable exception) {
+            System.out.println("ERR: " + userMsg + ": " + exception);
+        }
+
+        @Override
+        public void removeErrorListener(ErrorListener listener) {
+        }
+
+        @Override
+        public void warning(String userMsg, Throwable exception) {
+            System.out.println("WARN: " + userMsg + ": " + exception);
+        }
+
+        @Override
+        public void warning(String userMsg) {
+            System.out.println("WARN: " + userMsg);
+        }
+    }
 }

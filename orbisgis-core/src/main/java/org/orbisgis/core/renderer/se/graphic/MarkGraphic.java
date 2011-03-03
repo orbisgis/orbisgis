@@ -67,9 +67,7 @@ import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.renderer.se.transform.Transform;
 import org.orbisgis.core.renderer.se.StrokeNode;
 import org.orbisgis.core.renderer.se.ViewBoxNode;
-import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
-import org.orbisgis.utils.I18N;
 
 public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, ViewBoxNode {
 
@@ -125,7 +123,10 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
         }
 
         if (t.getStroke() != null) {
-            this.setStroke(Stroke.createFromJAXBElement(t.getStroke()));
+            System.out.println ("Will read stroke :");
+            Stroke s = Stroke.createFromJAXBElement(t.getStroke());
+            System.out.println ("Stroke is " + s);
+            this.setStroke(s);
         }
 
 

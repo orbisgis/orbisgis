@@ -172,14 +172,14 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
 
                 double nbSegments;
 
-                int nbToDraw;
+                //int nbToDraw;
 
                 if (this.isLengthRapport()) {
                     nbSegments = (int) ((lineLength / segLength) + 0.5);
                     //System.out.println("  Length Rapport : Split line in " + (int) nbSegments + " parts");
                     segments = ShapeHelper.splitLine(shp, (int) nbSegments);
                     segLength = lineLength / nbSegments;
-                    nbToDraw = (int) nbSegments;
+                    //nbToDraw = (int) nbSegments;
                 } else {
                     nbSegments = lineLength / segLength;
                     //System.out.println("  No linear rapport: NbSegement: " + nbSegments);
