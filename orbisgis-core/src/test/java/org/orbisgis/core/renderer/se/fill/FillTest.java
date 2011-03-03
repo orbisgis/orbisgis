@@ -54,8 +54,9 @@ import javax.media.jai.RenderableGraphics;
 import javax.swing.JFrame;
 
 import junit.framework.TestCase;
+import org.orbisgis.core.ConsoleErrorManager;
+import org.orbisgis.core.ConsoleOutputManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.errorManager.ErrorListener;
 import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.FeatureTypeStyle;
@@ -76,16 +77,16 @@ public class FillTest extends TestCase {
         super(testName);
     }
 
-    protected FailErrorManager failErrorManager;
-    protected FailOutputManager failOutput;
+    protected ConsoleErrorManager failErrorManager;
+    protected ConsoleOutputManager failOutput;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
 
-        failErrorManager = new FailErrorManager();
+        failErrorManager = new ConsoleErrorManager();
         Services.registerService(ErrorManager.class, "", failErrorManager);
-        failOutput = new FailOutputManager();
+        failOutput = new ConsoleOutputManager();
         Services.registerService(OutputManager.class, "", failOutput);
     }
 
@@ -146,61 +147,5 @@ public class FillTest extends TestCase {
             Logger.getLogger(FillTest.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-    }
-
-
-    protected class FailOutputManager implements OutputManager{
-
-        @Override
-        public void print(String out) {
-            System.out.println ("OUTPUT: " + out);
-        }
-
-        @Override
-        public void print(String text, Color color) {
-            System.out.println ("OUTPUT: " + text);
-        }
-
-        @Override
-        public void println(String out) {
-            System.out.println ("OUTPUT: " + out);
-        }
-
-        @Override
-        public void println(String text, Color color) {
-            System.out.println ("OUTPUT: " + text);
-        }
-
-    }
-
-    protected class FailErrorManager implements ErrorManager {
-
-        @Override
-        public void addErrorListener(ErrorListener listener) {
-        }
-
-        @Override
-        public void error(String userMsg) {
-            System.out.println("ERR: " + userMsg);
-        }
-
-        @Override
-        public void error(String userMsg, Throwable exception) {
-            System.out.println("ERR: " + userMsg + ": " + exception);
-        }
-
-        @Override
-        public void removeErrorListener(ErrorListener listener) {
-        }
-
-        @Override
-        public void warning(String userMsg, Throwable exception) {
-            System.out.println("WARN: " + userMsg + ": " + exception);
-        }
-
-        @Override
-        public void warning(String userMsg) {
-            System.out.println("WARN: " + userMsg);
-        }
     }
 }

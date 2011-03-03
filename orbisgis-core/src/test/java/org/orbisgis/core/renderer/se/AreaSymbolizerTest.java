@@ -17,35 +17,32 @@ import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
 import junit.framework.TestCase;
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.driver.DriverException;
-import org.gdms.driver.driverManager.DriverLoadException;
+import org.orbisgis.core.ConsoleErrorManager;
+import org.orbisgis.core.ConsoleOutputManager;
+import org.orbisgis.core.Services;
+import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.Layer;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.Renderer;
 import org.orbisgis.core.renderer.persistance.se.SymbolizerType;
-import org.orbisgis.core.renderer.se.common.Uom;
-import org.orbisgis.core.renderer.se.fill.SolidFill;
-import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
-import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
-import org.orbisgis.core.renderer.se.graphic.ViewBox;
-import org.orbisgis.core.renderer.se.graphic.WellKnownName;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
+import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 
 /**
  *
  * @author maxence
  */
 public class AreaSymbolizerTest extends TestCase {
+
+    ConsoleOutputManager output;
+    ConsoleErrorManager error;
 
     private class ImagePanel extends JPanel {
 
@@ -63,6 +60,17 @@ public class AreaSymbolizerTest extends TestCase {
             //   ((Graphics2D) g).setStroke(new BasicStroke(10.0f));
             // g.drawLine(0, 0, 1000, 1000);
         }
+    }
+
+
+    public AreaSymbolizerTest(String testName) throws IOException {
+        super(testName);
+
+        error = new ConsoleErrorManager();
+        Services.registerService(ErrorManager.class, "", error);
+        output = new ConsoleOutputManager();
+        Services.registerService(OutputManager.class, "", output);
+
     }
 
     public void testAreaSymbolizer() throws ParameterException, IOException {
@@ -89,7 +97,8 @@ public class AreaSymbolizerTest extends TestCase {
 
             ILayer layer = new Layer("swiss", sds);
 
-            FeatureTypeStyle style = new FeatureTypeStyle(layer, "/home/maxence/projects/SCAP-c²/SE/pie.se");
+            FeatureTypeStyle style = new FeatureTypeStyle(layer, "/home/maxence/projects/SCAP-c²/SE/choro.se");
+            layer.setFeatureTypeStyle(style);
 
             Renderer renderer = new Renderer();
 
