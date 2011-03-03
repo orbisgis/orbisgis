@@ -44,6 +44,7 @@ import java.awt.geom.Path2D;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.security.Provider.Service;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -53,6 +54,7 @@ import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 /**
@@ -1241,7 +1243,7 @@ public class ShapeHelper {
         ArrayList<ArrayList<Vertex>> shapes = getVertexes(shp);
         ArrayList<Shape> rawShapes = new ArrayList<Shape>();
 
-        Rectangle2D bounds2D = shp.getBounds2D();
+        //Rectangle2D bounds2D = shp.getBounds2D();
 
         //if (Math.min(bounds2D.getWidth(), bounds2D.getHeight()) < Math.abs(offset)){
         //    return rawShapes;
@@ -1265,6 +1267,10 @@ public class ShapeHelper {
             }
 
             ArrayList<Vertex> offsetVertexes = createOffsetVertexes(vertexes, offset, closed);
+            if (offsetVertexes.size() < 2){
+                Services.getErrorManager().error("Unable to compute perpendicular offset");
+                return rawShapes;
+            }
 
             if (_DEBUG_) {
                 System.out.println("Cleaned vertexes: ");
