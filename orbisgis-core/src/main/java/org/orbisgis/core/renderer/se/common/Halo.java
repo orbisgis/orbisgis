@@ -113,7 +113,7 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
         return Uom.toPixel(radius.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null); // TODO 100%
     }
 
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) throws ParameterException, IOException {
+    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, Shape shp, MapTransform mt, boolean substract) throws ParameterException, IOException {
         if (radius != null && fill != null) {
             double r = this.getHaloRadius(sds, fid, mt);
             Area initialArea = new Area(shp);
@@ -124,8 +124,12 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
                     // TODO only fill  (halo - shp) !!!
                     if (halo != null) {
                         Area aHalo = new Area(halo);
-                        aHalo.subtract(initialArea);
-                        fill.draw(g2, sds, fid, aHalo, false, mt);
+
+                        if (substract){
+                            aHalo.subtract(initialArea);
+                        }
+
+                        fill.draw(g2, sds, fid, aHalo, selected, mt);
 
                     } else {
                         Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.renderer.cannotCreatePerpendicularOffset"));

@@ -157,7 +157,6 @@ public final class ExternalGraphic extends Graphic {
             at = transform.getGraphicalAffineTransform(false, sds, fid, mt, w, h);
         }
 
-
         double px = 0;
         double py = 0;
 
@@ -181,8 +180,8 @@ public final class ExternalGraphic extends Graphic {
         RenderableGraphics rg = Graphic.getNewRenderableGraphics(imageSize, 0, mt);
 
         if (halo != null) {
-            halo.draw(rg, sds, fid, atShp, mt);
-            // And add a translation to center image
+            halo.draw(rg, sds, fid, selected, atShp, mt, false);
+            // and add a translation to center img on halo
             at.concatenate(AffineTransform.getTranslateInstance(px, py));
         }
 

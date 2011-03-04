@@ -53,7 +53,7 @@ public class Gallery extends TestCase {
         Services.registerService(OutputManager.class, "", output);
     }
 
-    public void template(String shapefile, String title, String stylePath, String source, String savePath) throws IOException, InvalidStyle, DriverException, DriverLoadException, DataSourceCreationException {
+    public void template(String shapefile, String title, String stylePath, String source, String savePath, Envelope extent) throws IOException, InvalidStyle, DriverException, DriverLoadException, DataSourceCreationException {
             DataSourceFactory dsf = new DataSourceFactory();
             DataSource ds = dsf.getDataSource(new File(shapefile));
             ds.open();
@@ -64,10 +64,12 @@ public class Gallery extends TestCase {
             MapTransform mt = new MapTransform();
 
 
-            Envelope fullExtent = sds.getFullExtent();
+            if (extent == null)
+                extent = sds.getFullExtent();
+
             mt.resizeImage(WIDTH, HEIGHT);
-            mt.setExtent(fullExtent);
-            Envelope extent = mt.getAdjustedExtent();
+            mt.setExtent(extent);
+            Envelope effectiveExtent = mt.getAdjustedExtent();
 
             BufferedImage img = mt.getImage();
             Graphics2D g2 = (Graphics2D) img.getGraphics();
@@ -87,8 +89,7 @@ public class Gallery extends TestCase {
             graphics.fillRect(0, 0, WIDTH, HEIGHT);
 
 
-            renderer.draw(img, extent , layer);
-
+            renderer.draw(img, effectiveExtent , layer);
 
             if (source != null) {
                 graphics.setColor(Color.black);
@@ -103,25 +104,28 @@ public class Gallery extends TestCase {
 
     public void testChoropleth() throws ParameterException, IOException, InvalidStyle, DriverException, DriverLoadException, DataSourceCreationException {
 
+        this.template("../../datas2tests/shp/Swiss/g4districts98_region.shp", "SVG",
+                "src/test/resources/org/orbisgis/core/renderer/se/svg.se", null, "/tmp/svg.png", null);
+
+
         this.template("../../datas2tests/shp/bigshape2D/communes.shp", "DotMap Population communes",
-                "src/test/resources/org/orbisgis/core/renderer/se/dotmap_communes.se", null, "/tmp/dot_map_communes.png");
+                "src/test/resources/org/orbisgis/core/renderer/se/dotmap_communes.se", null, "/tmp/dot_map_communes.png", null);
 
         this.template("../../datas2tests/shp/Swiss/g4districts98_region.shp",
-                "Pie à la con", "src/test/resources/org/orbisgis/core/renderer/se/Districts/pie.se", null, "/tmp/pies.png");
+                "Pie à la con", "src/test/resources/org/orbisgis/core/renderer/se/Districts/pie.se", null, "/tmp/pies.png", null);
 
         this.template("../../datas2tests/shp/Swiss/g4districts98_region.shp",
-                "Silouette", "src/test/resources/org/orbisgis/core/renderer/se/Districts/radar.se", null, "/tmp/radar.png");
+                "Silouette", "src/test/resources/org/orbisgis/core/renderer/se/Districts/radar.se", null, "/tmp/radar.png", null);
 
         this.template("../../datas2tests/shp/Swiss/g4districts98_region.shp",
-                "Oui EEE 1992 (%)", "src/test/resources/org/orbisgis/core/renderer/se/Districts/choro.se", null, "/tmp/choro_ouiEEE.png");
+                "Oui EEE 1992 (%)", "src/test/resources/org/orbisgis/core/renderer/se/Districts/choro.se", null, "/tmp/choro_ouiEEE.png", null);
         this.template("../../datas2tests/shp/Swiss/g4districts98_region.shp",
-                "Oui EEE 1992 (%)", "src/test/resources/org/orbisgis/core/renderer/se/Districts/density_hatch.se", null, "/tmp/denstiy_hatch_raw_ouiEEE.png");
+                "Oui EEE 1992 (%)", "src/test/resources/org/orbisgis/core/renderer/se/Districts/density_hatch.se", null, "/tmp/denstiy_hatch_raw_ouiEEE.png", null);
         this.template("../../datas2tests/shp/Swiss/g4districts98_region.shp",
-                "Oui EEE 1992 (%)", "src/test/resources/org/orbisgis/core/renderer/se/Districts/density_hatch_classif.se", null, "/tmp/denstiy_hatch_classif_ouiEEE.png");
+                "Oui EEE 1992 (%)", "src/test/resources/org/orbisgis/core/renderer/se/Districts/density_hatch_classif.se", null, "/tmp/denstiy_hatch_classif_ouiEEE.png", null);
         this.template("../../datas2tests/shp/Swiss/g4districts98_region.shp",
-                "Oui EEE 1992 (%)", "src/test/resources/org/orbisgis/core/renderer/se/Districts/density_mark.se", null, "/tmp/denstiy_mark_ouiEEE.png");
+                "Oui EEE 1992 (%)", "src/test/resources/org/orbisgis/core/renderer/se/Districts/density_mark.se", null, "/tmp/denstiy_mark_ouiEEE.png", null);
         this.template("../../datas2tests/shp/Swiss/g4districts98_region.shp",
-                "Oui EEE 1992 (%)", "src/test/resources/org/orbisgis/core/renderer/se/Districts/density_mark_classif.se", null, "/tmp/denstiy_mark_classif_ouiEEE.png");
-
+                "Oui EEE 1992 (%)", "src/test/resources/org/orbisgis/core/renderer/se/Districts/density_mark_classif.se", null, "/tmp/denstiy_mark_classif_ouiEEE.png", null);
     }
 }

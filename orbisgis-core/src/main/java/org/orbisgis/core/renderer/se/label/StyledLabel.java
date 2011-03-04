@@ -295,8 +295,8 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode, 
         rg = Graphic.getNewRenderableGraphics(outline.getBounds2D(), margin, mt);
 
         if (halo != null) {
-            //halo.draw(rg, sds, fid, outline.getBounds(), mt);
-            halo.draw(rg, sds, fid, outline, mt);
+            halo.draw(rg, sds, fid, selected, outline.getBounds(), mt, false);
+            //halo.draw(rg, sds, fid, selected, outline, mt, true);
         }
 
         /**

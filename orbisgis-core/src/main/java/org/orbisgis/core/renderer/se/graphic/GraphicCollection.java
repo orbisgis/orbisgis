@@ -40,7 +40,6 @@
 
 package org.orbisgis.core.renderer.se.graphic;
 
-import java.awt.Color;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.RenderedImage;
@@ -64,7 +63,6 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.color.ColorHelper;
 
 /**
  * This class doesn't exists within XSD. Actually, it the CompositeGraphic element which has been move up
@@ -228,6 +226,7 @@ public final class GraphicCollection implements SymbolizerNode {
         while (it.hasNext()) {
             Graphic g = it.next();
             try {
+                System.out.println (" Go for graphic !");
                 RenderableGraphics img = g.getRenderableGraphics(sds, fid, selected, mt);
                 if (img != null) {
                     float mX = img.getMinX();
@@ -251,7 +250,7 @@ public final class GraphicCollection implements SymbolizerNode {
                     }
                 }
             } catch (ParameterException ex) {
-                Services.getErrorManager().error(ex.getMessage());
+                Services.getErrorManager().error("Erroi in graphic composition : " + ex.getMessage());
             }
         }
 

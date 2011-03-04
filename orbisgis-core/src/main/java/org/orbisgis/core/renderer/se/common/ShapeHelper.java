@@ -65,7 +65,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 public class ShapeHelper {
 
     public static final double _0_0175 = Math.PI / 180.0;
-    private static final boolean _DEBUG_ = false;
+    private static boolean _DEBUG_ = false;
     private static final boolean ENABLE_QUAD = true;
     private static final double FLATNESS = 1e-5;
     private static ErrorManager logger = Services.getErrorManager();
@@ -1261,9 +1261,9 @@ public class ShapeHelper {
 
             removeUselessVertex(vertexes);
 
-            if (closed) {
-                normalize(vertexes);
-            }
+            //if (closed) {
+            //    normalize(vertexes);
+            //}
 
             ArrayList<Vertex> offsetVertexes = createOffsetVertexes(vertexes, offset, closed);
             if (offsetVertexes.size() < 2) {
@@ -1528,6 +1528,10 @@ public class ShapeHelper {
 
     public static Geometry clipToExtent(Geometry the_geom, Envelope extent) {
         GeometryFactory geometryFactory = new GeometryFactory();
+
+        Envelope incExtent = new Envelope(extent);
+
+        incExtent.expandBy(extent.getWidth()/10, extent.getHeight()/10);
 
         Geometry geometry = the_geom.intersection(geometryFactory.toGeometry(extent));
 

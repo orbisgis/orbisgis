@@ -288,7 +288,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
         RenderableGraphics rg = Graphic.getNewRenderableGraphics(bounds, margin, mt);
 
         if (halo != null) {
-            halo.draw(rg, sds, fid, atShp, mt);
+            halo.draw(rg, sds, fid, selected, atShp, mt, true);
         }
 
         if (fill != null) {

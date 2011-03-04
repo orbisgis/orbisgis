@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<FeatureTypeStyle xmlns="http://www.opengis.net/se" xmlns:ns2="http://www.opengis.net/ows/1.1" xmlns:ns3="http://www.opengis.net/ogc" xmlns:ns4="http://www.w3.org/1999/xlink">
+    <Rule>
+        <CompositeSymbolizer>
+            <PointSymbolizer>
+                <Version>1.9</Version>
+                <Name>Default Symbolizer</Name>
+                <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
+		<CompositeGraphic>
+                <ExternalGraphic>
+                    <OnlineResource ns4:href="file:///home/maxence/stars.svg" />
+		    <!--<OnlineResource  ns4:href="http://francais.istockphoto.com/file_thumbview_approve/4361345/2/istockphoto_4361345-recycle-symbol.jpg" />-->
+		    <Format>image/svg+xml</Format>
+                    <!--<ViewBox>
+                        <Width>5.0</Width>
+                    </ViewBox>-->
+                </ExternalGraphic>
+
+		</CompositeGraphic>
+            </PointSymbolizer>
+        </CompositeSymbolizer>
+    </Rule>
+</FeatureTypeStyle>
