@@ -82,6 +82,7 @@ import org.gdms.data.FilterDataSourceDecorator;
 import org.orbisgis.core.renderer.se.FeatureTypeStyle;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.core.renderer.se.TextSymbolizer;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 
@@ -218,8 +219,12 @@ public class Renderer {
                 }
 
 
+                /**
+                 * Register elseRules as standard rules
+                 */
                 for (Rule elseR : fRList) {
                     rulesDs.put(elseR, elseDs);
+                    rList.add(elseR);
                 }
 
                 HashSet<Integer> selected = new HashSet<Integer>();
@@ -239,6 +244,10 @@ public class Renderer {
                 // Make sure TextSymbolizer are rendered on top
                 symbs.addAll(overlays);
 
+                /**
+                 * Create one buffered image for each symbolizer. This way allow
+                 * to render all symboliser in one path without encountering layer level issues
+                 */
                 for (Symbolizer s : symbs) {
                     BufferedImage bufImg = new BufferedImage(mt.getWidth(), mt.getHeight(), BufferedImage.TYPE_INT_ARGB);
                     Graphics2D sG2 = bufImg.createGraphics();
@@ -287,8 +296,10 @@ public class Renderer {
                         boolean emphasis = selected.contains((int) originalIndex);
 
                         for (Symbolizer s : r.getCompositeSymbolizer().getSymbolizerList()) {
-                            Graphics2D g2S = g2Symbs.get(s);
-                            s.draw(g2S, sds, originalIndex, emphasis, mt, the_geom);
+                            if (s instanceof TextSymbolizer == false) {
+                                Graphics2D g2S = g2Symbs.get(s);
+                                s.draw(g2S, sds, originalIndex, emphasis, mt, the_geom);
+                            }
                         }
 
                         pm.progressTo((int) (100 * ++layerCount / total));
@@ -301,7 +312,7 @@ public class Renderer {
 
                 long tV3 = System.currentTimeMillis();
                 logger.println("All Rules done in" + (tV3 - tV2) + "[ms] (" + layerCount + "objects)");
-                for (BufferedImage img : imgSymbs){
+                for (BufferedImage img : imgSymbs) {
                     g2.drawImage(img, null, null);
                 }
 
