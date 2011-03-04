@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<FeatureTypeStyle xmlns="http://www.opengis.net/se" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <Rule>
+        <CompositeSymbolizer>
+            <AreaSymbolizer>
+                <Version>1.9</Version>
+                <Name>Symbolizer Name</Name>
+                <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
+                <DotMapFill>
+                    <MarkGraphic>
+                        <WellKnownName>circle</WellKnownName>
+                        <ViewBox>
+                            <Width>1</Width>
+                        </ViewBox>
+                        <SolidFill>
+                            <Color>#00FF00</Color>
+                            <Opacity>60</Opacity>
+                        </SolidFill>
+                        <PenStroke>
+                            <Width>0.1</Width>
+                        </PenStroke>
+                    </MarkGraphic>
+                    <ValuePerMark>
+                        1000
+                    </ValuePerMark>
+                    <ValueToRepresent>
+		    	        <ogc:PropertyName>NFOYNI98</ogc:PropertyName>
+                    </ValueToRepresent>
+                </DotMapFill>
+            </AreaSymbolizer>
+        </CompositeSymbolizer>
+    </Rule>
+</FeatureTypeStyle>

@@ -38,11 +38,9 @@
 
 package org.orbisgis.core.renderer.se.graphic;
 
-import com.vividsolutions.jts.awt.PolygonShape;
 import java.awt.Polygon;
 import java.awt.Shape;
 import java.awt.geom.Arc2D;
-import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;

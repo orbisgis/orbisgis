@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<FeatureTypeStyle xmlns="http://www.opengis.net/se" xmlns:ns2="http://www.opengis.net/ows/1.1" xmlns:ogc="http://www.opengis.net/ogc" xmlns:ns4="http://www.w3.org/1999/xlink">
+    <Rule>
+        <CompositeSymbolizer>
+        <AreaSymbolizer>
+            <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
+            <SolidFill>
+                <Color>#DDDDDD</Color>
+            </SolidFill>
+            <PenStroke>
+            <SolidFill>
+                <Color>#888888</Color>
+            </SolidFill>
+                <Width>0.15</Width>
+            </PenStroke>
+        </AreaSymbolizer>
+
+        <PointSymbolizer>
+            <Version>1.9</Version>
+            <Name>Point symbolizer</Name>
+            <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
+            <Extension><ExtensionParameter name="level">2</ExtensionParameter></Extension>
+            <CompositeGraphic>
+                <PieChart>
+                <Radius>2</Radius>
+            <!--<HoleRadius>3</HoleRadius>-->
+            <PenStroke>
+                <Width>0.2</Width>
+            </PenStroke>
+            <Slice>
+                <Name>non onu 86</Name>
+                <Value><ogc:PropertyName>NON_ONU_86</ogc:PropertyName></Value>
+                <SolidFill>
+                    <Color>#E06161</Color>
+                    <Opacity>60.0</Opacity>
+                </SolidFill>
+            </Slice>
+            <Slice>
+                <Name>onu 2002</Name>
+                <Value><ogc:PropertyName>ONU_2002</ogc:PropertyName></Value>
+                <SolidFill>
+                    <Color>#86B51E</Color>
+                    <Opacity>60.0</Opacity>
+                </SolidFill>
+            </Slice>
+            <Slice>
+                <Name>2000</Name>
+                <Value><ogc:PropertyName>2000</ogc:PropertyName></Value>
+                
+                <SolidFill>
+                    <Color>#1E69B5</Color>
+                    <Opacity>60.0</Opacity>
+                </SolidFill>
+            </Slice>
+           </PieChart>
+
+           </CompositeGraphic>
+        </PointSymbolizer>
+
+        </CompositeSymbolizer>
+    </Rule>
+</FeatureTypeStyle>

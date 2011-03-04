@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<FeatureTypeStyle xmlns="http://www.opengis.net/se" xmlns:ns2="http://www.opengis.net/ows/1.1" xmlns:ns3="http://www.opengis.net/ogc" xmlns:ns4="http://www.w3.org/1999/xlink">
+    <Rule>
+        <AreaSymbolizer>
+            <Version>1.9</Version>
+            <Name>Area symbolizer</Name>
+            <Extension>
+                <ExtensionParameter name="level">0</ExtensionParameter>
+            </Extension>
+            <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
+            <SolidFill>
+                <Color>
+                    <Categorize threshholdsBelongTo="succeeding" fallbackValue="#0000CC">
+                        <LookupValue>
+                            <ns3:PropertyName>OUI_EEE92</ns3:PropertyName>
+                        </LookupValue>
+                        <Value>#CC0000</Value>
+                        <Threshold>30.0</Threshold>
+                        <Value>#FF3333</Value>
+                        <Threshold>40.0</Threshold>
+                        <Value>#FF6666</Value>
+                        <Threshold>45.0</Threshold>
+                        <Value>#FFCCCC</Value>
+                        <Threshold>50.0</Threshold>
+                        <Value>#99FF99</Value>
+                        <Threshold>55.0</Threshold>
+                        <Value>#33FF33</Value>
+                        <Threshold>60.0</Threshold>
+                        <Value>#00CC00</Value>
+                        <Threshold>70.0</Threshold>
+                        <Value>#009900</Value>
+                        <Extension>
+                            <ExtensionParameter name="method">MANUAL</ExtensionParameter>
+                        </Extension>
+                    </Categorize>
+                </Color>
+            </SolidFill>
+            <PenStroke>
+                <SolidFill>
+                    <Color>#000000</Color>
+                    <Opacity>65.0</Opacity>
+                </SolidFill>
+                <Width>0.1</Width>
+            </PenStroke>
+        </AreaSymbolizer>
+    </Rule>
+</FeatureTypeStyle>

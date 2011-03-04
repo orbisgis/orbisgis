@@ -72,6 +72,8 @@ import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
  */
 public final class PenStroke extends Stroke implements FillNode {
 
+
+    private static double DEFAULT_WIDTH_PX = 1.0;
     private static LineCap DEFAULT_CAP = LineCap.BUTT;
     private static LineJoin DEFAULT_JOIN = LineJoin.ROUND;
     private Fill fill;
@@ -335,7 +337,7 @@ public final class PenStroke extends Stroke implements FillNode {
             }
         }
 
-        double w = 1.0;
+        double w = DEFAULT_WIDTH_PX;
 
         if (width != null) {
             w = width.getValue(sds, fid);
@@ -536,7 +538,7 @@ public final class PenStroke extends Stroke implements FillNode {
         if (this.width != null) {
             return Uom.toPixel(width.getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
         } else {
-            return 0.0;
+            return DEFAULT_WIDTH_PX;
         }
     }
 

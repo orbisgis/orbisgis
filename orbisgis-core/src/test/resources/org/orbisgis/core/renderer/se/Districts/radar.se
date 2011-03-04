@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<FeatureTypeStyle xmlns="http://www.opengis.net/se" xmlns:ns2="http://www.opengis.net/ows/1.1" xmlns:ogc="http://www.opengis.net/ogc" xmlns:ns4="http://www.w3.org/1999/xlink">
+  <Rule>
+    <CompositeSymbolizer>
+      <AreaSymbolizer>
+        <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
+        <SolidFill>
+          <Color>#DDDDDD</Color>
+        </SolidFill>
+        <PenStroke>
+          <SolidFill>
+            <Color>#888888</Color>
+          </SolidFill>
+          <Width>0.15</Width>
+        </PenStroke>
+      </AreaSymbolizer>
+
+    
+        <PointSymbolizer>
+          <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
+          <CompositeGraphic>
+            <AxisChart>
+              <AxisChartSubtype>polar</AxisChartSubtype>
+              <AxisScale>
+                <AxisLength>5</AxisLength>
+                <Measure>100</Measure>
+              </AxisScale>
+	      <CategoryGap>2</CategoryGap>
+	      <CategoryWidth>3</CategoryWidth>
+
+
+	      <PenStroke />	
+
+	      <SolidFill>
+		   <Color>#E16868</Color>
+		   <Opacity>80</Opacity>
+              </SolidFill>
+    
+              <Category>
+                <Measure><ogc:PropertyName>NON_ONU_86</ogc:PropertyName></Measure>
+              </Category>
+
+              <Category>
+                <Measure><ogc:PropertyName>ONU_2002</ogc:PropertyName></Measure>
+              </Category>
+
+              <Category>
+                <Measure><ogc:PropertyName>DEC01</ogc:PropertyName></Measure>
+              </Category>
+
+              <Category>
+                <Measure><ogc:PropertyName>ARMEMENTSO</ogc:PropertyName></Measure>
+              </Category>
+
+              <Category>
+                <Measure><ogc:PropertyName>UEMARS2001</ogc:PropertyName></Measure>
+              </Category>
+
+              <Category>
+                <Measure><ogc:PropertyName>NOV2000</ogc:PropertyName></Measure>
+              </Category>
+
+              <Category>
+                <Measure><ogc:PropertyName>2000</ogc:PropertyName></Measure>
+              </Category>
+
+              <Category>
+                <Measure><ogc:PropertyName>OUI_EEE92</ogc:PropertyName></Measure>
+              </Category>
+            </AxisChart>
+
+          </CompositeGraphic>
+        </PointSymbolizer>
+
+   </CompositeSymbolizer>
+  </Rule>
+</FeatureTypeStyle>
