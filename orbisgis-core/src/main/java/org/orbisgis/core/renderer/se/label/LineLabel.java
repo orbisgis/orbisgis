@@ -15,9 +15,9 @@ import java.util.ArrayList;
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.orbisgis.core.Services;
 
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.RenderContext;
 
 import org.orbisgis.core.renderer.persistance.se.LineLabelType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
@@ -54,7 +54,9 @@ public class LineLabel extends Label {
      *
      */
     @Override
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
+    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, 
+            Shape shp, boolean selected, MapTransform mt, RenderContext perm)
+            throws ParameterException, IOException {
         //RenderableGraphics l = this.label.getImage(sds, fid, selected, mt);
         // 1. GetGlyphs
         System.out.println("Draw LineLabel");
@@ -81,6 +83,23 @@ public class LineLabel extends Label {
          *  /                    \
          * |_____________________/
          *
+         * And plot label as:
+         *         ___________
+         *   _____/           \
+         *   \                 \
+         *   /   A  L  P  E  S  \
+         *  /                    \
+         * |_____________________/
+         *
+         * Rather than:
+         *         ___________
+         *   _____/           \
+         *   \                 \
+         *   /       ALPES      \
+         *  /                    \
+         * |_____________________/
+         *
+
          */
 
         VerticalAlignment vA = this.vAlign;
@@ -96,59 +115,70 @@ public class LineLabel extends Label {
 
         double lineLength = ShapeHelper.getLineLength(shp);
         double startAt;
+        double stopAt;
+
         switch (hA) {
             case RIGHT:
                 startAt = lineLength - totalWidth;
+                stopAt = lineLength;
             case LEFT:
                 startAt = 0.0;
+                stopAt = totalWidth;
             default:
             case CENTER:
                 startAt = (lineLength - totalWidth) / 2.0;
+                stopAt = (lineLength + totalWidth) / 2.0;
+
         }
 
         if (startAt < 0.0) {
             startAt = 0.0;
         }
+        if (stopAt > lineLength){
+            stopAt = lineLength;
+        }
 
-        /*
-        System.out.println ("LineLength: " + lineLength);
-        System.out.println ("TotalWidth: " + totalWidth);
-        System.out.println ("StartAt: " + startAt);
-         */
+
+
+        Point2D.Double ptStart = ShapeHelper.getPointAt(shp, startAt);
+        Point2D.Double ptStop = ShapeHelper.getPointAt(shp, stopAt);
+
+        int way = 1;
+
+        if (ptStart.x > ptStop.x){
+            // invert line way
+            way = -1;
+            double tmp = startAt;
+            startAt = stopAt;
+            stopAt = tmp;
+        }
 
         double currentPos = startAt;
-
+        double glyphWidth;
 
         for (RenderableGraphics glyph : glyphs) {
             if (glyph != null) {
                 RenderedImage ri = glyph.createRendering(mt.getCurrentRenderContext());
+
+                glyphWidth = ri.getWidth()*way;
+
                 //System.out.println("Glyph : curPos:" + currentPos + " w: " + ri.getWidth());
                 Point2D.Double pAt = ShapeHelper.getPointAt(shp, currentPos);
-                Point2D.Double pAfter = ShapeHelper.getPointAt(shp, currentPos + ri.getWidth());
+                Point2D.Double pAfter = ShapeHelper.getPointAt(shp, currentPos + glyphWidth);
 
-                /*if (pAt == null || pAfter == null){
-                Services.getErrorManager().error("error: Aie aie aie");
-                Services.getOutputManager().println("output: Aie Aie Aie ");
-                System.out.println("println Aie Aie Aie");
-                }*/
-
-                //System.out.println("PointAt " + pAt.x + ";" + pAt.y);
-                //System.out.println("PointAt+w " + pAfter.x + ";" + pAfter.y);
                 double theta = Math.atan2(pAfter.y - pAt.y, pAfter.x - pAt.x);
-                //System.out.println("Rotation : " + (theta / 0.0175));
 
                 AffineTransform at = AffineTransform.getTranslateInstance(pAt.x, pAt.y);
                 at.concatenate(AffineTransform.getRotateInstance(theta));
 
-                //currentPos += Math.ceil(glyph.getWidth() + 1);
-                currentPos += ri.getWidth();
+                currentPos += glyphWidth;
 
                 g2.drawRenderedImage(ri , at);
 
 
             } else {
                 //System.out.println ("Space...");
-                currentPos += emWidth;
+                currentPos += emWidth*way;
             }
         }
 
