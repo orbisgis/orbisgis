@@ -52,6 +52,7 @@ import org.orbisgis.core.renderer.persistance.se.TextSymbolizerType;
 
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -80,6 +81,7 @@ public final class TextSymbolizer extends VectorSymbolizer {
 
 		if (tst.getUnitOfMeasure() != null) {
 			this.uom = Uom.fromOgcURN(tst.getUnitOfMeasure());
+            System.out.println ("Text Symb uom : " + this.getUom());
 		}
 
 		if (tst.getPerpendicularOffset() != null) {
@@ -125,13 +127,16 @@ public final class TextSymbolizer extends VectorSymbolizer {
 	}
 
 	@Override
-	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt, Geometry the_geom) throws ParameterException, IOException, DriverException {
+	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, 
+            boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
+            throws ParameterException, IOException, DriverException {
+
 		ArrayList<Shape> shapes = this.getShapes(sds, fid, mt, the_geom);
 
 		if (shapes != null) {
 			for (Shape shp : shapes) {
 				if (shp != null && label != null) {
-					label.draw(g2, sds, fid, shp, selected, mt);
+					label.draw(g2, sds, fid, shp, selected, mt, perm);
 				}
 			}
 		}

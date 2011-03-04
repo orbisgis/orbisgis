@@ -50,6 +50,7 @@ import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
 
@@ -159,7 +160,9 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
      * @throws DriverException
      */
     @Override
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt, Geometry the_geom) throws ParameterException, IOException, DriverException {
+    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, 
+            boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
+            throws ParameterException, IOException, DriverException {
 
         ArrayList<Shape> shapes = this.getShapes(sds, fid, mt, the_geom);
 

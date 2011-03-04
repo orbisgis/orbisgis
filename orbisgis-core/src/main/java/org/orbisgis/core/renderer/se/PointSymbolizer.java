@@ -54,6 +54,7 @@ import org.orbisgis.core.renderer.persistance.se.PointSymbolizerType;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.persistance.se.ExtensionParameterType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -132,7 +133,9 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
     }
 
     @Override
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt, Geometry the_geom) throws IOException, DriverException {
+    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, 
+            boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
+            throws IOException, DriverException {
         if (graphic != null && graphic.getNumGraphics() > 0) {
 
             try {

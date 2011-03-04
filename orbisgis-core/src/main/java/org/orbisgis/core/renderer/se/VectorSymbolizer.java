@@ -42,7 +42,6 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
-import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
@@ -54,6 +53,7 @@ import org.orbisgis.core.renderer.persistance.se.SymbolizerType;
 
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.common.ShapeHelper;
 
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -79,9 +79,11 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
         super(st);
     }
 
+    /*
     @Override
-    public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt, Geometry the_geom)
-            throws ParameterException, IOException, DriverException;
+    public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
+            boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
+            throws ParameterException, IOException, DriverException;*/
 
     /**
      * Convert a spatial feature into a LiteShape, should add parameters to handle
@@ -102,6 +104,8 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
         } else {
             geom = the_geom;
         }
+
+        geom = ShapeHelper.clipToExtent(geom, mt.getAdjustedExtent());
 
         ArrayList<Shape> shapes = new ArrayList<Shape>();
 
@@ -147,6 +151,8 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
         } else {
             geom = the_geom;
         }
+
+        geom = ShapeHelper.clipToExtent(geom, mt.getAdjustedExtent());
 
         ArrayList<Shape> shapes = new ArrayList<Shape>();
 
@@ -226,6 +232,9 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
             geom = the_geom;
         }
 
+        geom = ShapeHelper.clipToExtent(geom, mt.getAdjustedExtent());
+
+
         AffineTransform at = mt.getAffineTransform();
 
         if (transform != null) {
@@ -248,8 +257,17 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
      * @throws IOException
      * @throws DriverException
      */
-    public Point2D getFirstPointShape(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException, DriverException {
-        Geometry geom = this.getTheGeom(sds, fid); // geom + function
+    public Point2D getFirstPointShape(SpatialDataSourceDecorator sds, long fid, MapTransform mt, Geometry the_geom) throws ParameterException, IOException, DriverException {
+        Geometry geom;
+
+        if (the_geom == null) {
+            geom = this.getTheGeom(sds, fid); // geom + function
+        } else {
+            geom = the_geom;
+        }
+
+        geom = ShapeHelper.clipToExtent(geom, mt.getAdjustedExtent());
+
 
         AffineTransform at = mt.getAffineTransform();
         if (transform != null) {
@@ -282,6 +300,8 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
         } else {
             geom = the_geom;
         }
+
+        geom = ShapeHelper.clipToExtent(geom, mt.getAdjustedExtent());
 
         ArrayList<Point2D> points = new ArrayList<Point2D>();
 

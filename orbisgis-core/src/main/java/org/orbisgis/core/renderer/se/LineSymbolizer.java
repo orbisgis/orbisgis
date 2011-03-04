@@ -48,6 +48,7 @@ import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.Drawer;
+import org.orbisgis.core.renderer.RenderContext;
 
 import org.orbisgis.core.renderer.persistance.se.LineSymbolizerType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
@@ -140,7 +141,9 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
      * @todo make sure the geom is a line or an area; implement p_offset
      */
     @Override
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt, Geometry the_geom) throws ParameterException, IOException, DriverException {
+    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, 
+            boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
+            throws ParameterException, IOException, DriverException {
         if (stroke != null) {
             ArrayList<Shape> shapes = this.getLines(sds, fid, mt, the_geom);
 

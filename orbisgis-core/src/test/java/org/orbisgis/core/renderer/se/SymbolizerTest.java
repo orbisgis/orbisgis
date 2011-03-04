@@ -144,7 +144,9 @@ public class SymbolizerTest extends TestCase {
 
             long fid;
             for (fid = 0; fid < ds.getRowCount(); fid++) {
-                cs.draw(g2, sds, fid, false, mt);
+                for (Symbolizer s : cs.getSymbolizerList()){
+                    s.draw(g2, sds, fid, false, mt, null, null);
+                }
             }
 
             System.out.println("Creation JFrame");

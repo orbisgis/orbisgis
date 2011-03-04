@@ -191,7 +191,7 @@ public final class CompoundStroke extends Stroke {
             shapes.add(shape);
         }
 
-        ShapeHelper.printvertices(shape);
+        //ShapeHelper.printvertices(shape);
 
         for (Shape shp : shapes) {
 
@@ -348,7 +348,7 @@ public final class CompoundStroke extends Stroke {
                     Shape seg = splitLine.remove(0);
 
                     //System.out.println ("StrokeElement Seg: ");
-                    ShapeHelper.printvertices(seg);
+                    //ShapeHelper.printvertices(seg);
 
                     strokes[i].draw(g2, sds, fid, seg, selected, mt, offset);
 
@@ -361,7 +361,7 @@ public final class CompoundStroke extends Stroke {
                     }
 
                     //System.out.println ("StrokeElement SCRAP: ");
-                    ShapeHelper.printvertices(scrap);
+                    //ShapeHelper.printvertices(scrap);
 
                     //System.out.println("length: " + lengths[i]);
                 }

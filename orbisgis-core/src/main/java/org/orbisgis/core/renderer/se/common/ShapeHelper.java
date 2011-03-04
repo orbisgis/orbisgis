@@ -37,6 +37,9 @@
  */
 package org.orbisgis.core.renderer.se.common;
 
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import java.awt.Shape;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
@@ -44,17 +47,15 @@ import java.awt.geom.Path2D;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.security.Provider.Service;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 /**
@@ -67,6 +68,7 @@ public class ShapeHelper {
     private static final boolean _DEBUG_ = false;
     private static final boolean ENABLE_QUAD = true;
     private static final double FLATNESS = 1e-5;
+    private static ErrorManager logger = Services.getErrorManager();
 
     /**
      * Compute the perimeter of the shape
@@ -114,34 +116,31 @@ public class ShapeHelper {
     }
 
     public static void printvertices(Shape shp) {
-        if (_DEBUG_) {
-            PathIterator it = shp.getPathIterator(null, FLATNESS);
-            Logger logger = Logger.getLogger(ShapeHelper.class.getName());
+        PathIterator it = shp.getPathIterator(null, FLATNESS);
 
-            double coords[] = new double[6];
+        double coords[] = new double[6];
 
-            while (!it.isDone()) {
-                int type = it.currentSegment(coords);
+        while (!it.isDone()) {
+            int type = it.currentSegment(coords);
 
-                switch (type) {
-                    case PathIterator.SEG_CLOSE:
-                        logger.log(Level.INFO, "CLOSE");
-                        break;
-                    case PathIterator.SEG_CUBICTO:
-                        logger.log(Level.INFO, "CUBIC TO {0};{1}", new Object[]{coords[0], coords[1]});
-                        break;
-                    case PathIterator.SEG_LINETO:
-                        logger.log(Level.INFO, "LINE TO {0};{1}", new Object[]{coords[0], coords[1]});
-                        break;
-                    case PathIterator.SEG_MOVETO:
-                        logger.log(Level.INFO, "MOVE TO {0};{1}", new Object[]{coords[0], coords[1]});
-                        break;
-                    case PathIterator.SEG_QUADTO:
-                        logger.log(Level.INFO, "QUAD TO {0};{1}", new Object[]{coords[0], coords[1]});
-                        break;
-                }
-                it.next();
+            switch (type) {
+                case PathIterator.SEG_CLOSE:
+                    logger.warning("CLOSE");
+                    break;
+                case PathIterator.SEG_CUBICTO:
+                    logger.warning("CUBIC TO " + coords[0] + ";" + coords[1]);
+                    break;
+                case PathIterator.SEG_LINETO:
+                    logger.warning("LINE TO " + coords[0] + ";" + coords[1]);
+                    break;
+                case PathIterator.SEG_MOVETO:
+                    logger.warning("MOVE TO " + coords[0] + ";" + coords[1]);
+                    break;
+                case PathIterator.SEG_QUADTO:
+                    logger.warning("QUAD TO " + coords[0] + ";" + coords[1]);
+                    break;
             }
+            it.next();
         }
     }
 
@@ -1267,7 +1266,7 @@ public class ShapeHelper {
             }
 
             ArrayList<Vertex> offsetVertexes = createOffsetVertexes(vertexes, offset, closed);
-            if (offsetVertexes.size() < 2){
+            if (offsetVertexes.size() < 2) {
                 Services.getErrorManager().error("Unable to compute perpendicular offset");
                 return rawShapes;
             }
@@ -1517,11 +1516,25 @@ public class ShapeHelper {
             }
         }
 
-        if (fieldId == -2)
+        if (fieldId == -2) {
             throw new ParameterException("Reference to geometry attribute is ambigous. Available are :" + available);
-        if (fieldId == -1)
+        }
+        if (fieldId == -1) {
             throw new ParameterException("This data source doesn't contains any geometry");
+        }
 
         return fieldId;
+    }
+
+    public static Geometry clipToExtent(Geometry the_geom, Envelope extent) {
+        GeometryFactory geometryFactory = new GeometryFactory();
+
+        Geometry geometry = the_geom.intersection(geometryFactory.toGeometry(extent));
+
+        if (geometry.isEmpty()) {
+            return null;
+        } else {
+            return geometry;
+        }
     }
 }

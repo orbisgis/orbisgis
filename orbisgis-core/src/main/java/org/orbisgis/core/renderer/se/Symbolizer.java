@@ -5,8 +5,6 @@ import java.awt.Graphics2D;
 import java.io.IOException;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.metadata.Metadata;
-import org.gdms.data.types.Type;
 import org.orbisgis.core.renderer.persistance.se.AreaSymbolizerType;
 import org.orbisgis.core.renderer.persistance.se.ExtensionParameterType;
 import org.orbisgis.core.renderer.persistance.se.LineSymbolizerType;
@@ -16,6 +14,7 @@ import org.orbisgis.core.renderer.persistance.se.SymbolizerType;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.Drawer;
+import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.persistance.se.ExtensionType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.TextSymbolizerType;
@@ -205,7 +204,9 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
         return (Rule) pIt;
     }
 
-    public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt, Geometry the_geom) throws ParameterException, IOException, DriverException;
+    public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, 
+            boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
+            throws ParameterException, IOException, DriverException;
 
     public abstract void draw(Drawer drawer, long fid, boolean selected);
 

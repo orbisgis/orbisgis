@@ -118,7 +118,7 @@ public final class TextStroke extends Stroke {
 	@Override
 	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt, double offset) throws ParameterException, IOException {
         if (this.lineLabel != null){
-            lineLabel.draw(g2, sds, fid, shp, selected, mt);
+            lineLabel.draw(g2, sds, fid, shp, selected, mt, null);
         }
 	}
 

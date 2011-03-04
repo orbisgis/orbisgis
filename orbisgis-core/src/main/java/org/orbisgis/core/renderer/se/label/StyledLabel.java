@@ -89,7 +89,6 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode, 
 
             if (font.getUnitOfMeasure() != null) {
                 this.setUom(Uom.fromOgcURN(font.getUnitOfMeasure()));
-
             }
 
             if (font.getFontSize() != null) {
@@ -99,9 +98,11 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode, 
             if (font.getFontFamily() != null) {
                 this.setFontFamily(SeParameterFactory.createStringParameter(font.getFontFamily()));
             }
+
             if (font.getFontStyle() != null) {
                 this.setFontStyle(SeParameterFactory.createStringParameter(font.getFontStyle()));
             }
+
             if (font.getFontWeight() != null) {
                 this.setFontWeight(SeParameterFactory.createStringParameter(font.getFontWeight()));
             }
@@ -132,7 +133,7 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode, 
 
     @Override
     public Uom getOwnUom() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return this.uom;
     }
 
     @Override
@@ -240,14 +241,15 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode, 
 
         String style = "normal";
         if (fontStyle != null) {
-            fontStyle.getValue(sds, fid);
+            style = fontStyle.getValue(sds, fid);
         }
 
         //double size = Uom.toPixel(12, Uom.PT, mt.getDpi(), mt.getScaleDenominator(), null);
         double size = 12.0;
         if (fontSize != null) {
             size = Uom.toPixel(fontSize.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-            size = (size * mt.getDpi()) / 72.0;
+            //size = (size * mt.getDpi()) / 72.0;
+            size = size * 72.0 / mt.getDpi();
         }
 
         int st = Font.PLAIN;
@@ -265,7 +267,6 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode, 
         }
 
 
-        System.out.println("FontSize is : " + (int) size);
         Font font = new Font(family, st, (int) size);
         FontMetrics metrics = new FontMetrics(font) {
         };

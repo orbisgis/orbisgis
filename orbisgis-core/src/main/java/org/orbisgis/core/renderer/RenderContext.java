@@ -38,6 +38,7 @@ package org.orbisgis.core.renderer;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import java.awt.Shape;
 
 /**
  * Interface used at render process to control overlapings of symbols. The
@@ -57,6 +58,13 @@ public interface RenderContext {
 	 * @return
 	 */
 	boolean canDraw(Envelope env);
+
+    /**
+     * Reserve area
+     * @param area
+     */
+    void addUsedArea(Envelope area);
+
 
 	/**
 	 * Returns a geometry that doesn't overlap any of the forbidden envelopes

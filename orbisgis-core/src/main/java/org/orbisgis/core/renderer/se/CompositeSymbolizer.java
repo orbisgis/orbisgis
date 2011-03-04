@@ -109,14 +109,14 @@ public final class CompositeSymbolizer implements SymbolizerNode {
         }
     }
 
-    
+    /*
     public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException, DriverException{
         for (Symbolizer s : this.symbolizers){
             if (s instanceof VectorSymbolizer){
-                ((VectorSymbolizer)s).draw(g2, sds, fid, selected, mt, null);
+                ((VectorSymbolizer)s).draw(g2, sds, fid, selected, mt, null, null);
             }
         }
-    }
+    }*/
 
     public CompositeSymbolizer(){
         symbolizers = new ArrayList<Symbolizer>();

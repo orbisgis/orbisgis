@@ -12,6 +12,7 @@ import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.persistance.se.LabelType;
 
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.RenderContext;
 
 import org.orbisgis.core.renderer.persistance.se.LineLabelType;
 import org.orbisgis.core.renderer.persistance.se.PointLabelType;
@@ -129,7 +130,9 @@ public abstract class Label implements SymbolizerNode, UomNode{
         label.setParent(this);
     }
 
-    public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException;
+    public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, 
+            Shape shp, boolean selected, MapTransform mt, RenderContext perm)
+            throws ParameterException, IOException;
 
     public abstract JAXBElement<? extends LabelType> getJAXBElement();
 

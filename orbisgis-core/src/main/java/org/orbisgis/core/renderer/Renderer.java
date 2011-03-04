@@ -37,6 +37,7 @@
  */
 package org.orbisgis.core.renderer;
 
+import com.vividsolutions.jts.awt.PolygonShape;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.geom.Rectangle2D;
@@ -76,6 +77,8 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
 import ij.process.ColorProcessor;
 import java.awt.Color;
+import java.awt.Shape;
+import java.awt.geom.Area;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.gdms.data.FilterDataSourceDecorator;
@@ -89,6 +92,9 @@ import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 public class Renderer {
 
     private static OutputManager logger = Services.getOutputManager();
+
+    // overlayImage is the one on witch label will be drawn
+    private BufferedImage overlayImage;
 
     /**
      * Create a view which correspond to feature in MapContext adjusted extend
@@ -129,8 +135,8 @@ public class Renderer {
      *            Progress monitor to report the status of the drawing
      * @return the number of rendered objects
      */
-    public int drawVector(Graphics2D g2,
-            MapTransform mt, ILayer layer, IProgressMonitor pm) throws DriverException {
+    public int drawVector(Graphics2D g2, MapTransform mt, ILayer layer,
+            IProgressMonitor pm, RenderContext perm) throws DriverException {
 
         logger.println("Current DPI is " + mt.getDpi());
         logger.println("Current SCALE is 1: " + mt.getScaleDenominator());
@@ -296,10 +302,14 @@ public class Renderer {
                         boolean emphasis = selected.contains((int) originalIndex);
 
                         for (Symbolizer s : r.getCompositeSymbolizer().getSymbolizerList()) {
-                            if (s instanceof TextSymbolizer == false) {
-                                Graphics2D g2S = g2Symbs.get(s);
-                                s.draw(g2S, sds, originalIndex, emphasis, mt, the_geom);
+                            Graphics2D g2S;
+                            if (s instanceof TextSymbolizer) {
+                                // TextSymbolizer always rendered on overlay
+                                g2S = overlayImage.createGraphics();
+                            } else {
+                                g2S = g2Symbs.get(s);
                             }
+                            s.draw(g2S, sds, originalIndex, emphasis, mt, the_geom, perm);
                         }
 
                         pm.progressTo((int) (100 * ++layerCount / total));
@@ -409,6 +419,12 @@ public class Renderer {
 
         long total1 = System.currentTimeMillis();
 
+        Envelope graphicExtent = new Envelope(0, 0, mt.getWidth(), mt.getHeight());
+        DefaultRendererPermission perm = new DefaultRendererPermission(graphicExtent);
+
+        // at each new rendering, overlay is reseted
+        overlayImage = new BufferedImage(mt.getWidth(), mt.getHeight(), BufferedImage.TYPE_INT_ARGB);
+
         for (int i = layers.length - 1; i
                 >= 0; i--) {
             if (pm.isCancelled()) {
@@ -446,7 +462,7 @@ public class Renderer {
                         if (sds != null) {
                             try {
                                 if (sds.isDefaultVectorial()) {
-                                    count += this.drawVector(g2, mt, layer, pm);
+                                    count += this.drawVector(g2, mt, layer, pm, perm);
                                 } else if (sds.isDefaultRaster()) {
                                     logger.println("Raster Not Yet supported => Not drawn: " + layer.getName(), Color.red);
                                 } else {
@@ -466,6 +482,9 @@ public class Renderer {
                 }
             }
         }
+
+        // After everything is done, add overlay layers to map transform image
+        mt.getImage().createGraphics().drawImage(overlayImage, null, 0, 0);
 
         long total2 = System.currentTimeMillis();
         logger.println(I18N.getString("orbisgis.org.orbisgis.renderer.totalRenderingTime") + (total2 - total1)); //$NON-NLS-1$
@@ -522,66 +541,6 @@ public class Renderer {
         draw(mt, layer, pm);
     }
 
-    /*
-    private Iterator<Integer> getIterator(Envelope adjustedExtent,
-    SpatialDataSourceDecorator sds) throws DriverException {
-    if (adjustedExtent.equals(sds.getFullExtent())) {
-    return new DataSourceIterator(sds);
-    } else {
-    DefaultSpatialIndexQuery query = new DefaultSpatialIndexQuery(
-    adjustedExtent, sds.getMetadata().getFieldName(
-    sds.getSpatialFieldIndex()));
-    return sds.queryIndex(query);
-    }
-
-    }
-
-    private boolean validScale(MapTransform mt, Legend legend) {
-    return (mt.getScaleDenominator() > legend.getMinScale())
-    && (mt.getScaleDenominator() < legend.getMaxScale());
-    }
-     */
-    /**
-     * For geometry collections we need to filter the symbol composite before
-     * drawing
-     *
-     * @param mt
-     * @param g2
-     * @param sym
-     * @param g
-     * @param permission
-     * @throws DriverException
-
-    private Envelope drawGeometryCollection(MapTransform mt, Graphics2D g2,
-    Symbol sym, Geometry g, DefaultRendererPermission permission)
-    throws DriverException {
-    if (g.getGeometryType().equals("GeometryCollection")) {
-    Envelope ret = null;
-
-
-    for (int j = 0; j
-    < g.getNumGeometries(); j++) {
-    Geometry childGeom = g.getGeometryN(j);
-    Envelope area = drawGeometryCollection(mt, g2, sym, childGeom,
-    permission);
-    if (ret == null) {
-    ret = area;
-    } else {
-    ret.expandToInclude(area);
-    }
-    }
-
-    return ret;
-    } else {
-    sym = RenderUtils.buildSymbolToDraw(sym, g);
-    if (sym != null) {
-    return sym.draw(g2, g, mt, permission);
-    } else {
-    return null;
-    }
-    }
-    }
-     */
     public void draw(BufferedImage img, Envelope extent, ILayer layer) {
         draw(img, extent, layer, new NullProgressMonitor());
     }
@@ -590,17 +549,19 @@ public class Renderer {
 
         private Quadtree quadtree;
         private Envelope drawExtent;
+        private Area extent;
 
         public DefaultRendererPermission(Envelope drawExtent) {
             this.drawExtent = drawExtent;
             this.quadtree = new Quadtree();
+            this.extent = new Area(new Rectangle2D.Double(drawExtent.getMinX(), drawExtent.getMinY(), drawExtent.getWidth(), drawExtent.getHeight()));
         }
 
+        @Override
         public void addUsedArea(Envelope area) {
             quadtree.insert(area, area);
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         public boolean canDraw(Envelope area) {
             List<Envelope> list = quadtree.query(area);
@@ -613,7 +574,6 @@ public class Renderer {
             return true;
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         public Geometry getValidGeometry(Geometry geometry, double distance) {
             List<Envelope> list = quadtree.query(geometry.getEnvelopeInternal());
@@ -630,6 +590,30 @@ public class Renderer {
                 return geometry;
             }
         }
+
+        /*@Override
+        public Shape getValidShape(Shape shape, double distance) {
+            if (shape instanceof PolygonShape) {
+                Rectangle2D bounds2D = shape.getBounds2D();
+
+                Envelope shpEnv = new Envelope(bounds2D.getMinX(), bounds2D.getMaxX(), bounds2D.getMinY(), bounds2D.getMaxY());
+                List<Envelope> list = quadtree.query(shpEnv);
+
+
+                Area area = new Area(shape);
+                logger.println("Shape:");
+                ShapeHelper.printvertices(area);
+
+                for (Envelope env : list) {
+                    Area rect = new Area(new Rectangle2D.Double(env.getMinX(), env.getMinY(), env.getWidth(), env.getHeight()));
+                    area.subtract(rect);
+                }
+
+                return area;
+            } else{
+                return shape;
+            }
+        }*/
     }
 
     /**
