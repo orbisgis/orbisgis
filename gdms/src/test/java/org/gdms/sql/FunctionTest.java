@@ -54,160 +54,163 @@ import org.gdms.sql.strategies.IncompatibleTypesException;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.WKTReader;
+import org.gdms.data.values.WKBUtil;
 
 public abstract class FunctionTest extends TestCase {
 
-	protected Geometry JTSMultiPolygon2D;
-	protected Geometry JTSMultiLineString2D;
-	protected Geometry JTSMultiPoint2D;
-	protected Geometry JTSPolygon2D; // With two holes
-	protected Geometry JTSGeometryCollection;
-	protected Geometry JTSPoint3D;
-	private Geometry JTSLineString2D;
+    protected Geometry JTSMultiPolygon2D;
+    protected Geometry JTSMultiLineString2D;
+    protected Geometry JTSMultiPoint2D;
+    protected Geometry JTSPolygon2D; // With two holes
+    protected Geometry JTSGeometryCollection;
+    protected Geometry JTSPoint3D;
+    protected Geometry JTSLineString2D;
+    protected Geometry JTSPoint2D;
+    public static DataSourceFactory dsf = new DataSourceFactory();
 
-	public static DataSourceFactory dsf = new DataSourceFactory();
+    @Override
+    protected void setUp() throws Exception {
+        WKTReader wktr = new WKTReader();
+        JTSMultiPolygon2D = wktr.read("MULTIPOLYGON (((0 0, 1 1, 0 1, 0 0)))");
+        JTSMultiLineString2D = wktr.read("MULTILINESTRING ((0 0, 1 1, 0 1, 0 0))");
+        JTSMultiPoint2D = wktr.read("MULTIPOINT (0 0, 1 1, 0 1, 0 0)");
+        JTSPolygon2D = wktr.read("POLYGON ((181 124, 87 162, 76 256, 166 315, 286 325, 373 255, 387 213, 377 159, 351 121, 298 101, 234 56, 181 124), (165 244, 227 219, 234 300, 168 288, 165 244), (244 130, 305 135, 324 186, 306 210, 272 206, 206 174, 244 130))");
 
-	@Override
-	protected void setUp() throws Exception {
-		WKTReader wktr = new WKTReader();
-		JTSMultiPolygon2D = wktr.read("MULTIPOLYGON (((0 0, 1 1, 0 1, 0 0)))");
-		JTSMultiLineString2D = wktr
-				.read("MULTILINESTRING ((0 0, 1 1, 0 1, 0 0))");
-		JTSMultiPoint2D = wktr.read("MULTIPOINT (0 0, 1 1, 0 1, 0 0)");
-		JTSPolygon2D = wktr
-				.read("POLYGON ((181 124, 87 162, 76 256, 166 315, 286 325, 373 255, 387 213, 377 159, 351 121, 298 101, 234 56, 181 124), (165 244, 227 219, 234 300, 168 288, 165 244), (244 130, 305 135, 324 186, 306 210, 272 206, 206 174, 244 130))");
+        JTSLineString2D = wktr.read("LINESTRING (1 1, 2 1, 2 2, 1 2, 1 1)");
+        JTSPoint3D = wktr.read("POINT(0 10 20)");
+        JTSPoint2D = wktr.read("POINT(0 10)");
 
-		JTSLineString2D = wktr.read("LINESTRING (1 1, 2 1, 2 2, 1 2, 1 1)");
-		JTSPoint3D = wktr.read("POINT(0 10 20)");
+        GeometryFactory gf = new GeometryFactory();
+        JTSGeometryCollection = gf.createGeometryCollection(new Geometry[]{
+                    JTSMultiPolygon2D, JTSMultiLineString2D, JTSPolygon2D});
+        // first datasource
+        final GenericObjectDriver driver1 = new GenericObjectDriver(
+                new String[]{"pk", "geom"},
+                new Type[]{
+                    TypeFactory.createType(
+                    Type.INT,
+                    new Constraint[]{new PrimaryKeyConstraint()}),
+                    TypeFactory.createType(Type.GEOMETRY)});
 
-		GeometryFactory gf = new GeometryFactory();
-		JTSGeometryCollection = gf.createGeometryCollection(new Geometry[] {
-				JTSMultiPolygon2D, JTSMultiLineString2D, JTSPolygon2D });
-		// first datasource
-		final GenericObjectDriver driver1 = new GenericObjectDriver(
-				new String[] { "pk", "geom" },
-				new Type[] {
-						TypeFactory
-								.createType(
-										Type.INT,
-										new Constraint[] { new PrimaryKeyConstraint() }),
-						TypeFactory.createType(Type.GEOMETRY) });
+        // insert all filled rows...
+        driver1.addValues(new Value[]{ValueFactory.createValue(1),
+                    ValueFactory.createValue(JTSMultiPolygon2D)});
+        driver1.addValues(new Value[]{ValueFactory.createValue(2),
+                    ValueFactory.createValue(JTSMultiLineString2D)});
+        driver1.addValues(new Value[]{ValueFactory.createValue(3),
+                    ValueFactory.createValue(JTSLineString2D)});
+        driver1.addValues(new Value[]{ValueFactory.createValue(4),
+                    ValueFactory.createValue(JTSPolygon2D)});
+        // and register this new driver...
 
-		// insert all filled rows...
-		driver1.addValues(new Value[] { ValueFactory.createValue(1),
-				ValueFactory.createValue(JTSMultiPolygon2D) });
-		driver1.addValues(new Value[] { ValueFactory.createValue(2),
-				ValueFactory.createValue(JTSMultiLineString2D) });
-		driver1.addValues(new Value[] { ValueFactory.createValue(3),
-				ValueFactory.createValue(JTSLineString2D) });
-		driver1.addValues(new Value[] { ValueFactory.createValue(4),
-				ValueFactory.createValue(JTSPolygon2D) });
-		// and register this new driver...
+        if (!dsf.exists("ds1")) {
+            dsf.getSourceManager().register("ds1", driver1);
+        }
 
-		if (!dsf.exists("ds1")) {
-			dsf.getSourceManager().register("ds1", driver1);
-		}
+        // second datasource
+        final GenericObjectDriver driver2 = new GenericObjectDriver(
+                new String[]{"pk", "geom"},
+                new Type[]{
+                    TypeFactory.createType(
+                    Type.INT,
+                    new Constraint[]{new PrimaryKeyConstraint()}),
+                    TypeFactory.createType(Type.GEOMETRY)});
 
-		// second datasource
-		final GenericObjectDriver driver2 = new GenericObjectDriver(
-				new String[] { "pk", "geom" },
-				new Type[] {
-						TypeFactory
-								.createType(
-										Type.INT,
-										new Constraint[] { new PrimaryKeyConstraint() }),
-						TypeFactory.createType(Type.GEOMETRY) });
+        driver1.addValues(new Value[]{ValueFactory.createValue(1),
+                    ValueFactory.createValue(JTSMultiPolygon2D)});
+        // and register this new driver...
+        if (!dsf.exists("ds1")) {
+            dsf.getSourceManager().register("ds2", driver2);
+        }
+    }
 
-		driver1.addValues(new Value[] { ValueFactory.createValue(1),
-				ValueFactory.createValue(JTSMultiPolygon2D) });
-		// and register this new driver...
-		if (!dsf.exists("ds1")) {
-			dsf.getSourceManager().register("ds2", driver2);
-		}
-	}
+    protected Value evaluate(Function function, ColumnValue... args)
+            throws FunctionException {
+        Type[] types = new Type[args.length];
+        Value[] values = new Value[args.length];
+        for (int i = 0; i < types.length; i++) {
+            types[i] = TypeFactory.createType(args[i].getTypeCode());
+            values[i] = args[i].getValue();
+        }
+        FunctionOperator.validateFunction(types, function);
+        return evaluateFunction(function, values);
+    }
 
-	protected Value evaluate(Function function, ColumnValue... args)
-			throws FunctionException {
-		Type[] types = new Type[args.length];
-		Value[] values = new Value[args.length];
-		for (int i = 0; i < types.length; i++) {
-			types[i] = TypeFactory.createType(args[i].getTypeCode());
-			values[i] = args[i].getValue();
-		}
-		FunctionOperator.validateFunction(types, function);
-		return evaluateFunction(function, values);
-	}
+    protected Value evaluateAggregatedZeroRows(Function function) {
+        return function.getAggregateResult();
+    }
 
-	protected Value evaluateAggregatedZeroRows(Function function) {
-		return function.getAggregateResult();
-	}
+    private Value evaluateFunction(Function function, Value[] values)
+            throws FunctionException {
+        if (function.isAggregate()) {
+            Value lastEvaluation = function.evaluate(dsf, values);
+            Value lastCall = function.getAggregateResult();
+            if (lastCall != null) {
+                return lastCall;
+            } else {
+                return lastEvaluation;
+            }
+        } else {
+            return function.evaluate(dsf, values);
+        }
+    }
 
-	private Value evaluateFunction(Function function, Value[] values)
-			throws FunctionException {
-		if (function.isAggregate()) {
-			Value lastEvaluation = function.evaluate(dsf, values);
-			Value lastCall = function.getAggregateResult();
-			if (lastCall != null) {
-				return lastCall;
-			} else {
-				return lastEvaluation;
-			}
-		} else {
-			return function.evaluate(dsf, values);
-		}
-	}
+    protected Value evaluate(Function function, Value... args)
+            throws FunctionException {
+        Type[] types = new Type[args.length];
+        for (int i = 0; i < types.length; i++) {
+            types[i] = TypeFactory.createType(args[i].getType());
+        }
+        FunctionOperator.validateFunction(types, function);
+        return evaluateFunction(function, args);
+    }
 
-	protected Value evaluate(Function function, Value... args)
-			throws FunctionException {
-		Type[] types = new Type[args.length];
-		for (int i = 0; i < types.length; i++) {
-			types[i] = TypeFactory.createType(args[i].getType());
-		}
-		FunctionOperator.validateFunction(types, function);
-		return evaluateFunction(function, args);
-	}
+    protected Type evaluate(Function function, Type... args)
+            throws FunctionException {
+        return function.getType(args);
+    }
 
-	protected Type evaluate(Function function, Type... args)
-			throws FunctionException {
-		return function.getType(args);
-	}
+    protected Value testSpatialFunction(Function function,
+            Geometry normalValue, int parameterCount) throws Exception {
+        return testSpatialFunction(function, ValueFactory.createValue(normalValue), Type.GEOMETRY, parameterCount);
+    }
 
-	protected Value testSpatialFunction(Function function,
-			Geometry normalValue, int parameterCount) throws Exception {
-		return testSpatialFunction(function, ValueFactory
-				.createValue(normalValue), Type.GEOMETRY, parameterCount);
-	}
+    protected Value testSpatialFunction(Function function, Value normalValue,
+            int valueType, int parameterCount) throws Exception {
+        // Test null input
+        Value res = evaluate(function, new ColumnValue(valueType, ValueFactory.createNullValue()));
+        assertTrue(res.isNull());
 
-	protected Value testSpatialFunction(Function function, Value normalValue,
-			int valueType, int parameterCount) throws Exception {
-		// Test null input
-		Value res = evaluate(function, new ColumnValue(valueType, ValueFactory
-				.createNullValue()));
-		assertTrue(res.isNull());
+        // Test too many parameters
+        Value[] args = new Value[parameterCount + 1];
+        for (int i = 0; i < args.length; i++) {
+            args[i] = normalValue;
+        }
+        try {
+            res = evaluate(function, args);
+            assertTrue(false);
+        } catch (IncompatibleTypesException e) {
+        }
 
-		// Test too many parameters
-		Value[] args = new Value[parameterCount + 1];
-		for (int i = 0; i < args.length; i++) {
-			args[i] = normalValue;
-		}
-		try {
-			res = evaluate(function, args);
-			assertTrue(false);
-		} catch (IncompatibleTypesException e) {
+        // Test wrong parameter type
+        try {
+            Value wrong = ValueFactory.createValue(new Value[0]);
+            res = evaluate(function, wrong);
+            assertTrue(false);
+        } catch (IncompatibleTypesException e) {
+        }
 
-		}
+        // Test normal input value and type
+        res = evaluate(function, normalValue);
+        return res;
+    }
 
-		// Test wrong parameter type
-		try {
-			Value wrong = ValueFactory.createValue(new Value[0]);
-			res = evaluate(function, wrong);
-			assertTrue(false);
-		} catch (IncompatibleTypesException e) {
-		}
-
-		// Test normal input value and type
-		res = evaluate(function, normalValue);
-		return res;
-	}
-
+    /**
+     * Return a wkt representation of the geometry
+     * @param geom
+     * @return
+     */
+    public String toString(Geometry geom) {
+        return WKBUtil.getTextWKTWriter3DInstance().write(geom);
+    }
 }

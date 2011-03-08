@@ -71,7 +71,7 @@ import org.gdms.sql.InstructionTest;
 import org.gdms.sql.OptimizationTests;
 import org.gdms.sql.ProcessorTest;
 import org.gdms.sql.function.alphanumeric.AlphanumericFunctionTest;
-import org.gdms.sql.function.spatial.convert.SpatialFunctionTest;
+import org.gdms.sql.function.spatial.convert.ConvertFunctionTest;
 import org.gdms.sql.function.spatial.geometryProperties.PropertiesFunctionTest;
 import org.gdms.sql.function.spatial.io.IOSpatialFunctionTest;
 import org.gdms.sql.function.spatial.operators.OperatorsTest;
@@ -125,7 +125,7 @@ public class GDMSTests extends TestCase {
 		suite.addTestSuite(ProcessorTest.class);
 		suite.addTestSuite(GrammarTest.class);
 		suite.addTestSuite(AlphanumericFunctionTest.class);
-		suite.addTestSuite(SpatialFunctionTest.class);
+		suite.addTestSuite(ConvertFunctionTest.class);
 		suite.addTestSuite(PropertiesFunctionTest.class);
 		suite.addTestSuite(IOSpatialFunctionTest.class);
 		suite.addTestSuite(OperatorsTest.class);
@@ -133,7 +133,7 @@ public class GDMSTests extends TestCase {
 		suite.addTestSuite(PredicatesTest.class);
 		suite.addTestSuite(StatisticFunctionsTest.class);
 		suite.addTestSuite(SQLTest.class);
-		suite.addTestSuite(SpatialFunctionTest.class);
+		suite.addTestSuite(ConvertFunctionTest.class);
 		suite.addTestSuite(CustomQueriesTest.class);
 		// TODO suite.addTestSuite(ExplodeTest.class);
 

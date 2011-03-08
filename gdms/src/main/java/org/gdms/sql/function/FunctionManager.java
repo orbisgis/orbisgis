@@ -3,17 +3,17 @@
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information. OrbisGIS is
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ * the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
  *
  *  Team leader Erwan BOCHER, scientific researcher,
  *
- *  User support leader : Gwendall Petit, geomatic engineer.
- *
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Antoine GOURLAY,Maxence LAURENT, Gwendall PETIT
+ *
+ * Copyright (C) 2010 Erwan BOCHER, Alexis GUEGANNO, Antoine GOURLAY, Gwendall PETIT
  *
  * This file is part of OrbisGIS.
  *
@@ -63,6 +63,7 @@ import org.gdms.sql.function.alphanumeric.ToStringFunction;
 import org.gdms.sql.function.math.ACos;
 import org.gdms.sql.function.math.ASin;
 import org.gdms.sql.function.math.ATan;
+import org.gdms.sql.function.math.Abs;
 import org.gdms.sql.function.math.Ceil;
 import org.gdms.sql.function.math.Cos;
 import org.gdms.sql.function.math.Exp;
@@ -94,6 +95,7 @@ import org.gdms.sql.function.spatial.geometry.create.ST_AddPoints;
 import org.gdms.sql.function.spatial.geometry.create.ST_Boundary;
 import org.gdms.sql.function.spatial.geometry.create.ST_BoundingCircle;
 import org.gdms.sql.function.spatial.geometry.create.ST_Densify;
+import org.gdms.sql.function.spatial.geometry.create.ST_MakeEnvelope;
 import org.gdms.sql.function.spatial.geometry.create.ST_MakeLine;
 import org.gdms.sql.function.spatial.geometry.create.ST_MakePoint;
 import org.gdms.sql.function.spatial.geometry.create.ST_MinimumDiameter;
@@ -148,6 +150,7 @@ import org.gdms.sql.function.spatial.geometry.properties.ST_NumPoints;
 import org.gdms.sql.function.spatial.geometry.properties.ST_X;
 import org.gdms.sql.function.spatial.geometry.properties.ST_Y;
 import org.gdms.sql.function.spatial.geometry.properties.ST_Z;
+import org.gdms.sql.function.spatial.geometry.simplify.ST_PrecisionReducer;
 import org.gdms.sql.function.spatial.geometry.simplify.ST_Simplify;
 import org.gdms.sql.function.spatial.geometry.simplify.ST_SimplifyPreserveTopology;
 import org.gdms.sql.function.spatial.geometry.trigo.ST_Azimut;
@@ -175,6 +178,7 @@ public class FunctionManager {
 	private static ArrayList<FunctionManagerListener> listeners = new ArrayList<FunctionManagerListener>();
 	static {
 		addFunction(ConcatenateFunction.class);
+                addFunction(Abs.class);
 		addFunction(String2DateFunction.class);
 		addFunction(String2IntFunction.class);
 		addFunction(String2DoubleFunction.class);
@@ -301,7 +305,9 @@ public class FunctionManager {
 		addFunction(ST_MeanSpacing.class);
 		addFunction(ST_Transform.class);
 		addFunction(ST_Force_2D.class);
-	}
+                addFunction(ST_PrecisionReducer.class);
+                addFunction(ST_MakeEnvelope.class);
+        }
 
 	public static void addFunctionManagerListener(
 			FunctionManagerListener listener) {
