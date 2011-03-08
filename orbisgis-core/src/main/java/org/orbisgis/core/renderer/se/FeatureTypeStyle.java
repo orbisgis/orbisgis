@@ -160,8 +160,6 @@ public final class FeatureTypeStyle implements SymbolizerNode {
 		} catch (JAXBException ex) {
 			Logger.getLogger(FeatureTypeStyle.class.getName()).log(Level.SEVERE, null, ex);
 		}
-
-
 	}
 
 	public JAXBElement<FeatureTypeStyleType> getJAXBElement() {

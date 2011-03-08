@@ -79,6 +79,7 @@ public class ShapeHelper {
     public static double getAreaPerimeterLength(Shape area) {
         PathIterator it = area.getPathIterator(null, FLATNESS);
 
+        System.out.println("Get length :");
         double coords[] = new double[6];
 
         double p = 0.0;
@@ -86,21 +87,36 @@ public class ShapeHelper {
         Double x1 = null;
         Double y1 = null;
 
-        while (!it.isDone()) {
-            it.currentSegment(coords);
+        Double xFirst = null;
+        Double yFirst = null;
 
-            double x2 = coords[0];
-            double y2 = coords[1];
+        while (!it.isDone()) {
+            int type = it.currentSegment(coords);
+
+            double x2;
+            double y2;
+
+            if (type == PathIterator.SEG_CLOSE) {
+                x2 = xFirst;
+                y2 = yFirst;
+            } else {
+                x2 = coords[0];
+                y2 = coords[1];
+            }
 
             if (x1 != null && y1 != null) {
                 double xx, yy;
                 xx = x2 - x1;
                 yy = y2 - y1;
                 p += Math.sqrt(xx * xx + yy * yy);
+            } else {
+                xFirst = x2;
+                yFirst = y2;
             }
 
             x1 = x2;
             y1 = y2;
+            //System.out.println (x1 + ";" + y1);
 
             it.next();
         }
@@ -180,6 +196,9 @@ public class ShapeHelper {
         y1 = coords[1];
         segment.moveTo(x1, y1);
 
+        double xFirst = x1;
+        double yFirst = y1;
+
         it.next();
 
         double x2 = 0.0;
@@ -188,10 +207,15 @@ public class ShapeHelper {
         boolean first = true;
 
         while (!it.isDone()) {
-            it.currentSegment(coords);
+            int type = it.currentSegment(coords);
 
-            x2 = coords[0];
-            y2 = coords[1];
+            if (type == PathIterator.SEG_CLOSE) {
+                x2 = xFirst;
+                y2 = yFirst;
+            } else {
+                x2 = coords[0];
+                y2 = coords[1];
+            }
 
             double xx, yy;
             xx = x2 - x1;
@@ -265,6 +289,10 @@ public class ShapeHelper {
 
         x1 = coords[0];
         y1 = coords[1];
+
+        double xFirst = x1;
+        double yFirst = y1;
+
         segment.moveTo(x1, y1);
 
         it.next();
@@ -273,10 +301,15 @@ public class ShapeHelper {
         double y2 = 0.0;
 
         while (!it.isDone()) {
-            it.currentSegment(coords);
+            int type = it.currentSegment(coords);
 
-            x2 = coords[0];
-            y2 = coords[1];
+            if (type == PathIterator.SEG_CLOSE) {
+                x2 = xFirst;
+                y2 = yFirst;
+            } else {
+                x2 = coords[0];
+                y2 = coords[1];
+            }
 
             double xx, yy;
             xx = x2 - x1;
@@ -345,6 +378,10 @@ public class ShapeHelper {
 
         x1 = coords[0];
         y1 = coords[1];
+
+        double xFirst = x1;
+        double yFirst = y1;
+
         segment.moveTo(x1, y1);
 
         it.next();
@@ -353,10 +390,15 @@ public class ShapeHelper {
         double y2 = 0.0;
 
         while (!it.isDone()) {
-            it.currentSegment(coords);
+            int type = it.currentSegment(coords);
 
-            x2 = coords[0];
-            y2 = coords[1];
+            if (type == PathIterator.SEG_CLOSE) {
+                x2 = xFirst;
+                y2 = yFirst;
+            } else {
+                x2 = coords[0];
+                y2 = coords[1];
+            }
 
             double xx, yy;
             xx = x2 - x1;
@@ -1531,7 +1573,7 @@ public class ShapeHelper {
 
         Envelope incExtent = new Envelope(extent);
 
-        incExtent.expandBy(extent.getWidth()/10, extent.getHeight()/10);
+        incExtent.expandBy(extent.getWidth() / 10, extent.getHeight() / 10);
 
         Geometry geometry = the_geom.intersection(geometryFactory.toGeometry(extent));
 

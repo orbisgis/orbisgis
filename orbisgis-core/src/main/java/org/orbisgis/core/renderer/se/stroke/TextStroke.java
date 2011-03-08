@@ -44,16 +44,13 @@ import java.util.ArrayList;
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.TextStrokeType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.label.LineLabel;
 import org.orbisgis.core.renderer.se.label.StyledLabel;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 /**
  *
@@ -64,15 +61,9 @@ public final class TextStroke extends Stroke {
 	private LineLabel lineLabel;
 
 	TextStroke(TextStrokeType tst) throws InvalidStyle {
-        super();
+        super(tst);
 		if (tst.getLineLabel() != null) {
 			setLineLabel(new LineLabel(tst.getLineLabel()));
-		}
-
-		if (tst.getUnitOfMeasure() != null) {
-			this.setUom(Uom.fromOgcURN(tst.getUnitOfMeasure()));
-		} else {
-            this.setUom(null);
 		}
 	}
 
@@ -97,13 +88,6 @@ public final class TextStroke extends Stroke {
 		if (lineLabel != null){
 			StyledLabel label = lineLabel.getLabel();
 		    if (label != null){
-				//RealParameter size = label.getFontSize();
-				//if (size != null){
-				//	double value = size.getValue(sds, fid);
-				//	return Uom.toPixel(value, label.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-				//} else {
-                //    return
-                //}
                 return label.getEmInPixel(sds, fid, mt)*2.0;
 			}
 		}

@@ -41,7 +41,6 @@ package org.orbisgis.core.renderer.se.graphic;
 import java.awt.Shape;
 import java.io.IOException;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.MarkGraphicType;
 
 import org.orbisgis.core.renderer.se.parameter.ParameterException;

@@ -48,7 +48,6 @@ import java.awt.Color;
 import java.awt.Container;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -64,7 +63,6 @@ import junit.framework.TestCase;
 import org.orbisgis.core.ConsoleErrorManager;
 import org.orbisgis.core.ConsoleOutputManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.errorManager.ErrorListener;
 import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.FeatureTypeStyleType;
@@ -78,11 +76,11 @@ import org.orbisgis.core.ui.plugins.views.output.OutputManager;
  *
  * @author maxence
  */
-public class StrokeTest extends TestCase {
+public class StrokeRapportTest extends TestCase {
 
     private FeatureTypeStyle fts;
 
-    public StrokeTest(String testName) throws IOException {
+    public StrokeRapportTest(String testName) throws IOException {
         super(testName);
     }
 
@@ -117,7 +115,7 @@ public class StrokeTest extends TestCase {
 
         System.out.println(dj.getColorModel());
 
-        fts = new FeatureTypeStyle(null, "src/test/resources/org/orbisgis/core/renderer/se/strokes.se");
+        fts = new FeatureTypeStyle(null, "src/test/resources/org/orbisgis/core/renderer/se/strokes_rapport.se");
 
         // 1)
         try {
@@ -150,7 +148,7 @@ public class StrokeTest extends TestCase {
         RenderedImage r = rg.createRendering(mt.getCurrentRenderContext());
         dj.set(r, (int)rg.getWidth()/2, (int)rg.getHeight()/2);
 
-        File file = new File("/tmp/stroke.png");
+        File file = new File("/tmp/stroke_rapport.png");
         ImageIO.write(r, "png", file);
 
         // Add to the JFrame’s ContentPane an instance of JScrollPane
@@ -168,7 +166,7 @@ public class StrokeTest extends TestCase {
         try {
             Thread.sleep(20000);
         } catch (InterruptedException ex) {
-            Logger.getLogger(StrokeTest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(StrokeRapportTest.class.getName()).log(Level.SEVERE, null, ex);
         }
         
     }

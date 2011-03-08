@@ -1,0 +1,2186 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<FeatureTypeStyle xmlns="http://www.opengis.net/se" xmlns:ns2="http://www.opengis.net/ows/1.1" xmlns:ns3="http://www.opengis.net/ogc" xmlns:ns4="http://www.w3.org/1999/xlink">
+  <Rule>
+    <PointSymbolizer>
+      <Version>1.9</Version>
+      <Name>Default Symbolizer</Name>
+      <Extension>
+        <ExtensionParameter name="level">0</ExtensionParameter>
+      </Extension>
+      <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
+      <CompositeGraphic>
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
+          <ViewBox>
+            <Width>270.0</Width>
+            <Height>160.0</Height>
+          </ViewBox>
+          <GraphicFill>
+            <CompositeGraphic>
+              <MarkGraphic>
+                <WellKnownName>SQUARE</WellKnownName>
+                <ViewBox>
+                  <Width>4.0</Width>
+                </ViewBox>
+                <SolidFill>
+                  <Color>#888888</Color>
+                  <Opacity>100.0</Opacity>
+                </SolidFill>
+              </MarkGraphic>
+              <MarkGraphic>
+                <WellKnownName>SQUARE</WellKnownName>
+                <ViewBox>
+                  <Width>2.0</Width>
+                </ViewBox>
+                <Transform>
+                  <Translate>
+                    <X>1.0</X>
+                    <Y>1.0</Y>
+                  </Translate>
+                </Transform>
+                <SolidFill>
+                  <Color>#BBBBBB</Color>
+                  <Opacity>100.0</Opacity>
+                </SolidFill>
+              </MarkGraphic>
+              <MarkGraphic>
+                <WellKnownName>SQUARE</WellKnownName>
+                <ViewBox>
+                  <Width>2.0</Width>
+                </ViewBox>
+                <Transform>
+                  <Translate>
+                    <X>-1.0</X>
+                    <Y>-1.0</Y>
+                  </Translate>
+                </Transform>
+                <SolidFill>
+                  <Color>#BBBBBB</Color>
+                  <Opacity>100.0</Opacity>
+                </SolidFill>
+              </MarkGraphic>
+            </CompositeGraphic>
+          </GraphicFill>
+        </MarkGraphic>
+
+        <TextGraphic>
+          <Transform>
+            <Translate>
+              <X>-125.0</X>
+              <Y>-75.0</Y>
+            </Translate>
+          </Transform>
+          <StyledLabel>
+            <LabelText>Linear/Offset</LabelText>
+            <Font/>
+          </StyledLabel>
+        </TextGraphic>
+
+        <TextGraphic>
+          <Transform>
+            <Translate>
+              <X>-105.0</X>
+              <Y>-75.0</Y>
+            </Translate>
+          </Transform>
+          <StyledLabel>
+            <LabelText>off/off</LabelText>
+            <Font/>
+          </StyledLabel>
+        </TextGraphic>
+
+        <TextGraphic>
+          <Transform>
+            <Translate>
+              <X>-75.0</X>
+              <Y>-75.0</Y>
+            </Translate>
+          </Transform>
+          <StyledLabel>
+            <LabelText>off/on</LabelText>
+            <Font/>
+          </StyledLabel>
+        </TextGraphic>
+
+        <TextGraphic>
+          <Transform>
+            <Translate>
+              <X>-45.0</X>
+              <Y>-75.0</Y>
+            </Translate>
+          </Transform>
+          <StyledLabel>
+            <LabelText>on/off</LabelText>
+            <Font/>
+          </StyledLabel>
+        </TextGraphic>
+
+        <TextGraphic>
+          <Transform>
+            <Translate>
+              <X>-15.0</X>
+              <Y>-75.0</Y>
+            </Translate>
+          </Transform>
+          <StyledLabel>
+            <LabelText>on/on</LabelText>
+            <Font/>
+          </StyledLabel>
+        </TextGraphic>
+
+
+<!-- NEW LINE -->
+
+        <TextGraphic>
+          <Transform>
+            <Translate>
+              <X>-125.0</X>
+              <Y>-65.0</Y>
+            </Translate>
+          </Transform>
+          <StyledLabel>
+            <LabelText>Dash 3mm</LabelText>
+            <Font/>
+          </StyledLabel>
+        </TextGraphic>
+
+
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>5.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-105.0</X>
+              <Y>-65.0</Y>
+            </Translate>
+          </Transform>
+          <PenStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">off</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
+            </Extension>
+            <SolidFill>
+              <Color>#000000</Color>
+              <Opacity>100.0</Opacity>
+            </SolidFill>
+	    <Width>0.4</Width>
+	    <DashArray>3</DashArray>
+          </PenStroke>
+        </MarkGraphic>
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>5.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-105.0</X>
+              <Y>-65.0</Y>
+            </Translate>
+          </Transform>
+	  <PerpendicularOffset>2.0</PerpendicularOffset>
+          <PenStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">off</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
+            </Extension>
+            <SolidFill>
+              <Color>#000000</Color>
+              <Opacity>100.0</Opacity>
+            </SolidFill>
+	    <Width>0.4</Width>
+	    <DashArray>3</DashArray>
+          </PenStroke>
+        </MarkGraphic>
+
+
+
+
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>5.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-75.0</X>
+              <Y>-65.0</Y>
+            </Translate>
+          </Transform>
+          <PenStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">off</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">on</ExtensionParameter>
+            </Extension>
+            <SolidFill>
+              <Color>#000000</Color>
+              <Opacity>100.0</Opacity>
+            </SolidFill>
+	    <Width>0.4</Width>
+	    <DashArray>3</DashArray>
+          </PenStroke>
+        </MarkGraphic>
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>5.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-75.0</X>
+              <Y>-65.0</Y>
+            </Translate>
+          </Transform>
+	  <PerpendicularOffset>2.0</PerpendicularOffset>
+          <PenStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">off</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">on</ExtensionParameter>
+            </Extension>
+            <SolidFill>
+              <Color>#000000</Color>
+              <Opacity>100.0</Opacity>
+            </SolidFill>
+	    <Width>0.4</Width>
+	    <DashArray>3</DashArray>
+          </PenStroke>
+        </MarkGraphic>
+
+
+
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>5.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-45.0</X>
+              <Y>-65.0</Y>
+            </Translate>
+          </Transform>
+          <PenStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">on</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
+            </Extension>
+            <SolidFill>
+              <Color>#000000</Color>
+              <Opacity>100.0</Opacity>
+            </SolidFill>
+	    <Width>0.4</Width>
+	    <DashArray>3</DashArray>
+          </PenStroke>
+        </MarkGraphic>
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>5.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-45.0</X>
+              <Y>-65.0</Y>
+            </Translate>
+          </Transform>
+	  <PerpendicularOffset>2.0</PerpendicularOffset>
+          <PenStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">on</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
+            </Extension>
+            <SolidFill>
+              <Color>#000000</Color>
+              <Opacity>100.0</Opacity>
+            </SolidFill>
+	    <Width>0.4</Width>
+	    <DashArray>3</DashArray>
+          </PenStroke>
+        </MarkGraphic>
+
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>5.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-15.0</X>
+              <Y>-65.0</Y>
+            </Translate>
+          </Transform>
+          <PenStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">on</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">on</ExtensionParameter>
+            </Extension>
+            <SolidFill>
+              <Color>#000000</Color>
+              <Opacity>100.0</Opacity>
+            </SolidFill>
+	    <Width>0.4</Width>
+	    <DashArray>3</DashArray>
+          </PenStroke>
+        </MarkGraphic>
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>5.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-15.0</X>
+              <Y>-65.0</Y>
+            </Translate>
+          </Transform>
+	  <PerpendicularOffset>2.0</PerpendicularOffset>
+          <PenStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">on</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">on</ExtensionParameter>
+            </Extension>
+            <SolidFill>
+              <Color>#000000</Color>
+              <Opacity>100.0</Opacity>
+            </SolidFill>
+	    <Width>0.4</Width>
+	    <DashArray>3</DashArray>
+          </PenStroke>
+        </MarkGraphic>
+
+
+
+
+<!-- NEW LINE -->
+
+        <TextGraphic>
+          <Transform>
+            <Translate>
+              <X>-125.0</X>
+              <Y>-45.0</Y>
+            </Translate>
+          </Transform>
+          <StyledLabel>
+            <LabelText>Dash 3mm</LabelText>
+            <Font/>
+          </StyledLabel>
+        </TextGraphic>
+
+
+        <MarkGraphic>
+          <WellKnownName>STAR</WellKnownName>
+          <ViewBox>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-105.0</X>
+              <Y>-45.0</Y>
+            </Translate>
+          </Transform>
+          <PenStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">off</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
+            </Extension>
+            <SolidFill>
+              <Color>#000000</Color>
+              <Opacity>100.0</Opacity>
+            </SolidFill>
+	    <Width>0.4</Width>
+	    <DashArray>2</DashArray>
+          </PenStroke>
+        </MarkGraphic>
+        <MarkGraphic>
+          <WellKnownName>STAR</WellKnownName>
+          <ViewBox>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-105.0</X>
+              <Y>-45.0</Y>
+            </Translate>
+          </Transform>
+	  <PerpendicularOffset>2.0</PerpendicularOffset>
+          <PenStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">off</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
+            </Extension>
+            <SolidFill>
+              <Color>#000000</Color>
+              <Opacity>100.0</Opacity>
+            </SolidFill>
+	    <Width>0.4</Width>
+	    <DashArray>2</DashArray>
+          </PenStroke>
+        </MarkGraphic>
+
+
+
+
+        <MarkGraphic>
+          <WellKnownName>STAR</WellKnownName>
+          <ViewBox>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-75.0</X>
+              <Y>-45.0</Y>
+            </Translate>
+          </Transform>
+          <PenStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">off</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">on</ExtensionParameter>
+            </Extension>
+            <SolidFill>
+              <Color>#000000</Color>
+              <Opacity>100.0</Opacity>
+            </SolidFill>
+	    <Width>0.4</Width>
+	    <DashArray>2</DashArray>
+          </PenStroke>
+        </MarkGraphic>
+        <MarkGraphic>
+          <WellKnownName>STAR</WellKnownName>
+          <ViewBox>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-75.0</X>
+              <Y>-45.0</Y>
+            </Translate>
+          </Transform>
+	  <PerpendicularOffset>2.0</PerpendicularOffset>
+          <PenStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">off</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">on</ExtensionParameter>
+            </Extension>
+            <SolidFill>
+              <Color>#000000</Color>
+              <Opacity>100.0</Opacity>
+            </SolidFill>
+	    <Width>0.4</Width>
+	    <DashArray>2</DashArray>
+          </PenStroke>
+        </MarkGraphic>
+
+
+
+        <MarkGraphic>
+          <WellKnownName>STAR</WellKnownName>
+          <ViewBox>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-45.0</X>
+              <Y>-45.0</Y>
+            </Translate>
+          </Transform>
+          <PenStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">on</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
+            </Extension>
+            <SolidFill>
+              <Color>#000000</Color>
+              <Opacity>100.0</Opacity>
+            </SolidFill>
+	    <Width>0.4</Width>
+	    <DashArray>2</DashArray>
+          </PenStroke>
+        </MarkGraphic>
+        <MarkGraphic>
+          <WellKnownName>STAR</WellKnownName>
+          <ViewBox>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-45.0</X>
+              <Y>-45.0</Y>
+            </Translate>
+          </Transform>
+	  <PerpendicularOffset>2.0</PerpendicularOffset>
+          <PenStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">on</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
+            </Extension>
+            <SolidFill>
+              <Color>#000000</Color>
+              <Opacity>100.0</Opacity>
+            </SolidFill>
+	    <Width>0.4</Width>
+	    <DashArray>2</DashArray>
+          </PenStroke>
+        </MarkGraphic>
+
+        <MarkGraphic>
+          <WellKnownName>STAR</WellKnownName>
+          <ViewBox>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-15.0</X>
+              <Y>-45.0</Y>
+            </Translate>
+          </Transform>
+          <PenStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">on</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">on</ExtensionParameter>
+            </Extension>
+            <SolidFill>
+              <Color>#000000</Color>
+              <Opacity>100.0</Opacity>
+            </SolidFill>
+	    <Width>0.4</Width>
+	    <DashArray>2</DashArray>
+          </PenStroke>
+        </MarkGraphic>
+        <MarkGraphic>
+          <WellKnownName>STAR</WellKnownName>
+          <ViewBox>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-15.0</X>
+              <Y>-45.0</Y>
+            </Translate>
+          </Transform>
+	  <PerpendicularOffset>2.0</PerpendicularOffset>
+          <PenStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">on</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">on</ExtensionParameter>
+            </Extension>
+            <SolidFill>
+              <Color>#000000</Color>
+              <Opacity>100.0</Opacity>
+            </SolidFill>
+	    <Width>0.4</Width>
+	    <DashArray>2</DashArray>
+          </PenStroke>
+        </MarkGraphic>
+
+
+<!-- NEW LINE -->
+
+        <TextGraphic>
+          <Transform>
+            <Translate>
+              <X>-125.0</X>
+              <Y>-25.0</Y>
+            </Translate>
+          </Transform>
+          <StyledLabel>
+            <LabelText>GraphicStroke</LabelText>
+            <Font/>
+          </StyledLabel>
+        </TextGraphic>
+
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>5.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-105.0</X>
+              <Y>-25.0</Y>
+            </Translate>
+          </Transform>
+	  <PerpendicularOffset>2.0</PerpendicularOffset>
+          <PenStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">off</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
+            </Extension>
+	    <SolidFill>
+	        <Color>#ff0000</Color>
+	    </SolidFill>
+          </PenStroke>
+        </MarkGraphic>
+ 
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>5.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-105.0</X>
+              <Y>-25.0</Y>
+            </Translate>
+          </Transform>
+	  <PerpendicularOffset>2.0</PerpendicularOffset>
+          <GraphicStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">off</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
+            </Extension>
+	    <MarkGraphic />
+          </GraphicStroke>
+        </MarkGraphic>
+
+
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>5.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-105.0</X>
+              <Y>-25.0</Y>
+            </Translate>
+          </Transform>
+          <GraphicStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">off</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
+            </Extension>
+	    <MarkGraphic />
+          </GraphicStroke>
+        </MarkGraphic>
+
+
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>5.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-75.0</X>
+              <Y>-25.0</Y>
+            </Translate>
+          </Transform>
+          <GraphicStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">off</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">on</ExtensionParameter>
+            </Extension>
+	    <MarkGraphic />
+          </GraphicStroke>
+        </MarkGraphic>
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>5.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-75.0</X>
+              <Y>-25.0</Y>
+            </Translate>
+          </Transform>
+	  <PerpendicularOffset>2.0</PerpendicularOffset>
+          <GraphicStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">off</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">on</ExtensionParameter>
+            </Extension>
+	    <MarkGraphic />
+          </GraphicStroke>
+        </MarkGraphic>
+
+
+
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>5.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-45.0</X>
+              <Y>-25.0</Y>
+            </Translate>
+          </Transform>
+          <GraphicStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">on</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
+            </Extension>
+	    <MarkGraphic />
+          </GraphicStroke>
+        </MarkGraphic>
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>5.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-45.0</X>
+              <Y>-25.0</Y>
+            </Translate>
+          </Transform>
+	  <PerpendicularOffset>2.0</PerpendicularOffset>
+          <GraphicStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">on</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
+            </Extension>
+	    <MarkGraphic />
+          </GraphicStroke>
+        </MarkGraphic>
+
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>5.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-15.0</X>
+              <Y>-25.0</Y>
+            </Translate>
+          </Transform>
+          <GraphicStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">on</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">on</ExtensionParameter>
+            </Extension>
+	    <MarkGraphic />
+          </GraphicStroke>
+        </MarkGraphic>
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>5.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-15.0</X>
+              <Y>-25.0</Y>
+            </Translate>
+          </Transform>
+	  <PerpendicularOffset>2.0</PerpendicularOffset>
+          <GraphicStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">on</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">on</ExtensionParameter>
+            </Extension>
+	    <MarkGraphic />
+          </GraphicStroke>
+        </MarkGraphic>
+
+<!-- NEW LINE -->
+
+        <TextGraphic>
+          <Transform>
+            <Translate>
+              <X>-125.0</X>
+              <Y>-10.0</Y>
+            </Translate>
+          </Transform>
+          <StyledLabel>
+            <LabelText>Avenue</LabelText>
+            <Font/>
+          </StyledLabel>
+        </TextGraphic>
+
+
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>10.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-105.0</X>
+              <Y>-10.0</Y>
+            </Translate>
+          </Transform>
+                <PerpendicularOffset>1.5</PerpendicularOffset>
+                <GraphicStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">off</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
+            </Extension>
+                    <MarkGraphic>
+                        <WellKnownName>CIRCLE</WellKnownName>
+                        <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
+                        <ViewBox>
+                            <Width>1.5</Width>
+                        </ViewBox>
+                        <PenStroke>
+                            <SolidFill>
+<Color>#006600</Color>
+<Opacity>100.0</Opacity>
+                            </SolidFill>
+                            <Width>0.2</Width>
+                        </PenStroke>
+                    </MarkGraphic>
+                    <Length>20.0</Length>
+                    <RelativeOrientation>normal</RelativeOrientation>
+                </GraphicStroke>
+        </MarkGraphic>
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>10.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-105.0</X>
+              <Y>-10.0</Y>
+            </Translate>
+          </Transform>
+                <PerpendicularOffset>-1.5</PerpendicularOffset>
+                <GraphicStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">off</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
+            </Extension>
+                    <MarkGraphic>
+                        <WellKnownName>CIRCLE</WellKnownName>
+                        <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
+                        <ViewBox>
+                            <Width>1.5</Width>
+                        </ViewBox>
+                        <PenStroke>
+                            <SolidFill>
+<Color>#006600</Color>
+<Opacity>100.0</Opacity>
+                            </SolidFill>
+                            <Width>0.2</Width>
+                        </PenStroke>
+                    </MarkGraphic>
+                    <Length>20.0</Length>
+                    <RelativeOrientation>normal</RelativeOrientation>
+                </GraphicStroke>
+        </MarkGraphic>
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>10.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-105.0</X>
+              <Y>-10.0</Y>
+            </Translate>
+          </Transform>
+	  <PerpendicularOffset>-0.5</PerpendicularOffset>
+          <PenStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">off</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
+            </Extension>
+            <SolidFill>
+              <Color>#000000</Color>
+              <Opacity>100.0</Opacity>
+            </SolidFill>
+	    <Width>0.1</Width>
+          </PenStroke>
+        </MarkGraphic>
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>10.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-105.0</X>
+              <Y>-10.0</Y>
+            </Translate>
+          </Transform>
+	  <PerpendicularOffset>0.5</PerpendicularOffset>
+          <PenStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">off</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
+            </Extension>
+            <SolidFill>
+              <Color>#000000</Color>
+              <Opacity>100.0</Opacity>
+            </SolidFill>
+	    <Width>0.1</Width>
+          </PenStroke>
+        </MarkGraphic>
+
+
+
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>10.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-75.0</X>
+              <Y>-10.0</Y>
+            </Translate>
+          </Transform>
+                <PerpendicularOffset>1.5</PerpendicularOffset>
+                <GraphicStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">off</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">on</ExtensionParameter>
+            </Extension>
+                    <MarkGraphic>
+                        <WellKnownName>CIRCLE</WellKnownName>
+                        <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
+                        <ViewBox>
+                            <Width>1.5</Width>
+                        </ViewBox>
+                        <PenStroke>
+                            <SolidFill>
+<Color>#006600</Color>
+<Opacity>100.0</Opacity>
+                            </SolidFill>
+                            <Width>0.2</Width>
+                        </PenStroke>
+                    </MarkGraphic>
+                    <Length>20.0</Length>
+                    <RelativeOrientation>normal</RelativeOrientation>
+                </GraphicStroke>
+        </MarkGraphic>
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>10.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-75.0</X>
+              <Y>-10.0</Y>
+            </Translate>
+          </Transform>
+                <PerpendicularOffset>-1.5</PerpendicularOffset>
+                <GraphicStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">off</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">on</ExtensionParameter>
+            </Extension>
+                    <MarkGraphic>
+                        <WellKnownName>CIRCLE</WellKnownName>
+                        <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
+                        <ViewBox>
+                            <Width>1.5</Width>
+                        </ViewBox>
+                        <PenStroke>
+                            <SolidFill>
+<Color>#006600</Color>
+<Opacity>100.0</Opacity>
+                            </SolidFill>
+                            <Width>0.2</Width>
+                        </PenStroke>
+                    </MarkGraphic>
+                    <Length>20.0</Length>
+                    <RelativeOrientation>normal</RelativeOrientation>
+                </GraphicStroke>
+        </MarkGraphic>
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>10.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-75.0</X>
+              <Y>-10.0</Y>
+            </Translate>
+          </Transform>
+	  <PerpendicularOffset>-0.5</PerpendicularOffset>
+          <PenStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">off</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">on</ExtensionParameter>
+            </Extension>
+            <SolidFill>
+              <Color>#000000</Color>
+              <Opacity>100.0</Opacity>
+            </SolidFill>
+	    <Width>0.1</Width>
+          </PenStroke>
+        </MarkGraphic>
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>10.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-75.0</X>
+              <Y>-10.0</Y>
+            </Translate>
+          </Transform>
+	  <PerpendicularOffset>0.5</PerpendicularOffset>
+          <PenStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">off</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">on</ExtensionParameter>
+            </Extension>
+            <SolidFill>
+              <Color>#000000</Color>
+              <Opacity>100.0</Opacity>
+            </SolidFill>
+	    <Width>0.1</Width>
+          </PenStroke>
+        </MarkGraphic>
+
+
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>10.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-45.0</X>
+              <Y>-10.0</Y>
+            </Translate>
+          </Transform>
+                <PerpendicularOffset>1.5</PerpendicularOffset>
+                <GraphicStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">on</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
+            </Extension>
+                    <MarkGraphic>
+                        <WellKnownName>CIRCLE</WellKnownName>
+                        <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
+                        <ViewBox>
+                            <Width>1.5</Width>
+                        </ViewBox>
+                        <PenStroke>
+                            <SolidFill>
+<Color>#006600</Color>
+<Opacity>100.0</Opacity>
+                            </SolidFill>
+                            <Width>0.2</Width>
+                        </PenStroke>
+                    </MarkGraphic>
+                    <Length>20.0</Length>
+                    <RelativeOrientation>normal</RelativeOrientation>
+                </GraphicStroke>
+        </MarkGraphic>
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>10.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-45.0</X>
+              <Y>-10.0</Y>
+            </Translate>
+          </Transform>
+                <PerpendicularOffset>-1.5</PerpendicularOffset>
+                <GraphicStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">on</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
+            </Extension>
+                    <MarkGraphic>
+                        <WellKnownName>CIRCLE</WellKnownName>
+                        <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
+                        <ViewBox>
+                            <Width>1.5</Width>
+                        </ViewBox>
+                        <PenStroke>
+                            <SolidFill>
+<Color>#006600</Color>
+<Opacity>100.0</Opacity>
+                            </SolidFill>
+                            <Width>0.2</Width>
+                        </PenStroke>
+                    </MarkGraphic>
+                    <Length>20.0</Length>
+                    <RelativeOrientation>normal</RelativeOrientation>
+                </GraphicStroke>
+        </MarkGraphic>
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>10.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-45.0</X>
+              <Y>-10.0</Y>
+            </Translate>
+          </Transform>
+	  <PerpendicularOffset>-0.5</PerpendicularOffset>
+          <PenStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">on</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
+            </Extension>
+            <SolidFill>
+              <Color>#000000</Color>
+              <Opacity>100.0</Opacity>
+            </SolidFill>
+	    <Width>0.1</Width>
+          </PenStroke>
+        </MarkGraphic>
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>10.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-45.0</X>
+              <Y>-10.0</Y>
+            </Translate>
+          </Transform>
+	  <PerpendicularOffset>0.5</PerpendicularOffset>
+          <PenStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">on</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
+            </Extension>
+            <SolidFill>
+              <Color>#000000</Color>
+              <Opacity>100.0</Opacity>
+            </SolidFill>
+	    <Width>0.1</Width>
+          </PenStroke>
+        </MarkGraphic>
+
+
+
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>10.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-15.0</X>
+              <Y>-10.0</Y>
+            </Translate>
+          </Transform>
+                <PerpendicularOffset>1.5</PerpendicularOffset>
+                <GraphicStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">on</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">on</ExtensionParameter>
+            </Extension>
+                    <MarkGraphic>
+                        <WellKnownName>CIRCLE</WellKnownName>
+                        <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
+                        <ViewBox>
+                            <Width>1.5</Width>
+                        </ViewBox>
+                        <PenStroke>
+                            <SolidFill>
+<Color>#006600</Color>
+<Opacity>100.0</Opacity>
+                            </SolidFill>
+                            <Width>0.2</Width>
+                        </PenStroke>
+                    </MarkGraphic>
+                    <Length>20.0</Length>
+                    <RelativeOrientation>normal</RelativeOrientation>
+                </GraphicStroke>
+        </MarkGraphic>
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>10.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-15.0</X>
+              <Y>-10.0</Y>
+            </Translate>
+          </Transform>
+                <PerpendicularOffset>-1.5</PerpendicularOffset>
+                <GraphicStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">on</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">on</ExtensionParameter>
+            </Extension>
+                    <MarkGraphic>
+                        <WellKnownName>CIRCLE</WellKnownName>
+                        <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
+                        <ViewBox>
+                            <Width>1.5</Width>
+                        </ViewBox>
+                        <PenStroke>
+                            <SolidFill>
+<Color>#006600</Color>
+<Opacity>100.0</Opacity>
+                            </SolidFill>
+                            <Width>0.2</Width>
+                        </PenStroke>
+                    </MarkGraphic>
+                    <Length>20.0</Length>
+                    <RelativeOrientation>normal</RelativeOrientation>
+                </GraphicStroke>
+        </MarkGraphic>
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>10.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-15.0</X>
+              <Y>-10.0</Y>
+            </Translate>
+          </Transform>
+	  <PerpendicularOffset>-0.5</PerpendicularOffset>
+          <PenStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">on</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">on</ExtensionParameter>
+            </Extension>
+            <SolidFill>
+              <Color>#000000</Color>
+              <Opacity>100.0</Opacity>
+            </SolidFill>
+	    <Width>0.1</Width>
+          </PenStroke>
+        </MarkGraphic>
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>10.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-15.0</X>
+              <Y>-10.0</Y>
+            </Translate>
+          </Transform>
+	  <PerpendicularOffset>0.5</PerpendicularOffset>
+          <PenStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">on</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">on</ExtensionParameter>
+            </Extension>
+            <SolidFill>
+              <Color>#000000</Color>
+              <Opacity>100.0</Opacity>
+            </SolidFill>
+	    <Width>0.1</Width>
+          </PenStroke>
+        </MarkGraphic>
+
+
+<!-- NEW LINE -->
+
+        <TextGraphic>
+          <Transform>
+            <Translate>
+              <X>-125.0</X>
+              <Y>10.0</Y>
+            </Translate>
+          </Transform>
+          <StyledLabel>
+            <LabelText>Compound</LabelText>
+            <Font/>
+          </StyledLabel>
+        </TextGraphic>
+
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>10.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-105.0</X>
+              <Y>10.0</Y>
+            </Translate>
+          </Transform>
+	  <PerpendicularOffset>2.0</PerpendicularOffset>
+
+	  <CompoundStroke>
+    	    <Extension>
+              <ExtensionParameter name="linearRapport">off</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
+            </Extension>
+
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>Circle</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+             <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>star</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>triangle</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>halfCircle</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>x</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>square</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+             <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>cross</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>cross</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	  </CompoundStroke>
+        </MarkGraphic>
+
+
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>10.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-105.0</X>
+              <Y>10.0</Y>
+            </Translate>
+          </Transform>
+
+	  <CompoundStroke>
+    	    <Extension>
+              <ExtensionParameter name="linearRapport">off</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
+            </Extension>
+
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>Circle</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+             <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>star</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>triangle</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>halfCircle</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>x</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>square</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+             <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>cross</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>cross</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	  </CompoundStroke>
+
+        </MarkGraphic>
+
+
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>10.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-75.0</X>
+              <Y>10.0</Y>
+            </Translate>
+          </Transform>
+
+	  <CompoundStroke>
+    	    <Extension>
+              <ExtensionParameter name="linearRapport">off</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">on</ExtensionParameter>
+            </Extension>
+
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>Circle</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+             <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>star</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>triangle</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>halfCircle</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>x</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>square</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+             <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>cross</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>cross</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	  </CompoundStroke>
+
+        </MarkGraphic>
+
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>10.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-75.0</X>
+              <Y>10.0</Y>
+            </Translate>
+          </Transform>
+	  <PerpendicularOffset>2.0</PerpendicularOffset>
+
+	  <CompoundStroke>
+    	    <Extension>
+              <ExtensionParameter name="linearRapport">off</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">on</ExtensionParameter>
+            </Extension>
+
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>Circle</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+             <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>star</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>triangle</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>halfCircle</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>x</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>square</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+             <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>cross</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>cross</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	  </CompoundStroke>
+
+        </MarkGraphic>
+
+
+
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>10.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-45.0</X>
+              <Y>10.0</Y>
+            </Translate>
+          </Transform>
+
+	  <CompoundStroke>
+    	    <Extension>
+              <ExtensionParameter name="linearRapport">on</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
+            </Extension>
+
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>Circle</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+             <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>star</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>triangle</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>halfCircle</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>x</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>square</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+             <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>cross</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>cross</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	  </CompoundStroke>
+
+        </MarkGraphic>
+
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>10.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-45.0</X>
+              <Y>10.0</Y>
+            </Translate>
+          </Transform>
+	  <PerpendicularOffset>2.0</PerpendicularOffset>
+
+	  <CompoundStroke>
+    	    <Extension>
+              <ExtensionParameter name="linearRapport">on</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
+            </Extension>
+
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>Circle</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+             <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>star</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>triangle</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>halfCircle</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>x</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>square</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+             <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>cross</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>cross</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	  </CompoundStroke>
+
+        </MarkGraphic>
+
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>10.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-15.0</X>
+              <Y>10.0</Y>
+            </Translate>
+          </Transform>
+
+	  <CompoundStroke>
+    	    <Extension>
+              <ExtensionParameter name="linearRapport">on</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">on</ExtensionParameter>
+            </Extension>
+
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>Circle</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+             <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>star</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>triangle</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>halfCircle</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>x</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>square</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+             <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>cross</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>cross</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	  </CompoundStroke>
+
+        </MarkGraphic>
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>10.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-15.0</X>
+              <Y>10.0</Y>
+            </Translate>
+          </Transform>
+	  <PerpendicularOffset>2.0</PerpendicularOffset>
+
+	  <CompoundStroke>
+    	    <Extension>
+              <ExtensionParameter name="linearRapport">on</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">on</ExtensionParameter>
+            </Extension>
+
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>Circle</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+             <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>star</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>triangle</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>halfCircle</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>x</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>square</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+             <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>cross</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	     <StrokeElement>
+	     	<GraphicStroke>
+		  <MarkGraphic>
+		     <WellKnownName>cross</WellKnownName> 
+		  </MarkGraphic>
+	     	</GraphicStroke>
+	     </StrokeElement>
+	  </CompoundStroke>
+
+        </MarkGraphic>
+
+
+<!-- NEW LINE -->
+
+        <TextGraphic>
+          <Transform>
+            <Translate>
+              <X>-125.0</X>
+              <Y>25.0</Y>
+            </Translate>
+          </Transform>
+          <StyledLabel>
+            <LabelText>GraphicStroke</LabelText>
+            <Font/>
+          </StyledLabel>
+        </TextGraphic>
+
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>5.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-105.0</X>
+              <Y>25.0</Y>
+            </Translate>
+          </Transform>
+	  <PerpendicularOffset>2.0</PerpendicularOffset>
+          <GraphicStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">off</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
+            </Extension>
+	    <MarkGraphic>
+	        <WellKnownName>square</WellKnownName> 
+		<ViewBox>
+		  <Height>5</Height>
+		  <Width>0.2</Width>
+		</ViewBox>
+		<Transform>
+		  <Translate>
+		    <Y>2.5</Y>
+		  </Translate>
+		  <Rotate>
+		    <Angle>45</Angle>
+		  </Rotate>
+		</Transform>
+
+		<SolidFill>
+		  <Color>#000000</Color>
+		</SolidFill>
+	    </MarkGraphic>
+	    <Length>2</Length>
+          </GraphicStroke>
+        </MarkGraphic>
+
+
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>5.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-105.0</X>
+              <Y>25.0</Y>
+            </Translate>
+          </Transform>
+          <GraphicStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">off</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
+            </Extension>
+	    <MarkGraphic />
+          </GraphicStroke>
+        </MarkGraphic>
+
+
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>5.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-75.0</X>
+              <Y>25.0</Y>
+            </Translate>
+          </Transform>
+          <GraphicStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">off</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">on</ExtensionParameter>
+            </Extension>
+	    <MarkGraphic />
+          </GraphicStroke>
+        </MarkGraphic>
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>5.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-75.0</X>
+              <Y>25.0</Y>
+            </Translate>
+          </Transform>
+	  <PerpendicularOffset>2.0</PerpendicularOffset>
+          <GraphicStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">off</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">on</ExtensionParameter>
+            </Extension>
+	    <MarkGraphic />
+          </GraphicStroke>
+        </MarkGraphic>
+
+
+
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>5.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-45.0</X>
+              <Y>25.0</Y>
+            </Translate>
+          </Transform>
+          <GraphicStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">on</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
+            </Extension>
+	    <MarkGraphic />
+          </GraphicStroke>
+        </MarkGraphic>
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>5.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-45.0</X>
+              <Y>25.0</Y>
+            </Translate>
+          </Transform>
+	  <PerpendicularOffset>2.0</PerpendicularOffset>
+          <GraphicStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">on</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
+            </Extension>
+	    <MarkGraphic />
+          </GraphicStroke>
+        </MarkGraphic>
+
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>5.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-15.0</X>
+              <Y>25.0</Y>
+            </Translate>
+          </Transform>
+          <GraphicStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">on</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">on</ExtensionParameter>
+            </Extension>
+	    <MarkGraphic />
+          </GraphicStroke>
+        </MarkGraphic>
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Height>5.0</Height>
+            <Width>20.0</Width>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-15.0</X>
+              <Y>25.0</Y>
+            </Translate>
+          </Transform>
+	  <PerpendicularOffset>2.0</PerpendicularOffset>
+          <GraphicStroke>
+            <Extension>
+              <ExtensionParameter name="linearRapport">on</ExtensionParameter>
+              <ExtensionParameter name="offsetRapport">on</ExtensionParameter>
+            </Extension>
+	    <MarkGraphic />
+          </GraphicStroke>
+        </MarkGraphic>
+
+
+     </CompositeGraphic>
+    </PointSymbolizer>
+  </Rule>
+</FeatureTypeStyle>

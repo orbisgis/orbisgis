@@ -37,8 +37,11 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
     private RelativeOrientation orientation;
 
     GraphicStroke(JAXBElement<GraphicStrokeType> elem) throws InvalidStyle {
-        super();
-        GraphicStrokeType gst = elem.getValue();
+        this(elem.getValue());
+    }
+
+    GraphicStroke(GraphicStrokeType gst) throws InvalidStyle {
+        super(gst);
 
         if (gst.getGraphic() != null) {
             this.setGraphicCollection(new GraphicCollection(gst.getGraphic(), this));
@@ -155,20 +158,17 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
             }
 
 
-            int shapeCounter = 1;
+            double gWidth = getGraphicWidth(sds, fid, mt);
             for (Shape shp : shapes) {
                 //System.out.println("Process shape n°" + shapeCounter + "/" + shapes.size());
-                shapeCounter++;
                 double segLength = getNaturalLength(sds, fid, shp, mt);
-
-                double gWidth = getGraphicWidth(sds, fid, mt);
 
                 //System.out.println("SegLength <-> gWidth: " + segLength + "<->" + gWidth);
                 double lineLength = ShapeHelper.getLineLength(shp);
+                System.out.println ("LineLength: " + lineLength);
 
                 RelativeOrientation rOrient = this.getRelativeOrientation();
                 ArrayList<Shape> segments = null;
-
 
                 double nbSegments;
 
@@ -195,15 +195,9 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
                     }
                 }
 
-                int i = 0;
                 if (segments != null) {
+                    System.out.println ("segs: " + segments.size());
                     for (Shape seg : segments) {
-                        //System.out.println("  DRAW GRAPHIC ON NEW SEG");
-                        /*if (i == nbToDraw) {
-                        break;
-                        }*/
-                        i++;
-
                         ArrayList<Shape> oSegs;
                         if (this.isOffsetRapport() && Math.abs(offset) > 0.0) {
                             oSegs = ShapeHelper.perpendicularOffset(seg, offset);

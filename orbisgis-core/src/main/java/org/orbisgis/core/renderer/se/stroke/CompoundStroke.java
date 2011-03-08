@@ -73,7 +73,8 @@ public final class CompoundStroke extends Stroke {
     ArrayList<StrokeAnnotationGraphic> annotations;
 
     public CompoundStroke(CompoundStrokeType s) throws InvalidStyle {
-        super();
+        super(s);
+
         if (s.getPreGap() != null) {
             setPreGap(SeParameterFactory.createRealParameter(s.getPreGap()));
         }
@@ -97,12 +98,6 @@ public final class CompoundStroke extends Stroke {
                 StrokeAnnotationGraphic sag = new StrokeAnnotationGraphic(sagt);
                 addStrokeAnnotationGraphic(sag);
             }
-        }
-
-        if (s.getUnitOfMeasure() != null) {
-            this.setUom(Uom.fromOgcURN(s.getUnitOfMeasure()));
-        } else {
-            this.setUom(null);
         }
     }
 

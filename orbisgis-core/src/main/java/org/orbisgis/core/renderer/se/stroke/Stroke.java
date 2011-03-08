@@ -14,7 +14,10 @@ import org.orbisgis.core.renderer.persistance.se.StrokeType;
 import org.orbisgis.core.map.MapTransform;
 
 import org.orbisgis.core.renderer.persistance.se.CompoundStrokeType;
+import org.orbisgis.core.renderer.persistance.se.ExtensionParameterType;
+import org.orbisgis.core.renderer.persistance.se.ExtensionType;
 import org.orbisgis.core.renderer.persistance.se.GraphicStrokeType;
+import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.PenStrokeType;
 import org.orbisgis.core.renderer.persistance.se.TextStrokeType;
 
@@ -38,13 +41,34 @@ public abstract class Stroke implements SymbolizerNode, UomNode {
 	private Uom uom;
     protected SymbolizerNode parent;
 
-    private boolean lengthRapport;
+    private boolean linearRapport;
     private boolean offsetRapport;
 
 
     protected Stroke(){
-        lengthRapport = true;
+        linearRapport = true;
         offsetRapport = true;
+    }
+
+    protected Stroke (StrokeType s){
+        this();
+
+        if (s.getUnitOfMeasure() != null){
+            this.setUom(Uom.fromOgcURN(s.getUnitOfMeasure()));
+        } else {
+            this.setUom(null);
+        }
+
+        if (s.getExtension() != null) {
+            for (ExtensionParameterType param : s.getExtension().getExtensionParameter()) {
+                if (param.getName().equalsIgnoreCase("linearRapport")) {
+                    linearRapport = param.getContent().equalsIgnoreCase("on");
+                } else if (param.getName().equalsIgnoreCase("offsetRapport")) {
+                    offsetRapport = param.getContent().equalsIgnoreCase("on");
+                }
+            }
+        }
+
     }
 
     /**
@@ -54,7 +78,6 @@ public abstract class Stroke implements SymbolizerNode, UomNode {
      * @return Java Stroke
      */
     public static Stroke createFromJAXBElement(JAXBElement<? extends StrokeType> s) throws InvalidStyle{
-        System.out.println ("Create stroke !");
         if (s.getDeclaredType() == PenStrokeType.class){
             return new PenStroke((JAXBElement<PenStrokeType>)s);
         } else if (s.getDeclaredType() == GraphicStrokeType.class){
@@ -70,7 +93,7 @@ public abstract class Stroke implements SymbolizerNode, UomNode {
     }
 
 	@Override
-    public void setUom(Uom uom) {
+    public final void setUom(Uom uom) {
         this.uom = uom;
     }
 
@@ -106,11 +129,11 @@ public abstract class Stroke implements SymbolizerNode, UomNode {
      * @return whether or not stroke elems lenght shall be scaled
      */
     public boolean isLengthRapport() {
-        return lengthRapport;
+        return linearRapport;
     }
 
     public void setLengthRapport(boolean lengthRapport) {
-        this.lengthRapport = lengthRapport;
+        this.linearRapport = lengthRapport;
     }
 
     /**
@@ -162,17 +185,34 @@ public abstract class Stroke implements SymbolizerNode, UomNode {
 
     public abstract JAXBElement<? extends StrokeType> getJAXBElement();
 
-    protected void setJAXBProperties(StrokeType s) {
-		/*
-        if (postGap != null) {
-            s.setPostGap(postGap.getJAXBParameterValueType());
-        }
-        if (preGap != null) {
-            s.setPreGap(preGap.getJAXBParameterValueType());
-        }*/
-        if (uom != null) {
+    protected final void setJAXBProperties(StrokeType s) {
+        if (getOwnUom() != null) {
             s.setUnitOfMeasure(uom.toURN());
         }
+
+        ObjectFactory of = new ObjectFactory();
+        ExtensionType exts = of.createExtensionType();
+
+        ExtensionParameterType linRap = of.createExtensionParameterType();
+        linRap.setName("linearRapport");
+        if (this.linearRapport){
+            linRap.setContent("on");
+        } else {
+            linRap.setContent("off");
+        }
+        exts.getExtensionParameter().add(linRap);
+
+        ExtensionParameterType offRap = of.createExtensionParameterType();
+        offRap.setName("offsetRapport");
+        if (this.offsetRapport){
+            offRap.setContent("on");
+        } else {
+            offRap.setContent("off");
+        }
+        exts.getExtensionParameter().add(offRap);
+
+
+        s.setExtension(exts);
     }
 
     public abstract double getNaturalLength(SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) throws ParameterException, IOException;

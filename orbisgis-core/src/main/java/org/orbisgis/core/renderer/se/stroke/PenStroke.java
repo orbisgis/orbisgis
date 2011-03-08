@@ -72,7 +72,6 @@ import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
  */
 public final class PenStroke extends Stroke implements FillNode {
 
-
     private static double DEFAULT_WIDTH_PX = 1.0;
     private static LineCap DEFAULT_CAP = LineCap.BUTT;
     private static LineJoin DEFAULT_JOIN = LineJoin.ROUND;
@@ -132,10 +131,12 @@ public final class PenStroke extends Stroke implements FillNode {
      * @param t
      */
     public PenStroke(PenStrokeType t) throws InvalidStyle {
-        this();
+        super(t);
 
         if (t.getFill() != null) {
             this.setFill(Fill.createFromJAXBElement(t.getFill()));
+        } else {
+            this.setFill(new SolidFill(Color.BLACK));
         }
 
         if (t.getDashArray() != null) {
@@ -167,18 +168,6 @@ public final class PenStroke extends Stroke implements FillNode {
                 Logger.getLogger(PenStroke.class.getName()).log(Level.SEVERE, "Could not convert line join", ex);
             }
         }
-
-        /*if (t.getOpacity() != null) {
-        this.setOpacity(SeParameterFactory.createRealParameter(t.getOpacity()));
-        }*/
-
-        if (t.getUnitOfMeasure() != null) {
-            this.setUom(Uom.fromOgcURN(t.getUnitOfMeasure()));
-        } else {
-            this.setUom(null);
-        }
-
-        //this.updateBasicStroke();
     }
 
     public PenStroke(JAXBElement<PenStrokeType> s) throws InvalidStyle {
@@ -479,12 +468,15 @@ public final class PenStroke extends Stroke implements FillNode {
                         i++;
                     }
 
+                    if (paint != null) {
+                        g2.setPaint(paint);
+                        g2.setStroke(bs);
+                    }
 
                     for (Shape seg : fragments) {
                         for (Shape oSeg : ShapeHelper.perpendicularOffset(seg, offset)) {
                             if (oSeg != null) {
-                                if (paint != null){
-                                    g2.setPaint(paint);
+                                if (paint != null) {
                                     g2.draw(oSeg);
                                 } else {
                                     Shape outline = bs.createStrokedShape(oSeg);
@@ -505,7 +497,7 @@ public final class PenStroke extends Stroke implements FillNode {
                         for (Shape oShp : ShapeHelper.perpendicularOffset(shp, offset)) {
                             if (oShp != null) {
 
-                                if (paint != null){
+                                if (paint != null) {
                                     //g2.setStroke(stroke);
                                     //g2.setPaint(paint);
                                     g2.draw(oShp);
@@ -516,7 +508,7 @@ public final class PenStroke extends Stroke implements FillNode {
                             }
                         }
                     } else {
-                        if (paint != null){
+                        if (paint != null) {
                             // Some fill type can be converted to a texture paint or a solid color
 
                             //g2.setStroke(stroke);
@@ -545,7 +537,7 @@ public final class PenStroke extends Stroke implements FillNode {
     //@Override
     public double getMinLength(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException {
         double length = 0;
-        if (dashArray != null){
+        if (dashArray != null) {
             String sDash = this.dashArray.getValue(sds, fid);
             String[] splitedDash = sDash.split(" ");
 
@@ -554,7 +546,7 @@ public final class PenStroke extends Stroke implements FillNode {
             }
         }
 
-        if (dashOffset != null){
+        if (dashOffset != null) {
             length += dashOffset.getValue(sds, fid);
         }
 

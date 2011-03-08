@@ -124,9 +124,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
         }
 
         if (t.getStroke() != null) {
-            System.out.println ("Will read stroke :");
             Stroke s = Stroke.createFromJAXBElement(t.getStroke());
-            System.out.println ("Stroke is " + s);
             this.setStroke(s);
         }
 
@@ -138,7 +136,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
             if (t.getOnlineResource() != null) {
                 this.setSource((MarkGraphicSource) new OnlineResource(t.getOnlineResource()));
             } else if (t.getInlineContent() != null) {
-                // TODO Not yer implemented
+                // TODO Not yet implemented
             }
 
             if (t.getMarkIndex() != null) {
@@ -276,7 +274,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
                     shp.getBounds().getHeight()).createTransformedShape(shp);
         }
 
-        if (this.fill == null && this.stroke == null){
+        if (this.getFill() == null && this.getStroke() == null){
             this.setFill(new SolidFill());
             this.setStroke(new PenStroke());
         }
@@ -360,7 +358,9 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
     public JAXBElement<MarkGraphicType> getJAXBElement() {
         MarkGraphicType m = new MarkGraphicType();
 
-        source.setJAXBSource(m);
+        if (source != null){
+            source.setJAXBSource(m);
+        }
 
         if (uom != null) {
             m.setUnitOfMeasure(uom.toURN());

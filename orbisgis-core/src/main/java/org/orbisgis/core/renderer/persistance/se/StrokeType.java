@@ -37,7 +37,8 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "StrokeType", propOrder = {
-    "unitOfMeasure"
+    "unitOfMeasure",
+    "extension"
 })
 @XmlSeeAlso({
     TextStrokeType.class,
@@ -50,6 +51,9 @@ public abstract class StrokeType {
     @XmlElement(name = "UnitOfMeasure")
     @XmlSchemaType(name = "anyURI")
     protected String unitOfMeasure;
+
+    @XmlElement(name = "Extension")
+    protected ExtensionType extension;
 
     /**
      * Gets the value of the unitOfMeasure property.
@@ -74,5 +78,29 @@ public abstract class StrokeType {
     public void setUnitOfMeasure(String value) {
         this.unitOfMeasure = value;
     }
+
+     /**
+      * Gets the value of the extension property.
+      *
+      * @return
+      *     possible object is
+      *     {@link ExtensionType }
+      *
+      */
+     public ExtensionType getExtension() {
+         return extension;
+     }
+
+     /**
+      * Sets the value of the extension property.
+      *
+      * @param value
+      *     allowed object is
+      *     {@link ExtensionType }
+      *
+      */
+     public void setExtension(ExtensionType value) {
+         this.extension = value;
+     }
 
 }
