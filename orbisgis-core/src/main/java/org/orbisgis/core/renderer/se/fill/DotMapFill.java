@@ -48,7 +48,8 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.RenderedImage;
 
 import java.io.IOException;
-import javax.media.jai.RenderableGraphics;
+import java.util.ArrayList;
+import java.util.Random;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.Services;
@@ -59,6 +60,7 @@ import org.orbisgis.core.renderer.persistance.se.DotMapFillType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.se.GraphicNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
@@ -67,7 +69,12 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 public final class DotMapFill extends Fill implements GraphicNode {
 
-    DotMapFill(JAXBElement<DotMapFillType> f) throws InvalidStyle {
+    public DotMapFill(){
+        rand = new Random();
+    }
+
+    public DotMapFill(JAXBElement<DotMapFillType> f) throws InvalidStyle {
+        this();
         DotMapFillType dmf = f.getValue();
 
         if (dmf.getGraphic() != null) {
@@ -136,20 +143,31 @@ public final class DotMapFill extends Fill implements GraphicNode {
             long fid, Shape shp, boolean selected, MapTransform mt)
             throws ParameterException, IOException {
 
-        Area area = new Area(shp);
         RenderedImage m = this.mark.getGraphic(sds, fid, selected, mt).createRendering(mt.getCurrentRenderContext());
         double perMark = this.quantityPerMark.getValue(sds, fid);
         double total = this.totalQuantity.getValue(sds, fid);
         int nb = (int) Math.round(total / perMark);
 
-        for (int i = 0; i < nb; i++) {
-            Double pos = findMarkPosition(area);
-            if (pos != null) {
-                g2.drawRenderedImage(m, AffineTransform.getTranslateInstance(pos.x, pos.y));
-            } else{
-                Services.getErrorManager().error("Could not find position for mark within area");
+        /*double offset = -1 * Math.sqrt(m.getWidth() * m.getWidth() + m.getHeight() * m.getHeight());
+        ArrayList<Shape> shapes = ShapeHelper.perpendicularOffset(shp, offset);
+
+        if (shapes != null && shapes.size() > 0) {
+            if (shapes.size() > 1) {
+                System.out.println("Several Shape ! Take first only");
             }
-        }
+*/
+            //Area area = new Area(shapes.get(0));
+            Area area = new Area(shp);
+            rand.setSeed((long) mt.getScaleDenominator());
+            for (int i = 0; i < nb; i++) {
+                Double pos = findMarkPosition(area);
+                if (pos != null) {
+                    g2.drawRenderedImage(m, AffineTransform.getTranslateInstance(pos.x, pos.y));
+                } else {
+                    Services.getErrorManager().error("Could not find position for mark within area");
+                }
+            }
+        //}
     }
 
     /**
@@ -161,8 +179,8 @@ public final class DotMapFill extends Fill implements GraphicNode {
         Rectangle2D bounds2D = area.getBounds2D();
 
         for (int i = 0; i < 100; i++) {
-            double x = Math.random() * bounds2D.getWidth() + bounds2D.getMinX();
-            double y = Math.random() * bounds2D.getHeight() + bounds2D.getMinY();
+            double x = rand.nextDouble() * bounds2D.getWidth() + bounds2D.getMinX();
+            double y = rand.nextDouble() * bounds2D.getHeight() + bounds2D.getMinY();
 
             if (area.contains(x, y)) {
                 return new Point2D.Double(x, y);
@@ -217,4 +235,6 @@ public final class DotMapFill extends Fill implements GraphicNode {
     private GraphicCollection mark;
     private RealParameter quantityPerMark;
     private RealParameter totalQuantity;
+
+    private Random rand;
 }
