@@ -5,11 +5,13 @@
 package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 
 import java.awt.Component;
+import java.awt.Graphics;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JPanel;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.renderer.classification.Range;
@@ -32,14 +34,21 @@ import org.orbisgis.core.sif.UIPanel;
 public class ChoroplethWizardPanel extends JPanel implements UIPanel {
 
 	private ILayer layer;
+        private JSE_ChoroplethDatas ChoroDatas;
 
 	/*
 	 * Create a Choropleth wizard panel
 	 * @param layer the layer to create a choropleth for
 	 */
-	public ChoroplethWizardPanel(ILayer layer) {
-		super();
-		this.layer = layer;
+	public ChoroplethWizardPanel(ILayer layer) throws DriverException {
+            super();
+            ChoroDatas = new JSE_ChoroplethDatas(layer);
+            ChoroDatas.readData();
+            Range[] ranges = ChoroDatas.getRange();
+            Value value = ChoroDatas.getValue();
+            this.add(new JSE_ChoroplethChartPanel(ranges,value));
+
+            this.layer = layer;
 	}
 
 	@Override
@@ -84,7 +93,6 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
 	 */
 	public Rule getRule() throws DriverException {
 
-
 		Metadata metadata = layer.getDataSource().getMetadata();
 
 		// Quick (and hugly) step to fetch the first numeric attribute
@@ -106,6 +114,7 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
 
 				rangesHelper.disecMean();
 				Range[] ranges = rangesHelper.getRanges();
+                                rangesHelper.getIntervals();
 
 				// Create a 4-class red-progression choropleth
 				Categorize2Color choropleth = new Categorize2Color(new ColorLiteral("#dd0000"), new ColorLiteral("#FFFF00"), field);
@@ -127,5 +136,5 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
 			}
 		}
 		return null;
-	}
+	}       
 }
