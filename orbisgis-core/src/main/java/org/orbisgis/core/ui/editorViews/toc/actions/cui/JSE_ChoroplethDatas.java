@@ -17,6 +17,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
+import org.orbisgis.core.renderer.classification.ClassificationUtils;
 import org.orbisgis.core.renderer.classification.Range;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
@@ -108,8 +109,6 @@ public class JSE_ChoroplethDatas implements UIPanel{
                 rangesHelper.disecQuantiles();
                 ranges = rangesHelper.getRanges();
 
-                Feature feature = new Feature(metadata);
-                value = feature.getValue(selectedField);
 
 
             } catch (ParameterException ex) {
@@ -229,6 +228,17 @@ public class JSE_ChoroplethDatas implements UIPanel{
                     Logger.getLogger(CreateChoroplethPlugIn.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+
+    public double[] getSortedData() throws ParameterException{
+        String selectedField = fields.get(fieldIndex); //Get field name
+        RealAttribute field = new RealAttribute(selectedField); //Get field
+        try{
+            return ClassificationUtils.getSortedValues(layer.getDataSource(), field);
+        }catch(DriverException ex){
+            Logger.getLogger(CreateChoroplethPlugIn.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
     public List<String> getAliases(){
