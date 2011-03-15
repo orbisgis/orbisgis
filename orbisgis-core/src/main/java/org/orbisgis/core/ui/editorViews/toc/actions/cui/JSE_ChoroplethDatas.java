@@ -55,8 +55,18 @@ public class JSE_ChoroplethDatas implements UIPanel{
         this.layer = layer;
         fields = new ArrayList<String>();
         aliases = new ArrayList<String>();
+        //BEGIN
+        //Temp variable data for testing
         fieldIndex = 0;
         numberOfClasses = 4;
+        beginColor = Color.LIGHT_GRAY;
+        endColor = Color.ORANGE;
+        classesColors = new Color[4];
+        classesColors[0] = Color.RED;
+        classesColors[1] = Color.YELLOW;
+        classesColors[2] = Color.BLUE;
+        classesColors[3] = Color.GREEN;
+        //END
         try{
             init();
         }catch(DriverException ex){
@@ -270,7 +280,7 @@ public class JSE_ChoroplethDatas implements UIPanel{
         return classesColors;
     }
 
-    public Color getClassColor(Color value, int index){
+    public Color getClassColor(int index){
         if(index < classesColors.length)
             return classesColors[index];
         return null;
@@ -292,7 +302,12 @@ public class JSE_ChoroplethDatas implements UIPanel{
     public List<JSE_Steps> getSteps(){
         return null;
     }
-     
+
+    public RealAttribute getField()
+    {
+        return new RealAttribute(fields.get(fieldIndex));
+    }
+
     public List<String> getFields(){
          return fields;
     }

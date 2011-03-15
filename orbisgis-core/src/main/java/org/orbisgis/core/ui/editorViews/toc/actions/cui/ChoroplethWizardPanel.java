@@ -4,17 +4,20 @@
  */
 package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 
+import java.awt.Color;
 import java.awt.Component;
-import java.awt.Graphics;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.renderer.classification.ClassificationUtils;
 import org.orbisgis.core.renderer.classification.Range;
 import org.orbisgis.core.renderer.classification.RangeMethod;
 import org.orbisgis.core.renderer.se.AreaSymbolizer;
@@ -36,6 +39,7 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
 
 	private ILayer layer;
         private JSE_ChoroplethDatas ChoroDatas;
+        private JButton btnApply;
 
 	/*
 	 * Create a Choropleth wizard panel
@@ -43,12 +47,17 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
 	 */
 	public ChoroplethWizardPanel(ILayer layer) throws DriverException {
             super();
+
+            btnApply = new JButton("Apply");
+            btnApply.setMargin(new Insets(0, 0, 0, 0));
+            btnApply.addActionListener(new btnApplyListener(this));
+            this.add(btnApply);
+            
             ChoroDatas = new JSE_ChoroplethDatas(layer);
             ChoroDatas.readData();
             Range[] ranges = ChoroDatas.getRange();
             Value value = ChoroDatas.getValue();
             this.add(new JSE_ChoroplethChartPanel(ranges,value));
-
             this.layer = layer;
 	}
 
@@ -88,13 +97,29 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
 		return UIFactory.getDefaultOkMessage();
 	}
 
+        private AreaSymbolizer draw(){
+            Categorize2Color choropleth = new Categorize2Color(new ColorLiteral(ChoroDatas.getBeginColor()), new ColorLiteral(ChoroDatas.getEndColor()), ChoroDatas.getField());
+            Range[] ranges = ChoroDatas.getRange();
+            for(int i= 0; i< ranges.length ; i++){
+                choropleth.addClass(new RealLiteral(ranges[i].getMaxRange()), new ColorLiteral(ChoroDatas.getClassColor(i)));
+            }
+
+            SolidFill choroplethFill = new SolidFill();
+            choroplethFill.setColor(choropleth);
+            AreaSymbolizer as = new AreaSymbolizer();
+            as.setFill(choroplethFill);
+            return as;
+        }
 	/*
 	 * Is called after the panel has been closed (and validated)
 	 * This method return a new se:Rule based on the wizard values
 	 */
 	public Rule getRule() throws DriverException {
-
-		Metadata metadata = layer.getDataSource().getMetadata();
+            Rule r = new Rule();
+            r.setName("Choropleth (" + ChoroDatas.getField().getColumnName() + ")");
+            r.getCompositeSymbolizer().addSymbolizer(this.draw());
+            return r;
+		/*Metadata metadata = layer.getDataSource().getMetadata();
 
 		// Quick (and hugly) step to fetch the first numeric attribute
 		String retainedFiledName = null;
@@ -117,19 +142,6 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
 				Range[] ranges = rangesHelper.getRanges();
                                 rangesHelper.getIntervals();
 
-                                //Get sorted values
-                                double[] valeurs = ClassificationUtils.getSortedValues(layer.getDataSource(), field);
-                                System.out.println("*******************************************************");
-                                System.out.println(field.getColumnName());
-                                for(int i= 0; i< valeurs.length;i++)
-                                    System.out.println("Value "+ i + ": " + valeurs[i]);
-
-                                System.out.println("*******************************************************");
-                                System.out.println("nbr ranges : " + ranges.length);
-                                for(int i= 0; i < ranges.length; i++)
-                                    System.out.println("Range : " + ranges[i].getMinRange() +"-"+ ranges[i].getMaxRange());
-                                System.out.println("*******************************************************");
-				// Create a 4-class red-progression choropleth
 				Categorize2Color choropleth = new Categorize2Color(new ColorLiteral("#dd0000"), new ColorLiteral("#FFFF00"), field);
 				choropleth.addClass(new RealLiteral(ranges[0].getMaxRange()), new ColorLiteral("#aa0000"));
 				choropleth.addClass(new RealLiteral(ranges[1].getMaxRange()), new ColorLiteral("#770000"));
@@ -147,7 +159,31 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
 				Logger.getLogger(ChoroplethWizardPanel.class.getName()).log(Level.SEVERE, null, ex);
 				return null;
 			}
+		}*/
+	}
+        private class btnApplyListener implements ActionListener {
+
+		private final ChoroplethWizardPanel metaPanel;
+
+		public btnApplyListener(ChoroplethWizardPanel metaPanel) {
+			super();
+			this.metaPanel = metaPanel;
 		}
-		return null;
-	}       
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+                    try{
+                        Rule r = this.metaPanel.getRule();
+                        if (r != null) {
+                            // Add the rule in the current featureTypeStyle
+                            layer.getFeatureTypeStyle().clear();
+                            layer.getFeatureTypeStyle().addRule(r);
+                            // And finally redraw the map
+                            layer.fireStyleChangedPublic();
+                        }
+                    }catch(DriverException ex){
+                        Logger.getLogger(ChoroplethWizardPanel.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+		}
+	}
 }
