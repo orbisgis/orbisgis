@@ -14,6 +14,7 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
+import org.orbisgis.core.renderer.classification.ClassificationUtils;
 import org.orbisgis.core.renderer.classification.Range;
 import org.orbisgis.core.renderer.classification.RangeMethod;
 import org.orbisgis.core.renderer.se.AreaSymbolizer;
@@ -116,9 +117,18 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
 				Range[] ranges = rangesHelper.getRanges();
                                 rangesHelper.getIntervals();
 
+                                //Get sorted values
+                                double[] valeurs = ClassificationUtils.getSortedValues(layer.getDataSource(), field);
+                                System.out.println("*******************************************************");
+                                System.out.println(field.getColumnName());
+                                for(int i= 0; i< valeurs.length;i++)
+                                    System.out.println("Value "+ i + ": " + valeurs[i]);
+
+                                System.out.println("*******************************************************");
                                 System.out.println("nbr ranges : " + ranges.length);
                                 for(int i= 0; i < ranges.length; i++)
                                     System.out.println("Range : " + ranges[i].getMinRange() +"-"+ ranges[i].getMaxRange());
+                                System.out.println("*******************************************************");
 				// Create a 4-class red-progression choropleth
 				Categorize2Color choropleth = new Categorize2Color(new ColorLiteral("#dd0000"), new ColorLiteral("#FFFF00"), field);
 				choropleth.addClass(new RealLiteral(ranges[0].getMaxRange()), new ColorLiteral("#aa0000"));

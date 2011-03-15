@@ -5,6 +5,7 @@
 
 package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.net.URL;
 import java.util.ArrayList;
@@ -37,9 +38,13 @@ public class JSE_ChoroplethDatas implements UIPanel{
     private Range[] ranges;
     private int numberOfClasses; //Number of classes to create
     private Value value;
-    private int colIndex;
     private StatisticMethod statIndex; //Selected statistic method
     private int defaultClassNumbers = 10; // The default maximum amount of classes which can be created
+
+    private Color beginColor;
+    private Color endColor;
+    private Color[] classesColors;
+    private List<String> aliases;
 
     //Statistic (Classification) methods enumeration
     public enum StatisticMethod {QUANTITY, AVERAGE, JENKS, MANUAL }
@@ -48,13 +53,34 @@ public class JSE_ChoroplethDatas implements UIPanel{
         super();
         this.layer = layer;
         fields = new ArrayList<String>();
-        colIndex=0;
+        aliases = new ArrayList<String>();
+        fieldIndex = 0;
         numberOfClasses = 4;
+        try{
+            init();
+        }catch(DriverException ex){
+             Logger.getLogger(CreateChoroplethPlugIn.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    private void init() throws DriverException
+    {
+        Metadata metadata = layer.getDataSource().getMetadata();
+        String retainedFiledName = null;
+        for (int i = 0; i < metadata.getFieldCount(); i++) {
+                int currentType = metadata.getFieldType(i).getTypeCode();
+
+                if (currentType == 4 || (currentType >= 16 && currentType <= 256)) {
+                        retainedFiledName = metadata.getFieldName(i);
+                        fields.add(retainedFiledName);
+                }
+        }
     }
 
     void readData() throws DriverException
     {
-        Metadata metadata = layer.getDataSource().getMetadata();
+        /*Metadata metadata = layer.getDataSource().getMetadata();
 
         // Quick (and hugly) step to fetch the first numeric attribute
         String retainedFiledName = null;
@@ -70,9 +96,9 @@ public class JSE_ChoroplethDatas implements UIPanel{
         for(int i=1;i<=fields.size();i++)
         {
             System.out.println("fields "+i+" "+fields.get(i-1));
-        }
+        }*/
         
-        String selectedField = fields.get(colIndex);
+        String selectedField = fields.get(fieldIndex);
 
 
         if (selectedField != null) {
@@ -205,30 +231,67 @@ public class JSE_ChoroplethDatas implements UIPanel{
         }
     }
 
-    /*
-     * @return StatisticMethod (classification) method
-     */
-    StatisticMethod getStatisticMethod(){
+    public List<String> getAliases(){
+        return aliases;
+    }
+
+    public void setAlias(String value, int index){
+        if(index < aliases.size())
+            aliases.set(index, value);
+    }
+
+    public Color getBeginColor(){
+        return beginColor;
+    }
+
+    public void setBeginColor(Color value){
+        beginColor = value;
+    }
+
+    public Color getEndColor(){
+        return endColor;
+    }
+
+    public void setEndColor(Color value){
+        endColor = value;
+    }
+
+    public Color[] getClassesColors(){
+        return classesColors;
+    }
+
+    public Color getClassColor(Color value, int index){
+        if(index < classesColors.length)
+            return classesColors[index];
+        return null;
+    }
+
+    public void setClassColor(Color value, int index){
+        if(index < classesColors.length)
+            classesColors[index] = value;
+    }
+
+    public StatisticMethod getStatisticMethod(){
         return statIndex;
     }
 
-    List<JSE_Datas> getDatas(){
+    public List<JSE_Datas> getDatas(){
         return null;
     }
 
-     List<JSE_Steps> getSteps(){
+    public List<JSE_Steps> getSteps(){
         return null;
     }
      
-    List<String> getFields(){
+    public List<String> getFields(){
          return fields;
     }
 
-    Range[] getRange(){
+    public Range[] getRange(){
          return ranges;
     }
 
-    Value getValue()
+    public Value getValue()
     {
         return value;
     }
