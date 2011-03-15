@@ -13,13 +13,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.gdms.data.feature.Feature;
 import org.gdms.data.values.Value;
-import org.orbisgis.core.renderer.classification.Range;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.renderer.classification.RangeMethod;
+import org.orbisgis.core.renderer.classification.Range;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
+import org.orbisgis.core.renderer.classification.RangeMethod;
 import org.orbisgis.core.sif.UIPanel;
 import org.orbisgis.core.ui.plugins.toc.CreateChoroplethPlugIn;
 
@@ -32,20 +32,24 @@ public class JSE_ChoroplethDatas implements UIPanel{
     private ILayer layer;
 
     private List<JSE_Datas> datas;
-
     private List<String> fields;
+    private int fieldIndex; //Selected Field Index
     private Range[] ranges;
+    private int numberOfClasses; //Number of classes to create
     private Value value;
     private int colIndex;
-    private int nbRange;
+    private StatisticMethod statIndex; //Selected statistic method
+    private int defaultClassNumbers = 10; // The default maximum amount of classes which can be created
+
+    //Statistic (Classification) methods enumeration
+    public enum StatisticMethod {QUANTITY, AVERAGE, JENKS, MANUAL }
 
     JSE_ChoroplethDatas(ILayer layer) {
-         super();
+        super();
         this.layer = layer;
         fields = new ArrayList<String>();
-
         colIndex=0;
-        nbRange=4;
+        numberOfClasses = 4;
     }
 
     void readData() throws DriverException
@@ -74,7 +78,7 @@ public class JSE_ChoroplethDatas implements UIPanel{
         if (selectedField != null) {
             try {
                 RealAttribute defaultField = new RealAttribute(selectedField);
-                RangeMethod rangesHelper = new RangeMethod(layer.getDataSource(), defaultField, nbRange);
+                RangeMethod rangesHelper = new RangeMethod(layer.getDataSource(), defaultField, numberOfClasses);
                 rangesHelper.disecQuantiles();
                 ranges = rangesHelper.getRanges();
 
@@ -86,6 +90,126 @@ public class JSE_ChoroplethDatas implements UIPanel{
                 Logger.getLogger(CreateChoroplethPlugIn.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+
+    /*
+     * Resets ranges
+     */
+    private void resetRanges() throws DriverException{
+        String selectedField = fields.get(fieldIndex); //Get field name
+        RealAttribute field = new RealAttribute(selectedField); //Get field
+        //Create a RangeMethod helper
+        RangeMethod rangesHelper = new RangeMethod(layer.getDataSource(), field, numberOfClasses);
+
+        //Calculate ranges based on the statIndex
+        if (selectedField != null) {
+            try {
+                switch(statIndex){
+                    case AVERAGE:
+                       rangesHelper.disecMean();
+                       ranges = rangesHelper.getRanges();
+                       break;
+                    case JENKS:
+                        rangesHelper.disecNaturalBreaks();
+                        ranges = rangesHelper.getRanges();
+                      break;
+                    case QUANTITY:
+                        rangesHelper.disecQuantiles();
+                        ranges = rangesHelper.getRanges();
+                        break;
+                    case MANUAL:
+                        rangesHelper.disecQuantiles();
+                        ranges = rangesHelper.getRanges();
+                        break;
+                }
+            } catch (ParameterException ex) {
+                Logger.getLogger(CreateChoroplethPlugIn.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }    
+
+    /*
+     * @return an int[] containing the numbers of classes
+     * which are allowed to be created.
+     *
+     * Example: AVERAGE only supports 2, 4 or 8 classes
+     * If not limit, the amount of classes that can be
+     * created are defined in the variable "defaultClassNumbers"
+     */
+    public int[] getNumberOfClassesAllowed(){
+        switch(statIndex){
+                case AVERAGE: //2, 4 and 8 only alowed
+                    return new int[]{2, 4, 8};
+                default:
+                    int[] nonRestricted = new int[defaultClassNumbers];
+                    for(int i= 0; i < defaultClassNumbers; i++)
+                        nonRestricted[i] = i + 1;
+                    return nonRestricted;
+            }
+    }
+
+    /*
+     * Set the number of classes to create in classification
+     * Note: AVERAGE will only accept 2, 4 or 8 classes
+     */
+    public void setNbrClasses(int NbrClasses){
+        if(NbrClasses != numberOfClasses) //Check for change before updating
+        {
+            //Check for restrictions
+            switch(statIndex){
+                case AVERAGE: //2, 4 and 8 only alowed
+                    if(NbrClasses == 2 || NbrClasses == 4 || NbrClasses == 8)
+                        numberOfClasses = NbrClasses;
+                    break;
+                default:
+                    numberOfClasses = NbrClasses;
+                    break;
+            }
+            try{
+                 resetRanges(); //Refresh/update ranges
+            }catch (DriverException ex) {
+                 Logger.getLogger(CreateChoroplethPlugIn.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
+    /*
+     * Set the field index (data field)
+     */
+    public void setFieldIndex(int FieldIndex){
+        if(FieldIndex != fieldIndex) //Check for change
+        {
+            //Set the field index
+            fieldIndex = FieldIndex;
+            try{
+                resetRanges(); //Reset and recalculate ranges
+            }catch (DriverException ex) {
+                    Logger.getLogger(CreateChoroplethPlugIn.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
+    /*
+     * Set the Statistic (classification) method
+     */
+    public void setStatisticMethod(StatisticMethod StatisticIndex){
+        if(StatisticIndex != statIndex) //Check for change
+        {
+            //Set the statistic method
+            statIndex = StatisticIndex;
+            try{
+                resetRanges(); //Reset and recalculate ranges
+            }catch (DriverException ex) {
+                    Logger.getLogger(CreateChoroplethPlugIn.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
+    /*
+     * @return StatisticMethod (classification) method
+     */
+    StatisticMethod getStatisticMethod(){
+        return statIndex;
     }
 
     List<JSE_Datas> getDatas(){

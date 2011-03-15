@@ -116,6 +116,9 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
 				Range[] ranges = rangesHelper.getRanges();
                                 rangesHelper.getIntervals();
 
+                                System.out.println("nbr ranges : " + ranges.length);
+                                for(int i= 0; i < ranges.length; i++)
+                                    System.out.println("Range : " + ranges[i].getMinRange() +"-"+ ranges[i].getMaxRange());
 				// Create a 4-class red-progression choropleth
 				Categorize2Color choropleth = new Categorize2Color(new ColorLiteral("#dd0000"), new ColorLiteral("#FFFF00"), field);
 				choropleth.addClass(new RealLiteral(ranges[0].getMaxRange()), new ColorLiteral("#aa0000"));
