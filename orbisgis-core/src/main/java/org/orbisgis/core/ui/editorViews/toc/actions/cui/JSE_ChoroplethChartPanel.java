@@ -60,7 +60,7 @@ class JSE_ChoroplethChartPanel extends JPanel {
         DefaultCategoryDataset data = refreshData(ranges, values);
 
         // create a chart...
-        JFreeChart chart = ChartFactory.createBarChart(
+        JFreeChart chart = ChartFactory.createBarChart3D(
                 "Sample Bar Chart", "X", "Y", data, PlotOrientation.VERTICAL,
                 true, true, false);
 
@@ -93,7 +93,7 @@ class JSE_ChoroplethChartPanel extends JPanel {
             for (int j = 1; j <= ranges.length; j++) {
                 range = ranges[j - 1];
                 if (value > range.getMinRange() && value <= range.getMaxRange()) {
-                    data.setValue(value, new Integer(j), new Integer(i));
+                    data.setValue(value, new Integer(j), new Integer(i-1));
                 }
             }
         }
@@ -122,11 +122,11 @@ class JSE_ChoroplethChartPanel extends JPanel {
     public static void drawAxis(JFreeChart chPanel, double[] values, Range[] ranges, Color[] colors) {
         CategoryPlot plot = (CategoryPlot) chPanel.getPlot();
         int nbRange = 0;
-        int ind = 1;
+        int ind = 0;
         while (nbRange < ranges.length - 1) {
-            for (int i = ind; i <= values.length; i++) {
-                if (values[i - 1] > ranges[nbRange].getMaxRange()) {
-                    final CategoryMarker start = new CategoryMarker(i - 1);
+            for (int i = ind; i < values.length; i++) {
+                if (values[i] > ranges[nbRange].getMaxRange()) {
+                    final CategoryMarker start = new CategoryMarker(i);
                     start.setPaint(colors[nbRange]);
                     start.setLabel(Integer.toString(nbRange+1));
                     start.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
@@ -137,6 +137,7 @@ class JSE_ChoroplethChartPanel extends JPanel {
                     ind = i;
                 }
             }
+            ind--;
         }
     }
 

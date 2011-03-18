@@ -57,14 +57,17 @@ public class JSE_ChoroplethDatas implements UIPanel {
         //BEGIN
         //Temp variable data for testing
         fieldIndex = 0;
-        numberOfClasses = 4;
+        numberOfClasses = 7;
         beginColor = Color.LIGHT_GRAY;
         endColor = Color.ORANGE;
-        classesColors = new Color[4];
+        classesColors = new Color[7];
         classesColors[0] = Color.RED;
         classesColors[1] = Color.YELLOW;
         classesColors[2] = Color.BLUE;
         classesColors[3] = Color.GREEN;
+        classesColors[4] = Color.ORANGE;
+        classesColors[5] = Color.BLACK;
+        classesColors[6] = Color.CYAN;
         //END
         try {
             init();

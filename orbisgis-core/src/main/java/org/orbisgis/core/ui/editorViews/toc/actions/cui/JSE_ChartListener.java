@@ -92,6 +92,7 @@ public class JSE_ChartListener implements MouseMotionListener, MouseListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
+
         selected=-1;
         Range[] ranges = ChoroDatas.getRange();
         for (int i = 1; i <= ranges.length; i++) {
