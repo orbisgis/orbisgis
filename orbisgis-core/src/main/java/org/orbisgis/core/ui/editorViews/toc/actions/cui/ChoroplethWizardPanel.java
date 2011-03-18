@@ -55,9 +55,7 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
             
             ChoroDatas = new JSE_ChoroplethDatas(layer);
             ChoroDatas.readData();
-            Range[] ranges = ChoroDatas.getRange();
-            Value value = ChoroDatas.getValue();
-            this.add(new JSE_ChoroplethChartPanel(ranges,value));
+            this.add(new JSE_ChoroplethChartPanel(ChoroDatas));
             this.layer = layer;
 	}
 

@@ -115,6 +115,16 @@
 	        <artifactId>autocomplete</artifactId>
 	        <version>1.4.1</version>
 	    </dependency>
+	 <dependency>
+	  <groupId>jfreechart</groupId>
+	  <artifactId>jfreechart</artifactId>
+	  <version>1.0.0</version>
+	 </dependency>
+	 <dependency>
+	  <groupId>jfree</groupId>
+	  <artifactId>jcommon</artifactId>
+	  <version>1.0.15</version>
+	 </dependency>
 	</dependencies>
 	<build>
 		<plugins>
