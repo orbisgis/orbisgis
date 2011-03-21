@@ -8,6 +8,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.EventListener;
+import java.util.EventObject;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,7 +30,7 @@ import org.orbisgis.core.ui.plugins.toc.CreateChoroplethPlugIn;
  *
  * @author sennj
  */
-public class JSE_ChoroplethDatas implements UIPanel {
+public class JSE_ChoroplethDatas{
 
     private ILayer layer;
     private List<String> fields;
@@ -46,7 +48,7 @@ public class JSE_ChoroplethDatas implements UIPanel {
     //Statistic (Classification) methods enumeration
     public enum StatisticMethod {
 
-        QUANTITY, AVERAGE, JENKS, MANUAL
+        QUANTILES, AVERAGE, JENKS, MANUAL
     }
 
     JSE_ChoroplethDatas(ILayer layer) {
@@ -56,6 +58,7 @@ public class JSE_ChoroplethDatas implements UIPanel {
         aliases = new ArrayList<String>();
         //BEGIN
         //Temp variable data for testing
+        statIndex = StatisticMethod.QUANTILES;
         fieldIndex = 0;
         numberOfClasses = 7;
         beginColor = Color.LIGHT_GRAY;
@@ -151,7 +154,7 @@ public class JSE_ChoroplethDatas implements UIPanel {
                         rangesHelper.disecNaturalBreaks();
                         ranges = rangesHelper.getRanges();
                         break;
-                    case QUANTITY:
+                    case QUANTILES:
                         rangesHelper.disecQuantiles();
                         ranges = rangesHelper.getRanges();
                         break;
@@ -174,8 +177,8 @@ public class JSE_ChoroplethDatas implements UIPanel {
      * If not limit, the amount of classes that can be
      * created are defined in the variable "defaultClassNumbers"
      */
-    public int[] getNumberOfClassesAllowed() {
-        switch (statIndex) {
+    public int[] getNumberOfClassesAllowed(StatisticMethod statmethod) {
+        switch (statmethod) {
             case AVERAGE: //2, 4 and 8 only alowed
                 return new int[]{2, 4, 8};
             default:
@@ -185,6 +188,15 @@ public class JSE_ChoroplethDatas implements UIPanel {
                 }
                 return nonRestricted;
         }
+    }
+
+    public Boolean isAllowed(int nbrOfClasses, StatisticMethod statmethod)
+    {
+        int[] values = getNumberOfClassesAllowed(statmethod);
+        for(int i = 0; i < values.length; i++)
+            if(values[i] == nbrOfClasses)
+                return true;
+        return false;
     }
 
     /*
@@ -207,6 +219,7 @@ public class JSE_ChoroplethDatas implements UIPanel {
             }
             try {
                 resetRanges(); //Refresh/update ranges
+                fireMyEvent(new DataChanged(this));
             } catch (DriverException ex) {
                 Logger.getLogger(CreateChoroplethPlugIn.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -223,6 +236,7 @@ public class JSE_ChoroplethDatas implements UIPanel {
             fieldIndex = FieldIndex;
             try {
                 resetRanges(); //Reset and recalculate ranges
+                fireMyEvent(new DataChanged(this));
             } catch (DriverException ex) {
                 Logger.getLogger(CreateChoroplethPlugIn.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -239,6 +253,7 @@ public class JSE_ChoroplethDatas implements UIPanel {
             statIndex = StatisticIndex;
             try {
                 resetRanges(); //Reset and recalculate ranges
+                fireMyEvent(new DataChanged(this));
             } catch (DriverException ex) {
                 Logger.getLogger(CreateChoroplethPlugIn.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -261,8 +276,10 @@ public class JSE_ChoroplethDatas implements UIPanel {
     }
 
     public void setAlias(String value, int index) {
-        if (index < aliases.size()) {
+        if (index < aliases.size())
+        {
             aliases.set(index, value);
+            fireMyEvent(new DataChanged(this));
         }
     }
 
@@ -272,6 +289,7 @@ public class JSE_ChoroplethDatas implements UIPanel {
 
     public void setBeginColor(Color value) {
         beginColor = value;
+        fireMyEvent(new DataChanged(this));
     }
 
     public Color getEndColor() {
@@ -280,6 +298,7 @@ public class JSE_ChoroplethDatas implements UIPanel {
 
     public void setEndColor(Color value) {
         endColor = value;
+        fireMyEvent(new DataChanged(this));
     }
 
     public Color[] getClassesColors() {
@@ -294,8 +313,10 @@ public class JSE_ChoroplethDatas implements UIPanel {
     }
 
     public void setClassColor(Color value, int index) {
-        if (index < classesColors.length) {
+        if (index < classesColors.length)
+        {
             classesColors[index] = value;
+            fireMyEvent(new DataChanged(this));
         }
     }
 
@@ -315,46 +336,52 @@ public class JSE_ChoroplethDatas implements UIPanel {
         return ranges;
     }
 
-    public void setRange(Range[] ranges) {
+    public void setRange(Range[] ranges)
+    {
         this.ranges = ranges;
+        fireMyEvent(new DataChanged(this));
     }
 
     public Value getValue() {
         return value;
     }
 
-    @Override
-    public URL getIconURL() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    // Declare the event. It must extend EventObject.
+    public class DataChanged extends EventObject {
+        public DataChanged(Object source) {
+            super(source);
+        }
     }
 
-    @Override
-    public String getTitle() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    // Declare the listener class. It must extend EventListener.
+    // A class must implement this interface to get DataChanged.
+    public interface DataChangedListener extends EventListener {
+        public void dataChangedOccurred(DataChanged evt);
     }
 
-    @Override
-    public String initialize() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    // Create the listener list
+    protected javax.swing.event.EventListenerList listenerList = new javax.swing.event.EventListenerList();
+
+    // This methods allows classes to register for DataChanged
+    public void addDataChangedListener(DataChangedListener listener) {
+        listenerList.add(DataChangedListener.class, listener);
     }
 
-    @Override
-    public String postProcess() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    // This methods allows classes to unregister for DataChanged
+    public void removeDataChangedListener(DataChangedListener listener) {
+        listenerList.remove(DataChangedListener.class, listener);
     }
 
-    @Override
-    public String validateInput() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    // This private class is used to fire DataChanged
+    void fireMyEvent(DataChanged evt) {
+        Object[] listeners = listenerList.getListenerList();
+        // Each listener occupies two elements - the first is the listener class
+        // and the second is the listener instance
+        for (int i=0; i<listeners.length; i+=2) {
+            if (listeners[i]==DataChangedListener.class) {
+                ((DataChangedListener)listeners[i+1]).dataChangedOccurred(evt);
+            }
+        }
     }
 
-    @Override
-    public Component getComponent() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public String getInfoText() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
 }

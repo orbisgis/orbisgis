@@ -4,16 +4,36 @@
  */
 package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
+import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JColorChooser;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JSeparator;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
@@ -30,6 +50,8 @@ import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.sif.UIPanel;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.JSE_ChoroplethDatas.DataChanged;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.JSE_ChoroplethDatas.DataChangedListener;
 
 /**
  *
@@ -41,21 +63,139 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
         private JSE_ChoroplethDatas ChoroDatas;
         private JButton btnApply;
 
+        private JPanel topPanel;
+        //Top panel controls
+        private JLabel lblField;
+        private JComboBox cbxField;
+        private JLabel lblNbrOfClasses;
+        private JComboBox cbxNbrOfClasses;
+        private JLabel lblStatMethod;
+        private JRadioButton rdbxStatMethodQuantiles;
+        private JRadioButton rdbxStatMethodMean;
+        private JRadioButton rdbxStatMethodJenks;
+        private JRadioButton rdbxStatMethodManual;
+        private JLabel lblColorBegin;
+        private JLabel lblColorEnd;
+        private JPanel pnlColorBegin;
+        private JPanel pnlColorEnd;
+        private JPanel centerPanel;
+        private JPanel bottomPanel;
 	/*
 	 * Create a Choropleth wizard panel
 	 * @param layer the layer to create a choropleth for
 	 */
 	public ChoroplethWizardPanel(ILayer layer) throws DriverException {
             super();
+            this.setLayout(new BorderLayout());
+            this.setSize(800, 600);
+
+            ChoroDatas = new JSE_ChoroplethDatas(layer);
+            ChoroDatas.readData();
+            // Register for MyEvents from c
+            ChoroDatas.addDataChangedListener(new DataChangedListener()
+            {
+                @Override
+                public void dataChangedOccurred(DataChanged evt)
+                {
+                    // DataChanged was fired
+                    System.out.println("DATA CHANGED");
+                }
+            });
+
+            /* TopPanel (NORTH) of dialog */
+            topPanel = new JPanel();topPanel.setBackground(Color.red);
+            topPanel.setLayout((new BorderLayout()));
+
+            lblField = new JLabel("Field");
+            cbxField = new JComboBox();
+            cbxField.addActionListener (new ActionListener () {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    ChoroDatas.setFieldIndex(cbxField.getSelectedIndex());
+                }
+            });
+            lblNbrOfClasses = new JLabel("Number Of Classes");
+            cbxNbrOfClasses = new JComboBox();
+            cbxNbrOfClasses.addActionListener (new ActionListener () {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if(cbxNbrOfClasses.getSelectedItem() != null)
+                        ChoroDatas.setNbrClasses(Integer.parseInt(cbxNbrOfClasses.getSelectedItem().toString()));
+                }
+            });
+
+            lblStatMethod = new JLabel("Statistic Method");
+            rdbxStatMethodQuantiles = new JRadioButton("Quantile");rdbxStatMethodQuantiles.setSelected(true);
+            rdbxStatMethodMean = new JRadioButton("Mean");
+            rdbxStatMethodJenks = new JRadioButton("Jenks");
+            rdbxStatMethodManual = new JRadioButton("Manual");
+            //Add radio button listener
+            RadioListener rListener = new RadioListener();
+            rdbxStatMethodQuantiles.addItemListener(rListener);
+            rdbxStatMethodMean.addItemListener(rListener);
+            rdbxStatMethodJenks.addItemListener(rListener);
+            rdbxStatMethodManual.addItemListener(rListener);
+            //Group the radio buttons.
+            ButtonGroup group = new ButtonGroup();
+            group.add(rdbxStatMethodQuantiles);
+            group.add(rdbxStatMethodMean);
+            group.add(rdbxStatMethodJenks);
+            group.add(rdbxStatMethodManual);
+
+            pnlColorBegin = new JPanel(); pnlColorBegin.setName("COLOR_BEGIN");
+            pnlColorBegin.addMouseListener(new MouseAdapter() { 
+                @Override
+                public void mousePressed(MouseEvent me) { 
+                changeColor(pnlColorBegin);
+            }});
+            pnlColorEnd = new JPanel(); pnlColorEnd.setName("COLOR_END");
+            pnlColorEnd.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent me) {
+                changeColor(pnlColorEnd);
+            }});
+            lblColorBegin = new JLabel("Starting Color");
+            lblColorEnd = new JLabel("Ending Color");
+            JPanel north = new JPanel();north.setLayout(new FlowLayout());
+            JPanel west = new JPanel();west.setLayout(new FlowLayout());
+            JPanel east = new JPanel();east.setLayout(new FlowLayout());
+            topPanel.add(north, BorderLayout.NORTH);
+            topPanel.add(west, BorderLayout.WEST);
+            topPanel.add(east, BorderLayout.EAST);
+            
+            north.add(lblField);
+            north.add(cbxField);
+            north.add(lblNbrOfClasses);
+            north.add(cbxNbrOfClasses);
+            west.add(lblStatMethod);
+            west.add(rdbxStatMethodQuantiles);
+            west.add(rdbxStatMethodMean);
+            west.add(rdbxStatMethodJenks);
+            west.add(rdbxStatMethodManual);
+            east.add(pnlColorBegin);east.add(lblColorBegin);
+            east.add(pnlColorEnd);east.add(lblColorEnd);
+
+            centerPanel = new JPanel();centerPanel.setBackground(Color.green);centerPanel.setSize(800,180);
+            bottomPanel = new JPanel();bottomPanel.setBackground(Color.blue);bottomPanel.setSize(800,200);
+            
+            this.add(topPanel, BorderLayout.NORTH);
+            this.add(centerPanel, BorderLayout.CENTER);
+            this.add(bottomPanel, BorderLayout.SOUTH);
 
             btnApply = new JButton("Apply");
             btnApply.setMargin(new Insets(0, 0, 0, 0));
             btnApply.addActionListener(new btnApplyListener(this));
-            this.add(btnApply);
-            
-            ChoroDatas = new JSE_ChoroplethDatas(layer);
-            ChoroDatas.readData();
-            this.add(new JSE_ChoroplethChartPanel(ChoroDatas));
+
+            pnlColorBegin.setBackground(ChoroDatas.getBeginColor());
+            pnlColorEnd.setBackground(ChoroDatas.getEndColor());
+            for(int i = 0; i < ChoroDatas.getFields().size(); i++)
+                cbxField.addItem(ChoroDatas.getFields().get(i));
+            if(cbxField.getItemCount() > 0)
+                cbxField.setSelectedIndex(0);
+            updateComboBoxNbrClasses(ChoroDatas.getStatisticMethod());
+
+            //bottomPanel.add(new JSE_ChoroplethChartPanel(ChoroDatas));
+            bottomPanel.add(btnApply);
             this.layer = layer;
 	}
 
@@ -71,6 +211,12 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
 
 	@Override
 	public String initialize() {
+                System.out.println("***initialize***");
+                Container parent = this.getParent();
+                if(parent != null)
+                {
+                    
+                }
 		return null;
 	}
 
@@ -101,13 +247,29 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
             for(int i= 0; i< ranges.length ; i++){
                 choropleth.addClass(new RealLiteral(ranges[i].getMaxRange()), new ColorLiteral(ChoroDatas.getClassColor(i)));
             }
-
             SolidFill choroplethFill = new SolidFill();
             choroplethFill.setColor(choropleth);
             AreaSymbolizer as = new AreaSymbolizer();
             as.setFill(choroplethFill);
             return as;
         }
+
+        private void changeColor(JPanel sender)
+        {
+            if(sender.getName().equals("COLOR_BEGIN"))
+            {
+                ChoroDatas.setBeginColor(JColorChooser.showDialog(sender, "Pick a begin color", ChoroDatas.getBeginColor()));
+                pnlColorBegin.setBackground(ChoroDatas.getBeginColor());
+                pnlColorBegin.invalidate();
+            }
+            else
+            {
+                ChoroDatas.setBeginColor(JColorChooser.showDialog(sender, "Pick an end color", ChoroDatas.getEndColor()));
+                pnlColorEnd.setBackground(ChoroDatas.getEndColor());
+                pnlColorEnd.invalidate();
+            }
+        }
+
 	/*
 	 * Is called after the panel has been closed (and validated)
 	 * This method return a new se:Rule based on the wizard values
@@ -159,6 +321,56 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
 			}
 		}*/
 	}
+
+        private void updateComboBoxNbrClasses(JSE_ChoroplethDatas.StatisticMethod statMethod)
+        {
+            cbxNbrOfClasses.removeAllItems();
+            int[] allowed = ChoroDatas.getNumberOfClassesAllowed(statMethod);
+            for(int i = 0; i < allowed.length; i++)
+                cbxNbrOfClasses.addItem(allowed[i]);
+            if(cbxNbrOfClasses.getItemCount() > 0)
+                cbxNbrOfClasses.setSelectedIndex(0);
+            ChoroDatas.setNbrClasses(Integer.parseInt(cbxNbrOfClasses.getSelectedItem().toString()));
+        }
+
+        class RadioListener implements ItemListener
+        {
+
+            @Override
+            public void itemStateChanged(ItemEvent e)
+            {
+                if(e.getItem().equals(rdbxStatMethodQuantiles) && e.getStateChange() == ItemEvent.SELECTED)
+                {
+                    //System.out.println("Quantiles Selected");
+                    if(!ChoroDatas.isAllowed(Integer.parseInt(cbxNbrOfClasses.getSelectedItem().toString()), JSE_ChoroplethDatas.StatisticMethod.QUANTILES))
+                        updateComboBoxNbrClasses(JSE_ChoroplethDatas.StatisticMethod.QUANTILES);
+                    ChoroDatas.setStatisticMethod(JSE_ChoroplethDatas.StatisticMethod.QUANTILES);
+                }
+                else if(e.getItem().equals(rdbxStatMethodMean) && e.getStateChange() == ItemEvent.SELECTED)
+                {
+                    //System.out.println("Mean Selected");
+                    if(!ChoroDatas.isAllowed(Integer.parseInt(cbxNbrOfClasses.getSelectedItem().toString()), JSE_ChoroplethDatas.StatisticMethod.AVERAGE))
+                        updateComboBoxNbrClasses(JSE_ChoroplethDatas.StatisticMethod.AVERAGE);
+                    ChoroDatas.setStatisticMethod(JSE_ChoroplethDatas.StatisticMethod.AVERAGE);
+                }
+                if(e.getItem().equals(rdbxStatMethodJenks) && e.getStateChange() == ItemEvent.SELECTED)
+                {
+                    //System.out.println("Jenks Selected");
+                    if(!ChoroDatas.isAllowed(Integer.parseInt(cbxNbrOfClasses.getSelectedItem().toString()), JSE_ChoroplethDatas.StatisticMethod.JENKS))
+                        updateComboBoxNbrClasses(JSE_ChoroplethDatas.StatisticMethod.JENKS);
+                    ChoroDatas.setStatisticMethod(JSE_ChoroplethDatas.StatisticMethod.JENKS);
+                }
+                if(e.getItem().equals(rdbxStatMethodManual) && e.getStateChange() == ItemEvent.SELECTED)
+                {
+                    //System.out.println("Manual Selected");
+                    if(!ChoroDatas.isAllowed(Integer.parseInt(cbxNbrOfClasses.getSelectedItem().toString()), JSE_ChoroplethDatas.StatisticMethod.MANUAL))
+                        updateComboBoxNbrClasses(JSE_ChoroplethDatas.StatisticMethod.MANUAL);
+                    ChoroDatas.setStatisticMethod(JSE_ChoroplethDatas.StatisticMethod.MANUAL);
+                }
+            }
+        }
+
+
         private class btnApplyListener implements ActionListener {
 
 		private final ChoroplethWizardPanel metaPanel;
