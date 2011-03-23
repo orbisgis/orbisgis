@@ -18,6 +18,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.CategoryMarker;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.ui.RectangleAnchor;
@@ -33,14 +34,19 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.JSE_ChoroplethDatas.Stat
  */
 class JSE_ChoroplethChartPanel extends JPanel {
 
+    private JSE_ChoroplethDatas ChoroDatas;
+    private JFreeChart chart;
+    private ChartPanel chPanel;
     private JSE_ChartListener chartLis;
+
 
     JSE_ChoroplethChartPanel(JSE_ChoroplethDatas ChoroDatas) {
         super();
-        this.add(initDraw(ChoroDatas));
+        this.ChoroDatas=ChoroDatas;
+        this.add(initDraw());
     }
 
-    public ChartPanel initDraw(JSE_ChoroplethDatas ChoroDatas) {
+    public ChartPanel initDraw() {
         ChoroDatas.setFieldIndex(0);
         ChoroDatas.setStatisticMethod(StatisticMethod.QUANTILES);
         try {
@@ -60,9 +66,9 @@ class JSE_ChoroplethChartPanel extends JPanel {
         DefaultCategoryDataset data = refreshData(ranges, values);
 
         // create a chart...
-        JFreeChart chart = ChartFactory.createBarChart3D(
-                "Sample Bar Chart", "X", "Y", data, PlotOrientation.VERTICAL,
-                true, true, false);
+        chart = ChartFactory.createBarChart3D(
+            "Sample Bar Chart", "X", "Y", data, PlotOrientation.VERTICAL,
+            true, true, false);
 
         drawAxis(chart, values, ranges, colors);
 
@@ -70,9 +76,9 @@ class JSE_ChoroplethChartPanel extends JPanel {
         annot.setPosition(RectangleEdge.TOP);
         chart.addSubtitle(annot);
 
-        ChartPanel chPanel = new ChartPanel(chart);
+        chPanel = new ChartPanel(chart);
 
-        chartLis = new JSE_ChartListener(chPanel, annot, data, ChoroDatas);
+        chartLis = new JSE_ChartListener(this,chPanel, annot,ChoroDatas);
 
         chPanel.setPopupMenu(null);
         chPanel.setDomainZoomable(false);
@@ -83,6 +89,7 @@ class JSE_ChoroplethChartPanel extends JPanel {
 
         return chPanel;
     }
+
 
     public static DefaultCategoryDataset refreshData(Range[] ranges, double[] values) {
         DefaultCategoryDataset data = new DefaultCategoryDataset();
@@ -127,25 +134,49 @@ class JSE_ChoroplethChartPanel extends JPanel {
             for (int i = ind; i < values.length; i++) {
                 if (values[i] > ranges[nbRange].getMaxRange()) {
                     final CategoryMarker start = new CategoryMarker(i);
-                    start.setPaint(colors[nbRange]);
+                    start.setPaint(colors[nbRange+1]);
                     start.setLabel(Integer.toString(nbRange+1));
-                    start.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
-                    start.setLabelTextAnchor(TextAnchor.TOP_LEFT);
+                    start.setLabelAnchor(RectangleAnchor.TOP_LEFT);
+                    start.setLabelTextAnchor(TextAnchor.TOP_RIGHT);
                     start.setDrawAsLine(true);
                     plot.addDomainMarker(start);
                     nbRange++;
-                    ind = i;
+                    ind = 0;
                 }
             }
             ind--;
         }
+        BarRenderer renderer = (BarRenderer) plot.getRenderer();
+        for(int i=1;i<=ranges.length;i++)
+        {
+            renderer.setSeriesPaint(i-1, colors[i-1]);
+        }
     }
 
-    public static void drawData(JSE_ChoroplethDatas ChoroDatas, ChartPanel chPanel, Range[] ranges, double[] values) {
+    public static void drawData(ChartPanel chPanel, Range[] ranges, double[] values) {
         DefaultCategoryDataset data = refreshData(ranges, values);
 
         CategoryPlot plot = (CategoryPlot) chPanel.getChart().getPlot();
         plot.setDataset(data);
+
+        chPanel.repaint();
+    }
+
+    public ChartPanel getChartPanel()
+    {
+        return chPanel;
+    }
+
+    public void refresh() {
+         try {
+            CategoryPlot plot = (CategoryPlot) chPanel.getChart().getPlot();
+            plot.clearDomainMarkers();
+            refreshData(ChoroDatas.getRange(), ChoroDatas.getSortedData());
+            drawData(chPanel,ChoroDatas.getRange(), ChoroDatas.getSortedData());
+            drawAxis(chart, ChoroDatas.getSortedData(), ChoroDatas.getRange(), ChoroDatas.getClassesColors());
+        } catch (ParameterException ex) {
+            Logger.getLogger(JSE_ChoroDatasChangedListener.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         chPanel.repaint();
     }

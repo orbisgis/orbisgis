@@ -197,6 +197,19 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
             //bottomPanel.add(new JSE_ChoroplethChartPanel(ChoroDatas));
             bottomPanel.add(btnApply);
             this.layer = layer;
+
+            //INIT
+            ChoroDatas.setNbrClasses(7);
+
+            JSE_ChoroplethRangeTabPanel rangeTabPanel = new JSE_ChoroplethRangeTabPanel(ChoroDatas);
+            centerPanel.add(rangeTabPanel);
+
+            JSE_ChoroplethChartPanel chartPanel = new JSE_ChoroplethChartPanel(ChoroDatas);
+            bottomPanel.add(chartPanel);
+
+            // Register for MyEvents from c
+            JSE_ChoroDatasChangedListener datasChangedListener = new JSE_ChoroDatasChangedListener(ChoroDatas,rangeTabPanel,chartPanel);
+            ChoroDatas.addDataChangedListener(datasChangedListener);
 	}
 
 	@Override

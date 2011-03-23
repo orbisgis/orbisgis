@@ -13,6 +13,7 @@ import java.util.EventObject;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.event.EventListenerList;
 import org.gdms.data.feature.Feature;
 import org.gdms.data.values.Value;
 import org.gdms.data.metadata.Metadata;
@@ -52,8 +53,11 @@ public class JSE_ChoroplethDatas{
     JSE_ChoroplethDatas(ILayer layer) {
         super();
         this.layer = layer;
+
         fields = new ArrayList<String>();
         aliases = new ArrayList<String>();
+
+
         //BEGIN
         //Temp variable data for testing
         statIndex = StatisticMethod.QUANTILES;
@@ -75,10 +79,6 @@ public class JSE_ChoroplethDatas{
         } catch (DriverException ex) {
             Logger.getLogger(CreateChoroplethPlugIn.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-
-
-
     }
 
     private void init() throws DriverException {

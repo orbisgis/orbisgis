@@ -17,18 +17,19 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 public class JSE_ChartListener implements MouseMotionListener, MouseListener {
 
+    JSE_ChoroplethChartPanel chartPanel;
     private ChartPanel chPanel;
     private TextTitle annot;
-    private DefaultCategoryDataset data;
     private JSE_ChoroplethDatas ChoroDatas;
+
     private Point.Double pos;
     private double rangeDelta;
     private int selected;
 
-    public JSE_ChartListener(ChartPanel chPanel, TextTitle annot, DefaultCategoryDataset data, JSE_ChoroplethDatas ChoroDatas) {
+    public JSE_ChartListener(JSE_ChoroplethChartPanel chartPanel,ChartPanel chPanel, TextTitle annot, JSE_ChoroplethDatas ChoroDatas) {
+        this.chartPanel=chartPanel;
         this.chPanel = chPanel;
         this.annot = annot;
-        this.data = data;
         this.ChoroDatas = ChoroDatas;
         this.pos = new Point.Double(0, 0);
         this.rangeDelta = 1;
@@ -40,6 +41,13 @@ public class JSE_ChartListener implements MouseMotionListener, MouseListener {
     @Override
     public void mouseDragged(MouseEvent arg1) {
         Point point = arg1.getPoint();
+
+        DefaultCategoryDataset data = null;
+        try {
+            data = chartPanel.refreshData(ChoroDatas.getRange(), ChoroDatas.getSortedData());
+        } catch (ParameterException ex) {
+            Logger.getLogger(JSE_ChartListener.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         pos = JSE_ChoroplethChartPanel.convertCoords(point, chPanel, data);
 
@@ -65,7 +73,7 @@ public class JSE_ChartListener implements MouseMotionListener, MouseListener {
             ChoroDatas.setRange(ranges);
 
             try {
-                JSE_ChoroplethChartPanel.drawData(ChoroDatas, chPanel, ranges, ChoroDatas.getSortedData());
+                JSE_ChoroplethChartPanel.drawData(chPanel, ranges, ChoroDatas.getSortedData());
                 JSE_ChoroplethChartPanel.drawAxis(chPanel.getChart(), ChoroDatas.getSortedData(), ranges, ChoroDatas.getClassesColors());
             } catch (ParameterException ex) {
                 Logger.getLogger(JSE_ChartListener.class.getName()).log(Level.SEVERE, null, ex);
@@ -78,6 +86,13 @@ public class JSE_ChartListener implements MouseMotionListener, MouseListener {
     @Override
     public void mouseMoved(MouseEvent arg1) {
         Point point = arg1.getPoint();
+
+        DefaultCategoryDataset data = null;
+        try {
+            data = chartPanel.refreshData(ChoroDatas.getRange(), ChoroDatas.getSortedData());
+        } catch (ParameterException ex) {
+            Logger.getLogger(JSE_ChartListener.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         pos = JSE_ChoroplethChartPanel.convertCoords(point, chPanel, data);
 
