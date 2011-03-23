@@ -189,12 +189,16 @@ public class RangeMethod {
 		int Mai = 0, Ma1i = 0, Ma2i = 0;
 		int Mbi = 0, Mb1i = 0, Mb2i = 0;
 		// Modification si besoin est du nombre de classes
+                // [MAI] WTF?!!!! if nbCL == 2, range[] has been initiated of size 2
+                // if nbCL is changed to 4 or 8 then range[] must be updated!
+
 		if (nbCl != 4 && nbCl != 8) {
 			if (Math.abs((nbCl - 4)) < Math.abs((nbCl - 8)))
 				nbCl = 4;
 			else
 				nbCl = 8;
 			// todo add a message dialog
+                        ranges = new Range[nbCl];
 		} else {
 
 		}

@@ -46,10 +46,8 @@ public class JSE_ChoroplethDatas{
     private List<String> aliases;
 
     //Statistic (Classification) methods enumeration
-    public enum StatisticMethod {
-
-        QUANTILES, AVERAGE, JENKS, MANUAL
-    }
+    public enum StatisticMethod {QUANTILES, AVERAGE, JENKS, MANUAL}
+    public enum DataChangedType {FIELD, NUMBEROFCLASS, RANGES, STATMETHOD, BEGINCOLOR, ENDCOLOR, CLASSCOLORS, ALIASES}
 
     JSE_ChoroplethDatas(ILayer layer) {
         super();
@@ -219,7 +217,7 @@ public class JSE_ChoroplethDatas{
             }
             try {
                 resetRanges(); //Refresh/update ranges
-                fireMyEvent(new DataChanged(this));
+                fireMyEvent(new DataChanged(this, DataChangedType.NUMBEROFCLASS));
             } catch (DriverException ex) {
                 Logger.getLogger(CreateChoroplethPlugIn.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -236,7 +234,7 @@ public class JSE_ChoroplethDatas{
             fieldIndex = FieldIndex;
             try {
                 resetRanges(); //Reset and recalculate ranges
-                fireMyEvent(new DataChanged(this));
+                fireMyEvent(new DataChanged(this, DataChangedType.FIELD));
             } catch (DriverException ex) {
                 Logger.getLogger(CreateChoroplethPlugIn.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -253,7 +251,7 @@ public class JSE_ChoroplethDatas{
             statIndex = StatisticIndex;
             try {
                 resetRanges(); //Reset and recalculate ranges
-                fireMyEvent(new DataChanged(this));
+                fireMyEvent(new DataChanged(this, DataChangedType.STATMETHOD));
             } catch (DriverException ex) {
                 Logger.getLogger(CreateChoroplethPlugIn.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -279,7 +277,7 @@ public class JSE_ChoroplethDatas{
         if (index < aliases.size())
         {
             aliases.set(index, value);
-            fireMyEvent(new DataChanged(this));
+            fireMyEvent(new DataChanged(this, DataChangedType.ALIASES));
         }
     }
 
@@ -289,7 +287,7 @@ public class JSE_ChoroplethDatas{
 
     public void setBeginColor(Color value) {
         beginColor = value;
-        fireMyEvent(new DataChanged(this));
+        fireMyEvent(new DataChanged(this, DataChangedType.BEGINCOLOR));
     }
 
     public Color getEndColor() {
@@ -298,7 +296,7 @@ public class JSE_ChoroplethDatas{
 
     public void setEndColor(Color value) {
         endColor = value;
-        fireMyEvent(new DataChanged(this));
+        fireMyEvent(new DataChanged(this, DataChangedType.ENDCOLOR));
     }
 
     public Color[] getClassesColors() {
@@ -316,7 +314,7 @@ public class JSE_ChoroplethDatas{
         if (index < classesColors.length)
         {
             classesColors[index] = value;
-            fireMyEvent(new DataChanged(this));
+            fireMyEvent(new DataChanged(this, DataChangedType.CLASSCOLORS));
         }
     }
 
@@ -339,7 +337,7 @@ public class JSE_ChoroplethDatas{
     public void setRange(Range[] ranges)
     {
         this.ranges = ranges;
-        fireMyEvent(new DataChanged(this));
+        fireMyEvent(new DataChanged(this, DataChangedType.RANGES));
     }
 
     public Value getValue() {
@@ -348,8 +346,10 @@ public class JSE_ChoroplethDatas{
 
     // Declare the event. It must extend EventObject.
     public class DataChanged extends EventObject {
-        public DataChanged(Object source) {
+        public DataChangedType dataType;
+        public DataChanged(Object source, DataChangedType datachangedtype) {
             super(source);
+            dataType = datachangedtype;
         }
     }
 

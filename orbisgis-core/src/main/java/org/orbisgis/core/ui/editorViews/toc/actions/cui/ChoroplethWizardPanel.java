@@ -98,7 +98,7 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
                 public void dataChangedOccurred(DataChanged evt)
                 {
                     // DataChanged was fired
-                    System.out.println("DATA CHANGED");
+                    System.out.println("DATA CHANGED : " + evt.dataType.toString());
                 }
             });
 
@@ -264,7 +264,7 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
             }
             else
             {
-                ChoroDatas.setBeginColor(JColorChooser.showDialog(sender, "Pick an end color", ChoroDatas.getEndColor()));
+                ChoroDatas.setEndColor(JColorChooser.showDialog(sender, "Pick an end color", ChoroDatas.getEndColor()));
                 pnlColorEnd.setBackground(ChoroDatas.getEndColor());
                 pnlColorEnd.invalidate();
             }
@@ -324,13 +324,24 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
 
         private void updateComboBoxNbrClasses(JSE_ChoroplethDatas.StatisticMethod statMethod)
         {
-            cbxNbrOfClasses.removeAllItems();
-            int[] allowed = ChoroDatas.getNumberOfClassesAllowed(statMethod);
-            for(int i = 0; i < allowed.length; i++)
-                cbxNbrOfClasses.addItem(allowed[i]);
-            if(cbxNbrOfClasses.getItemCount() > 0)
-                cbxNbrOfClasses.setSelectedIndex(0);
-            ChoroDatas.setNbrClasses(Integer.parseInt(cbxNbrOfClasses.getSelectedItem().toString()));
+            if(ChoroDatas != null)
+            {
+                int savedValue = 0;
+                if(cbxNbrOfClasses.getSelectedItem() != null)
+                    savedValue = Integer.parseInt(cbxNbrOfClasses.getSelectedItem().toString());
+
+                cbxNbrOfClasses.removeAllItems();
+                int[] allowed = ChoroDatas.getNumberOfClassesAllowed(statMethod);
+                for(int i = 0; i < allowed.length; i++)
+                {
+                    cbxNbrOfClasses.addItem(allowed[i]);
+                    if(allowed[i] == savedValue)
+                        cbxNbrOfClasses.setSelectedIndex(i);
+                }
+                
+                if(cbxNbrOfClasses.getSelectedItem()!= null)
+                    ChoroDatas.setNbrClasses(Integer.parseInt(cbxNbrOfClasses.getSelectedItem().toString()));
+            }
         }
 
         class RadioListener implements ItemListener
@@ -342,29 +353,25 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
                 if(e.getItem().equals(rdbxStatMethodQuantiles) && e.getStateChange() == ItemEvent.SELECTED)
                 {
                     //System.out.println("Quantiles Selected");
-                    if(!ChoroDatas.isAllowed(Integer.parseInt(cbxNbrOfClasses.getSelectedItem().toString()), JSE_ChoroplethDatas.StatisticMethod.QUANTILES))
-                        updateComboBoxNbrClasses(JSE_ChoroplethDatas.StatisticMethod.QUANTILES);
+                    updateComboBoxNbrClasses(JSE_ChoroplethDatas.StatisticMethod.QUANTILES);
                     ChoroDatas.setStatisticMethod(JSE_ChoroplethDatas.StatisticMethod.QUANTILES);
                 }
                 else if(e.getItem().equals(rdbxStatMethodMean) && e.getStateChange() == ItemEvent.SELECTED)
                 {
                     //System.out.println("Mean Selected");
-                    if(!ChoroDatas.isAllowed(Integer.parseInt(cbxNbrOfClasses.getSelectedItem().toString()), JSE_ChoroplethDatas.StatisticMethod.AVERAGE))
-                        updateComboBoxNbrClasses(JSE_ChoroplethDatas.StatisticMethod.AVERAGE);
+                    updateComboBoxNbrClasses(JSE_ChoroplethDatas.StatisticMethod.AVERAGE);
                     ChoroDatas.setStatisticMethod(JSE_ChoroplethDatas.StatisticMethod.AVERAGE);
                 }
                 if(e.getItem().equals(rdbxStatMethodJenks) && e.getStateChange() == ItemEvent.SELECTED)
                 {
                     //System.out.println("Jenks Selected");
-                    if(!ChoroDatas.isAllowed(Integer.parseInt(cbxNbrOfClasses.getSelectedItem().toString()), JSE_ChoroplethDatas.StatisticMethod.JENKS))
-                        updateComboBoxNbrClasses(JSE_ChoroplethDatas.StatisticMethod.JENKS);
+                    updateComboBoxNbrClasses(JSE_ChoroplethDatas.StatisticMethod.JENKS);
                     ChoroDatas.setStatisticMethod(JSE_ChoroplethDatas.StatisticMethod.JENKS);
                 }
                 if(e.getItem().equals(rdbxStatMethodManual) && e.getStateChange() == ItemEvent.SELECTED)
                 {
                     //System.out.println("Manual Selected");
-                    if(!ChoroDatas.isAllowed(Integer.parseInt(cbxNbrOfClasses.getSelectedItem().toString()), JSE_ChoroplethDatas.StatisticMethod.MANUAL))
-                        updateComboBoxNbrClasses(JSE_ChoroplethDatas.StatisticMethod.MANUAL);
+                    updateComboBoxNbrClasses(JSE_ChoroplethDatas.StatisticMethod.MANUAL);
                     ChoroDatas.setStatisticMethod(JSE_ChoroplethDatas.StatisticMethod.MANUAL);
                 }
             }
