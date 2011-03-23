@@ -40,12 +40,17 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.driver.DriverException;
 
+/**
+ * The TableDefinition used to describe tables with a raster column.
+ */
 public class RasterTableDefinition implements TableDefinition {
 
+	@Override
 	public boolean isValid(Metadata metadata) throws DriverException {
 		return MetadataUtilities.isRaster(metadata);
 	}
 
+	@Override
 	public String getDescription() {
 		return "A raster table is needed";
 	}

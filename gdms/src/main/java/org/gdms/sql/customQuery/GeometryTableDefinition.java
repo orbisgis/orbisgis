@@ -40,12 +40,18 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.driver.DriverException;
 
+/**
+ * The table definition used to describe tables that contain a geometry column.
+ *
+ */
 public class GeometryTableDefinition implements TableDefinition {
 
+	@Override
 	public boolean isValid(Metadata metadata) throws DriverException {
 		return MetadataUtilities.isGeometry(metadata);
 	}
 
+	@Override
 	public String getDescription() {
 		return "A geometry table is needed";
 	}

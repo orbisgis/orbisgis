@@ -39,6 +39,10 @@ package org.gdms.sql.customQuery;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
 
+/**
+ * TableDefinition instances are used to describe the tables that can be used by custom queries.
+ * @author alexis
+ */
 public interface TableDefinition {
 	TableDefinition SPATIAL = new SpatialTableDefinition();
 	TableDefinition GEOMETRY = new GeometryTableDefinition();

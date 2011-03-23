@@ -40,12 +40,17 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.driver.DriverException;
 
+/**
+ * The tabe definition used to describe tables that contain a raster or a geometry column.
+ */
 public class SpatialTableDefinition implements TableDefinition {
+	@Override
 	public boolean isValid(Metadata metadata) throws DriverException {
 		return MetadataUtilities.isGeometry(metadata)
 				|| MetadataUtilities.isRaster(metadata);
 	}
 
+	@Override
 	public String getDescription() {
 		return "A table with at least a geometric or raster field is needed";
 	}
