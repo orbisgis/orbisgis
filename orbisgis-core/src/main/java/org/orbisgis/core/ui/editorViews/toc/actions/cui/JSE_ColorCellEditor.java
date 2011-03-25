@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 
 import java.awt.Color;
@@ -20,18 +19,18 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.ColorPicker;
  *
  * @author sennj
  */
-class JSE_ColorCellEditor extends AbstractCellEditor implements TableCellEditor, ActionListener{
+class JSE_ColorCellEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
 
     private JSE_ChoroplethDatas ChoroDatas;
     private Color couleur;
     private int row;
     private JButton bouton;
     private ColorPicker dialog;
- 
+
     public JSE_ColorCellEditor(JSE_ChoroplethDatas ChoroDatas) {
         super();
 
-        this.ChoroDatas =  ChoroDatas;
+        this.ChoroDatas = ChoroDatas;
         bouton = new JButton();
         bouton.setActionCommand("change");
         bouton.addActionListener(this);
@@ -43,15 +42,14 @@ class JSE_ColorCellEditor extends AbstractCellEditor implements TableCellEditor,
     public void actionPerformed(ActionEvent e) {
         bouton.setBackground(Color.LIGHT_GRAY);
         if ("change".equals(e.getActionCommand())) {
-                      
-            if(UIFactory.showDialog(dialog))
-            {
+
+            if (UIFactory.showDialog(dialog)) {
                 couleur = dialog.getColor();
                 ChoroDatas.setClassColor(couleur, row);
                 bouton.setBackground(couleur);
             }
             fireEditingStopped();
-        } 
+        }
     }
 
     @Override
@@ -61,8 +59,8 @@ class JSE_ColorCellEditor extends AbstractCellEditor implements TableCellEditor,
 
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-        this.couleur = (Color)value;
-        this.row=row;
+        this.couleur = (Color) value;
+        this.row = row;
         return bouton;
     }
 }

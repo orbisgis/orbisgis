@@ -167,7 +167,7 @@ class JSE_ChoroplethChartPanel extends JPanel {
         return chPanel;
     }
 
-    public void refresh() {
+    public void refresh(JSE_ChoroplethDatas ChoroDatas) {
          try {
             CategoryPlot plot = (CategoryPlot) chPanel.getChart().getPlot();
             plot.clearDomainMarkers();

@@ -7,14 +7,7 @@ package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
-import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.classification.Range;
 
 /**
@@ -24,14 +17,13 @@ import org.orbisgis.core.renderer.classification.Range;
 class JSE_TableModel extends AbstractTableModel {
 
     JSE_ChoroplethDatas ChoroDatas;
-
     private final List<JSE_RangeTab> rangesTab = new ArrayList<JSE_RangeTab>();
     private final String[] entetes = {"Color", "ValueMin", "ValueMax", "Alias"};
 
     public JSE_TableModel(JSE_ChoroplethDatas ChoroDatas) {
         super();
 
-        this.ChoroDatas=ChoroDatas;
+        this.ChoroDatas = ChoroDatas;
 
         Range[] ranges = ChoroDatas.getRange();
         Color[] colors = ChoroDatas.getClassesColors();
@@ -113,27 +105,20 @@ class JSE_TableModel extends AbstractTableModel {
 
     public void addRanges(JSE_RangeTab range) {
         rangesTab.add(range);
-
         fireTableRowsInserted(rangesTab.size() - 1, rangesTab.size() - 1);
     }
 
     public void removeRanges(int rowIndex) {
         rangesTab.remove(rowIndex);
-
         fireTableRowsDeleted(rowIndex, rowIndex);
     }
 
-     public void refreshData() {
-        try {
-            ChoroDatas.readData();
-        } catch (DriverException ex) {
-            Logger.getLogger(JSE_TableModel.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public void refreshData(JSE_ChoroplethDatas ChoroDatas) {
         Range[] ranges = ChoroDatas.getRange();
         Color[] colors = ChoroDatas.getClassesColors();
 
         for (int i = 1; i <= ranges.length; i++) {
-            rangesTab.set(i-1, new JSE_RangeTab(colors[i - 1], ranges[i - 1].getMinRange(), ranges[i - 1].getMaxRange(), String.valueOf(i)));
+            rangesTab.set(i - 1, new JSE_RangeTab(colors[i - 1], ranges[i - 1].getMinRange(), ranges[i - 1].getMaxRange(), String.valueOf(i)));
         }
     }
 }

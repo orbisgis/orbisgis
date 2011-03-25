@@ -1,8 +1,12 @@
 package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 
-import java.awt.event.*;
-import javax.swing.*;
-import java.beans.*;
+
+import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import javax.swing.AbstractAction;
+import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import org.orbisgis.core.renderer.classification.Range;
@@ -32,12 +36,11 @@ public class JSE_TableListener extends AbstractAction implements TableModelListe
      *  @param table   the table to be monitored for data changes
      *  @param action  the Action to invoke when cell data is changed
      */
-    public JSE_TableListener(JSE_ChoroplethRangeTabPanel rangeTabPanel,JTable table, JSE_ChoroplethDatas ChoroDatas) {
-        this.rangeTabPanel=rangeTabPanel;
+    public JSE_TableListener(JSE_ChoroplethRangeTabPanel rangeTabPanel, JTable table, JSE_ChoroplethDatas ChoroDatas) {
+        this.rangeTabPanel = rangeTabPanel;
         this.table = table;
-        this.table.addPropertyChangeListener(this);
-
         this.ChoroDatas = ChoroDatas;
+        this.table.addPropertyChangeListener(this);
     }
 
     /**
@@ -155,22 +158,18 @@ public class JSE_TableListener extends AbstractAction implements TableModelListe
             JSE_TableListener tcl = new JSE_TableListener(
                     getTable(), getRow(), getColumn(), getOldValue(), getNewValue());
 
-            ActionEvent event = new ActionEvent(
-                    tcl,
-                    ActionEvent.ACTION_PERFORMED,
-                    "");
+            ActionEvent event = new ActionEvent(tcl, ActionEvent.ACTION_PERFORMED, "");
             this.actionPerformed(event);
         }
     }
 
     @Override
     public void tableChanged(TableModelEvent e) {
-     
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        System.out.println("set r "+row+" c "+column+" ");
+        System.out.println("set r " + row + " c " + column + " ");
         if (column == 1 && row != 0) {
             table.setValueAt(newValue, row - 1, column + 1);
             refreshRange(ChoroDatas, row - 1, column, newValue);
@@ -179,21 +178,16 @@ public class JSE_TableListener extends AbstractAction implements TableModelListe
             table.setValueAt(newValue, row + 1, column - 1);
             refreshRange(ChoroDatas, row, column, newValue);
         }
-
-
-
     }
 
     public void refreshRange(JSE_ChoroplethDatas ChoroDatas, int row, int column, Object newValue) {
         Range[] ranges = ChoroDatas.getRange();
         ranges[row].setMaxRange(Double.valueOf((Double) newValue));
-         
+
         if (!(row == ChoroDatas.getRange().length && column == 2)) {
-            ranges[row+1].setMinRange(Double.valueOf((Double) newValue));
+            ranges[row + 1].setMinRange(Double.valueOf((Double) newValue));
         }
         ChoroDatas.setRange(ranges);
-        rangeTabPanel.refresh();
+        table.repaint();
     }
-
-    
 }

@@ -5,16 +5,12 @@
 package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 
 import java.awt.Color;
-import java.awt.Component;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.EventObject;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.event.EventListenerList;
-import org.gdms.data.feature.Feature;
 import org.gdms.data.values.Value;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
@@ -24,14 +20,13 @@ import org.orbisgis.core.renderer.classification.Range;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.core.renderer.classification.RangeMethod;
-import org.orbisgis.core.sif.UIPanel;
 import org.orbisgis.core.ui.plugins.toc.CreateChoroplethPlugIn;
 
 /**
  *
  * @author sennj
  */
-public class JSE_ChoroplethDatas{
+public class JSE_ChoroplethDatas {
 
     private ILayer layer;
     private List<String> fields;
@@ -47,8 +42,15 @@ public class JSE_ChoroplethDatas{
     private List<String> aliases;
 
     //Statistic (Classification) methods enumeration
-    public enum StatisticMethod {QUANTILES, AVERAGE, JENKS, MANUAL}
-    public enum DataChangedType {FIELD, NUMBEROFCLASS, RANGES, STATMETHOD, BEGINCOLOR, ENDCOLOR, CLASSCOLORS, ALIASES}
+    public enum StatisticMethod {
+
+        QUANTILES, AVERAGE, JENKS, MANUAL
+    }
+
+    public enum DataChangedType {
+
+        FIELD, NUMBEROFCLASS, RANGES, STATMETHOD, BEGINCOLOR, ENDCOLOR, CLASSCOLORS, ALIASES
+    }
 
     JSE_ChoroplethDatas(ILayer layer) {
         super();
@@ -188,12 +190,13 @@ public class JSE_ChoroplethDatas{
         }
     }
 
-    public Boolean isAllowed(int nbrOfClasses, StatisticMethod statmethod)
-    {
+    public Boolean isAllowed(int nbrOfClasses, StatisticMethod statmethod) {
         int[] values = getNumberOfClassesAllowed(statmethod);
-        for(int i = 0; i < values.length; i++)
-            if(values[i] == nbrOfClasses)
+        for (int i = 0; i < values.length; i++) {
+            if (values[i] == nbrOfClasses) {
                 return true;
+            }
+        }
         return false;
     }
 
@@ -274,8 +277,7 @@ public class JSE_ChoroplethDatas{
     }
 
     public void setAlias(String value, int index) {
-        if (index < aliases.size())
-        {
+        if (index < aliases.size()) {
             aliases.set(index, value);
             fireMyEvent(new DataChanged(this, DataChangedType.ALIASES));
         }
@@ -311,8 +313,7 @@ public class JSE_ChoroplethDatas{
     }
 
     public void setClassColor(Color value, int index) {
-        if (index < classesColors.length)
-        {
+        if (index < classesColors.length) {
             classesColors[index] = value;
             fireMyEvent(new DataChanged(this, DataChangedType.CLASSCOLORS));
         }
@@ -334,8 +335,7 @@ public class JSE_ChoroplethDatas{
         return ranges;
     }
 
-    public void setRange(Range[] ranges)
-    {
+    public void setRange(Range[] ranges) {
         this.ranges = ranges;
         fireMyEvent(new DataChanged(this, DataChangedType.RANGES));
     }
@@ -346,7 +346,9 @@ public class JSE_ChoroplethDatas{
 
     // Declare the event. It must extend EventObject.
     public class DataChanged extends EventObject {
+
         public DataChangedType dataType;
+
         public DataChanged(Object source, DataChangedType datachangedtype) {
             super(source);
             dataType = datachangedtype;
@@ -356,9 +358,9 @@ public class JSE_ChoroplethDatas{
     // Declare the listener class. It must extend EventListener.
     // A class must implement this interface to get DataChanged.
     public interface DataChangedListener extends EventListener {
+
         public void dataChangedOccurred(DataChanged evt);
     }
-
     // Create the listener list
     protected javax.swing.event.EventListenerList listenerList = new javax.swing.event.EventListenerList();
 
@@ -377,11 +379,10 @@ public class JSE_ChoroplethDatas{
         Object[] listeners = listenerList.getListenerList();
         // Each listener occupies two elements - the first is the listener class
         // and the second is the listener instance
-        for (int i=0; i<listeners.length; i+=2) {
-            if (listeners[i]==DataChangedListener.class) {
-                ((DataChangedListener)listeners[i+1]).dataChangedOccurred(evt);
+        for (int i = 0; i < listeners.length; i += 2) {
+            if (listeners[i] == DataChangedListener.class) {
+                ((DataChangedListener) listeners[i + 1]).dataChangedOccurred(evt);
             }
         }
     }
-
 }

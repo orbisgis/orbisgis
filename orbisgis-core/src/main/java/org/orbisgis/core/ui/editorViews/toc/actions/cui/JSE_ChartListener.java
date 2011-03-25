@@ -21,13 +21,12 @@ public class JSE_ChartListener implements MouseMotionListener, MouseListener {
     private ChartPanel chPanel;
     private TextTitle annot;
     private JSE_ChoroplethDatas ChoroDatas;
-
     private Point.Double pos;
     private double rangeDelta;
     private int selected;
 
-    public JSE_ChartListener(JSE_ChoroplethChartPanel chartPanel,ChartPanel chPanel, TextTitle annot, JSE_ChoroplethDatas ChoroDatas) {
-        this.chartPanel=chartPanel;
+    public JSE_ChartListener(JSE_ChoroplethChartPanel chartPanel, ChartPanel chPanel, TextTitle annot, JSE_ChoroplethDatas ChoroDatas) {
+        this.chartPanel = chartPanel;
         this.chPanel = chPanel;
         this.annot = annot;
         this.ChoroDatas = ChoroDatas;
@@ -53,21 +52,20 @@ public class JSE_ChartListener implements MouseMotionListener, MouseListener {
 
         annot.setText("X = " + pos.x + " Y = " + pos.y);
 
-        if(selected!=-1)
-        {
+        if (selected != -1) {
             CategoryPlot plot = (CategoryPlot) chPanel.getChart().getPlot();
             plot.clearDomainMarkers();
 
             Range[] ranges = ChoroDatas.getRange();
 
-            double range=0;
+            double range = 0;
             try {
                 range = ChoroDatas.getSortedData()[(int) pos.x];
             } catch (ParameterException ex) {
                 Logger.getLogger(JSE_ChartListener.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-            ranges[selected-1].setMaxRange(range);
+            ranges[selected - 1].setMaxRange(range);
             ranges[selected].setMinRange(range);
 
             ChoroDatas.setRange(ranges);
@@ -95,7 +93,6 @@ public class JSE_ChartListener implements MouseMotionListener, MouseListener {
         }
 
         pos = JSE_ChoroplethChartPanel.convertCoords(point, chPanel, data);
-
         annot.setText("X = " + pos.x + " Y = " + pos.y);
 
         chPanel.repaint();
@@ -108,16 +105,16 @@ public class JSE_ChartListener implements MouseMotionListener, MouseListener {
     @Override
     public void mousePressed(MouseEvent e) {
 
-        selected=-1;
+        selected = -1;
         Range[] ranges = ChoroDatas.getRange();
         for (int i = 1; i <= ranges.length; i++) {
-            double range=0;
+            double range = 0;
             try {
                 range = ChoroDatas.getSortedData()[(int) pos.x];
             } catch (ParameterException ex) {
                 Logger.getLogger(JSE_ChartListener.class.getName()).log(Level.SEVERE, null, ex);
             }
-            if (isNear(range, ranges[i-1].getMaxRange())) {
+            if (isNear(range, ranges[i - 1].getMaxRange())) {
                 selected = i;
             }
         }
@@ -125,7 +122,7 @@ public class JSE_ChartListener implements MouseMotionListener, MouseListener {
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        selected=-1;
+        selected = -1;
     }
 
     @Override
