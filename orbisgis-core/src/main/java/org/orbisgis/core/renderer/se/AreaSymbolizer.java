@@ -43,10 +43,10 @@ import java.awt.Shape;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.xml.bind.JAXBElement;
+import net.opengis.se._2_0.core.AreaSymbolizerType;
+import net.opengis.se._2_0.core.ObjectFactory;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.Drawer;
-import org.orbisgis.core.renderer.persistance.se.AreaSymbolizerType;
-import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
@@ -89,11 +89,11 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 
 
         if (ast.getGeometry() != null) {
-            this.setGeometry(new GeometryAttribute(ast.getGeometry().getPropertyName()));
+            this.setGeometry(new GeometryAttribute(ast.getGeometry()));
         }
 
-        if (ast.getUnitOfMeasure() != null) {
-            this.uom = Uom.fromOgcURN(ast.getUnitOfMeasure());
+        if (ast.getUom() != null) {
+            this.uom = Uom.fromOgcURN(ast.getUom());
         }
 
         if (ast.getPerpendicularOffset() != null) {
@@ -192,7 +192,7 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
         this.setJAXBProperty(s);
 
         if (uom != null) {
-            s.setUnitOfMeasure(this.getUom().toURN());
+            s.setUom(this.getUom().toURN());
         }
 
         if (transform != null) {

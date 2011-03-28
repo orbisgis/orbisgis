@@ -7,15 +7,15 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.bind.JAXBElement;
-import org.orbisgis.core.renderer.persistance.se.CategorizeType;
+import net.opengis.fes._2.ExpressionType;
+import net.opengis.se._2_0.core.CategorizeType;
 import org.gdms.data.DataSource;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.orbisgis.core.renderer.persistance.ogc.ExpressionType;
-import org.orbisgis.core.renderer.persistance.se.ExtensionParameterType;
-import org.orbisgis.core.renderer.persistance.se.ExtensionType;
-import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
-import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
-import org.orbisgis.core.renderer.persistance.se.ThreshholdsBelongToType;
+import net.opengis.se._2_0.core.ExtensionParameterType;
+import net.opengis.se._2_0.core.ExtensionType;
+import net.opengis.se._2_0.core.ObjectFactory;
+import net.opengis.se._2_0.core.ParameterValueType;
+import net.opengis.se._2_0.core.ThreshholdBelongsToType;
 
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
@@ -372,9 +372,9 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 		}
 
 		if (this.succeeding) {
-			c.setThreshholdsBelongTo(ThreshholdsBelongToType.SUCCEEDING);
+			c.setThreshholdBelongsTo(ThreshholdBelongsToType.SUCCEEDING);
 		} else {
-			c.setThreshholdsBelongTo(ThreshholdsBelongToType.PRECEDING);
+			c.setThreshholdBelongsTo(ThreshholdBelongsToType.PRECEDING);
 		}
 		ObjectFactory of = new ObjectFactory();
 

@@ -35,21 +35,18 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-
 package org.orbisgis.core.renderer.se.graphic;
 
-
+import java.awt.Graphics2D;
 import java.awt.Shape;
-import java.awt.geom.Point2D;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
-import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.orbisgis.core.renderer.persistance.se.MarkGraphicType;
-import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
+import net.opengis.se._2_0.core.MarkGraphicType;
+import net.opengis.se._2_0.core.ObjectFactory;
 
-import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -66,13 +63,18 @@ import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.renderer.se.transform.Transform;
 import org.orbisgis.core.renderer.se.StrokeNode;
+import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.ViewBoxNode;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
+import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 
-public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, ViewBoxNode {
+public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, ViewBoxNode, UomNode {
 
     public static final double defaultSize = 3;
-    private MarkGraphicSource source;
+    //private MarkGraphicSource source;
+    private Uom uom;
+    private StringParameter wkn;
+    private OnlineResource onlineResource;
     private ViewBox viewBox;
     private RealParameter pOffset;
     private Halo halo;
@@ -89,7 +91,8 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 
     public void setTo3mmCircle() {
         this.setUom(Uom.MM);
-        this.setSource(WellKnownName.CIRCLE);
+        //this.setSource(WellKnownName.CIRCLE);
+
         this.setViewBox(new ViewBox(new RealLiteral(defaultSize)));
         this.setFill(new SolidFill());
         ((RealLiteral) ((SolidFill) this.getFill()).getOpacity()).setValue(100.0);
@@ -99,8 +102,8 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
     MarkGraphic(JAXBElement<MarkGraphicType> markG) throws IOException, InvalidStyle {
         MarkGraphicType t = markG.getValue();
 
-        if (t.getUnitOfMeasure() != null) {
-            this.setUom(Uom.fromOgcURN(t.getUnitOfMeasure()));
+        if (t.getUom() != null) {
+            this.setUom(Uom.fromOgcURN(t.getUom()));
         }
 
         if (t.getViewBox() != null) {
@@ -128,13 +131,14 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
             this.setStroke(s);
         }
 
-
         // Source
         if (t.getWellKnownName() != null) {
-            this.setSource(WellKnownName.fromString(t.getWellKnownName()));
+            this.setWkn(SeParameterFactory.createStringParameter(t.getWellKnownName()));
+            //this.setSource(); // TODO WellKnownName !!!
         } else {
             if (t.getOnlineResource() != null) {
-                this.setSource((MarkGraphicSource) new OnlineResource(t.getOnlineResource()));
+                //this.setSource((MarkGraphicSource) new OnlineResource(t.getOnlineResource()));
+                this.setOnlineResource(new OnlineResource(t.getOnlineResource()));
             } else if (t.getInlineContent() != null) {
                 // TODO Not yet implemented
             }
@@ -145,6 +149,25 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 
             this.mimeType = t.getFormat();
         }
+    }
+
+    @Override
+    public Uom getUom() {
+        if (uom != null) {
+            return this.uom;
+        } else {
+            return parent.getUom();
+        }
+    }
+
+    @Override
+    public Uom getOwnUom() {
+        return uom;
+    }
+
+    @Override
+    public void setUom(Uom uom) {
+        this.uom = uom;
     }
 
     @Override
@@ -202,10 +225,10 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
         //updateGraphic();
     }
 
+    /*
     public MarkGraphicSource getSource() {
-        return source;
-    }
-
+    return source;
+    }*/
     public RealParameter getpOffset() {
         return pOffset;
     }
@@ -228,21 +251,73 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
      */
     @Override
     public void updateGraphic() {
-        try {
-            shape = source.getShape(viewBox, null, -1, null, null, markIndex, mimeType);
+        /*try {
+        shape = getShape(null, -1, null);
         } catch (Exception e) {
-            Services.getErrorManager().error("Could not update graphic", e);
-            shape = null;
+        Services.getErrorManager().error("Could not update graphic", e);
+        shape = null;
+        }*/
+        shape = null;
+    }
+
+    private MarkGraphicSource getSource(SpatialDataSourceDecorator sds, long fid) throws ParameterException {
+        if (wkn != null) {
+            return WellKnownName.fromString(wkn.getValue(sds, fid));
+        } else if (onlineResource != null) {
+            return onlineResource;
+        }
+        return null;
+    }
+
+    private Shape getShape(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
+
+        Double dpi = null;
+        Double scaleDenom = null;
+
+        if (mt != null) {
+            dpi = mt.getDpi();
+            scaleDenom = mt.getScaleDenominator();
+        }
+
+        MarkGraphicSource source = getSource(sds, fid);
+
+        if (source != null) {
+            return source.getShape(viewBox, sds, fid, scaleDenom, dpi, markIndex, mimeType);
+        } else {
+            return null;
         }
     }
 
-    public void setSource(MarkGraphicSource source) {
-        this.source = source;
+    /*public void setSource(MarkGraphicSource source) {
+    this.source = source;
 
-        if (source instanceof OnlineResource) {
-            // Add listener which update markIndex context!
+    if (source instanceof OnlineResource) {
+    // Add listener which update markIndex context!
+    }
+    //updateGraphic();
+    }*/
+    @Override
+    public Rectangle2D getBounds(SpatialDataSourceDecorator sds, long fid,
+            MapTransform mt) throws ParameterException, IOException {
+        Shape shp = null;
+
+        // If the shape doesn't depends on feature (i.e. not null), we used the cached one
+        if (shape == null) {
+            shp = getShape(sds, fid, mt);
+        } else {
+            shp = shape;
         }
-        //updateGraphic();
+
+        if (shp == null) {
+            shp = WellKnownName.CIRCLE.getShape(viewBox, sds, fid, mt.getScaleDenominator(), mt.getDpi(), markIndex, mimeType);
+        }
+
+        if (transform != null) {
+            return this.transform.getGraphicalAffineTransform(false, sds, fid, mt, shp.getBounds().getWidth(),
+                    shp.getBounds().getHeight()).createTransformedShape(shp).getBounds2D();
+        } else {
+            return shp.getBounds2D();
+        }
     }
 
     /**
@@ -251,46 +326,96 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
      * @throws ParameterException
      * @throws IOException
      */
-    @Override
+    /*@Override
     public RenderableGraphics getRenderableGraphics(SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException {
-        Shape shp;
+    Shape shp = null;
+
+    // If the shape doesn't depends on feature (i.e. not null), we used the cached one
+    if (shape == null) {
+    shp = getShape(sds, fid, mt);
+    } else {
+    shp = shape;
+    }
+
+    if (shp == null){
+    shp = WellKnownName.CIRCLE.getShape(viewBox, sds, fid, mt.getScaleDenominator(), mt.getDpi(), markIndex, mimeType);
+    }
+
+    // Apply AT
+    Shape atShp = shp;
+
+    if (transform != null) {
+    atShp = this.transform.getGraphicalAffineTransform(false, sds, fid, mt, shp.getBounds().getWidth(),
+    shp.getBounds().getHeight()).createTransformedShape(shp);
+    }
+
+    if (this.getFill() == null && this.getStroke() == null) {
+    this.setFill(new SolidFill());
+    this.setStroke(new PenStroke());
+    }
+
+    Rectangle2D bounds = atShp.getBounds2D();
+
+    double margin = this.getMargin(sds, fid, mt);
+
+    RenderableGraphics rg = Graphic.getNewRenderableGraphics(bounds, margin, mt);
+
+    if (halo != null) {
+    halo.draw(rg, sds, fid, selected, atShp, mt, true);
+    }
+
+    if (fill != null) {
+    fill.draw(rg, sds, fid, atShp, selected, mt);
+    }
+
+    if (stroke != null) {
+    double offset = 0.0;
+    if (pOffset != null) {
+    offset = Uom.toPixel(pOffset.getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+    }
+    stroke.draw(rg, sds, fid, atShp, selected, mt, offset);
+    }
+
+    return rg;
+    }*/
+    @Override
+    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
+            boolean selected, MapTransform mt, AffineTransform fat) throws ParameterException, IOException {
+        Shape shp = null;
+
+        AffineTransform at = new AffineTransform(fat);
 
         // If the shape doesn't depends on feature (i.e. not null), we used the cached one
         if (shape == null) {
-            if (source != null) {
-                shp = source.getShape(viewBox, sds, fid, mt.getScaleDenominator(), mt.getDpi(), markIndex, mimeType);
-            } else {
-                shp = WellKnownName.CIRCLE.getShape(viewBox, sds, fid, mt.getScaleDenominator(), mt.getDpi(), markIndex, mimeType);
-            }
+            shp = getShape(sds, fid, mt);
         } else {
             shp = shape;
+        }
+
+        if (shp == null) {
+            shp = WellKnownName.CIRCLE.getShape(viewBox, sds, fid, mt.getScaleDenominator(), mt.getDpi(), markIndex, mimeType);
         }
 
         // Apply AT
         Shape atShp = shp;
 
         if (transform != null) {
-            atShp = this.transform.getGraphicalAffineTransform(false, sds, fid, mt, shp.getBounds().getWidth(),
-                    shp.getBounds().getHeight()).createTransformedShape(shp);
+            at.concatenate(this.transform.getGraphicalAffineTransform(false, sds, fid, mt, shp.getBounds().getWidth(), shp.getBounds().getHeight()));
         }
 
-        if (this.getFill() == null && this.getStroke() == null){
+        atShp = at.createTransformedShape(shp);
+
+        if (this.getFill() == null && this.getStroke() == null) {
             this.setFill(new SolidFill());
             this.setStroke(new PenStroke());
         }
 
-        Rectangle2D bounds = atShp.getBounds2D();
-
-        double margin = this.getMargin(sds, fid, mt);
-
-        RenderableGraphics rg = Graphic.getNewRenderableGraphics(bounds, margin, mt);
-
         if (halo != null) {
-            halo.draw(rg, sds, fid, selected, atShp, mt, true);
+            halo.draw(g2, sds, fid, selected, atShp, mt, true);
         }
 
         if (fill != null) {
-            fill.draw(rg, sds, fid, atShp, selected, mt);
+            fill.draw(g2, sds, fid, atShp, selected, mt);
         }
 
         if (stroke != null) {
@@ -298,11 +423,8 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
             if (pOffset != null) {
                 offset = Uom.toPixel(pOffset.getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
             }
-            stroke.draw(rg, sds, fid, atShp, selected, mt, offset);
+            stroke.draw(g2, sds, fid, atShp, selected, mt, offset);
         }
-
-        return rg;
-
     }
 
     /**
@@ -313,57 +435,82 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
      * @throws ParameterException
      * @throws IOException
      */
-    private double getMargin(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
-        double sWidth = 0.0;
-        double haloR = 0.0;
-        double offset = 0.0;
+    /*private double getMargin(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
+    double sWidth = 0.0;
+    double haloR = 0.0;
+    double offset = 0.0;
 
-        if (stroke != null) {
-            sWidth += stroke.getMaxWidth(sds, fid, mt);
-        }
-
-        if (this.halo != null) {
-            haloR = halo.getHaloRadius(sds, fid, mt);
-        }
-
-        if (this.pOffset != null) {
-            offset = Uom.toPixel(pOffset.getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-        }
-
-        double max = Math.max(sWidth, haloR);
-        return Math.max(max, 2*offset);
+    if (stroke != null) {
+    sWidth += stroke.getMaxWidth(sds, fid, mt);
     }
 
+    if (this.halo != null) {
+    haloR = halo.getHaloRadius(sds, fid, mt);
+    }
+
+    if (this.pOffset != null) {
+    offset = Uom.toPixel(pOffset.getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+    }
+
+    double max = Math.max(sWidth, haloR);
+    return Math.max(max, 2 * offset);
+    }*/
+
+    /*
     @Override
     public double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
-        double delta = 0.0;
+    double delta = 0.0;
 
-        if (viewBox != null && viewBox.usable()) {
-            Point2D dim = viewBox.getDimensionInPixel(sds, fid, defaultSize, defaultSize, mt.getScaleDenominator(), mt.getDpi());
-            delta = Math.max(dim.getX(), dim.getY());
-        } else {
-            if (source != null){
-                delta = source.getDefaultMaxWidth(sds, fid, delta, delta, markIndex, mimeType);
-            } else {
-                delta = WellKnownName.CIRCLE.getDefaultMaxWidth(sds, fid, delta, delta, markIndex, mimeType);
-            }
+    if (viewBox != null && viewBox.usable()) {
+    Point2D dim = viewBox.getDimensionInPixel(sds, fid, defaultSize, defaultSize, mt.getScaleDenominator(), mt.getDpi());
+    delta = Math.max(dim.getX(), dim.getY());
+    } else {
+    MarkGraphicSource source = getSource(sds, fid);
+    if (source != null) {
+    delta = source.getDefaultMaxWidth(sds, fid, delta, delta, markIndex, mimeType);
+    } else {
+    delta = WellKnownName.CIRCLE.getDefaultMaxWidth(sds, fid, delta, delta, markIndex, mimeType);
+    }
+    }
+
+    delta += this.getMargin(sds, fid, mt);
+
+    return delta;
+    }*/
+    public OnlineResource getOnlineResource() {
+        return onlineResource;
+    }
+
+    public void setOnlineResource(OnlineResource onlineResource) {
+        this.onlineResource = onlineResource;
+        if (onlineResource != null) {
+            wkn = null;
         }
+    }
 
-        delta += this.getMargin(sds, fid, mt);
+    public StringParameter getWkn() {
+        return wkn;
+    }
 
-        return delta;
+    public void setWkn(StringParameter wkn) {
+        this.wkn = wkn;
+        if (wkn != null) {
+            this.onlineResource = null;
+        }
     }
 
     @Override
     public JAXBElement<MarkGraphicType> getJAXBElement() {
         MarkGraphicType m = new MarkGraphicType();
 
-        if (source != null){
-            source.setJAXBSource(m);
+        if (wkn != null) {
+            m.setWellKnownName(wkn.getJAXBParameterValueType());
+        } else if (onlineResource != null) {
+            onlineResource.setJAXBSource(m);
         }
 
         if (uom != null) {
-            m.setUnitOfMeasure(uom.toURN());
+            m.setUom(uom.toURN());
         }
 
         if (markIndex != null) {
@@ -407,25 +554,28 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 
         String result = "";
 
-        if (viewBox != null){
+        if (wkn != null) {
+            result += " " + wkn.dependsOnFeature();
+        }
+        if (viewBox != null) {
             result += " " + viewBox.dependsOnFeature();
         }
-        if (pOffset != null){
+        if (pOffset != null) {
             result += " " + pOffset.dependsOnFeature();
         }
-        if (halo != null){
+        if (halo != null) {
             result += " " + halo.dependsOnFeature();
         }
-        if (fill != null){
+        if (fill != null) {
             result += " " + fill.dependsOnFeature();
         }
-        if (stroke != null){
+        if (stroke != null) {
             result += " " + stroke.dependsOnFeature();
         }
-        if (transform != null){
+        if (transform != null) {
             result += " " + transform.dependsOnFeature();
         }
-        if (markIndex != null){
+        if (markIndex != null) {
             result += " " + markIndex.dependsOnFeature();
         }
 

@@ -47,8 +47,8 @@ import java.awt.Shape;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
 
-import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
-import org.orbisgis.core.renderer.persistance.se.SolidFillType;
+import net.opengis.se._2_0.core.ObjectFactory;
+import net.opengis.se._2_0.core.SolidFillType;
 
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;

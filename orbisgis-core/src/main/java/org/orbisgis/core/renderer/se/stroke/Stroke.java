@@ -5,26 +5,23 @@ import java.awt.Shape;
 import java.io.IOException;
 
 import javax.xml.bind.JAXBElement;
+import net.opengis.se._2_0.core.CompoundStrokeType;
+import net.opengis.se._2_0.core.ExtensionParameterType;
+import net.opengis.se._2_0.core.ExtensionType;
+import net.opengis.se._2_0.core.GraphicStrokeType;
+import net.opengis.se._2_0.core.ObjectFactory;
+import net.opengis.se._2_0.core.PenStrokeType;
+import net.opengis.se._2_0.core.StrokeType;
+import net.opengis.se._2_0.core.TextStrokeType;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.Services;
 
-import org.orbisgis.core.renderer.persistance.se.StrokeType;
 
 import org.orbisgis.core.map.MapTransform;
 
-import org.orbisgis.core.renderer.persistance.se.CompoundStrokeType;
-import org.orbisgis.core.renderer.persistance.se.ExtensionParameterType;
-import org.orbisgis.core.renderer.persistance.se.ExtensionType;
-import org.orbisgis.core.renderer.persistance.se.GraphicStrokeType;
-import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
-import org.orbisgis.core.renderer.persistance.se.PenStrokeType;
-import org.orbisgis.core.renderer.persistance.se.TextStrokeType;
-
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
-import org.orbisgis.core.renderer.se.UomNode;
-import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 
@@ -34,11 +31,11 @@ import org.orbisgis.core.ui.plugins.views.output.OutputManager;
  * @todo create subclasses : TextStroke, CompoundStroke and StrokeReference
  * @author maxence
  */
-public abstract class Stroke implements SymbolizerNode, UomNode {
+public abstract class Stroke implements SymbolizerNode {
 
     protected static OutputManager logger = Services.getOutputManager();
 
-	private Uom uom;
+	//private Uom uom;
     protected SymbolizerNode parent;
 
     private boolean linearRapport;
@@ -46,18 +43,18 @@ public abstract class Stroke implements SymbolizerNode, UomNode {
 
 
     protected Stroke(){
-        linearRapport = true;
-        offsetRapport = true;
+        linearRapport = false;
+        offsetRapport = false;
     }
 
     protected Stroke (StrokeType s){
         this();
 
-        if (s.getUnitOfMeasure() != null){
+        /*if (s.getUnitOfMeasure() != null){
             this.setUom(Uom.fromOgcURN(s.getUnitOfMeasure()));
         } else {
             this.setUom(null);
-        }
+        }*/
 
         if (s.getExtension() != null) {
             for (ExtensionParameterType param : s.getExtension().getExtensionParameter()) {
@@ -92,6 +89,7 @@ public abstract class Stroke implements SymbolizerNode, UomNode {
         return null;
     }
 
+    /*
 	@Override
     public final void setUom(Uom uom) {
         this.uom = uom;
@@ -109,7 +107,7 @@ public abstract class Stroke implements SymbolizerNode, UomNode {
         } else {
             return uom;
         }
-    }
+    }*/
 
     @Override
     public SymbolizerNode getParent() {
@@ -157,7 +155,7 @@ public abstract class Stroke implements SymbolizerNode, UomNode {
      * @param fid
      * @return
      */
-    public abstract double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException;
+    //public abstract double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException;
 
     /**
      *  Return the minimum required length to totally draw the stoke
@@ -186,9 +184,10 @@ public abstract class Stroke implements SymbolizerNode, UomNode {
     public abstract JAXBElement<? extends StrokeType> getJAXBElement();
 
     protected final void setJAXBProperties(StrokeType s) {
-        if (getOwnUom() != null) {
+
+        /*if (getOwnUom() != null) {
             s.setUnitOfMeasure(uom.toURN());
-        }
+        }*/
 
         ObjectFactory of = new ObjectFactory();
         ExtensionType exts = of.createExtensionType();

@@ -9,8 +9,8 @@ import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.map.MapTransform;
 
-import org.orbisgis.core.renderer.persistance.se.MatrixType;
-import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
+import net.opengis.se._2_0.core.MatrixType;
+import net.opengis.se._2_0.core.ObjectFactory;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;

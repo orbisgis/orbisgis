@@ -3,6 +3,7 @@
  * and open the template in the editor.
  */
 
+/*
 package org.orbisgis.core.renderer.se.parameter.real;
 
 import java.io.File;
@@ -14,11 +15,13 @@ import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-
+*/
 /**
  *
  * @author maxence
  */
+
+/*
 public class RealParameterFactoryTest extends TestCase {
     
     public RealParameterFactoryTest(String testName) {
@@ -35,9 +38,6 @@ public class RealParameterFactoryTest extends TestCase {
         super.tearDown();
     }
 
-	/**
-	 * Test of createFromString method, of class RealParameterFactory.
-	 */ 
 	public void testCreateFromString() {
 		try {
 			DataSourceFactory dsf = new DataSourceFactory();
@@ -57,3 +57,4 @@ public class RealParameterFactoryTest extends TestCase {
 	}
 
 }
+*/

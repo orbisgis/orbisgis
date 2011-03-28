@@ -37,12 +37,12 @@
  */
 package org.orbisgis.core.renderer.se.stroke;
 
-import org.orbisgis.core.renderer.persistance.se.StrokeAnnotationGraphicType;
+import net.opengis.se._2_0.core.StrokeAnnotationGraphicType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.RelativeOrientation;
 import org.orbisgis.core.renderer.se.common.Uom;
-import org.orbisgis.core.renderer.se.graphic.Graphic;
+
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
@@ -65,7 +65,7 @@ final class StrokeAnnotationGraphic implements SymbolizerNode {
 		}
 
 		if (sagt.getRelativeOrientation() != null) {
-			this.setRelativeOrientation(RelativeOrientation.readFromToken(sagt.getRelativeOrientation().value()));
+			this.setRelativeOrientation(RelativeOrientation.readFromToken(sagt.getRelativeOrientation()));
 		}
 
 		if (sagt.getRelativePosition() != null) {
@@ -127,7 +127,7 @@ final class StrokeAnnotationGraphic implements SymbolizerNode {
 		}
 
 		if (getRelativeOrientation() != null) {
-			sagt.setRelativeOrientation(orientation.getJaxbType());
+			sagt.setRelativeOrientation(orientation.getJAXBType());
 		}
 
 		if (getRelativePosition() != null) {

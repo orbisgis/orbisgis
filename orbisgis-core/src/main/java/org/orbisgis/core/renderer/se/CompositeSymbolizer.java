@@ -39,22 +39,15 @@
 
 package org.orbisgis.core.renderer.se;
 
-import java.awt.Graphics2D;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.SpatialDataSourceDecorator;
+import net.opengis.se._2_0.core.CompositeSymbolizerType;
+import net.opengis.se._2_0.core.ObjectFactory;
+import net.opengis.se._2_0.core.SymbolizerType;
 
-import org.gdms.driver.DriverException;
-import org.orbisgis.core.map.MapTransform;
-
-import org.orbisgis.core.renderer.persistance.se.CompositeSymbolizerType;
-import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
-import org.orbisgis.core.renderer.persistance.se.SymbolizerType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 /**
  *
@@ -87,11 +80,11 @@ public final class CompositeSymbolizer implements SymbolizerNode {
     public CompositeSymbolizer(JAXBElement<? extends SymbolizerType> st) throws InvalidStyle {
         symbolizers = new ArrayList<Symbolizer>();
         
-        if (st.getDeclaredType() == org.orbisgis.core.renderer.persistance.se.CompositeSymbolizerType.class){
+        if (st.getDeclaredType() == net.opengis.se._2_0.core.CompositeSymbolizerType.class){
             JAXBElement<CompositeSymbolizerType> jcs = (JAXBElement<CompositeSymbolizerType>)st;
 
             for (JAXBElement<? extends SymbolizerType> s : jcs.getValue().getSymbolizer()){
-                if (s.getDeclaredType() == org.orbisgis.core.renderer.persistance.se.CompositeSymbolizerType.class){
+                if (s.getDeclaredType() == net.opengis.se._2_0.core.CompositeSymbolizerType.class){
                     // If the sub-symbolizer is another collection : inline all
                     CompositeSymbolizer cs2 = new CompositeSymbolizer(s);
                     for (Symbolizer s2 : cs2.symbolizers){

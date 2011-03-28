@@ -1,17 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<FeatureTypeStyle xmlns="http://www.opengis.net/se" xmlns:ns2="http://www.opengis.net/ows/1.1" xmlns:ns3="http://www.opengis.net/ogc" xmlns:ns4="http://www.w3.org/1999/xlink">
+<FeatureTypeStyle xmlns="http://www.opengis.net/se/2.0/core" xmlns:ns2="http://www.opengis.net/ows/2.0" xmlns:ns3="http://www.opengis.net/fes/2.0" xmlns:ns4="http://www.w3.org/1999/xlink">
   <Rule>
-    <PointSymbolizer>
-      <Version>1.9</Version>
+    <PointSymbolizer uom=">urn:ogc:def:uom:se::mm" version="2.0.0">
       <Name>Default Symbolizer</Name>
       <Extension>
         <ExtensionParameter name="level">0</ExtensionParameter>
       </Extension>
-      <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
       <CompositeGraphic>
         <MarkGraphic>
           <WellKnownName>SQUARE</WellKnownName>
-          <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
           <ViewBox>
             <Width>270.0</Width>
             <Height>160.0</Height>
@@ -64,86 +61,74 @@
           </GraphicFill>
         </MarkGraphic>
 
-        <TextGraphic>
-          <Transform>
-            <Translate>
-              <X>-125.0</X>
+        <PointTextGraphic>
+	    <PointPosition>
+              <X>-134.0</X>
               <Y>-75.0</Y>
-            </Translate>
-          </Transform>
-          <StyledLabel>
+	    </PointPosition>
+          <PointLabel><StyledText>
             <LabelText>Linear/Offset</LabelText>
             <Font/>
-          </StyledLabel>
-        </TextGraphic>
+          </StyledText></PointLabel>
+        </PointTextGraphic>
 
-        <TextGraphic>
-          <Transform>
-            <Translate>
+        <PointTextGraphic>
+	    <PointPosition>
               <X>-105.0</X>
               <Y>-75.0</Y>
-            </Translate>
-          </Transform>
-          <StyledLabel>
+	    </PointPosition>
+          <PointLabel><StyledText>
             <LabelText>off/off</LabelText>
             <Font/>
-          </StyledLabel>
-        </TextGraphic>
+          </StyledText></PointLabel>
+        </PointTextGraphic>
 
-        <TextGraphic>
-          <Transform>
-            <Translate>
+        <PointTextGraphic>
+	    <PointPosition>
               <X>-75.0</X>
               <Y>-75.0</Y>
-            </Translate>
-          </Transform>
-          <StyledLabel>
+	    </PointPosition>
+          <PointLabel><StyledText>
             <LabelText>off/on</LabelText>
             <Font/>
-          </StyledLabel>
-        </TextGraphic>
+          </StyledText></PointLabel>
+        </PointTextGraphic>
 
-        <TextGraphic>
-          <Transform>
-            <Translate>
+        <PointTextGraphic>
+	    <PointPosition>
               <X>-45.0</X>
               <Y>-75.0</Y>
-            </Translate>
-          </Transform>
-          <StyledLabel>
+	    </PointPosition>
+          <PointLabel><StyledText>
             <LabelText>on/off</LabelText>
             <Font/>
-          </StyledLabel>
-        </TextGraphic>
+          </StyledText></PointLabel>
+        </PointTextGraphic>
 
-        <TextGraphic>
-          <Transform>
-            <Translate>
+        <PointTextGraphic>
+	    <PointPosition>
               <X>-15.0</X>
               <Y>-75.0</Y>
-            </Translate>
-          </Transform>
-          <StyledLabel>
+	    </PointPosition>
+          <PointLabel><StyledText>
             <LabelText>on/on</LabelText>
             <Font/>
-          </StyledLabel>
-        </TextGraphic>
+          </StyledText></PointLabel>
+        </PointTextGraphic>
 
 
 <!-- NEW LINE -->
 
-        <TextGraphic>
-          <Transform>
-            <Translate>
-              <X>-125.0</X>
+        <PointTextGraphic>
+	    <PointPosition>
+              <X>-134.0</X>
               <Y>-65.0</Y>
-            </Translate>
-          </Transform>
-          <StyledLabel>
+	    </PointPosition>
+          <PointLabel><StyledText>
             <LabelText>Dash 3mm</LabelText>
             <Font/>
-          </StyledLabel>
-        </TextGraphic>
+          </StyledText></PointLabel>
+        </PointTextGraphic>
 
 
         <MarkGraphic>
@@ -171,6 +156,7 @@
 	    <DashArray>3</DashArray>
           </PenStroke>
         </MarkGraphic>
+
         <MarkGraphic>
           <WellKnownName>SQUARE</WellKnownName>
           <ViewBox>
@@ -364,18 +350,16 @@
 
 <!-- NEW LINE -->
 
-        <TextGraphic>
-          <Transform>
-            <Translate>
-              <X>-125.0</X>
+        <PointTextGraphic>
+	    <PointPosition>
+              <X>-134.0</X>
               <Y>-45.0</Y>
-            </Translate>
-          </Transform>
-          <StyledLabel>
+	    </PointPosition>
+          <PointLabel><StyledText>
             <LabelText>Dash 3mm</LabelText>
             <Font/>
-          </StyledLabel>
-        </TextGraphic>
+          </StyledText></PointLabel>
+        </PointTextGraphic>
 
 
         <MarkGraphic>
@@ -586,18 +570,16 @@
 
 <!-- NEW LINE -->
 
-        <TextGraphic>
-          <Transform>
-            <Translate>
-              <X>-125.0</X>
+        <PointTextGraphic>
+	    <PointPosition>
+              <X>-134.0</X>
               <Y>-25.0</Y>
-            </Translate>
-          </Transform>
-          <StyledLabel>
+	    </PointPosition>
+          <PointLabel><StyledText>
             <LabelText>GraphicStroke</LabelText>
             <Font/>
-          </StyledLabel>
-        </TextGraphic>
+          </StyledText></PointLabel>
+        </PointTextGraphic>
 
         <MarkGraphic>
           <WellKnownName>SQUARE</WellKnownName>
@@ -798,18 +780,16 @@
 
 <!-- NEW LINE -->
 
-        <TextGraphic>
-          <Transform>
-            <Translate>
-              <X>-125.0</X>
+        <PointTextGraphic>
+	    <PointPosition>
+              <X>-134.0</X>
               <Y>-10.0</Y>
-            </Translate>
-          </Transform>
-          <StyledLabel>
+	    </PointPosition>
+          <PointLabel><StyledText>
             <LabelText>Avenue</LabelText>
             <Font/>
-          </StyledLabel>
-        </TextGraphic>
+          </StyledText></PointLabel>
+        </PointTextGraphic>
 
 
         <MarkGraphic>
@@ -825,14 +805,13 @@
             </Translate>
           </Transform>
                 <PerpendicularOffset>1.5</PerpendicularOffset>
-                <GraphicStroke>
+                <GraphicStroke relativeOrientation="normal">
             <Extension>
               <ExtensionParameter name="linearRapport">off</ExtensionParameter>
               <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
             </Extension>
                     <MarkGraphic>
                         <WellKnownName>CIRCLE</WellKnownName>
-                        <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
                         <ViewBox>
                             <Width>1.5</Width>
                         </ViewBox>
@@ -845,7 +824,6 @@
                         </PenStroke>
                     </MarkGraphic>
                     <Length>20.0</Length>
-                    <RelativeOrientation>normal</RelativeOrientation>
                 </GraphicStroke>
         </MarkGraphic>
         <MarkGraphic>
@@ -861,14 +839,13 @@
             </Translate>
           </Transform>
                 <PerpendicularOffset>-1.5</PerpendicularOffset>
-                <GraphicStroke>
+                <GraphicStroke relativeOrientation="normal">
             <Extension>
               <ExtensionParameter name="linearRapport">off</ExtensionParameter>
               <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
             </Extension>
                     <MarkGraphic>
                         <WellKnownName>CIRCLE</WellKnownName>
-                        <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
                         <ViewBox>
                             <Width>1.5</Width>
                         </ViewBox>
@@ -881,7 +858,6 @@
                         </PenStroke>
                     </MarkGraphic>
                     <Length>20.0</Length>
-                    <RelativeOrientation>normal</RelativeOrientation>
                 </GraphicStroke>
         </MarkGraphic>
         <MarkGraphic>
@@ -950,14 +926,13 @@
             </Translate>
           </Transform>
                 <PerpendicularOffset>1.5</PerpendicularOffset>
-                <GraphicStroke>
+                <GraphicStroke relativeOrientation="normal">
             <Extension>
               <ExtensionParameter name="linearRapport">off</ExtensionParameter>
               <ExtensionParameter name="offsetRapport">on</ExtensionParameter>
             </Extension>
                     <MarkGraphic>
                         <WellKnownName>CIRCLE</WellKnownName>
-                        <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
                         <ViewBox>
                             <Width>1.5</Width>
                         </ViewBox>
@@ -970,7 +945,6 @@
                         </PenStroke>
                     </MarkGraphic>
                     <Length>20.0</Length>
-                    <RelativeOrientation>normal</RelativeOrientation>
                 </GraphicStroke>
         </MarkGraphic>
         <MarkGraphic>
@@ -986,14 +960,13 @@
             </Translate>
           </Transform>
                 <PerpendicularOffset>-1.5</PerpendicularOffset>
-                <GraphicStroke>
+                <GraphicStroke relativeOrientation="normal">
             <Extension>
               <ExtensionParameter name="linearRapport">off</ExtensionParameter>
               <ExtensionParameter name="offsetRapport">on</ExtensionParameter>
             </Extension>
                     <MarkGraphic>
                         <WellKnownName>CIRCLE</WellKnownName>
-                        <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
                         <ViewBox>
                             <Width>1.5</Width>
                         </ViewBox>
@@ -1006,7 +979,6 @@
                         </PenStroke>
                     </MarkGraphic>
                     <Length>20.0</Length>
-                    <RelativeOrientation>normal</RelativeOrientation>
                 </GraphicStroke>
         </MarkGraphic>
         <MarkGraphic>
@@ -1074,14 +1046,13 @@
             </Translate>
           </Transform>
                 <PerpendicularOffset>1.5</PerpendicularOffset>
-                <GraphicStroke>
+                <GraphicStroke relativeOrientation="normal">
             <Extension>
               <ExtensionParameter name="linearRapport">on</ExtensionParameter>
               <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
             </Extension>
                     <MarkGraphic>
                         <WellKnownName>CIRCLE</WellKnownName>
-                        <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
                         <ViewBox>
                             <Width>1.5</Width>
                         </ViewBox>
@@ -1094,7 +1065,6 @@
                         </PenStroke>
                     </MarkGraphic>
                     <Length>20.0</Length>
-                    <RelativeOrientation>normal</RelativeOrientation>
                 </GraphicStroke>
         </MarkGraphic>
         <MarkGraphic>
@@ -1110,14 +1080,13 @@
             </Translate>
           </Transform>
                 <PerpendicularOffset>-1.5</PerpendicularOffset>
-                <GraphicStroke>
+                <GraphicStroke relativeOrientation="normal">
             <Extension>
               <ExtensionParameter name="linearRapport">on</ExtensionParameter>
               <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
             </Extension>
                     <MarkGraphic>
                         <WellKnownName>CIRCLE</WellKnownName>
-                        <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
                         <ViewBox>
                             <Width>1.5</Width>
                         </ViewBox>
@@ -1130,7 +1099,6 @@
                         </PenStroke>
                     </MarkGraphic>
                     <Length>20.0</Length>
-                    <RelativeOrientation>normal</RelativeOrientation>
                 </GraphicStroke>
         </MarkGraphic>
         <MarkGraphic>
@@ -1199,14 +1167,13 @@
             </Translate>
           </Transform>
                 <PerpendicularOffset>1.5</PerpendicularOffset>
-                <GraphicStroke>
+                <GraphicStroke relativeOrientation="normal">
             <Extension>
               <ExtensionParameter name="linearRapport">on</ExtensionParameter>
               <ExtensionParameter name="offsetRapport">on</ExtensionParameter>
             </Extension>
                     <MarkGraphic>
                         <WellKnownName>CIRCLE</WellKnownName>
-                        <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
                         <ViewBox>
                             <Width>1.5</Width>
                         </ViewBox>
@@ -1219,7 +1186,6 @@
                         </PenStroke>
                     </MarkGraphic>
                     <Length>20.0</Length>
-                    <RelativeOrientation>normal</RelativeOrientation>
                 </GraphicStroke>
         </MarkGraphic>
         <MarkGraphic>
@@ -1235,14 +1201,13 @@
             </Translate>
           </Transform>
                 <PerpendicularOffset>-1.5</PerpendicularOffset>
-                <GraphicStroke>
+                <GraphicStroke relativeOrientation="normal">
             <Extension>
               <ExtensionParameter name="linearRapport">on</ExtensionParameter>
               <ExtensionParameter name="offsetRapport">on</ExtensionParameter>
             </Extension>
                     <MarkGraphic>
                         <WellKnownName>CIRCLE</WellKnownName>
-                        <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
                         <ViewBox>
                             <Width>1.5</Width>
                         </ViewBox>
@@ -1255,7 +1220,6 @@
                         </PenStroke>
                     </MarkGraphic>
                     <Length>20.0</Length>
-                    <RelativeOrientation>normal</RelativeOrientation>
                 </GraphicStroke>
         </MarkGraphic>
         <MarkGraphic>
@@ -1312,18 +1276,16 @@
 
 <!-- NEW LINE -->
 
-        <TextGraphic>
-          <Transform>
-            <Translate>
-              <X>-125.0</X>
+        <PointTextGraphic>
+	    <PointPosition>
+              <X>-134.0</X>
               <Y>10.0</Y>
-            </Translate>
-          </Transform>
-          <StyledLabel>
+	    </PointPosition>
+          <PointLabel><StyledText>
             <LabelText>Compound</LabelText>
             <Font/>
-          </StyledLabel>
-        </TextGraphic>
+          </StyledText></PointLabel>
+        </PointTextGraphic>
 
         <MarkGraphic>
           <WellKnownName>SQUARE</WellKnownName>
@@ -1974,18 +1936,16 @@
 
 <!-- NEW LINE -->
 
-        <TextGraphic>
-          <Transform>
-            <Translate>
-              <X>-125.0</X>
+        <PointTextGraphic>
+	    <PointPosition>
+              <X>-134.0</X>
               <Y>25.0</Y>
-            </Translate>
-          </Transform>
-          <StyledLabel>
+	    </PointPosition>
+          <PointLabel><StyledText>
             <LabelText>GraphicStroke</LabelText>
             <Font/>
-          </StyledLabel>
-        </TextGraphic>
+          </StyledText></PointLabel>
+        </PointTextGraphic>
 
         <MarkGraphic>
           <WellKnownName>SQUARE</WellKnownName>
@@ -2178,7 +2138,6 @@
 	    <MarkGraphic />
           </GraphicStroke>
         </MarkGraphic>
-
 
      </CompositeGraphic>
     </PointSymbolizer>

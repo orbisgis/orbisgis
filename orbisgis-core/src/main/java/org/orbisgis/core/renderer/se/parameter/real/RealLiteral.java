@@ -40,8 +40,8 @@
 package org.orbisgis.core.renderer.se.parameter.real;
 
 import javax.xml.bind.JAXBElement;
+import net.opengis.fes._2.LiteralType;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.orbisgis.core.renderer.persistance.ogc.LiteralType;
 import org.orbisgis.core.renderer.se.parameter.Literal;
 
 public class RealLiteral extends Literal implements RealParameter {

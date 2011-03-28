@@ -1,13 +1,16 @@
 package org.orbisgis.core.renderer.se.common;
 
-import org.orbisgis.core.renderer.persistance.se.RelativeOrientationType;
+import net.opengis.se._2_0.core.ObjectFactory;
+import net.opengis.se._2_0.core.RelativeOrientationType;
+
 
 public enum RelativeOrientation {
 
 	PORTRAYAL, NORMAL, NORMAL_UP, LINE, LINE_UP;
 	// TODO NORMAL_REVERSE, LINE_REVERSE ?
 
-	public static RelativeOrientation readFromToken(String token) {
+	public static RelativeOrientation readFromToken(RelativeOrientationType rot) {
+        String token = rot.value();
 		if (token.equalsIgnoreCase("normal")) {
 			return RelativeOrientation.NORMAL;
 		} else if (token.equalsIgnoreCase("normalup")) {
@@ -21,16 +24,29 @@ public enum RelativeOrientation {
 		}
 	}
 
-	public RelativeOrientationType getJaxbType() {
+    public RelativeOrientationType getJAXBType(){
+	   switch (this){
+			case LINE:
+           case LINE_UP:
+			case NORMAL:
+			case NORMAL_UP:
+			case PORTRAYAL:
+		}
+		return null;
+
+    }
+
+
+	public String getAsString() {
 		switch (values()[ordinal()]) {
 			case LINE:
-				return RelativeOrientationType.LINE;
+				return "line";
 			case NORMAL:
-				return RelativeOrientationType.NORMAL;
+				return "normal";
 			case NORMAL_UP:
-				return RelativeOrientationType.NORMAL_UP;
+				return "normalUp";
 			case PORTRAYAL:
-				return RelativeOrientationType.PORTRAYAL;
+				return "portrayal";
 		}
 		return null;
 	}

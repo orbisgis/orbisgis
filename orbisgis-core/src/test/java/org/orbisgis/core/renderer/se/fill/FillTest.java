@@ -43,6 +43,10 @@ import com.sun.media.jai.widget.DisplayJAI;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import java.io.File;
 
 import java.io.IOException;
@@ -62,6 +66,7 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.FeatureTypeStyle;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 
@@ -112,22 +117,30 @@ public class FillTest extends TestCase {
         PointSymbolizer ps = (PointSymbolizer) fts.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
         GraphicCollection collec = ps.getGraphicCollection();
 
-        RenderableGraphics rg;
-        MapTransform mt = new MapTransform();
-        rg = collec.getGraphic(null, -1, false, mt);
+
+		MapTransform mt = new MapTransform();
+
+        double width = Uom.toPixel(270, Uom.MM, mt.getDpi(), null, null);
+        double height = Uom.toPixel(160, Uom.MM, mt.getDpi(), null, null);
+
+        //Rectangle2D.Double dim = new Rectangle2D.Double(-width/2, -height/2, width, height);
+        BufferedImage img = new BufferedImage((int)width, (int)height, BufferedImage.TYPE_4BYTE_ABGR);
+        //RenderableGraphics rg = new RenderableGraphics(dim);
+        Graphics2D rg = img.createGraphics();
+        rg.setRenderingHints(mt.getRenderingHints());
+        mt.setImage(img);
+
+        collec.draw(rg, null, -1, false, mt, AffineTransform.getTranslateInstance(width/2, height/2));
 
         rg.setPaint(Color.BLACK);
-        rg.drawLine((int) rg.getMinX(), 0, (int) (rg.getMinX() + rg.getWidth()), 0);
-        rg.drawLine(0, (int) rg.getMinY(), 0, (int) (rg.getMinY() + rg.getHeight()));
+        rg.drawLine(0, 0, (int) (width), 0);
+        rg.drawLine(0, 0, 0, (int)height);
 
-        dj.setBounds((int) rg.getMinX(), (int) rg.getMinY(), (int) rg.getWidth(), (int) rg.getHeight());
-        RenderedImage r = rg.createRendering(mt.getCurrentRenderContext());
-        dj.set(r, (int) rg.getWidth() / 2, (int) rg.getHeight() / 2);
+        dj.setBounds(0, 0, (int)width, (int)height);
+        dj.set(img, 0, 0);
 
         File file = new File("/tmp/fill.png");
-        ImageIO.write(r, "png", file);
-
-
+        ImageIO.write(img, "png", file);
 
         // Add to the JFrame’s ContentPane an instance of JScrollPane
         // containing the DisplayJAI instance.
@@ -136,7 +149,7 @@ public class FillTest extends TestCase {
 
         // Set the closing operation so the application is finished.
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize((int) rg.getWidth(), (int) rg.getHeight() + 24); // adjust the frame size.
+        frame.setSize((int) width, (int) height + 24); // adjust the frame size.
         frame.setVisible(true); // show the frame.
 
         System.out.print("");

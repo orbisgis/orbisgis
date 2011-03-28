@@ -37,7 +37,7 @@ import org.orbisgis.core.layerModel.GdmsLayer;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.renderer.Renderer;
-import org.orbisgis.core.renderer.persistance.se.FeatureTypeStyleType;
+import net.opengis.se._2_0.core.FeatureTypeStyleType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
 

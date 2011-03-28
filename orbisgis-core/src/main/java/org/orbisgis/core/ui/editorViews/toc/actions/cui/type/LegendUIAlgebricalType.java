@@ -37,7 +37,7 @@
  */
 
 
-
+/*
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.type;
 
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
@@ -47,6 +47,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real.LegendUIAlgebricalPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real.LegendUIMetaRealPanel;
 
+*/
 /**
  *
  * @author maxence

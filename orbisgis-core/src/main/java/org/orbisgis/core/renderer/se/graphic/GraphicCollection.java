@@ -35,14 +35,11 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-
-
-
 package org.orbisgis.core.renderer.se.graphic;
 
+import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
-import java.awt.image.RenderedImage;
 
 import java.io.IOException;
 
@@ -50,13 +47,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.renderer.persistance.se.CompositeGraphicType;
-import org.orbisgis.core.renderer.persistance.se.GraphicType;
-import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
+import net.opengis.se._2_0.core.CompositeGraphicType;
+import net.opengis.se._2_0.core.GraphicType;
+import net.opengis.se._2_0.core.ObjectFactory;
 
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -176,43 +172,8 @@ public final class GraphicCollection implements SymbolizerNode {
         parent = node;
     }
 
-    /**
-     * Convert a graphic collection to a drawable Graphics2D.
-     * If this collection doesn't depends on features, this g2 
-     * can be used for all features.
-     *
-     * Callers to this method are (will be...) :
-     *    - GraphicStroke
-     *    - GraphicFill
-     *    - DensityFill
-     *    - DotMapFill
-     *    - AxisChart
-     *    - PointSymbolizer
-     *
-     *
-     * @param feat The feature the graphic is for
-     * @param selected is the feature selected ?
-     * @param mt the current map transform
-     * @return a specific image for this feature
-     * @throws ParameterException
-     * @throws IOException
-     */
-    public RenderableGraphics getGraphic(SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt)
+    public Rectangle2D getBounds(SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt)
             throws ParameterException, IOException {
-        /*
-         * if the graphics collection doesn't depends on feature and the current
-         * feature is not selected, use cached graphic
-         * Note that the graphic is regenerated every time the scale change (to
-         * support gm ant gft units)
-         */
-        if (!selected
-                && this.dependsOnFeature().isEmpty()
-                && this.graphicCache != null
-                && mt.getScaleDenominator() == this.scaleCache) {
-            return graphicCache;
-        }
-
-        ArrayList<RenderableGraphics> images = new ArrayList<RenderableGraphics>();
 
         double xmin = Double.MAX_VALUE;
         double ymin = Double.MAX_VALUE;
@@ -226,15 +187,12 @@ public final class GraphicCollection implements SymbolizerNode {
         while (it.hasNext()) {
             Graphic g = it.next();
             try {
-                System.out.println (" Go for graphic !");
-                RenderableGraphics img = g.getRenderableGraphics(sds, fid, selected, mt);
-                if (img != null) {
-                    float mX = img.getMinX();
-                    float w = img.getWidth();
-                    float mY = img.getMinY();
-                    float h = img.getHeight();
-
-                    images.add(img);
+                Rectangle2D bounds = g.getBounds(sds, fid, mt);
+                if (bounds != null) {
+                    double mX = bounds.getMinX();
+                    double w = bounds.getWidth();
+                    double mY = bounds.getMinY();
+                    double h = bounds.getHeight();
 
                     if (mX < xmin) {
                         xmin = mX;
@@ -245,12 +203,12 @@ public final class GraphicCollection implements SymbolizerNode {
                     if (mX + w > xmax) {
                         xmax = mX + w;
                     }
-                    if (img.getMinY() + img.getHeight() > ymax) {
+                    if (bounds.getMinY() + bounds.getHeight() > ymax) {
                         ymax = mY + h;
                     }
                 }
             } catch (ParameterException ex) {
-                Services.getErrorManager().error("Erroi in graphic composition : " + ex.getMessage());
+                Services.getErrorManager().error("Error during graphic composition : " + ex.getMessage());
             }
         }
 
@@ -258,20 +216,30 @@ public final class GraphicCollection implements SymbolizerNode {
         double height = ymax - ymin;
 
         if (width > 0 && height > 0) {
-            RenderableGraphics rg = Graphic.getNewRenderableGraphics(new Rectangle2D.Double(xmin, ymin, xmax - xmin, ymax - ymin), 0.0, mt);
-
-            for (RenderableGraphics g : images) {
-                //rg.drawRenderableImage(g, new AffineTransform());
-                rg.drawRenderedImage(g.createRendering(mt.getCurrentRenderContext()), new AffineTransform());
-            }
-
-            if (!selected && this.dependsOnFeature().isEmpty()) {
-                scaleCache = mt.getScaleDenominator();
-                graphicCache = rg;
-            }
-            return rg;
+            return new Rectangle2D.Double(xmin, ymin, xmax - xmin, ymax - ymin);
         } else {
             return null;
+        }
+    }
+
+    /**
+     *
+     * @param g2
+     * @param sds
+     * @param fid
+     * @param selected
+     * @param mt
+     * @throws ParameterException
+     * @throws IOException
+     */
+    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt, AffineTransform at)
+            throws ParameterException, IOException {
+        for (Graphic g : graphics) {
+            try {
+                g.draw(g2, sds, fid, selected, mt, at);
+            } catch (ParameterException ex) {
+                Services.getErrorManager().error("Could not render graphic : " + ex);
+            }
         }
     }
 
@@ -281,17 +249,6 @@ public final class GraphicCollection implements SymbolizerNode {
             result += " " + g.dependsOnFeature();
         }
         return result.trim();
-    }
-
-    public double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
-        double maxWidth = 0.0;
-
-        Iterator<Graphic> it = graphics.iterator();
-        while (it.hasNext()) {
-            Graphic g = it.next();
-            maxWidth = Math.max(g.getMaxWidth(sds, fid, mt), maxWidth);
-        }
-        return maxWidth;
     }
 
     public JAXBElement<? extends GraphicType> getJAXBElement() {
@@ -313,33 +270,6 @@ public final class GraphicCollection implements SymbolizerNode {
         }
     }
 
-    public RenderedImage getCache(SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt)
-            throws ParameterException, IOException {
-
-        /*if (!selected && ! this.dependsOnFeature() && imageCache != null){
-        return imageCache;
-        }*/
-
-
-        RenderableGraphics rGraphic = this.getGraphic(sds, fid, selected, mt);
-        RenderedImage rImage = null;
-        if (rGraphic != null) {
-            rImage = rGraphic.createRendering(mt.getCurrentRenderContext());
-        }
-
-        /*
-         * Only cache if the graphic doesn't depends on features attribute
-         * and only if it's not a selected highlighted graphic
-         */
-        if (!selected && this.dependsOnFeature().isEmpty()) {
-            this.imageCache = rImage;
-        }
-
-        return rImage;
-    }
-    RenderableGraphics graphicCache = null;
-    RenderedImage imageCache = null;
-    double scaleCache = -1;
     private ArrayList<Graphic> graphics;
     private SymbolizerNode parent;
 }

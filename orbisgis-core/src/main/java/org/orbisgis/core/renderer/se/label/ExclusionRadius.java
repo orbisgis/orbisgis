@@ -5,8 +5,10 @@
 package org.orbisgis.core.renderer.se.label;
 
 import javax.xml.bind.JAXBElement;
-import org.orbisgis.core.renderer.persistance.se.ExclusionRadiusType;
-import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
+
+import net.opengis.se._2_0.core.ExclusionRadiusType;
+import net.opengis.se._2_0.core.ObjectFactory;
+
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
@@ -28,8 +30,8 @@ public final class ExclusionRadius extends ExclusionZone {
             setRadius(SeParameterFactory.createRealParameter(e.getRadius()));
         }
 
-        if (e.getUnitOfMeasure() != null){
-            setUom(Uom.fromOgcURN(e.getUnitOfMeasure()));
+        if (e.getUom() != null){
+            setUom(Uom.fromOgcURN(e.getUom()));
         }
     }
 
@@ -49,7 +51,7 @@ public final class ExclusionRadius extends ExclusionZone {
         ExclusionRadiusType r = new ExclusionRadiusType();
 
         if (uom != null) {
-            r.setUnitOfMeasure(uom.toString());
+            r.setUom(uom.toString());
         }
         if (radius != null) {
             r.setRadius(radius.getJAXBParameterValueType());

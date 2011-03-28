@@ -40,11 +40,6 @@
 
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.type;
 
-import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.graphic.LegendUIWellKnownNamePanel;
-
 /**
  *
  * @author maxence

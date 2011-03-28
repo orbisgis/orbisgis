@@ -42,6 +42,8 @@ import com.sun.media.jai.widget.DisplayJAI;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
@@ -57,6 +59,7 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.FeatureTypeStyle;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 
@@ -108,9 +111,14 @@ public class ProportionalSymbolsTest extends TestCase {
         PointSymbolizer ps = (PointSymbolizer) fts.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
         GraphicCollection collec = ps.getGraphicCollection();
 
-        RenderableGraphics rg;
 		MapTransform mt = new MapTransform();
-        rg = collec.getGraphic(null, -1, false, mt);
+        double width = Uom.toPixel(270, Uom.MM, mt.getDpi(), null, null);
+        double height = Uom.toPixel(160, Uom.MM, mt.getDpi(), null, null);
+
+        Rectangle2D.Double dim = new Rectangle2D.Double(-width/2, -height/2, width, height);
+        RenderableGraphics rg = new RenderableGraphics(dim);
+
+        collec.draw(rg, null, -1, false, mt, new AffineTransform());
 
         rg.setPaint(Color.BLACK);
         rg.drawLine((int)rg.getMinX(), 0, (int)(rg.getMinX() + rg.getWidth()), 0);

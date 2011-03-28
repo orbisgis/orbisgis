@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<FeatureTypeStyle xmlns="http://www.opengis.net/se" xmlns:ns2="http://www.opengis.net/ows/1.1" xmlns:ogc="http://www.opengis.net/ogc" xmlns:ns4="http://www.w3.org/1999/xlink">
+<FeatureTypeStyle xmlns="http://www.opengis.net/se/2.0/core" xmlns:ns2="http://www.opengis.net/ows/2.0" xmlns:fes="http://www.opengis.net/fes/2.0" xmlns:ns4="http://www.w3.org/1999/xlink">
   <Rule>
-    <PointSymbolizer>
-      <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
+    <PointSymbolizer uom="urn:ogc:def:uom:se::mm">
       <CompositeGraphic>
         <!-- Background: draughtboard -->
         <MarkGraphic>
@@ -57,15 +56,15 @@
         <WellKnownName>Circle</WellKnownName>
           <ViewBox>
             <Width>
-              <ogc:Mul>
-                <ogc:Literal>10</ogc:Literal>
-                <Sqrt>
-                  <ogc:Div>
-                    <ogc:Literal>10</ogc:Literal>
-                    <ogc:Literal>25000</ogc:Literal>
-                  </ogc:Div>
-                </Sqrt>
-              </ogc:Mul>
+	      <fes:Function name="mul">
+                <fes:Literal>10</fes:Literal>
+	        <fes:Function name="sqrt">
+	          <fes:Function name="div">
+                    <fes:Literal>10</fes:Literal>
+                    <fes:Literal>25000</fes:Literal>
+		  </fes:Function>
+		</fes:Function>
+              </fes:Function>
             </Width>
           </ViewBox>
 	  <Transform>
@@ -85,15 +84,15 @@
         <WellKnownName>Circle</WellKnownName>
           <ViewBox>
             <Width>
-              <ogc:Mul>
-                <ogc:Literal>10</ogc:Literal>
-                <Sqrt>
-                  <ogc:Div>
-                    <ogc:Literal>2500</ogc:Literal>
-                    <ogc:Literal>25000</ogc:Literal>
-                  </ogc:Div>
-                </Sqrt>
-              </ogc:Mul>
+	      <fes:Function name="mul">
+                <fes:Literal>10</fes:Literal>
+	        <fes:Function name="sqrt">
+	          <fes:Function name="div">
+                    <fes:Literal>2500</fes:Literal>
+                    <fes:Literal>25000</fes:Literal>
+		  </fes:Function>
+		</fes:Function>
+              </fes:Function>
             </Width>
           </ViewBox>
 	  <Transform>
@@ -112,15 +111,15 @@
         <WellKnownName>Circle</WellKnownName>
           <ViewBox>
             <Width>
-              <ogc:Mul>
-                <ogc:Literal>10</ogc:Literal>
-                <Sqrt>
-                  <ogc:Div>
-                    <ogc:Literal>5000</ogc:Literal>
-                    <ogc:Literal>25000</ogc:Literal>
-                  </ogc:Div>
-                </Sqrt>
-              </ogc:Mul>
+	      <fes:Function name="mul">
+                <fes:Literal>10</fes:Literal>
+	        <fes:Function name="sqrt">
+	          <fes:Function name="div">
+                    <fes:Literal>5000</fes:Literal>
+                    <fes:Literal>25000</fes:Literal>
+		  </fes:Function>
+		</fes:Function>
+              </fes:Function>
             </Width>
           </ViewBox>
 	  <Transform>
@@ -139,15 +138,15 @@
         <WellKnownName>Circle</WellKnownName>
           <ViewBox>
             <Width>
-              <ogc:Mul>
-                <ogc:Literal>10</ogc:Literal>
-                <Sqrt>
-                  <ogc:Div>
-                    <ogc:Literal>7500</ogc:Literal>
-                    <ogc:Literal>25000</ogc:Literal>
-                  </ogc:Div>
-                </Sqrt>
-              </ogc:Mul>
+	      <fes:Function name="mul">
+                <fes:Literal>10</fes:Literal>
+	        <fes:Function name="sqrt">
+	          <fes:Function name="div">
+                    <fes:Literal>7500</fes:Literal>
+                    <fes:Literal>25000</fes:Literal>
+		  </fes:Function>
+		</fes:Function>
+              </fes:Function>
             </Width>
           </ViewBox>
 	  <Transform>
@@ -167,15 +166,15 @@
         <WellKnownName>Circle</WellKnownName>
           <ViewBox>
             <Width>
-              <ogc:Mul>
-                <ogc:Literal>10</ogc:Literal>
-                <Sqrt>
-                  <ogc:Div>
-                    <ogc:Literal>10000</ogc:Literal>
-                    <ogc:Literal>25000</ogc:Literal>
-                  </ogc:Div>
-                </Sqrt>
-              </ogc:Mul>
+	      <fes:Function name="mul">
+                <fes:Literal>10</fes:Literal>
+	        <fes:Function name="sqrt">
+	          <fes:Function name="div">
+                    <fes:Literal>10000</fes:Literal>
+                    <fes:Literal>25000</fes:Literal>
+		  </fes:Function>
+		</fes:Function>
+              </fes:Function>
             </Width>
           </ViewBox>
 	  <Transform>
@@ -194,15 +193,15 @@
         <WellKnownName>Circle</WellKnownName>
           <ViewBox>
             <Width>
-              <ogc:Mul>
-                <ogc:Literal>10</ogc:Literal>
-                <Sqrt>
-                  <ogc:Div>
-                    <ogc:Literal>12500</ogc:Literal>
-                    <ogc:Literal>25000</ogc:Literal>
-                  </ogc:Div>
-                </Sqrt>
-              </ogc:Mul>
+	      <fes:Function name="mul">
+                <fes:Literal>10</fes:Literal>
+	        <fes:Function name="sqrt">
+	          <fes:Function name="div">
+                    <fes:Literal>12500</fes:Literal>
+                    <fes:Literal>25000</fes:Literal>
+		  </fes:Function>
+		</fes:Function>
+              </fes:Function>
             </Width>
           </ViewBox>
 	  <Transform>
@@ -222,15 +221,15 @@
         <WellKnownName>Circle</WellKnownName>
           <ViewBox>
             <Width>
-              <ogc:Mul>
-                <ogc:Literal>10</ogc:Literal>
-                <Sqrt>
-                  <ogc:Div>
-                    <ogc:Literal>15000</ogc:Literal>
-                    <ogc:Literal>25000</ogc:Literal>
-                  </ogc:Div>
-                </Sqrt>
-              </ogc:Mul>
+	      <fes:Function name="mul">
+                <fes:Literal>10</fes:Literal>
+	        <fes:Function name="sqrt">
+	          <fes:Function name="div">
+                    <fes:Literal>15000</fes:Literal>
+                    <fes:Literal>25000</fes:Literal>
+		  </fes:Function>
+		</fes:Function>
+              </fes:Function>
             </Width>
           </ViewBox>
 	  <Transform>
@@ -251,15 +250,15 @@
         <WellKnownName>Circle</WellKnownName>
           <ViewBox>
             <Width>
-              <ogc:Mul>
-                <ogc:Literal>10</ogc:Literal>
-                <Sqrt>
-                  <ogc:Div>
-                    <ogc:Literal>17500</ogc:Literal>
-                    <ogc:Literal>25000</ogc:Literal>
-                  </ogc:Div>
-                </Sqrt>
-              </ogc:Mul>
+	      <fes:Function name="mul">
+                <fes:Literal>10</fes:Literal>
+	        <fes:Function name="sqrt">
+	          <fes:Function name="div">
+                    <fes:Literal>17500</fes:Literal>
+                    <fes:Literal>25000</fes:Literal>
+		  </fes:Function>
+		</fes:Function>
+              </fes:Function>
             </Width>
           </ViewBox>
 	  <Transform>
@@ -280,15 +279,15 @@
         <WellKnownName>Circle</WellKnownName>
           <ViewBox>
             <Width>
-              <ogc:Mul>
-                <ogc:Literal>10</ogc:Literal>
-                <Sqrt>
-                  <ogc:Div>
-                    <ogc:Literal>20000</ogc:Literal>
-                    <ogc:Literal>25000</ogc:Literal>
-                  </ogc:Div>
-                </Sqrt>
-              </ogc:Mul>
+	      <fes:Function name="mul">
+                <fes:Literal>10</fes:Literal>
+	        <fes:Function name="sqrt">
+	          <fes:Function name="div">
+                    <fes:Literal>20000</fes:Literal>
+                    <fes:Literal>25000</fes:Literal>
+		  </fes:Function>
+		</fes:Function>
+              </fes:Function>
             </Width>
           </ViewBox>
 	  <Transform>
@@ -309,15 +308,15 @@
         <WellKnownName>Circle</WellKnownName>
           <ViewBox>
             <Width>
-              <ogc:Mul>
-                <ogc:Literal>10</ogc:Literal>
-                <Sqrt>
-                  <ogc:Div>
-                    <ogc:Literal>22500</ogc:Literal>
-                    <ogc:Literal>25000</ogc:Literal>
-                  </ogc:Div>
-                </Sqrt>
-              </ogc:Mul>
+	      <fes:Function name="mul">
+                <fes:Literal>10</fes:Literal>
+	        <fes:Function name="sqrt">
+	          <fes:Function name="div">
+                    <fes:Literal>22500</fes:Literal>
+                    <fes:Literal>25000</fes:Literal>
+		  </fes:Function>
+		</fes:Function>
+              </fes:Function>
             </Width>
           </ViewBox>
 	  <Transform>
@@ -338,15 +337,15 @@
         <WellKnownName>Circle</WellKnownName>
           <ViewBox>
             <Width>
-              <ogc:Mul>
-                <ogc:Literal>10</ogc:Literal>
-                <Sqrt>
-                  <ogc:Div>
-                    <ogc:Literal>25000</ogc:Literal>
-                    <ogc:Literal>25000</ogc:Literal>
-                  </ogc:Div>
-                </Sqrt>
-              </ogc:Mul>
+	      <fes:Function name="mul">
+                <fes:Literal>10</fes:Literal>
+	        <fes:Function name="sqrt">
+	          <fes:Function name="div">
+                    <fes:Literal>25000</fes:Literal>
+                    <fes:Literal>25000</fes:Literal>
+		  </fes:Function>
+		</fes:Function>
+              </fes:Function>
             </Width>
           </ViewBox>
 	  <Transform>
@@ -360,7 +359,7 @@
           </SolidFill>
         <PenStroke />
       </MarkGraphic>
-
+<!--
       <TextGraphic>
         <StyledLabel>
           <LabelText>0</LabelText>
@@ -836,7 +835,6 @@
  	</MarkGraphic>
 
 
-<!-- #######- -->
 
       <MarkGraphic>
         <WellKnownName>Circle</WellKnownName>
@@ -1161,7 +1159,7 @@
         <PenStroke />
       </MarkGraphic>
 
-
+-->
 
       </CompositeGraphic>
 

@@ -8,20 +8,18 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
-import java.awt.image.RenderedImage;
+import java.awt.geom.Rectangle2D;
 import java.io.IOException;
-import java.util.ArrayList;
 
-import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
 
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
 
-import org.orbisgis.core.renderer.persistance.se.LineLabelType;
-import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
-import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
+import net.opengis.se._2_0.core.LineLabelType;
+import net.opengis.se._2_0.core.ObjectFactory;
+import net.opengis.se._2_0.core.ParameterValueType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -57,21 +55,10 @@ public class LineLabel extends Label {
     public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, 
             Shape shp, boolean selected, MapTransform mt, RenderContext perm)
             throws ParameterException, IOException {
-        //RenderableGraphics l = this.label.getImage(sds, fid, selected, mt);
-        // 1. GetGlyphs
-        System.out.println("Draw LineLabel");
-        ArrayList<RenderableGraphics> glyphs = this.label.getGlyphs(sds, fid, selected, mt);
-
         double emWidth = label.getEmInPixel(sds, fid, mt);
 
-        double totalWidth = 0.0;
-        for (RenderableGraphics glyph : glyphs) {
-            if (glyph != null) {
-                totalWidth += glyph.getWidth();
-            } else {
-                totalWidth += emWidth;
-            }
-        }
+        Rectangle2D bounds = label.getBounds(g2, sds, fid, mt);
+        double totalWidth = bounds.getWidth();
 
         // TODO, is shp a polygon ? Yes so create a line like:
 
@@ -156,11 +143,14 @@ public class LineLabel extends Label {
         double currentPos = startAt;
         double glyphWidth;
 
-        for (RenderableGraphics glyph : glyphs) {
-            if (glyph != null) {
-                RenderedImage ri = glyph.createRendering(mt.getCurrentRenderContext());
+        String text = label.getLabelText().getValue(sds, fid);
+        String[] glyphs = text.split("");
 
-                glyphWidth = ri.getWidth()*way;
+        for (String glyph : glyphs) {
+            if (glyph != null && !glyph.isEmpty()) {
+                Rectangle2D gBounds = label.getBounds(g2, glyph, sds, fid, mt);
+
+                glyphWidth = gBounds.getWidth()*way;
 
                 //System.out.println("Glyph : curPos:" + currentPos + " w: " + ri.getWidth());
                 Point2D.Double pAt = ShapeHelper.getPointAt(shp, currentPos);
@@ -172,28 +162,14 @@ public class LineLabel extends Label {
                 at.concatenate(AffineTransform.getRotateInstance(theta));
 
                 currentPos += glyphWidth;
+                label.draw(g2, glyph, sds, fid, selected, mt, at, perm);
 
-                g2.drawRenderedImage(ri , at);
-
-
+                //g2.drawRenderedImage(ri , at);
             } else {
                 //System.out.println ("Space...");
                 currentPos += emWidth*way;
             }
         }
-
-
-        // convert lineShape to a point
-        // create AT according to rotation and exclusionZone
-
-        /*g2.drawImage(label,
-        new AffineTransformOp(AT,
-        AffineTransformOp.TYPE_BICUBIC),
-        -label.getWidth() / 2,
-        -label.getHeight() / 2);
-
-         */
-
     }
 
     @Override
@@ -206,7 +182,7 @@ public class LineLabel extends Label {
         LineLabelType ll = new LineLabelType();
 
         if (uom != null) {
-            ll.setUnitOfMeasure(uom.toString());
+            ll.setUom(uom.toString());
         }
 
         if (hAlign != null) {
@@ -222,7 +198,7 @@ public class LineLabel extends Label {
         }
 
         if (label != null) {
-            ll.setStyledLabel(label.getJAXBType());
+            ll.setStyledText(label.getJAXBType());
         }
 
         return ll;

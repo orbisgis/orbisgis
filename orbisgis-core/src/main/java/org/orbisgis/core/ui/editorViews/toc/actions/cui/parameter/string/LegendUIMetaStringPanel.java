@@ -80,6 +80,7 @@ public abstract class LegendUIMetaStringPanel extends LegendUIAbstractMetaPanel 
 
 	@Override
 	protected final LegendUIComponent getCompForClass(Class newClass) {
+        System.out.println ("Youpi: " + newClass);
 		if (newClass == StringLiteral.class) {
 			StringLiteral s;
 			if (string instanceof StringLiteral) {

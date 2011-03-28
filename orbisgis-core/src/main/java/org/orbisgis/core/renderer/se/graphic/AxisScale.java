@@ -1,6 +1,6 @@
 package org.orbisgis.core.renderer.se.graphic;
 
-import org.orbisgis.core.renderer.persistance.se.AxisScaleType;
+import net.opengis.se._2_0.thematic.AxisScaleType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
@@ -14,8 +14,8 @@ public final class AxisScale {
            this.setAxisLength(SeParameterFactory.createRealParameter(as.getAxisLength()));
        }
 
-       if (as.getMeasure() != null){
-           this.setMeasure(SeParameterFactory.createRealParameter(as.getMeasure()));
+       if (as.getValue() != null){
+           this.setMeasure(SeParameterFactory.createRealParameter(as.getValue()));
        }
     }
 
@@ -49,7 +49,7 @@ public final class AxisScale {
 
         }
         if (measure != null) {
-            scale.setMeasure(measure.getJAXBParameterValueType());
+            scale.setValue(measure.getJAXBParameterValueType());
         }
 
         return scale;

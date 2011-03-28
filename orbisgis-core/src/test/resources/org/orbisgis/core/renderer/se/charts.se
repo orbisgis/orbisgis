@@ -1,17 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<FeatureTypeStyle xmlns="http://www.opengis.net/se" xmlns:ns2="http://www.opengis.net/ows/1.1" xmlns:ns3="http://www.opengis.net/ogc" xmlns:ns4="http://www.w3.org/1999/xlink">
+<FeatureTypeStyle xmlns="http://www.opengis.net/se/2.0/core" 
+	xmlns:tse="http://www.opengis.net/se/2.0/thematic" 
+	xmlns:ns2="http://www.opengis.net/ows/2.0" 
+	xmlns:ns3="http://www.opengis.net/fes/2.0" 
+	xmlns:ns4="http://www.w3.org/1999/xlink">
   <Rule>
-    <PointSymbolizer>
-      <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
+    <PointSymbolizer uom=">urn:ogc:def:uom:se::mm" version="2.0.0">
       <CompositeGraphic>
         <!-- Background: draughtboard -->
         <MarkGraphic>
-          <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
           <WellKnownName>SQUARE</WellKnownName>
           <ViewBox>
             <Width>270</Width>
             <Height>160</Height>
            </ViewBox>
+	   <SolidFill>
+	     <Color>#ffffff</Color>
+	   </SolidFill>
                 <GraphicFill>
                     <CompositeGraphic>
                     <MarkGraphic>
@@ -54,366 +59,366 @@
                 </GraphicFill>
             </MarkGraphic>
 
-            <PieChart>
+            <tse:PieChart>
                 <Radius>10</Radius>
-            	<!--<HoleRadius>3</HoleRadius>-->
+            	<!--<tse:HoleRadius>3</tse:HoleRadius>-->
             	<PenStroke />
-                <Slice>
+                <tse:Slice>
                     <Name>A</Name>
                     <Value>140</Value>
                     <SolidFill>
                         <Color>#Eb6101</Color>
                         <Opacity>60.0</Opacity>
                     </SolidFill>
-                </Slice>
+                </tse:Slice>
 
-                <Slice>
+                <tse:Slice>
                     <Name>B</Name>
                     <Value>20</Value>
                     <SolidFill>
                         <Color>#E06161</Color>
                         <Opacity>60.0</Opacity>
                     </SolidFill>
-                </Slice>
-                <Slice>
+                </tse:Slice>
+                <tse:Slice>
                     <Name>C</Name>
                     <Value>200</Value>
                     <SolidFill>
                         <Color>#86B51E</Color>
                     <Opacity>60.0</Opacity>
                 </SolidFill>
-            </Slice>
-            <Slice>
+            </tse:Slice>
+            <tse:Slice>
                 <Name>D</Name>
                 <Value>150</Value>
                 <SolidFill>
                     <Color>#1E69B5</Color>
                     <Opacity>60.0</Opacity>
                 </SolidFill>
-            </Slice>
+            </tse:Slice>
 	    <Transform>
 	        <Translate>
 		  <X>-120</X>
 		  <Y>-65</Y>
 	        </Translate>
 	    </Transform>
-        </PieChart>
+        </tse:PieChart>
 
-            <PieChart>
+            <tse:PieChart>
                 <Radius>10</Radius>
-            	<!--<HoleRadius>3</HoleRadius>-->
+            	<!--<tse:HoleRadius>3</tse:HoleRadius>-->
             	<PenStroke />
-                <Slice>
+                <tse:Slice>
                     <Name>A</Name>
                     <Value>0</Value>
                     <SolidFill>
                         <Color>#Eb6101</Color>
                         <Opacity>60.0</Opacity>
                     </SolidFill>
-                </Slice>
+                </tse:Slice>
 
-                <Slice>
+                <tse:Slice>
                     <Name>B</Name>
                     <Value>20</Value>
                     <SolidFill>
                         <Color>#E06161</Color>
                         <Opacity>60.0</Opacity>
                     </SolidFill>
-                </Slice>
-                <Slice>
+                </tse:Slice>
+                <tse:Slice>
                     <Name>C</Name>
                     <Value>200</Value>
                     <SolidFill>
                         <Color>#86B51E</Color>
                     <Opacity>60.0</Opacity>
                 </SolidFill>
-            </Slice>
-            <Slice>
+            </tse:Slice>
+            <tse:Slice>
                 <Name>D</Name>
                 <Value>150</Value>
                 <SolidFill>
                     <Color>#1E69B5</Color>
                     <Opacity>60.0</Opacity>
                 </SolidFill>
-            </Slice>
+            </tse:Slice>
 	    <Transform>
 	        <Translate>
 		  <X>-90</X>
 		  <Y>-65</Y>
 	        </Translate>
 	    </Transform>
-        </PieChart>
+        </tse:PieChart>
 
-            <PieChart>
+            <tse:PieChart>
                 <Radius>10</Radius>
-            	<!--<HoleRadius>3</HoleRadius>-->
+            	<!--<tse:HoleRadius>3</tse:HoleRadius>-->
             	<PenStroke />
-                <Slice>
+                <tse:Slice>
                     <Name>A</Name>
                     <Value>0</Value>
                     <SolidFill>
                         <Color>#Eb6101</Color>
                         <Opacity>60.0</Opacity>
                     </SolidFill>
-                </Slice>
+                </tse:Slice>
 
-                <Slice>
+                <tse:Slice>
                     <Name>B</Name>
                     <Value>0</Value>
                     <SolidFill>
                         <Color>#E06161</Color>
                         <Opacity>60.0</Opacity>
                     </SolidFill>
-                </Slice>
-                <Slice>
+                </tse:Slice>
+                <tse:Slice>
                     <Name>C</Name>
                     <Value>200</Value>
                     <SolidFill>
                         <Color>#86B51E</Color>
                     <Opacity>60.0</Opacity>
                 </SolidFill>
-            </Slice>
-            <Slice>
+            </tse:Slice>
+            <tse:Slice>
                 <Name>D</Name>
                 <Value>150</Value>
                 <SolidFill>
                     <Color>#1E69B5</Color>
                     <Opacity>60.0</Opacity>
                 </SolidFill>
-            </Slice>
+            </tse:Slice>
 	    <Transform>
 	        <Translate>
 		  <X>-60</X>
 		  <Y>-65</Y>
 	        </Translate>
 	    </Transform>
-        </PieChart>
+        </tse:PieChart>
 
 
-            <PieChart>
+            <tse:PieChart>
                 <Radius>10</Radius>
-            	<!--<HoleRadius>3</HoleRadius>-->
+            	<!--<tse:HoleRadius>3</tse:HoleRadius>-->
             	<PenStroke />
-                <Slice>
+                <tse:Slice>
                     <Name>A</Name>
                     <Value>0</Value>
                     <SolidFill>
                         <Color>#Eb6101</Color>
                         <Opacity>60.0</Opacity>
                     </SolidFill>
-                </Slice>
+                </tse:Slice>
 
-                <Slice>
+                <tse:Slice>
                     <Name>B</Name>
                     <Value>0</Value>
                     <SolidFill>
                         <Color>#E06161</Color>
                         <Opacity>60.0</Opacity>
                     </SolidFill>
-                </Slice>
-                <Slice>
+                </tse:Slice>
+                <tse:Slice>
                     <Name>C</Name>
                     <Value>0</Value>
                     <SolidFill>
                         <Color>#86B51E</Color>
                     <Opacity>60.0</Opacity>
                 </SolidFill>
-            </Slice>
-            <Slice>
+            </tse:Slice>
+            <tse:Slice>
                 <Name>D</Name>
                 <Value>150</Value>
                 <SolidFill>
                     <Color>#1E69B5</Color>
                     <Opacity>60.0</Opacity>
                 </SolidFill>
-            </Slice>
+            </tse:Slice>
 	    <Transform>
 	        <Translate>
 		  <X>-30</X>
 		  <Y>-65</Y>
 	        </Translate>
 	    </Transform>
-        </PieChart>
+        </tse:PieChart>
 
 
 
 <!-- NEW LINE -->
-            <PieChart>
+            <tse:PieChart>
                 <Radius>10</Radius>
-            	<HoleRadius>5</HoleRadius>
+            	<tse:HoleRadius>5</tse:HoleRadius>
             	<PenStroke />
-                <Slice>
+                <tse:Slice>
                     <Name>A</Name>
                     <Value>140</Value>
                     <SolidFill>
                         <Color>#Eb6101</Color>
                         <Opacity>60.0</Opacity>
                     </SolidFill>
-                </Slice>
+                </tse:Slice>
 
-                <Slice>
+                <tse:Slice>
                     <Name>B</Name>
                     <Value>20</Value>
                     <SolidFill>
                         <Color>#E06161</Color>
                         <Opacity>60.0</Opacity>
                     </SolidFill>
-                </Slice>
-                <Slice>
+                </tse:Slice>
+                <tse:Slice>
                     <Name>C</Name>
                     <Value>200</Value>
                     <SolidFill>
                         <Color>#86B51E</Color>
                     <Opacity>60.0</Opacity>
                 </SolidFill>
-            </Slice>
-            <Slice>
+            </tse:Slice>
+            <tse:Slice>
                 <Name>D</Name>
                 <Value>150</Value>
                 <SolidFill>
                     <Color>#1E69B5</Color>
                     <Opacity>60.0</Opacity>
                 </SolidFill>
-            </Slice>
+            </tse:Slice>
 	    <Transform>
 	        <Translate>
 		  <X>-120</X>
 		  <Y>-40</Y>
 	        </Translate>
 	    </Transform>
-        </PieChart>
+        </tse:PieChart>
 
-            <PieChart>
+            <tse:PieChart>
                 <Radius>10</Radius>
-            	<HoleRadius>5</HoleRadius>
-		<PieSubtype>half</PieSubtype>
+            	<tse:HoleRadius>5</tse:HoleRadius>
+		<tse:PieSubtype>half</tse:PieSubtype>
             	<PenStroke />
-                <Slice>
+                <tse:Slice>
                     <Name>A</Name>
                     <Value>100</Value>
                     <SolidFill>
                         <Color>#Eb6101</Color>
                         <Opacity>60.0</Opacity>
                     </SolidFill>
-                </Slice>
+                </tse:Slice>
 
-                <Slice>
+                <tse:Slice>
                     <Name>B</Name>
                     <Value>20</Value>
                     <SolidFill>
                         <Color>#E06161</Color>
                         <Opacity>60.0</Opacity>
                     </SolidFill>
-                </Slice>
-                <Slice>
+                </tse:Slice>
+                <tse:Slice>
                     <Name>C</Name>
                     <Value>200</Value>
                     <SolidFill>
                         <Color>#86B51E</Color>
                     <Opacity>60.0</Opacity>
                 </SolidFill>
-            </Slice>
-            <Slice>
+            </tse:Slice>
+            <tse:Slice>
                 <Name>D</Name>
                 <Value>150</Value>
                 <SolidFill>
                     <Color>#1E69B5</Color>
                     <Opacity>60.0</Opacity>
                 </SolidFill>
-            </Slice>
+            </tse:Slice>
 	    <Transform>
 	        <Translate>
 		  <X>-90</X>
 		  <Y>-40</Y>
 	        </Translate>
 	    </Transform>
-        </PieChart>
+        </tse:PieChart>
 
-            <PieChart>
+            <tse:PieChart>
                 <Radius>10</Radius>
-            	<HoleRadius>5</HoleRadius>
-		<PieSubtype>half</PieSubtype>
+            	<tse:HoleRadius>5</tse:HoleRadius>
+		<tse:PieSubtype>half</tse:PieSubtype>
             	<PenStroke />
-                <Slice>
+                <tse:Slice>
                     <Name>A</Name>
                     <Value>40</Value>
                     <SolidFill>
                         <Color>#Eb6101</Color>
                         <Opacity>60.0</Opacity>
                     </SolidFill>
-                </Slice>
+                </tse:Slice>
 
-                <Slice>
+                <tse:Slice>
                     <Name>B</Name>
                     <Value>100</Value>
                     <SolidFill>
                         <Color>#E06161</Color>
                         <Opacity>60.0</Opacity>
                     </SolidFill>
-                </Slice>
-                <Slice>
+                </tse:Slice>
+                <tse:Slice>
                     <Name>C</Name>
                     <Value>200</Value>
                     <SolidFill>
                         <Color>#86B51E</Color>
                     <Opacity>60.0</Opacity>
                 </SolidFill>
-            </Slice>
-            <Slice>
+            </tse:Slice>
+            <tse:Slice>
                 <Name>D</Name>
                 <Value>150</Value>
                 <SolidFill>
                     <Color>#1E69B5</Color>
                     <Opacity>60.0</Opacity>
                 </SolidFill>
-            </Slice>
+            </tse:Slice>
 	    <Transform>
 	        <Translate>
 		  <X>-60</X>
 		  <Y>-40</Y>
 	        </Translate>
 	    </Transform>
-        </PieChart>
+        </tse:PieChart>
 
 
-            <PieChart>
+            <tse:PieChart>
                 <Radius>10</Radius>
-            	<HoleRadius>5</HoleRadius>
-		<PieSubtype>half</PieSubtype>
+            	<tse:HoleRadius>5</tse:HoleRadius>
+		<tse:PieSubtype>half</tse:PieSubtype>
             	<PenStroke />
-                <Slice>
+                <tse:Slice>
                     <Name>A</Name>
                     <Value>100</Value>
                     <SolidFill>
                         <Color>#Eb6101</Color>
                         <Opacity>60.0</Opacity>
                     </SolidFill>
-                </Slice>
+                </tse:Slice>
 
-                <Slice>
+                <tse:Slice>
                     <Name>B</Name>
                     <Value>25</Value>
                     <SolidFill>
                         <Color>#E06161</Color>
                         <Opacity>60.0</Opacity>
                     </SolidFill>
-                </Slice>
-                <Slice>
+                </tse:Slice>
+                <tse:Slice>
                     <Name>C</Name>
                     <Value>120</Value>
                     <SolidFill>
                         <Color>#86B51E</Color>
                     <Opacity>60.0</Opacity>
                 </SolidFill>
-            </Slice>
-            <Slice>
+            </tse:Slice>
+            <tse:Slice>
                 <Name>D</Name>
                 <Value>150</Value>
                 <SolidFill>
                     <Color>#1E69B5</Color>
                     <Opacity>60.0</Opacity>
                 </SolidFill>
-            </Slice>
+            </tse:Slice>
 	    <Transform>
 	        <Rotate>
 		    <Angle>-90</Angle>
@@ -423,48 +428,48 @@
 		  <Y>-40</Y>
 	        </Translate>
 	    </Transform>
-        </PieChart>
+        </tse:PieChart>
 
 
-            <PieChart>
+            <tse:PieChart>
                 <Radius>10</Radius>
-            	<!--<HoleRadius>3</HoleRadius>-->
-            	<HoleRadius>5</HoleRadius>
-		<PieSubtype>half</PieSubtype>
+            	<!--<tse:HoleRadius>3</tse:HoleRadius>-->
+            	<tse:HoleRadius>5</tse:HoleRadius>
+		<tse:PieSubtype>half</tse:PieSubtype>
             	<PenStroke />
-                <Slice>
+                <tse:Slice>
                     <Name>A</Name>
                     <Value>65</Value>
                     <SolidFill>
                         <Color>#Eb6101</Color>
                         <Opacity>60.0</Opacity>
                     </SolidFill>
-                </Slice>
+                </tse:Slice>
 
-                <Slice>
+                <tse:Slice>
                     <Name>B</Name>
                     <Value>40</Value>
                     <SolidFill>
                         <Color>#E06161</Color>
                         <Opacity>60.0</Opacity>
                     </SolidFill>
-                </Slice>
-                <Slice>
+                </tse:Slice>
+                <tse:Slice>
                     <Name>C</Name>
                     <Value>82</Value>
                     <SolidFill>
                         <Color>#86B51E</Color>
                     <Opacity>60.0</Opacity>
                 </SolidFill>
-            </Slice>
-            <Slice>
+            </tse:Slice>
+            <tse:Slice>
                 <Name>D</Name>
                 <Value>15</Value>
                 <SolidFill>
                     <Color>#1E69B5</Color>
                     <Opacity>60.0</Opacity>
                 </SolidFill>
-            </Slice>
+            </tse:Slice>
 	    <Transform>
 	        <Rotate>
 		    <Angle>90</Angle>
@@ -477,16 +482,16 @@
 		  <Y>-40</Y>
 	        </Translate>
 	    </Transform>
-        </PieChart>
+        </tse:PieChart>
 
 
 <!-- NEW LINE -->
-        <AxisChart>
-	   <AxisChartSubtype>ortho</AxisChartSubtype>
-	   <AxisScale>
-	     <AxisLength>10</AxisLength>
-	     <Measure>50</Measure>
-	   </AxisScale>
+        <tse:AxisChart>
+	   <tse:AxisChartSubtype>ortho</tse:AxisChartSubtype>
+	   <tse:AxisScale>
+	     <tse:AxisLength>10</tse:AxisLength>
+	     <Value>50</Value>
+	   </tse:AxisScale>
 	   <Transform>
 	      <Translate>
 	        <X>-125</X>
@@ -494,8 +499,8 @@
 	      </Translate>
 	   </Transform>
 
-	   <Category>
-	     <Measure>100</Measure>
+	   <tse:Category>
+	     <Value>100</Value>
 		<SolidFill>
 	           <Color>#ff0000</Color>
 		   <Opacity>60</Opacity>
@@ -505,9 +510,9 @@
 	       <Color>#00000</Color>
 	     </SolidFill>
 	   </PenStroke>
-	   </Category>
-	   <Category>
-	     <Measure>-20</Measure>
+	   </tse:Category>
+	   <tse:Category>
+	     <Value>-20</Value>
 		<SolidFill>
 	           <Color>#ff00FF</Color>
 		   <Opacity>60</Opacity>
@@ -517,9 +522,9 @@
 	       <Color>#00000</Color>
 	     </SolidFill>
 	   </PenStroke>
-	   </Category>
-	   <Category>
-	     <Measure>70</Measure>
+	   </tse:Category>
+	   <tse:Category>
+	     <Value>70</Value>
 	     <SolidFill>
 	           <Color>#00FF00</Color>
 		   <Opacity>60</Opacity>
@@ -530,16 +535,16 @@
 	     </SolidFill>
 	   </PenStroke>
 
-	   </Category>
-        </AxisChart>
+	   </tse:Category>
+        </tse:AxisChart>
 
 
-        <AxisChart>
-	   <AxisChartSubtype>ortho</AxisChartSubtype>
-	   <AxisScale>
-	     <AxisLength>10</AxisLength>
-	     <Measure>50</Measure>
-	   </AxisScale>
+        <tse:AxisChart>
+	   <tse:AxisChartSubtype>ortho</tse:AxisChartSubtype>
+	   <tse:AxisScale>
+	     <tse:AxisLength>10</tse:AxisLength>
+	     <Value>50</Value>
+	   </tse:AxisScale>
 	   <Transform>
 	      <Translate>
 	        <X>-105</X>
@@ -550,26 +555,26 @@
 	     <Color>#0000aa</Color>
 	     <Opacity>60</Opacity>
 	   </SolidFill>
-	   <Category>
-	     <Measure>100</Measure>
-	   </Category>
-	   <Category>
-	     <Measure>20</Measure>
-	   </Category>
-	   <Category>
-	     <Measure>70</Measure>
-	   </Category>
-        </AxisChart>
+	   <tse:Category>
+	     <Value>100</Value>
+	   </tse:Category>
+	   <tse:Category>
+	     <Value>20</Value>
+	   </tse:Category>
+	   <tse:Category>
+	     <Value>70</Value>
+	   </tse:Category>
+        </tse:AxisChart>
 
 
 
 
-        <AxisChart>
-	   <AxisChartSubtype>ortho</AxisChartSubtype>
-	   <AxisScale>
-	     <AxisLength>10</AxisLength>
-	     <Measure>50</Measure>
-	   </AxisScale>
+        <tse:AxisChart>
+	   <tse:AxisChartSubtype>ortho</tse:AxisChartSubtype>
+	   <tse:AxisScale>
+	     <tse:AxisLength>10</tse:AxisLength>
+	     <Value>50</Value>
+	   </tse:AxisScale>
 	   <Transform>
 	      <Translate>
 	        <X>-85</X>
@@ -584,8 +589,8 @@
 	     <Width>1</Width>
 	   </PenStroke>
 
-	   <Category>
-	     <Measure>100</Measure>
+	   <tse:Category>
+	     <Value>100</Value>
                 <MarkGraphic>
                   <WellKnownName>x</WellKnownName>
                   <ViewBox>
@@ -594,9 +599,9 @@
                   <SolidFill><Color>#bb0000</Color></SolidFill>
                   <PenStroke />
                 </MarkGraphic>
-	   </Category>
-	   <Category>
-	     <Measure>20</Measure>
+	   </tse:Category>
+	   <tse:Category>
+	     <Value>20</Value>
                 <MarkGraphic>
                   <WellKnownName>x</WellKnownName>
                   <ViewBox>
@@ -605,9 +610,9 @@
                   <SolidFill><Color>#bb0000</Color></SolidFill>
                   <PenStroke />
                 </MarkGraphic>
-	   </Category>
-	   <Category>
-	     <Measure>70</Measure>
+	   </tse:Category>
+	   <tse:Category>
+	     <Value>70</Value>
 	                     <MarkGraphic>
                   <WellKnownName>x</WellKnownName>
                   <ViewBox>
@@ -616,19 +621,19 @@
                   <SolidFill><Color>#bb0000</Color></SolidFill>
                   <PenStroke />
                 </MarkGraphic>
-	   </Category>
-        </AxisChart>
+	   </tse:Category>
+        </tse:AxisChart>
 
 
 
 
 	<!--
-        <AxisChart>
-	   <AxisChartSubtype>ortho</AxisChartSubtype>
-	   <AxisScale>
-	     <AxisLength>10</AxisLength>
-	     <Measure>50</Measure>
-	   </AxisScale>
+        <tse:AxisChart>
+	   <tse:AxisChartSubtype>ortho</tse:AxisChartSubtype>
+	   <tse:AxisScale>
+	     <tse:AxisLength>10</tse:AxisLength>
+	     <Value>50</Value>
+	   </tse:AxisScale>
 	   <Transform>
 	      <Translate>
 	        <X>-65</X>
@@ -643,8 +648,8 @@
 	       <Color>#00000</Color>
 	     </SolidFill>
 	   </PenStroke>
-	   <Category>
-	     <Measure>100</Measure>
+	   <tse:Category>
+	     <Value>100</Value>
                 <MarkGraphic>
                   <WellKnownName>x</WellKnownName>
                   <ViewBox>
@@ -661,9 +666,9 @@
 	       <Color>#00000</Color>
 	     </SolidFill>
 	   </PenStroke>
-	   </Category>
-	   <Category>
-	     <Measure>20</Measure>
+	   </tse:Category>
+	   <tse:Category>
+	     <Value>20</Value>
                 <MarkGraphic>
                   <WellKnownName>x</WellKnownName>
                   <ViewBox>
@@ -682,9 +687,9 @@
 	   </PenStroke>
 
 
-	   </Category>
-	   <Category>
-	     <Measure>70</Measure>
+	   </tse:Category>
+	   <tse:Category>
+	     <Value>70</Value>
 	                     <MarkGraphic>
                   <WellKnownName>x</WellKnownName>
                   <ViewBox>
@@ -702,20 +707,20 @@
 	     </SolidFill>
 	   </PenStroke>
 
-	   </Category>
-        </AxisChart>
+	   </tse:Category>
+        </tse:AxisChart>
 	-->	
 
 
 
 
 <!-- NEW LINE -->
-        <AxisChart>
-	   <AxisChartSubtype>polar</AxisChartSubtype>
-	   <AxisScale>
-	     <AxisLength>10</AxisLength>
-	     <Measure>50</Measure>
-	   </AxisScale>
+        <tse:AxisChart>
+	   <tse:AxisChartSubtype>polar</tse:AxisChartSubtype>
+	   <tse:AxisScale>
+	     <tse:AxisLength>10</tse:AxisLength>
+	     <Value>50</Value>
+	   </tse:AxisScale>
 	   <Transform>
 	      <Translate>
 	        <X>-110</X>
@@ -723,8 +728,8 @@
 	      </Translate>
 	   </Transform>
 
-	   <Category>
-	     <Measure>100</Measure>
+	   <tse:Category>
+	     <Value>100</Value>
 		<SolidFill>
 	           <Color>#ff0000</Color>
 		   <Opacity>60</Opacity>
@@ -734,9 +739,9 @@
 	       <Color>#00000</Color>
 	     </SolidFill>
 	   </PenStroke>
-	   </Category>
-	   <Category>
-	     <Measure>20</Measure>
+	   </tse:Category>
+	   <tse:Category>
+	     <Value>20</Value>
 		<SolidFill>
 	           <Color>#ff00FF</Color>
 		   <Opacity>60</Opacity>
@@ -746,9 +751,9 @@
 	       <Color>#00000</Color>
 	     </SolidFill>
 	   </PenStroke>
-	   </Category>
-	   <Category>
-	     <Measure>70</Measure>
+	   </tse:Category>
+	   <tse:Category>
+	     <Value>70</Value>
 	     <SolidFill>
 	           <Color>#00FF00</Color>
 		   <Opacity>60</Opacity>
@@ -759,16 +764,16 @@
 	     </SolidFill>
 	   </PenStroke>
 
-	   </Category>
-        </AxisChart>
+	   </tse:Category>
+        </tse:AxisChart>
 
 
-        <AxisChart>
-	   <AxisChartSubtype>polar</AxisChartSubtype>
-	   <AxisScale>
-	     <AxisLength>10</AxisLength>
-	     <Measure>50</Measure>
-	   </AxisScale>
+        <tse:AxisChart>
+	   <tse:AxisChartSubtype>polar</tse:AxisChartSubtype>
+	   <tse:AxisScale>
+	     <tse:AxisLength>10</tse:AxisLength>
+	     <Value>50</Value>
+	   </tse:AxisScale>
 	   <Transform>
 	      <Translate>
 	        <X>-90</X>
@@ -779,26 +784,26 @@
 	     <Color>#0000aa</Color>
 	     <Opacity>60</Opacity>
 	   </SolidFill>
-	   <Category>
-	     <Measure>100</Measure>
-	   </Category>
-	   <Category>
-	     <Measure>20</Measure>
-	   </Category>
-	   <Category>
-	     <Measure>70</Measure>
-	   </Category>
-        </AxisChart>
+	   <tse:Category>
+	     <Value>100</Value>
+	   </tse:Category>
+	   <tse:Category>
+	     <Value>20</Value>
+	   </tse:Category>
+	   <tse:Category>
+	     <Value>70</Value>
+	   </tse:Category>
+        </tse:AxisChart>
 
 
 
 
-        <AxisChart>
-	   <AxisChartSubtype>polar</AxisChartSubtype>
-	   <AxisScale>
-	     <AxisLength>10</AxisLength>
-	     <Measure>50</Measure>
-	   </AxisScale>
+        <tse:AxisChart>
+	   <tse:AxisChartSubtype>polar</tse:AxisChartSubtype>
+	   <tse:AxisScale>
+	     <tse:AxisLength>10</tse:AxisLength>
+	     <Value>50</Value>
+	   </tse:AxisScale>
 	   <Transform>
 	      <Translate>
 	        <X>-60</X>
@@ -813,8 +818,8 @@
 	     <Width>1</Width>
 	   </PenStroke>
 
-	   <Category>
-	     <Measure>100</Measure>
+	   <tse:Category>
+	     <Value>100</Value>
                 <MarkGraphic>
                   <WellKnownName>x</WellKnownName>
                   <ViewBox>
@@ -823,9 +828,9 @@
                   <SolidFill><Color>#bb0000</Color></SolidFill>
                   <PenStroke />
                 </MarkGraphic>
-	   </Category>
-	   <Category>
-	     <Measure>20</Measure>
+	   </tse:Category>
+	   <tse:Category>
+	     <Value>20</Value>
                 <MarkGraphic>
                   <WellKnownName>x</WellKnownName>
                   <ViewBox>
@@ -834,9 +839,9 @@
                   <SolidFill><Color>#bb0000</Color></SolidFill>
                   <PenStroke />
                 </MarkGraphic>
-	   </Category>
-	   <Category>
-	     <Measure>70</Measure>
+	   </tse:Category>
+	   <tse:Category>
+	     <Value>70</Value>
 	                     <MarkGraphic>
                   <WellKnownName>x</WellKnownName>
                   <ViewBox>
@@ -845,15 +850,15 @@
                   <SolidFill><Color>#bb0000</Color></SolidFill>
                   <PenStroke />
                 </MarkGraphic>
-	   </Category>
-        </AxisChart>
+	   </tse:Category>
+        </tse:AxisChart>
 
-        <AxisChart>
-	   <AxisChartSubtype>polar</AxisChartSubtype>
-	   <AxisScale>
-	     <AxisLength>10</AxisLength>
-	     <Measure>100</Measure>
-	   </AxisScale>
+        <tse:AxisChart>
+	   <tse:AxisChartSubtype>polar</tse:AxisChartSubtype>
+	   <tse:AxisScale>
+	     <tse:AxisLength>10</tse:AxisLength>
+	     <Value>100</Value>
+	   </tse:AxisScale>
 	   <Transform>
 	      <Translate>
 	        <X>-40</X>
@@ -865,27 +870,27 @@
 	     <Opacity>60</Opacity>
 	   </SolidFill>
 	   <PenStroke />
-	   <Category>
-	     <Measure>100</Measure>
-	   </Category>
-	   <Category>
-	     <Measure>20</Measure>
-	   </Category>
-	   <Category>
-	     <Measure>70</Measure>
-	   </Category>
-	   <Category>
-	     <Measure>30</Measure>
-	   </Category>
-        </AxisChart>
+	   <tse:Category>
+	     <Value>100</Value>
+	   </tse:Category>
+	   <tse:Category>
+	     <Value>20</Value>
+	   </tse:Category>
+	   <tse:Category>
+	     <Value>70</Value>
+	   </tse:Category>
+	   <tse:Category>
+	     <Value>30</Value>
+	   </tse:Category>
+        </tse:AxisChart>
 
 
-        <AxisChart>
-	   <AxisChartSubtype>polar</AxisChartSubtype>
-	   <AxisScale>
-	     <AxisLength>10</AxisLength>
-	     <Measure>100</Measure>
-	   </AxisScale>
+        <tse:AxisChart>
+	   <tse:AxisChartSubtype>polar</tse:AxisChartSubtype>
+	   <tse:AxisScale>
+	     <tse:AxisLength>10</tse:AxisLength>
+	     <Value>100</Value>
+	   </tse:AxisScale>
 	   <Transform>
 	      <Translate>
 	        <X>-20</X>
@@ -897,33 +902,33 @@
 	     <Opacity>60</Opacity>
 	   </SolidFill>
 	   <PenStroke />
-	   <Category>
-	     <Measure>100</Measure>
-	   </Category>
-	   <Category>
-	     <Measure>20</Measure>
-	   </Category>
-	   <Category>
-	     <Measure>70</Measure>
-	   </Category>
-	   <Category>
-	     <Measure>30</Measure>
-	   </Category>
-	   <Category>
-	     <Measure>80</Measure>
-	   </Category>
-	   <Category>
-	     <Measure>66</Measure>
-	   </Category>
-        </AxisChart>
+	   <tse:Category>
+	     <Value>100</Value>
+	   </tse:Category>
+	   <tse:Category>
+	     <Value>20</Value>
+	   </tse:Category>
+	   <tse:Category>
+	     <Value>70</Value>
+	   </tse:Category>
+	   <tse:Category>
+	     <Value>30</Value>
+	   </tse:Category>
+	   <tse:Category>
+	     <Value>80</Value>
+	   </tse:Category>
+	   <tse:Category>
+	     <Value>66</Value>
+	   </tse:Category>
+        </tse:AxisChart>
 
 
-        <AxisChart>
-	   <AxisChartSubtype>polar</AxisChartSubtype>
-	   <AxisScale>
-	     <AxisLength>10</AxisLength>
-	     <Measure>100</Measure>
-	   </AxisScale>
+        <tse:AxisChart>
+	   <tse:AxisChartSubtype>polar</tse:AxisChartSubtype>
+	   <tse:AxisScale>
+	     <tse:AxisLength>10</tse:AxisLength>
+	     <Value>100</Value>
+	   </tse:AxisScale>
 	   <Transform>
 	      <Translate>
 	        <X>-20</X>
@@ -935,25 +940,25 @@
 	     <Opacity>60</Opacity>
 	   </SolidFill>
 	   <PenStroke />
-	   <Category>
-	     <Measure>100</Measure>
-	   </Category>
-	   <Category>
-	     <Measure>20</Measure>
-	   </Category>
-	   <Category>
-	     <Measure>70</Measure>
-	   </Category>
-	   <Category>
-	     <Measure>30</Measure>
-	   </Category>
-	   <Category>
-	     <Measure>80</Measure>
-	   </Category>
-	   <Category>
-	     <Measure>66</Measure>
-	   </Category>
-        </AxisChart>
+	   <tse:Category>
+	     <Value>100</Value>
+	   </tse:Category>
+	   <tse:Category>
+	     <Value>20</Value>
+	   </tse:Category>
+	   <tse:Category>
+	     <Value>70</Value>
+	   </tse:Category>
+	   <tse:Category>
+	     <Value>30</Value>
+	   </tse:Category>
+	   <tse:Category>
+	     <Value>80</Value>
+	   </tse:Category>
+	   <tse:Category>
+	     <Value>66</Value>
+	   </tse:Category>
+        </tse:AxisChart>
 
 
 

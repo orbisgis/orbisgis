@@ -44,14 +44,17 @@ import java.awt.Paint;
 import java.awt.Shape;
 import java.io.IOException;
 import javax.xml.bind.JAXBElement;
+
+import net.opengis.se._2_0.core.FillType;
+import net.opengis.se._2_0.core.GraphicFillType;
+import net.opengis.se._2_0.core.HatchedFillType;
+import net.opengis.se._2_0.core.SolidFillType;
+
+import net.opengis.se._2_0.thematic.DensityFillType;
+import net.opengis.se._2_0.thematic.DotMapFillType;
+
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.orbisgis.core.renderer.persistance.se.FillType;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.persistance.se.DensityFillType;
-import org.orbisgis.core.renderer.persistance.se.DotMapFillType;
-import org.orbisgis.core.renderer.persistance.se.GraphicFillType;
-import org.orbisgis.core.renderer.persistance.se.HatchedFillType;
-import org.orbisgis.core.renderer.persistance.se.SolidFillType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -128,6 +131,7 @@ public abstract class Fill implements SymbolizerNode {
      */
     public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException;
 
+
     /**
      * Return a Paint that correspond to the SE Fill type.
      * If the fill type cannot be converted into a Painter, null is returned
@@ -140,7 +144,8 @@ public abstract class Fill implements SymbolizerNode {
      *
      * @throws ParameterException
      */
-	public abstract Paint getPaint(long fid, SpatialDataSourceDecorator sds, boolean selected, MapTransform mt) throws ParameterException;
+	public abstract Paint getPaint(long fid, SpatialDataSourceDecorator sds, boolean selected, MapTransform mt) throws ParameterException, IOException;
+
 
     /**
      * Serialise to JAXBElement

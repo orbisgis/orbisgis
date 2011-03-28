@@ -10,5 +10,5 @@ package org.orbisgis.core.renderer.se.parameter;
  * @author maxence
  */
 public interface PropertyNameListener {
-	void propertyNameChanged(PropertyName p);
+	void propertyNameChanged(ValueReference p);
 }

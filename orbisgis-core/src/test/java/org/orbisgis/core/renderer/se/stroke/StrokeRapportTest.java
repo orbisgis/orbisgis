@@ -40,12 +40,13 @@ package org.orbisgis.core.renderer.se.stroke;
 
 
 import java.awt.image.RenderedImage;
-import javax.xml.bind.JAXBException;
 import org.orbisgis.core.renderer.se.graphic.*;
 import com.sun.media.jai.widget.DisplayJAI;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 
@@ -65,10 +66,11 @@ import org.orbisgis.core.ConsoleOutputManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.persistance.se.FeatureTypeStyleType;
+import net.opengis.se._2_0.core.FeatureTypeStyleType;
 import org.orbisgis.core.renderer.se.FeatureTypeStyle;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 
@@ -136,9 +138,14 @@ public class StrokeRapportTest extends TestCase {
         PointSymbolizer ps = (PointSymbolizer) fts.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
         GraphicCollection collec = ps.getGraphicCollection();
 
-        RenderableGraphics rg;
 		MapTransform mt = new MapTransform();
-        rg = collec.getGraphic(null, -1, false, mt);
+        double width = Uom.toPixel(270, Uom.MM, mt.getDpi(), null, null);
+        double height = Uom.toPixel(160, Uom.MM, mt.getDpi(), null, null);
+
+        Rectangle2D.Double dim = new Rectangle2D.Double(-width/2, -height/2, width, height);
+        RenderableGraphics rg = new RenderableGraphics(dim);
+
+        collec.draw(rg, null, -1, false, mt, new AffineTransform());
 
         rg.setPaint(Color.BLACK);
         rg.drawLine((int)rg.getMinX(), 0, (int)(rg.getMinX() + rg.getWidth()), 0);

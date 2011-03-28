@@ -35,8 +35,6 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-
-
 package org.orbisgis.core.renderer.se.fill;
 
 import java.awt.Graphics2D;
@@ -49,16 +47,13 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
 
-import org.orbisgis.core.renderer.persistance.se.GraphicFillType;
-import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
-import org.orbisgis.core.renderer.persistance.se.TileGapType;
+import net.opengis.se._2_0.core.GraphicFillType;
+import net.opengis.se._2_0.core.ObjectFactory;
+import net.opengis.se._2_0.core.TileGapType;
 
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -97,8 +92,8 @@ public final class GraphicFill extends Fill implements UomNode {
             }
         }
 
-        if (gft.getUnitOfMeasure() != null) {
-            this.setUom(Uom.fromOgcURN(gft.getUnitOfMeasure()));
+        if (gft.getUom() != null) {
+            this.setUom(Uom.fromOgcURN(gft.getUom()));
         }
     }
 
@@ -115,15 +110,15 @@ public final class GraphicFill extends Fill implements UomNode {
         return graphic;
     }
 
-	@Override
+    @Override
     public void setUom(Uom uom) {
         this.uom = uom;
     }
 
-	@Override
-	public Uom getOwnUom(){
-		return uom;
-	}
+    @Override
+    public Uom getOwnUom() {
+        return uom;
+    }
 
     @Override
     public Uom getUom() {
@@ -136,16 +131,16 @@ public final class GraphicFill extends Fill implements UomNode {
 
     public void setGapX(RealParameter gap) {
         gapX = gap;
-		if (gap != null){
-			gap.setContext(RealParameterContext.realContext);
-		}
+        if (gap != null) {
+            gap.setContext(RealParameterContext.realContext);
+        }
     }
 
     public void setGapY(RealParameter gap) {
         gapY = gap;
-		if (gap != null){
-			gap.setContext(RealParameterContext.realContext);
-		}
+        if (gap != null) {
+            gap.setContext(RealParameterContext.realContext);
+        }
     }
 
     public RealParameter getGapX() {
@@ -179,17 +174,11 @@ public final class GraphicFill extends Fill implements UomNode {
      * @throws ParameterException
      * @throws IOException
      */
-	@Override
-    public Paint getPaint(long fid, SpatialDataSourceDecorator sds, boolean selected, MapTransform mt) throws ParameterException {
-        RenderableGraphics img;
-		try {
-			img = graphic.getGraphic(sds, fid, selected, mt);
-		} catch (IOException ex) {
-			Logger.getLogger(GraphicFill.class.getName()).log(Level.SEVERE, null, ex);
-			return null;
-		}
+    @Override
+    public Paint getPaint(long fid, SpatialDataSourceDecorator sds, boolean selected, MapTransform mt) throws ParameterException, IOException {
+        Rectangle2D bounds = graphic.getBounds(sds, fid, selected, mt);
 
-        if (img != null) {
+        if (bounds != null) {
             double gX = 0.0;
             double gY = 0.0;
 
@@ -207,20 +196,20 @@ public final class GraphicFill extends Fill implements UomNode {
                 }
             }
 
-            gX = Uom.toPixel(gX, getUom(), mt.getDpi(), mt.getScaleDenominator(), (double)img.getWidth());
-            gY = Uom.toPixel(gY, getUom(), mt.getDpi(), mt.getScaleDenominator(), (double)img.getHeight());
+            gX = Uom.toPixel(gX, getUom(), mt.getDpi(), mt.getScaleDenominator(), bounds.getWidth());
+            gY = Uom.toPixel(gY, getUom(), mt.getDpi(), mt.getScaleDenominator(), bounds.getHeight());
 
-            BufferedImage i = new BufferedImage((int) (img.getWidth() + gX), (int) (img.getHeight() + gY), BufferedImage.TYPE_INT_ARGB);
+            BufferedImage i = new BufferedImage((int) (bounds.getWidth() + gX), (int) (bounds.getHeight() + gY), BufferedImage.TYPE_INT_ARGB);
             Graphics2D tile = i.createGraphics();
+            tile.setRenderingHints(mt.getRenderingHints());
 
-            tile.drawRenderedImage(img.createRendering(mt.getCurrentRenderContext()), AffineTransform.getTranslateInstance(-img.getMinX() + gX / 2.0, -img.getMinY() + gY / 2.0));
+            graphic.draw(tile, sds, fid, selected, mt, AffineTransform.getTranslateInstance(-bounds.getMinX() + gX / 2.0, -bounds.getMinY() + gY / 2.0));
 
             return new TexturePaint(i, new Rectangle2D.Double(0, 0, i.getWidth(), i.getHeight()));
         } else {
             return null;
         }
     }
-
 
     @Override
     public String dependsOnFeature() {
@@ -229,13 +218,13 @@ public final class GraphicFill extends Fill implements UomNode {
         String gy = "";
         String g = "";
 
-        if (gapX != null){
+        if (gapX != null) {
             gx = gapX.dependsOnFeature();
         }
-        if (gapY != null){
+        if (gapY != null) {
             gy = gapY.dependsOnFeature();
         }
-        if (graphic != null){
+        if (graphic != null) {
             g = graphic.dependsOnFeature();
         }
 
@@ -247,7 +236,7 @@ public final class GraphicFill extends Fill implements UomNode {
         GraphicFillType f = new GraphicFillType();
 
         if (uom != null) {
-            f.setUnitOfMeasure(uom.toURN());
+            f.setUom(uom.toURN());
         }
 
         if (graphic != null) {

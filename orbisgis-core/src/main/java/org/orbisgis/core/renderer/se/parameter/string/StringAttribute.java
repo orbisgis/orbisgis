@@ -1,6 +1,7 @@
 package org.orbisgis.core.renderer.se.parameter.string;
 
 import javax.xml.bind.JAXBElement;
+import net.opengis.fes._2.ValueReferenceType;
 import org.gdms.data.SpatialDataSourceDecorator;
 
 import org.gdms.data.feature.Feature;
@@ -8,12 +9,11 @@ import org.gdms.data.values.Value;
 
 import org.gdms.driver.DriverException;
 
-import org.orbisgis.core.renderer.persistance.ogc.PropertyNameType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.PropertyName;
+import org.orbisgis.core.renderer.se.parameter.ValueReference;
 
-public class StringAttribute extends PropertyName implements StringParameter{
+public class StringAttribute extends ValueReference implements StringParameter{
 
     /**
      * 
@@ -25,7 +25,7 @@ public class StringAttribute extends PropertyName implements StringParameter{
         super(fieldName);
     }
 
-    public StringAttribute(JAXBElement<PropertyNameType> expr) throws InvalidStyle {
+    public StringAttribute(JAXBElement<ValueReferenceType> expr) throws InvalidStyle {
         super(expr);
     }
 

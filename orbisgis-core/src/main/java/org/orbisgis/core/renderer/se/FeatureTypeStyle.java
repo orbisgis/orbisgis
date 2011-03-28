@@ -57,14 +57,14 @@ import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventLocator;
 import javax.xml.bind.util.ValidationEventCollector;
 import javax.xml.validation.Schema;
+import net.opengis.se._2_0.core.FeatureTypeStyleType;
+import net.opengis.se._2_0.core.ObjectFactory;
+import net.opengis.se._2_0.core.RuleType;
 
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
 
 
-import org.orbisgis.core.renderer.persistance.se.FeatureTypeStyleType;
-import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
-import org.orbisgis.core.renderer.persistance.se.RuleType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 
@@ -117,7 +117,7 @@ public final class FeatureTypeStyle implements SymbolizerNode {
 
 		} catch (Exception ex){
 			Logger.getLogger(FeatureTypeStyle.class.getName()).log(Level.SEVERE, "Error while loading style", ex);
-			throw new SeExceptions.InvalidStyle("Error while loading the style: " + ex);
+			throw new SeExceptions.InvalidStyle("Error while loading the style (" + seFile + "): " + ex);
 		}
 
 	}

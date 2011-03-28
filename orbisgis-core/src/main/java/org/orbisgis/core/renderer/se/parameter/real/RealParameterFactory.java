@@ -35,6 +35,8 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
+
+/*
 package org.orbisgis.core.renderer.se.parameter.real;
 
 import java.util.ArrayList;
@@ -44,13 +46,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.gdms.data.DataSource;
 
-/**
+**
  *
  * @author maxence
- */
+ *
 public class RealParameterFactory {
 
-	/**
+	*
 	 * Convert a string into its corresponding RealParameter expression tree
 	 * 
 	 * Supported operators are : + - * / log sqrt
@@ -62,7 +64,7 @@ public class RealParameterFactory {
 	 * 
 	 * @param expression 
 	 * @return RealParameter expression tree
-	 */
+	 *
 	public static RealParameter createFromString(String expression, DataSource ds) {
 		try {
 			String expr = expression.trim();
@@ -248,7 +250,6 @@ public class RealParameterFactory {
 	}
 
 	private enum TokenType {
-
 		ADD, SUB, MUL, DIV, LOG, SQRT, ATTR, CST, GROUP, NA;
 	}
 
@@ -321,3 +322,4 @@ public class RealParameterFactory {
 		}
 	}
 }
+*/

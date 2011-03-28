@@ -47,7 +47,7 @@ import javax.swing.Icon;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.renderer.se.parameter.PropertyName;
+import org.orbisgis.core.renderer.se.parameter.ValueReference;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.ComboBoxInput;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
@@ -68,9 +68,9 @@ public abstract class LegendUIPropertyNamePanel extends LegendUIComponent
 				   LegendUIStringComponent {
 
 	private ComboBoxInput fieldList;
-	private PropertyName p;
+	private ValueReference p;
 
-	public LegendUIPropertyNamePanel(String name, LegendUIController controller, LegendUIComponent parent, PropertyName p, boolean isNullable) {
+	public LegendUIPropertyNamePanel(String name, LegendUIController controller, LegendUIComponent parent, ValueReference p, boolean isNullable) {
 		super(name, controller, parent, 0, isNullable);
 		this.p = p;
 
@@ -159,9 +159,9 @@ public abstract class LegendUIPropertyNamePanel extends LegendUIComponent
 	private static class ComboBoxInputImpl extends ComboBoxInput {
 
 		private String[] possibilities;
-		private PropertyName pName;
+		private ValueReference pName;
 
-		private ComboBoxInputImpl(String[] possibilities, int current, PropertyName pName) {
+		private ComboBoxInputImpl(String[] possibilities, int current, ValueReference pName) {
 			super(possibilities, current);
 			this.possibilities = possibilities;
 			this.pName = pName;

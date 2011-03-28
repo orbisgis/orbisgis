@@ -4,20 +4,20 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
-import java.awt.image.RenderedImage;
+import java.awt.geom.Rectangle2D;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.map.MapTransform;
 
-import org.orbisgis.core.renderer.persistance.se.GraphicStrokeType;
-import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
+import net.opengis.se._2_0.core.GraphicStrokeType;
+import net.opengis.se._2_0.core.ObjectFactory;
 import org.orbisgis.core.renderer.se.GraphicNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.UomNode;
 
 import org.orbisgis.core.renderer.se.common.RelativeOrientation;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
@@ -29,12 +29,13 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
-public final class GraphicStroke extends Stroke implements GraphicNode {
+public final class GraphicStroke extends Stroke implements GraphicNode, UomNode {
 
     public final static double MIN_LENGTH = 1; // In pixel !
     private GraphicCollection graphic;
     private RealParameter length;
     private RelativeOrientation orientation;
+    private Uom uom;
 
     GraphicStroke(JAXBElement<GraphicStrokeType> elem) throws InvalidStyle {
         this(elem.getValue());
@@ -52,7 +53,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
         }
 
         if (gst.getRelativeOrientation() != null) {
-            this.setRelativeOrientation(RelativeOrientation.readFromToken(gst.getRelativeOrientation().value()));
+            this.setRelativeOrientation(RelativeOrientation.readFromToken(gst.getRelativeOrientation()));
         } else {
             this.setRelativeOrientation(RelativeOrientation.NORMAL);
         }
@@ -117,11 +118,11 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
     }
 
     private double getGraphicWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
-        RenderableGraphics g;
         RelativeOrientation rOrient = this.getRelativeOrientation();
-        g = graphic.getGraphic(sds, fid, false, mt);
-        double gWidth = g.getWidth();
-        double gHeight = g.getHeight();
+        Rectangle2D bounds = graphic.getBounds(sds, fid, false, mt);
+
+        double gWidth = bounds.getWidth();
+        double gHeight = bounds.getHeight();
 
         switch (rOrient) {
             case NORMAL:
@@ -140,10 +141,8 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
     public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
             Shape shape, boolean selected, MapTransform mt, double offset)
             throws ParameterException, IOException {
-        RenderableGraphics g = graphic.getGraphic(sds, fid, selected, mt);
-        RenderedImage createRendering = g.createRendering(mt.getCurrentRenderContext());
 
-        if (g != null) {
+        //if (g != null) {
             //System.out.println("GraphicStroke.draw");
             ArrayList<Shape> shapes;
             // if not using offset rapport, compute perpendiculat offset first
@@ -165,7 +164,6 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
 
                 //System.out.println("SegLength <-> gWidth: " + segLength + "<->" + gWidth);
                 double lineLength = ShapeHelper.getLineLength(shp);
-                System.out.println ("LineLength: " + lineLength);
 
                 RelativeOrientation rOrient = this.getRelativeOrientation();
                 ArrayList<Shape> segments = null;
@@ -196,7 +194,6 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
                 }
 
                 if (segments != null) {
-                    System.out.println ("segs: " + segments.size());
                     for (Shape seg : segments) {
                         ArrayList<Shape> oSegs;
                         if (this.isOffsetRapport() && Math.abs(offset) > 0.0) {
@@ -241,33 +238,23 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
 
                                     at.concatenate(AffineTransform.getRotateInstance(theta));
                                 }
-                                g2.drawRenderedImage(createRendering, at);
+
+                                graphic.draw(g2, sds, fid, selected, mt, at);
                             }
                         }
                     }
                 }
             }
-        }
-    }
-
-    @Override
-    public double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws IOException, ParameterException {
-        RenderableGraphics g = graphic.getGraphic(sds, fid, false, mt);
-        if (g != null) {
-            return Math.max(Math.max(g.getWidth(), Math.abs(g.getMinX())), Math.max(g.getHeight(), Math.abs(g.getMinY())));
-        } else {
-            return 0.0;
-        }
-        //return graphic.getMaxWidth(sds, fid, mt);
-        //return Math.max(Math.abs( g.getMinX() ), Math.abs(g.getMinY()));
+        //}
     }
 
     /*@Override
-    public double getMinLength(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
-        if (length != null) {
-            return length.getValue(sds, fid);
+    public double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws IOException, ParameterException {
+        Double bounds = graphic.getBounds(sds, fid, false, mt);
+        if (bounds != null) {
+            return Math.max(Math.max(bounds.getHeight(), Math.abs(bounds.getMinX())), Math.max(bounds.getHeight(), Math.abs(bounds.getMinY())));
         } else {
-            return graphic.getMaxWidth(sds, fid, mt);
+            return 0.0;
         }
     }*/
 
@@ -295,6 +282,11 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
 
         this.setJAXBProperties(s);
 
+
+        if (uom != null){
+            s.setUom(uom.toURN());
+        }
+
         if (graphic != null) {
             s.setGraphic(graphic.getJAXBElement());
         }
@@ -304,8 +296,27 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
         }
 
         if (orientation != null) {
-            s.setRelativeOrientation(orientation.getJaxbType());
+            s.setRelativeOrientation(orientation.getJAXBType());
         }
         return s;
+    }
+
+    @Override
+    public Uom getUom() {
+        if (uom != null){
+            return uom;
+        } else {
+            return parent.getUom();
+        }
+    }
+
+    @Override
+    public void setUom(Uom u) {
+        uom = u;
+    }
+
+    @Override
+    public Uom getOwnUom() {
+        return uom;
     }
 }

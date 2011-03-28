@@ -48,11 +48,12 @@ import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.xml.bind.JAXBElement;
+import net.opengis.se._2_0.core.SymbolizerType;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.orbisgis.core.renderer.persistance.se.SymbolizerType;
 
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -75,7 +76,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
     protected VectorSymbolizer() {
     }
 
-    protected VectorSymbolizer(JAXBElement<? extends SymbolizerType> st) {
+    protected VectorSymbolizer(JAXBElement<? extends SymbolizerType> st) throws InvalidStyle {
         super(st);
     }
 

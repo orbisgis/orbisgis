@@ -37,7 +37,7 @@
  */
 
 
-
+/*
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real;
 
 import javax.swing.Icon;
@@ -47,12 +47,14 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.TextInput;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
-
+*/
 /**
  *
  * @author maxence
  */
-public abstract class LegendUIAlgebricalPanel extends LegendUIComponent implements LegendUIRealComponent {
+
+/*
+ public abstract class LegendUIAlgebricalPanel extends LegendUIComponent implements LegendUIRealComponent {
 
 
 	TextInput input;
@@ -95,3 +97,4 @@ public abstract class LegendUIAlgebricalPanel extends LegendUIComponent implemen
 	public abstract void realChanged(RealParameter newReal);
 
 }
+*/

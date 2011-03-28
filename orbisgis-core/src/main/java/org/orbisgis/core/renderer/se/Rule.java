@@ -7,6 +7,8 @@ package org.orbisgis.core.renderer.se;
 import com.vividsolutions.jts.geom.Geometry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.opengis.se._2_0.core.ElseFilterType;
+import net.opengis.se._2_0.core.RuleType;
 
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.FilterDataSourceDecorator;
@@ -17,9 +19,7 @@ import org.gdms.sql.strategies.SemanticException;
 
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.persistance.se.DomainConstraintsType;
-import org.orbisgis.core.renderer.persistance.se.ElseFilterType;
-import org.orbisgis.core.renderer.persistance.se.RuleType;
+
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.graphic.ExternalGraphic;
@@ -123,9 +123,14 @@ public final class Rule implements SymbolizerNode {
 			this.setCompositeSymbolizer(new CompositeSymbolizer(rt.getSymbolizer()));
 		}
 
+        /*
+         * TODO  Replace with WhereClause !!
 		if (rt.getDomainConstraints() != null && rt.getDomainConstraints().getTimePeriod() != null){
 			this.setWhere(rt.getDomainConstraints().getTimePeriod());
-		}
+		}*/
+        if (rt.getWhereClause() != null){
+            this.setWhere(rt.getWhereClause());
+        }
 	}
 
 	public void setCompositeSymbolizer(CompositeSymbolizer cs) {
@@ -156,9 +161,10 @@ public final class Rule implements SymbolizerNode {
 			rt.setElseFilter(new ElseFilterType());
 		} else if(this.getWhere() != null && !this.getWhere().isEmpty())
 		{
+            rt.setWhereClause(this.getWhere());
 			// Temp HACK TODO !! Serialize Filters !!!!
-			rt.setDomainConstraints(new DomainConstraintsType());
-		    rt.getDomainConstraints().setTimePeriod(this.getWhere());
+			//rt.setDomainConstraints(new DomainConstraintsType());
+		    //rt.getDomainConstraints().setTimePeriod(this.getWhere());
 		}
 
 		rt.setSymbolizer(this.symbolizer.getJAXBElement());

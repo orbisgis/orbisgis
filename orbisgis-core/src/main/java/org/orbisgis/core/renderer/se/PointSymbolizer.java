@@ -43,19 +43,18 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 
 import java.io.IOException;
-import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.Drawer;
-import org.orbisgis.core.renderer.persistance.se.ExtensionType;
-import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
-import org.orbisgis.core.renderer.persistance.se.PointSymbolizerType;
+import net.opengis.se._2_0.core.ExtensionType;
+import net.opengis.se._2_0.core.ObjectFactory;
+import net.opengis.se._2_0.core.PointSymbolizerType;
 
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
-import org.orbisgis.core.renderer.persistance.se.ExtensionParameterType;
+import net.opengis.se._2_0.core.ExtensionParameterType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
@@ -87,16 +86,16 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
 
     public PointSymbolizer(JAXBElement<PointSymbolizerType> st) throws InvalidStyle {
         super(st);
-        PointSymbolizerType ast = st.getValue();
+        PointSymbolizerType pst = st.getValue();
 
-        if (ast.getGeometry() != null) {
+        if (pst.getGeometry() != null) {
             // TODO load GeometryFunction !
         }
 
 
         onVertex = false;
-        if (ast.getExtension() != null) {
-            for (ExtensionParameterType param : ast.getExtension().getExtensionParameter()) {
+        if (pst.getExtension() != null) {
+            for (ExtensionParameterType param : pst.getExtension().getExtensionParameter()) {
                 if (param.getName().equalsIgnoreCase("mode")) {
                     //level = Integer.parseInt(param.getContent());
                     onVertex = param.getContent().equalsIgnoreCase(MODE_VERTEX);
@@ -105,18 +104,19 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
             }
         }
 
-        if (ast.getUnitOfMeasure() != null) {
-            Uom u = Uom.fromOgcURN(ast.getUnitOfMeasure());
+        System.out.println("Point Symb uom: " + pst.getUom());
+        if (pst.getUom() != null) {
+            Uom u = Uom.fromOgcURN(pst.getUom());
             System.out.println("This is the UOM: " + u);
             this.setUom(u);
         }
 
-        if (ast.getTransform() != null) {
-            this.setTransform(new Transform(ast.getTransform()));
+        if (pst.getTransform() != null) {
+            this.setTransform(new Transform(pst.getTransform()));
         }
 
-        if (ast.getGraphic() != null) {
-            this.setGraphicCollection(new GraphicCollection(ast.getGraphic(), this));
+        if (pst.getGraphic() != null) {
+            this.setGraphicCollection(new GraphicCollection(pst.getGraphic(), this));
 
         }
     }
@@ -133,43 +133,30 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
     }
 
     @Override
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, 
+    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
             boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
             throws IOException, DriverException {
         if (graphic != null && graphic.getNumGraphics() > 0) {
 
             try {
-                //ArrayList<Point2D> pts = this.getPoints(sds, fid, mt);
-                RenderableGraphics rg = graphic.getGraphic(sds, fid, selected, mt);
+                double x = 0, y = 0;
 
-                if (rg != null) {
-                    double x = 0, y = 0;
-                    //for (Point2D pt : pts) {
-                    // This is to emulate ExtractFirstPoint geom function !!!
-                    //Point2D pt = this.getFirstPointShape(sds, fid);
-
-                    //RenderedImage cache = graphic.getCache(sds, fid, selected);
-                    //if (cache != null) {
-
-                    if (onVertex) {
-                        for (Point2D pt : getPoints(sds, fid, mt, the_geom)) {
-                            x = pt.getX();
-                            y = pt.getY();
-
-                            // Draw the graphic right over the point !
-                            g2.drawRenderedImage(rg.createRendering(mt.getCurrentRenderContext()), AffineTransform.getTranslateInstance(x, y));
-                        }
-                    } else {
-                        Point2D pt = getPointShape(sds, fid, mt, the_geom);
-
-
+                if (onVertex) {
+                    for (Point2D pt : getPoints(sds, fid, mt, the_geom)) {
                         x = pt.getX();
                         y = pt.getY();
 
-                        // Draw the graphic right over the point !
-                        g2.drawRenderedImage(rg.createRendering(mt.getCurrentRenderContext()), AffineTransform.getTranslateInstance(x, y));
-                        //}
+                        graphic.draw(g2, sds, fid, selected, mt, AffineTransform.getTranslateInstance(x, y));
                     }
+                } else {
+                    Point2D pt = getPointShape(sds, fid, mt, the_geom);
+
+
+                    x = pt.getX();
+                    y = pt.getY();
+
+                    // Draw the graphic right over the point !
+                    graphic.draw(g2, sds, fid, selected, mt, AffineTransform.getTranslateInstance(x, y));
                 }
             } catch (ParameterException ex) {
                 Services.getErrorManager().error("Could not render feature ", ex);
@@ -186,7 +173,7 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
 
 
         if (this.uom != null) {
-            s.setUnitOfMeasure(this.getUom().toURN());
+            s.setUom(this.getUom().toURN());
         }
 
         if (transform != null) {

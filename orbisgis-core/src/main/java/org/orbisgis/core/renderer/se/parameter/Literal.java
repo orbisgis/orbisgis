@@ -7,10 +7,10 @@ package org.orbisgis.core.renderer.se.parameter;
 
 import java.util.ArrayList;
 import javax.xml.bind.JAXBElement;
-import org.orbisgis.core.renderer.persistance.ogc.ExpressionType;
-import org.orbisgis.core.renderer.persistance.ogc.LiteralType;
-import org.orbisgis.core.renderer.persistance.ogc.ObjectFactory;
-import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
+import net.opengis.fes._2.ExpressionType;
+import net.opengis.fes._2.LiteralType;
+import net.opengis.fes._2.ObjectFactory;
+import net.opengis.se._2_0.core.ParameterValueType;
 
 /**
  *

@@ -79,7 +79,6 @@ public class ShapeHelper {
     public static double getAreaPerimeterLength(Shape area) {
         PathIterator it = area.getPathIterator(null, FLATNESS);
 
-        System.out.println("Get length :");
         double coords[] = new double[6];
 
         double p = 0.0;
@@ -116,7 +115,6 @@ public class ShapeHelper {
 
             x1 = x2;
             y1 = y2;
-            //System.out.println (x1 + ";" + y1);
 
             it.next();
         }
@@ -1342,8 +1340,10 @@ public class ShapeHelper {
                     System.out.println(v);
                 }
             }
-
-            rawShapes.add(createShapeFromVertexes(rawLink, closed));
+            Shape finalShape = createShapeFromVertexes(rawLink, closed);
+            if (finalShape != null){
+                rawShapes.add(finalShape);
+            }
         }
 
         return rawShapes;

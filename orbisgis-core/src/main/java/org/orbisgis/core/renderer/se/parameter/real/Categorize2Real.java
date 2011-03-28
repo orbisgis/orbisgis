@@ -2,10 +2,10 @@ package org.orbisgis.core.renderer.se.parameter.real;
 
 import java.util.Iterator;
 import javax.xml.bind.JAXBElement;
+import net.opengis.se._2_0.core.CategorizeType;
+import net.opengis.se._2_0.core.ParameterValueType;
+import net.opengis.se._2_0.core.ThreshholdBelongsToType;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.orbisgis.core.renderer.persistance.se.CategorizeType;
-import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
-import org.orbisgis.core.renderer.persistance.se.ThreshholdsBelongToType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.Categorize;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -13,8 +13,6 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 
 public final class Categorize2Real extends Categorize<RealParameter, RealLiteral> implements RealParameter {
 
-	private Double min;
-	private Double max;
 	private RealParameterContext ctx;
 
     public Categorize2Real(RealParameter initialClass, RealLiteral fallback, RealParameter lookupValue){
@@ -40,7 +38,7 @@ public final class Categorize2Real extends Categorize<RealParameter, RealLiteral
                     SeParameterFactory.createRealParameter(it.next().getValue()));
         }
 
-        if (t.getThreshholdsBelongTo() == ThreshholdsBelongToType.PRECEDING)
+        if (t.getThreshholdBelongsTo() == ThreshholdBelongsToType.PRECEDING)
             this.setThresholdsPreceding();
         else
             this.setThresholdsSucceeding();

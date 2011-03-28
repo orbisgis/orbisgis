@@ -105,14 +105,14 @@ public class Gallery extends TestCase {
     public void testChoropleth() throws ParameterException, IOException, InvalidStyle, DriverException, DriverLoadException, DataSourceCreationException {
 
         this.template("../../datas2tests/shp/Swiss/g4districts98_region.shp", "SVG",
-                "src/test/resources/org/orbisgis/core/renderer/se/svg.se", null, "/tmp/svg.png", null);
-
+               "/home/maxence/projects/SCAP-c²/SE/extG.se", null, "/tmp/extG.png", null);
 
         this.template("../../datas2tests/shp/bigshape2D/communes.shp", "DotMap Population communes",
                 "src/test/resources/org/orbisgis/core/renderer/se/dotmap_communes.se", null, "/tmp/dot_map_communes.png", null);
 
         this.template("../../datas2tests/shp/Swiss/g4districts98_region.shp",
                 "Pie à la con", "src/test/resources/org/orbisgis/core/renderer/se/Districts/pie.se", null, "/tmp/pies.png", null);
+
 
         this.template("../../datas2tests/shp/Swiss/g4districts98_region.shp",
                 "Silouette", "src/test/resources/org/orbisgis/core/renderer/se/Districts/radar.se", null, "/tmp/radar.png", null);

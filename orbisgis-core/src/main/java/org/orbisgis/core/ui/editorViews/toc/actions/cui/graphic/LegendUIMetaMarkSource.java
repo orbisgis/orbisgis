@@ -38,11 +38,16 @@
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.graphic;
 
 import javax.swing.Icon;
+import org.orbisgis.core.renderer.se.common.OnlineResource;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.graphic.WellKnownName;
+import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
+import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractMetaPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.color.LegendUIMetaColorPanel;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.string.LegendUIMetaStringPanel;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 /**
@@ -51,48 +56,59 @@ import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
  */
 public class LegendUIMetaMarkSource extends LegendUIAbstractMetaPanel {
 
-	private LegendUIComponent comp;
-	private MarkGraphic mark;
+    private LegendUIComponent comp;
+    private MarkGraphic mark;
+    private final Class[] classes = {WellKnownName.class};
 
-	private final Class[] classes = { WellKnownName.class};
-
-	public LegendUIMetaMarkSource(LegendUIController ctrl, LegendUIComponent parent, MarkGraphic mark) {
-		super("Source", ctrl, parent, 0, false);
-		this.mark = mark;
+    public LegendUIMetaMarkSource(LegendUIController ctrl, LegendUIComponent parent, MarkGraphic mark) {
+        super("Source", ctrl, parent, 0, false);
+        this.mark = mark;
 
 
-		comp = null;
-		if (mark.getSource() != null) {
-			comp = getCompForClass(mark.getSource().getClass());
-		}
-	}
+        comp = null;
+        if (mark.getWkn() != null) {
+            comp = getCompForClass(WellKnownName.class);
+        } else if (mark.getOnlineResource() != null) {
+            comp = getCompForClass(OnlineResource.class);
+        }
+    }
 
-	@Override
-	protected final LegendUIComponent getCompForClass(Class newClass) {
-		if (newClass == WellKnownName.class) {
-			return new LegendUIWellKnownNamePanel(controller, this, mark);
-		} else {
-			return null;
-		}
-	}
+    @Override
+    protected final LegendUIComponent getCompForClass(Class newClass) {
+        if (newClass == WellKnownName.class) {
+            return new LegendUIMetaStringPanel("WKN", controller, this, mark.getWkn(), false) {
 
-	@Override
-	public Icon getIcon() {
-		return OrbisGISIcon.PALETTE;
-	}
+                @Override
+                public void stringChanged(StringParameter newString) {
+                    mark.setWkn(newString);
+                }
+            };
+        } else {
+            return null;
+        }
+    }
 
-	@Override
-	public void init() {
-		init(classes, comp);
-	}
+    @Override
+    public Icon getIcon() {
+        return OrbisGISIcon.PALETTE;
+    }
 
-	@Override
-	protected void switchTo(LegendUIComponent newActiveComp) {
-		//this.mark TODO
-	}
+    @Override
+    public void init() {
+        init(classes, comp);
+    }
 
-	@Override
-	public Class getEditedClass() {
-		return mark.getSource().getClass();
-	}
+    @Override
+    protected void switchTo(LegendUIComponent newActiveComp) {
+        //this.mark TODO
+    }
+
+    @Override
+    public Class getEditedClass() {
+        if (mark.getWkn() != null) {
+            return WellKnownName.class;
+        } else {
+            return null;
+        }
+    }
 }

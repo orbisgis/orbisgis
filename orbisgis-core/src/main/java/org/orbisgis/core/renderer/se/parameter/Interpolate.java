@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
-import org.orbisgis.core.renderer.persistance.ogc.ExpressionType;
-import org.orbisgis.core.renderer.persistance.se.InterpolateType;
-import org.orbisgis.core.renderer.persistance.se.InterpolationPointType;
-import org.orbisgis.core.renderer.persistance.se.ModeType;
-import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
-import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
+import net.opengis.fes._2.ExpressionType;
+import net.opengis.se._2_0.core.InterpolateType;
+import net.opengis.se._2_0.core.InterpolationPointType;
+import net.opengis.se._2_0.core.ModeType;
+import net.opengis.se._2_0.core.ObjectFactory;
+import net.opengis.se._2_0.core.ParameterValueType;
 
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;

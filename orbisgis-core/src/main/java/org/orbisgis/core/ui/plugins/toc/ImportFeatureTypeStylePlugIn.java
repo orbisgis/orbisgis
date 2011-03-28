@@ -110,7 +110,9 @@ public class ImportFeatureTypeStylePlugIn extends AbstractPlugIn {
 					layer.setFeatureTypeStyle(new FeatureTypeStyle(layer, seFile));
 				} catch (SeExceptions.InvalidStyle ex) {
 			        Services.getErrorManager().error(ex.getLocalizedMessage());
-					JOptionPane.showMessageDialog(null, ex.getMessage(), "Error while loading the style", JOptionPane.ERROR_MESSAGE);
+                    String msg = ex.getMessage().replace("<", "\n    - ").replace(',', ' ').replace(": ", "\n - ");
+					JOptionPane.showMessageDialog(null, msg,
+                            "Error while loading the style", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 

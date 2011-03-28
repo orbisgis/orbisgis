@@ -1,25 +1,18 @@
 package org.orbisgis.core.renderer.se.parameter.geometry;
 
 import com.vividsolutions.jts.geom.Geometry;
-import javax.xml.bind.JAXBElement;
+import net.opengis.se._2_0.core.GeometryType;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.renderer.persistance.ogc.PropertyNameType;
-import org.orbisgis.core.renderer.persistance.se.GeometryType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.PropertyName;
+import org.orbisgis.core.renderer.se.parameter.ValueReference;
 
-public class GeometryAttribute extends PropertyName {
+public class GeometryAttribute extends ValueReference {
 
-    public GeometryAttribute(JAXBElement<PropertyNameType> expr) throws InvalidStyle {
-        super(expr);
+    public GeometryAttribute(GeometryType geom) throws InvalidStyle {
+        super(geom.getValueReference());
 	}
-
-	public GeometryAttribute(PropertyNameType propertyName) throws InvalidStyle {
-		super(propertyName);
-	}
-
 
     public Geometry getTheGeom(SpatialDataSourceDecorator sds, long fid) throws ParameterException {
         try {

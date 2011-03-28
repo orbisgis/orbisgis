@@ -1,11 +1,10 @@
 package org.orbisgis.core.renderer.se.parameter.real;
 
 import javax.xml.bind.JAXBElement;
+import net.opengis.se._2_0.core.InterpolateType;
+import net.opengis.se._2_0.core.InterpolationPointType;
+import net.opengis.se._2_0.core.ModeType;
 import org.gdms.data.SpatialDataSourceDecorator;
-
-import org.orbisgis.core.renderer.persistance.se.InterpolateType;
-import org.orbisgis.core.renderer.persistance.se.InterpolationPointType;
-import org.orbisgis.core.renderer.persistance.se.ModeType;
 
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 

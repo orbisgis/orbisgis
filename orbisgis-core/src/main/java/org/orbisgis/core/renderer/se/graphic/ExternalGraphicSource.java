@@ -7,9 +7,9 @@ package org.orbisgis.core.renderer.se.graphic;
 
 import java.awt.image.RenderedImage;
 import java.io.IOException;
+import net.opengis.se._2_0.core.ExternalGraphicType;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.persistance.se.ExternalGraphicType;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 /**

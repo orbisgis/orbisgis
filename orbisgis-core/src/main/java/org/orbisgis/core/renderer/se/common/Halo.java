@@ -9,7 +9,7 @@ import org.gdms.data.SpatialDataSourceDecorator;
 
 import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.persistance.se.HaloType;
+import net.opengis.se._2_0.core.HaloType;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
@@ -45,8 +45,8 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
             this.setRadius(SeParameterFactory.createRealParameter(halo.getRadius()));
         }
 
-        if (halo.getUnitOfMeasure() != null) {
-            this.setUom(Uom.fromOgcURN(halo.getUnitOfMeasure()));
+        if (halo.getUom() != null) {
+            this.setUom(Uom.fromOgcURN(halo.getUom()));
         }
     }
 
@@ -156,7 +156,7 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
         }
 
         if (uom != null) {
-            h.setUnitOfMeasure(uom.toURN());
+            h.setUom(uom.toURN());
         }
 
         return h;

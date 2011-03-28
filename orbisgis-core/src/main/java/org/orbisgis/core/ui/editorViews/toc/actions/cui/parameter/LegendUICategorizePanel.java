@@ -71,7 +71,7 @@ import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.Categorize;
 import org.orbisgis.core.renderer.se.parameter.CategorizeListener;
 import org.orbisgis.core.renderer.se.parameter.LiteralListener;
-import org.orbisgis.core.renderer.se.parameter.PropertyName;
+import org.orbisgis.core.renderer.se.parameter.ValueReference;
 import org.orbisgis.core.renderer.se.parameter.PropertyNameListener;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.color.ColorHelper;
@@ -400,7 +400,7 @@ public abstract class LegendUICategorizePanel extends LegendUIComponent
      * @param p
      */
     @Override
-    public void propertyNameChanged(PropertyName p) {
+    public void propertyNameChanged(ValueReference p) {
         footer.removeAll();
         JLabel text;
 

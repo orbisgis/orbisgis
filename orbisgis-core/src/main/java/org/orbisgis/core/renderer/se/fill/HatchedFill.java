@@ -37,10 +37,8 @@
  */
 package org.orbisgis.core.renderer.se.fill;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Paint;
-import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
@@ -49,9 +47,9 @@ import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.persistance.se.FillType;
-import org.orbisgis.core.renderer.persistance.se.HatchedFillType;
-import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
+import net.opengis.se._2_0.core.FillType;
+import net.opengis.se._2_0.core.HatchedFillType;
+import net.opengis.se._2_0.core.ObjectFactory;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -162,7 +160,7 @@ public final class HatchedFill extends Fill {
             double width = mt.getWidth();
             double height = mt.getHeight();
 
-            if (g2 instanceof RenderableGraphics) {
+            /*if (g2 instanceof RenderableGraphics) {
                 System.out.println("GRAPHIC CONTEXT!");
                 RenderableGraphics rg = (RenderableGraphics) g2;
                 minX = Math.round(rg.getMinX());
@@ -170,7 +168,7 @@ public final class HatchedFill extends Fill {
                 width = Math.round(rg.getWidth());
                 height = Math.round(rg.getHeight());
                 throw  new ParameterException("HatchedFill is not currently supported to style marks");
-            }
+            }*/
 
 
             double xDist;
@@ -254,21 +252,11 @@ public final class HatchedFill extends Fill {
 
             double x;
             double y;
-            //g2.setCI
-            //g2.setClip(shp);
 
-
-            //Rectangle clip = new Rectangle((int)minX, (int)(minY + height/3), (int)(width), (int)(height/2));
+            // Inform graphic2f to only draw hatches within the shape !
             g2.clip(shp);
 
-            //g2.setPaint(Color.yellow);
-            //g2.fill(clip);
-
-            //System.out.println ("  Clip is : " + clip);
-            //System.out.println ("  Clip is : " + g2.getClip());
-
             Rectangle2D.Double bounds = new Rectangle2DDouble((int)minX, (int)minY, width, height);
-            //System.out.println ("B0ounds : " + bounds);
 
             for (x = xStart, y = yStart; ; x += xDist, y += yDist, xRef += xDistRef, yRef += yDistRef) {
                 if (bounds.intersectsLine(xRef, y, x, yRef)){

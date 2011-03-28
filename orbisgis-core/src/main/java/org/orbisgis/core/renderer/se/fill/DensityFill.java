@@ -44,22 +44,20 @@ import java.awt.Shape;
 import java.awt.TexturePaint;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 
 import java.io.IOException;
 
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.orbisgis.core.renderer.persistance.se.DensityFillType;
+import net.opengis.se._2_0.thematic.DensityFillType;
 
-import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
+import net.opengis.se._2_0.thematic.ObjectFactory;
 
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.GraphicNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
 import java.awt.geom.AffineTransform;
-import javax.media.jai.RenderableGraphics;
 
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -167,7 +165,7 @@ public final class DensityFill extends Fill implements GraphicNode {
     }
 
     @Override
-    public Paint getPaint(long fid, SpatialDataSourceDecorator sds, boolean selected, MapTransform mt) throws ParameterException {
+    public Paint getPaint(long fid, SpatialDataSourceDecorator sds, boolean selected, MapTransform mt) throws ParameterException, IOException {
         double percentage = 0.0;
 
         if (percentageCovered != null) {
@@ -182,7 +180,7 @@ public final class DensityFill extends Fill implements GraphicNode {
             Paint painter = null;
 
             if (isHatched && hatches != null) {
-                if (hatches.getMinLength(sds, fid, mt) > 0){
+                if (hatches.getMinLength(sds, fid, mt) > 0) {
                     throw new ParameterException("Dashed hatched aren't supported yet!");
                 }
 
@@ -196,7 +194,7 @@ public final class DensityFill extends Fill implements GraphicNode {
                 theta *= Math.PI / 180.0;
 
                 // Stroke width
-                double sWidth = hatches.getMaxWidth(sds, fid, mt);
+                double sWidth = hatches.getWidthInPixel(sds, fid, mt);
 
                 // Perpendiculat dist bw two hatches
                 double pDist = 100 * sWidth / percentage;
@@ -273,43 +271,52 @@ public final class DensityFill extends Fill implements GraphicNode {
                 painter = new TexturePaint(img, new Rectangle2D.Double(0, 0, ix, iy));
             } else if (mark != null) { // Marked
 
-                RenderableGraphics g;
+                //RenderableGraphics g;
+                Rectangle2D bounds;
                 try {
-                    g = mark.getGraphic(sds, fid, selected, mt);
+                    //g = mark.getGraphic(sds, fid, selected, mt);
+                    bounds = mark.getBounds(sds, fid, selected, mt);
                 } catch (IOException ex) {
                     throw new ParameterException(ex);
                 }
 
-                if (g != null) {
+                if (bounds != null) {
                     // Mark size:
-                    double mWidth = g.getWidth();
-                    double mHeight = g.getHeight();
+                    double mWidth = bounds.getWidth();
+                    double mHeight = bounds.getHeight();
 
                     //Final Texture square size
                     //double TextureSize = getTextureSize(mWidth, mHeight, percentage);
                     double tHeight = getTextureSize(mHeight, percentage);
                     double tWidth = getTextureSize(mWidth, percentage);
 
-                    RenderedImage rg = g.createRendering(mt.getCurrentRenderContext());
+                    //RenderedImage rg = g.createRendering(mt.getCurrentRenderContext());
 
                     //Create image to which to paint the marks
                     BufferedImage i = new BufferedImage((int) tWidth, (int) tHeight, BufferedImage.TYPE_INT_ARGB);
                     //Create graphics from the image
                     Graphics2D tg = i.createGraphics();
+                    tg.setRenderingHints(mt.getRenderingHints());
                     //Draw the mark to the image
                     //Draw centered full mark if percentage is smaller or equal to 50
+                    try {
+                        mark.draw(tg, sds, fid, selected, mt, AffineTransform.getTranslateInstance(tWidth / 2, tHeight / 2));
 
-                    tg.drawRenderedImage(rg, AffineTransform.getTranslateInstance(tWidth / 2, tHeight / 2));
-                    if (percentage <= 50) {
-                        //Draw mark quarters
-                        //Top left corner quarter mark
-                        tg.drawRenderedImage(rg, AffineTransform.getTranslateInstance(0, 0));
-                        //Top right corner quarter mark
-                        tg.drawRenderedImage(rg, AffineTransform.getTranslateInstance(tWidth, 0));
-                        //Bottom right corner quarter mark
-                        tg.drawRenderedImage(rg, AffineTransform.getTranslateInstance(tWidth, tHeight));
-                        //Bottom left corner quarter mark
-                        tg.drawRenderedImage(rg, AffineTransform.getTranslateInstance(0, tHeight));
+                        //tg.drawRenderedImage(rg, AffineTransform.getTranslateInstance(tWidth / 2, tHeight / 2));
+                        if (percentage <= 50) {
+                            //Draw mark quarters
+
+                            //Top left corner quarter mark
+                            mark.draw(tg, sds, fid, selected, mt, AffineTransform.getTranslateInstance(0, 0));
+                            //Top right corner quarter mark
+                            mark.draw(tg, sds, fid, selected, mt, AffineTransform.getTranslateInstance(tWidth, 0));
+                            //Bottom right corner quarter mark
+                            mark.draw(tg, sds, fid, selected, mt, AffineTransform.getTranslateInstance(tWidth, tHeight));
+                            //Bottom left corner quarter mark
+                            mark.draw(tg, sds, fid, selected, mt, AffineTransform.getTranslateInstance(0, tHeight));
+                        }
+                    } catch (IOException ex) {
+                        throw new ParameterException("Couldn't generate tile !", ex);
                     }
                     //finally set the painter
                     painter = new TexturePaint(i, new Rectangle2D.Double(0, 0, i.getWidth(), i.getHeight()));
@@ -325,26 +332,23 @@ public final class DensityFill extends Fill implements GraphicNode {
     private double getTextureSize(double markSize, double percentage) {
         double size = (markSize * 100) / percentage;
 
-        if (percentage > 50){
-           size -= (size - markSize)/2.0;
+        if (percentage > 50) {
+            size -= (size - markSize) / 2.0;
         }
         return size + 0.5;
     }
 
-    
     //private double getTextureSize(double markWidth, double markHeight, double percentage) {
         /* Square size depends on the percentage. Lower or equal to 50, the mark
-         * will be drawn 2 times in total (1 full, 4/4 quarters).
-         * Higher then 50, the mark will be drawn 1 time ( 4/4 quarters).
-         */
-        //double TextureSurface = (markWidth * markHeight * 100) / percentage;
-        //if (percentage <= 50) {
-            //TextureSurface = (markWidth * markHeight * 2 * 100) / percentage;
-        //}
-        //return Math.round(Math.sqrt(TextureSurface));
+     * will be drawn 2 times in total (1 full, 4/4 quarters).
+     * Higher then 50, the mark will be drawn 1 time ( 4/4 quarters).
+     */
+    //double TextureSurface = (markWidth * markHeight * 100) / percentage;
+    //if (percentage <= 50) {
+    //TextureSurface = (markWidth * markHeight * 2 * 100) / percentage;
     //}
-
-
+    //return Math.round(Math.sqrt(TextureSurface));
+    //}
     @Override
     public String dependsOnFeature() {
 

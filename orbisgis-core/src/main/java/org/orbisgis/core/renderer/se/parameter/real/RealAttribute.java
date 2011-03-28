@@ -1,14 +1,13 @@
 package org.orbisgis.core.renderer.se.parameter.real;
 
 import javax.xml.bind.JAXBElement;
+import net.opengis.fes._2.ValueReferenceType;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.feature.Feature;
-import org.orbisgis.core.renderer.persistance.ogc.PropertyNameType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.PropertyName;
+import org.orbisgis.core.renderer.se.parameter.ValueReference;
 
-public class RealAttribute extends PropertyName implements RealParameter{
+public class RealAttribute extends ValueReference implements RealParameter{
 
 	private RealParameterContext ctx;
 
@@ -21,7 +20,7 @@ public class RealAttribute extends PropertyName implements RealParameter{
 		ctx = RealParameterContext.realContext;
     }
 
-    public RealAttribute(JAXBElement<PropertyNameType> expr) throws InvalidStyle {
+    public RealAttribute(JAXBElement<ValueReferenceType> expr) throws InvalidStyle {
         super(expr);
 		ctx = RealParameterContext.realContext;
     }

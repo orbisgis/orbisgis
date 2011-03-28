@@ -52,9 +52,9 @@ import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
  *
  * @author maxence
  */
-public class LegendUIWellKnownNamePanel extends LegendUIComponent {
+/*public class LegendUIWellKnownNamePanel extends LegendUIComponent {
 
-
+    
 	MarkGraphic mg;
 
 	ComboBoxInput wknInput;
@@ -64,7 +64,7 @@ public class LegendUIWellKnownNamePanel extends LegendUIComponent {
 	public LegendUIWellKnownNamePanel(LegendUIController controller, LegendUIComponent parent, MarkGraphic m) {
 		super("WKG", controller, parent, 0, false);
 		this.mg = m;
-		this.wkn = (WellKnownName) mg.getSource();
+		//this.wkn = (WellKnownName) mg.getSource();
 
 
 		wknInput = new ComboBoxInput(WellKnownName.values(), ((WellKnownName)mg.getSource()).ordinal()) {
@@ -102,5 +102,5 @@ public class LegendUIWellKnownNamePanel extends LegendUIComponent {
 		return WellKnownName.class;
 	}
 
-
 }
+*/

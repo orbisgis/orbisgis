@@ -66,9 +66,9 @@ import org.gdms.data.SpatialDataSourceDecorator;
 
 import org.orbisgis.core.map.MapTransform;
 
-import org.orbisgis.core.renderer.persistance.ows._1.OnlineResourceType;
-import org.orbisgis.core.renderer.persistance.se.ExternalGraphicType;
-import org.orbisgis.core.renderer.persistance.se.MarkGraphicType;
+import net.opengis.ows._2.OnlineResourceType;
+import net.opengis.se._2_0.core.ExternalGraphicType;
+import net.opengis.se._2_0.core.MarkGraphicType;
 import org.orbisgis.core.renderer.se.graphic.ExternalGraphicSource;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphicSource;
 import org.orbisgis.core.renderer.se.graphic.ViewBox;
@@ -307,7 +307,7 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
         throw new ParameterException("Unknown MIME type: " + mimeType);
     }
 
-    @Override
+    //@Override
     public void setJAXBSource(MarkGraphicType m) {
         OnlineResourceType o = new OnlineResourceType();
 

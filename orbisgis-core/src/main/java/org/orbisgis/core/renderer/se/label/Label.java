@@ -9,13 +9,13 @@ import java.awt.Shape;
 import java.io.IOException;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.orbisgis.core.renderer.persistance.se.LabelType;
+import net.opengis.se._2_0.core.LabelType;
 
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
 
-import org.orbisgis.core.renderer.persistance.se.LineLabelType;
-import org.orbisgis.core.renderer.persistance.se.PointLabelType;
+import net.opengis.se._2_0.core.LineLabelType;
+import net.opengis.se._2_0.core.PointLabelType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
@@ -61,7 +61,7 @@ public abstract class Label implements SymbolizerNode, UomNode{
 
 	protected SymbolizerNode parent;
     protected Uom uom;
-    protected StyledLabel label;
+    protected StyledText label;
     protected HorizontalAlignment hAlign;
     protected VerticalAlignment vAlign;
 
@@ -79,12 +79,12 @@ public abstract class Label implements SymbolizerNode, UomNode{
     }
 
 	protected Label(LabelType t) throws InvalidStyle{
-        if (t.getUnitOfMeasure() != null) {
-            this.uom = Uom.fromOgcURN(t.getUnitOfMeasure());
+        if (t.getUom() != null) {
+            this.uom = Uom.fromOgcURN(t.getUom());
         }
 
-        if (t.getStyledLabel() != null) {
-            this.setLabel(new StyledLabel(t.getStyledLabel()));
+        if (t.getStyledText() != null) {
+            this.setLabel(new StyledText(t.getStyledText()));
         }
 	}
 
@@ -121,11 +121,11 @@ public abstract class Label implements SymbolizerNode, UomNode{
         parent = node;
     }
 
-    public StyledLabel getLabel() {
+    public StyledText getLabel() {
         return label;
     }
 
-    public final void setLabel(StyledLabel label) {
+    public final void setLabel(StyledText label) {
         this.label = label;
         label.setParent(this);
     }

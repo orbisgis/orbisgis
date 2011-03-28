@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<FeatureTypeStyle xmlns="http://www.opengis.net/se" xmlns:ns2="http://www.opengis.net/ows/1.1" xmlns:ns3="http://www.opengis.net/ogc" xmlns:ns4="http://www.w3.org/1999/xlink">
+<FeatureTypeStyle xmlns="http://www.opengis.net/se/2.0/core" xmlns:ns2="http://www.opengis.net/ows/2.0" xmlns:ns3="http://www.opengis.net/fes/2.0" xmlns:ns4="http://www.w3.org/1999/xlink">
   <Rule>
-    <PointSymbolizer>
-      <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
+    <PointSymbolizer uom="urn:ogc:def:uom:se::mm">
       <CompositeGraphic>
         <!-- Background: draughtboard -->
         <MarkGraphic>
-          <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
           <WellKnownName>SQUARE</WellKnownName>
           <ViewBox>
             <Width>270</Width>
@@ -69,17 +67,15 @@
           </Transform>
         </MarkGraphic>
 
-        <TextGraphic>
-         <StyledLabel>
+        <PointTextGraphic>
+         <PointLabel><StyledText>
            <LabelText>Default</LabelText>
-         </StyledLabel>
-         <Transform>
-          <Translate>
+         </StyledText></PointLabel>
+	 <PointPosition>
             <X>-125</X>
             <Y>-50</Y>
-          </Translate>
-         </Transform>
-        </TextGraphic>
+	 </PointPosition>
+        </PointTextGraphic>
 
 
      
@@ -101,17 +97,15 @@
           </Transform>
         </MarkGraphic>
 
-        <TextGraphic>
-         <StyledLabel>
+        <PointTextGraphic>
+         <PointLabel><StyledText>
            <LabelText>SolidPink</LabelText>
-         </StyledLabel>
-         <Transform>
-          <Translate>
+         </StyledText></PointLabel>
+	 <PointPosition>
             <X>-90</X>
             <Y>-50</Y>
-          </Translate>
-         </Transform>
-        </TextGraphic>
+	 </PointPosition>
+        </PointTextGraphic>
 
      
         <MarkGraphic>
@@ -134,17 +128,15 @@
           </Transform>
         </MarkGraphic>
 
-        <TextGraphic>
-         <StyledLabel>
+        <PointTextGraphic>
+         <PointLabel><StyledText>
            <LabelText>3mm alpha=50</LabelText>
-         </StyledLabel>
-         <Transform>
-          <Translate>
+         </StyledText></PointLabel>
+	 <PointPosition>
             <X>-60</X>
             <Y>-50</Y>
-          </Translate>
-         </Transform>
-        </TextGraphic>
+	 </PointPosition>
+        </PointTextGraphic>
 
  
         <MarkGraphic>
@@ -164,17 +156,15 @@
           </Transform>
         </MarkGraphic>
 
-        <TextGraphic>
-         <StyledLabel>
+        <PointTextGraphic>
+         <PointLabel><StyledText>
            <LabelText>5mm LineJoin:Mitre</LabelText>
-         </StyledLabel>
-         <Transform>
-          <Translate>
+         </StyledText></PointLabel>
+	 <PointPosition>
             <X>-30</X>
             <Y>-50</Y>
-          </Translate>
-         </Transform>
-        </TextGraphic>
+	 </PointPosition>
+        </PointTextGraphic>
 
 
  
@@ -194,16 +184,14 @@
           </Transform>
         </MarkGraphic>
 
-        <TextGraphic>
-         <StyledLabel>
+        <PointTextGraphic>
+         <PointLabel><StyledText>
            <LabelText>5mm LineJoin:Round</LabelText>
-         </StyledLabel>
-         <Transform>
-          <Translate>
+         </StyledText></PointLabel>
+	 <PointPosition>
             <Y>-50</Y>
-          </Translate>
-         </Transform>
-        </TextGraphic>
+	 </PointPosition>
+        </PointTextGraphic>
 
         <MarkGraphic>
           <WellKnownName>square</WellKnownName>
@@ -222,17 +210,15 @@
           </Transform>
         </MarkGraphic>
 
-        <TextGraphic>
-         <StyledLabel>
+        <PointTextGraphic>
+         <PointLabel><StyledText>
            <LabelText>5mm LineJoin:Bevel</LabelText>
-         </StyledLabel>
-         <Transform>
-          <Translate>
+         </StyledText></PointLabel>
+	 <PointPosition>
             <X>30</X>
             <Y>-50</Y>
-          </Translate>
-         </Transform>
-        </TextGraphic>
+	 </PointPosition>
+        </PointTextGraphic>
 
 
         <MarkGraphic>
@@ -252,17 +238,15 @@
           </Transform>
         </MarkGraphic>
 
-        <TextGraphic>
-         <StyledLabel>
+        <PointTextGraphic>
+         <PointLabel><StyledText>
            <LabelText>Dash 2</LabelText>
-         </StyledLabel>
-         <Transform>
-          <Translate>
+         </StyledText></PointLabel>
+	 <PointPosition>
             <X>60</X>
             <Y>-50</Y>
-          </Translate>
-         </Transform>
-        </TextGraphic>
+	 </PointPosition>
+        </PointTextGraphic>
 
 
         <MarkGraphic>
@@ -283,17 +267,15 @@
           </Transform>
         </MarkGraphic>
 
-        <TextGraphic>
-         <StyledLabel>
+        <PointTextGraphic>
+         <PointLabel><StyledText>
            <LabelText>Dash 2 + 2</LabelText>
-         </StyledLabel>
-         <Transform>
-          <Translate>
+         </StyledText></PointLabel>
+	 <PointPosition>
             <X>90</X>
             <Y>-50</Y>
-          </Translate>
-         </Transform>
-        </TextGraphic>
+	 </PointPosition>
+        </PointTextGraphic>
 
 
         <MarkGraphic>
@@ -315,17 +297,15 @@
           </Transform>
         </MarkGraphic>
 
-        <TextGraphic>
-         <StyledLabel>
+        <PointTextGraphic>
+         <PointLabel><StyledText>
            <LabelText>Dash 2 2</LabelText>
-         </StyledLabel>
-         <Transform>
-          <Translate>
+         </StyledText></PointLabel>
+	 <PointPosition>
             <X>120</X>
             <Y>-50</Y>
-          </Translate>
-         </Transform>
-        </TextGraphic>
+	 </PointPosition>
+        </PointTextGraphic>
 
 <!--- NEW LINE -->
 
@@ -348,17 +328,15 @@
           </Transform>
         </MarkGraphic>
 
-        <TextGraphic>
-         <StyledLabel>
+        <PointTextGraphic>
+         <PointLabel><StyledText>
            <LabelText>LineCap : def</LabelText>
-         </StyledLabel>
-         <Transform>
-          <Translate>
+         </StyledText></PointLabel>
+	 <PointPosition>
             <X>-120</X>
             <Y>-20</Y>
-          </Translate>
-         </Transform>
-        </TextGraphic>
+	 </PointPosition>
+        </PointTextGraphic>
 
         <MarkGraphic>
           <WellKnownName>square</WellKnownName>
@@ -378,17 +356,15 @@
           </Transform>
         </MarkGraphic>
 
-        <TextGraphic>
-         <StyledLabel>
+        <PointTextGraphic>
+         <PointLabel><StyledText>
            <LabelText>LineCap : butt</LabelText>
-         </StyledLabel>
-         <Transform>
-          <Translate>
+         </StyledText></PointLabel>
+	 <PointPosition>
             <X>-90</X>
             <Y>-20</Y>
-          </Translate>
-         </Transform>
-        </TextGraphic>
+	 </PointPosition>
+        </PointTextGraphic>
 
         <MarkGraphic>
           <WellKnownName>square</WellKnownName>
@@ -408,17 +384,15 @@
           </Transform>
         </MarkGraphic>
 
-        <TextGraphic>
-         <StyledLabel>
+        <PointTextGraphic>
+         <PointLabel><StyledText>
            <LabelText>LineCap : round</LabelText>
-         </StyledLabel>
-         <Transform>
-          <Translate>
+         </StyledText></PointLabel>
+	 <PointPosition>
             <X>-60</X>
             <Y>-20</Y>
-          </Translate>
-         </Transform>
-        </TextGraphic>
+	 </PointPosition>
+        </PointTextGraphic>
 
         <MarkGraphic>
           <WellKnownName>square</WellKnownName>
@@ -438,17 +412,15 @@
           </Transform>
         </MarkGraphic>
 
-        <TextGraphic>
-         <StyledLabel>
+        <PointTextGraphic>
+         <PointLabel><StyledText>
            <LabelText>LineCap : square</LabelText>
-         </StyledLabel>
-         <Transform>
-          <Translate>
+         </StyledText></PointLabel>
+	 <PointPosition>
             <X>-30</X>
             <Y>-20</Y>
-          </Translate>
-         </Transform>
-        </TextGraphic>
+	 </PointPosition>
+        </PointTextGraphic>
 
 
         <MarkGraphic>
@@ -472,16 +444,14 @@
           </Transform>
         </MarkGraphic>
 
-        <TextGraphic>
-         <StyledLabel>
+        <PointTextGraphic>
+         <PointLabel><StyledText>
            <LabelText>Stipple</LabelText>
-         </StyledLabel>
-         <Transform>
-          <Translate>
+         </StyledText></PointLabel>
+	 <PointPosition>
             <Y>-20</Y>
-          </Translate>
-         </Transform>
-        </TextGraphic>
+	 </PointPosition>
+        </PointTextGraphic>
 
 
 <!-- NEW LINE -->
@@ -505,17 +475,15 @@
           </Transform>
         </MarkGraphic>
 
-        <TextGraphic>
-         <StyledLabel>
+        <PointTextGraphic>
+         <PointLabel><StyledText>
            <LabelText>GS: default</LabelText>
-         </StyledLabel>
-         <Transform>
-          <Translate>
+         </StyledText></PointLabel>
+	 <PointPosition>
             <X>-120</X>
 	    <Y>10</Y>
-          </Translate>
-         </Transform>
-        </TextGraphic>
+	 </PointPosition>
+        </PointTextGraphic>
 
 
         <MarkGraphic>
@@ -538,17 +506,15 @@
           </Transform>
         </MarkGraphic>
 
-        <TextGraphic>
-         <StyledLabel>
+        <PointTextGraphic>
+         <PointLabel><StyledText>
            <LabelText>GS: l=0</LabelText>
-         </StyledLabel>
-         <Transform>
-          <Translate>
+         </StyledText></PointLabel>
+	 <PointPosition>
             <X>-90</X>
 	    <Y>10</Y>
-          </Translate>
-         </Transform>
-        </TextGraphic>
+	 </PointPosition>
+        </PointTextGraphic>
 
         <MarkGraphic>
           <WellKnownName>circle</WellKnownName>
@@ -570,17 +536,15 @@
           </Transform>
         </MarkGraphic>
 
-        <TextGraphic>
-         <StyledLabel>
+        <PointTextGraphic>
+         <PointLabel><StyledText>
            <LabelText>GS: l=10</LabelText>
-         </StyledLabel>
-         <Transform>
-          <Translate>
+         </StyledText></PointLabel>
+	 <PointPosition>
             <X>-60</X>
 	    <Y>10</Y>
-          </Translate>
-         </Transform>
-        </TextGraphic>
+	 </PointPosition>
+        </PointTextGraphic>
 
         <MarkGraphic>
           <WellKnownName>circle</WellKnownName>
@@ -624,17 +588,15 @@
           </Transform>
         </MarkGraphic>
 
-        <TextGraphic>
-         <StyledLabel>
+        <PointTextGraphic>
+         <PointLabel><StyledText>
            <LabelText>GS: MarkTran</LabelText>
-         </StyledLabel>
-         <Transform>
-          <Translate>
+         </StyledText></PointLabel>
+	 <PointPosition>
             <X>-30</X>
 	    <Y>10</Y>
-          </Translate>
-         </Transform>
-        </TextGraphic>
+	 </PointPosition>
+        </PointTextGraphic>
 
         <MarkGraphic>
           <WellKnownName>circle</WellKnownName>
@@ -665,16 +627,14 @@
           </Transform>
         </MarkGraphic>
 
-        <TextGraphic>
-         <StyledLabel>
+        <PointTextGraphic>
+         <PointLabel><StyledText>
            <LabelText>GS: MarkTran</LabelText>
-         </StyledLabel>
-         <Transform>
-          <Translate>
+         </StyledText></PointLabel>
+	 <PointPosition>
 	    <Y>10</Y>
-          </Translate>
-         </Transform>
-        </TextGraphic>
+	 </PointPosition>
+        </PointTextGraphic>
 
 <!-- NEW LINE -->
         <MarkGraphic>
@@ -682,7 +642,7 @@
           <ViewBox>
 	    <Width>20</Width>
           </ViewBox>
-	  <GraphicStroke>
+	  <GraphicStroke relativeOrientation="normal">
                 <MarkGraphic>
                     <!--<OnlineResource ns4:href="http://bitbucket.org/ovnicraft/ogcserver/raw/649d8bf42a09/haiti/fonts/ERS_v2_Incidents_txt.ttf" />-->
 		    <OnlineResource ns4:href="file:///usr/share/fonts/TTF/luximb.ttf" />
@@ -697,7 +657,6 @@
                     </SolidFill>
 		    <PenStroke />
                 </MarkGraphic>
-		<RelativeOrientation>normal</RelativeOrientation>
 	  </GraphicStroke>
           <Transform>
             <Translate>
@@ -707,17 +666,15 @@
           </Transform>
         </MarkGraphic>
 
-        <TextGraphic>
-         <StyledLabel>
+        <PointTextGraphic>
+         <PointLabel><StyledText>
            <LabelText>GS: normal</LabelText>
-         </StyledLabel>
-         <Transform>
-          <Translate>
+         </StyledText></PointLabel>
+	 <PointPosition>
             <X>-120</X>
 	    <Y>40</Y>
-          </Translate>
-         </Transform>
-        </TextGraphic>
+	 </PointPosition>
+        </PointTextGraphic>
 
 
         <MarkGraphic>
@@ -725,7 +682,7 @@
           <ViewBox>
 	    <Width>20</Width>
           </ViewBox>
-	  <GraphicStroke>
+	  <GraphicStroke relativeOrientation="normalUp">
                 <MarkGraphic>
                     <!--<OnlineResource ns4:href="http://bitbucket.org/ovnicraft/ogcserver/raw/649d8bf42a09/haiti/fonts/ERS_v2_Incidents_txt.ttf" />-->
 		    <OnlineResource ns4:href="file:///usr/share/fonts/TTF/luximb.ttf" />
@@ -739,7 +696,6 @@
                         <Opacity>100.0</Opacity>
                     </SolidFill>
                 </MarkGraphic>
-		<RelativeOrientation>normalUp</RelativeOrientation>
 	  </GraphicStroke>
           <Transform>
             <Translate>
@@ -749,24 +705,22 @@
           </Transform>
         </MarkGraphic>
 
-        <TextGraphic>
-         <StyledLabel>
+        <PointTextGraphic>
+         <PointLabel><StyledText>
            <LabelText>GS: normalUP</LabelText>
-         </StyledLabel>
-         <Transform>
-          <Translate>
+         </StyledText></PointLabel>
+	 <PointPosition>
             <X>-90</X>
 	    <Y>40</Y>
-          </Translate>
-         </Transform>
-        </TextGraphic>
+	 </PointPosition>
+        </PointTextGraphic>
 
         <MarkGraphic>
           <WellKnownName>circle</WellKnownName>
           <ViewBox>
 	    <Width>20</Width>
           </ViewBox>
-	  <GraphicStroke>
+	  <GraphicStroke relativeOrientation="portrayal">
                 <MarkGraphic>
                     <!--<OnlineResource ns4:href="http://bitbucket.org/ovnicraft/ogcserver/raw/649d8bf42a09/haiti/fonts/ERS_v2_Incidents_txt.ttf" />-->
 		    <OnlineResource ns4:href="file:///usr/share/fonts/TTF/luximb.ttf" />
@@ -780,7 +734,6 @@
                         <Opacity>100.0</Opacity>
                     </SolidFill>
                 </MarkGraphic>
-		<RelativeOrientation>portrayal</RelativeOrientation>
 	  </GraphicStroke>
           <Transform>
             <Translate>
@@ -790,17 +743,15 @@
           </Transform>
         </MarkGraphic>
 
-        <TextGraphic>
-         <StyledLabel>
+        <PointTextGraphic>
+         <PointLabel><StyledText>
            <LabelText>GS: portrayal</LabelText>
-         </StyledLabel>
-         <Transform>
-          <Translate>
+         </StyledText></PointLabel>
+         <PointPosition>
             <X>-60</X>
 	    <Y>40</Y>
-          </Translate>
-         </Transform>
-        </TextGraphic>
+	 </PointPosition>
+        </PointTextGraphic>
 
 
         <MarkGraphic>
@@ -808,7 +759,7 @@
           <ViewBox>
 	    <Width>20</Width>
           </ViewBox>
-	  <GraphicStroke>
+	  <GraphicStroke relativeOrientation="line">
                 <MarkGraphic>
                     <!--<OnlineResource ns4:href="http://bitbucket.org/ovnicraft/ogcserver/raw/649d8bf42a09/haiti/fonts/ERS_v2_Incidents_txt.ttf" />-->
 		    <OnlineResource ns4:href="file:///usr/share/fonts/TTF/luximb.ttf" />
@@ -822,7 +773,6 @@
                         <Opacity>100.0</Opacity>
                     </SolidFill>
                 </MarkGraphic>
-		<RelativeOrientation>line</RelativeOrientation>
 	  </GraphicStroke>
           <Transform>
             <Translate>
@@ -832,17 +782,15 @@
           </Transform>
         </MarkGraphic>
 
-        <TextGraphic>
-         <StyledLabel>
+        <PointTextGraphic>
+         <PointLabel><StyledText>
            <LabelText>GS: line</LabelText>
-         </StyledLabel>
-         <Transform>
-          <Translate>
+         </StyledText></PointLabel>
+         <PointPosition>
             <X>-30</X>
 	    <Y>40</Y>
-          </Translate>
-         </Transform>
-        </TextGraphic>
+         </PointPosition>
+        </PointTextGraphic>
 
 
         <MarkGraphic>
@@ -850,7 +798,7 @@
           <ViewBox>
 	    <Width>20</Width>
           </ViewBox>
-	  <GraphicStroke>
+	  <GraphicStroke relativeOrientation="line">
                 <MarkGraphic>
                     <!--<OnlineResource ns4:href="http://bitbucket.org/ovnicraft/ogcserver/raw/649d8bf42a09/haiti/fonts/ERS_v2_Incidents_txt.ttf" />-->
 		    <OnlineResource ns4:href="file:///usr/share/fonts/TTF/luximb.ttf" />
@@ -866,7 +814,6 @@
                         <Opacity>100.0</Opacity>
                     </SolidFill>
                 </MarkGraphic>
-		<RelativeOrientation>line</RelativeOrientation>
 	  </GraphicStroke>
           <Transform>
             <Translate>
@@ -875,16 +822,14 @@
           </Transform>
         </MarkGraphic>
 
-        <TextGraphic>
-         <StyledLabel>
+        <PointTextGraphic>
+         <PointLabel><StyledText>
            <LabelText>GS: line+pOff</LabelText>
-         </StyledLabel>
-         <Transform>
-          <Translate>
+         </StyledText></PointLabel>
+         <PointPosition>
 	    <Y>40</Y>
-          </Translate>
-         </Transform>
-        </TextGraphic>
+         </PointPosition>
+        </PointTextGraphic>
 
         
         <MarkGraphic>
@@ -1039,9 +984,9 @@
           </ViewBox>
 	  <TextStroke>
 	    <LineLabel>
-	      <StyledLabel>
+	      <StyledText>
 	        <LabelText>Blah Blah Blah Blah Blah Blah Blah Blah Blah Blah Blah Blah</LabelText>
-	      </StyledLabel>
+	      </StyledText>
 	    </LineLabel>
 	  </TextStroke>
 	  <SolidFill />
@@ -1053,17 +998,15 @@
           </Transform>
         </MarkGraphic>
 
-        <TextGraphic>
-         <StyledLabel>
+        <PointTextGraphic>
+         <PointLabel><StyledText>
            <LabelText>TS: def </LabelText>
-         </StyledLabel>
-         <Transform>
-          <Translate>
+         </StyledText></PointLabel>
+         <PointPosition>
             <X>-120</X>
 	    <Y>70</Y>
-          </Translate>
-         </Transform>
-        </TextGraphic>
+         </PointPosition>
+        </PointTextGraphic>
 
         <MarkGraphic>
           <WellKnownName>square</WellKnownName>
@@ -1073,7 +1016,7 @@
           </ViewBox>
 		<CompoundStroke>
 		  <StrokeElement>
-                    <GraphicStroke>
+                    <GraphicStroke relativeOrientation="normal">
                       <MarkGraphic>
                         <WellKnownName>SQUARE</WellKnownName>
                         <ViewBox>
@@ -1091,11 +1034,10 @@
                         </SolidFill>
                       </MarkGraphic>
                       <Length>2.5</Length>
-                      <RelativeOrientation>normal</RelativeOrientation>
                     </GraphicStroke>
 		  </StrokeElement>
 		  <StrokeElement>
-                    <GraphicStroke>
+                    <GraphicStroke relativeOrientation="normal">
                       <MarkGraphic>
                         <WellKnownName>SQUARE</WellKnownName>
                         <ViewBox>
@@ -1114,7 +1056,6 @@
                         </SolidFill>
                       </MarkGraphic>
                       <Length>2.5</Length>
-                      <RelativeOrientation>normal</RelativeOrientation>
                     </GraphicStroke>
 		  </StrokeElement>
 	       </CompoundStroke>
@@ -1134,13 +1075,12 @@
           </ViewBox>
 	  <CompoundStroke>
 	     <StrokeElement>
-	       <GraphicStroke>
+	       <GraphicStroke relativeOrientation="normal">
                   <MarkGraphic>
                     <WellKnownName>SQUARE</WellKnownName>
 		    <PenStroke />
 		    <SolidFill />
 		  </MarkGraphic>
-		  <RelativeOrientation>normal</RelativeOrientation>
 	          <Length>4</Length>
 	       </GraphicStroke>
 	     </StrokeElement>
@@ -1158,17 +1098,15 @@
         </MarkGraphic>
 
 
-        <TextGraphic>
-         <StyledLabel>
+        <PointTextGraphic>
+         <PointLabel><StyledText>
            <LabelText>CS: Check distance /square/</LabelText>
-         </StyledLabel>
-         <Transform>
-          <Translate>
-	      <X>-60</X>
+         </StyledText></PointLabel>
+         <PointPosition>
+	    <X>-60</X>
 	    <Y>70</Y>
-          </Translate>
-         </Transform>
-        </TextGraphic>
+         </PointPosition>
+        </PointTextGraphic>
 
 
 
@@ -1183,7 +1121,7 @@
                 <PerpendicularOffset>5</PerpendicularOffset>
 	      <CompoundStroke>
 		  <StrokeElement>
-                    <GraphicStroke>
+                    <GraphicStroke relativeOrientation="normal">
                       <MarkGraphic>
                         <WellKnownName>SQUARE</WellKnownName>
                         <ViewBox>
@@ -1196,7 +1134,6 @@
                         </SolidFill>
                       </MarkGraphic>
                       <Length>10.0</Length>
-                      <RelativeOrientation>normal</RelativeOrientation>
                     </GraphicStroke>
 		  </StrokeElement>
 	       </CompoundStroke>
@@ -1220,7 +1157,7 @@
 		<CompoundStroke>
 		  <PreGap>5.0</PreGap>
 		  <StrokeElement>
-                    <GraphicStroke>
+                    <GraphicStroke relativeOrientation="normal">
                       <MarkGraphic>
                         <WellKnownName>SQUARE</WellKnownName>
                         <ViewBox>
@@ -1233,7 +1170,6 @@
                         </SolidFill>
                       </MarkGraphic>
                       <Length>10.0</Length>
-                      <RelativeOrientation>normal</RelativeOrientation>
                     </GraphicStroke>
 		  </StrokeElement>
 	       </CompoundStroke>
@@ -1253,13 +1189,12 @@
 
 	  <CompoundStroke>
 	     <StrokeElement>
-	       <GraphicStroke>
+	       <GraphicStroke relativeOrientation="normal">
                   <MarkGraphic>
                     <WellKnownName>SQUARE</WellKnownName>
 		    <PenStroke />
 		    <SolidFill />
 		  </MarkGraphic>
-		  <RelativeOrientation>normal</RelativeOrientation>
 	          <Length>4</Length>
 	       </GraphicStroke>
 	     </StrokeElement>
@@ -1277,16 +1212,14 @@
         </MarkGraphic>
 
 
-        <TextGraphic>
-         <StyledLabel>
+        <PointTextGraphic>
+         <PointLabel><StyledText>
            <LabelText>CS: Test Distance Ellipse</LabelText>
-         </StyledLabel>
-         <Transform>
-          <Translate>
+         </StyledText></PointLabel>
+         <PointPosition>
 	    <Y>70</Y>
-          </Translate>
-         </Transform>
-        </TextGraphic>
+         </PointPosition>
+        </PointTextGraphic>
 
 
 
@@ -1299,7 +1232,7 @@
                 <!--<PerpendicularOffset>2.5</PerpendicularOffset>-->
 		<CompoundStroke>
 		  <StrokeElement>
-                    <GraphicStroke>
+                    <GraphicStroke relativeOrientation="normal">
                       <MarkGraphic>
                         <WellKnownName>SQUARE</WellKnownName>
                         <ViewBox>
@@ -1317,11 +1250,10 @@
                         </SolidFill>
                       </MarkGraphic>
                       <Length>5.0</Length>
-                      <RelativeOrientation>normal</RelativeOrientation>
                     </GraphicStroke>
 		  </StrokeElement>
 		  <StrokeElement>
-                    <GraphicStroke>
+                    <GraphicStroke relativeOrientation="normal">
                       <MarkGraphic>
                         <WellKnownName>SQUARE</WellKnownName>
                         <ViewBox>
@@ -1340,7 +1272,6 @@
                         </SolidFill>
                       </MarkGraphic>
                       <Length>5.0</Length>
-                      <RelativeOrientation>normal</RelativeOrientation>
                     </GraphicStroke>
 		  </StrokeElement>
 	       </CompoundStroke>
@@ -1373,17 +1304,15 @@
         </MarkGraphic>
 
 
-        <TextGraphic>
-         <StyledLabel>
+        <PointTextGraphic>
+         <PointLabel><StyledText>
            <LabelText>CS: Test Distance Ellipse</LabelText>
-         </StyledLabel>
-         <Transform>
-          <Translate>
+         </StyledText></PointLabel>
+         <PointPosition>
 	    <Y>70</Y>
 	    <X>60</X>
-          </Translate>
-         </Transform>
-        </TextGraphic>
+         </PointPosition>
+        </PointTextGraphic>
 
 
         <MarkGraphic>
@@ -1450,17 +1379,15 @@
 
 
 
-        <TextGraphic>
-         <StyledLabel>
+        <PointTextGraphic>
+         <PointLabel><StyledText>
            <LabelText>Dash: Offset + linear rapport</LabelText>
-         </StyledLabel>
-         <Transform>
-          <Translate>
+         </StyledText></PointLabel>
+         <PointPosition>
 	    <Y>70</Y>
 	    <X>100</X>
-          </Translate>
-         </Transform>
-        </TextGraphic>
+         </PointPosition>
+        </PointTextGraphic>
 
 
 

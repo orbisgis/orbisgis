@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<FeatureTypeStyle xmlns="http://www.opengis.net/se" xmlns:ns2="http://www.opengis.net/ows/1.1" xmlns:ns3="http://www.opengis.net/ogc" xmlns:ns4="http://www.w3.org/1999/xlink">
+<FeatureTypeStyle xmlns="http://www.opengis.net/se/2.0/core" xmlns:ns2="http://www.opengis.net/ows/2.0" xmlns:ns3="http://www.opengis.net/fes/2.0" xmlns:ns4="http://www.w3.org/1999/xlink">
   <Rule>
-    <PointSymbolizer>
-      <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
+    <PointSymbolizer uom="urn:ogc:def:uom:se::mm">
       <CompositeGraphic>
         <!-- Background: draughtboard -->
         <MarkGraphic>
-          <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
           <WellKnownName>SQUARE</WellKnownName>
           <ViewBox>
             <Width>270</Width>
@@ -68,17 +66,17 @@
                     </Transform>
                 </ExternalGraphic>
 
-                <TextGraphic>
-                    <StyledLabel>
+                <PointTextGraphic>
+                    <PointLabel><StyledText>
                         <LabelText>ExtGr</LabelText>
-                    </StyledLabel>
-                        <Transform>
+                    </StyledText></PointLabel>
+                        <!--<Transform>
                             <Translate>
                            <X>-125</X>
                            <Y>-60</Y>
                         </Translate>
-                    </Transform>
-                </TextGraphic>
+                    </Transform>-->
+                </PointTextGraphic>
 
 
 
@@ -98,17 +96,17 @@
                         </Translate>
                     </Transform>
                 </ExternalGraphic>
-                <TextGraphic>
-                    <StyledLabel>
+                <PointTextGraphic>
+                    <PointLabel><StyledText>
                         <LabelText>ExtGr(VBScale></LabelText>
-                    </StyledLabel>
-                        <Transform>
+                    </StyledText></PointLabel>
+                        <!--<Transform>
                             <Translate>
                            <X>-110</X>
                            <Y>-55</Y>
                         </Translate>
-                    </Transform>
-                </TextGraphic>
+                    </Transform>-->
+                </PointTextGraphic>
 
 
 
@@ -126,17 +124,17 @@
                     </Transform>
                     <Opacity>50.0</Opacity>
                 </ExternalGraphic>
-                <TextGraphic>
-                    <StyledLabel>
+                <PointTextGraphic>
+                    <PointLabel><StyledText>
                         <LabelText>ExtGr(Opa)></LabelText>
-                    </StyledLabel>
-                        <Transform>
+                    </StyledText></PointLabel>
+                        <!--<Transform>
                             <Translate>
                            <X>-95</X>
                            <Y>-60</Y>
                         </Translate>
-                    </Transform>
-                </TextGraphic>
+                    </Transform>-->
+                </PointTextGraphic>
 
                 <ExternalGraphic>
                     <OnlineResource ns4:href="https://www.yoplait.ca/ResourceDocs/fr/logo_yop.jpg"/>
@@ -158,17 +156,17 @@
                     </Halo>
                 </ExternalGraphic>
 		
-                <TextGraphic>
-                    <StyledLabel>
+                <PointTextGraphic>
+                    <PointLabel><StyledText>
                         <LabelText>ExtGr(Opa)></LabelText>
-                    </StyledLabel>
-                        <Transform>
+                    </StyledText></PointLabel>
+                        <!--<Transform>
                             <Translate>
                            <X>-80</X>
                            <Y>-55</Y>
                         </Translate>
-                    </Transform>
-                </TextGraphic>
+                    </Transform>-->
+                </PointTextGraphic>
 
 
                 <MarkGraphic>
@@ -181,17 +179,17 @@
                         </Translate>
                     </Transform>
                 </MarkGraphic>
-		<TextGraphic>
-                    <StyledLabel>
+		<PointTextGraphic>
+                    <PointLabel><StyledText>
                         <LabelText>DefMark></LabelText>
-                    </StyledLabel>
-                        <Transform>
+                    </StyledText></PointLabel>
+                        <!--<Transform>
                             <Translate>
                            <X>-125</X>
                            <Y>-35</Y>
                         </Translate>
-                    </Transform>
-                </TextGraphic>
+                    </Transform>-->
+                </PointTextGraphic>
 
                 <MarkGraphic>
 		    <ViewBox>
@@ -209,17 +207,17 @@
                         </Translate>
                     </Transform>
                 </MarkGraphic>
-		<TextGraphic>
-                    <StyledLabel>
+		<PointTextGraphic>
+                    <PointLabel><StyledText>
                         <LabelText>Greeen-60%</LabelText>
-                    </StyledLabel>
-                        <Transform>
+                    </StyledText></PointLabel>
+                        <!--<Transform>
                             <Translate>
                            <X>-110</X>
                            <Y>-35</Y>
                         </Translate>
-                    </Transform>
-                </TextGraphic>
+                    </Transform>-->
+                </PointTextGraphic>
 
                 <MarkGraphic>
 		    <ViewBox>
@@ -269,90 +267,90 @@
                         </Translate>
                     </Transform>
                 </MarkGraphic>
-		<TextGraphic>
-                    <StyledLabel>
+		<PointTextGraphic>
+                    <PointLabel><StyledText>
                         <LabelText>ShareGFill</LabelText>
-                    </StyledLabel>
-                        <Transform>
+                    </StyledText></PointLabel>
+                        <!--<Transform>
                             <Translate>
                            <X>-95</X>
                            <Y>-35</Y>
                         </Translate>
-                    </Transform>
-                </TextGraphic>
+                    </Transform>-->
+                </PointTextGraphic>
 
 
-		<TextGraphic>
-                    <StyledLabel>
+		<PointTextGraphic>
+                    <PointLabel><StyledText>
                         <LabelText>Circle</LabelText>
-                    </StyledLabel>
-                        <Transform>
+                    </StyledText></PointLabel>
+                        <!--<Transform>
                             <Translate>
 			   <X>10</X>
                            <Y>-75</Y>
                         </Translate>
-                    </Transform>
-                </TextGraphic>
+                    </Transform>-->
+                </PointTextGraphic>
 
-		<TextGraphic>
-                    <StyledLabel>
+		<PointTextGraphic>
+                    <PointLabel><StyledText>
                         <LabelText>Square</LabelText>
-                    </StyledLabel>
-                        <Transform>
+                    </StyledText></PointLabel>
+                        <!--<Transform>
                             <Translate>
 			   <X>30</X>
                            <Y>-75</Y>
                         </Translate>
-                    </Transform>
-                </TextGraphic>
+                    </Transform>-->
+                </PointTextGraphic>
 
-		<TextGraphic>
-                    <StyledLabel>
+		<PointTextGraphic>
+                    <PointLabel><StyledText>
                         <LabelText>triangle</LabelText>
-                    </StyledLabel>
-                        <Transform>
+                    </StyledText></PointLabel>
+                        <!--<Transform>
                             <Translate>
 			   <X>50</X>
                            <Y>-75</Y>
                         </Translate>
-                    </Transform>
-                </TextGraphic>
+                    </Transform>-->
+                </PointTextGraphic>
 
-		<TextGraphic>
-                    <StyledLabel>
+		<PointTextGraphic>
+                    <PointLabel><StyledText>
                         <LabelText>CROSS</LabelText>
-                    </StyledLabel>
-                        <Transform>
+                    </StyledText></PointLabel>
+                        <!--<Transform>
                             <Translate>
 			   <X>70</X>
                            <Y>-75</Y>
                         </Translate>
-                    </Transform>
-                </TextGraphic>
+                    </Transform>-->
+                </PointTextGraphic>
 
-		<TextGraphic>
-                    <StyledLabel>
+		<PointTextGraphic>
+                    <PointLabel><StyledText>
                         <LabelText>X</LabelText>
-                    </StyledLabel>
-                        <Transform>
+                    </StyledText></PointLabel>
+                        <!--<Transform>
                             <Translate>
 			   <X>90</X>
                            <Y>-75</Y>
                         </Translate>
-                    </Transform>
-                </TextGraphic>
+                    </Transform>-->
+                </PointTextGraphic>
 
-		<TextGraphic>
-                    <StyledLabel>
+		<PointTextGraphic>
+                    <PointLabel><StyledText>
                         <LabelText>Star</LabelText>
-                    </StyledLabel>
-                        <Transform>
+                    </StyledText></PointLabel>
+                        <!--<Transform>
                             <Translate>
 			   <X>110</X>
                            <Y>-75</Y>
                         </Translate>
-                    </Transform>
-                </TextGraphic>
+                    </Transform>-->
+                </PointTextGraphic>
 
         <MarkGraphic>
           <WellKnownName>Circle</WellKnownName>
@@ -854,11 +852,10 @@
           </Transform>
         </MarkGraphic>
 
-        <TextGraphic>
-          <StyledLabel>
+        <PointTextGraphic>
+          <PointLabel><StyledText>
             <LabelText>abcdefghijklmnopqrstuvwxyz</LabelText>
-	    <Font>
-      	       <UnitOfMeasure>urn:ogc:def:uom:se::pt</UnitOfMeasure>
+	    <Font uom="urn:ogc:def:uom:se::pt">
 	       <FontSize>12</FontSize>
 	    </Font>
 	    <Halo>
@@ -867,20 +864,19 @@
                  <Color>#ff0000</Color>
                </SolidFill>
 	    </Halo>
-          </StyledLabel>
-          <Transform>
+          </StyledText></PointLabel>
+          <!--<Transform>
             <Translate>
              <X>10</X>
              <Y>50</Y>
             </Translate>
-          </Transform>
-        </TextGraphic>
+          </Transform>-->
+        </PointTextGraphic>
 
-        <TextGraphic>
-          <StyledLabel>
+        <PointTextGraphic>
+          <PointLabel><StyledText>
             <LabelText>abcdefghijklmnopqrstuvwxyz</LabelText>
-	    <Font>
-      	       <UnitOfMeasure>urn:ogc:def:uom:se::pt</UnitOfMeasure>
+	    <Font uom="urn:ogc:def:uom:se::pt">
 	       <FontSize>24</FontSize>
 	       <FontStyle>Italic</FontStyle>
 	    </Font>
@@ -890,25 +886,24 @@
                  <Color>#ff0000</Color>
                </SolidFill>
 	    </Halo>
-          </StyledLabel>
-          <Transform>
+          </StyledText></PointLabel>
+          <!--<Transform>
             <Translate>
              <X>10</X>
              <Y>60</Y>
             </Translate>
-          </Transform>
-        </TextGraphic>
+          </Transform>-->
+        </PointTextGraphic>
 
 
 
 
 
 
-        <TextGraphic>
-          <StyledLabel>
+        <PointTextGraphic>
+          <PointLabel><StyledText>
             <LabelText>abcdefghijklmnopqrstuvwxyz</LabelText>
-	    <Font>
-      	       <UnitOfMeasure>urn:ogc:def:uom:se::pt</UnitOfMeasure>
+	    <Font uom="urn:ogc:def:uom:se::pt">
 	       <FontSize>12</FontSize>
 	    </Font>
 	  <Halo>
@@ -917,14 +912,14 @@
                       <Color>#ff0000</Color>
                  </SolidFill>
 	  </Halo>
-          </StyledLabel>
-          <Transform>
+          </StyledText></PointLabel>
+          <!--<Transform>
             <Translate>
              <X>10</X>
              <Y>50</Y>
             </Translate>
-          </Transform>
-        </TextGraphic>
+          </Transform>-->
+        </PointTextGraphic>
 
 
 <!--   SVG -->

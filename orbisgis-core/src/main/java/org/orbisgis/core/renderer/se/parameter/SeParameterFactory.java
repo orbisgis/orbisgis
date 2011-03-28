@@ -40,16 +40,16 @@
 package org.orbisgis.core.renderer.se.parameter;
 
 import javax.xml.bind.JAXBElement;
-import org.orbisgis.core.renderer.persistance.ogc.BinaryOperatorType;
-import org.orbisgis.core.renderer.persistance.ogc.ExpressionType;
-import org.orbisgis.core.renderer.persistance.ogc.LiteralType;
-import org.orbisgis.core.renderer.persistance.ogc.PropertyNameType;
-import org.orbisgis.core.renderer.persistance.se.CategorizeType;
-import org.orbisgis.core.renderer.persistance.se.InterpolateType;
+import net.opengis.fes._2.ExpressionType;
+import net.opengis.fes._2.FunctionType;
+import net.opengis.fes._2.LiteralType;
+import net.opengis.fes._2.ValueReferenceType;
 
-import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
-import org.orbisgis.core.renderer.persistance.se.RecodeType;
-import org.orbisgis.core.renderer.persistance.se.UnaryOperatorType;
+import net.opengis.se._2_0.core.CategorizeType;
+import net.opengis.se._2_0.core.InterpolateType;
+import net.opengis.se._2_0.core.ParameterValueType;
+import net.opengis.se._2_0.core.RecodeType;
+
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.color.Categorize2Color;
 import org.orbisgis.core.renderer.se.parameter.color.ColorAttribute;
@@ -60,10 +60,9 @@ import org.orbisgis.core.renderer.se.parameter.color.Recode2Color;
 import org.orbisgis.core.renderer.se.parameter.real.Categorize2Real;
 import org.orbisgis.core.renderer.se.parameter.real.Interpolate2Real;
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
-import org.orbisgis.core.renderer.se.parameter.real.RealBinaryOperator;
+import org.orbisgis.core.renderer.se.parameter.real.RealFunction;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
-import org.orbisgis.core.renderer.se.parameter.real.RealUnaryOperator;
 import org.orbisgis.core.renderer.se.parameter.real.Recode2Real;
 import org.orbisgis.core.renderer.se.parameter.string.Categorize2String;
 import org.orbisgis.core.renderer.se.parameter.string.Recode2String;
@@ -80,32 +79,31 @@ public final class SeParameterFactory {
     private SeParameterFactory() {
     }
 
-    public static RealParameter createRealParameter(JAXBElement<? extends ExpressionType> expr) throws InvalidStyle {
+    public static RealParameter createRealParameter(JAXBElement<? extends Object> expr) throws InvalidStyle {
         if (expr == null)
             return null;
 
-        if (expr.getDeclaredType() == org.orbisgis.core.renderer.persistance.ogc.FunctionType.class) {
-            // TODO (for geometry functions)
-        } else if (expr.getDeclaredType() == BinaryOperatorType.class) {
-            return new RealBinaryOperator((JAXBElement<BinaryOperatorType>) expr);
+        if (expr.getDeclaredType() == net.opengis.fes._2.FunctionType.class) {
+            return new RealFunction((JAXBElement<FunctionType>)expr);
+        } else if (expr.getDeclaredType() == ValueReferenceType.class) {
+            return new RealAttribute((JAXBElement<ValueReferenceType>) expr);
 
-        } else if (expr.getDeclaredType() == PropertyNameType.class) {
-            return new RealAttribute((JAXBElement<PropertyNameType>) expr);
-
-        } else if (expr.getDeclaredType() == org.orbisgis.core.renderer.persistance.ogc.LiteralType.class) {
+        } else if (expr.getDeclaredType() == LiteralType.class) {
             return new RealLiteral((JAXBElement<LiteralType>) expr);
 
-        } else if (expr.getDeclaredType() == org.orbisgis.core.renderer.persistance.se.CategorizeType.class) {
+        } else if (expr.getDeclaredType() == net.opengis.se._2_0.core.CategorizeType.class) {
             return new Categorize2Real((JAXBElement<CategorizeType>) expr);
 
-        } else if (expr.getDeclaredType() == org.orbisgis.core.renderer.persistance.se.RecodeType.class) {
+        } else if (expr.getDeclaredType() == net.opengis.se._2_0.core.RecodeType.class) {
             return new Recode2Real((JAXBElement<RecodeType>) expr);
 
-        } else if (expr.getDeclaredType() == org.orbisgis.core.renderer.persistance.se.InterpolateType.class) {
+        } else if (expr.getDeclaredType() == net.opengis.se._2_0.core.InterpolateType.class) {
             return new Interpolate2Real((JAXBElement<InterpolateType>) expr);
+        } else if (expr.getDeclaredType() == net.opengis.fes._2.FunctionType.class) {
 
-        } else if (expr.getDeclaredType() == org.orbisgis.core.renderer.persistance.se.UnaryOperatorType.class) {
-            return new RealUnaryOperator((JAXBElement<UnaryOperatorType>) expr);
+
+        /*} else if (expr.getDeclaredType() == net.opengis.se._2_0.core.UnaryOperatorType.class) {
+            return new RealUnaryOperator((JAXBElement<UnaryOperatorType>) expr);*/
         }
 
         return null;
@@ -134,21 +132,21 @@ public final class SeParameterFactory {
         if (expr == null)
             return null;
 
-        if (expr.getDeclaredType() == org.orbisgis.core.renderer.persistance.ogc.FunctionType.class) {
+        if (expr.getDeclaredType() == net.opengis.fes._2.FunctionType.class) {
             // TODO ??
-        } else if (expr.getDeclaredType() == PropertyNameType.class) {
-            return new ColorAttribute((JAXBElement<PropertyNameType>) expr);
+        } else if (expr.getDeclaredType() == ValueReferenceType.class) {
+            return new ColorAttribute((JAXBElement<ValueReferenceType>) expr);
 
-        } else if (expr.getDeclaredType() == org.orbisgis.core.renderer.persistance.ogc.LiteralType.class) {
+        } else if (expr.getDeclaredType() == LiteralType.class) {
             return new ColorLiteral((JAXBElement<LiteralType>) expr);
 
-        } else if (expr.getDeclaredType() == org.orbisgis.core.renderer.persistance.se.CategorizeType.class) {
+        } else if (expr.getDeclaredType() == net.opengis.se._2_0.core.CategorizeType.class) {
             return new Categorize2Color((JAXBElement<CategorizeType>) expr);
 
-        } else if (expr.getDeclaredType() == org.orbisgis.core.renderer.persistance.se.RecodeType.class) {
+        } else if (expr.getDeclaredType() == net.opengis.se._2_0.core.RecodeType.class) {
             return new Recode2Color((JAXBElement<RecodeType>) expr);
 
-        } else if (expr.getDeclaredType() == org.orbisgis.core.renderer.persistance.se.InterpolateType.class) {
+        } else if (expr.getDeclaredType() == net.opengis.se._2_0.core.InterpolateType.class) {
             return new Interpolate2Color((JAXBElement<InterpolateType>) expr);
         }
 
@@ -178,18 +176,18 @@ public final class SeParameterFactory {
         if (expr == null)
             return null;
 
-        if (expr.getDeclaredType() == org.orbisgis.core.renderer.persistance.ogc.FunctionType.class) {
+        if (expr.getDeclaredType() == FunctionType.class) {
             // TODO ??
-        } else if (expr.getDeclaredType() == PropertyNameType.class) {
-            return new StringAttribute((JAXBElement<PropertyNameType>) expr);
+        } else if (expr.getDeclaredType() == ValueReferenceType.class) {
+            return new StringAttribute((JAXBElement<ValueReferenceType>) expr);
 
-        } else if (expr.getDeclaredType() == org.orbisgis.core.renderer.persistance.ogc.LiteralType.class) {
+        } else if (expr.getDeclaredType() == LiteralType.class) {
             return new StringLiteral((JAXBElement<LiteralType>) expr);
 
-        } else if (expr.getDeclaredType() == org.orbisgis.core.renderer.persistance.se.CategorizeType.class) {
+        } else if (expr.getDeclaredType() == net.opengis.se._2_0.core.CategorizeType.class) {
             return new Categorize2String((JAXBElement<CategorizeType>) expr);
 
-        } else if (expr.getDeclaredType() == org.orbisgis.core.renderer.persistance.se.RecodeType.class) {
+        } else if (expr.getDeclaredType() == net.opengis.se._2_0.core.RecodeType.class) {
             return new Recode2String((JAXBElement<RecodeType>) expr);
         }
 

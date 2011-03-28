@@ -39,17 +39,16 @@ package org.orbisgis.core.renderer.se.stroke;
 
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.geom.Rectangle2D;
 import java.io.IOException;
-import java.util.ArrayList;
-import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
-import org.orbisgis.core.renderer.persistance.se.TextStrokeType;
+import net.opengis.se._2_0.core.ObjectFactory;
+import net.opengis.se._2_0.core.TextStrokeType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.label.LineLabel;
-import org.orbisgis.core.renderer.se.label.StyledLabel;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 /**
@@ -83,16 +82,16 @@ public final class TextStroke extends Stroke {
 		}
 	}
 
-	@Override
+	/*@Override
 	public double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
 		if (lineLabel != null){
-			StyledLabel label = lineLabel.getLabel();
+			StyledText label = lineLabel.getLabel();
 		    if (label != null){
                 return label.getEmInPixel(sds, fid, mt)*2.0;
 			}
 		}
 		return 0;
-	}
+	}*/
 
     /*@Override
     public double getMinLength(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
@@ -131,23 +130,12 @@ public final class TextStroke extends Stroke {
 
     @Override
     public double getNaturalLength(SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) throws ParameterException, IOException {
-        ArrayList<RenderableGraphics> glyphs = lineLabel.getLabel().getGlyphs(sds, fid, false, mt);
+        Rectangle2D bounds = lineLabel.getLabel().getBounds(null, sds, fid, mt);
+        return bounds.getWidth();
+    }
 
-        double em = lineLabel.getLabel().getEmInPixel(sds, fid, mt);
-
-        double length = 0.0;
-        for (RenderableGraphics glyph : glyphs ){
-            if (glyph != null){
-                length += glyph.getWidth();
-            }else{
-                length += em;
-            }
-        }
-
-        return length;
-
-        //RenderableGraphics image = lineLabel.getLabel().getImage(sds, fid, false, mt);
-        //return image.getWidth();
-        //throw new UnsupportedOperationException("Not supported yet.");
+    @Override
+    public Uom getUom() {
+        return parent.getUom();
     }
 }

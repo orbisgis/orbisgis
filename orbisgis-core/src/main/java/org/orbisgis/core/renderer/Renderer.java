@@ -344,6 +344,8 @@ public class Renderer {
         } catch (Exception ex) {
             java.util.logging.Logger.getLogger("Could not draw " + layer.getName()).log(Level.SEVERE, "Error while drawing " + layer.getName(), ex);
             ex.printStackTrace(System.err);
+            g2.drawString(ex.toString(), 20, 20);
+
         }
         return layerCount;
     }

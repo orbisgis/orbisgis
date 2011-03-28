@@ -43,24 +43,21 @@ import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.Point2D;
-import java.awt.geom.Point2D.Double;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.RenderedImage;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Random;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.Services;
 
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.persistance.se.DotMapFillType;
+import net.opengis.se._2_0.thematic.DotMapFillType;
 
-import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
+import net.opengis.se._2_0.thematic.ObjectFactory;
 import org.orbisgis.core.renderer.se.GraphicNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
@@ -69,7 +66,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 public final class DotMapFill extends Fill implements GraphicNode {
 
-    public DotMapFill(){
+    public DotMapFill() {
         rand = new Random();
     }
 
@@ -143,31 +140,36 @@ public final class DotMapFill extends Fill implements GraphicNode {
             long fid, Shape shp, boolean selected, MapTransform mt)
             throws ParameterException, IOException {
 
-        RenderedImage m = this.mark.getGraphic(sds, fid, selected, mt).createRendering(mt.getCurrentRenderContext());
-        double perMark = this.quantityPerMark.getValue(sds, fid);
-        double total = this.totalQuantity.getValue(sds, fid);
+        //RenderedImage m = this.mark.getGraphic(sds, fid, selected, mt).createRendering(mt.getCurrentRenderContext());
+
+
+        Double perMark = null;
+        if (quantityPerMark != null) {
+            perMark = this.quantityPerMark.getValue(sds, fid);
+        }
+
+        Double total = null;
+        if (totalQuantity != null) {
+            total = this.totalQuantity.getValue(sds, fid);
+        }
+
+        if (perMark == null || total == null) {
+            throw new ParameterException("Dot Map Fill: missing parameters !!!");
+        }
+
         int nb = (int) Math.round(total / perMark);
 
-        /*double offset = -1 * Math.sqrt(m.getWidth() * m.getWidth() + m.getHeight() * m.getHeight());
-        ArrayList<Shape> shapes = ShapeHelper.perpendicularOffset(shp, offset);
-
-        if (shapes != null && shapes.size() > 0) {
-            if (shapes.size() > 1) {
-                System.out.println("Several Shape ! Take first only");
+        //Area area = new Area(shapes.get(0));
+        Area area = new Area(shp);
+        rand.setSeed((long) mt.getScaleDenominator());
+        for (int i = 0; i < nb; i++) {
+            Point2D.Double pos = findMarkPosition(area);
+            if (pos != null) {
+                mark.draw(g2, sds, fid, selected, mt, AffineTransform.getTranslateInstance(pos.x, pos.y));
+            } else {
+                Services.getErrorManager().error("Could not find position for mark within area");
             }
-*/
-            //Area area = new Area(shapes.get(0));
-            Area area = new Area(shp);
-            rand.setSeed((long) mt.getScaleDenominator());
-            for (int i = 0; i < nb; i++) {
-                Double pos = findMarkPosition(area);
-                if (pos != null) {
-                    g2.drawRenderedImage(m, AffineTransform.getTranslateInstance(pos.x, pos.y));
-                } else {
-                    Services.getErrorManager().error("Could not find position for mark within area");
-                }
-            }
-        //}
+        }
     }
 
     /**
@@ -235,6 +237,5 @@ public final class DotMapFill extends Fill implements GraphicNode {
     private GraphicCollection mark;
     private RealParameter quantityPerMark;
     private RealParameter totalQuantity;
-
     private Random rand;
 }

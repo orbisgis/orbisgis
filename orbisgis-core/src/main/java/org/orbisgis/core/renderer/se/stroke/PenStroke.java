@@ -48,13 +48,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.orbisgis.core.renderer.persistance.se.PenStrokeType;
+import net.opengis.se._2_0.core.PenStrokeType;
 
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
-import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
+import net.opengis.se._2_0.core.ObjectFactory;
+import net.opengis.se._2_0.core.ParameterValueType;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
@@ -70,7 +71,7 @@ import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
  * Basic stroke for linear features
  * @author maxence
  */
-public final class PenStroke extends Stroke implements FillNode {
+public final class PenStroke extends Stroke implements FillNode, UomNode {
 
     private static double DEFAULT_WIDTH_PX = 1.0;
     private static LineCap DEFAULT_CAP = LineCap.BUTT;
@@ -82,6 +83,7 @@ public final class PenStroke extends Stroke implements FillNode {
     private LineCap lineCap;
     private StringParameter dashArray;
     private RealParameter dashOffset;
+    private Uom uom;
 
     @Override
     public double getNaturalLength(SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) {
@@ -132,6 +134,10 @@ public final class PenStroke extends Stroke implements FillNode {
      */
     public PenStroke(PenStrokeType t) throws InvalidStyle {
         super(t);
+
+        if (t.getUom() != null) {
+            setUom(Uom.fromOgcURN(t.getUom()));
+        }
 
         if (t.getFill() != null) {
             this.setFill(Fill.createFromJAXBElement(t.getFill()));
@@ -525,8 +531,7 @@ public final class PenStroke extends Stroke implements FillNode {
         }
     }
 
-    @Override
-    public double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException {
+    public double getWidthInPixel(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException {
         if (this.width != null) {
             return Uom.toPixel(width.getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
         } else {
@@ -564,6 +569,10 @@ public final class PenStroke extends Stroke implements FillNode {
 
         this.setJAXBProperties(s);
 
+        if (this.uom != null) {
+            s.setUom(uom.toURN());
+        }
+
         if (this.fill != null) {
             s.setFill(fill.getJAXBElement());
         }
@@ -594,5 +603,24 @@ public final class PenStroke extends Stroke implements FillNode {
         }
 
         return s;
+    }
+
+    @Override
+    public Uom getUom() {
+        if (uom != null) {
+            return uom;
+        } else {
+            return parent.getUom();
+        }
+    }
+
+    @Override
+    public void setUom(Uom u) {
+        uom = u;
+    }
+
+    @Override
+    public Uom getOwnUom() {
+        return uom;
     }
 }

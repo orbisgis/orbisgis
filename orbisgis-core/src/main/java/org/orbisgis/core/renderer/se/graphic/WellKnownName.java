@@ -47,7 +47,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import org.gdms.data.SpatialDataSourceDecorator;
 
-import org.orbisgis.core.renderer.persistance.se.MarkGraphicType;
+import net.opengis.se._2_0.core.MarkGraphicType;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
@@ -234,11 +234,6 @@ public enum WellKnownName implements MarkGraphicSource {
             default:
                 return new Rectangle2D.Double(-x2, -y2, x, y);
         }
-    }
-
-	@Override
-    public void setJAXBSource(MarkGraphicType m){
-        m.setWellKnownName(this.toString());
     }
 
     @Override

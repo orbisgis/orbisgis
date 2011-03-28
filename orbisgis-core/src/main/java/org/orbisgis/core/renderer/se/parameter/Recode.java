@@ -39,15 +39,17 @@
 
 package org.orbisgis.core.renderer.se.parameter;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
+import net.opengis.fes._2.ExpressionType;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.orbisgis.core.renderer.persistance.ogc.ExpressionType;
-import org.orbisgis.core.renderer.persistance.se.MapItemType;
-import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
-import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
-import org.orbisgis.core.renderer.persistance.se.RecodeType;
+import net.opengis.se._2_0.core.MapItemType;
+import net.opengis.se._2_0.core.ObjectFactory;
+import net.opengis.se._2_0.core.ParameterValueType;
+import net.opengis.se._2_0.core.RecodeType;
+import org.orbisgis.core.Services;
 
 import org.orbisgis.core.renderer.se.parameter.string.*;
 
@@ -160,6 +162,7 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
             String key = lookupValue.getValue(sds, fid);
             return getMapItemValue(key);
         } catch (Exception e) {
+            Services.getOutputManager().println("Fallback:" + e, Color.yellow);
             return fallbackValue;
         }
     }

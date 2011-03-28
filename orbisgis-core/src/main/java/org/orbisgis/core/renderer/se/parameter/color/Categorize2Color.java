@@ -4,10 +4,9 @@ import java.awt.Color;
 import java.util.Iterator;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.orbisgis.core.renderer.persistance.se.CategorizeType;
-import org.orbisgis.core.renderer.persistance.se.ExtensionParameterType;
-import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
-import org.orbisgis.core.renderer.persistance.se.ThreshholdsBelongToType;
+import net.opengis.se._2_0.core.CategorizeType;
+import net.opengis.se._2_0.core.ParameterValueType;
+import net.opengis.se._2_0.core.ThreshholdBelongsToType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
 import org.orbisgis.core.renderer.se.parameter.Categorize;
@@ -39,7 +38,7 @@ public class Categorize2Color extends Categorize<ColorParameter, ColorLiteral> i
             this.addClass(th, c);
         }
 
-        if (t.getThreshholdsBelongTo() == ThreshholdsBelongToType.PRECEDING) {
+        if (t.getThreshholdBelongsTo() == ThreshholdBelongsToType.PRECEDING) {
             this.setThresholdsPreceding();
         } else {
             this.setThresholdsSucceeding();

@@ -1,12 +1,15 @@
 package org.orbisgis.core.renderer.se.parameter.real;
 
+import java.util.List;
 import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
+import net.opengis.fes._2.ExpressionType;
+import net.opengis.fes._2.FunctionType;
+import net.opengis.fes._2.ObjectFactory;
 import org.gdms.data.SpatialDataSourceDecorator;
 
-import org.orbisgis.core.renderer.persistance.ogc.ExpressionType;
-import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
-import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
-import org.orbisgis.core.renderer.persistance.se.UnaryOperatorType;
+import net.opengis.se._2_0.core.ParameterValueType;
+
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
@@ -34,13 +37,13 @@ public final class RealUnaryOperator implements RealParameter {
 		setOperand(value);
     }
 
-    public RealUnaryOperator(JAXBElement<UnaryOperatorType> expr) throws InvalidStyle {
+    public RealUnaryOperator(JAXBElement<FunctionType> expr) throws InvalidStyle {
 		this();
-        UnaryOperatorType t = expr.getValue();
+        FunctionType t = expr.getValue();
 
-        this.setOperand(SeParameterFactory.createRealParameter((JAXBElement<? extends ExpressionType>)t.getExpression()));
+        this.setOperand(SeParameterFactory.createRealParameter((JAXBElement<? extends Object>)t.getExpression()));
 
-        String operator = expr.getName().getLocalPart();
+        String operator = t.getName();
 
         if (operator.equals("Log")){
             this.op = RealUnitaryOperatorType.LOG;
@@ -104,21 +107,25 @@ public final class RealUnaryOperator implements RealParameter {
     @Override
     public JAXBElement<? extends ExpressionType> getJAXBExpressionType() {
 
-        UnaryOperatorType o = new UnaryOperatorType();
+        FunctionType f = new FunctionType();
+        List<JAXBElement<?>> expr = f.getExpression();
 
-        o.setExpression(this.getOperand().getJAXBExpressionType());
-
-        ObjectFactory of = new ObjectFactory();
+        expr.add(this.getOperand().getJAXBExpressionType());
+        //f.setExpression(this.getOperand().getJAXBExpressionType());
 
         switch (op) {
             case SQRT:
-                return of.createSqrt(o);
+                f.setName("sqrt");
+                break;
             case LN:
-                return of.createLn(o);
+                f.setName("ln");
+                break;
             case LOG:
-                return of.createLog(o);
+                f.setName("log");
+                break;
         }
-        return null;
+        ObjectFactory of = new ObjectFactory();
+        return of.createFunction(f);
     }
 
 	@Override

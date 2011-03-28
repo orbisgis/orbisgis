@@ -4,20 +4,20 @@ import com.vividsolutions.jts.geom.Geometry;
 import java.awt.Graphics2D;
 import java.io.IOException;
 import javax.xml.bind.JAXBElement;
+import net.opengis.se._2_0.core.AreaSymbolizerType;
+import net.opengis.se._2_0.core.ExtensionParameterType;
+import net.opengis.se._2_0.core.LineSymbolizerType;
+import net.opengis.se._2_0.core.PointSymbolizerType;
+import net.opengis.se._2_0.core.SymbolizerType;
+import net.opengis.se._2_0.raster.RasterSymbolizerType;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.orbisgis.core.renderer.persistance.se.AreaSymbolizerType;
-import org.orbisgis.core.renderer.persistance.se.ExtensionParameterType;
-import org.orbisgis.core.renderer.persistance.se.LineSymbolizerType;
-import org.orbisgis.core.renderer.persistance.se.PointSymbolizerType;
-import org.orbisgis.core.renderer.persistance.se.RasterSymbolizerType;
-import org.orbisgis.core.renderer.persistance.se.SymbolizerType;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.Drawer;
 import org.orbisgis.core.renderer.RenderContext;
-import org.orbisgis.core.renderer.persistance.se.ExtensionType;
-import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
-import org.orbisgis.core.renderer.persistance.se.TextSymbolizerType;
+import net.opengis.se._2_0.core.ExtensionType;
+import net.opengis.se._2_0.core.ObjectFactory;
+import net.opengis.se._2_0.core.TextSymbolizerType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -32,7 +32,7 @@ import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
 public abstract class Symbolizer implements SymbolizerNode, Comparable {
 
     protected static final String DEFAULT_NAME = "Default Symbolizer";
-    protected static final String VERSION = "1.9";
+    protected static final String VERSION = "2.0.0";
     protected String name;
     protected String desc;
     protected GeometryAttribute the_geom;
@@ -50,7 +50,7 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
         return name;
     }
 
-    public Symbolizer(JAXBElement<? extends SymbolizerType> st) {
+    public Symbolizer(JAXBElement<? extends SymbolizerType> st) throws InvalidStyle {
         SymbolizerType t = st.getValue();
 
         if (t.getName() != null) {
@@ -61,6 +61,7 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
 
         if (t.getVersion() != null && !t.getVersion().equals(Symbolizer.VERSION)) {
             System.out.println("Unsupported Style version!");
+            throw new InvalidStyle("Unsupported version !");
         }
 
         if (t.getDescription() != null) {
@@ -138,7 +139,7 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
         // TODO Load description from XML
         s.setDescription(null);
         s.setName(name);
-        s.setVersion("1.9");
+        s.setVersion(Symbolizer.VERSION);
 
         ExtensionType exts = of.createExtensionType();
         ExtensionParameterType param = of.createExtensionParameterType();
@@ -163,15 +164,15 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
     }
     }*/
     public static Symbolizer createSymbolizerFromJAXBElement(JAXBElement<? extends SymbolizerType> st) throws InvalidStyle {
-        if (st.getDeclaredType() == org.orbisgis.core.renderer.persistance.se.AreaSymbolizerType.class) {
+        if (st.getDeclaredType() == AreaSymbolizerType.class) {
             return new AreaSymbolizer((JAXBElement<AreaSymbolizerType>) st);
-        } else if (st.getDeclaredType() == org.orbisgis.core.renderer.persistance.se.LineSymbolizerType.class) {
+        } else if (st.getDeclaredType() == LineSymbolizerType.class) {
             return new LineSymbolizer((JAXBElement<LineSymbolizerType>) st);
-        } else if (st.getDeclaredType() == org.orbisgis.core.renderer.persistance.se.PointSymbolizerType.class) {
+        } else if (st.getDeclaredType() == PointSymbolizerType.class) {
             return new PointSymbolizer((JAXBElement<PointSymbolizerType>) st);
-        } else if (st.getDeclaredType() == org.orbisgis.core.renderer.persistance.se.TextSymbolizerType.class) {
+        } else if (st.getDeclaredType() == TextSymbolizerType.class) {
             return new TextSymbolizer((JAXBElement<TextSymbolizerType>) st);
-        } else if (st.getDeclaredType() == org.orbisgis.core.renderer.persistance.se.RasterSymbolizerType.class) {
+        } else if (st.getDeclaredType() == RasterSymbolizerType.class) {
             return new RasterSymbolizer((JAXBElement<RasterSymbolizerType>) st);
         } else {
             System.out.println("NULL => " + st.getDeclaredType());

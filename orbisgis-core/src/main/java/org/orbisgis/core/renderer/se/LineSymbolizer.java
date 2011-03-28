@@ -43,6 +43,8 @@ import java.awt.Shape;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.xml.bind.JAXBElement;
+import net.opengis.se._2_0.core.LineSymbolizerType;
+import net.opengis.se._2_0.core.ObjectFactory;
 import org.gdms.data.SpatialDataSourceDecorator;
 
 import org.gdms.driver.DriverException;
@@ -50,8 +52,6 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.Drawer;
 import org.orbisgis.core.renderer.RenderContext;
 
-import org.orbisgis.core.renderer.persistance.se.LineSymbolizerType;
-import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -92,8 +92,8 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
             // TODO
         }
 
-        if (ast.getUnitOfMeasure() != null) {
-            this.uom = Uom.fromOgcURN(ast.getUnitOfMeasure());
+        if (ast.getUom() != null) {
+            this.uom = Uom.fromOgcURN(ast.getUom());
         }
 
         if (ast.getPerpendicularOffset() != null) {
@@ -173,7 +173,7 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
 
 
         if (this.getUom() != null) {
-            s.setUnitOfMeasure(this.getUom().toURN());
+            s.setUom(this.getUom().toURN());
         }
 
         if (transform != null) {

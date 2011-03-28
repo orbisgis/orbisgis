@@ -1,11 +1,13 @@
+/*
 package org.orbisgis.core.renderer.se.parameter.real;
 
 import java.util.List;
 import javax.xml.bind.JAXBElement;
+import net.opengis.fes._2.ExpressionType;
+import net.opengis.fes._2.FunctionType;
+import net.opengis.fes._2.ObjectFactory;
+import net.opengis.se._2_0.core.ParameterValueType;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.orbisgis.core.renderer.persistance.ogc.BinaryOperatorType;
-import org.orbisgis.core.renderer.persistance.ogc.ExpressionType;
-import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
@@ -37,15 +39,15 @@ public final class RealBinaryOperator implements RealParameter {
 		setRightValue(r);
 	}
 
-	public RealBinaryOperator(JAXBElement<BinaryOperatorType> expr) throws InvalidStyle {
+	public RealBinaryOperator(JAXBElement<FunctionType> expr) throws InvalidStyle {
 		ctx = RealParameterContext.realContext;
 
-		BinaryOperatorType t = expr.getValue();
+        FunctionType f = new FunctionType();
 
-		this.setLeftValue(SeParameterFactory.createRealParameter((JAXBElement<? extends ExpressionType>) t.getExpression().get(0)));
-		this.setRightValue(SeParameterFactory.createRealParameter((JAXBElement<? extends ExpressionType>) t.getExpression().get(1)));
+		this.setLeftValue(SeParameterFactory.createRealParameter((JAXBElement<? extends Object>) f.getExpression().get(0)));
+		this.setRightValue(SeParameterFactory.createRealParameter((JAXBElement<? extends Object>) f.getExpression().get(1)));
 
-		String operator = expr.getName().getLocalPart();
+		String operator = f.getName();
 
 		if (operator.equals("Add")) {
 			this.op = RealBinaryOperatorType.ADD;
@@ -93,13 +95,13 @@ public final class RealBinaryOperator implements RealParameter {
         return (l.dependsOnFeature() + " " + r.dependsOnFeature()).trim();
 	}
 
-	/**
+	**
 	 *
 	 * @param ds
 	 * @param fid
 	 * @return
 	 * @throws ParameterException
-	 */
+	 *
 	@Override
 	public double getValue(SpatialDataSourceDecorator sds, long fid) throws ParameterException {
 		double lVal = l.getValue(sds, fid);
@@ -125,27 +127,30 @@ public final class RealBinaryOperator implements RealParameter {
 
 	@Override
 	public JAXBElement<? extends ExpressionType> getJAXBExpressionType() {
-		BinaryOperatorType o = new BinaryOperatorType();
+        FunctionType f = new FunctionType();
 
-		List<JAXBElement<?>> ex = o.getExpression();
+		List<JAXBElement<?>> ex = f.getExpression();
 		ex.add(l.getJAXBExpressionType());
 		ex.add(r.getJAXBExpressionType());
 
-		org.orbisgis.core.renderer.persistance.ogc.ObjectFactory of =
-				new org.orbisgis.core.renderer.persistance.ogc.ObjectFactory();
+        ObjectFactory of = new ObjectFactory();
 
 		switch (op) {
-			case ADD:
-				return of.createAdd(o);
+            case ADD:
+                f.setName("add");
+                break;
 			case SUB:
-				return of.createSub(o);
+                f.setName("sub");
+                break;
 			case DIV:
-				return of.createDiv(o);
+                f.setName("div");
+                break;
 			case MUL:
-				return of.createMul(o);
+                f.setName("mul");
+                break;
 		}
 
-		return null;
+        return of.createFunction(f);
 	}
 
 	@Override
@@ -196,3 +201,5 @@ public final class RealBinaryOperator implements RealParameter {
         return 0;
     }
 }
+
+    */

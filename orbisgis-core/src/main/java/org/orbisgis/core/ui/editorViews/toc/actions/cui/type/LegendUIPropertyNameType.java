@@ -41,7 +41,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.renderer.se.parameter.PropertyName;
+import org.orbisgis.core.renderer.se.parameter.ValueReference;
 import org.orbisgis.core.renderer.se.parameter.color.ColorAttribute;
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.core.renderer.se.parameter.string.StringAttribute;

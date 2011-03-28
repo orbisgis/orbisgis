@@ -31,7 +31,7 @@ import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.Layer;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.Renderer;
-import org.orbisgis.core.renderer.persistance.se.SymbolizerType;
+import net.opengis.se._2_0.core.SymbolizerType;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 

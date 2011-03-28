@@ -39,8 +39,8 @@ package org.orbisgis.core.renderer.se.stroke;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.orbisgis.core.renderer.persistance.se.AlternativeStrokeElementsType;
-import org.orbisgis.core.renderer.persistance.se.StrokeElementType;
+import net.opengis.se._2_0.core.AlternativeStrokeElementsType;
+import net.opengis.se._2_0.core.StrokeElementType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
 /**

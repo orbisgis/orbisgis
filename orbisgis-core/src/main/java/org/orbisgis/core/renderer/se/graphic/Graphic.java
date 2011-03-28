@@ -1,40 +1,34 @@
 package org.orbisgis.core.renderer.se.graphic;
 
-import java.awt.AlphaComposite;
-import java.awt.Color;
-import java.awt.Composite;
-import java.awt.CompositeContext;
-import java.awt.RenderingHints;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
-import java.awt.image.ColorModel;
 import java.io.IOException;
 
-import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.orbisgis.core.renderer.persistance.se.GraphicType;
+import net.opengis.se._2_0.core.GraphicType;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.persistance.se.AxisChartType;
-import org.orbisgis.core.renderer.persistance.se.ExternalGraphicType;
-import org.orbisgis.core.renderer.persistance.se.MarkGraphicType;
-import org.orbisgis.core.renderer.persistance.se.PieChartType;
-import org.orbisgis.core.renderer.persistance.se.TextGraphicType;
+import net.opengis.se._2_0.thematic.AxisChartType;
+import net.opengis.se._2_0.core.ExternalGraphicType;
+import net.opengis.se._2_0.core.MarkGraphicType;
+import net.opengis.se._2_0.thematic.PieChartType;
+import net.opengis.se._2_0.core.PointTextGraphicType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
-import org.orbisgis.core.renderer.se.UomNode;
-import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.color.ColorHelper;
 import org.orbisgis.core.renderer.se.transform.Transform;
 
 /**
  * @todo create subclasses: AlternativeGraphic, GraphicReference
  * @author maxence
  */
-public abstract class Graphic implements SymbolizerNode, UomNode {
+public abstract class Graphic implements SymbolizerNode {
+
+    protected SymbolizerNode parent;
+    protected Transform transform;
 
     public static Graphic createFromJAXBElement(JAXBElement<? extends GraphicType> gr) throws InvalidStyle {
-
         try {
             if (gr.getDeclaredType() == ExternalGraphicType.class) {
                 return new ExternalGraphic((JAXBElement<ExternalGraphicType>) gr);
@@ -44,8 +38,8 @@ public abstract class Graphic implements SymbolizerNode, UomNode {
                 return new MarkGraphic((JAXBElement<MarkGraphicType>) gr);
             }
 
-            if (gr.getDeclaredType() == TextGraphicType.class) {
-                return new TextGraphic((JAXBElement<TextGraphicType>) gr);
+            if (gr.getDeclaredType() == PointTextGraphicType.class) {
+                return new PointTextGraphic((JAXBElement<PointTextGraphicType>) gr);
             }
 
             if (gr.getDeclaredType() == PieChartType.class) {
@@ -57,6 +51,8 @@ public abstract class Graphic implements SymbolizerNode, UomNode {
             }
 
         } catch (IOException ex) {
+            System.out.println ("Ex: " + ex);
+            ex.printStackTrace(System.err);
             return null;
         }
         return null;
@@ -66,26 +62,6 @@ public abstract class Graphic implements SymbolizerNode, UomNode {
 	public String toString(){
 		return this.getClass().getSimpleName();
 	}
-
-
-    @Override
-    public Uom getUom() {
-        if (uom != null) {
-            return this.uom;
-        } else {
-            return parent.getUom();
-        }
-    }
-
-	@Override
-	public Uom getOwnUom(){
-		return uom;
-	}
-
-	@Override
-    public void setUom(Uom uom) {
-        this.uom = uom;
-    }
 
     @Override
     public SymbolizerNode getParent() {
@@ -116,56 +92,30 @@ public abstract class Graphic implements SymbolizerNode, UomNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public abstract RenderableGraphics getRenderableGraphics(SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt)
+    /*public abstract RenderableGraphics getRenderableGraphics(SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt)
             throws ParameterException, IOException;
+     */
 
     /**
-     * Create an empty RenderableGraphics based on specified bounds and margin
-     * @param bounds graphics size and positions
-     * @param margin margin (top, bottom, left and right) to add to bounds
-     * @return new empty RenderableGraphcis
+     * Return graphic bounds. Bounds center point shall match CRS origin !
+     *
+     *
+     * @param sds
+     * @param fid
+     * @param selected
+     * @param mt
+     * @param at
+     * @return
+     * @throws ParameterException
+     * @throws IOException
      */
-    public static RenderableGraphics getNewRenderableGraphics(Rectangle2D bounds, double margin, MapTransform mt) throws ParameterException {
+    public abstract Rectangle2D getBounds(SpatialDataSourceDecorator sds,
+            long fid, MapTransform mt) throws ParameterException, IOException;
 
-		double width = bounds.getWidth() + 2 * margin;
-		double height = bounds.getHeight() + 2 * margin;
-
-		if (width < 1.0){
-			width = 1.0;
-		}
-
-		if (height < 1.0){
-			height = 1.0;
-		}
-
-		//System.out.println ("Width: " + width  + " -- Height: " + height);
-
-		RenderableGraphics rg  = null;
-		try {
-        	rg = new RenderableGraphics(new Rectangle2D.Double(
-            	    bounds.getMinX() - margin,
-                	bounds.getMinY() - margin,
-	                width, height));
-		}
-		catch (Exception e){
-			throw new ParameterException("Invalid bounds !", e);
-		}
-
-        rg.addRenderingHints(mt.getRenderingHints());
-        return rg;
-    }
+    public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, 
+            boolean selected, MapTransform mt, AffineTransform at) throws ParameterException, IOException;
 
     public abstract String dependsOnFeature();
-
     public abstract JAXBElement<? extends GraphicType> getJAXBElement();
-
-    public abstract double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException;
-
     public abstract void updateGraphic();
-    
-    private SymbolizerNode parent;
-    protected Transform transform;
-    protected Uom uom;
-    
-    //private Transform transform;
 }

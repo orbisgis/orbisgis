@@ -1,19 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<FeatureTypeStyle xmlns="http://www.opengis.net/se" xmlns:ns2="http://www.opengis.net/ows/1.1" xmlns:ns3="http://www.opengis.net/ogc" xmlns:ns4="http://www.w3.org/1999/xlink">
+<FeatureTypeStyle xmlns="http://www.opengis.net/se/2.0/core" xmlns:tse="http://www.opengis.net/se/2.0/thematic" xmlns:ns2="http://www.opengis.net/ows/2.0" xmlns:ns3="http://www.opengis.net/fes/2.0" xmlns:ns4="http://www.w3.org/1999/xlink" version="2.0.0">
 
     <Rule>
-        <DomainConstraints>
-            <TimePeriod>OUI_EEE92 &lt; 50</TimePeriod>
-        </DomainConstraints>
+        <WhereClause>OUI_EEE92 &lt; 50</WhereClause>
 
-        <AreaSymbolizer>
-            <Version>1.9</Version>
+        <AreaSymbolizer uom="urn:ogc:def:uom:se::mm" version="2.0.0">
             <Name>Area symbolizer</Name>
             <Extension>
                 <ExtensionParameter name="level">0</ExtensionParameter>
             </Extension>
-            <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
-            <DensityFill>
+            <tse:DensityFill>
 	        <MarkGraphic>
 		    <WellKnownName>X</WellKnownName>
 		    <SolidFill>
@@ -21,10 +17,10 @@
 		    </SolidFill>
 		    <PenStroke />
 		</MarkGraphic>
-		<Percentage>
+		<tse:Percentage>
                     <Categorize threshholdsBelongTo="succeeding" fallbackValue="0">
                         <LookupValue>
-                            <ns3:PropertyName>OUI_EEE92</ns3:PropertyName>
+                            <ns3:ValueReference>OUI_EEE92</ns3:ValueReference>
                         </LookupValue>
                         <Value>30.0</Value>
                         <Threshold>30.0</Threshold>
@@ -37,8 +33,8 @@
                             <ExtensionParameter name="method">MANUAL</ExtensionParameter>
                         </Extension>
                     </Categorize>
-		</Percentage>
-            </DensityFill>
+		</tse:Percentage>
+            </tse:DensityFill>
             <PenStroke>
                 <SolidFill>
                     <Color>#000000</Color>
@@ -50,18 +46,14 @@
     </Rule>
 
     <Rule>
-        <DomainConstraints>
-            <TimePeriod>OUI_EEE92 &gt;= 50</TimePeriod>
-        </DomainConstraints>
+        <WhereClause>OUI_EEE92 &gt;= 50</WhereClause>
 
-        <AreaSymbolizer>
-            <Version>1.9</Version>
+        <AreaSymbolizer uom="urn:ogc:def:uom:se::mm" version="2.0.0">
             <Name>Area symbolizer</Name>
             <Extension>
                 <ExtensionParameter name="level">0</ExtensionParameter>
             </Extension>
-            <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
-            <DensityFill>
+            <tse:DensityFill>
 	        <MarkGraphic>
 		    <WellKnownName>Circle</WellKnownName>
 		    <SolidFill>
@@ -69,10 +61,10 @@
 		    </SolidFill>
 		    <PenStroke />
 		</MarkGraphic>
-		<Percentage>
+		<tse:Percentage>
              <Categorize threshholdsBelongTo="succeeding" fallbackValue="0">
                         <LookupValue>
-                            <ns3:PropertyName>OUI_EEE92</ns3:PropertyName>
+                            <ns3:ValueReference>OUI_EEE92</ns3:ValueReference>
                         </LookupValue>
                         <Value>55.0</Value>
                         <Threshold>55.0</Threshold>
@@ -85,8 +77,8 @@
                             <ExtensionParameter name="method">MANUAL</ExtensionParameter>
                         </Extension>
                     </Categorize>
-		</Percentage>
-            </DensityFill>
+		</tse:Percentage>
+            </tse:DensityFill>
             <PenStroke>
                 <SolidFill>
                     <Color>#000000</Color>

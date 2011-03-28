@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<FeatureTypeStyle xmlns="http://www.opengis.net/se" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink">
+<FeatureTypeStyle xmlns="http://www.opengis.net/se/2.0/core" xmlns:tse="http://www.opengis.net/se/2.0/thematic" xmlns:ns2="http://www.opengis.net/ows/2.0" xmlns:ns3="http://www.opengis.net/fes/2.0" xmlns:ns4="http://www.w3.org/1999/xlink" version="2.0.0">
     <Rule>
         <CompositeSymbolizer>
-            <AreaSymbolizer>
-                <Version>1.9</Version>
+            <AreaSymbolizer uom="urn:ogc:def:uom:se::mm" version="2.0.0">
                 <Name>Symbolizer Name</Name>
-                <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
-                <DotMapFill>
+                <tse:DotMapFill>
                     <MarkGraphic>
                         <WellKnownName>circle</WellKnownName>
                         <ViewBox>
@@ -20,13 +18,11 @@
                             <Width>0.1</Width>
                         </PenStroke>
                     </MarkGraphic>
-                    <ValuePerMark>
-                        1000
-                    </ValuePerMark>
-                    <ValueToRepresent>
-		    	        <ogc:PropertyName>NFOYNI98</ogc:PropertyName>
-                    </ValueToRepresent>
-                </DotMapFill>
+                    <tse:ValuePerMark>1000</tse:ValuePerMark>
+                    <tse:ValueToRepresent>
+		    	        <ns3:ValueReference>NFOYNI98</ns3:ValueReference>
+                    </tse:ValueToRepresent>
+                </tse:DotMapFill>
             </AreaSymbolizer>
         </CompositeSymbolizer>
     </Rule>

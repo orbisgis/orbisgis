@@ -1,20 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<FeatureTypeStyle xmlns="http://www.opengis.net/se" xmlns:ns2="http://www.opengis.net/ows/1.1" xmlns:ns3="http://www.opengis.net/ogc" xmlns:ns4="http://www.w3.org/1999/xlink">
+<FeatureTypeStyle xmlns="http://www.opengis.net/se/2.0/core" xmlns:tse="http://www.opengis.net/se/2.0/thematic" xmlns:ns2="http://www.opengis.net/ows/2.0" xmlns:ns3="http://www.opengis.net/fes/2.0" xmlns:ns4="http://www.w3.org/1999/xlink" version="2.0.0">
     <Rule>
-        <AreaSymbolizer>
-            <Version>1.9</Version>
+        <AreaSymbolizer uom="urn:ogc:def:uom:se::mm" version="2.0.0">
             <Name>Area symbolizer</Name>
             <Extension>
                 <ExtensionParameter name="level">0</ExtensionParameter>
             </Extension>
-            <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
-            <DensityFill>
+            <tse:DensityFill>
 	        <PenStroke>
 		  <SolidFill>
 		  <Color>
                     <Categorize threshholdsBelongTo="succeeding" fallbackValue="#000000">
                         <LookupValue>
-                            <ns3:PropertyName>OUI_EEE92</ns3:PropertyName>
+                            <ns3:ValueReference>OUI_EEE92</ns3:ValueReference>
                         </LookupValue>
                         <Value>#cc0000</Value>
                         <Threshold>50.0</Threshold>
@@ -27,10 +25,10 @@
 
 		<Width>1</Width>
 	        </PenStroke>
-		<Percentage>
+		<tse:Percentage>
                     <Categorize threshholdsBelongTo="succeeding" fallbackValue="0">
                         <LookupValue>
-                            <ns3:PropertyName>OUI_EEE92</ns3:PropertyName>
+                            <ns3:ValueReference>OUI_EEE92</ns3:ValueReference>
                         </LookupValue>
                         <Value>30.0</Value>
                         <Threshold>30.0</Threshold>
@@ -51,11 +49,11 @@
                             <ExtensionParameter name="method">MANUAL</ExtensionParameter>
                         </Extension>
                     </Categorize>
-		</Percentage>
-		<Orientation>
+		</tse:Percentage>
+		<tse:Orientation>
                     <Categorize threshholdsBelongTo="succeeding" fallbackValue="0">
                         <LookupValue>
-                            <ns3:PropertyName>OUI_EEE92</ns3:PropertyName>
+                            <ns3:ValueReference>OUI_EEE92</ns3:ValueReference>
                         </LookupValue>
                         <Value>45</Value>
                         <Threshold>50.0</Threshold>
@@ -64,8 +62,8 @@
                             <ExtensionParameter name="method">MANUAL</ExtensionParameter>
                         </Extension>
                     </Categorize>
-		</Orientation>
-            </DensityFill>
+		</tse:Orientation>
+            </tse:DensityFill>
             <PenStroke>
                 <SolidFill>
                     <Color>#000000</Color>

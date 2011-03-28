@@ -1,6 +1,6 @@
 package org.orbisgis.core.renderer.se.graphic;
 
-import org.orbisgis.core.renderer.persistance.se.CategoryType;
+import net.opengis.se._2_0.thematic.CategoryType;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.GraphicNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -50,8 +50,8 @@ public final class Category implements SymbolizerNode, FillNode, StrokeNode, Gra
             setStroke(Stroke.createFromJAXBElement(c.getStroke()));
         }
 
-        if (c.getMeasure() != null){
-            setMeasure(SeParameterFactory.createRealParameter(c.getMeasure()));
+        if (c.getValue() != null){
+            setMeasure(SeParameterFactory.createRealParameter(c.getValue()));
         }
 
         if (c.getName() != null){

@@ -42,14 +42,19 @@ package org.orbisgis.core.renderer.se;
 import com.vividsolutions.jts.geom.Geometry;
 import java.awt.Graphics2D;
 import java.io.IOException;
+
 import javax.xml.bind.JAXBElement;
+
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.feature.Feature;
 import org.gdms.driver.DriverException;
+
 import org.orbisgis.core.map.MapTransform;
+
 import org.orbisgis.core.renderer.Drawer;
 import org.orbisgis.core.renderer.RenderContext;
-import org.orbisgis.core.renderer.persistance.se.RasterSymbolizerType;
+
+import net.opengis.se._2_0.raster.RasterSymbolizerType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.raster.OverlapBehavior;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -207,13 +212,13 @@ public class RasterSymbolizer extends Symbolizer {
         return null;
     }
 
-    public RasterSymbolizer(JAXBElement<RasterSymbolizerType> st) {
+    public RasterSymbolizer(JAXBElement<RasterSymbolizerType> st) throws InvalidStyle {
 		super(st);
         RasterSymbolizerType lst = st.getValue();
         System.out.println("RasterSymb");
 
         System.out.println("  Name: " + lst.getName());
-        System.out.println("  UoM: " + lst.getUnitOfMeasure());
+        System.out.println("  UoM: " + lst.getUom());
         System.out.println("  Version: " + lst.getVersion());
         System.out.println("  Desc: " + lst.getDescription());
         System.out.println("  Geom: " + lst.getGeometry());

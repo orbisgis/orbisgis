@@ -10,11 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.persistance.se.MatrixType;
-import org.orbisgis.core.renderer.persistance.se.RotateType;
-import org.orbisgis.core.renderer.persistance.se.ScaleType;
-import org.orbisgis.core.renderer.persistance.se.TransformType;
-import org.orbisgis.core.renderer.persistance.se.TranslateType;
+import net.opengis.se._2_0.core.MatrixType;
+import net.opengis.se._2_0.core.RotateType;
+import net.opengis.se._2_0.core.ScaleType;
+import net.opengis.se._2_0.core.TransformType;
+import net.opengis.se._2_0.core.TranslateType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
@@ -53,8 +53,8 @@ public class Transform implements SymbolizerNode, UomNode {
         transformations = new ArrayList<Transformation>();
         consolidated = null;
 
-		if (t.getUnitOfMeasure() != null) {
-			this.setUom(Uom.fromOgcURN(t.getUnitOfMeasure()));
+		if (t.getUom() != null) {
+			this.setUom(Uom.fromOgcURN(t.getUom()));
 		}
 
         for (Object o : t.getTranslateOrRotateOrScale()){
@@ -134,8 +134,8 @@ public class Transform implements SymbolizerNode, UomNode {
     public TransformType getJAXBType(){
         TransformType t = new TransformType();
 
-		if (uom != null) {
-			t.setUnitOfMeasure(uom.toURN());
+		if (getOwnUom() != null) {
+			t.setUom(getOwnUom().toURN());
 		}
 
         List<Object> list = t.getTranslateOrRotateOrScale();

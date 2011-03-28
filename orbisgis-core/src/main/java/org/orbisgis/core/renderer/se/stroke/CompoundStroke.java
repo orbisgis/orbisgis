@@ -41,21 +41,23 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
 
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.persistance.se.CompoundStrokeType;
-import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
-import org.orbisgis.core.renderer.persistance.se.StrokeAnnotationGraphicType;
+import net.opengis.se._2_0.core.CompoundStrokeType;
+import net.opengis.se._2_0.core.ObjectFactory;
+import net.opengis.se._2_0.core.StrokeAnnotationGraphicType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.RelativeOrientation;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
@@ -65,15 +67,20 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  *
  * @author maxence
  */
-public final class CompoundStroke extends Stroke {
+public final class CompoundStroke extends Stroke implements UomNode {
 
-    RealParameter preGap;
-    RealParameter postGap;
-    ArrayList<CompoundStrokeElement> elements;
-    ArrayList<StrokeAnnotationGraphic> annotations;
+    private RealParameter preGap;
+    private RealParameter postGap;
+    private ArrayList<CompoundStrokeElement> elements;
+    private ArrayList<StrokeAnnotationGraphic> annotations;
+    private Uom uom;
 
     public CompoundStroke(CompoundStrokeType s) throws InvalidStyle {
         super(s);
+
+        if (s.getUom() != null){
+            setUom(Uom.fromOgcURN(s.getUom()));
+        }
 
         if (s.getPreGap() != null) {
             setPreGap(SeParameterFactory.createRealParameter(s.getPreGap()));
@@ -129,7 +136,7 @@ public final class CompoundStroke extends Stroke {
         return postGap;
     }
 
-    @Override
+    /*@Override
     public double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
         double max = 0.0;
         for (CompoundStrokeElement elem : elements) {
@@ -156,7 +163,7 @@ public final class CompoundStroke extends Stroke {
         }
 
         return max;
-    }
+    }*/
 
     /*@Override
     public double getMinLength(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
@@ -379,13 +386,17 @@ public final class CompoundStroke extends Stroke {
             ArrayList<Shape> splitLineInSeg = ShapeHelper.splitLineInSeg(shp, patternLength);
             for (Shape seg : splitLineInSeg) {
                 for (StrokeAnnotationGraphic annotation : annotations) {
-                    RenderableGraphics rg = annotation.getGraphic().getGraphic(sds, fid, selected, mt);
+                    GraphicCollection graphic = annotation.getGraphic();
+                    Rectangle2D bounds = graphic.getBounds(sds, fid, selected, mt);
+
                     RelativeOrientation rOrient = annotation.getRelativeOrientation();
                     if (rOrient == null) {
                         rOrient = RelativeOrientation.NORMAL;
                     }
-                    double gWidth = rg.getWidth();
-                    double gHeight = rg.getHeight();
+
+                    double gWidth = bounds.getWidth();
+                    double gHeight = bounds.getHeight();
+
                     double gLength;
                     switch (rOrient) {
                         case NORMAL:
@@ -401,18 +412,19 @@ public final class CompoundStroke extends Stroke {
                             gLength = Math.sqrt(gWidth * gWidth + gHeight * gHeight);
                             break;
                     }
-                    //double pos = (annotation.getRelativePosition().getValue(sds, fid) + j) * patternLength;
-                    //double pos = j * patternLength + (annotation.getRelativePosition().getValue(sds, fid) * (patternLength - gLength) + gLength / 2.0);
+
                     double pos = (ShapeHelper.getLineLength(seg) - gLength) * annotation.getRelativePosition().getValue(sds, fid) + gLength / 2.0;
-                    //System.out.println("Stroke Annotation Graphic");
-                    //System.out.println("Pos: " + pos);
+
                     Point2D.Double pt = ShapeHelper.getPointAt(seg, pos);
+
                     AffineTransform at = AffineTransform.getTranslateInstance(pt.x, pt.y);
                     if (rOrient != RelativeOrientation.PORTRAYAL) {
+
                         Point2D.Double ptA = ShapeHelper.getPointAt(seg, pos - gLength / 2.0);
                         Point2D.Double ptB = ShapeHelper.getPointAt(seg, pos + gLength / 2.0);
+
                         double theta = Math.atan2(ptB.y - ptA.y, ptB.x - ptA.x);
-                        //System.out.println("(" + ptA.x + ";" + ptA.y + ")" + "(" + ptB.x + ";" + ptB.y + ")" + "   => Angle: " + (theta / 0.0175));
+
                         switch (rOrient) {
                             case LINE:
                                 theta += 0.5 * Math.PI;
@@ -425,7 +437,8 @@ public final class CompoundStroke extends Stroke {
                         }
                         at.concatenate(AffineTransform.getRotateInstance(theta));
                     }
-                    g2.drawRenderedImage(rg.createRendering(mt.getCurrentRenderContext()), at);
+
+                    graphic.draw(g2, sds, fid, selected, mt, at);
                 }
             }
 
@@ -467,6 +480,10 @@ public final class CompoundStroke extends Stroke {
 
         this.setJAXBProperties(s);
 
+        if (uom != null){
+            s.setUom(uom.toURN());
+        }
+
         if (this.preGap != null) {
             s.setPreGap(preGap.getJAXBParameterValueType());
         }
@@ -488,5 +505,24 @@ public final class CompoundStroke extends Stroke {
         }
 
         return s;
+    }
+
+    @Override
+    public Uom getUom() {
+        if (uom != null){
+            return uom;
+        } else {
+            return parent.getUom();
+        }
+    }
+
+    @Override
+    public void setUom(Uom u) {
+        uom = u;
+    }
+
+    @Override
+    public Uom getOwnUom() {
+        return uom;
     }
 }

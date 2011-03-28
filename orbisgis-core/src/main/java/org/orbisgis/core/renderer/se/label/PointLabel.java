@@ -10,19 +10,17 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
-import java.awt.image.RenderedImage;
 
 import java.io.IOException;
-import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
 
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
 
-import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
-import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
-import org.orbisgis.core.renderer.persistance.se.PointLabelType;
+import net.opengis.se._2_0.core.ObjectFactory;
+import net.opengis.se._2_0.core.ParameterValueType;
+import net.opengis.se._2_0.core.PointLabelType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -44,15 +42,13 @@ public final class PointLabel extends Label {
      *
      */
     public PointLabel() {
-        setLabel(new StyledLabel());
+        setLabel(new StyledText());
         rotation = new RealLiteral(0.0);
 
     }
 
-    PointLabel(JAXBElement<PointLabelType> pl) throws InvalidStyle {
-        super(pl);
-
-        PointLabelType plt = pl.getValue();
+    public PointLabel(PointLabelType plt) throws InvalidStyle {
+        super(plt);
 
         if (plt.getHorizontalAlignment() != null) {
             this.hAlign = HorizontalAlignment.fromString(SeParameterFactory.extractToken(plt.getHorizontalAlignment()));
@@ -70,6 +66,11 @@ public final class PointLabel extends Label {
             setRotation(SeParameterFactory.createRealParameter(plt.getRotation()));
         }
 
+
+    }
+
+    PointLabel(JAXBElement<PointLabelType> pl) throws InvalidStyle {
+        this(pl.getValue());
     }
 
     public ExclusionZone getExclusionZone() {
@@ -96,70 +97,55 @@ public final class PointLabel extends Label {
     public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
             Shape shp, boolean selected, MapTransform mt, RenderContext perm)
             throws ParameterException, IOException {
-        RenderableGraphics l = this.label.getImage(sds, fid, selected, mt);
-
-        // convert lineShape to a point
-        // create AT according to rotation and exclusionZone
-
         double x;
         double y;
 
+        // TODO RenderPermission !
+        double deltaX = 0;
+        double deltaY = 0;
+
         if (shp instanceof PolygonShape) {
             //shp = perm.getValidShape(shp, 0);
+            // TODO Validate !
             x = shp.getBounds2D().getCenterX();
             y = shp.getBounds2D().getCenterY();
         } else {
-            x = shp.getBounds2D().getCenterX() + l.getWidth() / 2;
-            y = shp.getBounds2D().getCenterY() - l.getHeight() / 2;
+            Rectangle2D bounds = this.label.getBounds(g2, sds, fid, mt);
+            x = shp.getBounds2D().getCenterX() + bounds.getWidth() / 2;
+            y = shp.getBounds2D().getCenterY() - bounds.getHeight() / 2;
 
             if (this.exclusionZone != null) {
                 if (this.exclusionZone instanceof ExclusionRadius) {
                     double radius = ((ExclusionRadius) (this.exclusionZone)).getRadius().getValue(sds, fid);
                     radius = Uom.toPixel(radius, getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-                    x += radius;
-                    y -= radius;
+                    deltaX = radius;
+                    deltaY = radius;
                 } else {
-                    double deltaX = ((ExclusionRectangle) (this.exclusionZone)).getX().getValue(sds, fid);
-                    double deltaY = ((ExclusionRectangle) (this.exclusionZone)).getY().getValue(sds, fid);
+                    deltaX = ((ExclusionRectangle) (this.exclusionZone)).getX().getValue(sds, fid);
+                    deltaY = ((ExclusionRectangle) (this.exclusionZone)).getY().getValue(sds, fid);
 
                     deltaX = Uom.toPixel(deltaX, getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
                     deltaY = Uom.toPixel(deltaY, getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-
-                    x += deltaX;
-                    y -= deltaY;
                 }
             }
         }
 
-
-        RenderedImage labelSymb = l.createRendering(mt.getCurrentRenderContext());
         AffineTransform at = AffineTransform.getTranslateInstance(x, y);
 
-
-        if (perm != null) {
-
-            Rectangle2D bounds = new Rectangle2D.Double(labelSymb.getMinX(), labelSymb.getMinY(), labelSymb.getWidth(), labelSymb.getHeight());
-            Shape pos = at.createTransformedShape(bounds);
-            bounds = pos.getBounds2D();
-
-            Envelope env = new Envelope(bounds.getMinX(), bounds.getMaxX(), bounds.getMinY(), bounds.getMaxY());
-
-            if (perm.canDraw(env)) {
-                g2.drawRenderedImage(labelSymb, at);
-                perm.addUsedArea(env);
-            }
-        } else {
-            g2.drawRenderedImage(labelSymb, at);
-        }
-
+        label.draw(g2, sds, fid, selected, mt, at, perm);
     }
 
     @Override
     public JAXBElement<PointLabelType> getJAXBElement() {
+        ObjectFactory of = new ObjectFactory();
+        return of.createPointLabel(getPointLabelType());
+    }
+
+    public PointLabelType getPointLabelType() {
         PointLabelType pl = new PointLabelType();
 
         if (uom != null) {
-            pl.setUnitOfMeasure(uom.toString());
+            pl.setUom(uom.toString());
         }
 
         if (exclusionZone != null) {
@@ -183,11 +169,9 @@ public final class PointLabel extends Label {
         }
 
         if (label != null) {
-            pl.setStyledLabel(label.getJAXBType());
+            pl.setStyledText(label.getJAXBType());
         }
-
-        ObjectFactory of = new ObjectFactory();
-        return of.createPointLabel(pl);
+        return pl;
     }
 
     @Override

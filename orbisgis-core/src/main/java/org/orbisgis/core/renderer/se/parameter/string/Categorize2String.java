@@ -2,11 +2,10 @@ package org.orbisgis.core.renderer.se.parameter.string;
 
 import java.util.Iterator;
 import javax.xml.bind.JAXBElement;
+import net.opengis.se._2_0.core.CategorizeType;
+import net.opengis.se._2_0.core.ParameterValueType;
+import net.opengis.se._2_0.core.ThreshholdBelongsToType;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.feature.Feature;
-import org.orbisgis.core.renderer.persistance.se.CategorizeType;
-import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
-import org.orbisgis.core.renderer.persistance.se.ThreshholdsBelongToType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.Categorize;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -36,7 +35,7 @@ public class Categorize2String extends Categorize<StringParameter, StringLiteral
                     SeParameterFactory.createStringParameter(it.next().getValue()));
         }
 
-        if (t.getThreshholdsBelongTo() == ThreshholdsBelongToType.PRECEDING) {
+        if (t.getThreshholdBelongsTo() == ThreshholdBelongsToType.PRECEDING) {
             this.setThresholdsPreceding();
         } else {
             this.setThresholdsSucceeding();

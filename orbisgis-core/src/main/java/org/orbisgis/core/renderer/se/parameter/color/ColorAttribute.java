@@ -42,21 +42,21 @@ package org.orbisgis.core.renderer.se.parameter.color;
 
 import java.awt.Color;
 import javax.xml.bind.JAXBElement;
+import net.opengis.fes._2.ValueReferenceType;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.feature.Feature;
-import org.orbisgis.core.renderer.persistance.ogc.PropertyNameType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
-import org.orbisgis.core.renderer.se.parameter.PropertyName;
+import org.orbisgis.core.renderer.se.parameter.ValueReference;
 
-public class ColorAttribute extends PropertyName implements ColorParameter {
+public class ColorAttribute extends ValueReference implements ColorParameter {
 
     public ColorAttribute(String fieldName) {
         super(fieldName);
     }
 
-    public ColorAttribute(JAXBElement<PropertyNameType> expr) throws InvalidStyle {
+    public ColorAttribute(JAXBElement<ValueReferenceType> expr) throws InvalidStyle {
         super(expr);
     }
 

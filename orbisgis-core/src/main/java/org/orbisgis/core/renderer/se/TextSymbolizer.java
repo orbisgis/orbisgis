@@ -47,8 +47,8 @@ import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.Drawer;
 
-import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
-import org.orbisgis.core.renderer.persistance.se.TextSymbolizerType;
+import net.opengis.se._2_0.core.ObjectFactory;
+import net.opengis.se._2_0.core.TextSymbolizerType;
 
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
@@ -79,8 +79,8 @@ public final class TextSymbolizer extends VectorSymbolizer {
 			// TODO
 		}
 
-		if (tst.getUnitOfMeasure() != null) {
-			this.uom = Uom.fromOgcURN(tst.getUnitOfMeasure());
+		if (tst.getUom() != null) {
+			this.uom = Uom.fromOgcURN(tst.getUom());
             System.out.println ("Text Symb uom : " + this.getUom());
 		}
 
@@ -152,7 +152,7 @@ public final class TextSymbolizer extends VectorSymbolizer {
 
 
 		if (this.getUom() != null){
-			s.setUnitOfMeasure(this.getUom().toURN());
+			s.setUom(this.getUom().toURN());
 		}
 
 		if (transform != null) {

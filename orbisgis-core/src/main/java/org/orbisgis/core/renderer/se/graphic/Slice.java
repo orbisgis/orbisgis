@@ -1,6 +1,6 @@
 package org.orbisgis.core.renderer.se.graphic;
 
-import org.orbisgis.core.renderer.persistance.se.SliceType;
+import net.opengis.se._2_0.thematic.SliceType;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
