@@ -1,15 +1,17 @@
 package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 
-
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import org.orbisgis.core.renderer.classification.Range;
+import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 
 /*
@@ -170,7 +172,6 @@ public class JSE_TableListener extends AbstractAction implements TableModelListe
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        System.out.println("set r " + row + " c " + column + " ");
         if (column == 1 && row != 0) {
             table.setValueAt(newValue, row - 1, column + 1);
             refreshRange(ChoroDatas, row - 1, column, newValue);
@@ -188,6 +189,30 @@ public class JSE_TableListener extends AbstractAction implements TableModelListe
         if (!(row == ChoroDatas.getRange().length && column == 2)) {
             ranges[row + 1].setMinRange(Double.valueOf((Double) newValue));
         }
+
+        double[] choroData;
+        int nbElemRangeBefore = 0;
+        int nbElemRange = 0;
+
+        try {
+            choroData = ChoroDatas.getSortedData();
+            for (int i = 1; i <= choroData.length; i++) {
+                if (choroData[i - 1] >= ranges[row].getMinRange()
+                        && choroData[i - 1] < ranges[row].getMaxRange()) {
+                    nbElemRangeBefore++;
+                }
+                if (choroData[i - 1] >= ranges[row + 1].getMinRange()
+                        && choroData[i - 1] < ranges[row + 1].getMaxRange()) {
+                    nbElemRange++;
+                }
+            }
+        } catch (ParameterException ex) {
+            Logger.getLogger(JSE_TableListener.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        ranges[row].setNumberOfItems(nbElemRangeBefore);
+        ranges[row + 1].setNumberOfItems(nbElemRange);
+
         ChoroDatas.setRange(ranges);
         table.repaint();
     }

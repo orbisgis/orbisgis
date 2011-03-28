@@ -22,18 +22,14 @@ class JSE_ChoroplethRangeTabPanel extends JPanel {
     public JSE_ChoroplethRangeTabPanel(JSE_ChoroplethDatas ChoroDatas) {
 
         JPanel tab = new JPanel();
-
         tableModel = new JSE_TableModel(ChoroDatas);
-
         tableau = new JTable(tableModel);
-
         tableModel.addTableModelListener(new JSE_TableListener(this, tableau, ChoroDatas));
 
         tableau.setDefaultRenderer(Color.class, new JSE_ColorCellRenderer());
         tableau.setDefaultEditor(Color.class, new JSE_ColorCellEditor(ChoroDatas));
 
         tab.setLayout(new BorderLayout());
-
         tab.add(tableau.getTableHeader(), BorderLayout.NORTH);
         tab.add(tableau, BorderLayout.CENTER);
         tab.setPreferredSize(new Dimension(600,180));

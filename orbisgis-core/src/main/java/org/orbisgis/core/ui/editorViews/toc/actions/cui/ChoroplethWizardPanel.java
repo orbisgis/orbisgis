@@ -57,7 +57,7 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
         JSE_ChoroplethChartPanel chartPanel = new JSE_ChoroplethChartPanel(ChoroDatas);
         bottomPanel.add(chartPanel);
 
-        JSE_ChoroDatasChangedListener datasChangedListener = new JSE_ChoroDatasChangedListener(ChoroDatas, rangeTabPanel, chartPanel);
+        JSE_ChoroDatasChangedListener datasChangedListener = new JSE_ChoroDatasChangedListener(this,ChoroDatas,inputPanel,rangeTabPanel, chartPanel);
         ChoroDatas.addDataChangedListener(datasChangedListener);
 
         JPanel wisardPanel = new JPanel();
@@ -118,12 +118,12 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
         if (ChoroDatas.getAutoColorFill()) {
             choropleth = new Categorize2Color(new ColorLiteral(ChoroDatas.getBeginColor()), new ColorLiteral(ChoroDatas.getEndColor()), ChoroDatas.getField());
             for (int i = 0; i < ranges.length; i++) {
-                choropleth.addClass(new RealLiteral(ranges[i].getMaxRange()), choropleth.getClassValue(i));
+                choropleth.addClass(new RealLiteral(ranges[i].getMinRange()), choropleth.getClassValue(i));
             }
         } else {
             choropleth = new Categorize2Color(new ColorLiteral(ChoroDatas.getClassColor(0)), new ColorLiteral(ChoroDatas.getClassColor(ChoroDatas.getClassesColors().length - 1)), ChoroDatas.getField());
             for (int i = 0; i < ranges.length; i++) {
-                choropleth.addClass(new RealLiteral(ranges[i].getMaxRange()), new ColorLiteral(ChoroDatas.getClassColor(i)));
+                choropleth.addClass(new RealLiteral(ranges[i].getMinRange()), new ColorLiteral(ChoroDatas.getClassColor(i)));
             }
         }
         SolidFill choroplethFill = new SolidFill();

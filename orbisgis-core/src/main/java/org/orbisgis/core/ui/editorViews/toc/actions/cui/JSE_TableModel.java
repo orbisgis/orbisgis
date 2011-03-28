@@ -29,7 +29,7 @@ class JSE_TableModel extends AbstractTableModel {
         Color[] colors = ChoroDatas.getClassesColors();
 
         for (int i = 1; i <= ranges.length; i++) {
-            rangesTab.add(new JSE_RangeTab(colors[i - 1], ranges[i - 1].getMinRange(), ranges[i - 1].getMaxRange(), String.valueOf(i)));
+                rangesTab.add(new JSE_RangeTab(colors[i - 1], ranges[i - 1].getMinRange(), ranges[i - 1].getMaxRange(), String.valueOf(i)));
         }
     }
 
@@ -120,7 +120,7 @@ class JSE_TableModel extends AbstractTableModel {
         rangesTab.removeAll(rangesTab);
         
         for (int i = 1; i <= ranges.length; i++) {
-            rangesTab.add( new JSE_RangeTab(colors[i - 1], ranges[i - 1].getMinRange(), ranges[i - 1].getMaxRange(), String.valueOf(i)));
+             rangesTab.add( new JSE_RangeTab(colors[i - 1], ranges[i - 1].getMinRange(), ranges[i - 1].getMaxRange(), String.valueOf(i)));
         }
 
 
