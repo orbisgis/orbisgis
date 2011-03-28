@@ -65,20 +65,11 @@ class JSE_ChoroplethInputPanel extends JPanel {
         this.ChoroDatas.addDataChangedListener(new DataChangedListener(){
             @Override
             public void dataChangedOccurred(DataChanged evt) {
-                if(evt.dataType == JSE_ChoroplethDatas.DataChangedType.CLASSCOLORS)
-                {
-                    rdbxStatMethodManual.setSelected(true);
-                    ChoroDatas.setAutoColorFill(false);
-                }else if(evt.dataType == JSE_ChoroplethDatas.DataChangedType.BEGINCOLOR || evt.dataType == JSE_ChoroplethDatas.DataChangedType.ENDCOLOR)
-                {
-                    ChoroDatas.setAutoColorFill(true);
-                } else if (evt.dataType == JSE_ChoroplethDatas.DataChangedType.RANGES && ChoroDatas.getStatisticMethod() != JSE_ChoroplethDatas.StatisticMethod.MANUAL)
+                if (evt.dataType == JSE_ChoroplethDatas.DataChangedType.RANGES && ChoroDatas.getStatisticMethod() != JSE_ChoroplethDatas.StatisticMethod.MANUAL)
                 {
                     rdbxStatMethodManual.setSelected(true);
                 }
-                else if (evt.dataType == JSE_ChoroplethDatas.DataChangedType.STATMETHOD && ChoroDatas.getStatisticMethod() != JSE_ChoroplethDatas.StatisticMethod.MANUAL)
-                    ChoroDatas.setAutoColorFill(true);
-                }
+            }
         });
         initDraw(metaPanel);
     }

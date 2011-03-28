@@ -36,7 +36,7 @@ public class JSE_ChoroplethDatas {
     private Value value;
     private StatisticMethod statIndex; //Selected statistic method
     private int defaultClassNumbers = 10; // The default maximum amount of classes which can be created
-    private Boolean autoColorFill = false;
+    private Boolean autoColorFill = true;
     private Color beginColor;
     private Color endColor;
     private Color[] classesColors;
@@ -49,7 +49,7 @@ public class JSE_ChoroplethDatas {
     }
 
     public enum DataChangedType {
-        FIELD, NUMBEROFCLASS, RANGES, STATMETHOD, BEGINCOLOR, ENDCOLOR, CLASSCOLORS, ALIASES
+        FIELD, NUMBEROFCLASS, RANGES, STATMETHOD, BEGINCOLOR, ENDCOLOR, CLASSCOLORS, CLASSCOLOR, ALIASES
     }
 
     public JSE_ChoroplethDatas(ILayer layer) {
@@ -100,6 +100,23 @@ public class JSE_ChoroplethDatas {
         }
     }
 
+    private void CalculateColors()
+    {
+        if(ranges.length == numberOfClasses && autoColorFill)
+        {
+            classesColors = new Color[numberOfClasses];
+            int r = beginColor.getRed(); int g = beginColor.getGreen(); int b = beginColor.getBlue();
+            int rstep = (endColor.getRed() - beginColor.getRed()) / numberOfClasses;
+            int gstep = (endColor.getGreen() - beginColor.getGreen()) / numberOfClasses;
+            int bstep = (endColor.getBlue() - beginColor.getBlue()) / numberOfClasses;
+            for (int i = 0; i < ranges.length - 1; i++)
+            {
+                    classesColors[i] = new Color(r + i * rstep, g + i * gstep, b + i* bstep);
+            }
+            fireMyEvent(new DataChanged(this, DataChangedType.CLASSCOLORS));
+        }
+    }
+
     public void readData() throws DriverException {
         /*Metadata metadata = layer.getDataSource().getMetadata();
 
@@ -119,7 +136,7 @@ public class JSE_ChoroplethDatas {
         System.out.println("fields "+i+" "+fields.get(i-1));
         }*/
 
-        String selectedField = fields.get(fieldIndex);
+        /*String selectedField = fields.get(fieldIndex);
 
 
         if (selectedField != null) {
@@ -134,7 +151,7 @@ public class JSE_ChoroplethDatas {
             } catch (ParameterException ex) {
                 Logger.getLogger(CreateChoroplethPlugIn.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
+        }*/
     }
 
     /*
@@ -288,7 +305,7 @@ public class JSE_ChoroplethDatas {
         }
     }
 
-    public Boolean getAutoColorFill()
+    /*public Boolean getAutoColorFill()
     {
         return autoColorFill;
     }
@@ -296,14 +313,16 @@ public class JSE_ChoroplethDatas {
     public void setAutoColorFill(Boolean value)
     {
         autoColorFill = value;
-    }
+    }*/
 
     public Color getBeginColor() {
         return beginColor;
     }
 
     public void setBeginColor(Color value) {
+        autoColorFill = true;
         beginColor = value;
+        CalculateColors();
         fireMyEvent(new DataChanged(this, DataChangedType.BEGINCOLOR));
     }
 
@@ -312,7 +331,9 @@ public class JSE_ChoroplethDatas {
     }
 
     public void setEndColor(Color value) {
+        autoColorFill = true;
         endColor = value;
+        CalculateColors();
         fireMyEvent(new DataChanged(this, DataChangedType.ENDCOLOR));
     }
 
@@ -330,7 +351,7 @@ public class JSE_ChoroplethDatas {
     public void setClassColor(Color value, int index) {
         if (index < classesColors.length) {
             classesColors[index] = value;
-            fireMyEvent(new DataChanged(this, DataChangedType.CLASSCOLORS));
+            fireMyEvent(new DataChanged(this, DataChangedType.CLASSCOLOR));
         }
     }
 

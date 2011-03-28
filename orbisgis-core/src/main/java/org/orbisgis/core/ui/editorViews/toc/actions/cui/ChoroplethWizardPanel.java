@@ -5,6 +5,7 @@
 package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.net.URL;
@@ -32,6 +33,7 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
     private JPanel topPanel;
     private JPanel centerPanel;
     private JPanel bottomPanel;
+    private ILayer layer;
 
     /*
      * Create a Choropleth wizard panel
@@ -39,11 +41,12 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
      */
     public ChoroplethWizardPanel(ILayer layer) throws DriverException {
         super();
-        this.setLayout(new BorderLayout());
-        this.setSize(800, 600);
+        /*this.setLayout(new BorderLayout());
+        this.setSize(800, 600);*/
 
+        this.layer = layer;
         ChoroDatas = new JSE_ChoroplethDatas(layer);
-        ChoroDatas.readData();
+        //ChoroDatas.readData();
 
         topPanel = new JPanel();
         JSE_ChoroplethInputPanel inputPanel = new JSE_ChoroplethInputPanel(this, layer, ChoroDatas);
@@ -57,7 +60,7 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
         JSE_ChoroplethChartPanel chartPanel = new JSE_ChoroplethChartPanel(ChoroDatas);
         bottomPanel.add(chartPanel);
 
-        JSE_ChoroDatasChangedListener datasChangedListener = new JSE_ChoroDatasChangedListener(this,ChoroDatas,inputPanel,rangeTabPanel, chartPanel);
+        JSE_ChoroDatasChangedListener datasChangedListener = new JSE_ChoroDatasChangedListener(this, ChoroDatas, inputPanel, rangeTabPanel, chartPanel);
         ChoroDatas.addDataChangedListener(datasChangedListener);
 
         JPanel wisardPanel = new JPanel();
@@ -115,17 +118,13 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
         Categorize2Color choropleth = null;
         //choropleth = new Categorize2Color(new ColorLiteral(ChoroDatas.getBeginColor()), new ColorLiteral(ChoroDatas.getEndColor()), ChoroDatas.getField());
         Range[] ranges = ChoroDatas.getRange();
-        if (ChoroDatas.getAutoColorFill()) {
-            choropleth = new Categorize2Color(new ColorLiteral(ChoroDatas.getBeginColor()), new ColorLiteral(ChoroDatas.getEndColor()), ChoroDatas.getField());
-            for (int i = 0; i < ranges.length; i++) {
-                choropleth.addClass(new RealLiteral(ranges[i].getMinRange()), choropleth.getClassValue(i));
-            }
-        } else {
-            choropleth = new Categorize2Color(new ColorLiteral(ChoroDatas.getClassColor(0)), new ColorLiteral(ChoroDatas.getClassColor(ChoroDatas.getClassesColors().length - 1)), ChoroDatas.getField());
-            for (int i = 0; i < ranges.length; i++) {
-                choropleth.addClass(new RealLiteral(ranges[i].getMinRange()), new ColorLiteral(ChoroDatas.getClassColor(i)));
-            }
+        choropleth = new Categorize2Color(new ColorLiteral(ChoroDatas.getClassColor(0)), new ColorLiteral(ChoroDatas.getClassColor(ChoroDatas.getClassesColors().length - 1)), ChoroDatas.getField());
+        for (int i = 0; i < ranges.length - 1; i++) {
+            choropleth.addClass(new RealLiteral(ranges[i].getMaxRange()), new ColorLiteral(ChoroDatas.getClassColor(i)));
         }
+        /*for (int i = 0; i < ranges.length; i++) {
+            System.out.println("Threshold " + choropleth.getThresholdValue(i) + " :" + choropleth.getClassValue(i));
+        }*/
         SolidFill choroplethFill = new SolidFill();
         choroplethFill.setColor(choropleth);
         as.setFill(choroplethFill);
