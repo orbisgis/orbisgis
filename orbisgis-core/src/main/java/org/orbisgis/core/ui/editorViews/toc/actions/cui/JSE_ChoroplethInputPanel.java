@@ -27,6 +27,8 @@ import javax.swing.JRadioButton;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.renderer.se.Rule;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.JSE_ChoroplethDatas.DataChanged;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.JSE_ChoroplethDatas.DataChangedListener;
 
 /**
  *
@@ -56,10 +58,28 @@ class JSE_ChoroplethInputPanel extends JPanel {
     private JPanel centerPanel;
     private JPanel bottomPanel;
 
-    public JSE_ChoroplethInputPanel(ChoroplethWizardPanel metaPanel,ILayer layer,JSE_ChoroplethDatas ChoroDatas)
+    public JSE_ChoroplethInputPanel(ChoroplethWizardPanel metaPanel,ILayer layer,JSE_ChoroplethDatas ChoroPlethDatas)
     {
         this.layer=layer;
-        this.ChoroDatas=ChoroDatas;
+        this.ChoroDatas=ChoroPlethDatas;
+        this.ChoroDatas.addDataChangedListener(new DataChangedListener(){
+            @Override
+            public void dataChangedOccurred(DataChanged evt) {
+                if(evt.dataType == JSE_ChoroplethDatas.DataChangedType.CLASSCOLORS)
+                {
+                    rdbxStatMethodManual.setSelected(true);
+                    ChoroDatas.setAutoColorFill(false);
+                }else if(evt.dataType == JSE_ChoroplethDatas.DataChangedType.BEGINCOLOR || evt.dataType == JSE_ChoroplethDatas.DataChangedType.ENDCOLOR)
+                {
+                    ChoroDatas.setAutoColorFill(true);
+                } else if (evt.dataType == JSE_ChoroplethDatas.DataChangedType.RANGES && ChoroDatas.getStatisticMethod() != JSE_ChoroplethDatas.StatisticMethod.MANUAL)
+                {
+                    rdbxStatMethodManual.setSelected(true);
+                }
+                else if (evt.dataType == JSE_ChoroplethDatas.DataChangedType.STATMETHOD && ChoroDatas.getStatisticMethod() != JSE_ChoroplethDatas.StatisticMethod.MANUAL)
+                    ChoroDatas.setAutoColorFill(true);
+                }
+        });
         initDraw(metaPanel);
     }
 
@@ -210,25 +230,25 @@ class JSE_ChoroplethInputPanel extends JPanel {
                 {
                     //System.out.println("Quantiles Selected");
                     updateComboBoxNbrClasses(JSE_ChoroplethDatas.StatisticMethod.QUANTILES);
-                    ChoroDatas.setStatisticMethod(JSE_ChoroplethDatas.StatisticMethod.QUANTILES);
+                    ChoroDatas.setStatisticMethod(JSE_ChoroplethDatas.StatisticMethod.QUANTILES, true);
                 }
                 else if(e.getItem().equals(rdbxStatMethodMean) && e.getStateChange() == ItemEvent.SELECTED)
                 {
                     //System.out.println("Mean Selected");
                     updateComboBoxNbrClasses(JSE_ChoroplethDatas.StatisticMethod.AVERAGE);
-                    ChoroDatas.setStatisticMethod(JSE_ChoroplethDatas.StatisticMethod.AVERAGE);
+                    ChoroDatas.setStatisticMethod(JSE_ChoroplethDatas.StatisticMethod.AVERAGE, true);
                 }
                 if(e.getItem().equals(rdbxStatMethodJenks) && e.getStateChange() == ItemEvent.SELECTED)
                 {
                     //System.out.println("Jenks Selected");
                     updateComboBoxNbrClasses(JSE_ChoroplethDatas.StatisticMethod.JENKS);
-                    ChoroDatas.setStatisticMethod(JSE_ChoroplethDatas.StatisticMethod.JENKS);
+                    ChoroDatas.setStatisticMethod(JSE_ChoroplethDatas.StatisticMethod.JENKS, true);
                 }
                 if(e.getItem().equals(rdbxStatMethodManual) && e.getStateChange() == ItemEvent.SELECTED)
                 {
                     //System.out.println("Manual Selected");
                     updateComboBoxNbrClasses(JSE_ChoroplethDatas.StatisticMethod.MANUAL);
-                    ChoroDatas.setStatisticMethod(JSE_ChoroplethDatas.StatisticMethod.MANUAL);
+                    ChoroDatas.setStatisticMethod(JSE_ChoroplethDatas.StatisticMethod.MANUAL, false);
                 }
             }
         }

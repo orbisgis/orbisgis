@@ -47,7 +47,7 @@ class JSE_ChoroplethChartPanel extends JPanel {
     }
 
     public ChartPanel initDraw() {
-        ChoroDatas.setStatisticMethod(StatisticMethod.QUANTILES);
+        ChoroDatas.setStatisticMethod(StatisticMethod.QUANTILES, true);
         try {
             ChoroDatas.resetRanges();
         } catch (DriverException ex) {

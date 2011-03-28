@@ -129,7 +129,7 @@ public class JSE_TableListener extends AbstractAction implements TableModelListe
         //  PropertyChangeEvent is fired.
         //  This results in the "run" method being invoked
 
-        ChoroDatas.setStatisticMethod(JSE_ChoroplethDatas.StatisticMethod.MANUAL);
+        ChoroDatas.setStatisticMethod(JSE_ChoroplethDatas.StatisticMethod.MANUAL, false);
         SwingUtilities.invokeLater(this);
     }
     /*

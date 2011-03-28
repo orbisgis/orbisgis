@@ -15,6 +15,7 @@ import org.orbisgis.core.renderer.classification.Range;
 import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
+import org.orbisgis.core.renderer.se.parameter.Categorize;
 import org.orbisgis.core.renderer.se.parameter.color.Categorize2Color;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
@@ -27,9 +28,7 @@ import org.orbisgis.core.sif.UIPanel;
  */
 public class ChoroplethWizardPanel extends JPanel implements UIPanel {
 
-
     private JSE_ChoroplethDatas ChoroDatas;
-
     private JPanel topPanel;
     private JPanel centerPanel;
     private JPanel bottomPanel;
@@ -45,16 +44,16 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
 
         ChoroDatas = new JSE_ChoroplethDatas(layer);
         ChoroDatas.readData();
-      
-        topPanel=new JPanel();
+
+        topPanel = new JPanel();
         JSE_ChoroplethInputPanel inputPanel = new JSE_ChoroplethInputPanel(this, layer, ChoroDatas);
         topPanel.add(inputPanel);
 
-        centerPanel=new JPanel();
+        centerPanel = new JPanel();
         JSE_ChoroplethRangeTabPanel rangeTabPanel = new JSE_ChoroplethRangeTabPanel(ChoroDatas);
         centerPanel.add(rangeTabPanel);
 
-        bottomPanel=new JPanel();
+        bottomPanel = new JPanel();
         JSE_ChoroplethChartPanel chartPanel = new JSE_ChoroplethChartPanel(ChoroDatas);
         bottomPanel.add(chartPanel);
 
@@ -64,9 +63,9 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
         JPanel wisardPanel = new JPanel();
         wisardPanel.setLayout((new BorderLayout()));
 
-        wisardPanel.add(topPanel,BorderLayout.NORTH);
-        wisardPanel.add(centerPanel,BorderLayout.CENTER);
-        wisardPanel.add(bottomPanel,BorderLayout.SOUTH);
+        wisardPanel.add(topPanel, BorderLayout.NORTH);
+        wisardPanel.add(centerPanel, BorderLayout.CENTER);
+        wisardPanel.add(bottomPanel, BorderLayout.SOUTH);
 
         this.add(wisardPanel);
     }
@@ -112,14 +111,23 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
     }
 
     private AreaSymbolizer draw() {
-        Categorize2Color choropleth = new Categorize2Color(new ColorLiteral(ChoroDatas.getBeginColor()), new ColorLiteral(ChoroDatas.getEndColor()), ChoroDatas.getField());
+        AreaSymbolizer as = new AreaSymbolizer();
+        Categorize2Color choropleth = null;
+        //choropleth = new Categorize2Color(new ColorLiteral(ChoroDatas.getBeginColor()), new ColorLiteral(ChoroDatas.getEndColor()), ChoroDatas.getField());
         Range[] ranges = ChoroDatas.getRange();
-        for (int i = 0; i < ranges.length; i++) {
-            choropleth.addClass(new RealLiteral(ranges[i].getMaxRange()+(1.0f/Integer.MAX_VALUE)), new ColorLiteral(ChoroDatas.getClassColor(i)));
+        if (ChoroDatas.getAutoColorFill()) {
+            choropleth = new Categorize2Color(new ColorLiteral(ChoroDatas.getBeginColor()), new ColorLiteral(ChoroDatas.getEndColor()), ChoroDatas.getField());
+            for (int i = 0; i < ranges.length; i++) {
+                choropleth.addClass(new RealLiteral(ranges[i].getMaxRange()), choropleth.getClassValue(i));
+            }
+        } else {
+            choropleth = new Categorize2Color(new ColorLiteral(ChoroDatas.getClassColor(0)), new ColorLiteral(ChoroDatas.getClassColor(ChoroDatas.getClassesColors().length - 1)), ChoroDatas.getField());
+            for (int i = 0; i < ranges.length; i++) {
+                choropleth.addClass(new RealLiteral(ranges[i].getMaxRange()), new ColorLiteral(ChoroDatas.getClassColor(i)));
+            }
         }
         SolidFill choroplethFill = new SolidFill();
         choroplethFill.setColor(choropleth);
-        AreaSymbolizer as = new AreaSymbolizer();
         as.setFill(choroplethFill);
         return as;
     }

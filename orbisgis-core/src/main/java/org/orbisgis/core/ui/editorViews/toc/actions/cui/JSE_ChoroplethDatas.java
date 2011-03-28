@@ -36,6 +36,7 @@ public class JSE_ChoroplethDatas {
     private Value value;
     private StatisticMethod statIndex; //Selected statistic method
     private int defaultClassNumbers = 10; // The default maximum amount of classes which can be created
+    private Boolean autoColorFill = false;
     private Color beginColor;
     private Color endColor;
     private Color[] classesColors;
@@ -48,7 +49,6 @@ public class JSE_ChoroplethDatas {
     }
 
     public enum DataChangedType {
-
         FIELD, NUMBEROFCLASS, RANGES, STATMETHOD, BEGINCOLOR, ENDCOLOR, CLASSCOLORS, ALIASES
     }
 
@@ -251,13 +251,14 @@ public class JSE_ChoroplethDatas {
     /*
      * Set the Statistic (classification) method
      */
-    public void setStatisticMethod(StatisticMethod StatisticIndex) {
+    public void setStatisticMethod(StatisticMethod StatisticIndex, Boolean refreshRanges) {
         if (StatisticIndex != statIndex) //Check for change
         {
             //Set the statistic method
             statIndex = StatisticIndex;
             try {
-                resetRanges(); //Reset and recalculate ranges
+                if (refreshRanges)
+                    resetRanges(); //Reset and recalculate ranges
                 fireMyEvent(new DataChanged(this, DataChangedType.STATMETHOD));
             } catch (DriverException ex) {
                 Logger.getLogger(CreateChoroplethPlugIn.class.getName()).log(Level.SEVERE, null, ex);
@@ -285,6 +286,16 @@ public class JSE_ChoroplethDatas {
             aliases.set(index, value);
             fireMyEvent(new DataChanged(this, DataChangedType.ALIASES));
         }
+    }
+
+    public Boolean getAutoColorFill()
+    {
+        return autoColorFill;
+    }
+
+    public void setAutoColorFill(Boolean value)
+    {
+        autoColorFill = value;
     }
 
     public Color getBeginColor() {
