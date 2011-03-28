@@ -4,22 +4,22 @@
  */
 package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.JSE_ChoroplethDatas.DataChanged;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.JSE_ChoroplethDatas.DataChangedListener;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.ChoroplethDatas.DataChanged;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.ChoroplethDatas.DataChangedListener;
 
 /**
  *
  * @author sennj
  */
-class JSE_ChoroDatasChangedListener implements DataChangedListener {
+class ChoroDatasChangedListener implements DataChangedListener {
 
     ChoroplethWizardPanel choroplethWizard;
-    JSE_ChoroplethDatas ChoroDatas;
-    JSE_ChoroplethInputPanel inputPanel;
-    JSE_ChoroplethRangeTabPanel rangeTabPanel;
-    JSE_ChoroplethChartPanel chartPanel;
+    ChoroplethDatas ChoroDatas;
+    ChoroplethInputPanel inputPanel;
+    ChoroplethRangeTabPanel rangeTabPanel;
+    ChoroplethChartPanel chartPanel;
 
-    public JSE_ChoroDatasChangedListener(ChoroplethWizardPanel choroplethWizard,JSE_ChoroplethDatas ChoroDatas, JSE_ChoroplethInputPanel inputPanel ,JSE_ChoroplethRangeTabPanel rangeTabPanel, JSE_ChoroplethChartPanel chartPanel) {
+    public ChoroDatasChangedListener(ChoroplethWizardPanel choroplethWizard,ChoroplethDatas ChoroDatas, ChoroplethInputPanel inputPanel ,ChoroplethRangeTabPanel rangeTabPanel, ChoroplethChartPanel chartPanel) {
         this.choroplethWizard = choroplethWizard;
         this.ChoroDatas = ChoroDatas;
         this.inputPanel = inputPanel;

@@ -14,20 +14,20 @@ import javax.swing.JTable;
  *
  * @author sennj
  */
-class JSE_ChoroplethRangeTabPanel extends JPanel {
+class ChoroplethRangeTabPanel extends JPanel {
 
-    private JSE_TableModel tableModel;
+    private TableModel tableModel;
     private JTable tableau;
 
-    public JSE_ChoroplethRangeTabPanel(JSE_ChoroplethDatas ChoroDatas) {
+    public ChoroplethRangeTabPanel(ChoroplethDatas ChoroDatas) {
 
         JPanel tab = new JPanel();
-        tableModel = new JSE_TableModel(ChoroDatas);
+        tableModel = new TableModel(ChoroDatas);
         tableau = new JTable(tableModel);
-        tableModel.addTableModelListener(new JSE_TableListener(this, tableau, ChoroDatas));
+        tableModel.addTableModelListener(new TableListener(this, tableau, ChoroDatas));
 
-        tableau.setDefaultRenderer(Color.class, new JSE_ColorCellRenderer());
-        tableau.setDefaultEditor(Color.class, new JSE_ColorCellEditor(ChoroDatas));
+        tableau.setDefaultRenderer(Color.class, new ColorCellRenderer());
+        tableau.setDefaultEditor(Color.class, new ColorCellEditor(ChoroDatas));
 
         tab.setLayout(new BorderLayout());
         tab.add(tableau.getTableHeader(), BorderLayout.NORTH);
@@ -38,7 +38,7 @@ class JSE_ChoroplethRangeTabPanel extends JPanel {
 
     }
 
-    public void refresh(JSE_ChoroplethDatas ChoroDatas) {
+    public void refresh(ChoroplethDatas ChoroDatas) {
         tableau.removeAll();
         tableModel.refreshData(ChoroDatas);
         tableau.repaint();

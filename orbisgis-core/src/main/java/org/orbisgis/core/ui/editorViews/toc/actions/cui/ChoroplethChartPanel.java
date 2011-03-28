@@ -26,21 +26,21 @@ import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.TextAnchor;
 import org.orbisgis.core.renderer.classification.Range;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.JSE_ChoroplethDatas.StatisticMethod;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.ChoroplethDatas.StatisticMethod;
 
 /**
  *
  * @author sennj
  */
-class JSE_ChoroplethChartPanel extends JPanel {
+class ChoroplethChartPanel extends JPanel {
 
-    private JSE_ChoroplethDatas ChoroDatas;
+    private ChoroplethDatas ChoroDatas;
     private JFreeChart chart;
     private ChartPanel chPanel;
-    private JSE_ChartListener chartLis;
+    private ChartListener chartLis;
 
 
-    JSE_ChoroplethChartPanel(JSE_ChoroplethDatas ChoroDatas) {
+    ChoroplethChartPanel(ChoroplethDatas ChoroDatas) {
         super();
         this.ChoroDatas=ChoroDatas;
         this.add(initDraw());
@@ -51,14 +51,14 @@ class JSE_ChoroplethChartPanel extends JPanel {
         try {
             ChoroDatas.resetRanges();
         } catch (DriverException ex) {
-            Logger.getLogger(JSE_ChoroplethChartPanel.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ChoroplethChartPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
         Range[] ranges = ChoroDatas.getRange();
         double[] values = null;
         try {
             values = ChoroDatas.getSortedData();
         } catch (ParameterException ex) {
-            Logger.getLogger(JSE_ChoroplethChartPanel.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ChoroplethChartPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
         Color[] colors = ChoroDatas.getClassesColors();
 
@@ -76,7 +76,7 @@ class JSE_ChoroplethChartPanel extends JPanel {
 
         chPanel = new ChartPanel(chart);
 
-        chartLis = new JSE_ChartListener(this,chPanel, annot,ChoroDatas);
+        chartLis = new ChartListener(this,chPanel, annot,ChoroDatas);
 
         chPanel.setPopupMenu(null);
         chPanel.setDomainZoomable(false);
@@ -165,7 +165,7 @@ class JSE_ChoroplethChartPanel extends JPanel {
         return chPanel;
     }
 
-    public void refresh(JSE_ChoroplethDatas ChoroDatas) {
+    public void refresh(ChoroplethDatas ChoroDatas) {
          try {
             CategoryPlot plot = (CategoryPlot) chPanel.getChart().getPlot();
             plot.clearDomainMarkers();
@@ -173,7 +173,7 @@ class JSE_ChoroplethChartPanel extends JPanel {
             drawData(chPanel,ChoroDatas.getRange(), ChoroDatas.getSortedData());
             drawAxis(chart, ChoroDatas.getSortedData(), ChoroDatas.getRange(), ChoroDatas.getClassesColors());
         } catch (ParameterException ex) {
-            Logger.getLogger(JSE_ChoroDatasChangedListener.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ChoroDatasChangedListener.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         chPanel.repaint();

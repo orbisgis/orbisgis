@@ -10,14 +10,14 @@ import java.awt.Color;
  *
  * @author sennj
  */
-class JSE_RangeTab {
+class RangeTab {
 
     private Color color;
     private Double valueMin;
     private Double valueMax;
     private String alias;
 
-    public JSE_RangeTab(Color color, Double valueMin, Double valueMax, String alias) {
+    public RangeTab(Color color, Double valueMin, Double valueMax, String alias) {
         this.color = color;
         this.valueMin = valueMin;
         this.valueMax = valueMax;

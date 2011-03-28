@@ -14,7 +14,7 @@ import javax.swing.table.DefaultTableCellRenderer;
  *
  * @author sennj
  */
-class JSE_ColorCellRenderer extends DefaultTableCellRenderer {
+class ColorCellRenderer extends DefaultTableCellRenderer {
 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {

@@ -26,7 +26,7 @@ import org.orbisgis.core.ui.plugins.toc.CreateChoroplethPlugIn;
  *
  * @author sennj
  */
-public class JSE_ChoroplethDatas {
+public class ChoroplethDatas {
 
     private ILayer layer;
     private List<String> fields;
@@ -42,17 +42,13 @@ public class JSE_ChoroplethDatas {
     private Color[] classesColors;
     private List<String> aliases;
 
-    //Statistic (Classification) methods enumeration
+    //Statistic (Classification, categorization) methods enumeration
     public enum StatisticMethod {
 
         QUANTILES, AVERAGE, JENKS, MANUAL
     }
 
-    public enum DataChangedType {
-        FIELD, NUMBEROFCLASS, RANGES, STATMETHOD, BEGINCOLOR, ENDCOLOR, CLASSCOLORS, CLASSCOLOR, ALIASES
-    }
-
-    public JSE_ChoroplethDatas(ILayer layer) {
+    public ChoroplethDatas(ILayer layer) {
         super();
         this.layer = layer;
 
@@ -100,18 +96,17 @@ public class JSE_ChoroplethDatas {
         }
     }
 
-    private void CalculateColors()
-    {
-        if(ranges.length == numberOfClasses && autoColorFill)
-        {
+    private void CalculateColors() {
+        if (ranges.length == numberOfClasses && autoColorFill) {
             classesColors = new Color[numberOfClasses];
-            int r = beginColor.getRed(); int g = beginColor.getGreen(); int b = beginColor.getBlue();
+            int red = beginColor.getRed();
+            int green = beginColor.getGreen();
+            int blue = beginColor.getBlue();
             int rstep = (endColor.getRed() - beginColor.getRed()) / numberOfClasses;
             int gstep = (endColor.getGreen() - beginColor.getGreen()) / numberOfClasses;
             int bstep = (endColor.getBlue() - beginColor.getBlue()) / numberOfClasses;
-            for (int i = 0; i < ranges.length - 1; i++)
-            {
-                    classesColors[i] = new Color(r + i * rstep, g + i * gstep, b + i* bstep);
+            for (int i = 0; i < ranges.length - 1; i++) {
+                classesColors[i] = new Color(red + i * rstep, green + i * gstep, blue + i * bstep);
             }
             fireMyEvent(new DataChanged(this, DataChangedType.CLASSCOLORS));
         }
@@ -140,17 +135,17 @@ public class JSE_ChoroplethDatas {
 
 
         if (selectedField != null) {
-            try {
-                RealAttribute defaultField = new RealAttribute(selectedField);
-                RangeMethod rangesHelper = new RangeMethod(layer.getDataSource(), defaultField, numberOfClasses);
-                rangesHelper.disecQuantiles();
-                ranges = rangesHelper.getRanges();
+        try {
+        RealAttribute defaultField = new RealAttribute(selectedField);
+        RangeMethod rangesHelper = new RangeMethod(layer.getDataSource(), defaultField, numberOfClasses);
+        rangesHelper.disecQuantiles();
+        ranges = rangesHelper.getRanges();
 
 
 
-            } catch (ParameterException ex) {
-                Logger.getLogger(CreateChoroplethPlugIn.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        } catch (ParameterException ex) {
+        Logger.getLogger(CreateChoroplethPlugIn.class.getName()).log(Level.SEVERE, null, ex);
+        }
         }*/
     }
 
@@ -169,21 +164,29 @@ public class JSE_ChoroplethDatas {
                 switch (statIndex) {
                     case AVERAGE:
                         rangesHelper.disecMean();
-                        ranges = rangesHelper.getRanges();
                         break;
                     case JENKS:
                         rangesHelper.disecNaturalBreaks();
-                        ranges = rangesHelper.getRanges();
                         break;
                     case QUANTILES:
                         rangesHelper.disecQuantiles();
-                        ranges = rangesHelper.getRanges();
                         break;
                     case MANUAL:
                         rangesHelper.disecQuantiles();
-                        ranges = rangesHelper.getRanges();
                         break;
                 }
+                ranges = rangesHelper.getRanges();
+
+                /* disecMean() speciality
+                 * Although this method accepts 2 as a number of class
+                 * it actually changes its value to 4. This needs to be updated
+                 * in the interface.
+                 */
+                if (numberOfClasses != ranges.length) {
+                    setNbrClasses(ranges.length);
+                }
+
+                CalculateColors();
             } catch (ParameterException ex) {
                 Logger.getLogger(CreateChoroplethPlugIn.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -225,18 +228,18 @@ public class JSE_ChoroplethDatas {
      * Set the number of classes to create in classification
      * Note: AVERAGE will only accept 2, 4 or 8 classes
      */
-    public void setNbrClasses(int NbrClasses) {
-        if (NbrClasses != numberOfClasses) //Check for change before updating
+    public void setNbrClasses(int nbrClasses) {
+        if (nbrClasses != numberOfClasses) //Check for change before updating
         {
             //Check for restrictions
             switch (statIndex) {
                 case AVERAGE: //2, 4 and 8 only alowed
-                    if (NbrClasses == 2 || NbrClasses == 4 || NbrClasses == 8) {
-                        numberOfClasses = NbrClasses;
+                    if (nbrClasses == 2 || nbrClasses == 4 || nbrClasses == 8) {
+                        numberOfClasses = nbrClasses;
                     }
                     break;
                 default:
-                    numberOfClasses = NbrClasses;
+                    numberOfClasses = nbrClasses;
                     break;
             }
             try {
@@ -251,11 +254,11 @@ public class JSE_ChoroplethDatas {
     /*
      * Set the field index (data field)
      */
-    public void setFieldIndex(int FieldIndex) {
-        if (FieldIndex != fieldIndex) //Check for change
+    public void setFieldIndex(int fieldIndex) {
+        if (fieldIndex != this.fieldIndex) //Check for change
         {
             //Set the field index
-            fieldIndex = FieldIndex;
+            this.fieldIndex = fieldIndex;
             try {
                 resetRanges(); //Reset and recalculate ranges
                 fireMyEvent(new DataChanged(this, DataChangedType.FIELD));
@@ -268,14 +271,15 @@ public class JSE_ChoroplethDatas {
     /*
      * Set the Statistic (classification) method
      */
-    public void setStatisticMethod(StatisticMethod StatisticIndex, Boolean refreshRanges) {
-        if (StatisticIndex != statIndex) //Check for change
+    public void setStatisticMethod(StatisticMethod statisticIndex, Boolean refreshRanges) {
+        if (statisticIndex != statIndex) //Check for change
         {
             //Set the statistic method
-            statIndex = StatisticIndex;
+            statIndex = statisticIndex;
             try {
-                if (refreshRanges)
+                if (refreshRanges) {
                     resetRanges(); //Reset and recalculate ranges
+                }
                 fireMyEvent(new DataChanged(this, DataChangedType.STATMETHOD));
             } catch (DriverException ex) {
                 Logger.getLogger(CreateChoroplethPlugIn.class.getName()).log(Level.SEVERE, null, ex);
@@ -307,14 +311,13 @@ public class JSE_ChoroplethDatas {
 
     /*public Boolean getAutoColorFill()
     {
-        return autoColorFill;
+    return autoColorFill;
     }
 
     public void setAutoColorFill(Boolean value)
     {
-        autoColorFill = value;
+    autoColorFill = value;
     }*/
-
     public Color getBeginColor() {
         return beginColor;
     }
@@ -378,6 +381,11 @@ public class JSE_ChoroplethDatas {
 
     public Value getValue() {
         return value;
+    }
+
+    public enum DataChangedType {
+
+        FIELD, NUMBEROFCLASS, RANGES, STATMETHOD, BEGINCOLOR, ENDCOLOR, CLASSCOLORS, CLASSCOLOR, ALIASES
     }
 
     // Declare the event. It must extend EventObject.

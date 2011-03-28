@@ -22,11 +22,11 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  *
  *  The source of the Action is a TableCellListener instance.
  */
-public class JSE_TableListener extends AbstractAction implements TableModelListener, PropertyChangeListener, Runnable {
+public class TableListener extends AbstractAction implements TableModelListener, PropertyChangeListener, Runnable {
 
-    JSE_ChoroplethRangeTabPanel rangeTabPanel;
+    ChoroplethRangeTabPanel rangeTabPanel;
     private JTable table;
-    private JSE_ChoroplethDatas ChoroDatas;
+    private ChoroplethDatas ChoroDatas;
     private int row;
     private int column;
     private Object oldValue;
@@ -38,7 +38,7 @@ public class JSE_TableListener extends AbstractAction implements TableModelListe
      *  @param table   the table to be monitored for data changes
      *  @param action  the Action to invoke when cell data is changed
      */
-    public JSE_TableListener(JSE_ChoroplethRangeTabPanel rangeTabPanel, JTable table, JSE_ChoroplethDatas ChoroDatas) {
+    public TableListener(ChoroplethRangeTabPanel rangeTabPanel, JTable table, ChoroplethDatas ChoroDatas) {
         this.rangeTabPanel = rangeTabPanel;
         this.table = table;
         this.ChoroDatas = ChoroDatas;
@@ -54,7 +54,7 @@ public class JSE_TableListener extends AbstractAction implements TableModelListe
      *  @param oldValue  the old data of the changed cell
      *  @param newValue  the new data of the changed cell
      */
-    private JSE_TableListener(JTable table, int row, int column, Object oldValue, Object newValue) {
+    private TableListener(JTable table, int row, int column, Object oldValue, Object newValue) {
         this.table = table;
         this.row = row;
         this.column = column;
@@ -131,7 +131,7 @@ public class JSE_TableListener extends AbstractAction implements TableModelListe
         //  PropertyChangeEvent is fired.
         //  This results in the "run" method being invoked
 
-        ChoroDatas.setStatisticMethod(JSE_ChoroplethDatas.StatisticMethod.MANUAL, false);
+        ChoroDatas.setStatisticMethod(ChoroplethDatas.StatisticMethod.MANUAL, false);
         SwingUtilities.invokeLater(this);
     }
     /*
@@ -158,7 +158,7 @@ public class JSE_TableListener extends AbstractAction implements TableModelListe
             //  Make a copy of the data in case another cell starts editing
             //  while processing this change
 
-            JSE_TableListener tcl = new JSE_TableListener(
+            TableListener tcl = new TableListener(
                     getTable(), getRow(), getColumn(), getOldValue(), getNewValue());
 
             ActionEvent event = new ActionEvent(tcl, ActionEvent.ACTION_PERFORMED, "");
@@ -182,7 +182,7 @@ public class JSE_TableListener extends AbstractAction implements TableModelListe
         }
     }
 
-    public void refreshRange(JSE_ChoroplethDatas ChoroDatas, int row, int column, Object newValue) {
+    public void refreshRange(ChoroplethDatas ChoroDatas, int row, int column, Object newValue) {
         Range[] ranges = ChoroDatas.getRange();
         ranges[row].setMaxRange(Double.valueOf((Double) newValue));
 
@@ -207,7 +207,7 @@ public class JSE_TableListener extends AbstractAction implements TableModelListe
                 }
             }
         } catch (ParameterException ex) {
-            Logger.getLogger(JSE_TableListener.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(TableListener.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         ranges[row].setNumberOfItems(nbElemRangeBefore);

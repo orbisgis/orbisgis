@@ -19,15 +19,15 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.ColorPicker;
  *
  * @author sennj
  */
-class JSE_ColorCellEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
+class ColorCellEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
 
-    private JSE_ChoroplethDatas ChoroDatas;
+    private ChoroplethDatas ChoroDatas;
     private Color couleur;
     private int row;
     private JButton bouton;
     private ColorPicker dialog;
 
-    public JSE_ColorCellEditor(JSE_ChoroplethDatas ChoroDatas) {
+    public ColorCellEditor(ChoroplethDatas ChoroDatas) {
         super();
 
         this.ChoroDatas = ChoroDatas;

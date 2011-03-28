@@ -15,17 +15,17 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import org.orbisgis.core.renderer.classification.Range;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
-public class JSE_ChartListener implements MouseMotionListener, MouseListener {
+public class ChartListener implements MouseMotionListener, MouseListener {
 
-    JSE_ChoroplethChartPanel chartPanel;
+    ChoroplethChartPanel chartPanel;
     private ChartPanel chPanel;
     private TextTitle annot;
-    private JSE_ChoroplethDatas ChoroDatas;
+    private ChoroplethDatas ChoroDatas;
     private Point.Double pos;
     private double rangeDelta;
     private int selected;
 
-    public JSE_ChartListener(JSE_ChoroplethChartPanel chartPanel, ChartPanel chPanel, TextTitle annot, JSE_ChoroplethDatas ChoroDatas) {
+    public ChartListener(ChoroplethChartPanel chartPanel, ChartPanel chPanel, TextTitle annot, ChoroplethDatas ChoroDatas) {
         this.chartPanel = chartPanel;
         this.chPanel = chPanel;
         this.annot = annot;
@@ -35,7 +35,7 @@ public class JSE_ChartListener implements MouseMotionListener, MouseListener {
     }
 
     public void chartMouseClicked(ChartMouseEvent arg0) {
-        ChoroDatas.setStatisticMethod(JSE_ChoroplethDatas.StatisticMethod.MANUAL, false);
+        ChoroDatas.setStatisticMethod(ChoroplethDatas.StatisticMethod.MANUAL, false);
     }
 
     @Override
@@ -46,10 +46,10 @@ public class JSE_ChartListener implements MouseMotionListener, MouseListener {
         try {
             data = chartPanel.refreshData(ChoroDatas.getRange(), ChoroDatas.getSortedData());
         } catch (ParameterException ex) {
-            Logger.getLogger(JSE_ChartListener.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ChartListener.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        pos = JSE_ChoroplethChartPanel.convertCoords(point, chPanel, data);
+        pos = ChoroplethChartPanel.convertCoords(point, chPanel, data);
 
         annot.setText("X = " + pos.x + " Y = " + pos.y);
 
@@ -63,7 +63,7 @@ public class JSE_ChartListener implements MouseMotionListener, MouseListener {
             try {
                 range = ChoroDatas.getSortedData()[(int) pos.x];
             } catch (ParameterException ex) {
-                Logger.getLogger(JSE_ChartListener.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ChartListener.class.getName()).log(Level.SEVERE, null, ex);
             }
 
             ranges[selected - 1].setMaxRange(range);
@@ -72,10 +72,10 @@ public class JSE_ChartListener implements MouseMotionListener, MouseListener {
             ChoroDatas.setRange(ranges);
 
             try {
-                JSE_ChoroplethChartPanel.drawData(chPanel, ranges, ChoroDatas.getSortedData());
-                JSE_ChoroplethChartPanel.drawAxis(chPanel.getChart(), ChoroDatas.getSortedData(), ranges, ChoroDatas.getClassesColors());
+                ChoroplethChartPanel.drawData(chPanel, ranges, ChoroDatas.getSortedData());
+                ChoroplethChartPanel.drawAxis(chPanel.getChart(), ChoroDatas.getSortedData(), ranges, ChoroDatas.getClassesColors());
             } catch (ParameterException ex) {
-                Logger.getLogger(JSE_ChartListener.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ChartListener.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 
@@ -90,10 +90,10 @@ public class JSE_ChartListener implements MouseMotionListener, MouseListener {
         try {
             data = chartPanel.refreshData(ChoroDatas.getRange(), ChoroDatas.getSortedData());
         } catch (ParameterException ex) {
-            Logger.getLogger(JSE_ChartListener.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ChartListener.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        pos = JSE_ChoroplethChartPanel.convertCoords(point, chPanel, data);
+        pos = ChoroplethChartPanel.convertCoords(point, chPanel, data);
         annot.setText("X = " + pos.x + " Y = " + pos.y);
 
         chPanel.repaint();
@@ -113,7 +113,7 @@ public class JSE_ChartListener implements MouseMotionListener, MouseListener {
             try {
                 range = ChoroDatas.getSortedData()[(int) pos.x];
             } catch (ParameterException ex) {
-                Logger.getLogger(JSE_ChartListener.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ChartListener.class.getName()).log(Level.SEVERE, null, ex);
             }
             if (isNear(range, ranges[i - 1].getMaxRange())) {
                 selected = i;

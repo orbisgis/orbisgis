@@ -5,7 +5,6 @@
 package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.net.URL;
@@ -16,7 +15,6 @@ import org.orbisgis.core.renderer.classification.Range;
 import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
-import org.orbisgis.core.renderer.se.parameter.Categorize;
 import org.orbisgis.core.renderer.se.parameter.color.Categorize2Color;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
@@ -29,7 +27,7 @@ import org.orbisgis.core.sif.UIPanel;
  */
 public class ChoroplethWizardPanel extends JPanel implements UIPanel {
 
-    private JSE_ChoroplethDatas ChoroDatas;
+    private ChoroplethDatas ChoroDatas;
     private JPanel topPanel;
     private JPanel centerPanel;
     private JPanel bottomPanel;
@@ -41,26 +39,23 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
      */
     public ChoroplethWizardPanel(ILayer layer) throws DriverException {
         super();
-        /*this.setLayout(new BorderLayout());
-        this.setSize(800, 600);*/
 
         this.layer = layer;
-        ChoroDatas = new JSE_ChoroplethDatas(layer);
-        //ChoroDatas.readData();
+        ChoroDatas = new ChoroplethDatas(layer);
 
         topPanel = new JPanel();
-        JSE_ChoroplethInputPanel inputPanel = new JSE_ChoroplethInputPanel(this, layer, ChoroDatas);
+        ChoroplethInputPanel inputPanel = new ChoroplethInputPanel(this, layer, ChoroDatas);
         topPanel.add(inputPanel);
 
         centerPanel = new JPanel();
-        JSE_ChoroplethRangeTabPanel rangeTabPanel = new JSE_ChoroplethRangeTabPanel(ChoroDatas);
+        ChoroplethRangeTabPanel rangeTabPanel = new ChoroplethRangeTabPanel(ChoroDatas);
         centerPanel.add(rangeTabPanel);
 
         bottomPanel = new JPanel();
-        JSE_ChoroplethChartPanel chartPanel = new JSE_ChoroplethChartPanel(ChoroDatas);
+        ChoroplethChartPanel chartPanel = new ChoroplethChartPanel(ChoroDatas);
         bottomPanel.add(chartPanel);
 
-        JSE_ChoroDatasChangedListener datasChangedListener = new JSE_ChoroDatasChangedListener(this, ChoroDatas, inputPanel, rangeTabPanel, chartPanel);
+        ChoroDatasChangedListener datasChangedListener = new ChoroDatasChangedListener(this, ChoroDatas, inputPanel, rangeTabPanel, chartPanel);
         ChoroDatas.addDataChangedListener(datasChangedListener);
 
         JPanel wisardPanel = new JPanel();
@@ -123,7 +118,7 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
             choropleth.addClass(new RealLiteral(ranges[i].getMaxRange()), new ColorLiteral(ChoroDatas.getClassColor(i)));
         }
         /*for (int i = 0; i < ranges.length; i++) {
-            System.out.println("Threshold " + choropleth.getThresholdValue(i) + " :" + choropleth.getClassValue(i));
+        System.out.println("Threshold " + choropleth.getThresholdValue(i) + " :" + choropleth.getClassValue(i));
         }*/
         SolidFill choroplethFill = new SolidFill();
         choroplethFill.setColor(choropleth);
@@ -167,7 +162,7 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
         choropleth.addClass(new RealLiteral(ranges[0].getMaxRange()), new ColorLiteral("#aa0000"));
         choropleth.addClass(new RealLiteral(ranges[1].getMaxRange()), new ColorLiteral("#770000"));
         choropleth.addClass(new RealLiteral(ranges[2].getMaxRange()), new ColorLiteral("#330000"));
-
+        
         SolidFill choroplethFill = new SolidFill();
         choroplethFill.setColor(choropleth);
         AreaSymbolizer as = new AreaSymbolizer();

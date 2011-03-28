@@ -14,13 +14,13 @@ import org.orbisgis.core.renderer.classification.Range;
  *
  * @author sennj
  */
-class JSE_TableModel extends AbstractTableModel {
+class TableModel extends AbstractTableModel {
 
-    JSE_ChoroplethDatas ChoroDatas;
-    private final List<JSE_RangeTab> rangesTab = new ArrayList<JSE_RangeTab>();
+    ChoroplethDatas ChoroDatas;
+    private final List<RangeTab> rangesTab = new ArrayList<RangeTab>();
     private final String[] entetes = {"Color", "ValueMin", "ValueMax", "Alias"};
 
-    public JSE_TableModel(JSE_ChoroplethDatas ChoroDatas) {
+    public TableModel(ChoroplethDatas ChoroDatas) {
         super();
 
         this.ChoroDatas = ChoroDatas;
@@ -29,7 +29,7 @@ class JSE_TableModel extends AbstractTableModel {
         Color[] colors = ChoroDatas.getClassesColors();
 
         for (int i = 1; i <= ranges.length; i++) {
-                rangesTab.add(new JSE_RangeTab(colors[i - 1], ranges[i - 1].getMinRange(), ranges[i - 1].getMaxRange(), String.valueOf(i)));
+                rangesTab.add(new RangeTab(colors[i - 1], ranges[i - 1].getMinRange(), ranges[i - 1].getMaxRange(), String.valueOf(i)));
         }
     }
 
@@ -84,7 +84,7 @@ class JSE_TableModel extends AbstractTableModel {
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
         if (aValue != null) {
-            JSE_RangeTab ami = rangesTab.get(rowIndex);
+            RangeTab ami = rangesTab.get(rowIndex);
 
             switch (columnIndex) {
                 case 0:
@@ -103,7 +103,7 @@ class JSE_TableModel extends AbstractTableModel {
         }
     }
 
-    public void addRanges(JSE_RangeTab range) {
+    public void addRanges(RangeTab range) {
         rangesTab.add(range);
         fireTableRowsInserted(rangesTab.size() - 1, rangesTab.size() - 1);
     }
@@ -113,14 +113,14 @@ class JSE_TableModel extends AbstractTableModel {
         fireTableRowsDeleted(rowIndex, rowIndex);
     }
 
-    public void refreshData(JSE_ChoroplethDatas ChoroDatas) {
+    public void refreshData(ChoroplethDatas ChoroDatas) {
         Range[] ranges = ChoroDatas.getRange();
         Color[] colors = ChoroDatas.getClassesColors();
 
         rangesTab.removeAll(rangesTab);
         
         for (int i = 1; i <= ranges.length; i++) {
-             rangesTab.add( new JSE_RangeTab(colors[i - 1], ranges[i - 1].getMinRange(), ranges[i - 1].getMaxRange(), String.valueOf(i)));
+             rangesTab.add( new RangeTab(colors[i - 1], ranges[i - 1].getMinRange(), ranges[i - 1].getMaxRange(), String.valueOf(i)));
         }
 
 
