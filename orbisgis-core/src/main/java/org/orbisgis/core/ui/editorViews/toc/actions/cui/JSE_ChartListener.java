@@ -35,6 +35,7 @@ public class JSE_ChartListener implements MouseMotionListener, MouseListener {
     }
 
     public void chartMouseClicked(ChartMouseEvent arg0) {
+        ChoroDatas.setStatisticMethod(JSE_ChoroplethDatas.StatisticMethod.MANUAL);
     }
 
     @Override

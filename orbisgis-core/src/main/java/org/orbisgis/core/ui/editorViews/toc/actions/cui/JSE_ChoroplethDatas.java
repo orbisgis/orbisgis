@@ -52,7 +52,7 @@ public class JSE_ChoroplethDatas {
         FIELD, NUMBEROFCLASS, RANGES, STATMETHOD, BEGINCOLOR, ENDCOLOR, CLASSCOLORS, ALIASES
     }
 
-    JSE_ChoroplethDatas(ILayer layer) {
+    public JSE_ChoroplethDatas(ILayer layer) {
         super();
         this.layer = layer;
 
@@ -64,10 +64,10 @@ public class JSE_ChoroplethDatas {
         //Temp variable data for testing
         statIndex = StatisticMethod.QUANTILES;
         fieldIndex = 0;
-        numberOfClasses = 7;
+        numberOfClasses = 10;
         beginColor = Color.LIGHT_GRAY;
         endColor = Color.ORANGE;
-        classesColors = new Color[7];
+        classesColors = new Color[numberOfClasses];
         classesColors[0] = Color.RED;
         classesColors[1] = Color.YELLOW;
         classesColors[2] = Color.BLUE;
@@ -75,6 +75,10 @@ public class JSE_ChoroplethDatas {
         classesColors[4] = Color.ORANGE;
         classesColors[5] = Color.BLACK;
         classesColors[6] = Color.CYAN;
+        classesColors[7] = Color.PINK;
+        classesColors[8] = Color.MAGENTA;
+        classesColors[9] = Color.GRAY;
+
         //END
         try {
             init();
@@ -96,7 +100,7 @@ public class JSE_ChoroplethDatas {
         }
     }
 
-    void readData() throws DriverException {
+    public void readData() throws DriverException {
         /*Metadata metadata = layer.getDataSource().getMetadata();
 
         // Quick (and hugly) step to fetch the first numeric attribute
@@ -375,7 +379,7 @@ public class JSE_ChoroplethDatas {
     }
 
     // This private class is used to fire DataChanged
-    void fireMyEvent(DataChanged evt) {
+    public void fireMyEvent(DataChanged evt) {
         Object[] listeners = listenerList.getListenerList();
         // Each listener occupies two elements - the first is the listener class
         // and the second is the listener instance

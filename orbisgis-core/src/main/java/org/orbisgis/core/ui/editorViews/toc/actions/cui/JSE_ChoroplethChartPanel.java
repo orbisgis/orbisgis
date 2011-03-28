@@ -47,7 +47,6 @@ class JSE_ChoroplethChartPanel extends JPanel {
     }
 
     public ChartPanel initDraw() {
-        ChoroDatas.setFieldIndex(0);
         ChoroDatas.setStatisticMethod(StatisticMethod.QUANTILES);
         try {
             ChoroDatas.resetRanges();
@@ -66,9 +65,8 @@ class JSE_ChoroplethChartPanel extends JPanel {
         DefaultCategoryDataset data = refreshData(ranges, values);
 
         // create a chart...
-        chart = ChartFactory.createBarChart3D(
-            "Sample Bar Chart", "X", "Y", data, PlotOrientation.VERTICAL,
-            true, true, false);
+        chart = ChartFactory.createBarChart3D("Sample Bar Chart", "X", "Y", data, 
+                PlotOrientation.VERTICAL, true, true, false);
 
         drawAxis(chart, values, ranges, colors);
 
