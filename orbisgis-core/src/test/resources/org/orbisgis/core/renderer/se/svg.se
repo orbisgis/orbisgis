@@ -2,16 +2,25 @@
 <FeatureTypeStyle xmlns="http://www.opengis.net/se/2.0/core" xmlns:ns2="http://www.opengis.net/ows/2.0" xmlns:ns3="http://www.opengis.net/fes-2.0" xmlns:ns4="http://www.w3.org/1999/xlink" version="2.0.0">
     <Rule>
         <CompositeSymbolizer>
+            <AreaSymbolizer uom="urn:ogc:def:uom:se::mm" version="2.0.0">
+                <Name>Symbolizer Name</Name>
+                  <SolidFill>
+                    <Color>#dddddd</Color>
+                    <Opacity>60</Opacity>
+                  </SolidFill>
+                <PenStroke />
+            </AreaSymbolizer>
+
             <PointSymbolizer uom="urn:ogc:def:uom:se::mm" version="2.0.0">
                 <Name>Default Symbolizer</Name>
 		<CompositeGraphic>
                 <ExternalGraphic>
-                    <OnlineResource ns4:href="file:///home/maxence/stars.svg" />
+                    <OnlineResource ns4:href="http://geosysin.iict.ch/house.svg" />
 		    <!--<OnlineResource  ns4:href="http://francais.istockphoto.com/file_thumbview_approve/4361345/2/istockphoto_4361345-recycle-symbol.jpg" />-->
 		    <Format>image/svg+xml</Format>
-                    <!--<ViewBox>
+                    <ViewBox>
                         <Width>5.0</Width>
-                    </ViewBox>-->
+                    </ViewBox>
                 </ExternalGraphic>
 
 		</CompositeGraphic>
