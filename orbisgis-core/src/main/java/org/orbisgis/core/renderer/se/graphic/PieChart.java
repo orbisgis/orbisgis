@@ -258,8 +258,6 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode {
 
         double r = PieChart.DEFAULT_RADIUS_PX; // 30px by default
 
-        System.out.println("Pie UOM is " + this.getUom());
-
         if (radius != null) {
             r = Uom.toPixel(this.getRadius().getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null); // TODO 100%
         }

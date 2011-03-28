@@ -503,7 +503,6 @@ public final class AxisChart extends Graphic implements UomNode {
         }
 
         if (lineStroke != null) {
-            System.out.println("lineStroke");
             Path2D line = new Path2D.Double();
             line.moveTo(xOffset[0] + cWidth / 2, -heights[0]);
             for (i = 0; i < nCat; i++) {
@@ -756,7 +755,6 @@ public final class AxisChart extends Graphic implements UomNode {
             xpos[i] = Math.cos(alpha) * heights[i];
             alphas[i] = alpha;
             alpha += beta;
-            System.out.println("Height n°" + i + ": " + heights[i] + " @ " + xpos[i] + ";" + ypos[i]);
         }
 
         if (this.areaFill != null || this.lineStroke != null) {
@@ -772,11 +770,9 @@ public final class AxisChart extends Graphic implements UomNode {
             }
 
             if (this.areaFill != null) {
-                System.out.println(" Fill Area!");
                 areaFill.draw(g2, sds, fid, shp, selected, mt);
             }
             if (this.lineStroke != null) {
-                System.out.println(" Stroke line!");
                 lineStroke.draw(g2, sds, fid, shp, selected, mt, 0.0);
             }
         }

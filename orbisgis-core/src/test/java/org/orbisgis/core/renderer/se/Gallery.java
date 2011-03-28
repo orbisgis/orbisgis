@@ -53,7 +53,9 @@ public class Gallery extends TestCase {
         Services.registerService(OutputManager.class, "", output);
     }
 
-    public void template(String shapefile, String title, String stylePath, String source, String savePath, Envelope extent) throws IOException, InvalidStyle, DriverException, DriverLoadException, DataSourceCreationException {
+    public void template(String shapefile, String title, String stylePath, String source,
+            String savePath, Envelope extent)
+            throws IOException, InvalidStyle, DriverException, DriverLoadException, DataSourceCreationException {
             DataSourceFactory dsf = new DataSourceFactory();
             DataSource ds = dsf.getDataSource(new File(shapefile));
             ds.open();
@@ -70,6 +72,7 @@ public class Gallery extends TestCase {
             mt.resizeImage(WIDTH, HEIGHT);
             mt.setExtent(extent);
             Envelope effectiveExtent = mt.getAdjustedExtent();
+            System.out.print("Extent: " + effectiveExtent);
 
             BufferedImage img = mt.getImage();
             Graphics2D g2 = (Graphics2D) img.getGraphics();
@@ -102,10 +105,26 @@ public class Gallery extends TestCase {
             }
     }
 
-    public void testChoropleth() throws ParameterException, IOException, InvalidStyle, DriverException, DriverLoadException, DataSourceCreationException {
+    public void testMaps()
+            throws ParameterException, IOException, InvalidStyle, DriverException, DriverLoadException, DataSourceCreationException {
 
         this.template("../../datas2tests/shp/Swiss/g4districts98_region.shp", "SVG",
                "src/test/resources/org/orbisgis/core/renderer/se/svg.se", null, "/tmp/extG.png", null);
+
+
+        this.template("../../datas2tests/shp/bigshape2D/cantons.shp", "Population canton (linéaire)",
+                "src/test/resources/org/orbisgis/core/renderer/se/symbol_prop_canton_interpol_lin.se", null,
+                "/tmp/pop_canton_lin.png", new Envelope(47680, 277971, 2265056, 2452630));
+
+
+        this.template("../../datas2tests/shp/bigshape2D/cantons.shp", "Population canton (sqrt)",
+                "src/test/resources/org/orbisgis/core/renderer/se/symbol_prop_canton_interpol_sqrt.se", null,
+                "/tmp/pop_canton_sqrt.png", new Envelope(47680, 277971, 2265056, 2452630));
+
+
+        this.template("../../datas2tests/shp/bigshape2D/cantons.shp", "Population canton (log)",
+                "src/test/resources/org/orbisgis/core/renderer/se/symbol_prop_canton_interpol_log.se", null,
+                "/tmp/pop_canton_log.png", new Envelope(47680, 277971, 2265056, 2452630));
 
         this.template("../../datas2tests/shp/bigshape2D/communes.shp", "DotMap Population communes",
                 "src/test/resources/org/orbisgis/core/renderer/se/dotmap_communes.se", null, "/tmp/dot_map_communes.png", null);
@@ -127,5 +146,7 @@ public class Gallery extends TestCase {
                 "Oui EEE 1992 (%)", "src/test/resources/org/orbisgis/core/renderer/se/Districts/density_mark.se", null, "/tmp/denstiy_mark_ouiEEE.png", null);
         this.template("../../datas2tests/shp/Swiss/g4districts98_region.shp",
                 "Oui EEE 1992 (%)", "src/test/resources/org/orbisgis/core/renderer/se/Districts/density_mark_classif.se", null, "/tmp/denstiy_mark_classif_ouiEEE.png", null);
+
+
     }
 }

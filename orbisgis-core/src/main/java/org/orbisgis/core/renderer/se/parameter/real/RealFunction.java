@@ -77,7 +77,6 @@ public class RealFunction extends Literal implements RealParameter {
 	@Override
 	public double getValue(SpatialDataSourceDecorator sds, long fid) throws ParameterException {
         double result;
-        System.out.println(this.toString());
 
         switch (op){
             case ADD:

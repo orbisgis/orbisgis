@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<FeatureTypeStyle xmlns="http://www.opengis.net/se/2.0/core" xmlns:ns2="http://www.opengis.net/ows/2.0" xmlns:fes="http://www.opengis.net/fes/2.0" xmlns:ns4="http://www.w3.org/1999/xlink">
+    <Rule>
+    <Name>Fond</Name>
+        <AreaSymbolizer uom="urn:fes:def:uom:se::mm">
+            <SolidFill>
+                <Color>#DDDDDD</Color>
+            </SolidFill>
+            <PenStroke>
+	        <SolidFill>
+                <Color>#888888</Color>
+	        </SolidFill>
+                <Width>0.15</Width>
+            </PenStroke>
+        </AreaSymbolizer>
+	</Rule>
+
+	<Rule>
+    	<Name>Interpol Sqrt [10;20]</Name>
+        <PointSymbolizer uom="urn:fes:def:uom:se::mm">
+            <MarkGraphic>
+                <WellKnownName>Circle</WellKnownName>
+                <ViewBox>
+		<Width>
+                  <Interpolate fallbackValue="0" mode="linear" method="numeric">
+                    <LookupValue><fes:Function name="sqrt"><fes:Function name="sqrt"><fes:ValueReference>PTOT99</fes:ValueReference></fes:Function></fes:Function></LookupValue>
+                       <InterpolationPoint>
+                          <Data>0</Data>
+                          <Value>0</Value>
+                        </InterpolationPoint>
+                        <InterpolationPoint>
+                          <Data>29.9728427761</Data>
+                          <Value>20</Value>
+                        </InterpolationPoint>
+		  </Interpolate>
+		  </Width>
+                </ViewBox>
+                <SolidFill>
+                    <Color>#ffffff</Color>
+                    <Opacity>60.0</Opacity>
+                </SolidFill>
+                <PenStroke />
+<Halo>
+<Radius>0.5</Radius>
+<SolidFill>
+<Color>#ffffff</Color>
+</SolidFill>
+</Halo>
+            </MarkGraphic>
+        </PointSymbolizer>
+    </Rule>
+</FeatureTypeStyle>
