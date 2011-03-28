@@ -279,8 +279,6 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
             MapTransform mt) throws ParameterException, IOException{
 
         Font font = getFont(sds, fid, mt);
-        TextLayout tl = new TextLayout(text, font, g2.getFontRenderContext());
-
         FontMetrics metrics = new FontMetrics(font) { };
         Rectangle2D bounds = metrics.getStringBounds(text, null);
         return bounds;

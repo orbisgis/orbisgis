@@ -83,9 +83,8 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
     /*
     @Override
     public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
-            boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
-            throws ParameterException, IOException, DriverException;*/
-
+    boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
+    throws ParameterException, IOException, DriverException;*/
     /**
      * Convert a spatial feature into a LiteShape, should add parameters to handle
      * the scale and to perform a scale dependent generalization !
@@ -172,40 +171,43 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
         while (!geom2Process.isEmpty()) {
             geom = geom2Process.remove(0);
 
-            if (geom instanceof GeometryCollection) {
-                // Uncollectionize
-                for (int i = 0; i < geom.getNumGeometries(); i++) {
-                    geom2Process.add(geom.getGeometryN(i));
-                }
-            } else if (geom instanceof Polygon) {
-                // Separate exterior and interior holes
-                Polygon p = (Polygon) geom;
-                Shape shape = mt.getShape(p.getExteriorRing());
-                if (shape != null) {
-                    if (at != null) {
-                        shape = at.createTransformedShape(shape);
+            if (geom != null) {
+
+                if (geom instanceof GeometryCollection) {
+                    // Uncollectionize
+                    for (int i = 0; i < geom.getNumGeometries(); i++) {
+                        geom2Process.add(geom.getGeometryN(i));
                     }
-                    shapes.add(shape);
-                }
-                int i;
-                // Be aware of polygon holes !
-                for (i = 0; i < p.getNumInteriorRing(); i++) {
-                    shape = mt.getShape(p.getInteriorRingN(i));
+                } else if (geom instanceof Polygon) {
+                    // Separate exterior and interior holes
+                    Polygon p = (Polygon) geom;
+                    Shape shape = mt.getShape(p.getExteriorRing());
                     if (shape != null) {
                         if (at != null) {
                             shape = at.createTransformedShape(shape);
                         }
                         shapes.add(shape);
                     }
-                }
-            } else {
-                Shape shape = mt.getShape(geom);
-
-                if (shape != null) {
-                    if (at != null) {
-                        shape = at.createTransformedShape(shape);
+                    int i;
+                    // Be aware of polygon holes !
+                    for (i = 0; i < p.getNumInteriorRing(); i++) {
+                        shape = mt.getShape(p.getInteriorRingN(i));
+                        if (shape != null) {
+                            if (at != null) {
+                                shape = at.createTransformedShape(shape);
+                            }
+                            shapes.add(shape);
+                        }
                     }
-                    shapes.add(shape);
+                } else {
+                    Shape shape = mt.getShape(geom);
+
+                    if (shape != null) {
+                        if (at != null) {
+                            shape = at.createTransformedShape(shape);
+                        }
+                        shapes.add(shape);
+                    }
                 }
             }
         }
