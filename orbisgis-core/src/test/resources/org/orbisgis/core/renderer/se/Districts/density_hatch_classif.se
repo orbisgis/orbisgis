@@ -30,21 +30,21 @@
                         <LookupValue>
                             <ns3:ValueReference>OUI_EEE92</ns3:ValueReference>
                         </LookupValue>
-                        <Value>30.0</Value>
+                        <Value>0.3</Value>
                         <Threshold>30.0</Threshold>
-                        <Value>40.0</Value>
+                        <Value>0.4</Value>
                         <Threshold>40.0</Threshold>
-                        <Value>45.0</Value>
+                        <Value>0.45</Value>
                         <Threshold>45.0</Threshold>
-                        <Value>50.0</Value>
+                        <Value>0.5</Value>
                         <Threshold>50.0</Threshold>
-                        <Value>55.0</Value>
+                        <Value>0.55</Value>
                         <Threshold>55.0</Threshold>
-                        <Value>60.0</Value>
+                        <Value>0.6</Value>
                         <Threshold>60.0</Threshold>
-                        <Value>70.0</Value>
+                        <Value>0.7</Value>
                         <Threshold>70.0</Threshold>
-                        <Value>80.0</Value>
+                        <Value>0.8</Value>
                         <Extension>
                             <ExtensionParameter name="method">MANUAL</ExtensionParameter>
                         </Extension>
@@ -67,7 +67,7 @@
             <PenStroke>
                 <SolidFill>
                     <Color>#000000</Color>
-                    <Opacity>65.0</Opacity>
+                    <Opacity>0.65</Opacity>
                 </SolidFill>
                 <Width>0.1</Width>
             </PenStroke>

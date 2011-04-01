@@ -175,6 +175,7 @@ public final class DensityFill extends Fill implements GraphicNode {
         double percentage = 0.0;
 
         if (percentageCovered != null) {
+            System.out.println ("% is : " + percentageCovered.getValue(sds, fid));
             percentage = percentageCovered.getValue(sds, fid)*100;
         }
 
@@ -336,25 +337,14 @@ public final class DensityFill extends Fill implements GraphicNode {
     }
 
     private double getTextureSize(double markSize, double percentage) {
-        double size = (markSize * 100) / percentage;
+        double size = (markSize) / percentage;
 
-        if (percentage > 50) {
+        if (percentage > 0.5) {
             size -= (size - markSize) / 2.0;
         }
         return size + 0.5;
     }
 
-    //private double getTextureSize(double markWidth, double markHeight, double percentage) {
-        /* Square size depends on the percentage. Lower or equal to 50, the mark
-     * will be drawn 2 times in total (1 full, 4/4 quarters).
-     * Higher then 50, the mark will be drawn 1 time ( 4/4 quarters).
-     */
-    //double TextureSurface = (markWidth * markHeight * 100) / percentage;
-    //if (percentage <= 50) {
-    //TextureSurface = (markWidth * markHeight * 2 * 100) / percentage;
-    //}
-    //return Math.round(Math.sqrt(TextureSurface));
-    //}
     @Override
     public String dependsOnFeature() {
 

@@ -82,30 +82,10 @@ public abstract class LegendUIDensityFillPanel extends LegendUIComponent impleme
             pen = new PenStroke();
         }
 
-        gCollec = dFill.getGraphicCollection();
-        if (gCollec == null) {
-            gCollec = new GraphicCollection();
-        }
-
-        pStroke = new LegendUIPenStrokePanel(controller, this, pen, false) {
-
-            @Override
-            protected void turnOff() {
-                //dFill.setHatches(null);
-            }
-
-            @Override
-            protected void turnOn() {
-                //dFill.setHatches((PenStroke) this.getStroke());
-            }
-        };
-
-        graphic = new LegendUICompositeGraphicPanel(ctrl, this, gCollec);
 
         String[] choices = {"hatch", "mark"};
         if (dFill.getHatches() != null) {
             current = 0;
-
         } else {
             current = 1;
         }
@@ -126,6 +106,27 @@ public abstract class LegendUIDensityFillPanel extends LegendUIComponent impleme
             }
         };
 
+
+
+        gCollec = dFill.getGraphicCollection();
+        if (gCollec == null) {
+            gCollec = new GraphicCollection();
+        }
+
+        pStroke = new LegendUIPenStrokePanel(controller, this, pen, false) {
+
+            @Override
+            protected void turnOff() {
+                //dFill.setHatches(null);
+            }
+
+            @Override
+            protected void turnOn() {
+                //dFill.setHatches((PenStroke) this.getStroke());
+            }
+        };
+
+        graphic = new LegendUICompositeGraphicPanel(ctrl, this, gCollec);
 
         orientation = new LegendUIMetaRealPanel("orientation", controller, this, dFill.getHatchesOrientation(), true) {
 

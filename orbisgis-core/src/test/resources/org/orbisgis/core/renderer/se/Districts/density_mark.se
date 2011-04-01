@@ -18,13 +18,16 @@
 		    <PenStroke />
 		</MarkGraphic>
 		<tse:Percentage>
-                    <ns3:ValueReference>OUI_EEE92</ns3:ValueReference>
+		    <ns3:Function name="div">
+                        <ns3:ValueReference>OUI_EEE92</ns3:ValueReference>
+			<ns3:Literal>100</ns3:Literal>
+		    </ns3:Function>
 		</tse:Percentage>
             </tse:DensityFill>
             <PenStroke>
                 <SolidFill>
                     <Color>#000000</Color>
-                    <Opacity>65.0</Opacity>
+                    <Opacity>0.65</Opacity>
                 </SolidFill>
                 <Width>0.1</Width>
             </PenStroke>
@@ -48,13 +51,16 @@
 		    <PenStroke />
 		</MarkGraphic>
 		<tse:Percentage>
-                    <ns3:ValueReference>OUI_EEE92</ns3:ValueReference>
+		    <ns3:Function name="div">
+                        <ns3:ValueReference>OUI_EEE92</ns3:ValueReference>
+			<ns3:Literal>100</ns3:Literal>
+		    </ns3:Function>
 		</tse:Percentage>
             </tse:DensityFill>
             <PenStroke>
                 <SolidFill>
                     <Color>#000000</Color>
-                    <Opacity>65.0</Opacity>
+                    <Opacity>0.65</Opacity>
                 </SolidFill>
                 <Width>0.1</Width>
             </PenStroke>

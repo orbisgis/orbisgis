@@ -30,6 +30,17 @@ public class RealFunctionTest extends TestCase {
         super.tearDown();
     }
 
+    public void testDiv(){
+        try {
+            RealFunction op1 = new RealFunction("div");
+            op1.addOperand(new RealLiteral(100));
+            op1.addOperand(new RealLiteral(10));
+            assertEquals(op1.getValue(null, -1), 10.0);
+        } catch (ParameterException ex) {
+            assertTrue(false);
+        }
+    }
+
     public void testSqrt(){
         try {
 

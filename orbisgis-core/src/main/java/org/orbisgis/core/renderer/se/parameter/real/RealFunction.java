@@ -54,9 +54,9 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 public class RealFunction implements RealParameter {
 
     private enum Operators {
-
         ADD, MUL, DIV, SUB, SQRT, LOG, LN
     };
+
     private Operators op;
     private RealParameterContext ctx;
     private ArrayList<RealParameter> operands;
@@ -187,9 +187,9 @@ public class RealFunction implements RealParameter {
     @Override
     public void setContext(RealParameterContext ctx) {
         this.ctx = ctx;
-        for (RealParameter p : operands) {
-            p.setContext(ctx);
-        }
+        //for (RealParameter p : operands) {
+        //    p.setContext(ctx);
+        //}
     }
 
     @Override

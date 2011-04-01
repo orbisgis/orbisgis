@@ -14,43 +14,32 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
-import junit.framework.TestCase;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.orbisgis.core.ConsoleErrorManager;
-import org.orbisgis.core.ConsoleOutputManager;
-import org.orbisgis.core.Services;
-import org.orbisgis.core.errorManager.ErrorManager;
+import org.orbisgis.core.AbstractTest;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.Layer;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.Renderer;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 
 /**
  *
  * @author maxence
  */
-public class Gallery extends TestCase {
-
-    ConsoleOutputManager output;
-    ConsoleErrorManager error;
+public class Gallery extends AbstractTest {
 
     private final static int WIDTH = 1000;
     private final static int HEIGHT = 1000;
 
-    public Gallery(String testName) throws IOException {
-        super(testName);
-        error = new ConsoleErrorManager();
-        Services.registerService(ErrorManager.class, "", error);
-        output = new ConsoleOutputManager();
-        Services.registerService(OutputManager.class, "", output);
+    @Override
+	protected void setUp() throws Exception {
+        super.setUp();
     }
 
     public void template(String shapefile, String title, String stylePath, String source,
