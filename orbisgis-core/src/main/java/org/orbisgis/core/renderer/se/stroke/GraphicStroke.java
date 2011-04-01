@@ -129,7 +129,6 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
             case NORMAL_UP:
                 return gWidth;
             case LINE:
-            case LINE_UP:
                 return gHeight;
             case PORTRAYAL:
             default:
@@ -247,16 +246,6 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
             }
         //}
     }
-
-    /*@Override
-    public double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws IOException, ParameterException {
-        Double bounds = graphic.getBounds(sds, fid, false, mt);
-        if (bounds != null) {
-            return Math.max(Math.max(bounds.getHeight(), Math.abs(bounds.getMinX())), Math.max(bounds.getHeight(), Math.abs(bounds.getMinY())));
-        } else {
-            return 0.0;
-        }
-    }*/
 
     @Override
     public String dependsOnFeature() {

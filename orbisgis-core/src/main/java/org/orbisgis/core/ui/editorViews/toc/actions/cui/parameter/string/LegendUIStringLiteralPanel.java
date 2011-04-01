@@ -35,9 +35,6 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-
-
-
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.string;
 
 import javax.swing.Icon;
@@ -45,6 +42,7 @@ import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.ComboBoxInput;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.TextInput;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
@@ -55,61 +53,89 @@ import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
  * @author maxence
  */
 public abstract class LegendUIStringLiteralPanel extends LegendUIComponent
-		implements LegendUIStringComponent {
+        implements LegendUIStringComponent {
 
-	private StringLiteral string;
-	private TextInput input;
+    private StringLiteral string;
+    private TextInput input;
+    private ComboBoxInput combo;
 
-	public LegendUIStringLiteralPanel(String name, LegendUIController controller,
-			LegendUIComponent parent, StringLiteral s, boolean isNullable) {
-		super(name, controller, parent, 0, isNullable);
-		this.string = s;
+    public LegendUIStringLiteralPanel(String name, LegendUIController controller,
+            LegendUIComponent parent, StringLiteral s, boolean isNullable) {
+        super(name, controller, parent, 0, isNullable);
+        this.string = s;
 
-		/*
-		 *  TextInput ask to implement  the valueChanged method, which propagate any new value edited by the user
-		 */
-		input = new TextInput(name, string.getValue(null, -1), 20, false) {
+        if (string.getRestriction() != null) {
+            // Restriction => ComboBox
+            final String[] list = string.getRestriction();
+            int selection = 0;
+            for (int i = 1; i < list.length; i++) {
+                if (string.getValue(null, -1).equalsIgnoreCase(list[i])) {
+                    selection = i;
+                    break;
+                }
+            }
 
-			@Override
-			protected void valueChanged(String s) {
-				LegendUIStringLiteralPanel.this.string.setValue(s);
-			}
-		};
-	}
+            combo = new ComboBoxInput(string.getRestriction(), selection) {
 
-	@Override
-	public Icon getIcon() {
-		return OrbisGISIcon.PENCIL;
-	}
+                @Override
+                protected void valueChanged(int i) {
+                    LegendUIStringLiteralPanel.this.string.setValue(list[i]);
+                }
+            };
+            input = null;
+        } else {
 
-	@Override
-	protected void mountComponent() {
-		editor.add(input);
-	}
+            /*
+             *  TextInput ask to implement  the valueChanged method, which propagate any new value edited by the user
+             */
+            input = new TextInput(name, string.getValue(null, -1), 20, false) {
 
-	@Override
-	public StringParameter getStringParameter() {
-		return string;
-	}
+                @Override
+                protected void valueChanged(String s) {
+                    LegendUIStringLiteralPanel.this.string.setValue(s);
+                }
+            };
+            combo = null;
+        }
+    }
 
-	@Override
-	public Class getEditedClass(){
-		return StringLiteral.class;
-	}
+    @Override
+    public Icon getIcon() {
+        return OrbisGISIcon.PENCIL;
+    }
 
-	@Override
-	protected void turnOff() {
-		stringChanged(null);
-	}
+    @Override
+    protected void mountComponent() {
+        if (input != null) {
+            editor.add(input);
+        } else if (combo != null) {
+            editor.add(combo);
+        }
+    }
 
-	@Override
-	protected void turnOn() {
-		stringChanged(this.string);
-	}
+    @Override
+    public StringParameter getStringParameter() {
+        return string;
+    }
 
-	/**
-	 * This method is primarly called when user want to activate or disactivate
-	 * @param string
-	 */
-	protected abstract void stringChanged(StringLiteral string);
+    @Override
+    public Class getEditedClass() {
+        return StringLiteral.class;
+    }
+
+    @Override
+    protected void turnOff() {
+        stringChanged(null);
+    }
+
+    @Override
+    protected void turnOn() {
+        stringChanged(this.string);
+    }
+
+    /**
+     * This method is primarly called when user want to activate or disactivate
+     * @param string
+     */
+    protected abstract void stringChanged(StringLiteral string);
 }

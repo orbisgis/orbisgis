@@ -48,6 +48,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.map.MapTransform;
@@ -56,8 +57,10 @@ import net.opengis.se._2_0.thematic.AxisChartSubtypeType;
 import net.opengis.se._2_0.thematic.AxisChartType;
 import net.opengis.se._2_0.thematic.CategoryType;
 import net.opengis.se._2_0.thematic.ObjectFactory;
+import org.orbisgis.core.renderer.se.FillNode;
 
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.StrokeNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -68,15 +71,15 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.renderer.se.transform.Transform;
-import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
 
 /**
  *
  * @author maxence
  * @todo Implements drawGraphic
  */
-public final class AxisChart extends Graphic implements UomNode {
+public final class AxisChart extends Graphic implements UomNode, FillNode, StrokeNode, TransformNode {
 
+    private ArrayList<CategoryListener> listeners;
     private Uom uom;
     private RealParameter normalizeTo;
     //private boolean isPolarChart;
@@ -84,6 +87,7 @@ public final class AxisChart extends Graphic implements UomNode {
     private RealParameter categoryWidth;
     private RealParameter categoryGap;
     private Fill areaFill;
+    private Transform transform;
     private Stroke lineStroke;
     private ArrayList<Category> categories;
     private AxisChartSubType subtype;
@@ -100,6 +104,8 @@ public final class AxisChart extends Graphic implements UomNode {
     public AxisChart() {
         subtype = AxisChartSubType.ORTHO;
         categories = new ArrayList<Category>();
+        listeners = new ArrayList<CategoryListener>();
+        this.setAxisScale(new AxisScale());
     }
 
     AxisChart(JAXBElement<AxisChartType> chartE) throws InvalidStyle {
@@ -115,7 +121,7 @@ public final class AxisChart extends Graphic implements UomNode {
         }
 
         if (t.getNormalization() != null) {
-            this.setNormalizedTo(SeParameterFactory.createRealParameter(t.getNormalization()));
+            this.setNormalizeTo(SeParameterFactory.createRealParameter(t.getNormalization()));
         }
 
         if (t.getCategoryWidth() != null) {
@@ -138,11 +144,11 @@ public final class AxisChart extends Graphic implements UomNode {
         }
 
         if (t.getFill() != null) {
-            this.setAreaFill(Fill.createFromJAXBElement(t.getFill()));
+            this.setFill(Fill.createFromJAXBElement(t.getFill()));
         }
 
         if (t.getStroke() != null) {
-            this.setLineStroke(Stroke.createFromJAXBElement(t.getStroke()));
+            this.setStroke(Stroke.createFromJAXBElement(t.getStroke()));
         }
 
         if (t.getAxisScale() != null) {
@@ -173,16 +179,41 @@ public final class AxisChart extends Graphic implements UomNode {
         this.uom = uom;
     }
 
+    @Override
+    public Transform getTransform() {
+        return transform;
+    }
+
+    @Override
+    public void setTransform(Transform transform) {
+        this.transform = transform;
+        if (transform != null) {
+            transform.setParent(this);
+        }
+    }
+
+    public void registerListerner(CategoryListener lsner) {
+        if (lsner != null) {
+            listeners.add(lsner);
+        }
+    }
+
+    public int getNumCategories() {
+        return categories.size();
+    }
+
     public void addCategory(Category c) {
         categories.add(c);
         c.setParent(this);
     }
 
-    public Fill getAreaFill() {
+    @Override
+    public Fill getFill() {
         return areaFill;
     }
 
-    public void setAreaFill(Fill areaFill) {
+    @Override
+    public void setFill(Fill areaFill) {
         this.areaFill = areaFill;
         areaFill.setParent(this);
     }
@@ -217,21 +248,45 @@ public final class AxisChart extends Graphic implements UomNode {
         }
     }
 
-    public Stroke getLineStroke() {
+    @Override
+    public Stroke getStroke() {
         return lineStroke;
     }
 
-    public void setLineStroke(Stroke lineStroke) {
+    @Override
+    public void setStroke(Stroke lineStroke) {
         this.lineStroke = lineStroke;
         lineStroke.setParent(this);
     }
 
-    public RealParameter getNormalizedTo() {
+    public RealParameter getNormalizeTo() {
         return normalizeTo;
     }
 
-    public void setNormalizedTo(RealParameter normalizedTo) {
-        this.normalizeTo = normalizedTo;
+    public void setNormalizeTo(RealParameter normalizeTo) {
+        this.normalizeTo = normalizeTo;
+        if (normalizeTo != null) {
+            normalizeTo.setContext(RealParameterContext.realContext);
+        }
+    }
+
+    public AxisChartSubType getSubtype() {
+        return subtype;
+    }
+
+    public void setSubtype(AxisChartSubType subtype) {
+        this.subtype = subtype;
+    }
+
+    public ArrayList<Category> getCategories() {
+        return categories;
+    }
+
+    public Category getCategory(int i) throws ParameterException {
+        if (i >= 0 && i < categories.size()) {
+            return categories.get(i);
+        }
+        throw new ParameterException("Category index out of bounds!");
     }
 
     @Override
@@ -239,14 +294,6 @@ public final class AxisChart extends Graphic implements UomNode {
     }
 
     private double[] getMeasuresInPixel(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException {
-        /*
-        System.out.println ("SDS:" + sds);
-        System.out.println ("axisScale:" + axisScale);
-        System.out.println ("axisScale length:" + axisScale.getAxisLength());
-        System.out.println ("axisScale measure:" + axisScale.getMeasureValue());
-        System.out.println ("UOM:" + getUom());
-         */
-
         double rLength = Uom.toPixel(axisScale.getAxisLength().getValue(sds, fid),
                 getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
         double rMesure = axisScale.getMeasureValue().getValue(sds, fid);
@@ -262,154 +309,60 @@ public final class AxisChart extends Graphic implements UomNode {
         return heights;
     }
 
-    /*private RenderableGraphics getOrthoChart(SpatialDataSourceDecorator sds, long fid,
-    boolean selected, MapTransform mt) throws ParameterException, IOException {
-
-    int nCat = categories.size();
-    double heights[] = getMeasuresInPixel(sds, fid, mt);
-
-    double maxHeight = 0;
-    double minHeight = 0;
-
-    for (double h : heights) {
-    if (h > maxHeight) {
-    maxHeight = h;
-    }
-    if (h < minHeight) {
-    minHeight = h;
-    }
-    }
-    double cGap = DEFAULT_GAP_PX;
-    if (categoryGap != null) {
-    cGap = Uom.toPixel(categoryGap.getValue(sds, fid), getUom(), mt.getDpi(),
-    mt.getScaleDenominator(), null);
+    public void moveCategoryDown(int i) {
+        if (i >= 0 && i < categories.size() - 1) {
+            Category tmp = categories.get(i);
+            categories.set(i, categories.get(i + 1));
+            categories.set(i + 1, tmp);
+            fireCatDown(i);
+        }
     }
 
-    double cWidth = DEFAULT_WIDTH_PX;
-    if (categoryWidth != null) {
-    cWidth = Uom.toPixel(categoryWidth.getValue(sds, fid), getUom(), mt.getDpi(),
-    mt.getScaleDenominator(), null);
+    public void moveCategoryUp(int i) {
+        if (i > 0 && i < categories.size()) {
+            Category tmp = categories.get(i);
+            categories.set(i, categories.get(i - 1));
+            categories.set(i - 1, tmp);
+            fireCatUp(i);
+        }
     }
 
-    double width = (nCat - 1) * cGap + nCat * cWidth + INITIAL_GAP_PX;
-
-
-    Rectangle2D.Double bounds = new Rectangle2D.Double(-width / 2, -maxHeight, width, maxHeight + -1 * minHeight);
-
-    AffineTransform at = null;
-    if (transform != null) {
-    at = transform.getGraphicalAffineTransform(false, sds, fid, mt, minHeight, minHeight);
-    Shape shp = at.createTransformedShape(bounds);
-    bounds.setRect(shp.getBounds2D());
+    public void removeCategory(int i) {
+        if (i >= 0 && i < categories.size()) {
+            categories.remove(i);
+            fireCatRm(i);
+        }
     }
 
-    RenderableGraphics g2 = Graphic.getNewRenderableGraphics(bounds, 10, mt);
-
-    double currentX = -width / 2 + INITIAL_GAP_PX;
-
-    double xOffset[] = new double[nCat];
-
-    int i;
-    for (i = 0; i < nCat; i++) {
-    //Category c = categories.get(i);
-    xOffset[i] = currentX;
-    currentX += cGap + cWidth;
+    private void fireCatDown(int i) {
+        for (CategoryListener l : listeners) {
+            l.categoryMoveDown(i);
+        }
     }
 
-    for (i = 0; i < nCat; i++) {
-    Category c = categories.get(i);
-    if (c.getFill() != null || c.getStroke() != null) {
-    Path2D.Double bar = new Path2D.Double();
-    bar.moveTo(xOffset[i], 0);
-    bar.lineTo(xOffset[i], -heights[i]);
-    bar.lineTo(xOffset[i] + cWidth, -heights[i]);
-    bar.lineTo(xOffset[i] + cWidth, 0);
-    bar.closePath();
-    Shape shp = bar;
-    if (at != null) {
-    shp = at.createTransformedShape(bar);
-    }
-    if (c.getFill() != null) {
-    c.getFill().draw(g2, sds, fid, shp, selected, mt);
-    }
-    if (c.getStroke() != null) {
-    c.getStroke().draw(g2, sds, fid, shp, selected, mt, 0.0);
-    }
-    }
+    private void fireCatUp(int i) {
+        for (CategoryListener l : listeners) {
+            l.categoryMoveUp(i);
+        }
     }
 
-    if (areaFill != null) {
-    Path2D area = new Path2D.Double();
-
-    area.moveTo(xOffset[0] + cWidth / 2, 0);
-    for (i = 0; i < nCat; i++) {
-    area.lineTo(xOffset[i] + cWidth / 2, -heights[i]);
-    }
-    area.lineTo(xOffset[nCat - 1] + cWidth / 2, 0);
-    area.closePath();
-
-    Shape shp = area;
-    if (at != null) {
-    shp = at.createTransformedShape(area);
-    }
-    areaFill.draw(g2, sds, fid, shp, selected, mt);
+    private void fireCatRm(int i) {
+        for (CategoryListener l : listeners) {
+            l.categoryRemoved(i);
+        }
     }
 
-    if (lineStroke != null) {
-    System.out.println("lineStroke");
-    Path2D line = new Path2D.Double();
-    line.moveTo(xOffset[0] + cWidth / 2, -heights[0]);
-    for (i = 0; i < nCat; i++) {
-    line.lineTo(xOffset[i] + cWidth / 2, -heights[i]);
-    }
-    //area.lineTo(xOffset[nCat-1]+cWidth/2, 0);
-    //area.closePath();
-    Shape shp = line;
-    if (at != null) {
-    shp = at.createTransformedShape(line);
-    }
-    lineStroke.draw(g2, sds, fid, shp, selected, mt, 0.0);
-    }
-
-    for (i = 0; i < nCat; i++) {
-    Category c = categories.get(i);
-    if (c.getGraphicCollection() != null) {
-    AffineTransform at2 = AffineTransform.getTranslateInstance(xOffset[i] + cWidth / 2, -heights[i]);
-    if (at != null) {
-    at2.concatenate(at);
-    }
-
-    c.getGraphicCollection().draw(g2, sds, fid, selected, mt, at2);
-    }
-    }
-
-    g2.setPaint(Color.black);
-
-    Point2D origin = at.transform(new Point2D.Double(0, 0), null);
-    Point2D maxX_y0 = at.transform(new Point2D.Double(0, 0), null);
-
-    g2.drawLine((int) bounds.getMinX(), (int) bounds.getMinY(), (int) bounds.getMinX(), (int) bounds.getMaxY());
-    g2.drawLine((int) bounds.getMinX(), (int) origin.getY(), (int) bounds.getMaxX(), (int) maxX_y0.getY());
-
-
-    /*
-    MarkGraphic arrow = new MarkGraphic();
-
-    arrow.setSource(WellKnownName.TRIANGLE);
-    arrow.setUom(Uom.MM);
-    arrow.setFill(new SolidFill(Color.black, 100.0));
-    arrow.setViewBox(new ViewBox(new RealLiteral(20)));
-    RenderableGraphics rArrow = arrow.getRenderableGraphics(sds, fid, selected, mt);
-    g2.drawRenderableImage(rArrow, AffineTransform.getTranslateInstance(0, bounds.getMinY()));
+    /**
+     * Draw method for polar chart
+     * @param g2
+     * @param sds
+     * @param fid
+     * @param selected
+     * @param mt
+     * @param at
+     * @throws ParameterException
+     * @throws IOException
      */
-    /*
-
-    return g2;
-    }*/
-
-    /*private RenderableGraphics getStackedChart(SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException {
-    return null;
-    }*/
     private void drawOrthoChart(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
             boolean selected, MapTransform mt, AffineTransform at)
             throws ParameterException, IOException {
@@ -550,152 +503,6 @@ public final class AxisChart extends Graphic implements UomNode {
          */
     }
 
-    /**
-     *
-     * Create polar chart
-     *
-     * @param sds
-     * @param fid
-     * @param selected
-     * @param mt
-     * @return
-     * @throws ParameterException
-     * @throws IOException
-     */
-    /*private RenderableGraphics getPolarChart(SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException {
-    int nCat = categories.size();
-    double heights[] = getMeasuresInPixel(sds, fid, mt);
-
-    double maxHeight = 0;
-    double minHeight = 0;
-
-    for (double h : heights) {
-    if (h > maxHeight) {
-    maxHeight = h;
-    }
-    if (h < minHeight) {
-    minHeight = h;
-    }
-    }
-
-    if (minHeight < 0.0) {
-    throw new ParameterException("Negative measures are not allowed for polar charts!");
-    }
-
-    //double width = (nCat - 1) * cGap + nCat * cWidth + INITIAL_GAP_PX;
-    double radius = maxHeight;
-
-    Rectangle2D.Double bounds = new Rectangle2D.Double(-radius, -radius, 2 * radius, 2 * radius);
-
-    AffineTransform at = null;
-    if (transform != null) {
-    at = transform.getGraphicalAffineTransform(false, sds, fid, mt, 2 * radius, 2 * radius);
-    Shape shp = at.createTransformedShape(bounds);
-    bounds.setRect(shp.getBounds2D());
-    }
-
-    RenderableGraphics g2 = Graphic.getNewRenderableGraphics(bounds, 10, mt); // TODO Fetch margin !
-
-    double alphas[] = new double[nCat];
-    double beta = 2*Math.PI / nCat;
-
-    double alpha = Math.PI / 2.0; // The first is vertical !
-
-    double xpos[] = new double[nCat];
-    double ypos[] = new double[nCat];
-
-    int i;
-    for (i = 0; i < nCat; i++) {
-    ypos[i] = Math.sin(alpha) * heights[i];
-    xpos[i] = Math.cos(alpha) * heights[i];
-    alphas[i] = alpha;
-    alpha += beta;
-    System.out.println ("Height n°" + i + ": " + heights[i]  + " @ "+ xpos[i] + ";" + ypos[i]);
-    }
-
-    if (this.areaFill != null || this.lineStroke != null) {
-    Path2D.Double area = new Path2D.Double();
-    area.moveTo(xpos[0], ypos[0]);
-    for (i = 1; i < nCat; i++) {
-    area.lineTo(xpos[i], ypos[i]);
-    }
-    area.closePath();
-    Shape shp = area;
-    if (at != null) {
-    shp = at.createTransformedShape(area);
-    }
-
-    if (this.areaFill != null) {
-    System.out.println (" Fill Area!");
-    areaFill.draw(g2, sds, fid, shp, selected, mt);
-    }
-    if (this.lineStroke != null) {
-    System.out.println (" Stroke line!");
-    lineStroke.draw(g2, sds, fid, shp, selected, mt, 0.0);
-    }
-    }
-
-    for (i = 0; i < nCat; i++) {
-    Category cat = this.categories.get(i);
-    if (cat.getGraphicCollection() != null) {
-    AffineTransform at2 = AffineTransform.getTranslateInstance(xpos[i], ypos[i]);
-    if (at != null) {
-    at2.concatenate(at);
-    }
-    cat.getGraphicCollection().draw(g2, sds, fid, selected, mt, at2);
-    }
-    Shape shp;
-
-    // TODO::CREATE SLICE
-
-    if (cat.getFill() != null || cat.getStroke() != null){
-    Arc2D.Double slice = new Arc2D.Double(-heights[i], - heights[i],
-    2 * heights[i], 2 * heights[i],
-    (-alphas[i] - beta/2)/ShapeHelper._0_0175, beta/ShapeHelper._0_0175, Arc2D.PIE);
-
-    shp = slice;
-    if (at != null){
-    shp = at.createTransformedShape(slice);
-    }
-    if (cat.getFill() != null){
-    cat.getFill().draw(g2, sds, fid, shp, selected, mt);
-    }
-    if (cat.getStroke() != null){
-    cat.getStroke().draw(g2, sds, fid, shp, selected, mt, 0.0);
-    }
-    }
-
-
-    // DRAW measure:
-    Path2D.Double stick = new Path2D.Double();
-    stick.moveTo(0, 0);
-    stick.lineTo(xpos[i], ypos[i]);
-    shp = stick;
-    if (at != null) {
-    shp = at.createTransformedShape(stick);
-    }
-    g2.setStroke(new BasicStroke(1));
-    //g2.setColor(Color.black);
-    g2.setPaint(Color.GRAY);
-    g2.draw(shp);
-
-    }
-    return g2;
-    }*/
-
-    /*@Override
-    public RenderableGraphics getRenderableGraphics(SpatialDataSourceDecorator sds,
-    long fid, boolean selected, MapTransform mt) throws ParameterException, IOException {
-    switch (subtype) {
-    case POLAR:
-    return getPolarChart(sds, fid, selected, mt);
-    case STACKED:
-    return getStackedChart(sds, fid, selected, mt);
-    case ORTHO:
-    default:
-    return getOrthoChart(sds, fid, selected, mt);
-    }
-    }*/
     private void drawStackedChart(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
             boolean selected, MapTransform mt, AffineTransform at) throws ParameterException, IOException {
     }
@@ -923,11 +730,6 @@ public final class AxisChart extends Graphic implements UomNode {
         }
     }
 
-    /*
-    @Override
-    public double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
-    throw new UnsupportedOperationException("Not supported yet.");
-    }*/
     @Override
     public JAXBElement<AxisChartType> getJAXBElement() {
 
@@ -976,6 +778,10 @@ public final class AxisChart extends Graphic implements UomNode {
             case STACKED:
                 a.setAxisChartSubtype(AxisChartSubtypeType.STACKED);
                 break;
+        }
+        List<CategoryType> category = a.getCategory();
+        for (Category c : categories) {
+            category.add(c.getJaxbType());
         }
 
         ObjectFactory of = new ObjectFactory();

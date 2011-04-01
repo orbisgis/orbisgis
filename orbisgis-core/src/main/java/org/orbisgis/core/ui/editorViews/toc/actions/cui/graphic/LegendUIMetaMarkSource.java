@@ -41,12 +41,10 @@ import javax.swing.Icon;
 import org.orbisgis.core.renderer.se.common.OnlineResource;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.graphic.WellKnownName;
-import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractMetaPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.color.LegendUIMetaColorPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.string.LegendUIMetaStringPanel;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
@@ -61,7 +59,7 @@ public class LegendUIMetaMarkSource extends LegendUIAbstractMetaPanel {
     private final Class[] classes = {WellKnownName.class};
 
     public LegendUIMetaMarkSource(LegendUIController ctrl, LegendUIComponent parent, MarkGraphic mark) {
-        super("Source", ctrl, parent, 0, false);
+        super(null, ctrl, parent, 0, false);
         this.mark = mark;
 
 
@@ -76,13 +74,15 @@ public class LegendUIMetaMarkSource extends LegendUIAbstractMetaPanel {
     @Override
     protected final LegendUIComponent getCompForClass(Class newClass) {
         if (newClass == WellKnownName.class) {
-            return new LegendUIMetaStringPanel("WKN", controller, this, mark.getWkn(), false) {
+            LegendUIMetaStringPanel wkn = new LegendUIMetaStringPanel("WKN", controller, this, mark.getWkn(), false) {
 
                 @Override
                 public void stringChanged(StringParameter newString) {
                     mark.setWkn(newString);
                 }
             };
+            wkn.init();
+            return wkn;
         } else {
             return null;
         }

@@ -98,17 +98,35 @@ public abstract class LegendUIPenStrokePanel extends LegendUIComponent implement
 		this.header = new LegendUIAbstractPanel(controller);
 		this.penStroke = pStroke;
 
-        this.fill = new LegendUIMetaFillPanel(controller, this, pStroke, false);
-        fill.init();
+		this.content = new LegendUIAbstractPanel(controller);
+		this.content2 = new LegendUIAbstractPanel(controller);
 
-		/*this.opacity = new LegendUIMetaRealPanel("Opacity", controller, this, penStroke.getOpacity(), true) {
+		uom = new UomInput(pStroke);
+
+		lCapValues = LineCap.values();
+		lJoinValues = LineJoin.values();
+
+		lineCap = new ComboBoxInput(lCapValues, penStroke.getLineCap().ordinal()) {
 
 			@Override
-			public void realChanged(RealParameter newReal) {
-				penStroke.setOpacity(newReal);
+			protected void valueChanged(int i) {
+				penStroke.setLineCap(lCapValues[i]);
 			}
 		};
-		this.opacity.init();*/
+
+
+		lineJoin = new ComboBoxInput(lJoinValues, penStroke.getLineJoin().ordinal()) {
+
+			@Override
+			protected void valueChanged(int i) {
+				penStroke.setLineJoin(lJoinValues[i]);
+			}
+		};
+
+
+
+        this.fill = new LegendUIMetaFillPanel(controller, this, pStroke, false);
+        fill.init();
 
 		this.strokeWidth = new LegendUIMetaRealPanel("Width", controller, this, penStroke.getWidth(), true) {
 
@@ -136,31 +154,6 @@ public abstract class LegendUIPenStrokePanel extends LegendUIComponent implement
 			}
 		};
 		dashArray.init();
-
-		lCapValues = LineCap.values();
-		lJoinValues = LineJoin.values();
-
-		lineCap = new ComboBoxInput(lCapValues, penStroke.getLineCap().ordinal()) {
-
-			@Override
-			protected void valueChanged(int i) {
-				penStroke.setLineCap(lCapValues[i]);
-			}
-		};
-
-
-		lineJoin = new ComboBoxInput(lJoinValues, penStroke.getLineJoin().ordinal()) {
-
-			@Override
-			protected void valueChanged(int i) {
-				penStroke.setLineJoin(lJoinValues[i]);
-			}
-		};
-
-		uom = new UomInput(pStroke);
-
-		this.content = new LegendUIAbstractPanel(controller);
-		this.content2 = new LegendUIAbstractPanel(controller);
 	}
 
 	@Override

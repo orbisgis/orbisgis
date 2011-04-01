@@ -94,7 +94,8 @@ public abstract class LegendUIRealLiteralPanel extends LegendUIComponent impleme
 			if (max < min) {
 				throw new IndexOutOfBoundsException("Bounds are invalid (min > max)");
 			}
-			slider = new JSlider(min.intValue(), max.intValue(), initial.intValue());
+			slider = new JSlider((int)(min*100), (int)(max*100), (int)(initial*100));
+
 			label = new JLabel();
 			updateSliderValue();
 
@@ -109,7 +110,7 @@ public abstract class LegendUIRealLiteralPanel extends LegendUIComponent impleme
 
 				@Override
 				public void stateChanged(ChangeEvent e) {
-					valueChanged((double) slider.getValue());
+					valueChanged((double) slider.getValue() / 100.0);
 					updateSliderValue();
 				}
 			});

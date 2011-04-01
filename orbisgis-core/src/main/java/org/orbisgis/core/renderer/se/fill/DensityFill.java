@@ -72,7 +72,7 @@ public final class DensityFill extends Fill implements GraphicNode {
     public DensityFill() {
         this.setHatches(new PenStroke());
         this.setHatchesOrientation(new RealLiteral(45));
-        this.setPercentageCovered(new RealLiteral(20.0));
+        this.setPercentageCovered(new RealLiteral(0.2));
     }
 
     DensityFill(JAXBElement<DensityFillType> f) throws InvalidStyle {
@@ -96,8 +96,11 @@ public final class DensityFill extends Fill implements GraphicNode {
 
     public void setHatches(PenStroke hatches) {
         this.hatches = hatches;
-        this.isHatched = true;
-        hatches.setParent(this);
+        if (hatches != null) {
+            this.isHatched = true;
+            this.setGraphicCollection(null);
+            hatches.setParent(this);
+        }
     }
 
     public PenStroke getHatches() {
@@ -122,8 +125,11 @@ public final class DensityFill extends Fill implements GraphicNode {
     @Override
     public void setGraphicCollection(GraphicCollection mark) {
         this.mark = mark;
-        this.isHatched = false;
-        mark.setParent(this);
+        if (mark != null) {
+            this.isHatched = false;
+            mark.setParent(this);
+            setHatches(null);
+        }
     }
 
     @Override
@@ -169,7 +175,7 @@ public final class DensityFill extends Fill implements GraphicNode {
         double percentage = 0.0;
 
         if (percentageCovered != null) {
-            percentage = percentageCovered.getValue(sds, fid);
+            percentage = percentageCovered.getValue(sds, fid)*100;
         }
 
         if (percentage > 100) {

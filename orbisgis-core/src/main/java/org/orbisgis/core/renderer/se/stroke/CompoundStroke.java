@@ -75,10 +75,17 @@ public final class CompoundStroke extends Stroke implements UomNode {
     private ArrayList<StrokeAnnotationGraphic> annotations;
     private Uom uom;
 
+    public CompoundStroke() {
+        super();
+        elements = new ArrayList<CompoundStrokeElement>();
+        addElement(new StrokeElement());
+        annotations = new ArrayList<StrokeAnnotationGraphic>();
+    }
+
     public CompoundStroke(CompoundStrokeType s) throws InvalidStyle {
         super(s);
 
-        if (s.getUom() != null){
+        if (s.getUom() != null) {
             setUom(Uom.fromOgcURN(s.getUom()));
         }
 
@@ -136,39 +143,13 @@ public final class CompoundStroke extends Stroke implements UomNode {
         return postGap;
     }
 
-    /*@Override
-    public double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
-        double max = 0.0;
-        for (CompoundStrokeElement elem : elements) {
-            StrokeElement sElem = null;
+    public ArrayList<StrokeAnnotationGraphic> getAnnotations() {
+        return annotations;
+    }
 
-            if (elem instanceof StrokeElement) {
-                sElem = (StrokeElement) elem;
-            } else if (elem instanceof AlternativeStrokeElements) {
-                AlternativeStrokeElements aElem = (AlternativeStrokeElements) elem;
-                sElem = aElem.getElements().get(0);
-            }
-
-            double sWidth = sElem.getStroke().getMaxWidth(sds, fid, mt);
-            if (sWidth > max) {
-                max = sWidth;
-            }
-        }
-
-        for (StrokeAnnotationGraphic annotation : annotations) {
-            RenderableGraphics g = annotation.getGraphic().getGraphic(sds, fid, false, mt);
-            if (g != null) {
-                max = Math.max(max, Math.max(Math.max(g.getWidth(), Math.abs(g.getMinX())), Math.max(g.getHeight(), Math.abs(g.getMinY()))));
-            }
-        }
-
-        return max;
-    }*/
-
-    /*@Override
-    public double getMinLength(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }*/
+    public ArrayList<CompoundStrokeElement> getElements() {
+        return elements;
+    }
 
     @Override
     public double getNaturalLength(SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) throws ParameterException, IOException {
@@ -201,247 +182,238 @@ public final class CompoundStroke extends Stroke implements UomNode {
                 initGap = Uom.toPixel(preGap.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
                 if (initGap > 0.0) {
                     //System.out.println ("Remove Global PreGap");
-                    shp = ShapeHelper.splitLine(shp, initGap).get(1);
+                    ArrayList<Shape> splitLine = ShapeHelper.splitLine(shp, initGap);
+                    if (splitLine.size() == 2) {
+                        shp = splitLine.get(1);
+                    } else {
+                        shp = null;
+                    }
                 }
             }
 
-            if (postGap != null) {
-                endGap = Uom.toPixel(postGap.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-                if (endGap > 0.0) {
-                    //System.out.println ("Remove Global PostGap");
-                    double lineLength = ShapeHelper.getLineLength(shp);
-                    shp = ShapeHelper.splitLine(shp, lineLength - endGap).get(0);
-                }
-            }
-
-            //System.out.println ("After removiung gaps:");
-            //ShapeHelper.printvertices(shp);
-
-            int nbElem = elements.size();
-
-            double lengths[] = new double[nbElem];
-            Stroke strokes[] = new Stroke[nbElem];
-            Double preGaps[] = new Double[nbElem];
-            Double postGaps[] = new Double[nbElem];
-
-            double remainingLength = ShapeHelper.getLineLength(shp);
-            double lineLength = remainingLength;
-            int nbInfinite = 0;
-
-            int i = 0;
-            for (CompoundStrokeElement elem : elements) {
-                StrokeElement sElem = null;
-
-                if (elem instanceof StrokeElement) {
-                    sElem = (StrokeElement) elem;
-                } else if (elem instanceof AlternativeStrokeElements) {
-                    AlternativeStrokeElements aElem = (AlternativeStrokeElements) elem;
-                    sElem = aElem.getElements().get(0);
+            if (shp != null) {
+                if (postGap != null) {
+                    endGap = Uom.toPixel(postGap.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                    if (endGap > 0.0) {
+                        //System.out.println ("Remove Global PostGap");
+                        double lineLength = ShapeHelper.getLineLength(shp);
+                        shp = ShapeHelper.splitLine(shp, lineLength - endGap).get(0);
+                    }
                 }
 
-                strokes[i] = sElem.getStroke();
+                //System.out.println ("After removiung gaps:");
+                //ShapeHelper.printvertices(shp);
 
-                if (sElem.getLength() != null) {
-                    lengths[i] = Uom.toPixel(sElem.getLength().getValue(sds, fid),
-                            getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-                    //System.out.println("Has own length: " + lengths[i]);
-                } else {
-                    lengths[i] = sElem.getStroke().getNaturalLength(sds, fid, shp, mt);
-                    //System.out.println("Natural length: " + lengths[i]);
-                }
+                int nbElem = elements.size();
 
-                if (sElem.getPreGap() != null) {
-                    preGaps[i] = Uom.toPixel(sElem.getPreGap().getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-                    remainingLength -= preGaps[i];
-                } else {
-                    preGaps[i] = null;
-                }
+                double lengths[] = new double[nbElem];
+                Stroke strokes[] = new Stroke[nbElem];
+                Double preGaps[] = new Double[nbElem];
+                Double postGaps[] = new Double[nbElem];
 
-                if (sElem.getPostGap() != null) {
-                    postGaps[i] = Uom.toPixel(sElem.getPostGap().getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-                    remainingLength -= postGaps[i];
-                } else {
-                    postGaps[i] = null;
-                }
+                double remainingLength = ShapeHelper.getLineLength(shp);
+                double lineLength = remainingLength;
+                int nbInfinite = 0;
 
-                if (Double.isInfinite(lengths[i])) {
-                    nbInfinite++;
-                } else {
-                    remainingLength -= lengths[i];
-                }
-                i++;
-            }
+                int i = 0;
+                for (CompoundStrokeElement elem : elements) {
+                    StrokeElement sElem = null;
 
-            //System.out.println(" Remain: " + remainingLength);
-            //System.out.println(" LineLength: " + lineLength);
+                    if (elem instanceof StrokeElement) {
+                        sElem = (StrokeElement) elem;
+                    } else if (elem instanceof AlternativeStrokeElements) {
+                        AlternativeStrokeElements aElem = (AlternativeStrokeElements) elem;
+                        sElem = aElem.getElements().get(0);
+                    }
 
-            //if (remainingLength < 0.0) {
-            //    Services.getErrorManager().error("Unable to generate compoundStroke: line too short");
-            //    return;
-            //} else {
+                    strokes[i] = sElem.getStroke();
 
-            double patternLength = lineLength - remainingLength;
-            if (nbInfinite > 0) {
-                double infiniteLength = remainingLength / nbInfinite;
-                //System.out.println(" Share remaining: " + infiniteLength);
-                for (i = 0; i < lengths.length; i++) {
+                    if (sElem.getLength() != null) {
+                        lengths[i] = Uom.toPixel(sElem.getLength().getValue(sds, fid),
+                                getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                        //System.out.println("Has own length: " + lengths[i]);
+                    } else {
+                        lengths[i] = sElem.getStroke().getNaturalLength(sds, fid, shp, mt);
+                        //System.out.println("Natural length: " + lengths[i]);
+                    }
+
+                    if (sElem.getPreGap() != null) {
+                        preGaps[i] = Uom.toPixel(sElem.getPreGap().getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                        remainingLength -= preGaps[i];
+                    } else {
+                        preGaps[i] = null;
+                    }
+
+                    if (sElem.getPostGap() != null) {
+                        postGaps[i] = Uom.toPixel(sElem.getPostGap().getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                        remainingLength -= postGaps[i];
+                    } else {
+                        postGaps[i] = null;
+                    }
+
                     if (Double.isInfinite(lengths[i])) {
-                        lengths[i] = infiniteLength;
-                        //System.out.println ("Set infinite lenght to: " + infiniteLength);
+                        nbInfinite++;
+                    } else {
+                        remainingLength -= lengths[i];
                     }
+                    i++;
                 }
-            } else { // fixed length pattern
-                if (this.isLengthRapport()) {
-                    // Scale pattern to lineLength intergral fraction
-                    int nbPattern = (int) ((lineLength / patternLength) + 0.5);
-                    if (nbPattern < 1) {
-                        // Male sure at least one pattern will be drawn
-                        nbPattern = 1;
-                    }
-                    // Compute factor
-                    double f = lineLength / (nbPattern * patternLength);
-                    for (i = 0; i < nbElem; i++) {
-                        lengths[i] *= f;
-                        if (preGaps[i] != null) {
-                            preGaps[i] *= f;
-                        }
-                        if (postGaps[i] != null) {
-                            postGaps[i] *= f;
+
+                double patternLength = lineLength - remainingLength;
+                if (nbInfinite > 0) {
+                    double infiniteLength = remainingLength / nbInfinite;
+                    //System.out.println(" Share remaining: " + infiniteLength);
+                    for (i = 0; i < lengths.length; i++) {
+                        if (Double.isInfinite(lengths[i])) {
+                            lengths[i] = infiniteLength;
+                            //System.out.println ("Set infinite lenght to: " + infiniteLength);
                         }
                     }
-                    patternLength *= f;
-                }
-            }
-            //}
-
-            Shape scrap = shp;
-
-
-            //while (ShapeHelper.getLineLength(chute) > 0) {
-            i = 0; // stroke element iterator
-            while (scrap != null) {
-
-                //if (i==0){
-                    //System.out.println ("NEW PATTERN");
-                //}
-                //System.out.println ("NEW ELEM");
-
-                double scrapLength = ShapeHelper.getLineLength(scrap);
-                if (scrapLength < 1){
-                    break;
-                }
-
-                if (preGaps[i] != null && preGaps[i] > 0) {
-                    ArrayList<Shape> splitLine = ShapeHelper.splitLine(scrap, preGaps[i]);
-                    //System.out.println("  preGap: " + preGaps[i]);
-                    if (splitLine.size() > 1) {
-                        scrap = splitLine.get(1);
-                    } else {
-                        scrap = null;
-                        //System.out.println ("  -> End of line !");
-                        break;
+                } else { // fixed length pattern
+                    if (this.isLengthRapport()) {
+                        // Scale pattern to lineLength intergral fraction
+                        int nbPattern = (int) ((lineLength / patternLength) + 0.5);
+                        if (nbPattern < 1) {
+                            // Male sure at least one pattern will be drawn
+                            nbPattern = 1;
+                        }
+                        // Compute factor
+                        double f = lineLength / (nbPattern * patternLength);
+                        for (i = 0; i < nbElem; i++) {
+                            lengths[i] *= f;
+                            if (preGaps[i] != null) {
+                                preGaps[i] *= f;
+                            }
+                            if (postGaps[i] != null) {
+                                postGaps[i] *= f;
+                            }
+                        }
+                        patternLength *= f;
                     }
                 }
 
-                if (lengths[i] > 0) {
-                    // get two lines. first is the one we'll style with i'est element
-                    ArrayList<Shape> splitLine = ShapeHelper.splitLine(scrap, lengths[i]);
-                    //System.out.println("Extract: " + lengths[i]);
-                    Shape seg = splitLine.remove(0);
+                Shape scrap = shp;
 
-                    //System.out.println ("StrokeElement Seg: ");
-                    //ShapeHelper.printvertices(seg);
 
-                    strokes[i].draw(g2, sds, fid, seg, selected, mt, offset);
+                //while (ShapeHelper.getLineLength(chute) > 0) {
+                i = 0; // stroke element iterator
+                while (scrap != null) {
 
-                    if (splitLine.size() > 0) {
-                        scrap = splitLine.remove(0);
-                    } else {
-                        scrap = null;
-                        //System.out.println ("  -> End of line !");
+                    double scrapLength = ShapeHelper.getLineLength(scrap);
+                    if (scrapLength < 1) {
                         break;
                     }
 
-                    //System.out.println ("StrokeElement SCRAP: ");
-                    //ShapeHelper.printvertices(scrap);
+                    if (preGaps[i] != null && preGaps[i] > 0) {
+                        ArrayList<Shape> splitLine = ShapeHelper.splitLine(scrap, preGaps[i]);
+                        //System.out.println("  preGap: " + preGaps[i]);
+                        if (splitLine.size() > 1) {
+                            scrap = splitLine.get(1);
+                        } else {
+                            scrap = null;
+                            //System.out.println ("  -> End of line !");
+                            break;
+                        }
+                    }
 
-                    //System.out.println("length: " + lengths[i]);
+                    if (lengths[i] > 0) {
+                        // get two lines. first is the one we'll style with i'est element
+                        ArrayList<Shape> splitLine = ShapeHelper.splitLine(scrap, lengths[i]);
+                        //System.out.println("Extract: " + lengths[i]);
+                        Shape seg = splitLine.remove(0);
+
+                        //System.out.println ("StrokeElement Seg: ");
+                        //ShapeHelper.printvertices(seg);
+
+                        strokes[i].draw(g2, sds, fid, seg, selected, mt, offset);
+
+                        if (splitLine.size() > 0) {
+                            scrap = splitLine.remove(0);
+                        } else {
+                            scrap = null;
+                            //System.out.println ("  -> End of line !");
+                            break;
+                        }
+
+                        //System.out.println ("StrokeElement SCRAP: ");
+                        //ShapeHelper.printvertices(scrap);
+
+                        //System.out.println("length: " + lengths[i]);
+                    }
+
+                    if (postGaps[i] != null && postGaps[i] > 0) {
+                        ArrayList<Shape> splitLine = ShapeHelper.splitLine(scrap, postGaps[i]);
+                        //System.out.println("postGap: " + postGaps[i]);
+                        if (splitLine.size() > 1) {
+                            scrap = splitLine.get(1);
+                        } else {
+                            scrap = null;
+                            break;
+                        }
+                    }
+
+                    i = (i + 1) % nbElem;
                 }
 
-                if (postGaps[i] != null && postGaps[i] > 0) {
-                    ArrayList<Shape> splitLine = ShapeHelper.splitLine(scrap, postGaps[i]);
-                    //System.out.println("postGap: " + postGaps[i]);
-                    if (splitLine.size() > 1) {
-                        scrap = splitLine.get(1);
-                    } else {
-                        scrap = null;
-                        break;
-                    }
-                }
 
-                i = (i + 1) % nbElem;
-            }
+                ArrayList<Shape> splitLineInSeg = ShapeHelper.splitLineInSeg(shp, patternLength);
+                for (Shape seg : splitLineInSeg) {
+                    for (StrokeAnnotationGraphic annotation : annotations) {
+                        GraphicCollection graphic = annotation.getGraphic();
+                        Rectangle2D bounds = graphic.getBounds(sds, fid, selected, mt);
 
+                        RelativeOrientation rOrient = annotation.getRelativeOrientation();
+                        if (rOrient == null) {
+                            rOrient = RelativeOrientation.NORMAL;
+                        }
 
-            ArrayList<Shape> splitLineInSeg = ShapeHelper.splitLineInSeg(shp, patternLength);
-            for (Shape seg : splitLineInSeg) {
-                for (StrokeAnnotationGraphic annotation : annotations) {
-                    GraphicCollection graphic = annotation.getGraphic();
-                    Rectangle2D bounds = graphic.getBounds(sds, fid, selected, mt);
+                        double gWidth = bounds.getWidth();
+                        double gHeight = bounds.getHeight();
 
-                    RelativeOrientation rOrient = annotation.getRelativeOrientation();
-                    if (rOrient == null) {
-                        rOrient = RelativeOrientation.NORMAL;
-                    }
-
-                    double gWidth = bounds.getWidth();
-                    double gHeight = bounds.getHeight();
-
-                    double gLength;
-                    switch (rOrient) {
-                        case NORMAL:
-                        case NORMAL_UP:
-                            gLength = gWidth;
-                            break;
-                        case LINE:
-                        case LINE_UP:
-                            gLength = gHeight;
-                            break;
-                        case PORTRAYAL:
-                        default:
-                            gLength = Math.sqrt(gWidth * gWidth + gHeight * gHeight);
-                            break;
-                    }
-
-                    double pos = (ShapeHelper.getLineLength(seg) - gLength) * annotation.getRelativePosition().getValue(sds, fid) + gLength / 2.0;
-
-                    Point2D.Double pt = ShapeHelper.getPointAt(seg, pos);
-
-                    AffineTransform at = AffineTransform.getTranslateInstance(pt.x, pt.y);
-                    if (rOrient != RelativeOrientation.PORTRAYAL) {
-
-                        Point2D.Double ptA = ShapeHelper.getPointAt(seg, pos - gLength / 2.0);
-                        Point2D.Double ptB = ShapeHelper.getPointAt(seg, pos + gLength / 2.0);
-
-                        double theta = Math.atan2(ptB.y - ptA.y, ptB.x - ptA.x);
-
+                        double gLength;
                         switch (rOrient) {
-                            case LINE:
-                                theta += 0.5 * Math.PI;
-                                break;
+                            case NORMAL:
                             case NORMAL_UP:
-                                if (theta < -Math.PI / 2 || theta > Math.PI / 2) {
-                                    theta += Math.PI;
-                                }
+                                gLength = gWidth;
+                                break;
+                            case LINE:
+                                gLength = gHeight;
+                                break;
+                            case PORTRAYAL:
+                            default:
+                                gLength = Math.sqrt(gWidth * gWidth + gHeight * gHeight);
                                 break;
                         }
-                        at.concatenate(AffineTransform.getRotateInstance(theta));
-                    }
 
-                    graphic.draw(g2, sds, fid, selected, mt, at);
+                        double pos = (ShapeHelper.getLineLength(seg) - gLength) * annotation.getRelativePosition().getValue(sds, fid) + gLength / 2.0;
+
+                        Point2D.Double pt = ShapeHelper.getPointAt(seg, pos);
+
+                        AffineTransform at = AffineTransform.getTranslateInstance(pt.x, pt.y);
+                        if (rOrient != RelativeOrientation.PORTRAYAL) {
+
+                            Point2D.Double ptA = ShapeHelper.getPointAt(seg, pos - gLength / 2.0);
+                            Point2D.Double ptB = ShapeHelper.getPointAt(seg, pos + gLength / 2.0);
+
+                            double theta = Math.atan2(ptB.y - ptA.y, ptB.x - ptA.x);
+
+                            switch (rOrient) {
+                                case LINE:
+                                    theta += 0.5 * Math.PI;
+                                    break;
+                                case NORMAL_UP:
+                                    if (theta < -Math.PI / 2 || theta > Math.PI / 2) {
+                                        theta += Math.PI;
+                                    }
+                                    break;
+                            }
+                            at.concatenate(AffineTransform.getRotateInstance(theta));
+                        }
+
+                        graphic.draw(g2, sds, fid, selected, mt, at);
+                    }
                 }
             }
-
         }
     }
 
@@ -480,7 +452,7 @@ public final class CompoundStroke extends Stroke implements UomNode {
 
         this.setJAXBProperties(s);
 
-        if (uom != null){
+        if (uom != null) {
             s.setUom(uom.toURN());
         }
 
@@ -509,7 +481,7 @@ public final class CompoundStroke extends Stroke implements UomNode {
 
     @Override
     public Uom getUom() {
-        if (uom != null){
+        if (uom != null) {
             return uom;
         } else {
             return parent.getUom();
@@ -524,5 +496,72 @@ public final class CompoundStroke extends Stroke implements UomNode {
     @Override
     public Uom getOwnUom() {
         return uom;
+    }
+
+    public void addAnnotation(StrokeAnnotationGraphic annotation) {
+        if (annotation != null) {
+            annotations.add(annotation);
+            annotation.setParent(this);
+        }
+    }
+
+    public boolean moveAnnotationUp(int i) {
+        if (i > 0 && i < this.annotations.size()) {
+            StrokeAnnotationGraphic anno = annotations.remove(i);
+            annotations.add(i - 1, anno);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean moveAnnotationDown(int i) {
+        if (i >= 0 && i < this.annotations.size() - 1) {
+            StrokeAnnotationGraphic anno = annotations.remove(i);
+            annotations.add(i + 1, anno);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean removeAnnotation(int i) {
+        try {
+            annotations.remove(i);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    public void addElement(CompoundStrokeElement element) {
+        if (element != null) {
+            elements.add(element);
+            element.setParent(this);
+        }
+    }
+
+    public boolean moveElementUp(int i) {
+        if (i > 0 && i < this.elements.size()) {
+            CompoundStrokeElement elem = elements.remove(i);
+            elements.add(i - 1, elem);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean moveElementDown(int i) {
+        if (i >= 0 && i < this.elements.size() - 1) {
+            CompoundStrokeElement elem = elements.remove(i);
+            elements.add(i + 1, elem);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean removeElement(int i) {
+        try {
+            elements.remove(i);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

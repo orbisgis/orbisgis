@@ -35,121 +35,203 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-
-
 package org.orbisgis.core.renderer.se.parameter.real;
 
 import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.JAXBElement;
+import net.opengis.fes._2.ExpressionType;
 import net.opengis.fes._2.FunctionType;
+import net.opengis.fes._2.ObjectFactory;
+import net.opengis.se._2_0.core.ParameterValueType;
+
 import org.gdms.data.SpatialDataSourceDecorator;
+
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.parameter.Literal;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 
-public class RealFunction extends Literal implements RealParameter {
+public class RealFunction implements RealParameter {
 
-    private enum Operators {ADD, MUL, DIV, SUB, SQRT, LOG, LN};
+    private enum Operators {
 
+        ADD, MUL, DIV, SUB, SQRT, LOG, LN
+    };
     private Operators op;
-	private RealParameterContext ctx;
-
+    private RealParameterContext ctx;
     private ArrayList<RealParameter> operands;
 
-	public RealFunction(String name) {
-		ctx = RealParameterContext.realContext;
+    public RealFunction(String name) {
+        ctx = RealParameterContext.realContext;
         this.op = Operators.valueOf(name.toUpperCase());
-        operands = new ArrayList<RealParameter>();
-	}
 
-	public RealFunction(FunctionType fcn) throws InvalidStyle {
+        operands = new ArrayList<RealParameter>();
+    }
+
+    public RealFunction(FunctionType fcn) throws InvalidStyle {
         this(fcn.getName());
-        for (JAXBElement<? extends Object> expr : fcn.getExpression()){
+        for (JAXBElement<? extends Object> expr : fcn.getExpression()) {
             operands.add(SeParameterFactory.createRealParameter(expr));
         }
     }
 
-	public RealFunction(JAXBElement<FunctionType> fcn) throws InvalidStyle {
+    public RealFunction(JAXBElement<FunctionType> fcn) throws InvalidStyle {
         this(fcn.getValue());
-	}
+    }
 
-	@Override
-	public double getValue(SpatialDataSourceDecorator sds, long fid) throws ParameterException {
+    /**
+     * Return i'est operand
+     *
+     * @param i
+     * @return the real parameter
+     * @throws ParameterException i is out of bounds
+     */
+    public RealParameter getOperand(int i) throws ParameterException {
+        if (i >= 0 && i < operands.size()) {
+            return operands.get(i);
+        }
+        throw new ParameterException("Index out of bounds");
+    }
+
+    /**
+     * Add a new operand
+     * @param operand the new operand to add
+     * @throws ParameterException if this function doesn't support more
+     */
+    public void addOperand(RealParameter operand) throws ParameterException {
+        switch (op) {
+            case ADD:
+            case MUL:
+                this.operands.add(operand);
+                return;
+            case DIV:
+            case SUB:
+                if (operands.size() < 2) {
+                    this.operands.add(operand);
+                } else {
+                    throw new ParameterException(op + " requiere exactly two operands");
+                }
+                return;
+            case SQRT:
+            case LN:
+            case LOG:
+                if (operands.size() < 1) {
+                    this.operands.add(operand);
+                } else {
+                    throw new ParameterException(op + " requiere exactly one operand");
+                }
+                return;
+        }
+    }
+
+    @Override
+    public double getValue(SpatialDataSourceDecorator sds, long fid) throws ParameterException {
         double result;
 
-        switch (op){
+        switch (op) {
             case ADD:
                 result = 0.0;
-                for (RealParameter p : operands){
+                for (RealParameter p : operands) {
                     result += p.getValue(sds, fid);
                 }
                 return result;
             case MUL:
                 result = 1.0;
-                for (RealParameter p : operands){
+                for (RealParameter p : operands) {
                     result *= p.getValue(sds, fid);
                 }
                 return result;
             case DIV:
-                if (operands.size() != 2){
+                if (operands.size() != 2) {
                     throw new ParameterException("A division requires two arguments !");
                 }
                 return operands.get(0).getValue(sds, fid) / operands.get(1).getValue(sds, fid);
             case SUB:
-                if (operands.size() != 2){
+                if (operands.size() != 2) {
                     throw new ParameterException("A subtraction requires two arguments !");
                 }
                 return operands.get(0).getValue(sds, fid) / operands.get(1).getValue(sds, fid);
             case SQRT:
-                if (operands.size() != 1){
+                if (operands.size() != 1) {
                     throw new ParameterException("A Square-root requires one argument !");
                 }
                 return Math.sqrt(operands.get(0).getValue(sds, fid));
             case LOG:
-                if (operands.size() != 1){
+                if (operands.size() != 1) {
                     throw new ParameterException("A Log10 requires one argument !");
                 }
                 return Math.log10(operands.get(0).getValue(sds, fid));
             case LN:
-                if (operands.size() != 1){
+                if (operands.size() != 1) {
                     throw new ParameterException("A natural logarithm requires one argument !");
                 }
                 return Math.log(operands.get(0).getValue(sds, fid));
         }
 
         throw new ParameterException("Unknown function name: " + op.toString());
-	}
+    }
 
-
-	@Override
-	public String toString() {
-	    String result = op.toString() + "(";
-        for (int i=0;i<operands.size();i++){
+    @Override
+    public String toString() {
+        String result = op.toString() + "(";
+        for (int i = 0; i < operands.size(); i++) {
             result += operands.get(i).toString();
-            if (i < operands.size()-1){
+            if (i < operands.size() - 1) {
                 result += ",";
             }
         }
         result += ")";
         return result;
-	}
+    }
 
-	@Override
-	public void setContext(RealParameterContext ctx) {
-		this.ctx = ctx;
-        for (RealParameter p : operands){
+    @Override
+    public void setContext(RealParameterContext ctx) {
+        this.ctx = ctx;
+        for (RealParameter p : operands) {
             p.setContext(ctx);
         }
-	}
+    }
 
-	@Override
-	public RealParameterContext getContext() {
-		return ctx;
-	}
+    @Override
+    public RealParameterContext getContext() {
+        return ctx;
+    }
 
     @Override
     public int compareTo(Object o) {
         return 0;
     }
+
+
+    @Override
+    public String dependsOnFeature() {
+        String result = "";
+        for (RealParameter p : operands){
+            result += " " + p.dependsOnFeature();
+        }
+        return result.trim();
+    }
+
+    @Override
+	public ParameterValueType getJAXBParameterValueType() {
+		ParameterValueType p = new ParameterValueType();
+		p.getContent().add(this.getJAXBExpressionType());
+		return p;
+	}
+
+    @Override
+    public JAXBElement<? extends ExpressionType> getJAXBExpressionType() {
+        FunctionType fcn = new FunctionType();
+        fcn.setName(op.name());
+        List<JAXBElement<?>> expression = fcn.getExpression();
+
+        for (RealParameter p : operands){
+            expression.add(p.getJAXBExpressionType());
+        }
+
+        ObjectFactory of = new ObjectFactory();
+        return of.createFunction(fcn);
+    }
+
+
 }

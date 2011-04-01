@@ -44,7 +44,9 @@ import org.orbisgis.core.renderer.se.common.RelativeOrientation;
 import org.orbisgis.core.renderer.se.common.Uom;
 
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
+import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
@@ -52,12 +54,20 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  *
  * @author maxence
  */
-final class StrokeAnnotationGraphic implements SymbolizerNode {
+public final class StrokeAnnotationGraphic implements SymbolizerNode {
 
 	protected SymbolizerNode parent;
 	private GraphicCollection graphic;
 	private RealParameter relativePosition;
 	private RelativeOrientation orientation;
+
+    public StrokeAnnotationGraphic(){
+        GraphicCollection gc = new GraphicCollection();
+        gc.addGraphic(new MarkGraphic());
+        setGraphic(gc);
+        setRelativeOrientation(RelativeOrientation.NORMAL_UP);
+        setRelativePosition(new RealLiteral(0));
+    }
 
 	public StrokeAnnotationGraphic(StrokeAnnotationGraphicType sagt) throws InvalidStyle {
 		if (sagt.getGraphic() != null) {
@@ -150,4 +160,9 @@ final class StrokeAnnotationGraphic implements SymbolizerNode {
 
         return result.trim();
 	}
+
+    @Override
+    public String toString(){
+        return "Annotation";
+    }
 }

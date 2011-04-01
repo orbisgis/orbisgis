@@ -26,20 +26,30 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  *
  * @author maxence
  */
-public abstract class Label implements SymbolizerNode, UomNode{
+public abstract class Label implements SymbolizerNode, UomNode {
 
     public enum HorizontalAlignment {
 
         LEFT, CENTER, RIGHT;
 
         public static HorizontalAlignment fromString(String token) {
-            if (token.equals("left"))
+            if (token.equals("left")) {
                 return LEFT;
-            
-            if (token.equals("center"))
+            }
+
+            if (token.equals("center")) {
                 return CENTER;
+            }
 
             return RIGHT; // default value
+        }
+
+        public static String[] getList() {
+            String[] list = new String[values().length];
+            for (int i = 0; i < values().length; i++) {
+                list[i] = values()[i].name();
+            }
+            return list;
         }
     }
 
@@ -48,18 +58,28 @@ public abstract class Label implements SymbolizerNode, UomNode{
         TOP, MIDDLE, BASELINE, BOTTOM;
 
         public static VerticalAlignment fromString(String token) {
-            if (token.equals("bottom"))
+            if (token.equals("bottom")) {
                 return BOTTOM;
-            if (token.equals("middle"))
+            }
+            if (token.equals("middle")) {
                 return MIDDLE;
-            if (token.equals("baseline"))
+            }
+            if (token.equals("baseline")) {
                 return BASELINE;
+            }
 
             return TOP;
         }
-    }
 
-	protected SymbolizerNode parent;
+        public static String[] getList() {
+            String[] list = new String[values().length];
+            for (int i = 0; i < values().length; i++) {
+                list[i] = values()[i].name();
+            }
+            return list;
+        }
+    }
+    protected SymbolizerNode parent;
     protected Uom uom;
     protected StyledText label;
     protected HorizontalAlignment hAlign;
@@ -67,18 +87,19 @@ public abstract class Label implements SymbolizerNode, UomNode{
 
     public static Label createLabelFromJAXBElement(JAXBElement<? extends LabelType> l) throws InvalidStyle {
         if (l.getDeclaredType() == PointLabelType.class) {
-            return new PointLabel((JAXBElement<PointLabelType>)l);
+            return new PointLabel((JAXBElement<PointLabelType>) l);
         } else if (l.getDeclaredType() == LineLabelType.class) {
-            return new LineLabel((JAXBElement<LineLabelType>)l);
+            return new LineLabel((JAXBElement<LineLabelType>) l);
         }
 
         return null;
     }
 
-    protected Label(){
+    protected Label() {
+        setLabel(new StyledText());
     }
 
-	protected Label(LabelType t) throws InvalidStyle{
+    protected Label(LabelType t) throws InvalidStyle {
         if (t.getUom() != null) {
             this.uom = Uom.fromOgcURN(t.getUom());
         }
@@ -86,16 +107,16 @@ public abstract class Label implements SymbolizerNode, UomNode{
         if (t.getStyledText() != null) {
             this.setLabel(new StyledText(t.getStyledText()));
         }
-	}
+    }
 
     protected Label(JAXBElement<? extends LabelType> l) throws InvalidStyle {
-		this(l.getValue());
-  }
+        this(l.getValue());
+    }
 
-	@Override
-	public Uom getOwnUom(){
-		return uom;
-	}
+    @Override
+    public Uom getOwnUom() {
+        return uom;
+    }
 
     @Override
     public Uom getUom() {
@@ -106,7 +127,7 @@ public abstract class Label implements SymbolizerNode, UomNode{
         }
     }
 
-	@Override
+    @Override
     public void setUom(Uom uom) {
         this.uom = uom;
     }
@@ -130,7 +151,27 @@ public abstract class Label implements SymbolizerNode, UomNode{
         label.setParent(this);
     }
 
-    public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, 
+    public HorizontalAlignment gethAlign() {
+        return hAlign;
+    }
+
+    public void sethAlign(HorizontalAlignment hAlign) {
+        if (hAlign != null) {
+            this.hAlign = hAlign;
+        }
+    }
+
+    public VerticalAlignment getvAlign() {
+        return vAlign;
+    }
+
+    public void setvAlign(VerticalAlignment vAlign) {
+        if (vAlign != null) {
+            this.vAlign = vAlign;
+        }
+    }
+
+    public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
             Shape shp, boolean selected, MapTransform mt, RenderContext perm)
             throws ParameterException, IOException;
 

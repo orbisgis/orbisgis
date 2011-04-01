@@ -105,7 +105,11 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
     }
 
     public void setUrl(String url) throws MalformedURLException {
-        this.url = new URL(url);
+        if (url == null || url.isEmpty()) {
+            this.url = null;
+        } else {
+            this.url = new URL(url);
+        }
     }
 
     @Override

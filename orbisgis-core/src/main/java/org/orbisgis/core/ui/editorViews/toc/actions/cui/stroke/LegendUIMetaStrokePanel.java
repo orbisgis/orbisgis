@@ -45,7 +45,9 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractMetaPane
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
 import org.orbisgis.core.renderer.se.StrokeNode;
+import org.orbisgis.core.renderer.se.stroke.CompoundStroke;
 import org.orbisgis.core.renderer.se.stroke.GraphicStroke;
+import org.orbisgis.core.renderer.se.stroke.TextStroke;
 
 /**
  *
@@ -56,10 +58,10 @@ public class LegendUIMetaStrokePanel extends LegendUIAbstractMetaPanel {
 	private StrokeNode sNode;
 	private LegendUIComponent comp;
 
-	private final Class[] classes = {PenStroke.class, GraphicStroke.class};
+	private final Class[] classes = {PenStroke.class, GraphicStroke.class, TextStroke.class, CompoundStroke.class};
 
 	public LegendUIMetaStrokePanel(LegendUIController controller, LegendUIComponent parent, StrokeNode strokeNode, boolean isNullable) {
-		super("stroke", controller, parent, 0, isNullable);
+		super(null, controller, parent, 0, isNullable);
 
 		this.sNode = strokeNode;
 
@@ -104,15 +106,56 @@ public class LegendUIMetaStrokePanel extends LegendUIAbstractMetaPanel {
 
 				@Override
 				protected void turnOff() {
-					throw new UnsupportedOperationException("Not supported yet.");
+					throw new UnsupportedOperationException("Unreachable code.");
 				}
 
 				@Override
 				protected void turnOn() {
-					throw new UnsupportedOperationException("Not supported yet.");
+					throw new UnsupportedOperationException("Unreachable code.");
 				}
 			};
 
+        } else if (newClass == TextStroke.class){
+            TextStroke tStroke;
+            if (sNode.getStroke() instanceof TextStroke){
+                tStroke = (TextStroke) sNode.getStroke();
+            } else {
+                tStroke = new TextStroke();
+            }
+
+            return new LegendUITextStrokePanel(controller, this, tStroke, false) {
+
+                @Override
+                protected void turnOff() {
+					throw new UnsupportedOperationException("Unreachable code.");
+                }
+
+                @Override
+                protected void turnOn() {
+					throw new UnsupportedOperationException("Unreachable code.");
+
+                }
+            };
+        } else if (newClass == CompoundStroke.class) {
+            CompoundStroke cStroke;
+            if (sNode.getStroke() instanceof CompoundStroke){
+                cStroke = (CompoundStroke) sNode.getStroke();
+            } else {
+                cStroke = new CompoundStroke();
+            }
+
+            return new LegendUICompoundStrokePanel(controller, this, cStroke, false) {
+
+                @Override
+                protected void turnOff() {
+					throw new UnsupportedOperationException("Unreachable code.");
+                }
+
+                @Override
+                protected void turnOn() {
+					throw new UnsupportedOperationException("Unreachable code.");
+                }
+            };
 		} else {
 			return null;
 		}

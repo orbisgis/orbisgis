@@ -57,18 +57,20 @@ public abstract class LegendUIViewBoxPanel extends LegendUIComponent {
 	private LegendUIMetaRealPanel width;
 	private LegendUIMetaRealPanel height;
 
-	public LegendUIViewBoxPanel(LegendUIController controller, LegendUIComponent parent, ViewBox vbox, boolean isNullable) {
+	public LegendUIViewBoxPanel(LegendUIController controller, LegendUIComponent parent,
+            ViewBox vbox, boolean isNullable) {
 		super("View Box", controller, parent, 0, isNullable);
 		this.viewbox = vbox;
 
 		if (viewbox == null){
 			viewbox = new ViewBox();
 			isNullable = true;
+            this.isNullComponent = true;
 		}
 
 		this.setBorder(BorderFactory.createTitledBorder(getName()));
 
-		height = new LegendUIMetaRealPanel("h", controller, this, vbox.getHeight(), true) {
+		height = new LegendUIMetaRealPanel("h", controller, this, viewbox.getHeight(), true) {
 
 			@Override
 			public void realChanged(RealParameter newReal) {
@@ -77,7 +79,7 @@ public abstract class LegendUIViewBoxPanel extends LegendUIComponent {
 		};
 		height.init();
 
-		width = new LegendUIMetaRealPanel("w", controller, this, vbox.getWidth(), true) {
+		width = new LegendUIMetaRealPanel("w", controller, this, viewbox.getWidth(), true) {
 
 			@Override
 			public void realChanged(RealParameter newReal) {
@@ -106,11 +108,13 @@ public abstract class LegendUIViewBoxPanel extends LegendUIComponent {
 	@Override
 	protected void turnOff() {
 		viewBoxChanged(null);
+        this.isNullComponent = true;
 	}
 
 	@Override
 	protected void turnOn() {
 		viewBoxChanged(viewbox);
+        this.isNullComponent = false;
 	}
 
 	public abstract void viewBoxChanged(ViewBox newViewBox);

@@ -43,6 +43,7 @@ import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
+import javax.swing.border.TitledBorder;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 /**
@@ -51,172 +52,182 @@ import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
  */
 public abstract class LegendUIAbstractMetaPanel extends LegendUIComponent {
 
-	private JButton changeType;
-	//private LegendUIType[] types;
-	private LegendUIComponent[] comps;
-	//private LegendUIType currentType;
-	private int currentComp;
+    private JButton changeType;
+    //private LegendUIType[] types;
+    private LegendUIComponent[] comps;
+    //private LegendUIType currentType;
+    private int currentComp;
+    private ClassWrapper[] classes;
 
-	private ClassWrapper[] classes;
+    public LegendUIAbstractMetaPanel(String name, LegendUIController controller, LegendUIComponent parent,
+            float weight, boolean isNullable) {
+        super(name, controller, parent, weight, isNullable);
 
-	public LegendUIAbstractMetaPanel(String name, LegendUIController controller, LegendUIComponent parent,
-			float weight, boolean isNullable) {
-		super(name, controller, parent, weight, isNullable);
+        this.setBorder(BorderFactory.createTitledBorder(name));
 
-		this.setBorder(BorderFactory.createTitledBorder(name));
+        changeType = new JButton(OrbisGISIcon.SE_CHANGE_TYPE);
+        changeType.setMargin(new Insets(0, 0, 0, 0));
+        changeType.addActionListener(new ChangeTypeListener(this));
 
-		changeType = new JButton(OrbisGISIcon.SE_CHANGE_TYPE);
-		changeType.setMargin(new Insets(0, 0, 0, 0));
-		changeType.addActionListener(new ChangeTypeListener(this));
+        currentComp = 0;
+    }
 
-		currentComp = 0;
-	}
+    protected void updateTitle() {
+        if (LegendUIAbstractMetaPanel.this.getName() == null) {
+            TitledBorder border = (TitledBorder) LegendUIAbstractMetaPanel.this.getBorder();
+            border.setTitle(comps[currentComp].getEditedClass().getSimpleName());
+        }
+    }
 
-	/**
-	 *
-	 * @param availableTypes
-	 * @param initialType
-	 * @param initialPanel
-	 */
-	protected void init(Class[] classes, LegendUIComponent comp) {
-		this.classes = new ClassWrapper[classes.length];
+    /**
+     *
+     * @param availableTypes
+     * @param initialType
+     * @param initialPanel
+     */
+    protected void init(Class[] classes, LegendUIComponent comp) {
+        this.classes = new ClassWrapper[classes.length];
 
-		int i = 0;
-		for (Class cl : classes){
-			this.classes[i] = new ClassWrapper(cl);
-			i++;
-		}
+        int i = 0;
+        for (Class cl : classes) {
+            this.classes[i] = new ClassWrapper(cl);
+            i++;
+        }
 
-		this.comps = new LegendUIComponent[classes.length];
-		if (comp != null){
-			this.currentComp = getIndex(comp);
-			comps[currentComp] = comp;
-			switchTo(comps[currentComp]);
-		} else {
-			isNullComponent = true;
-		}
-	}
+        this.comps = new LegendUIComponent[classes.length];
+        if (comp != null) {
+            this.currentComp = getIndex(comp);
+            comps[currentComp] = comp;
+            updateTitle();
+            switchTo(comps[currentComp]);
+        } else {
+            isNullComponent = true;
+        }
 
-	/**
-	 * call right after creating new instances !
-	 */
-	public abstract void init();
+    }
 
+    /**
+     * call right after creating new instances !
+     */
+    public abstract void init();
 
+    @Override
+    protected void turnOff() {
+        this.isNullComponent = true;
+        switchTo(null);
+        controller.structureChanged(this.getParentComponent());
+    }
 
-	@Override
-	protected void turnOff(){
-		this.isNullComponent = true;
-		switchTo(null);
-		controller.structureChanged(this.getParentComponent());
-	}
+    @Override
+    protected void turnOn() {
+        this.isNullComponent = false;
 
-	@Override
-	protected void turnOn(){
-		this.isNullComponent = false;
+        if (comps[currentComp] == null) {
+            comps[currentComp] = getCompForClass(classes[currentComp].mClass);
+        }
 
-		if (comps[currentComp] == null){
-			comps[currentComp] = getCompForClass(classes[currentComp].mClass);
-		}
+        switchTo(comps[currentComp]);
+        controller.structureChanged(this.getParentComponent());
+    }
 
-		switchTo(comps[currentComp]);
-		controller.structureChanged(this.getParentComponent());
-	}
+    /**
+     *
+     * @param type the new type of sub panel as selected by the user
+     * @param newActiveComp the corresponding UI component
+     */
+    protected abstract void switchTo(LegendUIComponent newActiveComp);
 
-	/**
-	 *
-	 * @param type the new type of sub panel as selected by the user
-	 * @param newActiveComp the corresponding UI component
-	 */
-	protected abstract void switchTo(LegendUIComponent newActiveComp);
+    private int getIndex(LegendUIComponent comp) {
+        Class cl = comp.getEditedClass();
+        int i;
+        for (i = 0; i < classes.length; i++) {
+            if (classes[i].mClass.equals(cl)) {
+                return i;
+            }
+        }
+        return 0;
+    }
 
-	private int getIndex(LegendUIComponent comp) {
-		Class cl = comp.getEditedClass();
-		int i;
-		for (i = 0; i < classes.length; i++) {
-			if (classes[i].mClass.equals(cl)) {
-				return i;
-			}
-		}
-		return 0;
-	}
+    private int getClassIndex(Class cl) {
+        int i;
+        for (i = 0; i < classes.length; i++) {
+            if (classes[i].mClass.equals(cl)) {
+                return i;
+            }
+        }
+        return 0;
+    }
 
-	private int getClassIndex(Class cl) {
-		int i;
-		for (i = 0; i < classes.length; i++) {
-			if (classes[i].mClass.equals(cl)) {
-				return i;
-			}
-		}
-		return 0;
-	}
+    private class ChangeTypeListener implements ActionListener {
 
-	private class ChangeTypeListener implements ActionListener {
+        private final LegendUIComponent metaPanel;
 
-		private final LegendUIComponent metaPanel;
+        public ChangeTypeListener(LegendUIComponent metaPanel) {
+            super();
+            this.metaPanel = metaPanel;
+        }
 
-		public ChangeTypeListener(LegendUIComponent metaPanel) {
-			super();
-			this.metaPanel = metaPanel;
-		}
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            ClassWrapper newClass = (ClassWrapper) JOptionPane.showInputDialog(null,
+                    "Choose a new type", "Choose a new type",
+                    JOptionPane.PLAIN_MESSAGE, null,
+                    classes, classes[currentComp]);
 
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			ClassWrapper newClass = (ClassWrapper) JOptionPane.showInputDialog(null,
-					"Choose a new type", "Choose a new type",
-					JOptionPane.PLAIN_MESSAGE, null,
-					classes, classes[currentComp]);
+            if (newClass != null) {
+                // First detach old-child
+                comps[currentComp].makeOrphan();
 
-			if (newClass != null) {
-				// First detach old-child
-				comps[currentComp].makeOrphan();
+                // then be sure the new child is OK
+                currentComp = getClassIndex(newClass.mClass);
 
-				// then be sure the new child is OK
-				currentComp = getClassIndex(newClass.mClass);
+                if (comps[currentComp] == null) {
+                    // If child doesn't exists, request it !
+                    comps[currentComp] = getCompForClass(newClass.mClass);
+                }
+                // Insert the new one in the tree
+                metaPanel.addChild(comps[currentComp]);
 
-				if (comps[currentComp] == null){
-					// If child doesn't exists, request it !
-					comps[currentComp] = getCompForClass(newClass.mClass);
-				}
-				// Insert the new one in the tree
-				metaPanel.addChild(comps[currentComp]);
+                LegendUIAbstractMetaPanel.this.updateTitle();
 
-				// Update SE Model
-				switchTo(comps[currentComp]);
-				// And finally update the UI Structure
-				controller.structureChanged(comps[currentComp]);
+                // Update SE Model
+                switchTo(comps[currentComp]);
+                // And finally update the UI Structure
+                controller.structureChanged(comps[currentComp]);
 
-			}
-		}
+            }
+        }
+    }
 
-	}
+    protected abstract LegendUIComponent getCompForClass(Class newClass);
 
-	protected abstract LegendUIComponent getCompForClass(Class newClass);
+    @Override
+    protected void mountComponent() {
+        toolbar.add(changeType);
 
-	@Override
-	protected void mountComponent() {
-		toolbar.add(changeType);
+        if (comps != null) {
+            if (comps[currentComp] == null) {
+                comps[currentComp] = getCompForClass(classes[currentComp].mClass);
+            }
+            editor.add(comps[currentComp]);
+        }
+    }
 
-		if (comps[currentComp] == null){
-			comps[currentComp] = getCompForClass(classes[currentComp].mClass);
-		}
+    public LegendUIComponent getCurrentComponent() {
+        return this.comps[currentComp];
+    }
 
-		editor.add(comps[currentComp]);
-	}
+    private class ClassWrapper {
 
-	public LegendUIComponent getCurrentComponent(){
-		return this.comps[currentComp];
-	}
+        Class mClass;
 
-	private class ClassWrapper {
-		Class mClass;
-		public ClassWrapper(Class theClass){
-			mClass = theClass;
-		}
+        public ClassWrapper(Class theClass) {
+            mClass = theClass;
+        }
 
-		@Override
-		public String toString(){
-			return mClass.getSimpleName();
-		}
-	}
+        @Override
+        public String toString() {
+            return mClass.getSimpleName();
+        }
+    }
 }

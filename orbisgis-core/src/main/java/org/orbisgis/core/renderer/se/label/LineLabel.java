@@ -32,15 +32,25 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
  */
 public class LineLabel extends Label {
 
+    public LineLabel() {
+        super();
+        setvAlign(VerticalAlignment.MIDDLE);
+        sethAlign(HorizontalAlignment.CENTER);
+    }
+
     public LineLabel(LineLabelType t) throws InvalidStyle {
         super(t);
 
         if (t.getHorizontalAlignment() != null) {
             this.hAlign = HorizontalAlignment.fromString(SeParameterFactory.extractToken(t.getHorizontalAlignment()));
+        } else {
+            this.hAlign = HorizontalAlignment.CENTER;
         }
 
         if (t.getVerticalAlignment() != null) {
             this.vAlign = VerticalAlignment.fromString(SeParameterFactory.extractToken(t.getVerticalAlignment()));
+        } else {
+            this.vAlign = VerticalAlignment.MIDDLE;
         }
     }
 

@@ -66,13 +66,15 @@ import org.orbisgis.core.renderer.se.StrokeNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.ViewBoxNode;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
+import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 
-public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, ViewBoxNode, UomNode {
+public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, ViewBoxNode, UomNode, TransformNode {
 
     public static final double defaultSize = 3;
     //private MarkGraphicSource source;
     private Uom uom;
+    private Transform transform;
     private StringParameter wkn;
     private OnlineResource onlineResource;
     private ViewBox viewBox;
@@ -91,7 +93,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 
     public void setTo3mmCircle() {
         this.setUom(Uom.MM);
-        //this.setSource(WellKnownName.CIRCLE);
+        this.setWkn(new StringLiteral("circle"));
 
         this.setViewBox(new ViewBox(new RealLiteral(defaultSize)));
         this.setFill(new SolidFill());
@@ -168,6 +170,19 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
     @Override
     public void setUom(Uom uom) {
         this.uom = uom;
+    }
+
+    @Override
+    public Transform getTransform() {
+        return transform;
+    }
+
+    @Override
+    public void setTransform(Transform transform) {
+        this.transform = transform;
+        if (transform != null) {
+            transform.setParent(this);
+        }
     }
 
     @Override
@@ -494,7 +509,8 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 
     public void setWkn(StringParameter wkn) {
         this.wkn = wkn;
-        if (wkn != null) {
+        if (this.wkn != null) {
+            this.wkn.setRestrictionTo(WellKnownName.getValues());
             this.onlineResource = null;
         }
     }

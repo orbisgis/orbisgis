@@ -35,7 +35,6 @@ public abstract class Stroke implements SymbolizerNode {
 
     protected static OutputManager logger = Services.getOutputManager();
 
-	//private Uom uom;
     protected SymbolizerNode parent;
 
     private boolean linearRapport;
@@ -49,12 +48,6 @@ public abstract class Stroke implements SymbolizerNode {
 
     protected Stroke (StrokeType s){
         this();
-
-        /*if (s.getUnitOfMeasure() != null){
-            this.setUom(Uom.fromOgcURN(s.getUnitOfMeasure()));
-        } else {
-            this.setUom(null);
-        }*/
 
         if (s.getExtension() != null) {
             for (ExtensionParameterType param : s.getExtension().getExtensionParameter()) {
@@ -88,26 +81,6 @@ public abstract class Stroke implements SymbolizerNode {
         // TODO Shoudl never occurs !
         return null;
     }
-
-    /*
-	@Override
-    public final void setUom(Uom uom) {
-        this.uom = uom;
-    }
-
-	@Override
-	public Uom getOwnUom(){
-		return uom;
-	}
-
-    @Override
-    public Uom getUom() {
-        if (uom == null) {
-            return parent.getUom();
-        } else {
-            return uom;
-        }
-    }*/
 
     @Override
     public SymbolizerNode getParent() {
@@ -149,26 +122,6 @@ public abstract class Stroke implements SymbolizerNode {
         this.offsetRapport = offsetRapport;
     }
 
-    /**
-     * Return the max width of the underlaying stroke
-     * @param ds
-     * @param fid
-     * @return
-     */
-    //public abstract double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException;
-
-    /**
-     *  Return the minimum required length to totally draw the stoke
-     * @param sds
-     * @param fid
-     * @param mt
-     * @return
-     * @throws ParameterException
-     * @throws IOException
-     */
-    //public abstract double getMinLength(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException;
-
-    //public abstract void getStroke(DataSource ds, int fid);
     /**
      *
      * @param g2 draw within this graphics2d

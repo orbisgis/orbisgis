@@ -116,6 +116,11 @@ public abstract class TextInput extends JPanel {
 		this.add(input);
 	}
 
+    public void setValue(String s){
+        input.setText(s);
+        valueChanged(s);
+    }
+
 	private void updateValue(boolean resetOnError) {
 		String inputText = input.getText();
 		if (resetOnError && (inputText == null || 

@@ -260,10 +260,17 @@ public final class Matrix implements Transformation {
         return m;
     }
 
+    @Override
+    public String toString(){
+        return "Matrix";
+    }
+
     private RealParameter a;
     private RealParameter b;
     private RealParameter c;
     private RealParameter d;
     private RealParameter e;
     private RealParameter f;
+
+
 }

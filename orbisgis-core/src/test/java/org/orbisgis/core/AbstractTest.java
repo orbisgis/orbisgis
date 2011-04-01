@@ -37,6 +37,7 @@
  */
 package org.orbisgis.core;
 
+import java.awt.Color;
 import junit.framework.TestCase;
 
 import org.gdms.data.DataSourceFactory;
@@ -44,16 +45,21 @@ import org.gdms.source.SourceManager;
 import org.orbisgis.core.errorManager.ErrorListener;
 import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.ui.TestWorkspace;
+import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 import org.orbisgis.core.workspace.Workspace;
 
 public class AbstractTest extends TestCase {
 
 	protected FailErrorManager failErrorManager;
+    protected FailOutputManager failOutputManager;
 
 	@Override
 	protected void setUp() throws Exception {
 		failErrorManager = new FailErrorManager();
+        failOutputManager = new FailOutputManager();
+
 		Services.registerService(ErrorManager.class, "", failErrorManager);
+		Services.registerService(OutputManager.class, "", failOutputManager);
 		TestWorkspace workspace = new TestWorkspace();
 		workspace.setWorkspaceFolder("target");
 		Services.registerService(Workspace.class, "", workspace);
@@ -87,6 +93,30 @@ public class AbstractTest extends TestCase {
 	protected DataManager getDataManager() {
 		return (DataManager) Services.getService(DataManager.class);
 	}
+
+    protected class FailOutputManager implements OutputManager {
+
+        @Override
+        public void print(String out) {
+            System.out.print (out);
+        }
+
+        @Override
+        public void print(String text, Color color) {
+            System.out.print(text);
+        }
+
+        @Override
+        public void println(String out) {
+            System.out.println(out);
+        }
+
+        @Override
+        public void println(String text, Color color) {
+            System.out.println(text);
+        }
+
+    }
 
 	protected class FailErrorManager implements ErrorManager {
 

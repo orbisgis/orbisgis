@@ -39,48 +39,48 @@ import org.orbisgis.core.renderer.se.transform.Transform;
  * @see MarkGraphic, Graphic
  * @author maxence
  */
-public final class ExternalGraphic extends Graphic implements UomNode {
+public final class ExternalGraphic extends Graphic implements UomNode, TransformNode {
 
     private ExternalGraphicSource source;
     private ViewBox viewBox;
     private RealParameter opacity;
     private Halo halo;
+    private Transform transform;
     private PlanarImage graphic;
     private Uom uom;
+    private String mimeType;
 
-	private String mimeType;
-
-    public ExternalGraphic(){
+    public ExternalGraphic() {
     }
 
     ExternalGraphic(JAXBElement<ExternalGraphicType> extG) throws IOException, InvalidStyle {
         ExternalGraphicType t = extG.getValue();
 
-        if (t.getHalo() != null){
+        if (t.getHalo() != null) {
             this.setHalo(new Halo(t.getHalo()));
         }
 
-        if (t.getOpacity() != null){
+        if (t.getOpacity() != null) {
             this.setOpacity(SeParameterFactory.createRealParameter(t.getOpacity()));
         }
 
-        if (t.getTransform() != null){
+        if (t.getTransform() != null) {
             this.setTransform(new Transform(t.getTransform()));
         }
 
-        if (t.getUom() != null){
+        if (t.getUom() != null) {
             this.setUom(Uom.fromOgcURN(t.getUom()));
         }
 
-        if (t.getViewBox() != null){
+        if (t.getViewBox() != null) {
             this.setViewBox(new ViewBox(t.getViewBox()));
         }
-        
-        if (t.getOnlineResource() != null){
+
+        if (t.getOnlineResource() != null) {
             this.setSource(new OnlineResource(t.getOnlineResource()));
         }
 
-		this.mimeType = t.getFormat();
+        this.mimeType = t.getFormat();
     }
 
     @Override
@@ -92,14 +92,27 @@ public final class ExternalGraphic extends Graphic implements UomNode {
         }
     }
 
-	@Override
-	public Uom getOwnUom(){
-		return uom;
-	}
+    @Override
+    public Uom getOwnUom() {
+        return uom;
+    }
 
-	@Override
+    @Override
     public void setUom(Uom uom) {
         this.uom = uom;
+    }
+
+    @Override
+    public Transform getTransform() {
+        return transform;
+    }
+
+    @Override
+    public void setTransform(Transform transform) {
+        this.transform = transform;
+        if (transform != null) {
+            transform.setParent(this);
+        }
     }
 
     public Halo getHalo() {
@@ -108,7 +121,9 @@ public final class ExternalGraphic extends Graphic implements UomNode {
 
     public void setHalo(Halo halo) {
         this.halo = halo;
-        halo.setParent(this);
+        if (halo != null) {
+            halo.setParent(this);
+        }
     }
 
     public RealParameter getOpacity() {
@@ -117,9 +132,9 @@ public final class ExternalGraphic extends Graphic implements UomNode {
 
     public void setOpacity(RealParameter opacity) {
         this.opacity = opacity;
-		if (this.opacity != null){
-			this.opacity.setContext(RealParameterContext.percentageContext);
-		}
+        if (this.opacity != null) {
+            this.opacity.setContext(RealParameterContext.percentageContext);
+        }
     }
 
     public ViewBox getViewBox() {
@@ -135,13 +150,13 @@ public final class ExternalGraphic extends Graphic implements UomNode {
     @Override
     public void updateGraphic() {
         graphic = null;
-		/*
+        /*
         try {
-            if (source != null) {
-                graphic = source.getPlanarImage(viewBox, null, null);
-            }
+        if (source != null) {
+        graphic = source.getPlanarImage(viewBox, null, null);
+        }
         } catch (Exception ex) {
-            ex.printStackTrace();
+        ex.printStackTrace();
         }*/
     }
 
@@ -150,13 +165,17 @@ public final class ExternalGraphic extends Graphic implements UomNode {
         updateGraphic();
     }
 
+    public ExternalGraphicSource getSource() {
+        return source;
+    }
+
     @Override
     public Rectangle2D getBounds(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
-         // TODO Implements SELECTED!
+        // TODO Implements SELECTED!
         RenderedImage img;
         img = source.getPlanarImage(viewBox, sds, fid, mt, mimeType);
 
-        if (img == null){
+        if (img == null) {
             return null;
         }
 
@@ -164,7 +183,7 @@ public final class ExternalGraphic extends Graphic implements UomNode {
         double h = img.getHeight();
 
         AffineTransform at = null;
-        if (transform != null){
+        if (transform != null) {
             at = transform.getGraphicalAffineTransform(false, sds, fid, mt, w, h);
         }
 
@@ -173,7 +192,7 @@ public final class ExternalGraphic extends Graphic implements UomNode {
 
         // reserve the place for halo
         if (halo != null) {
-			double r = halo.getHaloRadius(sds, fid, mt);
+            double r = halo.getHaloRadius(sds, fid, mt);
             w += 2 * r;
             h += 2 * r;
             px = r;
@@ -182,16 +201,15 @@ public final class ExternalGraphic extends Graphic implements UomNode {
 
         Rectangle2D bounds = new Rectangle2D.Double(0.0, 0.0, w, h);
 
-        if (at != null){
+        if (at != null) {
             return at.createTransformedShape(bounds).getBounds2D();
         } else {
             return bounds;
         }
     }
 
-
     @Override
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, 
+    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
             boolean selected, MapTransform mt, AffineTransform fat) throws ParameterException, IOException {
         // TODO Implements SELECTED!
         AffineTransform at = new AffineTransform(fat);
@@ -203,15 +221,15 @@ public final class ExternalGraphic extends Graphic implements UomNode {
         //    img = graphic;
         //}
 
-        if (img == null){
-            System.out.println ("Image is null !!!");
+        if (img == null) {
+            System.out.println("Image is null !!!");
             return;
         }
 
         double w = img.getWidth();
         double h = img.getHeight();
 
-        if (transform != null){
+        if (transform != null) {
             at.concatenate(transform.getGraphicalAffineTransform(false, sds, fid, mt, w, h));
         }
 
@@ -220,7 +238,7 @@ public final class ExternalGraphic extends Graphic implements UomNode {
 
         // reserve the place for halo
         if (halo != null) {
-			double r = halo.getHaloRadius(sds, fid, mt);
+            double r = halo.getHaloRadius(sds, fid, mt);
             w += 2 * r;
             h += 2 * r;
             px = r;
@@ -249,103 +267,101 @@ public final class ExternalGraphic extends Graphic implements UomNode {
 
     /*@Override
     public RenderableGraphics getRenderableGraphics(SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException {
-        // TODO Implements SELECTED!
+    // TODO Implements SELECTED!
 
-        RenderedImage img;
+    RenderedImage img;
 
-        //if (graphic == null) {
-        img = source.getPlanarImage(viewBox, sds, fid, mt, mimeType);
-        //} else {
-        //    img = graphic;
-        //}
+    //if (graphic == null) {
+    img = source.getPlanarImage(viewBox, sds, fid, mt, mimeType);
+    //} else {
+    //    img = graphic;
+    //}
 
-        if (img == null){
-            return null;
-        }
-        
-        double w = img.getWidth();
-        double h = img.getHeight();
+    if (img == null){
+    return null;
+    }
 
-        AffineTransform at = new AffineTransform();
-        if (transform != null){
-            at = transform.getGraphicalAffineTransform(false, sds, fid, mt, w, h);
-        }
+    double w = img.getWidth();
+    double h = img.getHeight();
 
-        double px = 0;
-        double py = 0;
+    AffineTransform at = new AffineTransform();
+    if (transform != null){
+    at = transform.getGraphicalAffineTransform(false, sds, fid, mt, w, h);
+    }
 
-        // reserve the place for halo
-        if (halo != null) {
-			double r = halo.getHaloRadius(sds, fid, mt);
-            w += 2 * r;
-            h += 2 * r;
-            px = r;
-            py = r;
-        }
+    double px = 0;
+    double py = 0;
 
-        Rectangle2D bounds = new Rectangle2D.Double(0.0, 0.0, w, h);
+    // reserve the place for halo
+    if (halo != null) {
+    double r = halo.getHaloRadius(sds, fid, mt);
+    w += 2 * r;
+    h += 2 * r;
+    px = r;
+    py = r;
+    }
 
-        at.concatenate(AffineTransform.getTranslateInstance(-w / 2.0, -h / 2.0));
+    Rectangle2D bounds = new Rectangle2D.Double(0.0, 0.0, w, h);
 
-        // Apply the AT to the bbox
-        Shape atShp = at.createTransformedShape(bounds);
-        Rectangle2D imageSize = atShp.getBounds2D();
+    at.concatenate(AffineTransform.getTranslateInstance(-w / 2.0, -h / 2.0));
 
-        RenderableGraphics rg = Graphic.getNewRenderableGraphics(imageSize, 0, mt);
+    // Apply the AT to the bbox
+    Shape atShp = at.createTransformedShape(bounds);
+    Rectangle2D imageSize = atShp.getBounds2D();
 
-        if (halo != null) {
-            halo.draw(rg, sds, fid, selected, atShp, mt, false);
-            // and add a translation to center img on halo
-            at.concatenate(AffineTransform.getTranslateInstance(px, py));
-        }
+    RenderableGraphics rg = Graphic.getNewRenderableGraphics(imageSize, 0, mt);
 
-        // TODO how to set opacity ?
+    if (halo != null) {
+    halo.draw(rg, sds, fid, selected, atShp, mt, false);
+    // and add a translation to center img on halo
+    at.concatenate(AffineTransform.getTranslateInstance(px, py));
+    }
+
+    // TODO how to set opacity ?
 
 
-        // apply the AT and draw the ext graphic
-        rg.drawRenderedImage(img, at);
+    // apply the AT and draw the ext graphic
+    rg.drawRenderedImage(img, at);
 
-        return rg;
+    return rg;
     }*/
 
     /*public double getMargin(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
-        double delta = 0.0;
+    double delta = 0.0;
 
-        if (this.halo != null) {
-			delta += halo.getHaloRadius(sds, fid, mt);
-        }
+    if (this.halo != null) {
+    delta += halo.getHaloRadius(sds, fid, mt);
+    }
 
-        return delta;
+    return delta;
     }*/
 
     /*
     @Override
     public double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
-        double delta = 0.0;
-        if (viewBox != null && viewBox.usable()) {
-            RenderedImage img;
-            if (graphic == null) {
-                img = source.getPlanarImage(viewBox, sds, fid, mt, mimeType);
-            } else {
-                img = graphic;
-            }
+    double delta = 0.0;
+    if (viewBox != null && viewBox.usable()) {
+    RenderedImage img;
+    if (graphic == null) {
+    img = source.getPlanarImage(viewBox, sds, fid, mt, mimeType);
+    } else {
+    img = graphic;
+    }
 
-            if (img != null){
-                Point2D dim = viewBox.getDimensionInPixel(sds, fid, img.getHeight(), img.getWidth(), mt.getScaleDenominator(), mt.getDpi());
+    if (img != null){
+    Point2D dim = viewBox.getDimensionInPixel(sds, fid, img.getHeight(), img.getWidth(), mt.getScaleDenominator(), mt.getDpi());
 
-                delta = Math.max(dim.getY(), dim.getX());
-            }
-            else{
-                return 0.0;
-            }
-        }
+    delta = Math.max(dim.getY(), dim.getX());
+    }
+    else{
+    return 0.0;
+    }
+    }
 
-        delta += this.getMargin(sds, fid, mt);
+    delta += this.getMargin(sds, fid, mt);
 
-        return delta;
+    return delta;
     }*/
-
-
     @Override
     public String dependsOnFeature() {
 
@@ -355,16 +371,16 @@ public final class ExternalGraphic extends Graphic implements UomNode {
         String v = "";
 
 
-        if (halo != null){
+        if (halo != null) {
             h = halo.dependsOnFeature();
         }
-        if (opacity != null){
+        if (opacity != null) {
             o = opacity.dependsOnFeature();
         }
-        if (transform != null){
+        if (transform != null) {
             t = transform.dependsOnFeature();
         }
-        if (viewBox != null){
+        if (viewBox != null) {
             v = viewBox.dependsOnFeature();
         }
 
@@ -383,9 +399,9 @@ public final class ExternalGraphic extends Graphic implements UomNode {
             source.setJAXBSource(e);
         }
 
-		if (mimeType != null){
-			e.setFormat(mimeType);
-		}
+        if (mimeType != null) {
+            e.setFormat(mimeType);
+        }
 
         if (opacity != null) {
             e.setOpacity(opacity.getJAXBParameterValueType());

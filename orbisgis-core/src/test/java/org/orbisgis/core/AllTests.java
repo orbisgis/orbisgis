@@ -50,7 +50,7 @@ import org.orbisgis.core.renderer.se.parameter.PropertyNameTest;
 import org.orbisgis.core.renderer.se.parameter.color.Categorize2ColorTest;
 import org.orbisgis.core.renderer.se.parameter.color.Recode2ColorTest;
 import org.orbisgis.core.renderer.se.parameter.real.Interpolate2RealTest;
-import org.orbisgis.core.renderer.se.parameter.real.RealUnaryOperatorTest;
+import org.orbisgis.core.renderer.se.parameter.real.RealFunctionTest;
 import org.orbisgis.core.renderer.se.transform.TransformTest;
 
 public class AllTests extends TestCase {
@@ -75,7 +75,7 @@ public class AllTests extends TestCase {
 		suite.addTestSuite(Categorize2ColorTest.class);
 		suite.addTestSuite(Recode2ColorTest.class);
         suite.addTestSuite(Interpolate2RealTest.class);
-        suite.addTestSuite(RealUnaryOperatorTest.class);
+        suite.addTestSuite(RealFunctionTest.class);
         suite.addTestSuite(TransformTest.class);
 		// $JUnit-END$
 		return suite;

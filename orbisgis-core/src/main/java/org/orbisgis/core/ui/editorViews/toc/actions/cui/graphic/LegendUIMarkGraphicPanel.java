@@ -66,6 +66,7 @@ public class LegendUIMarkGraphicPanel extends LegendUIComponent implements Legen
 	private LegendUIMetaFillPanel mFill;
 	private LegendUIMetaStrokePanel mStroke;
 	private LegendUIViewBoxPanel vBox;
+    private LegendUITransformPanel transform;
 	private LegendUIMetaRealPanel pOffset;
 	private LegendUIMetaMarkSource mSource;
 	private LegendUIHaloPanel halo;
@@ -75,11 +76,15 @@ public class LegendUIMarkGraphicPanel extends LegendUIComponent implements Legen
 		super("Mark graphic", controller, parent, 0, false);
 		this.mark = m;
 
+		this.uomInput = new UomInput(m);
+
 		this.mFill = new LegendUIMetaFillPanel(controller, this, (FillNode) mark, true);
 		this.mFill.init();
 
 		this.mStroke = new LegendUIMetaStrokePanel(controller, this, (StrokeNode) mark, true);
 		this.mStroke.init();
+
+        this.transform = new LegendUITransformPanel(controller, this, m);
 
 		this.pOffset = new LegendUIMetaRealPanel("POffset", controller, this, mark.getpOffset(), true) {
 
@@ -111,10 +116,9 @@ public class LegendUIMarkGraphicPanel extends LegendUIComponent implements Legen
 
 		};
 
-		this.mSource = new LegendUIMetaMarkSource(controller, parent, mark);
+		this.mSource = new LegendUIMetaMarkSource(controller, this, mark);
 		mSource.init();
 
-		this.uomInput = new UomInput(m);
 	}
 
 	@Override
@@ -127,16 +131,23 @@ public class LegendUIMarkGraphicPanel extends LegendUIComponent implements Legen
 		LegendUIAbstractPanel content1 = new LegendUIAbstractPanel(controller);
 		LegendUIAbstractPanel content2 = new LegendUIAbstractPanel(controller);
 		LegendUIAbstractPanel content3 = new LegendUIAbstractPanel(controller);
+		LegendUIAbstractPanel content3a = new LegendUIAbstractPanel(controller);
+		LegendUIAbstractPanel content3b = new LegendUIAbstractPanel(controller);
 
 		content1.add(mSource, BorderLayout.WEST);
 		content1.add(uomInput, BorderLayout.EAST);
 
-		content2.add(mFill, BorderLayout.NORTH);
-		content2.add(mStroke, BorderLayout.CENTER);
-		content2.add(vBox, BorderLayout.SOUTH);
+		content2.add(vBox, BorderLayout.NORTH);
+        content2.add(transform, BorderLayout.SOUTH);
 
-		content3.add(pOffset, BorderLayout.NORTH);
-		content3.add(halo, BorderLayout.SOUTH);
+		content3a.add(pOffset, BorderLayout.WEST);
+		content3a.add(halo, BorderLayout.EAST);
+
+		content3b.add(mStroke, BorderLayout.WEST);
+		content3b.add(mFill, BorderLayout.EAST);
+
+        content3.add(content3a, BorderLayout.NORTH);
+        content3.add(content3b, BorderLayout.SOUTH);
 
 		editor.add(content1, BorderLayout.NORTH);
 		editor.add(content2, BorderLayout.CENTER);

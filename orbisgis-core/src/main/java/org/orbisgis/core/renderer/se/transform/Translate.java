@@ -94,17 +94,30 @@ public class Translate implements Transformation {
         return t;
     }
 
-	private void setY(RealParameter y) {
+    public RealParameter getX() {
+        return x;
+    }
+
+    public RealParameter getY() {
+        return y;
+    }
+
+	public void setY(RealParameter y) {
 		this.y = y;
 		if (y != null){
 			y.setContext(RealParameterContext.realContext);
 		}
 	}
 
-	private void setX(RealParameter x) {
+	public void setX(RealParameter x) {
 		this.x = x;
 		if (x != null){
 			x.setContext(RealParameterContext.realContext);
 		}
 	}
+
+    @Override
+    public String toString(){
+        return "Translate";
+    }
 }

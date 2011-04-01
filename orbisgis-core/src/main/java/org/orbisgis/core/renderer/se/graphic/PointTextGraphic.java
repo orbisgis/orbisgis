@@ -28,6 +28,7 @@ public final class PointTextGraphic extends Graphic implements UomNode {
     private RealParameter y;
 
     public PointTextGraphic() {
+        setPointLabel(new PointLabel());
     }
 
     PointTextGraphic(JAXBElement<PointTextGraphicType> tge) throws InvalidStyle {

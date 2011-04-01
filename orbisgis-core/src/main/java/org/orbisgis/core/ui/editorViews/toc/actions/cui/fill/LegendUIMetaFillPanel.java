@@ -40,7 +40,10 @@ package org.orbisgis.core.ui.editorViews.toc.actions.cui.fill;
 import javax.swing.Icon;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.fill.DensityFill;
+import org.orbisgis.core.renderer.se.fill.DotMapFill;
 import org.orbisgis.core.renderer.se.fill.Fill;
+import org.orbisgis.core.renderer.se.fill.GraphicFill;
+import org.orbisgis.core.renderer.se.fill.HatchedFill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractMetaPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
@@ -57,10 +60,12 @@ public class LegendUIMetaFillPanel extends LegendUIAbstractMetaPanel {
 
 	private FillNode fNode;
 	private LegendUIComponent comp;
-	private final Class[] classes = {SolidFill.class, DensityFill.class};
+
+
+	private final Class[] classes = {SolidFill.class, DensityFill.class, GraphicFill.class, DotMapFill.class, HatchedFill.class};
 
 	public LegendUIMetaFillPanel(LegendUIController controller, LegendUIComponent parent, FillNode fillNode, boolean isNullable) {
-		super("fill", controller, parent, 0, isNullable);
+		super(null, controller, parent, 0, isNullable);
 
 		this.fNode = fillNode;
 
@@ -110,6 +115,57 @@ public class LegendUIMetaFillPanel extends LegendUIAbstractMetaPanel {
 				protected void turnOn() {
 				}
 			};
+        } else if (newClass == GraphicFill.class){
+            GraphicFill gFill;
+            if (f instanceof GraphicFill){
+                gFill = (GraphicFill)f;
+            } else {
+                gFill = new GraphicFill();
+            }
+
+            return new LegendUIGraphicFillPanel(controller, this, gFill, false) {
+                @Override
+                protected void turnOff() {
+                }
+
+                @Override
+                protected void turnOn() {
+                }
+            };
+        } else if (newClass == DotMapFill.class){
+            DotMapFill dFill;
+            if (f instanceof DotMapFill){
+                dFill = (DotMapFill)f;
+            } else {
+                dFill = new DotMapFill();
+            }
+
+            return new LegendUIDotMapFillPanel(controller, this, dFill, false) {
+                @Override
+                protected void turnOff() {
+                }
+
+                @Override
+                protected void turnOn() {
+                }
+            };
+        } else if (newClass == HatchedFill.class){
+            HatchedFill hFill;
+            if (f instanceof HatchedFill){
+                hFill = (HatchedFill)f;
+            } else {
+                hFill = new HatchedFill();
+            }
+
+            return new LegendUIHatchedFillPanel(controller, this, hFill, false) {
+                @Override
+                protected void turnOff() {
+                }
+
+                @Override
+                protected void turnOn() {
+                }
+            };
 		} else {
 			return null;
 		}

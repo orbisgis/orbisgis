@@ -55,6 +55,9 @@ public final class StrokeElement extends CompoundStrokeElement implements Stroke
 	private RealParameter postGap;
 	private Stroke stroke;
 
+    public StrokeElement(){
+        setStroke(new PenStroke());
+    }
 
 	public StrokeElement(StrokeElementType set) throws InvalidStyle {
 		if (set.getPreGap() != null) {
@@ -167,4 +170,9 @@ public final class StrokeElement extends CompoundStrokeElement implements Stroke
 
         return result.trim();
 	}
+
+    @Override
+    public String toString(){
+        return this.stroke.getClass().getSimpleName();
+    }
 }

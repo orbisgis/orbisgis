@@ -147,7 +147,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 	 * @param threshold
 	 * @param value
 	 */
-	public final void addClass(RealParameter threshold, ToType value) {
+	public void addClass(RealParameter threshold, ToType value) {
 		int index;
 		thresholds.add(threshold);
 		threshold.setContext(RealParameterContext.realContext);

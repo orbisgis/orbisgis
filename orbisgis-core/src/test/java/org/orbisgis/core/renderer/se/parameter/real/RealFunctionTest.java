@@ -9,15 +9,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import junit.framework.TestCase;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.real.RealUnaryOperator.RealUnitaryOperatorType;
 
 /**
  *
  * @author maxence
  */
-public class RealUnaryOperatorTest extends TestCase {
+public class RealFunctionTest extends TestCase {
     
-    public RealUnaryOperatorTest(String testName) {
+    public RealFunctionTest(String testName) {
         super(testName);
     }
 
@@ -33,25 +32,33 @@ public class RealUnaryOperatorTest extends TestCase {
 
     public void testSqrt(){
         try {
-            RealUnaryOperator op1 = new RealUnaryOperator(new RealLiteral(25.0), RealUnitaryOperatorType.SQRT);
+
+            RealFunction op1 = new RealFunction("sqrt");
+            op1.addOperand(new RealLiteral(25.0));
+
             assertEquals(5.0, op1.getValue(null, -1));
-            RealUnaryOperator op2 = new RealUnaryOperator(new RealLiteral(-25.0), RealUnitaryOperatorType.SQRT);
+            RealFunction op2 = new RealFunction("sqrt");
+            op2.addOperand(new RealLiteral(-25.0));
+
             assertEquals(Double.NaN, op2.getValue(null, -1));
         } catch (ParameterException ex) {
-            Logger.getLogger(RealUnaryOperatorTest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RealFunctionTest.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
 
     public void testLog(){
         try {
-            RealUnaryOperator op1 = new RealUnaryOperator(new RealLiteral(100), RealUnitaryOperatorType.LOG);
+            RealFunction op1 = new RealFunction("log");
+            op1.addOperand(new RealLiteral(100));
             assertEquals(2.0, op1.getValue(null, -1));
-            RealUnaryOperator op2 = new RealUnaryOperator(new RealLiteral(-100), RealUnitaryOperatorType.LOG);
+
+            RealFunction op2 = new RealFunction("log");
+            op2.addOperand(new RealLiteral(-100));
             assertEquals(Double.NaN, op2.getValue(null, -1));
         }
         catch (ParameterException ex) {
-            Logger.getLogger(RealUnaryOperatorTest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RealFunctionTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

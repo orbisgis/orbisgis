@@ -47,7 +47,6 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import org.gdms.data.SpatialDataSourceDecorator;
 
-import net.opengis.se._2_0.core.MarkGraphicType;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
@@ -60,6 +59,16 @@ public enum WellKnownName implements MarkGraphicSource {
     SQUARE, CIRCLE, HALFCIRCLE, TRIANGLE, STAR, CROSS, X;
 
     public static double DEFAULT_SIZE = 10.0;
+
+    public static String[] getValues(){
+        String[] list = new String[WellKnownName.values().length];
+        int i = 0;
+        for (WellKnownName wkn : WellKnownName.values()){
+            list[i] = wkn.toString();
+            i++;
+        }
+        return list;
+    }
 
 
     public static WellKnownName fromString(String token){

@@ -74,7 +74,7 @@ public abstract class LegendUIComponent extends LegendUIAbstractPanel {
 	// Is the (this) UI represents a NULL element (such as no fill) ?
 	protected boolean isNullComponent;
 
-	// Panel in which mount UI element
+	// Panel in which UI element will be mounted
 	protected LegendUIAbstractPanel editor;
 	// Panel reserved for special
 	protected LegendUIAbstractPanel toolbar;
@@ -144,7 +144,7 @@ public abstract class LegendUIComponent extends LegendUIAbstractPanel {
 		if (this.getName() != null) {
 			return this.getName();
 		} else {
-			return this.getClass().getSimpleName();
+			return this.getClass().getSimpleName().replaceAll("LegendUIMeta", "").replaceAll("Panel$", "");
 		}
 	}
 
@@ -373,12 +373,15 @@ public abstract class LegendUIComponent extends LegendUIAbstractPanel {
 		while (it.hasNext()) {
 			LegendUIComponent child = it.next();
 
+            System.out.print (" -> " + child);
 			// Child is not null => create its interface
 			if (!child.isNull()) {
+                System.out.println (" is not null");
 				child.mountComponentForChildren();
 				child.mountComponent();
 			} else {
 				// Child is null => in the list of unused parameters
+                System.out.println (" is null");
 				nullList.add(child);
 			}
 		}
@@ -408,7 +411,7 @@ public abstract class LegendUIComponent extends LegendUIAbstractPanel {
 		LegendUIComponent comp;
 
 		public SetUpParam(final LegendUIComponent comp) {
-			super("<html><u><i>" + comp.getName() + "</i></u></html>");
+			super("<html><u><i>" + comp.toString() + "</i></u></html>");
 			this.comp = comp;
 			setForeground(new Color(160, 160, 160));
 			this.addMouseListener(new MouseListener() {

@@ -48,27 +48,23 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
     private Fill fill;
     private Halo halo;
     private Uom uom;
+    private String[] weights = {"Normal", "Bold"};
+    private String[] styles = {"Normal", "Italic", "Oblique"};
 
     public StyledText() {
-        this.labelText = new StringLiteral("Label");
-        this.fontFamily = new StringLiteral("Arial");
-        this.fontWeight = new StringLiteral("Normal");
-        this.fontStyle = new StringLiteral("Normal");
-        this.fontSize = new RealLiteral(12);
-
-        setFill(new SolidFill(Color.BLACK, 100.0));
-        setStroke(null);
+        this("Label");
     }
 
     public StyledText(String label) {
-        this.labelText = new StringLiteral(label);
-        this.fontFamily = new StringLiteral("Arial");
-        this.fontWeight = new StringLiteral("Normal");
-        this.fontStyle = new StringLiteral("Normal");
-        this.fontSize = new RealLiteral(12);
+        setLabelText(new StringLiteral(label));
+        setFontFamily(new StringLiteral("Arial"));
+        setFontWeight(new StringLiteral("Normal"));
+        setFontStyle(new StringLiteral("Normal"));
+        setFontSize(new RealLiteral(12));
+        setUom(Uom.PT);
 
         SolidFill f = new SolidFill();
-        f.setOpacity(new RealLiteral(100.0));
+        f.setOpacity(new RealLiteral(1.0));
         f.setColor(new ColorLiteral(Color.black));
 
         this.setFill(f);
@@ -116,13 +112,22 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
         }
     }
 
-    @Override
-    public Uom getUom() {
+    /**
+     * For font, use this.uom, if no -> une parent's one
+     * @return
+     */
+    public Uom getFontUom() {
         if (this.uom != null) {
             return this.uom;
         } else {
             return parent.getUom();
         }
+    }
+
+    @Override
+    public Uom getUom() {
+        // Note: this.uom only affect font size
+        return parent.getUom();
     }
 
     @Override
@@ -174,7 +179,9 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
     }
 
     public void setLabelText(StringParameter labelText) {
-        this.labelText = labelText;
+        if (labelText != null) {
+            this.labelText = labelText;
+        }
     }
 
     @Override
@@ -195,7 +202,9 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
     }
 
     public void setFontFamily(StringParameter fontFamily) {
-        this.fontFamily = fontFamily;
+        if (fontFamily != null) {
+            this.fontFamily = fontFamily;
+        }
     }
 
     public RealParameter getFontSize() {
@@ -205,7 +214,7 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
     public void setFontSize(RealParameter fontSize) {
         this.fontSize = fontSize;
         if (this.fontSize != null) {
-            this.fontSize.setContext(RealParameterContext.percentageContext);
+            this.fontSize.setContext(RealParameterContext.nonNegativeContext);
         }
     }
 
@@ -214,7 +223,10 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
     }
 
     public void setFontStyle(StringParameter fontStyle) {
-        this.fontStyle = fontStyle;
+        if (fontStyle != null) {
+            this.fontStyle = fontStyle;
+            this.fontStyle.setRestrictionTo(styles);
+        }
     }
 
     public StringParameter getFontWeight() {
@@ -222,11 +234,14 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
     }
 
     public void setFontWeight(StringParameter fontWeight) {
-        this.fontWeight = fontWeight;
+        if (fontWeight != null) {
+            this.fontWeight = fontWeight;
+            this.fontWeight.setRestrictionTo(weights);
+        }
     }
 
-    private Font getFont(SpatialDataSourceDecorator sds, long fid, 
-            MapTransform mt) throws ParameterException, IOException{
+    private Font getFont(SpatialDataSourceDecorator sds, long fid,
+            MapTransform mt) throws ParameterException, IOException {
         String family = "Arial";
         if (fontFamily != null) {
             family = fontFamily.getValue(sds, fid);
@@ -247,7 +262,7 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
         //double size = Uom.toPixel(12, Uom.PT, mt.getDpi(), mt.getScaleDenominator(), null);
         double size = 12.0;
         if (fontSize != null) {
-            size = Uom.toPixel(fontSize.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+            size = Uom.toPixel(fontSize.getValue(sds, fid), getFontUom(), mt.getDpi(), mt.getScaleDenominator(), null);
             //size = (size * mt.getDpi()) / 72.0;
             size = size * 72.0 / mt.getDpi();
         }
@@ -270,16 +285,17 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
     }
 
     public Rectangle2D getBounds(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
-            MapTransform mt) throws ParameterException, IOException{
+            MapTransform mt) throws ParameterException, IOException {
         String text = labelText.getValue(sds, fid);
         return getBounds(g2, text, sds, fid, mt);
     }
 
     public Rectangle2D getBounds(Graphics2D g2, String text, SpatialDataSourceDecorator sds, long fid,
-            MapTransform mt) throws ParameterException, IOException{
+            MapTransform mt) throws ParameterException, IOException {
 
         Font font = getFont(sds, fid, mt);
-        FontMetrics metrics = new FontMetrics(font) { };
+        FontMetrics metrics = new FontMetrics(font) {
+        };
         Rectangle2D bounds = metrics.getStringBounds(text, null);
         return bounds;
     }
@@ -295,13 +311,14 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
         Font font = getFont(sds, fid, mt);
         TextLayout tl = new TextLayout(text, font, g2.getFontRenderContext());
 
-        FontMetrics metrics = new FontMetrics(font) { };
+        FontMetrics metrics = new FontMetrics(font) {
+        };
         Rectangle2D bounds = metrics.getStringBounds(text, null);
 
         double ty = -bounds.getMaxY() + bounds.getHeight() / 2.0;
 
         AffineTransform rat;
-        if (at != null){
+        if (at != null) {
             rat = new AffineTransform(at);
         } else {
             rat = new AffineTransform();
@@ -319,7 +336,7 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
          * No fill and no stroke : apply default solidfill !
          */
         if (fill == null && stroke == null) {
-            SolidFill sf = new SolidFill(Color.BLACK, 100.0);
+            SolidFill sf = new SolidFill(Color.BLACK, 1.0);
             sf.setParent(this);
             sf.draw(g2, sds, fid, outline, selected, mt);
         }
@@ -333,102 +350,21 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
         }
     }
 
-
-
-    /*private RenderableGraphics getTextImage(String text, SpatialDataSourceDecorator sds,
-            long fid, boolean selected, MapTransform mt) throws ParameterException, IOException {
-
-        Font font = getFont(sds, fid, mt);
-
-        FontMetrics metrics = new FontMetrics(font) { };
-        Rectangle2D bounds = metrics.getStringBounds(text, null);
-
-        RenderableGraphics rg = new RenderableGraphics(bounds);
-
-        TextLayout tl = new TextLayout(text, font, rg.getFontRenderContext());
-
-        double ty = -bounds.getMaxY() + bounds.getHeight() / 2.0;
-
-        Shape outline = tl.getOutline(AffineTransform.getTranslateInstance(-bounds.getCenterX(), ty));
-
-        double margin = 0.0;
-
-        if (stroke != null) {
-            margin = stroke.getMaxWidth(sds, fid, mt);
-        }
-        if (halo != null) {
-            margin += halo.getHaloRadius(sds, fid, mt);
-        }
-
-        rg = Graphic.getNewRenderableGraphics(outline.getBounds2D(), margin, mt);
-
-        if (halo != null) {
-            //halo.draw(rg, sds, fid, selected, outline.getBounds(), mt, false);
-            halo.draw(rg, sds, fid, selected, outline, mt, true);
-        }
-
-        // No fill and no stroke : apply default solidfill !
-        if (fill == null && stroke == null) {
-            SolidFill sf = new SolidFill(Color.BLACK, 100.0);
-            sf.draw(rg, sds, fid, outline, selected, mt);
-            sf.setParent(this);
-        }
-
-        if (fill != null) {
-            fill.draw(rg, sds, fid, outline, selected, mt);
-        }
-
-        if (stroke != null) {
-            stroke.draw(rg, sds, fid, outline, selected, mt, 0.0);
-        }
-
-        // HALO, FILL, STROKE
-        return rg;
-
-    }*/
-
-    public double getEmInPixel(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException {
-        double size = Uom.toPixel(12, Uom.PT, mt.getDpi(), mt.getScaleDenominator(), null);
-        if (fontSize != null) {
-            size = Uom.toPixel(fontSize.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-        }
-        return size / 2.0;
-    }
-
     /**
-     * Return one graphic for each glyph and null for space ( this.getEm() give effective width of spaces)
+     *
      * @param sds
      * @param fid
-     * @param selected
      * @param mt
      * @return
      * @throws ParameterException
-     * @throws IOException
      */
-    /*public ArrayList<RenderableGraphics> getGlyphs(SpatialDataSourceDecorator sds,
-            long fid, boolean selected, MapTransform mt) throws ParameterException, IOException {
-
-        ArrayList<RenderableGraphics> rGlyphs = new ArrayList<RenderableGraphics>();
-
-        String text = labelText.getValue(sds, fid);
-        String[] glyphs = text.split("");
-
-        for (String glyph : glyphs) {
-            if (!glyph.trim().isEmpty()) {
-                RenderableGraphics textImage = getTextImage(glyph, sds, fid, selected, mt);
-                rGlyphs.add(textImage);
-            } else {
-                rGlyphs.add(null);
-            }
+    public double getEmInPixel(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException {
+        double size = Uom.toPixel(12, Uom.PT, mt.getDpi(), mt.getScaleDenominator(), null);
+        if (fontSize != null) {
+            size = Uom.toPixel(fontSize.getValue(sds, fid), getFontUom(), mt.getDpi(), mt.getScaleDenominator(), null);
         }
-
-        return rGlyphs;
-    }*/
-
-    /*public RenderableGraphics getImage(SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException {
-        String text = labelText.getValue(sds, fid);
-        return getTextImage(text, sds, fid, selected, mt);
-    }*/
+        return size / 2.0;
+    }
 
     public StyledTextType getJAXBType() {
         StyledTextType l = new StyledTextType();
@@ -450,6 +386,10 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
         }
 
         FontType font = new FontType();
+        if (this.getOwnUom() != null){
+            font.setUom(getOwnUom().toURN());
+        }
+
         if (fontFamily != null) {
             font.setFontFamily(fontFamily.getJAXBParameterValueType());
         }

@@ -63,12 +63,13 @@ public class RealParameterContext {
 		return max;
 	}
 
+    @Override
 	public String toString(){
 		return " [" + min + ";" + max + "]";
 	}
 
 	static {
-		percentageContext = new RealParameterContext(0.0, 100.0);
+		percentageContext = new RealParameterContext(0.0, 1.0);
 		nonNegativeContext = new RealParameterContext(0.0, null);
 		realContext = new RealParameterContext(null, null);
 	};

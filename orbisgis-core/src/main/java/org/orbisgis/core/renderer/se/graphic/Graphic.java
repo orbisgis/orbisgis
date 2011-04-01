@@ -26,7 +26,6 @@ import org.orbisgis.core.renderer.se.transform.Transform;
 public abstract class Graphic implements SymbolizerNode {
 
     protected SymbolizerNode parent;
-    protected Transform transform;
 
     public static Graphic createFromJAXBElement(JAXBElement<? extends GraphicType> gr) throws InvalidStyle {
         try {
@@ -72,29 +71,6 @@ public abstract class Graphic implements SymbolizerNode {
     public void setParent(SymbolizerNode node) {
         this.parent = node;
     }
-
-    public Transform getTransform() {
-        return transform;
-    }
-
-    public void setTransform(Transform transform) {
-        this.transform = transform;
-        transform.setParent(this);
-    }
-
-    /**
-     * this method returns the particular subgraphic (RenderableGraphic)
-     * 
-     *
-     * @param ds DataSource of this layer
-     * @param fid id of the current feature to draw
-     * @return a buffered image containing the ext-graphic (AT has not been applied)
-     * @throws ParameterException
-     * @throws IOException
-     */
-    /*public abstract RenderableGraphics getRenderableGraphics(SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt)
-            throws ParameterException, IOException;
-     */
 
     /**
      * Return graphic bounds. Bounds center point shall match CRS origin !

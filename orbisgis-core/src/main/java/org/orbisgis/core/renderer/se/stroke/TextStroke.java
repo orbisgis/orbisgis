@@ -59,6 +59,10 @@ public final class TextStroke extends Stroke {
 
 	private LineLabel lineLabel;
 
+    public TextStroke(){
+        setLineLabel(new LineLabel());
+    }
+
 	TextStroke(TextStrokeType tst) throws InvalidStyle {
         super(tst);
 		if (tst.getLineLabel() != null) {

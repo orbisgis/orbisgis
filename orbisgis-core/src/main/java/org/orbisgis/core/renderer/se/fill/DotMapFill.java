@@ -44,7 +44,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.awt.image.RenderedImage;
 
 import java.io.IOException;
 import java.util.Random;
@@ -89,8 +88,10 @@ public final class DotMapFill extends Fill implements GraphicNode {
 
     @Override
     public void setGraphicCollection(GraphicCollection mark) {
-        this.mark = mark;
-        mark.setParent(this);
+        if (mark != null) {
+            this.mark = mark;
+            mark.setParent(this);
+        }
     }
 
     @Override
@@ -99,8 +100,8 @@ public final class DotMapFill extends Fill implements GraphicNode {
     }
 
     public void setQuantityPerMark(RealParameter quantityPerMark) {
-        this.quantityPerMark = quantityPerMark;
-        if (this.quantityPerMark != null) {
+        if (quantityPerMark != null) {
+            this.quantityPerMark = quantityPerMark;
             this.quantityPerMark.setContext(RealParameterContext.realContext);
         }
     }
@@ -110,8 +111,8 @@ public final class DotMapFill extends Fill implements GraphicNode {
     }
 
     public void setTotalQuantity(RealParameter totalQuantity) {
-        this.totalQuantity = totalQuantity;
-        if (this.totalQuantity != null) {
+        if (totalQuantity != null) {
+            this.totalQuantity = totalQuantity;
             this.totalQuantity.setContext(RealParameterContext.realContext);
         }
     }
@@ -223,7 +224,7 @@ public final class DotMapFill extends Fill implements GraphicNode {
         }
 
         if (totalQuantity != null) {
-            f.setValuePerMark(totalQuantity.getJAXBParameterValueType());
+            f.setValueToRepresent(totalQuantity.getJAXBParameterValueType());
         }
 
         return f;
@@ -234,6 +235,7 @@ public final class DotMapFill extends Fill implements GraphicNode {
         ObjectFactory of = new ObjectFactory();
         return of.createDotMapFill(this.getJAXBType());
     }
+
     private GraphicCollection mark;
     private RealParameter quantityPerMark;
     private RealParameter totalQuantity;

@@ -51,12 +51,14 @@ import net.opengis.se._2_0.core.FillType;
 import net.opengis.se._2_0.core.HatchedFillType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.StrokeNode;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
+import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
 
@@ -64,12 +66,16 @@ import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
  *
  * @author maxence
  */
-public final class HatchedFill extends Fill {
+public final class HatchedFill extends Fill implements StrokeNode {
 
     private RealParameter angle;
     private RealParameter distance;
     private RealParameter offset;
     private Stroke stroke;
+
+    public HatchedFill(){
+        setStroke(new PenStroke());
+    }
 
     public HatchedFill(JAXBElement<HatchedFillType> sf) throws InvalidStyle {
         if (sf.getValue().getAngle() != null) {
@@ -324,10 +330,12 @@ public final class HatchedFill extends Fill {
         }
     }
 
+    @Override
     public Stroke getStroke() {
         return stroke;
     }
 
+    @Override
     public void setStroke(Stroke stroke) {
         this.stroke = stroke;
         if (stroke != null) {

@@ -73,6 +73,28 @@ public class Transform implements SymbolizerNode, UomNode {
         }
     }
 
+    public boolean moveDown(int i) {
+        if (i >= 0 && i < transformations.size()-1){
+            Transformation remove = transformations.remove(i);
+            transformations.add(i+1, remove);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean moveUp(int i) {
+        if (i > 0 && i < transformations.size()){
+            Transformation remove = transformations.remove(i);
+            transformations.add(i-1, remove);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+
     /**
      * Return an affine transformation for java Shape object.
      * The purpose is to transfom se.graphics
@@ -110,6 +132,15 @@ public class Transform implements SymbolizerNode, UomNode {
 
     public void addTransformation(Transformation t) {
         transformations.add(t);
+    }
+
+    public boolean removeTransformation(int i) {
+        try{
+            transformations.remove(i);
+            return true;
+        } catch (Exception e){
+            return false;
+        }
     }
 
     public int getNumTransformation() {

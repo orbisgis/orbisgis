@@ -10,6 +10,7 @@ import net.opengis.se._2_0.core.ObjectFactory;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
@@ -21,6 +22,11 @@ public final class ExclusionRectangle extends ExclusionZone {
 
     private RealParameter x;
     private RealParameter y;
+
+    public ExclusionRectangle(){
+        this.setX(new RealLiteral(3));
+        this.setY(new RealLiteral(3));
+    }
 
     ExclusionRectangle(JAXBElement<ExclusionRectangleType> ert) throws InvalidStyle {
         ExclusionRectangleType e = ert.getValue();
@@ -45,7 +51,7 @@ public final class ExclusionRectangle extends ExclusionZone {
     public void setX(RealParameter x) {
         this.x = x;
 		if (x != null){
-			x.setContext(RealParameterContext.percentageContext);
+			x.setContext(RealParameterContext.nonNegativeContext);
 		}
     }
 
@@ -56,7 +62,7 @@ public final class ExclusionRectangle extends ExclusionZone {
     public void setY(RealParameter y) {
         this.y = y;
 		if (this.y != null){
-			y.setContext(RealParameterContext.percentageContext);
+			y.setContext(RealParameterContext.nonNegativeContext);
 		}
     }
 

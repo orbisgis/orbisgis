@@ -122,4 +122,30 @@ public final class Category implements SymbolizerNode, FillNode, StrokeNode, Gra
     public void setMeasure(RealParameter measure) {
         this.measure = measure;
     }
+
+    CategoryType getJaxbType() {
+        CategoryType ct = new CategoryType();
+
+        if (this.getFill() != null){
+            ct.setFill(this.getFill().getJAXBElement());
+        }
+
+        if (this.getStroke() != null){
+            ct.setStroke(getStroke().getJAXBElement());
+        }
+
+        if (this.getGraphicCollection() != null){
+            ct.setGraphic(getGraphicCollection().getJAXBElement());
+        }
+
+        if (this.getMeasure() != null){
+            ct.setValue(getMeasure().getJAXBParameterValueType());
+        }
+
+        if (this.getName() != null){
+            ct.setName(getName());
+        }
+
+        return ct;
+    }
 }

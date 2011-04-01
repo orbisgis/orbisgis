@@ -41,7 +41,7 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class TranslateType {
 
-    @XmlElement(name = "X", required = true)
+    @XmlElement(name = "X")
     protected ParameterValueType x;
     @XmlElement(name = "Y")
     protected ParameterValueType y;

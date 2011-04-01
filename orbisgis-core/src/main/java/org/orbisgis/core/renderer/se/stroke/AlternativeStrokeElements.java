@@ -51,9 +51,14 @@ public class AlternativeStrokeElements extends CompoundStrokeElement {
 
 	private ArrayList<StrokeElement> elements;
 
-	AlternativeStrokeElements(AlternativeStrokeElementsType aset) throws InvalidStyle {
-        System.out.println ("Read AlternativeStrokeElements!");
+
+    public AlternativeStrokeElements(){
 		elements = new ArrayList<StrokeElement>();
+    }
+
+
+	public AlternativeStrokeElements(AlternativeStrokeElementsType aset) throws InvalidStyle {
+        this();
 		for (StrokeElementType se : aset.getStrokeElement()) {
             StrokeElement strokeElement = new StrokeElement(se);
             strokeElement.setParent(this);

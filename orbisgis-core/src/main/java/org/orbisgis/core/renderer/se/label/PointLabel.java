@@ -42,9 +42,10 @@ public final class PointLabel extends Label {
      *
      */
     public PointLabel() {
-        setLabel(new StyledText());
+        super();
         rotation = new RealLiteral(0.0);
-
+        setvAlign(VerticalAlignment.TOP);
+        sethAlign(HorizontalAlignment.RIGHT);
     }
 
     public PointLabel(PointLabelType plt) throws InvalidStyle {
@@ -52,10 +53,14 @@ public final class PointLabel extends Label {
 
         if (plt.getHorizontalAlignment() != null) {
             this.hAlign = HorizontalAlignment.fromString(SeParameterFactory.extractToken(plt.getHorizontalAlignment()));
+        } else {
+            this.hAlign = HorizontalAlignment.RIGHT;
         }
 
         if (plt.getVerticalAlignment() != null) {
             this.vAlign = VerticalAlignment.fromString(SeParameterFactory.extractToken(plt.getVerticalAlignment()));
+        } else {
+            this.vAlign = VerticalAlignment.TOP;
         }
 
         if (plt.getExclusionZone() != null) {

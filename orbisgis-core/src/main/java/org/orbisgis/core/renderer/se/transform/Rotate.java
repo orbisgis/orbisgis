@@ -152,4 +152,9 @@ public final class Rotate implements Transformation {
 
         return r;
     }
+
+    @Override
+    public String toString(){
+        return "Rotate";
+    }
 }

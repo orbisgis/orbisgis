@@ -137,6 +137,12 @@ public final class Scale implements Transformation {
         }
         return s;
     }
+
+    @Override
+    public String toString(){
+        return "Scale";
+    }
+
     private RealParameter x;
     private RealParameter y;
 }

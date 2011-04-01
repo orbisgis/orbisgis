@@ -114,7 +114,7 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
      */
     public PenStroke() {
         super();
-        setFill(new SolidFill(Color.BLACK, 100.0));
+        setFill(new SolidFill(Color.BLACK, 1.0));
         setWidth(new RealLiteral(0.1));
         //setOpacity(new RealLiteral(100.0));
 

@@ -39,11 +39,8 @@ package org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter;
 
 import com.sun.media.jai.widget.DisplayJAI;
 import java.awt.BasicStroke;
-import java.awt.Graphics;
-import java.awt.Paint;
 import java.awt.image.BufferedImage;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.string.LegendUIStringComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real.LegendUIRealLiteralPanel;
@@ -67,7 +64,6 @@ import org.gdms.data.SpatialDataSourceDecorator;
 
 import org.orbisgis.core.renderer.classification.Range;
 import org.orbisgis.core.renderer.classification.RangeMethod;
-import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.Categorize;
 import org.orbisgis.core.renderer.se.parameter.CategorizeListener;
 import org.orbisgis.core.renderer.se.parameter.LiteralListener;

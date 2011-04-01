@@ -132,14 +132,14 @@ public final class GraphicFill extends Fill implements UomNode {
     public void setGapX(RealParameter gap) {
         gapX = gap;
         if (gap != null) {
-            gap.setContext(RealParameterContext.realContext);
+            gap.setContext(RealParameterContext.nonNegativeContext);
         }
     }
 
     public void setGapY(RealParameter gap) {
         gapY = gap;
         if (gap != null) {
-            gap.setContext(RealParameterContext.realContext);
+            gap.setContext(RealParameterContext.nonNegativeContext);
         }
     }
 
@@ -243,7 +243,7 @@ public final class GraphicFill extends Fill implements UomNode {
             f.setGraphic(graphic.getJAXBElement());
         }
 
-        if (gapX != null && gapY != null) {
+        if (gapX != null || gapY != null) {
             TileGapType tile = new TileGapType();
             if (gapX != null) {
                 tile.setX(gapX.getJAXBParameterValueType());

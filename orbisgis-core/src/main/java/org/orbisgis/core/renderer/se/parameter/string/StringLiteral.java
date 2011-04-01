@@ -8,6 +8,7 @@ import org.orbisgis.core.renderer.se.parameter.Literal;
 public class StringLiteral extends Literal implements StringParameter{
 
     private String v;
+    private String[] restriction;
 
     public StringLiteral(){
         v = "";
@@ -33,6 +34,15 @@ public class StringLiteral extends Literal implements StringParameter{
     @Override
     public String toString(){
         return v;
+    }
+
+    @Override
+    public void setRestrictionTo(String[] list) {
+        restriction = list;
+    }
+
+    public String[] getRestriction(){
+        return restriction;
     }
 
 }

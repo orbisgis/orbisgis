@@ -57,7 +57,7 @@ public class LegendUIAbstractPanel extends JPanel {
 	}
 
 
-	protected void add(LegendUIComponent comp) {
+	public void add(LegendUIComponent comp) {
 		if (comp != null && !comp.isNullComponent) {
 			if (comp.isNested()) {
 				LegendUILinkToComplexPanel link = new LegendUILinkToComplexPanel(controller, comp);

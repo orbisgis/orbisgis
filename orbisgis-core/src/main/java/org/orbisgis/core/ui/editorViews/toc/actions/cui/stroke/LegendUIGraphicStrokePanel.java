@@ -43,7 +43,6 @@ package org.orbisgis.core.ui.editorViews.toc.actions.cui.stroke;
 import java.awt.BorderLayout;
 import javax.swing.Icon;
 import org.orbisgis.core.renderer.se.common.RelativeOrientation;
-import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.stroke.GraphicStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;

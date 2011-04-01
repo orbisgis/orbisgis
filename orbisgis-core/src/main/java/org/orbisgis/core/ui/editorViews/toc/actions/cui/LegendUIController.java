@@ -275,21 +275,24 @@ public final class LegendUIController {
 		//System.out.println("Structure Changed !");
 		//Thread.dumpStack();
 
-		LegendUIComponent topPanel = focusOn.getTopParent();
 
-		if (topPanel != null) {
-			this.splitPanel(topPanel);
+
+		LegendUIComponent topPanel = focusOn.getTopParent();
+        if (topPanel != null) {
+			//this.splitPanel(topPanel);
+            topPanel.mountComponentForChildren();
+
 		} else {
 			System.out.println("Not able to found a root panel !");
 		}
 
-		LegendUIComponent panelToFocusOn = focusOn.getScopeParent();
-
 		if (mainPanel != null) {
+
 			mainPanel.refreshTOC();
 		}
 
 		if (updateUI) {
+		    LegendUIComponent panelToFocusOn = focusOn.getScopeParent();
 			editComponent(panelToFocusOn);
 		}
 	}

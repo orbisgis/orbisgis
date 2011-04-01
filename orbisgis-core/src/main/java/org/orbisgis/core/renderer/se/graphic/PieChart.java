@@ -32,10 +32,12 @@ import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.renderer.se.transform.Transform;
 import org.orbisgis.core.renderer.se.StrokeNode;
 import org.orbisgis.core.renderer.se.UomNode;
+import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
-public final class PieChart extends Graphic implements StrokeNode, UomNode {
+public final class PieChart extends Graphic implements StrokeNode, UomNode, TransformNode {
 
+    private ArrayList<SliceListener> listeners;
     private static final double DEFAULT_RADIUS_PX = 30;
     private Uom uom;
     private PieChartSubType type;
@@ -43,6 +45,7 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode {
     private RealParameter holeRadius;
     private boolean displayValue;
     private Stroke stroke;
+    private Transform transform;
     private ArrayList<Slice> slices;
 
     public enum PieChartSubType {
@@ -52,6 +55,9 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode {
 
     public PieChart() {
         slices = new ArrayList<Slice>();
+        type = PieChartSubType.WHOLE;
+        radius = new RealLiteral(10);
+        this.listeners = new ArrayList<SliceListener>();
     }
 
     PieChart(JAXBElement<PieChartType> pieE) throws InvalidStyle {
@@ -107,6 +113,28 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode {
 
     }
 
+    public void registerListerner(SliceListener lstner) {
+        listeners.add(lstner);
+    }
+
+    public void fireSliceMoveDown(int i) {
+        for (SliceListener l : listeners) {
+            l.sliceMoveDown(i);
+        }
+    }
+
+    public void fireSliceMoveUp(int i) {
+        for (SliceListener l : listeners) {
+            l.sliceMoveUp(i);
+        }
+    }
+
+    public void fireSliceRemoved(int i) {
+        for (SliceListener l : listeners) {
+            l.sliceRemoved(i);
+        }
+    }
+
     @Override
     public Uom getUom() {
         if (uom != null) {
@@ -138,6 +166,13 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode {
         }
     }
 
+    public void removeSlice(int i) {
+        if (i >= 0 && i < slices.size()) {
+            slices.remove(i);
+            fireSliceRemoved(i);
+        }
+    }
+
     public void addSlice(Slice slice) {
         if (slice != null) {
             slices.add(slice);
@@ -152,6 +187,7 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode {
                 Slice tmp = slices.get(i);
                 slices.set(i, slices.get(i - 1));
                 slices.set(i - 1, tmp);
+                fireSliceMoveUp(i);
             } else {
                 // TODO throw
             }
@@ -165,6 +201,7 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode {
                 Slice tmp = slices.get(i);
                 slices.set(i, slices.get(i + 1));
                 slices.set(i + 1, tmp);
+                fireSliceMoveDown(i);
             } else {
                 // TODO throw
             }
@@ -216,7 +253,9 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode {
     @Override
     public void setStroke(Stroke stroke) {
         this.stroke = stroke;
-        stroke.setParent(this);
+        if (stroke != null) {
+            stroke.setParent(this);
+        }
     }
 
     public PieChartSubType getType() {
@@ -225,6 +264,19 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode {
 
     public void setType(PieChartSubType type) {
         this.type = type;
+    }
+
+    @Override
+    public Transform getTransform() {
+        return transform;
+    }
+
+    @Override
+    public void setTransform(Transform transform) {
+        this.transform = transform;
+        if (transform != null) {
+            transform.setParent(this);
+        }
     }
 
     @Override
@@ -239,7 +291,7 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode {
         if (transform != null) {
             AffineTransform at = transform.getGraphicalAffineTransform(false, sds, fid, mt, 2 * r, 2 * r);
             return at.createTransformedShape(bounds).getBounds2D();
-        } else{
+        } else {
             return bounds;
         }
     }
@@ -375,7 +427,7 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode {
                 Rectangle2D anchor = labelAt.createTransformedShape(new Rectangle2D.Double(0, 0, 1, 1)).getBounds2D();
 
                 label.draw(g2, sds, fid, selected, mt,
-                        AffineTransform.getTranslateInstance(anchor.getCenterX(), anchor.getCenterY()) , null);
+                        AffineTransform.getTranslateInstance(anchor.getCenterX(), anchor.getCenterY()), null);
             }
 
         }
@@ -405,8 +457,6 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode {
     double[] gaps = new double[nSlices];
 
     double r = 30; // 30px by default
-
-    System.out.println ("Pie UOM is " + this.getUom());
 
     if (radius != null) {
     r = Uom.toPixel(this.getRadius().getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null); // TODO 100%

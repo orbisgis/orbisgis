@@ -37,14 +37,15 @@
  */
 package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 
+import java.awt.BorderLayout;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.se.StrokeNode;
+import org.orbisgis.core.renderer.se.label.Label;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.stroke.LegendUIMetaStrokePanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.fill.LegendUIMetaFillPanel;
-import javax.swing.BoxLayout;
 
 import javax.swing.Icon;
 import org.orbisgis.core.layerModel.ILayer;
@@ -63,22 +64,29 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.ComboBoxInput
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.TextInput;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.UomInput;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.graphic.LegendUICompositeGraphicPanel;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.label.LegendUIMetaLabelPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real.LegendUIMetaRealPanel;
 
 /**
- *
+ * This panel edit symbolizer
  * @author maxence
  */
 public class LegendUISymbolizerPanel extends LegendUIComponent {
 
     private final Symbolizer symbolizer;
+
     private LegendUIMetaFillPanel mFill;
     private LegendUIMetaStrokePanel mStroke;
+
     private LegendUIMetaRealPanel pOffset;
     private LegendUICompositeGraphicPanel gCollection;
+
     private ComboBoxInput sMode;
     private TextInput nameInput;
     private UomInput uomInput;
+
+    private LegendUIMetaLabelPanel label;
+
 
     public LegendUISymbolizerPanel(LegendUIController controller, LegendUIComponent parent,
             final Symbolizer symb) {
@@ -158,6 +166,24 @@ public class LegendUISymbolizerPanel extends LegendUIComponent {
                 Logger.getLogger(LegendUISymbolizerPanel.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else if (symb instanceof TextSymbolizer) {
+            final TextSymbolizer tSymb = (TextSymbolizer) symb;
+
+            pOffset = new LegendUIMetaRealPanel("POffset", controller, this, tSymb.getPerpendicularOffset(), true) {
+
+                @Override
+                public void realChanged(RealParameter newReal) {
+                    tSymb.setPerpendicularOffset(newReal);
+                }
+            };
+            pOffset.init();
+
+            label = new LegendUIMetaLabelPanel(controller, this, tSymb.getLabel(), false) {
+                @Override
+                public void labelChanged(Label newLabel) {
+                    tSymb.setLabel(newLabel);
+                }
+            };
+            label.init();
         } else if (symb instanceof RasterSymbolizer) { // ??
         }
     }
@@ -190,42 +216,56 @@ public class LegendUISymbolizerPanel extends LegendUIComponent {
         editor.removeAll();
 
         LegendUIAbstractPanel topBar = new LegendUIAbstractPanel(controller);
-        topBar.setLayout(new BoxLayout(topBar, BoxLayout.X_AXIS));
+        //topBar.setLayout(new BoxLayout(topBar, BoxLayout.X_AXIS));
 
-        topBar.add(nameInput);
+        topBar.add(nameInput, BorderLayout.WEST);
 
 
         LegendUIAbstractPanel symbEditor = new LegendUIAbstractPanel(controller);
-        symbEditor.setLayout(new BoxLayout(symbEditor, BoxLayout.Y_AXIS));
-
+        //symbEditor.setLayout(new BoxLayout(symbEditor, BoxLayout.Y_AXIS));
 
         if (uomInput != null) {
-            topBar.add(uomInput);
+            topBar.add(uomInput, BorderLayout.EAST);
         }
 
-        symbEditor.add(topBar);
+        editor.add(topBar, BorderLayout.NORTH);
 
         if (pOffset != null) {
-            symbEditor.add(pOffset);
+            symbEditor.add(pOffset, BorderLayout.NORTH);
         }
 
-        if (mStroke != null) {
-            symbEditor.add(mStroke);
-        }
+        if (mStroke != null && mFill != null) {
+            LegendUIAbstractPanel container = new LegendUIAbstractPanel(controller);
 
-        if (mFill != null) {
-            symbEditor.add(mFill);
+            container.add(mStroke, BorderLayout.WEST);
+            container.add(mFill, BorderLayout.EAST);
+            symbEditor.add(container, BorderLayout.SOUTH);
+
+        } else {
+            // LINE SYMBOLIZER
+            if (mStroke != null) {
+                symbEditor.add(mStroke, BorderLayout.SOUTH);
+            }
+
+            if (mFill != null) {
+                symbEditor.add(mFill, BorderLayout.SOUTH);
+            }
+
         }
 
         if (sMode != null) {
-            symbEditor.add(sMode);
+            topBar.add(sMode, BorderLayout.CENTER);
         }
 
         if (gCollection != null) {
-            symbEditor.add(gCollection);
+            symbEditor.add(gCollection, BorderLayout.SOUTH);
         }
 
-        editor.add(symbEditor);
+        if (label != null){
+            symbEditor.add(label, BorderLayout.CENTER);
+        }
+
+        editor.add(symbEditor, BorderLayout.SOUTH);
     }
 
     @Override

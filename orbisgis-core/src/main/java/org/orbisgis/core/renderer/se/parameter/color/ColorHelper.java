@@ -54,12 +54,11 @@ public final class ColorHelper {
     /**
      * return a new color based on the given color with the specified alpha value
      * @param c
-     * @param alpha
+     * @param alpha [0;1]
      * @return new color with alpha channel
-     * @todo is alpha [0;100] or [0.0;1.0] ? 
      */
     public static Color getColorWithAlpha(Color c, double alpha) {
-        int a = (int) (255.0 * alpha/100.0);
+        int a = (int) (255.0 * alpha);
 
         if (a < 0) {
             a = 0;
@@ -157,7 +156,7 @@ public final class ColorHelper {
     }
 
     public static BufferedImage getColorSpaceImage(){
-        BufferedImage colorSpace = new BufferedImage(300, 500, BufferedImage.TYPE_INT_RGB);
+        BufferedImage colorSpace = new BufferedImage(150,250, BufferedImage.TYPE_INT_RGB);
         Graphics g2 = colorSpace.getGraphics();
 
         double dh = 360.0 / (colorSpace.getHeight() - 1);

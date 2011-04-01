@@ -105,11 +105,13 @@ public abstract class LegendUIHaloPanel extends LegendUIComponent {
 
 	@Override
 	protected void turnOff() {
+        this.isNullComponent = true;
 		haloChanged(null);
 	}
 
 	@Override
 	protected void turnOn() {
+        this.isNullComponent = false;
 		haloChanged(halo);
 	}
 
