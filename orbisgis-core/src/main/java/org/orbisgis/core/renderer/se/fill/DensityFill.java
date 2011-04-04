@@ -175,7 +175,6 @@ public final class DensityFill extends Fill implements GraphicNode {
         double percentage = 0.0;
 
         if (percentageCovered != null) {
-            System.out.println ("% is : " + percentageCovered.getValue(sds, fid));
             percentage = percentageCovered.getValue(sds, fid)*100;
         }
 
@@ -183,7 +182,7 @@ public final class DensityFill extends Fill implements GraphicNode {
             percentage = 100;
         }
 
-        if (percentage > 0.0) {// nothing to draw (TODO compare with an epsilon !!)
+        if (percentage > 0.5) {// nothing to draw (TODO compare with an epsilon !!)
             Paint painter = null;
 
             if (isHatched && hatches != null) {
@@ -244,7 +243,6 @@ public final class DensityFill extends Fill implements GraphicNode {
                 // Tile size is always absolute
                 ix = Math.abs(ix);
                 iy = Math.abs(iy);
-
 
                 BufferedImage img = new BufferedImage(ix, iy, BufferedImage.TYPE_INT_ARGB);
                 Graphics2D tile = img.createGraphics();
@@ -337,9 +335,9 @@ public final class DensityFill extends Fill implements GraphicNode {
     }
 
     private double getTextureSize(double markSize, double percentage) {
-        double size = (markSize) / percentage;
+        double size = 100*(markSize) / percentage;
 
-        if (percentage > 0.5) {
+        if (percentage > 50) {
             size -= (size - markSize) / 2.0;
         }
         return size + 0.5;
