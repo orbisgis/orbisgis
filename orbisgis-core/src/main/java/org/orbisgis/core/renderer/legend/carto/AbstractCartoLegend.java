@@ -5,6 +5,8 @@ import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.renderer.legend.carto.persistence.LegendContainer;
 import org.orbisgis.core.renderer.symbol.collection.persistence.SimpleSymbolType;
 
+
+@Deprecated
 public abstract class AbstractCartoLegend extends AbstractLegend implements
 		Legend {
 

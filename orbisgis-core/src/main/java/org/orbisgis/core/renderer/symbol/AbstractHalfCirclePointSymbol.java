@@ -41,6 +41,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Arc2D;
 
+@Deprecated
 public abstract class AbstractHalfCirclePointSymbol extends AbstractPointSymbol {
 
 	AbstractHalfCirclePointSymbol(Color outline, int lineWidth,

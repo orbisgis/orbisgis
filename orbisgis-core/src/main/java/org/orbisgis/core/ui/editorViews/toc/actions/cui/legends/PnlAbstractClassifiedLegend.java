@@ -73,6 +73,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.table.SymbolValu
 /**
  *
  */
+@Deprecated
 public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 		implements ILegendPanel {
 

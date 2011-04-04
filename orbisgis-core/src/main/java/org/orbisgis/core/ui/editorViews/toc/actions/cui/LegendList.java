@@ -63,6 +63,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.utils.I18N;
 
+@Deprecated
 public class LegendList extends JPanel {
 	private JToolBar toolBar;
 	private JButton jButtonMenuAdd;

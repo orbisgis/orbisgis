@@ -11,6 +11,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 
+@Deprecated
 public class LegendListRenderer implements ListCellRenderer {
 
 	private LegendListRenderPanel ourJPanel = null;

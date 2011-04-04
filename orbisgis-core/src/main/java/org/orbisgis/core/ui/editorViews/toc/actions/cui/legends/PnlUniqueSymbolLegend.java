@@ -62,6 +62,8 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
  * 
  * @author david
  */
+
+@Deprecated
 public class PnlUniqueSymbolLegend extends javax.swing.JPanel implements
 		ILegendPanel, UIPanel {
 

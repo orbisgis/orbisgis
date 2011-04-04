@@ -48,6 +48,7 @@ import org.orbisgis.core.renderer.RenderContext;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
+@Deprecated
 public interface Symbol {
 
 	/**

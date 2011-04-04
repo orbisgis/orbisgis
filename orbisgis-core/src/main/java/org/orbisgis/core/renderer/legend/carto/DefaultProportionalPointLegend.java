@@ -75,6 +75,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 
+@Deprecated
 public class DefaultProportionalPointLegend extends AbstractCartoLegend
 		implements ProportionalLegend {
 

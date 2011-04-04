@@ -69,6 +69,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ISymbolEditor;
 import org.orbisgis.utils.I18N;
 
+@Deprecated
 public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 
 	private static final String NO_LEGEND_ID = "no-legend"; //$NON-NLS-1$

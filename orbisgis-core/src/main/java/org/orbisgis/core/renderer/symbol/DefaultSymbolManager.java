@@ -47,6 +47,7 @@ import org.orbisgis.core.renderer.symbol.collection.persistence.SimpleSymbolType
 import org.orbisgis.core.renderer.symbol.collection.persistence.SymbolCompositeType;
 import org.orbisgis.core.renderer.symbol.collection.persistence.SymbolType;
 
+@Deprecated
 public class DefaultSymbolManager implements SymbolManager {
 
 	private ArrayList<Symbol> availableSymbols = new ArrayList<Symbol>();

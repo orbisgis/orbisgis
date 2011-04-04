@@ -46,6 +46,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 
+@Deprecated
 public abstract class AbstractPolygonSymbol extends AbstractLineSymbol
 		implements StandardPolygonSymbol {
 

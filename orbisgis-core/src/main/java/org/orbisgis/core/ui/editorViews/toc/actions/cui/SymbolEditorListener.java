@@ -1,5 +1,6 @@
 package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 
+@Deprecated
 public interface SymbolEditorListener {
 
 	/**

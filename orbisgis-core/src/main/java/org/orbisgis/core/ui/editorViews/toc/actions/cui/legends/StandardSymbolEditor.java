@@ -30,6 +30,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.SymbolEditorListener;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.ColorPicker;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ISymbolEditor;
 
+@Deprecated
 public class StandardSymbolEditor extends JPanel implements ISymbolEditor {
 
 	private JButton btnSync;

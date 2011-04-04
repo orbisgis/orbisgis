@@ -5,6 +5,7 @@ import java.awt.Component;
 import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.SymbolEditorListener;
 
+@Deprecated
 public interface ISymbolEditor {
 
 	/**

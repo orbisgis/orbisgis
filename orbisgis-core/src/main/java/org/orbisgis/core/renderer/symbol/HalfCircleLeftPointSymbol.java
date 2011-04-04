@@ -49,6 +49,7 @@ import org.orbisgis.core.renderer.RenderContext;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
+@Deprecated
 public class HalfCircleLeftPointSymbol extends AbstractHalfCirclePointSymbol {
 
 	HalfCircleLeftPointSymbol(Color outline, int lineWidth, Color fillColor,

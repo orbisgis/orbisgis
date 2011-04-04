@@ -44,6 +44,7 @@ import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.utils.I18N;
 
+@Deprecated
 public class NoPanel implements ILegendPanel {
 
 	private Legend legend;

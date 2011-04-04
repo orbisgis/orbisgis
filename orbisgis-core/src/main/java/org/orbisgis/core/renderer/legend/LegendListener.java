@@ -36,6 +36,7 @@
  */
 package org.orbisgis.core.renderer.legend;
 
+@Deprecated
 public interface LegendListener {
 
 	/**

@@ -39,6 +39,7 @@ package org.orbisgis.core.renderer.symbol;
 import java.util.HashMap;
 import java.util.Map;
 
+@Deprecated
 public abstract class AbstractSymbol implements Symbol {
 
 	private String name;

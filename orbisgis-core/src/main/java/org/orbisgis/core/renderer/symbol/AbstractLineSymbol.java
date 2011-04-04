@@ -48,6 +48,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
 
+@Deprecated
 public abstract class AbstractLineSymbol extends AbstractGeometrySymbol
 		implements StandardLineSymbol {
 

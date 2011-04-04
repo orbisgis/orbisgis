@@ -2,6 +2,7 @@ package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 
 import org.orbisgis.core.renderer.symbol.Symbol;
 
+@Deprecated
 public interface SymbolEditionValidation {
 
 	/**

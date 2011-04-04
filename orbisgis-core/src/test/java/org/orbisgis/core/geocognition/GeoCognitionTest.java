@@ -25,6 +25,7 @@ import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.renderer.symbol.SymbolFactory;
 import org.orbisgis.progress.NullProgressMonitor;
 
+@Deprecated
 public class GeoCognitionTest extends AbstractGeocognitionTest {
 
 	public void testRootId() throws Exception {

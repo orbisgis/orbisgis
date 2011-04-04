@@ -47,6 +47,7 @@ import org.orbisgis.core.renderer.symbol.Symbol;
  * @author Fernando Gonzalez Cortes
  * 
  */
+@Deprecated
 public interface Legend {
 
 	/**

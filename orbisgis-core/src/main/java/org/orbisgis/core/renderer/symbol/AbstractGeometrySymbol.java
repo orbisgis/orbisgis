@@ -38,6 +38,7 @@ package org.orbisgis.core.renderer.symbol;
 
 import com.vividsolutions.jts.geom.Geometry;
 
+@Deprecated
 public abstract class AbstractGeometrySymbol extends AbstractSymbol implements
 		Symbol {
 

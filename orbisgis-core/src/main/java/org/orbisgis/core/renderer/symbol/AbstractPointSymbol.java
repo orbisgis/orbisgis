@@ -48,6 +48,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
 
+@Deprecated
 public abstract class AbstractPointSymbol extends AbstractPolygonSymbol
 		implements StandardPointSymbol {
 

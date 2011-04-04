@@ -51,6 +51,7 @@ import org.orbisgis.core.renderer.legend.carto.IntervalLegend;
 import org.orbisgis.core.renderer.legend.carto.LegendFactory;
 import org.orbisgis.core.renderer.symbol.Symbol;
 
+@Deprecated
 public class IntervalLegendTableModel extends ClassifiedLegendTableModel
 		implements TableModel {
 

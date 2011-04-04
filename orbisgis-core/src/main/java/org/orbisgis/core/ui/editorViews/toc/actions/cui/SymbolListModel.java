@@ -9,6 +9,7 @@ import javax.swing.event.ListDataListener;
 import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ISymbolEditor;
 
+@Deprecated
 public class SymbolListModel implements ListModel {
 
 	private ArrayList<ISymbolEditor> editors = new ArrayList<ISymbolEditor>();

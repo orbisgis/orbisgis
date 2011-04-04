@@ -26,6 +26,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
 
+@Deprecated
 public class ImageSymbol extends AbstractSymbol implements Symbol {
 
 	protected Image img;

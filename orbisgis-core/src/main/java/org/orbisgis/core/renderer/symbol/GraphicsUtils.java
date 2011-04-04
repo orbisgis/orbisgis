@@ -3,6 +3,7 @@ package org.orbisgis.core.renderer.symbol;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
+@Deprecated
 public class GraphicsUtils {
 	/**
 	 * Draws an arrow on the given Graphics2D context

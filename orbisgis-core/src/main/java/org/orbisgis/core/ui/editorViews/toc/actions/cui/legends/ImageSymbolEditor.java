@@ -23,6 +23,7 @@ import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.SymbolEditorListener;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ISymbolEditor;
 
+@Deprecated
 public class ImageSymbolEditor extends JPanel implements ISymbolEditor {
 
 	private ImageSymbol symbol;

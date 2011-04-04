@@ -76,6 +76,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.ColorPicker;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.table.IntervalLegendTableModel;
 
+@Deprecated
 public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 
 	private javax.swing.JComboBox cmbIntervalType;

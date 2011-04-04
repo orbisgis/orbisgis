@@ -38,6 +38,7 @@ package org.orbisgis.core.renderer.legend.carto;
 
 import org.orbisgis.core.renderer.legend.Legend;
 
+@Deprecated
 public interface LabelLegend extends Legend {
 	/**
 	 * Sets the field used to get the size of the label

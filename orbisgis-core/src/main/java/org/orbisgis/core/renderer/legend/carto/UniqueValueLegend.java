@@ -39,6 +39,7 @@ package org.orbisgis.core.renderer.legend.carto;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.symbol.Symbol;
 
+@Deprecated
 public interface UniqueValueLegend extends ClassifiedLegend {
 
 	/**

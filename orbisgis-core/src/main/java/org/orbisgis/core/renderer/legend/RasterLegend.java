@@ -48,6 +48,7 @@ import org.gdms.data.SpatialDataSourceDecorator;
 import org.grap.lut.LutDisplay;
 import org.orbisgis.core.renderer.symbol.Symbol;
 
+@Deprecated
 public class RasterLegend extends AbstractLegend implements Legend {
 
 	private ColorModel colorModel = null;

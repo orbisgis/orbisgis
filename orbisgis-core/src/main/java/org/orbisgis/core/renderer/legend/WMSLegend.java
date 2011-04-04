@@ -18,6 +18,8 @@ import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.layerModel.WMSConnection;
 import org.orbisgis.core.renderer.symbol.Symbol;
 
+
+@Deprecated
 public class WMSLegend extends AbstractLegend {
 
 	private WMSConnection wmsConnection;

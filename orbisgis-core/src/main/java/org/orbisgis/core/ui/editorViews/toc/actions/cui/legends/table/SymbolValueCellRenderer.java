@@ -44,6 +44,7 @@ import javax.swing.table.TableCellRenderer;
 import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.Canvas;
 
+@Deprecated
 public class SymbolValueCellRenderer implements TableCellRenderer {
 
 	public Component getTableCellRendererComponent(JTable table, Object value,

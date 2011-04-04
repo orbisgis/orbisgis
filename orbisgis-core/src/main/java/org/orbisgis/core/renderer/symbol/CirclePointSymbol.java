@@ -49,6 +49,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPoint;
 
+@Deprecated
 public class CirclePointSymbol extends AbstractCirclePointSymbol {
 
 	CirclePointSymbol(Color outline, int lineWidth, Color fillColor, int size,

@@ -49,6 +49,7 @@ import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.orbisgis.core.renderer.legend.carto.ClassifiedLegend;
 import org.orbisgis.core.renderer.legend.carto.LegendFactory;
 
+@Deprecated
 public abstract class ClassifiedLegendTableModel extends AbstractTableModel
 		implements TableModel {
 

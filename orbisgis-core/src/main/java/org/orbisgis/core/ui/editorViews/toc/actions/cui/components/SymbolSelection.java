@@ -51,6 +51,7 @@ import org.orbisgis.core.ui.components.sif.ChoosePanel;
  * 
  * @author david
  */
+@Deprecated
 public class SymbolSelection extends ChoosePanel {
 
 	/**

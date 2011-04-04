@@ -39,6 +39,7 @@ package org.orbisgis.core.renderer.legend.carto;
 import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.renderer.symbol.Symbol;
 
+@Deprecated
 public interface UniqueSymbolLegend extends Legend {
 
 	/**

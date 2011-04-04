@@ -58,6 +58,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperti
 
 import com.vividsolutions.jts.geom.Geometry;
 
+@Deprecated
 public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
 		IntervalLegend {
 

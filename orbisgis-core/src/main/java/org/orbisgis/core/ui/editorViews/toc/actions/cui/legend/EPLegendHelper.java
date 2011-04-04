@@ -49,6 +49,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.PnlUniqueSymbolL
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.PnlUniqueValueLegend;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.StandardSymbolEditor;
 
+@Deprecated
 public class EPLegendHelper {
 
 	/**

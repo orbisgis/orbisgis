@@ -56,6 +56,7 @@ import org.orbisgis.core.renderer.symbol.SymbolManager;
 
 import com.vividsolutions.jts.geom.Geometry;
 
+@Deprecated
 public class DefaultUniqueValueLegend extends AbstractClassifiedLegend
 		implements UniqueValueLegend {
 

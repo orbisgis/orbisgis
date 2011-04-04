@@ -40,6 +40,7 @@ import java.util.ArrayList;
 
 import com.vividsolutions.jts.geom.Geometry;
 
+@Deprecated
 public class RenderUtils {
 
 	/**

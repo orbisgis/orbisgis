@@ -60,6 +60,7 @@ import org.orbisgis.utils.FileUtils;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 
+@Deprecated
 public class MapContextTest extends AbstractTest {
 
 	@Override

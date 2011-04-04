@@ -53,6 +53,7 @@ import org.orbisgis.core.renderer.symbol.SymbolManager;
 import org.orbisgis.core.renderer.symbol.collection.persistence.SymbolType;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
 
+@Deprecated
 abstract class AbstractClassifiedLegend extends AbstractCartoLegend implements
 		ClassifiedLegend {
 

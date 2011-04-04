@@ -10,6 +10,8 @@ import org.orbisgis.core.renderer.legend.Legend;
  * @author Fernando Gonzalez Cortes
  * 
  */
+
+@Deprecated
 public interface LegendManager {
 
 	/**

@@ -65,6 +65,7 @@ import org.orbisgis.core.renderer.legend.carto.LegendFactory;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendContext;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
 
+@Deprecated
 public class PnlLabelLegend extends JPanel implements ILegendPanel {
 
 	private LabelLegend legend;

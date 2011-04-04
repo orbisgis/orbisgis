@@ -41,6 +41,7 @@ import java.awt.Component;
 import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
 
+@Deprecated
 public class LegendElement {
 
 	private Component component;

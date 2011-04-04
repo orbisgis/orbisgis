@@ -9,6 +9,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 
+@Deprecated
 public class GeometryProperties {
 
 	private static final String GEOMETRY_Z = "Geometry.Z";

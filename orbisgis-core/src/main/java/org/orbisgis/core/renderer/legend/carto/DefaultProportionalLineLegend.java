@@ -72,6 +72,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 
+@Deprecated
 public class DefaultProportionalLineLegend extends AbstractCartoLegend
 		implements ProportionalLegend {
 

@@ -50,6 +50,7 @@ import org.orbisgis.core.renderer.legend.carto.LegendFactory;
 import org.orbisgis.core.renderer.legend.carto.UniqueValueLegend;
 import org.orbisgis.core.renderer.symbol.Symbol;
 
+@Deprecated
 public class UniqueValueLegendTableModel extends ClassifiedLegendTableModel
 		implements TableModel {
 

@@ -38,6 +38,7 @@ package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 
 import org.orbisgis.core.renderer.symbol.Symbol;
 
+@Deprecated
 public class CompositeSymbolFilter implements SymbolFilter {
 
 	private SymbolFilter[] filters;

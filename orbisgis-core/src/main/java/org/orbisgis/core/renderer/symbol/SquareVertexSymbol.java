@@ -50,6 +50,8 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
+
+@Deprecated
 public class SquareVertexSymbol extends AbstractSquarePointSymbol {
 
 	SquareVertexSymbol(Color outline, int lineWidth, Color fillColor, int size,

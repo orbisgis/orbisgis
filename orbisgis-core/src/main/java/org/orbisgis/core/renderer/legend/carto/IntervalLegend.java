@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.symbol.Symbol;
 
+@Deprecated
 public interface IntervalLegend extends ClassifiedLegend {
 
 	/**

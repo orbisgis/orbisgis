@@ -10,6 +10,7 @@ import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.ui.components.preview.JNumericSpinner;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ISymbolEditor;
 
+@Deprecated
 public class ArrowSymbolEditor extends StandardSymbolEditor implements
 		ISymbolEditor {
 

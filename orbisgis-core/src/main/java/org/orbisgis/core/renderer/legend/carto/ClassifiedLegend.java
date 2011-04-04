@@ -41,6 +41,7 @@ import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.renderer.symbol.Symbol;
 
+@Deprecated
 public interface ClassifiedLegend extends Legend {
 
 	/**

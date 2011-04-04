@@ -44,6 +44,7 @@ import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.renderer.symbol.StandardSymbol;
 
+@Deprecated
 public interface ProportionalLegend extends Legend {
 
 	int LINEAR = 1;

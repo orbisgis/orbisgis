@@ -2,6 +2,7 @@ package org.orbisgis.core.ui.editorViews.toc.actions.cui.legends;
 
 import org.orbisgis.core.sif.OpenFilePanel;
 
+@Deprecated
 public class ImageFileChooser extends OpenFilePanel {
 
 	public static final String IMAGE_FILE_CHOOSER = "org.orbisgis.ImageFileChooser";

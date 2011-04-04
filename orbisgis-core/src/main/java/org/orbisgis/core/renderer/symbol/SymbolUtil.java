@@ -27,6 +27,7 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 
+@Deprecated
 public class SymbolUtil {
 
 	/**

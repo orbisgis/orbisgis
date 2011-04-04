@@ -42,6 +42,7 @@ import org.gdms.data.types.GeometryConstraint;
 
 import com.vividsolutions.jts.geom.Geometry;
 
+@Deprecated
 public class HalfCircleLeftVertexSymbol extends HalfCircleLeftPointSymbol {
 
 	HalfCircleLeftVertexSymbol(Color outline, int lineWidth, Color fillColor,

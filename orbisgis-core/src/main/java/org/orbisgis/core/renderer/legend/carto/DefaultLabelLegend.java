@@ -56,6 +56,7 @@ import org.orbisgis.utils.FormatUtils;
 
 import com.vividsolutions.jts.geom.Geometry;
 
+@Deprecated
 public class DefaultLabelLegend extends AbstractCartoLegend implements
 		LabelLegend {
 

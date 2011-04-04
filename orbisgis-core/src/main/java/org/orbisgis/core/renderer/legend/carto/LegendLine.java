@@ -34,6 +34,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
+
 package org.orbisgis.core.renderer.legend.carto;
 
 import java.awt.Color;
@@ -45,6 +46,7 @@ import java.awt.geom.Rectangle2D;
 import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.renderer.symbol.SymbolUtil;
 
+@Deprecated
 public class LegendLine {
 
 	private Symbol symbol;

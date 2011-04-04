@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.legend.carto.persistence.LegendType;
 
+@Deprecated
 public abstract class AbstractLegend implements Legend {
 
 	private String name;

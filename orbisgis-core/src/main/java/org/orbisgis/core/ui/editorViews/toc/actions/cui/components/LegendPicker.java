@@ -49,6 +49,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
  * 
  * @author david
  */
+@Deprecated
 public class LegendPicker extends ChoosePanel {
 
 	/**

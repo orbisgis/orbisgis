@@ -36,6 +36,7 @@
  */
 package org.orbisgis.core.renderer.legend.carto;
 
+@Deprecated
 public class LegendFactory {
 
 	public static UniqueSymbolLegend createUniqueSymbolLegend() {

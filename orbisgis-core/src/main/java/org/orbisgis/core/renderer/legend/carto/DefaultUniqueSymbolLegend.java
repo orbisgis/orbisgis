@@ -50,6 +50,7 @@ import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.renderer.symbol.SymbolManager;
 import org.orbisgis.core.renderer.symbol.collection.persistence.SymbolType;
 
+@Deprecated
 public class DefaultUniqueSymbolLegend extends AbstractCartoLegend implements
 		UniqueSymbolLegend {
 

@@ -44,6 +44,8 @@ import java.awt.Color;
  * 
  * @author Fernando Gonzalez Cortes
  */
+
+@Deprecated
 public interface StandardPolygonSymbol extends StandardLineSymbol {
 
 	/**

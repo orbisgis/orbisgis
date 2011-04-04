@@ -83,6 +83,7 @@ import org.orbisgis.utils.I18N;
  *
  * @author david
  */
+@Deprecated
 public class SymbolBuilder extends JPanel implements UIPanel,
 		SymbolEditorListener {
 

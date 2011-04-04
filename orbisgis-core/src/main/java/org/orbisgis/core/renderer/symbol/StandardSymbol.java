@@ -42,5 +42,7 @@ package org.orbisgis.core.renderer.symbol;
  * 
  * @author Fernando Gonzalez Cortes
  */
+
+@Deprecated
 public interface StandardSymbol extends Symbol {
 }

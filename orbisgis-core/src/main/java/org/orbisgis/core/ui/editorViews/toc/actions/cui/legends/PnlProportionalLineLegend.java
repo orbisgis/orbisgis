@@ -91,6 +91,7 @@ import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
 
 import com.vividsolutions.jts.geom.Envelope;
 
+@Deprecated
 public class PnlProportionalLineLegend extends JPanel implements ILegendPanel {
 
 	private ProportionalLegend legend;

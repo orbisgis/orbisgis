@@ -57,6 +57,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 
+@Deprecated
 public class LabelSymbol extends AbstractSymbol implements Symbol {
 
 	private int fontSize;

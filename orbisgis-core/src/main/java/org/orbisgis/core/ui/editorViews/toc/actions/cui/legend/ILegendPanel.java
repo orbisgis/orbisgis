@@ -54,6 +54,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendContext;
  * 
  * @author David Ortega
  */
+@Deprecated
 public interface ILegendPanel {
 	int POINT = 1;
 	int LINE = 2;

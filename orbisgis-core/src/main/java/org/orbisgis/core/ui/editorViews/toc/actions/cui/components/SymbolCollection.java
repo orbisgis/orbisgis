@@ -66,6 +66,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendContext;
  * 
  * @author david
  */
+@Deprecated
 public class SymbolCollection extends javax.swing.JPanel implements UIPanel {
 	private LegendContext legendContext;
 	private JPanel pnlSymbols;

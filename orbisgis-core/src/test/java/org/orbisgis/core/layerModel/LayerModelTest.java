@@ -51,6 +51,7 @@ import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.renderer.legend.carto.LegendFactory;
 
+@Deprecated
 public class LayerModelTest extends AbstractTest {
 
 	private DataSourceFactory dsf = new DataSourceFactory();

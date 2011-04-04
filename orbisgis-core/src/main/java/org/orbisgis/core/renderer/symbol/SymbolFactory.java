@@ -40,6 +40,8 @@ import java.awt.Color;
 import java.io.IOException;
 import java.net.URL;
 
+
+@Deprecated
 public class SymbolFactory {
 
 	public static Symbol createPolygonSymbol() {

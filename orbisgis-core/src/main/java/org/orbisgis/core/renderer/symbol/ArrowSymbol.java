@@ -56,6 +56,7 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.MultiPoint;
 
+@Deprecated
 public class ArrowSymbol extends AbstractPointSymbol implements
 		StandardPointSymbol {
 

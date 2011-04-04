@@ -4,6 +4,7 @@ import org.orbisgis.core.renderer.symbol.StandardSymbol;
 import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.SymbolFilter;
 
+@Deprecated
 public class StandardSymbolFilter implements SymbolFilter {
 
 	public boolean accept(Symbol symbol) {

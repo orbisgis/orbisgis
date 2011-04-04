@@ -45,6 +45,7 @@ import javax.swing.JPanel;
 import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.renderer.symbol.SymbolUtil;
 
+@Deprecated
 public class Canvas extends JPanel {
 
 	private Symbol s;

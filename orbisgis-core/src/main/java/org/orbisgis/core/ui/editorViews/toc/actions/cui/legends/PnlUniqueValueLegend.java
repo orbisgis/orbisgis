@@ -63,6 +63,7 @@ import org.orbisgis.core.ui.components.sif.ChoosePanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.table.UniqueValueLegendTableModel;
 
+@Deprecated
 public class PnlUniqueValueLegend extends PnlAbstractClassifiedLegend {
 
 	public PnlUniqueValueLegend() {

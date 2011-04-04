@@ -49,6 +49,7 @@ import org.orbisgis.core.renderer.RenderContext;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
+@Deprecated
 public class PolygonSymbol extends AbstractPolygonSymbol {
 
 	PolygonSymbol(Color outlineColor, int lineWidth, Color fillColor) {

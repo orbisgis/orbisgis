@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.orbisgis.core.renderer.legend.Legend;
 
+@Deprecated
 public class DefaultLegendManager implements LegendManager {
 
 	private ArrayList<Legend> newInstances = new ArrayList<Legend>();
