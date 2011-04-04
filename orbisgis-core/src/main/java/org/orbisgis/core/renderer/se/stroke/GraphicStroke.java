@@ -142,71 +142,73 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
             throws ParameterException, IOException {
 
         //if (g != null) {
-            //System.out.println("GraphicStroke.draw");
-            ArrayList<Shape> shapes;
-            // if not using offset rapport, compute perpendiculat offset first
-            if (!this.isOffsetRapport() && Math.abs(offset) > 0.0) {
-                shapes = ShapeHelper.perpendicularOffset(shape, offset);
-                // Setting offset to 0.0 let be sure the offset will never been applied twice!
-                offset = 0.0;
-                //System.out.println("Apply offset to graphic stroke!");
+        System.out.println("GraphicStroke.draw");
+        ArrayList<Shape> shapes;
+        // if not using offset rapport, compute perpendiculat offset first
+        if (!this.isOffsetRapport() && Math.abs(offset) > 0.0) {
+            shapes = ShapeHelper.perpendicularOffset(shape, offset);
+            // Setting offset to 0.0 let be sure the offset will never been applied twice!
+            offset = 0.0;
+            //System.out.println("Apply offset to graphic stroke!");
+        } else {
+            shapes = new ArrayList<Shape>();
+            shapes.add(shape);
+        }
+
+
+        double gWidth = getGraphicWidth(sds, fid, mt);
+        for (Shape shp : shapes) {
+            //System.out.println("Process shape n°" + shapeCounter + "/" + shapes.size());
+            double segLength = getNaturalLength(sds, fid, shp, mt);
+
+            //System.out.println("SegLength <-> gWidth: " + segLength + "<->" + gWidth);
+            double lineLength = ShapeHelper.getLineLength(shp);
+
+            RelativeOrientation rOrient = this.getRelativeOrientation();
+            ArrayList<Shape> segments = null;
+
+            double nbSegments;
+
+            //int nbToDraw;
+
+            if (this.isLengthRapport()) {
+                nbSegments = (int) ((lineLength / segLength) + 0.5);
+                //System.out.println("  Length Rapport : Split line in " + (int) nbSegments + " parts");
+                segments = ShapeHelper.splitLine(shp, (int) nbSegments);
+                segLength = lineLength / nbSegments;
+                //nbToDraw = (int) nbSegments;
             } else {
-                shapes = new ArrayList<Shape>();
-                shapes.add(shape);
+                nbSegments = lineLength / segLength;
+                //System.out.println("  No linear rapport: NbSegement: " + nbSegments);
+                //segLength = lineLength / nbSegments;
+                //System.out.println("    BUGGY ? (new) SegLength (?): " + (lineLength / nbSegments));
+                // Effective number of graphic to draw (skip the last one if not space left...)
+                //nbToDraw = (int) nbSegments;
+                //if (nbToDraw > 0) {
+                if (nbSegments > 0) {
+                    // TODO remove half of extra space at the beginning of the line
+                    //shp = ShapeHelper.splitLine(shp, (nbSegments - nbToDraw)/2.0).get(1);
+                    segments = ShapeHelper.splitLineInSeg(shp, segLength);
+                }
             }
 
-
-            double gWidth = getGraphicWidth(sds, fid, mt);
-            for (Shape shp : shapes) {
-                //System.out.println("Process shape n°" + shapeCounter + "/" + shapes.size());
-                double segLength = getNaturalLength(sds, fid, shp, mt);
-
-                //System.out.println("SegLength <-> gWidth: " + segLength + "<->" + gWidth);
-                double lineLength = ShapeHelper.getLineLength(shp);
-
-                RelativeOrientation rOrient = this.getRelativeOrientation();
-                ArrayList<Shape> segments = null;
-
-                double nbSegments;
-
-                //int nbToDraw;
-
-                if (this.isLengthRapport()) {
-                    nbSegments = (int) ((lineLength / segLength) + 0.5);
-                    //System.out.println("  Length Rapport : Split line in " + (int) nbSegments + " parts");
-                    segments = ShapeHelper.splitLine(shp, (int) nbSegments);
-                    segLength = lineLength / nbSegments;
-                    //nbToDraw = (int) nbSegments;
-                } else {
-                    nbSegments = lineLength / segLength;
-                    //System.out.println("  No linear rapport: NbSegement: " + nbSegments);
-                    //segLength = lineLength / nbSegments;
-                    //System.out.println("    BUGGY ? (new) SegLength (?): " + (lineLength / nbSegments));
-                    // Effective number of graphic to draw (skip the last one if not space left...)
-                    //nbToDraw = (int) nbSegments;
-                    //if (nbToDraw > 0) {
-                    if (nbSegments > 0) {
-                        // TODO remove half of extra space at the beginning of the line
-                        //shp = ShapeHelper.splitLine(shp, (nbSegments - nbToDraw)/2.0).get(1);
-                        segments = ShapeHelper.splitLineInSeg(shp, segLength);
+            if (segments != null) {
+                for (Shape seg : segments) {
+                    ArrayList<Shape> oSegs;
+                    if (this.isOffsetRapport() && Math.abs(offset) > 0.0) {
+                        oSegs = ShapeHelper.perpendicularOffset(seg, offset);
+                    } else {
+                        oSegs = new ArrayList<Shape>();
+                        oSegs.add(seg);
                     }
-                }
 
-                if (segments != null) {
-                    for (Shape seg : segments) {
-                        ArrayList<Shape> oSegs;
-                        if (this.isOffsetRapport() && Math.abs(offset) > 0.0) {
-                            oSegs = ShapeHelper.perpendicularOffset(seg, offset);
-                        } else {
-                            oSegs = new ArrayList<Shape>();
-                            oSegs.add(seg);
-                        }
+                    for (Shape oSeg : oSegs) {
+                        if (oSeg != null) {
 
-                        for (Shape oSeg : oSegs) {
-                            if (oSeg != null) {
-
-                                //System.out.println ("Going to plot a point:");
-                                segLength = ShapeHelper.getLineLength(oSeg);
+                            //System.out.println ("Going to plot a point:");
+                            segLength = ShapeHelper.getLineLength(oSeg);
+                            if (segLength >= 1) {
+                                System.out.println("oSeg Length: " + segLength);
                                 Point2D.Double pt = ShapeHelper.getPointAt(oSeg, segLength / 2);
                                 AffineTransform at = AffineTransform.getTranslateInstance(pt.x, pt.y);
 
@@ -244,6 +246,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
                     }
                 }
             }
+        }
         //}
     }
 
@@ -272,7 +275,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
         this.setJAXBProperties(s);
 
 
-        if (uom != null){
+        if (uom != null) {
             s.setUom(uom.toURN());
         }
 
@@ -292,7 +295,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
 
     @Override
     public Uom getUom() {
-        if (uom != null){
+        if (uom != null) {
             return uom;
         } else {
             return parent.getUom();
