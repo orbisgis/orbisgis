@@ -65,7 +65,6 @@ import java.util.Observable;
 
 import javax.swing.AbstractButton;
 
-import org.gdms.data.types.GeometryConstraint;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.renderer.symbol.SymbolUtil;
@@ -78,66 +77,54 @@ import org.orbisgis.core.ui.plugins.views.mapEditor.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 import org.orbisgis.utils.I18N;
 
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 
 public class PickCoordinatesPointTool extends AbstractPointTool {
 
-	AbstractButton button;
+        AbstractButton button;
 
-	@Override
-	public AbstractButton getButton() {
-		return button;
-	}
+        @Override
+        public AbstractButton getButton() {
+                return button;
+        }
 
-	public void setButton(AbstractButton button) {
-		this.button = button;
-	}
+        public void setButton(AbstractButton button) {
+                this.button = button;
+        }
 
-	@Override
-	public void update(Observable o, Object arg) {
-		PlugInContext.checkTool(this);
-	}
+        @Override
+        public void update(Observable o, Object arg) {
+                PlugInContext.checkTool(this);
+        }
 
-	public boolean isEnabled(MapContext vc, ToolManager tm) {
-		return vc.getLayerModel().getLayerCount() > 0;
-	}
+        public boolean isEnabled(MapContext vc, ToolManager tm) {
+                return vc.getLayerModel().getLayerCount() > 0;
+        }
 
-	public boolean isVisible(MapContext vc, ToolManager tm) {
-		return isEnabled(vc, tm);
-	}
+        public boolean isVisible(MapContext vc, ToolManager tm) {
+                return isEnabled(vc, tm);
+        }
 
-	@Override
-	protected void pointDone(Point point, MapContext mc, ToolManager tm)
-			throws TransitionException {
-		Geometry g = point;
-		if (ToolUtilities.geometryTypeIs(mc, GeometryConstraint.MULTI_POINT)) {
-			g = ToolManager.toolsGeometryFactory
-					.createMultiPoint(new Point[] { point });
-		}
+        @Override
+        protected void pointDone(Point point, MapContext mc, ToolManager tm)
+                throws TransitionException {
+                EditorManager em = Services.getService(EditorManager.class);
+                IEditor editor = em.getActiveEditor();
 
-		EditorManager em = Services.getService(EditorManager.class);
-		IEditor editor = em.getActiveEditor();
+                if (editor != null) {
+                        if (editor instanceof MapEditorPlugIn) {
+                                final MapEditorPlugIn mapEditor = (MapEditorPlugIn) editor;
+                                SymbolUtil.flashPoint(point, (Graphics2D) mapEditor.getMapControl().getGraphics(), tm.getMapTransform());
 
-		if (editor != null) {
-			if (editor instanceof MapEditorPlugIn) {
-				final MapEditorPlugIn mapEditor = (MapEditorPlugIn) editor;
-				SymbolUtil.flashPoint(g, (Graphics2D) mapEditor.getMapControl()
-						.getGraphics(), tm.getMapTransform());
+                        }
+                }
+                OutputManager om = (OutputManager) Services.getService(OutputManager.class);
+                Color color = Color.blue;
+                om.print(I18N.getString("orbisgis.core.ui.editors.map.tool.pickCoordinate")
+                        + " : " + point.toText() + "\n", color);
+        }
 
-			}
-		}
-		OutputManager om = (OutputManager) Services
-				.getService(OutputManager.class);
-		Color color = Color.blue;
-		om.print(I18N
-				.getString("orbisgis.core.ui.editors.map.tool.pickCoordinate")
-				+ " : " + g.toText() + "\n", color);
-	}
-
-	public String getName() {
-		return I18N
-				.getString("orbisgis.core.ui.editors.map.tool.pickCoordinate_tooltip");
-	}
-
+        public String getName() {
+                return I18N.getString("orbisgis.core.ui.editors.map.tool.pickCoordinate_tooltip");
+        }
 }
