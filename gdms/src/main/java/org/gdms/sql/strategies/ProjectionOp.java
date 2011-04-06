@@ -39,6 +39,7 @@ package org.gdms.sql.strategies;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import org.apache.log4j.Logger;
 
 import org.gdms.data.ExecutionException;
 import org.gdms.data.metadata.DefaultMetadata;
@@ -62,6 +63,7 @@ import org.orbisgis.progress.IProgressMonitor;
 public class ProjectionOp extends AbstractExpressionOperator implements
 		Operator, SelectionTransporter {
 
+        private static final Logger logger = Logger.getLogger(ProjectionOp.class);
 	private ArrayList<SelectElement> selectElements;
 	private String[] aliasList;
 	private Expression[] expressionList;
@@ -177,15 +179,13 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 
 	}
 
-	protected Expression[] getExpressions() {
+	protected Expression[] getExpressions() throws DriverException {
 		if (expressionList == null) {
 			try {
 				//TODO : Change this
 				expandStars();
-			} catch (DriverException e) {
-				e.printStackTrace();
 			} catch (SemanticException e) {
-				e.printStackTrace();
+				throw new DriverException(e);
 			}
 		}
 
@@ -291,7 +291,7 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 			SelectElement {
 	}
 
-	public boolean isAggregated() {
+	public boolean isAggregated() throws DriverException {
 		Expression[] exprs = getExpressions();
 		for (Expression expression : exprs) {
 			FunctionOperator[] functions = expression
@@ -390,7 +390,7 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 	 * @return true if the instruction is a custom query and false if it is not
 	 *         or it cannot be stated yet
 	 */
-	public boolean isCustomQuery() {
+	public boolean isCustomQuery() throws DriverException {
 		try {
 			Expression[] exprs = getExpressions();
 			boolean custom = false;
@@ -416,8 +416,8 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 				return false;
 			}
 		} catch (SemanticException e) {
+                        throw new DriverException(e);
 		}
-		return false;
 	}
 
 	public int passFieldUp(Field field) throws DriverException {
