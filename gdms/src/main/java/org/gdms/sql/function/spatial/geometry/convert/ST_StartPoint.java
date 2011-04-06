@@ -51,49 +51,54 @@ import org.gdms.sql.function.FunctionException;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
 
 public class ST_StartPoint implements Function {
 
-	public Value evaluate(DataSourceFactory dsf, Value[] args)
-			throws FunctionException {
-		final Geometry geom = args[0].getAsGeometry();
+        public Value evaluate(DataSourceFactory dsf, Value[] args)
+                throws FunctionException {
+                final Geometry geom = args[0].getAsGeometry();
 
-		if (geom instanceof LineString) {
-			LineString line = (LineString) geom;
-			return ValueFactory.createValue(line.getStartPoint());
+                if (geom instanceof MultiLineString) {
+                        if (geom.getNumGeometries() == 1) {
+                                LineString line = (LineString) geom.getGeometryN(0);
+                                return ValueFactory.createValue(line.getStartPoint());
+                        }
+                } else if (geom instanceof LineString) {
+                        LineString line = (LineString) geom;
+                        return ValueFactory.createValue(line.getStartPoint());
 
-		}
-		return ValueFactory.createNullValue();
-	}
+                }
+                return ValueFactory.createNullValue();
+        }
 
-	public String getName() {
-		return "ST_StartPoint";
-	}
+        public String getName() {
+                return "ST_StartPoint";
+        }
 
-	public Arguments[] getFunctionArguments() {
-		return new Arguments[] { new Arguments(Argument.GEOMETRY) };
-	}
+        public Arguments[] getFunctionArguments() {
+                return new Arguments[]{new Arguments(Argument.GEOMETRY)};
+        }
 
-	public boolean isAggregate() {
-		return false;
-	}
+        public boolean isAggregate() {
+                return false;
+        }
 
-	public String getDescription() {
-		return "Returns the first point of a LINESTRING geometry as a POINT or NULL if the input parameter is not a LINESTRING.";
-	}
+        public String getDescription() {
+                return "Returns the first point of a LINESTRING geometry as a POINT or NULL if the input parameter is not a LINESTRING.";
+        }
 
-	public String getSqlOrder() {
-		return "select ST_StartPoint(the_geom) from myTable;";
-	}
+        public String getSqlOrder() {
+                return "select ST_StartPoint(the_geom) from myTable;";
+        }
 
-	@Override
-	public Value getAggregateResult() {
-		return null;
-	}
+        @Override
+        public Value getAggregateResult() {
+                return null;
+        }
 
-	@Override
-	public Type getType(Type[] argsTypes) throws InvalidTypeException {
-		return TypeFactory.createType(Type.GEOMETRY);
-	}
-
+        @Override
+        public Type getType(Type[] argsTypes) throws InvalidTypeException {
+                return TypeFactory.createType(Type.GEOMETRY);
+        }
 }

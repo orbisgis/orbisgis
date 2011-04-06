@@ -51,6 +51,7 @@ import org.gdms.sql.function.FunctionException;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
 
 public class ST_EndPoint implements Function {
 
@@ -58,7 +59,13 @@ public class ST_EndPoint implements Function {
 			throws FunctionException {
 		final Geometry geom = args[0].getAsGeometry();
 
-		if (geom instanceof LineString) {
+                if (geom instanceof MultiLineString){
+                        if (geom.getNumGeometries()==1){
+			LineString line = (LineString) geom.getGeometryN(0);
+			return ValueFactory.createValue(line.getEndPoint());
+                        }
+                }
+                else if(geom instanceof LineString) {
 			LineString line = (LineString) geom;
 			return ValueFactory.createValue(line.getEndPoint());
 
