@@ -136,6 +136,21 @@ public class ToolUtilities {
 		}
 	}
 
+        /**
+         * Check if the selection (features) is greater than a parameter.
+         * @param vc
+         * @param i
+         * @return
+         */
+        public static boolean isSelectionGreaterOrEqualsThan(MapContext vc, int i){
+                ILayer activeLayer = vc.getActiveLayer();
+		if (activeLayer == null) {
+			return false;
+		} else {
+			return activeLayer.getSelection().length>=i;
+		}
+        }
+
 	public static boolean activeSelectionGreaterThan(MapContext vc, int i) {
 		ILayer activeLayer = vc.getActiveLayer();
 		if (activeLayer == null) {
