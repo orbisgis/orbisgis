@@ -138,10 +138,6 @@ public class Main {
 			}
 			wrsk.init(commandLine.hasOption(CLEAN));
 
-			if (commandLine.hasOption(DOCUMENT)) {
-				Services.generateDoc(new File(getReferenceFile(),
-						"services.html"));
-			}
 			// Install OrbisGIS core services
 			new OrbisGISWorkspace();
 			OrbisgisUIServices.installConfigurationService();
