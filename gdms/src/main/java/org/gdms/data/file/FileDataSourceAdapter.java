@@ -52,9 +52,11 @@ import org.gdms.data.edition.Commiter;
 import org.gdms.data.edition.DeleteEditionInfo;
 import org.gdms.data.edition.EditionInfo;
 import org.gdms.data.edition.PhysicalDirection;
+import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.FileReadWriteDriver;
+import org.gdms.driver.gdms.GdmsDriver;
 import org.gdms.source.CommitListener;
 import org.gdms.source.DefaultSourceManager;
 import org.gdms.source.Source;
@@ -67,129 +69,136 @@ import org.orbisgis.progress.NullProgressMonitor;
  * @author Fernando Gonzalez Cortes
  */
 public class FileDataSourceAdapter extends DriverDataSource implements
-		Commiter, CommitListener {
+        Commiter, CommitListener {
 
-	private FileDriver driver;
+        private FileDriver driver;
+        private File file;
+        private boolean realSource;
 
-	private File file;
+        /**
+         * @param src
+         * @param file
+         * @param driver
+         * @param commitable
+         *            If the file is the source itself or it's the result of a SQL
+         *            query for example
+         */
+        public FileDataSourceAdapter(Source src, File file, FileDriver driver,
+                boolean commitable) {
+                super(src);
+                this.driver = driver;
+                this.file = file;
+                this.realSource = commitable;
+        }
 
-	private boolean realSource;
+        public FileDriver getDriver() {
+                return driver;
+        }
 
-	/**
-	 * @param src
-	 * @param file
-	 * @param driver
-	 * @param commitable
-	 *            If the file is the source itself or it's the result of a SQL
-	 *            query for example
-	 */
-	public FileDataSourceAdapter(Source src, File file, FileDriver driver,
-			boolean commitable) {
-		super(src);
-		this.driver = driver;
-		this.file = file;
-		this.realSource = commitable;
-	}
+        @Override
+        public Metadata getMetadata() throws DriverException {
+                if (driver.isOpen()) {
+                        return driver.getMetadata();
+                } else {
+                        driver.open(file);
+                        Metadata m = driver.getMetadata();
+                        driver.close();
+                        return m;
+                }
+        }
 
-	public FileDriver getDriver() {
-		return driver;
-	}
+        /**
+         * @see org.gdms.data.DataSource#saveData(org.gdms.data.DataSource)
+         */
+        public void saveData(DataSource ds) throws DriverException {
+                ds.open();
+                ((FileReadWriteDriver) driver).writeFile(file, ds,
+                        new NullProgressMonitor());
+                ds.close();
+        }
 
-	/**
-	 * @see org.gdms.data.DataSource#saveData(org.gdms.data.DataSource)
-	 */
-	public void saveData(DataSource ds) throws DriverException {
-		ds.open();
-		((FileReadWriteDriver) driver).writeFile(file, ds,
-				new NullProgressMonitor());
-		ds.close();
-	}
+        public void open() throws DriverException {
+                driver.open(file);
+                fireOpen(this);
 
-	public void open() throws DriverException {
-		driver.open(file);
-		fireOpen(this);
+                DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory().getSourceManager();
+                sm.addCommitListener(this);
+        }
 
-		DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory()
-				.getSourceManager();
-		sm.addCommitListener(this);
-	}
+        public void close() throws DriverException, AlreadyClosedException {
+                driver.close();
+                fireCancel(this);
 
-	public void close() throws DriverException, AlreadyClosedException {
-		driver.close();
-		fireCancel(this);
+                DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory().getSourceManager();
+                sm.removeCommitListener(this);
+        }
 
-		DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory()
-				.getSourceManager();
-		sm.removeCommitListener(this);
-	}
+        @Override
+        public boolean commit(List<PhysicalDirection> rowsDirections,
+                String[] fieldNames, ArrayList<EditionInfo> schemaActions,
+                ArrayList<EditionInfo> editionActions,
+                ArrayList<DeleteEditionInfo> deletedPKs, DataSource modifiedSource)
+                throws DriverException {
+                String tempFileName = getDataSourceFactory().getTempFile() + "."
+                        + driver.getFileExtensions()[0];
+                File temp = new File(tempFileName);
+                ((FileReadWriteDriver) driver).writeFile(temp, new RightValueDecorator(
+                        modifiedSource), new NullProgressMonitor());
+                try {
+                        driver.close();
+                } catch (DriverException e) {
+                        throw new DriverException("Cannot free resources: data writen in "
+                                + temp.getAbsolutePath(), e);
+                }
+                try {
+                        ((FileReadWriteDriver) driver).copy(temp, file);
+                } catch (IOException e) {
+                        throw new DriverException("Cannot copy file: data writen in "
+                                + temp.getAbsolutePath(), e);
+                }
 
-	@Override
-	public boolean commit(List<PhysicalDirection> rowsDirections,
-			String[] fieldNames, ArrayList<EditionInfo> schemaActions,
-			ArrayList<EditionInfo> editionActions,
-			ArrayList<DeleteEditionInfo> deletedPKs, DataSource modifiedSource)
-			throws DriverException {
-		String tempFileName = getDataSourceFactory().getTempFile() + "."
-				+ driver.getFileExtensions()[0];
-		File temp = new File(tempFileName);
-		((FileReadWriteDriver) driver).writeFile(temp, new RightValueDecorator(
-				modifiedSource), new NullProgressMonitor());
-		try {
-			driver.close();
-		} catch (DriverException e) {
-			throw new DriverException("Cannot free resources: data writen in "
-					+ temp.getAbsolutePath(), e);
-		}
-		try {
-			((FileReadWriteDriver) driver).copy(temp, file);
-		} catch (IOException e) {
-			throw new DriverException("Cannot copy file: data writen in "
-					+ temp.getAbsolutePath(), e);
-		}
+                driver.open(file);
 
-		driver.open(file);
+                fireCommit(this);
 
-		fireCommit(this);
+                return false;
+        }
 
-		return false;
-	}
+        @Override
+        public boolean isEditable() {
+                return super.isEditable() && realSource;
+        }
 
-	@Override
-	public boolean isEditable() {
-		return super.isEditable() && realSource;
-	}
+        public void commitDone(String name) throws DriverException {
+                if (realSource) {
+                        sync();
+                } else {
+                        // reexecute query
+                        driver.close();
+                        Source src = getSource();
+                        SQLSourceDefinition dsd = (SQLSourceDefinition) src.getDataSourceDefinition();
+                        try {
+                                this.file = dsd.execute(new NullProgressMonitor());
+                        } catch (ExecutionException e) {
+                                throw new DriverException("Cannot update view. "
+                                        + "Using last result", e);
+                        } catch (SemanticException e) {
+                                throw new DriverException("Cannot update view. "
+                                        + "Using last result", e);
+                        }
+                        driver.open(file);
+                }
+        }
 
-	public void commitDone(String name) throws DriverException {
-		if (realSource) {
-			sync();
-		} else {
-			// reexecute query
-			driver.close();
-			Source src = getSource();
-			SQLSourceDefinition dsd = (SQLSourceDefinition) src
-					.getDataSourceDefinition();
-			try {
-				this.file = dsd.execute(new NullProgressMonitor());
-			} catch (ExecutionException e) {
-				throw new DriverException("Cannot update view. "
-						+ "Using last result", e);
-			} catch (SemanticException e) {
-				throw new DriverException("Cannot update view. "
-						+ "Using last result", e);
-			}
-			driver.open(file);
-		}
-	}
+        public void syncWithSource() throws DriverException {
+                sync();
+        }
 
-	public void syncWithSource() throws DriverException {
-		sync();
-	}
+        private void sync() throws DriverException {
+                driver.close();
+                driver.open(file);
+        }
 
-	private void sync() throws DriverException {
-		driver.close();
-		driver.open(file);
-	}
-
-	public void isCommiting(String name, Object source) {
-	}
+        public void isCommiting(String name, Object source) {
+        }
 }

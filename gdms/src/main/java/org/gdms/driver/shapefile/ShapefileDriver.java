@@ -101,13 +101,16 @@ public class ShapefileDriver implements FileReadWriteDriver {
                         if (reader != null) {
                                 reader.close();
                         }
+                        reader = null;
                         if (shxFile != null) {
                                 shxFile.close();
                         }
+                        shxFile = null;
 
                         if (dbfDriver != null) {
                                 dbfDriver.close();
                         }
+                        dbfDriver = null;
                 } catch (IOException e) {
                         throw new DriverException(e);
                 }
@@ -648,5 +651,10 @@ public class ShapefileDriver implements FileReadWriteDriver {
         @Override
         public String getTypeName() {
                 return "SHP";
+        }
+
+        @Override
+        public boolean isOpen() {
+                return reader != null;
         }
 }

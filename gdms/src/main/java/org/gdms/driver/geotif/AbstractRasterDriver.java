@@ -222,4 +222,11 @@ public abstract class AbstractRasterDriver implements FileReadWriteDriver {
         public boolean isCommitable() {
                 return false;
         }
+
+        @Override
+        public boolean isOpen() {
+                // once .open() is called, the content is always accessible
+                // thus the driver is always open.
+                return true;
+        }
 }

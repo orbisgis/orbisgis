@@ -272,4 +272,11 @@ public class VrmlDriver implements FileReadWriteDriver {
 	public String getTypeName() {
 		return "VRML";
 	}
+
+        @Override
+        public boolean isOpen() {
+                // once .open() is called, the content of rows
+                // is always accessible.
+                return rows != null;
+        }
 }
