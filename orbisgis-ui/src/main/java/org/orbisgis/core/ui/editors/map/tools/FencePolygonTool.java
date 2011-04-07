@@ -38,22 +38,18 @@
 package org.orbisgis.core.ui.editors.map.tools;
 
 import java.awt.Color;
+import java.io.IOException;
 import java.util.Observable;
 
 import javax.swing.AbstractButton;
 
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.NoSuchTableException;
-import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.driver.generic.GenericObjectDriver;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
@@ -70,112 +66,114 @@ import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
+import java.io.File;
+import org.gdms.data.metadata.DefaultMetadata;
+import org.gdms.data.metadata.Metadata;
+import org.gdms.driver.gdms.GdmsWriter;
 
 public class FencePolygonTool extends AbstractPolygonTool {
-	private DataSource dsResult;
-	private ILayer layer;
-	private final String fenceLayerName = "fence";
-	AbstractButton button;
 
-	@Override
-	public AbstractButton getButton() {
-		return button;
-	}
+        private ILayer layer;
+        private String fenceFile = "fence.gdms";
+        private final String fenceLayerName = "fence";
+        AbstractButton button;
 
-	public void setButton(AbstractButton button) {
-		this.button = button;
-	}
+        @Override
+        public AbstractButton getButton() {
+                return button;
+        }
 
-	@Override
-	public void update(Observable o, Object arg) {
-		PlugInContext.checkTool(this);
-	}
+        public void setButton(AbstractButton button) {
+                this.button = button;
+        }
 
-	protected void polygonDone(Polygon g, MapContext vc, ToolManager tm)
-			throws TransitionException {
-		try {
-			if (null != layer) {
-				vc.getLayerModel().remove(layer);
-			}
-			buildFenceDatasource(g);
-			DataManager dataManager = (DataManager) Services
-					.getService(DataManager.class);
-			layer = dataManager.createLayer(dsResult);
+        @Override
+        public void update(Observable o, Object arg) {
+                PlugInContext.checkTool(this);
+        }
 
-			vc.getLayerModel().insertLayer(layer, 0);
+        protected void polygonDone(Polygon g, MapContext vc, ToolManager tm)
+                throws TransitionException {
+                try {
+                        if (null != layer) {
+                                vc.getLayerModel().remove(layer);
+                        }
 
-			final UniqueSymbolLegend l = LegendFactory
-					.createUniqueSymbolLegend();
-			final Symbol polSym = SymbolFactory.createPolygonSymbol(
-					Color.ORANGE, 4, null);
-			l.setSymbol(polSym);
-			layer.setLegend(l);
-		} catch (LayerException e) {
-			Services.getErrorManager().error(
-					"Cannot use fence tool: " + e.getMessage(), e);
-		} catch (DriverException e) {
-			Services.getErrorManager().error(
-					"Cannot apply the legend : " + e.getMessage(), e);
-		}
-	}
+                        layer = createFenceLayer(g);
 
-	public boolean isEnabled(MapContext vc, ToolManager tm) {
-		return vc.getLayerModel().getLayerCount() > 0;
-	}
+                        vc.getLayerModel().insertLayer(layer, 0);
 
-	public boolean isVisible(MapContext vc, ToolManager tm) {
-		return true;
-	}
+                        final UniqueSymbolLegend l = LegendFactory.createUniqueSymbolLegend();
+                        final Symbol polSym = SymbolFactory.createPolygonSymbol(
+                                Color.ORANGE, 4, null);
+                        l.setSymbol(polSym);
+                        layer.setLegend(l);
+                } catch (LayerException e) {
+                        Services.getErrorManager().error(I18N.getString("orbisgis.core.ui.editors.map.tool.fence.use"), e);
+                } catch (DriverException e) {
+                        Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.ui.layer.legend.cannotApplyLegend"), e);
+                }
+        }
 
-	private String buildFenceDatasource(Geometry g) {
-		try {
-			final GenericObjectDriver driver = new GenericObjectDriver(
-					new String[] { "the_geom" }, new Type[] { TypeFactory
-							.createType(Type.GEOMETRY) });
+        public boolean isEnabled(MapContext vc, ToolManager tm) {
+                return vc.getLayerModel().getLayerCount() > 0;
+        }
 
-			DataSourceFactory dsf = ((DataManager) Services
-					.getService(DataManager.class)).getDataSourceFactory();
+        public boolean isVisible(MapContext vc, ToolManager tm) {
+                return true;
+        }
 
-			if (!dsf.getSourceManager().exists(fenceLayerName)) {
-				dsf.getSourceManager().register(fenceLayerName, driver);
-			}
-			dsResult = dsf.getDataSource(fenceLayerName);
-			dsResult.open();
+        private ILayer createFenceLayer(Geometry g) {
+                try {
+                        DataSourceFactory dsf = ((DataManager) Services.getService(DataManager.class)).getDataSourceFactory();
 
-			while (dsResult.getRowCount() > 0) {
-				dsResult.deleteRow(0);
-			}
 
-			if (dsResult.getFieldCount() == 0) {
-				dsResult.addField("the_geom", TypeFactory
-						.createType(Type.GEOMETRY));
-			}
-			dsResult
-					.insertFilledRow(new Value[] { ValueFactory.createValue(g) });
-			dsResult.commit();
-			dsResult.close();
 
-			return dsResult.getName();
-		} catch (DriverLoadException e) {
-			Services.getErrorManager().error(
-					"Error while recovering fence vectorial layer", e);
-		} catch (DataSourceCreationException e) {
-			Services.getErrorManager().error(
-					"Error while creating fence vectorial layer", e);
-		} catch (DriverException e) {
-			Services.getErrorManager().error(
-					"Error while populating fence vectorial layer", e);
-		} catch (NonEditableDataSourceException e) {
-			Services.getErrorManager().error(
-					"Error while committing fence vectorial layer", e);
-		} catch (NoSuchTableException e) {
-			Services.getErrorManager().error(
-					"Error while creating fence vectorial layer", e);
-		}
-		return null;
-	}
+                        File file = new File(dsf.getResultDir() + File.separator + fenceFile);
 
-	public String getName() {
-		return I18N.getString("orbisgis.core.ui.editors.map.tool.fence");
-	}
+                        if (file.exists()) {
+                                file.delete();
+                        }
+
+                        if (dsf.getSourceManager().exists(fenceLayerName)) {
+                                dsf.getSourceManager().remove(fenceLayerName);
+                        }
+
+                        GdmsWriter writer;
+                        writer = new GdmsWriter(file);
+
+
+                        Metadata md = new DefaultMetadata(new Type[]{TypeFactory.createType(Type.GEOMETRY)}, new String[]{"the_geom"});
+
+                        writer.writeMetadata(1, md);
+                        writer.addValues(new Value[]{ValueFactory.createValue(g)});
+
+                        // write the row indexes
+                        writer.writeRowIndexes();
+                        // write envelope
+                        writer.writeExtent();
+                        writer.close();
+                        dsf.getSourceManager().register(fenceLayerName, file);
+
+                        DataManager dataManager = (DataManager) Services.getService(DataManager.class);
+                        return dataManager.createLayer(fenceLayerName);
+
+
+                } catch (DriverLoadException e) {
+                        Services.getErrorManager().error(I18N.getString("orbisgis.core.ui.editors.map.tool.fence.errorRecovering"), e);
+                } catch (DriverException e) {
+                        Services.getErrorManager().error(I18N.getString("orbisgis.core.ui.editors.map.tool.fence.create"), e);
+
+                } catch (LayerException e) {
+                        Services.getErrorManager().error(I18N.getString("orbisgis.core.ui.editors.map.tool.fence.create"), e);
+
+                } catch (IOException e) {
+                        Services.getErrorManager().error(I18N.getString("orbisgis.core.ui.editors.map.tool.fence.create"), e);
+                }
+                return null;
+        }
+
+        public String getName() {
+                return I18N.getString("orbisgis.core.ui.editors.map.tool.fence");
+        }
 }
