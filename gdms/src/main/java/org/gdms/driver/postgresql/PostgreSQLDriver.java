@@ -77,6 +77,7 @@ import org.postgresql.PGConnection;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTWriter;
 import java.util.Arrays;
+import java.util.Properties;
 import org.gdms.data.types.SRIDConstraint;
 
 /**
@@ -127,7 +128,7 @@ public class PostgreSQLDriver extends DefaultDBDriver {
          *
          * @see org.gdms.driver.DBDriver#connect(java.lang.String)
          */
-        public Connection getConnection(String host, int port, String dbName,
+        public Connection getConnection(String host, int port, boolean ssl, String dbName,
                 String user, String password) throws SQLException {
                 if (driverException != null) {
                         throw new RuntimeException(driverException);
@@ -144,8 +145,15 @@ public class PostgreSQLDriver extends DefaultDBDriver {
                 if (user != null) {
                         connectionString += ("?user=" + user + "&password=" + password);
                 }
-
-                Connection c = DriverManager.getConnection(connectionString);
+                Connection c = null;
+                if (ssl) {
+                        Properties props = new Properties();
+                        props.setProperty("ssl", "true");
+                        props.setProperty("sslfactory", "org.postgresql.ssl.NonValidatingFactory");
+                        c = DriverManager.getConnection(connectionString, props);
+                } else {
+                        c = DriverManager.getConnection(connectionString);
+                }
                 ((PGConnection) c).addDataType("geometry", org.postgis.PGgeometry.class);
                 ((PGConnection) c).addDataType("box3d", org.postgis.PGbox3d.class);
 

@@ -364,7 +364,7 @@ public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 		this.schemaName = source.getSchemaName();
 
 		try {
-			c = getConnection(source.getHost(), source.getPort(), source
+			c = getConnection(source.getHost(), source.getPort(), source.isSsl(), source
 					.getDbName(), source.getUser(), source.getPassword());
 			beginTrans(c);
 			sql = new StringBuilder(getCreateTableKeyWord()

@@ -85,11 +85,7 @@ public class HSQLDBDriver extends DefaultDBDriver implements DBReadWriteDriver {
 		}
 	}
 
-	/**
-	 * @see org.gdms.driver.DBDriver#getConnection(java.lang.String, int,
-	 *      java.lang.String, java.lang.String, java.lang.String)
-	 */
-	public Connection getConnection(String host, int port, String dbName,
+	public Connection getConnection(String host, int port, boolean ssl, String dbName,
 			String user, String password) throws SQLException {
 		if (driverException != null) {
 			throw new RuntimeException(driverException);

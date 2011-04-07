@@ -66,7 +66,7 @@ public interface DBDriver extends ReadOnlyDriver {
 	 * @throws SQLException
 	 *             If some error happens
 	 */
-	Connection getConnection(String host, int port, String dbName, String user,
+	Connection getConnection(String host, int port, boolean ssl, String dbName, String user,
 			String password) throws SQLException;
 
 	/**

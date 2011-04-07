@@ -105,7 +105,7 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition {
 		((ReadOnlyDriver) driver).setDataSourceFactory(getDataSourceFactory());
 		Connection con;
 		try {
-			con = driver.getConnection(def.getHost(), def.getPort(), def
+			con = driver.getConnection(def.getHost(), def.getPort(), def.isSsl(), def
 					.getDbName(), def.getUser(), def.getPassword());
 		} catch (SQLException e) {
 			throw new DriverException(e);
@@ -197,6 +197,9 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition {
 				definition.getUser(), definition.getPassword(), definition
 						.getSchemaName(), definition.getTableName(), definition
 						.getPrefix());
+                if (definition.getSsl() != null && definition.getSsl().equals("true")) {
+                        dbSource.setSsl(true);
+                }
 		return new DBTableSourceDefinition(dbSource);
 	}
 

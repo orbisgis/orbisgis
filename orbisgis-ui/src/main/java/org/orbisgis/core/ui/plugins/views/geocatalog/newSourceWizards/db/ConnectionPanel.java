@@ -121,6 +121,7 @@ public class ConnectionPanel extends MultiInputPanel {
 			connection.close();
 			return null;
 		} catch (SQLException e) {
+                        e.printStackTrace();
 			return ErrorMessages.CannotConnect + ": " + e.getMessage();
 		}
 	}
@@ -128,7 +129,7 @@ public class ConnectionPanel extends MultiInputPanel {
 	public Connection getConnection() throws SQLException {
 		DBSource dbSource = getDBSource();
 		Connection connection = getDBDriver().getConnection(dbSource.getHost(),
-				dbSource.getPort(), dbSource.getDbName(), dbSource.getUser(),
+				dbSource.getPort(), true, dbSource.getDbName(), dbSource.getUser(),
 				dbSource.getPassword());
 		return connection;
 	}

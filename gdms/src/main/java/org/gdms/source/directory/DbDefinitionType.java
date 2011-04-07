@@ -60,6 +60,8 @@ public class DbDefinitionType
     protected String prefix;
     @XmlAttribute(name = "schema-name", required = true)
     protected String schemaName;
+    @XmlAttribute()
+    protected String ssl;
 
     /**
      * Gets the value of the host property.
@@ -251,6 +253,30 @@ public class DbDefinitionType
      */
     public void setSchemaName(String value) {
         this.schemaName = value;
+    }
+
+    /**
+     * Gets the value of the ssl property.
+     *
+     * @return
+     *     possible object is
+     *     {@link String }
+     *
+     */
+    public String getSsl() {
+        return ssl;
+    }
+
+    /**
+     * Sets the value of the ssl property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *
+     */
+    public void setSsl(String value) {
+        this.ssl = value;
     }
 
 }
