@@ -62,17 +62,19 @@ import org.fife.ui.autocomplete.ParameterizedCompletion;
 import org.fife.ui.autocomplete.VariableCompletion;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
+import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.DefaultType;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.FileDriver;
 import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.SourceEvent;
 import org.gdms.source.SourceListener;
-import org.gdms.source.SourceManager;
 import org.gdms.source.SourceRemovalEvent;
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.customQuery.QueryManager;
@@ -802,15 +804,17 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                 // else we have to retrieve it from a DataSource
                 // this is an expensive operation that should only be done once
                 try {
-                        DataSource ds = dataManager.getDataSourceFactory().getDataSource(sourceName);
-                        ReadOnlyDriver d = ds.getDriver();
-                        if ((d.getType() & SourceManager.RASTER) == SourceManager.RASTER) {
-                                // this is a raster : easy !
-                                m = d.getMetadata();
-                        } else {
-                                ds.open();
-                                m = d.getMetadata();
-                                ds.close();
+                        DataSource ds = dataManager.getDataSourceFactory().
+                                getDataSource(sourceName, DataSourceFactory.NORMAL);
+                        final ReadOnlyDriver driver = ds.getDriver();
+                        synchronized (driver) {
+                                if (driver instanceof FileDriver && ((FileDriver) driver).isOpen()) {
+                                        m = new DefaultMetadata(ds.getMetadata());
+                                } else {
+                                        ds.open();
+                                        m = new DefaultMetadata(ds.getMetadata());
+                                        ds.close();
+                                }
                         }
                         // then we cache it
                         cachedMetadatas.put(sourceName, m);
