@@ -37,6 +37,7 @@
 package org.orbisgis.core.ui.plugins.views.sqlConsole.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragGestureEvent;
@@ -46,12 +47,18 @@ import java.awt.dnd.DragSourceDragEvent;
 import java.awt.dnd.DragSourceDropEvent;
 import java.awt.dnd.DragSourceEvent;
 import java.awt.dnd.DragSourceListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
+import javax.swing.border.BevelBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import org.gdms.sql.customQuery.QueryManager;
@@ -59,6 +66,7 @@ import org.gdms.sql.function.FunctionManager;
 import org.orbisgis.core.ui.components.jlist.OGList;
 import org.orbisgis.core.ui.components.text.JButtonTextField;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
+import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
 import org.orbisgis.utils.I18N;
 
 /**
@@ -68,117 +76,181 @@ import org.orbisgis.utils.I18N;
 public class SQLFunctionsPanel extends JPanel implements DragGestureListener,
         DragSourceListener {
 
-    private final DragSource dragSource;
-    private final OGList list;
-    private final FunctionListModel functionListModel;
-    private final JButtonTextField txtFilter;
-    private final JLabel functionLabelCount;
+        private final DragSource dragSource;
+        private final OGList list;
+        private final FunctionListModel functionListModel;
+        private final JButtonTextField txtFilter;
+        private final JLabel functionLabelCount;
+        private final JLabel collapsed;
+        private final JToolBar east;
 
-    public SQLFunctionsPanel() {
-        this.setLayout(new BorderLayout());
-        functionListModel = new FunctionListModel();
-        txtFilter = new JButtonTextField();
-        txtFilter.getDocument().addDocumentListener(new DocumentListener() {
+        public SQLFunctionsPanel(JPanel panel) {
+                this.setLayout(new BorderLayout());
+                functionListModel = new FunctionListModel();
+                txtFilter = new JButtonTextField();
+                txtFilter.getDocument().addDocumentListener(new DocumentListener() {
 
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                doFilter();
-            }
+                        @Override
+                        public void removeUpdate(DocumentEvent e) {
+                                doFilter();
+                        }
 
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                doFilter();
-            }
+                        @Override
+                        public void insertUpdate(DocumentEvent e) {
+                                doFilter();
+                        }
 
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                doFilter();
-            }
-        });
+                        @Override
+                        public void changedUpdate(DocumentEvent e) {
+                                doFilter();
+                        }
+                });
 
-        list = new OGList() {
+                list = new OGList() {
 
-            public String getToolTipText(MouseEvent evt) {
-                int index = locationToIndex(evt.getPoint());
-                FunctionElement item = (FunctionElement) getModel().getElementAt(index);
-                String toolTip;
-                if (item.getFunctionType() == FunctionElement.BASIC_FUNCTION) {
-                    toolTip = FunctionManager.getFunction(item.getFunctionName()).getDescription();
-                } else {
-                    toolTip = QueryManager.getQuery(item.getFunctionName()).getDescription();
+                        public String getToolTipText(MouseEvent evt) {
+                                int index = locationToIndex(evt.getPoint());
+                                FunctionElement item = (FunctionElement) getModel().getElementAt(index);
+                                String toolTip;
+                                if (item.getFunctionType() == FunctionElement.BASIC_FUNCTION) {
+                                        toolTip = FunctionManager.getFunction(item.getFunctionName()).getDescription();
+                                } else {
+                                        toolTip = QueryManager.getQuery(item.getFunctionName()).getDescription();
+                                }
+                                // Return the tool tip text
+                                return toolTip;
+                        }
+                };
+                list.setBorder(BorderFactory.createLoweredBevelBorder());
+                list.setModel(functionListModel);
+                list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+                JButton btnCollapse = new JButton();
+                btnCollapse.setIcon(IconLoader.getIcon("go-next.png"));
+                btnCollapse.setToolTipText(I18N.getString("orbisgis.org.ui.sqlConsole.collapse"));
+                btnCollapse.addActionListener(new ActionListener() {
+
+                        public void actionPerformed(ActionEvent e) {
+                                collapse();
+                        }
+                });
+                btnCollapse.setBorderPainted(false);
+
+                east = new JToolBar();
+		east.setFloatable(false);
+		east.add(txtFilter);
+		east.add(btnCollapse);
+		east.setOpaque(false);
+		this.add(east, BorderLayout.NORTH);
+                this.add(new JScrollPane(list), BorderLayout.CENTER);
+                FunctionListRenderer functionListRenderer = new FunctionListRenderer();
+                list.setCellRenderer(functionListRenderer);
+
+                functionLabelCount = new JLabel(I18N.getString(Names.FUNCTION_PANEL_NUMBER + " = " + functionListModel.getSize()));
+                this.add(functionLabelCount, BorderLayout.SOUTH);
+
+                dragSource = DragSource.getDefaultDragSource();
+                dragSource.createDefaultDragGestureRecognizer(list,
+                        DnDConstants.ACTION_COPY_OR_MOVE, this);
+
+                collapsed = new JLabel(IconLoader.getIcon("go-previous.png"), JLabel.CENTER);
+                collapsed.setIconTextGap(20);
+                collapsed.setVerticalTextPosition(JLabel.BOTTOM);
+                collapsed.setHorizontalTextPosition(JLabel.CENTER);
+                collapsed.setToolTipText(I18N.getString("orbisgis.org.ui.sqlConsole.expand"));
+
+                this.add(collapsed, BorderLayout.WEST);
+                collapsed.addMouseListener(new MouseAdapter() {
+
+                        @Override
+                        public void mouseClicked(MouseEvent e) {
+                                if (!list.isVisible()) {
+                                        expand();
+                                }
+                        }
+                });
+
+                this.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+                this.setMinimumSize(new Dimension(100, 40));
+
+                collapse();
+
+        }
+
+        @Override
+        public void dragGestureRecognized(DragGestureEvent dge) {
+                Transferable dragData = getDragData(dge);
+                if (dragData != null) {
+                        dragSource.startDrag(dge, DragSource.DefaultMoveDrop, dragData,
+                                this);
                 }
-                // Return the tool tip text
-                return toolTip;
-            }
-        };
-        list.setBorder(BorderFactory.createLoweredBevelBorder());
-        list.setModel(functionListModel);
-        list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        this.add(txtFilter, BorderLayout.NORTH);
-        this.add(new JScrollPane(list), BorderLayout.CENTER);
-        FunctionListRenderer functionListRenderer = new FunctionListRenderer();
-        list.setCellRenderer(functionListRenderer);
 
-        functionLabelCount = new JLabel(I18N
-				.getString(Names.FUNCTION_PANEL_NUMBER + " = "  + functionListModel.getSize()));
-        this.add(functionLabelCount, BorderLayout.SOUTH);
-
-        dragSource = DragSource.getDefaultDragSource();
-        dragSource.createDefaultDragGestureRecognizer(list,
-                DnDConstants.ACTION_COPY_OR_MOVE, this);
-
-    }
-
-    @Override
-    public void dragGestureRecognized(DragGestureEvent dge) {
-        Transferable dragData = getDragData(dge);
-        if (dragData != null) {
-            dragSource.startDrag(dge, DragSource.DefaultMoveDrop, dragData,
-                    this);
         }
 
-    }
-
-    public String[] getSelectedSources() {
-        Object[] selectedValues = list.getSelectedValues();
-        String[] sources = new String[selectedValues.length];
-        for (int i = 0; i < sources.length; i++) {
-            sources[i] = selectedValues[i].toString();
+        public String[] getSelectedSources() {
+                Object[] selectedValues = list.getSelectedValues();
+                String[] sources = new String[selectedValues.length];
+                for (int i = 0; i < sources.length; i++) {
+                        sources[i] = selectedValues[i].toString();
+                }
+                return sources;
         }
-        return sources;
-    }
 
-    public Transferable getDragData(DragGestureEvent dge) {
-        FunctionElement functionElement = (FunctionElement) list.getSelectedValue();
+        public Transferable getDragData(DragGestureEvent dge) {
+                FunctionElement functionElement = (FunctionElement) list.getSelectedValue();
 
-        if (functionElement != null) {
-            return null;
-        } else {
-            return null;
+                if (functionElement != null) {
+                        return null;
+                } else {
+                        return null;
+                }
         }
-    }
 
-    @Override
-    public void dragEnter(DragSourceDragEvent dsde) {
-    }
+        @Override
+        public void dragEnter(DragSourceDragEvent dsde) {
+        }
 
-    @Override
-    public void dragOver(DragSourceDragEvent dsde) {
-    }
+        @Override
+        public void dragOver(DragSourceDragEvent dsde) {
+        }
 
-    @Override
-    public void dropActionChanged(DragSourceDragEvent dsde) {
-    }
+        @Override
+        public void dropActionChanged(DragSourceDragEvent dsde) {
+        }
 
-    @Override
-    public void dragExit(DragSourceEvent dse) {
-    }
+        @Override
+        public void dragExit(DragSourceEvent dse) {
+        }
 
-    @Override
-    public void dragDropEnd(DragSourceDropEvent dsde) {
-    }
+        @Override
+        public void dragDropEnd(DragSourceDropEvent dsde) {
+        }
 
-    private void doFilter() {
-        functionListModel.filter(txtFilter.getText());
-    }
+        private void doFilter() {
+                functionListModel.filter(txtFilter.getText());
+        }
+
+        private void collapse() {
+                SQLFunctionsPanel.this.setPreferredSize(new Dimension(20, 0));
+                list.setVisible(false);
+
+                east.setVisible(false);
+                collapsed.setVisible(true);
+        }
+
+        private void expand() {
+                SQLFunctionsPanel.this.setPreferredSize(null);
+                list.setVisible(true);
+                east.setVisible(true);
+                collapsed.setVisible(false);
+        }
+
+        private String getVertical(String string) {
+                String ret = "<html>";
+                for (int i = 0; i < string.length(); i++) {
+                        ret += string.charAt(i) + "<br/>";
+                }
+
+                return ret + "</html>";
+        }
 }
