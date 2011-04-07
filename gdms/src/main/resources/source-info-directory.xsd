@@ -95,6 +95,7 @@
 				<xs:attribute name="password" type="xs:string" use="required"/>
 				<xs:attribute name="prefix" type="xs:string" use="required"/>				
 				<xs:attribute name="schema-name" type="xs:string" use="required"/>
+                                <xs:attribute name="ssl" type="xs:string" />
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>

@@ -99,27 +99,30 @@ public class H2spatialDriver extends DefaultDBDriver {
 	 * @see org.gdms.driver.DBDriver#getConnection(java.lang.String, int,
 	 *      java.lang.String, java.lang.String, java.lang.String)
 	 */
-	public Connection getConnection(String host, int port, String dbName,
+	public Connection getConnection(String host, int port, boolean ssl, String dbName,
 			String user, String password) throws SQLException {
 		if (driverException != null) {
 			throw new RuntimeException(driverException);
 		}
 		String connectionString;
-		if ((null == host) || (0 == host.length()) || (dbName.startsWith("/"))) {
-			connectionString = "jdbc:h2:file:" + dbName;
-		} else {
-			connectionString = "jdbc:h2:tcp://" + host + ":" + port + "/"
-					+ dbName;
-		}
-		final Properties p = new Properties();
-		p.put("shutdown", "true");
+                if ((null == host) || (0 == host.length()) || (dbName.startsWith("/"))) {
+                        connectionString = "jdbc:h2:file:" + dbName;
+                } else if (ssl) {
+                        connectionString = "jdbc:h2:ssl://" + host + ":" + port + "/"
+                                + dbName;
+                } else {
+                        connectionString = "jdbc:h2:tcp://" + host + ":" + port + "/"
+                                + dbName;
+                }
+                final Properties p = new Properties();
+                p.put("shutdown", "true");
 
-		final Connection con = DriverManager.getConnection(connectionString,
-				user, password);
-		final Statement stat = con.createStatement();
-		SQLCodegenerator.addSpatialFunctions(stat);
-		stat.close();
-		return con;
+                final Connection con = DriverManager.getConnection(connectionString,
+                        user, password);
+                final Statement stat = con.createStatement();
+                SQLCodegenerator.addSpatialFunctions(stat);
+                stat.close();
+                return con;
 	}
 
 	@Override

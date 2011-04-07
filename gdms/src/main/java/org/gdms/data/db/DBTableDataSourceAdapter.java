@@ -122,7 +122,7 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 	 */
 	private Connection getConnection() throws SQLException {
 		if (con == null) {
-			con = driver.getConnection(def.getHost(), def.getPort(), def
+			con = driver.getConnection(def.getHost(), def.getPort(), def.isSsl(), def
 					.getDbName(), def.getUser(), def.getPassword());
 		}
 		return con;

@@ -62,6 +62,8 @@ public class DBSource implements Serializable {
 
 	private String prefix;
 
+        private boolean ssl = false;
+
 	public DBSource(String host, int port, String dbName, String user,
 			String password, String prefix) {
 		this.host = host;
@@ -72,17 +74,36 @@ public class DBSource implements Serializable {
 		this.prefix = prefix;
 	}
 
+        public DBSource(String host, int port, String dbName, String user,
+			String password, String prefix, boolean ssl) {
+                this(host, port, dbName, user, password, prefix);
+                this.ssl = ssl;
+        }
+
 	public DBSource(String host, int port, String dbName, String user,
 			String password, String tableName, String prefix) {
 		this(host, port, dbName, user, password, prefix);
 		this.tableName = tableName;
 	}
 
+        public DBSource(String host, int port, String dbName, String user,
+			String password, String tableName, String prefix, boolean ssl) {
+                this(host, port, dbName, user, password, tableName, prefix);
+                this.ssl = ssl;
+        }
+
 	public DBSource(String host, int port, String dbName, String user,
 			String password, String schemaName, String tableName, String prefix) {
 		this(host, port, dbName, user, password, tableName, prefix);
 		this.schemaName = schemaName;
 	}
+
+        public DBSource(String host, int port, String dbName, String user,
+			String password, String schemaName, String tableName, String prefix,
+                        boolean ssl) {
+                this(host, port, dbName, user, password, tableName, schemaName, prefix);
+                this.ssl = ssl;
+        }
 
 	public String getDbName() {
 		return dbName;
@@ -159,4 +180,18 @@ public class DBSource implements Serializable {
 	public void setPrefix(String prefix) {
 		this.prefix = prefix;
 	}
+
+        /**
+         * @return the ssl
+         */
+        public boolean isSsl() {
+                return ssl;
+        }
+
+        /**
+         * @param ssl the ssl to set
+         */
+        public void setSsl(boolean ssl) {
+                this.ssl = ssl;
+        }
 }
