@@ -48,6 +48,7 @@ import org.gdms.source.DBDriverFilter;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.sif.multiInputPanel.CheckBoxChoice;
 import org.orbisgis.core.sif.multiInputPanel.ComboBoxChoice;
 import org.orbisgis.core.sif.multiInputPanel.InputType;
 import org.orbisgis.core.sif.multiInputPanel.IntType;
@@ -65,6 +66,7 @@ public class ConnectionPanel extends MultiInputPanel {
 	public static final String DBNAME = "dbname";
 	public static final String USER = "user";
 	public static final String PASSWORD = "pass";
+        public static final String SSL = "ssl";
 
 	public ConnectionPanel() {
 		super("org.orbisgis.core.ui.geocatalog.resources.db.FirstUIPanel", I18N
@@ -95,6 +97,8 @@ public class ConnectionPanel extends MultiInputPanel {
 		addInput(PASSWORD, I18N
 				.getString("orbisgis.org.orbisgis.core.password"), "",
 				new PasswordType(LENGTH));
+
+                addInput(SSL, I18N.getString("orbisgis.org.orbisgis.core.db.ssl"), new CheckBoxChoice(false));
 	}
 
 	private InputType getDriverInput() {
@@ -129,7 +133,7 @@ public class ConnectionPanel extends MultiInputPanel {
 	public Connection getConnection() throws SQLException {
 		DBSource dbSource = getDBSource();
 		Connection connection = getDBDriver().getConnection(dbSource.getHost(),
-				dbSource.getPort(), true, dbSource.getDbName(), dbSource.getUser(),
+				dbSource.getPort(), dbSource.isSsl(),dbSource.getDbName(), dbSource.getUser(),
 				dbSource.getPassword());
 		return connection;
 	}
@@ -156,8 +160,12 @@ public class ConnectionPanel extends MultiInputPanel {
 		if ((port == 0) || (getInput(PORT).trim().length() == 0)) {
 			port = dbDriver.getDefaultPort();
 		}
+                boolean ssl = false;
+                if (getInput(SSL).equals("true")){
+                        ssl =true;
+                }
 
 		return new DBSource(host, port, dbName, user, password, getDBDriver()
-				.getPrefixes()[0]);
+				.getPrefixes()[0], ssl);
 	}
 }
