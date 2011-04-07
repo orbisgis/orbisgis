@@ -135,4 +135,8 @@ public abstract class AbstractDataSourceDefinition implements
 			return null;
 		}
 	}
+
+        @Override
+        public void refresh() {
+        }
 }

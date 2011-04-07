@@ -947,6 +947,7 @@ public class DefaultSourceManager implements SourceManager {
 			}
 		}
 		ExtendedSource src = getExtendedSource(name);
+                src.getDataSourceDefinition().refresh();
 		String[] referencing = src.getReferencingSources();
 		for (String referencingSource : referencing) {
 			fireCommitDone(referencingSource);
