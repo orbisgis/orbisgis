@@ -391,6 +391,7 @@ public class DiskRTree implements RTree {
 		} else {
 			save();
 			// Free resources
+                        buffer.close();
 			fis.close();
 		}
 	}

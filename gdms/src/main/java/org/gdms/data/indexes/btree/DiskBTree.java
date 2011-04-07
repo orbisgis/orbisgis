@@ -381,6 +381,7 @@ public class DiskBTree implements BTree {
 		} else {
 			save();
 			// Free resources
+                        buffer.close();
 			fis.close();
 		}
 	}
