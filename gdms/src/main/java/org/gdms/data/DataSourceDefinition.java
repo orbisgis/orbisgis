@@ -158,4 +158,6 @@ public interface DataSourceDefinition {
 
 	public ReadOnlyDriver getDriver();
 
+        public void refresh();
+
 }

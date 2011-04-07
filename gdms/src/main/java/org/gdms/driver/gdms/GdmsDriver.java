@@ -38,11 +38,10 @@ package org.gdms.driver.gdms;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.OpenCloseCounter;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
@@ -57,6 +56,7 @@ public class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver {
 
         static final byte VERSION_NUMBER = 3;
         private GdmsReader reader;
+        private OpenCloseCounter counter = new OpenCloseCounter("");
 
         public void copy(File in, File out) throws IOException {
                 FileUtils.copy(in, out);
@@ -85,32 +85,49 @@ public class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver {
         }
 
         public void close() throws DriverException {
-                try {
-                        reader.close();
-                        reader = null;
-                } catch (IOException e) {
-                        throw new DriverException(e);
+                synchronized (this) {
+                        if (counter.stop()) {
+                                try {
+                                        reader.close();
+                                        reader = null;
+                                } catch (IOException e) {
+                                        throw new DriverException(e);
+                                }
+                        }
                 }
         }
 
         public void open(File file) throws DriverException {
-                try {
-                        reader = new GdmsReader(file);
-                        reader.readMetadata();
-                } catch (IOException e) {
-                        throw new DriverException(e);
+                synchronized (this) {
+                        if (counter.start()) {
+                                try {
+                                        reader = new GdmsReader(file);
+                                        reader.readMetadata();
+                                } catch (IOException e) {
+                                        counter.stop();
+                                        throw new DriverException(e);
+                                }
+                        }
                 }
         }
 
         public boolean isOpen() {
-                return reader != null;
+                boolean open = false;
+                synchronized (this) {
+                        open = reader != null;
+                }
+                return open;
         }
 
         public Metadata getMetadata() throws DriverException {
-                if (reader == null) {
-                        return null;
+                Metadata m = null;
+                synchronized (this) {
+                        if (reader == null) {
+                                return null;
+                        }
+                        m = reader.getMetadata();
                 }
-                return reader.getMetadata();
+                return m;
         }
 
         public int getType() {
@@ -119,8 +136,8 @@ public class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver {
 
                 // when it is actually bound to a file, we check for additional data
                 // (getMetadata() != null) excludes the case of a corrupted gdms file
-                if (reader != null && reader.getMetadata() != null) {
-                        try {
+                try {
+                        if (reader != null && reader.getMetadata() != null) {
                                 Metadata m = reader.getMetadata();
                                 for (int i = 0; i < m.getFieldCount(); i++) {
                                         switch (m.getFieldType(i).getTypeCode()) {
@@ -132,22 +149,23 @@ public class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver {
                                                         break;
                                         }
                                 }
-                        } catch (DriverException ex) {
+
+                                return type;
+                        } else {
+                                // if we cannot tell, we add VECTORIAL
+                                // WARNING: this is needed so that GDMS can be considered
+                                // a writable vectorial driver
+                                //
+                                // 01/11/2011
+                                // TODO: getType should be split between a method that
+                                // returns the type of the current file loaded by the driver
+                                // and a static method that returns the types this driver
+                                // can work with
+                                return type | SourceManager.VECTORIAL;
                         }
-                        return type;
-                } else {
-                        // if we cannot tell, we add VECTORIAL
-                        // WARNING: this is needed so that GDMS can be considered
-                        // a writable vectorial driver
-                        //
-                        // 01/11/2011
-                        // TODO: getType should be split between a method that
-                        // returns the type of the current file loaded by the driver
-                        // and a static method that returns the types this driver
-                        // can work with
+                } catch (DriverException ex) {
                         return type | SourceManager.VECTORIAL;
                 }
-                
         }
 
         public void setDataSourceFactory(DataSourceFactory dsf) {

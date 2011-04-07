@@ -64,6 +64,8 @@ import org.orbisgis.utils.I18N;
 public class FileSourceDefinition extends AbstractDataSourceDefinition {
 
         public File file;
+        public int cachedType = -1;
+        public boolean listenerInitialiazed = false;
 
         public FileSourceDefinition(File file) {
                 this.file = file;
@@ -145,18 +147,27 @@ public class FileSourceDefinition extends AbstractDataSourceDefinition {
         }
 
         @Override
-        public int getType() {
-                try {
-                        if (getDriver().getTypeName().equals("GDMS") && getDriver().getMetadata() == null) {
-                                GdmsDriver d = (GdmsDriver) getDriver();
-                                d.open(file);
-                                int type = d.getType();
-                                d.close();
-                                return type;
-                        }
+        public void refresh() {
+                cachedType = -1;
+        }
 
-                } catch (DriverException ex) {
+        @Override
+        public int getType() {
+                if (cachedType == -1) {
+                        try {
+                                if (getDriver().getTypeName().equals("GDMS") && !((FileDriver) getDriver()).isOpen()) {
+                                        GdmsDriver d = (GdmsDriver) getDriver();
+                                        d.open(file);
+                                        int type = d.getType();
+                                        d.close();
+                                        cachedType = type;
+                                } else {
+                                        cachedType = getDriver().getType();
+                                }
+                        } catch (DriverException ex) {
+                                cachedType = getDriver().getType();
+                        }
                 }
-                return super.getType();
+                return cachedType;
         }
 }

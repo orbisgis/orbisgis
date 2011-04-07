@@ -341,6 +341,11 @@ public class ReadWriteBufferManager {
 		buffer.clear();
 	}
 
+        public void close() throws IOException {
+                flush();
+                channel.force(false);
+        }
+
 	public int getEOFDirection() throws IOException {
 		int fileSize = (int) channel.size();
 		int highestModificationInFile = windowStart + highestModification;

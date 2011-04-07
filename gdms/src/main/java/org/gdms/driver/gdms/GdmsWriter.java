@@ -39,7 +39,7 @@ public class GdmsWriter {
 	}
 
 	public void close() throws IOException {
-		bm.flush();
+		bm.close();
 		raf.close();
 	}
 

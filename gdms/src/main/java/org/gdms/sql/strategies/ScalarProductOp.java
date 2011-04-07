@@ -138,6 +138,7 @@ public class ScalarProductOp extends AbstractOperator implements Operator,
 					int childFieldIndex = child.passFieldUp(field);
 					if (childFieldIndex != -1) {
 						fieldIndex = offset + childFieldIndex;
+                                                break;
 					} else {
 						offset += child.getResultMetadata().getFieldCount();
 					}

@@ -56,7 +56,6 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.FileReadWriteDriver;
-import org.gdms.driver.gdms.GdmsDriver;
 import org.gdms.source.CommitListener;
 import org.gdms.source.DefaultSourceManager;
 import org.gdms.source.Source;
@@ -71,7 +70,7 @@ import org.orbisgis.progress.NullProgressMonitor;
 public class FileDataSourceAdapter extends DriverDataSource implements
         Commiter, CommitListener {
 
-        private FileDriver driver;
+        private final FileDriver driver;
         private File file;
         private boolean realSource;
 
@@ -97,19 +96,18 @@ public class FileDataSourceAdapter extends DriverDataSource implements
 
         @Override
         public Metadata getMetadata() throws DriverException {
-                if (driver.isOpen()) {
-                        return driver.getMetadata();
-                } else {
-                        driver.open(file);
-                        Metadata m = driver.getMetadata();
-                        driver.close();
-                        return m;
+                synchronized (driver) {
+                        if (driver.isOpen()) {
+                                return driver.getMetadata();
+                        } else {
+                                driver.open(file);
+                                Metadata m = driver.getMetadata();
+                                driver.close();
+                                return m;
+                        }
                 }
         }
 
-        /**
-         * @see org.gdms.data.DataSource#saveData(org.gdms.data.DataSource)
-         */
         public void saveData(DataSource ds) throws DriverException {
                 ds.open();
                 ((FileReadWriteDriver) driver).writeFile(file, ds,
@@ -195,8 +193,10 @@ public class FileDataSourceAdapter extends DriverDataSource implements
         }
 
         private void sync() throws DriverException {
-                driver.close();
-                driver.open(file);
+                synchronized (driver) {
+                        driver.close();
+                        driver.open(file);
+                }
         }
 
         public void isCommiting(String name, Object source) {
