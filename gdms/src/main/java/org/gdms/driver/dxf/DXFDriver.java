@@ -82,4 +82,9 @@ public class DXFDriver implements FileDriver {
 		return result.getScope(dimension);
 	}
 
+        @Override
+        public boolean isOpen() {
+                return result != null;
+        }
+
 }

@@ -155,6 +155,11 @@ public class DBFDriver implements FileReadWriteDriver {
 		return header;
 	}
 
+        @Override
+        public boolean isOpen() {
+                return dbaseReader != null;
+        }
+
 	private class DBFType {
 		char type;
 
@@ -326,7 +331,9 @@ public class DBFDriver implements FileReadWriteDriver {
 			dbaseReader.close();
 		} catch (IOException e) {
 			throw new DriverException(e);
-		}
+		} finally {
+                        dbaseReader = null;
+                }
 	}
 
 	public Value getFieldValue(long rowIndex, int fieldId)

@@ -60,4 +60,6 @@ public interface FileDriver extends ReadOnlyDriver {
 	 * @return
 	 */
 	String[] getFileExtensions();
+
+        boolean isOpen();
 }

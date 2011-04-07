@@ -176,4 +176,11 @@ public class ValDriver implements FileDriver {
 	public String getTypeName() {
 		return "VAL";
 	}
+
+        @Override
+        public boolean isOpen() {
+                // once .open() is called, the content of rows
+                // is always accessible.
+                return rows != null;
+        }
 }

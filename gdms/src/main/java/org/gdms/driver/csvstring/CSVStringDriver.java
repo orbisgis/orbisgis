@@ -453,4 +453,11 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	public String getTypeName() {
 		return "CSV";
 	}
+
+        @Override
+        public boolean isOpen() {
+                // once .open() is called, the content of rows
+                // is always accessible.
+                return rows != null;
+        }
 }

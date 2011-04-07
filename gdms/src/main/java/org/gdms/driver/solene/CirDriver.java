@@ -411,4 +411,11 @@ public class CirDriver implements FileReadWriteDriver {
 		return "CIR";
 	}
 
+        @Override
+        public boolean isOpen() {
+                // once .open() is called, the content of rows
+                // is always accessible.
+                return rows != null;
+        }
+
 }

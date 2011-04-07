@@ -89,6 +89,8 @@ public class ReadDriver extends DefaultDBDriver implements ObjectDriver,
 
 	public static boolean pk = true;
 
+        private boolean open = false;
+
 	public static void initialize() {
 		values.clear();
 		values.add("cadena1");
@@ -162,11 +164,11 @@ public class ReadDriver extends DefaultDBDriver implements ObjectDriver,
 	}
 
 	public void start() throws DriverException {
-
+                open = true;
 	}
 
 	public void stop() throws DriverException {
-
+                open = false;
 	}
 
 	public void close(Connection conn) throws DriverException {
@@ -177,6 +179,7 @@ public class ReadDriver extends DefaultDBDriver implements ObjectDriver,
 		if (failOnClose) {
 			throw new DriverException();
 		}
+                open = false;
 	}
 
 	public void execute(Connection con, String sql) throws SQLException {
@@ -286,6 +289,7 @@ public class ReadDriver extends DefaultDBDriver implements ObjectDriver,
 	}
 
 	public void open(Connection con, String tableName) throws DriverException {
+                open = true;
 	}
 
 	public void beginTrans(Connection con) throws SQLException {
@@ -346,4 +350,9 @@ public class ReadDriver extends DefaultDBDriver implements ObjectDriver,
 	public String getTypeName() {
 		return null;
 	}
+
+        @Override
+        public boolean isOpen() {
+                return open;
+        }
 }
