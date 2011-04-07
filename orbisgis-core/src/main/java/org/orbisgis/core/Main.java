@@ -74,7 +74,6 @@ public class Main {
 	private static CommandLine commandLine;
 	public final static String I18N_FILE = "i18n";
 	public final static String CLEAN = "clean";
-	public final static String DOCUMENT = "doc";
 	public final static String WORKSPACE = "w";
 	public static String I18N_SETLOCALE = "";
 
@@ -136,10 +135,6 @@ public class Main {
 			}
 			wrsk.init(commandLine.hasOption(CLEAN));
 
-			if (commandLine.hasOption(DOCUMENT)) {
-				Services.generateDoc(new File(getReferenceFile(),
-						"services.html"));
-			}
 			// Install OrbisGIS core services
 			new OrbisGISWorkspace();
 			OrbisgisCoreServices.installConfigurationService();
@@ -215,7 +210,6 @@ public class Main {
 	private static void parseCommandLine(String[] args) throws ParseException {
 		commandLine = new CommandLine('-');
 		commandLine.addOptionSpec(new OptionSpec(I18N_FILE, 1));
-		commandLine.addOptionSpec(new OptionSpec(DOCUMENT, 0));
 		commandLine.addOptionSpec(new OptionSpec(WORKSPACE, 1));
 		commandLine.addOptionSpec(new OptionSpec(CLEAN, 0));
 		try {
@@ -224,16 +218,5 @@ public class Main {
 			ErrorMessages.error(ErrorMessages.CommandLineError, e);
 			throw e;
 		}
-	}
-
-	private static File getReferenceFile() throws IOException {
-		File ret = new File("docs/reference");
-		if (!ret.exists()) {
-			if (!ret.mkdirs()) {
-				throw new IOException("Cannot create documentation directory");
-			}
-		}
-
-		return ret;
 	}
 }
