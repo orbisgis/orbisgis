@@ -10,7 +10,7 @@
 	<groupId>org.orbisgis</groupId>
 	<artifactId>orbisgis-core</artifactId>
 	<name>orbisgis-core</name>
-	<version>3.0</version>
+	<version>3.0.1</version>
 	<url>http://orbisgis.org</url>
 	<dependencies>
 		<dependency>
@@ -62,7 +62,7 @@
 		<dependency>
 			<groupId>org.gdms</groupId>
 			<artifactId>gdms</artifactId>
-			<version>1.5.0</version>
+			<version>1.5.1</version>
 		</dependency>
 		<dependency>
 			<groupId>bsh</groupId>
