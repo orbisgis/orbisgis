@@ -77,6 +77,8 @@ public class ScanOperator extends AbstractOperator {
 	private Metadata metadata = null;
 	private DataSource dataSource;
 	private IndexQuery[] queries = new IndexQuery[0];
+        private int limit = -1;
+        private int offset = -1;
 
 	public ScanOperator(DataSourceFactory dsf, String tableName,
 			String tableAlias) {
@@ -122,20 +124,40 @@ public class ScanOperator extends AbstractOperator {
 				for (IndexQuery query : queries) {
 					HashSet<Integer> newIndexSet = new HashSet<Integer>();
 					Iterator<Integer> res = dataSource.queryIndex(query);
-					while (res.hasNext()) {
-						Integer elem = res.next();
-						if (indexSet.contains(elem) || all) {
-							newIndexSet.add(elem);
-						}
-					}
+                                        if (limit == -1) {
+                                                while (res.hasNext()) {
+                                                        Integer elem = res.next();
+                                                        if (indexSet.contains(elem) || all) {
+                                                                newIndexSet.add(elem);
+                                                        }
+                                                }
+                                        } else {
+                                                int llimit = (offset == -1 ? limit : limit + offset);
+                                                while (res.hasNext()) {
+                                                        Integer elem = res.next();
+                                                        if (indexSet.contains(elem) || all) {
+                                                                newIndexSet.add(elem);
+                                                        }
+                                                        if (newIndexSet.size() == llimit) {
+                                                                break;
+                                                        }
+                                                }
+                                        }
 					indexSet = newIndexSet;
 					all = false;
 				}
 				ArrayList<Integer> indexes = new ArrayList<Integer>(indexSet
 						.size());
 				indexes.addAll(indexSet);
+                                if (offset != -1) {
+                                        for (int i = 0; i < offset && !indexes.isEmpty(); i++) {
+                                                indexes.remove(0);
+                                        }
+                                }
 				ret = new RowMappedDriver(ret, indexes);
-			}
+			} else if (limit != -1 || offset != -1) {
+                                ret = new LimitOffsetDriver(limit, offset, ret);
+                        }
 			return ret;
 		} catch (DriverException e) {
 			throw new ExecutionException("Cannot access "
@@ -205,6 +227,18 @@ public class ScanOperator extends AbstractOperator {
 	public void setScanMode(IndexQuery[] indexQueries) {
 		queries = indexQueries;
 	}
+
+        @Override
+        public void setLimit(int limit) {
+                this.limit = limit;
+        }
+
+        @Override
+        public void setOffset(int offset) {
+                this.offset = offset;
+        }
+
+
 
 	public static IndexQuery[] getQuery(JoinContext joinContext,
 			Field indexField, Expression expression) throws DriverException {

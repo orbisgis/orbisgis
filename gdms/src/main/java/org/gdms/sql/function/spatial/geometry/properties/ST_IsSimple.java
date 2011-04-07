@@ -53,7 +53,7 @@ public class ST_IsSimple extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getName() {
-		return "ST_IsSimple ";
+		return "ST_IsSimple";
 	}
 
 	public Type getType(Type[] types) {
