@@ -107,8 +107,8 @@ public class ST_MakeEnvelope extends AbstractSpatialFunction {
 
     @Override
     public Arguments[] getFunctionArguments() {
-        return new Arguments[]{new Arguments(Argument.DOUBLE,
-                    Argument.DOUBLE, Argument.DOUBLE, Argument.DOUBLE), new Arguments(Argument.DOUBLE,
-                    Argument.DOUBLE, Argument.DOUBLE, Argument.DOUBLE, Argument.INT)};
+        return new Arguments[]{new Arguments(Argument.NUMERIC,
+                    Argument.NUMERIC, Argument.NUMERIC, Argument.NUMERIC), new Arguments(Argument.NUMERIC,
+                    Argument.NUMERIC, Argument.NUMERIC, Argument.NUMERIC, Argument.INT)};
     }
 }

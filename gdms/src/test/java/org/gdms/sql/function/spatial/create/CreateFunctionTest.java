@@ -45,6 +45,10 @@ import org.gdms.sql.function.spatial.geometry.create.ST_MakeEnvelope;
 
 public class CreateFunctionTest extends FunctionTest {
 
+        /**
+         * Test the make envelope function
+         * @throws Exception
+         */
 	public void testST_MakeEnvelope() throws Exception {
 
         ST_MakeEnvelope sT_MakeEnvelope = new ST_MakeEnvelope();
