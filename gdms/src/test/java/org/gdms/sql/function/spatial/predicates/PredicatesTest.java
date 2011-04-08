@@ -58,107 +58,93 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class PredicatesTest extends FunctionTest {
 
-	public void testPredicates() throws Exception {
-		testPredicate(new ST_Contains(), JTSMultiPolygon2D, JTSMultiLineString2D);
-		testPredicate(new ST_Crosses(), JTSMultiPolygon2D, JTSMultiLineString2D);
-		testPredicate(new ST_Disjoint(), JTSMultiPolygon2D, JTSMultiLineString2D);
-		testPredicate(new ST_Equals(), JTSMultiPolygon2D, JTSMultiLineString2D);
-		testPredicate(new ST_Intersects(), JTSMultiPolygon2D, JTSMultiLineString2D);
-		testPredicate(new ST_IsWithin(), JTSMultiPolygon2D, JTSMultiLineString2D);
-		testPredicate(new ST_Overlaps(), JTSMultiPolygon2D, JTSMultiLineString2D);
-		testPredicate(new ST_Touches(), JTSMultiPolygon2D, JTSMultiLineString2D);
-	}
+        public void testPredicates() throws Exception {
+                testPredicate(new ST_Contains(), JTSMultiPolygon2D, JTSMultiLineString2D);
+                testPredicate(new ST_Crosses(), JTSMultiPolygon2D, JTSMultiLineString2D);
+                testPredicate(new ST_Disjoint(), JTSMultiPolygon2D, JTSMultiLineString2D);
+                testPredicate(new ST_Equals(), JTSMultiPolygon2D, JTSMultiLineString2D);
+                testPredicate(new ST_Intersects(), JTSMultiPolygon2D, JTSMultiLineString2D);
+                testPredicate(new ST_IsWithin(), JTSMultiPolygon2D, JTSMultiLineString2D);
+                testPredicate(new ST_Overlaps(), JTSMultiPolygon2D, JTSMultiLineString2D);
+                testPredicate(new ST_Touches(), JTSMultiPolygon2D, JTSMultiLineString2D);
+        }
 
-	private void testPredicate(Function function, Geometry g1, Geometry g2)
-			throws Exception {
-		// Test null input
-		Value res = evaluate(function, new ColumnValue(Type.GEOMETRY,
-				ValueFactory.createValue(g1)), new ColumnValue(Type.GEOMETRY,
-				ValueFactory.createNullValue()));
-		assertTrue(res.isNull());
+        private void testPredicate(Function function, Geometry g1, Geometry g2)
+                throws Exception {
+                // Test null input
+                Value res = evaluate(function, new ColumnValue(Type.GEOMETRY,
+                        ValueFactory.createValue(g1)), new ColumnValue(Type.GEOMETRY,
+                        ValueFactory.createNullValue()));
+                assertTrue(res.isNull());
 
-		// Test normal input value and type
-		res = evaluate(function, ValueFactory.createValue(g2), ValueFactory
-				.createValue(g1));
-		assertTrue(res.getType() == Type.BOOLEAN);
+                // Test normal input value and type
+                res = evaluate(function, ValueFactory.createValue(g2), ValueFactory.createValue(g1));
+                assertTrue(res.getType() == Type.BOOLEAN);
 
-		// Test too many parameters
-		try {
-			res = evaluate(function, ValueFactory.createValue(g2), ValueFactory
-					.createValue(g2), ValueFactory.createValue(JTSMultiPoint2D));
-			assertTrue(false);
-		} catch (IncompatibleTypesException e) {
-		}
+                // Test too many parameters
+                try {
+                        res = evaluate(function, ValueFactory.createValue(g2), ValueFactory.createValue(g2), ValueFactory.createValue(JTSMultiPoint2D));
+                        assertTrue(false);
+                } catch (IncompatibleTypesException e) {
+                }
 
-		// Test wrong parameter type
-		try {
-			res = evaluate(function, ValueFactory.createValue(g1), ValueFactory
-					.createValue(true));
-			assertTrue(false);
-		} catch (IncompatibleTypesException e) {
-		}
-	}
+                // Test wrong parameter type
+                try {
+                        res = evaluate(function, ValueFactory.createValue(g1), ValueFactory.createValue(true));
+                        assertTrue(false);
+                } catch (IncompatibleTypesException e) {
+                }
+        }
 
+        public void testIsWithinDistance() throws Exception {
+                // Test null input
+                ST_IsWithinDistance function = new ST_IsWithinDistance();
+                Value res = evaluate(function, new ColumnValue(Type.GEOMETRY,
+                        ValueFactory.createValue(JTSMultiLineString2D)), new ColumnValue(Type.GEOMETRY,
+                        ValueFactory.createValue(JTSMultiPoint2D)), new ColumnValue(Type.DOUBLE,
+                        ValueFactory.createNullValue()));
+                assertTrue(res.isNull());
 
-	public void testIsWithinDistance() throws Exception {
-		// Test null input
-		ST_IsWithinDistance function = new ST_IsWithinDistance();
-		Value res = evaluate(function, new ColumnValue(Type.GEOMETRY,
-				ValueFactory.createValue(JTSMultiLineString2D)), new ColumnValue(Type.GEOMETRY,
-				ValueFactory.createValue(JTSMultiPoint2D)), new ColumnValue(Type.DOUBLE,
-				ValueFactory.createNullValue()));
-		assertTrue(res.isNull());
+                // Test normal input value and type
+                res = evaluate(function, ValueFactory.createValue(JTSMultiLineString2D), ValueFactory.createValue(JTSMultiPolygon2D), ValueFactory.createValue(14));
+                assertTrue(res.getType() == Type.BOOLEAN);
+                assertTrue(res.getAsBoolean() == JTSMultiLineString2D.isWithinDistance(JTSMultiPolygon2D, 14));
 
-		// Test normal input value and type
-		res = evaluate(function, ValueFactory.createValue(JTSMultiLineString2D), ValueFactory
-				.createValue(JTSMultiPolygon2D), ValueFactory.createValue(14));
-		assertTrue(res.getType() == Type.BOOLEAN);
-		assertTrue(res.getAsBoolean() == JTSMultiLineString2D.isWithinDistance(JTSMultiPolygon2D, 14));
+                // Test too many parameters
+                try {
+                        res = evaluate(function, ValueFactory.createValue(JTSMultiLineString2D), ValueFactory.createValue(JTSMultiLineString2D), ValueFactory.createValue(14),
+                                ValueFactory.createValue(1));
+                        assertTrue(false);
+                } catch (IncompatibleTypesException e) {
+                }
 
-		// Test too many parameters
-		try {
-			res = evaluate(function, ValueFactory.createValue(JTSMultiLineString2D), ValueFactory
-					.createValue(JTSMultiLineString2D), ValueFactory.createValue(14),
-					ValueFactory.createValue(1));
-			assertTrue(false);
-		} catch (IncompatibleTypesException e) {
-		}
+                // Test wrong parameter type
+                try {
+                        res = evaluate(function, ValueFactory.createValue(false));
+                        assertTrue(false);
+                } catch (IncompatibleTypesException e) {
+                }
+        }
 
-		// Test wrong parameter type
-		try {
-			res = evaluate(function, ValueFactory.createValue(false));
-			assertTrue(false);
-		} catch (IncompatibleTypesException e) {
-		}
-	}
+        /**
+         * Test relate function with some patterns
+         * @throws Exception
+         */
+        public void testRelate() throws Exception {
+                // Test null input
+                ST_Relate function = new ST_Relate();
+                Value geomA = ValueFactory.createValue(JTSMultiPolygon2D);
+                Value geomB = ValueFactory.createValue(JTSMultiLineString2D);
+                Value pattern = ValueFactory.createValue("FF21FFFF2");
 
-	public void testRelate() throws Exception {
-		// Test null input
-		ST_Relate function = new ST_Relate();
-		Value res = evaluate(function, new ColumnValue(Type.GEOMETRY,
-				ValueFactory.createValue(JTSMultiLineString2D)), new ColumnValue(Type.GEOMETRY,
-				ValueFactory.createNullValue()));
-		assertTrue(res.isNull());
+                Value[] values = new Value[]{geomA, geomB, pattern};
+                Value val = function.evaluate(dsf, values);
+                assertTrue(val.getAsBoolean());
 
-		// Test normal input value and type
-		res = evaluate(function, ValueFactory.createValue(JTSMultiLineString2D), ValueFactory
-				.createValue(JTSMultiPolygon2D));
-		assertTrue(res.getType() == Type.STRING);
-		assertTrue(res.getAsString().equals(JTSMultiLineString2D.relate(JTSMultiPolygon2D).toString()));
+                pattern = ValueFactory.createValue("F1FFFF2F2");
 
-		// Test too many parameters
-		try {
-			res = evaluate(function, ValueFactory.createValue(JTSMultiLineString2D), ValueFactory
-					.createValue(JTSMultiLineString2D), ValueFactory.createValue(14));
-			assertTrue(false);
-		} catch (IncompatibleTypesException e) {
-		}
-
-		// Test wrong parameter type
-		try {
-			res = evaluate(function, ValueFactory.createValue(false));
-			assertTrue(false);
-		} catch (IncompatibleTypesException e) {
-		}
-	}
+                values = new Value[]{geomB, geomA, pattern};
+                val = function.evaluate(dsf, values);
+                assertTrue(val.getAsBoolean());
+        }
 }

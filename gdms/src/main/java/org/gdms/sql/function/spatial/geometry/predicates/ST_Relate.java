@@ -84,17 +84,32 @@ import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.SpatialIndexedFunction;
 
 import com.vividsolutions.jts.geom.Geometry;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
 
-public class ST_Relate extends AbstractSpatialPredicateFunction implements SpatialIndexedFunction {
+public class ST_Relate  implements SpatialIndexedFunction {
 
-	public Value evaluateResult(DataSourceFactory dsf,  Value[] args) throws FunctionException {
-		final Geometry geom1 = args[0].getAsGeometry();
+
+        @Override
+        public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
+                final Geometry geom1 = args[0].getAsGeometry();
 		final Geometry geom2 = args[1].getAsGeometry();
-		return ValueFactory.createValue(geom1.relate(geom2).toString());
+		return ValueFactory.createValue(geom1.relate(geom2).matches(args[2].getAsString()));
+        }
+        
+        public Type getType(Type[] types) {
+		return TypeFactory.createType(Type.BOOLEAN);
 	}
 
 	public String getName() {
 		return "ST_Relate";
+	}
+
+        public Arguments[] getFunctionArguments() {
+		return new Arguments[] { new Arguments(Argument.GEOMETRY,
+				Argument.GEOMETRY, Argument.STRING) };
 	}
 
 	public boolean isAggregate() {
@@ -106,7 +121,13 @@ public class ST_Relate extends AbstractSpatialPredicateFunction implements Spati
 	}
 
 	public String getSqlOrder() {
-		return "select ST_Relate(the_geom1,the_geom2) from myTable;";
+		return "select ST_Relate(the_geom1,the_geom2, pattern) from myTable;";
 	}
+
+
+        @Override
+        public Value getAggregateResult() {
+                return null;
+        }
 
 }
