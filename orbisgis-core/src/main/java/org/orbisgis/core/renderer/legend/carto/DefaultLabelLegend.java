@@ -118,22 +118,22 @@ public class DefaultLabelLegend extends AbstractCartoLegend implements
 			case Type.DATE:
 			case Type.BOOLEAN:
 			case Type.TIME:
-				symbol = SymbolFactory.createLabelSymbol(v.getAsString(),
+				symbol = SymbolFactory.createLabelSymbol(v.toString(),
 						getSize(sds, row), smartPlacing);
 				break;
 
 			case Type.DOUBLE:
 			case Type.FLOAT:
 				double value = FormatUtils.round(v.getAsDouble(), 3);
-				symbol = SymbolFactory.createLabelSymbol(new Double(value)
+				symbol = SymbolFactory.createLabelSymbol(Double.valueOf(value)
 						.toString(), getSize(sds, row), smartPlacing);
 				break;
 
 			case Type.INT:
 			case Type.LONG:
 			case Type.SHORT:
-				symbol = SymbolFactory.createLabelSymbol(v.getAsString()
-						.toString(), getSize(sds, row), smartPlacing);
+				symbol = SymbolFactory.createLabelSymbol(v.toString(),
+                                        getSize(sds, row), smartPlacing);
 				break;
 
 			default:
