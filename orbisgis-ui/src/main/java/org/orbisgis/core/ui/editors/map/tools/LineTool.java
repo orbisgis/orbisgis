@@ -79,60 +79,57 @@ import com.vividsolutions.jts.geom.LineString;
 
 public class LineTool extends AbstractLineTool {
 
-	AbstractButton button;
+        AbstractButton button;
 
-	@Override
-	public AbstractButton getButton() {
-		return button;
-	}
+        @Override
+        public AbstractButton getButton() {
+                return button;
+        }
 
-	public void setButton(AbstractButton button) {
-		this.button = button;
-	}
+        public void setButton(AbstractButton button) {
+                this.button = button;
+        }
 
-	@Override
-	public void update(Observable o, Object arg) {
-		PlugInContext.checkTool(this);
-	}
+        @Override
+        public void update(Observable o, Object arg) {
+                PlugInContext.checkTool(this);
+        }
 
-	public boolean isEnabled(MapContext vc, ToolManager tm) {
-		return ToolUtilities.geometryTypeIs(vc, GeometryConstraint.LINESTRING,
-				GeometryConstraint.MULTI_LINESTRING)
-				&& ToolUtilities.isActiveLayerEditable(vc);
-	}
+        public boolean isEnabled(MapContext vc, ToolManager tm) {
+                return ToolUtilities.geometryTypeIs(vc, GeometryConstraint.LINESTRING)
+                        && ToolUtilities.isActiveLayerEditable(vc);
+        }
 
-	public boolean isVisible(MapContext vc, ToolManager tm) {
-		return isEnabled(vc, tm);
-	}
+        public boolean isVisible(MapContext vc, ToolManager tm) {
+                return isEnabled(vc, tm);
+        }
 
-	@Override
-	protected void lineDone(LineString ls, MapContext mc, ToolManager tm)
-			throws TransitionException {
-		Geometry g = ls;
-		if (ToolUtilities.geometryTypeIs(mc,
-				GeometryConstraint.MULTI_LINESTRING)) {
-			g = ToolManager.toolsGeometryFactory
-					.createMultiLineString(new LineString[] { ls });
-		}
+        @Override
+        protected void lineDone(LineString ls, MapContext mc, ToolManager tm)
+                throws TransitionException {
+                Geometry g = ls;
+                if (ToolUtilities.geometryTypeIs(mc,
+                        GeometryConstraint.MULTI_LINESTRING)) {
+                        g = ToolManager.toolsGeometryFactory.createMultiLineString(new LineString[]{ls});
+                }
 
-		SpatialDataSourceDecorator sds = mc.getActiveLayer().getSpatialDataSource();
-		try {
-			Value[] row = new Value[sds.getMetadata().getFieldCount()];
+                SpatialDataSourceDecorator sds = mc.getActiveLayer().getSpatialDataSource();
+                try {
+                        Value[] row = new Value[sds.getMetadata().getFieldCount()];
                         g.setSRID(sds.getSRID());
-			row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(g);
-			row = ToolUtilities.populateNotNullFields(sds, row);
-			sds.insertFilledRow(row);
-		} catch (DriverException e) {
-			throw new TransitionException("Cannot insert linestring", e);
-		}
-	}
+                        row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(g);
+                        row = ToolUtilities.populateNotNullFields(sds, row);
+                        sds.insertFilledRow(row);
+                } catch (DriverException e) {
+                        throw new TransitionException("Cannot insert linestring", e);
+                }
+        }
 
-	public double getInitialZ(MapContext mapContext) {
-		return ToolUtilities.getActiveLayerInitialZ(mapContext);
-	}
+        public double getInitialZ(MapContext mapContext) {
+                return ToolUtilities.getActiveLayerInitialZ(mapContext);
+        }
 
-	public String getName() {
-		return I18N.getString("orbisgis.core.ui.editors.map.tool.line_tooltip");
-	}
-
+        public String getName() {
+                return I18N.getString("orbisgis.core.ui.editors.map.tool.line_tooltip");
+        }
 }

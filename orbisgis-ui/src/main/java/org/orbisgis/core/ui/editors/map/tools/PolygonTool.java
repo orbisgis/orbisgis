@@ -94,8 +94,7 @@ public class PolygonTool extends AbstractPolygonTool {
 	}
 
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
-		return ToolUtilities.geometryTypeIs(vc, GeometryConstraint.POLYGON,
-				GeometryConstraint.MULTI_POLYGON)
+		return ToolUtilities.geometryTypeIs(vc, GeometryConstraint.POLYGON)
 				&& ToolUtilities.isActiveLayerEditable(vc);
 	}
 

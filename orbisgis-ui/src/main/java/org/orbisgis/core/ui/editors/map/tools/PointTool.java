@@ -96,8 +96,7 @@ public class PointTool extends AbstractPointTool {
 	}
 
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
-		return ToolUtilities.geometryTypeIs(vc, GeometryConstraint.POINT,
-				GeometryConstraint.MULTI_POINT)
+		return ToolUtilities.geometryTypeIs(vc, GeometryConstraint.POINT)
 				&& ToolUtilities.isActiveLayerEditable(vc);
 	}
 
