@@ -68,8 +68,10 @@ public abstract class FunctionTest extends TestCase {
         protected Geometry JTSPoint2D;  
         protected Geometry JTSMultiLineString3D;
         protected Geometry JTSLineString3D;
-        public static DataSourceFactory dsf = new DataSourceFactory();
+        protected  Geometry JTSPolygonWith2Holes;
       
+        public static DataSourceFactory dsf = new DataSourceFactory();
+
 
         @Override
         protected void setUp() throws Exception {
@@ -84,6 +86,8 @@ public abstract class FunctionTest extends TestCase {
                 JTSLineString3D = wktr.read("LINESTRING (1 1 1, 2 1 2, 2 2 3, 1 2 4, 1 1 5)");
                 JTSPoint3D = wktr.read("POINT(0 10 20)");
                 JTSPoint2D = wktr.read("POINT(0 10)");
+
+                JTSPolygonWith2Holes = wktr.read("POLYGON ((85 55, 85 306, 366 306, 366 55, 85 55), (153 205, 212 173, 241 190, 251 253, 235 278, 147 254, 153 205), (262 88, 321 97, 324 153, 303 177, 240 138, 262 88))");
 
                 GeometryFactory gf = new GeometryFactory();
                 JTSGeometryCollection = gf.createGeometryCollection(new Geometry[]{

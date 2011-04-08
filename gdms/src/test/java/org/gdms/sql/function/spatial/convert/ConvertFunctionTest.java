@@ -57,6 +57,7 @@ import org.gdms.sql.strategies.IncompatibleTypesException;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import org.gdms.sql.function.spatial.geometry.convert.ST_EndPoint;
+import org.gdms.sql.function.spatial.geometry.convert.ST_Holes;
 import org.gdms.sql.function.spatial.geometry.convert.ST_StartPoint;
 
 public class ConvertFunctionTest extends FunctionTest {
@@ -250,6 +251,23 @@ public class ConvertFunctionTest extends FunctionTest {
 
                 value = testSpatialFunction(new ST_StartPoint(), JTSPoint2D, 1);
                 assertTrue(value.isNull());
+        }
+
+        /**
+         * Test function to extract holes from a geometry
+         * @throws Exception
+         */
+        public final void testST_Holes() throws Exception {
+
+                Geometry g = testSpatialFunction(new ST_Holes(),
+                        JTSPolygonWith2Holes, 1).getAsGeometry();
+                assertTrue(JTSPolygonWith2Holes.getNumGeometries() == 2);
+
+                g = g.getFactory().createGeometryCollection(new Geometry[]{JTSGeometryCollection, JTSPolygonWith2Holes});
+
+                g = testSpatialFunction(new ST_Holes(),
+                        g, 1).getAsGeometry();
+                assertTrue(g.getNumGeometries() == 2);
 
 
 

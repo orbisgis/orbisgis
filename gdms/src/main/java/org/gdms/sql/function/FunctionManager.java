@@ -83,6 +83,7 @@ import org.gdms.sql.function.spatial.geometry.convert.ST_Centroid;
 import org.gdms.sql.function.spatial.geometry.convert.ST_EndPoint;
 import org.gdms.sql.function.spatial.geometry.convert.ST_Force_2D;
 import org.gdms.sql.function.spatial.geometry.convert.ST_Force_3D;
+import org.gdms.sql.function.spatial.geometry.convert.ST_Holes;
 import org.gdms.sql.function.spatial.geometry.convert.ST_InteriorPoint;
 import org.gdms.sql.function.spatial.geometry.convert.ST_PointN;
 import org.gdms.sql.function.spatial.geometry.convert.ST_PointsToLine;
@@ -307,6 +308,7 @@ public class FunctionManager {
 		addFunction(ST_Force_2D.class);
                 addFunction(ST_PrecisionReducer.class);
                 addFunction(ST_MakeEnvelope.class);
+                addFunction(ST_Holes.class);
         }
 
 	public static void addFunctionManagerListener(
