@@ -221,7 +221,6 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
                                 // ignore it
                         }
                 }
-                this.mapContext.removeMapContextListener(mapContextListener);
         }
 
         public void mouseMoved(MouseEvent e) {
