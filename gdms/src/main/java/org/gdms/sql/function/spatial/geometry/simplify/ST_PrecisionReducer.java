@@ -57,7 +57,11 @@ public class ST_PrecisionReducer extends AbstractSpatialFunction {
 
     @Override
     public Value evaluate(DataSourceFactory dsf, Value... values) throws FunctionException {
-        PrecisionModel pm = new PrecisionModel(scaleFactorForDecimalPlaces(values[1].getAsInt()));
+        final int nbDec = values[1].getAsInt();
+        if (nbDec < 0) {
+            throw new FunctionException("Decimal_places has to be >= 0.");
+        }
+        PrecisionModel pm = new PrecisionModel(scaleFactorForDecimalPlaces(nbDec));
         Geometry geom = SimpleGeometryPrecisionReducer.reduce(values[0].getAsGeometry(), pm);
         return ValueFactory.createValue(geom);
     }
@@ -74,7 +78,7 @@ public class ST_PrecisionReducer extends AbstractSpatialFunction {
 
     @Override
     public String getDescription() {
-        return "A function to reduce the geometry precision.";
+        return "A function to reduce the geometry precision. Decimal_Place is the number of decimals to keep.";
     }
 
     @Override
@@ -90,19 +94,10 @@ public class ST_PrecisionReducer extends AbstractSpatialFunction {
 
     /**
      * Computes the scale factor for a given number of decimal places.
-     * A negative value for decimalPlaces indicates the scale factor
-     * should be divided rather than multiplied. The negative sign
-     * is carried through to the computed scale factor.
      * @param decimalPlaces
      * @return the scale factor
      */
     public static double scaleFactorForDecimalPlaces(int decimalPlaces) {
-        int power = Math.abs(decimalPlaces);
-        int sign = decimalPlaces >= 0 ? 1 : -1;
-        double scaleFactor = 1.0;
-        for (int i = 1; i <= power; i++) {
-            scaleFactor *= 10.0;
-        }
-        return scaleFactor * sign;
+        return Math.pow(10.0, decimalPlaces);
     }
 }
