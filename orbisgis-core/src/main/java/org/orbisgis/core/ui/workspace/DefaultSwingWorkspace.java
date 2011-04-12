@@ -61,7 +61,6 @@ public class DefaultSwingWorkspace extends DefaultWorkspace implements
 	 */
 	public void init(boolean clean) {
 		try {
-			logger.debug("Initializing workspace");
 			File defaultWorkspace = getDefaultWorkspaceFile();
 			if (defaultWorkspace.exists()) {
 				if (clean) {
@@ -70,7 +69,7 @@ public class DefaultSwingWorkspace extends DefaultWorkspace implements
 					readCurrentworkspace(defaultWorkspace);
 					setWorkspaceFolder(workspaceFolder.getAbsolutePath());
 					setDefaultWorkspace(true);
-					logger.debug("Using workspace "
+					logger.info("Using workspace "
 							+ workspaceFolder.getAbsolutePath());
 				}
 			} else {

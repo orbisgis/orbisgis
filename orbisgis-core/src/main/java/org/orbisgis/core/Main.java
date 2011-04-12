@@ -40,11 +40,15 @@ package org.orbisgis.core;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 
 import javax.swing.JOptionPane;
+import org.apache.log4j.Level;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+import org.apache.log4j.Priority;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.RollingFileAppender;
 import org.orbisgis.core.background.BackgroundManager;
@@ -60,6 +64,7 @@ import org.orbisgis.core.ui.errors.FilteringErrorListener;
 import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.plugins.orbisgisFrame.configuration.EPConfigHelper;
 import org.orbisgis.core.ui.plugins.orbisgisFrame.configuration.WorkspaceConfiguration;
+import org.orbisgis.core.ui.plugins.views.beanShellConsole.javaManager.parser.JavaCharStream;
 import org.orbisgis.core.ui.preferences.translation.OrbisGISI18N;
 import org.orbisgis.core.ui.workspace.DefaultSwingWorkspace;
 import org.orbisgis.core.workspace.DefaultWorkspace;
@@ -99,6 +104,8 @@ public class Main {
 		splash.setVisible(true);
 		Splash.updateText("OrbisGIS services initialization.");
 		initServices();
+                initLogger();
+		logger.info("main.logger.start");
 		Splash.updateText("OrbisGIS services initialization ready.");
 		parseCommandLine(args);
 		initI18n(splash);
@@ -149,8 +156,6 @@ public class Main {
 			if (iTimer > 0)
 				WorkspaceConfiguration.startPeriodicSaving(iTimer);
 
-			initLogger();
-			logger.info("main.logger.start");
 			cacheMessages = new CacheMessages();
 			new FilteringErrorListener();
 			cacheMessages.printCacheMessages();
@@ -201,11 +206,29 @@ public class Main {
 			fa = new RollingFileAppender(l, Services.getService(
 					ApplicationInfo.class).getLogFile());
 			fa.setMaxFileSize("256KB");
+                        fa.setThreshold(Level.INFO);
 			Logger.getRootLogger().addAppender(fa);
+                        System.setOut(loggingStream());
+                        System.setErr(loggingStream());
+
 		} catch (IOException e) {
 			Services.getErrorManager().error("Init logger failed!", e);
 		}
 	}
+
+        private static PrintStream loggingStream() {
+                return new PrintStream(new OutputStream() {
+
+                        @Override
+                        public void write(int b) throws IOException {
+                                // do nothing
+                        }
+                }) {
+                        public void print(final String str) {
+                                Logger.getRootLogger().info(str);
+                        }
+                };
+        }
 
 	private static void parseCommandLine(String[] args) throws ParseException {
 		commandLine = new CommandLine('-');
