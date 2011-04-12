@@ -99,7 +99,7 @@ public class EditionSelectionTool extends AbstractSelectionTool {
                         }
                 } catch (CannotChangeGeometryException e) {
                         throw new DrawingException(
-                                I18N.getString("org.orbisgis.core.ui.editors.map.tool.selectionTool_1") + e.getMessage()); //$NON-NLS-1$
+                                I18N.getString("orbisgis.core.ui.editors.map.tool.selectionTool1") + ". " + e.getMessage()); //$NON-NLS-1$
                 }
         }
 
