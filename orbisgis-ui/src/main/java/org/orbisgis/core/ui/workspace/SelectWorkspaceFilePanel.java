@@ -258,6 +258,12 @@ public class SelectWorkspaceFilePanel extends AbstractUIPanel implements
 		return null;
 	}
 
+        @Override
+        public String getInfoText() {
+                final String infoText = super.getInfoText();
+                return infoText == null ? " " : infoText;
+        }
+
 	public void setSelectedFile(File file) {
 		fileChooser.setSelectedFile(file);
 	}
