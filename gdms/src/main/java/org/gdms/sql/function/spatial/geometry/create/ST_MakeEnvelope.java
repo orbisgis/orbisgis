@@ -69,15 +69,16 @@ public class ST_MakeEnvelope extends AbstractSpatialFunction {
         }
 
         double xmin = values[0].getAsDouble();
-        double xmax = values[1].getAsDouble();
-        double ymin = values[2].getAsDouble();
+        double ymin = values[1].getAsDouble();
+        double xmax = values[2].getAsDouble();
         double ymax = values[3].getAsDouble();
 
         Coordinate[] coordinates = new Coordinate[]{
             new Coordinate(xmin, ymin),
             new Coordinate(xmax, ymin),
             new Coordinate(xmax, ymax),
-            new Coordinate(xmin, ymax),new Coordinate(xmin, ymin)
+            new Coordinate(xmin, ymax),
+            new Coordinate(xmin, ymin)
         };
         Polygon geom = gf.createPolygon(gf.createLinearRing(coordinates), null);
         geom.setSRID(srid);

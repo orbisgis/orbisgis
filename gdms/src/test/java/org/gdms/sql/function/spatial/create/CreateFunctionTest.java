@@ -42,22 +42,21 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.FunctionTest;
 import org.gdms.sql.function.spatial.geometry.create.ST_MakeEnvelope;
 
-
 public class CreateFunctionTest extends FunctionTest {
 
         /**
          * Test the make envelope function
          * @throws Exception
          */
-	public void testST_MakeEnvelope() throws Exception {
+        public void testST_MakeEnvelope() throws Exception {
 
-        ST_MakeEnvelope sT_MakeEnvelope = new ST_MakeEnvelope();
-        Envelope env = JTSPolygon2D.getEnvelopeInternal();
-        Value[] values = new Value[]{ValueFactory.createValue(env.getMinX()),ValueFactory.createValue(env.getMaxX()), ValueFactory.createValue(env.getMinY()),ValueFactory.createValue(env.getMaxY())};
-        Value result = evaluate(sT_MakeEnvelope, values);
-
-        assertTrue(env.equals(result.getAsGeometry().getEnvelopeInternal()));      
-	}
-
-
+                ST_MakeEnvelope st_MakeEnvelope = new ST_MakeEnvelope();
+                Envelope env = JTSPolygon2D.getEnvelopeInternal();
+                Value[] values = new Value[]{ValueFactory.createValue(env.getMinX()), ValueFactory.createValue(env.getMinY()), ValueFactory.createValue(env.getMaxX()), ValueFactory.createValue(env.getMaxY())};
+                Value result = evaluate(st_MakeEnvelope, values);
+                assertTrue(env.getMinX()== result.getAsGeometry().getEnvelopeInternal().getMinX());
+                assertTrue(env.getMinY()== result.getAsGeometry().getEnvelopeInternal().getMinY());
+                assertTrue(env.getMaxX()== result.getAsGeometry().getEnvelopeInternal().getMaxX());
+                assertTrue(env.getMaxY()== result.getAsGeometry().getEnvelopeInternal().getMaxY());
+        }
 }
