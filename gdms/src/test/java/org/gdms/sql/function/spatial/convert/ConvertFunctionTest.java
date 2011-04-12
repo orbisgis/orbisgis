@@ -57,7 +57,7 @@ import org.gdms.sql.strategies.IncompatibleTypesException;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 
-public class SpatialFunctionTest extends FunctionTest {
+public class ConvertFunctionTest extends FunctionTest {
 
 	public void testConstraint2D() throws Exception {
 		// Test null input

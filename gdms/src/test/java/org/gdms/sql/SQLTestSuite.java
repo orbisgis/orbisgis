@@ -40,7 +40,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.gdms.sql.function.alphanumeric.AlphanumericFunctionTest;
-import org.gdms.sql.function.spatial.convert.SpatialFunctionTest;
+import org.gdms.sql.function.spatial.convert.ConvertFunctionTest;
 import org.gdms.sql.function.spatial.geometryProperties.PropertiesFunctionTest;
 import org.gdms.sql.function.spatial.io.IOSpatialFunctionTest;
 import org.gdms.sql.function.spatial.operators.OperatorsTest;
@@ -56,7 +56,7 @@ public class SQLTestSuite extends TestSuite {
 		suite.addTestSuite(ProcessorTest.class);
 		suite.addTestSuite(GrammarTest.class);
 		suite.addTestSuite(AlphanumericFunctionTest.class);
-		suite.addTestSuite(SpatialFunctionTest.class);
+		suite.addTestSuite(ConvertFunctionTest.class);
 		suite.addTestSuite(PropertiesFunctionTest.class);
 		suite.addTestSuite(IOSpatialFunctionTest.class);
 		suite.addTestSuite(OperatorsTest.class);
