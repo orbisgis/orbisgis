@@ -109,20 +109,20 @@ public class MultilineHandler extends AbstractHandler implements Handler {
 	public Geometry remove() throws CannotChangeGeometryException {
 
 		MultiLineString mls = (MultiLineString) geometry;
-		LineString[] polygons = new LineString[mls.getNumGeometries()];
+		LineString[] linestrings = new LineString[mls.getNumGeometries()];
 		int vIndex = vertexIndex;
-		for (int i = 0; i < polygons.length; i++) {
+		for (int i = 0; i < linestrings.length; i++) {
 			if (i == linestringIndex) {
 				PointHandler handler = new PointHandler((LineString) mls
 						.getGeometryN(i), Primitive.LINE_GEOMETRY_TYPE, vIndex,
 						null, geomIndex);
-				polygons[i] = (LineString) handler.removeVertex();
+				linestrings[i] = (LineString) handler.removeVertex();
 			} else {
-				polygons[i] = (LineString) mls.getGeometryN(i);
+				linestrings[i] = (LineString) mls.getGeometryN(i);
 			}
 		}
 
-		mls = gf.createMultiLineString(polygons);
+		mls = gf.createMultiLineString(linestrings);
 		if (!mls.isValid()) {
 			throw new CannotChangeGeometryException(THE_GEOMETRY_IS_NOT_VALID);
 		}

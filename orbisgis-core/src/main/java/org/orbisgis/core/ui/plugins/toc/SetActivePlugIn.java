@@ -54,11 +54,8 @@ public class SetActivePlugIn extends AbstractPlugIn {
 		MapContext mapContext = getPlugInContext().getMapContext();
 		ILayer[] selectedResources = mapContext.getSelectedLayers();
 
-		if (selectedResources.length > 0) {
-			for (ILayer resource : selectedResources) {
-				execute(mapContext, resource);
-			}
-		}
+                mapContext.setActiveLayer(selectedResources[0]);
+		
 		return true;
 	}
 
@@ -70,10 +67,7 @@ public class SetActivePlugIn extends AbstractPlugIn {
 				Names.POPUP_TOC_ACTIVE_GROUP, false, OrbisGISIcon.PENCIL,
 				wbContext);
 	}
-
-	public void execute(MapContext mapContext, ILayer layer) {
-		mapContext.setActiveLayer(layer);
-	}
+	
 
 	public boolean isEnabled() {
 		return getPlugInContext().checkLayerAvailability(

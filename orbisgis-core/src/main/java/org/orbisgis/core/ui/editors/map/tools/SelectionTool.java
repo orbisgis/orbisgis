@@ -71,7 +71,7 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.utils.I18N;
 
 /**
- * Tool to select geometries
+ * Tool to select  geometries
  * 
  * @author Fernando Gonzalez Cortes
  */

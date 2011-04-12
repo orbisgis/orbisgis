@@ -135,11 +135,11 @@ public abstract class AbstractHandler implements Handler {
 		}
 		Coordinate[] newCoords = new Coordinate[coords.length - 1];
 		for (int i = 0; i < vertexIndex; i++) {
-			newCoords[i] = new Coordinate(coords[i].x, coords[i].y);
+			newCoords[i] = new Coordinate(coords[i].x, coords[i].y, coords[i].z);
 		}
 		if (vertexIndex != coords.length - 1) {
 			for (int i = vertexIndex + 1; i < coords.length; i++) {
-				newCoords[i - 1] = new Coordinate(coords[i].x, coords[i].y);
+				newCoords[i - 1] = new Coordinate(coords[i].x, coords[i].y, coords[i].z);
 			}
 		}
 

@@ -57,6 +57,7 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Geometry;
+import org.gdms.data.types.GeometryConstraint;
 
 public class VertexAditionTool extends VertexAdition {
 
@@ -153,7 +154,8 @@ public class VertexAditionTool extends VertexAdition {
 
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
 		return ToolUtilities.activeSelectionGreaterThan(vc, 0)
-				&& ToolUtilities.isActiveLayerEditable(vc);
+				&& ToolUtilities.isActiveLayerEditable(vc) && ToolUtilities.isSelectionGreaterOrEqualsThan(vc, 1) &&
+                                !ToolUtilities.geometryTypeIs(vc, GeometryConstraint.POINT);
 	}
 
 	public boolean isVisible(MapContext vc, ToolManager tm) {

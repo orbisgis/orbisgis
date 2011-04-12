@@ -159,6 +159,7 @@ import org.orbisgis.core.ui.plugins.views.geocognition.RemoveGeocognitionPlugIn;
 import org.orbisgis.core.ui.plugins.views.mapEditor.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.tableEditor.TableEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
 import org.orbisgis.core.ui.windows.mainFrame.OrbisGISFrame;
 
 public class OrbisConfiguration implements Setup {
@@ -452,7 +453,7 @@ public class OrbisConfiguration implements Setup {
 		// Tool in Edition Map Toolbar
 		add(new PolygonTool(), OrbisGISIcon.POLYGON, frame
 				.getEditionMapToolBar());
-		add(new EditionSelectionTool(), OrbisGISIcon.SELECT, frame
+		add(new EditionSelectionTool(), IconLoader.getIcon("moveVertex.png"), frame
 				.getEditionMapToolBar());
 		add(new PointTool(), OrbisGISIcon.POINT, frame.getEditionMapToolBar());
 		add(new MultipointTool(), OrbisGISIcon.MULTIPOINT, frame

@@ -58,6 +58,7 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Geometry;
+import org.gdms.data.types.GeometryConstraint;
 
 public class VertexDeletionTool extends VertexDeletion {
 
@@ -152,7 +153,8 @@ public class VertexDeletionTool extends VertexDeletion {
 
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
 		return ToolUtilities.activeSelectionGreaterThan(vc, 0)
-				&& ToolUtilities.isActiveLayerEditable(vc);
+				&& ToolUtilities.isActiveLayerEditable(vc) && ToolUtilities.isSelectionGreaterOrEqualsThan(vc, 1)
+                                && !ToolUtilities.geometryTypeIs(vc, GeometryConstraint.POINT);
 	}
 
 	public boolean isVisible(MapContext vc, ToolManager tm) {
@@ -163,4 +165,5 @@ public class VertexDeletionTool extends VertexDeletion {
 		return I18N
 				.getString("orbisgis.core.ui.editors.map.tool.vertexDeletion_tooltip");
 	}
+
 }
