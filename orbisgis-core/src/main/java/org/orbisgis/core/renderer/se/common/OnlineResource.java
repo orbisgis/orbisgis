@@ -47,6 +47,7 @@ import java.awt.Shape;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -62,6 +63,7 @@ import java.util.logging.Logger;
 
 import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
+import javax.media.jai.RenderedOp;
 import org.gdms.data.SpatialDataSourceDecorator;
 
 import org.orbisgis.core.map.MapTransform;
@@ -84,20 +86,28 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
 
     private URL url;
     private PlanarImage rawImage;
+    private SVGIcon svgIcon;
+    private Double effectiveWidth;
+    private Double effectiveHeight;
+    private Double svgInitialWidth;
+    private Double svgInitialHeight;
 
     /**
      *
      */
     public OnlineResource() {
         url = null;
+        svgIcon = null;
     }
 
     public OnlineResource(String url) throws MalformedURLException {
         this.url = new URL(url);
+        svgIcon = null;
     }
 
     public OnlineResource(OnlineResourceType onlineResource) throws MalformedURLException {
         this.url = new URL(onlineResource.getHref());
+        svgIcon = null;
     }
 
     public URL getUrl() {
@@ -112,7 +122,7 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
         }
     }
 
-    @Override
+    //@Override
     public RenderedImage getPlanarImage(ViewBox viewBox, SpatialDataSourceDecorator sds, long fid, MapTransform mt, String mimeType)
             throws IOException, ParameterException {
 
@@ -120,6 +130,163 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
             return getSvgImage(viewBox, sds, fid, mt, mimeType);
         } else {
             return getJAIImage(viewBox, sds, fid, mt, mimeType);
+        }
+    }
+
+    public Rectangle2D.Double getJAIBounds(ViewBox viewBox, SpatialDataSourceDecorator sds, long fid, MapTransform mt, String mimeType) throws ParameterException {
+        try {
+            if (rawImage == null) {
+                rawImage = JAI.create("url", url);
+                Logger.getLogger(OnlineResource.class.getName()).log(Level.INFO, "Download ExternalGraphic from: {0}", url);
+            }
+        } catch (Exception ex) {
+            throw new ParameterException(ex);
+        }
+
+        double width = rawImage.getWidth();
+        double height = rawImage.getHeight();
+
+        if (viewBox != null && mt != null && viewBox.usable()) {
+            if (sds == null && !viewBox.dependsOnFeature().isEmpty()) {
+                throw new ParameterException("View box depends on feature");
+            }
+
+            try {
+
+                Point2D dim = viewBox.getDimensionInPixel(sds, fid, height, width, mt.getScaleDenominator(), mt.getDpi());
+
+                effectiveWidth = dim.getX();
+                effectiveHeight = dim.getY();
+
+                if (effectiveWidth > 0 && effectiveHeight > 0) {
+                    return new Rectangle2D.Double(-effectiveWidth / 2, -effectiveHeight / 2, effectiveWidth, effectiveHeight);
+                } else {
+                    effectiveWidth = null;
+                    effectiveHeight = null;
+                }
+            } catch (Exception ex) {
+                throw new ParameterException(ex);
+            }
+        }
+        // Others cases => native image bounds
+        return new Rectangle2D.Double(-width / 2, -height / 2, width, height);
+    }
+
+    public Rectangle2D.Double getSvgBounds(ViewBox viewBox, SpatialDataSourceDecorator sds, long fid, MapTransform mt, String mimeType) throws ParameterException {
+        try {
+            /*
+             * Fetch SVG if not already done
+             */
+            if (svgIcon == null) {
+                svgIcon = new SVGIcon();
+                svgIcon.setSvgURI(url.toURI());
+                svgIcon.setAntiAlias(true);
+
+                this.svgInitialHeight = (double) svgIcon.getIconHeight();
+                this.svgInitialWidth = (double) svgIcon.getIconWidth();
+            }
+
+            if (viewBox != null && mt != null && viewBox.usable()) {
+                if (sds == null && !viewBox.dependsOnFeature().isEmpty()) {
+                    throw new ParameterException("View box depends on feature");
+                }
+
+                double width = svgIcon.getIconWidth();
+                double height = svgIcon.getIconHeight();
+
+                Point2D dim = viewBox.getDimensionInPixel(sds, fid, svgInitialWidth, svgInitialHeight, mt.getScaleDenominator(), mt.getDpi());
+
+                effectiveWidth = dim.getX();
+                effectiveHeight = dim.getY();
+
+                if (effectiveHeight > 0 && effectiveWidth > 0) {
+                    return new Rectangle2D.Double(-effectiveWidth / 2, -effectiveHeight / 2, effectiveWidth, effectiveHeight);
+                } else {
+                    effectiveWidth = null;
+                    effectiveHeight = null;
+                    width = svgInitialWidth;
+                    height = svgInitialHeight;
+                    return new Rectangle2D.Double(-width / 2, -height / 2, width, height);
+                }
+            } else {
+                double width = svgInitialWidth;
+                double height = svgInitialHeight;
+                return new Rectangle2D.Double(-width / 2, -height / 2, width, height);
+            }
+        } catch (URISyntaxException ex) {
+            throw new ParameterException("Invalid URI");
+        }
+    }
+
+    @Override
+    public Rectangle2D.Double updateCacheAndGetBounds(ViewBox viewBox, SpatialDataSourceDecorator sds, long fid, MapTransform mt, String mimeType) throws ParameterException {
+        effectiveWidth = null;
+        effectiveHeight = null;
+        if (mimeType != null && mimeType.equalsIgnoreCase("image/svg+xml")) {
+            return getSvgBounds(viewBox, sds, fid, mt, mimeType);
+        } else {
+            return getJAIBounds(viewBox, sds, fid, mt, mimeType);
+        }
+    }
+
+    /*
+     * Draw the svg on g2
+     */
+    public void drawSVG(Graphics2D g2, AffineTransform at, double opacity) {
+        AffineTransform fat = new AffineTransform(at);
+
+        if (effectiveHeight != null && effectiveWidth != null) {
+            svgIcon.setPreferredSize(new Dimension((int) (effectiveWidth + 0.5), (int) (effectiveHeight + 0.5)));
+            fat.concatenate(AffineTransform.getTranslateInstance(-effectiveWidth / 2, -effectiveHeight / 2));
+        } else {
+            svgIcon.setPreferredSize(new Dimension((int) (svgInitialWidth + 0.5), (int) (svgInitialHeight + 0.5)));
+            fat.concatenate(AffineTransform.getTranslateInstance(-svgInitialWidth / 2, -svgInitialHeight / 2));
+        }
+        svgIcon.setScaleToFit(true);
+        AffineTransform atMedia = new AffineTransform(g2.getTransform());
+        g2.transform(fat);
+
+        svgIcon.paintIcon((Component) null, g2, 0, 0);
+        g2.setTransform(atMedia);
+    }
+
+    public void drawJAI(Graphics2D g2, AffineTransform at, MapTransform mt, double opacity) {
+        AffineTransform fat = new AffineTransform(at);
+        double width = rawImage.getWidth();
+        double height = rawImage.getHeight();
+
+        if (effectiveHeight != null && effectiveWidth != null){
+            double ratio_x = effectiveWidth / width;
+            double ratio_y = effectiveHeight / height;
+            ParameterBlock pb = new ParameterBlock();
+            pb.addSource(rawImage);
+            pb.add(ratio_x);
+            pb.add(ratio_y);
+            pb.add(0.0F);
+            pb.add(0.0F);
+            //pb.add(0);
+            //pb.add(InterpolationBilinear.getInstance(InterpolationBilinear.INTERP_BILINEAR));
+            RenderedOp img;
+            if (ratio_x > 1.0 || ratio_y > 1.0) {
+               img = JAI.create("scale", pb, mt.getRenderingHints());
+            } else {
+                //return JAI.create("SubsampleAverage", pb, mt.getRenderingHints());
+                img = JAI.create("SubsampleAverage", rawImage, ratio_x, ratio_y, mt.getRenderingHints());
+            }
+            fat.concatenate(AffineTransform.getTranslateInstance(-img.getWidth()/2, -img.getHeight()/2));
+            g2.drawRenderedImage(img, fat);
+        } else {
+            fat.concatenate(AffineTransform.getTranslateInstance(-width/2, -height/2));
+            g2.drawRenderedImage(rawImage, fat);
+        }
+    }
+
+    @Override
+    public void draw(Graphics2D g2, AffineTransform at, MapTransform mt, double opacity, String mimeType) {
+        if (mimeType != null && mimeType.equalsIgnoreCase("image/svg+xml")) {
+            drawSVG(g2, at, opacity);
+        } else {
+            drawJAI(g2, at, mt, opacity);
         }
     }
 
@@ -165,7 +332,6 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
 
     public PlanarImage getJAIImage(ViewBox viewBox, SpatialDataSourceDecorator sds, long fid, MapTransform mt, String mimeType)
             throws IOException, ParameterException {
-
 
         try {
             if (rawImage == null) {

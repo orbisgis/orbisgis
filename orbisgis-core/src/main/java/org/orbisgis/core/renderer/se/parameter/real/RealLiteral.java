@@ -78,6 +78,7 @@ public class RealLiteral extends Literal implements RealParameter {
 	public void setValue(double value) {
 		v = value;
 		checkContext();
+        fireChange();
 	}
 
 	@Override

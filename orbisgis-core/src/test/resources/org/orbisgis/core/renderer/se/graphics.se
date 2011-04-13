@@ -949,7 +949,7 @@
                         <Scale>
                             <XY>0.5</XY>
                         </Scale>
-                            <Translate>
+                        <Translate>
                            <X>-80</X>
                            <Y>-10</Y>
                         </Translate>
@@ -993,6 +993,21 @@
                     </Halo>
                 </ExternalGraphic>
 
+
+                <ExternalGraphic>
+                    <OnlineResource ns4:href="file:///home/maxence/stars.svg"/>
+		    <Format>image/svg+xml</Format>
+                    <!--<ViewBox>
+                        <Width>10.0</Width>
+                    </ViewBox>-->
+
+                    <Halo>
+                        <Radius>4</Radius>
+                        <SolidFill>
+                            <Color>#ffffff</Color>
+                        </SolidFill>
+                    </Halo>
+                </ExternalGraphic>
       </CompositeGraphic>
     </PointSymbolizer>
   </Rule>

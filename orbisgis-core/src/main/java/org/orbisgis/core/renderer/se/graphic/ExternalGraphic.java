@@ -171,37 +171,32 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
 
     @Override
     public Rectangle2D getBounds(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
-        // TODO Implements SELECTED!
-        RenderedImage img;
-        img = source.getPlanarImage(viewBox, sds, fid, mt, mimeType);
+        Rectangle2D.Double bounds = source.updateCacheAndGetBounds(viewBox, sds, fid, mt, mimeType);
 
-        if (img == null) {
-            return null;
-        }
+        double px = bounds.getMinX();
+        double py = bounds.getMinY();
 
-        double w = img.getWidth();
-        double h = img.getHeight();
+        double width = bounds.getWidth();
+        double height = bounds.getHeight();
 
         AffineTransform at = null;
         if (transform != null) {
-            at = transform.getGraphicalAffineTransform(false, sds, fid, mt, w, h);
+            at = transform.getGraphicalAffineTransform(false, sds, fid, mt, width, height);
         }
-
-        double px = 0;
-        double py = 0;
 
         // reserve the place for halo
         if (halo != null) {
             double r = halo.getHaloRadius(sds, fid, mt);
-            w += 2 * r;
-            h += 2 * r;
-            px = r;
-            py = r;
+            width += 2 * r;
+            height += 2 * r;
+            px -= r;
+            py -= r;
+
+            bounds = new Rectangle2D.Double(px, py, width, height);
         }
 
-        Rectangle2D bounds = new Rectangle2D.Double(0.0, 0.0, w, h);
-
         if (at != null) {
+            // take into account AT
             return at.createTransformedShape(bounds).getBounds2D();
         } else {
             return bounds;
@@ -211,58 +206,42 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
     @Override
     public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
             boolean selected, MapTransform mt, AffineTransform fat) throws ParameterException, IOException {
-        // TODO Implements SELECTED!
+
+
+        Rectangle2D.Double bounds = source.updateCacheAndGetBounds(viewBox, sds, fid, mt, mimeType);
+
         AffineTransform at = new AffineTransform(fat);
-        RenderedImage img;
 
-        //if (graphic == null) {
-        img = source.getPlanarImage(viewBox, sds, fid, mt, mimeType);
-        //} else {
-        //    img = graphic;
-        //}
+        double px = bounds.getMinX();
+        double py = bounds.getMinY();
 
-        if (img == null) {
-            System.out.println("Image is null !!!");
-            return;
-        }
-
-        double w = img.getWidth();
-        double h = img.getHeight();
+        double width = bounds.getWidth();
+        double height = bounds.getHeight();
 
         if (transform != null) {
-            at.concatenate(transform.getGraphicalAffineTransform(false, sds, fid, mt, w, h));
+            at.concatenate(transform.getGraphicalAffineTransform(false, sds, fid, mt, width, height));
         }
-
-        double px = 0;
-        double py = 0;
 
         // reserve the place for halo
         if (halo != null) {
             double r = halo.getHaloRadius(sds, fid, mt);
-            w += 2 * r;
-            h += 2 * r;
-            px = r;
-            py = r;
+            width += 2 * r;
+            height += 2 * r;
+            px -= r;
+            py -= r;
+
+            bounds = new Rectangle2D.Double(px, py, width, height);
+
+            // Draw it
+            halo.draw(g2, sds, fid, selected, at.createTransformedShape(bounds), mt, selected);
         }
 
-        Rectangle2D bounds = new Rectangle2D.Double(0.0, 0.0, w, h);
-
-        at.concatenate(AffineTransform.getTranslateInstance(-w / 2.0, -h / 2.0));
-
-        // Apply the AT to the bbox
-        Shape atShp = at.createTransformedShape(bounds);
-        //Rectangle2D imageSize = atShp.getBounds2D();
-
-        //RenderableGraphics rg = Graphic.getNewRenderableGraphics(imageSize, 0, mt);
-
-        if (halo != null) {
-            halo.draw(g2, sds, fid, selected, atShp, mt, false);
-            // and add a translation to center img on halo
-            //at.concatenate(AffineTransform.getTranslateInstance(px, py));
+        double op = 1.0;
+        if (opacity != null){
+            op = opacity.getValue(sds, fid);
         }
-        // TODO how to set opacity ?
-        // apply the AT and draw the ext graphic
-        g2.drawRenderedImage(img, at);
+
+        source.draw(g2, at, mt, op, mimeType);
     }
 
     /*@Override

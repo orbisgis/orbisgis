@@ -77,7 +77,6 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
 import ij.process.ColorProcessor;
 import java.awt.Color;
-import java.awt.Shape;
 import java.awt.geom.Area;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -310,6 +309,7 @@ public class Renderer {
                                 g2S = g2Symbs.get(s);
                             }
                             s.draw(g2S, sds, originalIndex, emphasis, mt, the_geom, perm);
+                            //s.draw(g2, sds, originalIndex, emphasis, mt, the_geom, perm);
                         }
 
                         pm.progressTo((int) (100 * ++layerCount / total));
@@ -411,7 +411,7 @@ public class Renderer {
 
         ILayer[] layers;
 
-        ArrayList<Symbolizer> overlay = new ArrayList<Symbolizer>();
+        //ArrayList<Symbolizer> overlay = new ArrayList<Symbolizer>();
 
         if (layer.acceptsChilds()) {
             layers = layer.getLayersRecursively();

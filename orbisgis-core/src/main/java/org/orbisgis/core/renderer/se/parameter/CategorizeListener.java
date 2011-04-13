@@ -20,4 +20,6 @@ public interface CategorizeListener {
 
 	// the iest has been moven at jest position
 	void classMoved(int i, int j);
+
+    void thresholdResorted();
 }

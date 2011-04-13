@@ -143,18 +143,22 @@ public final class ViewBox implements SymbolizerNode {
         if (x != null && y != null) {
             dx = x.getValue(sds, fid);
             dy = y.getValue(sds, fid);
+            System.out.println ("Full ViewBox");
         } else if (x != null) {
             dx = x.getValue(sds, fid);
             dy = dx * ratio;
+            System.out.println (" Resize X->" + dx);
         } else if (y != null) {
             dy = y.getValue(sds, fid);
             dx = dy / ratio;
+            System.out.println (" Resize Y->" + dy);
         } else { // nothing is defined
             dx = width;
             dy = height;
 			return null;
         }
 
+        System.out.println ("ViewBox: " + dx + ";" + dy);
 		//System.out.println ("DX DY: " + dx + ";" + dy);
 
         dx = Uom.toPixel(dx, this.getUom(), dpi, scale, width);

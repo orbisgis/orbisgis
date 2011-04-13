@@ -84,11 +84,12 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.RadioSwitch;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.string.LegendUIMetaStringPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.string.LegendUIStringLiteralPanel;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 /**
- * @todo BUG !!!!
+ * @todo BUGGY !!!!
  * @author maxence
  */
 public abstract class LegendUICategorizePanel extends LegendUIComponent
@@ -126,6 +127,9 @@ public abstract class LegendUICategorizePanel extends LegendUIComponent
 
         //right.setLayout(new GridLayout(0, 1));
         classes.setLayout(new GridLayout(0, 3));
+
+        values = new ArrayList<LegendUIAbstractMetaPanel>();
+        thresholds = new ArrayList<MetaRealThreshold>();
 
         this.categorize = c;
 
@@ -191,13 +195,8 @@ public abstract class LegendUICategorizePanel extends LegendUIComponent
                 } else if (classValue instanceof StringParameter) {
                     categorize.addClass(new RealLiteral(1000.0), new StringLiteral(""));
                 }
-
-                //fireChange();
-
             }
         });
-        values = new ArrayList<LegendUIAbstractMetaPanel>();
-        thresholds = new ArrayList<MetaRealThreshold>();
 
         // classes
         for (int i = 0; i < categorize.getNumClasses(); i++) {
@@ -208,6 +207,8 @@ public abstract class LegendUICategorizePanel extends LegendUIComponent
                 values.add(new MetaRealValue(controller, this, (RealParameter) classValue, i));
             } else if (classValue instanceof ColorParameter) {
                 values.add(new MetaColor(controller, this, (ColorParameter) classValue, i));
+            } else if (classValue instanceof StringParameter) {
+                values.add(new MetaStringValue(controller, this, (StringParameter) classValue, i));
             }
 
             if (i < categorize.getNumClasses() - 1) {
@@ -326,10 +327,16 @@ public abstract class LegendUICategorizePanel extends LegendUIComponent
         } else if (classValue instanceof ColorParameter) {
             values.add(i, new MetaColor(controller, this, (ColorParameter) categorize.getClassValue(i), i));
             literalChanged();
+        } else if (classValue instanceof StringParameter) {
+            System.out.println("ADD META " + i);
+            System.out.println("   total was: " + values.size());
+            values.add(i, new MetaStringValue(controller, this, (StringParameter) categorize.getClassValue(i), i));
         }
 
         //System.out.println("Add threshold: " + (i - 1));
         thresholds.add(i - 1, new MetaRealThreshold(controller, this, categorize.getThresholdValue(i - 1), i));
+
+        controller.structureChanged(this);
     }
 
     @Override
@@ -361,6 +368,17 @@ public abstract class LegendUICategorizePanel extends LegendUIComponent
         }
     }
 
+    @Override
+    public void thresholdResorted() {
+        thresholds.clear();
+
+        // classes
+        for (int i = 0; i < categorize.getNumClasses() - 1; i++) {
+            thresholds.add(new MetaRealThreshold(controller, this, categorize.getThresholdValue(i), i));
+        }
+        controller.structureChanged(this);
+    }
+
     /*
      * Called when one of the color has changed (only for literal colors)
      */
@@ -368,26 +386,28 @@ public abstract class LegendUICategorizePanel extends LegendUIComponent
     public final void literalChanged() {
         right.removeAll();
 
-        BufferedImage colorSpace = ColorHelper.getColorSpaceImage();
-        Graphics2D g2 = (Graphics2D) colorSpace.getGraphics();
+        if (categorize.getFallbackValue() instanceof ColorParameter) {
+            BufferedImage colorSpace = ColorHelper.getColorSpaceImage();
+            Graphics2D g2 = (Graphics2D) colorSpace.getGraphics();
 
-        try {
-            g2.setColor(Color.black);
-            g2.setStroke(new BasicStroke(3f));
+            try {
+                g2.setColor(Color.black);
+                g2.setStroke(new BasicStroke(3f));
 
-            //System.out.println("LiteralChanged");
-            for (LegendUIAbstractMetaPanel v : values) {
-                drawColorOnColorSpace(g2, v.getCurrentComponent(), colorSpace);
+                //System.out.println("LiteralChanged");
+                for (LegendUIAbstractMetaPanel v : values) {
+                    drawColorOnColorSpace(g2, v.getCurrentComponent(), colorSpace);
+                }
+                drawColorOnColorSpace(g2, fallbackPanel, colorSpace);
+
+            } catch (ParameterException ex) {
+                //System.out.println("Exeption" + ex);
             }
-            drawColorOnColorSpace(g2, fallbackPanel, colorSpace);
-
-        } catch (ParameterException ex) {
-            //System.out.println("Exeption" + ex);
+            DisplayJAI dj = new DisplayJAI(colorSpace);
+            right.add(dj);
+            //this.pack();
+            this.updateUI();
         }
-        DisplayJAI dj = new DisplayJAI(colorSpace);
-        right.add(dj);
-        //this.pack();
-        this.updateUI();
     }
 
     /**
@@ -442,6 +462,22 @@ public abstract class LegendUICategorizePanel extends LegendUIComponent
 
         private void setIndex(int i) {
             this.i = i;
+        }
+    }
+
+    private class MetaStringValue extends LegendUIMetaStringPanel {
+
+        private int i;
+
+        public MetaStringValue(LegendUIController controller, LegendUICategorizePanel parent, StringParameter stringParameter, int i) {
+            super("Value", controller, parent, stringParameter, false);
+            this.i = i;
+            init();
+        }
+
+        @Override
+        public void stringChanged(StringParameter newString) {
+            categorize.setClassValue(i, newString);
         }
     }
 

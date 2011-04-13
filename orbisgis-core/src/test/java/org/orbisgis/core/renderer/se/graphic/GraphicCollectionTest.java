@@ -6,11 +6,14 @@ package org.orbisgis.core.renderer.se.graphic;
 
 
 import com.sun.media.jai.widget.DisplayJAI;
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
 
@@ -87,23 +90,29 @@ public class GraphicCollectionTest extends TestCase {
         double width = Uom.toPixel(270, Uom.MM, mt.getDpi(), null, null);
         double height = Uom.toPixel(160, Uom.MM, mt.getDpi(), null, null);
 
-        Rectangle2D.Double dim = new Rectangle2D.Double(-width/2, -height/2, width, height);
-        RenderableGraphics rg = new RenderableGraphics(dim);
 
-        collec.draw(rg, null, -1, false, mt, new AffineTransform());
+        //Rectangle2D.Double dim = new Rectangle2D.Double(-width/2, -height/2, width, height);
+        BufferedImage img = new BufferedImage((int)width, (int)height, BufferedImage.TYPE_4BYTE_ABGR);
+        Graphics2D rg = img.createGraphics();
+        rg.setRenderingHints(mt.getRenderingHints());
 
+        collec.draw(rg, null, -1, false, mt, AffineTransform.getTranslateInstance(width/2, height/2));
+
+        rg.setStroke(new BasicStroke(1));
         rg.setPaint(Color.BLACK);
-        rg.drawLine((int)rg.getMinX(), 0, (int)(rg.getMinX() + rg.getWidth()), 0);
-        rg.drawLine(0, (int)rg.getMinY(), 0, (int)(rg.getMinY() + rg.getHeight()));
 
-        dj.setBounds((int)rg.getMinX(), (int)rg.getMinY(), (int)rg.getWidth(), (int)rg.getHeight());
+        rg.drawLine(0, (int)height/2, (int)width, (int)height/2);
+        rg.drawLine((int)width/2, 0, (int)width/2, (int)height);
 
-        RenderedImage r = rg.createRendering(mt.getCurrentRenderContext());
+        dj.setBounds(0, 0, (int)width, (int)height);
+        //dj.setBounds((int)rg.getMinX(), (int)rg.getMinY(), (int)rg.getWidth(), (int)rg.getHeight());
 
-        dj.set(r, (int)rg.getWidth()/2, (int)rg.getHeight()/2);
+        //RenderedImage r = rg.createRendering(mt.getCurrentRenderContext());
+
+        dj.set(img, 0,0);
 
         File file = new File("/tmp/graphics.png");
-        ImageIO.write(r, "png", file);
+        ImageIO.write(img, "png", file);
 
         // Add to the JFrame’s ContentPane an instance of JScrollPane
         // containing the DisplayJAI instance.
@@ -112,7 +121,7 @@ public class GraphicCollectionTest extends TestCase {
 
         // Set the closing operation so the application is finished.
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize((int)rg.getWidth(), (int)rg.getHeight()+24); // adjust the frame size.
+        frame.setSize((int)width, (int)height+24); // adjust the frame size.
         frame.setVisible(true); // show the frame.
 
         System.out.print("");
