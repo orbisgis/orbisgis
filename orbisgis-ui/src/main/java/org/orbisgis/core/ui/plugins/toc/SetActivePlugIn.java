@@ -61,27 +61,29 @@ public class SetActivePlugIn extends AbstractPlugIn {
                 ILayer layerToBeActivated = selectedResources[0];
                 ILayer activeLayer = mapContext.getActiveLayer();
                 //Test if one layer is already in edition
-                if ((activeLayer !=null)&& (activeLayer != layerToBeActivated)) {
+                if ((activeLayer != null) && (activeLayer != layerToBeActivated)) {
                         if (activeLayer.getSpatialDataSource().isModified()) {
-                        int option = JOptionPane.showConfirmDialog(null, I18N.getString("orbisgis.org.orbisgis.edit.saveChange"), I18N.getString("orbisgis.org.orbisgis.edit.stopEdition"),
-                                JOptionPane.YES_NO_CANCEL_OPTION);
-                        if (option == JOptionPane.YES_OPTION) {
-                                try {
-                                        activeLayer.getSpatialDataSource().commit();
-                                        mapContext.setActiveLayer(null);
-                                } catch (DriverException e) {
-                                        ErrorMessages.error(ErrorMessages.CannotSavelayer, e);
-                                } catch (NonEditableDataSourceException e) {
-                                        ErrorMessages.error(ErrorMessages.CannotSavelayer, e);
+                                int option = JOptionPane.showConfirmDialog(null, I18N.getString("orbisgis.org.orbisgis.edit.saveChange"), I18N.getString("orbisgis.org.orbisgis.edit.stopEdition"),
+                                        JOptionPane.YES_NO_CANCEL_OPTION);
+                                if (option == JOptionPane.YES_OPTION) {
+                                        try {
+                                                activeLayer.getSpatialDataSource().commit();
+                                                mapContext.setActiveLayer(null);
+                                        } catch (DriverException e) {
+                                                ErrorMessages.error(ErrorMessages.CannotSavelayer, e);
+                                        } catch (NonEditableDataSourceException e) {
+                                                ErrorMessages.error(ErrorMessages.CannotSavelayer, e);
+                                        }
+                                } else if (option == JOptionPane.NO_OPTION) {
+                                        try {
+                                                activeLayer.getSpatialDataSource().syncWithSource();
+                                                mapContext.setActiveLayer(null);
+                                        } catch (DriverException e) {
+                                                ErrorMessages.error(ErrorMessages.CannotRevertlayer, e);
+                                        }
+                                } else {
+                                       return true;
                                 }
-                        } else if (option == JOptionPane.NO_OPTION) {
-                                try {
-                                        activeLayer.getSpatialDataSource().syncWithSource();
-                                        mapContext.setActiveLayer(null);
-                                } catch (DriverException e) {
-                                        ErrorMessages.error(ErrorMessages.CannotRevertlayer, e);
-                                }
-                        }
                         }
 
                 }
