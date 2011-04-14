@@ -60,7 +60,6 @@ public class SetInactivePlugIn extends AbstractPlugIn {
                 MapContext mapContext = getPlugInContext().getMapContext();
                 ILayer[] selectedResources = mapContext.getSelectedLayers();
                 execute(mapContext, selectedResources[0]);
-
                 return true;
         }
 
