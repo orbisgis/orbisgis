@@ -355,21 +355,23 @@ public abstract class AbstractSelectionTool extends Selection {
                 int miny = Math.min(p.y, tm.getLastMouseY());
                 int width = Math.abs(p.x - tm.getLastMouseX());
                 int height = Math.abs(p.y - tm.getLastMouseY());
+                Color fillColor = new Color(255, 204, 51, 50);
+                Color lineColor = new Color(255, 204, 51);
                 if (tm.getLastMouseX() < p.x) {
-                        ((Graphics2D) g).setStroke(new BasicStroke(1,
-                                BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10,
-                                new float[]{10, 3}, 0));
+                        fillColor = new Color(209, 231, 255, 50);
+                        lineColor = new Color(0, 112, 211);
                 } else {
                         ((Graphics2D) g).setStroke(new BasicStroke());
                 }
                 Rectangle2DDouble shape = new Rectangle2DDouble(minx, miny, width,
                         height);
                 Graphics2D g2 = (Graphics2D) g;
-                g2.setPaint(new Color(255, 204, 51, 50));
+                g2.setPaint(fillColor);
                 g2.fill(shape);
-                g2.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND,
-                        BasicStroke.JOIN_ROUND));
-                g2.setColor(new Color(255, 204, 51));
+                g2.setStroke(new BasicStroke(1,
+                        BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10,
+                        new float[]{10, 3}, 0));
+                g2.setColor(lineColor);
                 g2.draw(shape);
         }
 
