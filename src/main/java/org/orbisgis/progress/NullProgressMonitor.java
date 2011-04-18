@@ -41,18 +41,18 @@ package org.orbisgis.progress;
  *
  * This ProgressMonitor does nothing.
  */
-public class NullProgressMonitor implements IProgressMonitor {
+public class NullProgressMonitor implements ProgressMonitor {
 
         @Override
         public void endTask() {
         }
 
         @Override
-        public void init(String taskName) {
+        public void init(String taskName, long end) {
         }
 
         @Override
-        public void progressTo(int progress) {
+        public void progressTo(long progress) {
         }
 
         @Override
@@ -71,7 +71,7 @@ public class NullProgressMonitor implements IProgressMonitor {
         }
 
         @Override
-        public void startTask(String taskName) {
+        public void startTask(String taskName, long end) {
         }
 
         @Override

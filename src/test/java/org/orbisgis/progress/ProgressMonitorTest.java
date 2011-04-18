@@ -43,27 +43,15 @@ import junit.framework.TestCase;
 public class ProgressMonitorTest extends TestCase {
 
 	public void testUsage() throws Exception {
-		IProgressMonitor pm = new ProgressMonitor("open file");
-		pm.startTask("read header");
-		System.out.println(pm);
-		for (int i = 0; i < 100; i++) {
+		ProgressMonitor pm = new DefaultProgressMonitor("open file", 100);
+		pm.startTask("read header", 200);
+		assertTrue(pm.getOverallProgress() == 0);
+		for (int i = 0; i < 200; i++) {
 			pm.progressTo(i);
-			System.out.println(pm);
+			assertTrue(pm.getCurrentProgress() == i / 2);
 		}
 		pm.endTask();
-		pm.progressTo(50);
-		System.out.println(pm);
-		pm.startTask("index file");
-		pm.startTask("select index");
-		System.out.println(pm);
-		pm.endTask();
-		System.out.println(pm);
-		pm.endTask();
-		System.out.println(pm);
-		pm.progressTo(80);
-		System.out.println(pm);
-		pm.endTask();
-		System.out.println(pm);
+		pm.progressTo(100);
 	}
 
 }

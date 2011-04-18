@@ -36,96 +36,54 @@
  */
 package org.orbisgis.progress;
 
-/**
- * Default implementation of an IProgressMonitor.
- *
- */
-public class ProgressMonitor implements IProgressMonitor {
+public interface ProgressMonitor {
 
-        private Task overallTask;
-        private Task currentTask;
-        private boolean cancelled;
+        public abstract void init(String taskName, long end);
 
-        public ProgressMonitor(String taskName) {
-                init(taskName);
-        }
+        /**
+         * Adds a new child task to the last added
+         *
+         * @param taskName
+         *            Task name
+         */
+        public abstract void startTask(String taskName, long end);
 
-        @Override
-        public void init(String taskName) {
-                overallTask = new Task(taskName);
-        }
+        public abstract void endTask();
 
-        @Override
-        public void startTask(String taskName) {
-                currentTask = new Task(taskName);
-        }
+        /**
+         * Gets the current name of the task. The name at init or the name at the
+         * last call to startTask if any
+         *
+         * @return
+         */
+        String getCurrentTaskName();
 
-        private class Task {
+        /**
+         * Indicates the progress of the last added task
+         *
+         * @param progress
+         */
+        public abstract void progressTo(long progress);
 
-                String taskName;
-                int percentage;
+        /**
+         * Gets the progress of the overall process
+         *
+         * @return
+         */
+        public abstract int getOverallProgress();
 
-                Task(String taskName) {
-                        this.taskName = taskName;
-                        this.percentage = 0;
-                }
-        }
+        /**
+         * Gets the progress of the current process
+         *
+         * @return
+         */
+        public abstract int getCurrentProgress();
 
-        @Override
-        public void endTask() {
-                currentTask = null;
-        }
-
-        @Override
-        public void progressTo(int progress) {
-                if (currentTask != null) {
-                        this.currentTask.percentage = progress;
-                } else {
-                        overallTask.percentage = progress;
-                }
-        }
-
-        @Override
-        public int getOverallProgress() {
-                return overallTask.percentage;
-        }
-
-        @Override
-        public String toString() {
-                StringBuilder ret = new StringBuilder().append(overallTask.taskName).append(": ");
-                ret.append(overallTask.percentage).append("\n");
-                if (currentTask != null) {
-                        ret.append(currentTask.taskName).append(": ");
-                        ret.append(currentTask.percentage).append("\n");
-                }
-
-                return ret.toString();
-        }
-
-        @Override
-        public synchronized boolean isCancelled() {
-                return cancelled;
-        }
-
-        public synchronized void setCancelled(boolean cancelled) {
-                this.cancelled = cancelled;
-        }
-
-        @Override
-        public String getCurrentTaskName() {
-                if (currentTask != null) {
-                        return currentTask.taskName;
-                } else {
-                        return null;
-                }
-        }
-
-        @Override
-        public int getCurrentProgress() {
-                if (currentTask != null) {
-                        return currentTask.percentage;
-                } else {
-                        return 0;
-                }
-        }
+        /**
+         * Returns true if the process is cancelled and should end as quickly as
+         * possible
+         *
+         * @return
+         */
+        public boolean isCancelled();
 }
