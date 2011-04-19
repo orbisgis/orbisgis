@@ -57,8 +57,11 @@ import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 import java.util.Locale;
@@ -551,10 +554,39 @@ public class ValuesTest extends TestCase {
 	 */
 	public void testGeometryCollectionStringRepresentation() throws Exception{
 		GeometryFactory gf = new GeometryFactory();
-		MultiPolygon mp = gf.createMultiPolygon(new Polygon[] {});
+		GeometryCollection mp = gf.createMultiPolygon(new Polygon[] {});
 		Value val = ValueFactory.createValue(mp);
 		String str = val.toString();
 		assertTrue(str.equals("MULTIPOLYGON EMPTY"));
+		Polygon poly = gf.createPolygon(gf.createLinearRing(new Coordinate[] {}), new LinearRing[] {});
+		assertTrue(poly.isEmpty());
+		mp = gf.createMultiPolygon(new Polygon[] {poly,});
+		val = ValueFactory.createValue(mp);
+		str = val.toString();
+		assertNotNull(str);
+		Polygon polyBis = gf.createPolygon(gf.createLinearRing(new Coordinate[] {
+			new Coordinate(0,0,0),
+			new Coordinate(1,1,0),
+			new Coordinate(3,4,0),
+			new Coordinate(0,0,0),
+		}), new LinearRing[] {});
+		mp = gf.createMultiPolygon(new Polygon[] {poly,polyBis});
+		val = ValueFactory.createValue(mp);
+		str = val.toString();
+		assertNotNull(str);
+		GeometryCollection coll = gf.createGeometryCollection(new Geometry[] {
+			gf.createPolygon(gf.createLinearRing(new Coordinate [] {}), new LinearRing[] {}),
+			gf.createPolygon(gf.createLinearRing(new Coordinate[] {
+				new Coordinate(0,0,0),
+				new Coordinate(1,1,0),
+				new Coordinate(3,4,0),
+				new Coordinate(0,0,0),
+			}), new LinearRing[] {})
+		});
+		mp = gf.createGeometryCollection(new Geometry[] {poly,coll,polyBis});
+		val = ValueFactory.createValue(mp);
+		str = val.toString();
+		assertNotNull(str);
 	}
 
 	private void checkConversions(Value value, Set<Integer> a) {

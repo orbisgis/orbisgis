@@ -138,11 +138,35 @@ class GeometryValue extends AbstractValue {
 		//As a geometry can be empty, we must check it is not when trying to access
 		//the z value of the value returned by getCoordinate. Indeed, getCoordinate
 		//will be null, so trying to know its z will result in a NullPointerException.
-		if (!geom.isEmpty() && Double.isNaN(geom.getCoordinate().z)) {
+		boolean useZ = useZForToString(geom);
+		if (!useZ) {
 			return WKBUtil.getTextWKTWriter2DInstance().write(geom);
 		} else {
 			return WKBUtil.getTextWKTWriter3DInstance().write(geom);
 		}
+	}
+
+	private Boolean useZForToString(Geometry geometry){
+		boolean useZ = false;
+		if(geometry.isEmpty()){
+			return true;
+		}
+		for(int i = 0; i<geometry.getNumGeometries(); i++){
+			Geometry tmp = geometry.getGeometryN(i);
+			if(tmp instanceof GeometryCollection){
+				boolean tmpBool = useZForToString(tmp);
+				if(tmpBool){
+					return true;
+				}
+			} else if(!tmp.isEmpty()  ){
+				if(Double.isNaN(tmp.getCoordinate().z)){
+					return false;
+				} else {
+					return true;
+				}
+			}
+		}
+		return useZ;
 	}
 
 	@Override
