@@ -43,6 +43,8 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 
 import com.vividsolutions.jts.geom.Geometry;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 /**
  * @author Fernando Gonzalez Cortes
@@ -50,7 +52,7 @@ import com.vividsolutions.jts.geom.Geometry;
 class ValueWriterImpl implements ValueWriter {
 
 	private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
-	private DecimalFormat df = new DecimalFormat();
+	private NumberFormat df = DecimalFormat.getInstance(Locale.ROOT);
 
 	public ValueWriterImpl() {
 		df.setGroupingUsed(false);

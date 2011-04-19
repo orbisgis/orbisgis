@@ -49,6 +49,7 @@ import org.gdms.sql.strategies.SemanticException;
 import org.grap.model.GeoRaster;
 
 import com.vividsolutions.jts.geom.Geometry;
+import java.util.Locale;
 
 /**
  * Factory to instantiate Value instances from basic types
@@ -321,7 +322,7 @@ public class ValueFactory {
 			break;
 
 		case Type.DOUBLE:
-			value = ValueFactory.createValue(DecimalFormat.getNumberInstance()
+			value = ValueFactory.createValue(DecimalFormat.getNumberInstance(Locale.ROOT)
 					.parse(text).doubleValue());
 
 			break;
@@ -332,7 +333,7 @@ public class ValueFactory {
 			break;
 
 		case Type.FLOAT:
-			value = ValueFactory.createValue(DecimalFormat.getNumberInstance()
+			value = ValueFactory.createValue(DecimalFormat.getNumberInstance(Locale.ROOT)
 					.parse(text).floatValue());
 
 			break;
