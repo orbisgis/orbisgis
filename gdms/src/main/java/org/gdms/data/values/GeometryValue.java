@@ -55,10 +55,12 @@ class GeometryValue extends AbstractValue {
 		this.geom = g;
 	}
 
+	@Override
 	public String getStringValue(ValueWriter writer) {
 		return writer.getStatementString(geom);
 	}
 
+	@Override
 	public int getType() {
 		return Type.GEOMETRY;
 	}
@@ -67,6 +69,7 @@ class GeometryValue extends AbstractValue {
 		return geom;
 	}
 
+	@Override
 	public int doHashCode() {
 		Coordinate coord = geom.getCoordinate();
 		return (int) (coord.x + coord.y);
@@ -130,14 +133,19 @@ class GeometryValue extends AbstractValue {
 		return equals(value).inversa();
 	}
 
+	@Override
 	public String toString() {
-		if (Double.isNaN(geom.getCoordinate().z)) {
+		//As a geometry can be empty, we must check it is not when trying to access
+		//the z value of the value returned by getCoordinate. Indeed, getCoordinate
+		//will be null, so trying to know its z will result in a NullPointerException.
+		if (!geom.isEmpty() && Double.isNaN(geom.getCoordinate().z)) {
 			return WKBUtil.getTextWKTWriter2DInstance().write(geom);
 		} else {
 			return WKBUtil.getTextWKTWriter3DInstance().write(geom);
 		}
 	}
 
+	@Override
 	public byte[] getBytes() {
 		GetDimensionSequenceFilter sf = new GetDimensionSequenceFilter();
 		geom.apply(sf);

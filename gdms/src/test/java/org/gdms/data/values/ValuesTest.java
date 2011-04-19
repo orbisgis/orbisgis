@@ -59,7 +59,9 @@ import org.grap.model.RasterMetadata;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
+import java.util.Locale;
 
 public class ValuesTest extends TestCase {
 	private java.sql.Date d;
@@ -276,7 +278,7 @@ public class ValuesTest extends TestCase {
 				Type.DATE).equals(ValueFactory.createValue(d))).getValue());
 
 		assertTrue(((BooleanValue) ValueFactory.createValueByType(
-				NumberFormat.getNumberInstance().format(1.1), Type.DOUBLE)
+				NumberFormat.getNumberInstance(Locale.ROOT).format(1.1), Type.DOUBLE)
 				.equals(ValueFactory.createValue(1.1d))).getValue());
 
 		assertTrue(((BooleanValue) ValueFactory
@@ -284,7 +286,7 @@ public class ValuesTest extends TestCase {
 						ValueFactory.createValue(1))).getValue());
 
 		assertTrue(((BooleanValue) ValueFactory.createValueByType(
-				NumberFormat.getNumberInstance().format(1.1), Type.FLOAT)
+				NumberFormat.getNumberInstance(Locale.ROOT).format(1.1), Type.FLOAT)
 				.equals(ValueFactory.createValue(1.1f))).getValue());
 
 		assertTrue(((BooleanValue) ValueFactory.createValueByType("1",
@@ -540,6 +542,19 @@ public class ValuesTest extends TestCase {
 			set.add(i);
 		}
 		checkConversions(value, set);
+	}
+
+	/**
+	 * Test created to check that we effectively retrieve a good representation of
+	 * empty multipolygons. indeed, a NullPointerException used to happen...
+	 * @throws Exception
+	 */
+	public void testGeometryCollectionStringRepresentation() throws Exception{
+		GeometryFactory gf = new GeometryFactory();
+		MultiPolygon mp = gf.createMultiPolygon(new Polygon[] {});
+		Value val = ValueFactory.createValue(mp);
+		String str = val.toString();
+		assertTrue(str.equals("MULTIPOLYGON EMPTY"));
 	}
 
 	private void checkConversions(Value value, Set<Integer> a) {
