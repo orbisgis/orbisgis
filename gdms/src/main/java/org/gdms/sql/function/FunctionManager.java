@@ -146,7 +146,7 @@ import org.gdms.sql.function.spatial.geometry.properties.ST_IsSimple;
 import org.gdms.sql.function.spatial.geometry.properties.ST_IsValid;
 import org.gdms.sql.function.spatial.geometry.properties.ST_Length;
 import org.gdms.sql.function.spatial.geometry.properties.ST_NumGeometries;
-import org.gdms.sql.function.spatial.geometry.properties.ST_NumInteriorRing;
+import org.gdms.sql.function.spatial.geometry.properties.ST_NumInteriorRings;
 import org.gdms.sql.function.spatial.geometry.properties.ST_NumPoints;
 import org.gdms.sql.function.spatial.geometry.properties.ST_X;
 import org.gdms.sql.function.spatial.geometry.properties.ST_Y;
@@ -214,7 +214,7 @@ public class FunctionManager {
                 addFunction(ST_SymDifference.class);
                 addFunction(Average.class);
                 addFunction(StandardDeviation.class);
-                addFunction(ST_NumInteriorRing.class);
+                addFunction(ST_NumInteriorRings.class);
                 addFunction(Sqrt.class);
                 addFunction(ST_ToMultiPoint.class);
                 addFunction(ST_ToMultiLine.class);

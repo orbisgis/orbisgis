@@ -47,7 +47,7 @@ import org.gdms.sql.function.spatial.geometry.properties.ST_IsEmpty;
 import org.gdms.sql.function.spatial.geometry.properties.ST_IsSimple;
 import org.gdms.sql.function.spatial.geometry.properties.ST_IsValid;
 import org.gdms.sql.function.spatial.geometry.properties.ST_Length;
-import org.gdms.sql.function.spatial.geometry.properties.ST_NumInteriorRing;
+import org.gdms.sql.function.spatial.geometry.properties.ST_NumInteriorRings;
 import org.gdms.sql.function.spatial.geometry.properties.ST_NumPoints;
 import org.gdms.sql.function.spatial.geometry.properties.ST_X;
 import org.gdms.sql.function.spatial.geometry.properties.ST_Y;
@@ -136,7 +136,7 @@ public class PropertiesFunctionTest extends FunctionTest {
         }
 
         public void testNumInteriorRing() throws Exception {
-                int v = evaluate(new ST_NumInteriorRing(), new Value[]{ValueFactory.createValue(JTSPolygonWith2Holes)}).getAsInt();
+                int v = evaluate(new ST_NumInteriorRings(), new Value[]{ValueFactory.createValue(JTSPolygonWith2Holes)}).getAsInt();
                 Polygon p = (Polygon) JTSPolygonWith2Holes;
                 assertTrue(p.getNumInteriorRing() == v);
         }
