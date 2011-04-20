@@ -34,7 +34,8 @@
  * or contact directly:
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
- *  
+ * 
+ * 
  * 
  */
 package org.gdms.sql.function.spatial.geometry.create;
@@ -42,57 +43,40 @@ package org.gdms.sql.function.spatial.geometry.create;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.geometryUtils.GeometryEditor;
 import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.spatial.geometry.AbstractSpatialFunction;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Point;
+import org.gdms.geometryUtils.GeometryClean;
 
-public class ST_AddPoints extends AbstractSpatialFunction {
+public class ST_RemoveDuplicateCoordinate extends AbstractSpatialFunction {
 
-	public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
+        public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
 
-		Geometry geom = args[0].getAsGeometry();
-		final Geometry geom1 = args[1].getAsGeometry();
+                final Geometry geom = args[0].getAsGeometry();
+                return ValueFactory.createValue(GeometryClean.removeDuplicateCoordinates(geom));
 
-		if (geom.getDimension() > 0) {
-			if (geom1.getDimension() == 0) {
+        }
 
-				int numGeom = geom1.getNumGeometries();
-				for (int i = 0; i < numGeom; i++) {
-					Point point = (Point) geom1.getGeometryN(i);
-					geom = GeometryEditor.insertVertex(geom, point);
-				}
-				return ValueFactory.createValue(geom);
-			}
-		}
+        public String getName() {
+                return "ST_RemoveDuplicateCoordinate";
+        }
 
-		return ValueFactory.createNullValue();
+        public Arguments[] getFunctionArguments() {
+                return new Arguments[]{new Arguments(Argument.GEOMETRY)};
+        }
 
-	}
+        public boolean isAggregate() {
+                return false;
+        }
 
-	public String getName() {
-		return "ST_AddPoints";
-	}
+        public String getDescription() {
+                return "Remove repeated coordinates into a geometry. ";
+        }
 
-	public Arguments[] getFunctionArguments() {
-		return new Arguments[] { new Arguments(Argument.GEOMETRY,
-				Argument.GEOMETRY) };
-	}
-
-	public boolean isAggregate() {
-		return false;
-	}
-
-	public String getDescription() {
-		return "Add a set of points on a geometry. ";
-	}
-
-	public String getSqlOrder() {
-		return "select ST_AddPoints(geometry, multipoints geometry) from myTable;";
-	}
-
+        public String getSqlOrder() {
+                return "select ST_RemoveDuplicateCoordinate(geometry) from myTable;";
+        }
 }

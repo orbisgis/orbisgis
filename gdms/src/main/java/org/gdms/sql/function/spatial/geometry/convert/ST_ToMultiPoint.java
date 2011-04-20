@@ -40,7 +40,7 @@ package org.gdms.sql.function.spatial.geometry.convert;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.geometryUtils.GeometryConverter;
+import org.gdms.geometryUtils.GeometryConvert;
 import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.FunctionException;
@@ -59,7 +59,7 @@ public class ST_ToMultiPoint extends AbstractSpatialFunction {
 		} else {
 			final Geometry geom = args[0].getAsGeometry();
 
-			return ValueFactory.createValue(GeometryConverter
+			return ValueFactory.createValue(GeometryConvert
 					.toMultiPoint(geom));
 		}
 	}

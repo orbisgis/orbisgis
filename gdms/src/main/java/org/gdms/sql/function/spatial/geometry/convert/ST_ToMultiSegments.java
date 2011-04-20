@@ -37,8 +37,6 @@
  */
 package org.gdms.sql.function.spatial.geometry.convert;
 
-import java.util.List;
-
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
@@ -49,47 +47,42 @@ import org.gdms.sql.function.spatial.geometry.AbstractSpatialFunction;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
+import org.gdms.geometryUtils.GeometryConvert;
 
 public class ST_ToMultiSegments extends AbstractSpatialFunction {
-	private final static GeometryFactory factory = new GeometryFactory();
 
-	public Value evaluate(DataSourceFactory dsf,Value[] args) throws FunctionException {
-		if (args[0].isNull()) {
-			return ValueFactory.createNullValue();
-		} else {
-			final Geometry geom = args[0].getAsGeometry();
-			final UniqueSegmentsExtracter uniqueSegmentsExtracter = new UniqueSegmentsExtracter(
-					geom);
-			final List<LineString> lineList = uniqueSegmentsExtracter
-					.getSegmentAsLineString();
-			return ValueFactory
-					.createValue(factory.createMultiLineString(lineList
-							.toArray(new LineString[0])));
-		}
-	}
+        private final static GeometryFactory factory = new GeometryFactory();
 
-	public String getDescription() {
-		return "Convert a geometry into a set of unique segments stored in a MultiLineString ";
-	}
+        public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
+                if (args[0].isNull()) {
+                        return ValueFactory.createNullValue();
+                } else {
+                        final Geometry geom = args[0].getAsGeometry();
+                        return ValueFactory.createValue(GeometryConvert.toSegmentsMultiLineString(geom));
+                }
+        }
 
-	public String getName() {
-		return "ST_ToMultiSegments";
-	}
+        public String getDescription() {
+                return "Convert a geometry into a set of unique segments stored in a MultiLineString ";
+        }
 
-	public String getSqlOrder() {
-		return "select ST_ToMultiSegments(the_geom) from myTable;";
-	}
+        public String getName() {
+                return "ST_ToMultiSegments";
+        }
 
-	public boolean isAggregate() {
-		return false;
-	}
+        public String getSqlOrder() {
+                return "select ST_ToMultiSegments(the_geom) from myTable;";
+        }
 
-	public Arguments[] getFunctionArguments() {
-		return new Arguments[] { new Arguments(Argument.GEOMETRY) };
-	}
+        public boolean isAggregate() {
+                return false;
+        }
 
-	public boolean isDesaggregate() {
-		return false;
-	}
+        public Arguments[] getFunctionArguments() {
+                return new Arguments[]{new Arguments(Argument.GEOMETRY)};
+        }
+
+        public boolean isDesaggregate() {
+                return false;
+        }
 }

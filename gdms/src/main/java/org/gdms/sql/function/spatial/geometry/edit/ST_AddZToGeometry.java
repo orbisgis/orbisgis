@@ -44,70 +44,70 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.geometryUtils.CoordinatesUtils;
 import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
 import com.vividsolutions.jts.geom.Geometry;
+import org.gdms.geometryUtils.GeometryEdit;
 
 public class ST_AddZToGeometry implements Function {
 
-	private double ZFieldValue;
+        private double ZFieldValue;
 
-	public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
-		if ((args[0].isNull()) || (args[1].isNull())) {
-			return ValueFactory.createNullValue();
-		}
+        public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
+                if ((args[0].isNull()) || (args[1].isNull())) {
+                        return ValueFactory.createNullValue();
+                }
 
-		Geometry geometry = args[0].getAsGeometry();
+                Geometry geometry = args[0].getAsGeometry();
 
-		ZFieldValue = args[1].getAsDouble();
+                ZFieldValue = args[1].getAsDouble();
 
-		Geometry geom = CoordinatesUtils.force_3D(geometry, ZFieldValue);
+                Geometry geom = GeometryEdit.force_3D(geometry, ZFieldValue);
 
-		return ValueFactory.createValue(geom);
+                return ValueFactory.createValue(geom);
 
-	}
+        }
 
-	public String getDescription() {
-		return "This function modify (or set) the z component of (each vertex of) the "
-				+ "geometric parameter to the corresponding value given by a field.";
-	}
+        public String getDescription() {
+                return "This function modify (or set) the z component of (each vertex of) the "
+                        + "geometric parameter to the corresponding value given by a field.";
+        }
 
-	public Arguments[] getFunctionArguments() {
+        public Arguments[] getFunctionArguments() {
 
-		return new Arguments[] { new Arguments(Argument.GEOMETRY,
-				Argument.NUMERIC) };
-	}
+                return new Arguments[]{new Arguments(Argument.GEOMETRY,
+                                Argument.NUMERIC)};
+        }
 
-	public String getName() {
-		return "ST_AddZ";
-	}
+        public String getName() {
+                return "ST_AddZ";
+        }
 
-	public String getSqlOrder() {
-		return "select ST_AddZ(the_geom, fieldname) from contourlines b;";
-	}
+        public String getSqlOrder() {
+                return "select ST_AddZ(the_geom, fieldname) from contourlines b;";
+        }
 
-	public Type getType(Type[] argsTypes) throws InvalidTypeException {
+        public Type getType(Type[] argsTypes) throws InvalidTypeException {
 
-		Type type = argsTypes[0];
-		Constraint[] constrs = type.getConstraints(Constraint.ALL
-				& ~Constraint.GEOMETRY_DIMENSION);
-		Constraint[] result = new Constraint[constrs.length + 1];
-		System.arraycopy(constrs, 0, result, 0, constrs.length);
-		result[result.length - 1] = new DimensionConstraint(3);
+                Type type = argsTypes[0];
+                Constraint[] constrs = type.getConstraints(Constraint.ALL
+                        & ~Constraint.GEOMETRY_DIMENSION);
+                Constraint[] result = new Constraint[constrs.length + 1];
+                System.arraycopy(constrs, 0, result, 0, constrs.length);
+                result[result.length - 1] = new DimensionConstraint(3);
 
-		return TypeFactory.createType(type.getTypeCode(), result);
+                return TypeFactory.createType(type.getTypeCode(), result);
 
-	}
+        }
 
-	public boolean isAggregate() {
-		return false;
-	}
+        public boolean isAggregate() {
+                return false;
+        }
 
-	public Value getAggregateResult() {
-		return null;
-	}
+        public Value getAggregateResult() {
+                return null;
+        }
 }

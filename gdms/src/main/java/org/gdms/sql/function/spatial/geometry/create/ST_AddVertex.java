@@ -34,70 +34,74 @@
  * or contact directly:
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
+ *  
+ * 
  */
-package org.gdms.sql.function.spatial.geometry.convert;
+package org.gdms.sql.function.spatial.geometry.create;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.types.Constraint;
-import org.gdms.data.types.DimensionConstraint;
-import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.geometryUtils.GeometryException;
 import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.Arguments;
-import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
+import org.gdms.sql.function.spatial.geometry.AbstractSpatialFunction;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Point;
 import org.gdms.geometryUtils.GeometryEdit;
 
-public class ST_Force_2D implements Function {
+public class ST_AddVertex extends AbstractSpatialFunction {
 
-        public Value evaluate(DataSourceFactory dsf, Value[] args)
-                throws FunctionException {
-                if (!args[0].isNull()) {
-                        Geometry geom = args[0].getAsGeometry();
-                        if (!Double.isNaN(geom.getCoordinate().z)) {
-                                return ValueFactory.createValue(GeometryEdit.force_2D(args[0].getAsGeometry()));
+        /**
+         * Allow capability to add a point into a geometry
+
+         * Take into account multipoints, polygon and linestring
+         */
+        public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
+
+                Geometry geom = args[0].getAsGeometry();
+                final Geometry geom1 = args[1].getAsGeometry();
+                if (geom.getDimension() > 0) {
+                        if (geom1.getDimension() == 0) {
+                                int numGeom = geom1.getNumGeometries();
+                                for (int i = 0; i < numGeom; i++) {
+                                        try {
+                                                Point point = (Point) geom1.getGeometryN(i);
+                                                geom = GeometryEdit.insertVertex(geom, point);
+                                        } catch (GeometryException ex) {
+                                                Logger.getLogger(ST_AddVertex.class.getName()).log(Level.SEVERE, null, ex);
+                                        }
+                                }
+                                return ValueFactory.createValue(geom);
                         }
-                        return args[0];
                 }
-                return args[0];
-        }
 
-        public String getDescription() {
-                return "Forces the geometries into XY mode. Metadata are also modified.";
+                return ValueFactory.createNullValue();
+
         }
 
         public String getName() {
-                return "ST_Force_2D";
+                return "ST_AddVertex";
         }
 
-        public String getSqlOrder() {
-                return "select ST_Force_2D(the_geom) from myTable";
+        public Arguments[] getFunctionArguments() {
+                return new Arguments[]{new Arguments(Argument.GEOMETRY,
+                                Argument.GEOMETRY)};
         }
 
         public boolean isAggregate() {
                 return false;
         }
 
-        public Arguments[] getFunctionArguments() {
-                return new Arguments[]{new Arguments(Argument.GEOMETRY)};
+        public String getDescription() {
+                return "Add a set of vertex on a polygon or linestring. ";
         }
 
-        public Type getType(Type[] argsTypes) {
-                Type type = argsTypes[0];
-                Constraint[] constrs = type.getConstraints(Constraint.ALL
-                        & ~Constraint.GEOMETRY_DIMENSION);
-                Constraint[] result = new Constraint[constrs.length + 1];
-                System.arraycopy(constrs, 0, result, 0, constrs.length);
-                result[result.length - 1] = new DimensionConstraint(2);
-                return TypeFactory.createType(type.getTypeCode(), result);
-        }
-
-        @Override
-        public Value getAggregateResult() {
-                return null;
+        public String getSqlOrder() {
+                return "select ST_AddVertex(geometry, multipoints) from myTable;";
         }
 }

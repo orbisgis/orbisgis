@@ -62,6 +62,9 @@ import org.gdms.drivers.ExportTest;
 import org.gdms.drivers.GDMSDriverTest;
 import org.gdms.drivers.RasterTest;
 import org.gdms.drivers.ShapefileDriverTest;
+import org.gdms.geometryUtils.GeometryConvertTest;
+import org.gdms.geometryUtils.GeometryEditTest;
+import org.gdms.geometryUtils.GeometryTypeUtilTest;
 import org.gdms.source.ChecksumTest;
 import org.gdms.source.SourceManagementTest;
 import org.gdms.spatial.SpatialDriverMetadataTest;
@@ -137,7 +140,14 @@ public class GDMSTests extends TestCase {
 		suite.addTestSuite(CustomQueriesTest.class);
 		// TODO suite.addTestSuite(ExplodeTest.class);
 
-		// $JUnit-END$
+
+                //Geometry utils
+
+                suite.addTestSuite(GeometryConvertTest.class);
+                suite.addTestSuite(GeometryEditTest.class);
+                suite.addTestSuite(GeometryTypeUtilTest.class);
+
+	// $JUnit-END$
 		return suite;
 	}
 }

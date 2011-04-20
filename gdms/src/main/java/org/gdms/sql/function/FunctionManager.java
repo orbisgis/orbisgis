@@ -3,17 +3,18 @@
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information. OrbisGIS is
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
  *
  *  Team leader Erwan BOCHER, scientific researcher,
  *
  *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ * Copyright (C) 2007-2008 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Antoine GOURLAY,Maxence LAURENT, Gwendall PETIT
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Antoine GOURLAY, Alexis GUEGANNO, Maxence LAURENT, Gwendall PETIT
  *
- * Copyright (C) 2010 Erwan BOCHER, Alexis GUEGANNO, Antoine GOURLAY, Gwendall PETIT
+ * Copyright (C) 2011 Erwan BOCHER, Antoine GOURLAY, Alexis GUEGANNO, Maxence LAURENT, Gwendall PETIT
+ *
  *
  * This file is part of OrbisGIS.
  *
@@ -32,8 +33,7 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info _at_ orbisgis.org
  */
 package org.gdms.sql.function;
 
@@ -91,8 +91,7 @@ import org.gdms.sql.function.spatial.geometry.convert.ST_StartPoint;
 import org.gdms.sql.function.spatial.geometry.convert.ST_ToMultiLine;
 import org.gdms.sql.function.spatial.geometry.convert.ST_ToMultiPoint;
 import org.gdms.sql.function.spatial.geometry.convert.ST_ToMultiSegments;
-import org.gdms.sql.function.spatial.geometry.create.ST_AddPoint;
-import org.gdms.sql.function.spatial.geometry.create.ST_AddPoints;
+import org.gdms.sql.function.spatial.geometry.create.ST_AddVertex;
 import org.gdms.sql.function.spatial.geometry.create.ST_Boundary;
 import org.gdms.sql.function.spatial.geometry.create.ST_BoundingCircle;
 import org.gdms.sql.function.spatial.geometry.create.ST_Densify;
@@ -102,7 +101,7 @@ import org.gdms.sql.function.spatial.geometry.create.ST_MakePoint;
 import org.gdms.sql.function.spatial.geometry.create.ST_MinimumDiameter;
 import org.gdms.sql.function.spatial.geometry.create.ST_MinimumRectangle;
 import org.gdms.sql.function.spatial.geometry.create.ST_OctogonalEnvelope;
-import org.gdms.sql.function.spatial.geometry.create.ST_RemoveRepeatedPoints;
+import org.gdms.sql.function.spatial.geometry.create.ST_RemoveDuplicateCoordinate;
 import org.gdms.sql.function.spatial.geometry.crs.ST_Transform;
 import org.gdms.sql.function.spatial.geometry.distance.ST_NearestPoints;
 import org.gdms.sql.function.spatial.geometry.edit.ST_AddZToGeometry;
@@ -139,6 +138,7 @@ import org.gdms.sql.function.spatial.geometry.properties.ST_Distance;
 import org.gdms.sql.function.spatial.geometry.properties.ST_Extent;
 import org.gdms.sql.function.spatial.geometry.properties.ST_GeometryN;
 import org.gdms.sql.function.spatial.geometry.properties.ST_GeometryType;
+import org.gdms.sql.function.spatial.geometry.properties.ST_InteriorRingN;
 import org.gdms.sql.function.spatial.geometry.properties.ST_IsClosed;
 import org.gdms.sql.function.spatial.geometry.properties.ST_IsEmpty;
 import org.gdms.sql.function.spatial.geometry.properties.ST_IsRectangle;
@@ -156,7 +156,6 @@ import org.gdms.sql.function.spatial.geometry.simplify.ST_Simplify;
 import org.gdms.sql.function.spatial.geometry.simplify.ST_SimplifyPreserveTopology;
 import org.gdms.sql.function.spatial.geometry.trigo.ST_Azimut;
 import org.gdms.sql.function.spatial.mixed.ST_Envelope;
-import org.gdms.sql.function.spatial.mixed.ST_SetZ;
 import org.gdms.sql.function.spatial.raster.algebra.ST_RasterAlgebra;
 import org.gdms.sql.function.spatial.raster.create.ST_CropRaster;
 import org.gdms.sql.function.spatial.raster.hydrology.ST_D8Accumulation;
@@ -175,260 +174,260 @@ import org.gdms.sql.function.spatial.raster.morphology.ST_Shadow;
 import org.gdms.sql.function.spatial.raster.properties.ST_Count;
 
 public class FunctionManager {
-	private static HashMap<String, Class<? extends Function>> nameFunction = new HashMap<String, Class<? extends Function>>();
-	private static ArrayList<FunctionManagerListener> listeners = new ArrayList<FunctionManagerListener>();
-	static {
-		addFunction(ConcatenateFunction.class);
+
+        private static HashMap<String, Class<? extends Function>> nameFunction = new HashMap<String, Class<? extends Function>>();
+        private static ArrayList<FunctionManagerListener> listeners = new ArrayList<FunctionManagerListener>();
+
+        static {
+                addFunction(ConcatenateFunction.class);
                 addFunction(Abs.class);
-		addFunction(String2DateFunction.class);
-		addFunction(String2IntFunction.class);
-		addFunction(String2DoubleFunction.class);
-		addFunction(LongToDoubleFunction.class);
-		addFunction(String2BooleanFunction.class);
-		addFunction(Count.class);
-		addFunction(Sum.class);
-		addFunction(StrLength.class);
-		addFunction(Max.class);
-		addFunction(Min.class);
-		addFunction(ST_Buffer.class);
-		addFunction(ST_Intersects.class);
-		addFunction(ST_Contains.class);
-		addFunction(ST_Intersection.class);
-		addFunction(ST_GeomUnion.class);
-		addFunction(ST_GeomFromText.class);
-		addFunction(ST_AsWKT.class);
-		addFunction(ST_Area.class);
-		addFunction(ST_Length.class);
-		addFunction(ST_NumPoints.class);
-		addFunction(ST_Dimension.class);
-		addFunction(ST_Force_3D.class);
-		addFunction(ST_GeometryType.class);
-		addFunction(ST_IsEmpty.class);
-		addFunction(ST_IsSimple.class);
-		addFunction(ST_Boundary.class);
-		addFunction(ST_GeometryN.class);
-		addFunction(ST_Equals.class);
-		addFunction(ST_Centroid.class);
-		addFunction(ST_Difference.class);
-		addFunction(ST_SymDifference.class);
-		addFunction(Average.class);
-		addFunction(StandardDeviation.class);
-		addFunction(ST_NumInteriorRing.class);
-		addFunction(Sqrt.class);
-		addFunction(ST_ToMultiPoint.class);
-		addFunction(ST_ToMultiLine.class);
-		addFunction(ST_IsValid.class);
-		addFunction(ToStringFunction.class);
-		addFunction(AutoNumeric.class);
-		addFunction(Pk.class);
-		addFunction(ST_IsWithin.class);
-		addFunction(ST_IsWithinDistance.class);
-		addFunction(ST_Relate.class);
+                addFunction(String2DateFunction.class);
+                addFunction(String2IntFunction.class);
+                addFunction(String2DoubleFunction.class);
+                addFunction(LongToDoubleFunction.class);
+                addFunction(String2BooleanFunction.class);
+                addFunction(Count.class);
+                addFunction(Sum.class);
+                addFunction(StrLength.class);
+                addFunction(Max.class);
+                addFunction(Min.class);
+                addFunction(ST_Buffer.class);
+                addFunction(ST_Intersects.class);
+                addFunction(ST_Contains.class);
+                addFunction(ST_Intersection.class);
+                addFunction(ST_GeomUnion.class);
+                addFunction(ST_GeomFromText.class);
+                addFunction(ST_AsWKT.class);
+                addFunction(ST_Area.class);
+                addFunction(ST_Length.class);
+                addFunction(ST_NumPoints.class);
+                addFunction(ST_Dimension.class);
+                addFunction(ST_Force_3D.class);
+                addFunction(ST_GeometryType.class);
+                addFunction(ST_IsEmpty.class);
+                addFunction(ST_IsSimple.class);
+                addFunction(ST_Boundary.class);
+                addFunction(ST_GeometryN.class);
+                addFunction(ST_Equals.class);
+                addFunction(ST_Centroid.class);
+                addFunction(ST_Difference.class);
+                addFunction(ST_SymDifference.class);
+                addFunction(Average.class);
+                addFunction(StandardDeviation.class);
+                addFunction(ST_NumInteriorRing.class);
+                addFunction(Sqrt.class);
+                addFunction(ST_ToMultiPoint.class);
+                addFunction(ST_ToMultiLine.class);
+                addFunction(ST_IsValid.class);
+                addFunction(ToStringFunction.class);
+                addFunction(AutoNumeric.class);
+                addFunction(Pk.class);
+                addFunction(ST_IsWithin.class);
+                addFunction(ST_IsWithinDistance.class);
+                addFunction(ST_Relate.class);
                 addFunction(ST_Covers.class);
                 addFunction(ST_MinimumDiameter.class);
-		addFunction(ST_Touches.class);
-		addFunction(ST_Disjoint.class);
-		addFunction(ST_Crosses.class);
-		addFunction(ST_Overlaps.class);
-		addFunction(ST_GeomUnionArg.class);
-		addFunction(ST_Extent.class);
-		addFunction(ST_ConvexHull.class);
-		addFunction(SubString.class);
-		addFunction(ST_Envelope.class);
-		addFunction(ST_CropRaster.class);
-		addFunction(ST_MakePoint.class);
-		addFunction(ST_MakeLine.class);
-		addFunction(ReplaceString.class);
-		addFunction(IsUID.class);
-		addFunction(ST_NumGeometries.class);
-		addFunction(ST_X.class);
-		addFunction(ST_Y.class);
-		addFunction(ST_Z.class);
-		addFunction(ST_Distance.class);
-		addFunction(ST_RingBuffer.class);
-		addFunction(ST_AddZToGeometry.class);
-		addFunction(ST_Azimut.class);
-		addFunction(Pi.class);
-		addFunction(ST_Densify.class);
-		addFunction(ST_Scale.class);
-		addFunction(ST_Rotate.class);
-		addFunction(ST_BoundingCircle.class);
-		addFunction(ST_MinimumRectangle.class);
-		addFunction(ST_OctogonalEnvelope.class);
-		addFunction(ST_NearestPoints.class);
-		addFunction(ST_CircleCompacity.class);
-		addFunction(ST_IsClosed.class);
-		addFunction(ST_Simplify.class);
-		addFunction(ST_SimplifyPreserveTopology.class);
-		addFunction(ST_Polygonize.class);
-		addFunction(ST_Reverse.class);
-		addFunction(ST_Normalize.class);
-		addFunction(ST_IsRectangle.class);
-		addFunction(ST_Snap.class);
-		addFunction(ST_PointsToLine.class);
-		addFunction(ST_D8Accumulation.class);
-		addFunction(ST_D8AllOutlets.class);
-		addFunction(ST_D8ConstrainedAccumulation.class);
-		addFunction(ST_D8Direction.class);
-		addFunction(ST_D8RiverDistance.class);
-		addFunction(ST_D8Slope.class);
-		addFunction(ST_D8StrahlerStreamOrder.class);
-		addFunction(ST_D8Watershed.class);
-		addFunction(ST_FillSinks.class);
-		addFunction(ST_LSFactor.class);
-		addFunction(ST_StreamPowerIndex.class);
-		addFunction(ST_WetnessIndex.class);
-		addFunction(ST_InteriorPoint.class);
-		addFunction(ST_SetZ.class);
-		addFunction(ST_RasterAlgebra.class);
-		addFunction(ST_Count.class);
-		addFunction(ST_Shadow.class);
-		addFunction(ST_ToMultiSegments.class);
-		addFunction(ST_RemoveRepeatedPoints.class);
-		addFunction(ST_AddPoint.class);
-		addFunction(ST_AddPoints.class);
-		addFunction(Log.class);
-		addFunction(Tan.class);
-		addFunction(ATan.class);
-		addFunction(ACos.class);
-		addFunction(Cos.class);
-		addFunction(Sin.class);
-		addFunction(ASin.class);
-		addFunction(Exp.class);
-		addFunction(Floor.class);
-		addFunction(Ceil.class);
-		addFunction(Random.class);
-		addFunction(ToDegrees.class);
-		addFunction(ToRadians.class);
-		addFunction(ST_StartPoint.class);
-		addFunction(ST_EndPoint.class);
-		addFunction(ST_PointN.class);
-		addFunction(ST_MeanSpacing.class);
-		addFunction(ST_Transform.class);
-		addFunction(ST_Force_2D.class);
+                addFunction(ST_Touches.class);
+                addFunction(ST_Disjoint.class);
+                addFunction(ST_Crosses.class);
+                addFunction(ST_Overlaps.class);
+                addFunction(ST_GeomUnionArg.class);
+                addFunction(ST_Extent.class);
+                addFunction(ST_ConvexHull.class);
+                addFunction(SubString.class);
+                addFunction(ST_Envelope.class);
+                addFunction(ST_CropRaster.class);
+                addFunction(ST_MakePoint.class);
+                addFunction(ST_MakeLine.class);
+                addFunction(ReplaceString.class);
+                addFunction(IsUID.class);
+                addFunction(ST_NumGeometries.class);
+                addFunction(ST_X.class);
+                addFunction(ST_Y.class);
+                addFunction(ST_Z.class);
+                addFunction(ST_Distance.class);
+                addFunction(ST_RingBuffer.class);
+                addFunction(ST_AddZToGeometry.class);
+                addFunction(ST_Azimut.class);
+                addFunction(Pi.class);
+                addFunction(ST_Densify.class);
+                addFunction(ST_Scale.class);
+                addFunction(ST_Rotate.class);
+                addFunction(ST_BoundingCircle.class);
+                addFunction(ST_MinimumRectangle.class);
+                addFunction(ST_OctogonalEnvelope.class);
+                addFunction(ST_NearestPoints.class);
+                addFunction(ST_CircleCompacity.class);
+                addFunction(ST_IsClosed.class);
+                addFunction(ST_Simplify.class);
+                addFunction(ST_SimplifyPreserveTopology.class);
+                addFunction(ST_Polygonize.class);
+                addFunction(ST_Reverse.class);
+                addFunction(ST_Normalize.class);
+                addFunction(ST_IsRectangle.class);
+                addFunction(ST_Snap.class);
+                addFunction(ST_PointsToLine.class);
+                addFunction(ST_D8Accumulation.class);
+                addFunction(ST_D8AllOutlets.class);
+                addFunction(ST_D8ConstrainedAccumulation.class);
+                addFunction(ST_D8Direction.class);
+                addFunction(ST_D8RiverDistance.class);
+                addFunction(ST_D8Slope.class);
+                addFunction(ST_D8StrahlerStreamOrder.class);
+                addFunction(ST_D8Watershed.class);
+                addFunction(ST_FillSinks.class);
+                addFunction(ST_LSFactor.class);
+                addFunction(ST_StreamPowerIndex.class);
+                addFunction(ST_WetnessIndex.class);
+                addFunction(ST_InteriorPoint.class);
+                addFunction(ST_RasterAlgebra.class);
+                addFunction(ST_Count.class);
+                addFunction(ST_Shadow.class);
+                addFunction(ST_ToMultiSegments.class);
+                addFunction(ST_RemoveDuplicateCoordinate.class);
+                addFunction(ST_AddVertex.class);
+                addFunction(Log.class);
+                addFunction(Tan.class);
+                addFunction(ATan.class);
+                addFunction(ACos.class);
+                addFunction(Cos.class);
+                addFunction(Sin.class);
+                addFunction(ASin.class);
+                addFunction(Exp.class);
+                addFunction(Floor.class);
+                addFunction(Ceil.class);
+                addFunction(Random.class);
+                addFunction(ToDegrees.class);
+                addFunction(ToRadians.class);
+                addFunction(ST_StartPoint.class);
+                addFunction(ST_EndPoint.class);
+                addFunction(ST_PointN.class);
+                addFunction(ST_MeanSpacing.class);
+                addFunction(ST_Transform.class);
+                addFunction(ST_Force_2D.class);
                 addFunction(ST_PrecisionReducer.class);
                 addFunction(ST_MakeEnvelope.class);
                 addFunction(ST_Holes.class);
+                addFunction(ST_InteriorRingN.class);
         }
 
-	public static void addFunctionManagerListener(
-			FunctionManagerListener listener) {
-		listeners.add(listener);
-	}
+        public static void addFunctionManagerListener(
+                FunctionManagerListener listener) {
+                listeners.add(listener);
+        }
 
-	/**
-	 * Remove the listener if it is present in the listener list
-	 * 
-	 * @param listener
-	 * @return true if the listener was successfully removed. False if the
-	 *         specified parameter was not a listener
-	 */
-	public static boolean removeFunctionManagerListener(
-			FunctionManagerListener listener) {
-		return listeners.remove(listener);
-	}
+        /**
+         * Remove the listener if it is present in the listener list
+         *
+         * @param listener
+         * @return true if the listener was successfully removed. False if the
+         *         specified parameter was not a listener
+         */
+        public static boolean removeFunctionManagerListener(
+                FunctionManagerListener listener) {
+                return listeners.remove(listener);
+        }
 
-	/**
-	 * Add a new function to the SQL engine
-	 * 
-	 * @param function
-	 *            function
-	 * 
-	 * @throws IllegalArgumentException
-	 *             If the class is not a valid function implementation with an
-	 *             empty constructor or there is already a function or custom
-	 *             query with that name
-	 */
-	public static void addFunction(Class<? extends Function> functionClass)
-			throws IllegalArgumentException {
-		Function function;
-		try {
-			function = functionClass.newInstance();
-		} catch (InstantiationException e) {
-			throw new IllegalArgumentException("Cannot instantiate function: "
-					+ functionClass, e);
-		} catch (IllegalAccessException e) {
-			throw new IllegalArgumentException("Cannot instantiate function: "
-					+ functionClass, e);
-		}
-		String functionName = function.getName().toLowerCase();
-		if (QueryManager.getQuery(functionName) != null) {
-			throw new IllegalArgumentException(
-					"A custom query already exists with that name:"
-							+ functionName);
-		}
-		if (nameFunction.get(functionName) != null) {
-			throw new IllegalArgumentException("Function " + functionName
-					+ " already exists");
-		}
+        /**
+         * Add a new function to the SQL engine
+         *
+         * @param function
+         *            function
+         *
+         * @throws IllegalArgumentException
+         *             If the class is not a valid function implementation with an
+         *             empty constructor or there is already a function or custom
+         *             query with that name
+         */
+        public static void addFunction(Class<? extends Function> functionClass)
+                throws IllegalArgumentException {
+                Function function;
+                try {
+                        function = functionClass.newInstance();
+                } catch (InstantiationException e) {
+                        throw new IllegalArgumentException("Cannot instantiate function: "
+                                + functionClass, e);
+                } catch (IllegalAccessException e) {
+                        throw new IllegalArgumentException("Cannot instantiate function: "
+                                + functionClass, e);
+                }
+                String functionName = function.getName().toLowerCase();
+                if (QueryManager.getQuery(functionName) != null) {
+                        throw new IllegalArgumentException(
+                                "A custom query already exists with that name:"
+                                + functionName);
+                }
+                if (nameFunction.get(functionName) != null) {
+                        throw new IllegalArgumentException("Function " + functionName
+                                + " already exists");
+                }
 
-		nameFunction.put(functionName, functionClass);
+                nameFunction.put(functionName, functionClass);
 
-		fireFunctionAdded(functionName);
-	}
+                fireFunctionAdded(functionName);
+        }
 
-	private static void fireFunctionAdded(String functionName) {
-		for (FunctionManagerListener listener : listeners) {
-			listener.functionAdded(functionName);
-		}
-	}
+        private static void fireFunctionAdded(String functionName) {
+                for (FunctionManagerListener listener : listeners) {
+                        listener.functionAdded(functionName);
+                }
+        }
 
-	/**
-	 * Gets the function which name is equal to the parameter
-	 * 
-	 * @param name
-	 * 
-	 * @return a new function instance or null if there is no function with that
-	 *         name
-	 */
-	public static Function getFunction(String name) {
-		Class<? extends Function> func = nameFunction.get(name.toLowerCase());
+        /**
+         * Gets the function which name is equal to the parameter
+         *
+         * @param name
+         *
+         * @return a new function instance or null if there is no function with that
+         *         name
+         */
+        public static Function getFunction(String name) {
+                Class<? extends Function> func = nameFunction.get(name.toLowerCase());
 
-		if (func == null) {
-			return null;
-		} else {
-			Function ret;
-			try {
-				ret = func.newInstance();
-				if (ret == null) {
-					throw new RuntimeException("Bad clone method for " + name);
-				} else {
-					return ret;
-				}
-			} catch (InstantiationException e) {
-				throw new RuntimeException("bug!", e);
-			} catch (IllegalAccessException e) {
-				throw new RuntimeException("bug!", e);
-			}
-		}
-	}
+                if (func == null) {
+                        return null;
+                } else {
+                        Function ret;
+                        try {
+                                ret = func.newInstance();
+                                if (ret == null) {
+                                        throw new RuntimeException("Bad clone method for " + name);
+                                } else {
+                                        return ret;
+                                }
+                        } catch (InstantiationException e) {
+                                throw new RuntimeException("bug!", e);
+                        } catch (IllegalAccessException e) {
+                                throw new RuntimeException("bug!", e);
+                        }
+                }
+        }
 
-	public static String[] getFunctionNames() {
-		ArrayList<String> ret = new ArrayList<String>();
-		Iterator<String> it = nameFunction.keySet().iterator();
-		while (it.hasNext()) {
-			ret.add(it.next());
-		}
+        public static String[] getFunctionNames() {
+                ArrayList<String> ret = new ArrayList<String>();
+                Iterator<String> it = nameFunction.keySet().iterator();
+                while (it.hasNext()) {
+                        ret.add(it.next());
+                }
 
-		return (String[]) ret.toArray(new String[0]);
-	}
+                return (String[]) ret.toArray(new String[0]);
+        }
 
-	public static Class<? extends Function> remove(String functionName) {
-		if (functionName != null) {
-			Class<? extends Function> ret = nameFunction.remove(functionName
-					.toLowerCase());
-			if (ret != null) {
-				fireFunctionRemoved(functionName);
-			}
-			return ret;
-		} else {
-			return null;
-		}
-	}
+        public static Class<? extends Function> remove(String functionName) {
+                if (functionName != null) {
+                        Class<? extends Function> ret = nameFunction.remove(functionName.toLowerCase());
+                        if (ret != null) {
+                                fireFunctionRemoved(functionName);
+                        }
+                        return ret;
+                } else {
+                        return null;
+                }
+        }
 
-	private static void fireFunctionRemoved(String functionName) {
-		for (FunctionManagerListener listener : listeners) {
-			listener.functionRemoved(functionName);
-		}
-	}
+        private static void fireFunctionRemoved(String functionName) {
+                for (FunctionManagerListener listener : listeners) {
+                        listener.functionRemoved(functionName);
+                }
+        }
 }

@@ -43,6 +43,7 @@ import java.util.Iterator;
 
 import org.gdms.sql.customQuery.cluster.kmeans.ST_KMeans;
 import org.gdms.sql.customQuery.showAttributes.ShowCall;
+import org.gdms.sql.customQuery.spatial.geometry.connectivity.ST_BlockIdentity;
 import org.gdms.sql.customQuery.spatial.geometry.convert.ST_Explode;
 import org.gdms.sql.customQuery.spatial.geometry.create.ST_BigCreateGrid;
 import org.gdms.sql.customQuery.spatial.geometry.create.ST_CreateGrid;
@@ -99,6 +100,7 @@ public class QueryManager {
 		registerQuery(ST_KMeans.class);
 		registerQuery(ST_Graph.class);
 		registerQuery(ST_MainDirections.class);
+                registerQuery(ST_BlockIdentity.class);
 	}
 
 	/**
