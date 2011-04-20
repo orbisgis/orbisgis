@@ -125,7 +125,6 @@ public class ConnectionPanel extends MultiInputPanel {
 			connection.close();
 			return null;
 		} catch (SQLException e) {
-                        e.printStackTrace();
 			return ErrorMessages.CannotConnect + ": " + e.getMessage();
 		}
 	}
