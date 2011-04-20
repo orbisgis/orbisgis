@@ -36,8 +36,8 @@
  */
 package org.orbisgis.core.ui.editors.map.tools;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import java.awt.Graphics;
-import java.awt.geom.Point2D;
 import java.util.Observable;
 
 import javax.swing.AbstractButton;
@@ -46,10 +46,8 @@ import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.core.ui.editors.map.tool.CannotChangeGeometryException;
 import org.orbisgis.core.ui.editors.map.tool.DrawingException;
 import org.orbisgis.core.ui.editors.map.tool.FinishedAutomatonException;
-import org.orbisgis.core.ui.editors.map.tool.Primitive;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
 import org.orbisgis.core.ui.editors.map.tools.generated.VertexAdition;
@@ -57,113 +55,107 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Point;
 import org.gdms.data.types.GeometryConstraint;
+import org.gdms.geometryUtils.GeometryEdit;
+import org.gdms.geometryUtils.GeometryException;
 
 public class VertexAditionTool extends VertexAdition {
 
-	AbstractButton button;
+        AbstractButton button;
 
-	@Override
-	public AbstractButton getButton() {
-		return button;
-	}
+        @Override
+        public AbstractButton getButton() {
+                return button;
+        }
 
-	public void setButton(AbstractButton button) {
-		this.button = button;
-	}
+        public void setButton(AbstractButton button) {
+                this.button = button;
+        }
 
-	@Override
-	public void update(Observable o, Object arg) {
-		PlugInContext.checkTool(this);
-	}
+        @Override
+        public void update(Observable o, Object arg) {
+                PlugInContext.checkTool(this);
+        }
 
-	@Override
-	public void transitionTo_Standby(MapContext vc, ToolManager tm)
-			throws FinishedAutomatonException, TransitionException {
+        @Override
+        public void transitionTo_Standby(MapContext vc, ToolManager tm)
+                throws FinishedAutomatonException, TransitionException {
+        }
 
-	}
+        @Override
+        public void transitionTo_Done(MapContext mc, ToolManager tm)
+                throws FinishedAutomatonException, TransitionException {
+                Point p = tm.getToolsFactory().createPoint(new Coordinate(tm.getValues()[0], tm.getValues()[1]));
+                try {
+                        ILayer activeLayer = mc.getActiveLayer();
+                        SpatialDataSourceDecorator sds = activeLayer.getSpatialDataSource();
+                        int[] selection = activeLayer.getSelection();
+                        for (int i = 0; i < selection.length; i++) {
+                                int geomIndex = selection[i];
+                                Geometry g = GeometryEdit.insertVertex(sds.getGeometry(geomIndex), p, tm.getTolerance());
+                                if (g != null) {
+                                        sds.setGeometry(geomIndex, g);
+                                        break;
+                                }
+                        }
+                } catch (GeometryException e) {
+                        throw new TransitionException(e);
+                } catch (DriverException e) {
+                        throw new TransitionException(e);
+                }
 
-	@Override
-	public void transitionTo_Done(MapContext mc, ToolManager tm)
-			throws FinishedAutomatonException, TransitionException {
-		Point2D p = new Point2D.Double(tm.getValues()[0], tm.getValues()[1]);
-		try {
-			ILayer activeLayer = mc.getActiveLayer();
-			SpatialDataSourceDecorator sds = activeLayer.getSpatialDataSource();
-			int[] selection = activeLayer.getSelection();
-			for (int i = 0; i < selection.length; i++) {
-				int geomIndex = selection[i];
-				Primitive prim = new Primitive(sds.getGeometry(geomIndex),
-						geomIndex);
-				Geometry g = prim.insertVertex(p, tm.getTolerance());
-				if (g != null) {
-					sds.setGeometry(geomIndex, g);
-					break;
-				}
-			}
-		} catch (CannotChangeGeometryException e) {
-			throw new TransitionException(e);
-		} catch (DriverException e) {
-			throw new TransitionException(e);
-		}
+                transition("init"); //$NON-NLS-1$
+        }
 
-		transition("init"); //$NON-NLS-1$
-	}
+        @Override
+        public void transitionTo_Cancel(MapContext vc, ToolManager tm)
+                throws FinishedAutomatonException, TransitionException {
+        }
 
-	@Override
-	public void transitionTo_Cancel(MapContext vc, ToolManager tm)
-			throws FinishedAutomatonException, TransitionException {
+        @Override
+        public void drawIn_Standby(Graphics g, MapContext mc, ToolManager tm)
+                throws DrawingException {
+                Point p = tm.getToolsFactory().createPoint(new Coordinate(tm.getLastRealMousePosition().getX(), tm.getLastRealMousePosition().getY()));
+                try {
+                        ILayer activeLayer = mc.getActiveLayer();
+                        SpatialDataSourceDecorator sds = activeLayer.getSpatialDataSource();
+                        int[] selection = activeLayer.getSelection();
+                        for (int i = 0; i < selection.length; i++) {
+                                int geomIndex = selection[i];
+                                Geometry geom = GeometryEdit.insertVertex(sds.getGeometry(geomIndex), p, tm.getTolerance());
+                                if (geom != null) {
+                                        tm.addGeomToDraw(geom);
+                                }
+                        }
+                } catch (GeometryException e) {
+                        throw new DrawingException(e);
+                } catch (DriverException e) {
+                        throw new DrawingException(e);
+                }
+        }
 
-	}
+        @Override
+        public void drawIn_Done(Graphics g, MapContext vc, ToolManager tm)
+                throws DrawingException {
+        }
 
-	@Override
-	public void drawIn_Standby(Graphics g, MapContext mc, ToolManager tm)
-			throws DrawingException {
-		Point2D p = tm.getLastRealMousePosition();
-		try {
-			ILayer activeLayer = mc.getActiveLayer();
-			SpatialDataSourceDecorator sds = activeLayer.getSpatialDataSource();
-			int[] selection = activeLayer.getSelection();
-			for (int i = 0; i < selection.length; i++) {
-				int geomIndex = selection[i];
-				Primitive prim = new Primitive(sds.getGeometry(geomIndex),
-						geomIndex);
-				Geometry geom = prim.insertVertex(p, tm.getTolerance());
-				if (geom != null) {
-					tm.addGeomToDraw(geom);
-				}
-			}
-		} catch (CannotChangeGeometryException e) {
-			throw new DrawingException(e);
-		} catch (DriverException e) {
-			throw new DrawingException(e);
-		}
-	}
+        @Override
+        public void drawIn_Cancel(Graphics g, MapContext vc, ToolManager tm)
+                throws DrawingException {
+        }
 
-	@Override
-	public void drawIn_Done(Graphics g, MapContext vc, ToolManager tm)
-			throws DrawingException {
+        public boolean isEnabled(MapContext vc, ToolManager tm) {
+                return ToolUtilities.activeSelectionGreaterThan(vc, 0)
+                        && ToolUtilities.isActiveLayerEditable(vc) && ToolUtilities.isSelectionGreaterOrEqualsThan(vc, 1)
+                        && !ToolUtilities.geometryTypeIs(vc, GeometryConstraint.POINT);
+        }
 
-	}
+        public boolean isVisible(MapContext vc, ToolManager tm) {
+                return isEnabled(vc, tm);
+        }
 
-	@Override
-	public void drawIn_Cancel(Graphics g, MapContext vc, ToolManager tm)
-			throws DrawingException {
-
-	}
-
-	public boolean isEnabled(MapContext vc, ToolManager tm) {
-		return ToolUtilities.activeSelectionGreaterThan(vc, 0)
-				&& ToolUtilities.isActiveLayerEditable(vc) && ToolUtilities.isSelectionGreaterOrEqualsThan(vc, 1) &&
-                                !ToolUtilities.geometryTypeIs(vc, GeometryConstraint.POINT);
-	}
-
-	public boolean isVisible(MapContext vc, ToolManager tm) {
-		return isEnabled(vc, tm);
-	}
-
-	public String getName() {
-		return I18N
-				.getString("orbisgis.core.ui.editors.map.tool.vertexAdition_tooltip");
-	}
+        public String getName() {
+                return I18N.getString("orbisgis.core.ui.editors.map.tool.vertexAdition_tooltip");
+        }
 }

@@ -108,7 +108,6 @@ import com.vividsolutions.jts.geom.Polygon;
  * Adapter from the MapControl Behaviours to Automaton's interface. It's also
  * the EditionContext of the system.
  * 
- * @author Fernando Gonzlez Corts
  */
 public class ToolManager extends MouseAdapter implements MouseMotionListener,
         MouseWheelListener {
@@ -642,10 +641,14 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
                 } catch (FinishedAutomatonException e1) {
                         setTool(defaultTool);
                 }
-
                 updateCursor();
         }
 
+        /**
+         * Last mouse position in world coordinate
+         * TODO : Use directly JTS object ?
+         * @return
+         */
         public Point2D getLastRealMousePosition() {
                 if (worldAdjustedPoint != null) {
                         return worldAdjustedPoint;
@@ -771,6 +774,10 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 
         public void removeToolListener(ToolListener listener) {
                 listeners.remove(listener);
+        }
+
+        public GeometryFactory getToolsFactory() {
+               return toolsGeometryFactory;
         }
 
         private class ToolLayerListener extends LayerListenerAdapter implements

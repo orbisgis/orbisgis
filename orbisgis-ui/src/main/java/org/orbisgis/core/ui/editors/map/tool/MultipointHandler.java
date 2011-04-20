@@ -65,65 +65,61 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
+import org.gdms.geometryUtils.GeometryEdit;
+import org.gdms.geometryUtils.GeometryException;
+import org.gdms.geometryUtils.GeometryTypeUtil;
 
 public class MultipointHandler extends AbstractHandler implements Handler {
 
-	private int pointIndex;
+        private int pointIndex;
 
-	public MultipointHandler(Geometry g, int pointIndex, int vertexIndex,
-			Coordinate p, int geomIndex) {
-		super(g, vertexIndex, p, geomIndex);
-		this.pointIndex = pointIndex;
-	}
+        public MultipointHandler(Geometry g, int pointIndex, int vertexIndex,
+                Coordinate p, int geomIndex) {
+                super(g, vertexIndex, p, geomIndex);
+                this.pointIndex = pointIndex;
+        }
 
-	/**
-	 * @see org.orbisgis.plugins.core.ui.editors.map.tool.estouro.theme.Handler#moveTo(double,
-	 *      double)
-	 */
-	public Geometry moveTo(double x, double y)
-			throws CannotChangeGeometryException {
-		Coordinate p = new Coordinate(x, y);
-		MultiPoint mp = (MultiPoint) geometry.clone();
-		Point[] points = new Point[mp.getNumGeometries()];
-		for (int i = 0; i < points.length; i++) {
-			if (i == pointIndex) {
-				PointHandler handler = new PointHandler((Point) mp
-						.getGeometryN(i), Primitive.POINT_GEOMETRY_TYPE, 0, p,
-						geomIndex);
-				points[i] = (Point) handler.moveJTSTo(x, y);
-			} else {
-				points[i] = (Point) mp.getGeometryN(i);
-			}
+        /**
+         * @see org.orbisgis.plugins.core.ui.editors.map.tool.estouro.theme.Handler#moveTo(double,
+         *      double)
+         */
+        public Geometry moveTo(double x, double y)
+                throws CannotChangeGeometryException {
+                Coordinate p = new Coordinate(x, y);
+                MultiPoint mp = (MultiPoint) geometry.clone();
+                Point[] points = new Point[mp.getNumGeometries()];
+                for (int i = 0; i < points.length; i++) {
+                        if (i == pointIndex) {
+                                PointHandler handler = new PointHandler((Point) mp.getGeometryN(i), GeometryTypeUtil.POINT_GEOMETRY_TYPE, 0, p,
+                                        geomIndex);
+                                points[i] = (Point) handler.moveJTSTo(x, y);
+                        } else {
+                                points[i] = (Point) mp.getGeometryN(i);
+                        }
 
-		}
+                }
 
-		mp = gf.createMultiPoint(points);
-		if (!mp.isValid()) {
-			throw new CannotChangeGeometryException(THE_GEOMETRY_IS_NOT_VALID);
-		}
+                mp = gf.createMultiPoint(points);
+                if (!mp.isValid()) {
+                        throw new CannotChangeGeometryException(THE_GEOMETRY_IS_NOT_VALID);
+                }
 
-		return mp;
-	}
+                return mp;
+        }
 
-	/**
-	 * @see org.orbisgis.plugins.core.ui.editors.map.tool.estouro.theme.Handler#remove()
-	 */
-	public Geometry remove() throws CannotChangeGeometryException {
+        /**
+         * @see org.orbisgis.plugins.core.ui.editors.map.tool.estouro.theme.Handler#remove()
+         */
+        public Geometry remove() throws GeometryException {
 
-		MultiPoint mp = (MultiPoint) geometry;
-		ArrayList<Point> points = new ArrayList<Point>();
-		for (int i = 0; i < mp.getNumGeometries(); i++) {
-			if (i != pointIndex) {
-				points.add((Point) mp.getGeometryN(i));
-			}
-		}
+                MultiPoint mp = (MultiPoint) geometry;
 
-		mp = gf.createMultiPoint(points.toArray(new Point[0]));
-		if (!mp.isValid()) {
-			throw new CannotChangeGeometryException(THE_GEOMETRY_IS_NOT_VALID);
-		}
+                mp = GeometryEdit.removeVertex(mp, pointIndex);
+                
+                if (!mp.isValid()) {
+                        throw new GeometryException(THE_GEOMETRY_IS_NOT_VALID);
+                }
 
-		return mp;
-	}
-
+                return mp;
+        }
 }

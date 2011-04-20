@@ -63,71 +63,70 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
+import org.gdms.geometryUtils.GeometryException;
+import org.gdms.geometryUtils.GeometryTypeUtil;
 
 public class MultilineHandler extends AbstractHandler implements Handler {
 
-	private int linestringIndex;
+        private int linestringIndex;
 
-	public MultilineHandler(Geometry g, int linestringIndex, int vertexIndex,
-			Coordinate p, int geomIndex) {
-		super(g, vertexIndex, p, geomIndex);
-		this.linestringIndex = linestringIndex;
-	}
+        public MultilineHandler(Geometry g, int linestringIndex, int vertexIndex,
+                Coordinate p, int geomIndex) {
+                super(g, vertexIndex, p, geomIndex);
+                this.linestringIndex = linestringIndex;
+        }
 
-	/**
-	 * @see org.orbisgis.plugins.core.ui.editors.map.tool.estouro.theme.Handler#moveTo(double,
-	 *      double)
-	 */
-	public Geometry moveTo(double x, double y)
-			throws CannotChangeGeometryException {
-		Coordinate p = new Coordinate(x, y);
-		MultiLineString mls = (MultiLineString) geometry.clone();
-		LineString[] polygons = new LineString[mls.getNumGeometries()];
-		for (int i = 0; i < polygons.length; i++) {
-			if (i == linestringIndex) {
-				PointHandler handler = new PointHandler((LineString) mls
-						.getGeometryN(i), Primitive.LINE_GEOMETRY_TYPE,
-						vertexIndex, p, geomIndex);
-				polygons[i] = (LineString) handler.moveJTSTo(x, y);
-			} else {
-				polygons[i] = (LineString) mls.getGeometryN(i);
-			}
+        /**
+         * @see org.orbisgis.plugins.core.ui.editors.map.tool.estouro.theme.Handler#moveTo(double,
+         *      double)
+         */
+        public Geometry moveTo(double x, double y)
+                throws CannotChangeGeometryException {
+                Coordinate p = new Coordinate(x, y);
+                MultiLineString mls = (MultiLineString) geometry.clone();
+                LineString[] lineString = new LineString[mls.getNumGeometries()];
+                for (int i = 0; i < lineString.length; i++) {
+                        if (i == linestringIndex) {
+                                PointHandler handler = new PointHandler((LineString) mls.getGeometryN(i), GeometryTypeUtil.LINESTRING_GEOMETRY_TYPE,
+                                        vertexIndex, p, geomIndex);
+                                lineString[i] = (LineString) handler.moveJTSTo(x, y);
+                        } else {
+                                lineString[i] = (LineString) mls.getGeometryN(i);
+                        }
 
-		}
+                }
 
-		mls = gf.createMultiLineString(polygons);
-		if (!mls.isValid()) {
-			throw new CannotChangeGeometryException(THE_GEOMETRY_IS_NOT_VALID);
-		}
+                mls = gf.createMultiLineString(lineString);
+                if (!mls.isValid()) {
+                        throw new CannotChangeGeometryException(THE_GEOMETRY_IS_NOT_VALID);
+                }
 
-		return mls;
-	}
+                return mls;
+        }
 
-	/**
-	 * @see org.orbisgis.plugins.core.ui.editors.map.tool.estouro.theme.Handler#remove()
-	 */
-	public Geometry remove() throws CannotChangeGeometryException {
+        /**
+         * @see org.orbisgis.plugins.core.ui.editors.map.tool.estouro.theme.Handler#remove()
+         */
+        public Geometry remove() throws GeometryException {
 
-		MultiLineString mls = (MultiLineString) geometry;
-		LineString[] linestrings = new LineString[mls.getNumGeometries()];
-		int vIndex = vertexIndex;
-		for (int i = 0; i < linestrings.length; i++) {
-			if (i == linestringIndex) {
-				PointHandler handler = new PointHandler((LineString) mls
-						.getGeometryN(i), Primitive.LINE_GEOMETRY_TYPE, vIndex,
-						null, geomIndex);
-				linestrings[i] = (LineString) handler.removeVertex();
-			} else {
-				linestrings[i] = (LineString) mls.getGeometryN(i);
-			}
-		}
+                MultiLineString mls = (MultiLineString) geometry;
+                LineString[] linestrings = new LineString[mls.getNumGeometries()];
+                int vIndex = vertexIndex;
+                for (int i = 0; i < linestrings.length; i++) {
+                        if (i == linestringIndex) {
+                                PointHandler handler = new PointHandler((LineString) mls.getGeometryN(i), GeometryTypeUtil.LINESTRING_GEOMETRY_TYPE, vIndex,
+                                        null, geomIndex);
+                                linestrings[i] = (LineString) handler.removeVertex();
+                        } else {
+                                linestrings[i] = (LineString) mls.getGeometryN(i);
+                        }
+                }
 
-		mls = gf.createMultiLineString(linestrings);
-		if (!mls.isValid()) {
-			throw new CannotChangeGeometryException(THE_GEOMETRY_IS_NOT_VALID);
-		}
+                mls = gf.createMultiLineString(linestrings);
+                if (!mls.isValid()) {
+                        throw new GeometryException(THE_GEOMETRY_IS_NOT_VALID);
+                }
 
-		return mls;
-	}
-
+                return mls;
+        }
 }

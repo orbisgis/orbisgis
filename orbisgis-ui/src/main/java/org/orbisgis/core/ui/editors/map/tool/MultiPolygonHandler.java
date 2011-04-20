@@ -63,73 +63,71 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
+import org.gdms.geometryUtils.GeometryException;
 
 public class MultiPolygonHandler extends AbstractHandler implements Handler {
 
-	private int polygonIndex;
+        private int polygonIndex;
+        private int holeIndex;
 
-	private int holeIndex;
+        public MultiPolygonHandler(com.vividsolutions.jts.geom.Geometry g,
+                int polygonIndex, int holeIndex, int vertexIndex, Coordinate p,
+                int geomIndex) {
+                super(g, vertexIndex, p, geomIndex);
+                this.polygonIndex = polygonIndex;
+                this.holeIndex = holeIndex;
+        }
 
-	public MultiPolygonHandler(com.vividsolutions.jts.geom.Geometry g,
-			int polygonIndex, int holeIndex, int vertexIndex, Coordinate p,
-			int geomIndex) {
-		super(g, vertexIndex, p, geomIndex);
-		this.polygonIndex = polygonIndex;
-		this.holeIndex = holeIndex;
-	}
+        /**
+         * @see org.orbisgis.plugins.core.ui.editors.map.tool.estouro.theme.Handler#moveTo(double,
+         *      double)
+         */
+        public Geometry moveTo(double x, double y)
+                throws CannotChangeGeometryException {
+                MultiPolygon mp = (MultiPolygon) geometry.clone();
+                Polygon[] polygons = new Polygon[mp.getNumGeometries()];
+                for (int i = 0; i < polygons.length; i++) {
+                        if (i == polygonIndex) {
+                                PolygonHandler handler = new PolygonHandler((Polygon) mp.getGeometryN(i), holeIndex, vertexIndex, null,
+                                        geomIndex);
+                                polygons[i] = handler.moveJTSTo(x, y);
+                        } else {
+                                polygons[i] = (Polygon) mp.getGeometryN(i);
+                        }
+                }
 
-	/**
-	 * @see org.orbisgis.plugins.core.ui.editors.map.tool.estouro.theme.Handler#moveTo(double,
-	 *      double)
-	 */
-	public Geometry moveTo(double x, double y)
-			throws CannotChangeGeometryException {
-		MultiPolygon mp = (MultiPolygon) geometry.clone();
-		Polygon[] polygons = new Polygon[mp.getNumGeometries()];
-		for (int i = 0; i < polygons.length; i++) {
-			if (i == polygonIndex) {
-				PolygonHandler handler = new PolygonHandler((Polygon) mp
-						.getGeometryN(i), holeIndex, vertexIndex, null,
-						geomIndex);
-				polygons[i] = handler.moveJTSTo(x, y);
-			} else {
-				polygons[i] = (Polygon) mp.getGeometryN(i);
-			}
-		}
+                mp = gf.createMultiPolygon(polygons);
 
-		mp = gf.createMultiPolygon(polygons);
+                if (!mp.isValid()) {
+                        throw new CannotChangeGeometryException(THE_GEOMETRY_IS_NOT_VALID);
+                }
 
-		if (!mp.isValid()) {
-			throw new CannotChangeGeometryException(THE_GEOMETRY_IS_NOT_VALID);
-		}
+                return mp;
+        }
 
-		return mp;
-	}
+        /**
+         * @see org.orbisgis.plugins.core.ui.editors.map.tool.estouro.theme.Handler#remove()
+         */
+        public Geometry remove() throws GeometryException {
 
-	/**
-	 * @see org.orbisgis.plugins.core.ui.editors.map.tool.estouro.theme.Handler#remove()
-	 */
-	public Geometry remove() throws CannotChangeGeometryException {
+                MultiPolygon mp = (MultiPolygon) geometry;
+                Polygon[] polygons = new Polygon[mp.getNumGeometries()];
+                int vIndex = vertexIndex;
+                for (int i = 0; i < polygons.length; i++) {
+                        if (i == polygonIndex) {
+                                PolygonHandler handler = new PolygonHandler((Polygon) mp.getGeometryN(i), holeIndex, vIndex, null, geomIndex);
+                                polygons[i] = (Polygon) handler.removeVertex();
+                        } else {
+                                polygons[i] = (Polygon) mp.getGeometryN(i);
+                        }
+                }
 
-		MultiPolygon mp = (MultiPolygon) geometry;
-		Polygon[] polygons = new Polygon[mp.getNumGeometries()];
-		int vIndex = vertexIndex;
-		for (int i = 0; i < polygons.length; i++) {
-			if (i == polygonIndex) {
-				PolygonHandler handler = new PolygonHandler((Polygon) mp
-						.getGeometryN(i), holeIndex, vIndex, null, geomIndex);
-				polygons[i] = (Polygon) handler.removeVertex();
-			} else {
-				polygons[i] = (Polygon) mp.getGeometryN(i);
-			}
-		}
+                mp = gf.createMultiPolygon(polygons);
 
-		mp = gf.createMultiPolygon(polygons);
+                if (!mp.isValid()) {
+                        throw new GeometryException(THE_GEOMETRY_IS_NOT_VALID);
+                }
 
-		if (!mp.isValid()) {
-			throw new CannotChangeGeometryException(THE_GEOMETRY_IS_NOT_VALID);
-		}
-
-		return mp;
-	}
+                return mp;
+        }
 }

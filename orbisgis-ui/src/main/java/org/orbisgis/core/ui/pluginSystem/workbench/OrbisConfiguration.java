@@ -53,7 +53,9 @@ import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.editors.map.tool.Automaton;
+import org.orbisgis.core.ui.editors.map.tools.AutoCompletePolygonTool;
 import org.orbisgis.core.ui.editors.map.tools.CompassTool;
+import org.orbisgis.core.ui.editors.map.tools.CutPolygonTool;
 import org.orbisgis.core.ui.editors.map.tools.EditionSelectionTool;
 import org.orbisgis.core.ui.editors.map.tools.FencePolygonTool;
 import org.orbisgis.core.ui.editors.map.tools.InfoTool;
@@ -68,6 +70,8 @@ import org.orbisgis.core.ui.editors.map.tools.PickCoordinatesPointTool;
 import org.orbisgis.core.ui.editors.map.tools.PointTool;
 import org.orbisgis.core.ui.editors.map.tools.PolygonTool;
 import org.orbisgis.core.ui.editors.map.tools.SelectionTool;
+import org.orbisgis.core.ui.editors.map.tools.SplitLineStringTool;
+import org.orbisgis.core.ui.editors.map.tools.SplitPolygonTool;
 import org.orbisgis.core.ui.editors.map.tools.VertexAditionTool;
 import org.orbisgis.core.ui.editors.map.tools.VertexDeletionTool;
 import org.orbisgis.core.ui.editors.map.tools.ZoomInTool;
@@ -437,6 +441,12 @@ public class OrbisConfiguration implements Setup {
 		// Tool in Edition Map Toolbar
 		add(new PolygonTool(), OrbisGISIcon.POLYGON, frame
 				.getEditionMapToolBar());
+                add(new CutPolygonTool(), IconLoader.getIcon("cutpolygon.png"), frame
+				.getEditionMapToolBar());
+                add(new AutoCompletePolygonTool(), IconLoader.getIcon("autocompletepolygon.png"), frame
+				.getEditionMapToolBar());
+                add(new SplitPolygonTool(), IconLoader.getIcon("splitpolygon.png"), frame
+				.getEditionMapToolBar());
 		add(new EditionSelectionTool(), IconLoader.getIcon("moveVertex.png"), frame
 				.getEditionMapToolBar());
 		add(new PointTool(), OrbisGISIcon.POINT, frame.getEditionMapToolBar());
@@ -445,6 +455,7 @@ public class OrbisConfiguration implements Setup {
 		add(new LineTool(), OrbisGISIcon.LINE, frame.getEditionMapToolBar());
 		add(new MultilineTool(), OrbisGISIcon.MULTILINE, frame
 				.getEditionMapToolBar());
+                add(new SplitLineStringTool(), IconLoader.getIcon("splitlinestring.png"), frame.getEditionMapToolBar());
 		add(new MultipolygonTool(), OrbisGISIcon.MULTIPOLYGON, frame
 				.getEditionMapToolBar());
 		add(new VertexAditionTool(), OrbisGISIcon.VERTEX_ADD, frame

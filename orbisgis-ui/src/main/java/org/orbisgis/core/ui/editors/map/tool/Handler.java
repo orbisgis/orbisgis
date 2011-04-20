@@ -67,6 +67,7 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Geometry;
+import org.gdms.geometryUtils.GeometryException;
 
 /**
  * Implementations of this interface represents the handlers of the geometries
@@ -115,7 +116,7 @@ public interface Handler {
 	 *             If the vertex cannot be removed due to geometrical
 	 *             constraints (i.e. a line must have at least two points, ...)
 	 */
-	public Geometry remove() throws CannotChangeGeometryException;
+	public Geometry remove() throws GeometryException;
 
 	/**
 	 * Returns the geometry id this handler belongs to

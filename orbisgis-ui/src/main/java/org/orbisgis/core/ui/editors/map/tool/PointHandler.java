@@ -65,82 +65,85 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiPoint;
+import org.gdms.geometryUtils.GeometryEdit;
+import org.gdms.geometryUtils.GeometryException;
+import org.gdms.geometryUtils.GeometryTypeUtil;
 
 public class PointHandler extends AbstractHandler implements Handler {
 
-	private String geometryType;
+        private String geometryType;
 
-	public PointHandler(Geometry g, String geometryType, int vertexIndex,
-			Coordinate p, int geomIndex) {
-		super(g, vertexIndex, p, geomIndex);
-		this.geometryType = geometryType;
-	}
+        public PointHandler(Geometry g, String geometryType, int vertexIndex,
+                Coordinate p, int geomIndex) {
+                super(g, vertexIndex, p, geomIndex);
+                this.geometryType = geometryType;
+        }
 
-	public com.vividsolutions.jts.geom.Geometry moveJTSTo(final double x,
-			final double y) throws CannotChangeGeometryException {
-		Geometry ret = (Geometry) geometry.clone();
-		ret.apply(new CoordinateSequenceFilter() {
+        public com.vividsolutions.jts.geom.Geometry moveJTSTo(final double x,
+                final double y) throws CannotChangeGeometryException {
+                Geometry ret = (Geometry) geometry.clone();
+                ret.apply(new CoordinateSequenceFilter() {
 
-			private boolean done = false;
+                        private boolean done = false;
 
-			public boolean isGeometryChanged() {
-				return true;
-			}
+                        public boolean isGeometryChanged() {
+                                return true;
+                        }
 
-			public boolean isDone() {
-				return done;
-			}
+                        public boolean isDone() {
+                                return done;
+                        }
 
-			public void filter(CoordinateSequence seq, int i) {
-				if (i == vertexIndex) {
-					seq.setOrdinate(i, 0, x);
-					seq.setOrdinate(i, 1, y);
-					done = true;
-				}
-			}
+                        public void filter(CoordinateSequence seq, int i) {
+                                if (i == vertexIndex) {
+                                        seq.setOrdinate(i, 0, x);
+                                        seq.setOrdinate(i, 1, y);
+                                        done = true;
+                                }
+                        }
+                });
 
-		});
+                return ret;
+        }
 
-		return ret;
-	}
+        public Geometry moveTo(double x, double y)
+                throws CannotChangeGeometryException {
+                com.vividsolutions.jts.geom.Geometry ret = moveJTSTo(x, y);
+                if (!ret.isValid()) {
+                        throw new CannotChangeGeometryException(THE_GEOMETRY_IS_NOT_VALID);
+                }
+                return ret;
+        }
 
-	public Geometry moveTo(double x, double y)
-			throws CannotChangeGeometryException {
-		com.vividsolutions.jts.geom.Geometry ret = moveJTSTo(x, y);
-		if (!ret.isValid()) {
-			throw new CannotChangeGeometryException(THE_GEOMETRY_IS_NOT_VALID);
-		}
-		return ret;
-	}
+        public com.vividsolutions.jts.geom.Geometry removeVertex()
+                throws GeometryException {
+                if (GeometryTypeUtil.isMultiPoint(geometry)) {
+                        return GeometryEdit.removeVertex((MultiPoint) geometry, vertexIndex);
+                } else if (GeometryTypeUtil.isLineString(geometry)) {
+                        return GeometryEdit.removeVertex((LineString) geometry, vertexIndex);
+                }
 
-	public com.vividsolutions.jts.geom.Geometry removeVertex()
-			throws CannotChangeGeometryException {
-		if (geometryType == Primitive.MULTIPOINT_GEOMETRY_TYPE) {
-			return gf.createMultiPoint(removeVertex(vertexIndex, geometry, 1));
-		} else if (geometryType == Primitive.LINE_GEOMETRY_TYPE) {
-			return gf.createLineString(removeVertex(vertexIndex, geometry, 2));
-		}
+                throw new RuntimeException();
+        }
 
-		throw new RuntimeException();
-	}
-
-	/**
-	 * @see org.orbisgis.plugins.core.ui.editors.map.tool.estouro.theme.Handler#remove()
-	 */
-	public Geometry remove() throws CannotChangeGeometryException {
-		if (geometryType == Primitive.POINT_GEOMETRY_TYPE) {
-			throw new CannotChangeGeometryException(
-					I18N.getString("orbisgis.org.orbisgis.ui.tool.pointHandler.cannotRemoveVertexFromPointGeometry")); //$NON-NLS-1$
-		} else if ((geometryType == Primitive.LINE_GEOMETRY_TYPE)
-				|| (geometryType == Primitive.MULTIPOINT_GEOMETRY_TYPE)) {
-			com.vividsolutions.jts.geom.Geometry g = removeVertex();
-			if (!g.isValid()) {
-				throw new CannotChangeGeometryException(
-						THE_GEOMETRY_IS_NOT_VALID);
-			}
-			return g;
-		}
-		throw new RuntimeException();
-	}
-
+        /**
+         * @see org.orbisgis.plugins.core.ui.editors.map.tool.estouro.theme.Handler#remove()
+         */
+        public Geometry remove() throws GeometryException {
+                if (GeometryTypeUtil.isPoint(geometry)) {
+                        throw new GeometryException(
+                                I18N.getString("orbisgis.org.orbisgis.ui.tool.pointHandler.cannotRemoveVertexFromPointGeometry")); //$NON-NLS-1$
+                } else if ((GeometryTypeUtil.isLineString(geometry))
+                        || (GeometryTypeUtil.isMultiPoint(geometry))) {
+                        com.vividsolutions.jts.geom.Geometry g = removeVertex();
+                        if (!g.isValid()) {
+                                throw new GeometryException(
+                                        THE_GEOMETRY_IS_NOT_VALID);
+                        }
+                        return g;
+                }
+                throw new RuntimeException();
+        }
 }

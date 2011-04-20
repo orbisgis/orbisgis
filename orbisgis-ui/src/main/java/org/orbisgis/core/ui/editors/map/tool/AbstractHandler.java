@@ -65,7 +65,6 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -116,36 +115,7 @@ public abstract class AbstractHandler implements Handler {
 		return new Point2D.Double(point.x, point.y);
 	}
 
-	/**
-	 * removes the vertex from the JTS geometry
-	 * 
-	 * @param g
-	 * 
-	 * @return
-	 * 
-	 * @throws CannotChangeGeometryException
-	 */
-	protected Coordinate[] removeVertex(int vertexIndex,
-			com.vividsolutions.jts.geom.Geometry g, int minNumVertex)
-			throws CannotChangeGeometryException {
-		Coordinate[] coords = g.getCoordinates();
-		if (coords.length <= minNumVertex) {
-			throw new CannotChangeGeometryException(
-					I18N.getString("orbisgis.org.orbisgis.ui.tool.AbstractHandler.invalidGeometryToFewVertex")); //$NON-NLS-1$
-		}
-		Coordinate[] newCoords = new Coordinate[coords.length - 1];
-		for (int i = 0; i < vertexIndex; i++) {
-			newCoords[i] = new Coordinate(coords[i].x, coords[i].y, coords[i].z);
-		}
-		if (vertexIndex != coords.length - 1) {
-			for (int i = vertexIndex + 1; i < coords.length; i++) {
-				newCoords[i - 1] = new Coordinate(coords[i].x, coords[i].y, coords[i].z);
-			}
-		}
-
-		return newCoords;
-	}
-
+	
 	public int getGeometryIndex() {
 		return geomIndex;
 	}
