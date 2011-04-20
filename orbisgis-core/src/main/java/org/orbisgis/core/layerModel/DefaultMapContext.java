@@ -467,6 +467,8 @@ public class DefaultMapContext implements MapContext {
 		DataManager dm = Services.getService(DataManager.class);
 		dm.getSourceManager().removeSourceListener(sourceListener);
 
+                listeners.clear();
+
 		this.open = false;
 	}
 
