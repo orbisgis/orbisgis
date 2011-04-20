@@ -84,7 +84,5 @@ public class OrbisGISConfiguration {
 		MemoryViewPlugIn memoryViewPlugIn = new MemoryViewPlugIn();
 		memoryViewPlugIn.initialize(pluginContext);
 
-                SQLFunctionsPlugIn sqlFunctionsPlugIn = new SQLFunctionsPlugIn();
-                sqlFunctionsPlugIn.initialize(pluginContext);
 	}
 }
