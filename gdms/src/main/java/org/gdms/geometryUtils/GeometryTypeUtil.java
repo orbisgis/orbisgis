@@ -151,4 +151,19 @@ public class GeometryTypeUtil {
         public static boolean isGeometryCollection(Geometry geometry) {
                 return geometry.getGeometryType().equals(GEOMETRYCOLLECTION_GEOMETRY_TYPE);
         }
+
+        /**
+         * Return true is a geometry contains at least a z value
+         * @param geometry
+         * @return
+         */
+        public static boolean is2_5Geometry(Geometry geometry) {
+                Coordinate[] coords = geometry.getCoordinates();
+                for (Coordinate coordinate : coords) {
+                        if (!Double.isNaN(coordinate.z)) {
+                                return true;
+                        }
+                }
+                return false;
+        }
 }

@@ -39,6 +39,7 @@ package org.gdms.data.types;
 import org.gdms.data.values.Value;
 
 import com.vividsolutions.jts.geom.Geometry;
+import org.gdms.geometryUtils.GeometryTypeUtil;
 
 /**
  * Constraint indicating the dimension of the geometry: 2D or 3D
@@ -83,7 +84,7 @@ public class DimensionConstraint extends AbstractIntConstraint {
 	}
 
 	private int getDimension(Geometry geom) {
-		return Double.isNaN(geom.getCoordinate().z) ? 2 : 3;
+		return GeometryTypeUtil.is2_5Geometry(geom) ? 3 : 2;
 	}
 
 	public int getDimension() {

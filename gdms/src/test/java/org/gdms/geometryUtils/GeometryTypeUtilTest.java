@@ -39,6 +39,7 @@
 package org.gdms.geometryUtils;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 import junit.framework.TestCase;
 
@@ -70,6 +71,21 @@ public class GeometryTypeUtilTest extends TestCase {
                geom = wKTReader.read("MULTIPOLYGON ((( 131 166, 131 266, 210 266, 210 166, 131 166 )), (( 267 144, 267 239, 362 239, 362 144, 267 144 )))");
                assertTrue(GeometryTypeUtil.isMultiPolygon(geom));
 
+        }
+
+        /**
+         * Test if a geometry has a z value or not
+         * @throws Exception
+         */
+        public void testGeometryHasZ() throws Exception{
+               Geometry geom = wKTReader.read("POINT(0 0)");
+               assertTrue(!GeometryTypeUtil.is2_5Geometry(geom));
+               geom = wKTReader.read("MULTIPOINT((0 0) , (1 1 10))");
+               assertTrue(GeometryTypeUtil.is2_5Geometry(geom));
+               geom = wKTReader.read("LINESTRING(0 0 12, 1 1 12)");
+               assertTrue(GeometryTypeUtil.is2_5Geometry(geom));
+               geom = wKTReader.read("MULTILINESTRING((0 0, 1 1),(0 0, 1 1 1))");
+               assertTrue(GeometryTypeUtil.is2_5Geometry(geom));
         }
 
         
