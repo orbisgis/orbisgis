@@ -46,6 +46,7 @@ import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.operation.distance.GeometryLocation;
 import java.util.ArrayList;
+import java.util.Collection;
 import junit.framework.TestCase;
 
 /**
@@ -193,6 +194,16 @@ public class GeometryEditTest extends TestCase {
                         }
 
                 }
+
+                //Line intersects 2,5 polygon
+                //Test if z values already exist
+                polygon = (Polygon) wKTReader.read("POLYGON (( 0 0 1, 10 0 5, 10 10 8 , 0 10 12, 0 0 12))");
+                line = (LineString) wKTReader.read("LINESTRING (5 0, 5 10)");
+                pols = GeometryEdit.splitPolygon(polygon, line);
+                for (Polygon pol : pols) {
+                        assertTrue(GeometryTypeUtil.is2_5Geometry(pol));
+                }
+
         }
 
         /**
@@ -203,8 +214,28 @@ public class GeometryEditTest extends TestCase {
                 Geometry geom = (Polygon) wKTReader.read("POLYGON (( 0 0 ,10 0, 10 10, 0 10, 0 0 ))");
                 Point point = (Point) wKTReader.read("POINT (20 10)");
                 //Test move a polygon
-                Geometry result = GeometryEdit.moveGeometry(geom, new Coordinate(0, 0), point.getCoordinate());              
+                Geometry result = GeometryEdit.moveGeometry(geom, new Coordinate(0, 0), point.getCoordinate());
                 assertTrue(result.getCoordinates()[0].equals2D(point.getCoordinate()));
+
+        }
+
+        /**
+         * Test cut a polygon
+         * @throws Exception
+         */
+        public void testCutPolygon() throws Exception {
+                Polygon polygon = (Polygon) wKTReader.read("POLYGON (( 0 0 ,10 0, 10 10, 0 10, 0 0 ))");
+                Polygon cutter = (Polygon) wKTReader.read("POLYGON (( 2 2  ,7 2, 7 7, 2 7, 2 2))");
+                //Test cut a polygon inside
+                ArrayList<Polygon> result = GeometryEdit.cutPolygon(polygon, cutter);
+                assertTrue(result.get(0).getNumInteriorRing() == 1);
+                assertTrue(result.get(0).getInteriorRingN(0).getEnvelopeInternal().equals(cutter.getEnvelopeInternal()));
+
+                //Test cut a polygon outside
+                cutter = (Polygon) wKTReader.read("POLYGON (( 2 -1.8153735632183903, 7.177873563218391 -1.8153735632183903, 7.177873563218391 7, 2 7, 2 -1.8153735632183903 ))");
+                result = GeometryEdit.cutPolygon(polygon, cutter);
+                assertTrue(result.get(0).equals(wKTReader.read("POLYGON (( 2 0, 0 0, 0 10, 10 10, 10 0, 7.177873563218391 0, 7.177873563218391 7, 2 7, 2 0 ))")));
+
 
         }
 }

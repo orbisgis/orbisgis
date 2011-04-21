@@ -56,6 +56,7 @@ import com.vividsolutions.jts.operation.polygonize.Polygonizer;
 import com.vividsolutions.jts.operation.union.UnaryUnionOp;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 import org.orbisgis.utils.I18N;
 
@@ -310,6 +311,34 @@ public class GeometryEdit {
                         return new LineString[]{lineString1, lineString2};
                 }
                 return null;
+        }
+
+        /**
+         * Split a multilinestring with a point
+         * @param multiLineString
+         * @param pointToSplit
+         * @return
+         */
+        public static MultiLineString splitMultiLineString(MultiLineString multiLineString, Point pointToSplit, double tolerance) {
+                ArrayList<LineString> linestrings = new ArrayList<LineString>();
+                boolean notChanged = true;
+                int nb = multiLineString.getNumGeometries();
+                for (int i = 0; i < nb; i++) {
+                        LineString subGeom = (LineString) multiLineString.getGeometryN(i);
+                        LineString[] result = splitLineString(subGeom, pointToSplit, tolerance);
+                        if (result != null) {
+                                Collections.addAll(linestrings, result);
+                                notChanged = false;
+                        } else {
+                                linestrings.add(subGeom);
+                        }
+                }
+                if (!notChanged) {
+                        return geometryFactory.createMultiLineString(linestrings.toArray(new LineString[linestrings.size()]));
+                }
+                return null;
+
+
         }
 
         /**
@@ -579,13 +608,12 @@ public class GeometryEdit {
         }
 
         /**
-         * Split a polygon with a lineString
+         * 
          * @param polygon
          * @param lineString
          * @return
          */
-        public static ArrayList<Polygon> splitPolygon(Polygon polygon, LineString lineString) {
-
+        public static Collection<Polygon> splitPolygonizer(Polygon polygon, LineString lineString) {
                 Set<LineString> segments = GeometryConvert.toSegmentsLineString(polygon.getExteriorRing());
                 segments.add(lineString);
                 int holes = polygon.getNumInteriorRing();
@@ -604,6 +632,21 @@ public class GeometryEdit {
                 Collection<Polygon> polygons = polygonizer.getPolygons();
 
                 if (polygons.size() > 1) {
+                        return polygons;
+                }
+
+                return null;
+        }
+
+        /**
+         * Split a polygon with a lineString
+         * @param polygon
+         * @param lineString
+         * @return
+         */
+        public static ArrayList<Polygon> splitPolygon(Polygon polygon, LineString lineString) {
+                Collection<Polygon> polygons = splitPolygonizer(polygon, lineString);
+                if (polygons != null && polygons.size() > 1) {
                         ArrayList<Polygon> pols = new ArrayList<Polygon>();
                         for (Polygon pol : polygons) {
                                 if (polygon.contains(pol.getInteriorPoint())) {
@@ -613,6 +656,33 @@ public class GeometryEdit {
                         return pols;
                 }
                 return null;
+        }
+
+        /**
+         * Split a multiPolygon with a lineString
+         * @param multiPolygon
+         * @param lineString
+         * @return
+         */
+        public static MultiPolygon splitMultiPolygon(MultiPolygon multiPolygon, LineString lineString) {
+                ArrayList<Polygon> polygons = new ArrayList<Polygon>();
+                boolean notChanged = true;
+                int nb = multiPolygon.getNumGeometries();
+                for (int i = 0; i < nb; i++) {
+                        Polygon subGeom = (Polygon) multiPolygon.getGeometryN(i);
+                        ArrayList<Polygon> result = splitPolygon(subGeom, lineString);
+                        if (result != null) {
+                                polygons.addAll(result);
+                                notChanged = false;
+                        } else {
+                                polygons.add(subGeom);
+                        }
+                }
+                if (!notChanged) {
+                        return geometryFactory.createMultiPolygon(polygons.toArray(new Polygon[polygons.size()]));
+                }
+                return null;
+
         }
 
         /**
@@ -697,5 +767,50 @@ public class GeometryEdit {
                 return moveGeometry(geometry, new double[]{xDisplacement, yDisplacement});
         }
 
-        
+        /**
+         * Cut a polygon with a polygon
+         * @param polygon
+         * @param hole
+         * @return
+         */
+        public static ArrayList<Polygon> cutPolygon(Polygon polygon, Polygon extrudePolygon) {
+                Geometry geom = polygon.difference(extrudePolygon);
+                ArrayList<Polygon> polygons = new ArrayList<Polygon>();
+                for (int i = 0; i < geom.getNumGeometries(); i++) {
+                        Polygon subGeom = (Polygon) geom.getGeometryN(i);
+                        polygons.add(subGeom);
+
+                }
+                return polygons;
+        }
+
+        /**
+         * Cut a multipolygon with a polygon
+         * @param multiPolygon
+         * @param extrudePolygon
+         * @return
+         */
+        public static MultiPolygon cutMultiPolygon(MultiPolygon multiPolygon, Polygon extrudePolygon) {
+                ArrayList<Polygon> polygons = new ArrayList<Polygon>();
+                boolean notChanged = true;
+                for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
+                        Polygon subGeom = (Polygon) multiPolygon.getGeometryN(i);
+                        if (extrudePolygon.intersects(subGeom)) {
+                                ArrayList<Polygon> result = cutPolygon(subGeom, extrudePolygon);
+                                if (result != null) {
+                                        polygons.addAll(result);
+                                        notChanged = false;
+                                } else {
+                                        polygons.add(subGeom);
+                                }
+                        } else {
+                                polygons.add(subGeom);
+                        }
+                }
+                if (!notChanged) {
+                        return geometryFactory.createMultiPolygon(polygons.toArray(new Polygon[polygons.size()]));
+                }
+                return null;
+
+        }
 }
