@@ -121,9 +121,8 @@ public class AutoCompletePolygonTool extends AbstractPolygonTool {
                         }
 
 
-
                 } catch (DriverException e) {
-                        throw new TransitionException("Cannot insert polygon", e);
+                        throw new TransitionException(I18N.getString("orbisgis.core.ui.editors.map.tool.polygon.cannotAutocomplete"), e);
                 }
         }
 

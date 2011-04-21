@@ -39,6 +39,7 @@ package org.orbisgis.core.ui.editors.map.tools;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 import java.util.ArrayList;
 import java.util.Observable;
@@ -96,17 +97,16 @@ public class SplitPolygonTool extends AbstractLineTool {
                 SpatialDataSourceDecorator sds = vc.getActiveLayer().getSpatialDataSource();
                 try {
                         Geometry geom = sds.getGeometry(handler.getGeometryIndex());
-                        Value[] row = sds.getRow(handler.getGeometryIndex());
                         if (ToolUtilities.geometryTypeIs(vc, GeometryConstraint.MULTI_POLYGON)) {
-                                int numGeom = geom.getNumGeometries();
-                                for (int i = 0; i < numGeom; i++) {
-                                        
+                                MultiPolygon result = GeometryEdit.splitMultiPolygon((MultiPolygon) geom, ls);
+                                if (result != null) {
+                                        sds.setGeometry(handler.getGeometryIndex(), result);
                                 }
-
                         } else if (ToolUtilities.geometryTypeIs(vc, GeometryConstraint.POLYGON)) {
                                 ArrayList<Polygon> polygons = GeometryEdit.splitPolygon((Polygon) geom, ls);
                                 if (polygons != null) {
                                         sds.deleteRow(handler.getGeometryIndex());
+                                        Value[] row = sds.getRow(handler.getGeometryIndex());
                                         for (Polygon polygon : polygons) {
                                                 row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(polygon);
                                                 sds.insertFilledRow(row);
@@ -116,7 +116,7 @@ public class SplitPolygonTool extends AbstractLineTool {
                         }
 
                 } catch (DriverException e) {
-                        throw new TransitionException("Cannot split polygon", e);
+                        throw new TransitionException(I18N.getString("orbisgis.core.ui.editors.map.tool.polygon.cannotSplitPolygon"), e);
                 }
         }
 }

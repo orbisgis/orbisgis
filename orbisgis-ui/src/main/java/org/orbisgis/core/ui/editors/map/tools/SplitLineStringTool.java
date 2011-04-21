@@ -39,6 +39,7 @@ package org.orbisgis.core.ui.editors.map.tools;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
 import java.util.Observable;
 
 import javax.swing.AbstractButton;
@@ -97,33 +98,9 @@ public class SplitLineStringTool extends AbstractPointTool {
                         uiTolerance = tm.getUITolerance();
                         Value[] row = sds.getRow(handler.getGeometryIndex());
                         if (ToolUtilities.geometryTypeIs(mc, GeometryConstraint.MULTI_LINESTRING)) {
-                                int numGeom = geom.getNumGeometries();
-                                ArrayList<LineString> lines = new ArrayList<LineString>();
-                                LineString[] lineSplited = null;
-                                for (int i = 0; i < numGeom; i++) {
-                                        LineString lineString = (LineString) geom.getGeometryN(i);
-                                        lineSplited = GeometryEdit.splitLineString(lineString, point, uiTolerance);
-                                        if (lineSplited != null) {
-                                        } else {
-                                                lines.add(lineString);
-                                        }
-                                }
-                                if (lineSplited != null) {
-                                        if (!lines.isEmpty()) {
-                                                sds.setGeometry(handler.getGeometryIndex(), geom.getFactory().createMultiLineString(lines.toArray(new LineString[lines.size()])));
-                                                row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(geom.getFactory().createMultiLineString(new LineString[]{lineSplited[0]}));
-                                                sds.insertFilledRow(row);
-                                                row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(geom.getFactory().createMultiLineString(new LineString[]{lineSplited[1]}));
-                                                sds.insertFilledRow(row);
-                                                mc.getActiveLayer().setSelection(new int[]{handler.getGeometryIndex(), (int) (sds.getRowCount() - 1), (int) (sds.getRowCount() - 2)});
-
-                                        } else {
-                                                sds.setGeometry(handler.getGeometryIndex(), geom.getFactory().createMultiLineString(new LineString[]{lineSplited[0]}));
-                                                row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(geom.getFactory().createMultiLineString(new LineString[]{lineSplited[1]}));
-                                                sds.insertFilledRow(row);
-                                                mc.getActiveLayer().setSelection(new int[]{handler.getGeometryIndex(), (int) (sds.getRowCount() - 1)});
-
-                                        }
+                               MultiLineString result =  GeometryEdit.splitMultiLineString((MultiLineString) geom,point, uiTolerance);
+                                if (result != null) {
+                                    sds.setGeometry(handler.getGeometryIndex(), result);
                                 }
                         } else if (ToolUtilities.geometryTypeIs(mc, GeometryConstraint.LINESTRING)) {
                                 LineString[] lines = GeometryEdit.splitLineString((LineString) geom, point, uiTolerance);
@@ -136,12 +113,12 @@ public class SplitLineStringTool extends AbstractPointTool {
                         }
 
                 } catch (DriverException e) {
-                        throw new TransitionException("Cannot split line", e);
+                        throw new TransitionException(I18N.getString("orbisgis.core.ui.editors.map.tool.line.cannotSplitLine"), e);
                 }
 
         }
 
         public String getName() {
-                return I18N.getString("orbisgis.core.ui.editors.map.tool.line.splitPoint");
+                return I18N.getString("orbisgis.core.ui.editors.map.tool.line.splitLine");
         }
 }

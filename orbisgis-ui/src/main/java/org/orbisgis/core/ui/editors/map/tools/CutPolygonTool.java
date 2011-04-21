@@ -37,16 +37,20 @@
  */
 package org.orbisgis.core.ui.editors.map.tools;
 
-import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Observable;
 
 import javax.swing.AbstractButton;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.geometryUtils.GeometryEdit;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editors.map.tool.Handler;
 import org.orbisgis.core.ui.editors.map.tool.MultiPolygonHandler;
@@ -83,51 +87,29 @@ public class CutPolygonTool extends AbstractPolygonTool {
                         for (Handler handler : handlers) {
                                 if (handler instanceof MultiPolygonHandler) {
                                         MultiPolygonHandler mp = (MultiPolygonHandler) handler;
-                                        updateGeometry(mp, pol, sds);
-
+                                        MultiPolygon mpolygon = (MultiPolygon) sds.getGeometry(mp.getGeometryIndex());
+                                        MultiPolygon result = GeometryEdit.cutMultiPolygon(mpolygon, pol);
+                                        if (result != null) {
+                                                sds.setGeometry(mp.getGeometryIndex(), result);
+                                        }
                                 } else if (handler instanceof PolygonHandler) {
                                         PolygonHandler ph = (PolygonHandler) handler;
-                                        updateGeometry(ph, pol, sds);
+                                        Polygon polygon = (Polygon) sds.getGeometry(ph.getGeometryIndex());
+                                        Collection<Polygon> polygons = GeometryEdit.cutPolygon(polygon, pol);
+                                        if (polygons != null) {
+                                                sds.deleteRow(handler.getGeometryIndex());
+                                                Value[] row = sds.getRow(handler.getGeometryIndex());
+                                                for (Polygon result : polygons) {
+                                                        row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(result);
+                                                        sds.insertFilledRow(row);
+                                                }
+                                        }
                                 }
-
                         }
 
                 } catch (DriverException e) {
-                        throw new TransitionException("Cannot insert polygon", e);
+                        throw new TransitionException(I18N.getString("orbisgis.core.ui.editors.map.tool.polygon.cannotCut"), e);
                 }
-        }
-
-        private void updateGeometry(PolygonHandler mp, Polygon pol, SpatialDataSourceDecorator sds) throws DriverException {
-                Polygon polygon = (Polygon) sds.getGeometry(mp.getGeometryIndex());
-                if (polygon.intersects(pol)) {
-                        Geometry newGeomIntersect = polygon.intersection(pol);
-                        Geometry newGeomDiff = polygon.difference(newGeomIntersect);
-                        if (newGeomDiff.isValid()) {
-                                polygon = (Polygon) newGeomDiff;
-                        }
-                }
-                sds.setGeometry(mp.getGeometryIndex(), polygon);
-        }
-
-        private void updateGeometry(MultiPolygonHandler mp, Polygon pol, SpatialDataSourceDecorator sds) throws DriverException {
-                Geometry geom = sds.getGeometry(mp.getGeometryIndex());
-
-                ArrayList<Polygon> geometries = new ArrayList<Polygon>();
-                for (int i = 0; i < geom.getNumGeometries(); i++) {
-                        Polygon subGeom = (Polygon) geom.getGeometryN(i);
-                        if (subGeom.intersects(pol)) {
-                                Geometry newGeomIntersect = subGeom.intersection(pol);
-                                Geometry newGeomDiff = subGeom.difference(newGeomIntersect);
-                                if (newGeomDiff.isValid()) {
-                                        geometries.add((Polygon) newGeomDiff);
-                                } else {
-                                        geometries.add(subGeom);
-                                }
-                        } else {
-                                geometries.add(subGeom);
-                        }
-                }
-                sds.setGeometry(mp.getGeometryIndex(), geom.getFactory().createMultiPolygon(geometries.toArray(new Polygon[geometries.size()])));
         }
 
         public boolean isEnabled(MapContext vc, ToolManager tm) {
