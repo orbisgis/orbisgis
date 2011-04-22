@@ -37,7 +37,6 @@
  */
 package org.orbisgis.core.renderer;
 
-import com.vividsolutions.jts.awt.PolygonShape;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.geom.Rectangle2D;
@@ -401,7 +400,14 @@ public class Renderer {
      *            Progress monitor to report the status of the drawing
      */
     public void draw(MapTransform mt, Graphics2D g2, int width, int height,
-            ILayer layer, IProgressMonitor pm) {
+            ILayer layer, IProgressMonitor progressMonitor) {
+
+        IProgressMonitor pm;
+        if (progressMonitor == null){
+            pm = new NullProgressMonitor();
+        } else {
+            pm = progressMonitor;
+        }
 
         g2.setRenderingHints(mt.getRenderingHints());
 
