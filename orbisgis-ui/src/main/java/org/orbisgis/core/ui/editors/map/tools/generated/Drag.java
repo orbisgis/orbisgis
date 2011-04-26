@@ -52,9 +52,9 @@ import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
 import org.orbisgis.utils.I18N;
 
-public abstract class Pan implements Automaton {
+public abstract class Drag implements Automaton {
 
-	private static Logger logger = Logger.getLogger(Pan.class.getName());
+	private static Logger logger = Logger.getLogger(Drag.class.getName());
 
 	private String status = "Standby";
 
@@ -62,50 +62,17 @@ public abstract class Pan implements Automaton {
 
 	private ToolManager tm;
 
+        @Override
 	public String[] getTransitionLabels() {
-		ArrayList<String> ret = new ArrayList<String>();
-
-		if ("Standby".equals(status)) {
-
-		}
-
-		if ("OnePointLeft".equals(status)) {
-
-		}
-
-		if ("RectangleDone".equals(status)) {
-
-		}
-
-		if ("Cancel".equals(status)) {
-
-		}
-
-		return ret.toArray(new String[0]);
+		return new String[0];
 	}
 
+        @Override
 	public String[] getTransitionCodes() {
-		ArrayList<String> ret = new ArrayList<String>();
-
-		if ("Standby".equals(status)) {
-
-		}
-
-		if ("OnePointLeft".equals(status)) {
-
-		}
-
-		if ("RectangleDone".equals(status)) {
-
-		}
-
-		if ("Cancel".equals(status)) {
-
-		}
-
-		return ret.toArray(new String[0]);
+		return new String[0];
 	}
 
+        @Override
 	public void init(MapContext ec, ToolManager tm) throws TransitionException,
 			FinishedAutomatonException {
 		logger.info("status: " + status);
@@ -118,6 +85,7 @@ public abstract class Pan implements Automaton {
 		}
 	}
 
+        @Override
 	public void transition(String code) throws NoSuchTransitionException,
 			TransitionException, FinishedAutomatonException {
 		logger.info("transition code: " + code);
@@ -127,13 +95,13 @@ public abstract class Pan implements Automaton {
 			if ("press".equals(code)) {
 				String preStatus = status;
 				try {
-					status = "OnePointLeft";
+					status = "MouseDown";
 					logger.info("status: " + status);
 					double[] v = tm.getValues();
 					for (int i = 0; i < v.length; i++) {
 						logger.info("value: " + v[i]);
 					}
-					transitionTo_OnePointLeft(ec, tm);
+					transitionTo_MouseDown(ec, tm);
 					if (isFinished(status)) {
 						throw new FinishedAutomatonException();
 					}
@@ -146,18 +114,18 @@ public abstract class Pan implements Automaton {
 
 		}
 
-		if ("OnePointLeft".equals(status)) {
+		if ("MouseDown".equals(status)) {
 
 			if ("release".equals(code)) {
 				String preStatus = status;
 				try {
-					status = "RectangleDone";
+					status = "MouseReleased";
 					logger.info("status: " + status);
 					double[] v = tm.getValues();
 					for (int i = 0; i < v.length; i++) {
 						logger.info("value: " + v[i]);
 					}
-					transitionTo_RectangleDone(ec, tm);
+					transitionTo_MouseReleased(ec, tm);
 					if (isFinished(status)) {
 						throw new FinishedAutomatonException();
 					}
@@ -170,9 +138,9 @@ public abstract class Pan implements Automaton {
 
 		}
 
-		if ("RectangleDone".equals(status)) {
+		if ("MouseReleased".equals(status)) {
 
-			if ("init".equals(code)) {
+			if ("finished".equals(code)) {
 				String preStatus = status;
 				try {
 					status = "Standby";
@@ -194,19 +162,6 @@ public abstract class Pan implements Automaton {
 
 		}
 
-		if ("Cancel".equals(status)) {
-
-		}
-
-		if ("esc".equals(code)) {
-			status = "Cancel";
-			transitionTo_Cancel(ec, tm);
-			if (isFinished(status)) {
-				throw new FinishedAutomatonException();
-			}
-			return;
-		}
-
 		throw new NoSuchTransitionException(code);
 	}
 
@@ -218,43 +173,34 @@ public abstract class Pan implements Automaton {
 
 		}
 
-		if ("OnePointLeft".equals(status)) {
+		if ("MouseDown".equals(status)) {
 
 			return false;
 
 		}
 
-		if ("RectangleDone".equals(status)) {
+		if ("MouseReleased".equals(status)) {
 
 			return false;
-
-		}
-
-		if ("Cancel".equals(status)) {
-
-			return true;
 
 		}
 
 		throw new RuntimeException("Invalid status: " + status);
 	}
 
+        @Override
 	public void draw(Graphics g) throws DrawingException {
 
 		if ("Standby".equals(status)) {
 			drawIn_Standby(g, ec, tm);
 		}
 
-		if ("OnePointLeft".equals(status)) {
-			drawIn_OnePointLeft(g, ec, tm);
+		if ("MouseDown".equals(status)) {
+			drawIn_MouseDown(g, ec, tm);
 		}
 
-		if ("RectangleDone".equals(status)) {
-			drawIn_RectangleDone(g, ec, tm);
-		}
-
-		if ("Cancel".equals(status)) {
-			drawIn_Cancel(g, ec, tm);
+		if ("MouseReleased".equals(status)) {
+			drawIn_MouseReleased(g, ec, tm);
 		}
 
 	}
@@ -265,24 +211,18 @@ public abstract class Pan implements Automaton {
 	public abstract void drawIn_Standby(Graphics g, MapContext vc,
 			ToolManager tm) throws DrawingException;
 
-	public abstract void transitionTo_OnePointLeft(MapContext vc, ToolManager tm)
+	public abstract void transitionTo_MouseDown(MapContext vc, ToolManager tm)
 			throws FinishedAutomatonException, TransitionException;
 
-	public abstract void drawIn_OnePointLeft(Graphics g, MapContext vc,
+	public abstract void drawIn_MouseDown(Graphics g, MapContext vc,
 			ToolManager tm) throws DrawingException;
 
-	public abstract void transitionTo_RectangleDone(MapContext vc,
+	public abstract void transitionTo_MouseReleased(MapContext vc,
 			ToolManager tm) throws FinishedAutomatonException,
 			TransitionException;
 
-	public abstract void drawIn_RectangleDone(Graphics g, MapContext vc,
+	public abstract void drawIn_MouseReleased(Graphics g, MapContext vc,
 			ToolManager tm) throws DrawingException;
-
-	public abstract void transitionTo_Cancel(MapContext vc, ToolManager tm)
-			throws FinishedAutomatonException, TransitionException;
-
-	public abstract void drawIn_Cancel(Graphics g, MapContext vc, ToolManager tm)
-			throws DrawingException;
 
 	protected void setStatus(String status) throws NoSuchTransitionException {
 		this.status = status;
@@ -292,25 +232,17 @@ public abstract class Pan implements Automaton {
 		return status;
 	}
 
-	public String getName() {
-		return "Pan";
-	}
-
-	public String getMessage() {
+        public String getMessage() {
 
 		if ("Standby".equals(status)) {
 			return I18N.getString("orbisgis.core.ui.editors.map.tool.pan_standby");
 		}
 
-		if ("OnePointLeft".equals(status)) {
-			return I18N.getString("orbisgis.core.ui.editors.map.tool.pan_onepointleft");
+		if ("MouseDown".equals(status)) {
+			return I18N.getString("orbisgis.core.ui.editors.map.tool.pan_MouseDown");
 		}
 
-		if ("RectangleDone".equals(status)) {
-			return "";
-		}
-
-		if ("Cancel".equals(status)) {
+		if ("MouseReleased".equals(status)) {
 			return "";
 		}
 
@@ -318,15 +250,17 @@ public abstract class Pan implements Automaton {
 	}
 
 	public String getConsoleCommand() {
-		return "pan";
+		return "drag";
 	}
 
+        @Override
 	public String getTooltip() {
 		return I18N.getString("orbisgis.core.ui.editors.map.tool.pan_tooltip");
 	}
 
 	private ImageIcon mouseCursor;
 
+        @Override
 	public ImageIcon getImageIcon() {
 		if (mouseCursor != null) {
 			return mouseCursor;
@@ -335,36 +269,20 @@ public abstract class Pan implements Automaton {
 		}
 	}
 
+        @Override
 	public void setMouseCursor(ImageIcon mouseCursor) {
 		this.mouseCursor = mouseCursor;
 	}
 
+        @Override
 	public void toolFinished(MapContext vc, ToolManager tm)
 			throws NoSuchTransitionException, TransitionException,
 			FinishedAutomatonException {
-
-		if ("Standby".equals(status)) {
-
-		}
-
-		if ("OnePointLeft".equals(status)) {
-
-		}
-
-		if ("RectangleDone".equals(status)) {
-
-		}
-
-		if ("Cancel".equals(status)) {
-
-		}
-
 	}
 
+        @Override
 	public java.awt.Point getHotSpotOffset() {
-
 		return new java.awt.Point(8, 8);
-
 	}
 
 }

@@ -62,7 +62,6 @@ package org.orbisgis.core.ui.editors.map.tools;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.geom.Point2D;
-import java.util.Observable;
 
 import javax.swing.AbstractButton;
 
@@ -71,8 +70,6 @@ import org.orbisgis.core.ui.editors.map.tool.FinishedAutomatonException;
 import org.orbisgis.core.ui.editors.map.tool.NoSuchTransitionException;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
-import org.orbisgis.core.ui.editors.map.tools.generated.Pan;
-import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -81,104 +78,68 @@ import com.vividsolutions.jts.geom.Envelope;
  * Tool to move the map extent
  * 
  */
-public class PanTool extends Pan {
+public class PanTool extends AbstractDragTool {
 
 	AbstractButton button;
 
+        @Override
 	public AbstractButton getButton() {
 		return button;
 	}
 
+        @Override
 	public void setButton(AbstractButton button) {
 		this.button = button;
 	}
 
-	public void update(Observable o, Object arg) {
-		PlugInContext.checkTool(this);
-	}
-
-	private double[] firstPoint;
-
-	/**
-	 * @see org.orbisgis.plugins.core.ui.editors.map.tools.generated.estouro.tools.generated.Pan#transitionTo_Standby()
-	 */
-	public void transitionTo_Standby(MapContext vc, ToolManager tm)
-			throws TransitionException {
-	}
-
-	/**
-	 * @see org.orbisgis.plugins.core.ui.editors.map.tools.generated.estouro.tools.generated.Pan#transitionTo_OnePointLeft()
-	 */
-	public void transitionTo_OnePointLeft(MapContext vc, ToolManager tm)
-			throws TransitionException {
-		firstPoint = tm.getValues();
-	}
-
-	/**
-	 * @throws FinishedAutomatonException
-	 * @throws NoSuchTransitionException
-	 * @see org.orbisgis.plugins.core.ui.editors.map.tools.generated.estouro.tools.generated.Pan#transitionTo_RectangleDone()
-	 */
-	public void transitionTo_RectangleDone(MapContext vc, ToolManager tm)
+	@Override
+	public void transitionTo_MouseReleased(MapContext vc, ToolManager tm)
 			throws TransitionException, FinishedAutomatonException {
+                // get the current point
 		double[] v = tm.getValues();
+
+                // get the start point (of the dragging move)
+                double[] firstPoint = getFirstPoint();
+
+                // diff
 		double dx = firstPoint[0] - v[0];
 		double dy = firstPoint[1] - v[1];
 
+                // move the envelope
 		Envelope extent = tm.getMapTransform().getExtent();
 		tm.getMapTransform().setExtent(
 				new Envelope(extent.getMinX() + dx, extent.getMaxX() + dx,
 						extent.getMinY() + dy, extent.getMaxY() + dy));
 
-		transition("init"); //$NON-NLS-1$
+                // we're done, this will get us back to StandBy
+		transition("finished"); //$NON-NLS-1$
 	}
 
-	/**
-	 * @see org.orbisgis.plugins.core.ui.editors.map.tools.generated.estouro.tools.generated.Pan#transitionTo_Cancel()
-	 */
-	public void transitionTo_Cancel(MapContext vc, ToolManager tm)
-			throws TransitionException {
-	}
+	@Override
+	public void drawIn_MouseDown(Graphics g, MapContext vc, ToolManager tm) {
+                // this is what is displayed when dragging
 
-	/**
-	 * @see org.orbisgis.plugins.core.ui.editors.map.tools.generated.estouro.tools.generated.Pan#drawIn_Standby(java.awt.Graphics)
-	 */
-	public void drawIn_Standby(Graphics g, MapContext vc, ToolManager tm) {
-	}
+                // current point position
+                double[] firstPoint = getFirstPoint();
 
-	/**
-	 * @see org.orbisgis.plugins.core.ui.editors.map.tools.generated.estouro.tools.generated.Pan#drawIn_OnePointLeft(java.awt.Graphics)
-	 */
-	public void drawIn_OnePointLeft(Graphics g, MapContext vc, ToolManager tm) {
+                // get the corresponding point in the map
 		Point p = tm.getMapTransform().fromMapPoint(
 				new Point2D.Double(firstPoint[0], firstPoint[1]));
 		int height = tm.getMapTransform().getHeight();
 		int width = tm.getMapTransform().getWidth();
+
+                // draw the new map...
 		g.clearRect(0, 0, width, height);
 		g.drawImage(tm.getMapTransform().getImage(), tm.getLastMouseX() - p.x,
 				tm.getLastMouseY() - p.y, null);
 	}
 
-	/**
-	 * @see org.orbisgis.plugins.core.ui.editors.map.tools.generated.estouro.tools.generated.Pan#drawIn_RectangleDone(java.awt.Graphics)
-	 */
-	public void drawIn_RectangleDone(Graphics g, MapContext vc, ToolManager tm) {
-	}
-
-	/**
-	 * @see org.orbisgis.plugins.core.ui.editors.map.tools.generated.estouro.tools.generated.Pan#drawIn_Cancel(java.awt.Graphics)
-	 */
-	public void drawIn_Cancel(Graphics g, MapContext vc, ToolManager tm) {
-	}
-
+        @Override
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
 		return ToolUtilities.layerCountGreaterThan(vc, 0);
 	}
 
-	public boolean isVisible(MapContext vc, ToolManager tm) {
-		return true;
-	}
-
+        @Override
 	public String getName() {
 		return I18N.getString("orbisgis.core.ui.editors.map.tool.pan_tooltip");
 	}
