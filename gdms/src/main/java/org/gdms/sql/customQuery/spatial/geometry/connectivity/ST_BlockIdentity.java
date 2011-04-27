@@ -1,13 +1,48 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ *
+ *
+ * Team leader : Erwan BOCHER, scientific researcher,
+ *
+ * User support leader : Gwendall Petit, geomatic engineer.
+ *
+ * Previous computer developer : Pierre-Yves FADET, computer engineer, Thomas LEDUC,
+ * scientific researcher, Fernando GONZALEZ CORTES, computer engineer.
+ *
+ * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ *
+ * Copyright (C) 2010 Erwan BOCHER, Alexis GUEGANNO, Maxence LAURENT, Antoine GOURLAY
+ *
+ * This file is part of OrbisGIS.
+ *
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ *
+ * or contact directly:
+ * info@orbisgis.org
  */
 package org.gdms.sql.customQuery.spatial.geometry.connectivity;
 
 import com.vividsolutions.jts.geom.Geometry;
-import java.util.ArrayDeque;
+import com.vividsolutions.jts.operation.distance.DistanceOp;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.gdms.data.DataSource;
@@ -33,92 +68,159 @@ import org.gdms.sql.function.Arguments;
 import org.orbisgis.progress.IProgressMonitor;
 
 /**
+ * Function to aggregate geometries by blocks based on a spatial predicate.
  *
- * @author ebocher
+ * if a field name is given after the geometry field (e.g. SELECT ST_BlockIdentity(the_geom, 'myId') FROM ... )
+ * then this field is returned in the output for the selected geometries. Unique IDs are best suited for this
+ * use.
+ *
+ * The algorithm uses an index to get the nearest geometries of a fixed geometry and then uses {@link DistanceOp}
+ * to check if the (smallest) distance between the two is 0. If it is, the two are grouped and the same
+ * algorithm is computed on the newly added geometries, until the group does not expand anymore.
+ *
+ * Note: BRUT-FORCE & NON-ROBUST algorithm.
+ *
+ * Using {@link DistanceOp} is MUCH faster than <code>geom1.touches(geom2)</code>, because it does not need
+ * to compute the DE-9IM intersection matrix. However it is still a brut-force algorithm on the lines and points
+ * of both geometry, that uses a non-robust CG algorithm in {@link  CGAlgorithms}. This could be improved
+ * by writing a custom JTS TouchesOp dedicated to that effect.
+ *
+ * @author Antoine Gourlay
  */
 public class ST_BlockIdentity implements CustomQuery {
 
-        private HashSet<Integer> idsDone;
-        private ArrayDeque<Integer> geomToBeInspected;
+        private HashSet<Integer> idsToProcess;
+        private SpatialDataSourceDecorator sds;
+        private int idField = -1;
 
         @Override
-        public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables, Value[] values, IProgressMonitor pm) throws ExecutionException {
+        public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables, Value[] values, IProgressMonitor pm) throws
+                ExecutionException {
 
                 DataSource ds = tables[0];
+
                 //We need to read our source.
-                SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
+                sds = new SpatialDataSourceDecorator(ds);
 
                 try {
-
                         sds.open();
+
+                        String idFieldName;
                         String geomField;
-                        if (values.length == 1) {
+                        if (values.length == 2) {
                                 geomField = values[0].getAsString();
+                                idFieldName = values[1].getAsString();
                         } else {
-
-                                geomField = sds.getSpatialFieldName();
-
+                                geomField = values[0].getAsString();
+                                idFieldName = geomField;
                         }
 
+                        idField = sds.getFieldIndexByName(idFieldName);
+
+                        pm.startTask("Building indexes");
+                        // build indexes
                         if (!dsf.getIndexManager().isIndexed(sds.getName(), geomField)) {
                                 dsf.getIndexManager().buildIndex(sds.getName(), geomField, pm);
                         }
+                        pm.endTask();
 
 
-                        //Populate a hashset with all row ide
-                        idsDone = new HashSet<Integer>();
+                        //Populate a hashset with all row ids
+                        idsToProcess = new HashSet<Integer>();
+                        for (int i = 0; i < sds.getRowCount(); i++) {
+                                idsToProcess.add(i);
+                        }
 
+                        // results
                         DefaultMetadata met = new DefaultMetadata();
-                        met.addField("row_id", TypeFactory.createType(Type.LONG));
+                        met.addField(idFieldName, sds.getFieldType(idField));
                         met.addField("block_id", TypeFactory.createType(Type.LONG));
 
                         DiskBufferDriver diskBufferDriver = new DiskBufferDriver(dsf, met);
 
 
-                        diskBufferDriver.addValues(new Value[]{
-                                ValueFactory.createValue(0),
-                                ValueFactory.createValue(0)});
-                        HashSet<Integer> curr = new HashSet<Integer>();
-                        curr.add(0);
-                        executeConnectivityInspector(0, 0, curr, sds, diskBufferDriver);
+                        int blockId = 0;
+                        while (!idsToProcess.isEmpty()) {
 
+                                // starts the block
+                                int start = idsToProcess.iterator().next();
+                                HashSet<Integer> block = new HashSet<Integer>();
+                                block.add(start);
+
+                                // aggregates the block
+                                aggregateNeighbours(start, block);
+
+                                // writes the block
+                                Iterator<Integer> it = block.iterator();
+                                while (it.hasNext()) {
+                                        diskBufferDriver.addValues(new Value[]{
+                                                        sds.getFieldValue(it.next(), idField),
+                                                        ValueFactory.createValue(blockId)});
+                                }
+
+                                // mark all those geometries as processed
+                                idsToProcess.removeAll(block);
+
+                                blockId++;
+                        }
+                        pm.endTask();
 
                         diskBufferDriver.writingFinished();
+                        pm.endTask();
                         sds.close();
 
                         return diskBufferDriver;
 
 
                 } catch (DriverException ex) {
-                        Logger.getLogger(ST_BlockIdentity.class.getName()).log(Level.SEVERE, null, ex);
+                        throw new ExecutionException(ex);
                 } catch (NoSuchTableException ex) {
-                        Logger.getLogger(ST_BlockIdentity.class.getName()).log(Level.SEVERE, null, ex);
+                        throw new ExecutionException(ex);
                 } catch (IndexException ex) {
-                        Logger.getLogger(ST_BlockIdentity.class.getName()).log(Level.SEVERE, null, ex);
+                        throw new ExecutionException(ex);
                 }
-
-                return null;
         }
 
-        private void executeConnectivityInspector(int blockId, int rowId, HashSet<Integer> currentBlock, SpatialDataSourceDecorator sds, DiskBufferDriver diskBufferDriver) throws DriverException {
+        private void aggregateNeighbours(int id, Set<Integer> agg) throws DriverException {
+                int size = agg.size();
 
-                Geometry geom = sds.getGeometry(rowId);
-                DefaultSpatialIndexQuery query = new DefaultSpatialIndexQuery(geom.getEnvelopeInternal(), sds.getSpatialFieldName());
-                Iterator<Integer> it = sds.queryIndex(query);
-                while (it.hasNext()) {
-                        Integer index = it.next();
-                        if (rowId == index || currentBlock.contains(index)) {
-                                continue;
-                        }
-                        Geometry intersectGeom = sds.getGeometry(index);
-                        if (intersectGeom.touches(geom)) {
-                                currentBlock.add(index);
-                                diskBufferDriver.addValues(new Value[]{
-                                ValueFactory.createValue(index),
-                                ValueFactory.createValue(blockId)});
-                                executeConnectivityInspector(blockId, index, currentBlock, sds, diskBufferDriver);
+                Set<Integer> re = relativesOf(id, agg);
+                agg.addAll(re);
+                int nSize = agg.size();
+
+
+                if (nSize == size) {
+                        // blockSize has not changed, there is no more blocks to add
+                        return;
+                } else {
+                        Iterator<Integer> it = re.iterator();
+                        while (it.hasNext()) {
+                                aggregateNeighbours(it.next(), agg);
                         }
                 }
+        }
+
+        private Set<Integer> relativesOf(int id, Set<Integer> excluded) throws DriverException {
+                Geometry geom = sds.getGeometry(id);
+
+                // query index
+                DefaultSpatialIndexQuery query = new DefaultSpatialIndexQuery(geom.getEnvelopeInternal(), sds.
+                        getSpatialFieldName());
+                Iterator<Integer> s = sds.queryIndex(query);
+
+                HashSet<Integer> h = new HashSet<Integer>();
+                while (s.hasNext()) {
+                        int i = s.next();
+
+                        // i != id to prevent adding itself
+                        // !excluded.contains(i) to filter already added geometries
+                        //      (this is O(1) while the next test is far from it...)
+                        // test if both geoms are at 0 distance, i.e. touches
+                        if (i != id && !excluded.contains(i) && DistanceOp.isWithinDistance(geom, sds.getGeometry(i), 0)) {
+                                h.add(i);
+                        }
+                }
+                return h;
         }
 
         @Override
@@ -149,7 +251,7 @@ public class ST_BlockIdentity implements CustomQuery {
 
         @Override
         public Arguments[] getFunctionArguments() {
-                return new Arguments[]{new Arguments(Argument.GEOMETRY),
-                                new Arguments()};
+                return new Arguments[]{new Arguments(Argument.GEOMETRY, Argument.STRING),
+                                new Arguments(Argument.GEOMETRY)};
         }
 }
