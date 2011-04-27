@@ -38,13 +38,12 @@
  */
 package org.gdms.sql.customQuery.spatial.geometry.connectivity;
 
+import com.vividsolutions.jts.algorithm.CGAlgorithms;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.operation.distance.DistanceOp;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
@@ -70,9 +69,10 @@ import org.orbisgis.progress.IProgressMonitor;
 /**
  * Function to aggregate geometries by blocks based on a spatial predicate.
  *
- * if a field name is given after the geometry field (e.g. SELECT ST_BlockIdentity(the_geom, 'myId') FROM ... )
- * then this field is returned in the output for the selected geometries. Unique IDs are best suited for this
- * use.
+ * if a comma-separated list of field names is given after the geometry field
+ * (e.g. SELECT ST_BlockIdentity(the_geom, 'the_geom, myId, myDesc') FROM ... )
+ * then these fields are returned in the output for the selected geometries. Unique IDs are best suited for this
+ * use, but anything can be used. By default if nothing is specified, the geometry field is returned.
  *
  * The algorithm uses an index to get the nearest geometries of a fixed geometry and then uses {@link DistanceOp}
  * to check if the (smallest) distance between the two is 0. If it is, the two are grouped and the same
@@ -85,13 +85,13 @@ import org.orbisgis.progress.IProgressMonitor;
  * of both geometry, that uses a non-robust CG algorithm in {@link  CGAlgorithms}. This could be improved
  * by writing a custom JTS TouchesOp dedicated to that effect.
  *
- * @author Antoine Gourlay
+ * @author Antoine Gourlay, Erwan Bocher
  */
 public class ST_BlockIdentity implements CustomQuery {
 
         private HashSet<Integer> idsToProcess;
         private SpatialDataSourceDecorator sds;
-        private int idField = -1;
+        private int[] fieldIds;
 
         @Override
         public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables, Value[] values, IProgressMonitor pm) throws
@@ -105,17 +105,20 @@ public class ST_BlockIdentity implements CustomQuery {
                 try {
                         sds.open();
 
-                        String idFieldName;
+                        String[] fieldNames;
                         String geomField;
                         if (values.length == 2) {
                                 geomField = values[0].getAsString();
-                                idFieldName = values[1].getAsString();
+                                fieldNames = values[1].getAsString().split(", *");
                         } else {
                                 geomField = values[0].getAsString();
-                                idFieldName = geomField;
+                                fieldNames = new String[] { geomField };
                         }
 
-                        idField = sds.getFieldIndexByName(idFieldName);
+                        fieldIds = new int[fieldNames.length];
+                        for (int i = 0; i < fieldNames.length; i++) {
+                                fieldIds[i] = sds.getFieldIndexByName(fieldNames[i]);
+                        }
 
                         pm.startTask("Building indexes");
                         // build indexes
@@ -133,7 +136,9 @@ public class ST_BlockIdentity implements CustomQuery {
 
                         // results
                         DefaultMetadata met = new DefaultMetadata();
-                        met.addField(idFieldName, sds.getFieldType(idField));
+                        for (int i = 0; i < fieldIds.length; i++) {
+                                met.addField(fieldNames[i], sds.getFieldType(fieldIds[i]));
+                        }
                         met.addField("block_id", TypeFactory.createType(Type.LONG));
 
                         DiskBufferDriver diskBufferDriver = new DiskBufferDriver(dsf, met);
@@ -153,9 +158,13 @@ public class ST_BlockIdentity implements CustomQuery {
                                 // writes the block
                                 Iterator<Integer> it = block.iterator();
                                 while (it.hasNext()) {
-                                        diskBufferDriver.addValues(new Value[]{
-                                                        sds.getFieldValue(it.next(), idField),
-                                                        ValueFactory.createValue(blockId)});
+                                        final Integer next = it.next();
+                                        Value[] res = new Value[fieldIds.length + 1];
+                                        for (int i = 0; i < fieldIds.length; i++) {
+                                                res[i] = sds.getFieldValue(next, fieldIds[i]);
+                                        }
+                                        res[fieldIds.length] = ValueFactory.createValue(blockId);
+                                        diskBufferDriver.addValues(res);
                                 }
 
                                 // mark all those geometries as processed
@@ -241,7 +250,8 @@ public class ST_BlockIdentity implements CustomQuery {
 
         @Override
         public Metadata getMetadata(Metadata[] tables) throws DriverException {
-                return null;
+                // hack to be able to inject into the map without a CREATE TABLE
+                return new DefaultMetadata(new Type[] { TypeFactory.createType(Type.GEOMETRY) }, new String[] { "the_geom" });
         }
 
         @Override
