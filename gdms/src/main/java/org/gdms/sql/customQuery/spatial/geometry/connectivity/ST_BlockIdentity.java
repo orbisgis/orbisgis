@@ -72,7 +72,7 @@ import org.orbisgis.progress.IProgressMonitor;
  * if a comma-separated list of field names is given after the geometry field
  * (e.g. SELECT ST_BlockIdentity(the_geom, 'the_geom, myId, myDesc') FROM ... )
  * then these fields are returned in the output for the selected geometries. Unique IDs are best suited for this
- * use, but anything can be used. By default if nothing is specified, the geometry field is returned.
+ * use, but anything can be used. By default if nothing is specified, all field of the input table is kept.
  *
  * The algorithm uses an index to get the nearest geometries of a fixed geometry and then uses {@link DistanceOp}
  * to check if the (smallest) distance between the two is 0. If it is, the two are grouped and the same
@@ -112,7 +112,7 @@ public class ST_BlockIdentity implements CustomQuery {
                                 fieldNames = values[1].getAsString().split(", *");
                         } else {
                                 geomField = values[0].getAsString();
-                                fieldNames = new String[] { geomField };
+                                fieldNames = sds.getFieldNames();
                         }
 
                         fieldIds = new int[fieldNames.length];
@@ -239,13 +239,13 @@ public class ST_BlockIdentity implements CustomQuery {
 
         @Override
         public String getDescription() {
-                return "Return all geometry blocks. A block is a set of connected geometry";
+                return "Return all geometry blocks. A block is a set of connected geometry.";
 
         }
 
         @Override
         public String getSqlOrder() {
-                return "SELECT ST_BlockIdentity() from myTable";
+                return "SELECT ST_BlockIdentity(the_geom [, 'the_geom, titi, toto' ]) from myTable";
         }
 
         @Override
