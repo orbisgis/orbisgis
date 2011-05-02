@@ -11,7 +11,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
 /**
- *
+ * Classe that render the cell from the range table
  * @author sennj
  */
 class ColorCellRenderer extends DefaultTableCellRenderer {

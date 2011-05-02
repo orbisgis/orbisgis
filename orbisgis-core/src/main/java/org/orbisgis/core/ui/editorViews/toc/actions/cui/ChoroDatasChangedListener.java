@@ -8,32 +8,30 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.ChoroplethDatas.DataChan
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.ChoroplethDatas.DataChangedListener;
 
 /**
- *
+ * Listener on data change
  * @author sennj
  */
 class ChoroDatasChangedListener implements DataChangedListener {
 
-    ChoroplethWizardPanel choroplethWizard;
-    ChoroplethDatas ChoroDatas;
-    ChoroplethInputPanel inputPanel;
-    ChoroplethRangeTabPanel rangeTabPanel;
-    ChoroplethChartPanel chartPanel;
+    private ChoroplethDatas choroDatas;
+    private ChoroplethRangeTabPanel rangeTabPanel;
+    private ChoroplethChartPanel chartPanel;
 
-    public ChoroDatasChangedListener(ChoroplethWizardPanel choroplethWizard,ChoroplethDatas ChoroDatas, ChoroplethInputPanel inputPanel ,ChoroplethRangeTabPanel rangeTabPanel, ChoroplethChartPanel chartPanel) {
-        this.choroplethWizard = choroplethWizard;
-        this.ChoroDatas = ChoroDatas;
-        this.inputPanel = inputPanel;
+    /**
+     * ChoroDatasChangedListener Constructor
+     * @param choroDatas the datas to draw
+     * @param rangeTabPanel the range table Panel
+     * @param chartPanel the chart Panel
+     */
+    public ChoroDatasChangedListener(ChoroplethDatas choroDatas, ChoroplethRangeTabPanel rangeTabPanel, ChoroplethChartPanel chartPanel) {
+        this.choroDatas = choroDatas;
         this.rangeTabPanel = rangeTabPanel;
         this.chartPanel = chartPanel;
     }
 
     @Override
     public void dataChangedOccurred(DataChanged evt) {
-        System.out.println("CHANGE APPEND " + evt.dataType.name());
-
-        chartPanel.refresh(ChoroDatas);
-        rangeTabPanel.refresh(ChoroDatas);
-
-
+        chartPanel.refresh(choroDatas);
+        rangeTabPanel.refresh(choroDatas);
     }
 }

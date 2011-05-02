@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 
 import java.awt.Color;
@@ -11,40 +7,57 @@ import javax.swing.table.AbstractTableModel;
 import org.orbisgis.core.renderer.classification.Range;
 
 /**
- *
+ * The table range TableModel
  * @author sennj
  */
 class TableModel extends AbstractTableModel {
 
-    ChoroplethDatas ChoroDatas;
     private final List<RangeTab> rangesTab = new ArrayList<RangeTab>();
-    private final String[] entetes = {"Color", "ValueMin", "ValueMax", "Alias"};
+    private final String[] entetes = {"Color", "ValueMin", "ValueMax","NbElem", "Alias"};
 
-    public TableModel(ChoroplethDatas ChoroDatas) {
+    public TableModel(ChoroplethDatas choroDatas) {
         super();
 
-        this.ChoroDatas = ChoroDatas;
-
-        Range[] ranges = ChoroDatas.getRange();
-        Color[] colors = ChoroDatas.getClassesColors();
+        Range[] ranges = choroDatas.getRange();
+        Color[] colors = choroDatas.getClassesColors();
+        String[] aliases = choroDatas.getAliases();
 
         for (int i = 1; i <= ranges.length; i++) {
-                rangesTab.add(new RangeTab(colors[i - 1], ranges[i - 1].getMinRange(), ranges[i - 1].getMaxRange(), String.valueOf(i)));
+                rangesTab.add(new RangeTab(colors[i - 1], ranges[i - 1].getMinRange(), ranges[i - 1].getMaxRange(),ranges[i - 1].getNumberOfItems(), aliases[i-1]));
         }
     }
 
+    /**
+     * getRowCount
+     * @return the row count
+     */
     public int getRowCount() {
         return rangesTab.size();
     }
 
+    /**
+     * getColumnCount
+     * @return the column count
+     */
     public int getColumnCount() {
         return entetes.length;
     }
 
+    /**
+     * getColumnName
+     * @param columnIndex the index of the selected column
+     * @return the name of the selected column
+     */
     public String getColumnName(int columnIndex) {
         return entetes[columnIndex];
     }
 
+    /**
+     * getValueAt
+     * @param rowIndex the index of the selected row
+     * @param columnIndex the index of the selected column
+     * @return the object in the selected row/column
+     */
     public Object getValueAt(int rowIndex, int columnIndex) {
         switch (columnIndex) {
             case 0:
@@ -54,6 +67,8 @@ class TableModel extends AbstractTableModel {
             case 2:
                 return rangesTab.get(rowIndex).getValueMax();
             case 3:
+                return rangesTab.get(rowIndex).getNbElem();
+            case 4:
                 return rangesTab.get(rowIndex).getAlias();
             default:
                 return null; //Ne devrait jamais arriver
@@ -70,6 +85,8 @@ class TableModel extends AbstractTableModel {
             case 2:
                 return Double.class;
             case 3:
+                return Integer.class;
+            case 4:
                 return String.class;
             default:
                 return Object.class;
@@ -97,6 +114,9 @@ class TableModel extends AbstractTableModel {
                     ami.setValueMax((Double) aValue);
                     break;
                 case 3:
+                    ami.setNbElem((Integer) aValue);
+                    break;
+                case 4:
                     ami.setAlias((String) aValue);
                     break;
             }
@@ -113,16 +133,20 @@ class TableModel extends AbstractTableModel {
         fireTableRowsDeleted(rowIndex, rowIndex);
     }
 
-    public void refreshData(ChoroplethDatas ChoroDatas) {
-        Range[] ranges = ChoroDatas.getRange();
-        Color[] colors = ChoroDatas.getClassesColors();
+     /**
+     * refreshData
+     * Refresh the table range elements
+     * @param choroDatas
+     */
+    public void refreshData(ChoroplethDatas choroDatas) {
+        Range[] ranges = choroDatas.getRange();
+        Color[] colors = choroDatas.getClassesColors();
+        String[] aliases = choroDatas.getAliases();
 
         rangesTab.removeAll(rangesTab);
-        
+
         for (int i = 1; i <= ranges.length; i++) {
-             rangesTab.add( new RangeTab(colors[i - 1], ranges[i - 1].getMinRange(), ranges[i - 1].getMaxRange(), String.valueOf(i)));
+             rangesTab.add( new RangeTab(colors[i - 1], ranges[i - 1].getMinRange(), ranges[i - 1].getMaxRange(),ranges[i - 1].getNumberOfItems(), aliases[i-1]));
         }
-
-
     }
 }

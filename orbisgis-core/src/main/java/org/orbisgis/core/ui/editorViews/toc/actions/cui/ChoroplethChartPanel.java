@@ -8,6 +8,7 @@ import java.awt.Color;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JPanel;
@@ -29,46 +30,61 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.ChoroplethDatas.StatisticMethod;
 
 /**
- *
+ * Panel with the chart
  * @author sennj
  */
 class ChoroplethChartPanel extends JPanel {
 
-    private ChoroplethDatas ChoroDatas;
+    private ChoroplethDatas choroDatas;
     private JFreeChart chart;
     private ChartPanel chPanel;
     private ChartListener chartLis;
 
-
-    ChoroplethChartPanel(ChoroplethDatas ChoroDatas) {
+    /**
+     * ChoroplethChartPanel Constructor
+     * @param choroDatas the datas to draw
+     * @param title the chart Panel title
+     * @param labelX the chart Panel label on X axis
+     * @param labelY the chart Panel label on Y axis
+     */
+    ChoroplethChartPanel(ChoroplethDatas choroDatas,String title,String labelX,String labelY) {
         super();
-        this.ChoroDatas=ChoroDatas;
-        this.add(initDraw());
+        this.choroDatas = choroDatas;
+        this.add(initDraw(title,labelX,labelY));
     }
 
-    public ChartPanel initDraw() {
-        ChoroDatas.setStatisticMethod(StatisticMethod.QUANTILES, true);
+    /**
+     * initDraw
+     * Initialise the draw process of the chart Panel
+     * @param title the chart Panel title
+     * @param labelX the chart Panel label on X axis
+     * @param labelY the chart Panel label on Y axis
+     * @return a ChartPanel
+     */
+    public ChartPanel initDraw(String title,String labelX,String labelY) {
+        choroDatas.setStatisticMethod(StatisticMethod.QUANTILES, true);
         try {
-            ChoroDatas.resetRanges();
+            choroDatas.resetRanges();
         } catch (DriverException ex) {
             Logger.getLogger(ChoroplethChartPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
-        Range[] ranges = ChoroDatas.getRange();
+        Range[] ranges = choroDatas.getRange();
         double[] values = null;
         try {
-            values = ChoroDatas.getSortedData();
+            values = choroDatas.getSortedData();
         } catch (ParameterException ex) {
             Logger.getLogger(ChoroplethChartPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
-        Color[] colors = ChoroDatas.getClassesColors();
+        Color[] colors = choroDatas.getClassesColors();
+        String[] aliases = choroDatas.getAliases();
 
-        DefaultCategoryDataset data = refreshData(ranges, values);
+        DefaultCategoryDataset data = refreshData(aliases,ranges, values);
 
         // create a chart...
-        chart = ChartFactory.createBarChart3D("Sample Bar Chart", "X", "Y", data, 
+        chart = ChartFactory.createBarChart3D(title, labelX, labelY, data,
                 PlotOrientation.VERTICAL, true, true, false);
 
-        drawAxis(chart, values, ranges, colors);
+        drawAxis(chart, values, ranges, colors,aliases);
 
         TextTitle annot = new TextTitle("X = 0 Y = 0");
         annot.setPosition(RectangleEdge.TOP);
@@ -76,7 +92,7 @@ class ChoroplethChartPanel extends JPanel {
 
         chPanel = new ChartPanel(chart);
 
-        chartLis = new ChartListener(this,chPanel, annot,ChoroDatas);
+        chartLis = new ChartListener(this, chPanel, annot, choroDatas);
 
         chPanel.setPopupMenu(null);
         chPanel.setDomainZoomable(false);
@@ -88,8 +104,15 @@ class ChoroplethChartPanel extends JPanel {
         return chPanel;
     }
 
-
-    public static DefaultCategoryDataset refreshData(Range[] ranges, double[] values) {
+    /**
+     * refreshData
+     * Refresh the data from the chart Panel
+     * @param aliases the aliases of the category
+     * @param ranges the ranges of the category
+     * @param values all the value
+     * @return a dataset that will be display on the chart Panel
+     */
+    public DefaultCategoryDataset refreshData(String[] aliases, Range[] ranges, double[] values) {
         DefaultCategoryDataset data = new DefaultCategoryDataset();
         double value;
         Range range;
@@ -98,14 +121,24 @@ class ChoroplethChartPanel extends JPanel {
             for (int j = 1; j <= ranges.length; j++) {
                 range = ranges[j - 1];
                 if (value > range.getMinRange() && value <= range.getMaxRange()) {
-                    data.setValue(value, new Integer(j), new Integer(i-1));
+                    data.setValue(value, aliases[j-1], new Integer(i - 1));
                 }
             }
         }
         return data;
+
+
     }
 
-    public static Point.Double convertCoords(Point mouse, ChartPanel chPanel, DefaultCategoryDataset data) {
+    /**
+     * convertCoords
+     * Convert the coords from the sceen value to the chart Panel value
+     * @param mouse the screen coords of the mouse pointer
+     * @param chPanel the JFreeChart Panel
+     * @param data a dataset that will be display on the chart Panel
+     * @return the converted mouse position
+     */
+    public Point.Double convertCoords(Point mouse, ChartPanel chPanel, DefaultCategoryDataset data) {
 
         Point2D p = chPanel.translateScreenToJava2D(mouse);
         Rectangle2D plotArea = chPanel.getScreenDataArea();
@@ -124,7 +157,31 @@ class ChoroplethChartPanel extends JPanel {
         return new Point.Double(chartX, chartY);
     }
 
-    public static void drawAxis(JFreeChart chPanel, double[] values, Range[] ranges, Color[] colors) {
+    /**
+     * drawAxis
+     * the default drawAxis methode to draw the vertical axis of the categary on the chart Panel
+     * @param chPanel the JFreeChart Panel
+     * @param values all the value
+     * @param ranges the ranges of the category
+     * @param colors the colors of the category
+     * @param aliases the aliases of the category
+     */
+    public void drawAxis(JFreeChart chPanel, double[] values, Range[] ranges, Color[] colors,String[] aliases)
+    {
+        drawAxis(chPanel, values, ranges, colors,aliases,-1);
+    }
+
+    /**
+     * drawAxis
+     * the extended drawAxis methode to draw the vertical axis of the categary on the chart Panel
+     * @param chPanel the JFreeChart Panel
+     * @param values all the value
+     * @param ranges the ranges of the category
+     * @param colors the colors of the category
+     * @param aliases the aliases of the category
+     * @param select a selected category
+     */
+    public void drawAxis(JFreeChart chPanel, double[] values, Range[] ranges, Color[] colors,String[] aliases,int select) {
         CategoryPlot plot = (CategoryPlot) chPanel.getPlot();
         int nbRange = 0;
         int ind = 0;
@@ -132,8 +189,11 @@ class ChoroplethChartPanel extends JPanel {
             for (int i = ind; i < values.length; i++) {
                 if (values[i] > ranges[nbRange].getMaxRange()) {
                     final CategoryMarker start = new CategoryMarker(i);
-                    start.setPaint(colors[nbRange+1]);
-                    start.setLabel(Integer.toString(nbRange+1));
+                    if(select-1 == nbRange)
+                        start.setPaint(Color.RED);
+                    else
+                        start.setPaint(Color.BLACK);
+                    start.setLabel(aliases[nbRange]);
                     start.setLabelAnchor(RectangleAnchor.TOP_LEFT);
                     start.setLabelTextAnchor(TextAnchor.TOP_RIGHT);
                     start.setDrawAsLine(true);
@@ -151,8 +211,16 @@ class ChoroplethChartPanel extends JPanel {
         }
     }
 
-    public static void drawData(ChartPanel chPanel, Range[] ranges, double[] values) {
-        DefaultCategoryDataset data = refreshData(ranges, values);
+    /**
+     * drawData
+     * Draw the data on the chart Panel
+     * @param chPanel the JFreeChart Panel
+     * @param aliases the aliases of the category
+     * @param ranges the ranges of the category
+     * @param values all the value
+     */
+    public void drawData(ChartPanel chPanel,String[] aliases, Range[] ranges, double[] values) {
+        DefaultCategoryDataset data = refreshData(aliases,ranges, values);
 
         CategoryPlot plot = (CategoryPlot) chPanel.getChart().getPlot();
         plot.setDataset(data);
@@ -160,22 +228,31 @@ class ChoroplethChartPanel extends JPanel {
         chPanel.repaint();
     }
 
-    public ChartPanel getChartPanel()
-    {
+    /**
+     * getChartPanel
+     * @return return the chart Panel
+     */
+    public ChartPanel getChartPanel() {
         return chPanel;
     }
 
-    public void refresh(ChoroplethDatas ChoroDatas) {
-         try {
+    /**
+     * refresh
+     * Refresh all the chart Panel
+     * @param choroDatas the datas to draw
+     */
+    public void refresh(ChoroplethDatas choroDatas) {
+        try {
             CategoryPlot plot = (CategoryPlot) chPanel.getChart().getPlot();
             plot.clearDomainMarkers();
-            refreshData(ChoroDatas.getRange(), ChoroDatas.getSortedData());
-            drawData(chPanel,ChoroDatas.getRange(), ChoroDatas.getSortedData());
-            drawAxis(chart, ChoroDatas.getSortedData(), ChoroDatas.getRange(), ChoroDatas.getClassesColors());
+            refreshData(choroDatas.getAliases(),choroDatas.getRange(), choroDatas.getSortedData());
+            drawData(chPanel,choroDatas.getAliases(), choroDatas.getRange(), choroDatas.getSortedData());
+            drawAxis(chart, choroDatas.getSortedData(), choroDatas.getRange(), choroDatas.getClassesColors(),choroDatas.getAliases());
         } catch (ParameterException ex) {
             Logger.getLogger(ChoroDatasChangedListener.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         chPanel.repaint();
     }
+
 }

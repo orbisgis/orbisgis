@@ -16,26 +16,30 @@ import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.ColorPicker;
 
 /**
- *
+ * Classe that edit the color of the cell from the range table
  * @author sennj
  */
 class ColorCellEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
 
-    private ChoroplethDatas ChoroDatas;
+    private ChoroplethDatas choroDatas;
     private Color couleur;
     private int row;
     private JButton bouton;
     private ColorPicker dialog;
 
-    public ColorCellEditor(ChoroplethDatas ChoroDatas) {
+    /**
+     * ColorCellEditor Constructor
+     * @param choroDatas the datas to draw
+     */
+    public ColorCellEditor(ChoroplethDatas choroDatas) {
         super();
 
-        this.ChoroDatas = ChoroDatas;
-        bouton = new JButton();
+        this.choroDatas = choroDatas;
+        this.bouton = new JButton();
         bouton.setActionCommand("change");
         bouton.addActionListener(this);
         bouton.setBorderPainted(false);
-        dialog = new ColorPicker();
+        this.dialog = new ColorPicker();
     }
 
     @Override
@@ -45,7 +49,7 @@ class ColorCellEditor extends AbstractCellEditor implements TableCellEditor, Act
 
             if (UIFactory.showDialog(dialog)) {
                 couleur = dialog.getColor();
-                ChoroDatas.setClassColor(couleur, row);
+                choroDatas.setClassColor(couleur, row);
                 bouton.setBackground(couleur);
             }
             fireEditingStopped();

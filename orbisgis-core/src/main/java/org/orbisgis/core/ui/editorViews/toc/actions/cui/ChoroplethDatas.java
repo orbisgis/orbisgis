@@ -11,7 +11,6 @@ import java.util.EventObject;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.gdms.data.values.Value;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
@@ -23,8 +22,8 @@ import org.orbisgis.core.renderer.classification.RangeMethod;
 import org.orbisgis.core.ui.plugins.toc.CreateChoroplethPlugIn;
 
 /**
- *
- * @author sennj
+ * Class to store the data
+ * @author sennj, mairep
  */
 public class ChoroplethDatas {
 
@@ -33,14 +32,13 @@ public class ChoroplethDatas {
     private int fieldIndex; //Selected Field Index
     private Range[] ranges;
     private int numberOfClasses; //Number of classes to create
-    private Value value;
     private StatisticMethod statIndex; //Selected statistic method
     private int defaultClassNumbers = 10; // The default maximum amount of classes which can be created
     private Boolean autoColorFill = true;
     private Color beginColor;
     private Color endColor;
     private Color[] classesColors;
-    private List<String> aliases;
+    private String[] aliases;
 
     //Statistic (Classification, categorization) methods enumeration
     public enum StatisticMethod {
@@ -48,41 +46,41 @@ public class ChoroplethDatas {
         QUANTILES, AVERAGE, JENKS, MANUAL
     }
 
+    /**
+     * Class constructor
+     * Contains all the data used by the Chloropleth wizard
+     * @param layer
+     */
     public ChoroplethDatas(ILayer layer) {
         super();
+
         this.layer = layer;
-
         fields = new ArrayList<String>();
-        aliases = new ArrayList<String>();
-
-
         //BEGIN
         //Temp variable data for testing
         statIndex = StatisticMethod.QUANTILES;
         fieldIndex = 0;
         numberOfClasses = 10;
-        beginColor = Color.LIGHT_GRAY;
-        endColor = Color.ORANGE;
+        beginColor = Color.BLUE;
+        endColor = Color.RED;
         classesColors = new Color[numberOfClasses];
-        classesColors[0] = Color.RED;
-        classesColors[1] = Color.YELLOW;
-        classesColors[2] = Color.BLUE;
-        classesColors[3] = Color.GREEN;
-        classesColors[4] = Color.ORANGE;
-        classesColors[5] = Color.BLACK;
-        classesColors[6] = Color.CYAN;
-        classesColors[7] = Color.PINK;
-        classesColors[8] = Color.MAGENTA;
-        classesColors[9] = Color.GRAY;
+        aliases = new String[numberOfClasses];
 
-        //END
         try {
             init();
+            resetRanges();
+            initLabel();
+            calculateColors();
+
         } catch (DriverException ex) {
-            Logger.getLogger(CreateChoroplethPlugIn.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ChoroplethDatas.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
+    /**
+     * Initiates field data
+     * @throws DriverException
+     */
     private void init() throws DriverException {
         Metadata metadata = layer.getDataSource().getMetadata();
         String retainedFiledName = null;
@@ -96,57 +94,33 @@ public class ChoroplethDatas {
         }
     }
 
-    private void CalculateColors() {
+    /**
+     * Calculate gradient colors based on the numberOfClasses
+     */
+    public void calculateColors() {
         if (ranges.length == numberOfClasses && autoColorFill) {
-            classesColors = new Color[numberOfClasses];
             int red = beginColor.getRed();
             int green = beginColor.getGreen();
             int blue = beginColor.getBlue();
-            int rstep = (endColor.getRed() - beginColor.getRed()) / numberOfClasses;
-            int gstep = (endColor.getGreen() - beginColor.getGreen()) / numberOfClasses;
-            int bstep = (endColor.getBlue() - beginColor.getBlue()) / numberOfClasses;
-            for (int i = 0; i < ranges.length - 1; i++) {
-                classesColors[i] = new Color(red + i * rstep, green + i * gstep, blue + i * bstep);
+            int rstep = (endColor.getRed() - beginColor.getRed()) / ranges.length;
+            int gstep = (endColor.getGreen() - beginColor.getGreen()) / ranges.length;
+            int bstep = (endColor.getBlue() - beginColor.getBlue()) / ranges.length;
+            for (int i = 1; i <= ranges.length; i++) {
+                classesColors[i - 1] = new Color(red + ((i - 1) * rstep), green + ((i - 1) * gstep), blue + ((i - 1) * bstep));
             }
+            classesColors[ranges.length - 1] = endColor;
+            classesColors[0] = beginColor;
             fireMyEvent(new DataChanged(this, DataChangedType.CLASSCOLORS));
         }
     }
 
-    public void readData() throws DriverException {
-        /*Metadata metadata = layer.getDataSource().getMetadata();
-
-        // Quick (and hugly) step to fetch the first numeric attribute
-        String retainedFiledName = null;
-        for (int i = 0; i < metadata.getFieldCount(); i++) {
-        int currentType = metadata.getFieldType(i).getTypeCode();
-
-        if (currentType == 4 || (currentType >= 16 && currentType <= 256)) {
-        retainedFiledName = metadata.getFieldName(i);
-        fields.add(retainedFiledName);
+    /**
+     * initalise the label
+     */
+     public void initLabel() {
+        for (int i = 1; i <= ranges.length; i++) {
+            aliases[i - 1] = String.valueOf(i);
         }
-        }
-
-        for(int i=1;i<=fields.size();i++)
-        {
-        System.out.println("fields "+i+" "+fields.get(i-1));
-        }*/
-
-        /*String selectedField = fields.get(fieldIndex);
-
-
-        if (selectedField != null) {
-        try {
-        RealAttribute defaultField = new RealAttribute(selectedField);
-        RangeMethod rangesHelper = new RangeMethod(layer.getDataSource(), defaultField, numberOfClasses);
-        rangesHelper.disecQuantiles();
-        ranges = rangesHelper.getRanges();
-
-
-
-        } catch (ParameterException ex) {
-        Logger.getLogger(CreateChoroplethPlugIn.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        }*/
     }
 
     /*
@@ -186,7 +160,7 @@ public class ChoroplethDatas {
                     setNbrClasses(ranges.length);
                 }
 
-                CalculateColors();
+                calculateColors();
             } catch (ParameterException ex) {
                 Logger.getLogger(CreateChoroplethPlugIn.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -214,6 +188,12 @@ public class ChoroplethDatas {
         }
     }
 
+    /**
+     * returns true if the number of classes is supported by the specified statmethod
+     * @param nbrOfClasses
+     * @param statmethod
+     * @return Boolean
+     */
     public Boolean isAllowed(int nbrOfClasses, StatisticMethod statmethod) {
         int[] values = getNumberOfClassesAllowed(statmethod);
         for (int i = 0; i < values.length; i++) {
@@ -287,6 +267,11 @@ public class ChoroplethDatas {
         }
     }
 
+    /**
+     * Gets the data sorted as it is done in the RangeMethod class
+     * @return
+     * @throws ParameterException
+     */
     public double[] getSortedData() throws ParameterException {
         String selectedField = fields.get(fieldIndex); //Get field name
         RealAttribute field = new RealAttribute(selectedField); //Get field
@@ -298,52 +283,80 @@ public class ChoroplethDatas {
         return null;
     }
 
-    public List<String> getAliases() {
+
+    
+
+    /**
+     * Returns class aliases
+     * @return
+     */
+    public String[] getAliases() {
         return aliases;
     }
 
+    /**
+     * Set the specific alias
+     * @param value
+     * @param index
+     */
     public void setAlias(String value, int index) {
-        if (index < aliases.size()) {
-            aliases.set(index, value);
+        if (index < aliases.length) {
+            aliases[index] = value;
             fireMyEvent(new DataChanged(this, DataChangedType.ALIASES));
         }
     }
 
-    /*public Boolean getAutoColorFill()
-    {
-    return autoColorFill;
-    }
-
-    public void setAutoColorFill(Boolean value)
-    {
-    autoColorFill = value;
-    }*/
+    /**
+     * Gets the begin color of the gradient
+     * @return
+     */
     public Color getBeginColor() {
         return beginColor;
     }
 
+    /**
+     * Sets the begin color of the gradient
+     * @param value
+     */
     public void setBeginColor(Color value) {
         autoColorFill = true;
         beginColor = value;
-        CalculateColors();
+        calculateColors();
         fireMyEvent(new DataChanged(this, DataChangedType.BEGINCOLOR));
     }
 
+    /**
+     * Gets the end color of the gradient
+     * @return
+     */
     public Color getEndColor() {
         return endColor;
     }
 
+    /**
+     * Sets the end color of the gradient
+     * @param value
+     */
     public void setEndColor(Color value) {
         autoColorFill = true;
         endColor = value;
-        CalculateColors();
+        calculateColors();
         fireMyEvent(new DataChanged(this, DataChangedType.ENDCOLOR));
     }
 
+    /**
+     * Get an array of color in relation to the classes
+     * @return
+     */
     public Color[] getClassesColors() {
         return classesColors;
     }
 
+    /**
+     * Gets a specific color at a specific index (or class index)
+     * @param index
+     * @return
+     */
     public Color getClassColor(int index) {
         if (index < classesColors.length) {
             return classesColors[index];
@@ -351,6 +364,11 @@ public class ChoroplethDatas {
         return null;
     }
 
+    /**
+     * Sets the class color at specific index
+     * @param value
+     * @param index
+     */
     public void setClassColor(Color value, int index) {
         if (index < classesColors.length) {
             classesColors[index] = value;
@@ -358,37 +376,57 @@ public class ChoroplethDatas {
         }
     }
 
+    /**
+     * Gets the selected statistic method
+     * @return
+     */
     public StatisticMethod getStatisticMethod() {
         return statIndex;
     }
 
+    /**
+     * Gets the selected field
+     * @return
+     */
     public RealAttribute getField() {
         return new RealAttribute(fields.get(fieldIndex));
     }
 
+    /**
+     * Gets the available data fields
+     * @return
+     */
     public List<String> getFields() {
         return fields;
     }
 
+    /**
+     * Gets the ranges
+     * @return
+     */
     public Range[] getRange() {
         return ranges;
     }
 
+    /**
+     * Sets the ranges
+     * @param ranges
+     */
     public void setRange(Range[] ranges) {
         this.ranges = ranges;
         fireMyEvent(new DataChanged(this, DataChangedType.RANGES));
     }
 
-    public Value getValue() {
-        return value;
-    }
-
+    /**
+     * Data change type enumeration
+     */
     public enum DataChangedType {
-
         FIELD, NUMBEROFCLASS, RANGES, STATMETHOD, BEGINCOLOR, ENDCOLOR, CLASSCOLORS, CLASSCOLOR, ALIASES
     }
 
-    // Declare the event. It must extend EventObject.
+    /**
+     * Declare the event. It must extend EventObject.
+     */
     public class DataChanged extends EventObject {
 
         public DataChangedType dataType;
@@ -399,26 +437,40 @@ public class ChoroplethDatas {
         }
     }
 
-    // Declare the listener class. It must extend EventListener.
-    // A class must implement this interface to get DataChanged.
+    /**
+     * Declare the listener class. It must extend EventListener.
+     * A class must implement this interface to get DataChanged.
+     */
     public interface DataChangedListener extends EventListener {
 
         public void dataChangedOccurred(DataChanged evt);
     }
-    // Create the listener list
+
+    /**
+     * Create the listener list
+     */
     protected javax.swing.event.EventListenerList listenerList = new javax.swing.event.EventListenerList();
 
-    // This methods allows classes to register for DataChanged
+    /**
+     * This methods allows classes to register for DataChanged
+     * @param listener
+     */
     public void addDataChangedListener(DataChangedListener listener) {
         listenerList.add(DataChangedListener.class, listener);
     }
 
-    // This methods allows classes to unregister for DataChanged
+    /**
+     * This methods allows classes to unregister for DataChanged
+     * @param listener
+     */
     public void removeDataChangedListener(DataChangedListener listener) {
         listenerList.remove(DataChangedListener.class, listener);
     }
 
-    // This private class is used to fire DataChanged
+    /**
+     * This private class is used to fire DataChanged
+     * @param evt
+     */
     public void fireMyEvent(DataChanged evt) {
         Object[] listeners = listenerList.getListenerList();
         // Each listener occupies two elements - the first is the listener class

@@ -15,44 +15,40 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 
 /*
- *  This class listens for changes made to the data in the table via the
- *  TableCellEditor. When editing is started, the value of the cell is saved
- *  When editing is stopped the new value is saved. When the oold and new
- *  values are different, then the provided Action is invoked.
- *
- *  The source of the Action is a TableCellListener instance.
+ * This class listens for changes made to the data in the table via the
+ * TableCellEditor. When editing is started, the value of the cell is saved
+ * When editing is stopped the new value is saved. When the oold and new
+ * values are different, then the provided Action is invoked.
  */
 public class TableListener extends AbstractAction implements TableModelListener, PropertyChangeListener, Runnable {
 
-    ChoroplethRangeTabPanel rangeTabPanel;
     private JTable table;
-    private ChoroplethDatas ChoroDatas;
+    private ChoroplethDatas choroDatas;
     private int row;
     private int column;
     private Object oldValue;
     private Object newValue;
 
     /**
-     *  Create a TableCellListener.
-     *
-     *  @param table   the table to be monitored for data changes
-     *  @param action  the Action to invoke when cell data is changed
+     * TableListener Creator
+     * Create a TableCellListener.
+     * @param table   the table to be monitored for data changes
+     * @param action  the Action to invoke when cell data is changed
      */
-    public TableListener(ChoroplethRangeTabPanel rangeTabPanel, JTable table, ChoroplethDatas ChoroDatas) {
-        this.rangeTabPanel = rangeTabPanel;
+    public TableListener(JTable table, ChoroplethDatas choroDatas) {
         this.table = table;
-        this.ChoroDatas = ChoroDatas;
+        this.choroDatas = choroDatas;
         this.table.addPropertyChangeListener(this);
     }
 
     /**
-     *  Create a TableCellListener with a copy of all the data relevant to
-     *  the change of data for a given cell.
-     *
-     *  @param row  the row of the changed cell
-     *  @param column  the column of the changed cell
-     *  @param oldValue  the old data of the changed cell
-     *  @param newValue  the new data of the changed cell
+     * TableListener Creator
+     * Create a TableCellListener with a copy of all the data relevant to
+     * the change of data for a given cell.
+     * @param row  the row of the changed cell
+     * @param column  the column of the changed cell
+     * @param oldValue  the old data of the changed cell
+     * @param newValue  the new data of the changed cell
      */
     private TableListener(JTable table, int row, int column, Object oldValue, Object newValue) {
         this.table = table;
@@ -63,45 +59,45 @@ public class TableListener extends AbstractAction implements TableModelListener,
     }
 
     /**
-     *  Get the column that was last edited
-     *
-     *  @return the column that was edited
+     * getColumn
+     * Get the column that was last edited
+     * @return the column that was edited
      */
     public int getColumn() {
         return column;
     }
 
     /**
-     *  Get the new value in the cell
-     *
-     *  @return the new value in the cell
+     * getNewValue
+     * Get the new value in the cell
+     * @return the new value in the cell
      */
     public Object getNewValue() {
         return newValue;
     }
 
     /**
-     *  Get the old value of the cell
-     *
-     *  @return the old value of the cell
+     * getOldValue
+     * Get the old value of the cell
+     * @return the old value of the cell
      */
     public Object getOldValue() {
         return oldValue;
     }
 
     /**
-     *  Get the row that was last edited
-     *
-     *  @return the row that was edited
+     * getRow
+     * Get the row that was last edited
+     * @return the row that was edited
      */
     public int getRow() {
         return row;
     }
 
     /**
-     *  Get the table of the cell that was changed
-     *
-     *  @return the table of the cell that was changed
+     * getTable
+     * Get the table of the cell that was changed
+     * @return the table of the cell that was changed
      */
     public JTable getTable() {
         return table;
@@ -131,12 +127,10 @@ public class TableListener extends AbstractAction implements TableModelListener,
         //  PropertyChangeEvent is fired.
         //  This results in the "run" method being invoked
 
-        ChoroDatas.setStatisticMethod(ChoroplethDatas.StatisticMethod.MANUAL, false);
+        choroDatas.setStatisticMethod(ChoroplethDatas.StatisticMethod.MANUAL, false);
         SwingUtilities.invokeLater(this);
     }
-    /*
-     *  See above.
-     */
+
 
     @Override
     public void run() {
@@ -174,19 +168,30 @@ public class TableListener extends AbstractAction implements TableModelListener,
     public void actionPerformed(ActionEvent e) {
         if (column == 1 && row != 0) {
             table.setValueAt(newValue, row - 1, column + 1);
-            refreshRange(ChoroDatas, row - 1, column, newValue);
+            refreshRange(choroDatas, row - 1, column, newValue);
         }
-        if (column == 2 && row != ChoroDatas.getRange().length) {
+        if (column == 2 && row != choroDatas.getRange().length) {
             table.setValueAt(newValue, row + 1, column - 1);
-            refreshRange(ChoroDatas, row, column, newValue);
+            refreshRange(choroDatas, row, column, newValue);
+        }
+        if (column == 4) {
+            refreshAlias(choroDatas, row, newValue);
         }
     }
 
-    public void refreshRange(ChoroplethDatas ChoroDatas, int row, int column, Object newValue) {
-        Range[] ranges = ChoroDatas.getRange();
+    /**
+     * refreshRange
+     * Refresh the range
+     * @param choroDatas the datas to draw
+     * @param row the selected row
+     * @param column the selected column
+     * @param newValue the new value to apply
+     */
+    public void refreshRange(ChoroplethDatas choroDatas, int row, int column, Object newValue) {
+        Range[] ranges = choroDatas.getRange();
         ranges[row].setMaxRange(Double.valueOf((Double) newValue));
 
-        if (!(row == ChoroDatas.getRange().length && column == 2)) {
+        if (!(row == choroDatas.getRange().length && column == 2)) {
             ranges[row + 1].setMinRange(Double.valueOf((Double) newValue));
         }
 
@@ -195,7 +200,7 @@ public class TableListener extends AbstractAction implements TableModelListener,
         int nbElemRange = 0;
 
         try {
-            choroData = ChoroDatas.getSortedData();
+            choroData = choroDatas.getSortedData();
             for (int i = 1; i <= choroData.length; i++) {
                 if (choroData[i - 1] >= ranges[row].getMinRange()
                         && choroData[i - 1] < ranges[row].getMaxRange()) {
@@ -213,7 +218,21 @@ public class TableListener extends AbstractAction implements TableModelListener,
         ranges[row].setNumberOfItems(nbElemRangeBefore);
         ranges[row + 1].setNumberOfItems(nbElemRange);
 
-        ChoroDatas.setRange(ranges);
+        choroDatas.setRange(ranges);
+        choroDatas.calculateColors();
+        table.repaint();
+    }
+
+     /**
+     * refreshAlias
+     * Refresh the alias
+     * @param choroDatas the datas to draw
+     * @param row the selected row
+     * @param newValue the new value to apply
+     */
+    public void refreshAlias(ChoroplethDatas choroDatas, int row, Object newValue)
+    {
+        choroDatas.setAlias((String)newValue, row);
         table.repaint();
     }
 }

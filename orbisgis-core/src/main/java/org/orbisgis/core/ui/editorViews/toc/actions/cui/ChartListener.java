@@ -15,88 +15,135 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import org.orbisgis.core.renderer.classification.Range;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
+/**
+ * Mouse Listener on the chart
+ * @author sennj
+ */
 public class ChartListener implements MouseMotionListener, MouseListener {
 
-    ChoroplethChartPanel chartPanel;
+    private ChoroplethChartPanel chartPanel;
     private ChartPanel chPanel;
     private TextTitle annot;
-    private ChoroplethDatas ChoroDatas;
+    private ChoroplethDatas choroDatas;
     private Point.Double pos;
     private double rangeDelta;
     private int selected;
 
-    public ChartListener(ChoroplethChartPanel chartPanel, ChartPanel chPanel, TextTitle annot, ChoroplethDatas ChoroDatas) {
+    /***
+     * ChartListener Constructor
+     * @param chartPanel the chart Panel
+     * @param chPanel the JFreeChart Panel
+     * @param annot the chart Panel subtitle
+     * @param choroDatas the datas to draw
+     */
+    public ChartListener(ChoroplethChartPanel chartPanel, ChartPanel chPanel, TextTitle annot, ChoroplethDatas choroDatas) {
         this.chartPanel = chartPanel;
         this.chPanel = chPanel;
         this.annot = annot;
-        this.ChoroDatas = ChoroDatas;
+        this.choroDatas = choroDatas;
         this.pos = new Point.Double(0, 0);
-        this.rangeDelta = 1;
+        this.rangeDelta = 5;
     }
 
     public void chartMouseClicked(ChartMouseEvent arg0) {
-        ChoroDatas.setStatisticMethod(ChoroplethDatas.StatisticMethod.MANUAL, false);
+        choroDatas.setStatisticMethod(ChoroplethDatas.StatisticMethod.MANUAL, false);
     }
 
     @Override
     public void mouseDragged(MouseEvent arg1) {
-        Point point = arg1.getPoint();
 
+        //Set the coord of the mouse pointer
+        Point point = arg1.getPoint();
         DefaultCategoryDataset data = null;
         try {
-            data = chartPanel.refreshData(ChoroDatas.getRange(), ChoroDatas.getSortedData());
+            data = chartPanel.refreshData(choroDatas.getAliases(), choroDatas.getRange(), choroDatas.getSortedData());
         } catch (ParameterException ex) {
             Logger.getLogger(ChartListener.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        pos = ChoroplethChartPanel.convertCoords(point, chPanel, data);
-
+        pos = chartPanel.convertCoords(point, chPanel, data);
         annot.setText("X = " + pos.x + " Y = " + pos.y);
 
+        //If a range is selected and the mouse is dragged then move the range
         if (selected != -1) {
             CategoryPlot plot = (CategoryPlot) chPanel.getChart().getPlot();
             plot.clearDomainMarkers();
 
-            Range[] ranges = ChoroDatas.getRange();
+            Range[] ranges = choroDatas.getRange();
 
-            double range = 0;
+            double[] datas = null;
             try {
-                range = ChoroDatas.getSortedData()[(int) pos.x];
+                datas = choroDatas.getSortedData();
             } catch (ParameterException ex) {
                 Logger.getLogger(ChartListener.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-            ranges[selected - 1].setMaxRange(range);
-            ranges[selected].setMinRange(range);
+            if ((int) pos.x > 0 && (int) pos.x < datas.length) {
+                
+                int nbElemBefore = 0;
+                int nbElemAfter = 0;
+                for (int i = 1; i <= selected + 1; i++) {
+                    if (i < selected) {
+                        nbElemBefore = nbElemBefore + ranges[i - 1].getNumberOfItems();
+                    }
+                    nbElemAfter = nbElemAfter + ranges[i - 1].getNumberOfItems();
+                }
 
-            ChoroDatas.setRange(ranges);
+                if ((int) pos.x > nbElemBefore && (int) pos.x < nbElemAfter) {
 
+                    ranges[selected - 1].setMaxRange(datas[(int) pos.x ]);
+                    ranges[selected].setMinRange(datas[(int) pos.x ]);
+
+                    System.out.println("pos "+pos.x+" bef "+nbElemBefore+" aft "+nbElemAfter);
+
+                    ranges[selected - 1].setNumberOfItems((int)(pos.x - nbElemBefore));
+                    ranges[selected].setNumberOfItems((int)(nbElemAfter- pos.x+1));
+
+                    choroDatas.setRange(ranges);
+                    choroDatas.calculateColors();
+                }
+            }
             try {
-                ChoroplethChartPanel.drawData(chPanel, ranges, ChoroDatas.getSortedData());
-                ChoroplethChartPanel.drawAxis(chPanel.getChart(), ChoroDatas.getSortedData(), ranges, ChoroDatas.getClassesColors());
+                chartPanel.drawData(chPanel, choroDatas.getAliases(), ranges, choroDatas.getSortedData());
+                chartPanel.drawAxis(chPanel.getChart(), choroDatas.getSortedData(), ranges, choroDatas.getClassesColors(), choroDatas.getAliases());
             } catch (ParameterException ex) {
                 Logger.getLogger(ChartListener.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-
         chPanel.repaint();
     }
 
     @Override
     public void mouseMoved(MouseEvent arg1) {
-        Point point = arg1.getPoint();
 
+        //Set the coord of the mouse pointer
+        Point point = arg1.getPoint();
         DefaultCategoryDataset data = null;
         try {
-            data = chartPanel.refreshData(ChoroDatas.getRange(), ChoroDatas.getSortedData());
+            data = chartPanel.refreshData(choroDatas.getAliases(), choroDatas.getRange(), choroDatas.getSortedData());
         } catch (ParameterException ex) {
             Logger.getLogger(ChartListener.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        pos = ChoroplethChartPanel.convertCoords(point, chPanel, data);
+        pos = chartPanel.convertCoords(point, chPanel, data);
         annot.setText("X = " + pos.x + " Y = " + pos.y);
 
-        chPanel.repaint();
+        //If the mouse move on a range then select it
+        selected = -1;
+        Range[] ranges = choroDatas.getRange();
+        int nbElem = 0;
+        for (int i = 1; i <= ranges.length; i++) {
+            nbElem += ranges[i - 1].getNumberOfItems();
+            if (isNear(pos.x, nbElem)) {
+                selected = i;
+            }
+        }
+        try {
+            CategoryPlot plot = (CategoryPlot) chPanel.getChart().getPlot();
+            plot.clearDomainMarkers();
+            chartPanel.drawAxis(chPanel.getChart(), choroDatas.getSortedData(), ranges, choroDatas.getClassesColors(), choroDatas.getAliases(), selected);
+            chPanel.repaint();
+        } catch (ParameterException ex) {
+            Logger.getLogger(ChartListener.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override
@@ -106,16 +153,14 @@ public class ChartListener implements MouseMotionListener, MouseListener {
     @Override
     public void mousePressed(MouseEvent e) {
 
+        //If the mouse is pressed on a range then select it
         selected = -1;
-        Range[] ranges = ChoroDatas.getRange();
+        int nbElem = 0;
+        Range[] ranges = choroDatas.getRange();
+
         for (int i = 1; i <= ranges.length; i++) {
-            double range = 0;
-            try {
-                range = ChoroDatas.getSortedData()[(int) pos.x];
-            } catch (ParameterException ex) {
-                Logger.getLogger(ChartListener.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            if (isNear(range, ranges[i - 1].getMaxRange())) {
+            nbElem += ranges[i - 1].getNumberOfItems();
+            if (isNear(pos.x, nbElem)) {
                 selected = i;
             }
         }
@@ -134,12 +179,24 @@ public class ChartListener implements MouseMotionListener, MouseListener {
     public void mouseExited(MouseEvent e) {
     }
 
+    /**
+     * getPos
+     * get the coordinate of the mouse pointer
+     * @return coordinate of the mouse pointer
+     */
     public Point.Double getPos() {
         return pos;
     }
 
-    private boolean isNear(double x, double delta) {
-        if (x <= delta + rangeDelta && x >= delta - rangeDelta) {
+    /**
+     * isNear
+     * Test if a an element is near another
+     * @param an element
+     * @param a second
+     * @return true if elem is near, false other
+     */
+    private boolean isNear(double x, double nbElem) {
+        if (x <= nbElem + rangeDelta && x >= nbElem - rangeDelta) {
             return true;
         }
         return false;

@@ -11,7 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 
 /**
- *
+ * Panel with the range table
  * @author sennj
  */
 class ChoroplethRangeTabPanel extends JPanel {
@@ -19,28 +19,37 @@ class ChoroplethRangeTabPanel extends JPanel {
     private TableModel tableModel;
     private JTable tableau;
 
-    public ChoroplethRangeTabPanel(ChoroplethDatas ChoroDatas) {
+    /**
+     * ChoroplethRangeTabPanel Constructor
+     * @param choroDatas the datas to draw
+     */
+    public ChoroplethRangeTabPanel(ChoroplethDatas choroDatas) {
 
         JPanel tab = new JPanel();
-        tableModel = new TableModel(ChoroDatas);
+        tableModel = new TableModel(choroDatas);
         tableau = new JTable(tableModel);
-        tableModel.addTableModelListener(new TableListener(this, tableau, ChoroDatas));
+        tableModel.addTableModelListener(new TableListener(tableau, choroDatas));
 
         tableau.setDefaultRenderer(Color.class, new ColorCellRenderer());
-        tableau.setDefaultEditor(Color.class, new ColorCellEditor(ChoroDatas));
+        tableau.setDefaultEditor(Color.class, new ColorCellEditor(choroDatas));
 
         tab.setLayout(new BorderLayout());
         tab.add(tableau.getTableHeader(), BorderLayout.NORTH);
         tab.add(tableau, BorderLayout.CENTER);
-        tab.setPreferredSize(new Dimension(600,180));
+        tab.setPreferredSize(new Dimension(600, 180));
 
         this.add(tab);
 
     }
 
-    public void refresh(ChoroplethDatas ChoroDatas) {
+    /**
+     * refresh
+     * refresh the range table
+     * @param choroDatas the datas to draw
+     */
+    public void refresh(ChoroplethDatas choroDatas) {
         tableau.removeAll();
-        tableModel.refreshData(ChoroDatas);
+        tableModel.refreshData(choroDatas);
         tableau.repaint();
     }
 }
