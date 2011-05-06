@@ -63,8 +63,8 @@ public class ST_CircleCompacity extends AbstractSpatialPropertyFunction {
         }
 
         public String getDescription() {
-                return "Calculate the compacity of each building's geometry compared "
-                        + "to the circle (the one that as the area of the building)";
+                return "Calculate the compacity for a polygon compared "
+                        + "to the circle. If the geometry is not a polygon returns a null value";
         }
 
         public String getName() {
@@ -80,6 +80,6 @@ public class ST_CircleCompacity extends AbstractSpatialPropertyFunction {
         }
 
         public String getSqlOrder() {
-                return "select ST_CircleCompacity(the_geom) from myBuildingsTable;";
+                return "select ST_CircleCompacity(the_geom) from polygonsTable;";
         }
 }
