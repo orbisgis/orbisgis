@@ -41,10 +41,10 @@ import junit.framework.TestSuite;
 
 import org.gdms.sql.function.alphanumeric.AlphanumericFunctionTest;
 import org.gdms.sql.function.spatial.convert.ConvertFunctionTest;
-import org.gdms.sql.function.spatial.geometryProperties.PropertiesFunctionTest;
 import org.gdms.sql.function.spatial.io.IOSpatialFunctionTest;
 import org.gdms.sql.function.spatial.operators.OperatorsTest;
 import org.gdms.sql.function.spatial.predicates.PredicatesTest;
+import org.gdms.sql.function.spatial.properties.PropertiesFunctionTest;
 import org.gdms.sql.function.statistics.StatisticFunctionsTest;
 import org.gdms.sql.strategies.CustomQueriesTest;
 import org.gdms.sql.strategies.SQLTest;

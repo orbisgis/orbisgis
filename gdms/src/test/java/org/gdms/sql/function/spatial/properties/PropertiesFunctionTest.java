@@ -34,7 +34,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.gdms.sql.function.spatial.geometryProperties;
+package org.gdms.sql.function.spatial.properties;
 
 import com.vividsolutions.jts.geom.Geometry;
 import org.gdms.data.values.Value;
@@ -57,6 +57,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Polygon;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.sql.function.spatial.geometry.properties.ST_CircleCompacity;
 import org.gdms.sql.function.spatial.geometry.properties.ST_InteriorRingN;
 
 public class PropertiesFunctionTest extends FunctionTest {
@@ -152,5 +153,28 @@ public class PropertiesFunctionTest extends FunctionTest {
                 p = (Polygon) JTSPolygonWith2Holes;
                 v = evaluate(new ST_InteriorRingN(), new Value[]{ValueFactory.createValue(JTSPolygonWith2Holes), ValueFactory.createValue(1)}).getAsGeometry();
                 assertTrue(v.equals(p.getInteriorRingN(1)));
+        }
+
+        /*
+         * Test the circle compacity function
+         */
+        public void testCircleCompacity() throws Exception {
+                //Test with a circle
+                Geometry circle = JTSPoint2D.buffer(20);
+                double v = evaluate(new ST_CircleCompacity(), new Value[]{ValueFactory.createValue(circle)}).getAsDouble();
+                assertEquals(v, 1, 0.01);
+                //Test with a polygon
+                v = evaluate(new ST_CircleCompacity(), new Value[]{ValueFactory.createValue(JTSPolygon2D)}).getAsDouble();
+                assertTrue(v < 1);
+                //Test with a multipolygon
+                Value r = evaluate(new ST_CircleCompacity(), new Value[]{ValueFactory.createValue(JTSMultiPolygon2D)});
+                assertTrue(r.isNull());
+                //Test with a point
+                r = evaluate(new ST_CircleCompacity(), new Value[]{ValueFactory.createValue(JTSPoint2D)});
+                assertTrue(r.isNull());
+                //Test with a linestring
+                r = evaluate(new ST_CircleCompacity(), new Value[]{ValueFactory.createValue(JTSLineString2D)});
+                assertTrue(r.isNull());
+
         }
 }

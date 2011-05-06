@@ -75,7 +75,7 @@ import org.gdms.sql.OptimizationTests;
 import org.gdms.sql.ProcessorTest;
 import org.gdms.sql.function.alphanumeric.AlphanumericFunctionTest;
 import org.gdms.sql.function.spatial.convert.ConvertFunctionTest;
-import org.gdms.sql.function.spatial.geometryProperties.PropertiesFunctionTest;
+import org.gdms.sql.function.spatial.properties.PropertiesFunctionTest;
 import org.gdms.sql.function.spatial.io.IOSpatialFunctionTest;
 import org.gdms.sql.function.spatial.operators.OperatorsTest;
 import org.gdms.sql.function.spatial.predicates.PredicatesTest;

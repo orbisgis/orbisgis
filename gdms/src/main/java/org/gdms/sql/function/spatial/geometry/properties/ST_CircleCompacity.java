@@ -42,42 +42,44 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.function.spatial.geometry.properties.AbstractSpatialPropertyFunction;
 
 import com.vividsolutions.jts.geom.Geometry;
+import org.gdms.geometryUtils.GeometryTypeUtil;
 
 public class ST_CircleCompacity extends AbstractSpatialPropertyFunction {
-	private final static double DPI = 2 * Math.PI;
 
-	public Value evaluateResult(DataSourceFactory dsf, Value[] args) throws FunctionException {
-		final Geometry geomBuild = args[0].getAsGeometry();
-		final double sBuild = geomBuild.getArea();
-		final double pBuild = geomBuild.getLength();
+        private final static double DPI = 2 * Math.PI;
 
-		final double correspondingCircleRadius = Math.sqrt(sBuild / Math.PI);
-		final double pCircle = DPI * correspondingCircleRadius;
-		return ValueFactory.createValue(pBuild / pCircle);
-	}
+        public Value evaluateResult(DataSourceFactory dsf, Value[] args) throws FunctionException {
+                final Geometry geomBuild = args[0].getAsGeometry();
+                if (GeometryTypeUtil.isPolygon(geomBuild)) {
+                        final double sBuild = geomBuild.getArea();
+                        final double pBuild = geomBuild.getLength();
+                        final double correspondingCircleRadius = Math.sqrt(sBuild / Math.PI);
+                        final double pCircle = DPI * correspondingCircleRadius;
+                        return ValueFactory.createValue(pCircle / pBuild);
+                }
+                return ValueFactory.createNullValue();
+        }
 
-	public String getDescription() {
-		return "Calculate the compacity of each building's geometry compared "
-				+ "to the circle (the one that as the area of the building)";
-	}
+        public String getDescription() {
+                return "Calculate the compacity of each building's geometry compared "
+                        + "to the circle (the one that as the area of the building)";
+        }
 
-	public String getName() {
-		return "ST_CircleCompacity";
-	}
+        public String getName() {
+                return "ST_CircleCompacity";
+        }
 
-	public Type getType(Type[] argsTypes) {
-		return TypeFactory.createType(Type.DOUBLE);
-	}
+        public Type getType(Type[] argsTypes) {
+                return TypeFactory.createType(Type.DOUBLE);
+        }
 
-	public boolean isAggregate() {
-		return false;
-	}
+        public boolean isAggregate() {
+                return false;
+        }
 
-	public String getSqlOrder() {
-		return "select ST_CircleCompacity(the_geom) from myBuildingsTable;";
-	}
-
+        public String getSqlOrder() {
+                return "select ST_CircleCompacity(the_geom) from myBuildingsTable;";
+        }
 }
