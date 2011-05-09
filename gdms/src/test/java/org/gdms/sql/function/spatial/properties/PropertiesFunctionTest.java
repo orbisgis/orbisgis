@@ -55,6 +55,7 @@ import org.gdms.sql.function.spatial.geometry.properties.ST_Z;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.spatial.geometry.properties.ST_CircleCompacity;
@@ -166,6 +167,17 @@ public class PropertiesFunctionTest extends FunctionTest {
                 //Test with a polygon
                 v = evaluate(new ST_CircleCompacity(), new Value[]{ValueFactory.createValue(JTSPolygon2D)}).getAsDouble();
                 assertTrue(v < 1);
+                //More precise test with a polygon (a square, in fact).
+                GeometryFactory gf = new GeometryFactory();
+                Polygon pl = gf.createPolygon(gf.createLinearRing(new Coordinate[]{
+                        new Coordinate(0,0),
+                        new Coordinate(1,0),
+                        new Coordinate(1,1),
+                        new Coordinate(0,1),
+                        new Coordinate(0,0),
+                }), new LinearRing[]{}); 
+                v = evaluate(new ST_CircleCompacity(), new Value[]{ValueFactory.createValue(pl)}).getAsDouble();
+                assertEquals(Math.sqrt(Math.PI)/2, v, 0.01);
                 //Test with a multipolygon
                 Value r = evaluate(new ST_CircleCompacity(), new Value[]{ValueFactory.createValue(JTSMultiPolygon2D)});
                 assertTrue(r.isNull());
