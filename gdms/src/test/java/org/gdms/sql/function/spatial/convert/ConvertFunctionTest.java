@@ -115,13 +115,9 @@ public class ConvertFunctionTest extends FunctionTest {
         public void testConstraint3D() throws Exception {
                 // Test null input
                 ST_Force_3D function = new ST_Force_3D();
-                Value res = evaluate(function, new ColumnValue(Type.GEOMETRY,
-                        ValueFactory.createNullValue()));
-                assertTrue(res.isNull());
-
                 // Test normal input value and type
                 Value vg1 = ValueFactory.createValue(JTSMultiPolygon2D);
-                res = evaluate(function, vg1);
+                Value res = evaluate(function, vg1);
                 assertTrue(res.getType() == Type.GEOMETRY);
                 assertTrue(res.equals(vg1).getAsBoolean());
 
@@ -261,15 +257,13 @@ public class ConvertFunctionTest extends FunctionTest {
 
                 Geometry g = testSpatialFunction(new ST_Holes(),
                         JTSPolygonWith2Holes, 1).getAsGeometry();
-                assertTrue(JTSPolygonWith2Holes.getNumGeometries() == 2);
+                assertTrue(g.getNumGeometries() == 2);
 
                 g = g.getFactory().createGeometryCollection(new Geometry[]{JTSGeometryCollection, JTSPolygonWith2Holes});
 
                 g = testSpatialFunction(new ST_Holes(),
                         g, 1).getAsGeometry();
                 assertTrue(g.getNumGeometries() == 2);
-
-
 
         }
 }

@@ -104,7 +104,7 @@ import org.gdms.sql.function.spatial.geometry.create.ST_OctogonalEnvelope;
 import org.gdms.sql.function.spatial.geometry.create.ST_RemoveDuplicateCoordinate;
 import org.gdms.sql.function.spatial.geometry.crs.ST_Transform;
 import org.gdms.sql.function.spatial.geometry.distance.ST_NearestPoints;
-import org.gdms.sql.function.spatial.geometry.edit.ST_AddZToGeometry;
+import org.gdms.sql.function.spatial.geometry.edit.ST_AddZ;
 import org.gdms.sql.function.spatial.geometry.edit.ST_Normalize;
 import org.gdms.sql.function.spatial.geometry.edit.ST_Reverse;
 import org.gdms.sql.function.spatial.geometry.edit.ST_Snap;
@@ -247,7 +247,7 @@ public class FunctionManager {
                 addFunction(ST_Z.class);
                 addFunction(ST_Distance.class);
                 addFunction(ST_RingBuffer.class);
-                addFunction(ST_AddZToGeometry.class);
+                addFunction(ST_AddZ.class);
                 addFunction(ST_Azimut.class);
                 addFunction(Pi.class);
                 addFunction(ST_Densify.class);

@@ -52,7 +52,7 @@ import org.gdms.sql.function.FunctionException;
 import com.vividsolutions.jts.geom.Geometry;
 import org.gdms.geometryUtils.GeometryEdit;
 
-public class ST_AddZToGeometry implements Function {
+public class ST_AddZ implements Function {
 
         private double ZFieldValue;
 
@@ -62,22 +62,19 @@ public class ST_AddZToGeometry implements Function {
                 }
 
                 Geometry geometry = args[0].getAsGeometry();
-
                 ZFieldValue = args[1].getAsDouble();
-
-                Geometry geom = GeometryEdit.force_3D(geometry, ZFieldValue);
+                Geometry geom = GeometryEdit.force_3D(geometry, ZFieldValue, true);
 
                 return ValueFactory.createValue(geom);
 
         }
 
         public String getDescription() {
-                return "This function modify (or set) the z component of (each vertex of) the "
-                        + "geometric parameter to the corresponding value given by a field.";
+                return "This function add a z value of each vertex of the "
+                        + "geometric.";
         }
 
         public Arguments[] getFunctionArguments() {
-
                 return new Arguments[]{new Arguments(Argument.GEOMETRY,
                                 Argument.NUMERIC)};
         }

@@ -54,14 +54,15 @@ public class ST_Force_3D implements Function {
 
         public Value evaluate(DataSourceFactory dsf, Value[] args)
                 throws FunctionException {
-                if (!args[0].isNull()) {
-                        return ValueFactory.createValue(GeometryEdit.force_3D(args[0].getAsGeometry()));
+                if (args.length == 2) {
+                        return ValueFactory.createValue(GeometryEdit.force_3D(args[0].getAsGeometry(), args[1].getAsDouble(), true));
+                } else {
+                        return ValueFactory.createValue(GeometryEdit.force_3D(args[0].getAsGeometry(), 0, false));
                 }
-                return args[0];
         }
 
         public String getDescription() {
-                return "Forces the geometries into XYZ mode. Metadata are also modified.";
+                return "Forces the geometries into XYZ mode. Metadata are also modified. A specific z can be added.";
         }
 
         public String getName() {
@@ -69,7 +70,7 @@ public class ST_Force_3D implements Function {
         }
 
         public String getSqlOrder() {
-                return "select ST_Force_3D(the_geom) from myTable";
+                return "select ST_Force_3D(the_geom [, z]) from myTable";
         }
 
         public boolean isAggregate() {
@@ -77,7 +78,7 @@ public class ST_Force_3D implements Function {
         }
 
         public Arguments[] getFunctionArguments() {
-                return new Arguments[]{new Arguments(Argument.GEOMETRY)};
+                return new Arguments[]{new Arguments(Argument.GEOMETRY), new Arguments(Argument.GEOMETRY, Argument.NUMERIC)};
         }
 
         public Type getType(Type[] argsTypes) {

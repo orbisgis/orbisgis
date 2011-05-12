@@ -94,7 +94,6 @@ public class LineNoder {
 		LinearComponentExtracter lineFilter = new LinearComponentExtracter(
 				linesList);
 		for (int i = 0; i < sds.getRowCount(); i++) {
-
 			Geometry g = sds.getGeometry(i);
 			g.apply(lineFilter);
 		}
@@ -119,7 +118,6 @@ public class LineNoder {
 		Geometry minLine = extractPoint(lines);
 		if (minLine != null)
 			unionInput = minLine;
-
 		Geometry noded = linesGeom.union(unionInput);
 		return noded;
 	}
@@ -133,7 +131,6 @@ public class LineNoder {
 	}
 
 	private Geometry extractPoint(Collection lines) {
-		int minPts = Integer.MAX_VALUE;
 		Geometry point = null;
 		// extract first point from first non-empty geometry
 		for (Iterator i = lines.iterator(); i.hasNext();) {

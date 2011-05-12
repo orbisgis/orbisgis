@@ -65,267 +65,277 @@ import org.gdms.sql.strategies.SemanticException;
 import org.orbisgis.progress.IProgressMonitor;
 
 public class ST_KMeans implements CustomQuery {
-	private DataSourceFactory dsf;
-	private int nbOfCluster;
-	private DataSource inDs;
-	private String cellIndexFieldName;
-	private int cellIndexFieldId;
-	private Metadata metadata;
-	private int dimension;
-	private long rowCount;
-	private int fieldCount;
 
-	public String getDescription() {
-		return "Data clustering problem implementation";
-	}
+        private DataSourceFactory dsf;
+        private int nbOfCluster;
+        private DataSource inDs;
+        private String cellIndexFieldName;
+        private int cellIndexFieldId;
+        private Metadata metadata;
+        private int dimension;
+        private long rowCount;
+        private int fieldCount;
 
-	public String getSqlOrder() {
-		return "select ST_KMeans(cellIndex, 7) from myTable;";
-	}
+        public String getDescription() {
+                return "Data clustering problem implementation";
+        }
 
-	public String getName() {
-		return "ST_KMeans";
-	}
+        public String getSqlOrder() {
+                return "select ST_KMeans(cellIndex, 7) from myTable;";
+        }
 
-	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
-			Value[] values, IProgressMonitor pm) throws ExecutionException {
-		this.dsf = dsf;
-		cellIndexFieldName = values[0].toString();
-		nbOfCluster = values[1].getAsInt();
-		inDs = tables[0];
+        public String getName() {
+                return "ST_KMeans";
+        }
 
-		try {
-			inDs.open();
-			rowCount = inDs.getRowCount();
-			cellIndexFieldId = inDs.getFieldIndexByName(cellIndexFieldName);
-			check();
+        public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
+                Value[] values, IProgressMonitor pm) throws ExecutionException {
+                this.dsf = dsf;
+                cellIndexFieldName = values[0].toString();
+                nbOfCluster = values[1].getAsInt();
+                inDs = tables[0];
 
-			// K-Means initialization
-			List<DataPoint> listOfCentroids;
-			List<DataPoint> listOfNewCentroids = initialization();
-			// for (DataPoint dp : listOfNewCentroids) {
-			// dp.print();
-			// }
-			Cluster[] clusters;
-			Cluster[] newClusters = new Cluster[listOfNewCentroids.size()];
+                try {
+                        inDs.open();
+                        rowCount = inDs.getRowCount();
+                        cellIndexFieldId = inDs.getFieldIndexByName(cellIndexFieldName);
+                        check();
 
-			// K-Means iterations
-			int count = 0;
-			do {
-				System.out.printf("Iteration number %d : %d centroids\n",
-						count++, listOfNewCentroids.size());
+                        // K-Means initialization
+                        List<DataPoint> listOfCentroids;
+                        List<DataPoint> listOfNewCentroids = initialization();
+                        // for (DataPoint dp : listOfNewCentroids) {
+                        // dp.print();
+                        // }
+                        Cluster[] clusters;
+                        Cluster[] newClusters = new Cluster[listOfNewCentroids.size()];
 
-				listOfCentroids = listOfNewCentroids;
-				clusters = newClusters;
+                        // K-Means iterations
+                        int count = 0;
+                        do {
+                                System.out.printf("Iteration number %d : %d centroids\n",
+                                        count++, listOfNewCentroids.size());
 
-				// find the closest centroid for each DataPoint
-				newClusters = new Cluster[listOfNewCentroids.size()];
-				for (long rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-					final DataPoint dataPoint = new DataPoint(inDs
-							.getRow(rowIndex), cellIndexFieldId);
-					final int clusterIndex = dataPoint
-							.findClosestCentroidIndex(listOfCentroids);
-					if (null == newClusters[clusterIndex]) {
-						newClusters[clusterIndex] = new Cluster(dimension,
-								inDs, cellIndexFieldId);
-					}
-					newClusters[clusterIndex].addDataPointIndex(rowIndex);
-				}
+                                listOfCentroids = listOfNewCentroids;
+                                clusters = newClusters;
 
-				// calculate the new centroid of each cluster
-				listOfNewCentroids = new ArrayList<DataPoint>(listOfCentroids
-						.size());
-				for (Cluster cluster : newClusters) {
-					if (null != cluster) {
-						listOfNewCentroids.add(cluster.getCentroid());
-					}
-				}
-			} while (continueTheIterations(listOfCentroids, listOfNewCentroids,
-					clusters, newClusters)
-					&& (count < 15));
+                                // find the closest centroid for each DataPoint
+                                newClusters = new Cluster[listOfNewCentroids.size()];
+                                for (long rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+                                        final DataPoint dataPoint = new DataPoint(inDs.getRow(rowIndex), cellIndexFieldId);
+                                        final int clusterIndex = dataPoint.findClosestCentroidIndex(listOfCentroids);
+                                        if (null == newClusters[clusterIndex]) {
+                                                newClusters[clusterIndex] = new Cluster(dimension,
+                                                        inDs, cellIndexFieldId);
+                                        }
+                                        newClusters[clusterIndex].addDataPointIndex(rowIndex);
+                                }
 
-			// built the driver for the resulting datasource, register it and
-			// populate it...
-			final ObjectDriver driver = populateResultingDatasource(newClusters);
-			inDs.close();
-			return driver;
-		} catch (DriverException e) {
-			throw new ExecutionException(e);
-		} catch (InvalidTypeException e) {
-			throw new ExecutionException(e);
-		} catch (DriverLoadException e) {
-			throw new ExecutionException(e);
-		} catch (NoSuchTableException e) {
-			throw new ExecutionException(e);
-		} catch (DataSourceCreationException e) {
-			throw new ExecutionException(e);
-		} catch (ParseException e) {
-			throw new ExecutionException(e);
-		} catch (SemanticException e) {
-			throw new ExecutionException(e);
-		}
-	}
+                                // calculate the new centroid of each cluster
+                                listOfNewCentroids = new ArrayList<DataPoint>(listOfCentroids.size());
+                                for (Cluster cluster : newClusters) {
+                                        if (null != cluster) {
+                                                listOfNewCentroids.add(cluster.getCentroid());
+                                        }
+                                }
+                        } while (continueTheIterations(listOfCentroids, listOfNewCentroids,
+                                clusters, newClusters)
+                                && (count < 15));
 
-	private ObjectDriver populateResultingDatasource(final Cluster[] newClusters)
-			throws InvalidTypeException, DriverException {
-		final GenericObjectDriver driver = new GenericObjectDriver(
-				new String[] { cellIndexFieldName, "clusterNumber" },
-				new Type[] { metadata.getFieldType(cellIndexFieldId),
-						TypeFactory.createType(Type.INT) });
-		for (int clusterIndex = 0; clusterIndex < newClusters.length; clusterIndex++) {
-			final Value clusterIndexValue = ValueFactory
-					.createValue(clusterIndex);
-			for (long rowIndex : newClusters[clusterIndex]
-					.getListOfDataPointsIndex()) {
-				final Value keyValue = inDs.getFieldValue(rowIndex,
-						cellIndexFieldId);
-				driver.addValues(new Value[] { keyValue, clusterIndexValue });
-			}
-		}
-		return driver;
-	}
+                        // built the driver for the resulting datasource, register it and
+                        // populate it...
+                        final ObjectDriver driver = populateResultingDatasource(newClusters);
+                        inDs.close();
+                        return driver;
+                } catch (DriverException e) {
+                        throw new ExecutionException(e);
+                } catch (InvalidTypeException e) {
+                        throw new ExecutionException(e);
+                } catch (DriverLoadException e) {
+                        throw new ExecutionException(e);
+                } catch (NoSuchTableException e) {
+                        throw new ExecutionException(e);
+                } catch (DataSourceCreationException e) {
+                        throw new ExecutionException(e);
+                } catch (ParseException e) {
+                        throw new ExecutionException(e);
+                } catch (SemanticException e) {
+                        throw new ExecutionException(e);
+                }
+        }
 
-	private void check() throws DriverException, ExecutionException {
-		metadata = inDs.getMetadata();
-		final int fieldCount = metadata.getFieldCount();
-		for (int fieldId = 0; fieldId < fieldCount; fieldId++) {
-			if (cellIndexFieldId != fieldId) {
-				if (!TypeFactory.isNumerical(metadata.getFieldType(fieldId)
-						.getTypeCode())) {
-					throw new ExecutionException("Field '"
-							+ metadata.getFieldName(fieldId)
-							+ "' is not numeric !");
-				}
-			}
-		}
-	}
+        private ObjectDriver populateResultingDatasource(final Cluster[] newClusters)
+                throws InvalidTypeException, DriverException {
+                final GenericObjectDriver driver = new GenericObjectDriver(
+                        new String[]{cellIndexFieldName, "clusterNumber"},
+                        new Type[]{metadata.getFieldType(cellIndexFieldId),
+                                TypeFactory.createType(Type.INT)});
+                for (int clusterIndex = 0; clusterIndex < newClusters.length; clusterIndex++) {
+                        final Value clusterIndexValue = ValueFactory.createValue(clusterIndex);
+                        for (long rowIndex : newClusters[clusterIndex].getListOfDataPointsIndex()) {
+                                final Value keyValue = inDs.getFieldValue(rowIndex,
+                                        cellIndexFieldId);
+                                driver.addValues(new Value[]{keyValue, clusterIndexValue});
+                        }
+                }
+                return driver;
+        }
 
-	private List<DataPoint> initialization() throws DriverException,
-			DriverLoadException, DataSourceCreationException, ParseException,
-			SemanticException {
-		fieldCount = inDs.getFieldCount();
-		// build the sql query
-		final StringBuilder queryAvgSb = new StringBuilder();
-		final StringBuilder queryStdDevSb = new StringBuilder();
+        private void check() throws DriverException, ExecutionException {
+                metadata = inDs.getMetadata();
+                final int fieldCount = metadata.getFieldCount();
+                for (int fieldId = 0; fieldId < fieldCount; fieldId++) {
+                        if (cellIndexFieldId != fieldId) {
+                                if (!TypeFactory.isNumerical(metadata.getFieldType(fieldId).getTypeCode())) {
+                                        throw new ExecutionException("Field '"
+                                                + metadata.getFieldName(fieldId)
+                                                + "' is not numeric !");
+                                }
+                        }
+                }
+        }
 
-		for (int fieldId = 0; fieldId < fieldCount; fieldId++) {
-			if (cellIndexFieldId != fieldId) {
-				queryAvgSb.append(
-						(queryAvgSb.length() == 0) ? "Avg(" : ", Avg(").append(
-						metadata.getFieldName(fieldId)).append(")");
-				queryStdDevSb.append(
-						(queryStdDevSb.length() == 0) ? "StandardDeviation("
-								: ", StandardDeviation(").append(
-						metadata.getFieldName(fieldId)).append(")");
-			}
-		}
-		final String query = "select " + queryAvgSb.toString() + ", "
-				+ queryStdDevSb.toString() + " from \"" + inDs.getName() + "\"";
+        private List<DataPoint> initialization() throws DriverException,
+                DriverLoadException, DataSourceCreationException, ParseException,
+                SemanticException {
+                fieldCount = inDs.getFieldCount();
+                Value[] resultingValues = computeStatistics();
+                dimension = fieldCount - 1;
+                final double[] averages = new double[dimension];
+                final double[] standardDeviations = new double[dimension];
+                for (int i = 0; i < dimension; i++) {
+                        averages[i] = resultingValues[i].getAsDouble();
+                        standardDeviations[i] = resultingValues[i + dimension].getAsDouble();
+                }
 
-		System.err.println(query);
+                // initialize the default list of clusters' centroids with average and
+                // standard deviation values...
+                final List<DataPoint> centroids = new ArrayList<DataPoint>();
+                for (int centroidIdx = 0; centroidIdx < dimension; centroidIdx++) {
+                        final double[] tmp1 = new double[dimension];
+                        final double[] tmp2 = new double[dimension];
+                        final double[] tmp3 = new double[dimension];
+                        final double[] tmp4 = new double[dimension];
+                        final double[] tmp5 = new double[dimension];
+                        final double[] tmp6 = new double[dimension];
+                        final double[] tmp7 = new double[dimension];
+                        final double[] tmp8 = new double[dimension];
+                        for (int i = 0; i < dimension; i++) {
+                                tmp1[i] = averages[i] - standardDeviations[i];
+                                tmp2[i] = averages[i] + standardDeviations[i];
+                                tmp5[i] = averages[i] - 0.5 * standardDeviations[i];
+                                tmp6[i] = averages[i] + 0.5 * standardDeviations[i];
+                                if (i == centroidIdx) {
+                                        tmp3[i] = tmp1[i];
+                                        tmp4[i] = tmp2[i];
+                                        tmp7[i] = tmp5[i];
+                                        tmp8[i] = tmp6[i];
+                                } else {
+                                        tmp3[i] = averages[i];
+                                        tmp4[i] = averages[i];
+                                        tmp7[i] = averages[i];
+                                        tmp8[i] = averages[i];
+                                }
+                        }
+                        centroids.add(new DataPoint(tmp1));
+                        centroids.add(new DataPoint(tmp2));
+                        centroids.add(new DataPoint(tmp3));
+                        centroids.add(new DataPoint(tmp4));
+                        centroids.add(new DataPoint(tmp5));
+                        centroids.add(new DataPoint(tmp6));
+                        centroids.add(new DataPoint(tmp7));
+                        centroids.add(new DataPoint(tmp8));
+                }
+                centroids.add(new DataPoint(averages));
+                return centroids;
+        }
 
-		// execute the query (CollectiveAvg + CollectiveStandardDeviation
-		// computations) and retrieve the averages and the standard deviations
-		// ValueCollection and arrays of double
-		final String tmpDsName = dsf.getSourceManager().nameAndRegister(query);
-		final DataSource tmpDs = dsf.getDataSource(tmpDsName);
-		tmpDs.open();
-		final Value[] resultingValues = tmpDs.getRow(0);
-		tmpDs.close();
-		dsf.remove(tmpDsName);
+        private boolean continueTheIterations(
+                final List<DataPoint> listOfCentroids,
+                final List<DataPoint> listOfNewCentroids, final Cluster[] clusters,
+                final Cluster[] newClusters) {
+                // compare the two lists of centroids
+                if (listOfCentroids.size() != listOfNewCentroids.size()) {
+                        return true;
+                }
+                final DataPointComparator dataPointComparator = new DataPointComparator();
+                Collections.sort(listOfCentroids, dataPointComparator);
+                Collections.sort(listOfNewCentroids, dataPointComparator);
+                for (int i = 0; i < listOfCentroids.size(); i++) {
+                        if (0 != dataPointComparator.compare(listOfCentroids.get(i),
+                                listOfNewCentroids.get(i))) {
+                                return true;
+                        }
+                }
+                // compare the two arrays of clusters
+                if (clusters.length != newClusters.length) {
+                        return true;
+                }
+                for (int i = 0; i < clusters.length; i++) {
+                        if (clusters[i].isDifferentFrom(newClusters[i])) {
+                                return true;
+                        }
+                }
+                return false;
+        }
 
-		dimension = fieldCount - 1;
-		final double[] averages = new double[dimension];
-		final double[] standardDeviations = new double[dimension];
-		for (int i = 0; i < dimension; i++) {
-			averages[i] = resultingValues[i].getAsDouble();
-			standardDeviations[i] = resultingValues[i + dimension]
-					.getAsDouble();
-		}
+        public Metadata getMetadata(Metadata[] tables) throws DriverException {
+                return new DefaultMetadata(new Type[]{
+                                tables[0].getFieldType(cellIndexFieldId),
+                                TypeFactory.createType(Type.INT)}, new String[]{
+                                cellIndexFieldName, "clusterNumber"});
+        }
 
-		// initialize the default list of clusters' centroids with average and
-		// standard deviation values...
-		final List<DataPoint> centroids = new ArrayList<DataPoint>();
-		for (int centroidIdx = 0; centroidIdx < dimension; centroidIdx++) {
-			final double[] tmp1 = new double[dimension];
-			final double[] tmp2 = new double[dimension];
-			final double[] tmp3 = new double[dimension];
-			final double[] tmp4 = new double[dimension];
-			final double[] tmp5 = new double[dimension];
-			final double[] tmp6 = new double[dimension];
-			final double[] tmp7 = new double[dimension];
-			final double[] tmp8 = new double[dimension];
-			for (int i = 0; i < dimension; i++) {
-				tmp1[i] = averages[i] - standardDeviations[i];
-				tmp2[i] = averages[i] + standardDeviations[i];
-				tmp5[i] = averages[i] - 0.5 * standardDeviations[i];
-				tmp6[i] = averages[i] + 0.5 * standardDeviations[i];
-				if (i == centroidIdx) {
-					tmp3[i] = tmp1[i];
-					tmp4[i] = tmp2[i];
-					tmp7[i] = tmp5[i];
-					tmp8[i] = tmp6[i];
-				} else {
-					tmp3[i] = averages[i];
-					tmp4[i] = averages[i];
-					tmp7[i] = averages[i];
-					tmp8[i] = averages[i];
-				}
-			}
-			centroids.add(new DataPoint(tmp1));
-			centroids.add(new DataPoint(tmp2));
-			centroids.add(new DataPoint(tmp3));
-			centroids.add(new DataPoint(tmp4));
-			centroids.add(new DataPoint(tmp5));
-			centroids.add(new DataPoint(tmp6));
-			centroids.add(new DataPoint(tmp7));
-			centroids.add(new DataPoint(tmp8));
-		}
-		centroids.add(new DataPoint(averages));
-		return centroids;
-	}
+        public TableDefinition[] getTablesDefinitions() {
+                return new TableDefinition[]{TableDefinition.ANY};
+        }
 
-	private boolean continueTheIterations(
-			final List<DataPoint> listOfCentroids,
-			final List<DataPoint> listOfNewCentroids, final Cluster[] clusters,
-			final Cluster[] newClusters) {
-		// compare the two lists of centroids
-		if (listOfCentroids.size() != listOfNewCentroids.size()) {
-			return true;
-		}
-		final DataPointComparator dataPointComparator = new DataPointComparator();
-		Collections.sort(listOfCentroids, dataPointComparator);
-		Collections.sort(listOfNewCentroids, dataPointComparator);
-		for (int i = 0; i < listOfCentroids.size(); i++) {
-			if (0 != dataPointComparator.compare(listOfCentroids.get(i),
-					listOfNewCentroids.get(i))) {
-				return true;
-			}
-		}
-		// compare the two arrays of clusters
-		if (clusters.length != newClusters.length) {
-			return true;
-		}
-		for (int i = 0; i < clusters.length; i++) {
-			if (clusters[i].isDifferentFrom(newClusters[i])) {
-				return true;
-			}
-		}
-		return false;
-	}
+        public Arguments[] getFunctionArguments() {
+                return new Arguments[]{new Arguments(Argument.NUMERIC,
+                                Argument.WHOLE_NUMBER)};
+        }
 
-	public Metadata getMetadata(Metadata[] tables) throws DriverException {
-		return new DefaultMetadata(new Type[] {
-				tables[0].getFieldType(cellIndexFieldId),
-				TypeFactory.createType(Type.INT) }, new String[] {
-				cellIndexFieldName, "clusterNumber" });
-	}
+        /**
+         * Compute average and standard deviation for all fields in the table.
+         * @return
+         * @throws ParseException
+         * @throws SemanticException
+         * @throws DriverLoadException
+         * @throws DriverException
+         * @throws NoSuchTableException
+         * @throws DataSourceCreationException
+         */
+        public Value[] computeStatistics() throws ParseException, SemanticException, DriverLoadException, DriverException, NoSuchTableException, DataSourceCreationException{
 
-	public TableDefinition[] getTablesDefinitions() {
-		return new TableDefinition[] { TableDefinition.ANY };
-	}
+                // build the sql query
+                final StringBuilder queryAvgSb = new StringBuilder();
+                final StringBuilder queryStdDevSb = new StringBuilder();
 
-	public Arguments[] getFunctionArguments() {
-		return new Arguments[] { new Arguments(Argument.NUMERIC,
-				Argument.WHOLE_NUMBER) };	}
+                for (int fieldId = 0; fieldId < fieldCount; fieldId++) {
+                        if (cellIndexFieldId != fieldId) {
+                                queryAvgSb.append(
+                                        (queryAvgSb.length() == 0) ? "Avg(" : ", Avg(").append(
+                                        metadata.getFieldName(fieldId)).append(")");
+                                queryStdDevSb.append(
+                                        (queryStdDevSb.length() == 0) ? "StandardDeviation("
+                                        : ", StandardDeviation(").append(
+                                        metadata.getFieldName(fieldId)).append(")");
+                        }
+                }
+                final String query = "select " + queryAvgSb.toString() + ", "
+                        + queryStdDevSb.toString() + " from " + inDs.getName();
+
+                System.err.println(query);
+
+                // execute the query (CollectiveAvg + CollectiveStandardDeviation
+                // computations) and retrieve the averages and the standard deviations
+                // ValueCollection and arrays of double
+                final DataSource tmpDs = dsf.getDataSourceFromSQL(query);
+                tmpDs.open();
+                final Value[] stats = tmpDs.getRow(0);
+                tmpDs.close();
+
+                return stats;
+                
+        }
 }

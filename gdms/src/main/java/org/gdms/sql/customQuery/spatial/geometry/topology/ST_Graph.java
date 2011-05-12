@@ -36,9 +36,14 @@
  */
 package org.gdms.sql.customQuery.spatial.geometry.topology;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
+import org.gdms.data.NoSuchTableException;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.metadata.Metadata;
@@ -46,7 +51,6 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.driver.generic.GenericObjectDriver;
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.customQuery.TableDefinition;
 import org.gdms.sql.function.Argument;
@@ -55,62 +59,54 @@ import org.orbisgis.progress.IProgressMonitor;
 
 public class ST_Graph implements CustomQuery {
 
-	public String getName() {
-		return "ST_Graph";
-	}
+        public String getName() {
+                return "ST_Graph";
+        }
 
-	public String getSqlOrder() {
-		return "select ST_Graph(the_geom) from myTable;";
-	}
+        public String getSqlOrder() {
+                return "select ST_Graph(the_geom) from myTable;";
+        }
 
-	public String getDescription() {
-		return "Build a graph based on geometries order";
-	}
+        public String getDescription() {
+                return "Build a graph based on geometries order";
+        }
 
-	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
-			Value[] values, IProgressMonitor pm) throws ExecutionException {
-		try {
-			final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
-					tables[0]);
-			sds.open();
+        public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
+                Value[] values, IProgressMonitor pm) throws ExecutionException {
+                try {
+                        final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
+                                tables[0]);
+                        sds.open();
 
-			final String spatialFieldName = values[0].toString();
-			sds.setDefaultGeometry(spatialFieldName);
+                        final String spatialFieldName = values[0].toString();
+                        sds.setDefaultGeometry(spatialFieldName);
+                        sds.close();
 
-			PlanarGraph planarGraph = new PlanarGraph(pm);
+                        GraphNetwork graphNetwork = new GraphNetwork(dsf, pm);
 
-			GenericObjectDriver edges = planarGraph.createEdges(sds);
+                        graphNetwork.buildGraph(sds);
+                } catch (IOException ex) {
+                        Logger.getLogger(ST_Graph.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (DriverLoadException e) {
+                        throw new ExecutionException(e);
+                } catch (DriverException e) {
+                        throw new ExecutionException(e);
+                } catch (NonEditableDataSourceException e) {
+                        e.printStackTrace();
+                }
+                return null;
+        }
 
-			GenericObjectDriver nodes = planarGraph.createNodes(edges);
+        public Metadata getMetadata(Metadata[] tables) throws DriverException {
+                return null;
+        }
 
-			dsf.getSourceManager().register(
-					dsf.getSourceManager().getUniqueName("edges"), edges);
+        public TableDefinition[] getTablesDefinitions() {
+                return new TableDefinition[]{TableDefinition.GEOMETRY};
+        }
 
-			dsf.getSourceManager().register(
-					dsf.getSourceManager().getUniqueName("nodes"), nodes);
-
-			sds.close();
-
-		} catch (DriverLoadException e) {
-			throw new ExecutionException(e);
-		} catch (DriverException e) {
-			throw new ExecutionException(e);
-		} catch (NonEditableDataSourceException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	public Metadata getMetadata(Metadata[] tables) throws DriverException {
-		return null;
-	}
-
-	public TableDefinition[] getTablesDefinitions() {
-		return new TableDefinition[] { TableDefinition.GEOMETRY };
-	}
-
-	public Arguments[] getFunctionArguments() {
-		return new Arguments[] { new Arguments(Argument.GEOMETRY,
-				Argument.BOOLEAN) };
-	}
+        public Arguments[] getFunctionArguments() {
+                return new Arguments[]{new Arguments(Argument.GEOMETRY,
+                                Argument.BOOLEAN)};
+        }
 }

@@ -188,14 +188,17 @@ public class GeometryEdit {
         }
 
         /**
-         * Convert a xy geometry to xyz. If the z does not exits a z equals to zero
-         * is added.
+         * Add a new  z value for each vertexes of the geometry.
+         * If the geometry doesn't contain a z (ie NaN value) a z equals to zero is added.
+         * The boolean argument is used to set if the z value must be added (true) or if the z value
+         * must replace all existing z (false).
          *
          * @param geom
          * @param value
+         * @param addZ
          * @return
          */
-        public static Geometry force_3D(Geometry geom) {
+        public static Geometry force_3D(Geometry geom, final double value, final boolean addZ) {
 
                 geom.apply(new CoordinateSequenceFilter() {
 
@@ -211,51 +214,16 @@ public class GeometryEdit {
 
                         public void filter(CoordinateSequence seq, int i) {
                                 Coordinate coord = seq.getCoordinate(i);
-                                double x = coord.x;
-                                double y = coord.y;
                                 double z = coord.z;
-                                seq.setOrdinate(i, 0, x);
-                                seq.setOrdinate(i, 1, y);
-                                if (Double.isNaN(z)) {
-                                        seq.setOrdinate(i, 2, 0);
+                                if (addZ) {
+                                        if (Double.isNaN(z)) {
+                                                z = 0;
+                                        }
+                                        seq.setOrdinate(i, 2, z + value);
+                                } else {
+                                        seq.setOrdinate(i, 2, value);
+
                                 }
-                                if (i == seq.size()) {
-                                        done = true;
-                                }
-                        }
-                });
-
-                return geom;
-
-        }
-
-        /**
-         * Update all z ordinate by a new value
-         *
-         * @param geom
-         * @param value
-         * @return
-         */
-        public static Geometry force_3D(Geometry geom, final double value) {
-
-                geom.apply(new CoordinateSequenceFilter() {
-
-                        boolean done = false;
-
-                        public boolean isGeometryChanged() {
-                                return true;
-                        }
-
-                        public boolean isDone() {
-                                return done;
-                        }
-
-                        public void filter(CoordinateSequence seq, int i) {
-                                double x = seq.getX(i);
-                                double y = seq.getY(i);
-                                seq.setOrdinate(i, 0, x);
-                                seq.setOrdinate(i, 1, y);
-                                seq.setOrdinate(i, 2, value);
                                 if (i == seq.size()) {
                                         done = true;
                                 }
