@@ -13,6 +13,13 @@
         <version>3.1-SNAPSHOT</version>
         <name>orbisgis-ui</name>
         <url>http://orbisgis.org</url>
+        <repositories>
+                <repository>
+                        <id>IRSTV</id>
+                        <name>IRSTV repository</name>
+                        <url>http://repo.orbisgis.org</url>
+                </repository>
+        </repositories>
         <dependencies>
                 <dependency>
                         <groupId>junit</groupId>

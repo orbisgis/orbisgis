@@ -57,9 +57,9 @@
         </pluginRepositories>
         <distributionManagement>
                 <repository>
-                        <id>geosysin</id>
-                        <name>Geosysin repository</name>
-                        <url>scp://irstv@www.orbisgis.org:/var/www/repo.orbisgis.org/htdocs</url>
+                        <id>IRSTV</id>
+                        <name>IRSTV repository</name>
+                        <url>sftp://irstv@www.orbisgis.org:/var/www/repo.orbisgis.org/htdocs</url>
                 </repository>
         </distributionManagement>
         <build>
