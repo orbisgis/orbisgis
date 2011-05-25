@@ -76,7 +76,7 @@ import javax.xml.validation.Validator;
 
 import org.xml.sax.SAXException;
 
-public class XMLUtils {
+public final class XMLUtils {
 
         /**
          * Returns null if the content is valid for the specified schema. If the

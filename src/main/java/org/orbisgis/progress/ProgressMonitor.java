@@ -38,17 +38,18 @@ package org.orbisgis.progress;
 
 public interface ProgressMonitor {
 
-        public abstract void init(String taskName, long end);
+        void init(String taskName, long end);
 
         /**
          * Adds a new child task to the last added
          *
          * @param taskName
          *            Task name
+         * @param end  
          */
-        public abstract void startTask(String taskName, long end);
+        void startTask(String taskName, long end);
 
-        public abstract void endTask();
+        void endTask();
 
         /**
          * Gets the current name of the task. The name at init or the name at the
@@ -63,21 +64,21 @@ public interface ProgressMonitor {
          *
          * @param progress
          */
-        public abstract void progressTo(long progress);
+        void progressTo(long progress);
 
         /**
          * Gets the progress of the overall process
          *
          * @return
          */
-        public abstract int getOverallProgress();
+        int getOverallProgress();
 
         /**
          * Gets the progress of the current process
          *
          * @return
          */
-        public abstract int getCurrentProgress();
+        int getCurrentProgress();
 
         /**
          * Returns true if the process is cancelled and should end as quickly as
@@ -85,5 +86,5 @@ public interface ProgressMonitor {
          *
          * @return
          */
-        public boolean isCancelled();
+        boolean isCancelled();
 }

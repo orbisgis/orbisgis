@@ -42,6 +42,7 @@ package org.orbisgis.progress;
  */
 public final class DefaultProgressMonitor implements ProgressMonitor {
 
+        private static final int PERCENTAGEMAX = 100;
         private Task overallTask;
         private Task currentTask;
         private boolean cancelled;
@@ -60,7 +61,7 @@ public final class DefaultProgressMonitor implements ProgressMonitor {
                 currentTask = new Task(taskName, end);
         }
 
-        private class Task {
+        private static class Task {
 
                 String taskName;
                 int percentage;
@@ -81,9 +82,9 @@ public final class DefaultProgressMonitor implements ProgressMonitor {
         @Override
         public void progressTo(long progress) {
                 if (currentTask != null) {
-                        currentTask.percentage = (int)(progress * 100 / currentTask.end);
+                        currentTask.percentage = (int) (progress * PERCENTAGEMAX / currentTask.end);
                 } else {
-                        overallTask.percentage = (int)(progress * 100 / overallTask.end);
+                        overallTask.percentage = (int) (progress * PERCENTAGEMAX / overallTask.end);
                 }
         }
 

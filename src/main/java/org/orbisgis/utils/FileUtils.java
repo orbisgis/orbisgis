@@ -42,7 +42,6 @@ import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -85,7 +84,6 @@ public final class FileUtils {
                 }
         }
 
-
         /**
          * Deletes a file if exists
          *
@@ -106,14 +104,14 @@ public final class FileUtils {
          * @throws IOException 
          */
         public static void deleteSHPFiles(File fileShp) throws IOException {
-                        File fileShx = getFileWithExtension(fileShp, "shx");
-                        File fileDbf = getFileWithExtension(fileShp, "dbf");
-                        File filePrj = getFileWithExtension(fileShp, "prj");
+                File fileShx = getFileWithExtension(fileShp, "shx");
+                File fileDbf = getFileWithExtension(fileShp, "dbf");
+                File filePrj = getFileWithExtension(fileShp, "prj");
 
-                        deleteFile(fileShp);
-                        deleteFile(fileShx);
-                        deleteFile(fileDbf);
-                        deleteFile(filePrj);
+                deleteFile(fileShp);
+                deleteFile(fileShx);
+                deleteFile(fileDbf);
+                deleteFile(filePrj);
         }
 
         /**
@@ -176,10 +174,8 @@ public final class FileUtils {
          */
         public static void copyFileToDirectory(File file, File destDir)
                 throws IOException {
-                if (!destDir.exists()) {
-                        if (!destDir.mkdirs()) {
-                                throw new IOException("Cannot create directory: " + destDir);
-                        }
+                if (!destDir.exists() && !destDir.mkdirs()) {
+                        throw new IOException("Cannot create directory: " + destDir);
                 }
 
                 File output = new File(destDir, file.getName());
@@ -282,11 +278,12 @@ public final class FileUtils {
         public static long copy(InputStream in, OutputStream out, byte[] copyBuffer)
                 throws IOException {
                 long bytesCopied = 0;
-                int read = -1;
+                int read = in.read(copyBuffer, 0, copyBuffer.length);
 
-                while ((read = in.read(copyBuffer, 0, copyBuffer.length)) != -1) {
+                while (read != -1) {
                         out.write(copyBuffer, 0, read);
                         bytesCopied += read;
+                        read = in.read(copyBuffer, 0, copyBuffer.length);
                 }
                 return bytesCopied;
         }
@@ -353,9 +350,10 @@ public final class FileUtils {
                                                         BUF_SIZE);
 
                                                 out.putNextEntry(new ZipEntry(getRelativePath(toZip, file)));
-                                                int count;
-                                                while ((count = in.read(data, 0, BUF_SIZE)) != -1) {
+                                                int count = in.read(data, 0, BUF_SIZE);
+                                                while (count != -1) {
                                                         out.write(data, 0, count);
+                                                        count = in.read(data, 0, BUF_SIZE);
                                                 }
                                                 out.closeEntry(); // close each entry
                                         } finally {
@@ -439,11 +437,9 @@ public final class FileUtils {
          * Retrieve the content of the file as an array of bytes.
          * @param file
          * @return
-         * @throws FileNotFoundException
          * @throws IOException
          */
-        public static byte[] getContent(File file) throws FileNotFoundException,
-                IOException {
+        public static byte[] getContent(File file) throws IOException {
                 FileInputStream fis = new FileInputStream(file);
                 return getContent(fis);
         }
@@ -474,15 +470,12 @@ public final class FileUtils {
          * compute the MD5 sum of the file.
          * @param file
          * @return
-         * @throws FileNotFoundException
-         *      if the file doesn't exist.
          * @throws IOException
          *      if there is a problem while computing the file
          * @throws NoSuchAlgorithmException
          *      if the MD5 algorithm can't be found.
          */
-        public static byte[] getMD5(File file) throws FileNotFoundException,
-                IOException, NoSuchAlgorithmException {
+        public static byte[] getMD5(File file) throws IOException, NoSuchAlgorithmException {
                 byte[] content = getContent(file);
                 MessageDigest m = MessageDigest.getInstance("MD5");
                 m.update(content, 0, content.length);
@@ -558,7 +551,7 @@ public final class FileUtils {
 
                                         if (name.toLowerCase().endsWith(extension)) {
                                                 int extensionStart = name.lastIndexOf('.');
-                                                if ( extensionStart == -1) {
+                                                if (extensionStart == -1) {
                                                         return false;
                                                 }
                                                 String ret2 = name.substring(0, extensionStart);

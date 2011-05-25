@@ -44,6 +44,8 @@ package org.orbisgis.utils;
  */
 public final class ByteUtils {
 
+        private static final int BYTESIZE = 0xFF;
+
         /**
          * Converts a byte array into an integer.
          *
@@ -55,8 +57,8 @@ public final class ByteUtils {
                 if (b.length < 4) {
                         throw new IllegalArgumentException("The length of the byte array should be >= 4");
                 }
-                return ((b[3] & 0xff)) + ((b[2] & 0xff) << 8)
-                        + ((b[1] & 0xff) << 16) + ((b[0] & 0xff) << 24);
+                return ((b[3] & BYTESIZE)) + ((b[2] & BYTESIZE) << 8)
+                        + ((b[1] & BYTESIZE) << 16) + ((b[0] & BYTESIZE) << 24);
         }
 
         /**
@@ -66,10 +68,10 @@ public final class ByteUtils {
          */
         public static byte[] intToBytes(int v) {
                 byte[] b = new byte[4];
-                b[0] = (byte) ((v >>> 24) & 0xFF);
-                b[1] = (byte) ((v >>> 16) & 0xFF);
-                b[2] = (byte) ((v >>> 8) & 0xFF);
-                b[3] = (byte) ((v) & 0xFF);
+                b[0] = (byte) ((v >>> 24) & BYTESIZE);
+                b[1] = (byte) ((v >>> 16) & BYTESIZE);
+                b[2] = (byte) ((v >>> 8) & BYTESIZE);
+                b[3] = (byte) ((v) & BYTESIZE);
 
                 return b;
         }
@@ -82,8 +84,8 @@ public final class ByteUtils {
         public static byte[] shortsToBytes(short[] shorts) {
                 byte[] ret = new byte[shorts.length * 2];
                 for (int i = 0; i < shorts.length; i++) {
-                        ret[i * 2] = (byte) ((shorts[i]) & 0xFF);
-                        ret[i * 2 + 1] = (byte) ((shorts[i] >>> 8) & 0xFF);
+                        ret[i * 2] = (byte) ((shorts[i]) & BYTESIZE);
+                        ret[i * 2 + 1] = (byte) ((shorts[i] >>> 8) & BYTESIZE);
                 }
 
                 return ret;
@@ -106,7 +108,7 @@ public final class ByteUtils {
         public static short[] bytesToShorts(byte[] bytes) {
                 short[] ret = new short[bytes.length / 2];
                 for (int i = 0; i < ret.length; i++) {
-                        ret[i] = (short) (((bytes[i * 2] & 0xff)) + ((bytes[i * 2 + 1] & 0xff) << 8));
+                        ret[i] = (short) (((bytes[i * 2] & BYTESIZE)) + ((bytes[i * 2 + 1] & BYTESIZE) << 8));
                 }
 
                 return ret;
@@ -129,10 +131,10 @@ public final class ByteUtils {
         public static byte[] intsToBytes(int[] ints) {
                 byte[] ret = new byte[ints.length * 4];
                 for (int i = 0; i < ints.length; i++) {
-                        ret[i * 4] = (byte) ((ints[i]) & 0xFF);
-                        ret[i * 4 + 1] = (byte) ((ints[i] >>> 8) & 0xFF);
-                        ret[i * 4 + 2] = (byte) ((ints[i] >>> 16) & 0xFF);
-                        ret[i * 4 + 3] = (byte) ((ints[i] >>> 24) & 0xFF);
+                        ret[i * 4] = (byte) ((ints[i]) & BYTESIZE);
+                        ret[i * 4 + 1] = (byte) ((ints[i] >>> 8) & BYTESIZE);
+                        ret[i * 4 + 2] = (byte) ((ints[i] >>> 16) & BYTESIZE);
+                        ret[i * 4 + 3] = (byte) ((ints[i] >>> 24) & BYTESIZE);
                 }
                 return ret;
         }
@@ -145,10 +147,10 @@ public final class ByteUtils {
         public static int[] bytesToInts(byte[] bytes) {
                 int[] ret = new int[bytes.length / 4];
                 for (int i = 0; i < ret.length; i++) {
-                        ret[i] = ((bytes[i * 4] & 0xff))
-                                + ((bytes[i * 4 + 1] & 0xff) << 8)
-                                + ((bytes[i * 4 + 2] & 0xff) << 16)
-                                + ((bytes[i * 4 + 3] & 0xff) << 24);
+                        ret[i] = ((bytes[i * 4] & BYTESIZE))
+                                + ((bytes[i * 4 + 1] & BYTESIZE) << 8)
+                                + ((bytes[i * 4 + 2] & BYTESIZE) << 16)
+                                + ((bytes[i * 4 + 3] & BYTESIZE) << 24);
                 }
 
                 return ret;
@@ -163,10 +165,10 @@ public final class ByteUtils {
                 byte[] ret = new byte[floats.length * 4];
                 for (int i = 0; i < floats.length; i++) {
                         int floatAsInt = Float.floatToIntBits(floats[i]);
-                        ret[i * 4] = (byte) ((floatAsInt) & 0xFF);
-                        ret[i * 4 + 1] = (byte) ((floatAsInt >>> 8) & 0xFF);
-                        ret[i * 4 + 2] = (byte) ((floatAsInt >>> 16) & 0xFF);
-                        ret[i * 4 + 3] = (byte) ((floatAsInt >>> 24) & 0xFF);
+                        ret[i * 4] = (byte) ((floatAsInt) & BYTESIZE);
+                        ret[i * 4 + 1] = (byte) ((floatAsInt >>> 8) & BYTESIZE);
+                        ret[i * 4 + 2] = (byte) ((floatAsInt >>> 16) & BYTESIZE);
+                        ret[i * 4 + 3] = (byte) ((floatAsInt >>> 24) & BYTESIZE);
                 }
                 return ret;
         }
@@ -188,10 +190,10 @@ public final class ByteUtils {
         public static float[] bytesToFloats(byte[] bytes) {
                 float[] ret = new float[bytes.length / 4];
                 for (int i = 0; i < ret.length; i++) {
-                        int floatAsInt = ((bytes[i * 4 + 3] & 0xff) << 24)
-                                + ((bytes[i * 4 + 2] & 0xff) << 16)
-                                + ((bytes[i * 4 + 1] & 0xff) << 8)
-                                + ((bytes[i * 4] & 0xff));
+                        int floatAsInt = ((bytes[i * 4 + 3] & BYTESIZE) << 24)
+                                + ((bytes[i * 4 + 2] & BYTESIZE) << 16)
+                                + ((bytes[i * 4 + 1] & BYTESIZE) << 8)
+                                + ((bytes[i * 4] & BYTESIZE));
                         ret[i] = Float.intBitsToFloat(floatAsInt);
                 }
 
@@ -246,13 +248,13 @@ public final class ByteUtils {
                 long[] ret = new long[bytes.length / 8];
                 for (int i = 0; i < ret.length; i++) {
                         ret[i] = (((long) bytes[i * 8] << 56)
-                                + ((long) (bytes[i * 8 + i * 8 + 1] & 255) << 48)
-                                + ((long) (bytes[i * 8 + 2] & 255) << 40)
-                                + ((long) (bytes[i * 8 + 3] & 255) << 32)
-                                + ((long) (bytes[i * 8 + 4] & 255) << 24)
-                                + ((bytes[i * 8 + 5] & 255) << 16)
-                                + ((bytes[i * 8 + 6] & 255) << 8)
-                                + ((bytes[i * 8 + 7] & 255)));
+                                + ((long) (bytes[i * 8 + i * 8 + 1] & BYTESIZE) << 48)
+                                + ((long) (bytes[i * 8 + 2] & BYTESIZE) << 40)
+                                + ((long) (bytes[i * 8 + 3] & BYTESIZE) << 32)
+                                + ((long) (bytes[i * 8 + 4] & BYTESIZE) << 24)
+                                + ((bytes[i * 8 + 5] & BYTESIZE) << 16)
+                                + ((bytes[i * 8 + 6] & BYTESIZE) << 8)
+                                + ((bytes[i * 8 + 7] & BYTESIZE)));
                 }
 
                 return ret;

@@ -1,6 +1,6 @@
 package org.orbisgis.utils;
 
-public class TextUtils {
+public final class TextUtils {
 
         /**
          * Returns the platform-specific line separator, or "\n" if it is not defined for some reason.

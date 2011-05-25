@@ -2,20 +2,23 @@ package org.orbisgis.utils;
 
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import org.apache.log4j.Logger;
 
 public final class I18N {
 
+        private final static Logger LOG = Logger.getLogger(I18N.class);
         //I18N file must be in "properties/" repository
-        private final static String PROPERTIES = "language";
-        private final static String SEPARATOR = "."; //System.getProperty("file.separator");
+        private static final String PROPERTIES = "language";
+        private static final String SEPARATOR = "."; //System.getProperty("file.separator");
         //Orbisgis loacle. This local would applied to all plugin (if -i18n local has been given by command line)
         private static Locale I18N_SETLOCALE;
         //Orbisgis key, for find back Resource bundle about orbisgis Context.
-        private static String ORBISGIS_CTX = "orbisgis";
+        private static final String ORBISGIS_CTX = "orbisgis";
         //ResourceBundle dictionnary (contains all resource bundle : plugIns, orbisgis, gdms ...)
-        private static HashMap<String, ResourceBundle> I18NS = new HashMap<String, ResourceBundle>();
+        private static final Map<String, ResourceBundle> I18NS = new HashMap<String, ResourceBundle>();
 
         /**
          * Returns the Text associated with the specified key, in the current context
@@ -30,8 +33,8 @@ public final class I18N {
                         return key;
                 } //context not found. No translation
                 String contextKey = key.substring(0, contextIndex);
-                if (contextKey != null) {
                         if (I18NS.get(contextKey) == null) {
+                                LOG.warn("Context not found for " + contextKey);
                                 //context not found. No translation : return key
                                 return key;
                         }
@@ -39,13 +42,10 @@ public final class I18N {
                                 //return translation
                                 return I18NS.get(contextKey).getString(key);
                         } catch (MissingResourceException m) {
+                                LOG.warn("missing resource", m);
                                 //key not found in context. No translation : return key
                                 return key;
                         }
-                } else //context not found. No translation : return key
-                {
-                        return key;
-                }
         }
 
         //Add I18N context : orbisgis context, gdms context... and context for each PlugIn.
@@ -68,13 +68,11 @@ public final class I18N {
                 ResourceBundle bundle = null;
                 try {
                         bundle = ResourceBundle.getBundle(baseName, locale, loader.getClassLoader());
-                        if (I18NS.get(fileName) != null) {
-                                //This PlugIn (or i18n context for this PlugIn) already exists
-                        } else //Put bundle into dictionnary with context key (file name)
-                        {
+                        if (I18NS.get(fileName) == null) {//Put bundle into dictionnary with context key (file name)
                                 I18NS.put(fileName, bundle);
                         }
-                } catch (MissingResourceException missingResException) {
+                } catch (MissingResourceException m) {
+                        LOG.warn("Missing resource", m);
                         //Do nothing. The ResourceBundle is not loaded --> key will return at translation.
                 }
                 //Record OrbisGIS locale. Only if locale has added on command line.
@@ -121,10 +119,8 @@ public final class I18N {
                                 String[] lc = lang.split("_");
                                 if (lc.length > 1) {
                                         locale = new Locale(lc[0], lc[1]);
-                                } else if (lc.length > 0) {
-                                        locale = new Locale(lc[0]);
                                 } else {
-                                        // TODO : what to do?
+                                        locale = new Locale(lc[0]);
                                 }
 
                         }
