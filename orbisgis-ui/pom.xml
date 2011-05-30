@@ -89,14 +89,6 @@
                                 <groupId>org.codehaus.mojo</groupId>
                                 <artifactId>rpm-maven-plugin</artifactId>
                                 <version>2.1-alpha-1</version>
-                                <executions>
-                                        <execution>
-                                                <phase>deploy</phase>
-                                                <goals>
-                                                        <goal>rpm</goal>
-                                                </goals>
-                                        </execution>
-                                </executions>
                                 <configuration>
                                         <copyright>GPL</copyright>
                                         <distribution>OrsbiGIS</distribution>
@@ -184,6 +176,20 @@
                                         </archive>
                                 </configuration>
                         </plugin>
+                        <plugin>
+                                <artifactId>maven-assembly-plugin</artifactId>
+                                <configuration>
+                                        <archive>
+                                                <manifest>
+                                                        <mainClass>org.orbisgis.core.Main</mainClass>
+                                                </manifest>
+                                        </archive>
+                                        <descriptorRefs>
+                                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                                        </descriptorRefs>
+                                </configuration>
+                        </plugin>
+
                 </plugins>
         </build>
 </project>
