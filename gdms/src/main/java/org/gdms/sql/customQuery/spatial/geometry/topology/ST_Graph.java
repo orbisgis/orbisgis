@@ -40,10 +40,8 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
-import org.gdms.data.NoSuchTableException;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.metadata.Metadata;
@@ -85,14 +83,14 @@ public class ST_Graph implements CustomQuery {
                         GraphNetwork graphNetwork = new GraphNetwork(dsf, pm);
 
                         graphNetwork.buildGraph(sds);
-                } catch (IOException ex) {
-                        Logger.getLogger(ST_Graph.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IOException e) {
+                        throw new ExecutionException(e);
                 } catch (DriverLoadException e) {
                         throw new ExecutionException(e);
                 } catch (DriverException e) {
                         throw new ExecutionException(e);
                 } catch (NonEditableDataSourceException e) {
-                        e.printStackTrace();
+                        throw new ExecutionException(e);
                 }
                 return null;
         }
@@ -106,7 +104,6 @@ public class ST_Graph implements CustomQuery {
         }
 
         public Arguments[] getFunctionArguments() {
-                return new Arguments[]{new Arguments(Argument.GEOMETRY,
-                                Argument.BOOLEAN)};
+                return new Arguments[]{new Arguments(Argument.GEOMETRY)};
         }
 }

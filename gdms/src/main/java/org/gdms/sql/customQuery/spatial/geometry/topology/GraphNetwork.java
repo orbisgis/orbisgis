@@ -176,6 +176,5 @@ public class GraphNetwork {
 
                 //Remove the Rtree on disk
                 new File(diskTreePath).delete();
-
         }
 }

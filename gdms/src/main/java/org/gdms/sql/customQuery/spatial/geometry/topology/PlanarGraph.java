@@ -108,10 +108,9 @@ public class PlanarGraph {
          * @throws DriverException, IOException
          */
         public void buildGraph(SpatialDataSourceDecorator sds) throws DriverException, IOException {
-
+                sds.open();
                 src_sds_Name = sds.getName();
                 pm.startTask("Create edges graph");
-                sds.open();
 
                 DefaultMetadata edgeMedata = new DefaultMetadata(new Type[]{
                                 TypeFactory.createType(Type.GEOMETRY,
@@ -147,7 +146,7 @@ public class PlanarGraph {
                 edges = lineMerger.getMergedLineStrings();
 
 
-                ds_edges_name = dsf.getSourceManager().getUniqueName(src_sds_Name + "_edges");
+                ds_edges_name = dsf.getSourceManager().getUniqueName(src_sds_Name + ds_edges_name);
 
                 //Write the result
                 File out = new File(ds_edges_name + ".gdms");
@@ -190,6 +189,8 @@ public class PlanarGraph {
                         } else {
                                 values[3] = ValueFactory.createValue(gidsEnd[0]);
                         }
+                        values[4] = ValueFactory.createValue(-1);
+                        values[5] = ValueFactory.createValue(-1);
                         edgesDriver.addValues(values);
 
                 }
@@ -202,7 +203,7 @@ public class PlanarGraph {
 
                 nodeDriver.writingFinished();
 
-                ds_nodes_name = dsf.getSourceManager().getUniqueName(src_sds_Name + "_nodes");
+                ds_nodes_name = dsf.getSourceManager().getUniqueName(src_sds_Name + ds_nodes_name);
                 dsf.getSourceManager().register(ds_nodes_name, nodeDriver);
                 dsf.getSourceManager().register(ds_edges_name, out);
         }
@@ -249,7 +250,7 @@ public class PlanarGraph {
                                 TypeFactory.createType(Type.INT)}, new String[]{"the_geom",
                                 ID});
 
-                ds_polygons_name = dsf.getSourceManager().getUniqueName(src_sds_Name + "_polygons");
+                ds_polygons_name = dsf.getSourceManager().getUniqueName(src_sds_Name + ds_polygons_name);
 
                 //Write the result
                 File out = new File(ds_polygons_name + ".gdms");
@@ -380,10 +381,8 @@ public class PlanarGraph {
                         dsf.getIndexManager().buildIndex(ds_polygons_name, "the_geom", pm);
                 }
 
-
                 DefaultSpatialIndexQuery query = new DefaultSpatialIndexQuery(envelope, "the_geom");
                 Iterator<Integer> it = sdsFaces.queryIndex(query);
-
                 return it;
         }
 }

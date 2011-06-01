@@ -85,8 +85,8 @@ public class ST_PlanarGraph implements CustomQuery {
                         planarGraph.buildGraph(sds);
                         planarGraph.createPolygonAndTopology();
                         return null;
-                } catch (IOException ex) {
-                        Logger.getLogger(ST_PlanarGraph.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IOException e) {
+                        throw new ExecutionException(e);
                 } catch (DriverLoadException e) {
                         throw new ExecutionException(e);
                 } catch (DriverException e) {
@@ -97,10 +97,9 @@ public class ST_PlanarGraph implements CustomQuery {
                         throw new ExecutionException(e);
                 } catch (IndexException e) {
                         throw new ExecutionException(e);
-                } catch (DataSourceCreationException ex) {
-                        Logger.getLogger(ST_PlanarGraph.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (DataSourceCreationException e) {
+                        throw new ExecutionException(e);
                 }
-                return null;
         }
 
         public Metadata getMetadata(Metadata[] tables) throws DriverException {
