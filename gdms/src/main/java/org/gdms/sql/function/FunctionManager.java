@@ -105,6 +105,7 @@ import org.gdms.sql.function.spatial.geometry.create.ST_RemoveDuplicateCoordinat
 import org.gdms.sql.function.spatial.geometry.crs.ST_Transform;
 import org.gdms.sql.function.spatial.geometry.distance.ST_NearestPoints;
 import org.gdms.sql.function.spatial.geometry.edit.ST_AddZ;
+import org.gdms.sql.function.spatial.geometry.edit.ST_AddZFromRaster;
 import org.gdms.sql.function.spatial.geometry.edit.ST_Normalize;
 import org.gdms.sql.function.spatial.geometry.edit.ST_Reverse;
 import org.gdms.sql.function.spatial.geometry.edit.ST_Snap;
@@ -309,6 +310,7 @@ public class FunctionManager {
                 addFunction(ST_MakeEnvelope.class);
                 addFunction(ST_Holes.class);
                 addFunction(ST_InteriorRingN.class);
+                addFunction(ST_AddZFromRaster.class);
         }
 
         public static void addFunctionManagerListener(
