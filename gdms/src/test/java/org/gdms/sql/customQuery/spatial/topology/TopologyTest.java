@@ -92,18 +92,18 @@ public class TopologyTest extends TestCase {
 
                 dsResult_polygons.close();
                 DataSource dsResult_edges = dsf.getDataSource(srcDS.getName() + "_edges");
-                DataSource exceptedDS = dsf.getDataSource(driver_out_src);
+                DataSource expectedDS = dsf.getDataSource(driver_out_src);
 
                 dsResult_edges.open();
                 //The planar graph returns 3 lines
                 assertTrue(dsResult_edges.getRowCount() == 3);
 
-                exceptedDS.open();
+                expectedDS.open();
                 //Check if all values are equals between input datasource and excepted datasource
-                for (int i = 0; i < dsResult_edges.getRowCount(); i++) {
-                        assertTrue(Arrays.equals(dsResult_edges.getRow(i), exceptedDS.getRow(i)));
+                for (int i = 0; i < expectedDS.getRowCount(); i++) {
+                        assertTrue(checkIsPresent(expectedDS.getRow(i), dsResult_edges));
                 }
-                exceptedDS.close();
+                expectedDS.close();
                 dsResult_edges.close();
 
         }
@@ -181,19 +181,36 @@ public class TopologyTest extends TestCase {
                 dsResult_nodes.close();
 
                 DataSource dsResult_edges = dsf.getDataSource(srcDS.getName() + "_edges");
-                DataSource exceptedDS = dsf.getDataSource(driver_out_src);
+                DataSource expectedDS = dsf.getDataSource(driver_out_src);
 
                 dsResult_edges.open();
                 //The planar graph returns 3 lines. The same as input.
                 assertTrue(dsResult_edges.getRowCount() == 4);
 
-                exceptedDS.open();
+                expectedDS.open();
                 //Check if all values are equals between input datasource and excepted datasource
-                for (int i = 0; i < dsResult_edges.getRowCount(); i++) {
-                        assertTrue(Arrays.equals(dsResult_edges.getRow(i), exceptedDS.getRow(i)));
+                for (int i = 0; i < expectedDS.getRowCount(); i++) {
+                        assertTrue(checkIsPresent(expectedDS.getRow(i), dsResult_edges));
                 }
-                exceptedDS.close();
+                expectedDS.close();
                 dsResult_edges.close();
 
+        }
+        
+        /**
+         * Check if the line expected is present in the table out.
+         * @param expected
+         * @param out
+         * @return
+         * @throws Exception 
+         */
+        private boolean checkIsPresent(Value[] expected, DataSource out) throws Exception{
+                for(long i=0; i<out.getRowCount(); i++){
+                        Value[] vals = out.getRow(i);
+                        if(expected[0].getAsGeometry().equals(vals[0].getAsGeometry())){
+                                return Arrays.equals(expected, out.getRow(i));
+                        }
+                }
+                return false;
         }
 }
