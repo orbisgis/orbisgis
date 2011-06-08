@@ -27,7 +27,8 @@ public class TopologyTest extends TestCase {
         private static DataSourceFactory dsf = new DataSourceFactory();
 
         /**
-         * A test to validate the planar graph method
+         * A test to validate the planar graph method with two polygons.
+         *
          * @throws Exception
          */
         public void testST_PlanarGraph() throws Exception {
@@ -40,41 +41,11 @@ public class TopologyTest extends TestCase {
                                 TypeFactory.createType(Type.INT)
                         });
 
-                driver_src.addValues(new Value[]{ValueFactory.createValue(wktr.read("LINESTRING ( 69 152, 69 293, 221 293, 221 152, 69 152 )")),
+                driver_src.addValues(new Value[]{ValueFactory.createValue(wktr.read("POLYGON( ( 69 152, 69 293, 221 293, 221 152, 69 152 ))")),
                                 ValueFactory.createValue(1)});
-                driver_src.addValues(new Value[]{ValueFactory.createValue(wktr.read("LINESTRING ( 221 152, 221 293, 390 293, 390 152, 221 152 )")),
+                driver_src.addValues(new Value[]{ValueFactory.createValue(wktr.read("POLYGON( ( 221 152, 221 293, 390 293, 390 152, 221 152 ))")),
                                 ValueFactory.createValue(2)});
 
-                // Expected result
-                final GenericObjectDriver driver_out_src = new GenericObjectDriver(
-                        new String[]{"the_geom", "id", "start_node", "end_node", "right_polygon", "left_polygon"},
-                        new Type[]{TypeFactory.createType(Type.GEOMETRY),
-                                TypeFactory.createType(Type.INT),
-                                TypeFactory.createType(Type.INT),
-                                TypeFactory.createType(Type.INT),
-                                TypeFactory.createType(Type.INT),
-                                TypeFactory.createType(Type.INT)
-                        });
-
-                // insert all filled rows...
-                driver_out_src.addValues(new Value[]{ValueFactory.createValue(wktr.read("LINESTRING ( 221 293, 390 293, 390 152, 221 152 )")),
-                                ValueFactory.createValue(1),
-                                ValueFactory.createValue(1),
-                                ValueFactory.createValue(2),
-                                ValueFactory.createValue(2),
-                                ValueFactory.createValue(-1)});
-                driver_out_src.addValues(new Value[]{ValueFactory.createValue(wktr.read("LINESTRING ( 221 293, 221 152 )")),
-                                ValueFactory.createValue(2),
-                                ValueFactory.createValue(1),
-                                ValueFactory.createValue(2),
-                                ValueFactory.createValue(1),
-                                ValueFactory.createValue(2)});
-                driver_out_src.addValues(new Value[]{ValueFactory.createValue(wktr.read("LINESTRING ( 221 152, 69 152, 69 293, 221 293 )")),
-                                ValueFactory.createValue(3),
-                                ValueFactory.createValue(2),
-                                ValueFactory.createValue(1),
-                                ValueFactory.createValue(1),
-                                ValueFactory.createValue(-1)});
 
                 DataSource srcDS = dsf.getDataSource(driver_src);
 
@@ -92,20 +63,49 @@ public class TopologyTest extends TestCase {
 
                 dsResult_polygons.close();
                 DataSource dsResult_edges = dsf.getDataSource(srcDS.getName() + "_edges");
-                DataSource expectedDS = dsf.getDataSource(driver_out_src);
 
                 dsResult_edges.open();
                 //The planar graph returns 3 lines
                 assertTrue(dsResult_edges.getRowCount() == 3);
 
-                expectedDS.open();
-                //Check if all values are equals between input datasource and excepted datasource
-                for (int i = 0; i < expectedDS.getRowCount(); i++) {
-                        assertTrue(checkIsPresent(expectedDS.getRow(i), dsResult_edges));
-                }
-                expectedDS.close();
-                dsResult_edges.close();
+                //Test the gid values for the 3 lines                
+                Value[] row0 = dsResult_edges.getRow(0);
+                //This row corresponds to the shared segment between geometry from row0 and row1
+                Value[] row1 = dsResult_edges.getRow(1);
+                Value[] row2 = dsResult_edges.getRow(2);
 
+                int gidRight = row1[4].getAsInt();
+                int gidLeft = row1[5].getAsInt();
+
+                //Check the left and right gids
+                //if the gids are not equal do a flip test, otherwise the topology is not valid.
+                if (gidLeft == 1 && gidRight == 2) {
+                        //Left gid
+                        assertTrue(row0[5].getAsInt() == -1);
+                        assertTrue(row2[5].getAsInt() == -1);
+                        //Right gid
+                        assertTrue(row0[4].getAsInt() == 1);
+                        assertTrue(row2[4].getAsInt() == 2);
+                } else if (gidLeft == 2 && gidRight == 1) {
+                        //Left gid
+                        assertTrue(row0[5].getAsInt() == -1);
+                        assertTrue(row2[5].getAsInt() == -1);
+                        //Right gid
+                        assertTrue(row0[4].getAsInt() == 2);
+                        assertTrue(row2[4].getAsInt() == 1);
+                } else {
+                        assertTrue("The topology is not valid", false);
+                }
+
+                //Check the start and end gids
+                assertTrue(row0[2].getAsInt() == 1);
+                assertTrue(row0[3].getAsInt() == 2);
+                assertTrue(row1[2].getAsInt() == 1);
+                assertTrue(row1[3].getAsInt() == 2);
+                assertTrue(row2[2].getAsInt() == 2);
+                assertTrue(row2[3].getAsInt() == 1);
+
+                dsResult_edges.close();
         }
 
         /**
@@ -159,7 +159,7 @@ public class TopologyTest extends TestCase {
                                 ValueFactory.createValue(3),
                                 ValueFactory.createValue(5),
                                 ValueFactory.createValue(6)});
-                 driver_out_src.addValues(new Value[]{ValueFactory.createValue(wktr.read("LINESTRING ( 329 127, 170.88433908045977 148.3647988505747 )")),
+                driver_out_src.addValues(new Value[]{ValueFactory.createValue(wktr.read("LINESTRING ( 329 127, 170.88433908045977 148.3647988505747 )")),
                                 ValueFactory.createValue(4),
                                 ValueFactory.createValue(4),
                                 ValueFactory.createValue(4),
@@ -177,7 +177,8 @@ public class TopologyTest extends TestCase {
 
                 dsResult_nodes.open();
                 //The planar graph returns 7 nodes
-                assertTrue(dsResult_nodes.getRowCount() == 7);
+                assertTrue(
+                        dsResult_nodes.getRowCount() == 7);
                 dsResult_nodes.close();
 
                 DataSource dsResult_edges = dsf.getDataSource(srcDS.getName() + "_edges");
@@ -185,18 +186,26 @@ public class TopologyTest extends TestCase {
 
                 dsResult_edges.open();
                 //The planar graph returns 3 lines. The same as input.
-                assertTrue(dsResult_edges.getRowCount() == 4);
+                assertTrue(
+                        dsResult_edges.getRowCount() == 4);
 
                 expectedDS.open();
                 //Check if all values are equals between input datasource and excepted datasource
-                for (int i = 0; i < expectedDS.getRowCount(); i++) {
+
+
+                for (int i = 0; i
+                        < expectedDS.getRowCount(); i++) {
                         assertTrue(checkIsPresent(expectedDS.getRow(i), dsResult_edges));
+
+
                 }
                 expectedDS.close();
                 dsResult_edges.close();
 
+
+
         }
-        
+
         /**
          * Check if the line expected is present in the table out.
          * @param expected
@@ -204,13 +213,19 @@ public class TopologyTest extends TestCase {
          * @return
          * @throws Exception 
          */
-        private boolean checkIsPresent(Value[] expected, DataSource out) throws Exception{
-                for(long i=0; i<out.getRowCount(); i++){
+        private boolean checkIsPresent(Value[] expected, DataSource out) throws Exception {
+                for (long i = 0; i
+                        < out.getRowCount(); i++) {
                         Value[] vals = out.getRow(i);
-                        if(expected[0].getAsGeometry().equals(vals[0].getAsGeometry())){
+
+
+                        if (expected[0].getAsGeometry().equals(vals[0].getAsGeometry())) {
                                 return Arrays.equals(expected, out.getRow(i));
+
+
                         }
                 }
                 return false;
+
         }
 }
