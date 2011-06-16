@@ -69,6 +69,7 @@ import org.orbisgis.core.renderer.symbol.SymbolFactory;
 
 import com.vividsolutions.jts.geom.Envelope;
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.orbisgis.core.renderer.ImageRenderer;
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 
 public class TestClassfication {
@@ -141,7 +142,7 @@ public class TestClassfication {
 			// .getEnvelopeInternal();
 			BufferedImage img = new BufferedImage(1000, 1000,
 					BufferedImage.TYPE_INT_ARGB);
-			Renderer r = new Renderer();
+			Renderer r = new ImageRenderer();
 			// int size = 350;
 			// extent = new Envelope(new Coordinate(extent.centre().x - size,
 			// extent.centre().y - size), new Coordinate(extent.centre().x
@@ -207,7 +208,7 @@ public class TestClassfication {
 			Envelope extent = layer.getEnvelope();
 			BufferedImage img = new BufferedImage(400, 400,
 					BufferedImage.TYPE_INT_ARGB);
-			Renderer r = new Renderer();
+			Renderer r = new ImageRenderer();
 			// int size = 185350;
 			// extent = new Envelope(new Coordinate(extent.centre().x - size,
 			// extent.centre().y - size), new Coordinate(extent.centre().x

@@ -32,6 +32,7 @@ import org.orbisgis.core.layerModel.Layer;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.Renderer;
 import net.opengis.se._2_0.core.SymbolizerType;
+import org.orbisgis.core.renderer.ImageRenderer;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 
@@ -100,7 +101,7 @@ public class AreaSymbolizerTest extends TestCase {
             FeatureTypeStyle style = new FeatureTypeStyle(layer, "/home/maxence/projects/SCAP-c²/SE/choro.se");
             layer.setFeatureTypeStyle(style);
 
-            Renderer renderer = new Renderer();
+            Renderer renderer = new ImageRenderer();
 
             renderer.draw(img, extent, layer);
 

@@ -38,6 +38,7 @@ import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.renderer.Renderer;
 import net.opengis.se._2_0.core.FeatureTypeStyleType;
+import org.orbisgis.core.renderer.ImageRenderer;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
 
@@ -130,7 +131,7 @@ public class FeatureTypeStyleTest extends TestCase {
             BufferedImage img = new BufferedImage(1003, 646,
                     BufferedImage.TYPE_INT_ARGB);
     
-            Renderer r = new Renderer();
+            Renderer r = new ImageRenderer();
             
             // int size = 350;
             // extent = new Envelope(new Coordinate(extent.centre().x - size,

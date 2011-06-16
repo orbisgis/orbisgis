@@ -68,6 +68,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.ImageRenderer;
 import org.orbisgis.core.renderer.se.Rule;
 
 /**
@@ -383,7 +384,7 @@ public class DefaultMapContext implements MapContext {
 	public void draw(MapTransform mt,
 			IProgressMonitor pm) {
 		checkIsOpen();
-		Renderer renderer = new Renderer();
+		Renderer renderer = new ImageRenderer();
 		renderer.draw(mt, getLayerModel(), pm);
 	}
 

@@ -87,12 +87,60 @@ import org.orbisgis.core.renderer.se.TextSymbolizer;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 
-public class Renderer {
+/**
+ * Renderer contains all the logic of the Symbology Encoding process based on java
+ * Graphics2D. This is an abstract class and subclasses provided effectives methods
+ * according to the rendering target (e.g. bitmap image, SVG, pdf, etc.)
+ *
+ * @author maxence
+ */
+public abstract class Renderer {
 
     private static OutputManager logger = Services.getOutputManager();
 
     // overlayImage is the one on witch label will be drawn
     private BufferedImage overlayImage;
+
+    /**
+     * This method shall returns a graphics2D for each symbolizers in the list.
+     * This is useful to make the diff bw pdf purpose and image purpose
+     * Is called just before a new layer is drawn
+     * @return
+     */
+    public abstract HashMap<Symbolizer, Graphics2D> getGraphics2D(ArrayList<Symbolizer> symbs,
+            Graphics2D g2, MapTransform mt);
+
+    /**
+     * Is called once the layer has been rendered
+     * @param g2 the graphics the layer has to be drawn on
+     */
+    public abstract void disposeLayer(Graphics2D g2);
+
+
+    /**
+     * Called before each feature
+     * @param name the name of the feature
+     */
+    public abstract void beginFeature(String name);
+
+    /**
+     * Called after each feature
+     * @param name the name of the feature
+     */
+    public abstract void endFeature(String name);
+
+    /**
+     * Called before each layer
+     * @param name the name of the layer
+     */
+    public abstract void beginLayer(String name);
+
+    /**
+     * Called after each layer
+     * @param name the name of the layer
+     */
+    public abstract void endLayer(String name);
+
 
     /**
      * Create a view which correspond to feature in MapContext adjusted extend
@@ -115,6 +163,7 @@ public class Renderer {
                 + extent.getMinX() + " " + extent.getMinY() + "))'), "
                 + sds.getSpatialFieldName() + ")");
     }
+
 
     /**
      * Draws the content of the Vector Layer
@@ -181,8 +230,6 @@ public class Renderer {
 
                 // Assign filtered data source to each rule
                 HashMap<Rule, FilterDataSourceDecorator> rulesDs = new HashMap<Rule, FilterDataSourceDecorator>();
-                ArrayList<BufferedImage> imgSymbs = new ArrayList<BufferedImage>();
-                HashMap<Symbolizer, Graphics2D> g2Symbs = new HashMap<Symbolizer, Graphics2D>();
 
                 String elseWhere = "";
                 // Foreach rList without ElseFilter
@@ -248,17 +295,10 @@ public class Renderer {
                 // Make sure TextSymbolizer are rendered on top
                 symbs.addAll(overlays);
 
-                /**
-                 * Create one buffered image for each symbolizer. This way allow
-                 * to render all symboliser in one path without encountering layer level issues
-                 */
-                for (Symbolizer s : symbs) {
-                    BufferedImage bufImg = new BufferedImage(mt.getWidth(), mt.getHeight(), BufferedImage.TYPE_INT_ARGB);
-                    Graphics2D sG2 = bufImg.createGraphics();
-                    sG2.addRenderingHints(mt.getRenderingHints());
-                    imgSymbs.add(bufImg);
-                    g2Symbs.put(s, sG2);
-                }
+
+
+                // Get a graphics for each symbolizer
+                HashMap<Symbolizer, Graphics2D> g2Symbs = getGraphics2D(symbs, g2, mt);
 
                 //for (Symbolizer s : symbs) {
                 for (Rule r : rList) {
@@ -267,6 +307,7 @@ public class Renderer {
                 }
 
                 for (Rule r : rList) {
+                    beginLayer(r.getName());
                     logger.println("Drawing rule " + r.getName());
                     pm.startTask("Drawing " + layer.getName() + " (Rule " + r.getName() + ")");
 
@@ -299,6 +340,7 @@ public class Renderer {
 
                         boolean emphasis = selected.contains((int) originalIndex);
 
+                        beginFeature(Long.toString(originalIndex));
                         for (Symbolizer s : r.getCompositeSymbolizer().getSymbolizerList()) {
                             Graphics2D g2S;
                             if (s instanceof TextSymbolizer) {
@@ -310,6 +352,7 @@ public class Renderer {
                             s.draw(g2S, sds, originalIndex, emphasis, mt, the_geom, perm);
                             //s.draw(g2, sds, originalIndex, emphasis, mt, the_geom, perm);
                         }
+                        endFeature(Long.toString(originalIndex));
 
                         pm.progressTo((int) (100 * ++layerCount / total));
                     }
@@ -317,13 +360,12 @@ public class Renderer {
                     logger.println("  -> Rule done in  " + (tf2 - tf1) + "[ms]");
 
                     pm.endTask();
+                    endLayer(r.getName());
                 }
 
                 long tV3 = System.currentTimeMillis();
                 logger.println("All Rules done in" + (tV3 - tV2) + "[ms] (" + layerCount + "objects)");
-                for (BufferedImage img : imgSymbs) {
-                    g2.drawImage(img, null, null);
-                }
+                disposeLayer(g2);
 
                 for (Rule r : rulesDs.keySet()) {
                     FilterDataSourceDecorator fds = rulesDs.get(r);
@@ -598,30 +640,6 @@ public class Renderer {
                 return geometry;
             }
         }
-
-        /*@Override
-        public Shape getValidShape(Shape shape, double distance) {
-            if (shape instanceof PolygonShape) {
-                Rectangle2D bounds2D = shape.getBounds2D();
-
-                Envelope shpEnv = new Envelope(bounds2D.getMinX(), bounds2D.getMaxX(), bounds2D.getMinY(), bounds2D.getMaxY());
-                List<Envelope> list = quadtree.query(shpEnv);
-
-
-                Area area = new Area(shape);
-                logger.println("Shape:");
-                ShapeHelper.printvertices(area);
-
-                for (Envelope env : list) {
-                    Area rect = new Area(new Rectangle2D.Double(env.getMinX(), env.getMinY(), env.getWidth(), env.getHeight()));
-                    area.subtract(rect);
-                }
-
-                return area;
-            } else{
-                return shape;
-            }
-        }*/
     }
 
     /**

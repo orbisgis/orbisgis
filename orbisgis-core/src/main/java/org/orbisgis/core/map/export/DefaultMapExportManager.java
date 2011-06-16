@@ -24,6 +24,7 @@ import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 
 import com.vividsolutions.jts.geom.Envelope;
+import org.orbisgis.core.renderer.ImageRenderer;
 
 public class DefaultMapExportManager implements MapExportManager {
 
@@ -47,7 +48,7 @@ public class DefaultMapExportManager implements MapExportManager {
 		}
 
 		pm.startTask("Drawing map");
-		Renderer r = new Renderer();
+		Renderer r = new ImageRenderer();
 		DOMImplementation domImpl = GenericDOMImplementation
 				.getDOMImplementation();
 

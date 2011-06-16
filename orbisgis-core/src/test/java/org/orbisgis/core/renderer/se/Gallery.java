@@ -24,6 +24,7 @@ import org.orbisgis.core.AbstractTest;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.Layer;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.ImageRenderer;
 import org.orbisgis.core.renderer.Renderer;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -73,7 +74,7 @@ public class Gallery extends AbstractTest {
             FeatureTypeStyle style = new FeatureTypeStyle(layer, stylePath);
             layer.setFeatureTypeStyle(style);
 
-            Renderer renderer = new Renderer();
+            Renderer renderer = new ImageRenderer();
             BufferedImage image = mt.getImage();
 
             Graphics graphics = image.getGraphics();

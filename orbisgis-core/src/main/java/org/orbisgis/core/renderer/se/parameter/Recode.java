@@ -158,11 +158,12 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
 	}
 
     public ToType getParameter(SpatialDataSourceDecorator sds, long fid) {
+        String key = "";
         try {
-            String key = lookupValue.getValue(sds, fid);
+            key = lookupValue.getValue(sds, fid);
             return getMapItemValue(key);
         } catch (Exception e) {
-            Services.getOutputManager().println("Fallback:" + e, Color.yellow);
+            Services.getOutputManager().println("Fallback (" + key + "): " + e, Color.yellow);
             return fallbackValue;
         }
     }

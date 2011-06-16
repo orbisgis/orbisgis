@@ -79,6 +79,7 @@ import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Envelope;
+import org.orbisgis.core.renderer.PdfRenderer;
 
 public class ExportMapAsPDFPlugIn extends AbstractPlugIn {
 
@@ -126,14 +127,14 @@ public class ExportMapAsPDFPlugIn extends AbstractPlugIn {
         MapContext mapContext = (MapContext) mapEditor.getElement().getObject();
 
         try {
-
-            Renderer r = new Renderer();
-
             if (outputFile.getName().toLowerCase().endsWith("pdf")) { //$NON-NLS-1$
 
                 FileOutputStream fos = new FileOutputStream(outputFile);
 
                 PdfWriter writer = PdfWriter.getInstance(document, fos);
+
+                writer.setTagged();
+                writer.setUserProperties(true);
 
                 document.open();
 
@@ -163,6 +164,8 @@ public class ExportMapAsPDFPlugIn extends AbstractPlugIn {
 
                 g2dMap.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                         RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+                Renderer r = new PdfRenderer(templateMap, writer);
 
                 r.draw(g2dMap, width, height, envelope, layer,
                         new NullProgressMonitor());
@@ -225,7 +228,6 @@ public class ExportMapAsPDFPlugIn extends AbstractPlugIn {
                 image = op.filter(image, null);
 
                 g2dScale.drawImage(image, 200, 0, null);
-
                 g2dMap.dispose();
                 g2dLegend.dispose();
                 g2dScale.dispose();

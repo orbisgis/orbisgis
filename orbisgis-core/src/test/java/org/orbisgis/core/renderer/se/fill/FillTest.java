@@ -37,7 +37,6 @@
  */
 package org.orbisgis.core.renderer.se.fill;
 
-import java.awt.image.RenderedImage;
 import org.orbisgis.core.renderer.se.graphic.*;
 import com.sun.media.jai.widget.DisplayJAI;
 import java.awt.BorderLayout;
@@ -45,7 +44,6 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
@@ -53,7 +51,6 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
-import javax.media.jai.RenderableGraphics;
 
 import javax.swing.JFrame;
 
