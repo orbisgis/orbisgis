@@ -133,7 +133,7 @@ public final class TextStroke extends Stroke {
 	}
 
     @Override
-    public double getNaturalLength(SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) throws ParameterException, IOException {
+    public Double getNaturalLength(SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) throws ParameterException, IOException {
         Rectangle2D bounds = lineLabel.getLabel().getBounds(null, sds, fid, mt);
         return bounds.getWidth();
     }

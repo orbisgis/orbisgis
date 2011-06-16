@@ -167,7 +167,7 @@ public abstract class Stroke implements SymbolizerNode {
         s.setExtension(exts);
     }
 
-    public abstract double getNaturalLength(SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) throws ParameterException, IOException;
+    public abstract Double getNaturalLength(SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) throws ParameterException, IOException;
 
     public abstract String dependsOnFeature();
 }

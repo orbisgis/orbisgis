@@ -102,7 +102,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
     }
 
     @Override
-    public double getNaturalLength(SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) throws ParameterException, IOException {
+    public Double getNaturalLength(SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) throws ParameterException, IOException {
         double naturalLength;
 
         if (length != null) {
@@ -141,15 +141,12 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
             Shape shape, boolean selected, MapTransform mt, double offset)
             throws ParameterException, IOException {
 
-        //if (g != null) {
-        System.out.println("GraphicStroke.draw");
         ArrayList<Shape> shapes;
-        // if not using offset rapport, compute perpendiculat offset first
+
         if (!this.isOffsetRapport() && Math.abs(offset) > 0.0) {
             shapes = ShapeHelper.perpendicularOffset(shape, offset);
             // Setting offset to 0.0 let be sure the offset will never been applied twice!
             offset = 0.0;
-            //System.out.println("Apply offset to graphic stroke!");
         } else {
             shapes = new ArrayList<Shape>();
             shapes.add(shape);
@@ -208,7 +205,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
                             //System.out.println ("Going to plot a point:");
                             segLength = ShapeHelper.getLineLength(oSeg);
                             if (segLength >= 1) {
-                                System.out.println("oSeg Length: " + segLength);
+                                //System.out.println("oSeg Length: " + segLength);
                                 Point2D.Double pt = ShapeHelper.getPointAt(oSeg, segLength / 2);
                                 AffineTransform at = AffineTransform.getTranslateInstance(pt.x, pt.y);
 

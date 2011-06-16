@@ -86,7 +86,7 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
     private Uom uom;
 
     @Override
-    public double getNaturalLength(SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) {
+    public Double getNaturalLength(SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) {
         return Double.POSITIVE_INFINITY;
     }
 
