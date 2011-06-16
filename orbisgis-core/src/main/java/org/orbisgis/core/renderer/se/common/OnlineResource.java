@@ -47,12 +47,10 @@ import java.awt.Shape;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
-import java.awt.image.renderable.ParameterBlock;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -60,6 +58,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.media.jai.InterpolationBicubic2;
 
 import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
@@ -123,6 +122,17 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
     }
 
     //@Override
+    /**
+     * @deprecated
+     * @param viewBox
+     * @param sds
+     * @param fid
+     * @param mt
+     * @param mimeType
+     * @return
+     * @throws IOException
+     * @throws ParameterException
+     */
     public RenderedImage getPlanarImage(ViewBox viewBox, SpatialDataSourceDecorator sds, long fid, MapTransform mt, String mimeType)
             throws IOException, ParameterException {
 
@@ -255,28 +265,25 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
         double width = rawImage.getWidth();
         double height = rawImage.getHeight();
 
-        if (effectiveHeight != null && effectiveWidth != null){
+        if (effectiveHeight != null && effectiveWidth != null) {
             double ratio_x = effectiveWidth / width;
             double ratio_y = effectiveHeight / height;
-            ParameterBlock pb = new ParameterBlock();
-            pb.addSource(rawImage);
-            pb.add(ratio_x);
-            pb.add(ratio_y);
-            pb.add(0.0F);
-            pb.add(0.0F);
-            //pb.add(0);
-            //pb.add(InterpolationBilinear.getInstance(InterpolationBilinear.INTERP_BILINEAR));
+
             RenderedOp img;
+
             if (ratio_x > 1.0 || ratio_y > 1.0) {
-               img = JAI.create("scale", pb, mt.getRenderingHints());
+                img = JAI.create("scale", rawImage,
+                        (float) ratio_x, (float) ratio_y,
+                        0.0f, 0.0f,
+                        InterpolationBicubic2.getInstance(InterpolationBicubic2.INTERP_BICUBIC_2),
+                        mt.getRenderingHints());
             } else {
-                //return JAI.create("SubsampleAverage", pb, mt.getRenderingHints());
                 img = JAI.create("SubsampleAverage", rawImage, ratio_x, ratio_y, mt.getRenderingHints());
             }
-            fat.concatenate(AffineTransform.getTranslateInstance(-img.getWidth()/2, -img.getHeight()/2));
+            fat.concatenate(AffineTransform.getTranslateInstance(-img.getWidth() / 2, -img.getHeight() / 2));
             g2.drawRenderedImage(img, fat);
         } else {
-            fat.concatenate(AffineTransform.getTranslateInstance(-width/2, -height/2));
+            fat.concatenate(AffineTransform.getTranslateInstance(-width / 2, -height / 2));
             g2.drawRenderedImage(rawImage, fat);
         }
     }
@@ -290,6 +297,9 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
         }
     }
 
+    /**
+     * @deprecated
+     */
     public RenderedImage getSvgImage(ViewBox viewBox, SpatialDataSourceDecorator sds, long fid, MapTransform mt, String mimeType)
             throws IOException, ParameterException {
         try {
@@ -330,6 +340,17 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
         }
     }
 
+    /**
+     * @deprecated
+     * @param viewBox
+     * @param sds
+     * @param fid
+     * @param mt
+     * @param mimeType
+     * @return
+     * @throws IOException
+     * @throws ParameterException
+     */
     public PlanarImage getJAIImage(ViewBox viewBox, SpatialDataSourceDecorator sds, long fid, MapTransform mt, String mimeType)
             throws IOException, ParameterException {
 
@@ -362,16 +383,13 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
                 if (widthDst > 0 && heightDst > 0) {
                     double ratio_x = widthDst / width;
                     double ratio_y = heightDst / height;
-                    ParameterBlock pb = new ParameterBlock();
-                    pb.addSource(img);
-                    pb.add(ratio_x);
-                    pb.add(ratio_y);
-                    pb.add(0.0F);
-                    pb.add(0.0F);
-                    //pb.add(0);
-                    //pb.add(InterpolationBilinear.getInstance(InterpolationBilinear.INTERP_BILINEAR));
+
                     if (ratio_x > 1.0 || ratio_y > 1.0) {
-                        return JAI.create("scale", pb, mt.getRenderingHints());
+                        return JAI.create("scale", rawImage,
+                                (float) ratio_x, (float) ratio_y,
+                                0.0f, 0.0f,
+                                InterpolationBicubic2.getInstance(InterpolationBicubic2.INTERP_BICUBIC_2),
+                                mt.getRenderingHints());
                     } else {
                         //return JAI.create("SubsampleAverage", pb, mt.getRenderingHints());
                         return JAI.create("SubsampleAverage", img, ratio_x, ratio_y, mt.getRenderingHints());
