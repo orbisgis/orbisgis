@@ -104,10 +104,8 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
             }
         }
 
-        System.out.println("Point Symb uom: " + pst.getUom());
         if (pst.getUom() != null) {
             Uom u = Uom.fromOgcURN(pst.getUom());
-            System.out.println("This is the UOM: " + u);
             this.setUom(u);
         }
 

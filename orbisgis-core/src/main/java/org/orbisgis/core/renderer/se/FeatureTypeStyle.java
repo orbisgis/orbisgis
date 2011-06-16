@@ -156,10 +156,14 @@ public final class FeatureTypeStyle implements SymbolizerNode {
      *  This method copies all rules from given style and merge them within the current
      * style. Resulting style is done by stacking new rules over rules from current style.
      * (i.e. symbolizer level of new style > level from current one)
+     *
+     * This may alter the behaviour of ElseRules !
+     * @todo let the layer have several style ?
+     *
      * @param style
      */
     public void merge(FeatureTypeStyle style) {
-        long offset = findBiggestLevel();
+        int offset = findBiggestLevel();
 
         for (Rule r : style.getRules()) {
             this.addRule(r);
@@ -169,8 +173,8 @@ public final class FeatureTypeStyle implements SymbolizerNode {
         }
     }
 
-    private long findBiggestLevel() {
-        long level = 0;
+    private int findBiggestLevel() {
+        int level = 0;
 
         for (Rule r : rules) {
             for (Symbolizer s : r.getCompositeSymbolizer().getSymbolizerList()) {

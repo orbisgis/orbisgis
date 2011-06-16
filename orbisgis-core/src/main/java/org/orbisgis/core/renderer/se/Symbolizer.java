@@ -37,7 +37,7 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
     protected String desc;
     protected GeometryAttribute the_geom;
     private SymbolizerNode parent;
-    protected long level;
+    protected int level;
 
     public Symbolizer() {
         name = Symbolizer.DEFAULT_NAME;
@@ -98,11 +98,11 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
         desc = description;
     }
 
-    public long getLevel() {
+    public int getLevel() {
         return level;
     }
 
-    public void setLevel(long level) {
+    public void setLevel(int level) {
         this.level = level;
     }
 
