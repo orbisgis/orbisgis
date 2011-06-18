@@ -17,7 +17,7 @@
                         <ViewBox><Width>4</Width></ViewBox>
                         <SolidFill>
                             <Color>#888888</Color>
-                            <Opacity>100</Opacity>
+                            <Opacity>1</Opacity>
                         </SolidFill>
                     </MarkGraphic>
                     <MarkGraphic>
@@ -25,7 +25,7 @@
                         <ViewBox><Width>2</Width></ViewBox>
                         <SolidFill>
                             <Color>#BBBBBB</Color>
-                            <Opacity>100</Opacity>
+                            <Opacity>1</Opacity>
                         </SolidFill>
                         <Transform>
                             <Translate>
@@ -39,7 +39,7 @@
                         <ViewBox><Width>2</Width></ViewBox>
                         <SolidFill>
                             <Color>#BBBBBB</Color>
-                            <Opacity>100</Opacity>
+                            <Opacity>1</Opacity>
                         </SolidFill>
                         <Transform>
                             <Translate>
@@ -110,7 +110,7 @@
           </ViewBox>
 	  <SolidFill>
 	    <Color>#ff0000</Color>
-	    <Opacity>75</Opacity>
+	    <Opacity>0.75</Opacity>
 	  </SolidFill>
           <Transform>
             <Translate>
@@ -137,7 +137,7 @@
           </ViewBox>
 	  <SolidFill>
 	    <Color>#ff0000</Color>
-	    <Opacity>25</Opacity>
+	    <Opacity>0.25</Opacity>
 	  </SolidFill>
           <Transform>
             <Translate>
@@ -440,7 +440,7 @@
 	     <MarkGraphic>
           <WellKnownName>Square</WellKnownName>
 	       <PenStroke />
-	       <SolidFill />
+	       <SolidFill><Color>#FFCA00</Color></SolidFill>
 	     </MarkGraphic>
 	     <tse:Percentage>0</tse:Percentage>
 	  </tse:DensityFill>
@@ -462,9 +462,9 @@
 	     <MarkGraphic>
           <WellKnownName>Square</WellKnownName>
 	       <PenStroke />
-	       <SolidFill />
+	       <SolidFill><Color>#FFCA00</Color></SolidFill>
 	     </MarkGraphic>
-	     <tse:Percentage>30</tse:Percentage>
+	     <tse:Percentage>0.30</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -485,9 +485,9 @@
 	     <MarkGraphic>
           <WellKnownName>Square</WellKnownName>
 	       <PenStroke />
-	       <SolidFill />
+	       <SolidFill><Color>#FFCA00</Color></SolidFill>
 	     </MarkGraphic>
-	     <tse:Percentage>50</tse:Percentage>
+	     <tse:Percentage>0.50</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -508,9 +508,9 @@
 	     <MarkGraphic>
           <WellKnownName>Square</WellKnownName>
 	       <PenStroke />
-	       <SolidFill />
+	       <SolidFill><Color>#FFCA00</Color></SolidFill>
 	     </MarkGraphic>
-	     <tse:Percentage>60</tse:Percentage>
+	     <tse:Percentage>0.60</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -533,9 +533,9 @@
 	     <MarkGraphic>
           <WellKnownName>Square</WellKnownName>
 	       <PenStroke />
-	       <SolidFill />
+	       <SolidFill><Color>#FFCA00</Color></SolidFill>
 	     </MarkGraphic>
-	     <tse:Percentage>80</tse:Percentage>
+	     <tse:Percentage>0.80</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -555,9 +555,9 @@
 	     <MarkGraphic>
           <WellKnownName>Square</WellKnownName>
 	       <PenStroke />
-	       <SolidFill />
+	       <SolidFill><Color>#FFCA00</Color></SolidFill>
 	     </MarkGraphic>
-	     <tse:Percentage>100</tse:Percentage>
+	     <tse:Percentage>1</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -582,9 +582,9 @@
 	         <Height>5</Height>
 	       </ViewBox>
 	       <PenStroke />
-	       <SolidFill />
+	       <SolidFill><Color>#FFCA00</Color></SolidFill>
 	     </MarkGraphic>
-	     <tse:Percentage>1</tse:Percentage>
+	     <tse:Percentage>0</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -607,9 +607,9 @@
 	         <Height>5</Height>
 	       </ViewBox>
 	       <PenStroke />
-	       <SolidFill />
+	       <SolidFill><Color>#FFCA00</Color></SolidFill>
 	     </MarkGraphic>
-	     <tse:Percentage>31</tse:Percentage>
+	     <tse:Percentage>0.3</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -633,9 +633,9 @@
 	         <Height>5</Height>
 	       </ViewBox>
 	       <PenStroke />
-	       <SolidFill />
+	       <SolidFill><Color>#FFCA00</Color></SolidFill>
 	     </MarkGraphic>
-	     <tse:Percentage>51</tse:Percentage>
+	     <tse:Percentage>0.51</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -659,9 +659,9 @@
 	         <Height>5</Height>
 	       </ViewBox>
 	       <PenStroke />
-	       <SolidFill />
+	       <SolidFill><Color>#FFCA00</Color></SolidFill>
 	     </MarkGraphic>
-	     <tse:Percentage>60</tse:Percentage>
+	     <tse:Percentage>0.60</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -687,9 +687,9 @@
 	         <Height>5</Height>
 	       </ViewBox>
 	       <PenStroke />
-	       <SolidFill />
+	       <SolidFill><Color>#FFCA00</Color></SolidFill>
 	     </MarkGraphic>
-	     <tse:Percentage>80</tse:Percentage>
+	     <tse:Percentage>0.80</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -712,9 +712,9 @@
 	         <Height>5</Height>
 	       </ViewBox>
 	       <PenStroke />
-	       <SolidFill />
+	       <SolidFill><Color>#FFCA00</Color></SolidFill>
 	     </MarkGraphic>
-	     <tse:Percentage>100</tse:Percentage>
+	     <tse:Percentage>1</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -740,9 +740,9 @@
 		 <Width>3</Width>
 	       </ViewBox>
 	       <PenStroke />
-	       <SolidFill />
+	       <SolidFill><Color>#FFCA00</Color></SolidFill>
 	     </MarkGraphic>
-	     <tse:Percentage>1</tse:Percentage>
+	     <tse:Percentage>0.1</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -766,9 +766,9 @@
 		 <Width>3</Width>
 	       </ViewBox>
 	       <PenStroke />
-	       <SolidFill />
+	       <SolidFill><Color>#FFCA00</Color></SolidFill>
 	     </MarkGraphic>
-	     <tse:Percentage>31</tse:Percentage>
+	     <tse:Percentage>0.31</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -793,9 +793,9 @@
 		 <Width>3</Width>
 	       </ViewBox>
 	       <PenStroke />
-	       <SolidFill />
+	       <SolidFill><Color>#FFCA00</Color></SolidFill>
 	     </MarkGraphic>
-	     <tse:Percentage>51</tse:Percentage>
+	     <tse:Percentage>0.51</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -820,9 +820,9 @@
 		 <Width>3</Width>
 	       </ViewBox>
 	       <PenStroke />
-	       <SolidFill />
+	       <SolidFill><Color>#FFCA00</Color></SolidFill>
 	     </MarkGraphic>
-	     <tse:Percentage>60</tse:Percentage>
+	     <tse:Percentage>0.60</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -849,9 +849,9 @@
 		 <Width>3</Width>
 	       </ViewBox>
 	       <PenStroke />
-	       <SolidFill />
+	       <SolidFill><Color>#FFCA00</Color></SolidFill>
 	     </MarkGraphic>
-	     <tse:Percentage>80</tse:Percentage>
+	     <tse:Percentage>0.80</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -875,9 +875,9 @@
 		 <Width>3</Width>
 	       </ViewBox>
 	       <PenStroke />
-	       <SolidFill />
+	       <SolidFill><Color>#FFCA00</Color></SolidFill>
 	     </MarkGraphic>
-	     <tse:Percentage>100</tse:Percentage>
+	     <tse:Percentage>1</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -899,9 +899,9 @@
 	     <MarkGraphic>
 	     <ViewBox><Width>5</Width></ViewBox>
 	       <PenStroke />
-	       <SolidFill />
+	       <SolidFill><Color>#FFCA00</Color></SolidFill>
 	     </MarkGraphic>
-	     <tse:Percentage>0</tse:Percentage>
+	     <tse:Percentage>0.0</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -920,9 +920,9 @@
 	     <MarkGraphic>
 	     <ViewBox><Width>5</Width></ViewBox>
 	       <PenStroke />
-	       <SolidFill />
+	       <SolidFill><Color>#FFCA00</Color></SolidFill>
 	     </MarkGraphic>
-	     <tse:Percentage>30</tse:Percentage>
+	     <tse:Percentage>0.30</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -943,9 +943,9 @@
 	     <MarkGraphic>
 	     <ViewBox><Width>5</Width></ViewBox>
 	       <PenStroke />
-	       <SolidFill />
+	       <SolidFill><Color>#FFCA00</Color></SolidFill>
 	     </MarkGraphic>
-	     <tse:Percentage>50</tse:Percentage>
+	     <tse:Percentage>0.50</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -966,9 +966,9 @@
 	     <MarkGraphic>
 	     <ViewBox><Width>5</Width></ViewBox>
 	       <PenStroke />
-	       <SolidFill />
+	       <SolidFill><Color>#FFCA00</Color></SolidFill>
 	     </MarkGraphic>
-	     <tse:Percentage>60</tse:Percentage>
+	     <tse:Percentage>0.60</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -991,9 +991,9 @@
 	     <MarkGraphic>
 	     <ViewBox><Width>5</Width></ViewBox>
 	       <PenStroke />
-	       <SolidFill />
+	       <SolidFill><Color>#FFCA00</Color></SolidFill>
 	     </MarkGraphic>
-	     <tse:Percentage>80</tse:Percentage>
+	     <tse:Percentage>0.80</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -1013,9 +1013,9 @@
 	     <MarkGraphic>
 	     <ViewBox><Width>5</Width></ViewBox>
 	       <PenStroke />
-	       <SolidFill />
+	       <SolidFill><Color>#FFCA00</Color></SolidFill>
 	     </MarkGraphic>
-	     <tse:Percentage>100</tse:Percentage>
+	     <tse:Percentage>1</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -1040,7 +1040,7 @@
 	      <PenStroke>
 	         <Width>2</Width>
 	      </PenStroke>
-	     <tse:Percentage>0</tse:Percentage>
+	     <tse:Percentage>0.0</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -1062,7 +1062,7 @@
 	      <PenStroke>
 	         <Width>2</Width>
 	      </PenStroke>
-	     <tse:Percentage>30</tse:Percentage>
+	     <tse:Percentage>0.30</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -1084,7 +1084,7 @@
 	      <PenStroke>
 	         <Width>2</Width>
 	      </PenStroke>
-	     <tse:Percentage>50</tse:Percentage>
+	     <tse:Percentage>0.50</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -1106,7 +1106,7 @@
 	      <PenStroke>
 	         <Width>2</Width>
 	      </PenStroke>
-	     <tse:Percentage>60</tse:Percentage>
+	     <tse:Percentage>0.60</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -1129,7 +1129,7 @@
 	      <PenStroke>
 	         <Width>2</Width>
 	      </PenStroke>
-	     <tse:Percentage>80</tse:Percentage>
+	     <tse:Percentage>0.80</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -1151,7 +1151,7 @@
 	      <PenStroke>
 	         <Width>2</Width>
 	      </PenStroke>
-	     <tse:Percentage>100</tse:Percentage>
+	     <tse:Percentage>1</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -1177,7 +1177,7 @@
 	         <Width>1</Width>
 	      </PenStroke>
 	      <tse:Orientation>45</tse:Orientation>
-	     <tse:Percentage>0</tse:Percentage>
+	     <tse:Percentage>0.0</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -1200,7 +1200,7 @@
 	         <Width>1</Width>
 	      </PenStroke>
 	      <tse:Orientation>45</tse:Orientation>
-	     <tse:Percentage>30</tse:Percentage>
+	     <tse:Percentage>0.30</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -1223,7 +1223,7 @@
 	         <Width>1</Width>
 	      </PenStroke>
 	      <tse:Orientation>45</tse:Orientation>
-	     <tse:Percentage>50</tse:Percentage>
+	     <tse:Percentage>0.50</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -1246,7 +1246,7 @@
 	         <Width>1</Width>
 	      </PenStroke>
 	      <tse:Orientation>45</tse:Orientation>
-	     <tse:Percentage>60</tse:Percentage>
+	     <tse:Percentage>0.60</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -1270,7 +1270,7 @@
 	         <Width>1</Width>
 	      </PenStroke>
 	      <tse:Orientation>45</tse:Orientation>
-	     <tse:Percentage>80</tse:Percentage>
+	     <tse:Percentage>0.80</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -1293,7 +1293,7 @@
 	         <Width>1</Width>
 	      </PenStroke>
 	      <tse:Orientation>45</tse:Orientation>
-	     <tse:Percentage>100</tse:Percentage>
+	     <tse:Percentage>1</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -1321,7 +1321,7 @@
 	         <Width>1</Width>
 	      </PenStroke>
 	      <tse:Orientation>90</tse:Orientation>
-	     <tse:Percentage>0</tse:Percentage>
+	     <tse:Percentage>0.0</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -1344,7 +1344,7 @@
 	         <Width>1</Width>
 	      </PenStroke>
 	      <tse:Orientation>90</tse:Orientation>
-	     <tse:Percentage>30</tse:Percentage>
+	     <tse:Percentage>0.30</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -1367,7 +1367,7 @@
 	         <Width>1</Width>
 	      </PenStroke>
 	      <tse:Orientation>90</tse:Orientation>
-	     <tse:Percentage>50</tse:Percentage>
+	     <tse:Percentage>0.50</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -1390,7 +1390,7 @@
 	         <Width>1</Width>
 	      </PenStroke>
 	      <tse:Orientation>90</tse:Orientation>
-	     <tse:Percentage>60</tse:Percentage>
+	     <tse:Percentage>0.60</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -1414,7 +1414,7 @@
 	         <Width>1</Width>
 	      </PenStroke>
 	      <tse:Orientation>90</tse:Orientation>
-	     <tse:Percentage>80</tse:Percentage>
+	     <tse:Percentage>0.80</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -1437,7 +1437,7 @@
 	         <Width>1</Width>
 	      </PenStroke>
 	      <tse:Orientation>90</tse:Orientation>
-	     <tse:Percentage>100</tse:Percentage>
+	     <tse:Percentage>1</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -1463,7 +1463,7 @@
 	         <Width>1</Width>
 	      </PenStroke>
 	      <tse:Orientation>0</tse:Orientation>
-	     <tse:Percentage>0</tse:Percentage>
+	     <tse:Percentage>0.0</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -1486,7 +1486,7 @@
 	         <Width>1</Width>
 	      </PenStroke>
 	      <tse:Orientation>0</tse:Orientation>
-	     <tse:Percentage>30</tse:Percentage>
+	     <tse:Percentage>0.30</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -1509,7 +1509,7 @@
 	         <Width>1</Width>
 	      </PenStroke>
 	      <tse:Orientation>0</tse:Orientation>
-	     <tse:Percentage>50</tse:Percentage>
+	     <tse:Percentage>0.50</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -1532,7 +1532,7 @@
 	         <Width>1</Width>
 	      </PenStroke>
 	      <tse:Orientation>0</tse:Orientation>
-	     <tse:Percentage>60</tse:Percentage>
+	     <tse:Percentage>0.60</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -1556,7 +1556,7 @@
 	         <Width>1</Width>
 	      </PenStroke>
 	      <tse:Orientation>0</tse:Orientation>
-	     <tse:Percentage>80</tse:Percentage>
+	     <tse:Percentage>0.80</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -1579,7 +1579,7 @@
 	         <Width>1</Width>
 	      </PenStroke>
 	      <tse:Orientation>0</tse:Orientation>
-	     <tse:Percentage>700</tse:Percentage>
+	     <tse:Percentage>1</tse:Percentage>
 	  </tse:DensityFill>
 	  <PenStroke />
           <Transform>
@@ -1661,7 +1661,7 @@
 	  <tse:DotMapFill>
 	      <MarkGraphic>
 	         <PenStroke />
-		 <SolidFill />
+		 <SolidFill><Color>#FFCA00</Color></SolidFill>
 	      </MarkGraphic>
 	      <tse:ValuePerMark>3</tse:ValuePerMark>
 	     <tse:ValueToRepresent>20</tse:ValueToRepresent>
