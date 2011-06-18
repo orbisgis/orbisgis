@@ -137,231 +137,240 @@ public final class HatchedFill extends Fill implements StrokeNode {
                     alpha = this.angle.getValue(sds, fid);
                 }
 
-                while (alpha < 0.0) {
-                    alpha += 360.0;
-                }   // Make sure alpha is > 0
-                while (alpha > 360.0) {
-                    alpha -= 360.0;
-                } // and < 360.0
-                alpha = alpha * Math.PI / 180.0;         // and finally convert in radian
-
-
-                double delta_ox = 0.0;
-                double delta_oy = 0.0;
-
+                double hOffset = 0.0;
                 if (this.offset != null) {
-                    double hOffset = Uom.toPixel(this.offset.getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-                    double beta = Math.PI / 2.0 + alpha;
-                    delta_ox = Math.cos(beta) * hOffset;
-                    delta_oy = Math.sin(beta) * hOffset;
+                    hOffset = Uom.toPixel(this.offset.getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
                 }
 
-
-
-                Double naturalLength = stroke.getNaturalLength(sds, fid, shp, mt);
-                if (naturalLength.isInfinite()) {
-                    naturalLength = 100.0;
-                }
-
-                Point2D.Double geoRef = new Point2D.Double(0, 0);
-                Point2D ref = mt.getAffineTransform().transform(geoRef, null);
-
-                ref.setLocation(ref.getX() + delta_ox, ref.getY() + delta_oy);
-
-                double cos_alpha = Math.cos(alpha);
-                double sin_alpha = Math.sin(alpha);
-
-                if (Math.abs(sin_alpha) < EPSILON) {
-                    sin_alpha = 0.0;
-                }
-
-                boolean vertical = false;
-
-                if (Math.abs(cos_alpha) < EPSILON) {
-                    cos_alpha = 0.0;
-                    vertical = true;
-                }
-
-                double delta_hx = cos_alpha * naturalLength;
-                double delta_hy = sin_alpha * naturalLength;
-
-                double delta_dx = pDist / sin_alpha;
-                double delta_dy = pDist / cos_alpha;
-
-                Rectangle2D fbox = shp.getBounds2D();
-
-
-                int nb2start;
-                int nb2end;
-
-                if (vertical) {
-                    if (delta_dx >= 0.0) {
-                        nb2start = (int) Math.ceil((fbox.getMinX() - ref.getX()) / delta_dx);
-                        nb2end = (int) Math.floor(((fbox.getMaxX() - ref.getX()) / delta_dx));
-                    } else {
-                        nb2start = (int) Math.floor((fbox.getMinX() - ref.getX()) / delta_dx);
-                        nb2end = (int) Math.ceil(((fbox.getMaxX() - ref.getX()) / delta_dx));
-                    }
-                } else {
-                    if (cos_alpha < 0) {
-                        nb2start = (int) Math.ceil((fbox.getMinX() - ref.getX()) / delta_hx);
-                        nb2end = (int) Math.floor(((fbox.getMaxX() - ref.getX()) / delta_hx));
-                    } else {
-                        nb2start = (int) Math.floor((fbox.getMinX() - ref.getX()) / delta_hx);
-                        nb2end = (int) Math.ceil(((fbox.getMaxX() - ref.getX()) / delta_hx));
-                    }
-                }
-
-                int nb2draw = nb2end - nb2start;
-
-                double ref_yXmin;
-                double ref_yXmax;
-
-                double cos_sin = cos_alpha * sin_alpha;
-
-                ref_yXmin = ref.getY() + nb2start * delta_hy;
-                ref_yXmax = ref.getY() + nb2end * delta_hy;
-
-                double hxmin;
-                double hxmax;
-                if (vertical) {
-                    hxmin = nb2start * delta_dx + ref.getX();
-                    hxmax = nb2end * delta_dx + ref.getX();
-                } else {
-                    hxmin = nb2start * delta_hx + ref.getX();
-                    hxmax = nb2end * delta_hx + ref.getX();
-                }
-
-                double hymin;
-                double hymax;
-                double nb2draw_delta_y = nb2draw * delta_hy;
-
-                if (vertical) {
-                    if (delta_hy  < 0.0){
-                        hymin = Math.ceil((fbox.getMinY() - ref.getY())/delta_hy)*delta_hy + ref.getY();
-                        hymax = Math.floor((fbox.getMaxY() - ref.getY())/delta_hy)*delta_hy + ref.getY();
-                    } else {
-                        hymin = Math.floor((fbox.getMinY() - ref.getY())/delta_hy)*delta_hy + ref.getY();
-                        hymax = Math.ceil((fbox.getMaxY() - ref.getY())/delta_hy)*delta_hy + ref.getY();
-                    }
-                } else {
-                    if (cos_sin < 0) {
-                        hymin = Math.floor((fbox.getMinY() - ref_yXmin) / (delta_dy)) * delta_dy + ref_yXmin;
-                        hymax = Math.ceil((fbox.getMaxY() - ref_yXmax) / (delta_dy)) * delta_dy + ref_yXmax - nb2draw_delta_y;
-                    } else {
-                        hymin = Math.floor((fbox.getMinY() - nb2draw_delta_y - ref_yXmin) / (delta_dy)) * delta_dy + ref_yXmin;
-
-                        if (delta_dy < 0) {
-                            hymax = Math.floor((fbox.getMaxY() + nb2draw_delta_y - ref_yXmax) / (delta_dy)) * delta_dy + ref_yXmax - nb2draw_delta_y;
-                        } else {
-                            hymax = Math.ceil((fbox.getMaxY() + nb2draw_delta_y - ref_yXmax) / (delta_dy)) * delta_dy + ref_yXmax - nb2draw_delta_y;
-                        }
-                    }
-                }
-
-                double y;
-                double x;
-
-                Line2D.Double l = new Line2D.Double();
-
-
-                // Inform graphic2f to only draw hatches within the shape !
-                g2.clip(shp);
-
-                if (vertical) {
-
-                    if (hxmin < hxmax) {
-                        if (delta_dx < 0){
-                            delta_dx *= -1;
-                        }
-                        for (x = hxmin; x < hxmax + delta_dx / 2.0; x += delta_dx) {
-                            if (sin_alpha > 0){
-                            l.x1 = x;
-                            l.y1 = hymin;
-                            l.x2 = x;
-                            l.y2 = hymax;
-                            } else {
-                                l.x1 = x;
-                                l.y1 = hymax;
-                                l.x2 = x;
-                                l.y2 = hymin;
-                            }
-
-                            stroke.draw(g2, sds, fid, l, selected, mt, 0.0);
-                        }
-                    } else {
-
-                        // Seems to been unreachable !
-                        for (x = hxmin; x > hxmax - delta_dx / 2.0; x += delta_dx) {
-                            l.x1 = x;
-                            l.y1 = hymin;
-                            l.x2 = x;
-                            l.y2 = hymax;
-
-                            stroke.draw(g2, sds, fid, l, selected, mt, 0.0);
-                        }
-                    }
-
-                } else {
-                    if (hymin < hymax) {
-                        if (delta_dy < 0.0) {
-                            delta_dy *= -1;
-                        }
-
-                        for (y = hymin; y < hymax + delta_dy / 2.0; y += delta_dy) {
-
-                            if (cos_alpha > 0) {
-                                // Line goes from the left to the right
-                                l.x1 = hxmin;
-                                l.y1 = y;
-                                l.x2 = hxmax;
-                                l.y2 = y + nb2draw * delta_hy;
-                            } else {
-                                // Line goes from the right to the left
-                                l.x1 = hxmax;
-                                l.y1 = y + nb2draw * delta_hy;
-                                l.x2 = hxmin;
-                                l.y2 = y;
-                            }
-
-                            stroke.draw(g2, sds, fid, l, selected, mt, 0.0);
-                        }
-                    } else {
-
-                        if (delta_dy > 0.0) {
-                            delta_dy *= -1;
-                        }
-
-
-                        for (y = hymin; y > hymax - delta_dy / 2.0; y += delta_dy) {
-
-
-                            if (cos_alpha > 0) {
-                                // Line goes from the left to the right
-                                l.x1 = hxmin;
-                                l.y1 = y;
-                                l.x2 = hxmax;
-                                l.y2 = y + nb2draw * delta_hy;
-                            } else {
-                                // Line goes from the right to the left
-                                l.x1 = hxmax;
-                                l.y1 = y + nb2draw * delta_hy;
-                                l.x2 = hxmin;
-                                l.y2 = y;
-                            }
-
-                            stroke.draw(g2, sds, fid, l, selected, mt, 0.0);
-
-                        }
-                    }
-                }
-                g2.setClip(null);
-
+                drawHatch(g2, sds, fid, shp, selected, mt, alpha, pDist, stroke, hOffset);
             } catch (RuntimeException eee) {
                 System.out.println("Suck " + eee);
                 eee.printStackTrace(System.out);
             }
         }
+
+
+    }
+
+    public static void drawHatch(Graphics2D g2, SpatialDataSourceDecorator sds,
+            long fid, Shape shp, boolean selected, MapTransform mt,
+            double alpha, double pDist, Stroke stroke, double hOffset) throws ParameterException, IOException {
+
+        while (alpha < 0.0) {
+            alpha += 360.0;
+        }   // Make sure alpha is > 0
+        while (alpha > 360.0) {
+            alpha -= 360.0;
+        } // and < 360.0
+        alpha = alpha * Math.PI / 180.0;         // and finally convert in radian
+
+        double delta_ox = 0.0;
+        double delta_oy = 0.0;
+
+        double beta = Math.PI / 2.0 + alpha;
+        delta_ox = Math.cos(beta) * hOffset;
+        delta_oy = Math.sin(beta) * hOffset;
+
+
+
+        Double naturalLength = stroke.getNaturalLength(sds, fid, shp, mt);
+        if (naturalLength.isInfinite()) {
+            naturalLength = 100.0;
+        }
+
+        Point2D.Double geoRef = new Point2D.Double(0, 0);
+        Point2D ref = mt.getAffineTransform().transform(geoRef, null);
+
+        ref.setLocation(ref.getX() + delta_ox, ref.getY() + delta_oy);
+
+        double cos_alpha = Math.cos(alpha);
+        double sin_alpha = Math.sin(alpha);
+
+        if (Math.abs(sin_alpha) < EPSILON) {
+            sin_alpha = 0.0;
+        }
+
+        boolean vertical = false;
+
+        if (Math.abs(cos_alpha) < EPSILON) {
+            cos_alpha = 0.0;
+            vertical = true;
+        }
+
+        double delta_hx = cos_alpha * naturalLength;
+        double delta_hy = sin_alpha * naturalLength;
+
+        double delta_dx = pDist / sin_alpha;
+        double delta_dy = pDist / cos_alpha;
+
+        Rectangle2D fbox = shp.getBounds2D();
+
+
+        int nb2start;
+        int nb2end;
+
+        if (vertical) {
+            if (delta_dx >= 0.0) {
+                nb2start = (int) Math.ceil((fbox.getMinX() - ref.getX()) / delta_dx);
+                nb2end = (int) Math.floor(((fbox.getMaxX() - ref.getX()) / delta_dx));
+            } else {
+                nb2start = (int) Math.floor((fbox.getMinX() - ref.getX()) / delta_dx);
+                nb2end = (int) Math.ceil(((fbox.getMaxX() - ref.getX()) / delta_dx));
+            }
+        } else {
+            if (cos_alpha < 0) {
+                nb2start = (int) Math.ceil((fbox.getMinX() - ref.getX()) / delta_hx);
+                nb2end = (int) Math.floor(((fbox.getMaxX() - ref.getX()) / delta_hx));
+            } else {
+                nb2start = (int) Math.floor((fbox.getMinX() - ref.getX()) / delta_hx);
+                nb2end = (int) Math.ceil(((fbox.getMaxX() - ref.getX()) / delta_hx));
+            }
+        }
+
+        int nb2draw = nb2end - nb2start;
+
+        double ref_yXmin;
+        double ref_yXmax;
+
+        double cos_sin = cos_alpha * sin_alpha;
+
+        ref_yXmin = ref.getY() + nb2start * delta_hy;
+        ref_yXmax = ref.getY() + nb2end * delta_hy;
+
+        double hxmin;
+        double hxmax;
+        if (vertical) {
+            hxmin = nb2start * delta_dx + ref.getX();
+            hxmax = nb2end * delta_dx + ref.getX();
+        } else {
+            hxmin = nb2start * delta_hx + ref.getX();
+            hxmax = nb2end * delta_hx + ref.getX();
+        }
+
+        double hymin;
+        double hymax;
+        double nb2draw_delta_y = nb2draw * delta_hy;
+
+        if (vertical) {
+            if (delta_hy < 0.0) {
+                hymin = Math.ceil((fbox.getMinY() - ref.getY()) / delta_hy) * delta_hy + ref.getY();
+                hymax = Math.floor((fbox.getMaxY() - ref.getY()) / delta_hy) * delta_hy + ref.getY();
+            } else {
+                hymin = Math.floor((fbox.getMinY() - ref.getY()) / delta_hy) * delta_hy + ref.getY();
+                hymax = Math.ceil((fbox.getMaxY() - ref.getY()) / delta_hy) * delta_hy + ref.getY();
+            }
+        } else {
+            if (cos_sin < 0) {
+                hymin = Math.floor((fbox.getMinY() - ref_yXmin) / (delta_dy)) * delta_dy + ref_yXmin;
+                hymax = Math.ceil((fbox.getMaxY() - ref_yXmax) / (delta_dy)) * delta_dy + ref_yXmax - nb2draw_delta_y;
+            } else {
+                hymin = Math.floor((fbox.getMinY() - nb2draw_delta_y - ref_yXmin) / (delta_dy)) * delta_dy + ref_yXmin;
+
+                if (delta_dy < 0) {
+                    hymax = Math.floor((fbox.getMaxY() + nb2draw_delta_y - ref_yXmax) / (delta_dy)) * delta_dy + ref_yXmax - nb2draw_delta_y;
+                } else {
+                    hymax = Math.ceil((fbox.getMaxY() + nb2draw_delta_y - ref_yXmax) / (delta_dy)) * delta_dy + ref_yXmax - nb2draw_delta_y;
+                }
+            }
+        }
+
+        double y;
+        double x;
+
+        Line2D.Double l = new Line2D.Double();
+
+
+        // Inform graphic2f to only draw hatches within the shape !
+        g2.clip(shp);
+
+        if (vertical) {
+
+            if (hxmin < hxmax) {
+                if (delta_dx < 0) {
+                    delta_dx *= -1;
+                }
+                for (x = hxmin; x < hxmax + delta_dx / 2.0; x += delta_dx) {
+                    if (sin_alpha > 0) {
+                        l.x1 = x;
+                        l.y1 = hymin;
+                        l.x2 = x;
+                        l.y2 = hymax;
+                    } else {
+                        l.x1 = x;
+                        l.y1 = hymax;
+                        l.x2 = x;
+                        l.y2 = hymin;
+                    }
+
+                    stroke.draw(g2, sds, fid, l, selected, mt, 0.0);
+                }
+            } else {
+
+                // Seems to been unreachable !
+                for (x = hxmin; x > hxmax - delta_dx / 2.0; x += delta_dx) {
+                    l.x1 = x;
+                    l.y1 = hymin;
+                    l.x2 = x;
+                    l.y2 = hymax;
+
+                    stroke.draw(g2, sds, fid, l, selected, mt, 0.0);
+                }
+            }
+
+        } else {
+            if (hymin < hymax) {
+                if (delta_dy < 0.0) {
+                    delta_dy *= -1;
+                }
+
+                for (y = hymin; y < hymax + delta_dy / 2.0; y += delta_dy) {
+
+                    if (cos_alpha > 0) {
+                        // Line goes from the left to the right
+                        l.x1 = hxmin;
+                        l.y1 = y;
+                        l.x2 = hxmax;
+                        l.y2 = y + nb2draw * delta_hy;
+                    } else {
+                        // Line goes from the right to the left
+                        l.x1 = hxmax;
+                        l.y1 = y + nb2draw * delta_hy;
+                        l.x2 = hxmin;
+                        l.y2 = y;
+                    }
+
+                    stroke.draw(g2, sds, fid, l, selected, mt, 0.0);
+                }
+            } else {
+
+                if (delta_dy > 0.0) {
+                    delta_dy *= -1;
+                }
+
+
+                for (y = hymin; y > hymax - delta_dy / 2.0; y += delta_dy) {
+
+
+                    if (cos_alpha > 0) {
+                        // Line goes from the left to the right
+                        l.x1 = hxmin;
+                        l.y1 = y;
+                        l.x2 = hxmax;
+                        l.y2 = y + nb2draw * delta_hy;
+                    } else {
+                        // Line goes from the right to the left
+                        l.x1 = hxmax;
+                        l.y1 = y + nb2draw * delta_hy;
+                        l.x2 = hxmin;
+                        l.y2 = y;
+                    }
+
+                    stroke.draw(g2, sds, fid, l, selected, mt, 0.0);
+
+                }
+            }
+        }
+        g2.setClip(null);
     }
 
     /**

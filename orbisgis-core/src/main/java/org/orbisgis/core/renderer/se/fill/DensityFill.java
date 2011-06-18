@@ -37,7 +37,6 @@
  */
 package org.orbisgis.core.renderer.se.fill;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Shape;
@@ -162,11 +161,41 @@ public final class DensityFill extends Fill implements GraphicNode {
 
     @Override
     public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
-        Paint painter = getPaint(fid, sds, selected, mt);
 
-        if (painter != null) {
-            g2.setPaint(painter);
-            g2.fill(shp);
+        if (isHatched) {
+            double alpha = 45.0;
+            double pDist;
+
+            if (this.orientation != null) {
+                alpha = this.orientation.getValue(sds, fid);
+            }
+
+            // Stroke width
+            double sWidth = hatches.getWidthInPixel(sds, fid, mt);
+
+            double percentage = 0.0;
+
+            if (percentageCovered != null) {
+                percentage = percentageCovered.getValue(sds, fid) * 100;
+            }
+
+            if (percentage > 100) {
+                percentage = 100;
+            }
+
+
+            // Perpendiculat dist bw two hatches
+            pDist = 100 * sWidth / percentage;
+
+            HatchedFill.drawHatch(g2, sds, fid, shp, selected, mt, alpha, pDist, hatches, 0.0);
+        } else {
+
+            Paint painter = getPaint(fid, sds, selected, mt);
+
+            if (painter != null) {
+                g2.setPaint(painter);
+                g2.fill(shp);
+            }
         }
     }
 
@@ -175,7 +204,7 @@ public final class DensityFill extends Fill implements GraphicNode {
         double percentage = 0.0;
 
         if (percentageCovered != null) {
-            percentage = percentageCovered.getValue(sds, fid)*100;
+            percentage = percentageCovered.getValue(sds, fid) * 100;
         }
 
         if (percentage > 100) {
@@ -186,94 +215,6 @@ public final class DensityFill extends Fill implements GraphicNode {
             Paint painter = null;
 
             if (isHatched && hatches != null) {
-                if (hatches.getMinLength(sds, fid, mt) > 0) {
-                    throw new ParameterException("Dashed hatched aren't supported yet!");
-                }
-
-                double theta = -45.0;
-
-                if (this.orientation != null) {
-                    // SE ask for clockwise angle, Math.cos()/sin() want counterclockwise
-                    theta = this.orientation.getValue(sds, fid);
-                }
-
-                theta *= Math.PI / 180.0;
-
-                // Stroke width
-                double sWidth = hatches.getWidthInPixel(sds, fid, mt);
-
-                // Perpendiculat dist bw two hatches
-                double pDist = 100 * sWidth / percentage;
-
-
-                double cosTheta = Math.cos(theta);
-                double sinTheta = Math.sin(theta);
-
-                double dx;
-                double dy;
-
-                int ix;
-                int iy;
-
-                ////
-                // Compute tile size
-
-                if (Math.abs(sinTheta) < 0.001) {
-                    // Vertical
-                    dx = 0;
-                    ix = (int) pDist;
-                } else {
-                    dx = pDist / sinTheta;
-                    ix = (int) dx;
-                }
-
-                if (Math.abs(cosTheta) < 0.001) {
-                    // Horizontal
-                    dy = 0;
-                    iy = (int) pDist;
-                } else {
-                    dy = pDist / cosTheta;
-                    iy = (int) dy;
-                }
-
-                // Hatch delta x & y
-                int idx = (int) dx;
-                int idy = (int) dy;
-
-                // Tile size is always absolute
-                ix = Math.abs(ix);
-                iy = Math.abs(iy);
-
-                BufferedImage img = new BufferedImage(ix, iy, BufferedImage.TYPE_INT_ARGB);
-                Graphics2D tile = img.createGraphics();
-
-                tile.setRenderingHints(mt.getCurrentRenderContext().getRenderingHints());
-
-                if (hatches.getFill() != null) {
-                    tile.setPaint(hatches.getFill().getPaint(fid, sds, selected, mt));
-                } else {
-                    tile.setColor(Color.black);
-                }
-
-                tile.setStroke(hatches.getBasicStroke(sds, fid, mt, null));
-
-                int ipDist = (int) pDist;
-
-                if (idx == 0) { // V-Hatches
-                    tile.drawLine(0, -idy, 0, idy);
-                    tile.drawLine(ipDist, -idy, ipDist, idy);
-                } else if (idy == 0) { // H-Hatches
-                    tile.drawLine(-idx, 0, idx, 0);
-                    tile.drawLine(-idx, ipDist, idx, ipDist);
-                } else {
-                    tile.drawLine(-2 * idx, -2 * idy, 2 * idx, 2 * idy);
-                    tile.drawLine(-idx, -2 * idy, 2 * idx, idy);
-                    tile.drawLine(0, -2 * idy, 2 * idx, 0);
-                    tile.drawLine(-2 * idx, -idy, idx, 2 * idy);
-                    tile.drawLine(-2 * idx, 0, 0, 2 * idy);
-                }
-
-                painter = new TexturePaint(img, new Rectangle2D.Double(0, 0, ix, iy));
             } else if (mark != null) { // Marked
 
                 //RenderableGraphics g;
@@ -335,7 +276,7 @@ public final class DensityFill extends Fill implements GraphicNode {
     }
 
     private double getTextureSize(double markSize, double percentage) {
-        double size = 100*(markSize) / percentage;
+        double size = 100 * (markSize) / percentage;
 
         if (percentage > 50) {
             size -= (size - markSize) / 2.0;
