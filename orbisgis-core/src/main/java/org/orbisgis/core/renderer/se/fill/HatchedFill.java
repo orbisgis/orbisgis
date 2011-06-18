@@ -37,13 +37,14 @@
  */
 package org.orbisgis.core.renderer.se.fill;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
-import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.map.MapTransform;
@@ -52,7 +53,6 @@ import net.opengis.se._2_0.core.HatchedFillType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.StrokeNode;
-import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
@@ -60,7 +60,6 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
-import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
 
 /**
  *
@@ -68,12 +67,13 @@ import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
  */
 public final class HatchedFill extends Fill implements StrokeNode {
 
+    private final static double EPSILON = 0.01; // todo Eval !
     private RealParameter angle;
     private RealParameter distance;
     private RealParameter offset;
     private Stroke stroke;
 
-    public HatchedFill(){
+    public HatchedFill() {
         setStroke(new PenStroke());
     }
 
@@ -123,161 +123,244 @@ public final class HatchedFill extends Fill implements StrokeNode {
     public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
 
         if (this.stroke != null) {
-            //Logger logger = Logger.getLogger(HatchedFill.class.getName());
             // Perpendicular distance between two lines
-            double pDist;
-            pDist = 10; // TODO DEFAULT VALUE
-            if (this.distance != null) {
-                pDist = Uom.toPixel(this.distance.getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-            }
-            double alpha = 45.0;
-            if (this.angle != null) {
-                alpha = this.angle.getValue(sds, fid);
-            }
-            double hOffset = 0.0;
-            if (this.offset != null) {
-                hOffset = Uom.toPixel(this.offset.getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-            }
 
-            //logger.log(Level.INFO, "Hatches Params: pDist={0}; angle={1}; offset={2}", new Object[]{pDist, alpha, hOffset});
-
-            // Make sure alpha is > 0
-            while (alpha < 0.0) {
-                alpha += 360.0;
-            }
-
-            // < 360.0
-            while (alpha > 360.0) {
-                alpha -= 360.0;
-            }
-
-            if (alpha > 180.0)
-                alpha -= 180.0;
-
-            // Adjust offset to be in [0;pDist[ intervall
-            if (hOffset > 0.0) {
-                hOffset -= pDist * ((int) (hOffset / pDist));
-            }
-
-
-            double minX = 0;
-            double minY = 0;
-
-            double width = mt.getWidth();
-            double height = mt.getHeight();
-
-            /*if (g2 instanceof RenderableGraphics) {
-                System.out.println("GRAPHIC CONTEXT!");
-                RenderableGraphics rg = (RenderableGraphics) g2;
-                minX = Math.round(rg.getMinX());
-                minY = Math.round(rg.getMinY());
-                width = Math.round(rg.getWidth());
-                height = Math.round(rg.getHeight());
-                throw  new ParameterException("HatchedFill is not currently supported to style marks");
-            }*/
-
-
-            double xDist;
-            double yDist;
-
-            double xDistRef;
-            double yDistRef;
-
-            double xStart;
-            double yStart;
-
-            // Starting point
-            double xRef;
-            double yRef;
-
-            if (alpha < 0.01){
-                // Horizontal
-                xDist = 0;
-                xDistRef = 0;
-
-                yDist = pDist;
-                yDistRef = pDist;
-
-                xStart = minX;
-                xRef = minX + width;
-
-                yStart = minY + hOffset;
-                yRef = minY + hOffset;
-            }
-            else if (alpha>89.9 && alpha < 90.1){
-                // Vertical
-                xDist = pDist;
-                xDistRef = pDist;
-
-                yDist = 0;
-                yDistRef = 0;
-
-                xStart = minX + hOffset;
-                xRef = minX + hOffset;
-
-                yStart = minY;
-                yRef = minY + height;
-            }
-            else if(alpha > 0.0 && alpha < 90.0) {
-                xDist = pDist / Math.cos((90 - alpha) * ShapeHelper._0_0175);
-                yDist = -pDist / Math.cos((alpha) * ShapeHelper._0_0175);
-
-                xDistRef = 0.0;
-                yDistRef = 0.0;
-
-                xRef = (int) minX;
-                yRef = minY + height;
-
-                xStart = xRef;
-                yStart = yRef;
-
-                if (hOffset > 0.0) {
-                    xStart += hOffset / Math.cos((90 - alpha) * ShapeHelper._0_0175);
-                    yStart -= hOffset / Math.cos((alpha) * ShapeHelper._0_0175);
+            try {
+                double pDist;
+                pDist = 10; // TODO DEFAULT VALUE
+                if (this.distance != null) {
+                    pDist = Uom.toPixel(this.distance.getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
                 }
-            } else if (alpha > 90.0 && alpha < 180.0){
-                xDist = - pDist / Math.sin((180 - alpha) * ShapeHelper._0_0175);
-                yDist = - pDist / Math.sin((alpha - 90.0) * ShapeHelper._0_0175);
 
-                xRef = (int) minX + width;
-                yRef = minY + height;
-
-                xDistRef = 0.0;
-                yDistRef = 0.0;
-
-                xStart = xRef;
-                yStart = yRef;
-
-                if (hOffset > 0.0) {
-                    xStart -= hOffset / Math.sin((180 - alpha) * ShapeHelper._0_0175);
-                    yStart -= hOffset / Math.sin((alpha - 90.0) * ShapeHelper._0_0175);
+                double alpha = 45.0;
+                if (this.angle != null) {
+                    alpha = this.angle.getValue(sds, fid);
                 }
-            } else {
-                throw new UnsupportedOperationException("There is an issue somewhere in HatchedFill...");
-            }
 
-            double x;
-            double y;
+                while (alpha < 0.0) {
+                    alpha += 360.0;
+                }   // Make sure alpha is > 0
+                while (alpha > 360.0) {
+                    alpha -= 360.0;
+                } // and < 360.0
+                alpha = alpha * Math.PI / 180.0;         // and finally convert in radian
 
-            // Inform graphic2f to only draw hatches within the shape !
-            g2.clip(shp);
 
-            Rectangle2D.Double bounds = new Rectangle2DDouble((int)minX, (int)minY, width, height);
+                double delta_ox = 0.0;
+                double delta_oy = 0.0;
 
-            for (x = xStart, y = yStart; ; x += xDist, y += yDist, xRef += xDistRef, yRef += yDistRef) {
-                if (bounds.intersectsLine(xRef, y, x, yRef)){
-                    Line2D.Double l = new Line2D.Double(xRef, y, x, yRef);
-                    Line2D.Double intersection = ShapeHelper.intersection(l, bounds);
-                    if (intersection != null) {
-                        stroke.draw(g2, sds, fid, intersection, selected, mt, 0.0);
+                if (this.offset != null) {
+                    double hOffset = Uom.toPixel(this.offset.getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                    double beta = Math.PI / 2.0 + alpha;
+                    delta_ox = Math.cos(beta) * hOffset;
+                    delta_oy = Math.sin(beta) * hOffset;
+                }
+
+
+
+                Double naturalLength = stroke.getNaturalLength(sds, fid, shp, mt);
+                if (naturalLength.isInfinite()) {
+                    naturalLength = 100.0;
+                }
+
+                Point2D.Double geoRef = new Point2D.Double(0, 0);
+                Point2D ref = mt.getAffineTransform().transform(geoRef, null);
+
+                ref.setLocation(ref.getX() + delta_ox, ref.getY() + delta_oy);
+
+                double cos_alpha = Math.cos(alpha);
+                double sin_alpha = Math.sin(alpha);
+
+                if (Math.abs(sin_alpha) < EPSILON) {
+                    sin_alpha = 0.0;
+                }
+
+                boolean vertical = false;
+
+                if (Math.abs(cos_alpha) < EPSILON) {
+                    cos_alpha = 0.0;
+                    vertical = true;
+                }
+
+                double delta_hx = cos_alpha * naturalLength;
+                double delta_hy = sin_alpha * naturalLength;
+
+                double delta_dx = pDist / sin_alpha;
+                double delta_dy = pDist / cos_alpha;
+
+                Rectangle2D fbox = shp.getBounds2D();
+
+
+                int nb2start;
+                int nb2end;
+
+                if (vertical) {
+                    if (delta_dx >= 0.0) {
+                        nb2start = (int) Math.ceil((fbox.getMinX() - ref.getX()) / delta_dx);
+                        nb2end = (int) Math.floor(((fbox.getMaxX() - ref.getX()) / delta_dx));
                     } else {
-                        stroke.draw(g2, sds, fid, l, selected, mt, 0.0);
+                        nb2start = (int) Math.floor((fbox.getMinX() - ref.getX()) / delta_dx);
+                        nb2end = (int) Math.ceil(((fbox.getMaxX() - ref.getX()) / delta_dx));
                     }
                 } else {
-                    break;
+                    if (cos_alpha < 0) {
+                        nb2start = (int) Math.ceil((fbox.getMinX() - ref.getX()) / delta_hx);
+                        nb2end = (int) Math.floor(((fbox.getMaxX() - ref.getX()) / delta_hx));
+                    } else {
+                        nb2start = (int) Math.floor((fbox.getMinX() - ref.getX()) / delta_hx);
+                        nb2end = (int) Math.ceil(((fbox.getMaxX() - ref.getX()) / delta_hx));
+                    }
                 }
+
+                int nb2draw = nb2end - nb2start;
+
+                double ref_yXmin;
+                double ref_yXmax;
+
+                double cos_sin = cos_alpha * sin_alpha;
+
+                ref_yXmin = ref.getY() + nb2start * delta_hy;
+                ref_yXmax = ref.getY() + nb2end * delta_hy;
+
+                double hxmin;
+                double hxmax;
+                if (vertical) {
+                    hxmin = nb2start * delta_dx + ref.getX();
+                    hxmax = nb2end * delta_dx + ref.getX();
+                } else {
+                    hxmin = nb2start * delta_hx + ref.getX();
+                    hxmax = nb2end * delta_hx + ref.getX();
+                }
+
+                double hymin;
+                double hymax;
+                double nb2draw_delta_y = nb2draw * delta_hy;
+
+                if (vertical) {
+                    if (delta_hy  < 0.0){
+                        hymin = Math.ceil((fbox.getMinY() - ref.getY())/delta_hy)*delta_hy + ref.getY();
+                        hymax = Math.floor((fbox.getMaxY() - ref.getY())/delta_hy)*delta_hy + ref.getY();
+                    } else {
+                        hymin = Math.floor((fbox.getMinY() - ref.getY())/delta_hy)*delta_hy + ref.getY();
+                        hymax = Math.ceil((fbox.getMaxY() - ref.getY())/delta_hy)*delta_hy + ref.getY();
+                    }
+                } else {
+                    if (cos_sin < 0) {
+                        hymin = Math.floor((fbox.getMinY() - ref_yXmin) / (delta_dy)) * delta_dy + ref_yXmin;
+                        hymax = Math.ceil((fbox.getMaxY() - ref_yXmax) / (delta_dy)) * delta_dy + ref_yXmax - nb2draw_delta_y;
+                    } else {
+                        hymin = Math.floor((fbox.getMinY() - nb2draw_delta_y - ref_yXmin) / (delta_dy)) * delta_dy + ref_yXmin;
+
+                        if (delta_dy < 0) {
+                            hymax = Math.floor((fbox.getMaxY() + nb2draw_delta_y - ref_yXmax) / (delta_dy)) * delta_dy + ref_yXmax - nb2draw_delta_y;
+                        } else {
+                            hymax = Math.ceil((fbox.getMaxY() + nb2draw_delta_y - ref_yXmax) / (delta_dy)) * delta_dy + ref_yXmax - nb2draw_delta_y;
+                        }
+                    }
+                }
+
+                double y;
+                double x;
+
+                Line2D.Double l = new Line2D.Double();
+
+
+                // Inform graphic2f to only draw hatches within the shape !
+                g2.clip(shp);
+
+                if (vertical) {
+
+                    if (hxmin < hxmax) {
+                        if (delta_dx < 0){
+                            delta_dx *= -1;
+                        }
+                        for (x = hxmin; x < hxmax + delta_dx / 2.0; x += delta_dx) {
+                            if (sin_alpha > 0){
+                            l.x1 = x;
+                            l.y1 = hymin;
+                            l.x2 = x;
+                            l.y2 = hymax;
+                            } else {
+                                l.x1 = x;
+                                l.y1 = hymax;
+                                l.x2 = x;
+                                l.y2 = hymin;
+                            }
+
+                            stroke.draw(g2, sds, fid, l, selected, mt, 0.0);
+                        }
+                    } else {
+
+                        // Seems to been unreachable !
+                        for (x = hxmin; x > hxmax - delta_dx / 2.0; x += delta_dx) {
+                            l.x1 = x;
+                            l.y1 = hymin;
+                            l.x2 = x;
+                            l.y2 = hymax;
+
+                            stroke.draw(g2, sds, fid, l, selected, mt, 0.0);
+                        }
+                    }
+
+                } else {
+                    if (hymin < hymax) {
+                        if (delta_dy < 0.0) {
+                            delta_dy *= -1;
+                        }
+
+                        for (y = hymin; y < hymax + delta_dy / 2.0; y += delta_dy) {
+
+                            if (cos_alpha > 0) {
+                                // Line goes from the left to the right
+                                l.x1 = hxmin;
+                                l.y1 = y;
+                                l.x2 = hxmax;
+                                l.y2 = y + nb2draw * delta_hy;
+                            } else {
+                                // Line goes from the right to the left
+                                l.x1 = hxmax;
+                                l.y1 = y + nb2draw * delta_hy;
+                                l.x2 = hxmin;
+                                l.y2 = y;
+                            }
+
+                            stroke.draw(g2, sds, fid, l, selected, mt, 0.0);
+                        }
+                    } else {
+
+                        if (delta_dy > 0.0) {
+                            delta_dy *= -1;
+                        }
+
+
+                        for (y = hymin; y > hymax - delta_dy / 2.0; y += delta_dy) {
+
+
+                            if (cos_alpha > 0) {
+                                // Line goes from the left to the right
+                                l.x1 = hxmin;
+                                l.y1 = y;
+                                l.x2 = hxmax;
+                                l.y2 = y + nb2draw * delta_hy;
+                            } else {
+                                // Line goes from the right to the left
+                                l.x1 = hxmax;
+                                l.y1 = y + nb2draw * delta_hy;
+                                l.x2 = hxmin;
+                                l.y2 = y;
+                            }
+
+                            stroke.draw(g2, sds, fid, l, selected, mt, 0.0);
+
+                        }
+                    }
+                }
+                g2.setClip(null);
+
+            } catch (RuntimeException eee) {
+                System.out.println("Suck " + eee);
+                eee.printStackTrace(System.out);
             }
-            g2.setClip(null);
         }
     }
 

@@ -87,7 +87,28 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
 
     @Override
     public Double getNaturalLength(SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) {
-        return Double.POSITIVE_INFINITY;
+
+        if (dashArray != null) {
+            // A dashed penstroke has a length
+            try {
+                double sum = 0.0;
+                String sDash = this.dashArray.getValue(sds, fid);
+                String[] splitedDash = sDash.split(" ");
+                for (int i = 0; i < splitedDash.length; i++) {
+                    sum += Uom.toPixel(Double.parseDouble(splitedDash[i]), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                }
+
+                if (splitedDash.length % 2 == 1) {
+                    // # pattern item is odd -> 2* to close the pattern
+                    sum *= 2;
+                }
+                return sum;
+            } catch (ParameterException ex) {
+                return Double.POSITIVE_INFINITY;
+            }
+        } else {
+            return Double.POSITIVE_INFINITY;
+        }
     }
 
     //private BasicStroke bStroke;
@@ -294,7 +315,8 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
     this.bStroke = null;
     }
     }*/
-    private BasicStroke createBasicStroke(SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt, Double v100p, boolean useDash) throws ParameterException {
+    private BasicStroke createBasicStroke(SpatialDataSourceDecorator sds, long fid,
+            Shape shp, MapTransform mt, Double v100p, boolean useDash) throws ParameterException {
 
         int cap;
         if (this.lineCap == null) {
@@ -350,11 +372,13 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
 
             dashA = new double[splitedDash.length];
             for (int i = 0; i < splitedDash.length; i++) {
-                dashA[i] = Uom.toPixel(Double.parseDouble(splitedDash[i]), getUom(), mt.getDpi(), mt.getScaleDenominator(), v100p);
+                dashA[i] = Uom.toPixel(Double.parseDouble(splitedDash[i]), getUom(),
+                        mt.getDpi(), mt.getScaleDenominator(), v100p);
             }
 
             if (this.dashOffset != null) {
-                dashO = Uom.toPixel(this.dashOffset.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), v100p);
+                dashO = Uom.toPixel(this.dashOffset.getValue(sds, fid), getUom(),
+                        mt.getDpi(), mt.getScaleDenominator(), v100p);
             }
 
             if (this.isLengthRapport()) {

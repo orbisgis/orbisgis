@@ -167,6 +167,9 @@ public abstract class Stroke implements SymbolizerNode {
         s.setExtension(exts);
     }
 
+    /**
+     * Returns the stroke pattern natural length, in pixel unit
+     */
     public abstract Double getNaturalLength(SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) throws ParameterException, IOException;
 
     public abstract String dependsOnFeature();

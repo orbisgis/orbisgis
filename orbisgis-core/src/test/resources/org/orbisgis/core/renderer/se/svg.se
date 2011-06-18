@@ -3,6 +3,10 @@
     <Rule>
         <CompositeSymbolizer>
             <AreaSymbolizer uom="urn:ogc:def:uom:se::mm" version="2.0.0">
+	              <Extension>
+        <ExtensionParameter name="level">1</ExtensionParameter>
+      </Extension>
+
                 <Name>Symbolizer Name</Name>
                   <SolidFill>
                     <Color>#dddddd</Color>
@@ -12,6 +16,10 @@
             </AreaSymbolizer>
 
             <PointSymbolizer uom="urn:ogc:def:uom:se::mm" version="2.0.0">
+      <Extension>
+        <ExtensionParameter name="level">2</ExtensionParameter>
+      </Extension>
+
                 <Name>Default Symbolizer</Name>
 		<CompositeGraphic>
                 <ExternalGraphic>

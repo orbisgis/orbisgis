@@ -3,6 +3,10 @@
     <Rule>
     <Name>Fond</Name>
         <AreaSymbolizer uom="urn:fes:def:uom:se::mm">
+
+      <Extension>
+        <ExtensionParameter name="level">1</ExtensionParameter>
+      </Extension>
             <SolidFill>
                 <Color>#DDDDDD</Color>
             </SolidFill>
@@ -18,6 +22,10 @@
 	<Rule>
     	<Name>Interpol Log [0;10]</Name>
         <PointSymbolizer uom="urn:fes:def:uom:se::mm">
+
+      <Extension>
+        <ExtensionParameter name="level">2</ExtensionParameter>
+      </Extension>
             <MarkGraphic>
                 <WellKnownName>Circle</WellKnownName>
                 <ViewBox>
