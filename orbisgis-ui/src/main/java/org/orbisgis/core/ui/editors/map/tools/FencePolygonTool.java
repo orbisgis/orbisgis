@@ -69,6 +69,7 @@ import com.vividsolutions.jts.geom.Polygon;
 import java.io.File;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.GeometryConstraint;
 import org.gdms.driver.gdms.GdmsWriter;
 
 public class FencePolygonTool extends AbstractPolygonTool {
@@ -143,7 +144,8 @@ public class FencePolygonTool extends AbstractPolygonTool {
                         writer = new GdmsWriter(file);
 
 
-                        Metadata md = new DefaultMetadata(new Type[]{TypeFactory.createType(Type.GEOMETRY)}, new String[]{"the_geom"});
+                        Metadata md = new DefaultMetadata(new Type[]{TypeFactory.createType(Type.GEOMETRY, new GeometryConstraint(
+                                        GeometryConstraint.POLYGON))}, new String[]{"the_geom"});
 
                         writer.writeMetadata(1, md);
                         writer.addValues(new Value[]{ValueFactory.createValue(g)});
