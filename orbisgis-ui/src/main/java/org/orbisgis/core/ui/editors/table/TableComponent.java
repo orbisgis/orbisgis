@@ -229,6 +229,10 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 		return table;
 	}
 
+        /**
+         * Refresh the attributes table linked to a layer
+         * @param selectedRows
+         */
 	private void checkSelectionRefresh(int[] selectedRows) {
 		if (this.element.getMapContext() != null) {
 			this.element.getMapContext().checkSelectionRefresh(selectedRows,

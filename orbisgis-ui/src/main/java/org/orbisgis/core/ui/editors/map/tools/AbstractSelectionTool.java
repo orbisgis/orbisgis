@@ -152,24 +152,26 @@ public abstract class AbstractSelectionTool extends Selection {
                         while (l.hasNext()) {
                                 int rowIndex = l.next();
                                 Geometry g = (Geometry) ds.getGeometry(rowIndex);
-                                if (g.intersects(selectionRect)) {
-                                        if ((tm.getMouseModifiers() & MouseEvent.CTRL_DOWN_MASK) == MouseEvent.CTRL_DOWN_MASK) {
-                                                int[] newSel = toggleSelection(activeLayer.getSelection(), rowIndex);
-                                                mc.checkSelectionRefresh(newSel, activeLayer.getSelection(), ds);
-                                                activeLayer.setSelection(newSel);
-                                                if (newSel.length > 0) {
-                                                        transition("selection"); //$NON-NLS-1$
-                                                } else {
-                                                        transition("init"); //$NON-NLS-1$
-                                                }
+                                if (g != null) {
+                                        if (g.intersects(selectionRect)) {
+                                                if ((tm.getMouseModifiers() & MouseEvent.CTRL_DOWN_MASK) == MouseEvent.CTRL_DOWN_MASK) {
+                                                        int[] newSel = toggleSelection(activeLayer.getSelection(), rowIndex);
+                                                        mc.checkSelectionRefresh(newSel, activeLayer.getSelection(), ds);
+                                                        activeLayer.setSelection(newSel);
+                                                        if (newSel.length > 0) {
+                                                                transition("selection"); //$NON-NLS-1$
+                                                        } else {
+                                                                transition("init"); //$NON-NLS-1$
+                                                        }
 
-                                                return;
-                                        } else {
-                                                int[] newSelection = new int[]{rowIndex};
-                                                mc.checkSelectionRefresh(newSelection, activeLayer.getSelection(), ds);
-                                                activeLayer.setSelection(newSelection);
-                                                transition("selection"); //$NON-NLS-1$
-                                                return;
+                                                        return;
+                                                } else {
+                                                        int[] newSelection = new int[]{rowIndex};
+                                                        mc.checkSelectionRefresh(newSelection, activeLayer.getSelection(), ds);
+                                                        activeLayer.setSelection(newSelection);
+                                                        transition("selection"); //$NON-NLS-1$
+                                                        return;
+                                                }
                                         }
                                 }
                         }
@@ -225,14 +227,15 @@ public abstract class AbstractSelectionTool extends Selection {
                         while (l.hasNext()) {
                                 int index = l.next();
                                 Geometry g = (Geometry) ds.getGeometry(index);
-
-                                if (intersects) {
-                                        if (g.intersects(selectionRect)) {
-                                                newSelection.add(index);
-                                        }
-                                } else {
-                                        if (selectionRect.contains(g)) {
-                                                newSelection.add(index);
+                                if (g != null) {
+                                        if (intersects) {
+                                                if (g.intersects(selectionRect)) {
+                                                        newSelection.add(index);
+                                                }
+                                        } else {
+                                                if (selectionRect.contains(g)) {
+                                                        newSelection.add(index);
+                                                }
                                         }
                                 }
                         }
