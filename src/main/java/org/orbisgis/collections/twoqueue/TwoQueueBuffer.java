@@ -92,9 +92,8 @@ public abstract class TwoQueueBuffer<I, B> {
          * If the block is not in memory, it is loaded from disk.
          * @param key a block id
          * @return the loaded block.
-         * @throws TwoQueueException 
          */
-        public B get(I key) throws TwoQueueException {
+        public B get(I key) {
                 // check Am
                 B b = am.get(key);
                 if (b != null) {
@@ -133,11 +132,11 @@ public abstract class TwoQueueBuffer<I, B> {
                 return b;
         }
 
-        protected abstract B reclaim(I id) throws TwoQueueException;
+        protected abstract B reclaim(I id);
 
-        protected abstract void unload(B b) throws TwoQueueException;
+        protected abstract void unload(B b);
 
-        private void put(I i,B b) throws TwoQueueException {
+        private void put(I i,B b) {
                 QueueValue<I, B> v = a1in.put(i, b);
                 if (v != null) {
                         // save v out to disk
