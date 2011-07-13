@@ -66,6 +66,7 @@ import org.gdms.sql.function.FunctionManager;
 import org.orbisgis.core.ui.components.jlist.OGList;
 import org.orbisgis.core.ui.components.text.JButtonTextField;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
+import org.orbisgis.core.ui.plugins.views.geocatalog.TransferableSource;
 import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
 import org.orbisgis.utils.I18N;
 
@@ -137,11 +138,11 @@ public class SQLFunctionsPanel extends JPanel implements DragGestureListener,
                 btnCollapse.setBorderPainted(false);
 
                 east = new JToolBar();
-		east.setFloatable(false);
-		east.add(txtFilter);
-		east.add(btnCollapse);
-		east.setOpaque(false);
-		this.add(east, BorderLayout.NORTH);
+                east.setFloatable(false);
+                east.add(txtFilter);
+                east.add(btnCollapse);
+                east.setOpaque(false);
+                this.add(east, BorderLayout.NORTH);
                 this.add(new JScrollPane(list), BorderLayout.CENTER);
                 FunctionListRenderer functionListRenderer = new FunctionListRenderer();
                 list.setCellRenderer(functionListRenderer);
@@ -191,19 +192,24 @@ public class SQLFunctionsPanel extends JPanel implements DragGestureListener,
                 Object[] selectedValues = list.getSelectedValues();
                 String[] sources = new String[selectedValues.length];
                 for (int i = 0; i < sources.length; i++) {
-                        sources[i] = selectedValues[i].toString();
+                        FunctionElement functionElement = (FunctionElement) selectedValues[i];
+                        if (functionElement.getFunctionType() == FunctionElement.BASIC_FUNCTION) {
+                                sources[i] = FunctionManager.getFunction(functionElement.getFunctionName()).getSqlOrder();
+                        } else if (functionElement.getFunctionType() == FunctionElement.CUSTOM_FUNCTION) {
+                                sources[i] = QueryManager.getQuery(functionElement.getFunctionName()).getSqlOrder();
+                        }
+
                 }
                 return sources;
         }
 
         public Transferable getDragData(DragGestureEvent dge) {
-                FunctionElement functionElement = (FunctionElement) list.getSelectedValue();
-
-                if (functionElement != null) {
-                        return null;
-                } else {
-                        return null;
-                }
+                String[] sources = getSelectedSources();
+		if (sources.length > 0) {
+			return new TransferableSource(sources);
+		} else {
+			return null;
+		}
         }
 
         @Override
