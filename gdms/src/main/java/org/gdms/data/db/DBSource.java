@@ -44,142 +44,135 @@ import java.io.Serializable;
  * @author Fernando Gonzalez Cortes
  */
 public class DBSource implements Serializable {
-	private static final long serialVersionUID = 0L;
 
-	private String host;
-
-	private int port;
-
-	private String tableName;
-
-	private String schemaName;
-
-	private String user;
-
-	private String dbName;
-
-	private String password;
-
-	private String prefix;
-
+        private static final long serialVersionUID = 0L;
+        private String host;
+        private int port;
+        private String tableName;
+        private String schemaName;
+        private String user;
+        private String dbName;
+        private String password;
+        private String prefix;
         private boolean ssl = false;
 
-	public DBSource(String host, int port, String dbName, String user,
-			String password, String prefix) {
-		this.host = host;
-		this.port = port;
-		this.dbName = dbName;
-		this.user = user;
-		this.password = password;
-		this.prefix = prefix;
-	}
+        public DBSource(String host, int port, String dbName, String user,
+                String password, String prefix) {
+                this.host = host;
+                this.port = port;
+                this.dbName = dbName;
+                this.user = user;
+                this.password = password;
+                this.prefix = prefix;
+        }
 
         public DBSource(String host, int port, String dbName, String user,
-			String password, String prefix, boolean ssl) {
+                String password, String prefix, boolean ssl) {
                 this(host, port, dbName, user, password, prefix);
                 this.ssl = ssl;
         }
 
-	public DBSource(String host, int port, String dbName, String user,
-			String password, String tableName, String prefix) {
-		this(host, port, dbName, user, password, prefix);
-		this.tableName = tableName;
-	}
-
         public DBSource(String host, int port, String dbName, String user,
-			String password, String tableName, String prefix, boolean ssl) {
+                String password, String tableName, String prefix) {
+                this(host, port, dbName, user, password, prefix);
+                this.tableName = tableName;
+        }
+        
+        public DBSource(String host, int port, String dbName, String user,
+                String password, String tableName, String prefix, boolean ssl) {
                 this(host, port, dbName, user, password, tableName, prefix);
                 this.ssl = ssl;
         }
 
-	public DBSource(String host, int port, String dbName, String user,
-			String password, String schemaName, String tableName, String prefix) {
-		this(host, port, dbName, user, password, tableName, prefix);
-		this.schemaName = schemaName;
-	}
-
         public DBSource(String host, int port, String dbName, String user,
-			String password, String schemaName, String tableName, String prefix,
-                        boolean ssl) {
-                this(host, port, dbName, user, password, tableName, schemaName, prefix);
+                String password, String schemaName, String tableName, String prefix) {
+                this(host, port, dbName, user, password, tableName, prefix);
+                this.schemaName = schemaName;
+        }
+        
+        public DBSource(String host, int port, String dbName, String user,
+                String password, String schemaName, String tableName, String prefix, boolean ssl) {
+                this(host, port, dbName, user, password, schemaName, tableName, prefix);
                 this.ssl = ssl;
         }
 
-	public String getDbName() {
-		return dbName;
-	}
+        public String getDbName() {
+                return dbName;
+        }
 
-	public void setDbName(String dbName) {
-		this.dbName = dbName;
-	}
+        public void setDbName(String dbName) {
+                this.dbName = dbName;
+        }
 
-	public String getHost() {
-		return host;
-	}
+        public String getHost() {
+                return host;
+        }
 
-	public void setHost(String host) {
-		this.host = host;
-	}
+        public void setHost(String host) {
+                this.host = host;
+        }
 
-	public String getPassword() {
-		return password;
-	}
+        public String getPassword() {
+                return password;
+        }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+        public void setPassword(String password) {
+                this.password = password;
+        }
 
-	public int getPort() {
-		return port;
-	}
+        public int getPort() {
+                return port;
+        }
 
-	public void setPort(int port) {
-		this.port = port;
-	}
+        public void setPort(int port) {
+                this.port = port;
+        }
 
-	public String getTableName() {
-		return tableName;
-	}
+        public String getTableName() {
+                return tableName;
+        }
 
-	public void setSchemaName(String schemaName) {
-		this.schemaName = schemaName;
-	}
+        public void setSchemaName(String schemaName) {
+                this.schemaName = schemaName;
+        }
 
-	public String getSchemaName() {
-		return schemaName;
-	}
+        public String getSchemaName() {
+                return schemaName;
+        }
 
-	public void setTableName(String tableName) {
-		this.tableName = tableName;
-	}
+        public void setTableName(String tableName) {
+                this.tableName = tableName;
+        }
 
-	public String getUser() {
-		return user;
-	}
+        public String getUser() {
+                return user;
+        }
 
-	public void setUser(String user) {
-		this.user = user;
-	}
+        public void setUser(String user) {
+                this.user = user;
+        }
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
-	public String toString() {
-		return host + "-" + port + "-" + dbName + "-" + user + "-" + password
-				+ "-" + tableName;
-	}
+        /**
+         * Returns a human-readable description of this DBSource
+         * @return a description String
+         */
+        @Override
+        public String toString() {
+                return host + "-" + port + "-" + dbName + "-" + user + "-" + password
+                        + "-" + tableName;
+        }
 
-	public String getDbms() {
-		return host + ":" + port + "//" + dbName;
-	}
+        public String getDbms() {
+                return host + ":" + port + "//" + dbName;
+        }
 
-	public String getPrefix() {
-		return prefix;
-	}
+        public String getPrefix() {
+                return prefix;
+        }
 
-	public void setPrefix(String prefix) {
-		this.prefix = prefix;
-	}
+        public void setPrefix(String prefix) {
+                this.prefix = prefix;
+        }
 
         /**
          * @return the ssl

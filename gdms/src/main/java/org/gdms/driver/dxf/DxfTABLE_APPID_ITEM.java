@@ -37,9 +37,9 @@ import java.util.LinkedHashMap;
  * @version 0.5.0
  */
 // History
-public class DxfTABLE_APPID_ITEM extends DxfTABLE_ITEM {
+public final class DxfTABLE_APPID_ITEM extends DxfTABLE_ITEM {
 
-    public DxfTABLE_APPID_ITEM(String name, int flags) {
+    private DxfTABLE_APPID_ITEM(String name, int flags) {
         super(name, flags);
     }
 

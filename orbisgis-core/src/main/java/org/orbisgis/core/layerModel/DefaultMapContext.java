@@ -44,7 +44,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.metadata.MetadataUtilities;
+import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.driver.DriverException;
 import org.gdms.source.SourceEvent;
 import org.gdms.source.SourceListener;
@@ -58,7 +58,7 @@ import org.orbisgis.core.layerModel.persistence.LayerCollectionType;
 import org.orbisgis.core.layerModel.persistence.LayerType;
 import org.orbisgis.core.layerModel.persistence.SelectedLayer;
 import org.orbisgis.core.renderer.Renderer;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.utils.I18N;
 
@@ -350,7 +350,7 @@ public class DefaultMapContext implements MapContext {
 	}
 
 	public void draw(BufferedImage inProcessImage, Envelope extent,
-			IProgressMonitor pm) {
+			ProgressMonitor pm) {
 		checkIsOpen();
 		Renderer renderer = new Renderer();
 		renderer.draw(inProcessImage, extent, getLayerModel(), pm);
@@ -436,7 +436,7 @@ public class DefaultMapContext implements MapContext {
 	}
 
 	@Override
-	public void close(IProgressMonitor pm) {
+	public void close(ProgressMonitor pm) {
 
 		checkIsOpen();
 
@@ -473,7 +473,7 @@ public class DefaultMapContext implements MapContext {
 	}
 
 	@Override
-	public void open(IProgressMonitor pm) throws LayerException {
+	public void open(ProgressMonitor pm) throws LayerException {
 
 		if (isOpen()) {
 			throw new IllegalStateException(

@@ -6,14 +6,16 @@
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
  *
- *  Team leader Erwan BOCHER, scientific researcher,
+ * Team leader : Erwan BOCHER, scientific researcher,
  *
- *  User support leader : Gwendall Petit, geomatic engineer.
+ * User support leader : Gwendall Petit, geomatic engineer.
  *
+ * Previous computer developer : Pierre-Yves FADET, computer engineer, Thomas LEDUC, 
+ * scientific researcher, Fernando GONZALEZ CORTES, computer engineer.
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2010 Erwan BOCHER, Alexis GUEGANNO, Maxence LAURENT, Antoine GOURLAY
  *
  * This file is part of OrbisGIS.
  *
@@ -32,8 +34,7 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info@orbisgis.org
  */
 package org.gdms.data.values;
 
@@ -44,626 +45,619 @@ import java.text.ParseException;
 import java.util.Date;
 
 import org.gdms.data.types.Type;
-import org.gdms.sql.parser.SQLEngineConstants;
-import org.gdms.sql.strategies.SemanticException;
 import org.grap.model.GeoRaster;
 
 import com.vividsolutions.jts.geom.Geometry;
 import java.util.Locale;
+import org.apache.log4j.Logger;
+import org.gdms.data.types.IncompatibleTypesException;
 
 /**
  * Factory to instantiate Value instances from basic types
  * 
  */
-public class ValueFactory {
-
-	public static final Value TRUE = createValue(true);
-
-	public static final Value FALSE = createValue(false);
-
-	/**
-	 * Creates a Value instance that contains the specified int value
-	 * 
-	 * @param n
-	 * 
-	 */
-	public static Value createValue(int n) {
-		IntValue ret = new IntValue();
-		ret.setValue(n);
-
-		return ret;
-	}
-
-	/**
-	 * Creates a Value instance that contains the specified long value
-	 * 
-	 * @param l
-	 */
-	public static Value createValue(long l) {
-		LongValue ret = new LongValue();
-		ret.setValue(l);
-
-		return ret;
-	}
-
-	/**
-	 * Creates a Value instance that contains the specified byte value
-	 * 
-	 * @param b
-	 */
-	public static Value createValue(byte b) {
-		return new ByteValue(b);
-	}
-
-	/**
-	 * Creates a Value instance that contains the specified short value
-	 * 
-	 * @param l
-	 */
-	public static Value createValue(short l) {
-		return new ShortValue(l);
-	}
-
-	/**
-	 * Creates a Value instance that contains the specified String value
-	 * 
-	 * @param s
-	 */
-	public static Value createValue(String s) {
-		if (s != null) {
-			StringValue ret = new StringValue();
-			ret.setValue(s);
-
-			return ret;
-		} else {
-			return createNullValue();
-		}
-	}
-
-	/**
-	 * Creates a Value instance that contains the specified float value
-	 * 
-	 * @param f
-	 */
-	public static Value createValue(float f) {
-		FloatValue ret = new FloatValue();
-		ret.setValue(f);
-
-		return ret;
-	}
-
-	/**
-	 * Creates a Value instance that contains the specified double value
-	 * 
-	 * @param d
-	 */
-	public static Value createValue(double d) {
-		DoubleValue ret = new DoubleValue();
-		ret.setValue(d);
-
-		return ret;
-	}
-
-	/**
-	 * Creates a Value instance that contains the specified date value
-	 * 
-	 * @param d
-	 */
-	public static Value createValue(Date d) {
-		if (d != null) {
-			DateValue ret = new DateValue();
-			ret.setValue(d);
-
-			return ret;
-		} else {
-			return createNullValue();
-		}
-	}
-
-	/**
-	 * Creates a Value instance that contains the specified time value
-	 * 
-	 * @param t
-	 */
-	public static Value createValue(Time t) {
-		if (t != null) {
-			TimeValue ret = new TimeValue();
-			ret.setValue(t);
-
-			return ret;
-		} else {
-			return createNullValue();
-		}
-	}
-
-	/**
-	 * Creates a TimestampValue object
-	 * 
-	 * @param t
-	 */
-	public static Value createValue(Timestamp t) {
-		if (t != null) {
-			TimestampValue ret = new TimestampValue();
-			ret.setValue(t);
-
-			return ret;
-		} else {
-			return createNullValue();
-		}
-	}
-
-	/**
-	 * Creates a Value instance that contains the specified boolean value
-	 * 
-	 * @param b
-	 */
-	public static Value createValue(boolean b) {
-		BooleanValue ret = new BooleanValue();
-		ret.setValue(b);
-
-		return ret;
-	}
-
-	/**
-	 * Creates a Value collection
-	 * 
-	 * @param values
-	 */
-	public static ValueCollection createValue(Value[] values) {
-		ValueCollection v = new ValueCollection();
-		v.setValues(values);
-
-		return v;
-	}
-
-	/**
-	 * Creates a Value instance with the specified literal
-	 * 
-	 * @param text
-	 *            Text containing the value
-	 * @param type
-	 *            Type of literal. SQL parser constant:
-	 *            SQLEngineConstants.STRING_LITERAL,
-	 *            SQLEngineConstants.INTEGER_LITERAL or
-	 *            SQLEngineConstants.FLOATING_POINT_LITERAL
-	 * 
-	 * 
-	 * @throws SemanticException
-	 *             If the literal type is not valid
-	 */
-	public static Value createValue(String text, int type)
-			throws IllegalArgumentException {
-		switch (type) {
-		case SQLEngineConstants.BOOLEAN_LITERAL:
-
-			return new BooleanValue(Boolean.parseBoolean(text));
-
-		case SQLEngineConstants.STRING_LITERAL:
-
-			StringValue r1 = new StringValue();
-			r1.setValue(text.substring(1, text.length() - 1));
-
-			return r1;
-
-		case SQLEngineConstants.INTEGER_LITERAL:
-
-			try {
-				IntValue r2 = new IntValue();
-				r2.setValue(Integer.parseInt(text));
-
-				return r2;
-			} catch (NumberFormatException e) {
-				LongValue r2 = new LongValue();
-				r2.setValue(Long.parseLong(text));
-
-				return r2;
-			}
-
-		case SQLEngineConstants.FLOATING_POINT_LITERAL:
-
-			try {
-				FloatValue r2 = new FloatValue();
-				r2.setValue(Float.parseFloat(text));
-
-				return r2;
-			} catch (NumberFormatException e) {
-				DoubleValue r2 = new DoubleValue();
-				r2.setValue(Double.parseDouble(text));
-
-				return r2;
-			}
-
-		default:
-			throw new IllegalArgumentException("Unexpected literal type: "
-					+ text + "->" + type);
-		}
-	}
-
-	/**
-	 * Instantiates a value of the specified type containing the value with the
-	 * specified textual representation
-	 * 
-	 * @param text
-	 *            Textual representation of the value to instantiate
-	 * @param type
-	 *            Type of the value. Must be one of the constants of the Type
-	 *            interface
-	 * 
-	 * @return
-	 * 
-	 * @throws ParseException
-	 *             If the textual representation cannot be converted to the
-	 *             specified type
-	 */
-	public static Value createValueByType(String text, int type)
-			throws ParseException, NumberFormatException {
-		Value value;
-
-		switch (type) {
-		case Type.LONG:
-			value = ValueFactory.createValue(Long.parseLong(text));
-
-			break;
-
-		case Type.BOOLEAN:
-			value = ValueFactory.createValue(Boolean.valueOf(text)
-					.booleanValue());
-
-			break;
-
-		case Type.STRING:
-			value = ValueFactory.createValue(text);
-
-			break;
-
-		case Type.DATE:
-			value = new DateValue(text);
-
-			break;
-
-		case Type.DOUBLE:
-			value = ValueFactory.createValue(DecimalFormat.getNumberInstance(Locale.ROOT)
-					.parse(text).doubleValue());
-
-			break;
-
-		case Type.INT:
-			value = ValueFactory.createValue(Integer.parseInt(text));
-
-			break;
-
-		case Type.FLOAT:
-			value = ValueFactory.createValue(DecimalFormat.getNumberInstance(Locale.ROOT)
-					.parse(text).floatValue());
-
-			break;
-
-		case Type.GEOMETRY:
-			try {
-				value = GeometryValue.parseString(text);
-			} catch (com.vividsolutions.jts.io.ParseException e) {
-				throw new ParseException("Cannot parse geometry:"
-						+ e.getMessage(), -1);
-			}
-
-			break;
-
-		case Type.SHORT:
-			value = ValueFactory.createValue(Short.parseShort(text));
-
-			break;
-
-		case Type.BYTE:
-			value = ValueFactory.createValue(Byte.parseByte(text));
-
-			break;
-
-		case Type.BINARY:
-
-			if ((text.length() / 2) != (text.length() / 2.0)) {
-				throw new ParseException(
-						"binary fields must have even number of characters.", 0);
-			}
-
-			byte[] array = new byte[text.length() / 2];
-
-			for (int i = 0; i < (text.length() / 2); i++) {
-				String byte_ = text.substring(2 * i, (2 * i) + 2);
-				array[i] = (byte) Integer.parseInt(byte_, 16);
-			}
-
-			value = ValueFactory.createValue(array);
-
-			break;
-
-		case Type.TIMESTAMP:
-			try {
-				value = ValueFactory.createValue(Timestamp.valueOf(text));
-			} catch (IllegalArgumentException e) {
-				throw new ParseException(e.getMessage(), -1);
-			}
-
-			break;
-
-		case Type.TIME:
-			value = new TimeValue(text);
-
-			break;
-
-		default:
-			value = ValueFactory.createValue(text);
-		}
-
-		return value;
-	}
-
-	/**
-	 * Creates a new null Value
-	 * 
-	 * @return NullValue
-	 */
-	public static Value createNullValue() {
-		return new NullValue();
-	}
-
-	/**
-	 * Gets a Value with the value v1 plus v2
-	 * 
-	 * @param v1
-	 *            first value
-	 * @param v2
-	 *            second value
-	 * 
-	 * @return a numeric value with the operation
-	 */
-	static Value suma(NumericValue v1, NumericValue v2) {
-		int type = getType(v1.getType(), v2.getType());
-
-		switch (type) {
-		/*
-		 * El operador '+' en java no est� definido para byte ni short, as� que
-		 * nosotros tampoco lo definimos. Por otro lado no conocemos manera de
-		 * detectar el overflow al operar con long's ni double's de manera
-		 * eficiente, as� que no se detecta.
-		 */
-		case Type.BYTE:
-		case Type.SHORT:
-		case Type.INT:
-
-			int intValue = v1.intValue() + v2.intValue();
-
-			if ((intValue) != (v1.longValue() + v2.longValue())) {
-				type = Type.LONG;
-
-			} else {
-				return (NumericValue) createValue(intValue);
-			}
-
-		case Type.LONG:
-			return (NumericValue) createValue(v1.longValue() + v2.longValue());
-
-		case Type.FLOAT:
-
-			float floatValue = v1.floatValue() + v2.floatValue();
-
-			if ((floatValue) != (v1.doubleValue() + v2.doubleValue())) {
-				type = Type.DOUBLE;
-
-			} else {
-				return (NumericValue) createValue(floatValue);
-			}
-
-		case Type.DOUBLE:
-			return (NumericValue) createValue(v1.doubleValue()
-					+ v2.doubleValue());
-		}
-
-		throw new RuntimeException("Cannot sum this data types: "
-				+ v1.getType() + " and " + v2.getType());
-	}
-
-	private static int getType(int type1, int type2) {
-		int type;
-		if ((type1 == Type.DOUBLE) || (type2 == Type.DOUBLE)) {
-			type = Type.DOUBLE;
-		} else if ((type1 == Type.FLOAT) || (type2 == Type.FLOAT)) {
-			type = Type.FLOAT;
-		} else if ((type1 == Type.LONG) || (type2 == Type.LONG)) {
-			type = Type.LONG;
-		} else {
-			type = Type.INT;
-		}
-		return type;
-	}
-
-	/**
-	 * Gets the value of the operation v1 v2
-	 * 
-	 * @param v1
-	 *            first value
-	 * @param v2
-	 *            second value
-	 * 
-	 * @return a numeric value with the operation
-	 */
-	static Value producto(NumericValue v1, NumericValue v2) {
-		int type = getType(v1.getType(), v2.getType());
-
-		while (true) {
-			switch (type) {
-			/*
-			 * El operador '+' en java no esta definido para byte ni short, asi
-			 * que nosotros tampoco lo definimos. Por otro lado no conocemos
-			 * manera de detectar el overflow al operar con long's ni double's
-			 * de manera eficiente, asi que no se detecta.
-			 */
-			case Type.BYTE:
-			case Type.SHORT:
-			case Type.INT:
-
-				int intValue = v1.intValue() * v2.intValue();
-
-				if ((intValue) != (v1.intValue() * v2.intValue())) {
-					type = Type.LONG;
-
-					continue;
-				} else {
-					return (NumericValue) createValue(intValue);
-				}
-
-			case Type.LONG:
-				return (NumericValue) createValue(v1.longValue()
-						* v2.longValue());
-
-			case Type.FLOAT:
-
-				float floatValue = v1.floatValue() * v2.floatValue();
-
-				if ((floatValue) != (v1.doubleValue() * v2.doubleValue())) {
-					type = Type.DOUBLE;
-
-					continue;
-				} else {
-					return (NumericValue) createValue(floatValue);
-				}
-
-			case Type.DOUBLE:
-				return (NumericValue) createValue(v1.doubleValue()
-						* v2.doubleValue());
-			}
-		}
-	}
-
-	/**
-	 * Gets the inverse value (1/v) of the specified parameter.
-	 * 
-	 * @param v
-	 * 
-	 * @return
-	 */
-	static Value inversa(NumericValue v) {
-		if (v.getAsDouble() == 0) {
-			throw new ArithmeticException("Cannot divide by zero");
-		} else {
-			return (NumericValue) createValue(1 / v.doubleValue());
-		}
-	}
-
-	/**
-	 * Creates a byte array value
-	 * 
-	 * @param bytes
-	 *            bytes of the value
-	 * 
-	 * @return
-	 */
-	public static Value createValue(byte[] bytes) {
-		BinaryValue ret = new BinaryValue(bytes);
-
-		return ret;
-	}
-
-	/**
-	 * Creates a Value instance that contains the specified geometry value
-	 * 
-	 * @param geom
-	 * @return
-	 */
-	public static Value createValue(Geometry geom) {
-		if (geom != null) {
-			return new GeometryValue(geom);
-		} else {
-			return createNullValue();
-		}
-	}	
-
-
-	/**
-	 * Creates a Value instance that contains the specified raster value
-	 * 
-	 * @param raster
-	 * @return
-	 */
-	public static Value createValue(GeoRaster raster) {
-		if (raster != null) {
-			return new RasterValue(raster);
-		} else {
-			return createNullValue();
-		}
-	}
-
-	/**
-	 * Creates a Value from the specified bytes. Those bytes must have been
-	 * obtained by a previous call to Value.getBytes
-	 * 
-	 * @param valueType
-	 *            The type of the value. one of the constants in Type interface
-	 * @param buffer
-	 *            byte representation of the value
-	 * 
-	 * @return
-	 */
-	public static Value createValue(int valueType, byte[] buffer) {
-		switch (valueType) {
-		case Type.BINARY:
-			return BinaryValue.readBytes(buffer);
-		case Type.BOOLEAN:
-			return BooleanValue.readBytes(buffer);
-		case Type.BYTE:
-			return ByteValue.readBytes(buffer);
-		case Type.COLLECTION:
-			return ValueCollection.readBytes(buffer);
-		case Type.DATE:
-			return DateValue.readBytes(buffer);
-		case Type.DOUBLE:
-			return DoubleValue.readBytes(buffer);
-		case Type.FLOAT:
-			return FloatValue.readBytes(buffer);
-		case Type.GEOMETRY:
-			return GeometryValue.readBytes(buffer);
-		case Type.INT:
-			return IntValue.readBytes(buffer);
-		case Type.LONG:
-			return LongValue.readBytes(buffer);
-		case Type.NULL:
-			return new NullValue();
-		case Type.RASTER:
-			return RasterValue.readBytes(buffer);
-		case Type.SHORT:
-			return ShortValue.readBytes(buffer);
-		case Type.STRING:
-			return StringValue.readBytes(buffer);
-		case Type.TIME:
-			return TimeValue.readBytes(buffer);
-		case Type.TIMESTAMP:
-			return TimestampValue.readBytes(buffer);
-		default:
-			throw new RuntimeException("Wrong type: " + valueType);
-		}
-	}
-
-	/**
-	 * <p>
-	 * Creates a value of the specified type in two steps. The first one builds
-	 * quickly the value based on the byte[], the second asks for data to the
-	 * specified byteProvider to build the Value completely on demand.
-	 * </p>
-	 * <p>
-	 * Note that this method only supports Rasters right now.
-	 * </p>
-	 * 
-	 * @param valueType
-	 * @param buffer
-	 * @param byteProvider
-	 * @return
-	 */
-	public static Value createLazyValue(int valueType, byte[] buffer,
-			ByteProvider byteProvider) {
-		switch (valueType) {
-		case Type.RASTER:
-			return RasterValue.readBytes(buffer, byteProvider);
-		default:
-			throw new RuntimeException("Wrong type: " + valueType);
-		}
-	}
+public final class ValueFactory {
+
+        private static final Logger LOG = Logger.getLogger(ValueFactory.class);
+        public static final BooleanValue TRUE = new DefaultBooleanValue(true);
+        public static final BooleanValue FALSE = new DefaultBooleanValue(false);
+        /**
+         * Max size of the Value cache.
+         */
+        public static final int VALUECACHEMAXSIZE = 50;
+
+        /**
+         * Creates a Value instance that contains the specified int value
+         *
+         * @param n
+         * @return
+         *
+         */
+        public static IntValue createValue(int n) {
+                return DefaultIntValue.BUF.get(n);
+        }
+
+        /**
+         * Creates a Value instance that contains the specified long value
+         *
+         * @param l
+         * @return
+         */
+        public static LongValue createValue(long l) {
+                return DefaultLongValue.BUF.get(l);
+        }
+
+        /**
+         * Creates a Value instance that contains the specified byte value
+         *
+         * @param b
+         * @return
+         */
+        public static ByteValue createValue(byte b) {
+                return DefaultByteValue.BUF.get(b);
+        }
+
+        /**
+         * Creates a Value instance that contains the specified short value
+         *
+         * @param l
+         * @return
+         */
+        public static ShortValue createValue(short l) {
+                return DefaultShortValue.BUF.get(l);
+        }
+
+        /**
+         * Creates a Value instance that contains the specified String value
+         *
+         * @param s
+         * @return
+         */
+        public static StringValue createValue(String s) {
+                if (s != null) {
+                        return DefaultStringValue.BUF.get(s);
+                } else {
+                        return createNullValue();
+                }
+        }
+
+        /**
+         * Creates a Value instance that contains the specified float value
+         *
+         * @param f
+         * @return
+         */
+        public static FloatValue createValue(float f) {
+                return DefaultFloatValue.BUF.get(f);
+        }
+
+        /**
+         * Creates a Value instance that contains the specified double value
+         *
+         * @param d
+         * @return
+         */
+        public static DoubleValue createValue(double d) {
+                return DefaultDoubleValue.BUF.get(d);
+        }
+
+        /**
+         * Creates a Value instance that contains the specified date value
+         *
+         * @param d
+         * @return
+         */
+        public static DateValue createValue(Date d) {
+                if (d != null) {
+                        return DefaultDateValue.BUF.get(new java.sql.Date(d.getTime()));
+                } else {
+                        return createNullValue();
+                }
+        }
+
+        /**
+         * Creates a Value instance that contains the specified time value
+         *
+         * @param t
+         * @return
+         */
+        public static TimeValue createValue(Time t) {
+                if (t != null) {
+                        return DefaultTimeValue.BUF.get(t);
+                } else {
+                        return createNullValue();
+                }
+        }
+
+        /**
+         * Creates a TimestampValue object
+         *
+         * @param t
+         * @return
+         */
+        public static TimestampValue createValue(Timestamp t) {
+                if (t != null) {
+                        return DefaultTimestampValue.BUF.get(t);
+                } else {
+                        return createNullValue();
+                }
+        }
+
+        /**
+         * Creates a Value instance that contains the specified boolean value
+         *
+         * @param b
+         * @return
+         */
+        public static BooleanValue createValue(boolean b) {
+                if (b) {
+                        return TRUE;
+                } else {
+                        return FALSE;
+                }
+        }
+
+        /**
+         * Creates a Value collection
+         *
+         * @param values
+         * @return
+         */
+        public static ValueCollection createValue(Value[] values) {
+                ValueCollection v = new DefaultValueCollection();
+                v.setValues(values);
+
+                return v;
+        }
+
+        /**
+         * Instantiates a value of the specified type containing the value with the
+         * specified textual representation
+         *
+         * @param text
+         *            Textual representation of the value to instantiate
+         * @param type
+         *            Type of the value. Must be one of the constants of the Type
+         *            interface
+         *
+         * @return
+         *
+         * @throws ParseException
+         *             If the textual representation cannot be converted to the
+         *             specified type
+         * @throws NumberFormatException
+         */
+        public static Value createValueByType(String text, int type)
+                throws ParseException {
+                Value value;
+
+                switch (type) {
+                        case Type.LONG:
+                                value = createValue(Long.parseLong(text));
+
+                                break;
+
+                        case Type.BOOLEAN:
+                                value = createValue(Boolean.valueOf(text));
+
+                                break;
+
+                        case Type.DATE:
+                                value = DefaultDateValue.parseString(text);
+
+                                break;
+
+                        case Type.DOUBLE:
+                                value = createValue(DecimalFormat.getNumberInstance(Locale.ROOT).parse(text).doubleValue());
+
+                                break;
+
+                        case Type.INT:
+                                value = createValue(Integer.parseInt(text));
+
+                                break;
+
+                        case Type.FLOAT:
+                                value = createValue(DecimalFormat.getNumberInstance(Locale.ROOT).parse(text).floatValue());
+
+                                break;
+
+                        case Type.GEOMETRY:
+                                try {
+                                        value = DefaultGeometryValue.parseString(text);
+                                } catch (com.vividsolutions.jts.io.ParseException e) {
+                                        LOG.error("Error parsing geometry", e);
+                                        throw new ParseException("Cannot parse geometry:"
+                                                + e.getMessage(), -1);
+                                }
+
+                                break;
+
+                        case Type.SHORT:
+                                value = createValue(Short.parseShort(text));
+
+                                break;
+
+                        case Type.BYTE:
+                                value = createValue(Byte.parseByte(text));
+
+                                break;
+
+                        case Type.BINARY:
+
+                                if (text.length() % 2 != 0) {
+                                        throw new ParseException(
+                                                "binary fields must have even number of characters.", 0);
+                                }
+
+                                byte[] array = new byte[text.length() / 2];
+
+                                for (int i = 0; i < (text.length() / 2); i++) {
+                                        String theByte = text.substring(2 * i, (2 * i) + 2);
+                                        array[i] = (byte) Integer.parseInt(theByte, 16);
+                                }
+
+                                value = createValue(array);
+
+                                break;
+
+                        case Type.TIMESTAMP:
+                                try {
+                                        value = createValue(Timestamp.valueOf(text));
+                                } catch (IllegalArgumentException e) {
+                                        LOG.error("Error parsing Timestamp", e);
+                                        throw new ParseException(e.getMessage(), -1);
+                                }
+
+                                break;
+
+                        case Type.TIME:
+                                value = DefaultTimeValue.parseString(text);
+
+                                break;
+
+                        case Type.STRING:
+                        default:
+                                value = createValue(text);
+                }
+
+                return value;
+        }
+
+        /**
+         * Creates a new null Value
+         *
+         * @param <T> 
+         * @return NullValue
+         */
+        public static <T extends Value> T createNullValue() {
+                return (T) NullValue.NULL;
+        }
+
+        /**
+         * Gets a Value with the value v1 plus v2
+         *
+         * @param v1
+         *            first value
+         * @param v2
+         *            second value
+         *
+         * @return a numeric value with the operation
+         */
+        static NumericValue sum(NumericValue v1, NumericValue v2) {
+                int type = getType(v1.getType(), v2.getType());
+
+                switch (type) {
+                        /*
+                         * El operador '+' en java no est� definido para byte ni short, as� que
+                         * nosotros tampoco lo definimos. Por otro lado no conocemos manera de
+                         * detectar el overflow al operar con long's ni double's de manera
+                         * eficiente, as� que no se detecta.
+                         */
+                        case Type.BYTE:
+                        case Type.SHORT:
+                        case Type.INT:
+
+                                int intValue = v1.intValue() + v2.intValue();
+
+                                if ((intValue) != (v1.longValue() + v2.longValue())) {
+                                        type = Type.LONG;
+
+                                } else {
+                                        return createValue(intValue);
+                                }
+
+                        case Type.LONG:
+                                return createValue(v1.longValue() + v2.longValue());
+
+                        case Type.FLOAT:
+
+                                float floatValue = v1.floatValue() + v2.floatValue();
+
+                                if ((floatValue) != (v1.doubleValue() + v2.doubleValue())) {
+                                        type = Type.DOUBLE;
+
+                                } else {
+                                        return createValue(floatValue);
+                                }
+
+                        case Type.DOUBLE:
+                                return createValue(v1.doubleValue()
+                                        + v2.doubleValue());
+                        default:
+                                throw new IncompatibleTypesException("Cannot sum this data types: "
+                                        + v1.getType() + " and " + v2.getType());
+                }
+
+        }
+
+        static NumericValue remainder(NumericValue v1, NumericValue v2) {
+                int type = getType(v1.getType(), v2.getType());
+
+                switch (type) {
+                        case Type.BYTE:
+                        case Type.SHORT:
+                        case Type.INT:
+                                return createValue(v1.intValue() % v2.intValue());
+
+                        case Type.FLOAT:
+                                return createValue(v1.floatValue() % v2.floatValue());
+                        case Type.LONG:
+                                return createValue(v1.longValue() % v2.longValue());
+                        case Type.DOUBLE:
+                                return createValue(v1.doubleValue() % v2.doubleValue());
+                        default:
+                                throw new IncompatibleTypesException("Cannot mod this data types: "
+                                        + v1.getType() + " and " + v2.getType());
+                }
+        }
+
+        static BooleanValue and(BooleanValue v1, BooleanValue v2) {
+                final boolean aNull = v1.isNull();
+                final boolean bNull = v2.isNull();
+
+                if (aNull && bNull) {
+                        return createNullValue();
+                }
+                final Boolean bBool = v2.getAsBoolean();
+                final Boolean aBool = v1.getAsBoolean();
+
+                if ((aNull && bBool) || (bNull && aBool)) {
+                        return createNullValue();
+                } else {
+                        return createValue(aBool && bBool);
+                }
+        }
+
+        static BooleanValue or(BooleanValue v1, BooleanValue v2) {
+                final boolean aNull = v1.isNull();
+                final boolean bNull = v2.isNull();
+
+                if (aNull && bNull) {
+                        return createNullValue();
+                }
+                final Boolean bBool = v2.getAsBoolean();
+                final Boolean aBool = v1.getAsBoolean();
+
+                if ((aNull && !bBool) || (bNull && !aBool)) {
+                        return createNullValue();
+                } else {
+                        return createValue(aBool || bBool);
+                }
+        }
+
+        static BooleanValue equals(BooleanValue v1, BooleanValue v2) {
+                if (v1.isNull() || v2.isNull()) {
+                        return createNullValue();
+                } else {
+                        return createValue(v1.getAsBoolean().equals(v2.getAsBoolean()));
+                }
+        }
+
+        private static int getType(int type1, int type2) {
+                int type;
+                if ((type1 == Type.DOUBLE) || (type2 == Type.DOUBLE)) {
+                        type = Type.DOUBLE;
+                } else if ((type1 == Type.FLOAT) || (type2 == Type.FLOAT)) {
+                        type = Type.FLOAT;
+                } else if ((type1 == Type.LONG) || (type2 == Type.LONG)) {
+                        type = Type.LONG;
+                } else {
+                        type = Type.INT;
+                }
+                return type;
+        }
+
+        /**
+         * Gets the value of the operation v1 v2
+         *
+         * @param v1
+         *            first value
+         * @param v2
+         *            second value
+         *
+         * @return a numeric value with the operation
+         */
+        static NumericValue product(NumericValue v1, NumericValue v2) {
+                int type = getType(v1.getType(), v2.getType());
+
+                while (true) {
+                        switch (type) {
+                                /*
+                                 * El operador '+' en java no esta definido para byte ni short, asi
+                                 * que nosotros tampoco lo definimos. Por otro lado no conocemos
+                                 * manera de detectar el overflow al operar con long's ni double's
+                                 * de manera eficiente, asi que no se detecta.
+                                 */
+                                case Type.BYTE:
+                                case Type.SHORT:
+                                case Type.INT:
+
+                                        int intValue = v1.intValue() * v2.intValue();
+
+                                        if ((intValue) != (v1.intValue() * v2.intValue())) {
+                                                type = Type.LONG;
+
+                                                continue;
+                                        } else {
+                                                return createValue(intValue);
+                                        }
+
+                                case Type.LONG:
+                                        return createValue(v1.longValue()
+                                                * v2.longValue());
+
+                                case Type.FLOAT:
+
+                                        float floatValue = v1.floatValue() * v2.floatValue();
+
+                                        if ((floatValue) != (v1.doubleValue() * v2.doubleValue())) {
+                                                type = Type.DOUBLE;
+
+                                                continue;
+                                        } else {
+                                                return createValue(floatValue);
+                                        }
+
+                                case Type.DOUBLE:
+                                        return createValue(v1.doubleValue()
+                                                * v2.doubleValue());
+                                default:
+                                        throw new IncompatibleTypesException("Cannot multiply these data types: "
+                                                + v1.getType() + " and " + v2.getType());
+                        }
+                }
+        }
+
+        /**
+         * Gets the inverse value (1/v) of the specified parameter.
+         *
+         * @param v
+         *
+         * @return
+         */
+        static NumericValue inverse(NumericValue v) {
+                if (v.getAsDouble() == 0) {
+                        throw new ArithmeticException("Division by zero");
+                } else {
+                        return createValue(1 / v.doubleValue());
+                }
+        }
+
+        /**
+         * Creates a byte array value
+         *
+         * @param bytes
+         *            bytes of the value
+         *
+         * @return
+         */
+        public static BinaryValue createValue(byte[] bytes) {
+                return new DefaultBinaryValue(bytes);
+        }
+
+        /**
+         * Creates a Value instance that contains the specified geometry value
+         *
+         * @param geom
+         * @return
+         */
+        public static GeometryValue createValue(Geometry geom) {
+                if (geom != null) {
+                        return new DefaultGeometryValue(geom);
+                } else {
+                        return createNullValue();
+                }
+        }
+
+        /**
+         * Creates a Value instance that contains the specified raster value
+         *
+         * @param raster
+         * @return
+         */
+        public static RasterValue createValue(GeoRaster raster) {
+                if (raster != null) {
+                        return new DefaultRasterValue(raster);
+                } else {
+                        return createNullValue();
+                }
+        }
+
+        /**
+         * Creates a Value from the specified bytes. Those bytes must have been
+         * obtained by a previous call to Value.getBytes
+         *
+         * @param valueType
+         *            The type of the value. one of the constants in Type interface
+         * @param buffer
+         *            byte representation of the value
+         *
+         * @return
+         */
+        public static Value createValue(int valueType, byte[] buffer) {
+                switch (valueType) {
+                        case Type.BINARY:
+                                return DefaultBinaryValue.readBytes(buffer);
+                        case Type.BOOLEAN:
+                                return DefaultBooleanValue.readBytes(buffer);
+                        case Type.BYTE:
+                                return DefaultByteValue.readBytes(buffer);
+                        case Type.COLLECTION:
+                                return DefaultValueCollection.readBytes(buffer);
+                        case Type.DATE:
+                                return DefaultDateValue.readBytes(buffer);
+                        case Type.DOUBLE:
+                                return DefaultDoubleValue.readBytes(buffer);
+                        case Type.FLOAT:
+                                return DefaultFloatValue.readBytes(buffer);
+                        case Type.GEOMETRY:
+                                return DefaultGeometryValue.readBytes(buffer);
+                        case Type.INT:
+                                return DefaultIntValue.readBytes(buffer);
+                        case Type.LONG:
+                                return DefaultLongValue.readBytes(buffer);
+                        case Type.NULL:
+                                return NullValue.NULL;
+                        case Type.RASTER:
+                                return DefaultRasterValue.readBytes(buffer);
+                        case Type.SHORT:
+                                return DefaultShortValue.readBytes(buffer);
+                        case Type.STRING:
+                                return DefaultStringValue.readBytes(buffer);
+                        case Type.TIME:
+                                return DefaultTimeValue.readBytes(buffer);
+                        case Type.TIMESTAMP:
+                                return DefaultTimestampValue.readBytes(buffer);
+                        default:
+                                throw new IllegalArgumentException("Wrong type: " + valueType);
+                }
+        }
+
+        /**
+         * <p>
+         * Creates a value of the specified type in two steps. The first one builds
+         * quickly the value based on the byte[], the second asks for data to the
+         * specified byteProvider to build the Value completely on demand.
+         * </p>
+         * <p>
+         * Note that this method only supports Rasters right now.
+         * </p>
+         *
+         * @param valueType
+         * @param buffer
+         * @param byteProvider
+         * @return
+         */
+        public static Value createLazyValue(int valueType, byte[] buffer,
+                ByteProvider byteProvider) {
+                if (valueType == Type.RASTER) {
+                        return DefaultRasterValue.readBytes(buffer, byteProvider);
+                } else {
+                        throw new IllegalArgumentException("Wrong type: " + valueType);
+                }
+        }
+
+        private ValueFactory() {
+        }
 }

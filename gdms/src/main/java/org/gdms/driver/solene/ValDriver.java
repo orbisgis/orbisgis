@@ -42,145 +42,191 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
+import org.apache.log4j.Logger;
 
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.metadata.DefaultMetadata;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.DefaultSchema;
+import org.gdms.data.schema.Metadata;
+import org.gdms.data.schema.Schema;
+import org.gdms.data.schema.SchemaMetadata;
 import org.gdms.data.types.Constraint;
+import org.gdms.data.types.ConstraintFactory;
 import org.gdms.data.types.DefaultTypeDefinition;
 import org.gdms.data.types.InvalidTypeException;
-import org.gdms.data.types.NotNullConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
-import org.gdms.data.types.UniqueConstraint;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
+import org.gdms.driver.ReadAccess;
 import org.gdms.source.SourceManager;
 
-public class ValDriver implements FileDriver {
-	public static final String DRIVER_NAME = "Solene Val driver";
+public final class ValDriver implements FileDriver, ReadAccess {
 
-	private String EXTENSION = "val";
+        public static final String DRIVER_NAME = "Solene Val driver";
+        private static final String EXTENSION = "val";
+        private Scanner in;
+        private List<Value[]> rows;
+        private Schema schema;
+        private File file;
+        private double min = Double.MAX_VALUE;
+        private double max = Double.MIN_VALUE;
+        private static final Logger LOG = Logger.getLogger(ValDriver.class);
 
-	private Scanner in;
+        @Override
+        public void close() throws DriverException {
+                LOG.trace("Closing");
+                in.close();
+        }
 
-	private List<Value[]> rows;
+        @Override
+        public void open() throws DriverException {
+                LOG.trace("Opening file " + file.getAbsolutePath());
+                try {
+                        rows = new ArrayList<Value[]>();
 
-	private double min = Double.MAX_VALUE;
+                        in = new Scanner(file);
+                        in.useLocale(Locale.US); // essential to read float values
 
-	private double max = Double.MIN_VALUE;
+                        final int nbFacesCir = in.nextInt();
+                        in.next(); // useless "supNumFaces"
+                        in.nextDouble(); // useless "read min"
+                        in.nextDouble(); // useless "read max"
+                        for (int i = 0; i < nbFacesCir; i++) {
+                                readFace();
+                        }
 
-	public void close() throws DriverException {
-		in.close();
-	}
+                } catch (FileNotFoundException e) {
+                        throw new DriverException(e);
+                } catch (InvalidTypeException e) {
+                        throw new DriverException(e);
+                }
+        }
 
-	public void open(File file) throws DriverException {
-		try {
-			rows = new ArrayList<Value[]>();
+        private void readFace() throws DriverException {
+                final String faceIdx = in.next();
+                if (faceIdx.charAt(0) != 'f') {
+                        throw new DriverException("Bad VAL file format (f) !");
+                }
+                final int nbContours = in.nextInt();
+                for (int boundIdx = 0; boundIdx < nbContours; boundIdx++) {
+                        final double tmp = in.nextDouble();
+                        min = (tmp < min) ? tmp : min;
+                        max = (tmp > max) ? tmp : max;
+                        rows.add(new Value[]{
+                                        ValueFactory.createValue(faceIdx + "_" + boundIdx),
+                                        ValueFactory.createValue(tmp)});
+                }
+        }
 
-			in = new Scanner(file);
-			in.useLocale(Locale.US); // essential to read float values
+        @Override
+        public TypeDefinition[] getTypesDefinitions() {
+                final TypeDefinition[] result = new TypeDefinition[2];
+                result[0] = new DefaultTypeDefinition("STRING", Type.STRING, new int[]{
+                                Constraint.UNIQUE, Constraint.NOT_NULL});
+                result[1] = new DefaultTypeDefinition("DOUBLE", Type.DOUBLE,
+                        new int[]{Constraint.NOT_NULL});
+                return result;
+        }
 
-			final int nbFacesCir = in.nextInt();
-			in.next(); // useless "supNumFaces"
-			in.nextDouble(); // useless "read min"
-			in.nextDouble(); // useless "read max"
-			for (int i = 0; i < nbFacesCir; i++) {
-				_readFace();
-			}
-		} catch (FileNotFoundException e) {
-			throw new DriverException(e);
-		}
-	}
+        @Override
+        public void setDataSourceFactory(DataSourceFactory dsf) {
+        }
 
-	private final void _readFace() throws DriverException {
-		final String faceIdx = in.next();
-		if (!faceIdx.startsWith("f")) {
-			throw new DriverException("Bad VAL file format (f) !");
-		}
-		final int nbContours = in.nextInt();
-		for (int boundIdx = 0; boundIdx < nbContours; boundIdx++) {
-			final double tmp = in.nextDouble();
-			min = (tmp < min) ? tmp : min;
-			max = (tmp > max) ? tmp : max;
-			rows.add(new Value[] {
-					ValueFactory.createValue(faceIdx + "_" + boundIdx),
-					ValueFactory.createValue(tmp) });
-		}
-	}
+        @Override
+        public String getDriverId() {
+                return DRIVER_NAME;
+        }
 
-	public Metadata getMetadata() throws DriverException {
-		final DefaultMetadata metadata = new DefaultMetadata();
-		try {
-			metadata.addField("id", Type.STRING, new Constraint[] {
-					new UniqueConstraint(), new NotNullConstraint() });
-			metadata.addField("noName", Type.DOUBLE,
-					new Constraint[] { new NotNullConstraint() });
-		} catch (InvalidTypeException e) {
-			throw new RuntimeException("Bug in the driver", e);
-		}
-		return metadata;
-	}
+        @Override
+        public int getType() {
+                return SourceManager.FILE;
+        }
 
-	public TypeDefinition[] getTypesDefinitions() {
-		final TypeDefinition[] result = new TypeDefinition[2];
-		result[0] = new DefaultTypeDefinition("STRING", Type.STRING, new int[] {
-				Constraint.UNIQUE, Constraint.NOT_NULL });
-		result[1] = new DefaultTypeDefinition("DOUBLE", Type.DOUBLE,
-				new int[] { Constraint.NOT_NULL });
-		return result;
-	}
+        @Override
+        public String[] getFileExtensions() {
+                return new String[]{EXTENSION};
+        }
 
-	public void setDataSourceFactory(DataSourceFactory dsf) {
-	}
+        @Override
+        public String getTypeDescription() {
+                return "Solene alphanumeric file";
+        }
 
-	public String getDriverId() {
-		return DRIVER_NAME;
-	}
+        @Override
+        public String getTypeName() {
+                return "VAL";
+        }
 
-	public Value getFieldValue(long rowIndex, int fieldId)
-			throws DriverException {
-		final Value[] fields = rows.get((int) rowIndex);
-		if ((fieldId < 0) || (fieldId > 1)) {
-			return ValueFactory.createNullValue();
-		} else {
-			return fields[fieldId];
-		}
-	}
+        @Override
+        public boolean isCommitable() {
+                return false;
+        }
 
-	public long getRowCount() throws DriverException {
-		return rows.size();
-	}
+        @Override
+        public String validateMetadata(Metadata metadata) throws DriverException {
+                return null;
+        }
 
-	public Number[] getScope(int dimension) throws DriverException {
-		return null;
-	}
+        @Override
+        public Schema getSchema() throws DriverException {
+                return schema;
+        }
 
-	public int getType() {
-		return SourceManager.FILE;
-	}
+        @Override
+        public ReadAccess getTable(String name) {
+                if (!name.equals("main")) {
+                        return null;
+                }
+                return this;
+        }
 
-	@Override
-	public String[] getFileExtensions() {
-		return new String[] { EXTENSION };
-	}
+        @Override
+        public Value getFieldValue(long rowIndex, int fieldId)
+                throws DriverException {
+                final Value[] fields = rows.get((int) rowIndex);
+                if ((fieldId < 0) || (fieldId > 1)) {
+                        return ValueFactory.createNullValue();
+                } else {
+                        return fields[fieldId];
+                }
+        }
 
-	@Override
-	public String getTypeDescription() {
-		return "Solene alphanumeric file";
-	}
+        @Override
+        public long getRowCount() throws DriverException {
+                return rows.size();
+        }
 
-	@Override
-	public String getTypeName() {
-		return "VAL";
-	}
+        @Override
+        public Number[] getScope(int dimension) throws DriverException {
+                return null;
+        }
+
+        @Override
+        public Metadata getMetadata() throws DriverException {
+                return schema.getTableByName("main");
+        }
+
+        @Override
+        public void setFile(File file) throws DriverException {
+                this.file = file;
+                // building schema
+                schema = new DefaultSchema("Val" + file.getAbsolutePath().hashCode());
+                final SchemaMetadata metadata = new SchemaMetadata(schema);
+                metadata.addField("id", Type.STRING, new Constraint[]{
+                                ConstraintFactory.createConstraint(Constraint.UNIQUE),
+                                ConstraintFactory.createConstraint(Constraint.NOT_NULL)});
+                metadata.addField("noName", Type.DOUBLE,
+                        ConstraintFactory.createConstraint(Constraint.NOT_NULL));
+                schema.addTable("main", metadata);
+                // finished building schema
+        }
 
         @Override
         public boolean isOpen() {
                 // once .open() is called, the content of rows
-                // is always accessible.
+                // is always  accessible.
                 return rows != null;
         }
 }

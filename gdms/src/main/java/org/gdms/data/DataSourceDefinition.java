@@ -37,127 +37,149 @@
  */
 package org.gdms.data;
 
-import java.util.ArrayList;
+import java.util.List;
+import org.gdms.data.schema.Schema;
 
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ReadOnlyDriver;
+import org.gdms.driver.Driver;
+import org.gdms.driver.ReadAccess;
 import org.gdms.source.directory.DefinitionType;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 /**
  * Class to be implemented to add new types of sources to the system.
  */
 public interface DataSourceDefinition {
-	/**
-	 * Creates a DataSource with the information of this object
-	 * 
-	 * @param tableName
-	 *            name of the DataSource
-	 * @param pm
-	 *            To indicate progress or being canceled
-	 * @return DataSource
-	 */
-	public DataSource createDataSource(String tableName, IProgressMonitor pm)
-			throws DataSourceCreationException;
 
-	/**
-	 * Creates this source with the content specified in the parameter
-	 * 
-	 * @param contents
-	 */
-	public void createDataSource(DataSource contents, IProgressMonitor pm)
-			throws DriverException;
+        /**
+         * Creates a DataSource with the information of this object
+         *
+         * @param tableName
+         *            name of the DataSource
+         * @param pm
+         *            To indicate progress or being canceled
+         * @return DataSource
+         * @throws DataSourceCreationException
+         */
+        DataSource createDataSource(String tableName, ProgressMonitor pm)
+                throws DataSourceCreationException;
 
-	/**
-	 * if any, frees the resources taken when the DataSource was created
-	 * 
-	 * @param name
-	 *            DataSource registration name
-	 * 
-	 * @throws DataSourceFinalizationException
-	 *             If the operation fails
-	 */
-	public void freeResources(String name)
-			throws DataSourceFinalizationException;
+        /**
+         * Creates this source with the content specified in the parameter
+         *
+         * @param contents
+         * @param pm
+         * @throws DriverException 
+         */
+        void createDataSource(ReadAccess contents, ProgressMonitor pm)
+                throws DriverException;
 
-	/**
-	 * Gives to the DataSourceDefinition a reference of the DataSourceFactory
-	 * where the DataSourceDefinition is registered
-	 * 
-	 * @param dsf
-	 */
-	public void setDataSourceFactory(DataSourceFactory dsf);
+        /**
+         * if any, frees the resources taken when the DataSource was created
+         *
+         * @param name
+         *            DataSource registration name
+         *
+         * @throws DataSourceFinalizationException
+         *             If the operation fails
+         */
+        void freeResources(String name)
+                throws DataSourceFinalizationException;
 
-	/**
-	 * Returns a xml object to save the definition at disk
-	 * 
-	 * @return
-	 */
-	public DefinitionType getDefinition();
+        /**
+         * Gives to the DataSourceDefinition a reference of the DataSourceFactory
+         * where the DataSourceDefinition is registered
+         *
+         * @param dsf
+         */
+        void setDataSourceFactory(DataSourceFactory dsf);
 
-	/**
-	 * Calculates the checksum of the source
-	 * 
-	 * @param openDS
-	 *            An instance to an open DataSource that accesses the source
-	 *            this object defines. Null if there is no open DataSource
-	 * 
-	 * @return
-	 * @throws DriverException
-	 */
-	public String calculateChecksum(DataSource openDS) throws DriverException;
+        /**
+         * Returns a xml object to save the definition at disk
+         *
+         * @return
+         */
+        DefinitionType getDefinition();
 
-	/**
-	 * Gets the names of the sources this source depends on. Usually it will be
-	 * an empty array but definitions that consist in an sql instruction may
-	 * return several values
-	 * 
-	 * @return
-	 * @throws DriverException
-	 */
-	public ArrayList<String> getSourceDependencies() throws DriverException;
+        /**
+         * Calculates the checksum of the source
+         *
+         * @param openDS
+         *            An instance to an open DataSource that accesses the source
+         *            this object defines. Null if there is no open DataSource
+         *
+         * @return
+         * @throws DriverException
+         */
+        String calculateChecksum(DataSource openDS) throws DriverException;
 
-	/**
-	 * Gets the type of the source accessed by this definition
-	 * 
-	 * @return
-	 */
-	public int getType();
+        /**
+         * Gets the names of the sources this source depends on. Usually it will be
+         * an empty array but definitions that consist in an sql instruction may
+         * return several values
+         *
+         * @return
+         * @throws DriverException
+         */
+        List<String> getSourceDependencies() throws DriverException;
 
-	/**
-	 * Get the source type description of the source accessed by this definition
-	 * 
-	 * @return
-	 */
-	public String getTypeName();
+        /**
+         * Gets the type of the source accessed by this definition
+         *
+         * @return
+         */
+        int getType();
 
-	/**
-	 * Method that lets the DataSourceDefinitions perform any kind of
-	 * initialization
-	 * 
-	 * @throws DriverException
-	 *             If the source is not valid and cannot be initializated
-	 */
-	public void initialize() throws DriverException;
+        /**
+         * Get the source type description of the source accessed by this definition
+         *
+         * @return
+         */
+        String getTypeName();
 
-	/**
-	 * Return true if this definition represents the same source as the
-	 * specified one
-	 * 
-	 * @param dsd
-	 * @return
-	 */
-	boolean equals(DataSourceDefinition dsd);
+        /**
+         * Method that lets the DataSourceDefinitions perform any kind of
+         * initialization
+         *
+         * @throws DriverException
+         *             If the source is not valid and cannot be initializated
+         */
+        void initialize() throws DriverException;
 
-	/**
-	 * Get the id of the driver used to access this source definition
-	 * 
-	 * @return
-	 */
-	public String getDriverId();
+        /**
+         * Get the id of the driver used to access this source definition
+         *
+         * @return the id of the driver
+         */
+        String getDriverId();
 
-	public ReadOnlyDriver getDriver();
+        /**
+         * Gets the driver associated with this source.
+         * @return the driver
+         */
+        Driver getDriver();
+        
+        /**
+         * Refreshes all stored data of the definition (e.g. the type).
+         */
+        void refresh();
 
-        public void refresh();
+        /**
+         * Gets the name of the table of the driver this Definition is
+         * describing
+         * @return the name of the driver
+         */
+        String getDriverTableName();
 
+        /**
+         * Deletes all physical storage associated with this source.
+         */
+        void delete();
+        
+        /**
+         * Gets the schema of underlying source.
+         * @return a never-empty schema
+         * @throws DriverException  
+         */
+        Schema getSchema() throws DriverException;
 }

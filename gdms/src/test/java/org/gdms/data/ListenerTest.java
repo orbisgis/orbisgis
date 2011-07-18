@@ -36,6 +36,7 @@
  */
 package org.gdms.data;
 
+import java.io.File;
 import junit.framework.TestCase;
 
 import org.gdms.data.edition.FakeDBTableSourceDefinition;
@@ -286,9 +287,11 @@ public class ListenerTest extends TestCase {
 		SourceManager sourceManager = dsf.getSourceManager();
 		sourceManager.setDriverManager(dm);
 		sourceManager.register("object", new ObjectSourceDefinition(
-				new ReadAndWriteDriver()));
+				new ReadAndWriteDriver(),"main"));
+                final ReadAndWriteDriver fileReadAndWriteDriver = new ReadAndWriteDriver();
+                fileReadAndWriteDriver.setFile(new File("."));
 		sourceManager.register("file", new FakeFileSourceDefinition(
-				new ReadAndWriteDriver()));
+				fileReadAndWriteDriver));
 		sourceManager.register("db", new FakeDBTableSourceDefinition(
 				new ReadAndWriteDriver(), "jdbc:closefailing"));
 	}

@@ -101,318 +101,304 @@ import org.gdms.driver.ReadBufferManager;
  */
 public class DbaseFileReader {
 
-	DbaseFileHeader header;
+        private DbaseFileHeader header;
+        private ReadBufferManager buffer;
+        private FileChannel channel;
+        private CharBuffer charBuffer;
+        private CharsetDecoder decoder;
+        private char[] fieldTypes;
+        private int[] fieldLengths;
+        private int cnt = 1;
 
-	ReadBufferManager buffer;
+        /**
+         * Creates a new instance of DBaseFileReader
+         *
+         * @param channel
+         *            The readable channel to use.
+         * @param listener
+         * @throws IOException
+         *             If an error occurs while initializing.
+         */
+        public DbaseFileReader(FileChannel channel, WarningListener listener)
+                throws IOException {
+                this.channel = channel;
 
-	FileChannel channel;
+                header = new DbaseFileHeader();
+                header.readHeader(channel, listener);
 
-	CharBuffer charBuffer;
+                init();
+        }
 
-	CharsetDecoder decoder;
+        private void init() throws IOException {
+                buffer = new ReadBufferManager(channel);
 
-	char[] fieldTypes;
+                // The entire file is in little endian
+                buffer.order(ByteOrder.LITTLE_ENDIAN);
 
-	int[] fieldLengths;
+                // Set up some buffers and lookups for efficiency
+                fieldTypes = new char[header.getNumFields()];
+                fieldLengths = new int[header.getNumFields()];
+                for (int i = 0, ii = header.getNumFields(); i < ii; i++) {
+                        fieldTypes[i] = header.getFieldType(i);
+                        fieldLengths[i] = header.getFieldLength(i);
+                }
 
-	int cnt = 1;
+                charBuffer = CharBuffer.allocate(header.getRecordLength() - 1);
+                Charset chars = Charset.forName("ISO-8859-1");
+                decoder = chars.newDecoder();
+        }
 
-	protected int currentOffset = 0;
+        /**
+         * Get the header from this file. The header is read upon instantiation.
+         *
+         * @return The header associated with this file or null if an error
+         *         occurred.
+         */
+        public DbaseFileHeader getHeader() {
+                return header;
+        }
 
-	/**
-	 * Creates a new instance of DBaseFileReader
-	 * 
-	 * @param channel
-	 *            The readable channel to use.
-	 * @throws IOException
-	 *             If an error occurs while initializing.
-	 */
-	public DbaseFileReader(FileChannel channel, WarningListener listener)
-			throws IOException {
-		this.channel = channel;
+        /**
+         * Clean up all resources associated with this reader.<B>Highly
+         * recomended.</B>
+         *
+         * @throws IOException
+         *             If an error occurs.
+         */
+        public void close() throws IOException {
+                if (channel != null && channel.isOpen()) {
+                        channel.close();
+                }
 
-		header = new DbaseFileHeader();
-		header.readHeader(channel, listener);
+                buffer = null;
+                channel = null;
+                charBuffer = null;
+                decoder = null;
+                header = null;
+        }
 
-		init();
-	}
+        /**
+         * Query the reader as to whether there is another record.
+         *
+         * @return True if more records exist, false otherwise.
+         */
+        public boolean hasNext() {
+                return cnt < header.getNumRecords() + 1;
+        }
 
-	private void init() throws IOException {
-		buffer = new ReadBufferManager(channel);
+        /**
+         * @param row
+         * @param column
+         * @return
+         * @throws IOException
+         */
+        private byte[] getBytes(int pos, int length) throws IOException {
+                byte[] bytes = new byte[length];
+                buffer.get(pos, bytes);
+                return bytes;
+        }
 
-		this.currentOffset = header.getHeaderLength();
+        public Value getFieldValue(int row, int column,
+                WarningListener warningListener) throws IOException {
+                int fieldPosition = getPositionFor(row, column);
+                int fieldLength = getLengthFor(column);
+                byte[] fieldBytes = getBytes(fieldPosition, fieldLength);
+                ByteBuffer field = ByteBuffer.wrap(fieldBytes);
 
-		// The entire file is in little endian
-		buffer.order(ByteOrder.LITTLE_ENDIAN);
+                charBuffer.clear();
+                decoder.decode(field, charBuffer, true);
+                charBuffer.flip();
 
-		// Set up some buffers and lookups for efficiency
-		fieldTypes = new char[header.getNumFields()];
-		fieldLengths = new int[header.getNumFields()];
-		for (int i = 0, ii = header.getNumFields(); i < ii; i++) {
-			fieldTypes[i] = header.getFieldType(i);
-			fieldLengths[i] = header.getFieldLength(i);
-		}
+                return readObject(0, column, warningListener);
 
-		charBuffer = CharBuffer.allocate(header.getRecordLength() - 1);
-		Charset chars = Charset.forName("ISO-8859-1");
-		decoder = chars.newDecoder();
-	}
+        }
 
-	/**
-	 * Get the header from this file. The header is read upon instantiation.
-	 * 
-	 * @return The header associated with this file or null if an error
-	 *         occurred.
-	 */
-	public DbaseFileHeader getHeader() {
-		return header;
-	}
+        private int getLengthFor(int column) {
+                return header.getFieldLength(column);
+        }
 
-	/**
-	 * Clean up all resources associated with this reader.<B>Highly
-	 * recomended.</B>
-	 * 
-	 * @throws IOException
-	 *             If an error occurs.
-	 */
-	public void close() throws IOException {
-		if (channel != null) {
-			if (channel.isOpen()) {
-				channel.close();
-			}
-		}
+        private int getPositionFor(int row, int column) {
+                int recordOffset = header.getHeaderLength() + row
+                        * header.getRecordLength() + 1;
+                int fieldOffset = 0;
+                for (int i = 0; i < column; i++) {
+                        fieldOffset += header.getFieldLength(i);
+                }
 
-		buffer = null;
-		channel = null;
-		charBuffer = null;
-		decoder = null;
-		header = null;
-	}
+                return fieldOffset + recordOffset;
+        }
 
-	/**
-	 * Query the reader as to whether there is another record.
-	 * 
-	 * @return True if more records exist, false otherwise.
-	 */
-	public boolean hasNext() {
-		return cnt < header.getNumRecords() + 1;
-	}
+        private Value readObject(final int fieldOffset, final int fieldNum,
+                WarningListener warningListener) throws IOException {
+                final char type = fieldTypes[fieldNum];
+                final int fieldLen = fieldLengths[fieldNum];
+                Value object = null;
 
-	/**
-	 * @param row
-	 * @param column
-	 * @return
-	 * @throws IOException
-	 */
-	private byte[] getBytes(int pos, int length) throws IOException {
-		byte[] bytes = new byte[length];
-		buffer.get(pos, bytes);
-		return bytes;
-	}
+                if (fieldLen > 0) {
 
-	public Value getFieldValue(int row, int column,
-			WarningListener warningListener) throws IOException {
-		int fieldPosition = getPositionFor(row, column);
-		int fieldLength = getLengthFor(column);
-		byte[] fieldBytes = getBytes(fieldPosition, fieldLength);
-		ByteBuffer field = ByteBuffer.wrap(fieldBytes);
+                        String numberString = extractNumberString(charBuffer, fieldOffset,
+                                fieldLen);
+                        switch (type) {
+                                // (L)logical (T,t,F,f,Y,y,N,n)
+                                case 'l':
+                                case 'L':
+                                        switch (charBuffer.charAt(fieldOffset)) {
 
-		charBuffer.clear();
-		decoder.decode(field, charBuffer, true);
-		charBuffer.flip();
+                                                case 't':
+                                                case 'T':
+                                                case 'Y':
+                                                case 'y':
+                                                        object = ValueFactory.createValue(true);
+                                                        break;
+                                                case 'f':
+                                                case 'F':
+                                                case 'N':
+                                                case 'n':
+                                                        object = ValueFactory.createValue(false);
+                                                        break;
+                                                default:
 
-		return readObject(0, column, warningListener);
+                                                        throw new IOException("Unknown logical value : '"
+                                                                + charBuffer.charAt(fieldOffset) + "'");
+                                        }
+                                        break;
+                                // (C)character (String)
+                                case 'c':
+                                case 'C':
+                                        // oh, this seems like a lot of work to parse strings...but,
+                                        // For some reason if zero characters ( (int) char == 0 ) are
+                                        // allowed
+                                        // in these strings, they do not compare correctly later on down
+                                        // the
+                                        // line....
+                                        int start = fieldOffset;
+                                        int end = fieldOffset + fieldLen - 1;
+                                        // trim off whitespace and 'zero' chars
+                                        while (start < end) {
+                                                char c = charBuffer.get(start);
+                                                if (c == 0 || Character.isWhitespace(c)) {
+                                                        start++;
+                                                } else {
+                                                        break;
+                                                }
+                                        }
+                                        while (end > start) {
+                                                char c = charBuffer.get(end);
+                                                if (c == 0 || Character.isWhitespace(c)) {
+                                                        end--;
+                                                } else {
+                                                        break;
+                                                }
+                                        }
+                                        // set up the new indexes for start and end
+                                        charBuffer.position(start).limit(end + 1);
+                                        String s = charBuffer.toString();
+                                        // this resets the limit...
+                                        charBuffer.clear();
+                                        object = ValueFactory.createValue(s);
+                                        break;
+                                // (D)date (Date)
+                                case 'd':
+                                case 'D':
+                                        if (charBuffer.toString().equals("00000000")) {
+                                                return ValueFactory.createNullValue();
+                                        } else {
+                                                try {
+                                                        String tempString = charBuffer.subSequence(fieldOffset,
+                                                                fieldOffset + 4).toString();
+                                                        int tempYear = Integer.parseInt(tempString);
+                                                        tempString = charBuffer.subSequence(fieldOffset + 4,
+                                                                fieldOffset + 6).toString();
+                                                        int tempMonth = Integer.parseInt(tempString) - 1;
+                                                        tempString = charBuffer.subSequence(fieldOffset + 6,
+                                                                fieldOffset + 8).toString();
+                                                        int tempDay = Integer.parseInt(tempString);
+                                                        Calendar cal = Calendar.getInstance();
+                                                        cal.clear();
+                                                        cal.set(Calendar.YEAR, tempYear);
+                                                        cal.set(Calendar.MONTH, tempMonth);
+                                                        cal.set(Calendar.DAY_OF_MONTH, tempDay);
+                                                        object = ValueFactory.createValue(cal.getTime());
+                                                } catch (NumberFormatException nfe) {
+                                                        // todo: use progresslistener, this isn't a grave error.
+                                                }
+                                        }
+                                        break;
 
-	}
+                                // (F)floating (Double)
+                                case 'n':
+                                case 'N':
+                                        try {
+                                                if (header.getFieldDecimalCount(fieldNum) == 0) {
+                                                        object = ValueFactory.createValue(Integer.parseInt(numberString));
+                                                        // parsing successful --> exit
+                                                        break;
+                                                }
+                                                // else will fall through to the floating point number
+                                        } catch (NumberFormatException e) {
 
-	private int getLengthFor(int column) {
-		return header.getFieldLength(column);
-	}
+                                                // todo: use progresslistener, this isn't a grave error.
 
-	private int getPositionFor(int row, int column) {
-		int recordOffset = header.getHeaderLength() + row
-				* header.getRecordLength() + 1;
-		int fieldOffset = 0;
-		for (int i = 0; i < column; i++) {
-			fieldOffset += header.getFieldLength(i);
-		}
+                                                // don't do this!!! the Double parse will be attemted as we
+                                                // fall
+                                                // through, so no need to create a new Object. -IanS
+                                                // object = new Integer(0);
 
-		return fieldOffset + recordOffset;
-	}
+                                                // Lets try parsing a long instead...
+                                                try {
+                                                        object = ValueFactory.createValue(Long.parseLong(numberString));
+                                                        // parsing successful --> exit
+                                                        break;
+                                                } catch (NumberFormatException e2) {
+                                                }
+                                        }
+                                        // no break!!
+                                        // this case falls through the following one if there is decimal count
+                                        // I know, this is ugly...
 
-	private Value readObject(final int fieldOffset, final int fieldNum,
-			WarningListener warningListener) throws IOException {
-		final char type = fieldTypes[fieldNum];
-		final int fieldLen = fieldLengths[fieldNum];
-		Value object = null;
+                                case 'f':
+                                case 'F': // floating point number
+                                        try {
 
-		// System.out.println( charBuffer.subSequence(fieldOffset,fieldOffset +
-		// fieldLen));
+                                                object = ValueFactory.createValue(Double.parseDouble(numberString));
+                                        } catch (NumberFormatException e) {
+                                                // todo: use progresslistener, this isn't a grave error,
+                                                // though it
+                                                // does indicate something is wrong
 
-		if (fieldLen > 0) {
+                                                // okay, now whatever we got was truly undigestable. Lets go
+                                                // with
+                                                // a zero Double.
+                                                object = ValueFactory.createValue(0.0d);
+                                                warningListener.throwWarning("Unparseable numeric value. 0.0 used: "
+                                                        + numberString);
+                                        }
+                                        break;
+                                default:
+                                        throw new IOException("Invalid field type : " + type);
+                        }
 
-			String numberString = extractNumberString(charBuffer, fieldOffset,
-					fieldLen);
-			switch (type) {
-			// (L)logical (T,t,F,f,Y,y,N,n)
-			case 'l':
-			case 'L':
-				switch (charBuffer.charAt(fieldOffset)) {
+                }
+                return object;
+        }
 
-				case 't':
-				case 'T':
-				case 'Y':
-				case 'y':
-					object = ValueFactory.createValue(true);
-					break;
-				case 'f':
-				case 'F':
-				case 'N':
-				case 'n':
-					object = ValueFactory.createValue(false);
-					break;
-				default:
+        /**
+         * @param charBuffer2
+         * @param fieldOffset
+         * @param fieldLen
+         */
+        private String extractNumberString(final CharBuffer charBuffer2,
+                final int fieldOffset, final int fieldLen) {
+                String thing = charBuffer2.subSequence(fieldOffset,
+                        fieldOffset + fieldLen).toString().trim();
+                return thing;
+        }
 
-					throw new IOException("Unknown logical value : '"
-							+ charBuffer.charAt(fieldOffset) + "'");
-				}
-				break;
-			// (C)character (String)
-			case 'c':
-			case 'C':
-				// oh, this seems like a lot of work to parse strings...but,
-				// For some reason if zero characters ( (int) char == 0 ) are
-				// allowed
-				// in these strings, they do not compare correctly later on down
-				// the
-				// line....
-				int start = fieldOffset;
-				int end = fieldOffset + fieldLen - 1;
-				// trim off whitespace and 'zero' chars
-				while (start < end) {
-					char c = charBuffer.get(start);
-					if (c == 0 || Character.isWhitespace(c)) {
-						start++;
-					} else
-						break;
-				}
-				while (end > start) {
-					char c = charBuffer.get(end);
-					if (c == 0 || Character.isWhitespace(c)) {
-						end--;
-					} else
-						break;
-				}
-				// set up the new indexes for start and end
-				charBuffer.position(start).limit(end + 1);
-				String s = charBuffer.toString();
-				// this resets the limit...
-				charBuffer.clear();
-				object = ValueFactory.createValue(s);
-				break;
-			// (D)date (Date)
-			case 'd':
-			case 'D':
-				if (charBuffer.toString().equals("00000000")) {
-					return ValueFactory.createNullValue();
-				} else {
-					try {
-						String tempString = charBuffer.subSequence(fieldOffset,
-								fieldOffset + 4).toString();
-						int tempYear = Integer.parseInt(tempString);
-						tempString = charBuffer.subSequence(fieldOffset + 4,
-								fieldOffset + 6).toString();
-						int tempMonth = Integer.parseInt(tempString) - 1;
-						tempString = charBuffer.subSequence(fieldOffset + 6,
-								fieldOffset + 8).toString();
-						int tempDay = Integer.parseInt(tempString);
-						Calendar cal = Calendar.getInstance();
-						cal.clear();
-						cal.set(Calendar.YEAR, tempYear);
-						cal.set(Calendar.MONTH, tempMonth);
-						cal.set(Calendar.DAY_OF_MONTH, tempDay);
-						object = ValueFactory.createValue(cal.getTime());
-					} catch (NumberFormatException nfe) {
-						// todo: use progresslistener, this isn't a grave error.
-					}
-				}
-				break;
+        public int getRecordCount() {
+                return header.getNumRecords();
+        }
 
-			// (F)floating (Double)
-			case 'n':
-			case 'N':
-				try {
-					if (header.getFieldDecimalCount(fieldNum) == 0) {
-						object = ValueFactory.createValue(Integer
-								.parseInt(numberString));
-						break;
-					}
-					// else will fall through to the floating point number
-				} catch (NumberFormatException e) {
-
-					// todo: use progresslistener, this isn't a grave error.
-
-					// don't do this!!! the Double parse will be attemted as we
-					// fall
-					// through, so no need to create a new Object. -IanS
-					// object = new Integer(0);
-
-					// Lets try parsing a long instead...
-					try {
-						object = ValueFactory.createValue(Long
-								.parseLong(numberString));
-						break;
-					} catch (NumberFormatException e2) {
-
-					}
-				}
-
-			case 'f':
-			case 'F': // floating point number
-				try {
-
-					object = ValueFactory.createValue(Double
-							.parseDouble(numberString));
-				} catch (NumberFormatException e) {
-					// todo: use progresslistener, this isn't a grave error,
-					// though it
-					// does indicate something is wrong
-
-					// okay, now whatever we got was truly undigestable. Lets go
-					// with
-					// a zero Double.
-					object = ValueFactory.createValue(0.0d);
-					warningListener
-							.throwWarning("Unparseable numeric value. 0.0 used: "
-									+ numberString);
-				}
-				break;
-			default:
-				throw new IOException("Invalid field type : " + type);
-			}
-
-		}
-		return object;
-	}
-
-	/**
-	 * @param charBuffer2
-	 * @param fieldOffset
-	 * @param fieldLen
-	 */
-	private final String extractNumberString(final CharBuffer charBuffer2,
-			final int fieldOffset, final int fieldLen) {
-		String thing = charBuffer2.subSequence(fieldOffset,
-				fieldOffset + fieldLen).toString().trim();
-		return thing;
-	}
-
-	public int getRecordCount() {
-		return header.getNumRecords();
-	}
-
-	public int getFieldCount() {
-		return header.getNumFields();
-	}
-
+        public int getFieldCount() {
+                return header.getNumFields();
+        }
 }

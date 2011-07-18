@@ -34,21 +34,19 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-/**
- *
- */
 package org.gdms.data.indexes.btree;
 
 import org.gdms.data.values.Value;
 
 class TrueComparator implements RangeComparator {
 
-	public boolean isInRange(Value v) {
-		return true;
-	}
+        @Override
+        public boolean isInRange(Value v) {
+                return true;
+        }
 
-	public int[] getRange(BTreeInteriorNode treeInteriorNode) {
-		return new int[] { 0, treeInteriorNode.values.size() };
-	}
-
+        @Override
+        public int[] getRange(BTreeInteriorNode treeInteriorNode) {
+                return new int[]{0, treeInteriorNode.values.size()};
+        }
 }

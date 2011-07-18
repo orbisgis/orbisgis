@@ -44,8 +44,8 @@ import org.gdms.BaseTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.metadata.DefaultMetadata;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.DefaultMetadata;
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -85,7 +85,7 @@ public class RasterTest extends TestCase {
 				rasterMetadata);
 
 		dsf = new DataSourceFactory();
-		dsf.setTempDir("src/test/resources/backup");
+		dsf.setTempDir(BaseTest.backupDir.getAbsolutePath());
 		DefaultMetadata metadata = new DefaultMetadata(new Type[] { TypeFactory
 				.createType(Type.RASTER) }, new String[] { "raster" });
 		GenericObjectDriver omd = new GenericObjectDriver(metadata);
@@ -94,12 +94,12 @@ public class RasterTest extends TestCase {
 	}
 
 	public void testOpenJPG() throws Exception {
-		File file = new File("src/test/resources/sample.jpg");
+		File file = new File(BaseTest.internalData,"sample.jpg");
 		testOpen(file);
 	}
 
 	public void testOpenPNG() throws Exception {
-		File file = new File("src/test/resources/sample.png");
+		File file = new File(BaseTest.internalData,"sample.png");
 		testOpen(file);
 	}
 

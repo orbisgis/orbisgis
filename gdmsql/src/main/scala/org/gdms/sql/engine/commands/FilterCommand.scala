@@ -1,0 +1,79 @@
+/** OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ *
+ *
+ * Team leader : Erwan BOCHER, scientific researcher,
+ *
+ * User support leader : Gwendall Petit, geomatic engineer.
+ *
+ * Previous computer developer : Pierre-Yves FADET, computer engineer, Thomas LEDUC,
+ * scientific researcher, Fernando GONZALEZ CORTES, computer engineer.
+ *
+ * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ *
+ * Copyright (C) 2010 Erwan BOCHER, Alexis GUEGANNO, Maxence LAURENT, Antoine GOURLAY
+ *
+ * This file is part of OrbisGIS.
+ *
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ *
+ * or contact directly:
+ * info@orbisgis.org
+ */
+
+package org.gdms.sql.engine.commands
+
+import scalaz.concurrent.Promise
+import org.gdms.sql.evaluator.Expression
+import org.gdms.sql.engine.GdmSQLPredef._
+import scalaz.Scalaz._
+
+/**
+ * Base class for row-level filtering of a row stream.
+ *
+ * @author Antoine Gourlay
+ * @since 0.1
+ */
+abstract class FilterCommand extends Command {
+  protected final def doWork(r: Iterable[Iterable[Promise[Iterable[Row]]]]) = {
+    // flatMap: apply the filter to all input table and produce 1 output table
+    // map: apply the filter to the whole dataset
+    // map: add the filtering to the list of future processing to be done by the Promise
+    // filter: performs the filter on a 'small' batch of rows
+    r flatMap { _ map { _ map {
+          _ filter(filterExecute)
+        } } }
+  }
+
+  /**
+   * This method perform the actual row-level filter.
+   */
+  protected def filterExecute: Row => Boolean
+
+}
+
+/**
+ * Filter command for use in Where statements
+ */
+class ExpressionFilterCommand(e: Expression) extends FilterCommand with ExpressionCommand {
+
+  protected val exp: Seq[Expression] = List(e)
+
+  protected def filterExecute: Row => Boolean = { e.evaluate(_).getAsBoolean.booleanValue }
+
+}

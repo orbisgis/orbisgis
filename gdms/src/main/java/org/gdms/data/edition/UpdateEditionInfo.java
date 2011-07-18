@@ -36,7 +36,7 @@
  */
 package org.gdms.data.edition;
 
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
@@ -52,7 +52,7 @@ public class UpdateEditionInfo extends OriginalEditionInfo {
 
 	private ValueCollection originalPK;
 
-	private PhysicalDirection dir;
+	private PhysicalRowAddress dir;
 
 	/**
 	 * Creates a new FlagIndexPair.
@@ -62,7 +62,7 @@ public class UpdateEditionInfo extends OriginalEditionInfo {
 	 * @param originalPK
 	 *            Value of the PK fields when the edition started
 	 */
-	public UpdateEditionInfo(ValueCollection originalPK, PhysicalDirection dir) {
+	public UpdateEditionInfo(ValueCollection originalPK, PhysicalRowAddress dir) {
 		this.originalPK = originalPK;
 		this.dir = dir;
 	}

@@ -44,9 +44,11 @@ package org.gdms.data;
  */
 public class NullWarningListener implements WarningListener {
 
+        @Override
 	public void throwWarning(String msg, Throwable t, Object source) {
 	}
 
+        @Override
 	public void throwWarning(String msg) {
 	}
 }

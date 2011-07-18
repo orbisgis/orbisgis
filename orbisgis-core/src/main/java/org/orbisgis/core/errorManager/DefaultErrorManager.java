@@ -59,7 +59,7 @@ public class DefaultErrorManager implements ErrorManager {
 	}
 
 	public void warning(String userMsg, Throwable exception) {
-		logger.error(I18N.getString("orbisgis.org.orbisgis.defaultErrorManager.warning") + userMsg, exception); //$NON-NLS-1$
+		logger.error(I18N.getString("orbisgis-core.org.orbisgis.defaultErrorManager.warning") + userMsg, exception); //$NON-NLS-1$
 		for (ErrorListener listener : listeners) {
 			try {
 				listener.warning(userMsg, exception);

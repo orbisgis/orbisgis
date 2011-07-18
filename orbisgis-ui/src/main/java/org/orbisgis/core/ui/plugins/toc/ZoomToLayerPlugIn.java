@@ -53,7 +53,7 @@ import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 import org.orbisgis.core.ui.plugins.views.mapEditor.MapEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -67,7 +67,7 @@ public class ZoomToLayerPlugIn extends AbstractPlugIn {
 		bm.backgroundOperation(new BackgroundJob() {
 
 			@Override
-			public void run(IProgressMonitor pm) {
+			public void run(ProgressMonitor pm) {
 
 				ILayer[] layers = mapContext.getSelectedLayers();
 

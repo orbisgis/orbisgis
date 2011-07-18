@@ -65,7 +65,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
@@ -92,6 +92,8 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
 
 import com.vividsolutions.jts.geom.Envelope;
+import org.gdms.data.types.Constraint;
+import org.gdms.data.types.ConstraintFactory;
 
 public class PnlProportionalPointLegend extends JPanel implements ILegendPanel {
 
@@ -333,10 +335,10 @@ public class PnlProportionalPointLegend extends JPanel implements ILegendPanel {
 
 	private SymbolFilter getSymbolFilter() {
 		return new CompositeSymbolFilter(new ConstraintSymbolFilter(
-				new GeometryConstraint(GeometryConstraint.POINT),
-				new GeometryConstraint(GeometryConstraint.MULTI_POINT),
-				new GeometryConstraint(GeometryConstraint.POLYGON),
-				new GeometryConstraint(GeometryConstraint.MULTI_POLYGON)),
+                        (GeometryConstraint)ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.POINT),
+                        (GeometryConstraint)ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.MULTI_POINT),
+                        (GeometryConstraint)ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.POLYGON),
+                        (GeometryConstraint)ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.MULTI_POLYGON)),
 				new SymbolFilter() {
 
 					@Override

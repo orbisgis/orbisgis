@@ -52,7 +52,7 @@ public interface InternalBuffer {
 	 * @param newRow
 	 * @return
 	 */
-	public PhysicalDirection insertRow(ValueCollection pk, Value[] newRow);
+	PhysicalRowAddress insertRow(ValueCollection pk, Value[] newRow);
 
 	/**
 	 * Sets the specified field in the specified direction to the new value
@@ -61,7 +61,7 @@ public interface InternalBuffer {
 	 * @param fieldId
 	 * @param value
 	 */
-	public void setFieldValue(int row, int fieldId, Value value);
+	void setFieldValue(int row, int fieldId, Value value);
 
 	/**
 	 * Gets the value of a cell
@@ -70,20 +70,20 @@ public interface InternalBuffer {
 	 * @param fieldId
 	 * @return
 	 */
-	public Value getFieldValue(int row, int fieldId);
+	Value getFieldValue(int row, int fieldId);
 
 	/**
 	 * Notifies the internal buffer that a new field has been added to the
 	 * DataSource
 	 */
-	public void addField();
+	void addField();
 
 	/**
 	 * Notifies the internal buffer that the specified field has been removed
 	 *
 	 * @param index
 	 */
-	public Value[] removeField(int index);
+	Value[] removeField(int index);
 
 	/**
 	 * Restores a previously deleted field
@@ -91,5 +91,5 @@ public interface InternalBuffer {
 	 * @param fieldIndex
 	 * @param values
 	 */
-	public void restoreField(int fieldIndex, Value[] values);
+	void restoreField(int fieldIndex, Value[] values);
 }

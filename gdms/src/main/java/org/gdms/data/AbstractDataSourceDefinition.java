@@ -39,103 +39,134 @@ package org.gdms.data;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.List;
+import org.apache.log4j.Logger;
+import org.gdms.data.schema.Schema;
 
 import org.gdms.driver.ChecksumCalculator;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ReadOnlyDriver;
+import org.gdms.driver.Driver;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.Source;
 import org.orbisgis.progress.NullProgressMonitor;
 
 public abstract class AbstractDataSourceDefinition implements
-		DataSourceDefinition {
+        DataSourceDefinition {
 
-	private DataSourceFactory dsf;
+        private static final Logger LOG = Logger.getLogger(AbstractDataSourceDefinition.class);
+        private DataSourceFactory dsf;
+        private Driver driver;
 
-	private ReadOnlyDriver driver;
+        @Override
+        public void freeResources(String name) throws DataSourceFinalizationException {
+        }
 
-	public void freeResources(String name)
-			throws DataSourceFinalizationException {
-	}
+        @Override
+        public void setDataSourceFactory(DataSourceFactory dsf) {
+                this.dsf = dsf;
+        }
 
-	public void setDataSourceFactory(DataSourceFactory dsf) {
-		this.dsf = dsf;
-	}
+        @Override
+        public Driver getDriver() {
+                if (driver == null) {
+                        driver = getDriverInstance();
+                }
 
-	public ReadOnlyDriver getDriver() {
-		if (driver == null) {
-			driver = getDriverInstance();
-		}
+                return driver;
+        }
 
-		return driver;
-	}
+        /**
+         * Return true if this definition represents the same source as the
+         * specified one
+         *
+         * @param dsd
+         * @return
+         */
+        @Override
+        public abstract boolean equals(Object dsd);
 
-	protected abstract ReadOnlyDriver getDriverInstance()
-			throws DriverLoadException;
+        @Override
+        public abstract int hashCode();
 
-	public void setDriver(ReadOnlyDriver driver) {
-		this.driver = driver;
-	}
+        protected abstract Driver getDriverInstance();
 
-	public DataSourceFactory getDataSourceFactory() {
-		return dsf;
-	}
+        public void setDriver(Driver driver) {
+                this.driver = driver;
+        }
 
-	protected Source getSource(String name) {
-		return getDataSourceFactory().getSourceManager().getSource(name);
-	}
+        public DataSourceFactory getDataSourceFactory() {
+                return dsf;
+        }
 
-	public String calculateChecksum(DataSource openDS) throws DriverException {
-		if (driver instanceof ChecksumCalculator) {
-			return ((ChecksumCalculator) driver).getChecksum();
-		} else {
-			try {
-				DataSource ds = openDS;
-				if (ds == null) {
-					ds = createDataSource("any", new NullProgressMonitor());
-				}
-				ds.setDataSourceFactory(dsf);
-				ds.open();
-				String ret = new String(DigestUtilities.getBase64Digest(ds));
-				ds.close();
-				return ret;
-			} catch (NoSuchAlgorithmException e) {
-				throw new DriverException(e);
-			} catch (DataSourceCreationException e) {
-				throw new DriverException(e);
-			}
-		}
-	}
+        protected Source getSource(String name) {
+                return getDataSourceFactory().getSourceManager().getSource(name);
+        }
 
-	public ArrayList<String> getSourceDependencies() throws DriverException {
-		return new ArrayList<String>(0);
-	}
+        @Override
+        public String calculateChecksum(DataSource openDS) throws DriverException {
+                if (driver instanceof ChecksumCalculator) {
+                        return ((ChecksumCalculator) driver).getChecksum();
+                } else {
+                        try {
+                                DataSource ds = openDS;
+                                if (ds == null) {
+                                        ds = createDataSource("any", new NullProgressMonitor());
+                                }
+                                ds.setDataSourceFactory(dsf);
+                                ds.open();
+                                String ret = DigestUtilities.getBase64Digest(ds);
+                                ds.close();
+                                return ret;
+                        } catch (NoSuchAlgorithmException e) {
+                                throw new DriverException(e);
+                        } catch (DataSourceCreationException e) {
+                                throw new DriverException(e);
+                        }
+                }
+        }
 
-	public int getType() {
-		return getDriver().getType();
-	}
+        @Override
+        public List<String> getSourceDependencies() throws DriverException {
+                return new ArrayList<String>(0);
+        }
 
-	@Override
-	public String getTypeName() {
-		try {
-			return getDriver().getTypeName();
-		} catch (DriverLoadException e) {
-			return "Unknown";
-		}
-	}
+        @Override
+        public int getType() {
+                return getDriver().getType();
+        }
 
-	public void initialize() throws DriverException {
-	}
+        @Override
+        public String getTypeName() {
+                try {
+                        return getDriver().getTypeName();
+                } catch (DriverLoadException e) {
+                        LOG.warn("Error getting type name. Returning Unknown.", e);
+                        return "Unknown";
+                }
+        }
 
-	@Override
-	public String getDriverId() {
-		try {
-			return getDriver().getDriverId();
-		} catch (DriverLoadException e) {
-			return null;
-		}
-	}
+        @Override
+        public void initialize() throws DriverException {
+        }
 
+        @Override
+        public String getDriverId() {
+                try {
+                        return getDriver().getDriverId();
+                } catch (DriverLoadException e) {
+                        return null;
+                }
+        }
+
+        @Override
+        public void delete() {
+        }
+
+        @Override
+        public Schema getSchema() throws DriverException {
+                return getDriver().getSchema();
+        }
+        
         @Override
         public void refresh() {
         }

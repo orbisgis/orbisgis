@@ -39,7 +39,7 @@ package org.orbisgis.core.ui.plugins.editors.tableEditor;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.NonEditableDataSourceException;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.sif.UIFactory;

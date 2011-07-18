@@ -40,7 +40,7 @@ import org.gdms.data.values.ValueCollection;
 import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
 
-public class DeleteEditionInfo extends OriginalEditionInfo implements EditionInfo {
+public class DeleteEditionInfo extends OriginalEditionInfo {
 
 	private ValueCollection pk;
 
@@ -49,12 +49,6 @@ public class DeleteEditionInfo extends OriginalEditionInfo implements EditionInf
 	 *
 	 * @param pk
 	 *            Original primary key of the object to be removed
-	 * @param pkNames
-	 *            Names of the primary key fields
-	 * @param tableName
-	 *            Name of the table being edited
-	 * @param driver
-	 *            driver used to edit
 	 */
 	public DeleteEditionInfo(ValueCollection pk) {
 		this.pk = pk;
@@ -65,6 +59,7 @@ public class DeleteEditionInfo extends OriginalEditionInfo implements EditionInf
 		return pk;
 	}
 
+        @Override
 	public String getSQL(String[] pkNames,
 			String[] fieldNames, DBReadWriteDriver driver)
 			throws DriverException {

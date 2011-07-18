@@ -84,146 +84,134 @@ import com.vividsolutions.jts.geom.Geometry;
  */
 public class ShapefileReader {
 
-	private ShapeHandler handler;
-
-	private ShapefileHeader header;
-
-	private FileChannel channel;
-
-	private ReadBufferManager buffer;
-
-	private ShapeType fileShapeType = ShapeType.UNDEFINED;
-
+        private ShapeHandler handler;
+        private ShapefileHeader header;
+        private FileChannel channel;
+        private ReadBufferManager buffer;
+        private ShapeType fileShapeType = ShapeType.UNDEFINED;
         private int srid = -1;
 
-	/**
-	 * Creates a new instance of ShapeFile.
-	 *
-	 * @param channel
-	 *            The ReadableByteChannel this reader will use.
-	 * @param warningListener
-	 * @param strict
-	 *            True to make the header parsing throw Exceptions if the
-	 *            version or magic number are incorrect.
-	 * @throws IOException
-	 *             If problems arise.
-	 * @throws ShapefileException
-	 *             If for some reason the file contains invalid records.
-	 */
-	public ShapefileReader(FileChannel channel, WarningListener warningListener) throws IOException,
-			ShapefileException {
-		this.channel = channel;
-		init(warningListener);
-	}
+        /**
+         * Creates a new instance of ShapeFile.
+         *
+         * @param channel
+         *            The ReadableByteChannel this reader will use.
+         * @param warningListener
+         * @throws IOException
+         *             If problems arise.
+         * @throws ShapefileException
+         *             If for some reason the file contains invalid records.
+         */
+        public ShapefileReader(FileChannel channel, WarningListener warningListener) throws IOException,
+                ShapefileException {
+                this.channel = channel;
+                init(warningListener);
+        }
 
-	// convenience to peak at a header
-	/**
-	 * A short cut for reading the header from the given channel.
-	 *
-	 * @param channel
-	 *            The channel to read from.
-	 * @param warningListener
-	 * @param strict
-	 *            True to make the header parsing throw Exceptions if the
-	 *            version or magic number are incorrect.
-	 * @throws IOException
-	 *             If problems arise.
-	 * @return A ShapefileHeader object.
-	 */
-	public static ShapefileHeader readHeader(ReadableByteChannel channel,
-			WarningListener warningListener) throws IOException {
-		ByteBuffer buffer = ByteBuffer.allocateDirect(100);
-		if (channel.read(buffer) != 100) {
-			throw new EOFException("Premature end of header");
-		}
-		buffer.flip();
-		ShapefileHeader header = new ShapefileHeader();
-		header.read(buffer, warningListener);
-		return header;
-	}
+        // convenience to peak at a header
+        /**
+         * A short cut for reading the header from the given channel.
+         *
+         * @param channel
+         *            The channel to read from.
+         * @param warningListener
+         * @throws IOException
+         *             If problems arise.
+         * @return A ShapefileHeader object.
+         */
+        public static ShapefileHeader readHeader(ReadableByteChannel channel,
+                WarningListener warningListener) throws IOException {
+                ByteBuffer buffer = ByteBuffer.allocateDirect(100);
+                if (channel.read(buffer) != 100) {
+                        throw new EOFException("Premature end of header");
+                }
+                buffer.flip();
+                ShapefileHeader header = new ShapefileHeader();
+                header.read(buffer, warningListener);
+                return header;
+        }
 
-	private void init(WarningListener warningListener) throws IOException, ShapefileException {
-		header = readHeader(channel, warningListener);
-		fileShapeType = header.getShapeType();
-		handler = fileShapeType.getShapeHandler();
+        private void init(WarningListener warningListener) throws IOException, ShapefileException {
+                header = readHeader(channel, warningListener);
+                fileShapeType = header.getShapeType();
+                handler = fileShapeType.getShapeHandler();
 
-		// recordHeader = ByteBuffer.allocateDirect(8);
-		// recordHeader.order(ByteOrder.BIG_ENDIAN);
+                // recordHeader = ByteBuffer.allocateDirect(8);
+                // recordHeader.order(ByteOrder.BIG_ENDIAN);
 
-		if (handler == null) {
-			throw new IOException("Unsuported shape type:" + fileShapeType);
-		}
-		buffer = new ReadBufferManager(channel);
-	}
+                if (handler == null) {
+                        throw new IOException("Unsuported shape type:" + fileShapeType);
+                }
+                buffer = new ReadBufferManager(channel);
+        }
 
-	/**
-	 * Get the header. Its parsed in the constructor.
-	 *
-	 * @return The header that is associated with this file.
-	 */
-	public ShapefileHeader getHeader() {
-		return header;
-	}
+        /**
+         * Get the header. Its parsed in the constructor.
+         *
+         * @return The header that is associated with this file.
+         */
+        public ShapefileHeader getHeader() {
+                return header;
+        }
 
-	// do important cleanup stuff.
-	// Closes channel !
-	/**
-	 * Clean up any resources. Closes the channel.
-	 *
-	 * @throws IOException
-	 *             If errors occur while closing the channel.
-	 */
-	public void close() throws IOException {
-		if (channel != null) {
-			if (channel.isOpen()) {
-				channel.close();
-			}
-		}
-		channel = null;
-		header = null;
-	}
+        // do important cleanup stuff.
+        // Closes channel !
+        /**
+         * Clean up any resources. Closes the channel.
+         *
+         * @throws IOException
+         *             If errors occur while closing the channel.
+         */
+        public void close() throws IOException {
+                if (channel != null && channel.isOpen()) {
+                        channel.close();
+                }
+                channel = null;
+                header = null;
+        }
 
-	/**
-	 * Fetch the next record information.
-	 *
-	 * @throws IOException
-	 * @return The record instance associated with this reader.
-	 */
-	public Geometry geomAt(int offset) throws IOException {
+        /**
+         * Fetch the next record information.
+         *
+         * @param offset 
+         * @throws IOException
+         * @return The record instance associated with this reader.
+         */
+        public Geometry geomAt(int offset) throws IOException {
 
-		// need to update position
-		buffer.position(offset);
+                // need to update position
+                buffer.position(offset);
 
-		// record header
-		buffer.skip(8);
+                // record header
+                buffer.skip(8);
 
-		// shape record is all little endian
-		buffer.order(ByteOrder.LITTLE_ENDIAN);
+                // shape record is all little endian
+                buffer.order(ByteOrder.LITTLE_ENDIAN);
 
-		// read the type, handlers don't need it
-		ShapeType recordType = ShapeType.forID(buffer.getInt());
+                // read the type, handlers don't need it
+                ShapeType recordType = ShapeType.forID(buffer.getInt());
 
-		// this usually happens if the handler logic is bunk,
-		// but bad files could exist as well...
-		if (recordType != ShapeType.NULL && recordType != fileShapeType) {
-			throw new IllegalStateException("ShapeType changed illegally from "
-					+ fileShapeType + " to " + recordType);
-		}
+                // this usually happens if the handler logic is bunk,
+                // but bad files could exist as well...
+                if (recordType != ShapeType.NULL && recordType != fileShapeType) {
+                        throw new IllegalStateException("ShapeType changed illegally from "
+                                + fileShapeType + " to " + recordType);
+                }
 
-		Geometry g = handler.read(buffer, recordType);
-                if (g != null && srid != -1) {
+                Geometry g = handler.read(buffer, recordType);
+                if (srid != -1 && g != null) {
                         g.setSRID(srid);
                 }
                 return g;
-	}
+        }
 
-	/**
-	 * @param handler
-	 *            The handler to set.
-	 */
-	public void setHandler(ShapeHandler handler) {
-		this.handler = handler;
-	}
+        /**
+         * @param handler
+         *            The handler to set.
+         */
+        public void setHandler(ShapeHandler handler) {
+                this.handler = handler;
+        }
 
         /**
          * @param srid the srid to set

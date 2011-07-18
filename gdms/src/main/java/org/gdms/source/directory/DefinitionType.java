@@ -11,6 +11,7 @@ package org.gdms.source.directory;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
+import org.gdms.data.DataSourceDefinition;
 
 
 /**
@@ -33,5 +34,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "definition-type")
 public class DefinitionType {
 
-
+        public DataSourceDefinition toDataSourceDefinition() throws InstantiationException,
+                IllegalAccessException, ClassNotFoundException {
+                throw new UnsupportedOperationException("Source type not recognized: " + this.getClass().getCanonicalName());
+        }
 }

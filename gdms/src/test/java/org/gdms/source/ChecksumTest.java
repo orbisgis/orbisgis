@@ -42,8 +42,7 @@ import junit.framework.TestCase;
 
 import org.gdms.DBTestSource;
 import org.gdms.FileTestSource;
-import org.gdms.SQLTestSource;
-import org.gdms.SourceTest;
+import org.gdms.BaseTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.db.DBSource;
@@ -54,7 +53,7 @@ public class ChecksumTest extends TestCase {
 	private SourceManager sm;
 
 	public void testModifyingSourceOutsideFactory() throws Exception {
-		File testFile = new File(SourceTest.internalData + "test.csv");
+		File testFile = new File(BaseTest.internalData + "test.csv");
 		String name = "file";
 		FileTestSource fts = new FileTestSource(name, testFile
 				.getAbsolutePath());
@@ -63,31 +62,23 @@ public class ChecksumTest extends TestCase {
 		testModifyingSourceOutsideFactory(name, false);
 
 		name = "db";
-		DBSource testDB = new DBSource(null, 0, SourceTest.internalData
+		DBSource testDB = new DBSource(null, 0, BaseTest.internalData
 				+ "backup/testhsqldb", "sa", "", "gisapps", "jdbc:hsqldb:file");
 		DBTestSource dbTestSource = new DBTestSource(name,
-				"org.hsqldb.jdbcDriver", SourceTest.internalData
+				"org.hsqldb.jdbcDriver", BaseTest.internalData
 						+ "testhsqldb.sql", testDB);
 		dbTestSource.backup();
 		sm.register(name, testDB);
 		testModifyingSourceOutsideFactory(name, false);
-
-		name = "sql";
-		String sql = "select count(id) from file;";
-		SQLTestSource sts = new SQLTestSource(name, sql);
-		sts.backup();
-		sm.register(name, sql);
-		testModifyingSourceOutsideFactory(name, true);
-
 	}
 
 	private synchronized void testModifyingSourceOutsideFactory(String name,
 			boolean upToDateValue) throws Exception {
-		assertTrue(sm.getSource(name).isUpToDate() == null);
+		assertFalse(sm.getSource(name).isUpToDate());
 		sm.saveStatus();
-		assertTrue(sm.getSource(name).isUpToDate().booleanValue() == true);
+		assertTrue(sm.getSource(name).isUpToDate());
 
-		DataSource ds = SourceTest.dsf.getDataSource(name);
+		DataSource ds = BaseTest.dsf.getDataSource(name);
 		ds.open();
 		ds.deleteRow(0);
 		if (upToDateValue) {
@@ -100,11 +91,11 @@ public class ChecksumTest extends TestCase {
 		}
 
 		instantiateDSF();
-		assertTrue(sm.getSource(name).isUpToDate().booleanValue() == upToDateValue);
+		assertTrue(sm.getSource(name).isUpToDate() == upToDateValue);
 	}
 
 	public void testUpdateOnSave() throws Exception {
-		File testFile = new File(SourceTest.internalData + "test.csv");
+		File testFile = new File(BaseTest.internalData + "test.csv");
 		String name = "file";
 		FileTestSource fts = new FileTestSource(name, testFile
 				.getAbsolutePath());
@@ -124,7 +115,7 @@ public class ChecksumTest extends TestCase {
 	private synchronized void modificationWithOtherFactory(File file)
 			throws Exception {
 		// Modification with another factory
-		DataSource ds = SourceTest.dsf.getDataSource(file);
+		DataSource ds = BaseTest.dsf.getDataSource(file);
 		ds.open();
 		ds.deleteRow(0);
 		wait(2000);
@@ -134,13 +125,13 @@ public class ChecksumTest extends TestCase {
 
 	@Override
 	protected void setUp() throws Exception {
-		SourceTest.dsf.getSourceManager().removeAll();
+		BaseTest.dsf.getSourceManager().removeAll();
 		instantiateDSF();
 		sm.removeAll();
 	}
 
 	private void instantiateDSF() {
-		dsf = new DataSourceFactory(SourceTest.internalData
+		dsf = new DataSourceFactory(BaseTest.internalData
 				+ "source-management");
 		sm = dsf.getSourceManager();
 	}

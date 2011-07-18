@@ -85,9 +85,9 @@ public class IsEditableTests extends BaseTest {
 		sourceManager.setDriverManager(dm);
 
 		sourceManager.register("readObject", new ObjectSourceDefinition(
-				new ReadDriver()));
+				new ReadDriver(),"main"));
 		sourceManager.register("readWriteObject", new ObjectSourceDefinition(
-				new ReadAndWriteDriver()));
+				new ReadAndWriteDriver(),"main"));
 		sourceManager.register("readFile", new FakeFileSourceDefinition(
 				new ReadDriver()));
 		sourceManager.register("readWriteFile", new FakeFileSourceDefinition(

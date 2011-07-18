@@ -37,9 +37,9 @@ import org.gdms.driver.generic.GenericObjectDriver;
  * @version 0.5.0
  */
 // History
-public class DxfENTITIES {
+public final class DxfENTITIES {
 
-	public DxfENTITIES() {
+	private DxfENTITIES() {
 
 	}
 

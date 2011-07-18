@@ -38,19 +38,20 @@ package org.gdms.driver.jdbc;
 
 import org.gdms.data.types.Type;
 
-public class TimeRule extends AbstractConversionRule implements ConversionRule {
+public class TimeRule extends AbstractConversionRule {
 
-	@Override
-	public int getOutputTypeCode() {
-		return Type.TIME;
-	}
+        @Override
+        public int getOutputTypeCode() {
+                return Type.TIME;
+        }
 
-	public String getTypeName() {
-		return "time";
-	}
+        @Override
+        public String getTypeName() {
+                return "time";
+        }
 
-	public boolean canApply(Type type) {
-		return type.getTypeCode() == Type.TIME;
-	}
-
+        @Override
+        public boolean canApply(Type type) {
+                return type.getTypeCode() == Type.TIME;
+        }
 }

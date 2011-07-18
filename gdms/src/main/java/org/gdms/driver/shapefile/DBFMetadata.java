@@ -40,53 +40,71 @@
 package org.gdms.driver.shapefile;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.Metadata;
+import org.gdms.data.schema.Schema;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 
 class DBFMetadata implements Metadata {
 
-	private ArrayList<Integer> mapping;
+        private List<Integer> mapping;
+        private Metadata metadata;
 
-	private Metadata metadata;
+        DBFMetadata(Metadata metadata) throws DriverException {
+                this.metadata = metadata;
 
-	public DBFMetadata(Metadata metadata) throws DriverException {
-		this.metadata = metadata;
+                mapping = new ArrayList<Integer>();
+                for (int i = 0; i < metadata.getFieldCount(); i++) {
+                        if (metadata.getFieldType(i).getTypeCode() != Type.GEOMETRY) {
+                                mapping.add(i);
+                        }
+                }
+                if (mapping.size() + 1 < metadata.getFieldCount()) {
+                        throw new IllegalArgumentException("The data source "
+                                + "has more than one spatial field");
+                } else if (mapping.size() + 1 > metadata.getFieldCount()) {
+                        throw new IllegalArgumentException("The data source "
+                                + "has no spatial field");
+                }
+        }
 
-		mapping = new ArrayList<Integer>();
-		for (int i = 0; i < metadata.getFieldCount(); i++) {
-			if (metadata.getFieldType(i).getTypeCode() != Type.GEOMETRY) {
-				mapping.add(i);
-			}
-		}
-		if (mapping.size() + 1 < metadata.getFieldCount()) {
-			throw new IllegalArgumentException("The data source "
-					+ "has more than one spatial field");
-		} else if (mapping.size() + 1 > metadata.getFieldCount()) {
-			throw new IllegalArgumentException("The data source "
-					+ "has no spatial field");
-		}
-	}
+        @Override
+        public int getFieldCount() throws DriverException {
+                return metadata.getFieldCount() - 1;
+        }
 
-	public int getFieldCount() throws DriverException {
-		return metadata.getFieldCount() - 1;
-	}
+        @Override
+        public String getFieldName(int fieldId) throws DriverException {
+                return metadata.getFieldName(mapping.get(fieldId));
+        }
 
-	public String getFieldName(int fieldId) throws DriverException {
-		return metadata.getFieldName(mapping.get(fieldId));
-	}
+        @Override
+        public Type getFieldType(int fieldId) throws DriverException {
+                return metadata.getFieldType(mapping.get(fieldId));
+        }
 
-	public Type getFieldType(int fieldId) throws DriverException {
-		return metadata.getFieldType(mapping.get(fieldId));
-	}
+        public List<Integer> getMapping() {
+                return mapping;
+        }
 
-	public ArrayList<Integer> getMapping() {
-		return mapping;
-	}
+        @Override
+        public int getFieldIndex(String fieldName) throws DriverException {
+                return metadata.getFieldIndex(fieldName);
+        }
 
-	public int getFieldIndex(String fieldName) throws DriverException {
-		return metadata.getFieldIndex(fieldName);
-	}
+        @Override
+        public Schema getSchema() {
+                return null;
+        }
 
+        @Override
+        public String[] getFieldNames() throws DriverException {
+                String[] s = new String[mapping.size()];
+                for (int i = 0; i < mapping.size(); i++) {
+                        s[i] = metadata.getFieldName(mapping.get(i));
+                }
+                return s;
+        }
 }

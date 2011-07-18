@@ -40,11 +40,12 @@ import java.io.File;
 import java.io.IOException;
 
 import junit.framework.TestCase;
+import org.gdms.BaseTest;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.file.FileSourceCreation;
-import org.gdms.data.metadata.DefaultMetadata;
+import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.ValueFactory;
 
@@ -55,7 +56,7 @@ public class CSVDriverTest extends TestCase {
 
 	@Override
 	protected void setUp() throws Exception {
-		File file1 = new File("src/test/resources/backup/csvdrivertest.csv");
+		File file1 = new File(BaseTest.backupDir,"csvdrivertest.csv");
 		if (file1.exists()) {
 			if (!file1.delete()) {
 				throw new IOException("Cannot delete file " + file1);

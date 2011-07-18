@@ -36,7 +36,7 @@
  */
 package org.gdms.data.edition;
 
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DBReadWriteDriver;
@@ -44,9 +44,9 @@ import org.gdms.driver.DriverException;
 
 public class InsertEditionInfo implements EditionInfo {
 
-	private PhysicalDirection dir;
+	private PhysicalRowAddress dir;
 
-	public InsertEditionInfo(PhysicalDirection dir) {
+	public InsertEditionInfo(PhysicalRowAddress dir) {
 		this.dir = dir;
 	}
 

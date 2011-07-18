@@ -36,12 +36,11 @@
  */
 package org.gdms.driver.png;
 
-import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.driver.geotif.AbstractRasterDriver;
 
-public class PngDriver extends AbstractRasterDriver implements
-		FileReadWriteDriver {
+public final class PngDriver extends AbstractRasterDriver {
 
+        @Override
 	public String getDriverId() {
 		return "png driver";
 	}

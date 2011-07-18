@@ -31,13 +31,12 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _ObjectDefinition_QNAME = new QName("", "object-definition");
-    private final static QName _WmsDefinition_QNAME = new QName("", "wms-definition");
-    private final static QName _DbDefinition_QNAME = new QName("", "db-definition");
-    private final static QName _Definition_QNAME = new QName("", "definition");
-    private final static QName _SqlDefinition_QNAME = new QName("", "sql-definition");
-    private final static QName _FileDefinition_QNAME = new QName("", "file-definition");
-    private final static QName _SystemDefinition_QNAME = new QName("", "system-definition");
+    private static QName _ObjectDefinition_QNAME = new QName("", "object-definition");
+    private static QName _WmsDefinition_QNAME = new QName("", "wms-definition");
+    private static QName _DbDefinition_QNAME = new QName("", "db-definition");
+    private static QName _Definition_QNAME = new QName("", "definition");
+    private static QName _FileDefinition_QNAME = new QName("", "file-definition");
+    private static QName _SystemDefinition_QNAME = new QName("", "system-definition");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: org.gdms.source.directory
@@ -111,14 +110,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link SqlDefinitionType }
-     * 
-     */
-    public SqlDefinitionType createSqlDefinitionType() {
-        return new SqlDefinitionType();
-    }
-
-    /**
      * Create an instance of {@link DbDefinitionType }
      * 
      */
@@ -168,15 +159,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "", name = "definition")
     public JAXBElement<DefinitionType> createDefinition(DefinitionType value) {
         return new JAXBElement<DefinitionType>(_Definition_QNAME, DefinitionType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link SqlDefinitionType }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "", name = "sql-definition")
-    public JAXBElement<SqlDefinitionType> createSqlDefinition(SqlDefinitionType value) {
-        return new JAXBElement<SqlDefinitionType>(_SqlDefinition_QNAME, SqlDefinitionType.class, null, value);
     }
 
     /**

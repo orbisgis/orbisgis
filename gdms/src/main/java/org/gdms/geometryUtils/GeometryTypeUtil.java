@@ -45,43 +45,44 @@ import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
 
 /**
- *
- * @author ebocher
+ * This utility class provides methods to test the actual type of a JTS {@link Geometry} object.
+ * 
+ * @author Erwan Bocher
  */
-public class GeometryTypeUtil {
+public final class GeometryTypeUtil {
 
-        static GeometryFactory gf = new GeometryFactory();
-        public static String POINT_GEOMETRY_TYPE;
-        public static String MULTIPOINT_GEOMETRY_TYPE;
-        public static String LINESTRING_GEOMETRY_TYPE;
-        public static String LINEARRING_GEOMETRY_TYPE;
-        public static String MULTILINESTRING_GEOMETRY_TYPE;
-        public static String POLYGON_GEOMETRY_TYPE;
-        public static String MULTIPOLYGON_GEOMETRY_TYPE;
-        public static String GEOMETRYCOLLECTION_GEOMETRY_TYPE;
+        private static final GeometryFactory FACTORY = new GeometryFactory();
+        public static final String POINT_GEOMETRY_TYPE;
+        public static final String MULTIPOINT_GEOMETRY_TYPE;
+        public static final String LINESTRING_GEOMETRY_TYPE;
+        public static final String LINEARRING_GEOMETRY_TYPE;
+        public static final String MULTILINESTRING_GEOMETRY_TYPE;
+        public static final String POLYGON_GEOMETRY_TYPE;
+        public static final String MULTIPOLYGON_GEOMETRY_TYPE;
+        public static final String GEOMETRYCOLLECTION_GEOMETRY_TYPE;
 
         static {
-                POINT_GEOMETRY_TYPE = gf.createPoint(new Coordinate(0, 0)).getGeometryType();
-                MULTIPOINT_GEOMETRY_TYPE = gf.createMultiPoint(
+                POINT_GEOMETRY_TYPE = FACTORY.createPoint(new Coordinate(0, 0)).getGeometryType();
+                MULTIPOINT_GEOMETRY_TYPE = FACTORY.createMultiPoint(
                         new Coordinate[]{new Coordinate(0, 0)}).getGeometryType();
-                LineString ls = gf.createLineString(new Coordinate[]{
+                LineString ls = FACTORY.createLineString(new Coordinate[]{
                                 new Coordinate(0, 0), new Coordinate(1, 0)});
                 LINESTRING_GEOMETRY_TYPE = ls.getGeometryType();
-                MULTILINESTRING_GEOMETRY_TYPE = gf.createMultiLineString(
+                MULTILINESTRING_GEOMETRY_TYPE = FACTORY.createMultiLineString(
                         new LineString[]{ls}).getGeometryType();
-                LinearRing lr = gf.createLinearRing(new Coordinate[]{
+                LinearRing lr = FACTORY.createLinearRing(new Coordinate[]{
                                 new Coordinate(0, 0), new Coordinate(1, 1),
                                 new Coordinate(1, 0), new Coordinate(0, 0)});
                 LINEARRING_GEOMETRY_TYPE = lr.getGeometryType();
-                Polygon pol = gf.createPolygon(lr, new LinearRing[0]);
+                Polygon pol = FACTORY.createPolygon(lr, new LinearRing[0]);
                 POLYGON_GEOMETRY_TYPE = pol.getGeometryType();
-                MULTIPOLYGON_GEOMETRY_TYPE = gf.createMultiPolygon(
+                MULTIPOLYGON_GEOMETRY_TYPE = FACTORY.createMultiPolygon(
                         new Polygon[]{pol}).getGeometryType();
-                GEOMETRYCOLLECTION_GEOMETRY_TYPE = gf.createGeometryCollection(new Geometry[]{pol, ls}).getGeometryType();
+                GEOMETRYCOLLECTION_GEOMETRY_TYPE = FACTORY.createGeometryCollection(new Geometry[]{pol, ls}).getGeometryType();
         }
 
         /**
-         * Test if the geometry is a point
+         * Tests if the geometry is a Point.
          * @param geometry
          * @return
          */
@@ -90,7 +91,7 @@ public class GeometryTypeUtil {
         }
 
         /**
-         * Test if the geometry is a polygon
+         * Tests if the geometry is a LineString.
          * @param geometry
          * @return
          */
@@ -99,7 +100,7 @@ public class GeometryTypeUtil {
         }
 
         /**
-         * Test if the geometry is a polygon
+         * Tests if the geometry is a LinearRing.
          * @param geometry
          * @return
          */
@@ -108,7 +109,7 @@ public class GeometryTypeUtil {
         }
 
         /**
-         * Test if the geometry is a polygon
+         * Tests if the geometry is a Polygon.
          * @param geometry
          * @return
          */
@@ -117,7 +118,7 @@ public class GeometryTypeUtil {
         }
 
         /**
-         * Test if the geometry is a multipoint
+         * Tests if the geometry is a MultiPoint.
          * @param geometry
          * @return
          */
@@ -126,7 +127,7 @@ public class GeometryTypeUtil {
         }
 
         /**
-         * Test if the geometry is a multipoint
+         * Tests if the geometry is a MultiPoint.
          * @param geometry
          * @return
          */
@@ -135,7 +136,7 @@ public class GeometryTypeUtil {
         }
 
         /**
-         * Test if the geometry is a multipolygon
+         * Tests if the geometry is a MultiPolygon.
          * @param geometry
          * @return
          */
@@ -144,7 +145,7 @@ public class GeometryTypeUtil {
         }
 
         /**
-         * Test if the geometry is a multipolygon
+         * Tests if the geometry is a GeometryCollection.
          * @param geometry
          * @return
          */
@@ -153,11 +154,11 @@ public class GeometryTypeUtil {
         }
 
         /**
-         * Return true is a geometry contains at least a z value
+         * Returns true is a geometry contains at least one z value.
          * @param geometry
          * @return
          */
-        public static boolean is2_5Geometry(Geometry geometry) {
+        public static boolean is25Geometry(Geometry geometry) {
                 Coordinate[] coords = geometry.getCoordinates();
                 for (Coordinate coordinate : coords) {
                         if (!Double.isNaN(coordinate.z)) {
@@ -165,5 +166,11 @@ public class GeometryTypeUtil {
                         }
                 }
                 return false;
+        }
+
+        /**
+         * Private constructor for utility class.
+         */
+        private GeometryTypeUtil() {
         }
 }

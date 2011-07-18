@@ -40,18 +40,17 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.gdms.data.db.DBSource;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 
 /**
- * Interface to be implement by the DB drivers that as also RW capabilities
- *
+ * Interface to be implement by the DB drivers that also have write capabilities.
  */
-public interface DBReadWriteDriver extends DBDriver, ReadWriteDriver {
+public interface DBReadWriteDriver extends DBDriver, Driver {
 
 	/**
-	 * Executes an instruction against the server
+	 * Executes an instruction against the server.
 	 *
 	 * @param con
 	 *            Connection used to execute the instruction
@@ -61,64 +60,65 @@ public interface DBReadWriteDriver extends DBDriver, ReadWriteDriver {
 	 * @throws SQLException
 	 *             If the execution fails
 	 */
-	public void execute(Connection con, String sql) throws SQLException;
+	void execute(Connection con, String sql) throws SQLException;
 
 	/**
 	 * Creates a new table. The source argument provides information about the
 	 * name of the table to be created and the host, port, schema and database where the
-	 * table has to be created
+	 * table has to be created.
 	 *
 	 * @param source
 	 * @param driverMetadata
 	 * @throws DriverException
 	 */
-	public void createSource(DBSource source, Metadata driverMetadata)
+	void createSource(DBSource source, Metadata driverMetadata)
 			throws DriverException;
 
 	/**
-	 * Begins a transaction
+	 * Begins a transaction.
 	 *
-	 * @param Connection
-	 *            to perform the transacion begining
+	 * @param con
+	 *            to perform the transaction beginning
 	 *
 	 * @throws SQLException
 	 *             If the transaction could not be started
 	 */
-	public void beginTrans(Connection con) throws SQLException;
+	void beginTrans(Connection con) throws SQLException;
 
 	/**
-	 * Commits the changes made during the transaction
+	 * Commits the changes made during the transaction.
 	 *
-	 * @param Connection
-	 *            to perform the transacion commitment
+	 * @param con
+	 *            to perform the transaction commitment
 	 *
 	 * @throws SQLException
-	 *             If the transaction could not be commited
+	 *             If the transaction could not be committed
 	 */
-	public void commitTrans(Connection con) throws SQLException;
+	void commitTrans(Connection con) throws SQLException;
 
 	/**
-	 * Cancels the changes made during the transaction
+	 * Cancels the changes made during the transaction.
 	 *
-	 * @param Connection
-	 *            to perform the transacion rollback
+	 * @param con
+	 *            to perform the transaction rollback
 	 *
 	 * @throws SQLException
-	 *             If the transaction could not be cancelled
+	 *             If the transaction could not be canceled
 	 */
-	public void rollBackTrans(Connection con) throws SQLException;
+	void rollBackTrans(Connection con) throws SQLException;
 
 	/**
 	 * Returns the SQL statement that changes the name of the specified name in
-	 * the current table
+	 * the current table.
 	 *
 	 * @param oldName
 	 *            Name of the field to change
 	 * @param newName
 	 *            New name
-	 * @return
+         * @return
+         * @throws DriverException
 	 */
-	public String getChangeFieldNameSQL(String oldName,
+	String getChangeFieldNameSQL(String oldName,
 			String newName) throws DriverException;
 
 	/**
@@ -129,31 +129,32 @@ public interface DBReadWriteDriver extends DBDriver, ReadWriteDriver {
 	 *            Name of the field to add
 	 * @param fieldType
 	 *            Type of the field to add
-	 * @return
+         * @return
+         * @throws DriverException
 	 */
-	public String getAddFieldSQL(String fieldName,
+	String getAddFieldSQL(String fieldName,
 			Type fieldType) throws DriverException;
 
 	/**
 	 * Returns the SQL instruction that deletes the record in the current
 	 * table that matches the condition of equality between the specified
 	 * primary key and the specified values. The corresponding value for
-	 * pkNames[i] is stored in values[i]
+	 * pkNames[i] is stored in values[i].
 	 *
 	 * @param pkNames
 	 *            Name of the fields that are primary key
 	 * @param values
 	 *            Values of the pkNames fields in the record to remove
-	 * @return
+         * @return
+         * @throws DriverException
 	 */
-	public String getDeleteRecordSQL(String[] pkNames,
+	String getDeleteRecordSQL(String[] pkNames,
 			Value[] values) throws DriverException;
 
 	/**
 	 * Returns the SQL instruction that inserts a row containing the values
 	 * specified in 'row' for each field specified in 'fieldNames' in the current table.
-	 * The corresponding value for fieldNames[i] is
-	 * stored in row[i]
+	 * The corresponding value for fieldNames[i] is stored in row[i].
 	 *
 	 * @param fieldNames
 	 *            Names of the fields
@@ -161,20 +162,22 @@ public interface DBReadWriteDriver extends DBDriver, ReadWriteDriver {
 	 *            Types of the fields
 	 * @param row
 	 *            values for the 'fieldNames'
-	 * @return
+         * @return
+         * @throws DriverException
 	 */
-	public String getInsertSQL(String[] fieldNames,
+	String getInsertSQL(String[] fieldNames,
 			Type[] fieldTypes, Value[] row) throws DriverException;
 
 	/**
 	 * Returns the SQL instruction that removes field specified by fieldName of
-	 * the current table
+	 * the current table.
 	 *
 	 * @param fieldName
 	 *            Name of the field to delete
-	 * @return
+         * @return
+         * @throws DriverException
 	 */
-	public String getDeleteFieldSQL(String fieldName)
+	String getDeleteFieldSQL(String fieldName)
 			throws DriverException;
 
 	/**
@@ -192,9 +195,10 @@ public interface DBReadWriteDriver extends DBDriver, ReadWriteDriver {
 	 *            Types of the fields
 	 * @param row
 	 *            Values to update
-	 * @return
+         * @return
+         * @throws DriverException 
 	 */
-	public String getUpdateSQL(String[] pkNames,
+	String getUpdateSQL(String[] pkNames,
 			Value[] values, String[] fieldNames, Type[] fieldTypes, Value[] row)
 			throws DriverException;
 }

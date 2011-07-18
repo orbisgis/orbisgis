@@ -37,11 +37,11 @@
  */
 package org.orbisgis.core.background;
 
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public interface BackgroundJob {
 
-	void run(IProgressMonitor pm);
+	void run(ProgressMonitor pm);
 
 	String getTaskName();
 

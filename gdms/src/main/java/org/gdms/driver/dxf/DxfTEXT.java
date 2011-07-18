@@ -21,7 +21,6 @@
  * michael.michaud@free.fr
  *
  */
-
 package org.gdms.driver.dxf;
 
 import java.io.IOException;
@@ -45,67 +44,62 @@ import com.vividsolutions.jts.geom.Point;
 // 2006-11-12 : Bug fixed x==Double.NaN --> Double.isNaN(x)
 public class DxfTEXT extends DxfENTITY {
 
-	public DxfTEXT() {
-		super("DEFAULT");
-	}
+        public DxfTEXT() {
+                super("DEFAULT");
+        }
 
-	public static DxfGroup readEntity(RandomAccessFile raf,
-			GenericObjectDriver driver) throws IOException, DriverException {
+        public static DxfGroup readEntity(RandomAccessFile raf,
+                GenericObjectDriver driver) throws IOException, DriverException {
 
-		Value[] values = new Value[DxfFile.DXF_SCHEMACount];
+                Value[] values = new Value[DxfFile.DXF_SCHEMACount];
 
-		/*
-		 * Feature feature = new BasicFeature(DxfFile.DXF_SCHEMA);
-		 * feature.setAttribute("LTYPE", "BYLAYER");
-		 * feature.setAttribute("ELEVATION", new Double(0.0));
-		 * feature.setAttribute("THICKNESS", new Double(0.0));
-		 * feature.setAttribute("COLOR", new Integer(256)); // equivalent to
-		 * BYLAYER feature.setAttribute("TEXT", "");
-		 * feature.setAttribute("TEXT_HEIGHT", new Double(0.0));
-		 * feature.setAttribute("TEXT_STYLE", "STANDARD");
-		 */
-		double x = Double.NaN, y = Double.NaN, z = Double.NaN;
-		DxfGroup group;
-		try {
-			while (null != (group = DxfGroup.readGroup(raf))
-					&& group.getCode() != 0) {
-				if (group.getCode() == 8)
-					values[1] = ValueFactory.createValue(group.getValue());
-				else if (group.getCode() == 6)
-					values[2] = ValueFactory.createValue(group.getValue());
-				else if (group.getCode() == 38)
-					values[3] = ValueFactory
-							.createValue(group.getDoubleValue());
-				else if (group.getCode() == 39)
-					values[4] = ValueFactory
-							.createValue(group.getDoubleValue());
-				else if (group.getCode() == 62)
-					values[5] = ValueFactory.createValue(group.getIntValue());
-				else if (group.getCode() == 10)
-					x = group.getDoubleValue();
-				else if (group.getCode() == 20)
-					y = group.getDoubleValue();
-				else if (group.getCode() == 30)
-					z = group.getDoubleValue();
-				else if (group.getCode() == 1)
-					values[6] = ValueFactory.createValue(group.getValue());
-				else if (group.getCode() == 40)
-					values[7] = ValueFactory
-							.createValue(group.getDoubleValue());
-				else if (group.getCode() == 7)
-					values[8] = ValueFactory.createValue(group.getValue());
-				else {
-				}
-			}
-			if (!Double.isNaN(x) && !Double.isNaN(y)) {
-				values[0] = ValueFactory.createValue(new Point(new Coordinate(
-						x, y, z), DPM, 0));
-				driver.addValues(values);
-			}
-		} catch (IOException ioe) {
-			throw ioe;
-		}
-		return group;
-	}
-
+                /*
+                 * Feature feature = new BasicFeature(DxfFile.DXF_SCHEMA);
+                 * feature.setAttribute("LTYPE", "BYLAYER");
+                 * feature.setAttribute("ELEVATION", new Double(0.0));
+                 * feature.setAttribute("THICKNESS", new Double(0.0));
+                 * feature.setAttribute("COLOR", new Integer(256)); // equivalent to
+                 * BYLAYER feature.setAttribute("TEXT", "");
+                 * feature.setAttribute("TEXT_HEIGHT", new Double(0.0));
+                 * feature.setAttribute("TEXT_STYLE", "STANDARD");
+                 */
+                double x = Double.NaN, y = Double.NaN, z = Double.NaN;
+                DxfGroup group;
+                try {
+                        while (null != (group = DxfGroup.readGroup(raf))
+                                && group.getCode() != 0) {
+                                if (group.getCode() == 8) {
+                                        values[1] = ValueFactory.createValue(group.getValue());
+                                } else if (group.getCode() == 6) {
+                                        values[2] = ValueFactory.createValue(group.getValue());
+                                } else if (group.getCode() == 38) {
+                                        values[3] = ValueFactory.createValue(group.getDoubleValue());
+                                } else if (group.getCode() == 39) {
+                                        values[4] = ValueFactory.createValue(group.getDoubleValue());
+                                } else if (group.getCode() == 62) {
+                                        values[5] = ValueFactory.createValue(group.getIntValue());
+                                } else if (group.getCode() == 10) {
+                                        x = group.getDoubleValue();
+                                } else if (group.getCode() == 20) {
+                                        y = group.getDoubleValue();
+                                } else if (group.getCode() == 30) {
+                                        z = group.getDoubleValue();
+                                } else if (group.getCode() == 1) {
+                                        values[6] = ValueFactory.createValue(group.getValue());
+                                } else if (group.getCode() == 40) {
+                                        values[7] = ValueFactory.createValue(group.getDoubleValue());
+                                } else if (group.getCode() == 7) {
+                                        values[8] = ValueFactory.createValue(group.getValue());
+                                }
+                        }
+                        if (!Double.isNaN(x) && !Double.isNaN(y)) {
+                                values[0] = ValueFactory.createValue(new Point(new Coordinate(
+                                        x, y, z), DPM, 0));
+                                driver.addValues(values);
+                        }
+                } catch (IOException ioe) {
+                        throw ioe;
+                }
+                return group;
+        }
 }

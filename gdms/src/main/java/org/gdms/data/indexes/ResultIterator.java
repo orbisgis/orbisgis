@@ -37,7 +37,15 @@
 package org.gdms.data.indexes;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
+/**
+ * Utility iterator class used to iterate over an array of integers.
+ *
+ * This iterator does not support remove operation. Calling <tt>remove()</tt>
+ * will throw an [@code UnsupportedOperationException}.
+ * @author Antoine Gourlay
+ */
 public class ResultIterator implements Iterator<Integer> {
 
 	private int[] results;
@@ -48,16 +56,26 @@ public class ResultIterator implements Iterator<Integer> {
 		this.results = results;
 	}
 
+        @Override
 	public boolean hasNext() {
 		return results.length > index;
 	}
 
+        @Override
 	public Integer next() {
+                if (results.length == index) {
+                        throw new NoSuchElementException();
+                }
 		Integer ret = results[index];
 		index++;
 		return ret;
 	}
 
+        /*
+         * This operation is not supported.
+         * Calling this method always throws an [@code UnsupportedOperationException}.
+         */
+        @Override
 	public void remove() {
 		throw new UnsupportedOperationException();
 	}

@@ -58,7 +58,7 @@ public interface EditionInfo {
 	 * @throws DriverException
 	 *             if cannot get the SQL statement
 	 */
-	public String getSQL(String[] pkNames,
+	String getSQL(String[] pkNames,
 			String[] fieldNames, DBReadWriteDriver driver)
 			throws DriverException;
 }

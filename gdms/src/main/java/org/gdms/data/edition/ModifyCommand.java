@@ -63,8 +63,12 @@ public class ModifyCommand extends AbstractCommand implements Command {
 				info.ibDir, info.previousValue, info.fieldId, info.row);
 	}
 
+        @Override
+        public void clear() {
+        }
+
 	public static class ModifyInfo {
-		public OriginalDirection previousDir;
+		public OriginalRowAddress previousDir;
 
 		public EditionInfo previousInfo;
 
@@ -76,7 +80,7 @@ public class ModifyCommand extends AbstractCommand implements Command {
 
 		public int fieldId;
 
-		public ModifyInfo(OriginalDirection previousDir,
+		public ModifyInfo(OriginalRowAddress previousDir,
 				EditionInfo previousInfo, InternalBufferDirection ibDir,
 				Value previousValue, long row, int fieldId) {
 			super();

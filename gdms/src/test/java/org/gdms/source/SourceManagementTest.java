@@ -40,12 +40,13 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
+import java.io.FilenameFilter;
+import java.io.IOException;
 
 import junit.framework.TestCase;
 
 import org.gdms.DBTestSource;
-import org.gdms.SourceTest;
+import org.gdms.BaseTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SourceAlreadyExistsException;
@@ -53,17 +54,15 @@ import org.gdms.data.db.DBSource;
 import org.gdms.data.edition.FakeDBTableSourceDefinition;
 import org.gdms.data.edition.FakeFileSourceDefinition;
 import org.gdms.data.edition.ReadAndWriteDriver;
-import org.gdms.data.file.FileSourceDefinition;
+import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.wms.WMSSource;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.generic.GenericObjectDriver;
-import org.gdms.spatial.SeveralSpatialFieldsDriver;
-import org.gdms.sql.customQuery.QueryManager;
-import org.gdms.sql.strategies.SumQuery;
 
 public class SourceManagementTest extends TestCase {
 
@@ -74,12 +73,13 @@ public class SourceManagementTest extends TestCase {
 	private File testFile;
 	private DBSource testDB;
 	private WMSSource testWMS;
-	private String sql = "select count(id) from myfile;";
 	private GenericObjectDriver obj;
 
 	public void testRegisterTwice() throws Exception {
+                sm.remove(SOURCE);
+                sm.register(SOURCE, new File("b.shp"));
 		try {
-			sm.register(SOURCE, new File("a"));
+			sm.register(SOURCE, new File("a.shp"));
 			assertTrue(false);
 		} catch (SourceAlreadyExistsException e) {
 			// we check that the failed registration has broken nothing
@@ -109,7 +109,13 @@ public class SourceManagementTest extends TestCase {
 		source.deleteProperty(fileProp);
 
 		File dir = sm.getSourceInfoDirectory();
-		File[] content = dir.listFiles();
+		File[] content = dir.listFiles(new FilenameFilter() {
+
+                        @Override
+                        public boolean accept(File dir, String name) {
+                                return !name.startsWith(".");
+                        }
+                });
 		assertTrue(content.length == 1);
 		assertTrue(content[0].getName().equals("directory.xml"));
 	}
@@ -126,7 +132,13 @@ public class SourceManagementTest extends TestCase {
 
 		source.deleteProperty(fileProp);
 		File dir = sm.getSourceInfoDirectory();
-		File[] content = dir.listFiles();
+		File[] content = dir.listFiles(new FilenameFilter() {
+
+                        @Override
+                        public boolean accept(File dir, String name) {
+                                return !name.startsWith(".");
+                        }
+                });
 		assertTrue(content.length == 1);
 		assertTrue(content[0].getName().equals("directory.xml"));
 	}
@@ -242,14 +254,13 @@ public class SourceManagementTest extends TestCase {
 		associateString(source, statistics);
 		String memento = sm.getMemento();
 
-		String newSourceInfoDir = SourceTest.internalData
+		String newSourceInfoDir = BaseTest.internalData
 				+ "source-management2";
 		sm.setSourceInfoDirectory(newSourceInfoDir);
 
-		sm.saveStatus();
 		instantiateDSF();
-		assertTrue(!memento.equals(sm.getMemento()));
 
+                memento = sm.getMemento();
 		sm.changeSourceInfoDirectory(newSourceInfoDir);
 		assertTrue(memento.equals(sm.getMemento()));
 	}
@@ -266,20 +277,18 @@ public class SourceManagementTest extends TestCase {
 		sm.removeAll();
 
 		DBTestSource dbTestSource = new DBTestSource("testhsqldb",
-				"org.hsqldb.jdbcDriver", SourceTest.internalData
+				"org.hsqldb.jdbcDriver", BaseTest.internalData
 						+ "testhsqldb.sql", testDB);
 		dbTestSource.backup();
 
 		sm.register("myfile", testFile);
 		sm.register("db", testDB);
 		sm.register("wms", testWMS);
-		sm.register("sql", sql);
 		sm.register("obj", obj);
 
 		String fileContent = getContent("myfile");
 		String dbContent = getContent("db");
 		String wmsContent = getContent("wms");
-		String sqlContent = getContent("sql");
 		String objContent = getContent("obj");
 
 		sm.saveStatus();
@@ -288,7 +297,6 @@ public class SourceManagementTest extends TestCase {
 		assertTrue(fileContent.equals(getContent("myfile")));
 		assertTrue(dbContent.equals(getContent("db")));
 		assertTrue(wmsContent.equals(getContent("wms")));
-		assertTrue(sqlContent.equals(getContent("sql")));
 		assertTrue(objContent.equals(getContent("obj")));
 
 	}
@@ -300,122 +308,6 @@ public class SourceManagementTest extends TestCase {
 		ds.close();
 
 		return ret;
-	}
-
-	public void testSelectDependencies() throws Exception {
-		sm.removeAll();
-		sm.register("db", testDB);
-		sm.register("file", testFile);
-		String sql = "select 2*StringToInt(file.id) from db, file "
-				+ "where StringToInt(file.id) <> 234;";
-		sm.register("sql", sql);
-		DataSource ds = dsf.getDataSource("sql");
-		assertTrue(setIs(ds.getReferencedSources(),
-				new String[] { "db", "file" }));
-		ds = dsf.getDataSourceFromSQL(sql);
-		assertTrue(setIs(ds.getReferencedSources(),
-				new String[] { "db", "file" }));
-		sql = "file union file;";
-		sm.register("sql2", sql);
-		ds = dsf.getDataSource("sql2");
-		assertTrue(setIs(ds.getReferencedSources(), new String[] { "file" }));
-		ds = dsf.getDataSourceFromSQL(sql);
-		assertTrue(setIs(ds.getReferencedSources(), new String[] { "file" }));
-
-		String[] srcDeps = dsf.getDataSource("file").getReferencedSources();
-		assertTrue(srcDeps.length == 0);
-	}
-
-	public void testCannotDeleteDependedSource() throws Exception {
-		sm.removeAll();
-		sm.register("db", testDB);
-		sm.register("file", testFile);
-		String sql = "select 2*StringToInt(file.id) from db, file "
-				+ "where file.id <> '234';";
-		sm.remove("file");
-		sm.remove("db");
-
-		sm.register("db", testDB);
-		sm.register("file", testFile);
-		sm.register("sql", sql);
-
-		try {
-			sm.remove("file");
-			assertTrue(false);
-		} catch (IllegalStateException e) {
-		}
-		try {
-			sm.remove("db");
-			assertTrue(false);
-		} catch (IllegalStateException e) {
-		}
-
-		sm.remove("sql");
-		sm.remove("file");
-		sm.remove("db");
-	}
-
-	public void testCanDeleteIfDependentSourceIsNotWellKnown() throws Exception {
-		sm.removeAll();
-		sm.register("db", testDB);
-		sm.register("file", testFile);
-		dsf.executeSQL("select 2*StringToInt(file.id) from db, file "
-				+ "where file.id <> '234';");
-		sm.remove("file");
-		sm.remove("db");
-	}
-
-	public void testDependentDependingSync() throws Exception {
-		sm.removeAll();
-		sm.register("db", testDB);
-		sm.register("file", testFile);
-		String sql = "select 2*StringToInt(file.id) from db, file "
-				+ "where file.id <> '234';";
-		sm.register("sql", sql);
-		sql = "select * from sql, file;";
-		sm.register("sql2", sql);
-		// Anonimous ds should not been taken into account for dependencies
-		dsf.executeSQL(sql);
-		Source src = sm.getSource("db");
-		assertTrue(setIs(src.getReferencingSources(), new String[] { "sql",
-				"sql2" }));
-		assertTrue(setIs(src.getReferencedSources(), new String[] {}));
-		src = sm.getSource("file");
-		assertTrue(setIs(src.getReferencingSources(), new String[] { "sql",
-				"sql2" }));
-		assertTrue(setIs(src.getReferencedSources(), new String[] {}));
-		src = sm.getSource("sql");
-		assertTrue(setIs(src.getReferencingSources(), new String[] { "sql2" }));
-		assertTrue(setIs(src.getReferencedSources(), new String[] { "file",
-				"db" }));
-		src = sm.getSource("sql2");
-		assertTrue(setIs(src.getReferencingSources(), new String[] {}));
-		assertTrue(setIs(src.getReferencedSources(), new String[] { "file",
-				"db", "sql" }));
-
-		sm.remove("sql2");
-		src = sm.getSource("db");
-		assertTrue(setIs(src.getReferencingSources(), new String[] { "sql" }));
-		assertTrue(setIs(src.getReferencedSources(), new String[] {}));
-		src = sm.getSource("file");
-		assertTrue(setIs(src.getReferencingSources(), new String[] { "sql" }));
-		assertTrue(setIs(src.getReferencedSources(), new String[] {}));
-		src = sm.getSource("sql");
-		assertTrue(setIs(src.getReferencingSources(), new String[] {}));
-		assertTrue(setIs(src.getReferencedSources(), new String[] { "file",
-				"db" }));
-		src = sm.getSource("sql2");
-		assertTrue(src == null);
-
-		sm.remove("sql");
-		src = sm.getSource("db");
-		assertTrue(setIs(src.getReferencingSources(), new String[] {}));
-		assertTrue(setIs(src.getReferencedSources(), new String[] {}));
-		src = sm.getSource("file");
-		assertTrue(setIs(src.getReferencingSources(), new String[] {}));
-		assertTrue(setIs(src.getReferencedSources(), new String[] {}));
-		src = sm.getSource("sql");
-		assertTrue(src == null);
 	}
 
 	public void testObjectDriverType() throws Exception {
@@ -434,22 +326,6 @@ public class SourceManagementTest extends TestCase {
 		assertTrue((src.getType() & SourceManager.VECTORIAL) == 0);
 	}
 
-	private boolean setIs(String[] referencingSources, String[] test) {
-		if (referencingSources.length != test.length) {
-			return false;
-		} else {
-			ArrayList<String> set = new ArrayList<String>();
-			for (String string : referencingSources) {
-				set.add(string);
-			}
-			for (String string : test) {
-				set.remove(string);
-			}
-
-			return set.isEmpty();
-		}
-	}
-
 	public void testGetAlreadyRegisteredSourceAnonimously() throws Exception {
 		sm.removeAll();
 
@@ -457,7 +333,6 @@ public class SourceManagementTest extends TestCase {
 		sm.register("myDB", testDB);
 		sm.register("myWMS", testWMS);
 		sm.register("myObj", obj);
-		sm.register("mySQL", sql);
 
 		DataSource ds = dsf.getDataSource(testFile);
 		assertTrue(ds.getName().equals("myfile"));
@@ -468,11 +343,8 @@ public class SourceManagementTest extends TestCase {
 		ds = dsf.getDataSource(testWMS);
 		assertTrue(ds.getName().equals("myWMS"));
 
-		ds = dsf.getDataSource(obj);
+		ds = dsf.getDataSource(obj,"main");
 		assertTrue(ds.getName().equals("myObj"));
-
-		ds = dsf.getDataSourceFromSQL(sql);
-		assertTrue(ds.getName().equals("mySQL"));
 	}
 
 	public void testCannotRegisterTwice() throws Exception {
@@ -482,7 +354,6 @@ public class SourceManagementTest extends TestCase {
 		sm.register("myDB", testDB);
 		sm.register("myWMS", testWMS);
 		sm.register("myObj", obj);
-		sm.register("mySQL", sql);
 
 		try {
 			sm.register("a", testFile);
@@ -505,12 +376,6 @@ public class SourceManagementTest extends TestCase {
 		} catch (SourceAlreadyExistsException e) {
 		}
 		try {
-			sm.register("d", sql);
-			assertTrue(false);
-		} catch (SourceAlreadyExistsException e) {
-		}
-
-		try {
 			sm.nameAndRegister(testFile);
 			assertTrue(false);
 		} catch (SourceAlreadyExistsException e) {
@@ -526,48 +391,14 @@ public class SourceManagementTest extends TestCase {
 		} catch (SourceAlreadyExistsException e) {
 		}
 		try {
-			sm.nameAndRegister(obj);
+			sm.nameAndRegister(obj,"main");
 			assertTrue(false);
 		} catch (SourceAlreadyExistsException e) {
 		}
-		try {
-			sm.nameAndRegister(sql);
-			assertTrue(false);
-		} catch (SourceAlreadyExistsException e) {
-		}
-	}
-
-	public void testSQLSourceType() throws Exception {
-		sm.register("spatial source", new SeveralSpatialFieldsDriver());
-		sm.register("myraster", new File("src/test/resources/sample.png"));
-		sm.register("alphasql", "select * from " + SOURCE + ";");
-		sm.register("spatialsql", "select * from spatial source;");
-		sm.register("rastersql", "select * from myraster;");
-		sm.register("mixedsql",
-				"select * from myraster, spatial source;");
-		assertTrue((sm.getSource("alphasql").getType() & SourceManager.SQL) == SourceManager.SQL);
-		assertTrue((sm.getSource("alphasql").getType() & SourceManager.VECTORIAL) == 0);
-		assertTrue((sm.getSource("spatialsql").getType() & SourceManager.SQL) == SourceManager.SQL);
-		assertTrue((sm.getSource("spatialsql").getType() & SourceManager.VECTORIAL) == SourceManager.VECTORIAL);
-		assertTrue((sm.getSource("rastersql").getType() & SourceManager.SQL) == SourceManager.SQL);
-		assertTrue((sm.getSource("rastersql").getType() & SourceManager.RASTER) == SourceManager.RASTER);
-		assertTrue((sm.getSource("mixedsql").getType() & SourceManager.SQL) == SourceManager.SQL);
-		assertTrue((sm.getSource("mixedsql").getType() & SourceManager.VECTORIAL) == SourceManager.VECTORIAL);
-		assertTrue((sm.getSource("mixedsql").getType() & SourceManager.RASTER) == SourceManager.RASTER);
-	}
-
-	public void testCustomQueryDependences() throws Exception {
-		SumQuery sq = new SumQuery();
-		if (QueryManager.getQuery(sq.getName()) == null) {
-			QueryManager.registerQuery(SumQuery.class);
-		}
-		sm.register("sum", "select sumquery() from " + SOURCE + ";");
-		String[] deps = sm.getSource("sum").getReferencedSources();
-		assertTrue(deps.length == 1);
-		assertTrue(deps[0].equals(SOURCE));
 	}
 
 	public void testSaveWithAnOpenHSQLDBDataSource() throws Exception {
+                sm.remove("db");
 		sm.register("db", testDB);
 		DataSource ds = dsf.getDataSource("db");
 		ds.open();
@@ -577,20 +408,23 @@ public class SourceManagementTest extends TestCase {
 	}
 
 	public void testUnknownSources() throws Exception {
-		sm.register("toto", new FileSourceDefinition("toto.shpp"));
-		assertTrue(sm.getSource("toto").getType() == SourceManager.UNKNOWN);
-		assertTrue(sm.getSource("toto").getTypeName().toUpperCase().equals(
-				"UNKNOWN"));
+                try {
+                        sm.register("toto", new FileSourceCreation(new File("toto.pptx"), null));
+                        fail();
+                } catch (DriverLoadException e) {
+                }
 	}
 
 	public void testListenCommits() throws Exception {
 		DriverManager dm = new DriverManager();
 		dm.registerDriver(ReadAndWriteDriver.class);
-
+                sm.remove("object");
+                sm.remove("file");
+                sm.remove("db");
 		SourceManager sourceManager = dsf.getSourceManager();
 		sourceManager.setDriverManager(dm);
 		sourceManager.register("object", new ObjectSourceDefinition(
-				new ReadAndWriteDriver()));
+				new ReadAndWriteDriver(),"main"));
 		sourceManager.register("file", new FakeFileSourceDefinition(
 				new ReadAndWriteDriver()));
 		sourceManager.register("db", new FakeDBTableSourceDefinition(
@@ -606,32 +440,28 @@ public class SourceManagementTest extends TestCase {
 		ds.open();
 		ds.close();
 
-		assertTrue(((DefaultSourceManager) dsf.getSourceManager()).commitListeners
-				.size() == 0);
-	}
-
-	public void testDependingNotWellKnownSourcesRemoved() throws Exception {
-		DataSource ds = dsf.getDataSourceFromSQL("select * from " + SOURCE);
-		String nwkn = ds.getName();
-		dsf.getSourceManager().remove(SOURCE);
-		assertTrue(!dsf.getSourceManager().exists(nwkn));
+//		assertTrue(((DefaultSourceManager) dsf.getSourceManager()).commitListeners.isEmpty());
 	}
 
 	@Override
 	protected void setUp() throws Exception {
 		instantiateDSF();
+                try {
 		sm.removeAll();
-		testFile = new File(SourceTest.internalData + "test.csv");
-		sm.register(SOURCE, testFile);
-		testDB = new DBSource(null, 0, SourceTest.internalData
+                } catch (IOException e) {
+                }
+		testFile = new File(BaseTest.internalData + "test.csv");
+		testDB = new DBSource(null, 0, BaseTest.internalData
 				+ "backup/testhsqldb", "sa", "", "gisapps", "jdbc:hsqldb:file");
 		testWMS = new WMSSource("127.0.0.1", "cantons", "EPSG:1234",
 				"format/pig");
 		obj = new GenericObjectDriver();
+                sm.remove(SOURCE);
+                sm.register(SOURCE, testFile);
 	}
 
 	private void instantiateDSF() {
-		dsf = new DataSourceFactory(SourceTest.internalData
+		dsf = new DataSourceFactory(BaseTest.internalData
 				+ "source-management");
 		sm = dsf.getSourceManager();
 

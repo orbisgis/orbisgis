@@ -42,101 +42,104 @@ import java.io.IOException;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public interface DataSourceIndex extends AdHocIndex {
 
-	/**
-	 * To update the index.
-	 *
-	 * @param direction
-	 * @throws IndexException
-	 */
-	public void deleteRow(Value value, int row) throws IndexException;
+        /**
+         * Deletes a row from the index.
+         *
+         * @param value
+         * @param row
+         * @throws IndexException
+         */
+        void deleteRow(Value value, int row) throws IndexException;
 
-	/**
-	 * To update the index
-	 *
-	 * @throws IndexException
-	 */
-	public void insertRow(Value value, int row) throws IndexException;
+        /**
+         * Inserts a row into the index.
+         *
+         * @param value
+         * @param row
+         * @throws IndexException
+         */
+        void insertRow(Value value, int row) throws IndexException;
 
-	/**
-	 * To update the index
-	 *
-	 * @throws IndexException
-	 */
-	public void setFieldValue(Value oldGeometry, Value newGeometry, int rowIndex)
-			throws IndexException;
+        /**
+         * Updates a field value in the index.
+         *
+         * @param oldGeometry
+         * @param newGeometry
+         * @param rowIndex
+         * @throws IndexException
+         */
+        void setFieldValue(Value oldGeometry, Value newGeometry, int rowIndex)
+                throws IndexException;
 
-	/**
-	 * Gets the field this index is built on
-	 *
-	 * @return
-	 */
-	public String getFieldName();
+        /**
+         * Gets the field this index is built on
+         *
+         * @return
+         */
+        String getFieldName();
 
-	/**
-	 * Sets the name of the field to index
-	 *
-	 * @param fieldName
-	 */
-	public void setFieldName(String fieldName);
+        /**
+         * Sets the name of the field to index
+         *
+         * @param fieldName
+         */
+        void setFieldName(String fieldName);
 
-	/**
-	 * Indexes the specified field of the specified source
-	 *
-	 * @param ds
-	 * @param fieldName
-	 * @param pm
-	 * @param indexFile
-	 * @throws IndexException
-	 */
-	public void buildIndex(DataSourceFactory dsf, DataSource ds,
-			IProgressMonitor pm) throws IndexException;
+        /**
+         * Indexes the specified field of the specified source
+         *
+         * @param dsf
+         * @param ds
+         * @param pm
+         * @throws IndexException
+         */
+        void buildIndex(DataSourceFactory dsf, DataSource ds,
+                ProgressMonitor pm) throws IndexException;
 
-	/**
-	 * Loads the index information from the file
-	 *
-	 * @param file
-	 * @throws IOException
-	 */
-	public void load() throws IndexException;
+        /**
+         * Loads the index information from the file
+         *
+         * @throws IndexException
+         */
+        void load() throws IndexException;
 
-	/**
-	 * Stores the information of this index at disk
-	 *
-	 * @throws IndexException
-	 */
-	public void save() throws IndexException;
+        /**
+         * Stores the information of this index at disk
+         *
+         * @throws IndexException
+         */
+        void save() throws IndexException;
 
-	/**
-	 * Sets the file related with the index
-	 *
-	 * @param file
-	 */
-	public void setFile(File file);
+        /**
+         * Sets the file related with the index
+         *
+         * @param file
+         */
+        void setFile(File file);
 
-	/**
-	 * Gets the file this index uses for storage
-	 *
-	 * @return
-	 */
-	public File getFile();
+        /**
+         * Gets the file this index uses for storage
+         *
+         * @return
+         */
+        File getFile();
 
-	/**
-	 * Frees all the resources used by the index
-	 *
-	 * @throws IOException
-	 */
-	public void close() throws IOException;
+        /**
+         * Frees all the resources used by the index
+         *
+         * @throws IOException
+         */
+        void close() throws IOException;
 
-	/**
-	 * Returns true if the method is called between an invocation to buildIndex
-	 * or load and an invocation to close
-	 *
-	 * @return
-	 */
-	public boolean isOpen();
-
+        /**
+         * Returns true if the method is called between an invocation to buildIndex
+         * or load and an invocation to close
+         *
+         * @return
+         */
+        boolean isOpen();
 }

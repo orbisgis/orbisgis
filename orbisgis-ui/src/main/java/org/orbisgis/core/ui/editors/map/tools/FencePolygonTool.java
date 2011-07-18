@@ -67,8 +67,10 @@ import org.orbisgis.utils.I18N;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
 import java.io.File;
-import org.gdms.data.metadata.DefaultMetadata;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.DefaultMetadata;
+import org.gdms.data.schema.Metadata;
+import org.gdms.data.types.Constraint;
+import org.gdms.data.types.ConstraintFactory;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.driver.gdms.GdmsWriter;
 
@@ -144,8 +146,7 @@ public class FencePolygonTool extends AbstractPolygonTool {
                         writer = new GdmsWriter(file);
 
 
-                        Metadata md = new DefaultMetadata(new Type[]{TypeFactory.createType(Type.GEOMETRY, new GeometryConstraint(
-                                        GeometryConstraint.POLYGON))}, new String[]{"the_geom"});
+                        Metadata md = new DefaultMetadata(new Type[]{TypeFactory.createType(Type.GEOMETRY, ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.POLYGON))}, new String[]{"the_geom"});
 
                         writer.writeMetadata(1, md);
                         writer.addValues(new Value[]{ValueFactory.createValue(g)});

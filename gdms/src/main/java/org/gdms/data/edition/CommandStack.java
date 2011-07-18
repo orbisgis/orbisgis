@@ -40,6 +40,7 @@
 package org.gdms.data.edition;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.gdms.driver.DriverException;
 
@@ -51,7 +52,7 @@ import org.gdms.driver.DriverException;
  * @author Fernando Gonzalez Cortes
  */
 public class CommandStack {
-	private ArrayList<Command> commands = new ArrayList<Command>();
+	private List<Command> commands = new ArrayList<Command>();
 
 	private int position = 0;
 
@@ -153,6 +154,9 @@ public class CommandStack {
          * Empties the stack
          */
 	public void clear() {
+                for (int i = 0; i < commands.size(); i++) {
+                        commands.get(i).clear();
+                }
 		position = 0;
 		commands = new ArrayList<Command>();
 	}

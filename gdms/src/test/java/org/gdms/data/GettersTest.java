@@ -40,13 +40,15 @@ import junit.framework.TestCase;
 
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.ReadAccess;
 
 public class GettersTest extends TestCase {
 
 	private DataSourceFactory dsf;
 
 	public void testAllGeters() throws Exception {
-		AllTypesObjectDriver test = new AllTypesObjectDriver();
+		AllTypesObjectDriver testD = new AllTypesObjectDriver();
+                ReadAccess test = testD.getTable("main");
 		DataSource d = dsf.getDataSource("alltypes");
 		d.open();
 		assertTrue(ValueFactory.createValue(d.getBinary(0, 0)).equals(
@@ -138,7 +140,7 @@ public class GettersTest extends TestCase {
 	protected void setUp() throws Exception {
 		dsf = new DataSourceFactory();
 		dsf.getSourceManager().register("alltypes",
-				new ObjectSourceDefinition(new AllTypesObjectDriver()));
+				new ObjectSourceDefinition(new AllTypesObjectDriver(),"main"));
 		super.setUp();
 	}
 }

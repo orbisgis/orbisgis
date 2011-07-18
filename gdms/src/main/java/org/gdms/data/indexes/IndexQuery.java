@@ -36,14 +36,18 @@
  */
 package org.gdms.data.indexes;
 
+/**
+ * Implementations of this class represents query over a {@code DataSourceIndex}
+ * @author Antoine Gourlay
+ */
 public interface IndexQuery {
 
 	/**
 	 * Gets the field this query is base on
 	 *
-	 * @return
+	 * @return the field name
 	 */
-	public String getFieldName();
+	String getFieldName();
 
 	/**
 	 * Returns true if the result of a query to the index return only values
@@ -52,5 +56,5 @@ public interface IndexQuery {
 	 *
 	 * @return
 	 */
-	public boolean isStrict();
+	boolean isStrict();
 }

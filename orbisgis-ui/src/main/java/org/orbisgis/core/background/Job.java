@@ -38,11 +38,12 @@
 package org.orbisgis.core.background;
 
 import java.util.ArrayList;
+import org.orbisgis.progress.DefaultProgressMonitor;
 
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 
-public class Job implements BackgroundJob, IProgressMonitor {
+public class Job implements BackgroundJob, ProgressMonitor {
 
 	private JobId processId;
 	private BackgroundJob lp;
@@ -56,7 +57,7 @@ public class Job implements BackgroundJob, IProgressMonitor {
 			boolean isBlocking) {
 		this.processId = processId;
 		this.lp = lp;
-		this.pm = new ProgressMonitor(lp.getTaskName());
+		this.pm = new DefaultProgressMonitor(lp.getTaskName(), 100);
 		this.jobQueue = jobQueue;
 		this.isBlocking = isBlocking;
 	}
@@ -73,7 +74,7 @@ public class Job implements BackgroundJob, IProgressMonitor {
 		return lp.getTaskName();
 	}
 
-	public void run(IProgressMonitor pm) {
+	public void run(ProgressMonitor pm) {
 		lp.run(pm);
 	}
 
@@ -113,8 +114,8 @@ public class Job implements BackgroundJob, IProgressMonitor {
 		}
 	}
 
-	public void init(String taskName) {
-		pm.init(taskName);
+	public void init(String taskName, long end) {
+		pm.init(taskName, end);
 		fireProgressTo();
 	}
 
@@ -122,7 +123,7 @@ public class Job implements BackgroundJob, IProgressMonitor {
 		return pm.isCancelled();
 	}
 
-	public void progressTo(int progress) {
+	public void progressTo(long progress) {
 		pm.progressTo(progress);
 		fireProgressTo();
 	}
@@ -137,8 +138,8 @@ public class Job implements BackgroundJob, IProgressMonitor {
 		pm.setCancelled(cancelled);
 	}
 
-	public void startTask(String taskName) {
-		pm.startTask(taskName);
+	public void startTask(String taskName, long end) {
+		pm.startTask(taskName, end);
 		fireSubTaskStarted();
 	}
 
@@ -165,7 +166,7 @@ public class Job implements BackgroundJob, IProgressMonitor {
 	public void clear() {
 		lp = new BackgroundJob() {
 
-			public void run(IProgressMonitor pm) {
+			public void run(ProgressMonitor pm) {
 			}
 
 			public String getTaskName() {

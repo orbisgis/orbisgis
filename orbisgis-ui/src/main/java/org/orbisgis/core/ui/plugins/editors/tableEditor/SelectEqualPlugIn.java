@@ -57,7 +57,7 @@ import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.views.tableEditor.TableEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.I18N;
 
 public class SelectEqualPlugIn extends AbstractPlugIn {
@@ -81,7 +81,7 @@ public class SelectEqualPlugIn extends AbstractPlugIn {
 		bm.backgroundOperation(new BackgroundJob() {
 
 			@Override
-			public void run(IProgressMonitor pm) {
+			public void run(ProgressMonitor pm) {
 				try {
 					DataSource dataSource = element.getDataSource();
 					ArrayList<Integer> newSel = new ArrayList<Integer>();

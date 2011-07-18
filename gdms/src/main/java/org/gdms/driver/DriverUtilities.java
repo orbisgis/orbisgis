@@ -36,77 +36,118 @@
  */
 package org.gdms.driver;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
 import java.io.File;
 
-import org.gdms.driver.driverManager.Driver;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.driverManager.DriverManager;
 
 /**
  * Utility method for the drivers
  */
-public class DriverUtilities {
+public final class DriverUtilities {
 
-	/**
-	 * Translates the specified code by using the translation table specified by
-	 * the two last arguments. If there is no translation a RuntimeException is
-	 * thrown.
-	 * 
-	 * @param code
-	 *            code to translate
-	 * @param source
-	 *            keys on the translation table
-	 * @param target
-	 *            translation to the keys
-	 * 
-	 * @return translated code
-	 */
-	public static int translate(int code, int[] source, int[] target) {
-		for (int i = 0; i < source.length; i++) {
-			if (code == source[i]) {
-				return target[i];
-			}
-		}
+        /**
+         * Translates the specified code by using the translation table specified by
+         * the two last arguments. If there is no translation a RuntimeException is
+         * thrown.
+         *
+         * @param code
+         *            code to translate
+         * @param source
+         *            keys on the translation table
+         * @param target
+         *            translation to the keys
+         *
+         * @return translated code
+         */
+        public static int translate(int code, int[] source, int[] target) {
+                for (int i = 0; i < source.length; i++) {
+                        if (code == source[i]) {
+                                return target[i];
+                        }
+                }
 
-		throw new RuntimeException("code mismatch");
-	}
+                throw new IllegalArgumentException("code mismatch");
+        }
 
-	public static ReadOnlyDriver getDriver(DriverManager dm, File file) {
-		String[] names = dm.getDriverNames();
-		for (int i = 0; i < names.length; i++) {
-			Driver driver = dm.getDriver(names[i]);
-			if (driver instanceof FileDriver) {
-				FileDriver fileDriver = (FileDriver) driver;
-				String[] extensions = fileDriver.getFileExtensions();
-				for (String extension : extensions) {
-					if (file.getAbsolutePath().toLowerCase().endsWith(
-							extension.toLowerCase())) {
-						return fileDriver;
-					}
-				}
-			}
-		}
+        /**
+         * Gets the first driver registered with the DriverManager that accepts the specified file.
+         * @param dm
+         * @param file
+         * @return
+         */
+        public static FileDriver getDriver(DriverManager dm, File file) {
+                String[] names = dm.getDriverNames();
+                for (int i = 0; i < names.length; i++) {
+                        Driver driver = dm.getDriver(names[i]);
+                        if (driver instanceof FileDriver) {
+                                FileDriver fileDriver = (FileDriver) driver;
+                                String[] extensions = fileDriver.getFileExtensions();
+                                for (String extension : extensions) {
+                                        if (file.getAbsolutePath().toLowerCase().endsWith(
+                                                extension.toLowerCase())) {
+                                                try {
+                                                        fileDriver.setFile(file);
+                                                } catch (DriverException ex) {
+                                                        throw new DriverLoadException(ex);
+                                                }
+                                                return fileDriver;
+                                        }
+                                }
+                        }
+                }
 
-		throw new DriverLoadException("No suitable driver for "
-				+ file.getAbsolutePath());
-	}
+                throw new DriverLoadException("No suitable driver for "
+                        + file.getAbsolutePath());
+        }
 
-	public static ReadOnlyDriver getDriver(DriverManager dm, String prefix) {
-		String[] names = dm.getDriverNames();
-		for (int i = 0; i < names.length; i++) {
-			Driver driver = dm.getDriver(names[i]);
-			if (driver instanceof DBDriver) {
-				DBDriver dbDriver = (DBDriver) driver;
-				String[] prefixes = dbDriver.getPrefixes();
-				for (String driverPrefix : prefixes) {
-					if (driverPrefix.toLowerCase().equals(prefix.toLowerCase())) {
-						return dbDriver;
-					}
-				}
-			}
-		}
+        /**
+         * Gets the first driver registered with the DriverManager that supports the
+         * specified prefix
+         * @param dm
+         * @param prefix
+         * @return
+         */
+        public static DBDriver getDriver(DriverManager dm, String prefix) {
+                String[] names = dm.getDriverNames();
+                for (int i = 0; i < names.length; i++) {
+                        Driver driver = dm.getDriver(names[i]);
+                        if (driver instanceof DBDriver) {
+                                DBDriver dbDriver = (DBDriver) driver;
+                                String[] prefixes = dbDriver.getPrefixes();
+                                for (String driverPrefix : prefixes) {
+                                        if (driverPrefix.equalsIgnoreCase(prefix)) {
+                                                return dbDriver;
+                                        }
+                                }
+                        }
+                }
 
-		throw new DriverLoadException("No suitable driver for " + prefix);
-	}
+                throw new DriverLoadException("No suitable driver for " + prefix);
+        }
 
+        /**
+         * gets the full extent of a ReadAccess data set.
+         * The extent is computed using the {@link ReadAccess#getScope(int) }
+         * method.
+         * @param r
+         * @return an Envelope for the Extent, or null if it cannot be computed
+         * @throws DriverException
+         */
+        public static Envelope getFullExtent(ReadAccess r) throws DriverException {
+                Number[] xScope = r.getScope(ReadAccess.X);
+                Number[] yScope = r.getScope(ReadAccess.Y);
+                if ((xScope != null) && (yScope != null)) {
+                        return new Envelope(new Coordinate(xScope[0].doubleValue(),
+                                yScope[0].doubleValue()), new Coordinate(xScope[1].doubleValue(),
+                                yScope[1].doubleValue()));
+                } else {
+                        return null;
+                }
+        }
+
+        private DriverUtilities() {
+        }
 }

@@ -62,6 +62,7 @@ import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Point;
+import org.gdms.driver.driverManager.DriverManager;
 
 public class RasterInfoTool extends AbstractPointTool {
 	public final static String[] LABELS = new String[] { I18N.getString("orbisgis.org.orbisgis.ui.rasterInfoTool.pixelX"), I18N.getString("orbisgis.org.orbisgis.ui.rasterInfoTool.pixelY"), //$NON-NLS-1$ //$NON-NLS-2$
@@ -120,7 +121,7 @@ public class RasterInfoTool extends AbstractPointTool {
 					ValueFactory.createValue(realWorldCoord.x),
 					ValueFactory.createValue(realWorldCoord.y) });
 			DataManager dataManager = Services.getService(DataManager.class);
-			im.setContents(dataManager.getDataSourceFactory().getDataSource(omd));
+			im.setContents(dataManager.getDataSourceFactory().getDataSource(omd, DriverManager.DEFAULT_SINGLE_TABLE_NAME));
 		} catch (IOException e) {
 			Services.getErrorManager().error(
 					I18N.getString("orbisgis.org.orbisgis.ui.rasterInfoTool.cannotAccessingGeorasterDatas"), e); //$NON-NLS-1$

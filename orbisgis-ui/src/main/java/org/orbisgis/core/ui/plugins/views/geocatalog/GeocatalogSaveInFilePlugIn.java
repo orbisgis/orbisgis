@@ -41,8 +41,8 @@ package org.orbisgis.core.ui.plugins.views.geocatalog;
 import java.io.File;
 
 import org.gdms.data.DataSourceFactory;
+import org.gdms.driver.Driver;
 import org.gdms.driver.FileDriver;
-import org.gdms.driver.driverManager.Driver;
 import org.gdms.driver.driverManager.DriverFilter;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.AndDriverFilter;

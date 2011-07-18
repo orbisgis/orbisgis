@@ -1,0 +1,150 @@
+/*
+ * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ *
+ *
+ * Team leader : Erwan BOCHER, scientific researcher,
+ *
+ * User support leader : Gwendall Petit, geomatic engineer.
+ *
+ * Previous computer developer : Pierre-Yves FADET, computer engineer, Thomas LEDUC,
+ * scientific researcher, Fernando GONZALEZ CORTES, computer engineer.
+ *
+ * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ *
+ * Copyright (C) 2010 Erwan BOCHER, Alexis GUEGANNO, Maxence LAURENT, Antoine GOURLAY
+ *
+ * This file is part of OrbisGIS.
+ *
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ *
+ * or contact directly:
+ * info@orbisgis.org
+ */
+package org.gdms.data.values;
+
+import java.sql.Types;
+
+import org.gdms.data.types.Type;
+
+/**
+ *
+ */
+class DefaultShortValue extends DefaultNumericValue implements ShortValue {
+
+        private short value;
+        public static final ValueTwoQueueBuffer<Short, ShortValue> BUF =
+                new ValueTwoQueueBuffer<Short, ShortValue>(ValueFactory.VALUECACHEMAXSIZE) {
+
+                        @Override
+                        protected ShortValue reclaim(Short id) {
+                                return new DefaultShortValue(id);
+                        }
+                };
+
+        /**
+         * Creates a new ShortValue
+         *
+         * @param s
+         *            the short
+         */
+        DefaultShortValue(short s) {
+                value = s;
+        }
+
+        /**
+         * Creates a new empty ShortValue
+         */
+        DefaultShortValue() {
+        }
+
+        @Override
+        public byte byteValue() {
+                return (byte) value;
+        }
+
+        @Override
+        public short shortValue() {
+                return value;
+        }
+
+        @Override
+        public int intValue() {
+                return (int) value;
+        }
+
+        @Override
+        public long longValue() {
+                return (long) value;
+        }
+
+        @Override
+        public float floatValue() {
+                return (float) value;
+        }
+
+        @Override
+        public double doubleValue() {
+                return (double) value;
+        }
+
+        @Override
+        public String getStringValue(ValueWriter writer) {
+                return writer.getStatementString(value, Types.SMALLINT);
+        }
+
+        @Override
+        public int getType() {
+                return Type.SHORT;
+        }
+
+        @Override
+        public int getDecimalDigitsCount() {
+                return 0;
+        }
+
+        public short getValue() {
+                return value;
+        }
+
+        @Override
+        public byte[] getBytes() {
+                byte[] ret = new byte[2];
+                ret[0] = (byte) ((value >>> 8) & 0xFF);
+                ret[1] = (byte) ((value) & 0xFF);
+
+                return ret;
+        }
+
+        public static Value readBytes(byte[] buffer) {
+                return BUF.get((short) (((0xff & buffer[0]) << 8) + ((0xff & buffer[1]))));
+        }
+
+        /**
+         * @param value the value to set
+         */
+        @Override
+        public void setValue(short value) {
+                this.value = value;
+        }
+
+        @Override
+        public NumericValue opposite() {
+                return ValueFactory.createValue(-value);
+        }
+}

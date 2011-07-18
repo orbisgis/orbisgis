@@ -37,30 +37,32 @@
 package org.gdms.data;
 
 import java.io.File;
-import java.io.FileFilter;
 
-import org.gdms.SourceTest;
-import org.gdms.data.db.DBSource;
-import org.gdms.data.db.DBSourceCreation;
+import org.gdms.BaseTest;
 import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.indexes.DefaultSpatialIndexQuery;
 import org.gdms.data.indexes.IndexManager;
 import org.gdms.data.indexes.SpatialIndexQuery;
-import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.object.ObjectSourceDefinition;
-import org.gdms.data.types.PrimaryKeyConstraint;
-import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.generic.GenericObjectDriver;
 import org.gdms.source.SourceManager;
-import org.gdms.sql.strategies.TableNotFoundException;
 
 import com.vividsolutions.jts.geom.Envelope;
+import java.io.FileFilter;
+import org.gdms.data.db.DBSource;
+import org.gdms.data.db.DBSourceCreation;
+import org.gdms.data.schema.DefaultMetadata;
+import org.gdms.data.schema.MetadataUtilities;
+import org.gdms.data.types.Constraint;
+import org.gdms.data.types.ConstraintFactory;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
+import org.gdms.driver.driverManager.DriverManager;
 
-public class DataSourceFactoryTests extends SourceTest {
+public class DataSourceFactoryTests extends BaseTest {
 
 	private SourceManager sm;
 
@@ -106,39 +108,6 @@ public class DataSourceFactoryTests extends SourceTest {
 		assertTrue(dsf.getSourceManager().isEmpty());
 	}
 
-	/**
-	 * Tests the naming of operation layer datasource
-	 *
-	 * @throws Throwable
-	 *             DOCUMENT ME!
-	 */
-	public void testOperationDataSourceName() throws Throwable {
-		DataSource d = dsf.getDataSourceFromSQL("select * from "
-				+ super.getAnyNonSpatialResource() + ";");
-		assertTrue(dsf.getDataSource(d.getName()) != null);
-	}
-
-	public void testSeveralNames() throws Exception {
-		String dsName = super.getAnyNonSpatialResource();
-		testSeveralNames(dsName);
-		testSeveralNames(dsf.getDataSourceFromSQL("select * from " + dsName)
-				.getName());
-	}
-
-	private void testSeveralNames(String dsName) throws TableNotFoundException,
-			SourceAlreadyExistsException, DriverLoadException,
-			NoSuchTableException, DataSourceCreationException, DriverException,
-			AlreadyClosedException {
-		String secondName = "secondName" + System.currentTimeMillis();
-		sm.addName(dsName, secondName);
-		checkNames(dsName, secondName);
-		try {
-			sm.addName("e" + System.currentTimeMillis(), "qosgsdq");
-			assertTrue(false);
-		} catch (TableNotFoundException e) {
-		}
-	}
-
 	private void checkNames(String dsName, String secondName)
 			throws DriverLoadException, NoSuchTableException,
 			DataSourceCreationException, DriverException,
@@ -168,7 +137,7 @@ public class DataSourceFactoryTests extends SourceTest {
 	public void testRegisteringCollission() throws Exception {
 		String name = "e" + System.currentTimeMillis();
 		ObjectSourceDefinition def = new ObjectSourceDefinition(
-				new GenericObjectDriver(null, null));
+				new GenericObjectDriver(null, null),"main");
 		sm.register(name, def);
 		try {
 			sm.register(name, def);
@@ -178,29 +147,18 @@ public class DataSourceFactoryTests extends SourceTest {
 	}
 
 	public void testRenameFirstName() throws Exception {
-		String dsName = super.getAnyNonSpatialResource();
+		sm.register("test3", new File(BaseTest.internalData, "hedgerow.shp"));
 		String newName = "test" + System.currentTimeMillis();
 		String newName2 = "test" + System.currentTimeMillis() + 1;
-		sm.addName(dsName, newName);
-		sm.rename(dsName, newName2);
+		sm.addName("test3", newName);
+		sm.rename("test3", newName2);
 		checkNames(newName, newName2);
 	}
 
-	public void testChangeNameOnExistingDataSources() throws Exception {
-		DataSourceFactory dsf = new DataSourceFactory();
-		dsf.getSourceManager().removeAll();
-		dsf.getSourceManager().register("file",
-				new File("src/test/resources/test.csv"));
-		DataSource ds = dsf.getDataSourceFromSQL("select * from file");
-		dsf.getSourceManager().rename(ds.getName(), "sql");
-		DataSource ds2 = dsf.getDataSource("sql");
-		assertTrue(ds.getName() == ds2.getName());
-	}
-
 	public void testRenameSecondName() throws Exception {
-		String dsName = super.getAnyNonSpatialResource();
+		sm.register("test4", new File(BaseTest.internalData, "hedgerow.shp"));
 		String newName = "test" + System.currentTimeMillis();
-		sm.addName(dsName, newName);
+		sm.addName("test4", newName);
 		String otherName = "test" + System.currentTimeMillis() + 1;
 		sm.rename(newName, otherName);
 		try {
@@ -208,44 +166,48 @@ public class DataSourceFactoryTests extends SourceTest {
 			assertTrue(false);
 		} catch (NoSuchTableException e) {
 		}
-		checkNames(otherName, dsName);
+		checkNames(otherName, "test4");
 	}
 
 	public void testRenameFirstNameCollidesWithSecond() throws Exception {
-		String dsName = super.getAnyNonSpatialResource();
+		sm.register("test5", new File(BaseTest.internalData, "hedgerow.shp"));
 		String newName = "test" + System.currentTimeMillis();
-		sm.addName(dsName, newName);
+		sm.addName("test5", newName);
 		try {
-			sm.rename(dsName, newName);
+			sm.rename("test5", newName);
 			assertTrue(false);
 		} catch (SourceAlreadyExistsException e) {
 		}
 	}
 
 	public void testRenameSecondNameCollidesWithFirst() throws Exception {
-		String dsName = super.getAnyNonSpatialResource();
-		String newName = "test" + System.currentTimeMillis();
-		sm.addName(dsName, newName);
+		sm.register("test6", new File(BaseTest.internalData, "hedgerow.shp"));
+		String newName = "test6_" + System.currentTimeMillis();
+		sm.addName("test6", newName);
 		try {
-			sm.rename(newName, dsName);
+			sm.rename(newName, "test6");
 			assertTrue(false);
 		} catch (SourceAlreadyExistsException e) {
 		}
 	}
 
 	public void testRemoveSourceRemovesAllNames() throws Exception {
-		String dsName = super.getAnyNonSpatialResource();
+		sm.register("test7", new File(BaseTest.internalData, "hedgerow.shp"));
 		String secondName = "secondName" + System.currentTimeMillis();
-		sm.addName(dsName, secondName);
-		sm.remove(dsName);
+		sm.addName("test7", secondName);
+		sm.remove("test7");
 		assertTrue(!sm.exists(secondName));
 	}
 
 	public void testSecondNameWorksWithIndexes() throws Exception {
-		String dsName = super.getAnySpatialResource();
+                String dsName = "test8";
+		sm.register(dsName, new File(BaseTest.internalData, "hedgerow.shp"));
 		String secondName = "secondName" + System.currentTimeMillis();
+                DataSource ds = dsf.getDataSource(dsName);
+                ds.open();
+                String spatialFieldName = ds.getMetadata().getFieldName(MetadataUtilities.getSpatialFieldIndex(ds.getMetadata()));
+                ds.close();
 		sm.addName(dsName, secondName);
-		String spatialFieldName = super.getSpatialFieldName(dsName);
 		dsf.getIndexManager().buildIndex(dsName, spatialFieldName,
 				IndexManager.RTREE_SPATIAL_INDEX, null);
 		SpatialIndexQuery query = new DefaultSpatialIndexQuery(new Envelope(0,
@@ -259,7 +221,8 @@ public class DataSourceFactoryTests extends SourceTest {
 	}
 
 	public void testRemoveSecondaryName() throws Exception {
-		String dsName = super.getAnySpatialResource();
+		String dsName = "test9";
+                sm.register(dsName, new File(BaseTest.internalData, "hedgerow.shp"));
 		String secondName = "secondName" + System.currentTimeMillis();
 		sm.addName(dsName, secondName);
 		checkNames(dsName, secondName);
@@ -268,11 +231,12 @@ public class DataSourceFactoryTests extends SourceTest {
 	}
 
 	public void testAddSecondNameRemoveAllAddSource() throws Exception {
-		String dsName = super.getAnySpatialResource();
+		String dsName = "test10";
+                sm.register(dsName, new File(BaseTest.internalData, "hedgerow.shp"));
 		String secondName = "secondName" + System.currentTimeMillis();
 		sm.addName(dsName, secondName);
 		sm.removeAll();
-		sm.register(dsName, new FileSourceDefinition(new File("")));
+		sm.register(dsName, new FileSourceDefinition(new File(BaseTest.internalData, "landcover2000.shp"), DriverManager.DEFAULT_SINGLE_TABLE_NAME));
 		try {
 			dsf.getDataSource(secondName);
 			assertTrue(false);
@@ -281,7 +245,8 @@ public class DataSourceFactoryTests extends SourceTest {
 	}
 
 	public void testExistsSecondName() throws Exception {
-		String dsName = super.getAnySpatialResource();
+		String dsName = "test11";
+                sm.register(dsName, new File(BaseTest.internalData, "hedgerow.shp"));
 		String secondName = "secondName" + System.currentTimeMillis();
 		sm.addName(dsName, secondName);
 		assertTrue(sm.exists(secondName));
@@ -293,7 +258,7 @@ public class DataSourceFactoryTests extends SourceTest {
 		dsf.createDataSource(new FileSourceCreation(new File("my.shp"), null) {
 
 			@Override
-			public DataSourceDefinition create() throws DriverException {
+			public DataSourceDefinition create(String name) throws DriverException {
 				dsf.getWarningListener().throwWarning("Cannot add", null, null);
 				return null;
 			}
@@ -322,21 +287,13 @@ public class DataSourceFactoryTests extends SourceTest {
 		assertTrue(d.getResultDir().equals(resultDir));
 	}
 
-	public void testSQLSources() throws Exception {
-		dsf.getSourceManager().register("sql",
-				"select * from " + super.getAnyNonSpatialResource() + ";");
-		DataSource ds = dsf.getDataSource("sql");
-		assertTrue((ds.getSource().getType() & SourceManager.SQL) == SourceManager.SQL);
-		assertTrue(ds.isEditable() == false);
-	}
-
 	public void testCreationTableAlreadyExists() throws Exception {
 		DefaultMetadata metadata = new DefaultMetadata();
 		metadata.addField("mystr", TypeFactory.createType(Type.STRING,
-				new PrimaryKeyConstraint()));
-		String file = SourceTest.backupDir + File.separator
+				ConstraintFactory.createConstraint(Constraint.PK)));
+		String file = BaseTest.backupDir + File.separator
 				+ "tableAlreadyExists";
-		File[] files = SourceTest.backupDir.listFiles(new FileFilter() {
+		File[] files = BaseTest.backupDir.listFiles(new FileFilter() {
 			public boolean accept(File pathname) {
 				return pathname.getName().startsWith("tableAlreadyExists");
 			}
@@ -359,7 +316,7 @@ public class DataSourceFactoryTests extends SourceTest {
 	public void testCreationFileAlreadyExists() throws Exception {
 		DefaultMetadata metadata = new DefaultMetadata();
 		metadata.addField("mystr", TypeFactory.createType(Type.STRING));
-		String filePath = SourceTest.backupDir + File.separator
+		String filePath = BaseTest.backupDir + File.separator
 				+ "fileAlreadyExists.gdms";
 		File file = new File(filePath);
 		file.delete();
@@ -376,7 +333,7 @@ public class DataSourceFactoryTests extends SourceTest {
 	public void testCreationNotRegisteredSource() throws Exception {
 		try {
 			dsf.saveContents("notexists", dsf
-					.getDataSource(new GenericObjectDriver()));
+					.getDataSource(new GenericObjectDriver(),"main"));
 			assertTrue(false);
 		} catch (IllegalArgumentException e) {
 		}

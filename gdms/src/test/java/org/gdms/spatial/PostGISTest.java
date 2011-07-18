@@ -36,12 +36,12 @@
  */
 package org.gdms.spatial;
 
-import org.gdms.SourceTest;
+import org.gdms.BaseTest;
 
 /**
  * 
  */
-public class PostGISTest extends SourceTest {
+public class PostGISTest extends BaseTest {
 	//
 	// private static GeometryFactory gf = new GeometryFactory();
 	//

@@ -39,18 +39,23 @@ package org.gdms.driver;
 
 import java.io.File;
 
-public interface FileDriver extends ReadOnlyDriver {
 	/**
-	 * opens the specified file. Attaches this file to the driver until close is
-	 * called
+ * A driver than is backed by a file on disk.
+ * @author Antoine Gourlay
 	 */
-	void open(File file) throws DriverException;
+public interface FileDriver extends Driver {
+	/**
+	 * Opens the driver. <code>setFile</code> must have been called before calling <code>open</code>.
+         *
+         * @throws DriverException
+         */
+	void open() throws DriverException;
 
 	/**
 	 * Closes the file being accessed
 	 * 
-	 * @throws DriverExceptio
-	 *             if something fails
+         *
+         * @throws DriverException 
 	 */
 	void close() throws DriverException;
 
@@ -61,5 +66,16 @@ public interface FileDriver extends ReadOnlyDriver {
 	 */
 	String[] getFileExtensions();
 
+        /**
+         * Sets the file associated with this driver.
+         * @param file a valid file.
+         * @throws DriverException  
+         */
+        void setFile(File file) throws DriverException;
+        
+        /**
+         * Checks if the driver is currently open.
+         * @return true if the file is open, false otherwise.
+         */
         boolean isOpen();
 }

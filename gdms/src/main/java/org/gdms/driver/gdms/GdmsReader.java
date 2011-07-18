@@ -43,14 +43,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 
-import org.gdms.data.metadata.DefaultMetadata;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.DefaultMetadata;
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.ConstraintFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.ByteProvider;
-import org.gdms.data.values.RasterValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -59,6 +58,8 @@ import org.gdms.driver.ReadBufferManager;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
+import java.util.Map;
+import org.gdms.data.values.DefaultRasterValue;
 
 /**
  * Reader dedicated to the GDMS file format. Used by the GdmsDriver to retrieve informations.
@@ -69,12 +70,12 @@ public class GdmsReader {
         private FileInputStream fis;
         private ReadBufferManager rbm;
         private int rowCount;
-        private int fieldCount;
         private Envelope fullExtent;
         private DefaultMetadata metadata;
-        private int[] rowIndexes;
-        private HashMap<Point, Value> rasterValueCache = new HashMap<Point, Value>();
+        private long[] rowIndexes;
         private byte version;
+        private File file;
+        private Map<Point, Value> rasterValueCache = new HashMap<Point, Value>();
 
         /**
          * Create a new GdmsReader instance
@@ -83,8 +84,14 @@ public class GdmsReader {
          * @throws IOException if there is a problem when opening the file.
          */
         public GdmsReader(File file) throws IOException {
+                this.file = file;
+                metadata = new DefaultMetadata();
+        }
+
+        public void open() throws IOException {
                 fis = new FileInputStream(file);
                 rbm = new ReadBufferManager(fis.getChannel());
+                rbm.position(0);
         }
 
         /**
@@ -101,6 +108,8 @@ public class GdmsReader {
          * Checks if there is enough remaining bytes, i.e. if there is more than
          * nb bytes left in the file
          * @param nb
+         * @throws DriverException
+         * @throws IOException
          */
         private void checkRemainingBytes(long nb) throws DriverException, IOException {
                 if (rbm.remaining() < nb) {
@@ -109,14 +118,14 @@ public class GdmsReader {
         }
 
         /**
-         * Retrieve the metadatas contained in the gdms file.
+         * Retrieve the metadata contained in the gdms file.
          * @throws IOException
          *                  If the file format is not supported
          * @throws DriverException
-         *                  If there is a problem while reading the metadatas.
+         *                  If there is a problem while reading the metadata.
          */
         public void readMetadata() throws IOException, DriverException {
-                // Be sure we are at the beginning of the file
+                // right position
                 rbm.position(0);
 
                 // Check for long-enough header
@@ -129,13 +138,13 @@ public class GdmsReader {
 
                 // Read version
                 version = rbm.get();
-                if ((version != 2) && (version != 3)) {
+                if ((version != 2) && (version != 3) && (version != 4)) {
                         throw new IOException("Unsupported gdms format version: " + version);
                 }
 
                 // read dimensions
                 rowCount = rbm.getInt();
-                fieldCount = rbm.getInt();
+                int fieldCount = rbm.getInt();
 
                 // read Envelope
                 Coordinate min = new Coordinate(rbm.getDouble(), rbm.getDouble());
@@ -147,16 +156,16 @@ public class GdmsReader {
                 Type[] fieldTypes = new Type[fieldCount];
                 for (int i = 0; i < fieldCount; i++) {
 
-                        // check there is a name length : 4 bytes
+                        // check there is a name length: 4 bytes
                         checkRemainingBytes(4);
 
                         // read name
                         int nameLength = rbm.getInt();
 
-                        // check that there is the name
+                        // check there is the name
                         checkRemainingBytes(nameLength);
 
-                        // reading the name
+                        // read the name
                         byte[] nameBytes = new byte[nameLength];
                         rbm.get(nameBytes);
                         fieldNames[i] = new String(nameBytes);
@@ -174,6 +183,7 @@ public class GdmsReader {
                                 // check that there is the info
                                 checkRemainingBytes(8);
 
+                                // read type
                                 int type = rbm.getInt();
                                 int size = rbm.getInt();
 
@@ -187,13 +197,13 @@ public class GdmsReader {
                         }
                         fieldTypes[i] = TypeFactory.createType(typeCode, constraints);
                 }
-                metadata = new DefaultMetadata();
+                metadata.clear();
                 for (int i = 0; i < fieldTypes.length; i++) {
                         Type type = fieldTypes[i];
                         metadata.addField(fieldNames[i], type);
                 }
 
-                this.rowIndexes = new int[rowCount];
+                this.rowIndexes = new long[rowCount];
                 if (version == 2) {
                         // check there is enough rowIndexes
                         // 4 bytes / index
@@ -203,27 +213,41 @@ public class GdmsReader {
                         for (int i = 0; i < rowCount; i++) {
                                 this.rowIndexes[i] = rbm.getInt();
                         }
-                } else if (version == GdmsDriver.VERSION_NUMBER) {
-                        if (rowCount > 0) {
-                                checkRemainingBytes(4);
-                                // read row indexes at the end of the file
-                                int rowIndexesDir = rbm.getInt();
-                                rbm.position(rowIndexesDir);
+                } else if (version == 3 && rowCount > 0) {
+                        checkRemainingBytes(4);
 
-                                // check there is enough rowIndexes
-                                // 4 bytes / index
-                                checkRemainingBytes(rowCount * 4);
+                        // read row indexes at the end of the file
+                        int rowIndexesDir = rbm.getInt();
+                        rbm.position(rowIndexesDir);
 
-                                for (int i = 0; i < rowCount; i++) {
-                                        this.rowIndexes[i] = rbm.getInt();
-                                }
+                        // check there is enough rowIndexes
+                        // 4 bytes / index
+                        checkRemainingBytes(rowCount * 4);
+
+                        for (int i = 0; i < rowCount; i++) {
+                                this.rowIndexes[i] = rbm.getInt();
+                        }
+                } else if (version == GdmsDriver.VERSION_NUMBER && rowCount > 0) {
+                        checkRemainingBytes(8);
+
+                        // read row indexes at the end of the file
+                        long rowIndexesDir = rbm.getLong();
+                        rbm.position(rowIndexesDir);
+
+                        // check there is enough rowIndexes
+                        // 8 bytes / index
+                        checkRemainingBytes(rowCount * 8);
+
+                        for (int i = 0; i < rowCount; i++) {
+                                this.rowIndexes[i] = rbm.getLong();
                         }
                 }
         }
 
         /**
-         * get the metadatas contained in the GDMS file.
+         * get the metadata contained in the GDMS file.
          * @return
+         * @throws DriverException  
          */
         public Metadata getMetadata() throws DriverException {
                 try {
@@ -262,7 +286,7 @@ public class GdmsReader {
                                                         return ValueFactory.createNullValue();
                                                 } else {
                                                         // Read header
-                                                        byte[] valueBytes = new byte[RasterValue.HEADER_SIZE];
+                                                        byte[] valueBytes = new byte[DefaultRasterValue.HEADER_SIZE];
                                                         rbm.get(valueBytes);
                                                         Value lazyRasterValue = ValueFactory.createLazyValue(fieldType, valueBytes,
                                                                 new RasterByteProvider(rowIndex,
@@ -296,14 +320,25 @@ public class GdmsReader {
 
         private int moveBufferAndGetSize(long rowIndex, int fieldId)
                 throws IOException {
-                int rowBytePosition = rowIndexes[(int) rowIndex];
-                rbm.position(rowBytePosition + 4 * fieldId);
-                int fieldBytePosition = rbm.getInt();
+                //We retrieve the position of this row in the file
+                long rowBytePosition = rowIndexes[(int) rowIndex];
+                //We move the good position : we want to know the adress of the
+                //field number fieldId, so we need to know the adress were it is.
+                long fieldBytePosition;
+                if (version == GdmsDriver.VERSION_NUMBER) {
+                        rbm.position(rowBytePosition + 8 * fieldId);
+                        //We retrieve the adress...
+                        fieldBytePosition = rbm.getLong();
+                } else {
+                        rbm.position(rowBytePosition + 4 * fieldId);
+                        //We retrieve the adress...
+                        fieldBytePosition = rbm.getInt();
+                }
+                //And then we move.
                 rbm.position(fieldBytePosition);
 
                 // read byte array size
-                int valueSize = rbm.getInt();
-                return valueSize;
+                return rbm.getInt();
         }
 
         private class RasterByteProvider implements ByteProvider {
@@ -311,11 +346,12 @@ public class GdmsReader {
                 private long rowIndex;
                 private int fieldId;
 
-                public RasterByteProvider(long rowIndex, int fieldId) {
+                RasterByteProvider(long rowIndex, int fieldId) {
                         this.rowIndex = rowIndex;
                         this.fieldId = fieldId;
                 }
 
+                @Override
                 public byte[] getBytes() throws IOException {
                         synchronized (GdmsReader.this) {
                                 int valueSize = moveBufferAndGetSize(rowIndex, fieldId);

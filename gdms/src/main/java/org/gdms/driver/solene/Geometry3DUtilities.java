@@ -42,7 +42,7 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
 
-public class Geometry3DUtilities {
+public final class Geometry3DUtilities {
 
 	/**
 	 * Obtention de la normale a un anneau par calcul. Il s'agit de recuperer
@@ -50,7 +50,10 @@ public class Geometry3DUtilities {
 	 * premier dans la liste des sommets. Le second est choisi de maniere a
 	 * maximiser la distance au premier. Le troisieme est celui qui maximise (en
 	 * valeur absolue) l'aire du triangle forme par les trois points.
-	 */
+         *
+         * @param polygon
+         * @return 
+         */
 	public static Coordinate computeNormal(final Polygon polygon) {
 		int i2 = 0;
 		int i3 = 0;
@@ -123,4 +126,7 @@ public class Geometry3DUtilities {
 
 		return new GeometryFactory().createPolygon(shell, holes);
 	}
+
+        private Geometry3DUtilities() {
+        }
 }

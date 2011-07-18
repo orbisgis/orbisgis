@@ -39,24 +39,25 @@ package org.gdms.driver.jdbc;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 
-public class LongRule extends AbstractConversionRule implements ConversionRule {
+public class LongRule extends AbstractConversionRule {
 
-	@Override
-	public int[] getValidConstraints() {
-		return addGlobalConstraints(Constraint.PRECISION);
-	}
+        @Override
+        public int[] getValidConstraints() {
+                return addGlobalConstraints(Constraint.PRECISION);
+        }
 
-	@Override
-	public int getOutputTypeCode() {
-		return Type.LONG;
-	}
+        @Override
+        public int getOutputTypeCode() {
+                return Type.LONG;
+        }
 
-	public String getTypeName() {
-		return "bigint";
-	}
+        @Override
+        public String getTypeName() {
+                return "bigint";
+        }
 
-	public boolean canApply(Type type) {
-		return type.getTypeCode() == Type.LONG;
-	}
-
+        @Override
+        public boolean canApply(Type type) {
+                return type.getTypeCode() == Type.LONG;
+        }
 }

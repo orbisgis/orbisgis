@@ -52,12 +52,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.MenuElement;
 
-import org.gdms.sql.customQuery.CustomQuery;
-import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionManager;
-import org.orbisgis.core.Services;
-import org.orbisgis.core.geocognition.Geocognition;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
@@ -353,13 +349,6 @@ public class FeatureInstaller {
 					i != menuPath.length - 1 ? null : plugIn, checkBox);
 			frame.getMenuTreePopup().addMenu(mymenu);
 		}
-	}
-
-	public void addRegisterCustomQuery(Class<? extends CustomQuery> queryClass) {
-		if (QueryManager.getQuery(queryClass.getSimpleName()) == null) {
-			QueryManager.registerQuery(queryClass);			
-		}
-
 	}
 
 	public void addRegisterFunction(Class<? extends Function> functionClass) {

@@ -44,7 +44,7 @@ import java.sql.SQLException;
  * 
  * @author Fernando Gonzalez Cortes
  */
-public interface DBDriver extends ReadOnlyDriver {
+public interface DBDriver extends Driver {
 
 	/**
 	 * Provides connections to the database. Each invocation creates and returns
@@ -54,7 +54,8 @@ public interface DBDriver extends ReadOnlyDriver {
 	 * 
 	 * @param port
 	 *            Port of the database management system. -1 means default port
-	 * @param dbName
+         * @param ssl 
+         * @param dbName
 	 * 
 	 * @param user
 	 * 
@@ -76,7 +77,7 @@ public interface DBDriver extends ReadOnlyDriver {
 	 * 
          * @throws DriverException
 	 */
-	public void close(Connection conn) throws DriverException;
+	void close(Connection conn) throws DriverException;
 
 	/**
 	 * Connects to the data source and reads the specified table of 
@@ -90,7 +91,7 @@ public interface DBDriver extends ReadOnlyDriver {
 	 * @throws DriverException
 	 */
 
-	public void open(Connection con, String tableName) throws DriverException;
+	void open(Connection con, String tableName) throws DriverException;
 	
 	/**
 	 * Connects to the data source and reads the specified table in the
@@ -105,7 +106,7 @@ public interface DBDriver extends ReadOnlyDriver {
 	 * 
 	 * @throws DriverException
 	 */
-	public void open(Connection con, String tableName, String schemaName) throws DriverException;
+	void open(Connection con, String tableName, String schemaName) throws DriverException;
 
 	
 	/**
@@ -118,7 +119,7 @@ public interface DBDriver extends ReadOnlyDriver {
 	 * 
 	 * @throws DriverException
 	 */
-	public TableDescription[] getTables(Connection c) throws DriverException;
+	TableDescription[] getTables(Connection c) throws DriverException;
 
 	
 	/**
@@ -129,7 +130,7 @@ public interface DBDriver extends ReadOnlyDriver {
 	 * 
 	 * @throws DriverException
 	 */
-	public String[] getSchemas(Connection c) throws DriverException;
+	String[] getSchemas(Connection c) throws DriverException;
 
 	
 	/**
@@ -146,7 +147,7 @@ public interface DBDriver extends ReadOnlyDriver {
 	 * 
 	 * @see {@link java.sql.DatabaseMetaData#getTables(String, String, String, String[])}
 	 */
-	public TableDescription[] getTables(Connection c, String catalog, 
+	TableDescription[] getTables(Connection c, String catalog, 
 			String schemaPattern, String tableNamePattern, String[] types)	throws DriverException;
 	
 
@@ -166,8 +167,8 @@ public interface DBDriver extends ReadOnlyDriver {
 	String[] getPrefixes();
 
         /**
-         * Gets all non blocking errors that have happened since the last
-         * call to any DBDriver method that could throw DriverException.
+         * Gets all non blocking errors that happened since the last
+         * call to any DBDriver method that could throw DriverException
          * @return an array of exceptions, possibly empty
          */
         DriverException[] getLastNonBlockingErrors();

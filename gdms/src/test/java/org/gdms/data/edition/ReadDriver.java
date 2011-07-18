@@ -48,10 +48,10 @@ import java.util.ArrayList;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.db.DBSource;
-import org.gdms.data.metadata.DefaultMetadata;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.DefaultMetadata;
+import org.gdms.data.schema.Metadata;
+import org.gdms.data.schema.Schema;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.PrimaryKeyConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -60,299 +60,324 @@ import org.gdms.driver.DBDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.ObjectDriver;
+import org.gdms.driver.ReadAccess;
 import org.gdms.driver.TableDescription;
 import org.gdms.driver.jdbc.ConversionRule;
 import org.gdms.driver.jdbc.DefaultDBDriver;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import org.gdms.data.schema.DefaultSchema;
+import org.gdms.data.types.ConstraintFactory;
 
 public class ReadDriver extends DefaultDBDriver implements ObjectDriver,
-		FileDriver, DBDriver {
+        FileDriver, DBDriver {
 
-	public static boolean failOnWrite = false;
-
-	public static boolean failOnClose = false;
-
-	public static boolean failOnCopy = false;
-
-	public static boolean isEditable = false;
-
-	private static ArrayList<String> values = new ArrayList<String>();
-
-	private GeometryFactory gf = new GeometryFactory();
-
-	private static ArrayList<String> newValues;
-
-	private static DataSource currentDataSource;
-
-	public static boolean pk = true;
-
+        public static boolean failOnWrite = false;
+        public static boolean failOnClose = false;
+        public static boolean failOnCopy = false;
+        public static boolean isEditable = false;
+        private static ArrayList<String> values = new ArrayList<String>();
+        private GeometryFactory gf = new GeometryFactory();
+        private static ArrayList<String> newValues;
+        private static DataSource currentDataSource;
+        public static boolean pk = true;
+        
         private boolean open = false;
 
-	public static void initialize() {
-		values.clear();
-		values.add("cadena1");
-		values.add("cadena2");
-		values.add("cadena3");
-		values.add("cadena4");
+        public static void initialize() {
+                values.clear();
+                values.add("cadena1");
+                values.add("cadena2");
+                values.add("cadena3");
+                values.add("cadena4");
 
-		newValues = null;
+                newValues = null;
 
-		failOnClose = false;
-		failOnWrite = false;
-		failOnCopy = false;
-		isEditable = false;
-	}
+                failOnClose = false;
+                failOnWrite = false;
+                failOnCopy = false;
+                isEditable = false;
+        }
 
-	public boolean write(DataSource dataWare, IProgressMonitor pm)
-			throws DriverException {
-		if (failOnWrite) {
-			throw new DriverException();
-		}
-		values = getContent(dataWare);
+        public boolean write(ReadAccess dataWare, ProgressMonitor pm)
+                throws DriverException {
+                if (failOnWrite) {
+                        throw new DriverException();
+                }
+                values = getContent(dataWare);
 
-		return false;
-	}
+                return false;
+        }
 
-	private ArrayList<String> getContent(DataSource d) throws DriverException {
-		ArrayList<String> newValues = new ArrayList<String>();
-		for (int i = 0; i < d.getRowCount(); i++) {
-			newValues.add(d.getString(i, 1));
-		}
-		return newValues;
-	}
+        private ArrayList<String> getContent(ReadAccess d) throws DriverException {
+                ArrayList<String> newValues = new ArrayList<String>();
+                for (int i = 0; i < d.getRowCount(); i++) {
+                        newValues.add(d.getFieldValue(i, 1).getAsString());
+                }
+                return newValues;
+        }
 
-	public void setDataSourceFactory(DataSourceFactory dsf) {
+        public void setDataSourceFactory(DataSourceFactory dsf) {
+        }
 
-	}
+        public String getDriverId() {
+                return "failing driver";
+        }
 
-	public Metadata getMetadata() throws DriverException {
-		Constraint[] constraints = new Constraint[0];
-		if (pk) {
-			constraints = new Constraint[] { new PrimaryKeyConstraint() };
-		}
-		final Type[] fieldsTypes = new Type[] {
-				TypeFactory.createType(Type.GEOMETRY),
-				TypeFactory.createType(Type.STRING, constraints) };
-		final String[] fieldsNames = new String[] { "geom", "alpha" };
+        public int getType(String driverType) {
+                return Type.STRING;
+        }
 
-		return new DefaultMetadata(fieldsTypes, fieldsNames);
-	}
+        public void start() throws DriverException {
+                final Type[] fieldsTypes = new Type[]{
+                        TypeFactory.createType(Type.GEOMETRY),
+                        TypeFactory.createType(Type.STRING)};
+                final String[] fieldsNames = new String[]{"geom", "alpha"};
+                this.schema.addTable("main", new DefaultMetadata(fieldsTypes, fieldsNames));
+                open();
+        }
 
-	public String getDriverId() {
-		return "failing driver";
-	}
+        public void stop() throws DriverException {
+                schema.removeTable("main");
+                close(null);
+        }
 
-	public int getType(String driverType) {
-		return Type.STRING;
-	}
+        public void close(Connection conn) throws DriverException {
+                if (newValues != null) {
+                        values = newValues;
+                }
 
-	public Value getFieldValue(long rowIndex, int fieldId)
-			throws DriverException {
-		if (fieldId == 0) {
-			return ValueFactory.createValue(gf
-					.createPoint(new Coordinate(0, 0)));
-		} else {
-			return ValueFactory.createValue(values.get((int) rowIndex));
-		}
-	}
-
-	public long getRowCount() throws DriverException {
-		return values.size();
-	}
-
-	public void start() throws DriverException {
-                open = true;
-	}
-
-	public void stop() throws DriverException {
+                if (failOnClose) {
+                        throw new DriverException();
+                }
                 open = false;
-	}
+        }
 
-	public void close(Connection conn) throws DriverException {
-		if (newValues != null) {
-			values = newValues;
-		}
+        public void execute(Connection con, String sql) throws SQLException {
+                if (failOnWrite) {
+                        throw new SQLException();
+                }
+                /*
+                 * this is not a real database driver. we fake the committing by
+                 * accessing directly to the ds the test specified by calling
+                 * setCurrentDataSource()
+                 */
 
-		if (failOnClose) {
-			throw new DriverException();
-		}
-                open = false;
-	}
+                try {
+                        newValues = getContent(currentDataSource);
+                } catch (DriverException e) {
+                        throw new RuntimeException();
+                }
+        }
 
-	public void execute(Connection con, String sql) throws SQLException {
-		if (failOnWrite) {
-			throw new SQLException();
-		}
-		/*
-		 * this is not a real database driver. we fake the committing by
-		 * accessing directly to the ds the test specified by calling
-		 * setCurrentDataSource()
-		 */
+        public static void setCurrentDataSource(DataSource ds) {
+                currentDataSource = ds;
+        }
 
-		try {
-			newValues = getContent(currentDataSource);
-		} catch (DriverException e) {
-			throw new RuntimeException();
-		}
-	}
+        public Connection getConnection(String host, int port, boolean ssl, String dbName,
+                String user, String password) throws SQLException {
+                return new FooConnection("alpha");
+        }
 
-	public static void setCurrentDataSource(DataSource ds) {
-		currentDataSource = ds;
-	}
+        public String getNullStatementString() {
+                return null;
+        }
 
-	public Connection getConnection(String host, int port, boolean ssl, String dbName,
-			String user, String password) throws SQLException {
-		return new FooConnection("alpha");
-	}
+        public String getStatementString(long i) {
+                return null;
+        }
 
-	public String getNullStatementString() {
-		return null;
-	}
+        public String getStatementString(int i, int sqlType) {
+                return null;
+        }
 
-	public String getStatementString(long i) {
-		return null;
-	}
+        public String getStatementString(double d, int sqlType) {
+                return null;
+        }
 
-	public String getStatementString(int i, int sqlType) {
-		return null;
-	}
+        public String getStatementString(String str, int sqlType) {
+                return null;
+        }
 
-	public String getStatementString(double d, int sqlType) {
-		return null;
-	}
+        public String getStatementString(Date d) {
+                return null;
+        }
 
-	public String getStatementString(String str, int sqlType) {
-		return null;
-	}
+        public String getStatementString(Time t) {
+                return null;
+        }
 
-	public String getStatementString(Date d) {
-		return null;
-	}
+        public String getStatementString(Timestamp ts) {
+                return null;
+        }
 
-	public String getStatementString(Time t) {
-		return null;
-	}
+        public String getStatementString(byte[] binary) {
+                return null;
+        }
 
-	public String getStatementString(Timestamp ts) {
-		return null;
-	}
+        public String getStatementString(boolean b) {
+                return null;
+        }
 
-	public String getStatementString(byte[] binary) {
-		return null;
-	}
+        public void createSource(DBSource source, Metadata driverMetadata)
+                throws DriverException {
+        }
 
-	public String getStatementString(boolean b) {
-		return null;
-	}
+        public void copy(File in, File out) throws IOException {
+                if (failOnCopy) {
+                        throw new IOException();
+                }
+                if (newValues != null) {
+                        values = newValues;
+                }
+        }
 
-	public void createSource(DBSource source, Metadata driverMetadata)
-			throws DriverException {
-	}
-
-	public void copy(File in, File out) throws IOException {
-		if (failOnCopy) {
-			throw new IOException();
-		}
-		if (newValues != null) {
-			values = newValues;
-		}
-	}
-
-	public void open(File file) throws DriverException {
-	}
-
-	public void createSource(String path, Metadata dsm,
-			DataSourceFactory dataSourceFactory) throws DriverException {
-	}
-
-	public void writeFile(File file, DataSource dataSource, IProgressMonitor pm)
-			throws DriverException {
-		if (failOnWrite) {
-			throw new DriverException();
-		}
-		newValues = getContent(dataSource);
-	}
-
-	public void close() throws DriverException {
-		close(null);
-	}
-
-	public String getReferenceInSQL(String fieldName) {
-		return null;
-	}
-
-	public Number[] getScope(int dimension) throws DriverException {
-		return new Number[] { 10, 10 };
-	}
-
-	public void open(Connection con, String tableName) throws DriverException {
+        public void open() throws DriverException {
                 open = true;
-	}
+        }
 
-	public void beginTrans(Connection con) throws SQLException {
-	}
+        public void createSource(String path, Metadata dsm,
+                DataSourceFactory dataSourceFactory) throws DriverException {
+        }
 
-	public void commitTrans(Connection con) throws SQLException {
-	}
+        public void writeFile(File file, ReadAccess dataSource, ProgressMonitor pm)
+                throws DriverException {
+                if (failOnWrite) {
+                        throw new DriverException();
+                }
+                newValues = getContent(dataSource);
+        }
 
-	public void rollBackTrans(Connection con) throws SQLException {
-	}
+        public void close() throws DriverException {
+                close(null);
+        }
 
-	public boolean isCommitable() {
-		return isEditable;
-	}
+        public String getReferenceInSQL(String fieldName) {
+                return null;
+        }
 
-	public ConversionRule[] getConversionRules() {
-		return null;
-	}
+        public void open(Connection con, String tableName) throws DriverException {
+                open();
+        }
 
-	public String getChangeFieldNameSQL(String tableName, String oldName,
-			String newName) {
-		return null;
-	}
+        public void beginTrans(Connection con) throws SQLException {
+        }
 
-	public TableDescription[] getTables(Connection c) throws DriverException {
-		return null;
-	}
+        public void commitTrans(Connection con) throws SQLException {
+        }
 
-	public int getType() {
-		return 0;
-	}
+        public void rollBackTrans(Connection con) throws SQLException {
+        }
 
-	public String validateMetadata(Metadata metadata) {
-		return null;
-	}
+        public boolean isCommitable() {
+                return isEditable;
+        }
 
-	@Override
-	public int getDefaultPort() {
-		return 0;
-	}
+        public ConversionRule[] getConversionRules() {
+                return null;
+        }
 
-	@Override
-	public String[] getFileExtensions() {
-		return new String[] { "" };
-	}
+        public String getChangeFieldNameSQL(String tableName, String oldName,
+                String newName) {
+                return null;
+        }
 
-	@Override
-	public String[] getPrefixes() {
-		return new String[] { "jdbc:test" };
-	}
+        public TableDescription[] getTables(Connection c) throws DriverException {
+                return null;
+        }
 
-	@Override
-	public String getTypeDescription() {
-		return null;
-	}
+        public int getType() {
+                return 0;
+        }
 
-	@Override
-	public String getTypeName() {
-		return null;
-	}
+        public String validateMetadata(Metadata metadata) {
+                return null;
+        }
+
+        @Override
+        public int getDefaultPort() {
+                return 0;
+        }
+
+        @Override
+        public String[] getFileExtensions() {
+                return new String[]{""};
+        }
+
+        @Override
+        public String[] getPrefixes() {
+                return new String[]{"jdbc:test"};
+        }
+
+        @Override
+        public String getTypeDescription() {
+                return null;
+        }
+
+        @Override
+        public String getTypeName() {
+                return null;
+        }
+
+        @Override
+        public ReadAccess getTable(String name) {
+                if (!name.equals("main")) {
+                        return null;
+                }
+                return new ReadAccess() {
+
+                        @Override
+                        public Value getFieldValue(long rowIndex, int fieldId)
+                                throws DriverException {
+                                if (fieldId == 0) {
+                                        return ValueFactory.createValue(gf.createPoint(new Coordinate(0, 0)));
+                                } else {
+                                        return ValueFactory.createValue(values.get((int) rowIndex));
+                                }
+                        }
+
+                        @Override
+                        public long getRowCount() throws DriverException {
+                                return values.size();
+                        }
+
+                        @Override
+                        public Number[] getScope(int dimension) throws DriverException {
+                                return new Number[]{10, 10};
+                        }
+
+                        @Override
+                        public Metadata getMetadata() throws DriverException {
+                                return schema.getTableByName("main");
+                        }
+                };
+        }
+
+        @Override
+        public void setFile(File file) {
+                this.schema = new DefaultSchema("test");
+                Constraint[] constraints = new Constraint[0];
+                if (pk) {
+                        constraints = new Constraint[]{ConstraintFactory.createConstraint(Constraint.PK)};
+                }
+                final Type[] fieldsTypes = new Type[]{
+                        TypeFactory.createType(Type.GEOMETRY),
+                        TypeFactory.createType(Type.STRING, constraints)};
+                final String[] fieldsNames = new String[]{"geom", "alpha"};
+                this.schema.addTable("main", new DefaultMetadata(fieldsTypes, fieldsNames));
+        }
+
+        @Override
+        public Schema getSchema() throws DriverException {
+                return schema;
+        }
 
         @Override
         public boolean isOpen() {
                 return open;
         }
+        
+        
 }

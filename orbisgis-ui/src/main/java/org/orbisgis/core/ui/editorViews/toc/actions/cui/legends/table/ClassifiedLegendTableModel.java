@@ -45,116 +45,111 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
 import org.gdms.data.values.Value;
-import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.orbisgis.core.renderer.legend.carto.ClassifiedLegend;
 import org.orbisgis.core.renderer.legend.carto.LegendFactory;
 
 public abstract class ClassifiedLegendTableModel extends AbstractTableModel
-		implements TableModel {
+        implements TableModel {
 
-	private ClassifiedLegend classifiedLegend = LegendFactory
-			.createUniqueValueLegend();
-	private boolean ordered = false;
-	private Integer[] valueIndex;
-	private boolean showRestOfValues;
+        private ClassifiedLegend classifiedLegend = LegendFactory.createUniqueValueLegend();
+        private boolean ordered = false;
+        private Integer[] valueIndex;
+        private boolean showRestOfValues;
 
-	public void deleteRows(int[] rows) {
-		Arrays.sort(rows);
-		for (int i = rows.length - 1; i >= 0; i--) {
-			int row = rows[i];
-			if (ordered) {
-				row = getValueIndex(row);
-			}
-			if (row == classifiedLegend.getClassificationCount()) {
-				JOptionPane.showMessageDialog(null,
-						"Cannot delete 'Rest of values'", "Error",
-						JOptionPane.ERROR_MESSAGE);
-			} else {
-				classifiedLegend.removeClassification(row);
-			}
-		}
-		invalidateOrder();
-		fireTableStructureChanged();
-	}
+        public void deleteRows(int[] rows) {
+                Arrays.sort(rows);
+                for (int i = rows.length - 1; i >= 0; i--) {
+                        int row = rows[i];
+                        if (ordered) {
+                                row = getValueIndex(row);
+                        }
+                        if (row == classifiedLegend.getClassificationCount()) {
+                                JOptionPane.showMessageDialog(null,
+                                        "Cannot delete 'Rest of values'", "Error",
+                                        JOptionPane.ERROR_MESSAGE);
+                        } else {
+                                classifiedLegend.removeClassification(row);
+                        }
+                }
+                invalidateOrder();
+                fireTableStructureChanged();
+        }
 
-	public int getRowCount() {
-		int ret = classifiedLegend.getClassificationCount();
-		if (showRestOfValues) {
-			ret++;
-		}
-		return ret;
-	}
+        public int getRowCount() {
+                int ret = classifiedLegend.getClassificationCount();
+                if (showRestOfValues) {
+                        ret++;
+                }
+                return ret;
+        }
 
-	public void setOrdered(boolean selected) {
-		ordered = selected;
-		invalidateOrder();
-	}
+        public void setOrdered(boolean selected) {
+                ordered = selected;
+                invalidateOrder();
+        }
 
-	protected int getSortedIndex(int index) {
-		if (ordered) {
-			index = getValueIndex(index);
-		}
+        protected int getSortedIndex(int index) {
+                if (ordered) {
+                        index = getValueIndex(index);
+                }
 
-		return index;
-	}
+                return index;
+        }
 
-	protected void invalidateOrder() {
-		valueIndex = null;
-		fireTableDataChanged();
-	}
+        protected void invalidateOrder() {
+                valueIndex = null;
+                fireTableDataChanged();
+        }
 
-	private int getValueIndex(int index) {
-		if (valueIndex == null) {
-			TreeSet<Integer> values = new TreeSet<Integer>(
-					new Comparator<Integer>() {
+        private int getValueIndex(int index) {
+                if (valueIndex == null) {
+                        TreeSet<Integer> values = new TreeSet<Integer>(
+                                new Comparator<Integer>() {
 
-						public int compare(Integer i1, Integer i2) {
-							Value v1 = getOrderValue(i1.intValue());
-							Value v2 = getOrderValue(i2.intValue());
-							try {
-								if (v1.isNull())
-									return -1;
-								if (v2.isNull())
-									return 1;
-								if (v1.less(v2).getAsBoolean()) {
-									return -1;
-								} else if (v2.less(v1).getAsBoolean()) {
-									return 1;
-								}
-							} catch (IncompatibleTypesException e) {
-								throw new RuntimeException(e);
-							}
+                                        public int compare(Integer i1, Integer i2) {
+                                                Value v1 = getOrderValue(i1.intValue());
+                                                Value v2 = getOrderValue(i2.intValue());
 
-							return -1;
-						}
+                                                if (v1.isNull()) {
+                                                        return -1;
+                                                } else if (v2.isNull()) {
+                                                        return 1;
+                                                } else {
+                                                        Value l = v1.less(v2);
+                                                        if (!l.isNull()) {
+                                                                return l.getAsBoolean() ? -1 : 1;
+                                                        }
+                                                }
 
-					});
 
-			for (int i = 0; i < classifiedLegend.getClassificationCount(); i++) {
-				values.add(new Integer(i));
-			}
+                                                return -1;
+                                        }
+                                });
 
-			valueIndex = values.toArray(new Integer[values.size()]);
-		}
+                        for (int i = 0; i < classifiedLegend.getClassificationCount(); i++) {
+                                values.add(new Integer(i));
+                        }
 
-		return valueIndex[index];
-	}
+                        valueIndex = values.toArray(new Integer[values.size()]);
+                }
 
-	protected abstract Value getOrderValue(int intValue);
+                return valueIndex[index];
+        }
 
-	public void setLegend(ClassifiedLegend legend) {
-		invalidateOrder();
-		fireTableDataChanged();
-		this.classifiedLegend = legend;
-	}
+        protected abstract Value getOrderValue(int intValue);
 
-	public void setShowRestOfValues(boolean showRestOfValues) {
-		this.showRestOfValues = showRestOfValues;
-		if (!showRestOfValues) {
-			classifiedLegend.setDefaultSymbol(null);
-			classifiedLegend.setDefaultLabel(null);
-		}
-		fireTableDataChanged();
-	}
+        public void setLegend(ClassifiedLegend legend) {
+                invalidateOrder();
+                fireTableDataChanged();
+                this.classifiedLegend = legend;
+        }
 
+        public void setShowRestOfValues(boolean showRestOfValues) {
+                this.showRestOfValues = showRestOfValues;
+                if (!showRestOfValues) {
+                        classifiedLegend.setDefaultSymbol(null);
+                        classifiedLegend.setDefaultLabel(null);
+                }
+                fireTableDataChanged();
+        }
 }

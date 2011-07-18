@@ -41,29 +41,26 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 
-public class RightValueDecorator extends AbstractDataSourceDecorator implements
-		DataSource {
+public class RightValueDecorator extends AbstractDataSourceDecorator {
 
-	public RightValueDecorator(DataSource internalDataSource) {
-		super(internalDataSource);
-	}
+        public RightValueDecorator(DataSource internalDataSource) {
+                super(internalDataSource);
+        }
 
-	/**
-	 * @see org.gdms.driver.ReadAccess#getFieldValue(long, int)
-	 */
-	public Value getFieldValue(long rowIndex, int fieldId)
-			throws DriverException {
-		final Value value = getDataSource().getFieldValue(rowIndex, fieldId);
+        @Override
+        public Value getFieldValue(long rowIndex, int fieldId)
+                throws DriverException {
+                final Value value = getDataSource().getFieldValue(rowIndex, fieldId);
 
-		if (null == value) {
-			return ValueFactory.createNullValue();
-		} else {
-			if ((value.getType() == Type.GEOMETRY)
-					&& value.getAsGeometry().isEmpty()) {
-				return ValueFactory.createNullValue();
-			} else {
-				return value;
-			}
-		}
-	}
+                if (null == value) {
+                        return ValueFactory.createNullValue();
+                } else {
+                        if ((value.getType() == Type.GEOMETRY)
+                                && value.getAsGeometry().isEmpty()) {
+                                return ValueFactory.createNullValue();
+                        } else {
+                                return value;
+                        }
+                }
+        }
 }

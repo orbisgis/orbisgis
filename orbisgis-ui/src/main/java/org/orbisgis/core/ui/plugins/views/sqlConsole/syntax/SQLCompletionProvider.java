@@ -39,8 +39,8 @@
 package org.orbisgis.core.ui.plugins.views.sqlConsole.syntax;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -55,6 +55,9 @@ import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
+import org.antlr.runtime.ANTLRInputStream;
+import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.RecognitionException;
 import org.fife.ui.autocomplete.AutoCompletion;
 import org.fife.ui.autocomplete.Completion;
 import org.fife.ui.autocomplete.DefaultCompletionProvider;
@@ -64,34 +67,32 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
-import org.gdms.data.metadata.DefaultMetadata;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.DefaultMetadata;
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.DefaultType;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
+import org.gdms.driver.Driver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
-import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.SourceEvent;
 import org.gdms.source.SourceListener;
 import org.gdms.source.SourceRemovalEvent;
-import org.gdms.sql.customQuery.CustomQuery;
-import org.gdms.sql.customQuery.QueryManager;
+import org.gdms.sql.engine.parsing.GdmSQLLexer;
+import org.gdms.sql.engine.parsing.GdmSQLParser;
 import org.gdms.sql.function.Argument;
-import org.gdms.sql.function.Arguments;
+import org.gdms.sql.function.BasicFunctionSignature;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionManager;
-import org.gdms.sql.parser.ParseException;
-import org.gdms.sql.parser.SQLEngine;
-import org.gdms.sql.parser.SQLEngineConstants;
-import org.gdms.sql.parser.TokenMgrError;
+import org.gdms.sql.function.FunctionSignature;
+import org.gdms.sql.function.ScalarArgument;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.background.UniqueJobID;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 /**
  * This class provides auto-completion for a JTextComponent.
@@ -103,6 +104,7 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
         private JTextComponent textC;
         private AutoCompletion auto;
         private static final String[] imgBool = {"TRUE", "FALSE"};
+        private String[] tokenNames;
         // Workaround to fix parser inconsistency
         private boolean idAdded;
         private String rootText;
@@ -110,7 +112,7 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
         private final Map<String, Metadata> cachedMetadatas = Collections.synchronizedMap(new TreeMap<String, Metadata>());
         private final Map<String, Completion> cachedCompletions = Collections.synchronizedMap(new TreeMap<String, Completion>());
         private final BlockingDeque<String> sourcesToLoad = new LinkedBlockingDeque<String>();
-        private int[] tableWithFieldsCase;
+//        private int[] tableWithFieldsCase;
         // source loading & thread synchronisation
         private final Object lock = new Object();
         private volatile boolean isLoadingSources = false;
@@ -153,24 +155,24 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                 auto.setShowDescWindow(true);
                 auto.install(textC);
 
-                // completion init
-                tableWithFieldsCase = new int[15];
-                tableWithFieldsCase[0] = SQLEngineConstants.EQUAL;
-                tableWithFieldsCase[1] = SQLEngineConstants.WHERE;
-                tableWithFieldsCase[2] = SQLEngineConstants.SELECT;
-                tableWithFieldsCase[3] = SQLEngineConstants.NOT;
-                tableWithFieldsCase[4] = SQLEngineConstants.PLUS;
-                tableWithFieldsCase[5] = SQLEngineConstants.MINUS;
-                tableWithFieldsCase[6] = SQLEngineConstants.GREATER;
-                tableWithFieldsCase[7] = SQLEngineConstants.GREATEREQUAL;
-                tableWithFieldsCase[8] = SQLEngineConstants.LESS;
-                tableWithFieldsCase[9] = SQLEngineConstants.LESSEQUAL;
-                tableWithFieldsCase[10] = SQLEngineConstants.NOTEQUAL;
-                tableWithFieldsCase[11] = SQLEngineConstants.NOTEQUAL2;
-                tableWithFieldsCase[12] = SQLEngineConstants.SLASH;
-                tableWithFieldsCase[13] = SQLEngineConstants.ASTERISK;
-                tableWithFieldsCase[14] = SQLEngineConstants.CONCAT;
-                Arrays.sort(tableWithFieldsCase);
+//                // completion init
+//                tableWithFieldsCase = new int[15];
+//                tableWithFieldsCase[0] = SQLEngineConstants.EQUAL;
+//                tableWithFieldsCase[1] = SQLEngineConstants.WHERE;
+//                tableWithFieldsCase[2] = SQLEngineConstants.SELECT;
+//                tableWithFieldsCase[3] = SQLEngineConstants.NOT;
+//                tableWithFieldsCase[4] = SQLEngineConstants.PLUS;
+//                tableWithFieldsCase[5] = SQLEngineConstants.MINUS;
+//                tableWithFieldsCase[6] = SQLEngineConstants.GREATER;
+//                tableWithFieldsCase[7] = SQLEngineConstants.GREATEREQUAL;
+//                tableWithFieldsCase[8] = SQLEngineConstants.LESS;
+//                tableWithFieldsCase[9] = SQLEngineConstants.LESSEQUAL;
+//                tableWithFieldsCase[10] = SQLEngineConstants.NOTEQUAL;
+//                tableWithFieldsCase[11] = SQLEngineConstants.NOTEQUAL2;
+//                tableWithFieldsCase[12] = SQLEngineConstants.SLASH;
+//                tableWithFieldsCase[13] = SQLEngineConstants.ASTERISK;
+//                tableWithFieldsCase[14] = SQLEngineConstants.CONCAT;
+//                Arrays.sort(tableWithFieldsCase);
 
                 // listen to SourceManager
                 dataManager = Services.getService(DataManager.class);
@@ -225,7 +227,7 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                 bm.nonBlockingBackgroundOperation(jobID, new BackgroundJob() {
 
                         @Override
-                        public void run(IProgressMonitor pm) {
+                        public void run(ProgressMonitor pm) {
                                 String source;
                                 while (true) {
                                         source = sourcesToLoad.poll();
@@ -360,7 +362,7 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
 
                 // yet another hack
                 // we are inside a list, either fields of tables
-                if (ReadCurrentWord(sql).startsWith(",")) {
+                if (word.startsWith(",")) {
                         doListCompetion(sql);
                         return;
                 }
@@ -368,22 +370,33 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                 clear();
 
                 // getting the engine and parsing the sql statement
-                SQLEngine parser = new SQLEngine(new ByteArrayInputStream(sql.getBytes()));
+                ANTLRInputStream input = null;
+                try {
+                        input = new ANTLRInputStream(new ByteArrayInputStream(sql.getBytes()));
+                } catch (IOException ex) {
+                        // never happens
+                        throw new IllegalStateException(ex);
+                }
+                GdmSQLLexer lexer = new GdmSQLLexer(input);
+                CommonTokenStream tokens = new CommonTokenStream(lexer);
+                GdmSQLParser parser = new GdmSQLParser(tokens);
+
+                if (tokenNames == null) {
+                        tokenNames = parser.getTokenNames();
+                }
 
                 try {
-                        parser.SQLScript();
-                } catch (ParseException e) {
+                        parser.start_rule();
+                } catch (RecognitionException e) {
                         // adding select for nested queries
                         boolean tableFielsdToo = false;
                         if (word.startsWith("(")) {
-                                addCompletion(new TokenCompletion(this, SQLEngineConstants.SELECT, e.tokenImage));
+                                addCompletion(new TokenCompletion(this, GdmSQLLexer.T_SELECT, tokenNames));
                                 tableFielsdToo = true;
                         }
 
                         // SQL Statement not complete, auto-completion needed
                         doNormalCompletion(e, sql, tableFielsdToo);
-                } catch (TokenMgrError e) {
-                        // never happens, but still...
                 }
         }
 
@@ -460,17 +473,17 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
          * Parses the ParseException to get the correct tokens and thus completions
          * @param e
          */
-        private void doNormalCompletion(ParseException e, String content, boolean tableWithFields) {
-                int tokenKind = e.currentToken.kind;
+        private void doNormalCompletion(RecognitionException e, String content, boolean tableWithFields) {
+                int tokenKind = e.token.getType();
                 // special case : nothing after TABLE
-                if (tokenKind == SQLEngineConstants.TABLE) {
+                if (tokenKind == GdmSQLParser.T_TABLE) {
                         return;
                 }
 
                 // special case : only sources after FROM
                 // may change in the future (functions...)
-                if (tokenKind == SQLEngineConstants.FROM
-                        || tokenKind == SQLEngineConstants.INTO) {
+                if (tokenKind == GdmSQLParser.T_FROM
+                        || tokenKind == GdmSQLParser.T_INTO) {
                         addCompletions(new ArrayList(getSourceNamesCompletion(false)));
                         return;
                 }
@@ -485,30 +498,31 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                                 addCompletion(new TokenCompletion(this, 1, imgBool));
                                 return;
                         }
-                        tableWithFields = true;
-                        if ((tokenKind == SQLEngineConstants.ID || tokenKind == SQLEngineConstants.BOOLEAN_LITERAL
-                                || tokenKind == SQLEngineConstants.CLOSEPAREN || tokenKind == SQLEngineConstants.FLOATING_POINT_LITERAL
-                                || tokenKind == SQLEngineConstants.INTEGER_LITERAL || tokenKind == SQLEngineConstants.NULL
-                                || tokenKind == SQLEngineConstants.STRING_LITERAL)) {
-                                addCompletion(new TokenCompletion(this, SQLEngineConstants.AND, e.tokenImage));
-                                addCompletion(new TokenCompletion(this, SQLEngineConstants.OR, e.tokenImage));
+//                        tableWithFields = true;
+                        if ((tokenKind == GdmSQLParser.ID || tokenKind == GdmSQLParser.T_TRUE || tokenKind == GdmSQLParser.T_FALSE
+                                || tokenKind == GdmSQLParser.LPAREN || tokenKind == GdmSQLParser.RPAREN
+                                || tokenKind == GdmSQLParser.NUMBER
+                                || tokenKind == GdmSQLParser.T_NULL
+                                || tokenKind == GdmSQLParser.QUOTED_STRING)) {
+                                addCompletion(new TokenCompletion(this, GdmSQLParser.T_AND, tokenNames));
+                                addCompletion(new TokenCompletion(this, GdmSQLParser.T_OR, tokenNames));
                         }
                 }
 
 
 
-                if (Arrays.binarySearch(tableWithFieldsCase, tokenKind) >= 0) {
-                        tableWithFields = true;
-                }
+//                if (Arrays.binarySearch(tableWithFieldsCase, tokenKind) >= 0) {
+//                        tableWithFields = true;
+//                }
 
-                HashSet words = new HashSet();
-                for (int i = 0; i < e.expectedTokenSequences.length; i++) {
-                        if (e.expectedTokenSequences[i].length > 0) {
-                                int token = e.expectedTokenSequences[i][e.expectedTokenSequences[i].length - 1];
-                                words.addAll(getCompletions(token, e.tokenImage, tokenKind, tableWithFields));
-                        }
-                }
-                addCompletions(new ArrayList(words));
+//                HashSet words = new HashSet();
+//                for (int i = 0; i < e.expectedTokenSequences.length; i++) {
+//                        if (e.expectedTokenSequences[i].length > 0) {
+//                                int token = e.expectedTokenSequences[i][e.expectedTokenSequences[i].length - 1];
+//                                words.addAll(getCompletions(token, e.tokenImage, tokenKind, tableWithFields));
+//                        }
+//                }
+//                addCompletions(new ArrayList(words));
         }
 
         /**
@@ -526,7 +540,7 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
 
                         // else we build it
 
-                        Arguments[] args = function.getFunctionArguments();
+                        FunctionSignature[] args = function.getFunctionSignatures();
                         for (int j = 0; j < args.length; j++) {
 
                                 // trying to get it from the cache
@@ -539,26 +553,27 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                                 ArrayList params = new ArrayList();
 
                                 // will contain all argument types needed to call function.getType(...)
-                                Type[] types = new Type[args[j].getArgumentCount()];
+                                Type[] types = new Type[args[j].getArguments().length];
 
-                                for (int l = 0; l < args[j].getArgumentCount(); l++) {
-                                        Argument arg = args[j].getArgument(l);
-                                        int typeCode = arg.getTypeCode();
-
-                                        // no need to auto-complete a NULL argument
-                                        if (typeCode != Type.NULL) {
-                                                // adds a parameter with no name but a type
-                                                params.add(new ParameterizedCompletion.Parameter(DefaultType.typesDescription.get(typeCode).replace("TYPE_", "").replace("ALL", "ANY"), null));
+                                for (int l = 0; l < args[j].getArguments().length; l++) {
+                                        Argument arg = args[j].getArguments()[l];
+                                        if (arg.isScalar()) {
+                                                int typeCode = ((ScalarArgument) arg).getTypeCode();
+                                                params.add(new ParameterizedCompletion.Parameter(DefaultType.typesDescription.get(typeCode), null));
+                                        } else if (arg.isTable()) {
+                                                params.add(new ParameterizedCompletion.Parameter("TABLE", null));
                                         }
-                                        // builds the actual corresponding type
-                                        types[l] = TypeFactory.createType(typeCode, DefaultType.typesDescription.get(typeCode));
+
                                 }
                                 String typeDesc = null;
 
-                                // return type for this set of arguments
-                                Type type = function.getType(types);
-                                // and its description
-                                typeDesc = DefaultType.typesDescription.get(type.getTypeCode()).replace("TYPE_", "").replace("ALL", "ANY");
+                                if (args[j].isScalarReturn()) {
+                                        // and its description
+                                        typeDesc = DefaultType.typesDescription.get(((BasicFunctionSignature) args[j]).getReturnType().getTypeCode()).replace("TYPE_", "").replace("ALL", "ANY");
+                                } else if (args[j].isTableReturn()) {
+                                        typeDesc = "TABLE";
+                                }
+
 
                                 SQLFunctionCompletion c = new SQLFunctionCompletion(this, function.getName(), typeDesc);
                                 c.setShortDescription(function.getDescription() + "<br>Ex :<br><br>" + function.getSqlOrder());
@@ -569,58 +584,6 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                                 a.add(c);
                         }
                 }
-
-                // retrieve all registered functions
-                String[] customQueries = QueryManager.getQueryNames();
-
-                for (int i = 0; i < customQueries.length; i++) {
-                        CustomQuery query = QueryManager.getQuery(customQueries[i]);
-
-                        // else we build it
-
-                        Arguments[] args = query.getFunctionArguments();
-                        for (int j = 0; j < args.length; j++) {
-                                // trying to get it from the cache
-                                Completion compl = cachedCompletions.get(query.getName() + '_' + j);
-                                if (compl != null) {
-                                        a.add(compl);
-                                        continue;
-                                }
-
-                                ArrayList params = new ArrayList();
-
-                                // will contain all argument types needed to call function.getType(...)
-                                Type[] types = new Type[args[j].getArgumentCount()];
-
-                                for (int l = 0; l < args[j].getArgumentCount(); l++) {
-                                        Argument arg = args[j].getArgument(l);
-                                        int typeCode = arg.getTypeCode();
-
-                                        // no need to auto-complete a NULL argument
-                                        if (typeCode != Type.NULL) {
-                                                // adds a parameter with no name but a type
-                                                params.add(new ParameterizedCompletion.Parameter(DefaultType.typesDescription.get(typeCode).replace("TYPE_", "").replace("ALL", "ANY"), null));
-                                        }
-                                        // builds the actual corresponding type
-                                        types[l] = TypeFactory.createType(typeCode, DefaultType.typesDescription.get(typeCode));
-                                }
-                                String typeDesc = null;
-
-                                // and its description
-                                typeDesc = "TABLE";
-
-                                SQLFunctionCompletion c = new SQLFunctionCompletion(this, query.getName(), typeDesc);
-                                c.setShortDescription(query.getDescription() + "<br>Ex :<br><br>" + query.getSqlOrder());
-                                c.setSummary(query.getDescription());
-                                c.setParams(params);
-                                // and we cache it for reuse
-                                cachedCompletions.put(query.getName() + '_' + i, c);
-                                a.add(c);
-                        }
-                }
-
-
-
                 return a;
         }
 
@@ -741,20 +704,21 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                 // special (useful) tokens
                 if (69 <= token && token <= 76) {
                         switch (token) {
-                                case SQLEngineConstants.BOOLEAN_LITERAL: {
+                                case GdmSQLParser.T_FALSE:
+                                case GdmSQLParser.T_TRUE: {
                                         // adds TRUE and FALSE rather than BOOLEAN_LITERAL
                                         a.add(new TokenCompletion(this, 0, imgBool));
                                         a.add(new TokenCompletion(this, 1, imgBool));
                                         break;
                                 }
-                                case SQLEngineConstants.ID: {
+                                case GdmSQLParser.ID: {
                                         // hack around parser to prevent adding twice the IDs
                                         if (idAdded) {
                                                 break;
                                         }
 
                                         idAdded = true;
-                                        if (currentToken == SQLEngineConstants.EOF || currentToken == SQLEngineConstants.SEMICOLON) {
+                                        if (currentToken == GdmSQLParser.EOF || currentToken == GdmSQLParser.SEMI) {
                                                 break;
                                         }
                                         // adding function completions
@@ -806,7 +770,7 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                 try {
                         DataSource ds = dataManager.getDataSourceFactory().
                                 getDataSource(sourceName, DataSourceFactory.NORMAL);
-                        final ReadOnlyDriver driver = ds.getDriver();
+                        final Driver driver = ds.getDriver();
                         synchronized (driver) {
                                 if (driver instanceof FileDriver && ((FileDriver) driver).isOpen()) {
                                         m = new DefaultMetadata(ds.getMetadata());

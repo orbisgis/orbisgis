@@ -47,11 +47,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
 
-import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.metadata.DefaultMetadata;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.Metadata;
+import org.gdms.data.schema.Schema;
 import org.gdms.data.types.DefaultTypeDefinition;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
@@ -60,8 +58,9 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileReadWriteDriver;
+import org.gdms.driver.ReadAccess;
 import org.gdms.source.SourceManager;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -70,213 +69,267 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Polygon;
+import org.apache.log4j.Logger;
+import org.gdms.data.schema.DefaultSchema;
+import org.gdms.data.schema.MetadataUtilities;
+import org.gdms.data.schema.SchemaMetadata;
 
 /**
  * @author Thomas LEDUC
  * 
  */
-public class VrmlDriver implements FileReadWriteDriver {
-	private Scanner in;
-	private PrintWriter out;
-	private List<Value[]> rows;
-	private Envelope envelope;
-	private final static String EOL = "\r\n";
-	private final static String VRML_LINE_FMT = "Shape {" + EOL
-			+ "\tappearance Appearance {" + EOL + "\t\tmaterial Material {"
-			+ EOL + "\t\t\tdiffuseColor 1 1 0" + EOL + "\t\t}" + EOL + "\t}"
-			+ EOL + "\tgeometry IndexedLineSet {" + EOL
-			+ "\t\tcoord Coordinate {" + EOL + "\t\t\tpoint [" + EOL + "%s"
-			+ "\t\t\t]" + EOL + "\t\t}" + EOL + "\t\tcoordIndex [" + EOL + "%s"
-			+ EOL + "\t\t]" + EOL + "\t}" + EOL + "}" + EOL + EOL;
-	private final static String VRML_FACE_FMT = "Shape {" + EOL
-			+ "\tappearance Appearance {" + EOL + "\t\tmaterial Material {"
-			+ EOL + "\t\t\tdiffuseColor 1 1 0" + EOL + "\t\t}" + EOL + "\t}"
-			+ EOL + "\tgeometry IndexedFaceSet {" + EOL
-			+ "\t\tcoord Coordinate {" + EOL + "\t\t\tpoint [" + EOL + "%s"
-			+ "\t\t\t]" + EOL + "\t\t}" + EOL + "\t\tcoordIndex [" + EOL
-			+ "\t\t\t%s" + EOL + "\t\t]" + EOL + "\t}" + EOL + "}" + EOL + EOL;
+public final class VrmlDriver implements FileReadWriteDriver, ReadAccess {
 
-	public void close() throws DriverException {
-		in.close();
-	}
+        private Scanner in;
+        private PrintWriter out;
+        private List<Value[]> rows;
+        private Envelope envelope;
+        private Schema schema;
+        private File file;
+        private static final String EOL = "\r\n";
+        private static final String VRML_LINE_FMT = "Shape {" + EOL
+                + "\tappearance Appearance {" + EOL + "\t\tmaterial Material {"
+                + EOL + "\t\t\tdiffuseColor 1 1 0" + EOL + "\t\t}" + EOL + "\t}"
+                + EOL + "\tgeometry IndexedLineSet {" + EOL
+                + "\t\tcoord Coordinate {" + EOL + "\t\t\tpoint [" + EOL + "%s"
+                + "\t\t\t]" + EOL + "\t\t}" + EOL + "\t\tcoordIndex [" + EOL + "%s"
+                + EOL + "\t\t]" + EOL + "\t}" + EOL + "}" + EOL + EOL;
+        private static final String VRML_FACE_FMT = "Shape {" + EOL
+                + "\tappearance Appearance {" + EOL + "\t\tmaterial Material {"
+                + EOL + "\t\t\tdiffuseColor 1 1 0" + EOL + "\t\t}" + EOL + "\t}"
+                + EOL + "\tgeometry IndexedFaceSet {" + EOL
+                + "\t\tcoord Coordinate {" + EOL + "\t\t\tpoint [" + EOL + "%s"
+                + "\t\t\t]" + EOL + "\t\t}" + EOL + "\t\tcoordIndex [" + EOL
+                + "\t\t\t%s" + EOL + "\t\t]" + EOL + "\t}" + EOL + "}" + EOL + EOL;
+        private static final Logger LOG = Logger.getLogger(VrmlDriver.class);
 
-	public void open(File file) throws DriverException {
-		try {
-			rows = new ArrayList<Value[]>();
-			in = new Scanner(file);
-			in.useLocale(Locale.US); // essential to read float values
-			// TODO needs to be written
-		} catch (FileNotFoundException e) {
-			throw new DriverException(e);
-		}
-	}
+        @Override
+        public void close() throws DriverException {
+                LOG.trace("Closing");
+                in.close();
+        }
 
-	public Metadata getMetadata() throws DriverException {
-		return new DefaultMetadata(new Type[] {
-				TypeFactory.createType(Type.INT),
-				TypeFactory.createType(Type.GEOMETRY) }, new String[] { "gid",
-				"the_geom" });
-	}
+        @Override
+        public void open() throws DriverException {
+                LOG.trace("Opening");
+                try {
+                        rows = new ArrayList<Value[]>();
+                        in = new Scanner(file);
+                        in.useLocale(Locale.US); // essential to read float values
+                        // TODO needs to be written
+                        // 12/09/2010 - why??
 
-	public TypeDefinition[] getTypesDefinitions() {
-		final TypeDefinition[] result = new TypeDefinition[2];
-		result[0] = new DefaultTypeDefinition("STRING", Type.STRING);
-		result[1] = new DefaultTypeDefinition("GEOMETRY", Type.GEOMETRY);
-		return result;
-	}
+                        // building schema
+                        schema = new DefaultSchema("Vrml" + file.getAbsolutePath().hashCode());
+                        schema.addTable("main", new SchemaMetadata(schema, new Type[]{
+                                        TypeFactory.createType(Type.INT),
+                                        TypeFactory.createType(Type.GEOMETRY)}, new String[]{"gid",
+                                        "the_geom"}));
+                        // finished building schema
 
-	public void setDataSourceFactory(DataSourceFactory dsf) {
-	}
+                } catch (FileNotFoundException e) {
+                        throw new DriverException(e);
+                }
+        }
 
-	public String getDriverId() {
-		return "VRML driver";
-	}
+        @Override
+        public TypeDefinition[] getTypesDefinitions() {
+                final TypeDefinition[] result = new TypeDefinition[2];
+                result[0] = new DefaultTypeDefinition("STRING", Type.STRING);
+                result[1] = new DefaultTypeDefinition("GEOMETRY", Type.GEOMETRY);
+                return result;
+        }
 
-	public Value getFieldValue(long rowIndex, int fieldId)
-			throws DriverException {
-		final Value[] fields = rows.get((int) rowIndex);
-		if ((fieldId < 0) || (fieldId > 1)) {
-			return ValueFactory.createNullValue();
-		} else {
-			return fields[fieldId];
-		}
-	}
+        @Override
+        public void setDataSourceFactory(DataSourceFactory dsf) {
+        }
 
-	public long getRowCount() throws DriverException {
-		return rows.size();
-	}
+        @Override
+        public String getDriverId() {
+                return "VRML driver";
+        }
 
-	public Number[] getScope(int dimension) throws DriverException {
-		if (dimension == X) {
-			return new Number[] { envelope.getMinX(), envelope.getMaxX() };
-		} else if (dimension == Y) {
-			return new Number[] { envelope.getMinY(), envelope.getMaxY() };
-		} else {
-			return null;
-		}
-	}
+        @Override
+        public void copy(File in, File out) throws IOException {
+                FileUtils.copy(in, out);
+        }
 
-	public void copy(File in, File out) throws IOException {
-		FileUtils.copy(in, out);
-	}
+        @Override
+        public void createSource(String path, Metadata metadata,
+                DataSourceFactory dataSourceFactory) throws DriverException {
+                LOG.trace("Creting source file at " + path);
+                try {
+                        final File outFile = new File(path);
+                        outFile.getParentFile().mkdirs();
+                        outFile.createNewFile();
+                } catch (IOException e) {
+                        throw new DriverException(e);
+                }
+        }
 
-	public void createSource(String path, Metadata metadata,
-			DataSourceFactory dataSourceFactory) throws DriverException {
-		try {
-			final File file = new File(path);
-			file.getParentFile().mkdirs();
-			file.createNewFile();
-		} catch (IOException e) {
-			throw new DriverException(e);
-		}
-	}
+        @Override
+        public void writeFile(final File file, final ReadAccess dataSource,
+                ProgressMonitor pm) throws DriverException {
+                LOG.trace("Writing file at " + file.getAbsolutePath());
 
-	public void writeFile(final File file, final DataSource dataSource,
-			IProgressMonitor pm) throws DriverException {
-		final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
-				dataSource);
-		try {
-			out = new PrintWriter(new FileOutputStream(file));
+                try {
+                        final long rowCount = dataSource.getRowCount();
+                        pm.startTask("Writing file", rowCount);
 
-			// write header part...
-			out.printf("#VRML V2.0 utf8%s", EOL);
+                        out = new PrintWriter(new FileOutputStream(file));
 
-			// write body part...
-			final long rowCount = dataSource.getRowCount();
+                        // write header part...
+                        out.printf("#VRML V2.0 utf8%s", EOL);
 
-			for (long rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-				if (rowIndex / 100 == rowIndex / 100.0) {
-					if (pm.isCancelled()) {
-						break;
-					} else {
-						pm.progressTo((int) (100 * rowIndex / dataSource
-								.getRowCount()));
-					}
-				}
+                        // write body part...
 
-				final Geometry g = sds.getGeometry(rowIndex);
-				write(g);
-			}
-			out.close();
-		} catch (FileNotFoundException e) {
-			throw new DriverException(e);
-		}
-	}
+                        final int spatialFieldIndex = MetadataUtilities.getSpatialFieldIndex(dataSource.getMetadata());
 
-	private void write(final Geometry geometry) {
-		if (geometry instanceof GeometryCollection) {
-			final GeometryCollection gc = (GeometryCollection) geometry;
-			final int nbOfGeometries = geometry.getNumGeometries();
-			for (int i = 0; i < nbOfGeometries; i++) {
-				write(gc.getGeometryN(i));
-			}
-		} else if (geometry instanceof LineString) {
-			write((LineString) geometry);
-		} else if (geometry instanceof Polygon) {
-			write((Polygon) geometry);
-		} else {
-			throw new RuntimeException("Needs to be written");
-		}
-	}
+                        for (long i = 0; i < rowCount; i++) {
+                                if (i >= 100 && i % 100 == 0) {
+                                        if (pm.isCancelled()) {
+                                                break;
+                                        } else {
+                                                pm.progressTo(i);
+                                        }
+                                }
 
-	private void write(final LineString lineString) {
-		final StringBuffer sb_coords = new StringBuffer();
-		final StringBuffer sb_idx = new StringBuffer();
-		final Coordinate[] coordinates = lineString.getCoordinates();
-		for (int i = 0; i < coordinates.length; i++) {
-			sb_coords.append("\t\t\t\t").append(coordinates[i].x).append(" ")
-					.append(coordinates[i].y).append(" ").append(
-							coordinates[i].z).append(",").append(EOL);
-			sb_idx.append(i).append(", ");
-		}
-		out.printf(VRML_LINE_FMT, sb_coords.toString(), sb_idx.toString());
-	}
+                                final Geometry g = dataSource.getFieldValue(i, spatialFieldIndex).getAsGeometry();
+                                write(g);
+                        }
+                        pm.progressTo(rowCount);
+                        out.close();
+                } catch (FileNotFoundException e) {
+                        throw new DriverException(e);
+                }
+                pm.endTask();
+        }
 
-	private void write(final Polygon polygon) {
-		final StringBuffer sb_coords = new StringBuffer();
-		final StringBuffer sb_idx = new StringBuffer();
-		final Coordinate[] coordinates = polygon.getExteriorRing()
-				.getCoordinates();
-		for (int i = 0; i < coordinates.length; i++) {
-			sb_coords.append("\t\t\t\t").append(coordinates[i].x).append(" ")
-					.append(coordinates[i].y).append(" ").append(
-							coordinates[i].z).append(",").append(EOL);
-			sb_idx.append(i).append(", ");
-		}
-		out.printf(VRML_FACE_FMT, sb_coords.toString(), sb_idx.toString());
-	}
+        private void write(final Geometry geometry) {
+                LOG.trace("Writing geometry");
+                if (geometry instanceof GeometryCollection) {
+                        final GeometryCollection gc = (GeometryCollection) geometry;
+                        final int nbOfGeometries = geometry.getNumGeometries();
+                        for (int i = 0; i < nbOfGeometries; i++) {
+                                write(gc.getGeometryN(i));
+                        }
+                } else if (geometry instanceof LineString) {
+                        write((LineString) geometry);
+                } else if (geometry instanceof Polygon) {
+                        write((Polygon) geometry);
+                } else {
+                        throw new IllegalArgumentException("Unrecognized geometry type.");
+                }
+        }
 
-	public boolean isCommitable() {
-		return true;
-	}
+        private void write(final LineString lineString) {
+                LOG.trace("Writing lineString");
+                final StringBuffer sbCoords = new StringBuffer();
+                final StringBuffer sbIdx = new StringBuffer();
+                final Coordinate[] coordinates = lineString.getCoordinates();
+                for (int i = 0; i < coordinates.length; i++) {
+                        sbCoords.append("\t\t\t\t").append(coordinates[i].x).append(" ").append(coordinates[i].y).append(" ").append(
+                                coordinates[i].z).append(",").append(EOL);
+                        sbIdx.append(i).append(", ");
+                }
+                out.printf(VRML_LINE_FMT, sbCoords.toString(), sbIdx.toString());
+        }
 
-	public int getType() {
-		return SourceManager.FILE | SourceManager.VECTORIAL;
-	}
+        private void write(final Polygon polygon) {
+                LOG.trace("Writing polygon");
+                final StringBuffer sbCoords = new StringBuffer();
+                final StringBuffer sbIdx = new StringBuffer();
+                final Coordinate[] coordinates = polygon.getExteriorRing().getCoordinates();
+                for (int i = 0; i < coordinates.length; i++) {
+                        sbCoords.append("\t\t\t\t").append(coordinates[i].x).append(" ").append(coordinates[i].y).append(" ").append(
+                                coordinates[i].z).append(",").append(EOL);
+                        sbIdx.append(i).append(", ");
+                }
+                out.printf(VRML_FACE_FMT, sbCoords.toString(), sbIdx.toString());
+        }
 
-	public String validateMetadata(Metadata metadata) throws DriverException {
-		throw new RuntimeException("Needs to be written");
-	}
+        @Override
+        public boolean isCommitable() {
+                return true;
+        }
 
-	@Override
-	public String[] getFileExtensions() {
-		return new String[] { "wrl" };
-	}
+        @Override
+        public int getType() {
+                return SourceManager.FILE | SourceManager.VECTORIAL;
+        }
 
-	@Override
-	public String getTypeDescription() {
-		return "VRML file";
-	}
+        @Override
+        public String validateMetadata(Metadata metadata) throws DriverException {
+                throw new UnsupportedOperationException("Not implemented yet");
+        }
 
-	@Override
-	public String getTypeName() {
-		return "VRML";
-	}
+        @Override
+        public String[] getFileExtensions() {
+                return new String[]{"wrl"};
+        }
 
+        @Override
+        public String getTypeDescription() {
+                return "VRML file";
+        }
+
+        @Override
+        public String getTypeName() {
+                return "VRML";
+        }
+
+        @Override
+        public Schema getSchema() throws DriverException {
+                return schema;
+        }
+
+        @Override
+        public ReadAccess getTable(String name) {
+                return this;
+        }
+
+        @Override
+        public Value getFieldValue(long rowIndex, int fieldId)
+                throws DriverException {
+                LOG.trace("Getting field at " + rowIndex);
+                final Value[] fields = rows.get((int) rowIndex);
+                if ((fieldId < 0) || (fieldId > 1)) {
+                        return ValueFactory.createNullValue();
+                } else {
+                        return fields[fieldId];
+                }
+        }
+
+        @Override
+        public long getRowCount() throws DriverException {
+                return rows.size();
+        }
+
+        @Override
+        public Number[] getScope(int dimension) throws DriverException {
+                if (dimension == X) {
+                        return new Number[]{envelope.getMinX(), envelope.getMaxX()};
+                } else if (dimension == Y) {
+                        return new Number[]{envelope.getMinY(), envelope.getMaxY()};
+                } else {
+                        return null;
+                }
+        }
+
+        @Override
+        public Metadata getMetadata() throws DriverException {
+                return schema.getTableByName("main");
+        }
+
+        @Override
+        public void setFile(File file) {
+                this.file = file;
+        }
+        
         @Override
         public boolean isOpen() {
                 // once .open() is called, the content of rows
-                // is always accessible.
+                // is always  accessible.
                 return rows != null;
         }
 }

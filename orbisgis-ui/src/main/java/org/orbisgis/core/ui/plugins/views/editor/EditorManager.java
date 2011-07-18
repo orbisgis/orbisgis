@@ -40,7 +40,7 @@ package org.orbisgis.core.ui.plugins.views.editor;
 import org.orbisgis.core.edition.EditableElement;
 import org.orbisgis.core.ui.editor.EditorListener;
 import org.orbisgis.core.ui.editor.IEditor;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public interface EditorManager {
 
@@ -95,7 +95,7 @@ public interface EditorManager {
 	 * @throws UnsupportedOperationException
 	 *             If there is no valid editor for the specified element
 	 */
-	void open(EditableElement element, IProgressMonitor pm)
+	void open(EditableElement element, ProgressMonitor pm)
 			throws UnsupportedOperationException;
 
 	/**

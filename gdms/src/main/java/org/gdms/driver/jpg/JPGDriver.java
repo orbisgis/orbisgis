@@ -36,29 +36,27 @@
  */
 package org.gdms.driver.jpg;
 
-import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.driver.geotif.AbstractRasterDriver;
 
-public class JPGDriver extends AbstractRasterDriver implements
-		FileReadWriteDriver {
+public final class JPGDriver extends AbstractRasterDriver {
 
-	public String getDriverId() {
-		return "jpg driver";
-	}
+        @Override
+        public String getDriverId() {
+                return "jpg driver";
+        }
 
-	@Override
-	public String[] getFileExtensions() {
-		return new String[] { "jpg" };
-	}
+        @Override
+        public String[] getFileExtensions() {
+                return new String[]{"jpg"};
+        }
 
-	@Override
-	public String getTypeDescription() {
-		return "JPG with JGW file";
-	}
+        @Override
+        public String getTypeDescription() {
+                return "JPG with JGW file";
+        }
 
-	@Override
-	public String getTypeName() {
-		return "JGW";
-	}
-
+        @Override
+        public String getTypeName() {
+                return "JGW";
+        }
 }

@@ -43,9 +43,9 @@ import com.vividsolutions.jts.geom.Point;
  * @version 0.5.0
  */
 // History
-public class DxfPOINT extends DxfENTITY {
+public final class DxfPOINT extends DxfENTITY {
 
-	public DxfPOINT() {
+	private DxfPOINT() {
 		super("DEFAULT");
 	}
 
@@ -68,28 +68,34 @@ public class DxfPOINT extends DxfENTITY {
 		try {
 			while (null != (group = DxfGroup.readGroup(raf))
 					&& group.getCode() != 0) {
-				if (group.getCode() == 8)
-					values[1] = ValueFactory.createValue(group.getValue());
-				else if (group.getCode() == 6)
-					values[2] = ValueFactory.createValue(group.getValue());
-				else if (group.getCode() == 38)
-					values[3] = ValueFactory
-							.createValue(group.getDoubleValue());
-				else if (group.getCode() == 39)
-					values[4] = ValueFactory
-							.createValue(group.getDoubleValue());
-				else if (group.getCode() == 62)
-					values[5] = ValueFactory.createValue(group.getIntValue());
-				else if (group.getCode() == 10)
-					x = group.getDoubleValue();
-				else if (group.getCode() == 20)
-					y = group.getDoubleValue();
-				else if (group.getCode() == 30)
-					z = group.getDoubleValue();
+				if (group.getCode() == 8) {
+                                        values[1] = ValueFactory.createValue(group.getValue());
+                                }
+				else if (group.getCode() == 6) {
+                                        values[2] = ValueFactory.createValue(group.getValue());
+                                }
+				else if (group.getCode() == 38) {
+                                        values[3] = ValueFactory.createValue(group.getDoubleValue());
+                                }
+				else if (group.getCode() == 39) {
+                                        values[4] = ValueFactory.createValue(group.getDoubleValue());
+                                }
+				else if (group.getCode() == 62) {
+                                        values[5] = ValueFactory.createValue(group.getIntValue());
+                                }
+				else if (group.getCode() == 10) {
+                                        x = group.getDoubleValue();
+                                }
+				else if (group.getCode() == 20) {
+                                        y = group.getDoubleValue();
+                                }
+				else if (group.getCode() == 30) {
+                                        z = group.getDoubleValue();
+                                }
 				else {
 				}
 			}
-			if (x != Double.NaN && y != Double.NaN) {
+			if (Double.isNaN(x) && Double.isNaN(y)) {
 				values[0] = ValueFactory.createValue(new Point(new Coordinate(
 						x, y, z), DPM, 0));
 				driver.addValues(values);

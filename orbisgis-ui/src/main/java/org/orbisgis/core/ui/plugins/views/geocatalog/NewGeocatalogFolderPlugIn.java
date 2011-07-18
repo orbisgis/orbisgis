@@ -57,7 +57,7 @@ import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.ui.wizards.OpenGdmsFolderPanel;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 import org.orbisgis.utils.I18N;
 
@@ -101,7 +101,7 @@ public class NewGeocatalogFolderPlugIn extends AbstractPlugIn {
 					}
 
 					@Override
-					public void run(IProgressMonitor pm) {
+					public void run(ProgressMonitor pm) {
 						processFolder(file, folderPanel.getSelectedFilter(), pm);
 					}
 
@@ -150,9 +150,9 @@ public class NewGeocatalogFolderPlugIn extends AbstractPlugIn {
 	 * @param file
 	 * @param pm
 	 */
-	private void processFolder(File file, FileFilter filter, IProgressMonitor pm) {
+	private void processFolder(File file, FileFilter filter, ProgressMonitor pm) {
 		if (file.isDirectory()) {
-			pm.startTask(file.getName());
+			pm.startTask(file.getName(), 100);
 			for (File content : file.listFiles()) {
 				if (pm.isCancelled()) {
 					break;

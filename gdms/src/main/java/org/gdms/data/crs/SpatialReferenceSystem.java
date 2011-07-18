@@ -34,7 +34,6 @@
  * or contact directly:
  * info _at_ orbisgis.org
  */
-
 package org.gdms.data.crs;
 
 import java.util.List;
@@ -51,8 +50,10 @@ import fr.cts.CoordinateOperation;
 import fr.cts.Identifier;
 import fr.cts.IllegalCoordinateException;
 import fr.cts.crs.GeodeticCRS;
+import fr.cts.crs.Proj4CRSFactory;
 import fr.cts.op.CoordinateOperationFactory;
 import fr.cts.op.CoordinateOperationSequence;
+import org.apache.log4j.Logger;
 
 /**
  * 
@@ -61,74 +62,72 @@ import fr.cts.op.CoordinateOperationSequence;
  */
 public class SpatialReferenceSystem {
 
-	private CoordinateOperationSequence coordinateOperationSequence = null;
+        private CoordinateOperationSequence coordinateOperationSequence = null;
+        private static final Logger LOG = Logger.getLogger(SpatialReferenceSystem.class);
         private int targetSRID;
 
-	
-	public SpatialReferenceSystem(DataSourceFactory dsf, int sourceCRS, int targetCRS) {
-		GDMSProj4CRSFactory gdmsProj4CRSFactory = new GDMSProj4CRSFactory(dsf);
-		init((GeodeticCRS) gdmsProj4CRSFactory.getCRSFromSRID(sourceCRS),
-				(GeodeticCRS) gdmsProj4CRSFactory.getCRSFromSRID(targetCRS));
+        public SpatialReferenceSystem(DataSourceFactory dsf, int sourceCRS, int targetCRS) {
+                init((GeodeticCRS) Proj4CRSFactory.getCRS(String.valueOf(sourceCRS)),
+                        (GeodeticCRS) Proj4CRSFactory.getCRS(String.valueOf(targetCRS)));
                 this.targetSRID = targetCRS;
-	}
+        }
 
-	public SpatialReferenceSystem(GeodeticCRS sourceCRS, GeodeticCRS targetCRS) {
+        public SpatialReferenceSystem(GeodeticCRS sourceCRS, GeodeticCRS targetCRS) {
 
-		init(sourceCRS, targetCRS);
-	}
+                init(sourceCRS, targetCRS);
+        }
 
-	private void init(GeodeticCRS sourceCRS, GeodeticCRS targetCRS) {
-		if ((sourceCRS != null) || (targetCRS != null)) {
-			List<CoordinateOperation> ops = CoordinateOperationFactory
-					.createCoordinateOperations(sourceCRS, targetCRS);
-			coordinateOperationSequence = new CoordinateOperationSequence(
-					new Identifier(SpatialReferenceSystem.class, "From  "
-							+ sourceCRS.getCode() + " to "
-							+ targetCRS.getCode()), ops);
-		} else {
-			new RuntimeException("Source and target CRS cannot be null.");
-		}
+        private void init(GeodeticCRS sourceCRS, GeodeticCRS targetCRS) {
+                if ((sourceCRS != null) && (targetCRS != null)) {
+                        List<CoordinateOperation> ops = CoordinateOperationFactory.createCoordinateOperations(sourceCRS, targetCRS);
+                        coordinateOperationSequence = new CoordinateOperationSequence(
+                                new Identifier(SpatialReferenceSystem.class, "From  "
+                                + sourceCRS.getCode() + " to "
+                                + targetCRS.getCode()), ops);
+                } else {
+                        throw new IllegalArgumentException("Source and target CRS cannot be null.");
+                }
 
-	}
+        }
 
-	public CoordinateOperationSequence getCoordinateOperationSequence() {
-		return coordinateOperationSequence;
-	}
+        public CoordinateOperationSequence getCoordinateOperationSequence() {
+                return coordinateOperationSequence;
+        }
 
-	public Geometry transform(Geometry geom) {
-		Geometry g = getGeometryTransformer().transform(geom);
+        public Geometry transform(Geometry geom) {
+                Geometry g = getGeometryTransformer().transform(geom);
                 g.setSRID(targetSRID);
                 return g;
-	}
+        }
 
-	public GeometryTransformer getGeometryTransformer() {
-		GeometryTransformer gt = null;
-		if (gt == null) {
-			gt = new GeometryTransformer() {
-				protected CoordinateSequence transformCoordinates(
-						CoordinateSequence cs, Geometry geom) {
-					Coordinate[] cc = geom.getCoordinates();
-					CoordinateSequence newcs = new CoordinateArraySequence(cc);
-					for (int i = 0; i < cc.length; i++) {
-						Coordinate c = cc[i];
-						try {
-							double[] xyz = coordinateOperationSequence
-									.transform(new double[] { c.x, c.y, c.z });
-							newcs.setOrdinate(i, 0, xyz[0]);
-							newcs.setOrdinate(i, 1, xyz[1]);
-							if (xyz.length > 2)
-								newcs.setOrdinate(i, 2, xyz[2]);
-							else
-								newcs.setOrdinate(i, 2, Double.NaN);
-						} catch (IllegalCoordinateException ice) {
-							ice.printStackTrace();
-						}
-					}
-					return newcs;
-				}
-			};
-		}
+        public GeometryTransformer getGeometryTransformer() {
+                GeometryTransformer gt = null;
+                gt = new GeometryTransformer() {
 
-		return gt;
-	}
+                        @Override
+                        protected CoordinateSequence transformCoordinates(
+                                CoordinateSequence cs, Geometry geom) {
+                                Coordinate[] cc = geom.getCoordinates();
+                                CoordinateSequence newcs = new CoordinateArraySequence(cc);
+                                for (int i = 0; i < cc.length; i++) {
+                                        Coordinate c = cc[i];
+                                        try {
+                                                double[] xyz = coordinateOperationSequence.transform(new double[]{c.x, c.y, c.z});
+                                                newcs.setOrdinate(i, 0, xyz[0]);
+                                                newcs.setOrdinate(i, 1, xyz[1]);
+                                                if (xyz.length > 2) {
+                                                        newcs.setOrdinate(i, 2, xyz[2]);
+                                                } else {
+                                                        newcs.setOrdinate(i, 2, Double.NaN);
+                                                }
+                                        } catch (IllegalCoordinateException ice) {
+                                                LOG.error("Cannot apply transformation", ice);
+                                        }
+                                }
+                                return newcs;
+                        }
+                };
+
+                return gt;
+        }
 }

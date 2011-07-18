@@ -12,6 +12,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
+import org.gdms.data.DataSourceDefinition;
+import org.gdms.data.wms.WMSSourceDefinition;
 
 
 /**
@@ -144,5 +146,10 @@ public class WmsDefinitionType
     public void setFormat(String value) {
         this.format = value;
     }
+
+        @Override
+        public DataSourceDefinition toDataSourceDefinition() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+                return WMSSourceDefinition.createFromXML(this);
+        }
 
 }

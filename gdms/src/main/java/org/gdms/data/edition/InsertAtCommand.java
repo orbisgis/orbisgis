@@ -56,4 +56,8 @@ public class InsertAtCommand extends AbstractCommand implements Command {
 		dataSource.undoInsertAt(index);
 	}
 
+        @Override
+        public void clear() {
+        }
+
 }

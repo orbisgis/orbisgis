@@ -63,13 +63,13 @@ public class DxfENTITY {
 	public static int precision = 3;
 
 	private String layerName = "DEFAULT";
-	private String lineType = null;
-	private float elevation = 0f;
-	private float thickness = 0f;
-	private int colorNumber = 256;
-	private int space = 0;
-	private double[] extrusionDirection = null;
-	private int flags = 0;
+//	private String lineType = null;
+//	private float elevation = 0f;
+//	private float thickness = 0f;
+//	private int colorNumber = 256;
+//	private int space = 0;
+//	private double[] extrusionDirection = null;
+//	private int flags = 0;
 
 	public String getLayerName() {
 		return layerName;

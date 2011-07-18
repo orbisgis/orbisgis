@@ -12,6 +12,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
+import org.gdms.data.DataSourceDefinition;
+import org.gdms.data.system.SystemSourceDefinition;
 
 
 /**
@@ -63,5 +65,10 @@ public class SystemDefinitionType
     public void setPath(String value) {
         this.path = value;
     }
+
+        @Override
+        public DataSourceDefinition toDataSourceDefinition() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+                return SystemSourceDefinition.createFromXML(this);
+        }
 
 }

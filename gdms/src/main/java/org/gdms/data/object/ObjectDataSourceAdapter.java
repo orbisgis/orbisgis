@@ -37,58 +37,74 @@
 package org.gdms.data.object;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import org.apache.log4j.Logger;
 
-import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
 import org.gdms.data.DriverDataSource;
 import org.gdms.data.edition.Commiter;
 import org.gdms.data.edition.DeleteEditionInfo;
 import org.gdms.data.edition.EditionInfo;
-import org.gdms.data.edition.PhysicalDirection;
+import org.gdms.data.edition.PhysicalRowAddress;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.ObjectReadWriteDriver;
 import org.gdms.source.CommitListener;
-import org.gdms.source.DefaultSourceManager;
 import org.gdms.source.Source;
+import org.gdms.source.SourceManager;
 import org.orbisgis.progress.NullProgressMonitor;
 
+/**
+ * DataSource implementation for accessing <code>ObjectDriver</code> sources.
+ * @author Antoine Gourlay
+ */
 public class ObjectDataSourceAdapter extends DriverDataSource implements
 		Commiter, CommitListener {
 
 	private ObjectDriver driver;
 
+        private static final Logger LOG = Logger.getLogger(ObjectDataSourceAdapter.class);
+
+        /**
+         * Creates a new ObjectDataSourceAdapter on the given source and driver.
+         * @param source a source object
+         * @param driver an ObjectDriver
+         */
 	public ObjectDataSourceAdapter(Source source, ObjectDriver driver) {
 		super(source);
 		this.driver = driver;
+                LOG.trace("Constructor");
 	}
 
+        @Override
 	public void open() throws DriverException {
+            LOG.trace("Opening");
 		driver.start();
 		fireOpen(this);
 
-		DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory()
-				.getSourceManager();
+		SourceManager sm = getDataSourceFactory().getSourceManager();
 		sm.addCommitListener(this);
 	}
 
-	public void close() throws DriverException, AlreadyClosedException {
+        @Override
+	public void close() throws DriverException {
+            LOG.trace("Closing");
 		driver.stop();
 		fireCancel(this);
 
-		DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory()
-				.getSourceManager();
+		SourceManager sm = getDataSourceFactory().getSourceManager();
 		sm.removeCommitListener(this);
 	}
 
+        @Override
 	public void saveData(DataSource ds) throws DriverException {
+            LOG.trace("Saving data");
 		ds.open();
 		((ObjectReadWriteDriver) driver).write(ds, new NullProgressMonitor());
 		ds.close();
 	}
 
+        @Override
 	public ObjectDriver getDriver() {
 		return driver;
 	}
@@ -98,11 +114,12 @@ public class ObjectDataSourceAdapter extends DriverDataSource implements
 	}
 
 	@Override
-	public boolean commit(List<PhysicalDirection> rowsDirections,
-			String[] fieldName, ArrayList<EditionInfo> schemaActions,
-			ArrayList<EditionInfo> editionActions,
-			ArrayList<DeleteEditionInfo> deletedPKs, DataSource modifiedSource)
+	public boolean commit(List<PhysicalRowAddress> rowsDirections,
+			String[] fieldName, List<EditionInfo> schemaActions,
+			List<EditionInfo> editionActions,
+			List<DeleteEditionInfo> deletedPKs, DataSource modifiedSource)
 			throws DriverException {
+            LOG.trace("Commiting");
 		boolean rowChanged = ((ObjectReadWriteDriver) driver).write(modifiedSource,
 				new NullProgressMonitor());
 		driver.stop();
@@ -111,10 +128,12 @@ public class ObjectDataSourceAdapter extends DriverDataSource implements
 		return rowChanged;
 	}
 
+        @Override
 	public void commitDone(String name) throws DriverException {
 		sync();
 	}
 
+        @Override
 	public void syncWithSource() throws DriverException {
 		sync();
 	}
@@ -124,6 +143,7 @@ public class ObjectDataSourceAdapter extends DriverDataSource implements
 		driver.stop();
 	}
 
+        @Override
 	public void isCommiting(String name, Object source) {
 	}
 }

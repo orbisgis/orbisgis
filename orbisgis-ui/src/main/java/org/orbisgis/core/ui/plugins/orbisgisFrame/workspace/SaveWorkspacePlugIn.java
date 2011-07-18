@@ -53,7 +53,7 @@ import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.workspace.Workspace;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.I18N;
 
 public class SaveWorkspacePlugIn extends AbstractPlugIn {
@@ -73,7 +73,7 @@ public class SaveWorkspacePlugIn extends AbstractPlugIn {
 			Workspace ws = (Workspace) Services.getService(Workspace.class);
 
 			@Override
-			public void run(IProgressMonitor pm) {
+			public void run(ProgressMonitor pm) {
 				try {
 					ws.saveWorkspace();
 				} catch (IOException e) {

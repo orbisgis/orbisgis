@@ -50,6 +50,8 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
+import java.util.List;
+import org.gdms.driver.ReadAccess;
 
 public class SeveralSpatialFieldsDriver extends GenericObjectDriver {
 
@@ -63,7 +65,7 @@ public class SeveralSpatialFieldsDriver extends GenericObjectDriver {
 				TypeFactory.createType(Type.STRING, "String") });
 		GeometryFactory gf = new GeometryFactory();
 
-		contents = new ArrayList<ArrayList<Value>>();
+		contents = new ArrayList<List<Value>>();
 		ArrayList<Value> row = new ArrayList<Value>();
 		row.add(ValueFactory.createValue(gf.createPoint(new Coordinate(0, 0))));
 		row.add(ValueFactory.createValue(gf.createLineString(new Coordinate[] {
@@ -111,7 +113,7 @@ public class SeveralSpatialFieldsDriver extends GenericObjectDriver {
 	}
 
 	private void calculateEnvelopes() {
-		for (ArrayList<Value> row : contents) {
+		for (List<Value> row : contents) {
 			for (Value value : row) {
 				if (value.getType() == Type.GEOMETRY) {
 					if (envelope != null) {
@@ -128,9 +130,9 @@ public class SeveralSpatialFieldsDriver extends GenericObjectDriver {
 
 	public Number[] getScope(int dimension) throws DriverException {
 		calculateEnvelopes();
-		if (dimension == X) {
+		if (dimension == ReadAccess.X) {
 			return new Number[] { envelope.getMinX(), envelope.getMaxX() };
-		} else if (dimension == Y) {
+		} else if (dimension == ReadAccess.Y) {
 			return new Number[] { envelope.getMinY(), envelope.getMaxY() };
 		} else {
 			return null;

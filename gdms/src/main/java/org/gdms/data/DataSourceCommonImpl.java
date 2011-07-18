@@ -46,23 +46,26 @@ import org.gdms.driver.DriverException;
  * Base class with the common implementation for non-decorator DataSource
  * implementations
  *
- * @author Fernando Gonzalez Cortes
  */
 public abstract class DataSourceCommonImpl extends AbstractDataSource {
+        private static final String NOT_SUPPORTED_UNDOABLE = "Not supported. Try to obtain the DataSource with the DataSourceFactory.UNDOABLE constant";
+        private static final String NO_EDITION = "The DataSource wasn't retrieved with edition capabilities";
 
 	protected DataSourceFactory dsf;
 
 	/**
 	 * @see org.gdms.data.DataSource#getDataSourceFactory()
 	 */
-	public DataSourceFactory getDataSourceFactory() {
+        @Override
+	public final DataSourceFactory getDataSourceFactory() {
 		return dsf;
 	}
 
 	/**
 	 * @see org.gdms.data.DataSource#setDataSourceFactory(DataSourceFactory)
 	 */
-	public void setDataSourceFactory(DataSourceFactory dsf) {
+        @Override
+	public final void setDataSourceFactory(DataSourceFactory dsf) {
 		this.dsf = dsf;
 	}
 
@@ -71,9 +74,10 @@ public abstract class DataSourceCommonImpl extends AbstractDataSource {
 	 *
 	 * @throws DriverException
 	 */
+        @Override
 	public void redo() throws DriverException {
 		throw new UnsupportedOperationException(
-				"Not supported. Try to obtain the DataSource with the DataSourceFactory.UNDOABLE constant");
+				NOT_SUPPORTED_UNDOABLE);
 	}
 
 	/**
@@ -81,15 +85,17 @@ public abstract class DataSourceCommonImpl extends AbstractDataSource {
 	 *
 	 * @throws DriverException
 	 */
+        @Override
 	public void undo() throws DriverException {
 		throw new UnsupportedOperationException(
-				"Not supported. Try to obtain the DataSource with the DataSourceFactory.UNDOABLE constant");
+				NOT_SUPPORTED_UNDOABLE);
 	}
 
 	/**
 	 * @return true if there is an edition action to redo
 	 *
 	 */
+        @Override
 	public boolean canRedo() {
 		return false;
 	}
@@ -98,102 +104,103 @@ public abstract class DataSourceCommonImpl extends AbstractDataSource {
 	 * @return true if there is an edition action to undo
 	 *
 	 */
+        @Override
 	public boolean canUndo() {
 		return false;
 	}
 
+        @Override
 	public boolean isOpen() {
 		return false;
 	}
 
+        @Override
 	public void deleteRow(long rowId) throws DriverException {
-		throw new UnsupportedOperationException("The DataSource wasn't "
-				+ "retrieved with edition capabilities");
+		throw new UnsupportedOperationException(NO_EDITION);
 	}
 
+        @Override
 	public void insertFilledRow(Value[] values) throws DriverException {
-		throw new UnsupportedOperationException("The DataSource wasn't "
-				+ "retrieved with edition capabilities");
+		throw new UnsupportedOperationException(NO_EDITION);
 	}
 
+        @Override
 	public void insertEmptyRow() throws DriverException {
-		throw new UnsupportedOperationException("The DataSource wasn't "
-				+ "retrieved with edition capabilities");
+		throw new UnsupportedOperationException(NO_EDITION);
 	}
 
+        @Override
 	public void insertFilledRowAt(long index, Value[] values)
 			throws DriverException {
-		throw new UnsupportedOperationException("The DataSource wasn't "
-				+ "retrieved with edition capabilities");
+		throw new UnsupportedOperationException(NO_EDITION);
 	}
 
+        @Override
 	public void insertEmptyRowAt(long index) throws DriverException {
-		throw new UnsupportedOperationException("The DataSource wasn't "
-				+ "retrieved with edition capabilities");
+		throw new UnsupportedOperationException(NO_EDITION);
 	}
 
+        @Override
 	public void setFieldValue(long row, int fieldId, Value value)
 			throws DriverException {
-		throw new UnsupportedOperationException("The DataSource wasn't "
-				+ "retrieved with edition capabilities");
+		throw new UnsupportedOperationException(NO_EDITION);
 	}
 
+        @Override
 	public void addEditionListener(EditionListener listener) {
-		throw new UnsupportedOperationException("The DataSource wasn't "
-				+ "retrieved with edition capabilities");
+		throw new UnsupportedOperationException(NO_EDITION);
 	}
 
+        @Override
 	public void removeEditionListener(EditionListener listener) {
-		throw new UnsupportedOperationException("The DataSource wasn't "
-				+ "retrieved with edition capabilities");
+		throw new UnsupportedOperationException(NO_EDITION);
 	}
 
+        @Override
 	public void setDispatchingMode(int dispatchingMode) {
-		throw new UnsupportedOperationException("The DataSource wasn't "
-				+ "retrieved with edition capabilities");
+		throw new UnsupportedOperationException(NO_EDITION);
 	}
 
+        @Override
 	public int getDispatchingMode() {
-		throw new UnsupportedOperationException("The DataSource wasn't "
-				+ "retrieved with edition capabilities");
+		throw new UnsupportedOperationException(NO_EDITION);
 	}
 
 	public void endUndoRedoAction() {
-		throw new UnsupportedOperationException("The DataSource wasn't "
-				+ "retrieved with edition capabilities");
+		throw new UnsupportedOperationException(NO_EDITION);
 	}
 
 	public void startUndoRedoAction() {
-		throw new UnsupportedOperationException("The DataSource wasn't "
-				+ "retrieved with edition capabilities");
+		throw new UnsupportedOperationException(NO_EDITION);
 	}
 
+        @Override
 	public void addField(String name, Type type) throws DriverException {
-		throw new UnsupportedOperationException("The DataSource wasn't "
-				+ "retrieved with edition capabilities");
+		throw new UnsupportedOperationException(NO_EDITION);
 	}
 
+        @Override
 	public void removeField(int fieldId) throws DriverException {
-		throw new UnsupportedOperationException("The DataSource wasn't "
-				+ "retrieved with edition capabilities");
+		throw new UnsupportedOperationException(NO_EDITION);
 	}
 
+        @Override
 	public void setFieldName(int fieldId, String newFieldName)
 			throws DriverException {
-		throw new UnsupportedOperationException("The DataSource wasn't "
-				+ "retrieved with edition capabilities");
+		throw new UnsupportedOperationException(NO_EDITION);
 	}
 
+        @Override
 	public void addMetadataEditionListener(MetadataEditionListener listener) {
-		throw new UnsupportedOperationException("The DataSource wasn't "
-				+ "retrieved with edition capabilities");
+		throw new UnsupportedOperationException(NO_EDITION);
 	}
 
+        @Override
 	public void removeMetadataEditionListener(MetadataEditionListener listener) {
-		throw new UnsupportedOperationException("The DataSource wasn't "
-				+ "retrieved with edition capabilities");
+		throw new UnsupportedOperationException(NO_EDITION);
 	}
 
+        @Override
 	public boolean isModified() {
 		return false;
 	}

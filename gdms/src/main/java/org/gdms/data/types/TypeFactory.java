@@ -5,15 +5,17 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
- *  Team leader Erwan BOCHER, scientific researcher,
- * 
- *  User support leader : Gwendall Petit, geomatic engineer.
  *
+ * Team leader : Erwan BOCHER, scientific researcher,
+ *
+ * User support leader : Gwendall Petit, geomatic engineer.
+ *
+ * Previous computer developer : Pierre-Yves FADET, computer engineer, Thomas LEDUC, 
+ * scientific researcher, Fernando GONZALEZ CORTES, computer engineer.
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2010 Erwan BOCHER, Alexis GUEGANNO, Maxence LAURENT, Antoine GOURLAY
  *
  * This file is part of OrbisGIS.
  *
@@ -32,8 +34,7 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info@orbisgis.org
  */
 package org.gdms.data.types;
 
@@ -44,205 +45,212 @@ import java.util.HashMap;
  * 
  * @author Fernando Gonzalez Cortes
  */
-public class TypeFactory {
-	/**
-	 * Creates a type with the specified type code. The code must be one of the
-	 * constants in Type interface
-	 * 
-	 * @param typeCode
-	 * @return
-	 */
-	public static Type createType(final int typeCode) {
-		return createType(typeCode, DefaultType.typesDescription.get(typeCode));
-	}
+public final class TypeFactory {
 
-	/**
-	 * Creates a type with the specified type code and the specified name. The
-	 * code must be one of the constants in Type interface
-	 * 
-	 * @param typeCode
-	 * @param typeName
-	 * @return
-	 */
-	public static Type createType(final int typeCode, final String typeName) {
-		if (null == typeName) {
-			return createType(typeCode);
-		} else {
-			final TypeDefinition typeDef = new DefaultTypeDefinition(typeName,
-					typeCode);
-			try {
-				return typeDef.createType();
-			} catch (InvalidTypeException e) {
-				throw new RuntimeException("bug", e);
-			}
-		}
-	}
+        /**
+         * Creates a type with the specified type code. The code must be one of the
+         * constants in Type interface
+         *
+         * @param typeCode
+         * @return
+         */
+        public static Type createType(final int typeCode) {
+                return createType(typeCode, DefaultType.typesDescription.get(typeCode));
+        }
 
-	/**
-	 * Creates a type with the specified type code and the specified
-	 * constraints. The code must be one of the constants in Type interface
-	 * 
-	 * @param typeCode
-	 * @param constraints
-	 * @return
-	 * @throws InvalidTypeException
-	 *             If the constraints are not valid for this type
-	 */
-	public static Type createType(final int typeCode,
-			final Constraint... constraints) throws InvalidTypeException {
-		if (null == constraints) {
-			return createType(typeCode);
-		} else {
-			return createType(typeCode, DefaultType.typesDescription
-					.get(typeCode), constraints);
-		}
-	}
+        /**
+         * Creates a type with the specified type code and the specified name. The
+         * code must be one of the constants in Type interface
+         *
+         * @param typeCode
+         * @param typeName
+         * @return
+         */
+        public static Type createType(final int typeCode, final String typeName) {
+                if (null == typeName) {
+                        return createType(typeCode);
+                } else {
+                        final TypeDefinition typeDef = new DefaultTypeDefinition(typeName,
+                                typeCode);
+                        return typeDef.createType();
+                }
+        }
 
-	/**
-	 * Creates a type with the specified type code and the specified constraints
-	 * and name. The code must be one of the constants in Type interface
-	 * 
-	 * @param typeCode
-	 * @param constraints
-	 * @return
-	 * @throws InvalidTypeException
-	 *             If the constraints are not valid for this type
-	 */
-	public static Type createType(final int typeCode, final String typeName,
-			final Constraint... constraints) throws InvalidTypeException {
-		if (null == constraints) {
-			return createType(typeCode, typeName);
-		} else {
-			final int fc = constraints.length;
-			final int[] constraintNames = new int[fc];
-			for (int i = 0; i < fc; i++) {
-				constraintNames[i] = constraints[i].getConstraintCode();
-			}
-			final TypeDefinition typeDef = new DefaultTypeDefinition(typeName,
-					typeCode, constraintNames);
-			return typeDef.createType(constraints);
-		}
-	}
+        /**
+         * Creates a type with the specified type code and the specified
+         * constraints. The code must be one of the constants in Type interface
+         *
+         * @param typeCode
+         * @param constraints
+         * @return
+         * @throws InvalidTypeException
+         *             If the constraints are not valid for this type
+         */
+        public static Type createType(final int typeCode,
+                final Constraint... constraints) {
+                if (null == constraints) {
+                        return createType(typeCode);
+                } else {
+                        return createType(typeCode, DefaultType.typesDescription.get(typeCode), constraints);
+                }
+        }
 
-	public static String getTypeName(int typeCode) {
-		switch (typeCode) {
-		case Type.BINARY:
-			return "binary";
-		case Type.BOOLEAN:
-			return "boolean";
-		case Type.BYTE:
-			return "byte";
-		case Type.COLLECTION:
-			return "value collection";
-		case Type.DATE:
-			return "date";
-		case Type.DOUBLE:
-			return "double";
-		case Type.FLOAT:
-			return "float";
-		case Type.GEOMETRY:
-			return "geometry";
-		case Type.INT:
-			return "int";
-		case Type.LONG:
-			return "long";
-		case Type.NULL:
-			return "null";
-		case Type.RASTER:
-			return "raster";
-		case Type.SHORT:
-			return "short";
-		case Type.STRING:
-			return "string";
-		case Type.TIME:
-			return "time";
-		case Type.TIMESTAMP:
-			return "timestamp";
-		default:
-			throw new IllegalArgumentException("Unknown data type: " + typeCode);
-		}
-	}
+        /**
+         * Creates a type with the specified type code and the specified constraints
+         * and name. The code must be one of the constants in Type interface
+         *
+         * @param typeCode
+         * @param typeName 
+         * @param constraints
+         * @return
+         * @throws InvalidTypeException
+         *             If the constraints are not valid for this type
+         */
+        public static Type createType(final int typeCode, final String typeName,
+                final Constraint... constraints) {
+                if (null == constraints) {
+                        return createType(typeCode, typeName);
+                } else {
+                        final int fc = constraints.length;
+                        final int[] constraintNames = new int[fc];
+                        for (int i = 0; i < fc; i++) {
+                                constraintNames[i] = constraints[i].getConstraintCode();
+                        }
+                        final TypeDefinition typeDef = new DefaultTypeDefinition(typeName,
+                                typeCode, constraintNames);
+                        return typeDef.createType(constraints);
+                }
+        }
 
-	public static boolean isNumerical(int typeCode) {
-		return (typeCode == Type.BYTE) || (typeCode == Type.DOUBLE)
-				|| (typeCode == Type.FLOAT) || (typeCode == Type.INT)
-				|| (typeCode == Type.LONG) || (typeCode == Type.SHORT);
-	}
+        public static String getTypeName(int typeCode) {
+                switch (typeCode) {
+                        case Type.BINARY:
+                                return "binary";
+                        case Type.BOOLEAN:
+                                return "boolean";
+                        case Type.BYTE:
+                                return "byte";
+                        case Type.COLLECTION:
+                                return "value collection";
+                        case Type.DATE:
+                                return "date";
+                        case Type.DOUBLE:
+                                return "double";
+                        case Type.FLOAT:
+                                return "float";
+                        case Type.GEOMETRY:
+                                return "geometry";
+                        case Type.INT:
+                                return "int";
+                        case Type.LONG:
+                                return "long";
+                        case Type.NULL:
+                                return "null";
+                        case Type.RASTER:
+                                return "raster";
+                        case Type.SHORT:
+                                return "short";
+                        case Type.STRING:
+                                return "string";
+                        case Type.TIME:
+                                return "time";
+                        case Type.TIMESTAMP:
+                                return "timestamp";
+                        default:
+                                throw new IllegalArgumentException("Unknown data type: " + typeCode);
+                }
+        }
 
-	public static int[] getTypes() {
-		return new int[] { Type.BINARY, Type.BOOLEAN, Type.BYTE, Type.DATE,
-				Type.DOUBLE, Type.FLOAT, Type.GEOMETRY, Type.INT, Type.LONG,
-				Type.RASTER, Type.SHORT, Type.STRING, Type.TIME, Type.TIMESTAMP };
-	}
+        public static boolean isNumerical(int typeCode) {
+                return (typeCode == Type.BYTE) || (typeCode == Type.DOUBLE)
+                        || (typeCode == Type.FLOAT) || (typeCode == Type.INT)
+                        || (typeCode == Type.LONG) || (typeCode == Type.SHORT);
+        }
 
-	public static boolean isSpatial(int typeCode) {
-		return (typeCode == Type.GEOMETRY) || (typeCode == Type.RASTER);
-	}
-	
-	/**
-	 * 
-	 * Return the type being able to accept all the values the other type
-	 * accepts. Returns -1 if the types are not compatible.
-	 * 
-	 * @param type1
-	 * @param type2
-	 * @return
-	 * 
-	 * @author gearscape
-	 */
-	public static int getBroaderType(int type1, int type2) {
-		if (isNumerical(type1) && isNumerical(type2)) {
-			HashMap<Integer, Integer> typeSort = new HashMap<Integer, Integer>();
-			typeSort.put(Type.BYTE, 0);
-			typeSort.put(Type.SHORT, 1);
-			typeSort.put(Type.INT, 2);
-			typeSort.put(Type.LONG, 3);
-			typeSort.put(Type.FLOAT, 4);
-			typeSort.put(Type.DOUBLE, 5);
-			HashMap<Integer, Integer> sortType = new HashMap<Integer, Integer>();
-			sortType.put(0, Type.BYTE);
-			sortType.put(1, Type.SHORT);
-			sortType.put(2, Type.INT);
-			sortType.put(3, Type.LONG);
-			sortType.put(4, Type.FLOAT);
-			sortType.put(5, Type.DOUBLE);
+        public static int[] getTypes() {
+                return new int[]{Type.BINARY, Type.BOOLEAN, Type.BYTE, Type.DATE,
+                                Type.DOUBLE, Type.FLOAT, Type.GEOMETRY, Type.INT, Type.LONG,
+                                Type.RASTER, Type.SHORT, Type.STRING, Type.TIME, Type.TIMESTAMP};
+        }
 
-			Integer sort1 = typeSort.get(type1);
-			Integer sort2 = typeSort.get(type2);
-			int sort = Math.max(sort1, sort2);
-			return sortType.get(sort);
-		} else if (isTime(type1) && isTime(type2)) {
-			HashMap<Integer, Integer> typeSort = new HashMap<Integer, Integer>();
-			typeSort.put(Type.DATE, 0);
-			typeSort.put(Type.TIME, 1);
-			typeSort.put(Type.TIMESTAMP, 2);
-			HashMap<Integer, Integer> sortType = new HashMap<Integer, Integer>();
-			sortType.put(0, Type.DATE);
-			sortType.put(1, Type.TIME);
-			sortType.put(2, Type.TIMESTAMP);
+        public static boolean isSpatial(int typeCode) {
+                return (typeCode == Type.GEOMETRY) || (typeCode == Type.RASTER);
+        }
 
-			Integer sort1 = typeSort.get(type1);
-			Integer sort2 = typeSort.get(type2);
-			int sort = Math.max(sort1, sort2);
-			return sortType.get(sort);
-		} else {
-			if (type1 == type2) {
-				return type1;
-			}
-		}
+        /**
+         *
+         * Return the type being able to accept all the values the other type
+         * accepts. Returns -1 if the types are not compatible.
+         *
+         * @param type1
+         * @param type2
+         * @return
+         *
+         * @author gearscape
+         */
+        public static int getBroaderType(int type1, int type2) {
+                if (isNumerical(type1) && isNumerical(type2)) {
+                        HashMap<Integer, Integer> typeSort = new HashMap<Integer, Integer>();
+                        typeSort.put(Type.BYTE, 0);
+                        typeSort.put(Type.SHORT, 1);
+                        typeSort.put(Type.INT, 2);
+                        typeSort.put(Type.LONG, 3);
+                        typeSort.put(Type.FLOAT, 4);
+                        typeSort.put(Type.DOUBLE, 5);
+                        HashMap<Integer, Integer> sortType = new HashMap<Integer, Integer>();
+                        sortType.put(0, Type.BYTE);
+                        sortType.put(1, Type.SHORT);
+                        sortType.put(2, Type.INT);
+                        sortType.put(3, Type.LONG);
+                        sortType.put(4, Type.FLOAT);
+                        sortType.put(5, Type.DOUBLE);
 
-		return -1;
-	}
-	
-	/**
-	 * 
-	 * @param typeCode
-	 * @return
-	 * 
-	 * @author gearscape
-	 */
-	public static boolean isTime(int typeCode) {
-		return (typeCode == Type.DATE) || (typeCode == Type.TIME)
-				|| (typeCode == Type.TIMESTAMP);
-	}
+                        Integer sort1 = typeSort.get(type1);
+                        Integer sort2 = typeSort.get(type2);
+                        int sort = Math.max(sort1, sort2);
+                        return sortType.get(sort);
+                } else if (isTime(type1) && isTime(type2)) {
+                        HashMap<Integer, Integer> typeSort = new HashMap<Integer, Integer>();
+                        typeSort.put(Type.DATE, 0);
+                        typeSort.put(Type.TIME, 1);
+                        typeSort.put(Type.TIMESTAMP, 2);
+                        HashMap<Integer, Integer> sortType = new HashMap<Integer, Integer>();
+                        sortType.put(0, Type.DATE);
+                        sortType.put(1, Type.TIME);
+                        sortType.put(2, Type.TIMESTAMP);
+
+                        Integer sort1 = typeSort.get(type1);
+                        Integer sort2 = typeSort.get(type2);
+                        int sort = Math.max(sort1, sort2);
+                        return sortType.get(sort);
+                } else {
+                        if (type1 == type2) {
+                                return type1;
+                        }
+                }
+
+                return -1;
+        }
+
+        /**
+         *
+         * @param typeCode
+         * @return
+         *
+         * @author gearscape
+         */
+        public static boolean isTime(int typeCode) {
+                return (typeCode == Type.DATE) || (typeCode == Type.TIME)
+                        || (typeCode == Type.TIMESTAMP);
+        }
+
+        public static boolean canBeCastTo(int fromTypeCode, int toTypeCode) {
+                if (fromTypeCode == toTypeCode) {
+                        return true;
+                }
+                return getBroaderType(toTypeCode, fromTypeCode) == toTypeCode;
+        }
+
+        private TypeFactory() {
+        }
 }

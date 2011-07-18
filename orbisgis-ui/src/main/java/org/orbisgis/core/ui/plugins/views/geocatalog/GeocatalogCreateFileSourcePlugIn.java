@@ -46,11 +46,9 @@ import org.gdms.data.InitializationException;
 import org.gdms.data.SourceAlreadyExistsException;
 import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.file.FileSourceDefinition;
+import org.gdms.driver.Driver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
-import org.gdms.driver.ReadOnlyDriver;
-import org.gdms.driver.ReadWriteDriver;
-import org.gdms.driver.driverManager.Driver;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.AndDriverFilter;
 import org.gdms.source.FileDriverFilter;
@@ -122,7 +120,7 @@ public class GeocatalogCreateFileSourcePlugIn extends AbstractPlugIn {
 		SourceManager sourceManager = dm.getSourceManager();
 		for (int i = 0; i < filtered.length; i++) {
 			driverNames[i] = filtered[i].getDriverId();
-			ReadOnlyDriver rod = (ReadOnlyDriver) filtered[i];
+			Driver rod = filtered[i];
 			typeNames[i] = rod.getTypeDescription();
 		}
 
@@ -133,8 +131,7 @@ public class GeocatalogCreateFileSourcePlugIn extends AbstractPlugIn {
 		if (UIFactory.showDialog(cp)) {
 			// Create wizard
 			UIPanel[] wizardPanels = new UIPanel[2];
-			ReadWriteDriver driver = (ReadWriteDriver) driverManager
-					.getDriver((String) cp.getSelected());
+			Driver driver = driverManager.getDriver((String) cp.getSelected());
 			boolean file;
 			if ((driver.getType() & SourceManager.FILE) == SourceManager.FILE) {
 				file = true;
@@ -180,7 +177,7 @@ public class GeocatalogCreateFileSourcePlugIn extends AbstractPlugIn {
 								+ extensions[0]);
 					}
 					dsc = new FileSourceCreation(selectedFile, mc.getMetadata());
-					dsd = new FileSourceDefinition(selectedFile);
+					dsd = new FileSourceDefinition(selectedFile, DriverManager.DEFAULT_SINGLE_TABLE_NAME);
 					name = FileUtils.getFileNameWithoutExtensionU(selectedFile);
 				} else {
 					throw new UnsupportedOperationException(

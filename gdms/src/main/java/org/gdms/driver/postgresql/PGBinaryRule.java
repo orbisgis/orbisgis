@@ -38,22 +38,21 @@ package org.gdms.driver.postgresql;
 
 import org.gdms.data.types.Type;
 import org.gdms.driver.jdbc.BinaryRule;
-import org.gdms.driver.jdbc.ConversionRule;
 
-public class PGBinaryRule extends BinaryRule implements
-		ConversionRule {
+public class PGBinaryRule extends BinaryRule {
 
-	@Override
-	public int getOutputTypeCode() {
-		return Type.BINARY;
-	}
+        @Override
+        public int getOutputTypeCode() {
+                return Type.BINARY;
+        }
 
-	public String getTypeName() {
-		return "bytea";
-	}
+        @Override
+        public String getTypeName() {
+                return "bytea";
+        }
 
-	public boolean canApply(Type type) {
-		return type.getTypeCode() == Type.BINARY;
-	}
-
+        @Override
+        public boolean canApply(Type type) {
+                return type.getTypeCode() == Type.BINARY;
+        }
 }

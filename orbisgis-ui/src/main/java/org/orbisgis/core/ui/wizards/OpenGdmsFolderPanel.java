@@ -39,8 +39,8 @@ Thomas LEDUC, scientific researcher, Fernando GONZALEZ
 
 package org.orbisgis.core.ui.wizards;
 
+import org.gdms.driver.Driver;
 import org.gdms.driver.FileDriver;
-import org.gdms.driver.driverManager.Driver;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.FileDriverFilter;
 import org.gdms.source.SourceManager;

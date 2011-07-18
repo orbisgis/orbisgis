@@ -36,35 +36,43 @@
  */
 package org.gdms.data;
 
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 
+/**
+ * Decorator designed to perform the necessary check on the underlying DataSource before
+ * doing any action.
+ */
 public class StatusCheckDecorator extends AbstractDataSourceDecorator {
+        private static final String MUST_BE_OPEN = "The data source must be open to call this method";
 
 	public StatusCheckDecorator(DataSource ds) {
 		super(ds);
 	}
 
+        @Override
 	public void addField(String name, Type driverType) throws DriverException {
 		if (isOpen()) {
 			getDataSource().addField(name, driverType);
 		} else {
 			throw new ClosedDataSourceException(
-					"The data source must be open to call this method");
+					MUST_BE_OPEN);
 		}
 	}
 
+        @Override
 	public String check(int fieldId, Value value) throws DriverException {
 		if (isOpen()) {
 			return getDataSource().check(fieldId, value);
 		} else {
 			throw new ClosedDataSourceException(
-					"The data source must be open to call this method");
+					MUST_BE_OPEN);
 		}
 	}
 
+        @Override
 	public void commit() throws DriverException, NonEditableDataSourceException {
 		if (isOpen()) {
 			if (isEditable()) {
@@ -74,131 +82,144 @@ public class StatusCheckDecorator extends AbstractDataSourceDecorator {
 			}
 		} else {
 			throw new ClosedDataSourceException(
-					"The data source must be open to call this method");
+					MUST_BE_OPEN);
 		}
 	}
 
+        @Override
 	public void deleteRow(long rowId) throws DriverException {
 		if (isOpen()) {
 			getDataSource().deleteRow(rowId);
 		} else {
 			throw new ClosedDataSourceException(
-					"The data source must be open to call this method");
+					MUST_BE_OPEN);
 		}
 	}
 
+        @Override
 	public Metadata getMetadata() throws DriverException {
 		if (isOpen()) {
 			return getDataSource().getMetadata();
 		} else {
 			throw new ClosedDataSourceException(
-					"The data source must be open to call this method");
+					MUST_BE_OPEN);
 		}
 	}
 
+        @Override
 	public int getFieldIndexByName(String fieldName) throws DriverException {
 		if (isOpen()) {
 			return getDataSource().getFieldIndexByName(fieldName);
 		} else {
 			throw new ClosedDataSourceException(
-					"The data source must be open to call this method");
+					MUST_BE_OPEN);
 		}
 	}
 
+        @Override
 	public Value getFieldValue(long rowIndex, int fieldId)
 			throws DriverException {
 		if (isOpen()) {
 			return getDataSource().getFieldValue(rowIndex, fieldId);
 		} else {
 			throw new ClosedDataSourceException(
-					"The data source must be open to call this method");
+					MUST_BE_OPEN);
 		}
 	}
 
+        @Override
 	public long getRowCount() throws DriverException {
 		if (isOpen()) {
 			return getDataSource().getRowCount();
 		} else {
 			throw new ClosedDataSourceException(
-					"The data source must be open to call this method");
+					MUST_BE_OPEN);
 		}
 	}
 
+        @Override
 	public Number[] getScope(int dimension) throws DriverException {
 		if (isOpen()) {
 			return getDataSource().getScope(dimension);
 		} else {
 			throw new ClosedDataSourceException(
-					"The data source must be open to call this method");
+					MUST_BE_OPEN);
 		}
 	}
 
+        @Override
 	public void insertEmptyRow() throws DriverException {
 		if (isOpen()) {
 			getDataSource().insertEmptyRow();
 		} else {
 			throw new ClosedDataSourceException(
-					"The data source must be open to call this method");
+					MUST_BE_OPEN);
 		}
 	}
 
+        @Override
 	public void insertEmptyRowAt(long index) throws DriverException {
 		if (isOpen()) {
 			getDataSource().insertEmptyRowAt(index);
 		} else {
 			throw new ClosedDataSourceException(
-					"The data source must be open to call this method");
+					MUST_BE_OPEN);
 		}
 	}
 
+        @Override
 	public void insertFilledRow(Value[] values) throws DriverException {
 		if (isOpen()) {
 			getDataSource().insertFilledRow(values);
 		} else {
 			throw new ClosedDataSourceException(
-					"The data source must be open to call this method");
+					MUST_BE_OPEN);
 		}
 	}
 
+        @Override
 	public void insertFilledRowAt(long index, Value[] values)
 			throws DriverException {
 		if (isOpen()) {
 			getDataSource().insertFilledRowAt(index, values);
 		} else {
 			throw new ClosedDataSourceException(
-					"The data source must be open to call this method");
+					MUST_BE_OPEN);
 		}
 	}
 
+        @Override
 	public boolean isModified() {
 		if (isOpen()) {
 			return getDataSource().isModified();
 		} else {
 			throw new ClosedDataSourceException(
-					"The data source must be open to call this method");
+					MUST_BE_OPEN);
 		}
 	}
 
+        @Override
 	public void redo() throws DriverException {
 		if (isOpen()) {
 			getDataSource().redo();
 		} else {
 			throw new ClosedDataSourceException(
-					"The data source must be open to call this method");
+					MUST_BE_OPEN);
 		}
 	}
 
+        @Override
 	public void removeField(int index) throws DriverException {
 		if (isOpen()) {
 			getDataSource().removeField(index);
 		} else {
 			throw new ClosedDataSourceException(
-					"The data source must be open to call this method");
+					MUST_BE_OPEN);
 		}
 	}
 
-	public void saveData(DataSource ds) throws IllegalStateException,
-			DriverException {
+        @Override
+	public void saveData(DataSource ds) throws DriverException {
 		if (isOpen()) {
 			throw new IllegalStateException(
 					"The data source must be closed to call this method");
@@ -207,31 +228,34 @@ public class StatusCheckDecorator extends AbstractDataSourceDecorator {
 		}
 	}
 
+        @Override
 	public void setFieldName(int index, String name) throws DriverException {
 		if (isOpen()) {
 			getDataSource().setFieldName(index, name);
 		} else {
 			throw new ClosedDataSourceException(
-					"The data source must be open to call this method");
+					MUST_BE_OPEN);
 		}
 	}
 
+        @Override
 	public void setFieldValue(long row, int fieldId, Value value)
 			throws DriverException {
 		if (isOpen()) {
 			getDataSource().setFieldValue(row, fieldId, value);
 		} else {
 			throw new ClosedDataSourceException(
-					"The data source must be open to call this method");
+					MUST_BE_OPEN);
 		}
 	}
 
+        @Override
 	public void undo() throws DriverException {
 		if (isOpen()) {
 			getDataSource().undo();
 		} else {
 			throw new ClosedDataSourceException(
-					"The data source must be open to call this method");
+					MUST_BE_OPEN);
 		}
 	}
 }

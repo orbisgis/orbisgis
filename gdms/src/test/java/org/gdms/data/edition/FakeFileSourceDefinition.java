@@ -38,26 +38,25 @@ package org.gdms.data.edition;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.file.FileDataSourceAdapter;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.driver.FileDriver;
-import org.gdms.driver.ReadOnlyDriver;
-import org.orbisgis.progress.IProgressMonitor;
+import org.gdms.driver.Driver;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class FakeFileSourceDefinition extends FileSourceDefinition {
 
 	protected Object driver;
 
 	public FakeFileSourceDefinition(Object driver) {
-		super("");
+		super("", "main");
 		this.driver = driver;
 	}
 
 	@Override
-	public DataSource createDataSource(String tableName, IProgressMonitor pm)
+	public DataSource createDataSource(String tableName, ProgressMonitor pm)
 			throws DataSourceCreationException {
-		((ReadOnlyDriver) driver).setDataSourceFactory(getDataSourceFactory());
+		((Driver) driver).setDataSourceFactory(getDataSourceFactory());
 
 		FileDataSourceAdapter ds = new FileDataSourceAdapter(
 				getDataSourceFactory().getSourceManager().getSource(tableName),
@@ -66,8 +65,13 @@ public class FakeFileSourceDefinition extends FileSourceDefinition {
 	}
 
 	@Override
-	public boolean equals(DataSourceDefinition obj) {
+	public boolean equals(Object obj) {
 		return false;
 	}
+
+        @Override
+        public int hashCode() {
+                return 59 * 5 + (this.driver != null ? this.driver.hashCode() : 0);
+        }
 
 }

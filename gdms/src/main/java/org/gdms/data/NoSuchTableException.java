@@ -36,8 +36,6 @@
  */
 package org.gdms.data;
 
-import org.gdms.sql.strategies.SemanticException;
-
 /**
  * This class represents the errors that happens when the DataSourceFactory
  * is asked for a table that doesn't exists. The common mistakes are
@@ -46,7 +44,7 @@ import org.gdms.sql.strategies.SemanticException;
  *
  * @author Fernando Gonzalez Cortes
  */
-public class NoSuchTableException extends SemanticException {
+public class NoSuchTableException extends Exception {
 	/**
 	 * Creates a new NoSuchTableException object.
 	 */
@@ -57,10 +55,10 @@ public class NoSuchTableException extends SemanticException {
 	/**
 	 * Creates a new NoSuchTableException object.
 	 *
-	 * @param arg0
+	 * @param tableName
 	 */
-	public NoSuchTableException(String arg0) {
-		super(arg0);
+	public NoSuchTableException(String tableName) {
+		super(tableName);
 	}
 
 	/**
@@ -75,10 +73,19 @@ public class NoSuchTableException extends SemanticException {
 	/**
 	 * Creates a new NoSuchTableException object.
 	 *
-	 * @param arg0
+	 * @param tableName
 	 * @param arg1
 	 */
-	public NoSuchTableException(String arg0, Throwable arg1) {
-		super(arg0, arg1);
+	public NoSuchTableException(String tableName, Throwable arg1) {
+		super(tableName, arg1);
 	}
+
+        private String format(String tableName) {
+                return String.format("The table %s does not exist!", tableName);
+        }
+
+        @Override
+        public String getMessage() {
+                return format(super.getMessage());
+        }
 }

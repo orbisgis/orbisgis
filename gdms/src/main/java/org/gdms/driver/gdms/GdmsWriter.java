@@ -5,35 +5,34 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 
-import org.gdms.data.DataSource;
-import org.gdms.data.indexes.btree.ReadWriteBufferManager;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.driver.ReadWriteBufferManager;
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 import com.vividsolutions.jts.geom.Envelope;
+import java.util.List;
+import org.gdms.driver.ReadAccess;
 
 /**
  * Class to write gdms files
- * 
+ *
  * @author Fernando Gonzalez Cortes
  */
 public class GdmsWriter {
-	private ArrayList<Integer> rowIndexes = new ArrayList<Integer>();
+	private List<Long> rowIndexes = new ArrayList<Long>();
 	private RandomAccessFile raf;
 	private ReadWriteBufferManager bm;
-	private int previousRowEnd = -1;
+	private long previousRowEnd = -1;
 	private Metadata metadata;
 	private Envelope env = null;
 	private int currentRow = 0;
-	private int rowIndexesDirPos;
-	private File file;
+	private long rowIndexesDirPos;
 
 	public GdmsWriter(File file) throws IOException {
-		this.file = file;
 		raf = new RandomAccessFile(file, "rw");
 		bm = new ReadWriteBufferManager(raf.getChannel());
 	}
@@ -43,45 +42,53 @@ public class GdmsWriter {
 		raf.close();
 	}
 
-	public void write(DataSource dataSource, IProgressMonitor pm)
+	public void write(ReadAccess dataSource, ProgressMonitor pm)
 			throws IOException, DriverException {
 		writeMetadata(dataSource.getRowCount(), dataSource.getMetadata());
-
 		// Write the file building the row indexes in memory
-		rowIndexes = new ArrayList<Integer>((int) dataSource.getRowCount());
-
+		final long rowcount =  dataSource.getRowCount();
+                pm.startTask("Writing file", rowcount);
+                final int colCount = dataSource.getMetadata().getFieldCount();
+		rowIndexes = new ArrayList<Long>((int)rowcount);
 		currentRow = 0;
-		for (int i = 0; i < dataSource.getRowCount(); i++) {
-			if (i / 100 == i / 100.0) {
+		for (int i = 0; i < rowcount; i++) {
+			if (i >= 100 && i % 100 == 0) {
 				if (pm.isCancelled()) {
 					break;
 				} else {
-					pm.progressTo((int) (100 * i / dataSource.getRowCount()));
+					pm.progressTo(i);
 				}
 			}
 
-			Value[] row = dataSource.getRow(i);
+			Value[] row = new Value[colCount];
+                        for (int j = 0; j < row.length; j++) {
+                                row[j] = dataSource.getFieldValue(i, j);
+                        }
 
 			addRow(row);
 		}
-
 		// write the row indexes
 		writeRowIndexes();
-
+                pm.progressTo(rowcount);
 		// write envelope
 		writeExtent();
+                pm.endTask();
 	}
 
+	/**
+	 * Write the address of each row in the file we are writing in.
+	 * @throws IOException
+	 *	If a problem occurs while writing the file
+	 */
 	public void writeRowIndexes() throws IOException {
-		int rowIndexesDir = previousRowEnd;
+		long rowIndexesDir = previousRowEnd;
 		bm.position(previousRowEnd);
-		for (int index : rowIndexes) {
-			bm.putInt(index);
+		for (long index : rowIndexes) {
+			bm.putLong(index);
 		}
-
 		// Write row indexes position
 		bm.position(rowIndexesDirPos);
-		bm.putInt(rowIndexesDir);
+		bm.putLong(rowIndexesDir);
 	}
 
 	public void addValues(Value[] row) throws DriverException {
@@ -99,18 +106,23 @@ public class GdmsWriter {
 		rowIndexes.add(previousRowEnd);
 		bm.position(previousRowEnd);
 		// Leave space for the row header
-		int rowHeaderStart = bm.getPosition();
-		int rowHeaderSize = metadata.getFieldCount() * 4;
+		long rowHeaderStart = bm.getPosition();
+		//The row header will contain the adress of the associated field.
+		//This adress is stored in a long, we need 8 bytes.
+		int rowHeaderSize = metadata.getFieldCount() * 8;
 		bm.position(rowHeaderStart + rowHeaderSize);
 
 		// Write the row and keep the field positions in memory
-		int[] fieldPositions = new int[metadata.getFieldCount()];
+		long[] fieldPositions = new long[metadata.getFieldCount()];
 		for (int j = 0; j < metadata.getFieldCount(); j++) {
 			fieldPositions[j] = bm.getPosition();
 			Value value = row[j];
 			byte[] bytes = value.getBytes();
+			//We put the number of bytes we need to store the value.
 			bm.putInt(bytes.length);
+			//We put the type of the value.
 			bm.putInt(value.getType());
+			//And finally, we put the value, as an array of bytes.
 			bm.put(bytes);
 			int typeCode = metadata.getFieldType(j).getTypeCode();
 			Envelope fieldEnvelope = null;
@@ -134,8 +146,8 @@ public class GdmsWriter {
 
 		// Write row header
 		bm.position(rowHeaderStart);
-		for (int fieldPosition : fieldPositions) {
-			bm.putInt(fieldPosition);
+		for (long fieldPosition : fieldPositions) {
+			bm.putLong(fieldPosition);
 		}
 
 		currentRow++;
@@ -202,7 +214,7 @@ public class GdmsWriter {
 		rowIndexesDirPos = bm.getPosition();
 
 		// Skip rowIndexes position
-		bm.putInt(-1);
+		bm.putLong(-1);
 	}
 
 	public void writeWritenRowCount() throws IOException {

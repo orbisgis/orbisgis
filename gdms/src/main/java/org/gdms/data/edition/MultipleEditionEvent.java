@@ -37,6 +37,7 @@
 package org.gdms.data.edition;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Contains zero or more EditionEvents
@@ -44,7 +45,7 @@ import java.util.ArrayList;
  * @author Fernando Gonz�lez Cort�s
  */
 public class MultipleEditionEvent {
-	private ArrayList<EditionEvent> events = new ArrayList<EditionEvent>();
+	private List<EditionEvent> events = new ArrayList<EditionEvent>();
 
 	public void addEvent(EditionEvent event) {
 		events.add(event);

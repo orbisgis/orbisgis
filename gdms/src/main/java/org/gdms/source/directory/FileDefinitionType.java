@@ -4,15 +4,14 @@
 // Any modifications to this file will be lost upon recompilation of the source schema. 
 // Generated on: 2010.10.28 at 10:28:11 PM CEST 
 //
-
-
 package org.gdms.source.directory;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
-
+import org.gdms.data.DataSourceDefinition;
+import org.gdms.data.file.FileSourceDefinition;
 
 /**
  * <p>Java class for file-definition-type complex type.
@@ -24,6 +23,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;extension base="{}definition-type">
  *       &lt;attribute name="path" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="tableName" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -34,34 +34,53 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "file-definition-type")
 public class FileDefinitionType
-    extends DefinitionType
-{
+        extends DefinitionType {
 
-    @XmlAttribute(required = true)
-    protected String path;
+        @XmlAttribute(required = true)
+        protected String path;
+        @XmlAttribute(required = true)
+        protected String tableName;
 
-    /**
-     * Gets the value of the path property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getPath() {
-        return path;
-    }
+        /**
+         * Gets the value of the path property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getPath() {
+                return path;
+        }
 
-    /**
-     * Sets the value of the path property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setPath(String value) {
-        this.path = value;
-    }
+        /**
+         * Sets the value of the path property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setPath(String value) {
+                this.path = value;
+        }
 
+        @Override
+        public DataSourceDefinition toDataSourceDefinition() {
+                return FileSourceDefinition.createFromXML(this);
+        }
+
+        /**
+         * @return the tableName
+         */
+        public String getTableName() {
+                return tableName;
+        }
+
+        /**
+         * @param tableName the tableName to set
+         */
+        public void setTableName(String tableName) {
+                this.tableName = tableName;
+        }
 }

@@ -38,20 +38,20 @@ package org.gdms.driver.jdbc;
 
 import org.gdms.data.types.Type;
 
-public class BinaryRule extends AbstractConversionRule implements
-		ConversionRule {
+public class BinaryRule extends AbstractConversionRule {
 
-	public String getTypeName() {
-		return "binary";
-	}
+        @Override
+        public String getTypeName() {
+                return "binary";
+        }
 
-	@Override
-	protected int getOutputTypeCode() {
-		return Type.BINARY;
-	}
+        @Override
+        protected int getOutputTypeCode() {
+                return Type.BINARY;
+        }
 
-	public boolean canApply(Type type) {
-		return type.getTypeCode() == Type.BINARY;
-	}
-
+        @Override
+        public boolean canApply(Type type) {
+                return type.getTypeCode() == Type.BINARY;
+        }
 }

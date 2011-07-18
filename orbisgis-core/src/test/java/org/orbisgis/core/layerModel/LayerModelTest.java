@@ -43,6 +43,7 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
+import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.generic.GenericObjectDriver;
 import org.gdms.source.SourceManager;
 import org.grap.model.GeoRaster;
@@ -64,7 +65,7 @@ public class LayerModelTest extends AbstractTest {
 				new String[] { "the_geom" }, new Type[] { TypeFactory
 						.createType(Type.GEOMETRY) });
 		dsf.getSourceManager().register("vector1", omd);
-		dummy = dsf.getDataSource(omd);
+		dummy = dsf.getDataSource(omd, DriverManager.DEFAULT_SINGLE_TABLE_NAME);
 		omd = new GenericObjectDriver();
 		dsf.getSourceManager().register("vector2", omd);
 		dummy2 = dsf.getDataSource("vector2");

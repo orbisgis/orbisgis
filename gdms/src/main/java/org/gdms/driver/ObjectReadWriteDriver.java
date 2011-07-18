@@ -36,23 +36,23 @@
  */
 package org.gdms.driver;
 
-import org.gdms.data.DataSource;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 /**
  * Interface to be implement by the Object driver that as also RW capabilities
  * 
  */
-public interface ObjectReadWriteDriver extends ObjectDriver, ReadWriteDriver {
-	/**
-	 * Writes the content in the DataSource to the specified file
-	 * 
-	 * @param dataWare
-	 *            DataSource with the contents
-	 * @param pm
-	 * @return
-	 * @throws DriverException
-	 */
-	boolean write(DataSource dataSource, IProgressMonitor pm)
-			throws DriverException;
+public interface ObjectReadWriteDriver extends ObjectDriver, Driver {
+
+        /**
+         * Writes the content in the DataSource to the specified file
+         *
+         * @param dataSource 
+         *            DataSource with the contents
+         * @param pm
+         * @return
+         * @throws DriverException
+         */
+        boolean write(ReadAccess dataSource, ProgressMonitor pm)
+                throws DriverException;
 }

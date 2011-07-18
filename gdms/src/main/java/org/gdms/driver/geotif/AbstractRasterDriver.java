@@ -39,12 +39,8 @@ package org.gdms.driver.geotif;
 import java.io.File;
 import java.io.IOException;
 
-import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.metadata.DefaultMetadata;
-import org.gdms.data.metadata.Metadata;
-import org.gdms.data.types.RasterTypeConstraint;
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.types.TypeFactory;
@@ -56,25 +52,36 @@ import org.gdms.source.SourceManager;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 
 import com.vividsolutions.jts.geom.Envelope;
 import fr.cts.crs.CoordinateReferenceSystem;
+import org.apache.log4j.Logger;
+import org.gdms.data.schema.DefaultMetadata;
+import org.gdms.data.schema.DefaultSchema;
+import org.gdms.data.schema.MetadataUtilities;
+import org.gdms.data.schema.Schema;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.SRIDConstraint;
+import org.gdms.data.types.ConstraintFactory;
+import org.gdms.driver.ReadAccess;
 import org.orbisgis.wkt.parser.PRJUtils;
 import org.orbisgis.wkt.parser.ParseException;
 
-public abstract class AbstractRasterDriver implements FileReadWriteDriver {
+public abstract class AbstractRasterDriver implements FileReadWriteDriver, ReadAccess {
 
-        public static final String RASTER_COLUMN_NAME = "raster";
         protected GeoRaster geoRaster;
         protected RasterMetadata metadata;
+        protected Schema schema;
+        private DefaultMetadata gdmsMetadata;
         protected Envelope envelope;
+        private static final Logger LOG = Logger.getLogger(AbstractRasterDriver.class);
         private int srid = -1;
+        private File file;
 
-        public void open(File file) throws DriverException {
+        @Override
+        public void open() throws DriverException {
+                LOG.trace("Opening file");
                 try {
                         geoRaster = GeoRasterFactory.createGeoRaster(file.getAbsolutePath());
                         geoRaster.open();
@@ -97,60 +104,71 @@ public abstract class AbstractRasterDriver implements FileReadWriteDriver {
 
                         }
 
+                        gdmsMetadata.clear();
+                        if (srid == -1) {
+                                gdmsMetadata.addField("raster", TypeFactory.createType(Type.RASTER,
+                                        ConstraintFactory.createConstraint(Constraint.RASTER_TYPE, geoRaster.getType())));
+                        } else {
+                                gdmsMetadata.addField("raster", TypeFactory.createType(Type.RASTER,
+                                        ConstraintFactory.createConstraint(Constraint.RASTER_TYPE, geoRaster.getType()),
+                                        ConstraintFactory.createConstraint(Constraint.SRID, srid)));
+                        }
+
                 } catch (IOException e) {
                         throw new DriverException("Cannot access the source: " + file, e);
                 }
         }
 
+        @Override
         public void setDataSourceFactory(DataSourceFactory dsf) {
         }
 
+        @Override
         public void close() throws DriverException {
         }
 
-        public Value getFieldValue(long rowIndex, int fieldId)
-                throws DriverException {
-                switch (fieldId) {
-                        case 0:
-                                return ValueFactory.createValue(geoRaster);
-                        default:
-                                throw new DriverException("No such field:" + fieldId);
-
-                }
-        }
-
+        @Override
         public void createSource(String path, Metadata metadata,
                 DataSourceFactory dataSourceFactory) throws DriverException {
                 throw new UnsupportedOperationException("Cannot create an empty raster");
         }
 
-        public long getRowCount() throws DriverException {
-                return 1;
-        }
-
+        @Override
         public void copy(File in, File out) throws IOException {
                 FileUtils.copy(in, out);
         }
 
-        public void writeFile(File file, DataSource dataSource, IProgressMonitor pm)
+        @Override
+        public void writeFile(File file, ReadAccess dataSource, ProgressMonitor pm)
                 throws DriverException {
+                LOG.trace("Writing file");
                 checkMetadata(dataSource.getMetadata());
                 if (dataSource.getRowCount() == 0) {
                         throw new DriverException("Cannot store an empty raster");
                 } else if (dataSource.getRowCount() > 1) {
                         throw new DriverException("Cannot store more than one raster");
                 } else {
-                        SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
-                                dataSource);
-                        GeoRaster gr = sds.getRaster(0);
-                        try {
-                                gr.save(file.getAbsolutePath());
-                        } catch (IOException e) {
-                                throw new DriverException("Cannot write raster", e);
+                        Value raster = dataSource.getFieldValue(0,
+                                MetadataUtilities.getSpatialFieldIndex(dataSource.getMetadata()));
+                        if (!raster.isNull()) {
+                                try {
+                                        raster.getAsRaster().save(file.getAbsolutePath());
+                                } catch (IOException e) {
+                                        throw new DriverException("Cannot write raster", e);
+                                }
                         }
                 }
         }
 
+        @Override
+        public void setFile(File file) {
+                this.file = file;
+                schema = new DefaultSchema(getTypeName() + file.getAbsolutePath().hashCode());
+                gdmsMetadata = new DefaultMetadata();
+                schema.addTable("main", gdmsMetadata);
+        }
+
+        @Override
         public TypeDefinition[] getTypesDefinitions() {
                 return null;
         }
@@ -167,42 +185,7 @@ public abstract class AbstractRasterDriver implements FileReadWriteDriver {
                 }
         }
 
-        public Metadata getMetadata() throws DriverException {
-                DefaultMetadata metadata = new DefaultMetadata();
-                try {
-                        Constraint[] c = null;
-                        if (geoRaster != null) {
-                                
-                                // adding SRID constraint
-                                if (srid != -1) {
-                                        c = new Constraint[]{new RasterTypeConstraint(geoRaster.getType()),
-                                                        new SRIDConstraint(srid)};
-                                } else {
-                                        c = new Constraint[]{new RasterTypeConstraint(geoRaster.getType())};
-                                }
-                        } else {
-                                c = new Constraint[0];
-                        }
-                        metadata.addField(RASTER_COLUMN_NAME, TypeFactory.createType(Type.RASTER, c));
-
-                } catch (IOException e) {
-                        throw new DriverException("Cannot read the raster type", e);
-                }
-
-                return metadata;
-        }
-
-        public Number[] getScope(int dimension) throws DriverException {
-                switch (dimension) {
-                        case X:
-                                return new Number[]{envelope.getMinX(), envelope.getMaxX()};
-                        case Y:
-                                return new Number[]{envelope.getMinY(), envelope.getMaxY()};
-                        default:
-                                return null;
-                }
-        }
-
+        @Override
         public String validateMetadata(Metadata metadata) throws DriverException {
                 if (metadata.getFieldCount() != 1) {
                         return "Cannot store more than one raster field";
@@ -215,18 +198,65 @@ public abstract class AbstractRasterDriver implements FileReadWriteDriver {
                 return null;
         }
 
+        @Override
         public int getType() {
                 return SourceManager.RASTER | SourceManager.FILE;
         }
 
+        @Override
         public boolean isCommitable() {
                 return false;
         }
 
         @Override
+        public Schema getSchema() throws DriverException {
+                return schema;
+        }
+
+        @Override
+        public ReadAccess getTable(String name) {
+                if (!name.equals("main")) {
+                        return null;
+                }
+                return this;
+        }
+        
+        @Override
         public boolean isOpen() {
                 // once .open() is called, the content is always accessible
                 // thus the driver is always open.
                 return true;
+        }
+
+        @Override
+        public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
+                if (fieldId == 0) {
+                        return ValueFactory.createValue(geoRaster);
+                } else {
+                        throw new DriverException("No such field:" + fieldId);
+
+                }
+        }
+
+        @Override
+        public long getRowCount() throws DriverException {
+                return 1;
+        }
+
+        @Override
+        public Number[] getScope(int dimension) throws DriverException {
+                switch (dimension) {
+                        case ReadAccess.X:
+                                return new Number[]{envelope.getMinX(), envelope.getMaxX()};
+                        case ReadAccess.Y:
+                                return new Number[]{envelope.getMinY(), envelope.getMaxY()};
+                        default:
+                                return null;
+                }
+        }
+
+        @Override
+        public Metadata getMetadata() throws DriverException {
+                return schema.getTableByName("main");
         }
 }

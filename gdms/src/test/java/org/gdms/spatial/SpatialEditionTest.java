@@ -39,7 +39,7 @@ package org.gdms.spatial;
 import java.io.File;
 import java.util.Iterator;
 
-import org.gdms.SourceTest;
+import org.gdms.BaseTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.DigestUtilities;
@@ -49,10 +49,9 @@ import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.indexes.DefaultSpatialIndexQuery;
 import org.gdms.data.indexes.IndexManager;
 import org.gdms.data.indexes.IndexQuery;
-import org.gdms.data.metadata.DefaultMetadata;
+import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryConstraint;
-import org.gdms.data.types.LengthConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -69,8 +68,9 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+import org.gdms.data.types.ConstraintFactory;
 
-public class SpatialEditionTest extends SourceTest {
+public class SpatialEditionTest extends BaseTest {
 
 	private GeometryFactory gf = new GeometryFactory();
 
@@ -130,7 +130,7 @@ public class SpatialEditionTest extends SourceTest {
 			Iterator<Integer> list, Geometry geometry) throws DriverException {
 		while (list.hasNext()) {
 			Integer dir = list.next();
-			if (super.equals(
+			if (BaseTest.equals(
 					sds.getFieldValue(dir, sds.getSpatialFieldIndex()),
 					ValueFactory.createValue(geometry))) {
 				return true;
@@ -284,19 +284,16 @@ public class SpatialEditionTest extends SourceTest {
 		shpFile.delete();
 		new File("src/test/resources/backup/big.shx").delete();
 		DefaultMetadata dsdm = new DefaultMetadata();
-		dsdm.addField("geom", Type.GEOMETRY,
-				new Constraint[] { new GeometryConstraint(
-						GeometryConstraint.LINESTRING) });
-		dsdm.addField("text", Type.STRING,
-				new Constraint[] { new LengthConstraint(10) });
+		dsdm.addField("geom", Type.GEOMETRY, ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.LINESTRING));
+		dsdm.addField("text", Type.STRING, ConstraintFactory.createConstraint(Constraint.LENGTH, 10));
 
 		dsf.createDataSource(new FileSourceCreation(shpFile, dsdm));
 
 		String dsName = "big" + System.currentTimeMillis();
 		dsf.getSourceManager().register(
 				dsName,
-				new FileSourceDefinition(new File(
-						"src/test/resources/backup/big.shp")));
+				new FileSourceCreation(new File(
+						"src/test/resources/backup/big.shp"), null));
 
 		SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf
 				.getDataSource(dsName));
@@ -325,14 +322,14 @@ public class SpatialEditionTest extends SourceTest {
 		for (int i = 0; i < n; i++) {
 			Geometry readGeom = d.getGeometry(i);
 			assertTrue(readGeom
-					.equals((com.vividsolutions.jts.geom.Geometry) geom));
+					.equals(geom));
 			assertTrue(d.getFieldValue(i, 1).equals(nv2).getAsBoolean());
 		}
 		d.close();
 	}
 
 	public void testIsModified() throws Exception {
-		DataSource d = dsf.getDataSource(super.getAnySpatialResource());
+		DataSource d = dsf.getDataSource(super.getResourcesWithoutPK()[0]);
 
 		d.open();
 		assertFalse(d.isModified());
@@ -545,7 +542,7 @@ public class SpatialEditionTest extends SourceTest {
 		Point p2 = gf.createPoint(new Coordinate(20, 20));
 		omd.addValues(new Value[] { ValueFactory.createValue(p1) });
 		omd.addValues(new Value[] { ValueFactory.createValue(p2) });
-		DataSource d = dsf.getDataSource(omd);
+		DataSource d = dsf.getDataSource(omd,"main");
 		dsf.getIndexManager().buildIndex(d.getName(), "geom",
 				IndexManager.RTREE_SPATIAL_INDEX, null);
 		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(d);

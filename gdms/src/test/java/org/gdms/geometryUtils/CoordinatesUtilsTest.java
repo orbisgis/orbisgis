@@ -35,7 +35,6 @@
  * or contact directly:
  * info _at_ orbisgis.org
  */
-
 package org.gdms.geometryUtils;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -50,9 +49,9 @@ import junit.framework.TestCase;
  */
 public class CoordinatesUtilsTest extends TestCase {
 
-        public WKTReader wKTReader = new WKTReader();
+        private WKTReader wKTReader = new WKTReader();
 
-         /**
+        /**
          * Test remove duplicate coordinates
          * @throws Exception
          */
@@ -60,9 +59,6 @@ public class CoordinatesUtilsTest extends TestCase {
                 //Test remove with a linestring
                 Geometry geom = wKTReader.read("LINESTRING(0 8 10, 1 8 ,1 8, 3 8,  8  8, 10 8, 10 8, 20 8, 0 8)");
                 Coordinate[] coords = CoordinateArrays.removeRepeatedPoints(geom.getCoordinates());
-                assertTrue(coords.length==7);
+                assertTrue(coords.length == 7);
         }
-
-
-
 }

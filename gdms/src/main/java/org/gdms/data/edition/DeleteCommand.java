@@ -60,8 +60,12 @@ public class DeleteCommand extends AbstractCommand implements Command {
 		dataSource.undoDeleteRow(info.dir, info.rowId, info.dei, info.ei);
 	}
 
+        @Override
+        public void clear() {
+        }
+
 	public static class DeleteCommandInfo {
-		public PhysicalDirection dir;
+		public PhysicalRowAddress dir;
 
 		public long rowId;
 
@@ -69,7 +73,7 @@ public class DeleteCommand extends AbstractCommand implements Command {
 
 		public EditionInfo ei;
 
-		public DeleteCommandInfo(PhysicalDirection dir, long rowId,
+		public DeleteCommandInfo(PhysicalRowAddress dir, long rowId,
 				DeleteEditionInfo dei, EditionInfo ei) {
 			super();
 			this.dir = dir;

@@ -38,32 +38,52 @@ package org.gdms.driver.gdms;
 
 import java.io.File;
 import java.io.IOException;
+import org.apache.log4j.Logger;
 
-import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.OpenCloseCounter;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.DefaultSchema;
+import org.gdms.data.schema.Metadata;
+import org.gdms.data.schema.Schema;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.driver.GDMSModelDriver;
+import org.gdms.driver.ReadAccess;
+import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.SourceManager;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 
-public class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver {
+public final class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver, ReadAccess {
 
-        static final byte VERSION_NUMBER = 3;
+        // version 1 : not supported anymore
+        // version 2 : supported
+        //      row indexes are after the metadata, at the beginning of the file
+        // version 3 : supported
+        //      row indexes are at the end of the file. The location is written
+        //      in the header, after the metadata
+        // version 4 : current version
+        //      locations within the file are now written as Long and not Integer
+        //      the file are thus longer, but can be bigger than 2 GB
+        //      note that there is still a limit on the number of rows
+        //      of Integer.MAX_VALUE - 1
+        static final byte VERSION_NUMBER = 4;
         private GdmsReader reader;
         private OpenCloseCounter counter = new OpenCloseCounter("");
+        private Schema schema;
+        private static final Logger LOG = Logger.getLogger(GdmsDriver.class);
 
+        @Override
         public void copy(File in, File out) throws IOException {
                 FileUtils.copy(in, out);
         }
 
+        @Override
         public void createSource(String path, Metadata metadata,
                 DataSourceFactory dataSourceFactory) throws DriverException {
+                LOG.trace("Creating gdms file");
                 try {
                         GdmsWriter writer = new GdmsWriter(new File(path));
                         writer.writeMetadata(0, metadata);
@@ -73,8 +93,10 @@ public class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver {
                 }
         }
 
-        public void writeFile(File file, DataSource dataSource, IProgressMonitor pm)
+        @Override
+        public void writeFile(File file, ReadAccess dataSource, ProgressMonitor pm)
                 throws DriverException {
+                LOG.trace("Writing gdms file");
                 try {
                         GdmsWriter writer = new GdmsWriter(file);
                         writer.write(dataSource, pm);
@@ -84,12 +106,13 @@ public class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver {
                 }
         }
 
+        @Override
         public void close() throws DriverException {
                 synchronized (this) {
+                        LOG.trace("Closing");
                         if (counter.stop()) {
                                 try {
                                         reader.close();
-                                        reader = null;
                                 } catch (IOException e) {
                                         throw new DriverException(e);
                                 }
@@ -97,101 +120,62 @@ public class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver {
                 }
         }
 
-        public void open(File file) throws DriverException {
+        @Override
+        public void open() throws DriverException {
                 synchronized (this) {
+                        LOG.trace("Opening");
                         if (counter.start()) {
                                 try {
-                                        reader = new GdmsReader(file);
+                                        reader.open();
                                         reader.readMetadata();
                                 } catch (IOException e) {
-                                        counter.stop();
                                         throw new DriverException(e);
                                 }
                         }
                 }
         }
 
-        public boolean isOpen() {
-                boolean open = false;
-                synchronized (this) {
-                        open = reader != null;
-                }
-                return open;
-        }
-
-        public Metadata getMetadata() throws DriverException {
-                Metadata m = null;
-                synchronized (this) {
-                        if (reader == null) {
-                                return null;
-                        }
-                        m = reader.getMetadata();
-                }
-                return m;
-        }
-
+        @Override
         public int getType() {
-                // by default this is a file driver
                 int type = SourceManager.FILE;
-
-                // when it is actually bound to a file, we check for additional data
-                // (getMetadata() != null) excludes the case of a corrupted gdms file
-                try {
-                        if (reader != null && reader.getMetadata() != null) {
-                                Metadata m = reader.getMetadata();
-                                for (int i = 0; i < m.getFieldCount(); i++) {
-                                        switch (m.getFieldType(i).getTypeCode()) {
-                                                case Type.GEOMETRY:
-                                                        type |= SourceManager.VECTORIAL;
-                                                        break;
-                                                case Type.RASTER:
-                                                        type |= SourceManager.RASTER;
-                                                        break;
+                if (schema != null) {
+                        try {
+                                Metadata m = schema.getTableByName(DriverManager.DEFAULT_SINGLE_TABLE_NAME);
+                                if (m != null) {
+                                        for (int i = 0; i < m.getFieldCount(); i++) {
+                                                switch (m.getFieldType(i).getTypeCode()) {
+                                                        case Type.GEOMETRY:
+                                                                type |= SourceManager.VECTORIAL;
+                                                                break;
+                                                        case Type.RASTER:
+                                                                type |= SourceManager.RASTER;
+                                                                break;
+                                                        default:
+                                                }
                                         }
                                 }
-
-                                return type;
-                        } else {
-                                // if we cannot tell, we add VECTORIAL
-                                // WARNING: this is needed so that GDMS can be considered
-                                // a writable vectorial driver
-                                //
-                                // 01/11/2011
-                                // TODO: getType should be split between a method that
-                                // returns the type of the current file loaded by the driver
-                                // and a static method that returns the types this driver
-                                // can work with
-                                return type | SourceManager.VECTORIAL;
+                        } catch (DriverException ex) {
+                                LOG.warn("There was an error while accessing the file.", ex);
                         }
-                } catch (DriverException ex) {
-                        return type | SourceManager.VECTORIAL;
                 }
+                return type;
         }
 
+        @Override
         public void setDataSourceFactory(DataSourceFactory dsf) {
         }
 
+        @Override
         public String getDriverId() {
                 return "GDMS driver";
         }
 
-        public Value getFieldValue(long rowIndex, int fieldId)
-                throws DriverException {
-                return reader.getFieldValue(rowIndex, fieldId);
-        }
-
-        public long getRowCount() throws DriverException {
-                return reader.getRowCount();
-        }
-
-        public Number[] getScope(int dimension) throws DriverException {
-                return reader.getScope(dimension);
-        }
-
+        @Override
         public boolean isCommitable() {
                 return true;
         }
 
+        @Override
         public String validateMetadata(Metadata metadata) {
                 return null;
         }
@@ -209,5 +193,59 @@ public class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver {
         @Override
         public String getTypeName() {
                 return "GDMS";
+        }
+
+        @Override
+        public Schema getSchema() throws DriverException {
+                return schema;
+        }
+
+        @Override
+        public ReadAccess getTable(String name) {
+                return this;
+        }
+
+        @Override
+        public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
+                return reader.getFieldValue(rowIndex, fieldId);
+        }
+
+        @Override
+        public long getRowCount() throws DriverException {
+                return reader.getRowCount();
+        }
+
+        @Override
+        public Number[] getScope(int dimension) throws DriverException {
+                return reader.getScope(dimension);
+        }
+
+        @Override
+        public Metadata getMetadata() throws DriverException {
+                if (schema == null) {
+                        return null;
+                }
+                return schema.getTableByName(DriverManager.DEFAULT_SINGLE_TABLE_NAME);
+        }
+
+        @Override
+        public void setFile(File file) throws DriverException {
+                try {
+                        schema = new DefaultSchema("GDMS" + file.getAbsolutePath().hashCode());
+                        reader = new GdmsReader(file);
+                        Metadata m = reader.getMetadata();
+                        schema.addTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME, m);
+                } catch (IOException ex) {
+                        throw new DriverException(ex);
+                }
+        }
+
+        @Override
+        public boolean isOpen() {
+                boolean open = false;
+                synchronized (this) {
+                        open = reader != null;
+                }
+                return open;
         }
 }

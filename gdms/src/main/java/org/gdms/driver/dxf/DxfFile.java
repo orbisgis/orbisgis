@@ -1,21 +1,21 @@
 /*
  * Library name : dxf
  * (C) 2006 Micha�l Michaud
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  * For more information, contact:
  *
  * michael.michaud@free.fr
@@ -29,8 +29,9 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 
-import org.gdms.data.metadata.DefaultMetadata;
+import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.types.Constraint;
+import org.gdms.data.types.ConstraintFactory;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
@@ -39,9 +40,9 @@ import org.gdms.driver.generic.GenericObjectDriver;
 /**
  * A whole dataset contained in a DXF file, and main methods to read from and to
  * write to the file.
- * 
+ *
  * The DxfFile class is one of the main class of the dxf library.
- * 
+ *
  * @author Micha�l Michaud
  * @version 0.5.0
  */
@@ -65,12 +66,7 @@ public class DxfFile {
 	public final static DxfGroup OBJECTS = new DxfGroup(2, "OBJECTS");
 	// Schema de donn�es g�n�ral pour les ENTITIES
 	public final static DefaultMetadata DXF_SCHEMA = new DefaultMetadata();
-	static int iterator = 0;
 	static int DXF_SCHEMACount = 9;
-	private DxfHEADER header = null;
-	private DxfCLASSES classes = null;
-	private DxfTABLES tables = null;
-	private DxfENTITIES entities = null;
 	private int coordinatePrecision = 2;;
 	GenericObjectDriver driver;
 
@@ -81,16 +77,15 @@ public class DxfFile {
 	/**
 	 * Initialize a JUMP FeatureSchema to load dxf data keeping some graphic
 	 * attributes.
-	 * 
+	 *
 	 * @throws DriverException
 	 */
 	public static void initializeDXF_SCHEMA() throws DriverException {
 		if (DXF_SCHEMA.getFieldCount() != 0) {
                         return;
                 }
-		DXF_SCHEMA.addField("GEOMETRY", Type.GEOMETRY,
-				new Constraint[] { new GeometryConstraint(
-						GeometryConstraint.GEOMETRY_COLLECTION) });
+		DXF_SCHEMA.addField("GEOMETRY", Type.GEOMETRY, ConstraintFactory.createConstraint(
+                        Constraint.GEOMETRY_TYPE, GeometryConstraint.GEOMETRY_COLLECTION));
 		DXF_SCHEMA.addField("LAYER", Type.STRING);
 		DXF_SCHEMA.addField("LTYPE", Type.STRING);
 		DXF_SCHEMA.addField("ELEVATION", Type.DOUBLE);
@@ -126,13 +121,13 @@ public class DxfFile {
 			if (group.equals(SECTION)) {
 				group = DxfGroup.readGroup(raf);
 				// System.out.println("SECTION " + group.getValue());
-				if (group.equals(HEADER)) {
-					dxfFile.header = DxfHEADER.readHeader(raf);
-				} else if (group.equals(CLASSES)) {
-					dxfFile.classes = DxfCLASSES.readClasses(raf);
-				} else if (group.equals(TABLES)) {
-					dxfFile.tables = DxfTABLES.readTables(raf);
-				} else if (group.equals(BLOCKS)) {
+//				if (group.equals(HEADER)) {
+//					dxfFile.header = DxfHEADER.readHeader(raf);
+//				} else if (group.equals(CLASSES)) {
+//					dxfFile.classes = DxfCLASSES.readClasses(raf);
+//				} else if (group.equals(TABLES)) {
+//					dxfFile.tables = DxfTABLES.readTables(raf);
+				if (group.equals(BLOCKS)) {
 					DxfBLOCKS.readEntities(raf, dxfFile.driver);
 				} else if (group.equals(ENTITIES)) {
 					DxfENTITIES.readEntities(raf, dxfFile.driver);
@@ -174,7 +169,7 @@ public class DxfFile {
 	 * .toString(999,
 	 * "TRANSLATION BY fr.michaelm.jump.drivers.dxf.DxfFile (v 0.4)"));
 	 * fw.write(DxfGroup.toString(999, "DATE : " + date.toString()));
-	 * 
+	 *
 	 * // ECRITURE DU HEADER fw.write(DxfGroup.toString(0, "SECTION"));
 	 * fw.write(DxfGroup.toString(2, "HEADER")); fw.write(DxfGroup.toString(9,
 	 * "$ACADVER")); fw.write(DxfGroup.toString(1, "AC1009"));
@@ -227,7 +222,7 @@ public class DxfFile {
 	 * fw.write(DxfGroup.toString(0, "LAYER")); // added by L. // Becker on //
 	 * 2006-11-08 fw.write(layer.toString()); } } fw.write(DxfGroup.toString(0,
 	 * "ENDTAB")); fw.write(DxfGroup.toString(0, "ENDSEC"));
-	 * 
+	 *
 	 * // ECRITURE DES FEATURES fw.write(DxfGroup.toString(0, "SECTION"));
 	 * fw.write(DxfGroup.toString(2, "ENTITIES")); Iterator it =
 	 * features.iterator(); while (it.hasNext()) { Feature feature = (Feature)
@@ -238,7 +233,7 @@ public class DxfFile {
 	 * (layerNames.length > 0) { fw.write(DxfENTITY.feature2Dxf(feature,
 	 * layerNames[0], suffix)); } else { fw.write(DxfENTITY.feature2Dxf(feature,
 	 * "0", false)); } } fw.write(DxfGroup.toString(0, "ENDSEC"));
-	 * 
+	 *
 	 * // FIN DE FICHIER fw.write(DxfGroup.toString(0, "EOF")); fw.flush(); }
 	 * catch (IOException ioe) { ioe.printStackTrace(); } return; }
 	 */

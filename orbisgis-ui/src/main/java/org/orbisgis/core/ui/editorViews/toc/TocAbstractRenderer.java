@@ -43,7 +43,7 @@ import java.io.IOException;
 import javax.swing.Icon;
 
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;

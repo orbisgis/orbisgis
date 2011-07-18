@@ -41,7 +41,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import javax.swing.AbstractListModel;
 import javax.swing.ListModel;
-import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.function.FunctionManager;
 
 /**
@@ -73,12 +72,7 @@ public class FunctionListModel extends AbstractListModel implements ListModel {
         for (String functionName : functions) {
             functionsList.add(new FunctionElement(functionName.toUpperCase(), FunctionElement.BASIC_FUNCTION));
         }
-        String[] customQueries = QueryManager.getQueryNames();
-
-        for (String customName : customQueries) {
-            functionsList.add(new FunctionElement(customName.toUpperCase(), FunctionElement.CUSTOM_FUNCTION));
-        }
-
+        
         Collections.sort(functionsList, new NameComparator());
 
 

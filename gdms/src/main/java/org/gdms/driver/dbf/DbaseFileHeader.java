@@ -76,6 +76,7 @@ import org.gdms.driver.ReadBufferManager;
  *         http://svn.geotools.org/geotools/tags/2.3.1/plugin/shapefile/src/org/geotools/data/shapefile/dbf/DbaseFileHeader.java $
  */
 public class DbaseFileHeader {
+        private static final String FIELD_LENGTH_FOR = "Field Length for ";
 	// Constant for the size of a record
 	private static final int FILE_DESCRIPTOR_SIZE = 32;
 
@@ -83,6 +84,7 @@ public class DbaseFileHeader {
 	private static final byte MAGIC = 0x03;
 
 	private static final int MINIMUM_HEADER = 33;
+        private static final String SET_TO = " set to ";
 
 	// Date the file was last updated.
 	private Date date = new Date();
@@ -104,7 +106,7 @@ public class DbaseFileHeader {
 	/**
 	 * Class for holding the information assicated with a record.
 	 */
-	class DbaseField {
+	static class DbaseField {
 
 		// Field Name
 		String fieldName;
@@ -151,7 +153,8 @@ public class DbaseFileHeader {
 	 *            The length of the field, in bytes ( see above )
 	 * @param inDecimalCount
 	 *            For numeric fields, the number of decimal places to track.
-	 * @throws DbaseFileException
+         * @param warningListener 
+         * @throws DbaseFileException
 	 *             If the type is not recognized.
 	 */
 	public void addColumn(String inFieldName, char inFieldType,
@@ -168,7 +171,7 @@ public class DbaseFileHeader {
 		DbaseField[] tempFieldDescriptors = new DbaseField[fields.length + 1];
 		for (int i = 0; i < fields.length; i++) {
 			fields[i].fieldDataAddress = tempLength;
-			tempLength = tempLength + fields[i].fieldLength;
+			tempLength += fields[i].fieldLength;
 			tempFieldDescriptors[i] = fields[i];
 		}
 		tempFieldDescriptors[fields.length] = new DbaseField();
@@ -196,9 +199,9 @@ public class DbaseFileHeader {
 			tempFieldDescriptors[fields.length].fieldType = 'C';
 			if (inFieldLength > 254) {
 				warningListener
-						.throwWarning("Field Length for "
+						.throwWarning(FIELD_LENGTH_FOR
 								+ inFieldName
-								+ " set to "
+								+ SET_TO
 								+ inFieldLength
 								+ " Which is longer than 254, not consistent with dbase III");
 			}
@@ -210,9 +213,9 @@ public class DbaseFileHeader {
 							+ " set to S which is flat out wrong people!, I am setting this to C, in the hopes you meant character.");
 			if (inFieldLength > 254) {
 				warningListener
-						.throwWarning("Field Length for "
+						.throwWarning(FIELD_LENGTH_FOR
 								+ inFieldName
-								+ " set to "
+								+ SET_TO
 								+ inFieldLength
 								+ " Which is longer than 254, not consistent with dbase III");
 			}
@@ -220,8 +223,8 @@ public class DbaseFileHeader {
 		} else if ((inFieldType == 'D') || (inFieldType == 'd')) {
 			tempFieldDescriptors[fields.length].fieldType = 'D';
 			if (inFieldLength != 8) {
-				warningListener.throwWarning("Field Length for " + inFieldName
-						+ " set to " + inFieldLength
+				warningListener.throwWarning(FIELD_LENGTH_FOR + inFieldName
+						+ SET_TO + inFieldLength
 						+ " Setting to 8 digets YYYYMMDD");
 			}
 			tempFieldDescriptors[fields.length].fieldLength = 8;
@@ -229,9 +232,9 @@ public class DbaseFileHeader {
 			tempFieldDescriptors[fields.length].fieldType = 'F';
 			if (inFieldLength > 20) {
 				warningListener
-						.throwWarning("Field Length for "
+						.throwWarning(FIELD_LENGTH_FOR
 								+ inFieldName
-								+ " set to "
+								+ SET_TO
 								+ inFieldLength
 								+ " Preserving length, but should be set to Max of 20 not valid for dbase IV, and UP specification, not present in dbaseIII.");
 			}
@@ -239,21 +242,21 @@ public class DbaseFileHeader {
 			tempFieldDescriptors[fields.length].fieldType = 'N';
 			if (inFieldLength > 18) {
 				warningListener
-						.throwWarning("Field Length for "
+						.throwWarning(FIELD_LENGTH_FOR
 								+ inFieldName
-								+ " set to "
+								+ SET_TO
 								+ inFieldLength
 								+ " Preserving length, but should be set to Max of 18 for dbase III specification.");
 			}
 			if (inDecimalCount < 0) {
 				warningListener.throwWarning("Field Decimal Position for "
-						+ inFieldName + " set to " + inDecimalCount
+						+ inFieldName + SET_TO + inDecimalCount
 						+ " Setting to 0 no decimal data will be saved.");
 				tempFieldDescriptors[fields.length].decimalCount = 0;
 			}
 			if (inDecimalCount > inFieldLength - 1) {
 				warningListener.throwWarning("Field Decimal Position for "
-						+ inFieldName + " set to " + inDecimalCount
+						+ inFieldName + SET_TO + inDecimalCount
 						+ " Setting to " + (inFieldLength - 1)
 						+ " no non decimal data will be saved.");
 				tempFieldDescriptors[fields.length].decimalCount = inFieldLength - 1;
@@ -261,8 +264,8 @@ public class DbaseFileHeader {
 		} else if ((inFieldType == 'L') || (inFieldType == 'l')) {
 			tempFieldDescriptors[fields.length].fieldType = 'L';
 			if (inFieldLength != 1) {
-				warningListener.throwWarning("Field Length for " + inFieldName
-						+ " set to " + inFieldLength
+				warningListener.throwWarning(FIELD_LENGTH_FOR + inFieldName
+						+ SET_TO + inFieldLength
 						+ " Setting to length of 1 for logical fields.");
 			}
 			tempFieldDescriptors[fields.length].fieldLength = 1;
@@ -271,8 +274,7 @@ public class DbaseFileHeader {
 					+ " For column " + inFieldName);
 		}
 		// the length of a record
-		tempLength = tempLength
-				+ tempFieldDescriptors[fields.length].fieldLength;
+		tempLength += tempFieldDescriptors[fields.length].fieldLength;
 
 		// set the new fields.
 		fields = tempFieldDescriptors;
@@ -299,9 +301,8 @@ public class DbaseFileHeader {
 				// if this is the last field and we still haven't found the
 				// named field
 				if (i == j && i == fields.length - 1) {
-					System.err.println("Could not find a field named '"
+					throw new IllegalArgumentException("Could not find a field named '"
 							+ inFieldName + "' for removal");
-					return retCol;
 				}
 				tempFieldDescriptors[j] = fields[i];
 				tempFieldDescriptors[j].fieldDataAddress = tempLength;
@@ -421,7 +422,8 @@ public class DbaseFileHeader {
 	 *            A readable byte channel. If you have an InputStream you need
 	 *            to use, you can call java.nio.Channels.getChannel(InputStream
 	 *            in).
-	 * @throws IOException
+         * @param listener
+         * @throws IOException
 	 *             If errors occur while reading.
 	 */
 	public void readHeader(FileChannel channel, WarningListener listener) throws IOException {
@@ -444,9 +446,9 @@ public class DbaseFileHeader {
 		int tempUpdateDay = in.get();
 		// ouch Y2K uncompliant
 		if (tempUpdateYear > 90) {
-			tempUpdateYear = tempUpdateYear + 1900;
+			tempUpdateYear += 1900;
 		} else {
-			tempUpdateYear = tempUpdateYear + 2000;
+			tempUpdateYear += 2000;
 		}
 		Calendar c = Calendar.getInstance();
 		c.set(Calendar.YEAR, tempUpdateYear);
@@ -497,7 +499,7 @@ public class DbaseFileHeader {
 			// read the field length in bytes
 			int length = (int) in.get();
 			if (length < 0) {
-				length = length + 256;
+				length += 256;
 			}
 			field.fieldLength = length;
 
@@ -524,10 +526,9 @@ public class DbaseFileHeader {
 		// in.skipBytes(1);
 		in.skip(1);
 
-		in = null;
 
 		fields = new DbaseField[lfields.size()];
-		fields = (DbaseField[]) lfields.toArray(fields);
+		fields = lfields.toArray(fields);
 	}
 
 	/**
@@ -568,7 +569,7 @@ public class DbaseFileHeader {
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
 
 		// write the output file type.
-		buffer.put((byte) MAGIC);
+		buffer.put(MAGIC);
 
 		// write the date stuff
 		Calendar c = Calendar.getInstance();
@@ -627,9 +628,9 @@ public class DbaseFileHeader {
 		buffer.position(0);
 
 		int r = buffer.remaining();
-		while ((r -= out.write(buffer)) > 0) {
-			; // do nothing
-		}
+                do {
+                        r -= out.write(buffer);
+                } while (r > 0);
 	}
 
 	/**
@@ -637,12 +638,12 @@ public class DbaseFileHeader {
 	 *
 	 * @return A String representing the state of the header.
 	 */
+        @Override
 	public String toString() {
-		StringBuffer fs = new StringBuffer();
+		StringBuilder fs = new StringBuilder();
 		for (int i = 0, ii = fields.length; i < ii; i++) {
 			DbaseField f = fields[i];
-			fs.append(f.fieldName + " " + f.fieldType + " " + f.fieldLength
-					+ " " + f.decimalCount + " " + f.fieldDataAddress + "\n");
+			fs.append(f.fieldName).append(" ").append(f.fieldType).append(" ").append(f.fieldLength).append(" ").append(f.decimalCount).append(" ").append(f.fieldDataAddress).append("\n");
 		}
 
 		return "DB3 Header\n" + "Date : " + date + "\n" + "Records : "

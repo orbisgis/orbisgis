@@ -61,7 +61,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.function.FunctionManager;
 import org.orbisgis.core.ui.components.jlist.OGList;
 import org.orbisgis.core.ui.components.text.JButtonTextField;
@@ -112,12 +111,8 @@ public class SQLFunctionsPanel extends JPanel implements DragGestureListener,
                         public String getToolTipText(MouseEvent evt) {
                                 int index = locationToIndex(evt.getPoint());
                                 FunctionElement item = (FunctionElement) getModel().getElementAt(index);
-                                String toolTip;
-                                if (item.getFunctionType() == FunctionElement.BASIC_FUNCTION) {
-                                        toolTip = FunctionManager.getFunction(item.getFunctionName()).getDescription();
-                                } else {
-                                        toolTip = QueryManager.getQuery(item.getFunctionName()).getDescription();
-                                }
+                                String toolTip = FunctionManager.getFunction(item.getFunctionName()).getDescription();
+
                                 // Return the tool tip text
                                 return toolTip;
                         }
@@ -193,23 +188,18 @@ public class SQLFunctionsPanel extends JPanel implements DragGestureListener,
                 String[] sources = new String[selectedValues.length];
                 for (int i = 0; i < sources.length; i++) {
                         FunctionElement functionElement = (FunctionElement) selectedValues[i];
-                        if (functionElement.getFunctionType() == FunctionElement.BASIC_FUNCTION) {
-                                sources[i] = FunctionManager.getFunction(functionElement.getFunctionName()).getSqlOrder();
-                        } else if (functionElement.getFunctionType() == FunctionElement.CUSTOM_FUNCTION) {
-                                sources[i] = QueryManager.getQuery(functionElement.getFunctionName()).getSqlOrder();
-                        }
-
+                        sources[i] = FunctionManager.getFunction(functionElement.getFunctionName()).getSqlOrder();
                 }
                 return sources;
         }
 
         public Transferable getDragData(DragGestureEvent dge) {
                 String[] sources = getSelectedSources();
-		if (sources.length > 0) {
-			return new TransferableSource(sources);
-		} else {
-			return null;
-		}
+                if (sources.length > 0) {
+                        return new TransferableSource(sources);
+                } else {
+                        return null;
+                }
         }
 
         @Override

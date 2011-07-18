@@ -43,24 +43,23 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.gdms.data.WarningListener;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.DimensionConstraint;
 import org.gdms.data.types.GeometryConstraint;
-import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.ReadAccess;
 import org.gdms.driver.TableDescription;
 import org.gdms.driver.jdbc.AutonumericRule;
 import org.gdms.driver.jdbc.BooleanRule;
@@ -76,18 +75,22 @@ import org.postgresql.PGConnection;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTWriter;
-import java.util.Arrays;
+import java.util.Map;
 import java.util.Properties;
+import org.apache.log4j.Logger;
+import org.gdms.data.types.ConstraintFactory;
 import org.gdms.data.types.SRIDConstraint;
 
 /**
  *
  */
-public class PostgreSQLDriver extends DefaultDBDriver {
+public final class PostgreSQLDriver extends DefaultDBDriver implements ReadAccess {
 
         public static final String DRIVER_NAME = "postgresql";
+        private static final String GEOMETRYFIELDNAME = "GEOMETRY";
         private static Exception driverException;
         private static JtsBinaryParser parser = new JtsBinaryParser();
+        private static final Logger LOG = Logger.getLogger(PostgreSQLDriver.class);
 
         static {
                 try {
@@ -97,12 +100,10 @@ public class PostgreSQLDriver extends DefaultDBDriver {
                 }
         }
         private Set<String> geometryFields;
-        private ArrayList<String> fields;
-        private HashMap<String, String> geometryTypes;
-        private HashMap<String, Integer> geometryDimensions;
+        private Map<String, String> geometryTypes;
+        private Map<String, Integer> geometryDimensions;
         private Window wnd;
         private int rowCount;
-        private boolean isPostGISTable;
         private int srid;
         private List<DriverException> nonblockingErrors = new ArrayList<DriverException>();
 
@@ -128,11 +129,13 @@ public class PostgreSQLDriver extends DefaultDBDriver {
          *
          * @see org.gdms.driver.DBDriver#connect(java.lang.String)
          */
+        @Override
         public Connection getConnection(String host, int port, boolean ssl, String dbName,
                 String user, String password) throws SQLException {
                 if (driverException != null) {
-                        throw new RuntimeException(driverException);
+                        throw new UnsupportedOperationException(driverException);
                 }
+                LOG.trace("Getting connection");
 
                 String connectionString = "jdbc:postgresql://" + host;
 
@@ -145,12 +148,14 @@ public class PostgreSQLDriver extends DefaultDBDriver {
                 if (user != null) {
                         connectionString += ("?user=" + user + "&password=" + password);
                 }
+
                 Connection c = null;
                 if (ssl) {
                         Properties props = new Properties();
                         props.setProperty("ssl", "true");
-                        props.setProperty("sslfactory", "org.postgresql.ssl.NonValidatingFactory");
-                        c = DriverManager.getConnection(connectionString, props);
+                        props.setProperty("sslfactory", "org.postgresql.ssl.NonValidationFactory");
+                        c = DriverManager.getConnection(user, props);
+
                 } else {
                         c = DriverManager.getConnection(connectionString);
                 }
@@ -161,11 +166,6 @@ public class PostgreSQLDriver extends DefaultDBDriver {
         }
 
         @Override
-        public long getRowCount() throws DriverException {
-                return rowCount;
-        }
-
-        @Override
         public void open(Connection con, String tableName) throws DriverException {
                 open(con, tableName, null);
         }
@@ -173,6 +173,7 @@ public class PostgreSQLDriver extends DefaultDBDriver {
         @Override
         public void open(Connection con, String tableName, String schemaName)
                 throws DriverException {
+                LOG.trace("Opening");
                 nonblockingErrors.clear();
                 this.tableName = tableName;
                 this.schemaName = schemaName;
@@ -181,7 +182,7 @@ public class PostgreSQLDriver extends DefaultDBDriver {
                 geometryFields = new HashSet<String>();
                 geometryTypes = new HashMap<String, String>();
                 geometryDimensions = new HashMap<String, Integer>();
-                fields = new ArrayList<String>();
+                List<String> fields = new ArrayList<String>();
                 Statement st;
                 try {
                         st = con.createStatement();
@@ -189,17 +190,16 @@ public class PostgreSQLDriver extends DefaultDBDriver {
                         throw new DriverException(ex);
                 }
                 ResultSet res = null;
+                boolean isPostGISTable = false;
                 try {
-                        if (schemaName != null) {
-                                if (schemaName.length() != 0) {
-                                        res = st.executeQuery("select * from \"geometry_columns\"" + " where \"f_table_schema\" = '" + schemaName + "' and \"f_table_name\" = '" + tableName + "'");
-                                }
+                        if (schemaName != null && schemaName.length() != 0) {
+                                res = st.executeQuery("select * from \"geometry_columns\"" + " where \"f_table_schema\" = '"
+                                        + schemaName + "' and \"f_table_name\" = '" + tableName + "'");
                         }
                         if (res == null) {
                                 res = st.executeQuery("select * from \"geometry_columns\""
                                         + " where \"f_table_name\" = '" + tableName + "'");
                         }
-
                         while (res.next()) {
                                 isPostGISTable = true;
                                 String geomFieldName = res.getString("f_geometry_column");
@@ -242,7 +242,7 @@ public class PostgreSQLDriver extends DefaultDBDriver {
                                         if (metadata.getColumnTypeName(i + 1).equals("geometry")) {
                                                 String geomFieldName = metadata.getColumnName(i + 1);
                                                 geometryFields.add(geomFieldName);
-                                                geometryTypes.put(geomFieldName, "GEOMETRY");
+                                                geometryTypes.put(geomFieldName, GEOMETRYFIELDNAME);
                                                 geometryDimensions.put(geomFieldName, Type.GEOMETRY);
                                                 break;
                                         }
@@ -288,6 +288,7 @@ public class PostgreSQLDriver extends DefaultDBDriver {
                 List<TableDescription> tablesDescToReturn = new ArrayList<TableDescription>();
                 tablesDescToReturn.addAll(Arrays.asList(tableDescriptions));
 
+                LOG.trace("Retrieving table definitions");
                 // Retrieves the PostGIS geometryType of each Database.
                 Statement st;
                 ResultSet res = null;
@@ -305,11 +306,11 @@ public class PostgreSQLDriver extends DefaultDBDriver {
                                                 tableDescriptions[i].getName())
                                                 && res.getString("f_table_schema").equals(
                                                 tableDescriptions[i].getSchema())) {
-                                                int srid = res.getInt("srid");
-                                                if (srid == 0) {
-                                                        srid = -1;
+                                                int thisSrid = res.getInt("srid");
+                                                if (thisSrid == 0) {
+                                                        thisSrid = -1;
                                                 }
-                                                tableDescriptions[i].setSrid(srid);
+                                                tableDescriptions[i].setSrid(thisSrid);
 
                                                 String geomType = res.getString("type");
                                                 if (geomType.equals("MULTIPOLYGON")
@@ -378,38 +379,38 @@ public class PostgreSQLDriver extends DefaultDBDriver {
 
         @Override
         protected Type getGDMSType(ResultSetMetaData resultsetMetadata,
-                List<String> pkFieldsList, int jdbcFieldIndex) throws SQLException,
-                InvalidTypeException, DriverException {
+                List<String> pkFieldsList, List<String> fkFieldsList, int jdbcFieldIndex) throws SQLException,
+                DriverException {
                 String fieldName = resultsetMetadata.getColumnName(jdbcFieldIndex);
                 if (geometryFields.contains(fieldName)) {
                         String geometryType = geometryTypes.get(fieldName);
                         int geometryDimension = geometryDimensions.get(fieldName);
 
                         return TypeFactory.createType(Type.GEOMETRY, getConstraints(
-                                fieldName, geometryType, geometryDimension, getWL()));
+                                geometryType, geometryDimension, getWL()));
                 } else {
-                        return super.getGDMSType(resultsetMetadata, pkFieldsList,
+                        return super.getGDMSType(resultsetMetadata, pkFieldsList, fkFieldsList,
                                 jdbcFieldIndex);
                 }
         }
 
-        private Constraint[] getConstraints(String fieldName, String geometryType,
+        private Constraint[] getConstraints(String geometryType,
                 int geometryDimension, WarningListener wl) throws DriverException {
-                GeometryConstraint gc;
+                Constraint gc;
 
                 if ("POINT".equals(geometryType)) {
-                        gc = new GeometryConstraint(GeometryConstraint.POINT);
+                        gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.POINT);
                 } else if ("MULTIPOINT".equals(geometryType)) {
-                        gc = new GeometryConstraint(GeometryConstraint.MULTI_POINT);
+                        gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.MULTI_POINT);
                 } else if ("LINESTRING".equals(geometryType)) {
-                        gc = new GeometryConstraint(GeometryConstraint.LINESTRING);
+                        gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.LINESTRING);
                 } else if ("MULTILINESTRING".equals(geometryType)) {
-                        gc = new GeometryConstraint(GeometryConstraint.MULTI_LINESTRING);
+                        gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.MULTI_LINESTRING);
                 } else if ("POLYGON".equals(geometryType)) {
-                        gc = new GeometryConstraint(GeometryConstraint.POLYGON);
+                        gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.POLYGON);
                 } else if ("MULTIPOLYGON".equals(geometryType)) {
-                        gc = new GeometryConstraint(GeometryConstraint.MULTI_POLYGON);
-                } else if ("GEOMETRY".equals(geometryType)) {
+                        gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.MULTI_POLYGON);
+                } else if (GEOMETRYFIELDNAME.equals(geometryType)) {
                         gc = null;
                 } else {
                         wl.throwWarning("Unrecognized geometry type: " + geometryType
@@ -417,16 +418,13 @@ public class PostgreSQLDriver extends DefaultDBDriver {
                         gc = null;
                 }
 
-                DimensionConstraint dc;
-                if (geometryDimension == 2) {
-                        dc = new DimensionConstraint(2);
-                } else if (geometryDimension == 3) {
-                        dc = new DimensionConstraint(3);
+                Constraint dc;
+                if (geometryDimension == 3) {
+                        dc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, 3);
                 } else {
-                        dc = new DimensionConstraint(2);
+                        dc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, 2);
                 }
 
-                Constraint sc;
                 ArrayList<Constraint> cons = new ArrayList<Constraint>();
                 if (srid != -1) {
                         cons.add(new SRIDConstraint(srid));
@@ -440,9 +438,7 @@ public class PostgreSQLDriver extends DefaultDBDriver {
                 return cons.toArray(new Constraint[cons.size()]);
         }
 
-        /**
-         * @see com.hardcode.driverManager.Driver#getDriverId()
-         */
+        @Override
         public String getDriverId() {
                 return DRIVER_NAME;
         }
@@ -452,19 +448,15 @@ public class PostgreSQLDriver extends DefaultDBDriver {
                 return new String[]{"jdbc:postgresql"};
         }
 
-        public Number[] getScope(int dimension) throws DriverException {
-                return null;
-        }
-
         @Override
         public String getStatementString(byte[] binary) {
                 StringBuilder sb = new StringBuilder("'");
                 for (int i = 0; i < binary.length; i++) {
-                        int byte_ = binary[i];
-                        if (byte_ < 0) {
-                                byte_ += 256;
+                        int theByte = binary[i];
+                        if (theByte < 0) {
+                                theByte += 256;
                         }
-                        String b = Integer.toOctalString(byte_);
+                        String b = Integer.toOctalString(theByte);
                         if (b.length() == 1) {
                                 sb.append("\\\\00").append(b);
                         } else if (b.length() == 2) {
@@ -480,34 +472,6 @@ public class PostgreSQLDriver extends DefaultDBDriver {
         }
 
         @Override
-        public Value getFieldValue(long rowIndex, int fieldId)
-                throws DriverException {
-                wnd.moveTo(rowIndex);
-                rowIndex = rowIndex - wnd.offset;
-                if (geometryFields.contains(super.getMetadata().getFieldName(fieldId))) {
-                        try {
-                                fieldId += 1;
-                                ResultSet rs = getResultSet();
-                                rs.absolute((int) rowIndex + 1);
-                                String bytes = rs.getString(fieldId);
-                                if (rs.wasNull()) {
-                                        return ValueFactory.createNullValue();
-                                } else {
-                                        Geometry geom = parser.parse(bytes);
-                                        return ValueFactory.createValue(geom);
-                                }
-                        } catch (SQLException e) {
-                                getWL().throwWarning(
-                                        "Cannot get value: " + e.getMessage()
-                                        + ". Returning null instead.");
-                                return ValueFactory.createNullValue();
-                        }
-                } else {
-                        return super.getFieldValue(rowIndex, fieldId);
-                }
-        }
-
-        @Override
         public String getAddFieldSQL(String fieldName, Type fieldType)
                 throws DriverException {
                 if (fieldType.getTypeCode() == Type.GEOMETRY) {
@@ -520,15 +484,15 @@ public class PostgreSQLDriver extends DefaultDBDriver {
         @Override
         public String getPostCreateTableSQL(Metadata metadata)
                 throws DriverException {
-                String ret = "";
+                StringBuilder ret = new StringBuilder();
                 for (int i = 0; i < metadata.getFieldCount(); i++) {
                         Type fieldType = metadata.getFieldType(i);
                         if (fieldType.getTypeCode() == Type.GEOMETRY) {
-                                ret += getAddGeometryColumn(metadata.getFieldName(i), metadata.getFieldType(i));
+                                ret.append(getAddGeometryColumn(metadata.getFieldName(i), metadata.getFieldType(i)));
                         }
                 }
 
-                return ret;
+                return ret.toString();
         }
 
         private String getAddGeometryColumn(String fieldName, Type fieldType)
@@ -560,31 +524,28 @@ public class PostgreSQLDriver extends DefaultDBDriver {
 
         private String getGeometryTypeName(Constraint constraint) {
                 if (constraint == null) {
-                        return "GEOMETRY";
+                        return GEOMETRYFIELDNAME;
                 } else {
                         GeometryConstraint gc = (GeometryConstraint) constraint;
-                        if (gc == null) {
-                                return "GEOMETRY";
-                        } else {
-                                switch (gc.getGeometryType()) {
-                                        case GeometryConstraint.POINT:
-                                                return "POINT";
-                                        case GeometryConstraint.LINESTRING:
-                                                return "LINESTRING";
-                                        case GeometryConstraint.POLYGON:
-                                                return "POLYGON";
-                                        case GeometryConstraint.MULTI_POINT:
-                                                return "MULTIPOINT";
-                                        case GeometryConstraint.MULTI_LINESTRING:
-                                                return "MULTILINESTRING";
-                                        case GeometryConstraint.MULTI_POLYGON:
-                                                return "MULTIPOLYGON";
-                                        default:
-                                                getWL().throwWarning(
-                                                        "Bug in postgreSQL driver: "
-                                                        + gc.getGeometryType());
-                                                return "GEOMETRY";
-                                }
+
+                        switch (gc.getGeometryType()) {
+                                case GeometryConstraint.POINT:
+                                        return "POINT";
+                                case GeometryConstraint.LINESTRING:
+                                        return "LINESTRING";
+                                case GeometryConstraint.POLYGON:
+                                        return "POLYGON";
+                                case GeometryConstraint.MULTI_POINT:
+                                        return "MULTIPOINT";
+                                case GeometryConstraint.MULTI_LINESTRING:
+                                        return "MULTILINESTRING";
+                                case GeometryConstraint.MULTI_POLYGON:
+                                        return "MULTIPOLYGON";
+                                default:
+                                        getWL().throwWarning(
+                                                "Bug in postgreSQL driver: "
+                                                + gc.getGeometryType());
+                                        return GEOMETRYFIELDNAME;
                         }
                 }
         }
@@ -592,7 +553,7 @@ public class PostgreSQLDriver extends DefaultDBDriver {
         @Override
         public String getInsertSQL(String[] fieldNames, Type[] fieldTypes,
                 Value[] row) throws DriverException {
-                StringBuffer sql = new StringBuffer();
+                StringBuilder sql = new StringBuilder();
                 sql.append("INSERT INTO ").append(getTableAndSchemaName()).append(
                         " (\"").append(fieldNames[0]);
 
@@ -630,7 +591,7 @@ public class PostgreSQLDriver extends DefaultDBDriver {
         public String getUpdateSQL(String[] pkNames, Value[] pkValues,
                 String[] fieldNames, Type[] fieldTypes, Value[] row)
                 throws DriverException {
-                StringBuffer sql = new StringBuffer();
+                StringBuilder sql = new StringBuilder();
                 sql.append("UPDATE ").append(getTableName()).append(" SET ");
                 String separator = "";
                 for (int i = 0; i < fieldNames.length; i++) {
@@ -668,7 +629,7 @@ public class PostgreSQLDriver extends DefaultDBDriver {
                 private int length = 1024 * 8;
                 private int offset;
 
-                public Window(int offset) {
+                Window(int offset) {
                         this.offset = offset;
                 }
 
@@ -680,6 +641,7 @@ public class PostgreSQLDriver extends DefaultDBDriver {
                 }
         }
 
+        @Override
         public int getType() {
                 return SourceManager.DB | SourceManager.VECTORIAL;
         }
@@ -693,6 +655,7 @@ public class PostgreSQLDriver extends DefaultDBDriver {
                                 new TimeRule(), new PGGeometryRule()};
         }
 
+        @Override
         public String validateMetadata(Metadata metadata) {
                 return null;
         }
@@ -717,10 +680,7 @@ public class PostgreSQLDriver extends DefaultDBDriver {
                 String[] result = super.getSchemas(c);
 
                 List<String> schemas = new ArrayList<String>();
-                for (int i = 0; i < result.length; i++) {
-                        schemas.add(result[i]);
-                }
-
+                schemas.addAll(Arrays.asList(result));
                 schemas.remove("information_schema");
                 schemas.remove("pg_catalog");
                 schemas.remove("pg_toast_temp_1");
@@ -733,5 +693,56 @@ public class PostgreSQLDriver extends DefaultDBDriver {
                 DriverException[] ex = nonblockingErrors.toArray(new DriverException[nonblockingErrors.size()]);
                 nonblockingErrors.clear();
                 return ex;
+        }
+
+        @Override
+        public ReadAccess getTable(String name) {
+                if (!name.equals(tableName)) {
+                        return null;
+                }
+                return this;
+        }
+
+        @Override
+        public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
+                LOG.trace("Getting value for row " + rowIndex);
+                wnd.moveTo(rowIndex);
+                rowIndex -= wnd.offset;
+                if (geometryFields.contains(PostgreSQLDriver.this.getInternalMetadata().getFieldName(fieldId))) {
+                        try {
+                                fieldId += 1;
+                                ResultSet rs = getResultSet();
+                                rs.absolute((int) rowIndex + 1);
+                                String bytes = rs.getString(fieldId);
+                                if (rs.wasNull()) {
+                                        return ValueFactory.createNullValue();
+                                } else {
+                                        Geometry geom = parser.parse(bytes);
+                                        return ValueFactory.createValue(geom);
+                                }
+                        } catch (SQLException e) {
+                                getWL().throwWarning(
+                                        "Cannot get value: " + e.getMessage()
+                                        + ". Returning null instead.");
+                                return ValueFactory.createNullValue();
+                        }
+                } else {
+                        return PostgreSQLDriver.super.getTable(tableName).getFieldValue(rowIndex, fieldId);
+                }
+        }
+
+        @Override
+        public long getRowCount() throws DriverException {
+                return rowCount;
+        }
+
+        @Override
+        public Number[] getScope(int dimension) throws DriverException {
+                return null;
+        }
+
+        @Override
+        public Metadata getMetadata() throws DriverException {
+                return schema.getTableByName(tableName);
         }
 }

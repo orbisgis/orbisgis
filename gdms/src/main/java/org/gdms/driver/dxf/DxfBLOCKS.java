@@ -39,10 +39,10 @@ import org.gdms.driver.generic.GenericObjectDriver;
  * @version 0.5.0
  */
 // History
-public class DxfBLOCKS {
+public final class DxfBLOCKS {
 	// final static FeatureSchema DXF_SCHEMA = new FeatureSchema();
 
-	public DxfBLOCKS() {
+	private DxfBLOCKS() {
 		/*
 		 * DXF_SCHEMA.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
 		 * DXF_SCHEMA.addAttribute("LAYER", AttributeType.STRING);
@@ -64,7 +64,6 @@ public class DxfBLOCKS {
 	public static DxfBLOCKS readEntities(RandomAccessFile raf,
 			GenericObjectDriver driver) throws IOException, DriverException {
 		DxfBLOCKS dxfEntities = new DxfBLOCKS();
-		try {
 			DxfGroup group = new DxfGroup(2, "BLOCKS");
 			while (!group.equals(DxfFile.ENDSEC)) {
 				if (group.getCode() == 0) {
@@ -87,9 +86,6 @@ public class DxfBLOCKS {
 					group = DxfGroup.readGroup(raf);
 				}
 			}
-		} catch (IOException ioe) {
-			throw ioe;
-		}
 		return dxfEntities;
 	}
 

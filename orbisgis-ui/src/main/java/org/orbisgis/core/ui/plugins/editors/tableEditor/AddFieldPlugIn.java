@@ -40,8 +40,8 @@ package org.orbisgis.core.ui.plugins.editors.tableEditor;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.types.TypeDefinition;
+import org.gdms.driver.Driver;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ReadWriteDriver;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.table.TableEditableElement;
@@ -62,7 +62,7 @@ public class AddFieldPlugIn extends AbstractPlugIn {
 				.getElement();
 		try {
 			DataSource dataSource = element.getDataSource();
-			ReadWriteDriver driver = (ReadWriteDriver) dataSource.getDriver();
+			Driver driver = dataSource.getDriver();
 			TypeDefinition[] typeDefinitions = driver.getTypesDefinitions();
 			FieldEditor fe = new FieldEditor(typeDefinitions);
 			if (UIFactory.showDialog(fe)) {

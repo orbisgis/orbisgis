@@ -36,27 +36,29 @@
  */
 package org.gdms.driver.shapefile;
 
-import org.gdms.data.DataSource;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.ReadAccess;
 import org.gdms.driver.dbf.RowProvider;
 
 public class DBFRowProvider implements RowProvider {
 
-	private DataSource dataSource;
+	private ReadAccess dataSource;
 
 	private DBFMetadata metadata;
 
-	public DBFRowProvider(DataSource ds) throws DriverException {
+	public DBFRowProvider(ReadAccess ds) throws DriverException {
 		this.dataSource = ds;
 		this.metadata = new DBFMetadata(dataSource.getMetadata());
 	}
 
+        @Override
 	public Metadata getMetadata() throws DriverException {
 		return metadata;
 	}
 
+        @Override
 	public Value[] getRow(long index) throws DriverException {
 		Value[] ret = new Value[getMetadata().getFieldCount()];
 		for (int i = 0; i < ret.length; i++) {
@@ -65,6 +67,7 @@ public class DBFRowProvider implements RowProvider {
 		return ret;
 	}
 
+        @Override
 	public long getRowCount() throws DriverException {
 		return dataSource.getRowCount();
 	}

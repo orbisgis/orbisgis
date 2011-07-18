@@ -1,5 +1,7 @@
 package org.gdms.data.wms;
 
+import org.apache.log4j.Logger;
+
 public class WMSSource {
 
 	private String host;
@@ -7,8 +9,11 @@ public class WMSSource {
 	private String srs;
 	private String format;
 
+        private static final Logger LOG = Logger.getLogger(WMSSource.class);
+
 	public WMSSource(String host, String layer, String srs, String format) {
 		super();
+                LOG.trace("Constructor");
 		this.host = host;
 		this.layer = layer;
 		this.srs = srs;

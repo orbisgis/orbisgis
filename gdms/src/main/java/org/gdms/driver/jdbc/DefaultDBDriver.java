@@ -49,25 +49,22 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import org.apache.log4j.Logger;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.WarningListener;
-import org.gdms.data.metadata.DefaultMetadata;
-import org.gdms.data.metadata.Metadata;
-import org.gdms.data.types.AutoIncrementConstraint;
+import org.gdms.data.schema.DefaultSchema;
+import org.gdms.data.schema.Metadata;
+import org.gdms.data.schema.SchemaMetadata;
 import org.gdms.data.types.Constraint;
+import org.gdms.data.types.ConstraintFactory;
 import org.gdms.data.types.InvalidTypeException;
-import org.gdms.data.types.LengthConstraint;
-import org.gdms.data.types.NotNullConstraint;
-import org.gdms.data.types.PrecisionConstraint;
-import org.gdms.data.types.PrimaryKeyConstraint;
-import org.gdms.data.types.ReadOnlyConstraint;
-import org.gdms.data.types.ScaleConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.ReadAccess;
 import org.gdms.driver.TableDescription;
 
 /**
@@ -75,485 +72,534 @@ import org.gdms.driver.TableDescription;
  * that are related to JDBC
  * 
  */
-public abstract class DefaultDBDriver extends DefaultSQL {
+public abstract class DefaultDBDriver extends DefaultSQL implements ReadAccess {
 
-	private ResultSet resultSet;
-	private long rowCount = -1;
-	private Metadata metadata = null;
-	private Connection conn;
-	private ResultSetMetaData resultsetMetadata;
-	private DataSourceFactory dsf;
-	private Statement statement;
-	private String orderFieldName;
+        private ResultSet resultSet;
+        private long rowCount = -1;
+        private Metadata metadata = null;
+        private Connection conn;
+        private ResultSetMetaData resultsetMetadata;
+        private DataSourceFactory dsf;
+        private Statement statement;
+        private String orderFieldName;
+        private static final Logger LOG = Logger.getLogger(DefaultDBDriver.class);
 
-	/**
-	 * @see org.gdms.driver.ReadOnlyDriver#getMetadata()
-	 */
-	public Metadata getMetadata() throws DriverException {
-		if (metadata == null) {
-			try {
-				final int fc = resultsetMetadata.getColumnCount();
-				final Type[] fieldsTypes = new Type[fc];
-				final String[] fieldsNames = new String[fc];
+        protected Metadata getInternalMetadata() throws DriverException {
+                if (metadata == null) {
+                        try {
+                                final int fc = resultsetMetadata.getColumnCount();
+                                final Type[] fieldsTypes = new Type[fc];
+                                final String[] fieldsNames = new String[fc];
 
-				final DatabaseMetaData dbmd = conn.getMetaData();
+                                final DatabaseMetaData dbmd = conn.getMetaData();
 
-				ResultSet pKSet = dbmd.getPrimaryKeys(null, schemaName,
-						tableName);
-				final List<String> pKFieldsList = new LinkedList<String>();
-				while (pKSet.next()) {
-					pKFieldsList.add(pKSet.getString("COLUMN_NAME"));
-				}
-				pKSet.close();
-				pKSet = null;
+                                ResultSet pKSet = null;
+                                final List<String> pKFieldsList = new LinkedList<String>();
+                                try {
+                                        pKSet = dbmd.getPrimaryKeys(null, schemaName,
+                                                tableName);
 
-				for (int i = 0; i < fc; i++) {
-					try {
-						fieldsNames[i] = resultsetMetadata.getColumnName(i + 1);
+                                        while (pKSet.next()) {
+                                                pKFieldsList.add(pKSet.getString("COLUMN_NAME"));
+                                        }
+                                } finally {
+                                        if (pKSet != null) {
+                                                pKSet.close();
+                                        }
+                                }
 
-						fieldsTypes[i] = getGDMSType(resultsetMetadata,
-								pKFieldsList, i + 1);
-					} catch (SQLException e) {
-						getWL().throwWarning(
-								"Cannot read type in field: " + i
-										+ ". Using binary instead");
-						fieldsTypes[i] = TypeFactory.createType(Type.BINARY,
-								"Unknown_field_" + i);
-					}
-				}
+                                ResultSet fKSet = null;
+                                final List<String> fKFieldsList = new LinkedList<String>();
+                                try {
+                                        fKSet = dbmd.getImportedKeys(null, schemaName,
+                                                tableName);
 
-				metadata = new DefaultMetadata(fieldsTypes, fieldsNames);
-			} catch (InvalidTypeException e) {
-				throw new DriverException(e);
-			} catch (SQLException e) {
-				throw new DriverException(e);
-			}
-		}
+                                        while (fKSet.next()) {
+                                                fKFieldsList.add(pKSet.getString("COLUMN_NAME"));
+                                        }
+                                } finally {
+                                        if (fKSet != null) {
+                                                fKSet.close();
+                                        }
+                                }
 
-		return metadata;
-	}
+                                for (int i = 0; i < fc; i++) {
+                                        try {
+                                                fieldsNames[i] = resultsetMetadata.getColumnName(i + 1);
 
-	protected Type getGDMSType(ResultSetMetaData resultsetMetadata,
-			List<String> pkFieldsList, int jdbcFieldIndex) throws SQLException,
-			DriverException, InvalidTypeException {
-		ArrayList<Constraint> constraints = new ArrayList<Constraint>();
-		int jdbcType = resultsetMetadata.getColumnType(jdbcFieldIndex);
-		int precision = resultsetMetadata.getPrecision(jdbcFieldIndex);
-		int scale = resultsetMetadata.getScale(jdbcFieldIndex);
-		int length = resultsetMetadata.getColumnDisplaySize(jdbcFieldIndex);
-		int ret = -1;
-		switch (jdbcType) {
-		case Types.CHAR:
-		case Types.VARCHAR:
-		case Types.LONGVARCHAR:
-		case Types.CLOB:
-			if (Integer.MAX_VALUE != length) {
-				constraints.add(new LengthConstraint(length));
-			}
-			ret = Type.STRING;
-			break;
-		case Types.BIGINT:
-			ret = Type.LONG;
-			break;
-		case Types.BOOLEAN:
-		case Types.BIT:
-			ret = Type.BOOLEAN;
-			break;
-		case Types.DATE:
-			ret = Type.DATE;
-			break;
-		case Types.DECIMAL:
-		case Types.NUMERIC:
-			if (precision != 0) {
-				constraints.add(new PrecisionConstraint(precision));
-			}
-			if (scale != 0) {
-				constraints.add(new ScaleConstraint(scale));
-			}
-			ret = Type.DOUBLE;
-			break;
-		case Types.FLOAT:
-		case Types.DOUBLE:
-			ret = Type.DOUBLE;
-			break;
-		case Types.INTEGER:
-			ret = Type.INT;
-			break;
-		case Types.REAL:
-			ret = Type.FLOAT;
-			break;
-		case Types.SMALLINT:
-			ret = Type.SHORT;
-			break;
-		case Types.TINYINT:
-			ret = Type.BYTE;
-			break;
-		case Types.BINARY:
-		case Types.VARBINARY:
-		case Types.LONGVARBINARY:
-		case Types.BLOB:
-			ret = Type.BINARY;
-			break;
-		case Types.TIMESTAMP:
-			ret = Type.TIMESTAMP;
-			break;
-		case Types.TIME:
-			ret = Type.TIME;
-			break;
-		case Types.OTHER:
-			ret = Type.BINARY;
-			break;
-		default:
-			throw new DriverException("Couldn't map the type " + jdbcType);
-		}
+                                                fieldsTypes[i] = getGDMSType(resultsetMetadata,
+                                                        pKFieldsList, fKFieldsList, i + 1);
+                                        } catch (SQLException e) {
+                                                getWL().throwWarning(
+                                                        "Cannot read type in field: " + i
+                                                        + ". Using binary instead");
+                                                fieldsTypes[i] = TypeFactory.createType(Type.BINARY,
+                                                        "Unknown_field_" + i);
+                                        }
+                                }
 
-		constraints.addAll(addGlobalConstraints(resultsetMetadata,
-				pkFieldsList, jdbcFieldIndex));
+                                metadata = new SchemaMetadata(schema, fieldsTypes, fieldsNames);
+                        } catch (InvalidTypeException e) {
+                                throw new DriverException(e);
+                        } catch (SQLException e) {
+                                throw new DriverException(e);
+                        }
+                }
 
-		return TypeFactory.createType(ret, constraints
-				.toArray(new Constraint[0]));
-	}
+                return metadata;
+        }
 
-	protected List<Constraint> addGlobalConstraints(
-			ResultSetMetaData resultsetMetadata, List<String> pkFieldsList,
-			int jdbcFieldIndex) throws SQLException {
-		List<Constraint> constraints = new ArrayList<Constraint>();
-		if (pkFieldsList.contains(resultsetMetadata
-				.getColumnName(jdbcFieldIndex))) {
-			constraints.add(new PrimaryKeyConstraint());
-		}
-		if (ResultSetMetaData.columnNoNulls == resultsetMetadata
-				.isNullable(jdbcFieldIndex)) {
-			constraints.add(new NotNullConstraint());
-		}
-		if (resultsetMetadata.isReadOnly(jdbcFieldIndex)) {
-			constraints.add(new ReadOnlyConstraint());
-		}
-		if (resultsetMetadata.isAutoIncrement(jdbcFieldIndex)) {
-			constraints.add(new AutoIncrementConstraint());
-			constraints.add(new ReadOnlyConstraint());
-		}
+        protected Type getGDMSType(ResultSetMetaData resultsetMetadata,
+                List<String> pkFieldsList, List<String> fkFieldsList, int jdbcFieldIndex) throws SQLException,
+                DriverException {
+                ArrayList<Constraint> constraints = new ArrayList<Constraint>();
+                int jdbcType = resultsetMetadata.getColumnType(jdbcFieldIndex);
+                int precision = resultsetMetadata.getPrecision(jdbcFieldIndex);
+                int scale = resultsetMetadata.getScale(jdbcFieldIndex);
+                int length = resultsetMetadata.getColumnDisplaySize(jdbcFieldIndex);
+                int ret = -1;
+                switch (jdbcType) {
+                        case Types.CHAR:
+                        case Types.VARCHAR:
+                        case Types.LONGVARCHAR:
+                        case Types.CLOB:
+                                if (Integer.MAX_VALUE != length) {
+                                        constraints.add(ConstraintFactory.createConstraint(Constraint.LENGTH, length));
+                                }
+                                ret = Type.STRING;
+                                break;
+                        case Types.BIGINT:
+                                ret = Type.LONG;
+                                break;
+                        case Types.BOOLEAN:
+                        case Types.BIT:
+                                ret = Type.BOOLEAN;
+                                break;
+                        case Types.DATE:
+                                ret = Type.DATE;
+                                break;
+                        case Types.DECIMAL:
+                        case Types.NUMERIC:
+                                if (precision != 0) {
+                                        constraints.add(ConstraintFactory.createConstraint(Constraint.PRECISION, precision));
+                                }
+                                if (scale != 0) {
+                                        constraints.add(ConstraintFactory.createConstraint(Constraint.SCALE, scale));
+                                }
+                                ret = Type.DOUBLE;
+                                break;
+                        case Types.FLOAT:
+                        case Types.DOUBLE:
+                                ret = Type.DOUBLE;
+                                break;
+                        case Types.INTEGER:
+                                ret = Type.INT;
+                                break;
+                        case Types.REAL:
+                                ret = Type.FLOAT;
+                                break;
+                        case Types.SMALLINT:
+                                ret = Type.SHORT;
+                                break;
+                        case Types.TINYINT:
+                                ret = Type.BYTE;
+                                break;
+                        case Types.BINARY:
+                        case Types.VARBINARY:
+                        case Types.LONGVARBINARY:
+                        case Types.TIMESTAMP:
+                                ret = Type.TIMESTAMP;
+                                break;
+                        case Types.TIME:
+                                ret = Type.TIME;
+                                break;
+                        case Types.BLOB:
+                        case Types.OTHER:
+                                ret = Type.BINARY;
+                                break;
+                        default:
+                                throw new DriverException("Couldn't map the type " + jdbcType);
+                }
 
-		return constraints;
-	}
+                constraints.addAll(addGlobalConstraints(resultsetMetadata,
+                        pkFieldsList, fkFieldsList, jdbcFieldIndex));
 
-	/**
-	 * Gets the order by clause of an instruction that orders by the primary key
-	 * fields for the specified table in the default schema
-	 * 
-	 * @param c
-	 * @param tableName
-	 * @return
-	 * @throws SQLException
-	 */
-	protected static String getOrderFields(Connection c, String tableName)
-			throws SQLException {
-		return getOrderFields(c, tableName, null);
-	}
+                return TypeFactory.createType(ret, constraints.toArray(new Constraint[constraints.size()]));
+        }
 
-	/**
-	 * Gets the order by clause of an instruction that orders by the primary key
-	 * fields for the specified table in the specified schema
-	 * 
-	 * @param c
-	 * @param tableName
-	 * @param schemaName
-	 * @return
-	 * @throws SQLException
-	 * 
-	 * @see DefaultDBDriver#getOrderFields(Connection, String)
-	 */
-	protected static String getOrderFields(Connection c, String tableName,
-			String schemaName) throws SQLException {
-		DatabaseMetaData metadata = c.getMetaData();
-		ResultSet res = metadata.getPrimaryKeys(null, schemaName, tableName);
+        protected List<Constraint> addGlobalConstraints(
+                ResultSetMetaData resultsetMetadata, List<String> pkFieldsList, List<String> fkFieldsList,
+                int jdbcFieldIndex) throws SQLException {
+                List<Constraint> constraints = new ArrayList<Constraint>();
+                if (pkFieldsList.contains(resultsetMetadata.getColumnName(jdbcFieldIndex))) {
+                        constraints.add(ConstraintFactory.createConstraint(Constraint.PK));
+                }
+                if (fkFieldsList.contains(resultsetMetadata.getColumnName(jdbcFieldIndex))) {
+                        constraints.add(ConstraintFactory.createConstraint(Constraint.FK));
+                }
+                if (ResultSetMetaData.columnNoNulls == resultsetMetadata.isNullable(jdbcFieldIndex)) {
+                        constraints.add(ConstraintFactory.createConstraint(Constraint.NOT_NULL));
+                }
+                if (resultsetMetadata.isReadOnly(jdbcFieldIndex)) {
+                        constraints.add(ConstraintFactory.createConstraint(Constraint.READONLY));
+                }
+                if (resultsetMetadata.isAutoIncrement(jdbcFieldIndex)) {
+                        constraints.add(ConstraintFactory.createConstraint(Constraint.AUTO_INCREMENT));
+                        constraints.add(ConstraintFactory.createConstraint(Constraint.READONLY));
+                }
 
-		String order = null;
-		if (res.next()) {
-			order = "\"" + res.getString("COLUMN_NAME") + "\"";
-		}
-		while (res.next()) {
-			order = order + ", \"" + res.getString("COLUMN_NAME") + "\"";
-		}
-		res.close();
-		res = null;
+                return constraints;
+        }
 
-		return order;
-	}
+        /**
+         * Gets the order by clause of an instruction that orders by the primary key
+         * fields for the specified table in the default schema
+         *
+         * @param c
+         * @param tableName
+         * @return
+         * @throws SQLException
+         */
+        protected static String getOrderFields(Connection c, String tableName)
+                throws SQLException {
+                return getOrderFields(c, tableName, null);
+        }
 
-	/**
-	 * @see {@link DriverException.gdms.driver.DBDriver}
-	 *      {@link #open(Connection, String)}
-	 */
-	public void open(Connection con, String tableName) throws DriverException {
-		open(con, tableName, null);
-	}
+        /**
+         * Gets the order by clause of an instruction that orders by the primary key
+         * fields for the specified table in the specified schema
+         *
+         * @param c
+         * @param tableName
+         * @param schemaName
+         * @return
+         * @throws SQLException
+         *
+         * @see DefaultDBDriver#getOrderFields(Connection, String)
+         */
+        protected static String getOrderFields(Connection c, String tableName,
+                String schemaName) throws SQLException {
+                DatabaseMetaData metadata = c.getMetaData();
+                ResultSet res = null;
+                StringBuilder order = new StringBuilder();
+                try {
+                        res = metadata.getPrimaryKeys(null, schemaName, tableName);
 
-	/**
-	 * @see {@link DriverException.gdms.driver.DBDriver}
-	 *      {@link #open(Connection, String, String)}
-	 */
-	public void open(Connection con, String tableName, String schemaName)
-			throws DriverException {
-		try {
-			orderFieldName = getOrderFields(con, tableName, schemaName);
 
-			statement = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-					ResultSet.CONCUR_READ_ONLY,
-					ResultSet.CLOSE_CURSORS_AT_COMMIT);
-			this.conn = con;
-			this.tableName = tableName;
-			this.schemaName = schemaName;
-			if (this.schemaName == null) {
-				for (TableDescription table : getTables(con)) {
-					if (table.getName().equals(tableName)) {
-						this.schemaName = table.getSchema();
-						break;
-					}
-				}
-			}
-			getData();
-		} catch (SQLException e) {
-			throw new DriverException(e.getMessage(), e);
-		}
-	}
+                        if (res.next()) {
+                                order.append(res.getString("COLUMN_NAME"));
+                        }
+                        while (res.next()) {
+                                order.append(", ").append(res.getString("COLUMN_NAME"));
+                        }
+                } finally {
+                        if (res != null) {
+                                res.close();
+                        }
+                }
 
-	/**
-	 * catches the {@link ResultSet} and {@link ResultSetMetaData}
-	 * 
-	 * @throws DriverException
-	 */
-	protected void getData() throws DriverException {
-		String sql = getSelectSQL(orderFieldName);
-		try {
-			resultSet = statement.executeQuery(sql);
-			resultsetMetadata = resultSet.getMetaData();
-		} catch (SQLException e) {
-			throw new DriverException(sql, e);
-		}
-	}
+                return order.toString();
+        }
 
-	/**
-	 * Gets the Select statement that will be accessed by the driver
-	 * 
-	 * @param orderFieldName
-	 * @return
-	 * @throws DriverException
-	 */
-	protected String getSelectSQL(String orderFieldName) throws DriverException {
-		String sql = "SELECT * FROM " + getTableAndSchemaName();
-		if (orderFieldName != null) {
-			sql += " ORDER BY " + orderFieldName;
-		}
-		return sql;
-	}
+        /**
+         * @see {@link DriverException.gdms.driver.DBDriver}
+         *      {@link #open(Connection, String)}
+         */
+        @Override
+        public void open(Connection con, String tableName) throws DriverException {
+                open(con, tableName, null);
+        }
 
-	/**
-	 * @see org.gdms.driver.ReadAccess#getFieldValue(long, int)
-	 */
-	public Value getFieldValue(long rowIndex, int fieldId)
-			throws DriverException {
-		Value value = null;
+        /**
+         * @see {@link DriverException.gdms.driver.DBDriver}
+         *      {@link #open(Connection, String, String)}
+         */
+        @Override
+        public void open(Connection con, String tableName, String schemaName)
+                throws DriverException {
+                LOG.trace("Opening connection");
+                try {
+                        orderFieldName = getOrderFields(con, tableName, schemaName);
 
-		try {
-			fieldId += 1;
-			resultSet.absolute((int) rowIndex + 1);
-			final int type = resultSet.getMetaData().getColumnType(fieldId);
+                        statement = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+                                ResultSet.CONCUR_READ_ONLY,
+                                ResultSet.CLOSE_CURSORS_AT_COMMIT);
+                        this.conn = con;
+                        this.tableName = tableName;
+                        this.schemaName = schemaName;
+                        if (this.schemaName == null) {
+                                final TableDescription[] tables = getTables(con);
+                                if (tables == null) {
+                                        throw new DriverException("Impossible to connect to the database!");
+                                }
+                                for (TableDescription table : tables) {
+                                        if (table.getName().equals(tableName)) {
+                                                this.schemaName = table.getSchema();
+                                                break;
+                                        }
+                                }
+                        }
+                        getData();
 
-			switch (type) {
-			case Types.BIGINT:
-				value = ValueFactory.createValue(resultSet.getLong(fieldId));
-				break;
+                        schema = new DefaultSchema(schemaName);
+                        schema.addTable(tableName, getInternalMetadata());
+                } catch (SQLException e) {
+                        throw new DriverException(e.getMessage(), e);
+                }
+        }
 
-			case Types.BIT:
-			case Types.BOOLEAN:
-				value = ValueFactory.createValue(resultSet.getBoolean(fieldId));
-				break;
+        /**
+         * catches the {@link ResultSet} and {@link ResultSetMetaData}
+         *
+         * @throws DriverException
+         */
+        protected void getData() throws DriverException {
+                String sql = getSelectSQL(orderFieldName);
+                try {
+                        resultSet = statement.executeQuery(sql);
+                        resultsetMetadata = resultSet.getMetaData();
+                } catch (SQLException e) {
+                        throw new DriverException("Impossible to execute the query: " + sql, e);
+                }
+        }
 
-			case Types.CHAR:
-			case Types.VARCHAR:
-			case Types.LONGVARCHAR:
-			case Types.CLOB:
-				String auxString = resultSet.getString(fieldId);
-				if (auxString != null) {
-					value = ValueFactory.createValue(auxString);
-				}
-				break;
+        /**
+         * Gets the Select statement that will be accessed by the driver
+         *
+         * @param orderFieldName
+         * @return
+         * @throws DriverException
+         */
+        protected String getSelectSQL(String orderFieldName) throws DriverException {
+                String sql = "SELECT * FROM " + getTableAndSchemaName();
+                if (orderFieldName != null) {
+                        sql += " ORDER BY " + orderFieldName;
+                }
+                return sql;
+        }
 
-			case Types.DATE:
-				final Date auxDate = resultSet.getDate(fieldId);
-				if (auxDate != null) {
-					value = ValueFactory.createValue(auxDate);
-				}
-				break;
+        /**
+         * @see org.gdms.driver.DBDriver#close(java.sql.Connection)
+         */
+        @Override
+        public void close(Connection conn) throws DriverException {
+                LOG.trace("Closing connection");
+                try {
+                        if (resultSet != null) {
+                                resultSet.close();
+                                resultsetMetadata = null;
+                                statement.close();
+                                conn.close();
+                        }
+                        resultSet = null;
+                        statement = null;
+                        metadata = null;
+                        tableName = null;
+                        schemaName = null;
+                        rowCount = -1;
+                } catch (SQLException e) {
+                        throw new DriverException(e);
+                }
+        }
 
-			case Types.DECIMAL:
-			case Types.NUMERIC:
-			case Types.FLOAT:
-			case Types.DOUBLE:
-				value = ValueFactory.createValue(resultSet.getDouble(fieldId));
-				break;
+        /**
+         * @see org.gdms.driver.ReadWriteDriver#isCommitable()
+         */
+        @Override
+        public boolean isCommitable() {
+                return orderFieldName != null;
+        }
 
-			case Types.INTEGER:
-				value = ValueFactory.createValue(resultSet.getInt(fieldId));
-				break;
+        /**
+         * getter for the {@link ResultSet}
+         *
+         * @return
+         */
+        protected ResultSet getResultSet() {
+                return resultSet;
+        }
 
-			case Types.REAL:
-				value = ValueFactory.createValue(resultSet.getFloat(fieldId));
-				break;
+        /**
+         * getter for the {@link ResultSetMetaData}
+         *
+         * @return
+         */
+        protected ResultSetMetaData getResultsetMetadata() {
+                return resultsetMetadata;
+        }
 
-			case Types.SMALLINT:
-				value = ValueFactory.createValue(resultSet.getShort(fieldId));
-				break;
+        /**
+         * getter for the {@link WarningListener} of the {@link DataSourceFactory}
+         *
+         * @return
+         */
+        protected WarningListener getWL() {
+                return dsf.getWarningListener();
+        }
 
-			case Types.TINYINT:
-				value = ValueFactory.createValue(resultSet.getByte(fieldId));
-				break;
+        /**
+         * @see org.gdms.data.driver.DriverCommons#setDataSourceFactory(org.gdms.data.DataSourceFactory)
+         */
+        /**
+         * @see org.gdms.driver.ReadOnlyDriver#setDataSourceFactory(org.gdms.data.DataSourceFactory)
+         */
+        @Override
+        public void setDataSourceFactory(DataSourceFactory dsf) {
+                this.dsf = dsf;
+        }
 
-			case Types.BINARY:
-			case Types.VARBINARY:
-			case Types.LONGVARBINARY:
-			case Types.BLOB:
-				final byte[] auxByteArray = resultSet.getBytes(fieldId);
-				if (auxByteArray != null) {
-					value = ValueFactory.createValue(auxByteArray);
-				}
-				break;
+        /**
+         * getter for the table name
+         *
+         * @return
+         */
+        protected String getTableName() {
+                return tableName;
+        }
 
-			case Types.TIMESTAMP:
-				final Timestamp auxTimeStamp = resultSet.getTimestamp(fieldId);
-				if (auxTimeStamp != null) {
-					value = ValueFactory.createValue(auxTimeStamp);
-				}
-				break;
+        /**
+         * getter for the schema name
+         *
+         * @return
+         */
+        protected String getSchemaName() {
+                return schemaName;
+        }
 
-			case Types.TIME:
-				final Time auxTime = resultSet.getTime(fieldId);
-				if (auxTime != null) {
-					value = ValueFactory.createValue(auxTime);
-				}
-				break;
+        @Override
+        public ReadAccess getTable(String name) {
+                if (!name.equalsIgnoreCase(tableName)) {
+                        return null;
+                }
+                return this;
+        }
 
-			default:
-				byte[] aux = resultSet.getBytes(fieldId);
-				if (aux != null) {
-					value = ValueFactory.createValue(aux);
-				}
-				break;
-			}
+        @Override
+        public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
+                LOG.trace("Retrieving row " + rowIndex);
+                Value value = null;
 
-			if (resultSet.wasNull()) {
-				return ValueFactory.createNullValue();
-			} else {
-				return value;
-			}
-		} catch (SQLException e) {
-			getWL().throwWarning(
-					"Cannot get the value in row " + rowIndex + " field "
-							+ fieldId + ". Returning null instead");
-			return ValueFactory.createNullValue();
-		}
-	}
+                try {
+                        fieldId += 1;
+                        resultSet.absolute((int) rowIndex + 1);
+                        final int type = resultSet.getMetaData().getColumnType(fieldId);
 
-	/**
-	 * @see org.gdms.driver.ReadAccess#getRowCount()
-	 */
-	public long getRowCount() throws DriverException {
-		try {
-			if (rowCount == -1) {
-				resultSet.last();
-				rowCount = resultSet.getRow();
-			}
+                        switch (type) {
+                                case Types.BIGINT:
+                                        value = ValueFactory.createValue(resultSet.getLong(fieldId));
+                                        break;
 
-			return rowCount;
-		} catch (SQLException e) {
-			throw new DriverException(e);
-		}
-	}
+                                case Types.BIT:
+                                case Types.BOOLEAN:
+                                        value = ValueFactory.createValue(resultSet.getBoolean(fieldId));
+                                        break;
 
-	/**
-	 * @see org.gdms.driver.DBDriver#close(java.sql.Connection)
-	 */
-	public void close(Connection conn) throws DriverException {
-		try {
-			if (resultSet != null) {
-				resultSet.close();
-				resultsetMetadata = null;
-				statement.close();
-				conn.close();
-			}
-			resultSet = null;
-			statement = null;
-			conn = null;
-			metadata = null;
-			tableName = null;
-			schemaName = null;
-			rowCount = -1;
-		} catch (SQLException e) {
-			throw new DriverException(e);
-		}
-	}
+                                case Types.CHAR:
+                                case Types.VARCHAR:
+                                case Types.LONGVARCHAR:
+                                case Types.CLOB:
+                                        String auxString = resultSet.getString(fieldId);
+                                        if (auxString != null) {
+                                                value = ValueFactory.createValue(auxString);
+                                        }
+                                        break;
 
-	/**
-	 * @see org.gdms.driver.ReadWriteDriver#isCommitable()
-	 */
-	public boolean isCommitable() {
-		return orderFieldName != null;
-	}
+                                case Types.DATE:
+                                        final Date auxDate = resultSet.getDate(fieldId);
+                                        if (auxDate != null) {
+                                                value = ValueFactory.createValue(auxDate);
+                                        }
+                                        break;
 
-	/**
-	 * getter for the {@link ResultSet}
-	 * 
-	 * @return
-	 */
-	protected ResultSet getResultSet() {
-		return resultSet;
-	}
+                                case Types.DECIMAL:
+                                case Types.NUMERIC:
+                                case Types.FLOAT:
+                                case Types.DOUBLE:
+                                        value = ValueFactory.createValue(resultSet.getDouble(fieldId));
+                                        break;
 
-	/**
-	 * getter for the {@link ResultSetMetaData}
-	 * 
-	 * @return
-	 */
-	protected ResultSetMetaData getResultsetMetadata() {
-		return resultsetMetadata;
-	}
+                                case Types.INTEGER:
+                                        value = ValueFactory.createValue(resultSet.getInt(fieldId));
+                                        break;
 
-	/**
-	 * getter for the {@link WarningListener} of the {@link DataSourceFactory}
-	 * 
-	 * @return
-	 */
-	protected WarningListener getWL() {
-		return dsf.getWarningListener();
-	}
+                                case Types.REAL:
+                                        value = ValueFactory.createValue(resultSet.getFloat(fieldId));
+                                        break;
 
-	/**
-	 * @see org.gdms.data.driver.DriverCommons#setDataSourceFactory(org.gdms.data.DataSourceFactory)
-	 */
-	/**
-	 * @see org.gdms.driver.ReadOnlyDriver#setDataSourceFactory(org.gdms.data.DataSourceFactory)
-	 */
-	public void setDataSourceFactory(DataSourceFactory dsf) {
-		this.dsf = dsf;
-	}
+                                case Types.SMALLINT:
+                                        value = ValueFactory.createValue(resultSet.getShort(fieldId));
+                                        break;
 
-	/**
-	 * getter for the table name
-	 * 
-	 * @return
-	 */
-	protected String getTableName() {
-		return tableName;
-	}
+                                case Types.TINYINT:
+                                        value = ValueFactory.createValue(resultSet.getByte(fieldId));
+                                        break;
 
-	/**
-	 * getter for the schema name
-	 * 
-	 * @return
-	 */
-	protected String getSchemaName() {
-		return schemaName;
-	}
+                                case Types.BINARY:
+                                case Types.VARBINARY:
+                                case Types.LONGVARBINARY:
+                                case Types.BLOB:
+                                        final byte[] auxByteArray = resultSet.getBytes(fieldId);
+                                        if (auxByteArray != null) {
+                                                value = ValueFactory.createValue(auxByteArray);
+                                        }
+                                        break;
 
+                                case Types.TIMESTAMP:
+                                        final Timestamp auxTimeStamp = resultSet.getTimestamp(fieldId);
+                                        if (auxTimeStamp != null) {
+                                                value = ValueFactory.createValue(auxTimeStamp);
+                                        }
+                                        break;
+
+                                case Types.TIME:
+                                        final Time auxTime = resultSet.getTime(fieldId);
+                                        if (auxTime != null) {
+                                                value = ValueFactory.createValue(auxTime);
+                                        }
+                                        break;
+
+                                default:
+                                        byte[] aux = resultSet.getBytes(fieldId);
+                                        if (aux != null) {
+                                                value = ValueFactory.createValue(aux);
+                                        }
+                                        break;
+                        }
+
+                        if (resultSet.wasNull()) {
+                                return ValueFactory.createNullValue();
+                        } else {
+                                return value;
+                        }
+                } catch (SQLException e) {
+                        getWL().throwWarning(
+                                "Cannot get the value in row " + rowIndex + " field "
+                                + fieldId + ". Returning null instead");
+                        return ValueFactory.createNullValue();
+                }
+        }
+
+        @Override
+        public long getRowCount() throws DriverException {
+                try {
+                        if (rowCount == -1) {
+                                resultSet.last();
+                                rowCount = resultSet.getRow();
+                        }
+
+                        return rowCount;
+                } catch (SQLException e) {
+                        throw new DriverException(e);
+                }
+        }
+
+        @Override
+        public Number[] getScope(int dimension) throws DriverException {
+                return null;
+        }
+
+        @Override
+        public Metadata getMetadata() throws DriverException {
+                return schema.getTableByName(tableName);
+        }
 }

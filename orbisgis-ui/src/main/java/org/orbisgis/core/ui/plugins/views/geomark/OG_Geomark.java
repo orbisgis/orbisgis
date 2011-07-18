@@ -41,87 +41,88 @@
  * Pierre-Yves.Fadet _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  **/
-
 package org.orbisgis.core.ui.plugins.views.geomark;
 
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceFactory;
-import org.gdms.data.ExecutionException;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ObjectDriver;
-import org.gdms.sql.customQuery.CustomQuery;
-import org.gdms.sql.customQuery.TableDefinition;
-import org.gdms.sql.function.Argument;
-import org.gdms.sql.function.Arguments;
+import org.gdms.sql.function.FunctionSignature;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 import com.vividsolutions.jts.geom.Envelope;
+import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.NoSuchTableException;
+import org.gdms.data.SQLDataSourceFactory;
+import org.gdms.driver.ReadAccess;
+import org.gdms.sql.function.FunctionException;
+import org.gdms.sql.function.ScalarArgument;
+import org.gdms.sql.function.executor.AbstractExecutorFunction;
+import org.gdms.sql.function.executor.ExecutorFunctionSignature;
 
-public class OG_Geomark implements CustomQuery {
-	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
-			Value[] values, IProgressMonitor pm) throws ExecutionException {
-		WorkbenchContext wbContext = Services
-				.getService(WorkbenchContext.class);
-		final GeomarkPanel geomarkPanel = (GeomarkPanel) wbContext
-				.getWorkbench().getFrame().getView("Geomark");
-		final String prefix = ((0 == values.length) ? tables[0].getName()
-				: values[0])
-				+ "-";
+public class OG_Geomark extends AbstractExecutorFunction {
 
-		try {
-			final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
-					tables[0]);
-			sds.open();
-			final int rowCount = (int) sds.getRowCount();
-			for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+        @Override
+        public void evaluate(SQLDataSourceFactory dsf, ReadAccess[] tables,
+                Value[] values, ProgressMonitor pm) throws FunctionException {
+                WorkbenchContext wbContext = Services.getService(WorkbenchContext.class);
+                final GeomarkPanel geomarkPanel = (GeomarkPanel) wbContext.getWorkbench().getFrame().getView("Geomark");
+                final String prefix = ((2 == values.length) ? values[1].getAsString()
+                                       : values[0].getAsString())
+                        + "-";
 
-				if (rowIndex / 100 == rowIndex / 100.0) {
-					if (pm.isCancelled()) {
-						break;
-					} else {
-						pm.progressTo((int) (100 * rowIndex / rowCount));
-					}
-				}
+                try {
+                        final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
+                                dsf.getDataSource(values[0].getAsString()));
+                        sds.open();
+                        final int rowCount = (int) sds.getRowCount();
+                        for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
 
-				final Envelope envelope = sds.getGeometry(rowIndex)
-						.getEnvelopeInternal();
-				geomarkPanel.add(prefix + rowIndex, envelope);
-			}
+                                if (rowIndex / 100 == rowIndex / 100.0) {
+                                        if (pm.isCancelled()) {
+                                                break;
+                                        } else {
+                                                pm.progressTo((int) (100 * rowIndex / rowCount));
+                                        }
+                                }
 
-			sds.close();
-			return null;
-		} catch (DriverException e) {
-			throw new ExecutionException(e);
-		}
-	}
+                                final Envelope envelope = sds.getGeometry(rowIndex).getEnvelopeInternal();
+                                geomarkPanel.add(prefix + rowIndex, envelope);
+                        }
 
-	public String getName() {
-		return "OG_Geomark";
-	}
+                        sds.close();
+                } catch (DriverException e) {
+                        throw new FunctionException(e);
+                } catch (NoSuchTableException e) {
+                        throw new FunctionException(e);
+                } catch (DataSourceCreationException e) {
+                        throw new FunctionException(e);
+                }
+        }
 
-	public String getSqlOrder() {
-		return "select OG_Geomark( [optionalPrefix] ) from myTable;";
-	}
+        public String getName() {
+                return "OG_Geomark";
+        }
 
-	public String getDescription() {
-		return "Stores each spatial field envelope as a new geomark.";
-	}
+        public String getSqlOrder() {
+                return "EXECUTE OG_Geomark('table_name', [optionalPrefix]);";
+        }
 
-	public Metadata getMetadata(Metadata[] tables) throws DriverException {
-		return null;
-	}
+        public String getDescription() {
+                return "Stores each spatial field envelope as a new geomark.";
+        }
 
-	public TableDefinition[] getTablesDefinitions() {
-		return new TableDefinition[] { TableDefinition.GEOMETRY };
-	}
+        public Metadata getMetadata(Metadata[] tables) throws DriverException {
+                return null;
+        }
 
-	public Arguments[] getFunctionArguments() {
-		return new Arguments[] { new Arguments(Argument.STRING),
-				new Arguments() };
-	}
+        @Override
+        public FunctionSignature[] getFunctionSignatures() {
+                return new FunctionSignature[]{
+                                new ExecutorFunctionSignature(ScalarArgument.STRING),
+                                new ExecutorFunctionSignature(ScalarArgument.STRING, ScalarArgument.STRING)
+                        };
+        }
 }

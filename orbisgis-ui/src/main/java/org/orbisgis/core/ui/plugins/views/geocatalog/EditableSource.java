@@ -55,7 +55,7 @@ import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editorViews.toc.AbstractTableEditableElement;
 import org.orbisgis.core.ui.editors.table.Selection;
 import org.orbisgis.core.ui.editors.table.TableEditableElement;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class EditableSource extends AbstractTableEditableElement implements
 		TableEditableElement {
@@ -77,7 +77,7 @@ public class EditableSource extends AbstractTableEditableElement implements
 		return sourceName;
 	}
 
-	public void close(IProgressMonitor progressMonitor)
+	public void close(ProgressMonitor progressMonitor)
 			throws UnsupportedOperationException, EditableElementException {
 		super.close(progressMonitor);
 		try {
@@ -96,7 +96,7 @@ public class EditableSource extends AbstractTableEditableElement implements
 		return EDITABLE_RESOURCE_TYPE;
 	}
 
-	public void open(IProgressMonitor progressMonitor)
+	public void open(ProgressMonitor progressMonitor)
 			throws UnsupportedOperationException, EditableElementException {
 		try {
 			DataManager dataManager = Services.getService(DataManager.class);

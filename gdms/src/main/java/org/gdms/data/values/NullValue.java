@@ -1,134 +1,329 @@
 /*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at French IRSTV institute and is able
- * to manipulate and create vector and raster spatial information. OrbisGIS
- * is distributed under GPL 3 license. It is produced  by the geo-informatic team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/>, CNRS FR 2488:
- *    Erwan BOCHER, scientific researcher,
- *    Thomas LEDUC, scientific researcher,
- *    Fernando GONZALEZ CORTES, computer engineer.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ *
+ *
+ * Team leader : Erwan BOCHER, scientific researcher,
+ *
+ * User support leader : Gwendall Petit, geomatic engineer.
+ *
+ * Previous computer developer : Pierre-Yves FADET, computer engineer, Thomas LEDUC, 
+ * scientific researcher, Fernando GONZALEZ CORTES, computer engineer.
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
+ * Copyright (C) 2010 Erwan BOCHER, Alexis GUEGANNO, Maxence LAURENT, Antoine GOURLAY
+ *
  * This file is part of OrbisGIS.
  *
- * OrbisGIS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * OrbisGIS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
- * For more information, please consult:
- *    <http://orbisgis.cerma.archi.fr/>
- *    <http://sourcesup.cru.fr/projects/orbisgis/>
+ * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- *    erwan.bocher _at_ ec-nantes.fr
- *    fergonco _at_ gmail.com
- *    thomas.leduc _at_ cerma.archi.fr
+ * info@orbisgis.org
  */
 package org.gdms.data.values;
 
-import java.io.Serializable;
-
+import com.vividsolutions.jts.geom.Geometry;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.Date;
 import org.gdms.data.types.Type;
-import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.gdms.data.types.IncompatibleTypesException;
+import org.gdms.data.types.TypeFactory;
+import org.grap.model.GeoRaster;
 
 /**
- * DOCUMENT ME!
+ * Represents a null value
  * 
  * @author Fernando Gonzalez Cortes
  */
-class NullValue extends AbstractValue implements Serializable {
-	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @return DOCUMENT ME!
-	 */
-	public String toString() {
-		return "";
-	}
+final class NullValue extends AbstractValue implements BinaryValue, BooleanValue, ByteValue, DateValue, DoubleValue, FloatValue,
+        GeometryValue, IntValue, LongValue, NumericValue, RasterValue, ShortValue, StringValue, TimeValue,
+        TimestampValue, ValueCollection {
 
-	/**
-	 * @see org.gdms.data.values.Value#doHashCode()
-	 */
-	public int doHashCode() {
-		return 0;
-	}
+        private static final String CANNOTSETNULL = "This value is a NullValue, it's content cannot be set. use .isNull() to check.";
+        private static final String NOTBOOLEAN = "The specified value is not a boolean:";
+        
+        public static final NullValue NULL = new NullValue();
 
-	@Override
-	public Value multiply(Value value) throws IncompatibleTypesException {
-		return ValueFactory.createNullValue();
-	}
+        private NullValue() {
+        }
 
-	@Override
-	public Value sum(Value value) throws IncompatibleTypesException {
-		return ValueFactory.createNullValue();
-	}
+        /**
+         * Returns a string representation of null, ie "null"
+         */
+        @Override
+        public String toString() {
+                return "null";
+        }
 
-	public Value and(Value value) throws IncompatibleTypesException {
-		return ValueFactory.createValue(false);
-	}
+        @Override
+        public int hashCode() {
+                return 0;
+        }
 
-	public Value equals(Value value) throws IncompatibleTypesException {
-		return ValueFactory.createValue(false);
-	}
+        @Override
+        public NumericValue multiply(Value value) {
+                return ValueFactory.createNullValue();
+        }
 
-	public Value greater(Value value) throws IncompatibleTypesException {
-		return ValueFactory.createValue(false);
-	}
+        @Override
+        public NumericValue sum(Value value) {
+                return ValueFactory.createNullValue();
+        }
 
-	public Value greaterEqual(Value value) throws IncompatibleTypesException {
-		return ValueFactory.createValue(false);
-	}
+        @Override
+        public BooleanValue equals(Value value) {
+                return ValueFactory.createNullValue();
+        }
 
-	public Value less(Value value) throws IncompatibleTypesException {
-		return ValueFactory.createValue(false);
-	}
+        @Override
+        public BooleanValue greater(Value value) {
+                return ValueFactory.createNullValue();
+        }
 
-	public Value lessEqual(Value value) throws IncompatibleTypesException {
-		return ValueFactory.createValue(false);
-	}
+        @Override
+        public BooleanValue greaterEqual(Value value) {
+                return ValueFactory.createNullValue();
+        }
 
-	public Value like(Value value) throws IncompatibleTypesException {
-		return ValueFactory.createValue(false);
-	}
+        @Override
+        public BooleanValue less(Value value) {
+                return ValueFactory.createNullValue();
+        }
 
-	public Value notEquals(Value value) throws IncompatibleTypesException {
-		return ValueFactory.createValue(false);
-	}
+        @Override
+        public BooleanValue lessEqual(Value value) {
+                return ValueFactory.createNullValue();
+        }
 
-	public Value or(Value value) throws IncompatibleTypesException {
-		return ValueFactory.createValue(false);
-	}
+        @Override
+        public BooleanValue like(Value value) {
+                return ValueFactory.createNullValue();
+        }
 
-	/**
-	 * @see org.gdms.data.values.Value#getStringValue(org.gdms.data.values.ValueWriter)
-	 */
-	public String getStringValue(ValueWriter writer) {
-		return writer.getNullStatementString();
-	}
+        @Override
+        public BooleanValue notEquals(Value value) {
+                return ValueFactory.createNullValue();
+        }
 
-	/**
-	 * @see org.gdms.data.values.Value#getType()
-	 */
-	public int getType() {
-		return Type.NULL;
-	}
+        @Override
+        public BooleanValue and(Value value) {
+                if (value instanceof BooleanValue) {
+                        return ValueFactory.and(this, (BooleanValue) value);
+                } else {
+                        throw new IncompatibleTypesException(
+                                NOTBOOLEAN
+                                + TypeFactory.getTypeName(value.getType()));
+                }
+        }
 
-	public byte[] getBytes() {
-		return new byte[0];
-	}
+        @Override
+        public BooleanValue or(Value value) {
+                if (value instanceof BooleanValue) {
+                        return ValueFactory.or(this, (BooleanValue) value);
+                } else {
+                        throw new IncompatibleTypesException(
+                                NOTBOOLEAN
+                                + TypeFactory.getTypeName(value.getType()));
+                }
+        }
 
-	@Override
-	public boolean isNull() {
-		return true;
-	}
+        /**
+         * @see org.gdms.data.values.Value#getStringValue(org.gdms.data.values.ValueWriter)
+         */
+        @Override
+        public String getStringValue(ValueWriter writer) {
+                return writer.getNullStatementString();
+        }
+
+        /**
+         * @see org.gdms.data.values.Value#getType()
+         */
+        @Override
+        public int getType() {
+                return Type.NULL;
+        }
+
+        @Override
+        public byte[] getBytes() {
+                return new byte[0];
+        }
+
+        @Override
+        public boolean isNull() {
+                return true;
+        }
+
+        @Override
+        public void setValue(byte[] b) {
+                throw new UnsupportedOperationException(CANNOTSETNULL);
+        }
+
+        @Override
+        public void setValue(boolean b) {
+                throw new UnsupportedOperationException(CANNOTSETNULL);
+        }
+
+        @Override
+        public void setValue(byte value) {
+                throw new UnsupportedOperationException(CANNOTSETNULL);
+        }
+
+        @Override
+        public void setValue(Date d) {
+                throw new UnsupportedOperationException(CANNOTSETNULL);
+        }
+
+        @Override
+        public void setValue(double value) {
+                throw new UnsupportedOperationException(CANNOTSETNULL);
+        }
+
+        @Override
+        public void setValue(float value) {
+                throw new UnsupportedOperationException(CANNOTSETNULL);
+        }
+
+        @Override
+        public void setValue(Geometry value) {
+                throw new UnsupportedOperationException(CANNOTSETNULL);
+        }
+
+        @Override
+        public void setValue(int value) {
+                throw new UnsupportedOperationException(CANNOTSETNULL);
+        }
+
+        @Override
+        public void setValue(long value) {
+                throw new UnsupportedOperationException(CANNOTSETNULL);
+        }
+
+        @Override
+        public byte byteValue() {
+                return 0;
+        }
+
+        @Override
+        public double doubleValue() {
+                return 0;
+        }
+
+        @Override
+        public float floatValue() {
+                return 0;
+        }
+
+        @Override
+        public int intValue() {
+                return 0;
+        }
+
+        @Override
+        public long longValue() {
+                return 0;
+        }
+
+        @Override
+        public short shortValue() {
+                return 0;
+        }
+
+        @Override
+        public void setValue(GeoRaster value) {
+                throw new UnsupportedOperationException(CANNOTSETNULL);
+        }
+
+        @Override
+        public void setValue(short value) {
+                throw new UnsupportedOperationException(CANNOTSETNULL);
+        }
+
+        @Override
+        public void setValue(String value) {
+                throw new UnsupportedOperationException(CANNOTSETNULL);
+        }
+
+        @Override
+        public void setValue(Time d) {
+                throw new UnsupportedOperationException(CANNOTSETNULL);
+        }
+
+        @Override
+        public void setValue(Timestamp d) {
+                throw new UnsupportedOperationException(CANNOTSETNULL);
+        }
+
+        @Override
+        public void setValues(Value[] values) {
+                throw new UnsupportedOperationException(CANNOTSETNULL);
+        }
+
+        @Override
+        public Value get(int i) {
+                return ValueFactory.createNullValue();
+        }
+
+        @Override
+        public Value[] getValues() {
+                return new Value[0];
+        }
+
+        @Override
+        public int getDecimalDigitsCount() {
+                return 0;
+        }
+
+        @Override
+        public BooleanValue not() {
+                return ValueFactory.createNullValue();
+        }
+
+        @Override
+        public NumericValue opposite() {
+                return ValueFactory.createNullValue();
+        }
+
+        @Override
+        public Value inverse() {
+                return ValueFactory.createNullValue();
+        }
+
+        @Override
+        public DoubleValue pow(Value value) {
+                return ValueFactory.createNullValue();
+        }
+
+        @Override
+        public NumericValue remainder(Value value) {
+                return ValueFactory.createNullValue();
+        }
+
+        @Override
+        public int compareTo(Value o) {
+                if (o.isNull()) {
+                        return 0;
+                } else {
+                        // by default NULL FIRST
+                        return 1;
+                }
+        }
+        
+        
 }

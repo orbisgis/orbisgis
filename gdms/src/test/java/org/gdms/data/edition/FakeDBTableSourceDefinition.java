@@ -39,31 +39,37 @@ package org.gdms.data.edition;
 import org.gdms.data.AbstractDataSource;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableDataSourceAdapter;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.driver.DBDriver;
-import org.gdms.driver.ReadOnlyDriver;
-import org.orbisgis.progress.IProgressMonitor;
+import org.gdms.driver.Driver;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class FakeDBTableSourceDefinition extends DBTableSourceDefinition {
 
-	protected Object driver;
+	protected Driver driver;
 
 	private String prefix;
 
-	public FakeDBTableSourceDefinition(Object driver, String prefix) {
+	public FakeDBTableSourceDefinition(Driver driver, String prefix) {
 		super(new DBSource(null, 0, null, null, null, null, null));
 		this.driver = driver;
 		this.prefix = prefix;
 	}
 
+        @Override
+        protected Driver getDriverInstance() {
+                return driver;
+        }
+        
+        
+
 	@Override
-	public DataSource createDataSource(String tableName, IProgressMonitor pm)
+	public DataSource createDataSource(String tableName, ProgressMonitor pm)
 			throws DataSourceCreationException {
 
-		((ReadOnlyDriver) driver).setDataSourceFactory(getDataSourceFactory());
+		((Driver) driver).setDataSourceFactory(getDataSourceFactory());
 
 		DBSource dbs = new DBSource(null, 0, null, null, null, null, null);
 		AbstractDataSource adapter = new DBTableDataSourceAdapter(
@@ -80,7 +86,7 @@ public class FakeDBTableSourceDefinition extends DBTableSourceDefinition {
 	}
 
 	@Override
-	public boolean equals(DataSourceDefinition obj) {
+	public boolean equals(Object obj) {
 		return false;
 	}
 

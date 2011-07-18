@@ -6,16 +6,16 @@
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
  *
- *  Team leader Erwan BOCHER, scientific researcher,
+ * Team leader : Erwan BOCHER, scientific researcher,
  *
- *  User support leader : Gwendall Petit, geomatic engineer.
+ * User support leader : Gwendall Petit, geomatic engineer.
  *
- * Previous computer developer : Pierre-Yves FADET, computer engineer, Thomas LEDUC, scientific researcher, Fernando GONZALEZ
- * CORTES, computer engineer.
+ * Previous computer developer : Pierre-Yves FADET, computer engineer, Thomas LEDUC, 
+ * scientific researcher, Fernando GONZALEZ CORTES, computer engineer.
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2010 Erwan BOCHER, Alexis GUEGANNO, Maxence LAURENT, Antoine GOURLAY
  *
  * This file is part of OrbisGIS.
  *
@@ -36,154 +36,143 @@
  * or contact directly:
  * info@orbisgis.org
  */
-
 package org.gdms.data.types;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.log4j.Logger;
 
 import org.gdms.data.values.Value;
-import org.gdms.sql.function.Argument;
 
 public class DefaultType implements Type {
-	private Constraint[] constraints;
 
-	private int typeCode;
+        private Constraint[] constraints;
+        private int typeCode;
+        public static final Map<Integer, String> typesDescription = new HashMap<Integer, String>();
 
-	public static Map<Integer, String> typesDescription = new HashMap<Integer, String>();
-
-	static {
-		java.lang.reflect.Field[] fields = Type.class.getFields();
-		for (int i = 0; i < fields.length; i++) {
-			try {
-				typesDescription.put((Integer) fields[i].get(null), fields[i]
-						.getName());
-			} catch (IllegalArgumentException e) {
-			} catch (IllegalAccessException e) {
-			}
-		}
-                java.lang.reflect.Field[] fieldsArg = Argument.class.getFields();
-                for (int i = 0; i < fieldsArg.length; i++) {
+        static {
+                java.lang.reflect.Field[] fields = Type.class.getFields();
+                for (int i = 0; i < fields.length; i++) {
                         try {
-                    if (fieldsArg[i].getType() == Integer.TYPE) {
-                        typesDescription.put((Integer) fieldsArg[i].get(null), fieldsArg[i].getName());
-                    }
+                                typesDescription.put((Integer) fields[i].get(null), fields[i].getName());
                         } catch (IllegalArgumentException e) {
+                                Logger.getLogger(DefaultType.class).error("Initialization error", e);
                         } catch (IllegalAccessException e) {
+                                Logger.getLogger(DefaultType.class).error("Initialization error", e);
                         }
                 }
-	}
+        }
 
-	/**
+        /**
          * Create a new Type with an empty array of constraints, using the given typeCode
-	 * @param description
-	 * @param typeCode
-	 * @throws InvalidTypeException
-	 */
-	DefaultType(final int typeCode) throws InvalidTypeException {
-		this(new Constraint[0], typeCode);
-	}
+         * @param description
+         * @param typeCode
+         * @throws InvalidTypeException
+         */
+        DefaultType(final int typeCode) {
+                this(new Constraint[0], typeCode);
+        }
 
-	/**
+        /**
          * Create a new Type, using the given typeCode and constraints array.
-	 * @param constraints
-	 * @param description
-	 * @param typeCode
-	 * @throws InvalidTypeException
-	 */
-	DefaultType(final Constraint[] constraints, final int typeCode) {
-		if (null == constraints) {
-			this.constraints = new Constraint[0];
-		} else {
-			this.constraints = constraints;
-		}
-		this.typeCode = typeCode;
-	}
+         * @param constraints
+         * @param description
+         * @param typeCode
+         * @throws InvalidTypeException
+         */
+        DefaultType(final Constraint[] constraints, final int typeCode) {
+                if (null == constraints) {
+                        this.constraints = new Constraint[0];
+                } else {
+                        this.constraints = constraints;
+                }
+                this.typeCode = typeCode;
+        }
 
-	/**
-	 * @see org.gdms.data.types.Type#getConstraints()
-	 */
-	public Constraint[] getConstraints() {
-		return constraints;
-	}
+        @Override
+        public Constraint[] getConstraints() {
+                return constraints;
+        }
 
-	/**
-	 * @see org.gdms.data.types.Type#getTypeCode()
-	 */
-	public int getTypeCode() {
-		return typeCode;
-	}
+        @Override
+        public int getTypeCode() {
+                return typeCode;
+        }
 
-	public String check(final Value value) {
-		for (Constraint constraint : constraints) {
-			String error = constraint.check(value);
-			if (error != null) {
-				return error;
-			}
-		}
-		
-		return null;
-	}
+        @Override
+        public String check(final Value value) {
+                for (Constraint constraint : constraints) {
+                        String error = constraint.check(value);
+                        if (error != null) {
+                                return error;
+                        }
+                }
 
-	public String getConstraintValue(final int constraint) {
-		final Constraint c = getConstraint(constraint);
-		return (null == c) ? null : c.getConstraintValue();
-	}
+                return null;
+        }
 
-	public boolean isRemovable() {
-		for (Constraint c : constraints) {
-			if (!c.allowsFieldRemoval()) {
-				return false;
-			}
-		}
+        @Override
+        public String getConstraintValue(final int constraint) {
+                final Constraint c = getConstraint(constraint);
+                return (null == c) ? null : c.getConstraintValue();
+        }
 
-		return true;
-	}
+        @Override
+        public boolean isRemovable() {
+                for (Constraint c : constraints) {
+                        if (!c.allowsFieldRemoval()) {
+                                return false;
+                        }
+                }
 
-	public Constraint getConstraint(int constraint) {
-		for (Constraint c : constraints) {
-			if (c.getConstraintCode() == constraint) {
-				return c;
-			}
-		}
-		return null;
-	}
+                return true;
+        }
 
-	/**
-	 * @see org.gdms.data.types.Type#getIntConstraint(org.gdms.data.types.ConstraintNames)
-	 */
-	public int getIntConstraint(int constraint) {
-		String value = getConstraintValue(constraint);
-		if (value != null) {
-			try {
-				return Integer.parseInt(value);
-			} catch (NumberFormatException e) {
-				throw new IllegalArgumentException("The constraint cannot "
-						+ "be expressed as an int: " + constraint);
-			}
-		} else {
-			return -1;
-		}
-	}
+        @Override
+        public Constraint getConstraint(int constraint) {
+                for (Constraint c : constraints) {
+                        if (c.getConstraintCode() == constraint) {
+                                return c;
+                        }
+                }
+                return null;
+        }
 
-	public boolean getBooleanConstraint(int constraint) {
-		String value = getConstraintValue(constraint);
-		if (value != null) {
-			return Boolean.parseBoolean(value);
-		} else {
-			return false;
-		}
-	}
+        @Override
+        public int getIntConstraint(int constraint) {
+                String value = getConstraintValue(constraint);
+                if (value != null) {
+                        try {
+                                return Integer.parseInt(value);
+                        } catch (NumberFormatException e) {
+                                throw new IllegalArgumentException("The constraint cannot "
+                                        + "be expressed as an int: " + constraint, e);
+                        }
+                } else {
+                        return -1;
+                }
+        }
 
-	public Constraint[] getConstraints(int constraintMask) {
-		ArrayList<Constraint> ret = new ArrayList<Constraint>();
-		for (Constraint constraint : constraints) {
-			if ((constraint.getConstraintCode() & constraintMask) > 0) {
-				ret.add(constraint);
-			}
-		}
+        @Override
+        public boolean getBooleanConstraint(int constraint) {
+                String value = getConstraintValue(constraint);
+                if (value != null) {
+                        return Boolean.parseBoolean(value);
+                } else {
+                        return false;
+                }
+        }
 
-		return ret.toArray(new Constraint[ret.size()]);
-	}
+        @Override
+        public Constraint[] getConstraints(int constraintMask) {
+                ArrayList<Constraint> ret = new ArrayList<Constraint>();
+                for (Constraint constraint : constraints) {
+                        if ((constraint.getConstraintCode() & constraintMask) > 0) {
+                                ret.add(constraint);
+                        }
+                }
+
+                return ret.toArray(new Constraint[ret.size()]);
+        }
 }

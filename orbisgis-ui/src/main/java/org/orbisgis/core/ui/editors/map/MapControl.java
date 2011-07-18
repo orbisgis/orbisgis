@@ -79,7 +79,7 @@ import org.orbisgis.core.ui.editors.map.tool.ToolListener;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -385,7 +385,7 @@ public class MapControl extends JComponent implements ComponentListener,
 			return I18N.getString("orbisgis.org.orbisgis.ui.mapControl.drawing"); //$NON-NLS-1$
 		}
 
-		public void run(IProgressMonitor pm) {
+		public void run(ProgressMonitor pm) {
 			synchronized (this) {
 				this.pm = new CancellablePM(cancel, pm);
 				pm = this.pm;
@@ -425,12 +425,12 @@ public class MapControl extends JComponent implements ComponentListener,
 		}
 	}
 
-	private class CancellablePM implements IProgressMonitor {
+	private class CancellablePM implements ProgressMonitor {
 
-		private IProgressMonitor decoratedPM;
+		private ProgressMonitor decoratedPM;
 		private boolean cancel;
 
-		public CancellablePM(boolean cancel, IProgressMonitor pm) {
+		public CancellablePM(boolean cancel, ProgressMonitor pm) {
 			this.decoratedPM = pm;
 			this.cancel = cancel;
 		}
@@ -451,21 +451,26 @@ public class MapControl extends JComponent implements ComponentListener,
 			return decoratedPM.getOverallProgress();
 		}
 
-		public void init(String taskName) {
-			decoratedPM.init(taskName);
+		public void init(String taskName, long i) {
+			decoratedPM.init(taskName, i);
 		}
 
 		public boolean isCancelled() {
 			return cancel || decoratedPM.isCancelled();
 		}
 
-		public void progressTo(int progress) {
+		public void progressTo(long progress) {
 			decoratedPM.progressTo(progress);
 		}
 
-		public void startTask(String taskName) {
-			decoratedPM.startTask(taskName);
+		public void startTask(String taskName, long i) {
+			decoratedPM.startTask(taskName, i);
 		}
+
+                @Override
+                public void setCancelled(boolean cancelled) {
+                        throw new UnsupportedOperationException("Not supported yet.");
+                }
 
 	}
 

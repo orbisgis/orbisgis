@@ -38,15 +38,19 @@ package org.gdms.data;
 
 import java.io.File;
 
-import org.gdms.SourceTest;
-import org.gdms.data.metadata.DefaultMetadata;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.BaseTest;
+import org.gdms.data.schema.DefaultMetadata;
+import org.gdms.data.schema.DefaultSchema;
+import org.gdms.data.schema.Metadata;
+import org.gdms.data.schema.Schema;
+import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
+import org.gdms.driver.ReadAccess;
 import org.orbisgis.utils.FileUtils;
 
-public class DataSourceTest extends SourceTest {
+public class DataSourceTest extends BaseTest {
 
 	public void testReadWriteAccessInDataSourceOutOfTransaction()
 			throws Exception {
@@ -130,7 +134,7 @@ public class DataSourceTest extends SourceTest {
 	}
 
 	public void testSaveDataWithOpenDataSource() throws Exception {
-		DataSource ds = dsf.getDataSource(super.getAnyNonSpatialResource());
+		DataSource ds = dsf.getDataSource(super.getNonDBSmallResources()[0]);
 
 		ds.open();
 		try {
@@ -142,7 +146,7 @@ public class DataSourceTest extends SourceTest {
 	}
 
 	public void testRemovedDataSource() throws Exception {
-		String dsName = super.getAnyNonSpatialResource();
+		String dsName = super.getNonDBSmallResources()[0];
 		DataSource ds = dsf.getDataSource(dsName);
 
 		ds.open();
@@ -161,7 +165,7 @@ public class DataSourceTest extends SourceTest {
 	}
 
 	public void testAlreadyClosed() throws Exception {
-		DataSource ds = dsf.getDataSource(super.getAnyNonSpatialResource());
+		DataSource ds = dsf.getDataSource(super.getNonDBSmallResources()[0]);
 
 		ds.open();
 		ds.close();
@@ -175,7 +179,7 @@ public class DataSourceTest extends SourceTest {
 
 	public void testFailedOpenClosedDataSource() throws Exception {
 		File volatileCsv = new File("target/test.csv");
-		FileUtils.copy(new File("src/test/resources/test.csv"), volatileCsv);
+		FileUtils.copy(new File(internalData + "test.csv"), volatileCsv);
 		DataSource ds = dsf.getDataSource(volatileCsv);
 		volatileCsv.delete();
 		try {
@@ -188,19 +192,6 @@ public class DataSourceTest extends SourceTest {
 
 	public void testCommitNonEditableDataSource() throws Exception {
 		DataSource ds = dsf.getDataSource(new ObjectDriver() {
-
-			public Number[] getScope(int dimension) throws DriverException {
-				return null;
-			}
-
-			public long getRowCount() throws DriverException {
-				return 0;
-			}
-
-			public Value getFieldValue(long rowIndex, int fieldId)
-					throws DriverException {
-				return null;
-			}
 
 			public String getDriverId() {
 				return null;
@@ -233,7 +224,58 @@ public class DataSourceTest extends SourceTest {
 				return null;
 			}
 
-		});
+            @Override
+            public boolean isCommitable() {
+                return false;
+            }
+
+            @Override
+            public TypeDefinition[] getTypesDefinitions() {
+                return new TypeDefinition[0];
+            }
+
+            @Override
+            public String validateMetadata(Metadata metadata) throws DriverException {
+                return null;
+            }
+
+                        @Override
+                        public Schema getSchema() throws DriverException {
+                                Schema s = new DefaultSchema("test0");
+                                s.addTable("main", new DefaultMetadata());
+                                return s;
+                        }
+
+                        @Override
+                        public ReadAccess getTable(String name) {
+                                if (!name.equals("main")) {
+                                        return null;
+                                }
+                                return new ReadAccess() {
+
+                                        @Override
+                                        public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
+                                                return null;
+                                        }
+
+                                        @Override
+                                        public long getRowCount() throws DriverException {
+                                                return 0;
+                                        }
+
+                                        @Override
+                                        public Number[] getScope(int dimension) throws DriverException {
+                                                return null;
+                                        }
+
+                                        @Override
+                                        public Metadata getMetadata() throws DriverException {
+                                                return new DefaultMetadata();
+                                        }
+                                };
+                        }
+
+		},"main");
 
 		ds.open();
 		try {

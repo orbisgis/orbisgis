@@ -44,419 +44,448 @@ import org.gdms.data.DataSourceCreation;
 import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.DataSourceFinalizationException;
 import org.gdms.data.NoSuchTableException;
-import org.gdms.data.SourceAlreadyExistsException;
 import org.gdms.data.db.DBSource;
+import org.gdms.data.schema.Schema;
 import org.gdms.data.wms.WMSSource;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverManager;
-import org.gdms.sql.parser.ParseException;
-import org.gdms.sql.strategies.SemanticException;
-import org.gdms.sql.strategies.TableNotFoundException;
 
 public interface SourceManager {
 
-	/**
-	 * The source has no known type
-	 */
-	public static final int UNKNOWN = 0;
+        /**
+         * The source has no known type
+         */
+        int UNKNOWN = 0;
+        /**
+         * The source type can contain raster fields
+         */
+        int RASTER = 1;
+        /**
+         * The source type can contain geometric fields
+         */
+        int VECTORIAL = 2;
+        /**
+         * The source is stored in a file
+         */
+        int FILE = 4;
+        /**
+         * The source is stored in a database
+         */
+        int DB = 8;
+        /**
+         * The source is stored in memory
+         */
+        int MEMORY = 16;
+        /**
+         * The source is the result of a SQL query
+         */
+        int SQL = 32;
+        /**
+         * The source contains the parameters of a WMS connection
+         */
+        int WMS = 64;
+        int SYSTEM_TABLE = 128;
 
-	/**
-	 * The source type can contain raster fields
-	 */
-	public static final int RASTER = 1;
+        /**
+         * Sets the driver manager used to load the drivers of the sources
+         *
+         * @param dm
+         */
+        void setDriverManager(DriverManager dm);
 
-	/**
-	 * The source type can contain geometric fields
-	 */
-	public static final int VECTORIAL = 2;
+        /**
+         * Adds a listener to the events in this class
+         *
+         * @param e
+         * @return
+         */
+        boolean addSourceListener(SourceListener e);
 
-	/**
-	 * The source is stored in a file
-	 */
-	public static final int FILE = 4;
+        /**
+         * Removes a listener to the events in this class
+         *
+         * @param o
+         * @return
+         */
+        boolean removeSourceListener(SourceListener o);
 
-	/**
-	 * The source is stored in a database
-	 */
-	public static final int DB = 8;
+        /**
+         * Removes all the information about the sources
+         *
+         * @throws IOException
+         */
+        void removeAll() throws IOException;
 
-	/**
-	 * The source is stored in memory
-	 */
-	public static final int MEMORY = 16;
+        /**
+         * Try to remove the information about the source with the name or alias
+         * specified
+         *
+         * @param name
+         * @return true if the source was found and removed and false if the source
+         *         was not found
+         * @throws IllegalStateException
+         *             If some source depends on the source being removed
+         */
+        boolean remove(String name);
 
-	/**
-	 * The source is the result of a SQL query
-	 */
-	public static final int SQL = 32;
+        /**
+         * Try to delete on disk or on database the source with the name or alias
+         * specified
+         *
+         * @param name
+         * @return true if the source was found and removed and false if the source
+         *         was not found
+         * @throws IllegalStateException
+         *             If some source depends on the source being removed
+         */
+        boolean delete(String name);
 
-	/**
-	 * The source contains the parameters of a WMS connection
-	 */
-	public static final int WMS = 64;
+        /**
+         * Registers a file with the specified name
+         *
+         * @param name
+         *            Name to register with
+         * @param file
+         *            file to register
+         * @throws SourceAlreadyExistsException
+         */
+        void register(String name, File file);
 
-	/**
-	 * The source is a system table
-	 */
-	public static final int SYSTEM_TABLE = 128;
+        /**
+         * Registers a database table with the specified name
+         *
+         * @param name
+         *            Name to register
+         * @param dbTable
+         *            source to register
+         * @throws SourceAlreadyExistsException
+         */
+        void register(String name, DBSource dbTable);
 
-	/**
-	 * Sets the driver manager used to load the drivers of the sources
-	 * 
-	 * @param dm
-	 */
-	public abstract void setDriverManager(DriverManager dm);
+        /**
+         * Registers a wms source with the specified name
+         *
+         * @param name
+         *            Name to register
+         * @param wmsSource
+         *            source to register
+         * @throws SourceAlreadyExistsException
+         */
+        void register(String name, WMSSource wmsSource);
 
-	/**
-	 * Adds a listener to the events in this class
-	 * 
-	 * @param e
-	 * @return
-	 */
-	public abstract boolean addSourceListener(SourceListener e);
+        /**
+         * Registers a object with the specified name
+         *
+         * @param name
+         *            Name to register with
+         * @param driver
+         *            object to register
+         * @throws SourceAlreadyExistsException 
+         */
+        void register(String name, ObjectDriver driver);
 
-	/**
-	 * Removes a listener to the events in this class
-	 * 
-	 * @param o
-	 * @return
-	 */
-	public abstract boolean removeSourceListener(SourceListener o);
+        /**
+         * Registers the specified DataSourceDefinition with the specified name
+         *
+         * @param name
+         *            Name to register with
+         * @param def
+         *            definition of the source
+         * @throws SourceAlreadyExistsException
+         */
+        void register(String name, DataSourceDefinition def);
+        
+        /**
+         * Registers all table available in the given DataSourceCreation.
+         * @param name name of the schema to register
+         * @param cr
+         */
+        void register(String name, DataSourceCreation cr);
 
-	/**
-	 * Removes all the information about the sources
-	 * 
-	 * @throws IOException
-	 */
-	public abstract void removeAll() throws IOException;
+        /**
+         * Gets a unique id
+         *
+         * @return unique id
+         */
+        String getUID();
 
-	/**
-	 * Try to remove the information about the source with the name or alias
-	 * specified
-	 * 
-	 * @param name
-	 * @return true if the source was found and removed and false if the source
-	 *         was not found
-	 * @throws IllegalStateException
-	 *             If some source depends on the source being removed
-	 */
-	public abstract boolean remove(String name) throws IllegalStateException;
+        /**
+         * Returns a name that hasn't been used for any registration so far and
+         * based in the specified name
+         *
+         * @param base
+         *            Base to obtain the unique name
+         * @return
+         */
+        String getUniqueName(String base);
 
-	/**
-	 * Try to delete on disk or on database the source with the name or alias
-	 * specified
-	 * 
-	 * @param name
-	 * @return true if the source was found and removed and false if the source
-	 *         was not found
-	 * @throws IllegalStateException
-	 *             If some source depends on the source being removed
-	 */
-	public abstract boolean delete(String name) throws IllegalStateException;
+        /**
+         * Registers generating the name automatically
+         *
+         * @param file
+         * @return the name of the registered source
+         */
+        String nameAndRegister(File file);
 
-	/**
-	 * Registers a file with the specified name
-	 * 
-	 * @param name
-	 *            Name to register with
-	 * @param file
-	 *            file to register
-	 * @throws SourceAlreadyExistsException
-	 */
-	public abstract void register(String name, File file)
-			throws SourceAlreadyExistsException;
+        /**
+         * Registers generating the name automatically
+         *
+         * @param dbTable
+         * @return the name of the registered source
+         */
+        String nameAndRegister(DBSource dbTable);
 
-	/**
-	 * Registers a database table with the specified name
-	 * 
-	 * @param name
-	 *            Name to register
-	 * @param dbTable
-	 *            source to register
-	 */
-	public abstract void register(String name, DBSource dbTable)
-			throws SourceAlreadyExistsException;
+        /**
+         * Registers generating the name automatically
+         *
+         * @param wmsSource
+         * @return the name of the registered source
+         */
+        String nameAndRegister(WMSSource wmsSource);
 
-	/**
-	 * Registers a wms source with the specified name
-	 * 
-	 * @param name
-	 *            Name to register
-	 * @param wmsSource
-	 *            source to register
-	 */
-	public abstract void register(String name, WMSSource wmsSource)
-			throws SourceAlreadyExistsException;
+        /**
+         * Registers generating the name automatically
+         *
+         * @param driver
+         * @param tableName 
+         * @return the name of the registered source
+         */
+        String nameAndRegister(ObjectDriver driver, String tableName);
 
-	/**
-	 * Registers a object with the specified name
-	 * 
-	 * @param name
-	 *            Name to register with
-	 * @param driver
-	 *            object to register
-	 */
-	public abstract void register(String name, ObjectDriver driver)
-			throws SourceAlreadyExistsException;
+        /**
+         * Registers generating the name automatically
+         *
+         * @param def
+         * @return the name of the registered source
+         */
+        String nameAndRegister(DataSourceDefinition def);
+        
+        /**
+         * Registers generating the name automatically
+         * 
+         * @param dsc
+         * @return the name of the registered source
+         */
+        String nameAndRegister(DataSourceCreation dsc);
 
-	/**
-	 * Generic register method
-	 * 
-	 * @param name
-	 *            Name to register with
-	 * @param def
-	 *            definition of the source
-	 */
-	public abstract void register(String name, DataSourceDefinition def)
-			throws SourceAlreadyExistsException;
+        /**
+         * Adds a new name to the specified data source name. The main name of the
+         * data source will not change but the new name can be used to refer to the
+         * source in the same way as the main one
+         *
+         * @param dsName
+         * @param newName
+         * @throws NoSuchTableException
+         * @throws SourceAlreadyExistsException
+         */
+        void addName(String dsName, String newName)
+                throws NoSuchTableException;
 
-	/**
-	 * Get's a unique id
-	 * 
-	 * @return unique id
-	 */
-	public abstract String getUID();
+        /**
+         * Modifies the name of the specified source. If modifies either the main
+         * name either the aliases
+         *
+         * @param dsName
+         * @param newName
+         * @throws SourceAlreadyExistsException
+         */
+        void rename(String dsName, String newName);
 
-	/**
-	 * Returns a name that hasn't been used for any registration so far and
-	 * based in the specified name
-	 * 
-	 * @param base
-	 *            Base to obtain the unique name
-	 * @return
-	 */
-	String getUniqueName(String base);
+        /**
+         * @param sourceName
+         * @return true if there is a source with the specified name, false
+         *         otherwise
+         */
+        boolean exists(String sourceName);
 
-	/**
-	 * Registers generating the name automatically
-	 * 
-	 * @param file
-	 * @return the name of the registered source
-	 */
-	public abstract String nameAndRegister(File file);
+        /**
+         * Gets the main name of the source
+         *
+         * @param dsName
+         * @return
+         * @throws NoSuchTableException
+         *             If there is no source with the specified name
+         */
+        String getMainNameFor(String dsName)
+                throws NoSuchTableException;
 
-	/**
-	 * Registers generating the name automatically
-	 * 
-	 * @param dbTable
-	 * @return the name of the registered source
-	 */
-	public abstract String nameAndRegister(DBSource dbTable);
+        /**
+         * Called to free resources
+         *
+         * @throws DataSourceFinalizationException
+         */
+        void shutdown() throws DataSourceFinalizationException;
 
-	/**
-	 * Registers generating the name automatically
-	 * 
-	 * @param wmsSource
-	 * @return the name of the registered source
-	 */
-	public abstract String nameAndRegister(WMSSource wmsSource);
+        /**
+         * @return true if there is no source in the manager and false otherwise
+         */
+        boolean isEmpty();
 
-	/**
-	 * Registers generating the name automatically
-	 * 
-	 * @param driver
-	 * @return the name of the registered source
-	 */
-	public abstract String nameAndRegister(ObjectDriver driver);
+        /**
+         * Creates a source and returns a definition of the source that can be used
+         * to register it. This method does not register the created source
+         *
+         * @param dsc
+         *            creation object
+         * @param tableName 
+         * @return
+         * @throws DriverException
+         */
+        DataSourceDefinition createDataSource(DataSourceCreation dsc, String tableName)
+                throws DriverException;
 
-	/**
-	 * Registers generating the name automatically
-	 * 
-	 * @param query
-	 * @return the name of the registered source
-	 * @throws DriverException
-	 * @throws SemanticException
-	 * @throws ParseException
-	 */
-	public abstract String nameAndRegister(String query) throws ParseException,
-			SemanticException, DriverException;
+        /**
+         * Creates a source with a default table name and returns a definition of the source
+         * that can be used to register it. This method does not register the created source.
+         * 
+         * This is strictly equivalent to calling:
+         * <code>createDataSource(dsc, DriverManager.DEFAULT_SINGLE_TABLE_NAME)</code>
+         *
+         * @param dsc
+         *            creation object
+         * @return
+         * @throws DriverException
+         */
+        DataSourceDefinition createDataSource(DataSourceCreation dsc)
+                throws DriverException;
+        
+        /**
+         * Gets the source with the specified name
+         *
+         * @param name
+         * @return null if there is no source with that name
+         */
+        Source getSource(String name);
 
-	/**
-	 * Registers generating the name automatically
-	 * 
-	 * @param def
-	 * @return the name of the registered source
-	 */
-	public abstract String nameAndRegister(DataSourceDefinition def);
+        /**
+         * Sets the directory where the registry of sources and its properties are
+         * stored. Each call to saveStatus will serialize the content of this
+         * manager to the specified directory. The current status is preserved
+         *
+         * @param newDir
+         * @throws DriverException
+         */
+        void setSourceInfoDirectory(String newDir)
+                throws DriverException;
 
-	/**
-	 * Adds a new name to the specified data source name. The main name of the
-	 * data source will not change but the new name can be used to refer to the
-	 * source in the same way as the main one
-	 * 
-	 * @param dsName
-	 * @param newName
-	 * @throws TableNotFoundException
-	 */
-	public abstract void addName(String dsName, String newName)
-			throws TableNotFoundException, SourceAlreadyExistsException;
+        /**
+         * Sets the directory where the registry of sources and its properties are
+         * stored. Each call to saveStatus will serialize the content of this
+         * manager to the specified directory. The specified directory is read and
+         * the status of this source manager is replaced by the one in the directory
+         *
+         * @param newSourceInfoDir
+         * @throws IOException
+         */
+        void changeSourceInfoDirectory(String newSourceInfoDir)
+                throws IOException;
 
-	/**
-	 * Modifies the name of the specified source. If modifies either the main
-	 * name either the aliases
-	 * 
-	 * @param dsName
-	 * @param newName
-	 * @throws SourceAlreadyExistsException
-	 */
-	public abstract void rename(String dsName, String newName)
-			throws SourceAlreadyExistsException;
+        /**
+         * Method for debugging purposes that obtains a snapshot of the system
+         *
+         * @return
+         * @throws IOException
+         */
+        String getMemento() throws IOException;
 
-	/**
-	 * @param sourceName
-	 * @return true if there is a source with the specified name, false
-	 *         otherwise
-	 */
-	public abstract boolean exists(String sourceName);
+        /**
+         * saves all the information about the sources in the directory specified by
+         * the last call to setSourceInfoDirectory
+         *
+         * @throws DriverException
+         */
+        void saveStatus() throws DriverException;
 
-	/**
-	 * Gets the main name of the source
-	 * 
-	 * @param dsName
-	 * @return
-	 * @throws NoSuchTableException
-	 *             If there is no source with the specified name
-	 */
-	public abstract String getMainNameFor(String dsName)
-			throws NoSuchTableException;
+        /**
+         * Gets the directory where the information of sources is stored
+         *
+         * @return
+         */
+        File getSourceInfoDirectory();
 
-	/**
-	 * Called to free resources
-	 * 
-	 * @throws DataSourceFinalizationException
-	 */
-	public abstract void shutdown() throws DataSourceFinalizationException;
+        /**
+         * Gets the driver manager
+         *
+         * @return
+         */
+        DriverManager getDriverManager();
 
-	/**
-	 * @return true if there is no source in the manager and false otherwise
-	 */
-	public abstract boolean isEmpty();
+        /**
+         * Removes the specified secondary name.
+         *
+         * @param secondName
+         */
+        void removeName(String secondName);
 
-	/**
-	 * Creates a source and returns a definition of the source that can be used
-	 * to register it. This method does not register the created source
-	 * 
-	 * @param dsc
-	 *            creation object
-	 * @return
-	 * @throws DriverException
-	 */
-	public abstract DataSourceDefinition createDataSource(DataSourceCreation dsc)
-			throws DriverException;
+        /**
+         * Gets the name of the source that accesses the specified source
+         * definition. If the source definition is not accessed by any source it
+         * will return null
+         *
+         * @param dataSourceDefinition
+         * @return
+         */
+        String getSourceName(
+                DataSourceDefinition dataSourceDefinition);
 
-	/**
-	 * Gets the source with the specified name
-	 * 
-	 * @param name
-	 * @return null if there is no source with that name
-	 */
-	public Source getSource(String name);
+        /**
+         * Gets the list of the names of all the sources in the manager
+         *
+         * @return
+         */
+        String[] getSourceNames();
 
-	/**
-	 * Sets the directory where the registry of sources and its properties are
-	 * stored. Each call to saveStatus will serialize the content of this
-	 * manager to the specified directory. The current status is preserved
-	 * 
-	 * @param newDir
-	 * @throws DriverException
-	 */
-	public abstract void setSourceInfoDirectory(String newDir)
-			throws DriverException;
+        /**
+         * Get all the alternative names for the specified source
+         *
+         * @param sourceName
+         * @return
+         * @throws NoSuchTableException
+         *             If there is no source with the specified name
+         */
+        String[] getAllNames(String sourceName)
+                throws NoSuchTableException;
 
-	/**
-	 * Sets the directory where the registry of sources and its properties are
-	 * stored. Each call to saveStatus will serialize the content of this
-	 * manager to the specified directory. The specified directory is read and
-	 * the status of this source manager is replaced by the one in the directory
-	 * 
-	 * @param newSourceInfoDir
-	 * @throws IOException
-	 */
-	public abstract void changeSourceInfoDirectory(String newSourceInfoDir)
-			throws IOException;
+        /**
+         * Loads the system tables.
+         */
+        void loadSystemTables();
 
-	/**
-	 * Method for debugging purposes that obtains a snapshot of the system
-	 * 
-	 * @return
-	 * @throws IOException
-	 */
-	public abstract String getMemento() throws IOException;
+        void addCommitListener(CommitListener listener);
 
-	/**
-	 * saves all the information about the sources in the directory specified by
-	 * the last call to setSourceInfoDirectory
-	 * 
-	 * @throws DriverException
-	 */
-	public abstract void saveStatus() throws DriverException;
+        void removeCommitListener(CommitListener listener);
 
-	/**
-	 * Gets the directory where the information of sources is stored
-	 * 
-	 * @return
-	 */
-	public abstract File getSourceInfoDirectory();
+        void fireCommitDone(String name);
 
-	/**
-	 * Registers an sql instruction.
-	 * 
-	 * @param name
-	 *            name to register
-	 * @param sql
-	 *            instruction to register
-	 * @throws DriverException
-	 * @throws SemanticException
-	 * @throws ParseException
-	 */
-	public abstract void register(String name, String sql)
-			throws SourceAlreadyExistsException, ParseException,
-			SemanticException, DriverException;
+        void fireIsCommiting(String name, Object source) throws DriverException;
 
-	/**
-	 * Gets the driver manager
-	 * 
-	 * @return
-	 */
-	public DriverManager getDriverManager();
+        void addSourceContextPath(String path);
 
-	/**
-	 * Removes the specified secondary name.
-	 * 
-	 * @param secondName
-	 */
-	public abstract void removeName(String secondName);
+        boolean containsSourceContextPath(String path);
 
-	/**
-	 * Gets the name of the source that accesses the specified source
-	 * definition. If the source definition is not accessed by any source it
-	 * will return null
-	 * 
-	 * @param fileSourceDefinition
-	 * @return
-	 */
-	public abstract String getSourceName(
-			DataSourceDefinition dataSourceDefinition);
+        boolean removeSourceContextPath(String path);
 
-	/**
-	 * Gets the list of the names of all the sources in the manager
-	 * 
-	 * @return
-	 */
-	public abstract String[] getSourceNames();
+        /**
+         * Initializes this SourceManager.
+         *
+         * Any call to this method while there are sources associated with the SourceManager
+         * will cause an InitializationException. This method can be called to reload the SourceManager,
+         * after a call to shutdown().
+         *
+         * Note that this method does not reload the DriverManager associated with this SourceManager.
+         *
+         * @throws IOException
+         * @throws InitializationException
+         */
+        void init() throws IOException;
 
-	/**
-	 * Get all the alternative names for the specified source
-	 * 
-	 * @param sourceName
-	 * @return
-	 * @throws NoSuchTableException
-	 *             If there is no source with the specified name
-	 */
-	public abstract String[] getAllNames(String sourceName)
-			throws NoSuchTableException;
-
-	public void loadSystemTables();
-
+        /**
+         * Gets the Schema of every data loaded in this SourceManager.
+         *
+         * This Schema does not contains any {@code Metadata}, but has a sub-schema for
+         * each set of Source that belongs to the same driver.
+         * @return the global GDMS schema for this SourceManager
+         */
+        Schema getSchema();
 }

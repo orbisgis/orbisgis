@@ -6,14 +6,16 @@
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
  *
- *  Team leader Erwan BOCHER, scientific researcher,
+ * Team leader : Erwan BOCHER, scientific researcher,
  *
- *  User support leader : Gwendall Petit, geomatic engineer.
+ * User support leader : Gwendall Petit, geomatic engineer.
  *
+ * Previous computer developer : Pierre-Yves FADET, computer engineer, Thomas LEDUC, 
+ * scientific researcher, Fernando GONZALEZ CORTES, computer engineer.
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2010 Erwan BOCHER, Alexis GUEGANNO, Maxence LAURENT, Antoine GOURLAY
  *
  * This file is part of OrbisGIS.
  *
@@ -32,27 +34,30 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info@orbisgis.org
  */
 package org.gdms.data.types;
 
-public abstract class AbstractConstraint implements Constraint {
+abstract class AbstractConstraint implements Constraint {
 
+        @Override
 	public boolean allowsFieldRemoval() {
 		return true;
 	}
 
-	public int[] getChoiceCodes() throws UnsupportedOperationException {
+        @Override
+	public int[] getChoiceCodes() {
 		throw new UnsupportedOperationException(
 				"Invalid operation for this Constraint");
 	}
 
-	public String[] getChoiceStrings() throws UnsupportedOperationException {
+        @Override
+	public String[] getChoiceStrings() {
 		throw new UnsupportedOperationException(
 				"Invalid operation for this Constraint");
 	}
 
+        @Override
 	public String getConstraintHumanValue() {
 		return getConstraintValue();
 	}

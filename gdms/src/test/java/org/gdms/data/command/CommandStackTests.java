@@ -128,6 +128,10 @@ public class CommandStackTests extends TestCase {
 			return this.id == c.id;
 		}
 
+                @Override
+                public void clear() {
+                }
+
 	}
 
 }

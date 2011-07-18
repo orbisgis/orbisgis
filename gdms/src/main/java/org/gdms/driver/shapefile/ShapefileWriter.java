@@ -60,6 +60,7 @@ import org.gdms.driver.WriteBufferManager;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import org.gdms.driver.DriverException;
 
 /**
  * ShapefileWriter allows for the storage of geometries in esris shp format.
@@ -86,26 +87,28 @@ import com.vividsolutions.jts.geom.Geometry;
  */
 public class ShapefileWriter {
 
-	FileChannel shpChannel;
+	private FileChannel shpChannel;
 
-	FileChannel shxChannel;
+	private FileChannel shxChannel;
 
-	WriteBufferManager shapeBuffer;
+	private WriteBufferManager shapeBuffer;
 
-	WriteBufferManager indexBuffer;
+	private WriteBufferManager indexBuffer;
 
-	ShapeHandler handler;
+	private ShapeHandler handler;
 
-	ShapeType type;
+	private ShapeType type;
 
-	int offset;
+	private int offset;
 
-	int cnt;
+	private int cnt;
 
 	/**
 	 * Creates a new instance of ShapeFileWriter
 	 *
-	 * @throws IOException
+         * @param shpChannel
+         * @param shxChannel
+         * @throws IOException
 	 */
 	public ShapefileWriter(FileChannel shpChannel, FileChannel shxChannel)
 			throws IOException {
@@ -119,14 +122,20 @@ public class ShapefileWriter {
 	 * Write the headers for this shapefile including the bounds, shape type,
 	 * the number of geometries and the total fileLength (in actual bytes, NOT
 	 * 16 bit words).
-	 */
+         *
+         * @param bounds
+         * @param type
+         * @param numberOfGeometries
+         * @param fileLength
+         * @throws DriverException
+         * @throws IOException
+         */
 	public void writeHeaders(Envelope bounds, ShapeType type,
-			int numberOfGeometries, int fileLength) throws IOException {
-
+			int numberOfGeometries, int fileLength) throws DriverException, IOException {
 		try {
 			handler = type.getShapeHandler();
 		} catch (ShapefileException se) {
-			throw new RuntimeException("unexpected Exception", se);
+			throw new DriverException("Error with type " + type, se);
 		}
 		ShapefileHeader header = new ShapefileHeader();
 		header.write(shapeBuffer, type, numberOfGeometries, fileLength / 2,
@@ -144,7 +153,10 @@ public class ShapefileWriter {
 	/**
 	 * Write a single Geometry to this shapefile. The Geometry must be
 	 * compatable with the ShapeType assigned during the writing of the headers.
-	 */
+         *
+         * @param g
+         * @throws IOException
+         */
 	public void writeGeometry(Geometry g) throws IOException {
 		int length;
 		if (g == null) {
@@ -174,7 +186,9 @@ public class ShapefileWriter {
 
 	/**
 	 * Close the underlying Channels.
-	 */
+         *
+         * @throws IOException 
+         */
 	public void close() throws IOException {
 		indexBuffer.flush();
 		shapeBuffer.flush();

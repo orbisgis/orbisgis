@@ -40,6 +40,8 @@
 package org.gdms.data.edition;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
@@ -48,64 +50,67 @@ import org.gdms.data.values.ValueFactory;
 
 public class MemoryInternalBuffer implements InternalBuffer {
 
-	private ArrayList<ArrayList<Value>> rows = new ArrayList<ArrayList<Value>>();
-	private DataSource dataSource;
+        private List<List<Value>> rows = new ArrayList<List<Value>>();
+        private DataSource dataSource;
 
-	public MemoryInternalBuffer(DataSource dataSource) {
-		this.dataSource = dataSource;
-	}
+        public MemoryInternalBuffer(DataSource dataSource) {
+                this.dataSource = dataSource;
+        }
 
-	private ArrayList<Value> getRow(Value[] values) {
-		ArrayList<Value> row = new ArrayList<Value>();
+        private List<Value> getRow(Value[] values) {
+                List<Value> row = new ArrayList<Value>();
+                row.addAll(Arrays.asList(values));
 
-		for (int i = 0; i < values.length; i++) {
-			row.add(values[i]);
-		}
+                return row;
+        }
 
-		return row;
-	}
+        @Override
+        public PhysicalRowAddress insertRow(ValueCollection pk, Value[] newRow) {
+                rows.add(getRow(newRow));
+                return new InternalBufferDirection(pk, this, rows.size() - 1,
+                        dataSource);
+        }
 
-	public PhysicalDirection insertRow(ValueCollection pk, Value[] newRow) {
-		rows.add(getRow(newRow));
-		return new InternalBufferDirection(pk, this, rows.size() - 1,
-				dataSource);
-	}
+        @Override
+        public void setFieldValue(int row, int fieldId, Value value) {
+                rows.get(row).set(fieldId, value);
+        }
 
-	public void setFieldValue(int row, int fieldId, Value value) {
-		rows.get(row).set(fieldId, value);
-	}
+        @Override
+        public Value getFieldValue(int row, int fieldId) {
+                Value v = rows.get(row).get(fieldId);
+                if (v == null) {
+                        return ValueFactory.createNullValue();
+                } else {
+                        return v;
+                }
+        }
 
-	public Value getFieldValue(int row, int fieldId) {
-		Value v = rows.get(row).get(fieldId);
-		if (v == null) {
-			return ValueFactory.createNullValue();
-		} else {
-			return v;
-		}
-	}
+        @Override
+        public Value[] removeField(int index) {
+                List<Value> ret = new ArrayList<Value>();
+                for (int i = 0; i < rows.size(); i++) {
+                        List<Value> row = rows.get(i);
+                        ret.add(row.remove(index));
+                }
 
-	public Value[] removeField(int index) {
-		ArrayList<Value> ret = new ArrayList<Value>();
-		for (int i = 0; i < rows.size(); i++) {
-			ArrayList<Value> row = rows.get(i);
-			ret.add(row.remove(index));
-		}
+                return ret.toArray(new Value[ret.size()]);
+        }
 
-		return ret.toArray(new Value[ret.size()]);
-	}
+        @Override
+        public void addField() {
+                Value nullValue = ValueFactory.createNullValue();
+                for (int i = 0; i < rows.size(); i++) {
+                        List<Value> row = rows.get(i);
+                        row.add(nullValue);
+                }
+        }
 
-	public void addField() {
-		Value nullValue = ValueFactory.createNullValue();
-		for (int i = 0; i < rows.size(); i++) {
-			ArrayList<Value> row = rows.get(i);
-			row.add(nullValue);
-		}
-	}
-
-	public void restoreField(int fieldIndex, Value[] values) {
-		for (int i = 0; i < rows.size(); i++) {
-			ArrayList<Value> row = rows.get(i);
-			row.add(fieldIndex, values[i]);
-		}
-	}
+        @Override
+        public void restoreField(int fieldIndex, Value[] values) {
+                for (int i = 0; i < rows.size(); i++) {
+                        List<Value> row = rows.get(i);
+                        row.add(fieldIndex, values[i]);
+                }
+        }
 }

@@ -35,8 +35,9 @@
 package org.gdms.geometryUtils;
 
 /**
- *
- * @author ebocher
+ * Exception related to geometry utilities.
+ * 
+ * @author Erwan Bocher
  */
 public class GeometryException extends Exception {
 

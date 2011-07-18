@@ -39,14 +39,12 @@ package org.gdms.driver.postgresql;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.jdbc.AbstractConversionRule;
-import org.gdms.driver.jdbc.ConversionRule;
 
-public abstract class AbstractIntRule extends AbstractConversionRule implements
-		ConversionRule {
+public abstract class AbstractIntRule extends AbstractConversionRule {
 
 	@Override
 	public String getSQL(String fieldName, Type fieldType) {
-		return "\"" + fieldName + "\" " + getTypeExpr(fieldType)
+		return fieldName + " " + getTypeExpr(fieldType)
 				+ getGlobalConstraintExpr(fieldType);
 	}
 

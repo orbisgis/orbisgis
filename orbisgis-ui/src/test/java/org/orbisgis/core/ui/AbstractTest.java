@@ -38,7 +38,7 @@ package org.orbisgis.core.ui;
 
 import junit.framework.TestCase;
 
-import org.gdms.data.DataSourceFactory;
+import org.gdms.data.SQLDataSourceFactory;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.DefaultDataManager;
 import org.orbisgis.core.Services;
@@ -48,13 +48,13 @@ import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.ui.editor.EditorListener;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class AbstractTest extends TestCase {
 
 	@Override
 	protected void setUp() throws Exception {
-		DataSourceFactory dsf = new DataSourceFactory(
+		SQLDataSourceFactory dsf = new SQLDataSourceFactory(
 				"src/test/resources/sources", "src/test/resources/temp");
 
 		Services.registerService(DataManager.class, "", new DefaultDataManager(
@@ -64,7 +64,7 @@ public class AbstractTest extends TestCase {
 		Services.registerService(EditorManager.class, "", new EditorManager() {
 
 			@Override
-			public void open(EditableElement element, IProgressMonitor pm)
+			public void open(EditableElement element, ProgressMonitor pm)
 					throws UnsupportedOperationException {
 			}
 

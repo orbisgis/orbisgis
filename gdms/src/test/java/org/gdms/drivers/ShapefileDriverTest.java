@@ -42,9 +42,8 @@ import java.util.Date;
 
 import junit.framework.TestCase;
 
-import org.gdms.BaseTest;
 import org.gdms.Geometries;
-import org.gdms.SourceTest;
+import org.gdms.BaseTest;
 import org.gdms.data.BasicWarningListener;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreation;
@@ -52,10 +51,9 @@ import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.file.FileSourceDefinition;
-import org.gdms.data.metadata.DefaultMetadata;
+import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.DimensionConstraint;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -72,6 +70,7 @@ import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.WKTReader;
+import org.gdms.data.types.ConstraintFactory;
 
 public class ShapefileDriverTest extends TestCase {
 	private DataSourceFactory dsf;
@@ -90,41 +89,24 @@ public class ShapefileDriverTest extends TestCase {
 	}
 
 	public void testOpenShapeWithDifferentCase() throws Exception {
-		DataSource ds = dsf.getDataSource(new File(SourceTest.internalData
+                // should it fail if different case ? I say yes...
+		DataSource ds = dsf.getDataSource(new File(BaseTest.internalData
 				+ "multipolygon2d.Shp"));
+                try {
 		ds.open();
 		ds.close();
+                assertTrue(false);
+                } catch (DriverException ex) {
+                }
 	}
 
 	public void testBigShape() throws Exception {
 		dsf.getSourceManager().register(
 				"big",
-				new FileSourceDefinition(new File(SourceTest.internalData
-						+ "landcover2000.shp")));
+				new FileSourceCreation(new File(BaseTest.internalData
+						+ "landcover2000.shp"), null));
 		DataSource ds = dsf.getDataSource("big");
 		ds.open();
-		ds.close();
-	}
-
-	public void testSaveSQL() throws Exception {
-		dsf.getSourceManager().register(
-				"shape",
-				new FileSourceDefinition(new File(SourceTest.internalData
-						+ "landcover2000.shp")));
-
-		DataSource sql = dsf.getDataSourceFromSQL(
-				"select Buffer(the_geom, 20) from shape",
-				DataSourceFactory.DEFAULT);
-		DataSourceDefinition target = new FileSourceDefinition(new File(
-				SourceTest.backupDir, "outputtestSaveSQL.shp"));
-		dsf.getSourceManager().register("buffer", target);
-		dsf.saveContents("buffer", sql);
-
-		DataSource ds = dsf.getDataSource("buffer");
-		ds.open();
-		sql.open();
-		assertTrue(ds.getRowCount() == sql.getRowCount());
-		sql.close();
 		ds.close();
 	}
 
@@ -132,10 +114,9 @@ public class ShapefileDriverTest extends TestCase {
 		GenericObjectDriver omd = new GenericObjectDriver(new String[] {
 				"the_geom", "id" }, new Type[] {
 				TypeFactory.createType(Type.GEOMETRY,
-						new Constraint[] { new GeometryConstraint(
-								GeometryConstraint.POINT) }),
+                                        ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.POINT)),
 				TypeFactory.createType(Type.STRING) });
-		dsf.getSourceManager().register("obj", new ObjectSourceDefinition(omd));
+		dsf.getSourceManager().register("obj", new ObjectSourceDefinition(omd,"main"));
 		DataSource ds = dsf.getDataSource("obj");
 		GeometryFactory gf = new GeometryFactory();
 		ds.open();
@@ -144,8 +125,8 @@ public class ShapefileDriverTest extends TestCase {
 						.createGeometryCollection(new Geometry[0])),
 				ValueFactory.createValue("0") });
 		ds.insertFilledRow(new Value[] { null, ValueFactory.createValue("1") });
-		DataSourceDefinition target = new FileSourceDefinition(new File(
-				SourceTest.backupDir, "outputtestSaveEmptyGeometries.shp"));
+		DataSourceCreation target = new FileSourceCreation(new File(
+				BaseTest.backupDir, "outputtestSaveEmptyGeometries.shp"), null);
 		dsf.getSourceManager().register("buffer", target);
 		dsf.saveContents("buffer", ds);
 		String contents = ds.getAsString();
@@ -164,10 +145,10 @@ public class ShapefileDriverTest extends TestCase {
 		GenericObjectDriver omd = new GenericObjectDriver(new String[] { "id",
 				"geom" }, new Type[] { TypeFactory.createType(Type.STRING),
 				TypeFactory.createType(Type.GEOMETRY) });
-		dsf.getSourceManager().register("obj", new ObjectSourceDefinition(omd));
-		DataSourceDefinition target = new FileSourceDefinition(new File(
-				SourceTest.backupDir,
-				"outputtestSaveHeterogeneousGeometries.shp"));
+		dsf.getSourceManager().register("obj", new ObjectSourceDefinition(omd,"main"));
+		DataSourceCreation target = new FileSourceCreation(new File(
+				BaseTest.backupDir,
+				"outputtestSaveHeterogeneousGeometries.shp"), null);
 		DataSource ds = dsf.getDataSource("obj");
 		ds.open();
 		ds.insertFilledRow(new Value[] { ValueFactory.createValue("1"),
@@ -201,9 +182,8 @@ public class ShapefileDriverTest extends TestCase {
 		DefaultMetadata m = new DefaultMetadata();
 		m.addField("thelongernameintheworld", Type.STRING);
 		m.addField("", Type.GEOMETRY,
-				new Constraint[] { new GeometryConstraint(
-						GeometryConstraint.POLYGON) });
-		File shpFile = new File(SourceTest.backupDir,
+				ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.POLYGON));
+		File shpFile = new File(BaseTest.backupDir,
 				"outputtestFieldNameTooLong.shp");
 		if (shpFile.exists()) {
 			assertTrue(shpFile.delete());
@@ -220,9 +200,8 @@ public class ShapefileDriverTest extends TestCase {
 		m.addField("string", Type.STRING);
 		m.addField("int", Type.INT);
 		m.addField("", Type.GEOMETRY,
-				new Constraint[] { new GeometryConstraint(
-						GeometryConstraint.POLYGON) });
-		File shpFile = new File(SourceTest.backupDir,
+                        ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.POLYGON));
+		File shpFile = new File(BaseTest.backupDir,
 				"outputtestNullStringValue.shp");
 		if (shpFile.exists()) {
 			assertTrue(shpFile.delete());
@@ -236,9 +215,9 @@ public class ShapefileDriverTest extends TestCase {
 		ds.commit();
 		ds.close();
 		ds.open();
-		assertTrue(ds.getString(0, "string").equals(" "));
+		assertTrue(ds.getString(0, "string").equalsIgnoreCase(" "));
 		assertTrue(ds.getInt(0, "int") == 0);
-		assertTrue(listener.warnings.size() == 0);
+		assertTrue(listener.warnings.isEmpty());
 	}
 
 	public void test2DReadWriteMultipolygon() throws Exception {
@@ -252,10 +231,10 @@ public class ShapefileDriverTest extends TestCase {
 		int nbCoords = geom.getCoordinates().length;
 		DefaultMetadata m = new DefaultMetadata();
 		m.addField("thelongernameintheworld", Type.STRING);
-		m.addField("", Type.GEOMETRY, new Constraint[] {
-				new GeometryConstraint(geometryType),
-				new DimensionConstraint(2) });
-		File shpFile = new File(SourceTest.backupDir,
+		m.addField("", Type.GEOMETRY,
+                        ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, geometryType),
+				ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, 2));
+		File shpFile = new File(BaseTest.backupDir,
 				"outputtest2DReadWrite.shp");
 		if (shpFile.exists()) {
 			assertTrue(shpFile.delete());
@@ -305,10 +284,10 @@ public class ShapefileDriverTest extends TestCase {
 			throws Exception {
 		DefaultMetadata m = new DefaultMetadata();
 		m.addField("thelongernameintheworld", Type.STRING);
-		m.addField("", Type.GEOMETRY, new Constraint[] {
-				new GeometryConstraint(geometryType),
-				new DimensionConstraint(3) });
-		File shpFile = new File(SourceTest.backupDir,
+		m.addField("", Type.GEOMETRY,
+				 ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, geometryType),
+				ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, 3));
+		File shpFile = new File(BaseTest.backupDir,
 				"outputtest3DReadWrite.shp");
 		if (shpFile.exists()) {
 			assertTrue(shpFile.delete());
@@ -334,9 +313,9 @@ public class ShapefileDriverTest extends TestCase {
 		omd.addValues(new Value[] { ValueFactory
 				.createValue(new GeometryFactory().createPoint(new Coordinate(
 						2, 2, 2))) });
-		DataSource ds = dsf.getDataSource(omd);
+		DataSource ds = dsf.getDataSource(omd,"main");
 
-		File shpFile = new File(SourceTest.backupDir,
+		File shpFile = new File(BaseTest.backupDir,
 				"testNoConstraintWith3DGeom2SHP.shp");
 		dsf.getSourceManager().register("shp", shpFile);
 		dsf.saveContents("shp", ds);
@@ -351,10 +330,9 @@ public class ShapefileDriverTest extends TestCase {
 	public void testWrongTypeForDBF() throws Exception {
 		DefaultMetadata m = new DefaultMetadata();
 		m.addField("id", Type.TIMESTAMP);
-		m.addField("", Type.GEOMETRY, new Constraint[] {
-				new GeometryConstraint(GeometryConstraint.POINT),
-				new DimensionConstraint(3) });
-		File shpFile = new File(SourceTest.backupDir,
+		m.addField("", Type.GEOMETRY,  ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.POINT),
+				ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, 3));
+		File shpFile = new File(BaseTest.backupDir,
 				"outputtestWrongTypeForDBF.shp");
 		if (shpFile.exists()) {
 			assertTrue(shpFile.delete());
@@ -371,9 +349,8 @@ public class ShapefileDriverTest extends TestCase {
 		dsf.setWarninglistener(listener);
 
 		DefaultMetadata m = new DefaultMetadata();
-		m.addField("the_geom", Type.GEOMETRY, new Constraint[] {
-				new GeometryConstraint(GeometryConstraint.POINT),
-				new DimensionConstraint(3) });
+		m.addField("the_geom", Type.GEOMETRY, ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.POINT),
+				ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, 3));
 		m.addField("f1", Type.BOOLEAN);
 		m.addField("f2", Type.BYTE);
 		m.addField("f3", Type.DATE);
@@ -384,7 +361,7 @@ public class ShapefileDriverTest extends TestCase {
 		m.addField("f8", Type.SHORT);
 		m.addField("f9", Type.STRING);
 
-		File shpFile = new File(SourceTest.backupDir, "outputtestAllTypes.shp");
+		File shpFile = new File(BaseTest.backupDir, "outputtestAllTypes.shp");
 		if (shpFile.exists()) {
 			assertTrue(shpFile.delete());
 		}
@@ -404,15 +381,15 @@ public class ShapefileDriverTest extends TestCase {
 		ds.commit();
 		ds.close();
 
-		assertTrue(listener.warnings.size() == 0);
+		assertTrue(listener.warnings.isEmpty());
 	}
 
 	// SEE THE GT BUG REPORT :
 	// http://jira.codehaus.org/browse/GEOT-1268
 
 	public void testReadAndWriteDBF() throws Exception {
-		File file = new File(SourceTest.internalData + "alltypes.dbf");
-		File backup = new File(SourceTest.internalData + "backup/alltypes.dbf");
+		File file = new File(BaseTest.internalData + "alltypes.dbf");
+		File backup = new File(BaseTest.internalData + "backup/alltypes.dbf");
 		FileUtils.copy(file, backup);
 		DataSource ds = dsf.getDataSource(backup);
 		for (int i = 0; i < 2; i++) {
@@ -437,15 +414,15 @@ public class ShapefileDriverTest extends TestCase {
 	}
 
 	public void testReadAndWriteSHP() throws Exception {
-		File file = new File(SourceTest.internalData + "alltypes.shp");
-		File backup1 = new File(SourceTest.internalData + "backup/alltypes.shp");
+		File file = new File(BaseTest.internalData + "alltypes.shp");
+		File backup1 = new File(BaseTest.internalData + "backup/alltypes.shp");
 		FileUtils.copy(file, backup1);
 		File backup = backup1;
-		file = new File(SourceTest.internalData + "alltypes.shx");
-		File backup2 = new File(SourceTest.internalData + "backup/alltypes.shx");
+		file = new File(BaseTest.internalData + "alltypes.shx");
+		File backup2 = new File(BaseTest.internalData + "backup/alltypes.shx");
 		FileUtils.copy(file, backup2);
-		file = new File(SourceTest.internalData + "alltypes.dbf");
-		File backup3 = new File(SourceTest.internalData + "backup/alltypes.dbf");
+		file = new File(BaseTest.internalData + "alltypes.dbf");
+		File backup3 = new File(BaseTest.internalData + "backup/alltypes.dbf");
 		FileUtils.copy(file, backup3);
 		DataSource ds = dsf.getDataSource(backup);
 		GeometryFactory gf = new GeometryFactory();
@@ -486,7 +463,7 @@ public class ShapefileDriverTest extends TestCase {
 	public void testNullDates() throws Exception {
 		DefaultMetadata m = new DefaultMetadata();
 		m.addField("geom", TypeFactory.createType(Type.GEOMETRY,
-				new GeometryConstraint(GeometryConstraint.LINESTRING)));
+				ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.LINESTRING)));
 		m.addField("date", Type.DATE);
 		DataSourceCreation dsc = new FileSourceCreation(new File(dsf
 				.getTempFile()

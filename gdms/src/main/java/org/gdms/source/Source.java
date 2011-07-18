@@ -45,6 +45,11 @@ import org.gdms.data.wms.WMSSource;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 
+/**
+ * Represents a Source registered in a SourceManager.
+ *
+ * A Source has a name, a type, and a set of associated properties.
+ */
 public interface Source {
 
 	/**
@@ -153,7 +158,7 @@ public interface Source {
 	 * @return true if the user specified a name when registering it. False if
 	 *         the name was generated automatically
 	 */
-	public boolean isWellKnownName();
+	boolean isWellKnownName();
 
 	/**
 	 * Indicates if the source has been modified by another entity different
@@ -163,7 +168,7 @@ public interface Source {
 	 * @return true if the source has not been modified and false otherwise
 	 * @throws DriverException
 	 */
-	Boolean isUpToDate() throws DriverException;
+	boolean isUpToDate() throws DriverException;
 
 	/**
 	 * Gets all the sources that depend on this source
@@ -244,14 +249,6 @@ public interface Source {
 	ObjectDriver getObject();
 
 	/**
-	 * Gets the source of this SQL source. If this source is not a SQL query it
-	 * returns null
-	 * 
-	 * @return
-	 */
-	String getSQL();
-
-	/**
 	 * @return true if this source is a file. False otherwise
 	 */
 	boolean isFileSource();
@@ -267,18 +264,18 @@ public interface Source {
 	boolean isWMSSource();
 
 	/**
-	 * @return source is an object. False otherwise
+	 * @return true if source is an object. False otherwise
 	 */
 	boolean isObjectSource();
 
 	/**
-	 * @return source is a sql query. False otherwise
+	 * @return true if source is a sql query. False otherwise
 	 */
 	boolean isSQLSource();
 
 	/**
 	 * 
-	 * @return source is a system table. False otherwise
+	 * @return true if source is a system table. False otherwise
 	 */
 	boolean isSystemTableSource();
 

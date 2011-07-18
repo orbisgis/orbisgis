@@ -36,7 +36,7 @@
  */
 package org.gdms.data;
 
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
@@ -47,8 +47,10 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 
 /**
+ * This decorator implements caching of getMetadata, getRowCount and getScope for
+ * the underlying DataSource.
  *
- *
+ * Note that is does reset its cache on its own when the underlying source is committed to.
  */
 
 public class CacheDecorator extends AbstractDataSourceDecorator implements
@@ -75,7 +77,7 @@ public class CacheDecorator extends AbstractDataSourceDecorator implements
 	}
 
 	@Override
-	public void close() throws DriverException, AlreadyClosedException {
+	public void close() throws DriverException {
 		DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory()
 				.getSourceManager();
 		sm.removeCommitListener(this);
@@ -83,6 +85,7 @@ public class CacheDecorator extends AbstractDataSourceDecorator implements
 		getDataSource().close();
 	}
 
+        @Override
 	public Metadata getMetadata() throws DriverException {
 		if (metadata == null) {
 			metadata = getDataSource().getMetadata();
@@ -91,6 +94,7 @@ public class CacheDecorator extends AbstractDataSourceDecorator implements
 		return metadata;
 	}
 
+        @Override
 	public long getRowCount() throws DriverException {
 		if (rc == -1) {
 			rc = getDataSource().getRowCount();
@@ -99,6 +103,7 @@ public class CacheDecorator extends AbstractDataSourceDecorator implements
 		return rc;
 	}
 
+        @Override
 	public Number[] getScope(int dimension) throws DriverException {
 		if (extent == null) {
 			Number[] x = getDataSource().getScope(X);
@@ -143,13 +148,16 @@ public class CacheDecorator extends AbstractDataSourceDecorator implements
 		}
 	}
 
+        @Override
 	public void isCommiting(String name, Object source) {
 	}
 
+        @Override
 	public void commitDone(String name) {
 		sync();
 	}
 
+        @Override
 	public void syncWithSource() throws DriverException {
 		getDataSource().syncWithSource();
 		sync();

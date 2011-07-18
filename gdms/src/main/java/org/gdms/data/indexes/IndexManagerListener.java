@@ -36,12 +36,12 @@
  */
 package org.gdms.data.indexes;
 
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public interface IndexManagerListener {
 
 	void indexCreated(String source, String field, String indexId,
-			IndexManager im, IProgressMonitor pm) throws IndexException;
+			IndexManager im, ProgressMonitor pm) throws IndexException;
 
 	void indexDeleted(String source, String field, String indexId,
 			IndexManager im) throws IndexException;

@@ -38,18 +38,20 @@ package org.gdms.data;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+import org.apache.log4j.Logger;
 
 import org.gdms.data.edition.Commiter;
+import org.gdms.data.indexes.FullIterator;
 import org.gdms.data.indexes.IndexException;
 import org.gdms.data.indexes.IndexQuery;
+import org.gdms.data.indexes.IndexQueryException;
 import org.gdms.data.indexes.ResultIterator;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ReadOnlyDriver;
-import org.gdms.driver.ReadWriteDriver;
+import org.gdms.driver.ReadAccess;
 import org.gdms.source.Source;
-import org.gdms.sql.strategies.FullIterator;
 
 /**
  * Base class for all the DataSources that directly access a driver. getDriver()
@@ -60,109 +62,132 @@ import org.gdms.sql.strategies.FullIterator;
  */
 public abstract class DriverDataSource extends DataSourceCommonImpl {
 
-	private Source source;
+        private Source source;
+        private List<DataSourceListener> listeners = new ArrayList<DataSourceListener>();
+        private static final Logger LOG = Logger.getLogger(DriverDataSource.class);
 
-	private ArrayList<DataSourceListener> listeners = new ArrayList<DataSourceListener>();
+        public DriverDataSource(Source source) {
+                LOG.trace("Constructor");
+                this.source = source;
+        }
 
-	public DriverDataSource(Source source) {
-		this.source = source;
-	}
+        @Override
+        public void addDataSourceListener(DataSourceListener listener) {
+                listeners.add(listener);
+        }
 
-	public void addDataSourceListener(DataSourceListener listener) {
-		listeners.add(listener);
-	}
+        @Override
+        public void removeDataSourceListener(DataSourceListener listener) {
+                listeners.remove(listener);
+        }
 
-	public void removeDataSourceListener(DataSourceListener listener) {
-		listeners.remove(listener);
-	}
+        protected void fireOpen(DataSource ds) {
+                for (DataSourceListener listener : listeners) {
+                        listener.open(ds);
+                }
+        }
 
-	protected void fireOpen(DataSource ds) {
-		for (DataSourceListener listener : listeners) {
-			listener.open(ds);
-		}
-	}
+        protected void fireCancel(DataSource ds) {
+                for (DataSourceListener listener : listeners) {
+                        listener.cancel(ds);
+                }
+        }
 
-	protected void fireCancel(DataSource ds) {
-		for (DataSourceListener listener : listeners) {
-			listener.cancel(ds);
-		}
-	}
+        protected void fireCommit(DataSource ds) {
+                for (DataSourceListener listener : listeners) {
+                        listener.commit(ds);
+                }
+        }
 
-	protected void fireCommit(DataSource ds) {
-		for (DataSourceListener listener : listeners) {
-			listener.commit(ds);
-		}
-	}
+        @Override
+        public Number[] getScope(int dimension) throws DriverException {
+                return getDriverTable().getScope(dimension);
+        }
 
-	public Number[] getScope(int dimension) throws DriverException {
-		return getDriver().getScope(dimension);
-	}
+        @Override
+        public boolean isEditable() {
+                return getDriver().isCommitable();
+        }
 
-	public boolean isEditable() {
-		final ReadOnlyDriver driver = getDriver();
+        @Override
+        public void commit() throws DriverException {
+                throw new UnsupportedOperationException("This DataSource has "
+                        + "no committing capabilities");
+        }
 
-		if (driver instanceof ReadWriteDriver) {
-			return ((ReadWriteDriver) driver).isCommitable();
-		} else {
-			return false;
-		}
-	}
+        /**
+         * @see org.gdms.driver.ReadAccess#getFieldValue(long, int)
+         */
+        @Override
+        public synchronized Value getFieldValue(long rowIndex, int fieldId)
+                throws DriverException {
+                LOG.trace("Getting field at " + rowIndex);
+                return getDriverTable().getFieldValue(rowIndex, fieldId);
+        }
 
-	public void commit() throws DriverException {
-		throw new UnsupportedOperationException("This DataSource has "
-				+ "no committing capabilities");
-	}
+        /**
+         * @see org.gdms.driver.ReadAccess#getRowCount()
+         */
+        @Override
+        public long getRowCount() throws DriverException {
+                if (getDriverTable() == null) {
+                        throw new DriverException("The driver does not contains the table '"
+                                + this.source.getDataSourceDefinition().getDriverTableName() + "'");
+                }
+                return getDriverTable().getRowCount();
+        }
 
-	/**
-	 * @see org.gdms.driver.ReadAccess#getFieldValue(long, int)
-	 */
-	public synchronized Value getFieldValue(long rowIndex, int fieldId)
-			throws DriverException {
-		return getDriver().getFieldValue(rowIndex, fieldId);
-	}
+        /**
+         * @see org.gdms.data.DataSource#getMetadata()
+         */
+        @Override
+        public Metadata getMetadata() throws DriverException {
+                return getDriver().getSchema().getTableByName(getDriverTableName());
+        }
 
-	/**
-	 * @see org.gdms.driver.ReadAccess#getRowCount()
-	 */
-	public long getRowCount() throws DriverException {
-		return getDriver().getRowCount();
-	}
+        @Override
+        public Iterator<Integer> queryIndex(IndexQuery queryIndex)
+                throws DriverException {
+                try {
+                        int[] ret = getDataSourceFactory().getIndexManager().queryIndex(
+                                getName(), queryIndex);
 
-	/**
-	 * @see org.gdms.data.DataSource#getMetadata()
-	 */
-	public Metadata getMetadata() throws DriverException {
-		return getDriver().getMetadata();
-	}
+                        if (ret != null) {
+                                return new ResultIterator(ret);
+                        } else {
+                                return new FullIterator(this);
+                        }
+                } catch (IndexException e) {
+                        throw new DriverException(e);
+                } catch (IndexQueryException e) {
+                        throw new DriverException(e);
+                } catch (NoSuchTableException e) {
+                        throw new DriverException(e);
+                }
+        }
 
-	public Iterator<Integer> queryIndex(IndexQuery queryIndex)
-			throws DriverException {
-		try {
-			int[] ret = getDataSourceFactory().getIndexManager().queryIndex(
-					getName(), queryIndex);
+        @Override
+        public Commiter getCommiter() {
+                return (Commiter) this;
+        }
 
-			if (ret != null) {
-				return new ResultIterator(ret);
-			} else {
-				return new FullIterator(this);
-			}
-		} catch (IndexException e) {
-			throw new DriverException(e);
-		} catch (NoSuchTableException e) {
-			throw new RuntimeException(e);
-		}
-	}
+        @Override
+        public String[] getReferencedSources() {
+                return source.getReferencedSources();
+        }
 
-	public Commiter getCommiter() {
-		return (Commiter) this;
-	}
+        @Override
+        public Source getSource() {
+                return source;
+        }
 
-	public String[] getReferencedSources() {
-		return source.getReferencedSources();
-	}
+        @Override
+        public ReadAccess getDriverTable() {
+                return getDriver().getTable(getDriverTableName());
+        }
 
-	public Source getSource() {
-		return source;
-	}
-
+        @Override
+        public String getDriverTableName() {
+                return source.getDataSourceDefinition().getDriverTableName();
+        }
 }

@@ -40,361 +40,389 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import org.apache.log4j.Logger;
 
-import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.WarningListener;
-import org.gdms.data.metadata.DefaultMetadata;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.DefaultMetadata;
+import org.gdms.data.schema.DefaultSchema;
+import org.gdms.data.schema.Metadata;
+import org.gdms.data.schema.Schema;
 import org.gdms.data.types.Constraint;
+import org.gdms.data.types.ConstraintFactory;
 import org.gdms.data.types.DefaultTypeDefinition;
 import org.gdms.data.types.InvalidTypeException;
-import org.gdms.data.types.LengthConstraint;
-import org.gdms.data.types.PrecisionConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileReadWriteDriver;
+import org.gdms.driver.ReadAccess;
 import org.gdms.source.SourceManager;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 
-public class DBFDriver implements FileReadWriteDriver {
+public final class DBFDriver implements FileReadWriteDriver, ReadAccess {
 
-	public static final String STRING = "String";
+        public static final String STRING = "String";
+        public static final String DOUBLE = "Double";
+        public static final String INTEGER = "Integer";
+        public static final String LONG = "Long";
+        public static final String DATE = "Date";
+        public static final String BOOLEAN = "Boolean";
+        public static final String LENGTH = "Length";
+        public static final String PRECISION = "Precision";
+        public static final String DRIVER_NAME = "Dbase driver";
+        private DbaseFileReader dbaseReader;
+        private DataSourceFactory dataSourceFactory;
+        private Schema schema;
+        private DefaultMetadata metadata;
+        private File file;
+        private static final Logger LOG = Logger.getLogger(DBFDriver.class);
 
-	public static final String DOUBLE = "Double";
+        @Override
+        public void setDataSourceFactory(DataSourceFactory dsf) {
+                this.dataSourceFactory = dsf;
+        }
 
-	public static final String INTEGER = "Integer";
+        @Override
+        public void createSource(String path, Metadata metadata,
+                DataSourceFactory dataSourceFactory) throws DriverException {
+                LOG.trace("Creating source file");
+                try {
+                        FileOutputStream fos = new FileOutputStream(new File(path));
+                        DbaseFileHeader header = getHeader(metadata, 0, dataSourceFactory.getWarningListener());
+                        DbaseFileWriter writer = new DbaseFileWriter(header, fos.getChannel());
+                        writer.close();
+                } catch (IOException e) {
+                        throw new DriverException(e);
+                } catch (DbaseFileException e) {
+                        throw new DriverException(e);
+                }
+        }
 
-	public static final String LONG = "Long";
+        @Override
+        public void writeFile(File file, ReadAccess dataSource, ProgressMonitor pm)
+                throws DriverException {
+                writeFile(file, new DefaultRowProvider(dataSource), dataSourceFactory.getWarningListener(), pm);
+        }
 
-	public static final String DATE = "Date";
+        public void writeFile(File file, RowProvider dataSource,
+                WarningListener warningListener, ProgressMonitor pm)
+                throws DriverException {
+                LOG.trace("Writing source file");
+                try {
+                        FileOutputStream fos = new FileOutputStream(file);
+                        DbaseFileHeader header = getHeader(dataSource.getMetadata(),
+                                (int) dataSource.getRowCount(), dataSourceFactory.getWarningListener());
+                        DbaseFileWriter writer = new DbaseFileWriter(header, fos.getChannel());
+                        final int numRecords = header.getNumRecords();
+                        pm.startTask("Writing file", numRecords);
+                        for (int i = 0; i < numRecords; i++) {
+                                if (i >= 100 && i % 100 == 0) {
+                                        if (pm.isCancelled()) {
+                                                break;
+                                        } else {
+                                                pm.progressTo(i);
+                                        }
+                                }
+                                writer.write(dataSource.getRow(i));
+                        }
+                        pm.progressTo(numRecords);
+                        writer.close();
+                } catch (IOException e) {
+                        throw new DriverException(e);
+                } catch (DbaseFileException e) {
+                        throw new DriverException(e);
+                }
+                pm.endTask();
+        }
 
-	public static final String BOOLEAN = "Boolean";
+        private DbaseFileHeader getHeader(Metadata m, int rowCount,
+                WarningListener warningListener) throws DriverException,
+                DbaseFileException {
+                DbaseFileHeader header = new DbaseFileHeader();
+                for (int i = 0; i < m.getFieldCount(); i++) {
+                        String fieldName = m.getFieldName(i);
+                        Type gdmsType = m.getFieldType(i);
+                        DBFType type = getDBFType(gdmsType);
+                        header.addColumn(fieldName, type.type, type.fieldLength,
+                                type.decimalCount, warningListener);
+                }
+                header.setNumRecords(rowCount);
 
-	public static final String LENGTH = "Length";
+                return header;
+        }
 
-	public static final String PRECISION = "Precision";
+        @Override
+        public Schema getSchema() throws DriverException {
+                return schema;
+        }
 
-	public static String DRIVER_NAME = "Dbase driver";
+        @Override
+        public ReadAccess getTable(String name) {
+                if (!name.equals("main")) {
+                        return null;
+                }
+                return this;
+        }
 
-	private DbaseFileReader dbaseReader;
+        @Override
+        public Value getFieldValue(long rowIndex, int fieldId)
+                throws DriverException {
+                try {
+                        return dbaseReader.getFieldValue((int) rowIndex, fieldId,
+                                dataSourceFactory.getWarningListener());
+                } catch (IOException e) {
+                        throw new DriverException(e);
+                }
+        }
 
-	private DataSourceFactory dataSourceFactory;
+        @Override
+        public long getRowCount() throws DriverException {
+                return dbaseReader.getHeader().getNumRecords();
+        }
 
-	public void setDataSourceFactory(DataSourceFactory dsf) {
-		this.dataSourceFactory = dsf;
-	}
+        @Override
+        public Number[] getScope(int dimension) throws DriverException {
+                return null;
+        }
 
-	public void createSource(String path, Metadata metadata,
-			DataSourceFactory dataSourceFactory) throws DriverException {
-		try {
-			FileOutputStream fos = new FileOutputStream(new File(path));
-			DbaseFileHeader header = getHeader(metadata, 0, dataSourceFactory
-					.getWarningListener());
-			DbaseFileWriter writer = new DbaseFileWriter(header, fos
-					.getChannel());
-			writer.close();
-		} catch (IOException e) {
-			throw new DriverException(e);
-		} catch (DbaseFileException e) {
-			throw new DriverException(e);
-		}
-	}
+        @Override
+        public Metadata getMetadata() throws DriverException {
+                return schema.getTableByName("main");
+        }
 
-	public void writeFile(File file, DataSource dataSource, IProgressMonitor pm)
-			throws DriverException {
-		writeFile(file, new DefaultRowProvider(dataSource), dataSourceFactory
-				.getWarningListener(), pm);
-	}
+        @Override
+        public void setFile(File file) {
+                this.file = file;
 
-	public void writeFile(File file, RowProvider dataSource,
-			WarningListener warningListener, IProgressMonitor pm)
-			throws DriverException {
-		try {
-			FileOutputStream fos = new FileOutputStream(file);
-			DbaseFileHeader header = getHeader(dataSource.getMetadata(),
-					(int) dataSource.getRowCount(), dataSourceFactory
-							.getWarningListener());
-			DbaseFileWriter writer = new DbaseFileWriter(header, fos
-					.getChannel());
-			for (int i = 0; i < header.getNumRecords(); i++) {
-				if (i / 100 == i / 100.0) {
-					if (pm.isCancelled()) {
-						break;
-					} else {
-						pm.progressTo((int) (100 * i / header.getNumRecords()));
-					}
-				}
-				writer.write(dataSource.getRow(i));
-			}
-			writer.close();
-		} catch (IOException e) {
-			throw new DriverException(e);
-		} catch (DbaseFileException e) {
-			throw new DriverException(e);
-		}
-	}
-
-	private DbaseFileHeader getHeader(Metadata m, int rowCount,
-			WarningListener warningListener) throws DriverException,
-			DbaseFileException {
-		DbaseFileHeader header = new DbaseFileHeader();
-		for (int i = 0; i < m.getFieldCount(); i++) {
-			String fieldName = m.getFieldName(i);
-			Type gdmsType = m.getFieldType(i);
-			DBFType type = getDBFType(gdmsType);
-			header.addColumn(fieldName, type.type, type.fieldLength,
-					type.decimalCount, warningListener);
-		}
-		header.setNumRecords(rowCount);
-
-		return header;
-	}
+                // building schema and metadata
+                schema = new DefaultSchema("DBF" + file.getAbsolutePath().hashCode());
+                metadata = new DefaultMetadata();
+                schema.addTable("main", metadata);
+        }
 
         @Override
         public boolean isOpen() {
                 return dbaseReader != null;
         }
 
-	private class DBFType {
-		char type;
+        private static class DBFType {
 
-		int fieldLength;
+                char type;
+                int fieldLength;
+                int decimalCount;
 
-		int decimalCount;
+                DBFType(char type, int fieldLength, int decimalCount) {
+                        super();
+                        this.type = type;
+                        this.fieldLength = fieldLength;
+                        this.decimalCount = decimalCount;
+                }
+        }
 
-		public DBFType(char type, int fieldLength, int decimalCount) {
-			super();
-			this.type = type;
-			this.fieldLength = fieldLength;
-			this.decimalCount = decimalCount;
-		}
-	}
+        private DBFType getDBFType(Type fieldType) throws DriverException {
+                Constraint lengthConstraint = fieldType.getConstraint(Constraint.LENGTH);
+                int length = Integer.MAX_VALUE;
+                if (lengthConstraint != null) {
+                        length = Integer.parseInt(lengthConstraint.getConstraintValue());
+                }
 
-	private DBFType getDBFType(Type fieldType) throws DriverException {
-		Constraint lengthConstraint = fieldType
-				.getConstraint(Constraint.LENGTH);
-		int length = Integer.MAX_VALUE;
-		if (lengthConstraint != null) {
-			length = Integer.parseInt(lengthConstraint.getConstraintValue());
-		}
+                Constraint decimalCountConstraint = fieldType.getConstraint(Constraint.PRECISION);
+                int decimalCount = Integer.MAX_VALUE;
+                if (decimalCountConstraint != null) {
+                        decimalCount = Integer.parseInt(decimalCountConstraint.getConstraintValue());
+                }
 
-		Constraint decimalCountConstraint = fieldType
-				.getConstraint(Constraint.PRECISION);
-		int decimalCount = Integer.MAX_VALUE;
-		if (decimalCountConstraint != null) {
-			decimalCount = Integer.parseInt(decimalCountConstraint
-					.getConstraintValue());
-		}
+                switch (fieldType.getTypeCode()) {
+                        case Type.BOOLEAN:
+                                return new DBFType('l', 1, 0);
+                        case Type.BYTE:
+                                return new DBFType('n', Math.min(3, length), 0);
+                        case Type.DATE:
+                                return new DBFType('d', 8, 0);
+                        case Type.DOUBLE:
+                        case Type.FLOAT:
+                                return new DBFType('f', Math.min(20, length), Math.min(18,
+                                        decimalCount));
+                        case Type.INT:
+                                return new DBFType('n', Math.min(10, length), 0);
+                        case Type.LONG:
+                                return new DBFType('n', Math.min(18, length), 0);
+                        case Type.SHORT:
+                                return new DBFType('n', Math.min(5, length), 0);
+                        case Type.STRING:
+                                return new DBFType('c', Math.min(254, length), 0);
+                        default:
+                                throw new DriverException("Cannot store "
+                                        + TypeFactory.getTypeName(fieldType.getTypeCode())
+                                        + " in dbase");
+                }
+        }
 
-		switch (fieldType.getTypeCode()) {
-		case Type.BOOLEAN:
-			return new DBFType('l', 1, 0);
-		case Type.BYTE:
-			return new DBFType('n', Math.min(3, length), 0);
-		case Type.DATE:
-			return new DBFType('d', 8, 0);
-		case Type.DOUBLE:
-		case Type.FLOAT:
-			return new DBFType('f', Math.min(20, length), Math.min(18,
-					decimalCount));
-		case Type.INT:
-			return new DBFType('n', Math.min(10, length), 0);
-		case Type.LONG:
-			return new DBFType('n', Math.min(18, length), 0);
-		case Type.SHORT:
-			return new DBFType('n', Math.min(5, length), 0);
-		case Type.STRING:
-			return new DBFType('c', Math.min(254, length), 0);
-		default:
-			throw new DriverException("Cannot store "
-					+ TypeFactory.getTypeName(fieldType.getTypeCode())
-					+ " in dbase");
-		}
-	}
+        @Override
+        public void copy(File in, File out) throws IOException {
+                FileUtils.copy(in, out);
+        }
 
-	public void copy(File in, File out) throws IOException {
-		FileUtils.copy(in, out);
-	}
+        private void loadInternalMetadata() throws DriverException {
+                metadata.clear();
+                DbaseFileHeader header = dbaseReader.getHeader();
 
-	public Metadata getMetadata() throws DriverException {
-		DbaseFileHeader header = dbaseReader.getHeader();
+                for (int i = 0; i < header.getNumFields(); i++) {
+                        String fieldsName = header.getFieldName(i);
+                        final int type = getFieldType(i);
+                        Type fieldType;
+                        try {
+                                switch (type) {
+                                        case Type.STRING:
+                                                fieldType = TypeFactory.createType(Type.STRING,
+                                                        STRING, ConstraintFactory.createConstraint(Constraint.LENGTH,
+                                                        header.getFieldLength(i)));
+                                                break;
+                                        case Type.INT:
+                                                fieldType = TypeFactory.createType(Type.INT, INTEGER,
+                                                        ConstraintFactory.createConstraint(Constraint.LENGTH,
+                                                        header.getFieldLength(i)));
+                                                break;
+                                        case Type.LONG:
+                                                fieldType = TypeFactory.createType(Type.LONG, LONG,
+                                                        ConstraintFactory.createConstraint(Constraint.LENGTH,
+                                                        header.getFieldLength(i)));
+                                                break;
+                                        case Type.DOUBLE:
+                                                fieldType = TypeFactory.createType(Type.DOUBLE,
+                                                        DOUBLE, new Constraint[]{
+                                                                ConstraintFactory.createConstraint(Constraint.LENGTH,
+                                                                header.getFieldLength(i)),
+                                                                ConstraintFactory.createConstraint(Constraint.PRECISION,
+                                                                header.getFieldDecimalCount(i))});
+                                                break;
+                                        case Type.BOOLEAN:
+                                                fieldType = TypeFactory.createType(Type.BOOLEAN,
+                                                        BOOLEAN);
+                                                break;
+                                        case Type.DATE:
+                                                fieldType = TypeFactory.createType(Type.DATE, DATE);
+                                                break;
+                                        default:
+                                                throw new DriverException("Unknown dbf driver type: " + type);
+                                }
+                        } catch (InvalidTypeException e) {
+                                throw new DriverException(e);
+                        }
+                        metadata.addField(fieldsName, fieldType);
+                }
+        }
 
-		final int fc = header.getNumFields();
-		final Type[] fieldsTypes = new Type[fc];
-		final String[] fieldsNames = new String[fc];
+        private int getFieldType(int i) throws DriverException {
+                DbaseFileHeader header = dbaseReader.getHeader();
+                char fieldType = header.getFieldType(i);
 
-		for (int i = 0; i < fc; i++) {
-			fieldsNames[i] = header.getFieldName(i);
-			final int type = getFieldType(i);
+                switch (fieldType) {
+                        // (L)logical (T,t,F,f,Y,y,N,n)
+                        case 'l':
+                        case 'L':
+                                return Type.BOOLEAN;
+                        // (C)character (String)
+                        case 'c':
+                        case 'C':
+                                return Type.STRING;
+                        // (D)date (Date)
+                        case 'd':
+                        case 'D':
+                                return Type.DATE;
+                        // (F)floating (Double)
+                        case 'n':
+                        case 'N':
+                                if ((header.getFieldDecimalCount(i) == 0)) {
+                                        if ((header.getFieldLength(i) >= 0)
+                                                && (header.getFieldLength(i) < 10)) {
+                                                return Type.INT;
+                                        } else {
+                                                return Type.LONG;
+                                        }
+                                }
+                        case 'f':
+                        case 'F': // floating point number
+                                return Type.DOUBLE;
+                        default:
+                                throw new DriverException("Unknown field type");
+                }
+        }
 
-			try {
-				switch (type) {
-				case Type.STRING:
-					fieldsTypes[i] = TypeFactory.createType(Type.STRING,
-							STRING, new Constraint[] { new LengthConstraint(
-									header.getFieldLength(i)) });
-					break;
-				case Type.INT:
-					fieldsTypes[i] = TypeFactory.createType(Type.INT, INTEGER,
-							new Constraint[] { new LengthConstraint(header
-									.getFieldLength(i)) });
-					break;
-				case Type.LONG:
-					fieldsTypes[i] = TypeFactory.createType(Type.LONG, LONG,
-							new Constraint[] { new LengthConstraint(header
-									.getFieldLength(i)) });
-					break;
-				case Type.DOUBLE:
-					fieldsTypes[i] = TypeFactory.createType(Type.DOUBLE,
-							DOUBLE, new Constraint[] {
-									new LengthConstraint(header
-											.getFieldLength(i)),
-									new PrecisionConstraint(header
-											.getFieldDecimalCount(i)) });
-					break;
-				case Type.BOOLEAN:
-					fieldsTypes[i] = TypeFactory.createType(Type.BOOLEAN,
-							BOOLEAN);
-					break;
-				case Type.DATE:
-					fieldsTypes[i] = TypeFactory.createType(Type.DATE, DATE);
-					break;
-				default:
-					throw new RuntimeException("Unknown dbf driver type: "
-							+ type);
-				}
-			} catch (InvalidTypeException e) {
-				throw new RuntimeException("Bug in the driver", e);
-			}
+        @Override
+        public void open() throws DriverException {
+                LOG.trace("Opening file");
+                try {
+                        FileInputStream fis = new FileInputStream(file);
+                        dbaseReader = new DbaseFileReader(fis.getChannel(),
+                                dataSourceFactory.getWarningListener());
+                        loadInternalMetadata();
+                } catch (IOException e) {
+                        throw new DriverException(e);
+                }
+        }
 
-		}
-		return new DefaultMetadata(fieldsTypes, fieldsNames);
-	}
-
-	/**
-	 * @see org.gdms.driver.ObjectDriver#getFieldType(int)
-	 */
-	private int getFieldType(int i) throws DriverException {
-		DbaseFileHeader header = dbaseReader.getHeader();
-		char fieldType = header.getFieldType(i);
-
-		switch (fieldType) {
-		// (L)logical (T,t,F,f,Y,y,N,n)
-		case 'l':
-		case 'L':
-			return Type.BOOLEAN;
-			// (C)character (String)
-		case 'c':
-		case 'C':
-			return Type.STRING;
-			// (D)date (Date)
-		case 'd':
-		case 'D':
-			return Type.DATE;
-			// (F)floating (Double)
-		case 'n':
-		case 'N':
-			if ((header.getFieldDecimalCount(i) == 0)) {
-				if ((header.getFieldLength(i) >= 0)
-						&& (header.getFieldLength(i) < 10)) {
-					return Type.INT;
-				} else {
-					return Type.LONG;
-				}
-			}
-		case 'f':
-		case 'F': // floating point number
-			return Type.DOUBLE;
-		default:
-			throw new DriverException("Unknown field type");
-		}
-	}
-
-	public void open(File file) throws DriverException {
-		try {
-			FileInputStream fis = new FileInputStream(file);
-			dbaseReader = new DbaseFileReader(fis.getChannel(),
-					dataSourceFactory.getWarningListener());
-
-		} catch (IOException e) {
-			throw new DriverException(e);
-		}
-	}
-
-	public void close() throws DriverException {
-		try {
-			dbaseReader.close();
-		} catch (IOException e) {
-			throw new DriverException(e);
-		} finally {
+        @Override
+        public void close() throws DriverException {
+                LOG.trace("Closing file");
+                try {
+                        dbaseReader.close();
+                } catch (IOException e) {
+                        throw new DriverException(e);
+                } finally {
                         dbaseReader = null;
                 }
-	}
+        }
 
-	public Value getFieldValue(long rowIndex, int fieldId)
-			throws DriverException {
-		try {
-			return dbaseReader.getFieldValue((int) rowIndex, fieldId,
-					dataSourceFactory.getWarningListener());
-		} catch (IOException e) {
-			throw new DriverException(e);
-		}
-	}
+        @Override
+        public String getDriverId() {
+                return DRIVER_NAME;
+        }
 
-	public long getRowCount() throws DriverException {
-		return dbaseReader.getHeader().getNumRecords();
-	}
+        @Override
+        public TypeDefinition[] getTypesDefinitions() {
+                return new TypeDefinition[]{
+                                new DefaultTypeDefinition(STRING, Type.STRING,
+                                new int[]{Constraint.LENGTH}),
+                                new DefaultTypeDefinition(INTEGER, Type.INT,
+                                new int[]{Constraint.LENGTH}),
+                                new DefaultTypeDefinition(DOUBLE, Type.DOUBLE, new int[]{
+                                        Constraint.LENGTH, Constraint.PRECISION}),
+                                new DefaultTypeDefinition(BOOLEAN, Type.BOOLEAN),
+                                new DefaultTypeDefinition(DATE, Type.DATE)};
+        }
 
-	public String getDriverId() {
-		return DRIVER_NAME;
-	}
+        @Override
+        public boolean isCommitable() {
+                return true;
+        }
 
-	public Number[] getScope(int dimension) throws DriverException {
-		return null;
-	}
+        @Override
+        public int getType() {
+                return SourceManager.FILE;
+        }
 
-	public TypeDefinition[] getTypesDefinitions() {
-		return new TypeDefinition[] {
-				new DefaultTypeDefinition(STRING, Type.STRING,
-						new int[] { Constraint.LENGTH }),
-				new DefaultTypeDefinition(INTEGER, Type.INT,
-						new int[] { Constraint.LENGTH }),
-				new DefaultTypeDefinition(DOUBLE, Type.DOUBLE, new int[] {
-						Constraint.LENGTH, Constraint.PRECISION }),
-				new DefaultTypeDefinition(BOOLEAN, Type.BOOLEAN),
-				new DefaultTypeDefinition(DATE, Type.DATE) };
-	}
+        @Override
+        public String validateMetadata(Metadata metadata) {
+                return null;
+        }
 
-	public boolean isCommitable() {
-		return true;
-	}
+        @Override
+        public String[] getFileExtensions() {
+                return new String[]{"dbf"};
+        }
 
-	public int getType() {
-		return SourceManager.FILE;
-	}
+        @Override
+        public String getTypeDescription() {
+                return "dBase file";
+        }
 
-	public String validateMetadata(Metadata metadata) {
-		return null;
-	}
-
-	@Override
-	public String[] getFileExtensions() {
-		return new String[] { "dbf" };
-	}
-
-	@Override
-	public String getTypeDescription() {
-		return "dBase file";
-	}
-
-	@Override
-	public String getTypeName() {
-		return "DBF";
-	}
-
+        @Override
+        public String getTypeName() {
+                return "DBF";
+        }
 }

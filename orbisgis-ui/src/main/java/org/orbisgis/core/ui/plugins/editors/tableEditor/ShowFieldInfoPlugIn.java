@@ -38,7 +38,7 @@
 
 package org.orbisgis.core.ui.plugins.editors.tableEditor;
 
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.ConstraintFactory;
 import org.gdms.data.types.Type;

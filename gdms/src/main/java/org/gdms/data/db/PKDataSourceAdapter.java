@@ -38,15 +38,14 @@ package org.gdms.data.db;
 
 import org.gdms.data.AbstractDataSourceDecorator;
 import org.gdms.data.DataSource;
-import org.gdms.data.metadata.DefaultMetadata;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.DefaultMetadata;
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Constraint;
+import org.gdms.data.types.ConstraintFactory;
 import org.gdms.data.types.InvalidTypeException;
-import org.gdms.data.types.PrimaryKeyConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
-import org.gdms.data.values.ValueCollection;
 import org.gdms.driver.DriverException;
 
 /**
@@ -57,15 +56,15 @@ import org.gdms.driver.DriverException;
  * @author Fernando Gonzalez Cortes
  *
  */
-class PKDataSourceAdapter extends AbstractDataSourceDecorator implements
-		DataSource {
+class PKDataSourceAdapter extends AbstractDataSourceDecorator {
 
 	private DefaultMetadata met;
 
-	public PKDataSourceAdapter(DataSource ds) {
+	PKDataSourceAdapter(DataSource ds) {
 		super(ds);
 	}
 
+        @Override
 	public Metadata getMetadata() throws DriverException {
 		if (met == null) {
 			met = new DefaultMetadata(getDataSource().getMetadata());
@@ -73,7 +72,7 @@ class PKDataSourceAdapter extends AbstractDataSourceDecorator implements
 			try {
 				met.addField(0, getPKName(), TypeFactory.createType(Type.INT)
 						.getTypeCode(),
-						new Constraint[] { new PrimaryKeyConstraint() });
+						new Constraint[] { ConstraintFactory.createConstraint(Constraint.PK) });
 			} catch (InvalidTypeException e) {
 				throw new DriverException(e);
 			}
@@ -81,16 +80,17 @@ class PKDataSourceAdapter extends AbstractDataSourceDecorator implements
 		return met;
 	}
 
+        @Override
 	public Value getFieldValue(long rowIndex, int fieldId)
 			throws DriverException {
 		if (fieldId == 0) {
-			return ((ValueCollection) getDataSource().getPK((int) rowIndex))
-					.getValues()[0];
+			return getDataSource().getPK((int) rowIndex).getAsValueCollection().get(0);
 		} else {
 			return getDataSource().getFieldValue(rowIndex, fieldId - 1);
 		}
 	}
 
+        @Override
 	public long getRowCount() throws DriverException {
 		return getDataSource().getRowCount();
 	}

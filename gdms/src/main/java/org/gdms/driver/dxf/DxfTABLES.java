@@ -28,8 +28,6 @@ import java.io.RandomAccessFile;
 import java.io.IOException;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
@@ -77,10 +75,8 @@ public class DxfTABLES {
     public static DxfTABLES readTables(RandomAccessFile raf) throws IOException {
         DxfTABLES tables = new DxfTABLES();
         DxfGroup group = null;
-        String nomVariable = null;
         // It�ration sur chaque table
         while (null != (group = DxfGroup.readGroup(raf)) && !group.equals(DxfFile.ENDSEC)) {
-            Map map = null;
             if (group.equals(TABLE)) {
                 // Lecture du groupe portant le nom de la table
                 group = DxfGroup.readGroup(raf);
@@ -116,27 +112,22 @@ public class DxfTABLES {
                     //System.out.println("\tTABLE VPORT");
                     tables.vPort= DxfTABLE_VPORT_ITEM.readTable(raf);
                 }
-                else if (group.getCode() == 999) {
-                    //System.out.println("Commentaire : " + group.getValue());
-                }
-                else {
-                    //System.out.println("Group " + group.getCode() + " " + group.getValue() + " UNKNOWN");
-                }
+//                else {
+//                    System.out.println("Group " + group.getCode() + " " + group.getValue() + " UNKNOWN");
+//                }
             }
-            else if (group.getCode() == 999) {
-                //System.out.println("Commentaire : " + group.getValue());
-            }
-            else {
-                //System.out.println("Group " + group.getCode() + " " + group.getValue() + " UNKNOWN");
-            }
+//            else {
+//                System.out.println("Group " + group.getCode() + " " + group.getValue() + " UNKNOWN");
+//            }
         }
         return tables;
     }
 
+        @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer(DxfFile.SECTION.toString());
+        StringBuilder sb = new StringBuilder(DxfFile.SECTION.toString());
         sb.append(DxfFile.TABLES.toString());
-        if (vPort.size() >0) {
+        if (!vPort.isEmpty()) {
             sb.append(DxfTABLES.TABLE.toString());
             sb.append(DxfTABLES.VPORT.toString());
             sb.append(DxfGroup.toString(70, Integer.toString(vPort.size())));
@@ -147,7 +138,7 @@ public class DxfTABLES {
             }
             sb.append(DxfTABLES.ENDTAB.toString());
         }
-        if (appId.size() > 0) {
+        if (!appId.isEmpty()) {
             sb.append(DxfTABLES.TABLE.toString());
             sb.append(DxfTABLES.APPID.toString());
             sb.append(DxfGroup.toString(70, Integer.toString(appId.size())));
@@ -158,7 +149,7 @@ public class DxfTABLES {
             }
             sb.append(DxfTABLES.ENDTAB.toString());
         }
-        if (dimStyle.size() >0) {
+        if (!dimStyle.isEmpty()) {
             sb.append(DxfTABLES.TABLE.toString());
             sb.append(DxfTABLES.DIMSTYLE.toString());
             sb.append(DxfGroup.toString(70, Integer.toString(dimStyle.size())));
@@ -169,7 +160,7 @@ public class DxfTABLES {
             }
             sb.append(DxfTABLES.ENDTAB.toString());
         }
-        if (lType.size() >0) {
+        if (!lType.isEmpty()) {
             sb.append(DxfTABLES.TABLE.toString());
             sb.append(DxfTABLES.LTYPE.toString());
             sb.append(DxfGroup.toString(70, Integer.toString(lType.size())));
@@ -180,7 +171,7 @@ public class DxfTABLES {
             }
             sb.append(DxfTABLES.ENDTAB.toString());
         }
-        if (layer.size() >0) {
+        if (!layer.isEmpty()) {
             sb.append(DxfTABLES.TABLE.toString());
             sb.append(DxfTABLES.LAYER.toString());
             sb.append(DxfGroup.toString(70, Integer.toString(layer.size())));
@@ -191,7 +182,7 @@ public class DxfTABLES {
             }
             sb.append(DxfTABLES.ENDTAB.toString());
         }
-        if (style.size() >0) {
+        if (!style.isEmpty()) {
             sb.append(DxfTABLES.TABLE.toString());
             sb.append(DxfTABLES.STYLE.toString());
             sb.append(DxfGroup.toString(70, Integer.toString(style.size())));
@@ -202,7 +193,7 @@ public class DxfTABLES {
             }
             sb.append(DxfTABLES.ENDTAB.toString());
         }
-        if (ucs.size() >0) {
+        if (!ucs.isEmpty()) {
             sb.append(DxfTABLES.TABLE.toString());
             sb.append(DxfTABLES.UCS.toString());
             sb.append(DxfGroup.toString(70, Integer.toString(ucs.size())));
@@ -213,7 +204,7 @@ public class DxfTABLES {
             }
             sb.append(DxfTABLES.ENDTAB.toString());
         }
-        if (view.size() >0) {
+        if (!view.isEmpty()) {
             sb.append(DxfTABLES.TABLE.toString());
             sb.append(DxfTABLES.VIEW.toString());
             sb.append(DxfGroup.toString(70, Integer.toString(view.size())));

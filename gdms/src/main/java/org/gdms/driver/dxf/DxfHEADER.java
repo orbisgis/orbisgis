@@ -216,22 +216,19 @@ public class DxfHEADER {
                     nomVariable = nomVariable.substring(1,nomVariable.length());
                     header.headerTable.put(nomVariable, new ArrayList(1));
                 }
-                else if (group.getCode() == 999) {}
                 else if (nomVariable != null) {
                     List groups = (List)header.headerTable.get(nomVariable);
                     groups.add(group);
-                }
-                else {
-                    //System.out.println("Group " + group.getCode() + " " + group.getValue() + " UNKNOWN");
                 }
             }
         } catch(IOException ioe) {throw ioe;}
         return header;
     }
 
+        @Override
     public String toString() {
         Iterator it = headerTable.keySet().iterator();
-        StringBuffer sb = new StringBuffer(DxfFile.SECTION.toString());
+        StringBuilder sb = new StringBuilder(DxfFile.SECTION.toString());
         sb.append(DxfFile.HEADER.toString());
         while (it.hasNext()) {
             String var = (String)it.next();

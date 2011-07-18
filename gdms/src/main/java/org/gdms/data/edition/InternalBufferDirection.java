@@ -40,12 +40,12 @@
 package org.gdms.data.edition;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
 import org.gdms.driver.DriverException;
 
-public class InternalBufferDirection implements PhysicalDirection {
+public class InternalBufferDirection implements PhysicalRowAddress {
 
 	private InternalBuffer buffer;
 

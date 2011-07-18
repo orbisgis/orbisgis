@@ -6,14 +6,16 @@
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
  *
- *  Team leader Erwan BOCHER, scientific researcher,
+ * Team leader : Erwan BOCHER, scientific researcher,
  *
- *  User support leader : Gwendall Petit, geomatic engineer.
+ * User support leader : Gwendall Petit, geomatic engineer.
  *
+ * Previous computer developer : Pierre-Yves FADET, computer engineer, Thomas LEDUC, 
+ * scientific researcher, Fernando GONZALEZ CORTES, computer engineer.
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2010 Erwan BOCHER, Alexis GUEGANNO, Maxence LAURENT, Antoine GOURLAY
  *
  * This file is part of OrbisGIS.
  *
@@ -32,34 +34,35 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info@orbisgis.org
  */
 package org.gdms.data.types;
 
 import org.orbisgis.utils.ByteUtils;
 
-public abstract class AbstractIntConstraint extends AbstractConstraint
-		implements Constraint {
+abstract class AbstractIntConstraint extends AbstractConstraint {
 
 	protected int constraintValue;
 
-	public AbstractIntConstraint(final int constraintValue) {
+	AbstractIntConstraint(final int constraintValue) {
 		this.constraintValue = constraintValue;
 	}
 
-	public AbstractIntConstraint(byte[] constraintBytes) {
+	AbstractIntConstraint(byte[] constraintBytes) {
 		this(ByteUtils.bytesToInt(constraintBytes));
 	}
 
+        @Override
 	public String getConstraintValue() {
 		return Integer.toString(constraintValue);
 	}
 
+        @Override
 	public byte[] getBytes() {
 		return ByteUtils.intToBytes(constraintValue);
 	}
 
+        @Override
 	public int getType() {
 		return CONSTRAINT_TYPE_INTEGER_LITERAL;
 	}

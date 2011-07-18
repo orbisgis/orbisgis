@@ -44,6 +44,7 @@ import java.io.FileFilter;
 import java.io.IOException;
 
 import org.gdms.data.file.FileSourceDefinition;
+import org.gdms.driver.driverManager.DriverManager;
 import org.orbisgis.utils.FileUtils;
 
 public class FileTestSource extends TestSource {
@@ -63,8 +64,8 @@ public class FileTestSource extends TestSource {
 		prefix = prefix.substring(0, prefix.length() - 4);
 		copyGroup(new File(prefix), getDestDirectory());
 
-		FileSourceDefinition def = new FileSourceDefinition(backupFile);
-		SourceTest.dsf.getSourceManager().register(name, def);
+		FileSourceDefinition def = new FileSourceDefinition(backupFile, DriverManager.DEFAULT_SINGLE_TABLE_NAME);
+		BaseTest.dsf.getSourceManager().register(name, def);
 	}
 
 	public File getBackupFile() {

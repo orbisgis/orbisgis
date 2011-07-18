@@ -6,14 +6,16 @@
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
  *
- *  Team leader Erwan BOCHER, scientific researcher,
+ * Team leader : Erwan BOCHER, scientific researcher,
  *
- *  User support leader : Gwendall Petit, geomatic engineer.
+ * User support leader : Gwendall Petit, geomatic engineer.
  *
+ * Previous computer developer : Pierre-Yves FADET, computer engineer, Thomas LEDUC, 
+ * scientific researcher, Fernando GONZALEZ CORTES, computer engineer.
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2010 Erwan BOCHER, Alexis GUEGANNO, Maxence LAURENT, Antoine GOURLAY
  *
  * This file is part of OrbisGIS.
  *
@@ -32,8 +34,7 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info@orbisgis.org
  */
 package org.gdms.data.values;
 
@@ -41,7 +42,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.gdms.data.types.IncompatibleTypesException;
 import org.grap.model.GeoRaster;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -51,95 +52,77 @@ import com.vividsolutions.jts.geom.Geometry;
  * that datatype. The implementation can inherit from AbstractValue or must
  * implement equals and hashCode in the way explained at doEquals method javadoc
  */
-public interface Value {
-	/**
-	 * @see com.hardcode.gdbms.engine.instruction.Operations#and(com.hardcode.gdbms.engine.values.value)
-	 *      ;
-	 */
-	public Value and(Value value) throws IncompatibleTypesException;
+public interface Value extends Comparable<Value> {
+
+        /**
+         * Gets a boolean value representing the SQL AND operation between this value and the <code>value</code>
+         * parameter using three-valued logic (3VL).
+         * @param value a value
+         * @return a value containing either TRUE, FALSE or NULL (=UNKNOWN)
+         */
+        BooleanValue and(Value value);
+
+        /**
+         * Gets a boolean value representing the SQL OR operation between this value and the <code>value</code>
+         * parameter using three-valued logic (3VL).
+         * @param value a value
+         * @return a value containing either TRUE, FALSE or NULL (=UNKNOWN)
+         */
+	BooleanValue or(Value value);
+
+        /**
+         * Gets a numeric value containing the product of this value and the <code>value</code> parameter.
+         * @param value a value
+         * @return the product of <code>this</code> and <code>value</code>
+         */
+	NumericValue multiply(Value value);
+
+        /**
+         * Gets a numeric value containing the sum of this value and the <code>value</code> parameter.
+         * @param value a value
+         * @return the sum of <code>this</code> and <code>value</code>
+         */
+	NumericValue sum(Value value);
 
 	/**
-	 * @see com.hardcode.gdbms.engine.instruction.Operations#or(com.hardcode.gdbms.engine.values.value)
-	 *      ;
-	 */
-	public Value or(Value value) throws IncompatibleTypesException;
-
-	/**
-	 * @see com.hardcode.gdbms.engine.instruction.Operations#multiply(com.hardcode.gdbms.engine.values.value)
-	 *      ;
-	 */
-	public Value multiply(Value value) throws IncompatibleTypesException;
-
-	/**
-	 * @see com.hardcode.gdbms.engine.instruction.Operations#sum(com.hardcode.gdbms.engine.values.value)
-	 *      ;
-	 */
-	public Value sum(Value value) throws IncompatibleTypesException;
-
-	/**
-	 * DOCUMENT ME!
+	 * Reverses the current Value, or if
+         * not possible.
 	 * 
-	 * @return DOCUMENT ME!
+	 * @return the inversed value
 	 * 
 	 * @throws IncompatibleTypesException
-	 *             DOCUMENT ME!
+	 *             if inversing the Value has no meaning.
 	 */
-	public Value inversa() throws IncompatibleTypesException;
+	Value inverse();
 
-	/**
-	 * @see org.gdms.sql.instruction.Operations#equals(org.gdms.data.values.Value)
-	 */
-	public Value equals(Value value) throws IncompatibleTypesException;
+        /**
+         * Gets a boolean value representing the SQL equality between this value and the <code>value</code>
+         * parameter using three-valued logic (3VL).
+         * @param value a value
+         * @return a value containing either TRUE, FALSE or NULL (=UNKNOWN)
+         */
+	BooleanValue equals(Value value);
 
-	/**
-	 * @see org.gdms.sql.instruction.Operations#notEquals(org.gdms.data.values.Value)
-	 */
-	public Value notEquals(Value value) throws IncompatibleTypesException;
+        /**
+         * Gets a boolean value representing the SQL non-equality between this value and the <code>value</code>
+         * parameter using three-valued logic (3VL).
+         * 
+         * This is always strictly equivalent to calling <code>equals(value).not()</code>.
+         * 
+         * @param value a value
+         * @return a value containing either TRUE, FALSE or NULL (=UNKNOWN)
+         */
+	BooleanValue notEquals(Value value);
 
-	/**
-	 * @see org.gdms.sql.instruction.Operations#greater(org.gdms.data.values.Value)
-	 */
-	public Value greater(Value value) throws IncompatibleTypesException;
+	BooleanValue greater(Value value);
 
-	/**
-	 * @see org.gdms.sql.instruction.Operations#less(org.gdms.data.values.Value)
-	 */
-	public Value less(Value value) throws IncompatibleTypesException;
+	BooleanValue less(Value value);
 
-	/**
-	 * @see org.gdms.sql.instruction.Operations#greaterEqual(org.gdms.data.values.Value)
-	 */
-	public Value greaterEqual(Value value) throws IncompatibleTypesException;
+	BooleanValue greaterEqual(Value value);
 
-	/**
-	 * @see org.gdms.sql.instruction.Operations#lessEqual(org.gdms.data.values.Value)
-	 */
-	public Value lessEqual(Value value) throws IncompatibleTypesException;
+	BooleanValue lessEqual(Value value);
 
-	/**
-	 * @see org.gdms.data.values.Operations#like(org.gdms.data.values.Value)
-	 */
-	public Value like(Value value) throws IncompatibleTypesException;
-
-	/**
-	 * In order to index the tables equals and hashCode must be defined.
-	 * AbstractValue overrides these methods by calling doEquals and doHashCode.
-	 * Any Value must inherit from abstract Value or override those methods in
-	 * the same way.
-	 * 
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	public boolean doEquals(Object obj);
-
-	/**
-	 * The hashCode implementation. Every value with the same semantic
-	 * information must return the same int
-	 * 
-	 * @return integer
-	 * 
-	 * @see java.lang.Object#hashCode()
-	 */
-	public int doHashCode();
+	BooleanValue like(Value value);
 
 	/**
 	 * Gets the string representation of the value as it is defined in the
@@ -150,26 +133,26 @@ public interface Value {
 	 * 
 	 * @return String
 	 */
-	public String getStringValue(ValueWriter writer);
+	String getStringValue(ValueWriter writer);
 
 	/**
 	 * Gets the type of the value
 	 * 
 	 * @return integer
 	 */
-	public int getType();
+	int getType();
 
 	/**
 	 * Gets this value represented as an array of bytes
 	 * 
 	 * @return
 	 */
-	public byte[] getBytes();
+	byte[] getBytes();
 
 	/**
 	 * @return true if this value is null, false otherwise
 	 */
-	public boolean isNull();
+	boolean isNull();
 
 	/**
 	 * @return this value if it is a binary value or it can be converted
@@ -178,16 +161,20 @@ public interface Value {
 	 *             if the value is not of the required type or cannot be
 	 *             converted
 	 */
-	public byte[] getAsBinary() throws IncompatibleTypesException;
+	byte[] getAsBinary();
 
 	/**
-	 * @return this value if it is a boolean value or it can be converted
+	 * @return the boolean value inside this Value
+         * This methods return <tt>true</tt> if the value is SQL TRUE,
+         * <tt>false</tt> if the value is SQL FALSE, and <tt>null</tt> if
+         * this value is SQL UNKNOWN.
+         * Note that is the latter case, we still have <code>isNull() == false</code>.
 	 * 
 	 * @throws IncompatibleTypesException
 	 *             if the value is not of the required type or cannot be
 	 *             converted
 	 */
-	public boolean getAsBoolean() throws IncompatibleTypesException;
+	Boolean getAsBoolean();
 
 	/**
 	 * @return this value if it is a date value or it can be converted
@@ -196,7 +183,7 @@ public interface Value {
 	 *             if the value is not of the required type or cannot be
 	 *             converted
 	 */
-	public Date getAsDate() throws IncompatibleTypesException;
+	Date getAsDate();
 
 	/**
 	 * @return this value if it is a geometry value or it can be converted
@@ -205,7 +192,7 @@ public interface Value {
 	 *             if the value is not of the required type or cannot be
 	 *             converted
 	 */
-	public Geometry getAsGeometry() throws IncompatibleTypesException;
+	Geometry getAsGeometry();
 
 	/**
 	 * @return this value if it is a raster value or it can be converted
@@ -214,7 +201,7 @@ public interface Value {
 	 *             if the value is not of the required type or cannot be
 	 *             converted
 	 */
-	public GeoRaster getAsRaster();
+	GeoRaster getAsRaster();
 
 	/**
 	 * @return this value if it is a numeric value or it can be converted
@@ -223,7 +210,7 @@ public interface Value {
 	 *             if the value is not of the required type or cannot be
 	 *             converted
 	 */
-	public double getAsDouble() throws IncompatibleTypesException;
+	double getAsDouble();
 
 	/**
 	 * @return this value if it is a numeric value or it can be converted
@@ -232,7 +219,7 @@ public interface Value {
 	 *             if the value is not of the required type or cannot be
 	 *             converted
 	 */
-	public float getAsFloat() throws IncompatibleTypesException;
+	float getAsFloat();
 
 	/**
 	 * @return this value if it is a numeric value or it can be converted
@@ -241,7 +228,7 @@ public interface Value {
 	 *             if the value is not of the required type or cannot be
 	 *             converted
 	 */
-	public long getAsLong() throws IncompatibleTypesException;
+	long getAsLong();
 
 	/**
 	 * @return this value if it is a numeric value or it can be converted
@@ -250,7 +237,7 @@ public interface Value {
 	 *             if the value is not of the required type or cannot be
 	 *             converted
 	 */
-	public byte getAsByte() throws IncompatibleTypesException;
+	byte getAsByte();
 
 	/**
 	 * @return this value if it is a numeric value or it can be converted
@@ -259,7 +246,7 @@ public interface Value {
 	 *             if the value is not of the required type or cannot be
 	 *             converted
 	 */
-	public short getAsShort() throws IncompatibleTypesException;
+	short getAsShort();
 
 	/**
 	 * @return this value if it is a numeric value or it can be converted
@@ -268,7 +255,7 @@ public interface Value {
 	 *             if the value is not of the required type or cannot be
 	 *             converted
 	 */
-	public int getAsInt() throws IncompatibleTypesException;
+	int getAsInt();
 
 	/**
 	 * @return this value if it is a string value or it can be converted
@@ -277,7 +264,7 @@ public interface Value {
 	 *             if the value is not of the required type or cannot be
 	 *             converted
 	 */
-	public String getAsString() throws IncompatibleTypesException;
+	String getAsString();
 
 	/**
 	 * @return this value if it is a timestamp value or it can be converted
@@ -286,7 +273,7 @@ public interface Value {
 	 *             if the value is not of the required type or cannot be
 	 *             converted
 	 */
-	public Timestamp getAsTimestamp() throws IncompatibleTypesException;
+	Timestamp getAsTimestamp();
 
 	/**
 	 * @return this value if it is a time value or it can be converted
@@ -295,7 +282,7 @@ public interface Value {
 	 *             if the value is not of the required type or cannot be
 	 *             converted
 	 */
-	public Time getAsTime() throws IncompatibleTypesException;
+	Time getAsTime();
 
 	/**
 	 * @return this value if it is a value collection
@@ -304,8 +291,7 @@ public interface Value {
 	 *             if the value is not of the required type or cannot be
 	 *             converted
 	 */
-	public ValueCollection getAsValueCollection()
-			throws IncompatibleTypesException;
+	ValueCollection getAsValueCollection();
 
 	/**
 	 * Tries to make a conversion to the specified type.
@@ -315,6 +301,40 @@ public interface Value {
 	 * @throws IncompatibleTypesException
 	 *             If the value cannot be converted
 	 */
-	public Value toType(int typeCode) throws IncompatibleTypesException;
+	Value toType(int typeCode);
+
+        /**
+         * Gets a boolean value representing the SQL boolean NOT of this value using three-valued logic (3VL).
+         * @return a value containing either TRUE, FALSE or NULL (=UNKNOWN)
+         */
+        BooleanValue not();
+
+        NumericValue opposite();
+
+        StringValue concatWith(Value value);
+
+        /**
+         * Takes the remainder of the division of this Value by the argument value,
+         * i.e. the result of 24 % 10 is 4
+         *
+         * @param value
+         * @return The remainder.
+         * @throws IncompatibleTypesException
+         * If the operation is not implemented or possible between these
+         * two products.
+         */
+        NumericValue remainder(Value value);
+
+        /**
+         * Returns a double value representing the value of this number raised
+         * to the power of the argument value.
+         *
+         * @param value
+         * @return The double result of the operation "this ^ value".
+         * @throws IncompatibleTypesException
+         * If the operation is not implemented or possible between these
+         * two products.
+         */
+        DoubleValue pow(Value value);
 
 }

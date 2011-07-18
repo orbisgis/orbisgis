@@ -17,52 +17,48 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-
 package org.gdms.driver.mifmid;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
-
- /** 
-  * Classe permettant de lire et d'�crire les informations sur le Système de
-  * coordonn�es contenues dans un fichier MIF 
-  * @author Micha�l Michaud
-  * @version 4.3 (2009-06-13)
-  */
+/** 
+ * Classe permettant de lire et d'�crire les informations sur le Système de
+ * coordonn�es contenues dans un fichier MIF
+ * @author Micha�l Michaud
+ * @version 4.3 (2009-06-13)
+ */
 public class Affine {
 
-    //**************************************************************************
-    //********************         variables statiques        ******************
-    //**************************************************************************
+        //**************************************************************************
+        //********************         variables statiques        ******************
+        //**************************************************************************
+        private static final DecimalFormatSymbols dfs = new DecimalFormatSymbols(Locale.ENGLISH);
+        private static final DecimalFormat format = new DecimalFormat("#0.000000000000", dfs);
+        //**************************************************************************
+        //********************         variables globales         ******************
+        //**************************************************************************
+        String unitname;
+        Double[] params = new Double[6];
 
-    private static final DecimalFormatSymbols dfs = new DecimalFormatSymbols(Locale.ENGLISH);
-    private static final DecimalFormat format = new DecimalFormat("#0.000000000000",dfs);
-
-    //**************************************************************************
-    //********************         variables globales         ******************
-    //**************************************************************************
-
-    String unitname;
-    Double[] params = new Double[6];
-
-    //**************************************************************************
-    //**************************************************************************
-    //********************          Les constructeurs      ********************
-    //**************************************************************************
-    //**************************************************************************
-
-    public Affine() {}
-
-    public String toString() {
-        StringBuffer sb = new StringBuffer(" Affine Units " + unitname);
-        for (int i = 0 ; i < 6 ; i++) {
-            if (!(params[i]==null)) {
-                sb.append(", " + format.format(params[i].doubleValue()));
-            }
+        //**************************************************************************
+        //**************************************************************************
+        //********************          Les constructeurs      ********************
+        //**************************************************************************
+        //**************************************************************************
+        public Affine() {
         }
-        return sb.toString();
-    }
 
-} 
+        @Override
+        public String toString() {
+                StringBuilder sb = new StringBuilder(" Affine Units ");
+                sb.append(unitname);
+                for (int i = 0; i < 6; i++) {
+                        if (!(params[i] == null)) {
+                                sb.append(", ").append(format.format(params[i].doubleValue()));
+                        }
+                }
+                return sb.toString();
+        }
+}

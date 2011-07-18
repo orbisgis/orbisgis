@@ -37,7 +37,7 @@
 package org.gdms;
 
 
-public class NoEmptyDataSetTest extends SourceTest {
+public class NoEmptyDataSetTest extends BaseTest {
 
 	public void testNoEmptyDataSetTest() throws Exception {
 		testNoEmptyDataSetTest(false);

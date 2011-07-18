@@ -44,6 +44,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -56,445 +57,477 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.Source;
-import org.gdms.sql.strategies.IncompatibleTypesException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.gdms.data.types.IncompatibleTypesException;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 
+/**
+ * This class manages all indexes linked to a {@code DataSourceFactory}.
+ * @author Antoine Gourlay
+ */
 public class IndexManager {
 
-	private static final Logger logger = Logger.getLogger(IndexManager.class);
+        private static final Logger logger = Logger.getLogger(IndexManager.class);
+        public static final String INDEX_PROPERTY_PREFIX = "org.gdms.index";
+        public static final String RTREE_SPATIAL_INDEX = "org.gdms.rtree";
+        public static final String BTREE_ALPHANUMERIC_INDEX = "org.gdms.btree";
+        private DataSourceFactory dsf;
+        private Map<String, Class<? extends DataSourceIndex>> indexRegistry = new HashMap<String, Class<? extends DataSourceIndex>>();
+        private Map<IndexDefinition, DataSourceIndex> indexCache = new HashMap<IndexDefinition, DataSourceIndex>();
+        private List<IndexManagerListener> listeners = new ArrayList<IndexManagerListener>();
 
-	public static final String INDEX_PROPERTY_PREFIX = "org.gdms.index";
+        public IndexManager(DataSourceFactory dsf) {
+                this.dsf = dsf;
+        }
 
-	public static final String RTREE_SPATIAL_INDEX = "org.gdms.rtree";
+        public void addIndexManagerListener(IndexManagerListener listener) {
+                listeners.add(listener);
+        }
 
-	public static final String BTREE_ALPHANUMERIC_INDEX = "org.gdms.btree";
+        public boolean removeIndexManagerListener(IndexManagerListener listener) {
+                return listeners.remove(listener);
+        }
 
-	private DataSourceFactory dsf;
+        /**
+         * Builds the specified index on the specified field of the datasource.
+         * Saves the index in a file
+         *
+         * @param dsName name of the source
+         * @param fieldName name of the field to index
+         * @param indexId the index type; can be null.
+         * @param pm a progress monitor; can be null.
+         * @throws IndexException if there is a problem building the index.
+         * @throws NoSuchTableException if the table <tt>dsName</tt> does not exist.
+         */
+        public void buildIndex(String dsName, String fieldName, String indexId,
+                ProgressMonitor pm) throws IndexException, NoSuchTableException {
+                if (pm == null) {
+                        pm = new NullProgressMonitor();
+                }
+                dsName = dsf.getSourceManager().getMainNameFor(dsName);
 
-	private Map<String, Class<? extends DataSourceIndex>> indexRegistry = new HashMap<String, Class<? extends DataSourceIndex>>();
+                Source src = dsf.getSourceManager().getSource(dsName);
 
-	private Map<IndexDefinition, DataSourceIndex> indexCache = new HashMap<IndexDefinition, DataSourceIndex>();
+                // Get index id if null
+                DataSource ds = null;
+                String propertyName = null;
+                try {
+                        ds = dsf.getDataSource(dsName, DataSourceFactory.NORMAL);
+                        ds.open();
+                        if (indexId == null) {
+                                int code = ds.getFieldType(ds.getFieldIndexByName(fieldName)).getTypeCode();
+                                if (code == Type.GEOMETRY) {
+                                        indexId = RTREE_SPATIAL_INDEX;
+                                } else {
+                                        indexId = BTREE_ALPHANUMERIC_INDEX;
+                                }
+                        }
 
-	private ArrayList<IndexManagerListener> listeners = new ArrayList<IndexManagerListener>();
+                        propertyName = INDEX_PROPERTY_PREFIX + "-" + fieldName + "-"
+                                + indexId;
 
-	public IndexManager(DataSourceFactory dsf) {
-		this.dsf = dsf;
-	}
+                        // build index
 
-	public void addIndexManagerListener(IndexManagerListener listener) {
-		listeners.add(listener);
-	}
+                        if (src.getFileProperty(propertyName) != null) {
+                                throw new IndexException("There is already an "
+                                        + "index on that field for that source: " + dsName
+                                        + "." + fieldName);
+                        }
+                        File indexFile = src.createFileProperty(propertyName);
+                        DataSourceIndex index = null;
+                        index = instantiateIndex(indexId);
+                        index.setFile(indexFile);
+                        index.setFieldName(fieldName);
+                        index.buildIndex(dsf, ds, pm);
+                        ds.close();
+                        if (pm.isCancelled()) {
+                                src.deleteProperty(propertyName);
+                                return;
+                        }
+                        index.save();
+                        index.close();
 
-	public boolean removeIndexManagerListener(IndexManagerListener listener) {
-		return listeners.remove(listener);
-	}
+                        IndexDefinition def = new IndexDefinition(dsName, fieldName);
+                        indexCache.put(def, index);
+                        fireIndexCreated(dsName, fieldName, indexId, pm);
+                } catch (DriverLoadException e) {
+                        throw new IndexException("Cannot read source", e);
+                } catch (IncompatibleTypesException e) {
+                        try {
+                                src.deleteProperty(propertyName);
+                        } catch (IOException e1) {
+                                logger.debug("Cannot create index and remove property", e1);
+                        }
+                        throw new IndexException("Cannot create an "
+                                + "index with that field type: " + fieldName, e);
+                } catch (IOException e) {
+                        throw new IndexException("Cannot associate index with source", e);
+                } catch (DriverException e) {
+                        try {
+                                src.deleteProperty(propertyName);
+                        } catch (IOException e1) {
+                                logger.debug("Cannot create index and remove property", e1);
+                        }
+                        throw new IndexException("Cannot access data to index", e);
+                } catch (NoSuchTableException e) {
+                        throw new IndexException("The source doesn't exist", e);
+                } catch (DataSourceCreationException e) {
+                        throw new IndexException("Cannot access the source", e);
+                } finally {
+                        if (ds != null && ds.isOpen()) {
+                                try {
+                                        ds.close();
+                                } catch (DriverException ex) {
+                                        throw new IndexException("Cannot access the source", ex);
+                                }
+                        }
+                }
 
-	/**
-	 * Builds the specified index on the specified field of the datasource.
-	 * Saves the index in a file
-	 * 
-	 * @param dsName
-	 * @param fieldName
-	 * @param indexId
-	 * @param pm
-	 * @throws NoSuchTableException
-	 * @throws IncompatibleTypesException
-	 * @throws DriverLoadException
-	 * @throws DriverException
-	 * @throws NoSuchTableException
-	 * @throws DataSourceCreationException
-	 */
-	public void buildIndex(String dsName, String fieldName, String indexId,
-			IProgressMonitor pm) throws IndexException, NoSuchTableException {
-		if (pm == null) {
-			pm = new NullProgressMonitor();
-		}
-		dsName = dsf.getSourceManager().getMainNameFor(dsName);
+        }
 
-		Source src = dsf.getSourceManager().getSource(dsName);
+        /**
+         * Builds the specified index on the specified field of the datasource.
+         * The index type if determined based on the field type.
+         * Saves the index in a file.
+         *
+         * @param tableName name of the source
+         * @param fieldName name of the field to index
+         * @param pm a progress monitor; can be null.
+         * @throws NoSuchTableException
+         * @throws IndexException
+         */
+        public void buildIndex(String tableName, String fieldName,
+                ProgressMonitor pm) throws NoSuchTableException, IndexException {
+                buildIndex(tableName, fieldName, null, pm);
+        }
 
-		// Get index id if null
-		DataSource ds;
-		try {
-			ds = dsf.getDataSource(dsName, DataSourceFactory.NORMAL);
-			if (indexId == null) {
-				int code = ds.getFieldType(ds.getFieldIndexByName(fieldName))
-						.getTypeCode();
-				if (code == Type.GEOMETRY) {
-					indexId = RTREE_SPATIAL_INDEX;
-				} else {
-					indexId = BTREE_ALPHANUMERIC_INDEX;
-				}
-			}
-		} catch (DriverException e) {
-			throw new IndexException("Cannot access data to index", e);
-		} catch (NoSuchTableException e) {
-			throw new IndexException("The source doesn't exist", e);
-		} catch (DataSourceCreationException e) {
-			throw new IndexException("Cannot access the source", e);
-		}
-		String propertyName = INDEX_PROPERTY_PREFIX + "-" + fieldName + "-"
-				+ indexId;
+        private void fireIndexCreated(String dsName, String fieldName,
+                String indexId, ProgressMonitor pm) throws IndexException {
+                for (IndexManagerListener listener : listeners) {
+                        listener.indexCreated(dsName, fieldName, indexId, this, pm);
+                }
+        }
 
-		// build index
-		try {
-			if (src.getFileProperty(propertyName) != null) {
-				throw new IndexException("There is already an "
-						+ "index on that field for that source: " + dsName
-						+ "." + fieldName);
-			}
-			File indexFile = src.createFileProperty(propertyName);
-			ds.open();
-			DataSourceIndex index = null;
-			index = instantiateIndex(indexId);
-			if (index == null) {
-				throw new UnsupportedOperationException("Cannot find "
-						+ indexId + " index");
-			}
-			index.setFile(indexFile);
-			index.setFieldName(fieldName);
-			index.buildIndex(dsf, ds, pm);
-			ds.close();
-			if (pm.isCancelled()) {
-				src.deleteProperty(propertyName);
-				return;
-			}
-			index.save();
-			index.close();
+        private void fireIndexDeleted(String dsName, String fieldName,
+                String indexId) throws IndexException {
+                for (IndexManagerListener listener : listeners) {
+                        listener.indexDeleted(dsName, fieldName, indexId, this);
+                }
+        }
 
-			IndexDefinition def = new IndexDefinition(dsName, fieldName);
-			indexCache.put(def, index);
-			fireIndexCreated(dsName, fieldName, indexId, pm);
-		} catch (DriverLoadException e) {
-			throw new IndexException("Cannot read source", e);
-		} catch (IncompatibleTypesException e) {
-			try {
-				src.deleteProperty(propertyName);
-			} catch (IOException e1) {
-				logger.debug("Cannot create index and remove property", e1);
-			}
-			throw new IndexException("Cannot create an "
-					+ "index with that field type: " + fieldName);
-		} catch (IOException e) {
-			throw new IndexException("Cannot associate index with source", e);
-		} catch (DriverException e) {
-			try {
-				src.deleteProperty(propertyName);
-			} catch (IOException e1) {
-				logger.debug("Cannot create index and remove property", e1);
-			}
-			throw new IndexException("Cannot access data to index", e);
-		}
+        /**
+         * Registers an index into the collection of indexes
+         *
+         * @param id
+         * @param index
+         */
+        public void addIndex(String id, Class<? extends DataSourceIndex> index) {
+                indexRegistry.put(id, index);
+        }
 
-	}
+        DataSourceIndex instantiateIndex(String indexId) throws IndexException {
+                final Class<? extends DataSourceIndex> indexClass = indexRegistry.get(indexId);
+                if (indexClass == null) {
+                        throw new IllegalArgumentException("Cannot find the index type: " + indexId);
+                }
+                try {
+                        return indexClass.newInstance();
+                } catch (InstantiationException e) {
+                        throw new IndexException("Cannot instantiate the index", e);
+                } catch (IllegalAccessException e) {
+                        throw new IndexException("Cannot instantiate the index", e);
+                }
+        }
 
-	public void buildIndex(String tableName, String fieldName,
-			IProgressMonitor pm) throws NoSuchTableException, IndexException {
-		buildIndex(tableName, fieldName, null, pm);
-	}
+        /**
+         * Gets the index for the specified source name. All instances of DataSource
+         * that access to the specified source will use the same index instance.
+         *
+         * @param dsName the name of the source
+         * @param fieldName the name of the indexed field
+         * @return the index, or null if not found.
+         * @throws IndexException
+         * @throws NoSuchTableException
+         */
+        public DataSourceIndex getIndex(String dsName, String fieldName)
+                throws IndexException, NoSuchTableException {
+                IndexDefinition def = new IndexDefinition(dsName, fieldName);
+                DataSourceIndex ret = indexCache.get(def);
+                if (ret == null) {
+                        String[] indexProperties = getIndexProperties(dsName);
+                        for (String indexProperty : indexProperties) {
+                                String propertyFieldName = getFieldName(indexProperty);
+                                if (propertyFieldName.equals(fieldName)) {
+                                        DataSourceIndex index = instantiateIndex(getIndexId(indexProperty));
+                                        Source src = dsf.getSourceManager().getSource(dsName);
+                                        index.setFieldName(fieldName);
+                                        index.setFile(src.getFileProperty(indexProperty));
+                                        index.load();
+                                        indexCache.put(def, index);
+                                        ret = index;
+                                        break;
+                                }
+                        }
+                }
 
-	private void fireIndexCreated(String dsName, String fieldName,
-			String indexId, IProgressMonitor pm) throws IndexException {
-		for (IndexManagerListener listener : listeners) {
-			listener.indexCreated(dsName, fieldName, indexId, this, pm);
-		}
-	}
+                return ret;
+        }
 
-	private void fireIndexDeleted(String dsName, String fieldName,
-			String indexId) throws IndexException {
-		for (IndexManagerListener listener : listeners) {
-			listener.indexDeleted(dsName, fieldName, indexId, this);
-		}
-	}
+        private static class IndexDefinition {
 
-	/**
-	 * Registers an index into the collection of indexes
-	 * 
-	 * @param index
-	 */
-	public void addIndex(String id, Class<? extends DataSourceIndex> index) {
-		indexRegistry.put(id, index);
-	}
+                public String dsName;
+                public String fieldName;
 
-	DataSourceIndex instantiateIndex(String indexId) throws IndexException {
-		try {
-			return indexRegistry.get(indexId).newInstance();
-		} catch (InstantiationException e) {
-			throw new IndexException("Cannot instantiate the index", e);
-		} catch (IllegalAccessException e) {
-			throw new IndexException("Cannot instantiate the index", e);
-		}
-	}
+                IndexDefinition(String dsName, String fieldName) {
+                        super();
+                        this.dsName = dsName;
+                        this.fieldName = fieldName;
+                }
 
-	/**
-	 * Gets the index for the specified source name. All instances of DataSource
-	 * that access to the specified source will use the same index instance.
-	 * 
-	 * @param dsName
-	 * @param fieldName
-	 * @return
-	 * @throws NoSuchTableException
-	 * @throws DriverException
-	 */
-	public DataSourceIndex getIndex(String dsName, String fieldName)
-			throws IndexException, NoSuchTableException {
-		IndexDefinition def = new IndexDefinition(dsName, fieldName);
-		DataSourceIndex ret = indexCache.get(def);
-		if (ret == null) {
-			String[] indexProperties = getIndexProperties(dsName);
-			for (String indexProperty : indexProperties) {
-				String propertyFieldName = getFieldName(indexProperty);
-				if (propertyFieldName.equals(fieldName)) {
-					DataSourceIndex index = instantiateIndex(getIndexId(indexProperty));
-					Source src = dsf.getSourceManager().getSource(dsName);
-					index.setFieldName(fieldName);
-					index.setFile(src.getFileProperty(indexProperty));
-					index.load();
-					indexCache.put(def, index);
-					ret = index;
-					break;
-				}
-			}
-		}
+                @Override
+                public boolean equals(Object obj) {
+                        if (obj instanceof IndexDefinition) {
+                                IndexDefinition id = (IndexDefinition) obj;
+                                return dsName.equals(id.dsName) && fieldName.equals(id.fieldName);
+                        } else {
+                                return false;
+                        }
+                }
 
-		return ret;
-	}
+                @Override
+                public int hashCode() {
+                        return dsName.hashCode() + fieldName.hashCode();
+                }
+        }
 
-	private class IndexDefinition {
-		public String dsName;
+        public void indexesChanged(String dsName, DataSourceIndex[] modifiedIndexes)
+                throws IOException {
+                try {
+                        dsName = dsf.getSourceManager().getMainNameFor(dsName);
+                        String[] indexProperties = getIndexProperties(dsName);
+                        Source src = dsf.getSourceManager().getSource(dsName);
+                        for (String indexProperty : indexProperties) {
+                                // Search the modified index related to this property
+                                for (DataSourceIndex dataSourceIndex : modifiedIndexes) {
+                                        if (dataSourceIndex.getFieldName().equals(
+                                                getFieldName(indexProperty))) {
+                                                // Get the file of the property and change the contents
+                                                File dest = src.getFileProperty(indexProperty);
+                                                File source = dataSourceIndex.getFile();
+                                                BufferedOutputStream out = null;
 
-		public String fieldName;
+                                                try {
+                                                        out = new BufferedOutputStream(
+                                                                new FileOutputStream(dest));
 
-		public IndexDefinition(String dsName, String fieldName) {
-			super();
-			this.dsName = dsName;
-			this.fieldName = fieldName;
-		}
+                                                        dataSourceIndex.save();
+                                                        dataSourceIndex.close();
 
-		@Override
-		public boolean equals(Object obj) {
-			IndexDefinition id = (IndexDefinition) obj;
-			return dsName.equals(id.dsName) && fieldName.equals(id.fieldName);
-		}
+                                                        BufferedInputStream in = null;
+                                                        try {
+                                                                in = new BufferedInputStream(
+                                                                        new FileInputStream(source));
+                                                                FileUtils.copy(in, out);
+                                                        } finally {
+                                                                if (in != null) {
+                                                                        in.close();
+                                                                }
+                                                        }
 
-		@Override
-		public int hashCode() {
-			return dsName.hashCode() + fieldName.hashCode();
-		}
+                                                } catch (IOException ex) {
+                                                        src.deleteProperty(indexProperty);
+                                                } catch (IndexException ex) {
+                                                        src.deleteProperty(indexProperty);
+                                                } finally {
+                                                        if (out != null) {
+                                                                out.close();
+                                                        }
+                                                }
 
-	}
 
-	public void indexesChanged(String dsName, DataSourceIndex[] modifiedIndexes)
-			throws IOException {
-		try {
-			dsName = dsf.getSourceManager().getMainNameFor(dsName);
-			String[] indexProperties = getIndexProperties(dsName);
-			Source src = dsf.getSourceManager().getSource(dsName);
-			for (String indexProperty : indexProperties) {
-				// Search the modified index related to this property
-				for (DataSourceIndex dataSourceIndex : modifiedIndexes) {
-					if (dataSourceIndex.getFieldName().equals(
-							getFieldName(indexProperty))) {
-						// Get the file of the property and change the contents
-						File dest = src.getFileProperty(indexProperty);
-						File source = dataSourceIndex.getFile();
-						try {
-							dataSourceIndex.save();
-							dataSourceIndex.close();
-							BufferedOutputStream out = new BufferedOutputStream(
-									new FileOutputStream(dest));
-							BufferedInputStream in = new BufferedInputStream(
-									new FileInputStream(source));
-							FileUtils.copy(in, out);
-							out.close();
-							in.close();
-						} catch (IOException e) {
-							src.deleteProperty(indexProperty);
-						} catch (IndexException e) {
-							src.deleteProperty(indexProperty);
-						}
+                                                IndexDefinition def = new IndexDefinition(dsName,
+                                                        getFieldName(indexProperty));
+                                                indexCache.remove(def);
+                                        }
+                                }
+                        }
+                } catch (NoSuchTableException e) {
+                        throw new IllegalArgumentException("bug: The source "
+                                + "does not exist: " + dsName, e);
+                }
+        }
 
-						IndexDefinition def = new IndexDefinition(dsName,
-								getFieldName(indexProperty));
-						indexCache.remove(def);
-					}
-				}
-			}
-		} catch (NoSuchTableException e) {
-			throw new IllegalArgumentException("bug: The source "
-					+ "does not exist: " + dsName);
-		}
-	}
+        /**
+         * Gets the indexes of the specified source
+         *
+         * @param dsName the name of the source
+         * @return all indexes on the source <tt>dsName</tt>
+         * @throws IndexException
+         * @throws NoSuchTableException
+         */
+        public DataSourceIndex[] getIndexes(String dsName) throws IndexException,
+                NoSuchTableException {
+                ArrayList<DataSourceIndex> ret = new ArrayList<DataSourceIndex>();
+                dsName = dsf.getSourceManager().getMainNameFor(dsName);
+                String[] indexProperties = getIndexProperties(dsName);
+                for (String indexProperty : indexProperties) {
+                        String fieldName = getFieldName(indexProperty);
+                        DataSourceIndex index = getIndex(dsName, fieldName);
+                        if (index != null) {
+                                ret.add(index);
+                        }
+                }
 
-	/**
-	 * Gets the indexes of the specified source
-	 * 
-	 * @param dsName
-	 * @return
-	 * @throws IndexException
-	 * @throws NoSuchTableException
-	 */
-	public DataSourceIndex[] getIndexes(String dsName) throws IndexException,
-			NoSuchTableException {
-		ArrayList<DataSourceIndex> ret = new ArrayList<DataSourceIndex>();
-		dsName = dsf.getSourceManager().getMainNameFor(dsName);
-		String[] indexProperties = getIndexProperties(dsName);
-		for (String indexProperty : indexProperties) {
-			String fieldName = getFieldName(indexProperty);
-			DataSourceIndex index = getIndex(dsName, fieldName);
-			if (index != null) {
-				ret.add(index);
-			}
-		}
+                return ret.toArray(new DataSourceIndex[ret.size()]);
+        }
 
-		return ret.toArray(new DataSourceIndex[0]);
-	}
+        private String getIndexId(String propertyName) {
+                String prop = propertyName.substring(INDEX_PROPERTY_PREFIX.length() + 1);
+                String indexId = prop.substring(prop.indexOf('-') + 1);
 
-	private String getIndexId(String propertyName) {
-		String prop = propertyName
-				.substring(INDEX_PROPERTY_PREFIX.length() + 1);
-		String indexId = prop.substring(prop.indexOf('-') + 1);
+                return indexId;
+        }
 
-		return indexId;
-	}
+        private String getFieldName(String propertyName) {
+                String prop = propertyName.substring(INDEX_PROPERTY_PREFIX.length() + 1);
+                String fieldName = prop.substring(0, prop.indexOf('-'));
 
-	private String getFieldName(String propertyName) {
-		String prop = propertyName
-				.substring(INDEX_PROPERTY_PREFIX.length() + 1);
-		String fieldName = prop.substring(0, prop.indexOf('-'));
+                return fieldName;
+        }
 
-		return fieldName;
-	}
+        private String[] getIndexProperties(String dsName) {
+                ArrayList<String> ret = new ArrayList<String>();
+                Source src = dsf.getSourceManager().getSource(dsName);
+                if (src != null) {
+                        String[] fileProperties = src.getFilePropertyNames();
+                        for (String fileProperty : fileProperties) {
+                                if (fileProperty.startsWith(INDEX_PROPERTY_PREFIX)) {
+                                        ret.add(fileProperty);
+                                }
+                        }
+                } else {
+                        throw new IllegalArgumentException("The source doesn't exist: "
+                                + dsName);
+                }
 
-	private String[] getIndexProperties(String dsName) {
-		ArrayList<String> ret = new ArrayList<String>();
-		Source src = dsf.getSourceManager().getSource(dsName);
-		if (src != null) {
-			String[] fileProperties = src.getFilePropertyNames();
-			for (String fileProperty : fileProperties) {
-				if (fileProperty.startsWith(INDEX_PROPERTY_PREFIX)) {
-					ret.add(fileProperty);
-				}
-			}
-		} else {
-			throw new IllegalArgumentException("The source doesn't exist: "
-					+ dsName);
-		}
+                return ret.toArray(new String[ret.size()]);
+        }
 
-		return ret.toArray(new String[ret.size()]);
-	}
+        /**
+         * Queries the index of the specified source, with the specified query
+         *
+         * @param dsName the name of the source
+         * @param indexQuery a query to execute against the source
+         * @return The iterator or null if there is no index in the specified field
+         * @throws IndexException
+         * @throws NoSuchTableException
+         * @throws IndexQueryException 
+         */
+        public int[] queryIndex(String dsName, IndexQuery indexQuery)
+                throws IndexException, NoSuchTableException, IndexQueryException {
+                DataSourceIndex dsi;
+                dsi = getIndex(dsName, indexQuery.getFieldName());
+                if (dsi != null) {
+                        if (!dsi.isOpen()) {
+                                dsi.load();
+                        }
+                        return dsi.getIterator(indexQuery);
+                } else {
+                        return null;
+                }
+        }
 
-	/**
-	 * Queries the index of the specified source, with the specified query
-	 * 
-	 * @param dsName
-	 * @param indexQuery
-	 * @return The iterator or null if there is no index in the specified field
-	 * @throws NoSuchTableException
-	 * @throws DriverException
-	 */
-	public int[] queryIndex(String dsName, IndexQuery indexQuery)
-			throws IndexException, NoSuchTableException {
-		DataSourceIndex dsi;
-		dsi = getIndex(dsName, indexQuery.getFieldName());
-		if (dsi != null) {
-			if (!dsi.isOpen()) {
-				dsi.load();
-			}
-			return dsi.getIterator(indexQuery);
-		} else {
-			return null;
-		}
-	}
+        public String[] getIndexedFieldNames(String name) {
+                String[] indexProperties = getIndexProperties(name);
+                String[] ret = new String[indexProperties.length];
+                for (int i = 0; i < ret.length; i++) {
+                        ret[0] = getFieldName(indexProperties[i]);
+                }
 
-	public String[] getIndexedFieldNames(String name) {
-		String[] indexProperties = getIndexProperties(name);
-		String[] ret = new String[indexProperties.length];
-		for (int i = 0; i < ret.length; i++) {
-			ret[0] = getFieldName(indexProperties[i]);
-		}
+                return ret;
+        }
 
-		return ret;
-	}
+        /**
+         * Removes the index for the source. All the current DataSource instances
+         * are affected
+         *
+         * @param dsName the name of the source
+         * @param fieldName the name of the indexed field
+         * @throws NoSuchTableException 
+         * @throws IllegalArgumentException
+         *             If the index doesn't exist
+         * @throws IndexException
+         */
+        public void deleteIndex(String dsName, String fieldName)
+                throws NoSuchTableException, IndexException {
+                try {
+                        dsName = dsf.getSourceManager().getMainNameFor(dsName);
+                        String[] indexProperties = getIndexProperties(dsName);
+                        for (String indexProperty : indexProperties) {
+                                if (indexProperty.startsWith(INDEX_PROPERTY_PREFIX + "-"
+                                        + fieldName + "-")) {
+                                        Source src = dsf.getSourceManager().getSource(dsName);
+                                        src.deleteProperty(indexProperty);
+                                        IndexDefinition def = new IndexDefinition(dsName, fieldName);
+                                        indexCache.remove(def);
+                                        fireIndexDeleted(dsName, fieldName,
+                                                getIndexId(indexProperty));
+                                        return;
+                                }
+                        }
+                        throw new IllegalArgumentException(dsName + " does not have "
+                                + "an index on the field'" + fieldName + "'");
+                } catch (IOException e) {
+                        throw new IndexException("Cannot remove index property of "
+                                + dsName + " at field " + fieldName, e);
+                }
+        }
 
-	/**
-	 * Removes the index for the source. All the current DataSource instances
-	 * are affected
-	 * 
-	 * @param dsName
-	 * @param fieldName
-	 * @throws IllegalArgumentException
-	 *             If the source doesn't exist
-	 * @throws IndexException
-	 */
-	public void deleteIndex(String dsName, String fieldName)
-			throws NoSuchTableException, IndexException {
-		try {
-			dsName = dsf.getSourceManager().getMainNameFor(dsName);
-			String[] indexProperties = getIndexProperties(dsName);
-			for (String indexProperty : indexProperties) {
-				if (indexProperty.startsWith(INDEX_PROPERTY_PREFIX + "-"
-						+ fieldName + "-")) {
-					Source src = dsf.getSourceManager().getSource(dsName);
-					src.deleteProperty(indexProperty);
-					IndexDefinition def = new IndexDefinition(dsName, fieldName);
-					indexCache.remove(def);
-					fireIndexDeleted(dsName, fieldName,
-							getIndexId(indexProperty));
-					return;
-				}
-			}
-			throw new IllegalArgumentException(dsName + " does not have "
-					+ "an index on the field'" + fieldName + "'");
-		} catch (IOException e) {
-			throw new IndexException("Cannot remove index property of "
-					+ dsName + " at field " + fieldName);
-		}
-	}
+        public AdHocIndex getAdHocIndex(ObjectDriver rightSource, String tableName, String fieldName,
+                String indexId, ProgressMonitor pm) throws IndexException,
+                NoSuchTableException {
+                if (pm == null) {
+                        pm = new NullProgressMonitor();
+                }
+                DataSourceIndex index = instantiateIndex(indexId);
 
-	public AdHocIndex getAdHocIndex(ObjectDriver rightSource, String fieldName,
-			String indexId, IProgressMonitor pm) throws IndexException,
-			NoSuchTableException {
-		if (pm == null) {
-			pm = new NullProgressMonitor();
-		}
-		DataSourceIndex index = instantiateIndex(indexId);
-		if (index == null) {
-			throw new UnsupportedOperationException("Cannot find " + indexId
-					+ " index");
-		}
+                try {
+                        DataSource ds = dsf.getDataSource(rightSource, tableName,
+                                DataSourceFactory.NORMAL);
+                        index.setFieldName(fieldName);
+                        ds.open();
+                        index.buildIndex(dsf, ds, pm);
+                        ds.close();
+                        return index;
+                } catch (DriverLoadException e) {
+                        throw new IndexException("Cannot read source", e);
+                } catch (IncompatibleTypesException e) {
+                        throw new IndexException("Cannot create an "
+                                + "index with that field type: " + fieldName, e);
+                } catch (DriverException e) {
+                        throw new IndexException("Cannot access data to index", e);
+                }
 
-		try {
-			DataSource ds = dsf.getDataSource(rightSource,
-					DataSourceFactory.NORMAL);
-			index.setFieldName(fieldName);
-			ds.open();
-			index.buildIndex(dsf, ds, pm);
-			ds.close();
-			return index;
-		} catch (DriverLoadException e) {
-			throw new IndexException("Cannot read source", e);
-		} catch (IncompatibleTypesException e) {
-			throw new IndexException("Cannot create an "
-					+ "index with that field type: " + fieldName);
-		} catch (DriverException e) {
-			throw new IndexException("Cannot access data to index", e);
-		}
+        }
 
-	}
-
-	public boolean isIndexed(String sourceName, String fieldName)
-			throws NoSuchTableException {
-		sourceName = dsf.getSourceManager().getMainNameFor(sourceName);
-		String[] indexProperties = getIndexProperties(sourceName);
-		for (String indexProperty : indexProperties) {
-			if (indexProperty.startsWith(INDEX_PROPERTY_PREFIX + "-"
-					+ fieldName + "-")) {
-				return true;
-			}
-		}
-		return false;
-	}
+        /**
+         * Returns true if there is an index on the specified field.
+         * @param sourceName the name of the source
+         * @param fieldName the name of the field
+         * @return true if there is an index, false otherwise.
+         * @throws NoSuchTableException
+         */
+        public boolean isIndexed(String sourceName, String fieldName)
+                throws NoSuchTableException {
+                sourceName = dsf.getSourceManager().getMainNameFor(sourceName);
+                String[] indexProperties = getIndexProperties(sourceName);
+                for (String indexProperty : indexProperties) {
+                        if (indexProperty.startsWith(INDEX_PROPERTY_PREFIX + "-"
+                                + fieldName + "-")) {
+                                return true;
+                        }
+                }
+                return false;
+        }
 }

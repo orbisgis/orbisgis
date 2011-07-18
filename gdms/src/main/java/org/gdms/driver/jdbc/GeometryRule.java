@@ -39,30 +39,31 @@ package org.gdms.driver.jdbc;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 
-public class GeometryRule extends AbstractConversionRule implements
-		ConversionRule {
+public class GeometryRule extends AbstractConversionRule {
 
-	@Override
-	public int[] getValidConstraints() {
-		return addGlobalConstraints(Constraint.GEOMETRY_TYPE,
-				Constraint.GEOMETRY_DIMENSION, Constraint.SRID);
-	}
+        @Override
+        public int[] getValidConstraints() {
+                return addGlobalConstraints(Constraint.GEOMETRY_TYPE,
+                        Constraint.GEOMETRY_DIMENSION, Constraint.SRID);
+        }
 
-	public int getOutputTypeCode() {
-		return Type.GEOMETRY;
-	}
+        @Override
+        public int getOutputTypeCode() {
+                return Type.GEOMETRY;
+        }
 
-	public String getTypeName() {
-		return "geometry";
-	}
+        @Override
+        public String getTypeName() {
+                return "geometry";
+        }
 
-	@Override
-	public String getSQL(String fieldName, Type fieldType) {
-		return null;
-	}
+        @Override
+        public String getSQL(String fieldName, Type fieldType) {
+                return null;
+        }
 
-	public boolean canApply(Type type) {
-		return type.getTypeCode() == Type.GEOMETRY;
-	}
-
+        @Override
+        public boolean canApply(Type type) {
+                return type.getTypeCode() == Type.GEOMETRY;
+        }
 }

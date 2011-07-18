@@ -40,15 +40,16 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
-import org.gdms.data.metadata.Metadata;
-import org.gdms.data.metadata.MetadataUtilities;
+import org.gdms.data.schema.Metadata;
+import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.gdms.data.types.IncompatibleTypesException;
 
 /**
  * Contains the DataSource methods that are executed by calling other DataSource
@@ -58,18 +59,19 @@ import org.gdms.sql.strategies.IncompatibleTypesException;
  */
 public abstract class AbstractDataSource implements DataSource {
 
-	/**
-	 * @see org.gdms.data.DataSource#getRow(long)
-	 */
-	public Value[] getRow(long rowIndex) throws DriverException {
-		Value[] ret = new Value[getMetadata().getFieldCount()];
+        /**
+         * @see org.gdms.data.DataSource#getRow(long)
+         */
+        @Override
+        public Value[] getRow(long rowIndex) throws DriverException {
+                Value[] ret = new Value[getMetadata().getFieldCount()];
 
-		for (int i = 0; i < ret.length; i++) {
-			ret[i] = getFieldValue(rowIndex, i);
-		}
+                for (int i = 0; i < ret.length; i++) {
+                        ret[i] = getFieldValue(rowIndex, i);
+                }
 
-		return ret;
-	}
+                return ret;
+        }
 
         /**
          * This method select the rows in the datasource where the value at fieldId match value
@@ -78,414 +80,463 @@ public abstract class AbstractDataSource implements DataSource {
          * @return rows where value at fieldId match value
          * @throws DriverException
          */
-
-	public ArrayList<Value[]> getRows(int fieldId, Value value)
-			throws DriverException {
-
-		ArrayList<Value[]> values = new ArrayList<Value[]>();
-		long size = getRowCount();
-
-		for (int i = 0; i < size; i++) {
-
-			Value v = getFieldValue(i, fieldId);
-
-			if (v.equals(value).getAsBoolean()) {
-
-				values.add(getRow(i));
-
-			}
-
-		}
-
-		return values;
-
-	}
-
-	public String getName() {
-		return getSource().getName();
-	}
-
-	public String check(int fieldId, Value value) throws DriverException {
-		return getMetadata().getFieldType(fieldId).check(value);
-	}
-
-	/**
-	 * @see org.gdms.data.edition.EditableDataSource#getFieldName(int)
-	 */
-	public String getFieldName(int fieldId) throws DriverException {
-		return getMetadata().getFieldName(fieldId);
-	}
-
-	/**
-	 * @see org.gdms.data.DataSource#getFieldNames()
-	 */
-	public String[] getFieldNames() throws DriverException {
-		Metadata dataSourceMetadata = getMetadata();
-		String[] ret = new String[dataSourceMetadata.getFieldCount()];
-
-		for (int i = 0; i < ret.length; i++) {
-			ret[i] = dataSourceMetadata.getFieldName(i);
-		}
-
-		return ret;
-	}
-
-	public Type getFieldType(int fieldId) throws DriverException {
-		return getMetadata().getFieldType(fieldId);
-	}
-
-	/**
-	 * @see org.gdms.data.DataSource#getFieldCount()
-	 */
-	public int getFieldCount() throws DriverException {
-		Metadata dataSourceMetadata = getMetadata();
-		return dataSourceMetadata.getFieldCount();
-	}
-
-	public int getFieldIndexByName(String fieldName) throws DriverException {
-		Metadata metadata = getMetadata();
-		for (int i = 0; i < metadata.getFieldCount(); i++) {
-			if (metadata.getFieldName(i).equals(fieldName)) {
-				return i;
-			}
-		}
-
-		return -1;
-	}
-
-	/**
-	 * gets a string representation of this datasource
-	 * 
-	 * @return String
-	 * 
-	 * @throws DriverException
-	 */
-	public String getAsString() throws DriverException {
-
-		StringBuffer aux = new StringBuffer();
-		int fc = getMetadata().getFieldCount();
-		int rc = (int) getRowCount();
-
-		for (int i = 0; i < fc; i++) {
-			aux.append(getMetadata().getFieldName(i)).append("\t");
-		}
-		aux.append("\n");
-		for (int row = 0; row < rc; row++) {
-			for (int j = 0; j < fc; j++) {
-				aux.append(getFieldValue(row, j)).append("\t");
-			}
-			aux.append("\n");
-		}
-
-		return aux.toString();
-	}
-
-	public int getInt(long row, String fieldName) throws DriverException {
-		return getInt(row, getFieldIndexByName(fieldName));
-	}
-
-	public int getInt(long row, int fieldId) throws DriverException {
-		try {
-			return getFieldValue(row, fieldId).getAsInt();
-		} catch (IncompatibleTypesException e) {
-			throw new DriverException(e);
-		}
-	}
-
-	public byte[] getBinary(long row, String fieldName) throws DriverException {
-		return getBinary(row, getFieldIndexByName(fieldName));
-	}
-
-	public byte[] getBinary(long row, int fieldId) throws DriverException {
-		try {
-			return getFieldValue(row, fieldId).getAsBinary();
-		} catch (IncompatibleTypesException e) {
-			throw new DriverException(e);
-		}
-	}
-
-	public boolean getBoolean(long row, String fieldName)
-			throws DriverException {
-		return getBoolean(row, getFieldIndexByName(fieldName));
-	}
-
-	public boolean getBoolean(long row, int fieldId) throws DriverException {
-		try {
-			return getFieldValue(row, fieldId).getAsBoolean();
-		} catch (IncompatibleTypesException e) {
-			throw new DriverException(e);
-		}
-	}
-
-	public byte getByte(long row, String fieldName) throws DriverException {
-		return getByte(row, getFieldIndexByName(fieldName));
-	}
-
-	public byte getByte(long row, int fieldId) throws DriverException {
-		try {
-			return getFieldValue(row, fieldId).getAsByte();
-		} catch (IncompatibleTypesException e) {
-			throw new DriverException(e);
-		}
-	}
-
-	public Date getDate(long row, String fieldName) throws DriverException {
-		return getDate(row, getFieldIndexByName(fieldName));
-	}
-
-	public Date getDate(long row, int fieldId) throws DriverException {
-		try {
-			return getFieldValue(row, fieldId).getAsDate();
-		} catch (IncompatibleTypesException e) {
-			throw new DriverException(e);
-		}
-	}
-
-	public double getDouble(long row, String fieldName) throws DriverException {
-		return getDouble(row, getFieldIndexByName(fieldName));
-	}
-
-	public double getDouble(long row, int fieldId) throws DriverException {
-		try {
-			return getFieldValue(row, fieldId).getAsDouble();
-		} catch (IncompatibleTypesException e) {
-			throw new DriverException(e);
-		}
-	}
-
-	public float getFloat(long row, String fieldName) throws DriverException {
-		return getFloat(row, getFieldIndexByName(fieldName));
-	}
-
-	public float getFloat(long row, int fieldId) throws DriverException {
-		try {
-			return getFieldValue(row, fieldId).getAsFloat();
-		} catch (IncompatibleTypesException e) {
-			throw new DriverException(e);
-		}
-	}
-
-	public long getLong(long row, String fieldName) throws DriverException {
-		return getLong(row, getFieldIndexByName(fieldName));
-	}
-
-	public long getLong(long row, int fieldId) throws DriverException {
-		try {
-			return getFieldValue(row, fieldId).getAsLong();
-		} catch (IncompatibleTypesException e) {
-			throw new DriverException(e);
-		}
-	}
-
-	public short getShort(long row, String fieldName) throws DriverException {
-		return getShort(row, getFieldIndexByName(fieldName));
-	}
-
-	public short getShort(long row, int fieldId) throws DriverException {
-		try {
-			return getFieldValue(row, fieldId).getAsShort();
-		} catch (IncompatibleTypesException e) {
-			throw new DriverException(e);
-		}
-	}
-
-	public String getString(long row, String fieldName) throws DriverException {
-		return getString(row, getFieldIndexByName(fieldName));
-	}
-
-	public String getString(long row, int fieldId) throws DriverException {
-		try {
-			return getFieldValue(row, fieldId).getAsString();
-		} catch (IncompatibleTypesException e) {
-			throw new DriverException(e);
-		}
-	}
-
-	public Timestamp getTimestamp(long row, String fieldName)
-			throws DriverException {
-		return getTimestamp(row, getFieldIndexByName(fieldName));
-	}
-
-	public Timestamp getTimestamp(long row, int fieldId) throws DriverException {
-		try {
-			return getFieldValue(row, fieldId).getAsTimestamp();
-		} catch (IncompatibleTypesException e) {
-			throw new DriverException(e);
-		}
-	}
-
-	public Time getTime(long row, String fieldName) throws DriverException {
-		return getTime(row, getFieldIndexByName(fieldName));
-	}
-
-	public Time getTime(long row, int fieldId) throws DriverException {
-		try {
-			return getFieldValue(row, fieldId).getAsTime();
-		} catch (IncompatibleTypesException e) {
-			throw new DriverException(e);
-		}
-	}
-
-	public void setInt(long row, String fieldName, int value)
-			throws DriverException {
-		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory
-				.createValue(value));
-	}
-
-	public void setInt(long row, int fieldId, int value) throws DriverException {
-		setFieldValue(row, fieldId, ValueFactory.createValue(value));
-	}
-
-	public void setBinary(long row, String fieldName, byte[] value)
-			throws DriverException {
-		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory
-				.createValue(value));
-	}
-
-	public void setBinary(long row, int fieldId, byte[] value)
-			throws DriverException {
-		setFieldValue(row, fieldId, ValueFactory.createValue(value));
-	}
-
-	public void setBoolean(long row, String fieldName, boolean value)
-			throws DriverException {
-		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory
-				.createValue(value));
-	}
-
-	public void setBoolean(long row, int fieldId, boolean value)
-			throws DriverException {
-		setFieldValue(row, fieldId, ValueFactory.createValue(value));
-	}
-
-	public void setByte(long row, String fieldName, byte value)
-			throws DriverException {
-		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory
-				.createValue(value));
-	}
-
-	public void setByte(long row, int fieldId, byte value)
-			throws DriverException {
-		setFieldValue(row, fieldId, ValueFactory.createValue(value));
-	}
-
-	public void setDate(long row, String fieldName, Date value)
-			throws DriverException {
-		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory
-				.createValue(value));
-	}
-
-	public void setDate(long row, int fieldId, Date value)
-			throws DriverException {
-		setFieldValue(row, fieldId, ValueFactory.createValue(value));
-	}
-
-	public void setDouble(long row, String fieldName, double value)
-			throws DriverException {
-		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory
-				.createValue(value));
-	}
-
-	public void setDouble(long row, int fieldId, double value)
-			throws DriverException {
-		setFieldValue(row, fieldId, ValueFactory.createValue(value));
-	}
-
-	public void setFloat(long row, String fieldName, float value)
-			throws DriverException {
-		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory
-				.createValue(value));
-	}
-
-	public void setFloat(long row, int fieldId, float value)
-			throws DriverException {
-		setFieldValue(row, fieldId, ValueFactory.createValue(value));
-	}
-
-	public void setLong(long row, String fieldName, long value)
-			throws DriverException {
-		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory
-				.createValue(value));
-	}
-
-	public void setLong(long row, int fieldId, long value)
-			throws DriverException {
-		setFieldValue(row, fieldId, ValueFactory.createValue(value));
-	}
-
-	public void setShort(long row, String fieldName, short value)
-			throws DriverException {
-		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory
-				.createValue(value));
-	}
-
-	public void setShort(long row, int fieldId, short value)
-			throws DriverException {
-		setFieldValue(row, fieldId, ValueFactory.createValue(value));
-	}
-
-	public void setString(long row, String fieldName, String value)
-			throws DriverException {
-		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory
-				.createValue(value));
-	}
-
-	public void setString(long row, int fieldId, String value)
-			throws DriverException {
-		setFieldValue(row, fieldId, ValueFactory.createValue(value));
-	}
-
-	public void setTimestamp(long row, String fieldName, Timestamp value)
-			throws DriverException {
-		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory
-				.createValue(value));
-	}
-
-	public void setTimestamp(long row, int fieldId, Timestamp value)
-			throws DriverException {
-		setFieldValue(row, fieldId, ValueFactory.createValue(value));
-	}
-
-	public void setTime(long row, String fieldName, Time value)
-			throws DriverException {
-		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory
-				.createValue(value));
-	}
-
-	public void setTime(long row, int fieldId, Time value)
-			throws DriverException {
-		setFieldValue(row, fieldId, ValueFactory.createValue(value));
-	}
-
-	public boolean isNull(long row, int fieldId) throws DriverException {
-		return getFieldValue(row, fieldId).isNull();
-	}
-
-	public boolean isNull(long row, String fieldName) throws DriverException {
-		return isNull(row, getFieldIndexByName(fieldName));
-	}
-
-	public ValueCollection getPK(int rowIndex) throws DriverException {
-		/*
-		 * TODO Caching fieldsId will speed up the open if edition is enabled
-		 */
-		int[] fieldsId = MetadataUtilities.getPKIndices(getMetadata());
-		if (fieldsId.length > 0) {
-			Value[] pks = new Value[fieldsId.length];
-
-			for (int i = 0; i < pks.length; i++) {
-				pks[i] = getFieldValue(rowIndex, fieldsId[i]);
-			}
-
-			return ValueFactory.createValue(pks);
-		} else {
-			return ValueFactory.createValue(new Value[] { ValueFactory
-					.createValue(rowIndex) });
-		}
-	}
-
-	public void printStack() {
-		System.out.println("<" + this.getClass().getName() + "/>");
-	}
-
+        public List<Value[]> getRows(int fieldId, Value value)
+                throws DriverException {
+
+                ArrayList<Value[]> values = new ArrayList<Value[]>();
+                long size = getRowCount();
+
+                for (int i = 0; i < size; i++) {
+
+                        Value v = getFieldValue(i, fieldId);
+
+                        if (v.equals(value).getAsBoolean()) {
+
+                                values.add(getRow(i));
+
+                        }
+
+                }
+
+                return values;
+
+        }
+
+        @Override
+        public String getName() {
+                return getSource().getName();
+        }
+
+        @Override
+        public String check(int fieldId, Value value) throws DriverException {
+                return getMetadata().getFieldType(fieldId).check(value);
+        }
+
+        /**
+         * @param fieldId
+         * @return
+         * @throws DriverException
+         * @see org.gdms.data.edition.EditableDataSource#getFieldName(int)
+         */
+        @Override
+        public final String getFieldName(int fieldId) throws DriverException {
+                return getMetadata().getFieldName(fieldId);
+        }
+
+        /**
+         * @see org.gdms.data.DataSource#getFieldNames()
+         */
+        @Override
+        public final String[] getFieldNames() throws DriverException {
+                Metadata dataSourceMetadata = getMetadata();
+                String[] ret = new String[dataSourceMetadata.getFieldCount()];
+
+                for (int i = 0; i < ret.length; i++) {
+                        ret[i] = dataSourceMetadata.getFieldName(i);
+                }
+
+                return ret;
+        }
+
+        @Override
+        public final Type getFieldType(int fieldId) throws DriverException {
+                return getMetadata().getFieldType(fieldId);
+        }
+
+        /**
+         * @return
+         * @throws DriverException
+         * @see org.gdms.data.DataSource#getFieldCount()
+         */
+        @Override
+        public final int getFieldCount() throws DriverException {
+                return getMetadata().getFieldCount();
+        }
+
+        @Override
+        public int getFieldIndexByName(String fieldName) throws DriverException {
+                Metadata metadata = getMetadata();
+                for (int i = 0; i < metadata.getFieldCount(); i++) {
+                        if (metadata.getFieldName(i).equals(fieldName)) {
+                                return i;
+                        }
+                }
+
+                return -1;
+        }
+
+        /**
+         * gets a string representation of this datasource
+         *
+         * @return String
+         *
+         * @throws DriverException
+         */
+        @Override
+        public final String getAsString() throws DriverException {
+
+                StringBuilder aux = new StringBuilder();
+                int fc = getMetadata().getFieldCount();
+                int rc = (int) getRowCount();
+
+                for (int i = 0; i < fc; i++) {
+                        aux.append(getMetadata().getFieldName(i)).append("\t");
+                }
+                aux.append("\n");
+                for (int row = 0; row < rc; row++) {
+                        for (int j = 0; j < fc; j++) {
+                                aux.append(getFieldValue(row, j)).append("\t");
+                        }
+                        aux.append("\n");
+                }
+
+                return aux.toString();
+        }
+
+        @Override
+        public final int getInt(long row, String fieldName) throws DriverException {
+                return getInt(row, getFieldIndexByName(fieldName));
+        }
+
+        @Override
+        public final int getInt(long row, int fieldId) throws DriverException {
+                try {
+                        return getFieldValue(row, fieldId).getAsInt();
+                } catch (IncompatibleTypesException e) {
+                        throw new DriverException(e);
+                }
+        }
+
+        @Override
+        public final byte[] getBinary(long row, String fieldName) throws DriverException {
+                return getBinary(row, getFieldIndexByName(fieldName));
+        }
+
+        @Override
+        public final byte[] getBinary(long row, int fieldId) throws DriverException {
+                try {
+                        return getFieldValue(row, fieldId).getAsBinary();
+                } catch (IncompatibleTypesException e) {
+                        throw new DriverException(e);
+                }
+        }
+
+        @Override
+        public final boolean getBoolean(long row, String fieldName)
+                throws DriverException {
+                return getBoolean(row, getFieldIndexByName(fieldName));
+        }
+
+        @Override
+        public final boolean getBoolean(long row, int fieldId) throws DriverException {
+                try {
+                        return getFieldValue(row, fieldId).getAsBoolean();
+                } catch (IncompatibleTypesException e) {
+                        throw new DriverException(e);
+                }
+        }
+
+        @Override
+        public final byte getByte(long row, String fieldName) throws DriverException {
+                return getByte(row, getFieldIndexByName(fieldName));
+        }
+
+        @Override
+        public final byte getByte(long row, int fieldId) throws DriverException {
+                try {
+                        return getFieldValue(row, fieldId).getAsByte();
+                } catch (IncompatibleTypesException e) {
+                        throw new DriverException(e);
+                }
+        }
+
+        @Override
+        public final Date getDate(long row, String fieldName) throws DriverException {
+                return getDate(row, getFieldIndexByName(fieldName));
+        }
+
+        @Override
+        public final Date getDate(long row, int fieldId) throws DriverException {
+                try {
+                        return getFieldValue(row, fieldId).getAsDate();
+                } catch (IncompatibleTypesException e) {
+                        throw new DriverException(e);
+                }
+        }
+
+        @Override
+        public final double getDouble(long row, String fieldName) throws DriverException {
+                return getDouble(row, getFieldIndexByName(fieldName));
+        }
+
+        @Override
+        public final double getDouble(long row, int fieldId) throws DriverException {
+                try {
+                        return getFieldValue(row, fieldId).getAsDouble();
+                } catch (IncompatibleTypesException e) {
+                        throw new DriverException(e);
+                }
+        }
+
+        @Override
+        public final float getFloat(long row, String fieldName) throws DriverException {
+                return getFloat(row, getFieldIndexByName(fieldName));
+        }
+
+        @Override
+        public final float getFloat(long row, int fieldId) throws DriverException {
+                try {
+                        return getFieldValue(row, fieldId).getAsFloat();
+                } catch (IncompatibleTypesException e) {
+                        throw new DriverException(e);
+                }
+        }
+
+        @Override
+        public final long getLong(long row, String fieldName) throws DriverException {
+                return getLong(row, getFieldIndexByName(fieldName));
+        }
+
+        @Override
+        public final long getLong(long row, int fieldId) throws DriverException {
+                try {
+                        return getFieldValue(row, fieldId).getAsLong();
+                } catch (IncompatibleTypesException e) {
+                        throw new DriverException(e);
+                }
+        }
+
+        @Override
+        public final short getShort(long row, String fieldName) throws DriverException {
+                return getShort(row, getFieldIndexByName(fieldName));
+        }
+
+        @Override
+        public final short getShort(long row, int fieldId) throws DriverException {
+                try {
+                        return getFieldValue(row, fieldId).getAsShort();
+                } catch (IncompatibleTypesException e) {
+                        throw new DriverException(e);
+                }
+        }
+
+        @Override
+        public final String getString(long row, String fieldName) throws DriverException {
+                return getString(row, getFieldIndexByName(fieldName));
+        }
+
+        @Override
+        public final String getString(long row, int fieldId) throws DriverException {
+                try {
+                        return getFieldValue(row, fieldId).getAsString();
+                } catch (IncompatibleTypesException e) {
+                        throw new DriverException(e);
+                }
+        }
+
+        @Override
+        public final Timestamp getTimestamp(long row, String fieldName)
+                throws DriverException {
+                return getTimestamp(row, getFieldIndexByName(fieldName));
+        }
+
+        @Override
+        public final Timestamp getTimestamp(long row, int fieldId) throws DriverException {
+                try {
+                        return getFieldValue(row, fieldId).getAsTimestamp();
+                } catch (IncompatibleTypesException e) {
+                        throw new DriverException(e);
+                }
+        }
+
+        @Override
+        public final Time getTime(long row, String fieldName) throws DriverException {
+                return getTime(row, getFieldIndexByName(fieldName));
+        }
+
+        @Override
+        public final Time getTime(long row, int fieldId) throws DriverException {
+                try {
+                        return getFieldValue(row, fieldId).getAsTime();
+                } catch (IncompatibleTypesException e) {
+                        throw new DriverException(e);
+                }
+        }
+
+        @Override
+        public final void setInt(long row, String fieldName, int value)
+                throws DriverException {
+                setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory.createValue(value));
+        }
+
+        @Override
+        public final void setInt(long row, int fieldId, int value) throws DriverException {
+                setFieldValue(row, fieldId, ValueFactory.createValue(value));
+        }
+
+        @Override
+        public final void setBinary(long row, String fieldName, byte[] value)
+                throws DriverException {
+                setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory.createValue(value));
+        }
+
+        @Override
+        public final void setBinary(long row, int fieldId, byte[] value)
+                throws DriverException {
+                setFieldValue(row, fieldId, ValueFactory.createValue(value));
+        }
+
+        @Override
+        public final void setBoolean(long row, String fieldName, boolean value)
+                throws DriverException {
+                setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory.createValue(value));
+        }
+
+        @Override
+        public final void setBoolean(long row, int fieldId, boolean value)
+                throws DriverException {
+                setFieldValue(row, fieldId, ValueFactory.createValue(value));
+        }
+
+        @Override
+        public final void setByte(long row, String fieldName, byte value)
+                throws DriverException {
+                setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory.createValue(value));
+        }
+
+        @Override
+        public final void setByte(long row, int fieldId, byte value)
+                throws DriverException {
+                setFieldValue(row, fieldId, ValueFactory.createValue(value));
+        }
+
+        @Override
+        public final void setDate(long row, String fieldName, Date value)
+                throws DriverException {
+                setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory.createValue(value));
+        }
+
+        @Override
+        public final void setDate(long row, int fieldId, Date value)
+                throws DriverException {
+                setFieldValue(row, fieldId, ValueFactory.createValue(value));
+        }
+
+        @Override
+        public final void setDouble(long row, String fieldName, double value)
+                throws DriverException {
+                setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory.createValue(value));
+        }
+
+        @Override
+        public final void setDouble(long row, int fieldId, double value)
+                throws DriverException {
+                setFieldValue(row, fieldId, ValueFactory.createValue(value));
+        }
+
+        @Override
+        public final void setFloat(long row, String fieldName, float value)
+                throws DriverException {
+                setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory.createValue(value));
+        }
+
+        @Override
+        public final void setFloat(long row, int fieldId, float value)
+                throws DriverException {
+                setFieldValue(row, fieldId, ValueFactory.createValue(value));
+        }
+
+        @Override
+        public final void setLong(long row, String fieldName, long value)
+                throws DriverException {
+                setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory.createValue(value));
+        }
+
+        @Override
+        public final void setLong(long row, int fieldId, long value)
+                throws DriverException {
+                setFieldValue(row, fieldId, ValueFactory.createValue(value));
+        }
+
+        @Override
+        public final void setShort(long row, String fieldName, short value)
+                throws DriverException {
+                setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory.createValue(value));
+        }
+
+        @Override
+        public final void setShort(long row, int fieldId, short value)
+                throws DriverException {
+                setFieldValue(row, fieldId, ValueFactory.createValue(value));
+        }
+
+        @Override
+        public final void setString(long row, String fieldName, String value)
+                throws DriverException {
+                setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory.createValue(value));
+        }
+
+        @Override
+        public final void setString(long row, int fieldId, String value)
+                throws DriverException {
+                setFieldValue(row, fieldId, ValueFactory.createValue(value));
+        }
+
+        @Override
+        public final void setTimestamp(long row, String fieldName, Timestamp value)
+                throws DriverException {
+                setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory.createValue(value));
+        }
+
+        @Override
+        public final void setTimestamp(long row, int fieldId, Timestamp value)
+                throws DriverException {
+                setFieldValue(row, fieldId, ValueFactory.createValue(value));
+        }
+
+        @Override
+        public final void setTime(long row, String fieldName, Time value)
+                throws DriverException {
+                setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory.createValue(value));
+        }
+
+        @Override
+        public final void setTime(long row, int fieldId, Time value)
+                throws DriverException {
+                setFieldValue(row, fieldId, ValueFactory.createValue(value));
+        }
+
+        @Override
+        public final boolean isNull(long row, int fieldId) throws DriverException {
+                return getFieldValue(row, fieldId).isNull();
+        }
+
+        @Override
+        public final boolean isNull(long row, String fieldName) throws DriverException {
+                return isNull(row, getFieldIndexByName(fieldName));
+        }
+
+        @Override
+        public final ValueCollection getPK(int rowIndex) throws DriverException {
+                /*
+                 * TODO Caching fieldsId will speed up the open if edition is enabled
+                 */
+                int[] fieldsId = MetadataUtilities.getPKIndices(getMetadata());
+                if (fieldsId.length > 0) {
+                        Value[] pks = new Value[fieldsId.length];
+
+                        for (int i = 0; i < pks.length; i++) {
+                                pks[i] = getFieldValue(rowIndex, fieldsId[i]);
+                        }
+
+                        return ValueFactory.createValue(pks);
+                } else {
+                        return ValueFactory.createValue(new Value[]{ValueFactory.createValue(rowIndex)});
+                }
+        }
+
+        @Override
+        public void printStack() {
+                System.out.println("<" + this.getClass().getName() + "/>");
+        }
 }

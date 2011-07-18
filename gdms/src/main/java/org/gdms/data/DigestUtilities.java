@@ -42,39 +42,43 @@ import java.security.NoSuchAlgorithmException;
 
 import org.gdms.driver.DriverException;
 
-public class DigestUtilities {
-	public static byte[] getDigest(DataSource ds)
-			throws NoSuchAlgorithmException, DriverException {
-		return getDigest(ds, ds.getRowCount());
-	}
+public final class DigestUtilities {
 
-	public static boolean equals(byte[] digest1, byte[] digest2) {
-		if (digest1.length != digest2.length) {
-			return false;
-		}
-		for (int i = 0; i < digest2.length; i++) {
-			if (digest1[i] != digest2[i]) {
-				return false;
-			}
-		}
+        public static byte[] getDigest(DataSource ds)
+                throws NoSuchAlgorithmException, DriverException {
+                return getDigest(ds, ds.getRowCount());
+        }
 
-		return true;
-	}
+        public static boolean equals(byte[] digest1, byte[] digest2) {
+                if (digest1.length != digest2.length) {
+                        return false;
+                }
+                for (int i = 0; i < digest2.length; i++) {
+                        if (digest1[i] != digest2[i]) {
+                                return false;
+                        }
+                }
 
-	public static byte[] getDigest(DataSource ds,
-			long rowCount)
-			throws DriverException, NoSuchAlgorithmException {
-		MessageDigest md5 = MessageDigest.getInstance("MD5");
-		for (int i = 0; i < rowCount; i++) {
-			for (int j = 0; j < ds.getFieldCount(); j++) {
-				md5.update(ds.getFieldValue(i, j).getBytes());
-			}
-		}
-		return md5.digest();
-	}
+                return true;
+        }
 
-	public static String getBase64Digest(DataSource ds)
-			throws NoSuchAlgorithmException, DriverException {
-		return String.valueOf(Base64Coder.encode(getDigest(ds)));
-	}
+        public static byte[] getDigest(DataSource ds,
+                long rowCount)
+                throws DriverException, NoSuchAlgorithmException {
+                MessageDigest md5 = MessageDigest.getInstance("MD5");
+                for (int i = 0; i < rowCount; i++) {
+                        for (int j = 0; j < ds.getFieldCount(); j++) {
+                                md5.update(ds.getFieldValue(i, j).getBytes());
+                        }
+                }
+                return md5.digest();
+        }
+
+        public static String getBase64Digest(DataSource ds)
+                throws NoSuchAlgorithmException, DriverException {
+                return String.valueOf(Base64Coder.encode(getDigest(ds)));
+        }
+
+        private DigestUtilities() {
+        }
 }

@@ -36,6 +36,7 @@
  */
 package org.gdms.data.object;
 
+import org.apache.log4j.Logger;
 import org.gdms.data.AbstractDataSourceDefinition;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
@@ -43,80 +44,89 @@ import org.gdms.data.DataSourceDefinition;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.ObjectReadWriteDriver;
-import org.gdms.driver.ReadOnlyDriver;
+import org.gdms.driver.Driver;
+import org.gdms.driver.ReadAccess;
 import org.gdms.source.directory.DefinitionType;
 import org.gdms.source.directory.ObjectDefinitionType;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 /**
- * DOCUMENT ME!
+ * Definition for sources built on {@link ObjectDriver}.
  *
- * @author $author$
- * @version $Revision: 1.1 $
+ * @author fergonco, Antoine Gourlay
  */
 public class ObjectSourceDefinition extends AbstractDataSourceDefinition {
 
-	public ObjectDriver driver;
+        private ObjectDriver driver;
+        private String tableName;
+        private static final Logger LOG = Logger.getLogger(ObjectSourceDefinition.class);
 
-	public ObjectSourceDefinition(ObjectDriver driver) {
-		this.driver = driver;
-		setDriver(driver);
-	}
+        public ObjectSourceDefinition(ObjectDriver driver, String tableName) {
+                LOG.trace("Constructor");
+                this.driver = driver;
+                this.tableName = tableName;
+                setDriver(driver);
+        }
 
-	public DataSource createDataSource(String tableName, IProgressMonitor pm)
-			throws DataSourceCreationException {
-		ObjectDataSourceAdapter ds;
-		ds = new ObjectDataSourceAdapter(getSource(tableName), driver);
-		return ds;
-	}
+        @Override
+        public DataSource createDataSource(String sourceName, ProgressMonitor pm)
+                throws DataSourceCreationException {
+                LOG.trace("Creating datasource");
+                ObjectDataSourceAdapter ds;
+                ds = new ObjectDataSourceAdapter(getSource(sourceName), driver);
+                LOG.trace("Datasource created");
+                return ds;
+        }
 
-	public void createDataSource(DataSource contents, IProgressMonitor pm) throws DriverException {
-		contents.open();
-		try {
-			((ObjectReadWriteDriver) driver).write(contents, pm);
-		} catch (DriverException e) {
-			contents.close();
-			throw e;
-		}
-		contents.close();
-	}
+        @Override
+        public void createDataSource(ReadAccess contents, ProgressMonitor pm) throws DriverException {
+                LOG.trace("Writing datasource to object");
+                ((ObjectReadWriteDriver) driver).write(contents, pm);
+        }
 
-	public DefinitionType getDefinition() {
-		ObjectDefinitionType ret = new ObjectDefinitionType();
-		ret.setClazz(driver.getClass().getCanonicalName());
+        @Override
+        public DefinitionType getDefinition() {
+                ObjectDefinitionType ret = new ObjectDefinitionType();
+                ret.setClazz(driver.getClass().getCanonicalName());
 
-		return ret;
-	}
+                return ret;
+        }
 
-	public static DataSourceDefinition createFromXML(ObjectDefinitionType d)
-			throws InstantiationException, IllegalAccessException,
-			ClassNotFoundException {
-		String className = d.getClazz();
-		ObjectDriver od = (ObjectDriver) Class.forName(className).newInstance();
+        public static DataSourceDefinition createFromXML(ObjectDefinitionType d)
+                throws InstantiationException, IllegalAccessException,
+                ClassNotFoundException {
+                String className = d.getClazz();
+                ObjectDriver od = (ObjectDriver) Class.forName(className).newInstance();
 
-		return new ObjectSourceDefinition(od);
-	}
+                return new ObjectSourceDefinition(od, d.getTableName());
+        }
 
-	@Override
-	protected ReadOnlyDriver getDriverInstance() {
-		return driver;
-	}
+        @Override
+        protected Driver getDriverInstance() {
+                return driver;
+        }
 
-	public ObjectDriver getObject() {
-		return driver;
-	}
+        public ObjectDriver getObject() {
+                return driver;
+        }
 
-	@Override
-	public boolean equals(DataSourceDefinition obj) {
-		if (obj instanceof ObjectSourceDefinition) {
-			ObjectSourceDefinition dsd = (ObjectSourceDefinition) obj;
-			if (driver.equals(dsd.driver)) {
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			return false;
-		}
-	}
+        @Override
+        public boolean equals(Object obj) {
+                if (obj instanceof ObjectSourceDefinition) {
+                        ObjectSourceDefinition dsd = (ObjectSourceDefinition) obj;
+                        return (driver.equals(dsd.driver));
+                } else {
+                        return false;
+                }
+        }
+
+        @Override
+        public String getDriverTableName() {
+                return tableName;
+        }
+
+        @Override
+        public int hashCode() {
+                return 158 * driver.hashCode() + tableName.hashCode();
+        }
 }

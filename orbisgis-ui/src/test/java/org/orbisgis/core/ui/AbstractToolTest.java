@@ -42,7 +42,6 @@ import javax.swing.JLabel;
 
 import junit.framework.TestCase;
 
-import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.generic.GenericObjectDriver;
@@ -55,6 +54,7 @@ import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tools.SelectionTool;
 
 import com.vividsolutions.jts.geom.Envelope;
+import org.gdms.data.SQLDataSourceFactory;
 
 public class AbstractToolTest extends TestCase {
 
@@ -68,7 +68,7 @@ public class AbstractToolTest extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 
-		DataSourceFactory dsf = new DataSourceFactory(
+		SQLDataSourceFactory dsf = new SQLDataSourceFactory(
 				"src/test/resources/backup", "src/test/resources/backup");
 
 		dataManager = new DefaultDataManager(dsf);

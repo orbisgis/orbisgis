@@ -39,120 +39,115 @@ package org.gdms.driver.driverManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+import org.apache.log4j.Logger;
+import org.gdms.driver.Driver;
 
 /**
- * 
- * @author Fernando Gonzalez Cortes
+ * This class is responsible for storing all the available drivers.
+
+ * It does not have any driver registered by default, it is up to the calling code to
+ * registered drivers.
  */
-public class DriverManager {
-	private HashMap<String, Class<? extends Driver>> nombreDriverClass = new HashMap<String, Class<? extends Driver>>();
-	private ArrayList<Throwable> failures = new ArrayList<Throwable>();
+public final class DriverManager {
 
-	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @return DOCUMENT ME!
-	 */
-	public Throwable[] getLoadFailures() {
-		return failures.toArray(new Throwable[0]);
-	}
+        private Map<String, Class<? extends Driver>> driverClasses = new HashMap<String, Class<? extends Driver>>();
+        private static final Logger logger = Logger.getLogger(DriverManager.class);
 
-	/**
-	 * Get the driver by name
-	 * 
-	 * @param name
-	 *            name of the desired driver
-	 * 
-	 * @return
-	 * 
-	 * @throws DriverLoadException
-	 *             if the driver class represents an abstract class, an
-	 *             interface, an array class, a primitive type, or void; or if
-	 *             the class has no nullary constructor; or if the instantiation
-	 *             fails for some other reason
-	 */
-	public Driver getDriver(String name) throws DriverLoadException {
-		try {
-			Class<? extends Driver> driverClass = nombreDriverClass.get(name);
-			if (driverClass == null)
-				throw new DriverLoadException("Driver not found: " + name);
-			return (Driver) driverClass.newInstance();
-		} catch (InstantiationException e) {
-			throw new DriverLoadException(e);
-		} catch (IllegalAccessException e) {
-			throw new DriverLoadException(e);
-		}
-	}
+        public static final String DEFAULT_SINGLE_TABLE_NAME = "main";
 
-	public void registerDriver(Class<? extends Driver> driverClass) {
-		if (Driver.class.isAssignableFrom(driverClass)) {
-			Driver driver;
-			try {
-				driver = driverClass.newInstance();
-				nombreDriverClass.put(driver.getDriverId(), driverClass);
-			} catch (InstantiationException e) {
-				throw new IllegalArgumentException(
-						"The driver cannot be instantiated", e);
-			} catch (IllegalAccessException e) {
-				throw new IllegalArgumentException(
-						"The driver cannot be instantiated", e);
-			}
-		} else {
-			throw new RuntimeException(driverClass.getName()
-					+ " is not an instance of " + Driver.class.getName());
-		}
-	}
+        /**
+         * Get the driver by name
+         *
+         * @param name
+         *            name of the desired driver
+         *
+         * @return
+         *
+         * @throws DriverLoadException
+         *             if the driver class represents an abstract class, an
+         *             interface, an array class, a primitive type, or void; or if
+         *             the class has no nullary constructor; or if the instantiation
+         *             fails for some other reason
+         */
+        public Driver getDriver(String name) {
+                logger.trace("Instantiating driver " + name);
+                try {
+                        Class<? extends Driver> driverClass = driverClasses.get(name);
+                        if (driverClass == null) {
+                                throw new DriverLoadException("Driver not found: " + name);
+                        }
+                        return driverClass.newInstance();
+                } catch (InstantiationException e) {
+                        throw new DriverLoadException(e);
+                } catch (IllegalAccessException e) {
+                        throw new DriverLoadException(e);
+                }
+        }
 
-	/**
-	 * Obtiene los tipos de todos los drivers del sistema
-	 * 
-	 * @return DOCUMENT ME!
-	 */
-	public String[] getDriverNames() {
-		ArrayList<String> names = new ArrayList<String>(nombreDriverClass
-				.size());
+        /**
+         * Registers a driver class into this DriverManager
+         * @param driverClass a class extending Driver
+         */
+        public void registerDriver(Class<? extends Driver> driverClass) {
+                logger.trace("Registering driver " + driverClass.getName());
+                        Driver driver;
+                        try {
+                                driver = driverClass.newInstance();
+                                driverClasses.put(driver.getDriverId(), driverClass);
+                        } catch (InstantiationException e) {
+                                throw new IllegalArgumentException(
+                                        "The driver cannot be instantiated", e);
+                        } catch (IllegalAccessException e) {
+                                throw new IllegalArgumentException(
+                                        "The driver cannot be instantiated", e);
+                        }
+        }
 
-		Iterator<String> iterator = nombreDriverClass.keySet().iterator();
+        /**
+         * Gets the name of all the registered drivers.
+         *
+         * @return an array containing the names
+         */
+        public String[] getDriverNames() {
+                return driverClasses.keySet().toArray(new String[driverClasses.size()]);
+        }
 
-		while (iterator.hasNext()) {
-			names.add((String) iterator.next());
-		}
+        /**
+         * Gets the Driver Class which as been registered with the specified name.
+         *
+         * @param driverName
+         *            the name of a registered driver
+         *
+         * @return the Driver Class, or null if there is none by that name
+         */
+        public Class<? extends Driver> getDriverClassByName(String driverName) {
+                return driverClasses.get(driverName);
+        }
 
-		return names.toArray(new String[0]);
-	}
+        /**
+         * Gets all the registered drivers that comply with the specified DriverFilter
+         * @param driverFilter
+         * @return
+         */
+        public Driver[] getDrivers(DriverFilter driverFilter) {
+                ArrayList<Driver> drivers = new ArrayList<Driver>();
 
-	/**
-	 * Obtiene la clase del driver relacionado con el tipo que se pasa como
-	 * par�metro
-	 * 
-	 * @param driverName
-	 *            DOCUMENT ME!
-	 * 
-	 * @return DOCUMENT ME!
-	 */
-	public Class<? extends Driver> getDriverClassByName(String driverName) {
-		return nombreDriverClass.get(driverName);
-	}
+                Iterator<Class<? extends Driver>> iterator = driverClasses.values().iterator();
 
-	public Driver[] getDrivers(DriverFilter driverFilter) {
-		ArrayList<Driver> drivers = new ArrayList<Driver>();
+                while (iterator.hasNext()) {
+                        try {
+                                Driver driver = iterator.next().newInstance();
+                                if (driverFilter.acceptDriver(driver)) {
+                                        drivers.add(driver);
+                                }
+                        } catch (InstantiationException e) {
+                                // ignore
+                        } catch (IllegalAccessException e) {
+                                // ignore
+                        }
+                }
 
-		Iterator<Class<? extends Driver>> iterator = nombreDriverClass.values()
-				.iterator();
-
-		while (iterator.hasNext()) {
-			try {
-				Driver driver = iterator.next().newInstance();
-				if (driverFilter.acceptDriver(driver)) {
-					drivers.add(driver);
-				}
-			} catch (InstantiationException e) {
-				// ignore
-			} catch (IllegalAccessException e) {
-				// ignore
-			}
-		}
-
-		return drivers.toArray(new Driver[0]);
-	}
+                return drivers.toArray(new Driver[drivers.size()]);
+        }
 }

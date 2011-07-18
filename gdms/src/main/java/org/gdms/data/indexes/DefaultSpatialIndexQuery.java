@@ -38,28 +38,33 @@ package org.gdms.data.indexes;
 
 import com.vividsolutions.jts.geom.Envelope;
 
+/**
+ * Default implementation for {@code SpatialIndexQuery}
+ * @author Antoine Gourlay
+ */
 public class DefaultSpatialIndexQuery implements SpatialIndexQuery {
 
-	private Envelope area;
+        private Envelope area;
+        private String fieldName;
 
-	private String fieldName;
+        public DefaultSpatialIndexQuery(Envelope area, String fieldName) {
+                super();
+                this.area = area;
+                this.fieldName = fieldName;
+        }
 
-	public DefaultSpatialIndexQuery(Envelope area, String fieldName) {
-		super();
-		this.area = area;
-		this.fieldName = fieldName;
-	}
+        @Override
+        public Envelope getArea() {
+                return area;
+        }
 
-	public Envelope getArea() {
-		return area;
-	}
+        @Override
+        public String getFieldName() {
+                return fieldName;
+        }
 
-	public String getFieldName() {
-		return fieldName;
-	}
-
-	public boolean isStrict() {
-		return false;
-	}
-
+        @Override
+        public boolean isStrict() {
+                return false;
+        }
 }

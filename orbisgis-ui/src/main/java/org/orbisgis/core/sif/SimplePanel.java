@@ -56,18 +56,19 @@ import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.file.FileSourceCreation;
-import org.gdms.data.metadata.DefaultMetadata;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.object.ObjectSourceDefinition;
+import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.sql.engine.SemanticException;
 import org.gdms.sql.parser.ParseException;
-import org.gdms.sql.strategies.SemanticException;
 import org.orbisgis.utils.I18N;
 
 public class SimplePanel extends JPanel {
@@ -245,8 +246,7 @@ public class SimplePanel extends JPanel {
                             logger.debug(
                                     I18N.getString(
                                     "orbisgis.org.orbisgis.sif.simplePanel.validatingInterface") + sql); //$NON-NLS-1$
-                            DataSource result = UIFactory.dsf.
-                                    getDataSourceFromSQL(sql);
+                            DataSource result = UIFactory.dsf.getDataSourceFromSQL(sql);
                             result.open();
                             long rowCount = result.getRowCount();
                             result.close();
@@ -300,6 +300,14 @@ public class SimplePanel extends JPanel {
                         msgPanel.setError(I18N.getString(
                                 "orbisgis.org.orbisgis.sif.simplePanel.couldNotValidateDialog") //$NON-NLS-1$
                                 + e.getMessage());
+                    } catch (NoSuchTableException e) {
+                        logger.error(
+                                I18N.getString(
+                                "orbisgis.org.orbisgis.sif.simplePanel.bugInSIF"),
+                                     e); //$NON-NLS-1$
+                        msgPanel.setError(I18N.getString(
+                                "orbisgis.org.orbisgis.sif.simplePanel.couldNotValidateDialog") //$NON-NLS-1$
+                                + e.getMessage());
                     }
                 }
             }
@@ -323,7 +331,7 @@ public class SimplePanel extends JPanel {
             UIFactory.dsf.remove(dsName);
         }
         UIFactory.dsf.registerDataSource(dsName,
-                                         new ObjectSourceDefinition(omd));
+                                         new ObjectSourceDefinition(omd, DriverManager.DEFAULT_SINGLE_TABLE_NAME));
     }
 
     private Value[] getGDMSValues(String[] values, int[] types) {

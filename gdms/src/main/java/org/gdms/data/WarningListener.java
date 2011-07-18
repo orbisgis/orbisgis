@@ -51,13 +51,13 @@ public interface WarningListener {
 	 * @param t
 	 * @param source
 	 */
-	public void throwWarning(String msg, Throwable t, Object source);
+	void throwWarning(String msg, Throwable t, Object source);
 
 	/**
 	 * The process thrown a warning
 	 * 
 	 * @param msg
 	 */
-	public void throwWarning(String msg);
+	void throwWarning(String msg);
 
 }

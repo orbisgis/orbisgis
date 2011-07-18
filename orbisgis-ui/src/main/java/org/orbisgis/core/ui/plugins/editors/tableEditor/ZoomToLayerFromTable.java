@@ -55,7 +55,7 @@ import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 import org.orbisgis.core.ui.plugins.views.mapEditor.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.tableEditor.TableEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -70,7 +70,7 @@ public class ZoomToLayerFromTable extends AbstractPlugIn {
 		bm.backgroundOperation(new BackgroundJob() {
 
 			@Override
-			public void run(IProgressMonitor pm) {
+			public void run(ProgressMonitor pm) {
 				try {
 
 					SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(

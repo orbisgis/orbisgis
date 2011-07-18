@@ -66,134 +66,54 @@
  * (250)385-6040
  * www.vividsolutions.com
  */
-
 package org.gdms.geometryUtils;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineSegment;
-import com.vividsolutions.jts.geom.LineString;
-
 
 /**
- * Utility functions for {@link LineSegment}s.
- * <p>
- * <i>Note:
- * Eventually some of these functions may be moved into the JTS LineSegment class.</i>
+ * This utility class provides some functions for JTS {@link LineSegment} objects.
+ * 
+ * @author Erwan Bocher
  */
-public class LineSegmentUtil {
-    /**
-     * Projects one line segment onto another and returns the resulting
-     * line segment.
-     * The returned line segment will be a subset of
-     * the target line line segment.  This subset may be null, if
-     * the segments are oriented in such a way that there is no projection.
-     *
-     * @param tgt the line segment to be projected onto
-     * @param seg the line segment to project
-     * @return the projected line segment, or <code>null</code> if there is no overlap
-     */
-    public static LineSegment project(LineSegment tgt, LineSegment seg) {
-        double pf0 = tgt.projectionFactor(seg.p0);
-        double pf1 = tgt.projectionFactor(seg.p1);
+public final class LineSegmentUtil {
 
-        // check if segment projects at all
-        if ((pf0 >= 1.0) && (pf1 >= 1.0)) {
-            return null;
+        /**
+         * Computes the Hausdorff distance between two LineSegments.
+         * 
+         * To compute the Hausdorff distance, the distances from one segment's endpoints to the other segment are
+         * computed and the maximum chosen.
+         *
+         * @param seg0
+         * @param seg1
+         * @return the Hausdorff distance between the segments
+         */
+        public static double hausdorffDistance(LineSegment seg0, LineSegment seg1) {
+                double hausdorffDist = seg0.distance(seg1.p0);
+                double dist;
+                dist = seg0.distance(seg1.p1);
+
+                if (dist > hausdorffDist) {
+                        hausdorffDist = dist;
+                }
+
+                dist = seg1.distance(seg0.p0);
+
+                if (dist > hausdorffDist) {
+                        hausdorffDist = dist;
+                }
+
+                dist = seg1.distance(seg0.p1);
+
+                if (dist > hausdorffDist) {
+                        hausdorffDist = dist;
+                }
+
+                return hausdorffDist;
         }
 
-        if ((pf0 <= 0.0) && (pf1 <= 0.0)) {
-            return null;
+        /**
+         * Private constructor for utility class.
+         */
+        private LineSegmentUtil() {
         }
-
-        Coordinate newp0 = tgt.project(seg.p0);
-
-        if (pf0 < 0.0) {
-            newp0 = tgt.p0;
-        }
-
-        if (pf0 > 1.0) {
-            newp0 = tgt.p1;
-        }
-
-        Coordinate newp1 = tgt.project(seg.p1);
-
-        if (pf1 < 0.0) {
-            newp1 = tgt.p0;
-        }
-
-        if (pf1 > 1.0) {
-            newp1 = tgt.p1;
-        }
-
-        return new LineSegment(newp0, newp1);
-    }
-
-    /**
-     * Computes the Hausdorff distance between two LineSegments.
-     * To compute the Hausdorff distance, it is sufficient to compute
-     * the distance from one segment's endpoints to the other segment
-     * and choose the maximum.
-     *
-     * @param seg0
-     * @param seg1
-     * @return the Hausdorff distance between the segments
-     */
-    public static double hausdorffDistance(LineSegment seg0, LineSegment seg1) {
-        double hausdorffDist = seg0.distance(seg1.p0);
-        double dist;
-        dist = seg0.distance(seg1.p1);
-
-        if (dist > hausdorffDist) {
-            hausdorffDist = dist;
-        }
-
-        dist = seg1.distance(seg0.p0);
-
-        if (dist > hausdorffDist) {
-            hausdorffDist = dist;
-        }
-
-        dist = seg1.distance(seg0.p1);
-
-        if (dist > hausdorffDist) {
-            hausdorffDist = dist;
-        }
-
-        return hausdorffDist;
-    }
-
-    /**
-     * Converts a LineSegment to a LineString.
-     * @param factory a factory used to create the LineString
-     * @param seg the LineSegment to convert
-     * @return a new LineString based on the segment
-     */
-    public static LineString asGeometry(GeometryFactory factory, LineSegment seg) {
-        Coordinate[] coord = { new Coordinate(seg.p0), new Coordinate(seg.p1) };
-        LineString line = factory.createLineString(coord);
-
-        return line;
-    }
-
-    //Is this the same as LineSegment's #closestPoint method? If so, this method
-    //should be removed. [Jon Aquino]
-    /*
-    public static Coordinate OLDclosestPoint(LineSegment seg, Coordinate p) {
-        double factor = seg.projectionFactor(p);
-
-        if ((factor > 0) && (factor < 1)) {
-            return seg.project(p);
-        }
-
-        double diSTO = seg.p0.distance(p);
-        double dist1 = seg.p1.distance(p);
-
-        if (diSTO < dist1) {
-            return seg.p0;
-        }
-
-        return seg.p1;
-    }
-    */
-}
+}

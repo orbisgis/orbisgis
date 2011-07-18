@@ -45,9 +45,9 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
+import org.gdms.driver.Driver;
 
 import org.gdms.driver.FileDriver;
-import org.gdms.driver.driverManager.Driver;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;

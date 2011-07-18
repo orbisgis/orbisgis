@@ -79,7 +79,6 @@ import org.orbisgis.core.ui.plugins.views.sqlConsole.actions.SQLConsoleKeyListen
 import org.orbisgis.core.ui.plugins.views.sqlConsole.codereformat.CodeReformator;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.codereformat.CommentSpec;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.syntax.SQLCompletionProvider;
-import org.orbisgis.core.ui.plugins.views.sqlConsole.util.CodeError;
 import org.orbisgis.utils.I18N;
 
 public class SQLConsolePanel extends JPanel implements DropTargetListener {
@@ -348,9 +347,6 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
 
         public RSyntaxTextArea getScriptPanel() {
                 return scriptPanel;
-        }
-
-        public void updateCodeError(CodeError codeError) {
         }
 
         public String getCurrentSQLStatement() {

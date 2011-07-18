@@ -37,21 +37,21 @@
 package org.gdms.driver.postgresql;
 
 import org.gdms.data.types.Type;
-import org.gdms.driver.jdbc.ConversionRule;
 
-public class PGLongRule extends AbstractIntRule implements ConversionRule {
+public class PGLongRule extends AbstractIntRule {
 
-	@Override
-	public int getOutputTypeCode() {
-		return Type.LONG;
-	}
+        @Override
+        public int getOutputTypeCode() {
+                return Type.LONG;
+        }
 
-	public String getTypeName() {
-		return "bigint";
-	}
+        @Override
+        public String getTypeName() {
+                return "bigint";
+        }
 
-	public boolean canApply(Type type) {
-		return type.getTypeCode() == Type.LONG;
-	}
-
+        @Override
+        public boolean canApply(Type type) {
+                return type.getTypeCode() == Type.LONG;
+        }
 }

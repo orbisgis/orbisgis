@@ -37,21 +37,21 @@
 package org.gdms.driver.h2;
 
 import org.gdms.data.types.Type;
-import org.gdms.driver.jdbc.ConversionRule;
 import org.gdms.driver.postgresql.AbstractIntRule;
 
-public class TinyIntRule extends AbstractIntRule implements
-		ConversionRule {
+public class TinyIntRule extends AbstractIntRule {
 
 	@Override
 	public int getOutputTypeCode() {
 		return Type.BYTE;
 	}
 
+        @Override
 	public String getTypeName() {
 		return "tinyint";
 	}
 
+        @Override
 	public boolean canApply(Type type) {
 		return type.getTypeCode() == Type.BYTE;
 	}

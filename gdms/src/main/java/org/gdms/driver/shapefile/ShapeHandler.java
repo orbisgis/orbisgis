@@ -70,7 +70,7 @@ public interface ShapeHandler {
   /** Get the ShapeType of this handler.
    * @return The ShapeType.
    */
-  public ShapeType getShapeType();
+  ShapeType getShapeType();
 
   /** Read a geometry from the ByteBuffer. The buffer's position, byteOrder, and limit
    * are set to that which is needed. The record has been read as well as the shape
@@ -80,7 +80,7 @@ public interface ShapeHandler {
    * @return A geometry object.
  * @throws IOException
    */
-  public Geometry read(ReadBufferManager buffer,ShapeType type) throws IOException;
+  Geometry read(ReadBufferManager buffer,ShapeType type) throws IOException;
 
   /** Write the geometry into the ByteBuffer. The position, byteOrder, and limit are
    * all set. The handler is not responsible for writing the record or
@@ -88,7 +88,7 @@ public interface ShapeHandler {
    * @param shapeBuffer The ByteBuffer to write to.
    * @param geometry The geometry to write.
    */
-  public void write(WriteBufferManager shapeBuffer, Object geometry) throws IOException;
+  void write(WriteBufferManager shapeBuffer, Object geometry) throws IOException;
 
   /** Get the length of the given geometry Object in <b>bytes</b> not 16-bit words.
    * This is easier to keep track of, since the ByteBuffer deals with bytes. <b>Do
@@ -96,5 +96,5 @@ public interface ShapeHandler {
    * @param geometry The geometry to analyze.
    * @return The number of <b>bytes</b> the shape will take up.
    */
-  public int getLength(Object geometry);
+  int getLength(Object geometry);
 }

@@ -38,10 +38,12 @@
 package org.orbisgis.core.ui.editors.map.tools;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 
 import javax.swing.AbstractButton;
@@ -63,6 +65,7 @@ import org.orbisgis.core.ui.editors.map.tool.Handler;
 public class SplitPolygonTool extends AbstractLineTool {
 
         AbstractButton button;
+        GeometryFactory gf = new GeometryFactory();
 
         @Override
         public AbstractButton getButton() {
@@ -98,12 +101,16 @@ public class SplitPolygonTool extends AbstractLineTool {
                 try {
                         Geometry geom = sds.getGeometry(handler.getGeometryIndex());
                         if (ToolUtilities.geometryTypeIs(vc, GeometryConstraint.MULTI_POLYGON)) {
-                                MultiPolygon result = GeometryEdit.splitMultiPolygon((MultiPolygon) geom, ls);
+                                List<Polygon> pols = new ArrayList<Polygon>();
+                                for (int i = 0; i < geom.getNumGeometries(); i++) {
+                                        pols.addAll(GeometryEdit.splitPolygon((Polygon) geom.getGeometryN(i), ls));
+                                }
+                                MultiPolygon result = gf.createMultiPolygon(pols.toArray(new Polygon[pols.size()]));
                                 if (result != null) {
                                         sds.setGeometry(handler.getGeometryIndex(), result);
                                 }
                         } else if (ToolUtilities.geometryTypeIs(vc, GeometryConstraint.POLYGON)) {
-                                ArrayList<Polygon> polygons = GeometryEdit.splitPolygon((Polygon) geom, ls);
+                                List<Polygon> polygons = GeometryEdit.splitPolygon((Polygon) geom, ls);
                                 if (polygons != null) {
                                         sds.deleteRow(handler.getGeometryIndex());
                                         Value[] row = sds.getRow(handler.getGeometryIndex());

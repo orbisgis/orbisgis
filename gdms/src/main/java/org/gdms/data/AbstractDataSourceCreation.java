@@ -39,20 +39,24 @@
  **/
 package org.gdms.data;
 
-import org.gdms.driver.ReadWriteDriver;
+import org.gdms.driver.Driver;
+import org.gdms.driver.DriverException;
 
 
+/**
+ * Abstract base class for DataSourceCreation objects
+ */
 public abstract class AbstractDataSourceCreation implements DataSourceCreation {
 
 	private DataSourceFactory dataSourceFactory;
 
-	private ReadWriteDriver driver;
+	private Driver driver;
 
         /**
          * Retrieve the driver to be used for the data source creation
          * @return
          */
-	public ReadWriteDriver getDriver() {
+	public final Driver getDriver() {
 		if (driver == null) {
 			driver = getDriverInstance();
 		}
@@ -65,13 +69,14 @@ public abstract class AbstractDataSourceCreation implements DataSourceCreation {
          * overwritten by the children, as the datasource creation machnism relies on it.
          * @return
          */
-	protected abstract ReadWriteDriver getDriverInstance();
+	protected abstract Driver getDriverInstance();
 
         /**
-
+         * Sets the dataSourceFactory associated with this object
          * @param dsf
          */
-	public void setDataSourceFactory(DataSourceFactory dsf) {
+        @Override
+	public final void setDataSourceFactory(DataSourceFactory dsf) {
 		this.dataSourceFactory = dsf;
 	}
 
@@ -79,8 +84,12 @@ public abstract class AbstractDataSourceCreation implements DataSourceCreation {
          * Get the data source factory associated to this.
          * @return
          */
-	public DataSourceFactory getDataSourceFactory() {
+	public final DataSourceFactory getDataSourceFactory() {
 		return dataSourceFactory;
 	}
 
+        @Override
+        public String[] getAvailableTables() throws DriverException {
+                return getDriver().getSchema().getTableNames();
+        }
 }

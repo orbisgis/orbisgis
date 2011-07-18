@@ -64,19 +64,14 @@ public class GDMSModelDriver {
 			}
 
 			return ret;
-		} catch (SecurityException e) {
-			throw new RuntimeException("Cannot read GDMS types", e);
 		} catch (NoSuchFieldException e) {
-			throw new RuntimeException("Cannot read GDMS types", e);
-		} catch (IllegalArgumentException e) {
-			throw new RuntimeException("Cannot read GDMS types", e);
+			throw new IllegalStateException("Cannot read GDMS types", e);
 		} catch (IllegalAccessException e) {
-			throw new RuntimeException("Cannot read GDMS types", e);
+			throw new IllegalStateException("Cannot read GDMS types", e);
 		}
 	}
 
-	private int[] getConstraints() throws IllegalArgumentException,
-			IllegalAccessException {
+	private int[] getConstraints() throws IllegalAccessException {
 		Class<Constraint> constClass = Constraint.class;
 		Field[] constCodes = constClass.getFields();
 		int[] codes = new int[constCodes.length];

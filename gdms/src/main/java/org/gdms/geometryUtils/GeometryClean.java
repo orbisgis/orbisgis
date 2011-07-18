@@ -50,15 +50,16 @@ import com.vividsolutions.jts.geom.Polygon;
 import java.util.ArrayList;
 
 /**
- *
- * @author ebocher
+ * This utility class provides cleaning utilities for JTS {@link Geometry} objects.
+ * 
+ * @author Erwan Bocher
  */
-public class GeometryClean {
+public final class GeometryClean {
 
-        static GeometryFactory geometryFactory = new GeometryFactory();
+        private static final GeometryFactory FACTORY = new GeometryFactory();
 
         /**
-         * Remove duplicate points into a geometry
+         * Removes duplicated points within a geometry.
          * @param geom
          * @return
          */
@@ -82,27 +83,27 @@ public class GeometryClean {
         }
 
         /**
-         * Remove duplicate coordinates in a linestring
+         * Removes duplicated coordinates within a LineString.
          * @param g
          * @return
          */
         public static LineString removeDuplicateCoordinates(LineString g) {
                 Coordinate[] coords = CoordinateArrays.removeRepeatedPoints(g.getCoordinates());
-                return geometryFactory.createLineString(coords);
+                return FACTORY.createLineString(coords);
         }
 
         /**
-         * Remove duplicate coordinates in a linearRing
+         * Removes duplicated coordinates within a linearRing.
          * @param g
          * @return
          */
         public static LinearRing removeDuplicateCoordinates(LinearRing g) {
                 Coordinate[] coords = CoordinateArrays.removeRepeatedPoints(g.getCoordinates());
-                return geometryFactory.createLinearRing(coords);
+                return FACTORY.createLinearRing(coords);
         }
 
         /**
-         * Remove duplicate coordinates in a multiLineString
+         * Removes duplicated coordinates in a MultiLineString.
          * @param g
          * @return
          */
@@ -112,27 +113,27 @@ public class GeometryClean {
                         LineString line = (LineString) g.getGeometryN(i);
                         lines.add(removeDuplicateCoordinates(line));
                 }
-                return geometryFactory.createMultiLineString(GeometryFactory.toLineStringArray(lines));
+                return FACTORY.createMultiLineString(GeometryFactory.toLineStringArray(lines));
         }
 
         /**
-         * Remove duplicate coordinates in a polygon
-         * @param g
+         * Removes duplicated coordinates within a Polygon.
+         * @param poly 
          * @return
          */
         public static Polygon removeDuplicateCoordinates(Polygon poly) {
                 Coordinate[] shellCoords = CoordinateArrays.removeRepeatedPoints(poly.getExteriorRing().getCoordinates());
-                LinearRing shell = geometryFactory.createLinearRing(shellCoords);
+                LinearRing shell = FACTORY.createLinearRing(shellCoords);
                 ArrayList<LinearRing> holes = new ArrayList<LinearRing>();
                 for (int i = 0; i < poly.getNumInteriorRing(); i++) {
                         Coordinate[] holeCoords = CoordinateArrays.removeRepeatedPoints(poly.getInteriorRingN(i).getCoordinates());
-                        holes.add(geometryFactory.createLinearRing(holeCoords));
+                        holes.add(FACTORY.createLinearRing(holeCoords));
                 }
-                return geometryFactory.createPolygon(shell, GeometryFactory.toLinearRingArray(holes));
+                return FACTORY.createPolygon(shell, GeometryFactory.toLinearRingArray(holes));
         }
 
         /**
-         * Remove duplicate coordinates in a multiPolygon
+         * Removes duplicated coordinates within a MultiPolygon.
          * @param g
          * @return
          */
@@ -142,11 +143,11 @@ public class GeometryClean {
                         Polygon poly = (Polygon) g.getGeometryN(i);
                         polys.add(removeDuplicateCoordinates(poly));
                 }
-                return geometryFactory.createMultiPolygon(GeometryFactory.toPolygonArray(polys));
+                return FACTORY.createMultiPolygon(GeometryFactory.toPolygonArray(polys));
         }
 
         /**
-         * Remove duplicate coordinates in a geometryCollection
+         * Removes duplicated coordinates within a GeometryCollection
          * @param g
          * @return
          */
@@ -156,6 +157,12 @@ public class GeometryClean {
                         Geometry geom = g.getGeometryN(i);
                         geoms.add(removeDuplicateCoordinates(geom));
                 }
-                return geometryFactory.createGeometryCollection(GeometryFactory.toGeometryArray(geoms));
+                return FACTORY.createGeometryCollection(GeometryFactory.toGeometryArray(geoms));
+        }
+
+        /**
+         * Private constructor for utility class.
+         */
+        private GeometryClean() {
         }
 }

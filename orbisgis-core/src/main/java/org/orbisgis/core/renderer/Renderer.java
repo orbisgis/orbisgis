@@ -82,7 +82,7 @@ import org.orbisgis.core.renderer.symbol.SelectionSymbol;
 import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
 import org.orbisgis.core.ui.plugins.orbisgisFrame.configuration.RenderingConfigurationConstants;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.utils.I18N;
 
@@ -114,7 +114,7 @@ public class Renderer {
 	 *            Progress monitor to report the status of the drawing
 	 */
 	public void draw(Graphics2D g2, int width, int height, Envelope extent,
-			ILayer layer, IProgressMonitor pm) {
+			ILayer layer, ProgressMonitor pm) {
 		setHints(g2);
 		MapTransform mt = new MapTransform();
 		mt.resizeImage(width, height);
@@ -242,13 +242,13 @@ public class Renderer {
 	 *            Progress monitor to report the status of the drawing
 	 */
 	public void draw(BufferedImage img, Envelope extent, ILayer layer,
-			IProgressMonitor pm) {
+			ProgressMonitor pm) {
 		draw(img.createGraphics(), img.getWidth(), img.getHeight(), extent,
 				layer, pm);
 	}
 
 	private void drawRasterLayer(MapTransform mt, ILayer layer, Graphics2D g2,
-			int width, int height, Envelope extent, IProgressMonitor pm)
+			int width, int height, Envelope extent, ProgressMonitor pm)
 			throws DriverException, IOException {
 		logger.debug(I18N.getString("orbisgis-core.org.orbisgis.renderer.rasterEnvelope") + layer.getEnvelope()); //$NON-NLS-1$
 		GraphicsConfiguration configuration = null;
@@ -289,7 +289,7 @@ public class Renderer {
 						(int) layerPixelEnvelope.getMinY(),
 						(int) layerPixelEnvelope.getWidth() + 1,
 						(int) layerPixelEnvelope.getHeight() + 1, null);
-				pm.startTask(I18N.getString("orbisgis-core.org.orbisgis.renderer.drawing") + layer.getName()); //$NON-NLS-1$
+				pm.startTask(I18N.getString("orbisgis-core.org.orbisgis.renderer.drawing") + layer.getName(), 1); //$NON-NLS-1$
 				String bands = ((RasterLegend) legend).getBands();
 				if (bands != null) {
 					g2.drawImage(invertRGB(layerImage, bands), 0, 0, null);
@@ -303,7 +303,7 @@ public class Renderer {
 
 	private void drawVectorLayer(MapTransform mt, ILayer layer, Graphics2D g2,
 			int width, int height, Envelope extent,
-			DefaultRendererPermission permission, IProgressMonitor pm)
+			DefaultRendererPermission permission, ProgressMonitor pm)
 			throws DriverException {
 
 		Legend[] legends = layer.getRenderingLegend();
@@ -346,7 +346,7 @@ public class Renderer {
 				Iterator<Integer> it = getIterator(mt.getAdjustedExtent(), sds);
 
 				long rowCount = sds.getRowCount();
-				pm.startTask(I18N.getString("orbisgis-core.org.orbisgis.renderer.drawing") + layer.getName()); //$NON-NLS-1$
+				pm.startTask(I18N.getString("orbisgis-core.org.orbisgis.renderer.drawing") + layer.getName(), 100); //$NON-NLS-1$
 				int i = 0;
 				while (it.hasNext()) {
 					Integer index = it.next();

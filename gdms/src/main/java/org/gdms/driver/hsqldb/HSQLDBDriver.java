@@ -44,13 +44,12 @@ import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.List;
 import java.util.Properties;
+import org.apache.log4j.Logger;
 
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
-import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.h2.TinyIntRule;
 import org.gdms.driver.jdbc.BinaryRule;
@@ -69,13 +68,14 @@ import org.gdms.driver.postgresql.PGShortRule;
 import org.gdms.source.SourceManager;
 
 /**
- * DOCUMENT ME!
+ * Driver to access the HSQLDB Sources
  * 
- * @author Fernando Gonzalez Cortes
  */
-public class HSQLDBDriver extends DefaultDBDriver implements DBReadWriteDriver {
+public final class HSQLDBDriver extends DefaultDBDriver {
 	private static Exception driverException;
-	public static String DRIVER_NAME = "HSQLDB driver";
+	public static final String DRIVER_NAME = "HSQLDB driver";
+
+        private static final Logger LOG = Logger.getLogger(HSQLDBDriver.class);
 
 	static {
 		try {
@@ -85,10 +85,12 @@ public class HSQLDBDriver extends DefaultDBDriver implements DBReadWriteDriver {
 		}
 	}
 
+	@Override
 	public Connection getConnection(String host, int port, boolean ssl, String dbName,
 			String user, String password) throws SQLException {
+            LOG.trace("Retrieveing connection");
 		if (driverException != null) {
-			throw new RuntimeException(driverException);
+			throw new UnsupportedOperationException(driverException);
 		}
 
 		final String connectionString = "jdbc:hsqldb:file:" + dbName;
@@ -98,21 +100,12 @@ public class HSQLDBDriver extends DefaultDBDriver implements DBReadWriteDriver {
 		return DriverManager.getConnection(connectionString, p);
 	}
 
-	/**
-	 * @see com.hardcode.driverManager.Driver#getDriverId()
-	 */
+	@Override
 	public String getDriverId() {
 		return DRIVER_NAME;
 	}
 
-	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @param ts
-	 *            DOCUMENT ME!
-	 * 
-	 * @return DOCUMENT ME!
-	 */
+	@Override
 	public String getStatementString(Timestamp ts) {
 		return "'" + ts.toString() + "'";
 	}
@@ -131,24 +124,21 @@ public class HSQLDBDriver extends DefaultDBDriver implements DBReadWriteDriver {
 		return null;
 	}
 
-	/**
-	 * @see org.gdms.driver.DBTransactionalDriver#beginTrans(Connection)
-	 */
+	@Override
 	public void beginTrans(Connection con) throws SQLException {
+            LOG.trace("Beginning transaction");
 		execute(con, "SET AUTOCOMMIT FALSE");
 	}
 
-	/**
-	 * @see org.gdms.driver.DBTransactionalDriver#commitTrans(Connection)
-	 */
+	@Override
 	public void commitTrans(Connection con) throws SQLException {
+            LOG.trace("Commiting transaction");
 		execute(con, "COMMIT;SET AUTOCOMMIT TRUE");
 	}
 
-	/**
-	 * @see org.gdms.driver.DBTransactionalDriver#rollBackTrans(Connection)
-	 */
+	@Override
 	public void rollBackTrans(Connection con) throws SQLException {
+            LOG.trace("Transaction rollback");
 		execute(con, "ROLLBACK;SET AUTOCOMMIT TRUE");
 	}
 
@@ -158,7 +148,11 @@ public class HSQLDBDriver extends DefaultDBDriver implements DBReadWriteDriver {
 	}
 
 	/**
-	 * @see org.gdms.driver.jdbc.DefaultDBDriver#getChangeFieldNameSQL(java.lang.String,
+         * @param tableName
+         * @param oldName
+         * @param newName
+         * @return
+         * @see org.gdms.driver.jdbc.DefaultDBDriver#getChangeFieldNameSQL(java.lang.String,
 	 *      java.lang.String, java.lang.String)
 	 */
 	public String getChangeFieldNameSQL(String tableName, String oldName,
@@ -167,14 +161,15 @@ public class HSQLDBDriver extends DefaultDBDriver implements DBReadWriteDriver {
 				+ "\" RENAME TO \"" + newName + "\"";
 	}
 
+        @Override
 	public int getType() {
 		return SourceManager.DB;
 	}
 
 	@Override
 	protected Type getGDMSType(ResultSetMetaData resultsetMetadata,
-			List<String> pkFieldsList, int jdbcFieldIndex) throws SQLException,
-			DriverException, InvalidTypeException {
+			List<String> pkFieldsList, List<String> fkFieldsList, int jdbcFieldIndex) throws SQLException,
+			DriverException {
 		int jdbcType = resultsetMetadata.getColumnType(jdbcFieldIndex);
 		switch (jdbcType) {
 		case Types.CHAR:
@@ -185,12 +180,12 @@ public class HSQLDBDriver extends DefaultDBDriver implements DBReadWriteDriver {
 					.getColumnDisplaySize(jdbcFieldIndex);
 			if ((columnSize == 32766) || (columnSize == 0)) {
 				List<Constraint> constraints = addGlobalConstraints(
-						resultsetMetadata, pkFieldsList, jdbcFieldIndex);
+						resultsetMetadata, pkFieldsList, fkFieldsList, jdbcFieldIndex);
 				return TypeFactory.createType(Type.STRING, constraints
-						.toArray(new Constraint[0]));
+						.toArray(new Constraint[constraints.size()]));
 			}
 		}
-		return super.getGDMSType(resultsetMetadata, pkFieldsList,
+		return super.getGDMSType(resultsetMetadata, pkFieldsList, fkFieldsList,
 				jdbcFieldIndex);
 	}
 
@@ -203,6 +198,7 @@ public class HSQLDBDriver extends DefaultDBDriver implements DBReadWriteDriver {
 				new StringRule(), new TimestampRule(), new TimeRule() };
 	}
 
+        @Override
 	public String validateMetadata(Metadata metadata) {
 		return null;
 	}

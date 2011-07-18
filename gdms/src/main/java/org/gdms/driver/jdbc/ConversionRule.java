@@ -44,7 +44,8 @@ public interface ConversionRule extends TypeDefinition {
 	/**
 	 * Returns true if the rule can be applied to the specified type
 	 *
-	 * @return
+         * @param type
+         * @return
 	 */
 	boolean canApply(Type type);
 
@@ -65,7 +66,9 @@ public interface ConversionRule extends TypeDefinition {
 	 *
 	 * @return
 	 */
+        @Override
 	String getTypeName();
 
-	public int[] getValidConstraints();
+        @Override
+	int[] getValidConstraints();
 }

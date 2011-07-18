@@ -40,17 +40,10 @@ package org.orbisgis.core;
 import junit.framework.TestCase;
 
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.errorManager.ErrorListener;
 import org.orbisgis.core.errorManager.ErrorManager;
-import org.orbisgis.core.map.export.DefaultMapExportManager;
-import org.orbisgis.core.map.export.MapExportManager;
-import org.orbisgis.core.map.export.RectanglesScale;
-import org.orbisgis.core.map.export.SingleLineScale;
-import org.orbisgis.core.renderer.legend.carto.DefaultLegendManager;
-import org.orbisgis.core.renderer.legend.carto.LegendManager;
-import org.orbisgis.core.renderer.symbol.DefaultSymbolManager;
-import org.orbisgis.core.renderer.symbol.SymbolManager;
 
 public class AbstractTest extends TestCase {
 
@@ -64,7 +57,7 @@ public class AbstractTest extends TestCase {
                 OrbisgisCoreServices.installServices();
 	}
 
-	public static void registerDataManager(DataSourceFactory dsf) {
+	public static void registerDataManager(SQLDataSourceFactory dsf) {
 		// Installation of the service
 		Services
 				.registerService(
@@ -74,7 +67,7 @@ public class AbstractTest extends TestCase {
 	}
 
 	public static void registerDataManager() {
-		DataSourceFactory dsf = new DataSourceFactory();
+		SQLDataSourceFactory dsf = new SQLDataSourceFactory();
 		registerDataManager(dsf);
 	}
 

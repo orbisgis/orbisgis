@@ -1,41 +1,79 @@
 /*
- * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
+ * The GDMS library (Generic Datasources Management System)
+ * is a middleware dedicated to the management of various kinds of
+ * data-sources such as spatial vectorial data or alphanumeric. Based
+ * on the JTS library and conform to the OGC simple feature access
+ * specifications, it provides a complete and robust API to manipulate
+ * in a SQL way remote DBMS (PostgreSQL, H2...) or flat files (.shp,
+ * .csv...). It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
- *
- *
- *  Team leader Erwan BOCHER, scientific researcher,
  * 
- *
- * Copyright (C) 2007-2008 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Antoine GOURLAY, Alexis GUEGANNO, Maxence LAURENT, Gwendall PETIT
- *
- * Copyright (C) 2011 Erwan BOCHER, Antoine GOURLAY, Alexis GUEGANNO, Maxence LAURENT, Gwendall PETIT
- *
- *
- * This file is part of OrbisGIS.
- *
- * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * 
+ * Team leader : Erwan BOCHER, scientific researcher,
+ * 
+ * User support leader : Gwendall Petit, geomatic engineer.
+ * 
+ * Previous computer developer : Pierre-Yves FADET, computer engineer, Thomas LEDUC, 
+ * scientific researcher, Fernando GONZALEZ CORTES, computer engineer.
+ * 
+ * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ * 
+ * Copyright (C) 2010 Erwan BOCHER, Alexis GUEGANNO, Maxence LAURENT, Antoine GOURLAY
+ * 
+ * This file is part of Gdms.
+ * 
+ * Gdms is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
- *
- * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * 
+ * Gdms is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with
- * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
- *
+ * Gdms. If not, see <http://www.gnu.org/licenses/>.
+ * 
  * For more information, please consult: <http://www.orbisgis.org/>
- *
+ * 
  * or contact directly:
- * info _at_ orbisgis.org
+ * info@orbisgis.org
+ */
+/*
+ * The Unified Mapping Platform (JUMP) is an extensible, interactive GUI
+ * for visualizing and manipulating spatial features with geometry and attributes.
+ *
+ * Copyright (C) 2003 Vivid Solutions
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * For more information, contact:
+ *
+ * Vivid Solutions
+ * Suite #1A
+ * 2328 Government Street
+ * Victoria BC  V8T 5G5
+ * Canada
+ *
+ * (250)385-6040
+ * www.vividsolutions.com
  */
 package org.gdms.geometryUtils;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateFilter;
@@ -54,38 +92,39 @@ import com.vividsolutions.jts.operation.distance.DistanceOp;
 import com.vividsolutions.jts.operation.distance.GeometryLocation;
 import com.vividsolutions.jts.operation.polygonize.Polygonizer;
 import com.vividsolutions.jts.operation.union.UnaryUnionOp;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import org.orbisgis.utils.I18N;
 
 /**
- *
- * @author ebocher
+ * This utility class contains editing methods for JTS {@link Geometry} objects.
+ * 
+ * Geometry objects are unmodifiable; this class allows you to "modify" a
+ * Geometry in a sense -- the modified Geometry is returned as a new Geometry.
+ * The new method <code>Geometry.isValid()</code> of the returned objects should be checked.
+ * 
+ * @author Erwan bocher
  */
-public class GeometryEdit {
+public final class GeometryEdit {
 
-        static GeometryFactory geometryFactory = new GeometryFactory();
+        private static final GeometryFactory FACTORY = new GeometryFactory();
 
-        public GeometryEdit(GeometryFactory geometryFactory) {
-                this.geometryFactory = geometryFactory;
-        }
-
-        /**
-         * Update all z ordinate by a new value for the first and the last
-         * coordinates.
-         *
-         * @param geom
-         * @param value
-         * @return
+        /**  
+         * Updates all z values by a new value using the specified first and the last  
+         * coordinates.  
+         *  
+         * @param geom  
+         * @param startZ 
+         * @param endZ 
+         * @return  
          */
-        public static Geometry force_3DStartEnd(Geometry geom, final double startZ,
+        public static Geometry forceDStartEnd(Geometry geom, final double startZ,
                 final double endZ) {
 
-                final double D = geom.getLength();
+                final double bigD = geom.getLength();
 
-                final double Z = endZ - startZ;
+                final double z = endZ - startZ;
 
                 final Coordinate coordEnd = geom.getCoordinates()[geom.getCoordinates().length - 1];
 
@@ -93,14 +132,17 @@ public class GeometryEdit {
 
                         boolean done = false;
 
+                        @Override
                         public boolean isGeometryChanged() {
                                 return true;
                         }
 
+                        @Override
                         public boolean isDone() {
                                 return done;
                         }
 
+                        @Override
                         public void filter(CoordinateSequence seq, int i) {
                                 double x = seq.getX(i);
                                 double y = seq.getY(i);
@@ -114,11 +156,11 @@ public class GeometryEdit {
                                         seq.setOrdinate(i, 2, endZ);
                                 } else {
 
-                                        double d = seq.getCoordinate(i).distance(coordEnd);
-                                        double factor = d / D;
+                                        double smallD = seq.getCoordinate(i).distance(coordEnd);
+                                        double factor = smallD / bigD;
                                         seq.setOrdinate(i, 0, x);
                                         seq.setOrdinate(i, 1, y);
-                                        seq.setOrdinate(i, 2, startZ + (factor * Z));
+                                        seq.setOrdinate(i, 2, startZ + (factor * z));
                                 }
 
                                 if (i == seq.size()) {
@@ -131,49 +173,48 @@ public class GeometryEdit {
 
         }
 
-        /**
-         * Reverse a linestring according to z value. The z first point must be
-         * greater than the z end point
-         *
-         * @param lineString
-         * @return
+        /**  
+         * Reverses a LineString according to the z value. The z of the first point must be  
+         * lower than the z of the end point.
+         *  
+         * @param lineString  
+         * @return  
          */
         public static LineString zReverse(LineString lineString) {
 
                 double startZ = lineString.getStartPoint().getCoordinate().z;
                 double endZ = lineString.getEndPoint().getCoordinate().z;
-                if (Double.isNaN(startZ) || Double.isNaN(endZ)) {
-                } else {
-                        if (startZ < endZ) {
-                                lineString = (LineString) lineString.reverse();
-                        }
+                if (!Double.isNaN(startZ) && !Double.isNaN(endZ) && startZ < endZ) {
+                        return (LineString) lineString.reverse();
                 }
 
                 return lineString;
         }
 
-        /**
-         * Convert a xyz geometry to xy.
-         *
-         * @param geom
-         * @param value
-         * @return
+        /**  
+         * Converts a xyz geometry to xy.  
+         *  
+         * @param geom  
+         * @return  
          */
-        public static Geometry force_2D(Geometry geom) {
+        public static Geometry force2D(Geometry geom) {
 
-                // return new Geometry2DTransformer().transform(geom);
+                // return new Geometry2DTransformer().transform(geom);  
                 geom.apply(new CoordinateSequenceFilter() {
 
-                        boolean done = false;
+                        private boolean done = false;
 
+                        @Override
                         public boolean isGeometryChanged() {
                                 return true;
                         }
 
+                        @Override
                         public boolean isDone() {
                                 return done;
                         }
 
+                        @Override
                         public void filter(CoordinateSequence seq, int i) {
                                 seq.setOrdinate(i, 2, Double.NaN);
 
@@ -187,31 +228,35 @@ public class GeometryEdit {
 
         }
 
-        /**
-         * Add a new  z value for each vertexes of the geometry.
-         * If the geometry doesn't contain a z (ie NaN value) a z equals to zero is added.
-         * The boolean argument is used to set if the z value must be added (true) or if the z value
-         * must replace all existing z (false).
-         *
-         * @param geom
-         * @param value
-         * @param addZ
-         * @return
+        /** 
+         * Adds a new  z value to each vertex of the Geometry. 
+         * 
+         * If the geometry doesn't contain a z (ie NaN value) a z equal to zero is added. 
+         * The boolean argument is used to set if the z value must be added (true) or if the z value 
+         * must replace all existing z (false). 
+         * 
+         * @param geom 
+         * @param value 
+         * @param addZ 
+         * @return 
          */
-        public static Geometry force_3D(Geometry geom, final double value, final boolean addZ) {
+        public static Geometry force3D(Geometry geom, final double value, final boolean addZ) {
 
                 geom.apply(new CoordinateSequenceFilter() {
 
-                        boolean done = false;
+                        private boolean done = false;
 
+                        @Override
                         public boolean isGeometryChanged() {
                                 return true;
                         }
 
+                        @Override
                         public boolean isDone() {
                                 return done;
                         }
 
+                        @Override
                         public void filter(CoordinateSequence seq, int i) {
                                 Coordinate coord = seq.getCoordinate(i);
                                 double z = coord.z;
@@ -232,21 +277,22 @@ public class GeometryEdit {
                 return geom;
         }
 
-        /**
-         * Split a LineString according a point         * 
-         * @param line
-         * @param pointToSplit
-         * @return
+        /**  
+         * Splits a LineString using a Point.
+         * @param line  
+         * @param pointToSplit  
+         * @return  
          */
         public static LineString[] splitLineString(LineString line, Point pointToSplit) {
                 return splitLineString(line, pointToSplit, -1);
         }
 
-        /**
-         * Split a LineString according a point with a given distance
-         * @param line
-         * @param geometryLocation
-         * @return
+        /**  
+         * Splits a LineString using a Point, with a distance tolerance.
+         * @param line  
+         * @param pointToSplit 
+         * @param tolerance 
+         * @return  
          */
         public static LineString[] splitLineString(LineString line, Point pointToSplit, double tolerance) {
                 Coordinate[] coords = line.getCoordinates();
@@ -281,11 +327,12 @@ public class GeometryEdit {
                 return null;
         }
 
-        /**
-         * Split a multilinestring with a point
-         * @param multiLineString
-         * @param pointToSplit
-         * @return
+        /**  
+         * Splits a MultilineString using a point.
+         * @param multiLineString  
+         * @param pointToSplit  
+         * @param tolerance 
+         * @return  
          */
         public static MultiLineString splitMultiLineString(MultiLineString multiLineString, Point pointToSplit, double tolerance) {
                 ArrayList<LineString> linestrings = new ArrayList<LineString>();
@@ -302,19 +349,19 @@ public class GeometryEdit {
                         }
                 }
                 if (!notChanged) {
-                        return geometryFactory.createMultiLineString(linestrings.toArray(new LineString[linestrings.size()]));
+                        return FACTORY.createMultiLineString(linestrings.toArray(new LineString[linestrings.size()]));
                 }
                 return null;
 
 
         }
 
-        /**
-         * A method to find the coordinate along a linestring
-         * @param g
-         * @param p
-         * @param tolerance
-         * @return
+        /**  
+         * Gets the coordinate of a Geometry that is the nearest of a given Point, with a distance tolerance.
+         * @param g  
+         * @param p  
+         * @param tolerance  
+         * @return  
          */
         public static GeometryLocation getVertexToSnap(Geometry g, Point p, double tolerance) {
                 DistanceOp distanceOp = new DistanceOp(g, p);
@@ -327,35 +374,34 @@ public class GeometryEdit {
 
         }
 
-        /**
-         * A method to find the coordinate along a linestring
-         * @param g
-         * @param p
-         * @param tolerance
-         * @return
+        /**  
+         * Gets the coordinate of a Geometry that is the nearest of a given Point.
+         * @param g  
+         * @param p  
+         * @return  
          */
         public static GeometryLocation getVertexToSnap(Geometry g, Point p) {
                 return getVertexToSnap(g, p, -1);
         }
 
-        /**
-         * Insert a vertex into a lineString
-         * @param lineString
-         * @param vertexPoint
-         * @return
-         * @throws GeometryException
+        /**  
+         * Inserts a vertex into a LineString.
+         * @param lineString  
+         * @param vertexPoint  
+         * @return  
+         * @throws GeometryException  
          */
         public static Geometry insertVertexInLineString(LineString lineString, Point vertexPoint) throws GeometryException {
                 return insertVertexInLineString(lineString, vertexPoint, -1);
         }
 
-        /**
-         * Insert a vertex into a lineString with a given tolerance
-         * @param lineString
-         * @param vertexPoint
-         * @param tolerance
-         * @return
-         * @throws GeometryException
+        /**  
+         * Inserts a vertex into a LineString with a given tolerance.
+         * @param lineString  
+         * @param vertexPoint  
+         * @param tolerance  
+         * @return  
+         * @throws GeometryException  
          */
         public static LineString insertVertexInLineString(LineString lineString, Point vertexPoint,
                 double tolerance) throws GeometryException {
@@ -370,7 +416,7 @@ public class GeometryEdit {
                                 ret[index + 1] = coord;
                                 System.arraycopy(coords, index + 1, ret, index + 2, coords.length
                                         - (index + 1));
-                                return geometryFactory.createLineString(ret);
+                                return FACTORY.createLineString(ret);
                         }
                         return null;
                 } else {
@@ -380,11 +426,11 @@ public class GeometryEdit {
 
         }
 
-        /**
-         * Insert a vertex into a linearRing
-         * @param lineString
-         * @param vertexPoint
-         * @return
+        /**  
+         * Inserts a vertex into a linearRing.
+         * @param lineString  
+         * @param vertexPoint  
+         * @return  
          */
         public static LinearRing insertVertexInLinearRing(LineString lineString,
                 Point vertexPoint) {
@@ -392,12 +438,12 @@ public class GeometryEdit {
 
         }
 
-        /**
-         * Insert a vertex into a linearRing with a given tolerance
-         * @param lineString
-         * @param vertexPoint
-         * @param tolerance
-         * @return
+        /**  
+         * Inserts a vertex into a LinearRing with a given tolerance.
+         * @param lineString  
+         * @param vertexPoint  
+         * @param tolerance  
+         * @return  
          */
         public static LinearRing insertVertexInLinearRing(LineString lineString,
                 Point vertexPoint, double tolerance) {
@@ -412,7 +458,7 @@ public class GeometryEdit {
                                 ret[index + 1] = coord;
                                 System.arraycopy(coords, index + 1, ret, index + 2, coords.length
                                         - (index + 1));
-                                return geometryFactory.createLinearRing(ret);
+                                return FACTORY.createLinearRing(ret);
                         }
                         return null;
                 } else {
@@ -420,12 +466,12 @@ public class GeometryEdit {
                 }
         }
 
-        /**
-         * Insert a vertex into a polygon
-         * @param geometry
-         * @param vertexPoint
-         * @return
-         * @throws GeometryException
+        /**  
+         * Inserts a vertex into a polygon.
+         * @param polygon 
+         * @param vertexPoint  
+         * @return  
+         * @throws GeometryException  
          */
         public static Geometry insertVertexInPolygon(Polygon polygon,
                 Point vertexPoint) throws GeometryException {
@@ -433,13 +479,13 @@ public class GeometryEdit {
 
         }
 
-        /**
-         * Insert a vertex into a polygon with a given tolerance
-         * @param geometry
-         * @param vertexPoint
-         * @param tolerance
-         * @return
-         * @throws GeometryException
+        /**  
+         * Inserts a vertex into a Polygon with a given tolerance.
+         * @param polygon 
+         * @param vertexPoint  
+         * @param tolerance  
+         * @return  
+         * @throws GeometryException  
          */
         public static Polygon insertVertexInPolygon(Polygon polygon,
                 Point vertexPoint, double tolerance) throws GeometryException {
@@ -447,9 +493,9 @@ public class GeometryEdit {
                 if (inserted != null) {
                         LinearRing[] holes = new LinearRing[polygon.getNumInteriorRing()];
                         for (int i = 0; i < holes.length; i++) {
-                                holes[i] = geometryFactory.createLinearRing(polygon.getInteriorRingN(i).getCoordinates());
+                                holes[i] = FACTORY.createLinearRing(polygon.getInteriorRingN(i).getCoordinates());
                         }
-                        Polygon ret = geometryFactory.createPolygon(inserted, holes);
+                        Polygon ret = FACTORY.createPolygon(inserted, holes);
 
                         if (!ret.isValid()) {
                                 throw new GeometryException(I18N.getString("gdms.geometryUtils.geometryException.geometryNotValid"));
@@ -466,11 +512,11 @@ public class GeometryEdit {
                                         if (h == i) {
                                                 holes[h] = inserted;
                                         } else {
-                                                holes[h] = geometryFactory.createLinearRing(polygon.getInteriorRingN(h).getCoordinates());
+                                                holes[h] = FACTORY.createLinearRing(polygon.getInteriorRingN(h).getCoordinates());
                                         }
                                 }
 
-                                Polygon ret = geometryFactory.createPolygon(geometryFactory.createLinearRing(polygon.getExteriorRing().getCoordinates()), holes);
+                                Polygon ret = FACTORY.createPolygon(FACTORY.createLinearRing(polygon.getExteriorRing().getCoordinates()), holes);
 
                                 if (!ret.isValid()) {
                                         throw new GeometryException(I18N.getString("gdms.geometryUtils.geometryException.geometryNotValid"));
@@ -483,13 +529,11 @@ public class GeometryEdit {
                 return null;
         }
 
-        /**
-         * Insert a point into a multipoints geometry.
-         * @param g
-         * @param vertexPoint
-         * @param tolerance
-         * @return
-         * @throws CannotChangeGeometryException
+        /**  
+         * Inserts a Point into a MultiPoint geometry.
+         * @param g  
+         * @param vertexPoint  
+         * @return  
          */
         public static Geometry insertVertexInMultipoint(Geometry g, Point vertexPoint) {
                 ArrayList<Point> geoms = new ArrayList<Point>();
@@ -497,34 +541,35 @@ public class GeometryEdit {
                         Point geom = (Point) g.getGeometryN(i);
                         geoms.add(geom);
                 }
-                geoms.add(geometryFactory.createPoint(new Coordinate(vertexPoint.getX(), vertexPoint.getY())));
-                return geometryFactory.createMultiPoint(GeometryFactory.toPointArray(geoms));
+                geoms.add(FACTORY.createPoint(new Coordinate(vertexPoint.getX(), vertexPoint.getY())));
+                return FACTORY.createMultiPoint(GeometryFactory.toPointArray(geoms));
         }
 
-        /**
-         * Insert a point into a geometry
-         * @param geom
-         * @param point
+        /**  
+         * Inserts a Point into a geometry.
+         * @param geom  
+         * @param point  
          * @return
+         * @throws GeometryException  
          */
         public static Geometry insertVertex(Geometry geom, Point point) throws GeometryException {
                 return insertVertex(geom, point, -1);
         }
 
-        /**
-         * Gets this geometry by adding the specified point as a new vertex
-         *
-         * @param vertexPoint
-         * @param tolerance
-         * @return Null if the vertex cannot be inserted
-         * @throws CannotChangeGeometryException
-         *             If the vertex can be inserted but it makes the geometry to be
-         *             in an invalid shape
+        /**  
+         * Returns a new geometry based on an existing one, with a specific point as a new vertex.
+         *  
+         * @param geometry 
+         * @param vertexPoint  
+         * @param tolerance  
+         * @return Null if the vertex cannot be inserted  
+         * @throws GeometryException  
+         *             If the vertex can be inserted but it makes the geometry to be  
+         *             in an invalid shape  
          */
         public static Geometry insertVertex(Geometry geometry, Point vertexPoint, double tolerance)
                 throws GeometryException {
-                if (geometry instanceof Point) {
-                } else if (geometry instanceof MultiPoint) {
+                if (geometry instanceof MultiPoint) {
                         return insertVertexInMultipoint(geometry, vertexPoint);
                 } else if (geometry instanceof LineString) {
                         return insertVertexInLineString((LineString) geometry, vertexPoint, tolerance);
@@ -544,7 +589,7 @@ public class GeometryEdit {
                                 }
                         }
                         if (any) {
-                                return geometryFactory.createMultiLineString(linestrings);
+                                return FACTORY.createMultiLineString(linestrings);
                         } else {
                                 return null;
                         }
@@ -566,22 +611,23 @@ public class GeometryEdit {
                                 }
                         }
                         if (any) {
-                                return geometryFactory.createMultiPolygon(polygons);
+                                return FACTORY.createMultiPolygon(polygons);
                         } else {
                                 return null;
                         }
                 }
 
-                throw new UnsupportedOperationException(I18N.getString("gdms.geometryUtils.geometryException.unknownType") + " : " + geometry.getGeometryType()); //$NON-NLS-1$
+                throw new UnsupportedOperationException(I18N.getString("gdms.geometryUtils.geometryException.unknownType") + " : " + geometry.getGeometryType()); //$NON-NLS-1$  
         }
 
-        /**
-         * 
-         * @param polygon
-         * @param lineString
-         * @return
+        /**  
+         * Splits a Polygon with a LineString.
+         * @param polygon  
+         * @param lineString  
+         * @return  
          */
         public static Collection<Polygon> splitPolygonizer(Polygon polygon, LineString lineString) {
+
                 Set<LineString> segments = GeometryConvert.toSegmentsLineString(polygon.getExteriorRing());
                 segments.add(lineString);
                 int holes = polygon.getNumInteriorRing();
@@ -590,11 +636,11 @@ public class GeometryEdit {
                         segments.addAll(GeometryConvert.toSegmentsLineString(polygon.getInteriorRingN(i)));
                 }
 
-                // Perform union of all extracted LineStrings (the edge-noding process)
+                // Perform union of all extracted LineStrings (the edge-noding process)  
                 UnaryUnionOp uOp = new UnaryUnionOp(segments);
                 Geometry union = uOp.union();
 
-                // Create polygons from unioned LineStrings
+                // Create polygons from unioned LineStrings  
                 Polygonizer polygonizer = new Polygonizer();
                 polygonizer.add(union);
                 Collection<Polygon> polygons = polygonizer.getPolygons();
@@ -602,17 +648,16 @@ public class GeometryEdit {
                 if (polygons.size() > 1) {
                         return polygons;
                 }
-
                 return null;
         }
 
-        /**
-         * Split a polygon with a lineString
-         * @param polygon
-         * @param lineString
-         * @return
+        /**  
+         * Splits a Polygon using a LineString.
+         * @param polygon  
+         * @param lineString  
+         * @return  
          */
-        public static ArrayList<Polygon> splitPolygon(Polygon polygon, LineString lineString) {
+        public static List<Polygon> splitPolygon(Polygon polygon, LineString lineString) {
                 Collection<Polygon> polygons = splitPolygonizer(polygon, lineString);
                 if (polygons != null && polygons.size() > 1) {
                         ArrayList<Polygon> pols = new ArrayList<Polygon>();
@@ -626,41 +671,15 @@ public class GeometryEdit {
                 return null;
         }
 
-        /**
-         * Split a multiPolygon with a lineString
-         * @param multiPolygon
-         * @param lineString
-         * @return
-         */
-        public static MultiPolygon splitMultiPolygon(MultiPolygon multiPolygon, LineString lineString) {
-                ArrayList<Polygon> polygons = new ArrayList<Polygon>();
-                boolean notChanged = true;
-                int nb = multiPolygon.getNumGeometries();
-                for (int i = 0; i < nb; i++) {
-                        Polygon subGeom = (Polygon) multiPolygon.getGeometryN(i);
-                        ArrayList<Polygon> result = splitPolygon(subGeom, lineString);
-                        if (result != null) {
-                                polygons.addAll(result);
-                                notChanged = false;
-                        } else {
-                                polygons.add(subGeom);
-                        }
-                }
-                if (!notChanged) {
-                        return geometryFactory.createMultiPolygon(polygons.toArray(new Polygon[polygons.size()]));
-                }
-                return null;
-
-        }
-
-        /**
-         * removes the vertex from the JTS geometry
-         *
-         * @param g
-         *
-         * @return
-         *
-         * @throws GeometryException
+        /**  
+         * Removes a vertex from a JTS geometry.
+         *  
+         * @param vertexIndex 
+         * @param g  
+         * @param minNumVertex 
+         * @return  
+         *  
+         * @throws GeometryException  
          */
         public static Coordinate[] removeVertex(int vertexIndex,
                 Geometry g, int minNumVertex)
@@ -668,7 +687,7 @@ public class GeometryEdit {
                 Coordinate[] coords = g.getCoordinates();
                 if (coords.length <= minNumVertex) {
                         throw new GeometryException(
-                                I18N.getString("orbisgis.org.orbisgis.ui.tool.AbstractHandler.invalidGeometryToFewVertex")); //$NON-NLS-1$
+                                I18N.getString("orbisgis.org.orbisgis.ui.tool.AbstractHandler.invalidGeometryToFewVertex")); //$NON-NLS-1$  
                 }
                 Coordinate[] newCoords = new Coordinate[coords.length - 1];
                 for (int i = 0; i < vertexIndex; i++) {
@@ -683,37 +702,38 @@ public class GeometryEdit {
                 return newCoords;
         }
 
-        /**
-         * Remove a vertex on a multipoint.
-         * @param geometry
-         * @param vertexIndex
-         * @return
-         * @throws GeometryException
+        /**  
+         * Removes a vertex from a MultiPoint.  
+         * @param geometry  
+         * @param vertexIndex  
+         * @return  
+         * @throws GeometryException  
          */
         public static MultiPoint removeVertex(MultiPoint geometry, int vertexIndex) throws GeometryException {
-                return geometryFactory.createMultiPoint(removeVertex(vertexIndex, geometry, 1));
+                return FACTORY.createMultiPoint(removeVertex(vertexIndex, geometry, 1));
         }
 
-        /**
-         * Remove a vertex on a linestring
-         * @param geometry
-         * @param vertexIndex
-         * @return
-         * @throws GeometryException
+        /**  
+         * Removes a vertex from a LineString.
+         * @param geometry  
+         * @param vertexIndex  
+         * @return  
+         * @throws GeometryException  
          */
         public static LineString removeVertex(LineString geometry, int vertexIndex) throws GeometryException {
-                return geometryFactory.createLineString(removeVertex(vertexIndex, geometry, 2));
+                return FACTORY.createLineString(removeVertex(vertexIndex, geometry, 2));
         }
 
-        /**
-         * Move a geometry according a distance displacement in x and y
-         * @param geometry
-         * @param displacement
-         * @return
+        /**  
+         * Moves a geometry according to a distance displacement in x and y.
+         * @param geometry  
+         * @param displacement  
+         * @return  
          */
         public static Geometry moveGeometry(Geometry geometry, final double[] displacement) {
                 geometry.apply(new CoordinateFilter() {
 
+                        @Override
                         public void filter(Coordinate coordinate) {
                                 coordinate.x += displacement[0];
                                 coordinate.y += displacement[1];
@@ -722,12 +742,12 @@ public class GeometryEdit {
                 return geometry;
         }
 
-        /**
-         * Move a geometry according a start and end coordinate
-         * @param geometry
-         * @param start
-         * @param end
-         * @return
+        /**  
+         * Moves a geometry according to start and end coordinates.
+         * @param geometry  
+         * @param start  
+         * @param end  
+         * @return  
          */
         public static Geometry moveGeometry(Geometry geometry, Coordinate start, Coordinate end) {
                 double xDisplacement = end.x - start.x;
@@ -735,13 +755,13 @@ public class GeometryEdit {
                 return moveGeometry(geometry, new double[]{xDisplacement, yDisplacement});
         }
 
-        /**
-         * Cut a polygon with a polygon
-         * @param polygon
-         * @param hole
-         * @return
+        /**  
+         * Cuts a Polygon with a Polygon.
+         * @param polygon  
+         * @param extrudePolygon 
+         * @return  
          */
-        public static ArrayList<Polygon> cutPolygon(Polygon polygon, Polygon extrudePolygon) {
+        public static List<Polygon> cutPolygon(Polygon polygon, Polygon extrudePolygon) {
                 Geometry geom = polygon.difference(extrudePolygon);
                 ArrayList<Polygon> polygons = new ArrayList<Polygon>();
                 for (int i = 0; i < geom.getNumGeometries(); i++) {
@@ -752,33 +772,31 @@ public class GeometryEdit {
                 return polygons;
         }
 
-        /**
-         * Cut a multipolygon with a polygon
-         * @param multiPolygon
-         * @param extrudePolygon
-         * @return
+        /**  
+         * Cuts a MultiPolygon with a Polygon.
+         * @param multiPolygon  
+         * @param extrudePolygon  
+         * @return  
          */
         public static MultiPolygon cutMultiPolygon(MultiPolygon multiPolygon, Polygon extrudePolygon) {
                 ArrayList<Polygon> polygons = new ArrayList<Polygon>();
-                boolean notChanged = true;
                 for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
                         Polygon subGeom = (Polygon) multiPolygon.getGeometryN(i);
                         if (extrudePolygon.intersects(subGeom)) {
-                                ArrayList<Polygon> result = cutPolygon(subGeom, extrudePolygon);
-                                if (result != null) {
-                                        polygons.addAll(result);
-                                        notChanged = false;
-                                } else {
-                                        polygons.add(subGeom);
-                                }
+                                List<Polygon> result = cutPolygon(subGeom, extrudePolygon);
+                                polygons.addAll(result);
                         } else {
                                 polygons.add(subGeom);
                         }
                 }
-                if (!notChanged) {
-                        return geometryFactory.createMultiPolygon(polygons.toArray(new Polygon[polygons.size()]));
-                }
-                return null;
 
+                return FACTORY.createMultiPolygon(polygons.toArray(new Polygon[polygons.size()]));
+
+        }
+
+        /**
+         * Private constructor for utility class.
+         */
+        private GeometryEdit() {
         }
 }

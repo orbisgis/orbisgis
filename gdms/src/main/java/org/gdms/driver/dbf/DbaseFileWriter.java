@@ -55,9 +55,8 @@ public class DbaseFileWriter {
 	private DbaseFileWriter.FieldFormatter formatter;
 	WritableByteChannel channel;
 	private ByteBuffer buffer;
-	private final Number NULL_NUMBER = new Integer(0);
-	private final String NULL_STRING = "";
-	private final Date NULL_DATE = new Date();
+	private static final Number NULL_NUMBER = Integer.valueOf(0);
+	private static final String NULL_STRING = "";
 	private Charset charset;
 
 	/**
@@ -106,9 +105,9 @@ public class DbaseFileWriter {
 	private void write() throws IOException {
 		buffer.position(0);
 		int r = buffer.remaining();
-		while ((r -= channel.write(buffer)) > 0) {
-			; // do nothing
-		}
+                do {
+                        r -= channel.write(buffer);
+                } while (r > 0);
 	}
 
 	/**
@@ -121,7 +120,7 @@ public class DbaseFileWriter {
 	 * @throws DbaseFileException
 	 *             If the entry doesn't comply to the header.
 	 */
-	public void write(Object[] record) throws IOException, DbaseFileException {
+	public void write(Value[] record) throws IOException, DbaseFileException {
 
 		if (record.length != header.getNumFields()) {
 			throw new DbaseFileException("Wrong number of fields "
@@ -149,48 +148,40 @@ public class DbaseFileWriter {
 		write();
 	}
 
-	private String fieldString(Object obj, final int col) {
+	private String fieldString(Value obj, final int col) {
 		String o;
 		final int fieldLen = header.getFieldLength(col);
 		switch (header.getFieldType(col)) {
 		case 'C':
+                case 'M':
+                case 'G':
 		case 'c':
-			o = formatter.getFieldString(fieldLen, obj == null ? NULL_STRING
+			o = formatter.getFieldString(fieldLen, obj.isNull() ? NULL_STRING
 					: obj.toString());
 			break;
 		case 'L':
 		case 'l':
-			o = (obj == null ? "F" : ((Value) obj).getAsBoolean() ? "T" : "F");
-			break;
-		case 'M':
-		case 'G':
-			o = formatter.getFieldString(fieldLen, obj == null ? NULL_STRING
-					: obj.toString());
+			o = (obj.isNull() ? "F" : obj.getAsBoolean() ? "T" : "F");
 			break;
 		case 'N':
 		case 'n':
 			// int?
 			if (header.getFieldDecimalCount(col) == 0) {
 
-				o = formatter.getFieldString(fieldLen, 0,
-						(Number) (obj == null ? NULL_NUMBER : ((Value) obj)
-								.getAsDouble()));
+				o = formatter.getFieldString(fieldLen, 0, (obj.isNull() ? NULL_NUMBER : obj.getAsDouble()));
 				break;
 			}
 		case 'F':
 		case 'f':
 			o = formatter.getFieldString(fieldLen, header
-					.getFieldDecimalCount(col),
-					(Number) (obj == null ? NULL_NUMBER : ((Value) obj)
-							.getAsDouble()));
+					.getFieldDecimalCount(col), (obj.isNull() ? NULL_NUMBER : obj.getAsDouble()));
 			break;
 		case 'D':
 		case 'd':
-			o = formatter.getFieldString((Date) (obj == null ? null
-					: ((Value) obj).getAsDate()));
+			o = formatter.getFieldString((obj.isNull() ? null : obj.getAsDate()));
 			break;
 		default:
-			throw new RuntimeException("Unknown type "
+			throw new IllegalStateException("Unknown type "
 					+ header.getFieldType(col));
 		}
 
@@ -236,7 +227,7 @@ public class DbaseFileWriter {
 			numFormat.setGroupingUsed(false);
 
 			// build a 255 white spaces string
-			StringBuffer sb = new StringBuffer(MAXCHARS);
+			StringBuilder sb = new StringBuilder(MAXCHARS);
 			sb.setLength(MAXCHARS);
 			for (int i = 0; i < MAXCHARS; i++) {
 				sb.setCharAt(i, ' ');
@@ -284,7 +275,7 @@ public class DbaseFileWriter {
 
 				return buffer.toString();
 			} catch (UnsupportedEncodingException e) {
-				throw new RuntimeException("This error should never occurr", e);
+				throw new IllegalStateException("This error should never happen...", e);
 			}
 		}
 

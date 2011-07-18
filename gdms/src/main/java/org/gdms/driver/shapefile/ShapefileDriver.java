@@ -46,12 +46,11 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.WarningListener;
-import org.gdms.data.metadata.DefaultMetadata;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.DefaultMetadata;
+import org.gdms.data.schema.Metadata;
+import org.gdms.data.schema.Schema;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.DefaultTypeDefinition;
 import org.gdms.data.types.DimensionConstraint;
@@ -63,9 +62,10 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileReadWriteDriver;
+import org.gdms.driver.ReadAccess;
 import org.gdms.driver.dbf.DBFDriver;
 import org.gdms.source.SourceManager;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -79,24 +79,34 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import fr.cts.crs.CoordinateReferenceSystem;
-import org.gdms.data.types.SRIDConstraint;
+import org.apache.log4j.Logger;
+import org.gdms.data.schema.DefaultSchema;
+import org.gdms.data.schema.MetadataUtilities;
+import org.gdms.data.types.ConstraintFactory;
+import org.gdms.driver.DriverUtilities;
+import org.gdms.driver.driverManager.DriverManager;
 import org.orbisgis.wkt.parser.PRJUtils;
 import org.orbisgis.wkt.parser.ParseException;
 
-public class ShapefileDriver implements FileReadWriteDriver {
+public final class ShapefileDriver implements FileReadWriteDriver, ReadAccess {
 
         public static final String DRIVER_NAME = "Shapefile driver";
-        private static GeometryFactory gf = new GeometryFactory();
-        private File fileShp;
+        private static final GeometryFactory GF = new GeometryFactory();
         private Envelope envelope;
-        private ShapeType type;
         private DBFDriver dbfDriver;
+        private ReadAccess driver;
         private ShapefileReader reader;
         private IndexFile shxFile;
         private DataSourceFactory dataSourceFactory;
+        private Schema schema;
+        private DefaultMetadata metadata;
+        private static final Logger LOG = Logger.getLogger(ShapefileDriver.class);
         private int srid = -1;
+        private File file;
 
+        @Override
         public void close() throws DriverException {
+                LOG.trace("Closing");
                 try {
                         if (reader != null) {
                                 reader.close();
@@ -106,7 +116,6 @@ public class ShapefileDriver implements FileReadWriteDriver {
                                 shxFile.close();
                         }
                         shxFile = null;
-
                         if (dbfDriver != null) {
                                 dbfDriver.close();
                         }
@@ -116,29 +125,68 @@ public class ShapefileDriver implements FileReadWriteDriver {
                 }
         }
 
-        public void open(File f) throws DriverException {
+        @Override
+        public void open() throws DriverException {
+                LOG.trace("Opening");
                 try {
-                        FileInputStream shpFis = new FileInputStream(f);
+                        FileInputStream shpFis = new FileInputStream(file);
                         WarningListener warningListener = dataSourceFactory.getWarningListener();
                         reader = new ShapefileReader(shpFis.getChannel(), warningListener);
-                        FileInputStream shxFis = new FileInputStream(FileUtils.getFileWithExtension(f, "shx"));
+                        FileInputStream shxFis = new FileInputStream(FileUtils.getFileWithExtension(file, "shx"));
                         shxFile = new IndexFile(shxFis.getChannel(), warningListener);
-                        fileShp = f;
 
                         ShapefileHeader header = reader.getHeader();
                         envelope = new Envelope(
                                 new Coordinate(header.minX(), header.minY()),
                                 new Coordinate(header.maxX(), header.maxY()));
 
-                        type = header.getShapeType();
+                        ShapeType type = header.getShapeType();
 
                         dbfDriver = new DBFDriver();
                         dbfDriver.setDataSourceFactory(dataSourceFactory);
-                        dbfDriver.open(FileUtils.getFileWithExtension(fileShp, "dbf"));
+                        File dbf = FileUtils.getFileWithExtension(file, "dbf");
+                        if (dbf == null || !dbf.exists()) {
+                                throw new DriverException("The file " + file.getAbsolutePath() + " has no corresponding .dbf file");
+                        }
+                        dbfDriver.setFile(dbf);
+                        dbfDriver.open();
 
+                        // registering ReadAccess
+                        driver = dbfDriver.getTable("main");
+
+                        Constraint dc;
+                        Constraint gc;
+                        // In case of a geometric type, the GeometryConstraint is mandatory
+                        if (type.id == ShapeType.POINT.id) {
+                                gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.POINT);
+                                dc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, 2);
+                        } else if (type.id == ShapeType.ARC.id) {
+                                gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.MULTI_LINESTRING);
+                                dc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, 2);
+                        } else if (type.id == ShapeType.POLYGON.id) {
+                                gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.MULTI_POLYGON);
+                                dc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, 2);
+                        } else if (type.id == ShapeType.MULTIPOINT.id) {
+                                gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.MULTI_POINT);
+                                dc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, 2);
+                        } else if (type.id == ShapeType.POINTZ.id) {
+                                gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.POINT);
+                                dc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, 3);
+                        } else if (type.id == ShapeType.ARCZ.id) {
+                                gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.MULTI_LINESTRING);
+                                dc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, 3);
+                        } else if (type.id == ShapeType.POLYGONZ.id) {
+                                gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.MULTI_POLYGON);
+                                dc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, 3);
+                        } else if (type.id == ShapeType.MULTIPOINTZ.id) {
+                                gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.MULTI_POINT);
+                                dc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, 3);
+                        } else {
+                                throw new DriverException("Unknown geometric type !");
+                        }
 
                         // Check prjFile File prjFile =
-                        File prj = FileUtils.getFileWithExtension(fileShp, "prj");
+                        File prj = FileUtils.getFileWithExtension(file, "prj");
 
                         if (prj != null && prj.exists()) {
                                 try {
@@ -152,102 +200,35 @@ public class ShapefileDriver implements FileReadWriteDriver {
                                 }
 
                         }
+
+                        // Constraint crsConstraint = new CRSConstraint(crs);
+                        Constraint[] constraints = new Constraint[]{gc, dc};
+                        metadata.clear();
+                        metadata.addField(0, "the_geom", Type.GEOMETRY, constraints);
+                        metadata.addAll(driver.getMetadata());
+
                         reader.setSrid(srid);
 
                 } catch (IOException e) {
                         throw new DriverException(e);
                 } catch (ShapefileException e) {
                         throw new DriverException(e);
-                }
-        }
-
-        public Value getFieldValue(long rowIndex, int fieldId)
-                throws DriverException {
-                try {
-                        if (fieldId == 0) {
-                                int offset = shxFile.getOffset((int) rowIndex);
-                                Geometry shape = reader.geomAt(offset);
-                                return (null == shape) ? null : ValueFactory.createValue(shape);
-                        } else {
-                                return dbfDriver.getFieldValue(rowIndex, fieldId - 1);
-                        }
-                } catch (IOException e) {
+                } catch (InvalidTypeException e) {
                         throw new DriverException(e);
                 }
         }
 
-        public Metadata getMetadata() throws DriverException {
-                DefaultMetadata metadata = new DefaultMetadata(dbfDriver.getMetadata());
-                try {
-                        DimensionConstraint dc;
-                        GeometryConstraint gc;
-                        // In case of a geometric type, the GeometryConstraint is mandatory
-                        if (type.id == ShapeType.POINT.id) {
-                                gc = new GeometryConstraint(GeometryConstraint.POINT);
-                                dc = new DimensionConstraint(2);
-                        } else if (type.id == ShapeType.ARC.id) {
-                                gc = new GeometryConstraint(GeometryConstraint.MULTI_LINESTRING);
-                                dc = new DimensionConstraint(2);
-                        } else if (type.id == ShapeType.POLYGON.id) {
-                                gc = new GeometryConstraint(GeometryConstraint.MULTI_POLYGON);
-                                dc = new DimensionConstraint(2);
-                        } else if (type.id == ShapeType.MULTIPOINT.id) {
-                                gc = new GeometryConstraint(GeometryConstraint.MULTI_POINT);
-                                dc = new DimensionConstraint(2);
-                        } else if (type.id == ShapeType.POINTZ.id) {
-                                gc = new GeometryConstraint(GeometryConstraint.POINT);
-                                dc = new DimensionConstraint(3);
-                        } else if (type.id == ShapeType.ARCZ.id) {
-                                gc = new GeometryConstraint(GeometryConstraint.MULTI_LINESTRING);
-                                dc = new DimensionConstraint(3);
-                        } else if (type.id == ShapeType.POLYGONZ.id) {
-                                gc = new GeometryConstraint(GeometryConstraint.MULTI_POLYGON);
-                                dc = new DimensionConstraint(3);
-                        } else if (type.id == ShapeType.MULTIPOINTZ.id) {
-                                gc = new GeometryConstraint(GeometryConstraint.MULTI_POINT);
-                                dc = new DimensionConstraint(3);
-                        } else {
-                                throw new DriverException("Unknown geometric type !");
-                        }
-
-                        // if there is a SRID present, we add the corresponding constraint
-                        Constraint[] constraints;
-                        if (srid != -1) {
-                                constraints = new Constraint[]{gc, dc, new SRIDConstraint(srid)};
-                        } else {
-                                constraints = new Constraint[]{gc, dc};
-                        }
-
-                        metadata.addField(0, "the_geom", Type.GEOMETRY, constraints);
-
-                } catch (InvalidTypeException e) {
-                        throw new RuntimeException("Bug in the driver", e);
-                }
-                return metadata;
-        }
-
-        public long getRowCount() throws DriverException {
-                return shxFile.getRecordCount();
-        }
-
+        @Override
         public void setDataSourceFactory(DataSourceFactory dsf) {
                 this.dataSourceFactory = dsf;
         }
 
+        @Override
         public String getDriverId() {
                 return DRIVER_NAME;
         }
 
-        public Number[] getScope(int dimension) throws DriverException {
-                if (dimension == X) {
-                        return new Number[]{envelope.getMinX(), envelope.getMaxX()};
-                } else if (dimension == Y) {
-                        return new Number[]{envelope.getMinY(), envelope.getMaxY()};
-                } else {
-                        return null;
-                }
-        }
-
+        @Override
         public TypeDefinition[] getTypesDefinitions() {
                 List<TypeDefinition> result = new LinkedList<TypeDefinition>(Arrays.asList(new DBFDriver().getTypesDefinitions()));
                 result.add(new DefaultTypeDefinition("Geometry", Type.GEOMETRY,
@@ -256,6 +237,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
                 return result.toArray(new TypeDefinition[result.size()]);
         }
 
+        @Override
         public void copy(File in, File out) throws IOException {
                 File inDBF = FileUtils.getFileWithExtension(in, "dbf");
                 File inSHX = FileUtils.getFileWithExtension(in, "shx");
@@ -300,7 +282,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
                         } else if ((type == ShapeType.MULTIPOINT)
                                 || (type == ShapeType.MULTIPOINTZ)) {
                                 if ((geom instanceof Point)) {
-                                        retVal = gf.createMultiPoint(new Point[]{(Point) geom});
+                                        retVal = GF.createMultiPoint(new Point[]{(Point) geom});
                                 } else if (geom instanceof MultiPoint) {
                                         retVal = geom;
                                 }
@@ -308,13 +290,13 @@ public class ShapefileDriver implements FileReadWriteDriver {
                                 || (type == ShapeType.POLYGONZ)) {
                                 if (geom instanceof Polygon) {
                                         Polygon p = JTSUtilities.makeGoodShapePolygon((Polygon) geom);
-                                        retVal = gf.createMultiPolygon(new Polygon[]{p});
+                                        retVal = GF.createMultiPolygon(new Polygon[]{p});
                                 } else if (geom instanceof MultiPolygon) {
                                         retVal = JTSUtilities.makeGoodShapeMultiPolygon((MultiPolygon) geom);
                                 }
                         } else if ((type == ShapeType.ARC) || (type == ShapeType.ARCZ)) {
                                 if ((geom instanceof LineString)) {
-                                        retVal = gf.createMultiLineString(new LineString[]{(LineString) geom});
+                                        retVal = GF.createMultiLineString(new LineString[]{(LineString) geom});
                                 } else if (geom instanceof MultiLineString) {
                                         retVal = geom;
                                 }
@@ -330,13 +312,15 @@ public class ShapefileDriver implements FileReadWriteDriver {
                 return retVal;
         }
 
+        @Override
         public void createSource(String path, Metadata metadata,
                 DataSourceFactory dataSourceFactory) throws DriverException {
+                LOG.trace("Creating source file");
                 // write dbf
                 String dbfFile = replaceExtension(new File(path), ".dbf").getAbsolutePath();
-                DBFDriver dbfDriver = new DBFDriver();
-                dbfDriver.setDataSourceFactory(dataSourceFactory);
-                dbfDriver.createSource(dbfFile, new DBFMetadata(metadata),
+                DBFDriver tempDbfDriver = new DBFDriver();
+                tempDbfDriver.setDataSourceFactory(dataSourceFactory);
+                tempDbfDriver.createSource(dbfFile, new DBFMetadata(metadata),
                         dataSourceFactory);
 
                 // write shapefile and shx
@@ -371,13 +355,11 @@ public class ShapefileDriver implements FileReadWriteDriver {
 //
 //
 //        }
-
         private GeometryConstraint getGeometryType(Metadata metadata)
                 throws DriverException {
                 for (int i = 0; i < metadata.getFieldCount(); i++) {
                         if (metadata.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
-                                GeometryConstraint gc = (GeometryConstraint) metadata.getFieldType(i).getConstraint(Constraint.GEOMETRY_TYPE);
-                                return gc;
+                                return (GeometryConstraint) metadata.getFieldType(i).getConstraint(Constraint.GEOMETRY_TYPE);
                         }
                 }
 
@@ -385,7 +367,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
                         + "source doesn't contain any spatial field");
         }
 
-        private int getGeometryDimension(DataSource dataSource, Metadata metadata)
+        private int getGeometryDimension(ReadAccess dataSource, Metadata metadata)
                 throws DriverException {
                 for (int i = 0; i < metadata.getFieldCount(); i++) {
                         if (metadata.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
@@ -452,34 +434,36 @@ public class ShapefileDriver implements FileReadWriteDriver {
 
         }
 
-        public void writeFile(final File file, final DataSource dataSource,
-                IProgressMonitor pm) throws DriverException {
+        @Override
+        public void writeFile(final File file, final ReadAccess dataSource,
+                ProgressMonitor pm) throws DriverException {
+                LOG.trace("Writing file " + file.getAbsolutePath());
                 WarningListener warningListener = dataSourceFactory.getWarningListener();
                 // write dbf
-                DBFDriver dbfDriver = new DBFDriver();
-                dbfDriver.setDataSourceFactory(dataSourceFactory);
-                dbfDriver.writeFile(replaceExtension(file, ".dbf"), new DBFRowProvider(
+                DBFDriver tempDbfDriver = new DBFDriver();
+                tempDbfDriver.setDataSourceFactory(dataSourceFactory);
+                tempDbfDriver.writeFile(replaceExtension(file, ".dbf"), new DBFRowProvider(
                         dataSource), warningListener, pm);
 
                 // write shapefile and shx
                 try {
-                        SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
-                                dataSource);
+                        final long rowCount = dataSource.getRowCount();
+                        pm.startTask("Writing geometries", rowCount);
                         FileOutputStream shpFis = new FileOutputStream(file);
                         final FileOutputStream shxFis = new FileOutputStream(
                                 replaceExtension(file, ".shx"));
 
                         ShapefileWriter writer = new ShapefileWriter(shpFis.getChannel(),
                                 shxFis.getChannel());
-                        Envelope fullExtent = sds.getFullExtent();
-                        Metadata metadata = dataSource.getMetadata();
-                        GeometryConstraint gc = getGeometryType(metadata);
-                        int dimension = getGeometryDimension(dataSource, metadata);
+                        Envelope fullExtent = DriverUtilities.getFullExtent(dataSource);
+                        Metadata outMetadata = dataSource.getMetadata();
+                        GeometryConstraint gc = getGeometryType(outMetadata);
+                        int dimension = getGeometryDimension(dataSource, outMetadata);
                         ShapeType shapeType;
                         if (gc == null) {
                                 warningListener.throwWarning("No geometry type in the "
                                         + "metadata. Will take the type of the first geometry");
-                                shapeType = getFirstShapeType(sds, dimension);
+                                shapeType = getFirstShapeType(dataSource, dimension);
                                 if (shapeType == null) {
                                         throw new IllegalArgumentException("A "
                                                 + "geometry type have to be specified");
@@ -487,25 +471,28 @@ public class ShapefileDriver implements FileReadWriteDriver {
                         } else {
                                 shapeType = getShapeType(gc.getGeometryType(), dimension);
                         }
-                        int fileLength = computeSize(sds, shapeType);
-                        writer.writeHeaders(fullExtent, shapeType, (int) sds.getRowCount(),
+                        int fileLength = computeSize(dataSource, shapeType);
+                        writer.writeHeaders(fullExtent, shapeType, (int) rowCount,
                                 fileLength);
-                        for (int i = 0; i < sds.getRowCount(); i++) {
-                                if (i / 100 == i / 100.0) {
+                        final int spatialFieldIndex = MetadataUtilities.getSpatialFieldIndex(dataSource.getMetadata());
+                        for (int i = 0; i < rowCount; i++) {
+                                if (i >= 100 && i % 100 == 0) {
                                         if (pm.isCancelled()) {
                                                 break;
                                         } else {
-                                                pm.progressTo((int) (100 * i / sds.getRowCount()));
+                                                pm.progressTo(i);
                                         }
                                 }
 
-                                Geometry geometry = sds.getGeometry(i);
-                                if (geometry != null) {
-                                        writer.writeGeometry(convertGeometry(geometry, shapeType));
+                                Value v = dataSource.getFieldValue(i, spatialFieldIndex);
+
+                                if (!v.isNull()) {
+                                        writer.writeGeometry(convertGeometry(v.getAsGeometry(), shapeType));
                                 } else {
                                         writer.writeGeometry(null);
                                 }
                         }
+                        pm.progressTo(rowCount);
                         writer.close();
 //                        writeprj(replaceExtension(file, ".prj"), metadata);
                 } catch (FileNotFoundException e) {
@@ -515,6 +502,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
                 } catch (ShapefileException e) {
                         throw new DriverException(e);
                 }
+                pm.endTask();
         }
 
         private File replaceExtension(File file, String suffix) {
@@ -523,12 +511,13 @@ public class ShapefileDriver implements FileReadWriteDriver {
                 return new File(prefix + suffix);
         }
 
-        private ShapeType getFirstShapeType(SpatialDataSourceDecorator sds,
+        private ShapeType getFirstShapeType(ReadAccess sds,
                 int dimension) throws DriverException {
+                final int spatialFieldIndex = MetadataUtilities.getSpatialFieldIndex(sds.getMetadata());
                 for (int i = 0; i < sds.getRowCount(); i++) {
-                        Geometry geom = sds.getGeometry(i);
-                        if (geom != null) {
-                                return getShapeType(geom, dimension);
+                        Value v = sds.getFieldValue(i, spatialFieldIndex);
+                        if (!v.isNull()) {
+                                return getShapeType(v.getAsGeometry(), dimension);
                         }
                 }
 
@@ -556,7 +545,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
                                 return ShapeType.POLYGONZ;
                         }
                 } else if (geom instanceof MultiPoint) {
-                        if (geom.getCoordinate().z == Double.NaN) {
+                        if (Double.isNaN(geom.getCoordinate().z)) {
                                 return ShapeType.MULTIPOINT;
                         } else {
                                 return ShapeType.MULTIPOINTZ;
@@ -567,15 +556,16 @@ public class ShapefileDriver implements FileReadWriteDriver {
                 }
         }
 
-        private int computeSize(SpatialDataSourceDecorator dataSource,
+        private int computeSize(ReadAccess dataSource,
                 ShapeType type) throws DriverException, ShapefileException {
+                final int spatialFieldIndex = MetadataUtilities.getSpatialFieldIndex(dataSource.getMetadata());
                 int fileLength = 100;
                 for (int i = (int) (dataSource.getRowCount() - 1); i >= 0; i--) {
-                        Geometry geometry = dataSource.getGeometry(i);
-                        if (geometry != null) {
+                        Value v = dataSource.getFieldValue(i, spatialFieldIndex);
+                        if (!v.isNull()) {
                                 // shape length + record (2 ints)
                                 int size = type.getShapeHandler().getLength(
-                                        convertGeometry(geometry, type)) + 8;
+                                        convertGeometry(v.getAsGeometry(), type)) + 8;
                                 fileLength += size;
                         } else {
                                 // null byte + record (2 ints)
@@ -586,14 +576,17 @@ public class ShapefileDriver implements FileReadWriteDriver {
                 return fileLength;
         }
 
+        @Override
         public boolean isCommitable() {
                 return true;
         }
 
+        @Override
         public int getType() {
                 return SourceManager.FILE | SourceManager.VECTORIAL;
         }
 
+        @Override
         public String validateMetadata(Metadata m) throws DriverException {
                 int spatialIndex = -1;
                 DefaultMetadata dbfMeta = new DefaultMetadata();
@@ -651,6 +644,63 @@ public class ShapefileDriver implements FileReadWriteDriver {
         @Override
         public String getTypeName() {
                 return "SHP";
+        }
+
+        @Override
+        public Schema getSchema() throws DriverException {
+                return schema;
+        }
+
+        @Override
+        public ReadAccess getTable(String name) {
+                if (!name.equals("main")) {
+                        return null;
+                }
+                return this;
+        }
+
+        @Override
+        public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
+                try {
+                        if (fieldId == 0) {
+                                int offset = shxFile.getOffset((int) rowIndex);
+                                Geometry shape = reader.geomAt(offset);
+                                return (null == shape) ? null : ValueFactory.createValue(shape);
+                        } else {
+                                return driver.getFieldValue(rowIndex, fieldId - 1);
+                        }
+                } catch (IOException e) {
+                        throw new DriverException(e);
+                }
+        }
+
+        @Override
+        public long getRowCount() throws DriverException {
+                return shxFile.getRecordCount();
+        }
+
+        @Override
+        public Number[] getScope(int dimension) throws DriverException {
+                if (dimension == X) {
+                        return new Number[]{envelope.getMinX(), envelope.getMaxX()};
+                } else if (dimension == Y) {
+                        return new Number[]{envelope.getMinY(), envelope.getMaxY()};
+                } else {
+                        return null;
+                }
+        }
+
+        @Override
+        public Metadata getMetadata() throws DriverException {
+                return schema.getTableByName("main");
+        }
+
+        @Override
+        public void setFile(File file) {
+                this.file = file;
+                schema = new DefaultSchema("SHP" + file.getAbsolutePath().hashCode());
+                metadata = new DefaultMetadata();
+                schema.addTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME, metadata);
         }
 
         @Override

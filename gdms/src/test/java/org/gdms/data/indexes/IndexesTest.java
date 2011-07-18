@@ -52,8 +52,7 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.source.Source;
 import org.gdms.source.SourceManager;
-import org.gdms.sql.strategies.FullIterator;
-import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.gdms.data.types.IncompatibleTypesException;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 

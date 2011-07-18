@@ -42,24 +42,36 @@ package org.gdms.data;
 import org.gdms.driver.DriverException;
 
 /**
- * Interface used to create data sources
+ * Interface used to create data sources from new or existing resources.
  */
 public interface DataSourceCreation {
 	/**
-	 * Creates the source
+	 * Creates the definition of the source described by this object.
+         *
+         * The DataSourceDefinition can then be given to its associated DataSourceFactory
+         * in order to build the actual DataSource
 	 *
-	 * @throws DriverException
+         * @param tableName the name of the table defined in this source whose definition must be created.
+         * @return a DataSourceDefinition
+         * @throws DriverException
 	 *             if the source creation fails
 	 */
-	public DataSourceDefinition create() throws DriverException;
+	DataSourceDefinition create(String tableName) throws DriverException;
 
 	/**
-	 * Gives to the DataSourceDefinition a reference of the DataSourceFactory
+	 * Gives to the DataSourceDefinition a reference to the DataSourceFactory
 	 * where the DataSourceDefinition is registered
 	 *
 	 * @param dsf
 	 *            Reference to the DataSourceFactory
 	 */
-	public void setDataSourceFactory(DataSourceFactory dsf);
+	void setDataSourceFactory(DataSourceFactory dsf);
+        
+        /**
+         * Gets the tables available in the file. If there is only one, the table MUST be named "main".
+         * @return
+         * @throws DriverException 
+         */
+        String[] getAvailableTables() throws DriverException;
 
 }

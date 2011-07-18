@@ -47,8 +47,6 @@ import javax.swing.JOptionPane;
 import org.gdms.data.DataSourceFinalizationException;
 import org.gdms.driver.DriverException;
 import org.gdms.source.SourceManager;
-import org.gdms.sql.customQuery.QueryManager;
-import org.gdms.sql.customQuery.QueryManagerListener;
 import org.gdms.sql.function.FunctionManager;
 import org.gdms.sql.function.FunctionManagerListener;
 import org.orbisgis.core.DataManager;
@@ -74,7 +72,6 @@ public class OrbisGISWorkspace implements WorkspaceListener {
 		workspace = Services.getService(Workspace.class);
 		workspace.addWorkspaceListener(this);
 		FunctionManager.addFunctionManagerListener(refreshFMListener);
-		QueryManager.addQueryManagerListener(refreshFMListener);
 
 		Services
 				.registerService(
@@ -118,7 +115,6 @@ public class OrbisGISWorkspace implements WorkspaceListener {
 
 	public void stop() {
 		FunctionManager.removeFunctionManagerListener(refreshFMListener);
-		QueryManager.removeQueryManagerListener(refreshFMListener);
 
 		EPWindowHelper.saveStatus();
 		try {
@@ -204,7 +200,7 @@ public class OrbisGISWorkspace implements WorkspaceListener {
 	}
 
 	private final class RefreshViewFunctionManagerListener implements
-			FunctionManagerListener, QueryManagerListener {
+			FunctionManagerListener {
 		public void functionRemoved(String functionName) {
 			refreshGeocognition();
 		}

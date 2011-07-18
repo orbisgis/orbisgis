@@ -44,7 +44,6 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.indexes.DefaultSpatialIndexQuery;
-import org.gdms.data.indexes.IndexManager;
 import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.values.Value;
@@ -55,7 +54,7 @@ import org.gdms.source.SourceManager;
 
 public class FailedEditionTest extends BaseTest {
 
-	private static final String SPATIAL_FIELD_NAME = "geom";
+	private static final String SPATIAL_FIELD_NAME = "the_geom";
 
 	private DataSourceFactory dsf;
 
@@ -138,29 +137,37 @@ public class FailedEditionTest extends BaseTest {
 		SourceManager sourceManager = dsf.getSourceManager();
 		sourceManager.setDriverManager(dm);
 		sourceManager.register("object", new ObjectSourceDefinition(
-				new ReadAndWriteDriver()));
+				new ReadAndWriteDriver(),"main"));
+                final ReadAndWriteDriver readAndWriteDriver1 = new ReadAndWriteDriver();
+                readAndWriteDriver1.setFile(null);
 		sourceManager.register("writeFile", new FakeFileSourceDefinition(
-				new ReadAndWriteDriver()));
+				readAndWriteDriver1));
+                final ReadAndWriteDriver readAndWriteDriver2 = new ReadAndWriteDriver();
+                readAndWriteDriver2.setFile(null);
 		sourceManager.register("closeFile", new FakeFileSourceDefinition(
-				new ReadAndWriteDriver()));
+				readAndWriteDriver2));
+                final ReadAndWriteDriver readAndWriteDriver3 = new ReadAndWriteDriver();
+                readAndWriteDriver3.setFile(null);
 		sourceManager.register("copyFile", new FakeFileSourceDefinition(
-				new ReadAndWriteDriver()));
+				readAndWriteDriver3));
 		sourceManager.register("executeDB", new FakeDBTableSourceDefinition(
 				new ReadAndWriteDriver(), "jdbc:executefailing"));
 		sourceManager.register("closeDB", new FakeDBTableSourceDefinition(
 				new ReadAndWriteDriver(), "jdbc:closefailing"));
-		dsf.getIndexManager().buildIndex("object", SPATIAL_FIELD_NAME,
-				IndexManager.RTREE_SPATIAL_INDEX, null);
-		dsf.getIndexManager().buildIndex("writeFile", SPATIAL_FIELD_NAME,
-				IndexManager.RTREE_SPATIAL_INDEX, null);
-		dsf.getIndexManager().buildIndex("executeDB", SPATIAL_FIELD_NAME,
-				IndexManager.RTREE_SPATIAL_INDEX, null);
-		dsf.getIndexManager().buildIndex("closeDB", SPATIAL_FIELD_NAME,
-				IndexManager.RTREE_SPATIAL_INDEX, null);
-		dsf.getIndexManager().buildIndex("copyFile", SPATIAL_FIELD_NAME,
-				IndexManager.RTREE_SPATIAL_INDEX, null);
-		dsf.getIndexManager().buildIndex("closeFile", SPATIAL_FIELD_NAME,
-				IndexManager.RTREE_SPATIAL_INDEX, null);
+
+                // what's the point in building an index on an emtpy source??
+//		dsf.getIndexManager().buildIndex("object", SPATIAL_FIELD_NAME,
+//				IndexManager.RTREE_SPATIAL_INDEX, null);
+//		dsf.getIndexManager().buildIndex("writeFile", SPATIAL_FIELD_NAME,
+//				IndexManager.RTREE_SPATIAL_INDEX, null);
+//		dsf.getIndexManager().buildIndex("executeDB", SPATIAL_FIELD_NAME,
+//				IndexManager.RTREE_SPATIAL_INDEX, null);
+//		dsf.getIndexManager().buildIndex("closeDB", SPATIAL_FIELD_NAME,
+//				IndexManager.RTREE_SPATIAL_INDEX, null);
+//		dsf.getIndexManager().buildIndex("copyFile", SPATIAL_FIELD_NAME,
+//				IndexManager.RTREE_SPATIAL_INDEX, null);
+//		dsf.getIndexManager().buildIndex("closeFile", SPATIAL_FIELD_NAME,
+//				IndexManager.RTREE_SPATIAL_INDEX, null);
 	}
 
 	private class FooQuery implements IndexQuery {

@@ -42,12 +42,12 @@ public interface EditionListener {
 	 * 
 	 * @param e
 	 */
-	public void singleModification(EditionEvent e);
+	void singleModification(EditionEvent e);
 
 	/**
 	 * Zero or more changes has been done in the DataSource
 	 * 
 	 * @param e
 	 */
-	public void multipleModification(MultipleEditionEvent e);
+	void multipleModification(MultipleEditionEvent e);
 }

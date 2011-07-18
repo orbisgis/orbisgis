@@ -45,9 +45,10 @@ public interface AdHocIndex {
 	 *
 	 *
 	 * @param indexQuery
-	 * @return
+         * @return
+         * @throws IndexException 
 	 */
-	public int[] getIterator(IndexQuery indexQuery)
-			throws IndexException;
+	int[] getIterator(IndexQuery indexQuery)
+			throws IndexQueryException, IndexException;
 
 }

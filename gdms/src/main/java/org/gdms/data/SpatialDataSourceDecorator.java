@@ -37,20 +37,18 @@
  */
 package org.gdms.data;
 
-import org.gdms.data.feature.Feature;
-import org.gdms.data.metadata.MetadataUtilities;
+import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ReadOnlyDriver;
 import org.grap.model.GeoRaster;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.SRIDConstraint;
+import org.gdms.driver.DriverUtilities;
 
 public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 
@@ -70,16 +68,8 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 	 *             if the operation fails
 	 */
 	public Envelope getFullExtent() throws DriverException {
-		Number[] xScope = getScope(ReadOnlyDriver.X);
-		Number[] yScope = getScope(ReadOnlyDriver.Y);
-		if ((xScope != null) && (yScope != null)) {
-			return new Envelope(new Coordinate(xScope[0].doubleValue(),
-					yScope[0].doubleValue()), new Coordinate(xScope[1]
-					.doubleValue(), yScope[1].doubleValue()));
-		} else {
-			return null;
+		return DriverUtilities.getFullExtent(this);
 		}
-	}
 
 	public GeoRaster getRaster(long rowIndex) throws DriverException {
 		Value fieldValue = getDataSource().getFieldValue(rowIndex,
@@ -132,9 +122,9 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 		if (spatialFieldIndex == -1) {
 			spatialFieldIndex = MetadataUtilities
 					.getSpatialFieldIndex(getMetadata());
-			if(spatialFieldIndex == -1) {
-				throw new DriverException("Unable to retrieve spatial informations in this source");
-			}
+                        if (spatialFieldIndex == -1) {
+                                throw new DriverException("Unable to retrieve spatial information in this source");
+                        }
 		}
 		return spatialFieldIndex;
 	}
@@ -295,32 +285,5 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 	public boolean isDefaultRaster() throws DriverException {
 		Type fieldType = getMetadata().getFieldType(getSpatialFieldIndex());
 		return fieldType.getTypeCode() == Type.RASTER;
-	}
-
-	/**
-	 * 
-	 * @param rowIndex
-	 * @return
-	 * @throws DriverException
-	 */
-
-	public Feature getFeature(long rowIndex) throws DriverException {
-		Feature feature = new Feature(getMetadata());
-		feature.setValues(getRow(rowIndex));
-		return feature;
-	}
-
-	/**
-	 * 
-	 * @param feature
-	 * @throws DriverException
-	 */
-	public void addFeature(Feature feature) throws DriverException {
-		if (feature.getMetadata().equals(getMetadata())) {
-			insertFilledRow(feature.getValues());
-		} else {
-			throw new DriverException(
-					"The feature metadata doesn't match the spatialDatasource metadata");
-		}
 	}
 }

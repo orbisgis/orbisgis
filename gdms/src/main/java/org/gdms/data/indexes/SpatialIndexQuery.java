@@ -36,14 +36,21 @@
  */
 package org.gdms.data.indexes;
 
-import org.gdms.sql.evaluator.EvaluationException;
-import org.gdms.sql.strategies.IncompatibleTypesException;
-
 import com.vividsolutions.jts.geom.Envelope;
 
+/**
+ * Represents a query over a spatially indexed data.
+ * @author Antoine Gourlay
+ */
 public interface SpatialIndexQuery extends IndexQuery {
 
-	public Envelope getArea() throws IncompatibleTypesException,
-			EvaluationException;
+        /**
+         * Gets the area in which the query is asking for data
+         * @return
+         * @throws IndexQueryException 
+         * @throws IncompatibleTypesException
+         * @throws EvaluationException
+         */
+	Envelope getArea() throws IndexQueryException;
 
 }

@@ -36,28 +36,35 @@
  */
 package org.gdms.driver.dbf;
 
-import org.gdms.data.DataSource;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.ReadAccess;
 
 public class DefaultRowProvider implements RowProvider {
 
-	private DataSource dataSource;
+        private ReadAccess dataSource;
 
-	public DefaultRowProvider(DataSource dataSource) {
-		this.dataSource = dataSource;
-	}
+        public DefaultRowProvider(ReadAccess dataSource) {
+                this.dataSource = dataSource;
+        }
 
-	public Metadata getMetadata() throws DriverException {
-		return dataSource.getMetadata();
-	}
+        @Override
+        public Metadata getMetadata() throws DriverException {
+                return dataSource.getMetadata();
+        }
 
-	public Value[] getRow(long index) throws DriverException {
-		return dataSource.getRow(index);
-	}
+        @Override
+        public Value[] getRow(long index) throws DriverException {
+                Value[] v = new Value[dataSource.getMetadata().getFieldCount()];
+                for (int i = 0; i < v.length; i++) {
+                        v[i] = dataSource.getFieldValue(index, i);
+                }
+                return v;
+        }
 
-	public long getRowCount() throws DriverException {
-		return dataSource.getRowCount();
-	}
+        @Override
+        public long getRowCount() throws DriverException {
+                return dataSource.getRowCount();
+        }
 }

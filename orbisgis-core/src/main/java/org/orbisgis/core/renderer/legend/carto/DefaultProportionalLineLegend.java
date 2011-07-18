@@ -45,7 +45,6 @@ import java.awt.geom.Rectangle2D;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
-import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.AllowAllRenderContext;
@@ -69,6 +68,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
+import org.gdms.data.types.IncompatibleTypesException;
 
 public class DefaultProportionalLineLegend extends AbstractCartoLegend
 		implements ProportionalLegend {

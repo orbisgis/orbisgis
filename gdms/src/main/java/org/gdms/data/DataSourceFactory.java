@@ -40,8 +40,7 @@ package org.gdms.data;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import org.apache.log4j.Logger;
 
 import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
@@ -51,20 +50,18 @@ import org.gdms.data.indexes.BTreeIndex;
 import org.gdms.data.indexes.IndexManager;
 import org.gdms.data.indexes.RTreeIndex;
 import org.gdms.data.object.ObjectSourceDefinition;
+import org.gdms.data.schema.Schema;
 import org.gdms.data.system.SystemSource;
 import org.gdms.data.system.SystemSourceDefinition;
 import org.gdms.data.wms.WMSSource;
 import org.gdms.data.wms.WMSSourceDefinition;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
-import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.driver.ReadAccess;
+import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.DefaultSourceManager;
 import org.gdms.source.SourceManager;
-import org.gdms.sql.parser.ParseException;
-import org.gdms.sql.strategies.Instruction;
-import org.gdms.sql.strategies.SQLProcessor;
-import org.gdms.sql.strategies.SemanticException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.utils.I18N;
 
@@ -81,798 +78,669 @@ import org.orbisgis.utils.I18N;
  */
 public class DataSourceFactory {
 
-	/**
-	 * No editing capabilities, no status check
-	 */
-	public final static int NORMAL = 0;
-
-	/**
-	 * Checks that the source is opened before accessing it
-	 */
-	public final static int STATUS_CHECK = 1;
-
-	/**
-	 * Editing capabilities
-	 */
-	public final static int EDITABLE = 2;
-
-	/**
-	 * EDITABLE | STATUS_CHECK
-	 */
-	public final static int DEFAULT = EDITABLE | STATUS_CHECK;
-
-	private String I18N_LOCALE = "";
-
-	private File tempDir = new File(".");
-
-	private List<DataSourceFactoryListener> listeners = new ArrayList<DataSourceFactoryListener>();
-
-	private WarningListener warningListener = new NullWarningListener();
-
-	private DefaultSourceManager sourceManager;
-
-	private IndexManager indexManager;
-
-	private File resultDir;
-
-	public DataSourceFactory() {
-		initialize(System.getProperty("user.home") + File.separator + ".gdms",
-				".");
-	}
-
-	public DataSourceFactory(String sourceInfoDir) {
-		initialize(sourceInfoDir, ".");
-	}
-
-	public DataSourceFactory(String sourceInfoDir, String tempDir) {
-		initialize(sourceInfoDir, tempDir);
-	}
-
-	/**
-	 * Creates a data source defined by the DataSourceCreation object
-	 * 
-	 * @param dsc
-	 * 
-	 * @throws DriverException
-	 *             if the source creation fails
-	 */
-	public DataSourceDefinition createDataSource(DataSourceCreation dsc)
-			throws DriverException {
-		return sourceManager.createDataSource(dsc);
-	}
-
-	/**
-	 * Saves the specified contents into the source specified by the tableName
-	 * parameter. A source must be registered with that name before
-	 * 
-	 * @param pm
-	 */
-	public void saveContents(String tableName, DataSource contents,
-			IProgressMonitor pm) throws DriverException {
-		sourceManager.saveContents(tableName, contents, pm);
-	}
-
-	/**
-	 * Saves the specified contents into the source specified by the tableName
-	 * parameter. A source must be registered with that name before
-	 * 
-	 * @param pm
-	 */
-	public void saveContents(String tableName, DataSource contents)
-			throws DriverException {
-		saveContents(tableName, contents, new NullProgressMonitor());
-	}
-
-	/**
-	 * Constructs the stack of DataSources to achieve the functionality
-	 * specified in the mode parameter
-	 * 
-	 * @param ds
-	 *            DataSource
-	 * @param mode
-	 *            opening mode
-	 * @param indexes
-	 * 
-	 * @return DataSource
-	 * @throws DataSourceCreationException
-	 */
-	private DataSource getModedDataSource(DataSource ds, int mode) {
-		DataSource ret = ds;
-
-		// Decorator Stack, "()" means optional
-		//
-		// RightValueDecorator
-		// (StatusCheckDecorator)
-		// OCCounterDecorator
-		// (UndoableDataSourceDecorator)
-		// (EditionDecorator)
-		// CacheDecorator
-
-		ret = new CacheDecorator(ret);
-
-		if ((mode & EDITABLE) == EDITABLE) {
-			ret = new EditionDecorator(ret);
-		}
-
-		if ((mode & EDITABLE) != 0) {
-			ret = new OCCounterDecorator(ret);
-		}
-
-		if ((mode & STATUS_CHECK) == STATUS_CHECK) {
-			ret = new StatusCheckDecorator(ret);
-		}
-
-		return new RightValueDecorator(ret);
-	}
-
-	/**
-	 * Gets a DataSource instance to access the file
-	 * 
-	 * @param file
-	 *            file to access
-	 * 
-	 * @return
-	 * 
-	 * @throws DriverLoadException
-	 *             If there isn't a suitable driver for such a file
-	 * @throws DataSourceCreationException
-	 *             If the instance creation fails
-	 * @throws DriverException
-	 */
-	public DataSource getDataSource(ObjectDriver object) throws DriverException {
-		return getDataSource(object, DEFAULT);
-	}
-
-	/**
-	 * Gets a DataSource instance to access the file
-	 * 
-	 * @param file
-	 *            file to access
-	 * @param mode
-	 *            To enable undo/redo operations UNDOABLE. NORMAL otherwise
-	 * @return
-	 * 
-	 * @throws DriverLoadException
-	 *             If there isn't a suitable driver for such a file
-	 * @throws DataSourceCreationException
-	 *             If the instance creation fails
-	 * @throws DriverException
-	 */
-	public DataSource getDataSource(ObjectDriver object, int mode)
-			throws DriverException {
-		try {
-			return getDataSource(new ObjectSourceDefinition(object), mode,
-					new NullProgressMonitor());
-		} catch (DriverLoadException e) {
-			throw new RuntimeException(I18N.getString("gdms.bug"));
-		} catch (DataSourceCreationException e) {
-			throw new RuntimeException("bug!");
-		}
-	}
-
-	/**
-	 * Gets a DataSource instance to access the file
-	 * 
-	 * @param file
-	 *            file to access
-	 * 
-	 * @return
-	 * 
-	 * @throws DriverLoadException
-	 *             If there isn't a suitable driver for such a file
-	 * @throws DataSourceCreationException
-	 *             If the instance creation fails
-	 * @throws DriverException
-	 */
-	public DataSource getDataSource(File file) throws DriverLoadException,
-			DataSourceCreationException, DriverException {
-		return getDataSource(file, DEFAULT);
-	}
-
-	/**
-	 * Gets a DataSource instance to access the file
-	 * 
-	 * @param file
-	 *            file to access
-	 * @param mode
-	 *            To enable undo/redo operations UNDOABLE. NORMAL otherwise
-	 * @return
-	 * 
-	 * @throws DriverLoadException
-	 *             If there isn't a suitable driver for such a file
-	 * @throws DataSourceCreationException
-	 *             If the instance creation fails
-	 * @throws DriverException
-	 */
-	public DataSource getDataSource(File file, int mode)
-			throws DriverLoadException, DataSourceCreationException,
-			DriverException {
-		return getDataSource(new FileSourceDefinition(file), mode,
-				new NullProgressMonitor());
-	}
-
-	/**
-	 * Gets a DataSource instance to access the file
-	 * 
-	 * @param file
-	 *            file to access
-	 * 
-	 * @return
-	 * 
-	 * @throws DriverLoadException
-	 *             If there isn't a suitable driver for such a file
-	 * @throws DataSourceCreationException
-	 *             If the instance creation fails
-	 * @throws DriverException
-	 * @throws SemanticException
-	 * @throws ParseException
-	 */
-	public DataSource getDataSourceFromSQL(String sql)
-			throws DriverLoadException, DataSourceCreationException,
-			DriverException, ParseException, SemanticException {
-		return getDataSourceFromSQL(sql, DEFAULT, new NullProgressMonitor());
-	}
-
-	/**
-	 * Gets a DataSource instance to access the file
-	 * 
-	 * @param file
-	 *            file to access
-	 * @param mode
-	 *            To enable undo/redo operations UNDOABLE. NORMAL otherwise
-	 * @return
-	 * 
-	 * @throws DriverLoadException
-	 *             If there isn't a suitable driver for such a file
-	 * @throws DataSourceCreationException
-	 *             If the instance creation fails
-	 * @throws DriverException
-	 * @throws SemanticException
-	 * @throws ParseException
-	 */
-	public DataSource getDataSourceFromSQL(String sql, int mode)
-			throws DriverLoadException, DataSourceCreationException,
-			DriverException, ParseException, SemanticException {
-		return getDataSourceFromSQL(sql, mode, new NullProgressMonitor());
-	}
-
-	/**
-	 * Gets a DataSource instance to access the file with the default mode
-	 * 
-	 * @param file
-	 *            file to access
-	 * @param pm
-	 *            Instance that monitors the process. Can be null
-	 * @return
-	 * 
-	 * @throws DriverLoadException
-	 *             If there isn't a suitable driver for such a file
-	 * @throws DataSourceCreationException
-	 *             If the instance creation fails
-	 * @throws DriverException
-	 * @throws SemanticException
-	 * @throws ParseException
-	 */
-	public DataSource getDataSourceFromSQL(String sql, IProgressMonitor pm)
-			throws DriverLoadException, DataSourceCreationException,
-			DriverException, ParseException, SemanticException {
-		return getDataSourceFromSQL(sql, DEFAULT, pm);
-	}
-
-	/**
-	 * Gets a DataSource instance to access the result of the SQL
-	 * 
-	 * @param file
-	 *            file to access
-	 * @param mode
-	 *            To enable undo/redo operations UNDOABLE. NORMAL otherwise
-	 * @param pm
-	 *            Instance that monitors the process. Can be null
-	 * @return The result of the instruction or null if the execution was
-	 *         cancelled
-	 * 
-	 * @throws DriverLoadException
-	 *             If there isn't a suitable driver for such a file
-	 * @throws DataSourceCreationException
-	 *             If the instance creation fails
-	 * @throws DriverException
-	 * @throws SemanticException
-	 * @throws ParseException
-	 */
-	public DataSource getDataSourceFromSQL(String sql, int mode,
-			IProgressMonitor pm) throws DriverLoadException,
-			DataSourceCreationException, DriverException, ParseException,
-			SemanticException {
-		if (pm == null) {
-			pm = new NullProgressMonitor();
-		}
-		SQLProcessor sqlProcessor = new SQLProcessor(this);
-		Instruction instruction = sqlProcessor.prepareInstruction(sql);
-		return getDataSource(instruction, mode, pm);
-	}
-
-	/**
-	 * Gets a DataSource instance to access the result of the instruction
-	 * 
-	 * @param instruction
-	 *            Instruction to evaluate. {@link SQLProcessor}
-	 * @param mode
-	 *            The DataSource mode {@link #EDITABLE} {@link #STATUS_CHECK}
-	 *            {@link #NORMAL} {@link #DEFAULT}
-	 * @param pm
-	 *            To monitor progress and cancel
-	 * 
-	 * @return
-	 * @throws DataSourceCreationException
-	 */
-	public DataSource getDataSource(Instruction instruction, int mode,
-			IProgressMonitor pm) throws DataSourceCreationException {
-		return getDataSource(new SQLSourceDefinition(instruction), mode, pm);
-	}
-
-	private DataSource getDataSource(DataSourceDefinition def, int mode,
-			IProgressMonitor pm) throws DriverLoadException,
-			DataSourceCreationException {
-		try {
-			String name = sourceManager.nameAndRegister(def);
-			return getDataSource(name, mode, pm);
-		} catch (NoSuchTableException e) {
-			throw new RuntimeException(e);
-		} catch (SourceAlreadyExistsException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	/**
-	 * Gets a DataSource instance to access the database source
-	 * 
-	 * @param dbSource
-	 *            source to access
-	 * 
-	 * @return
-	 * 
-	 * @throws DriverLoadException
-	 *             If there isn't a suitable driver for such a file
-	 * @throws DataSourceCreationException
-	 *             If the instance creation fails
-	 * @throws DriverException
-	 */
-	public DataSource getDataSource(DBSource dbSource)
-			throws DriverLoadException, DataSourceCreationException,
-			DriverException {
-		return getDataSource(dbSource, DEFAULT);
-	}
-
-	/**
-	 * Gets a DataSource instance to access the database source
-	 * 
-	 * @param dbSource
-	 *            source to access
-	 * @param mode
-	 *            To enable undo/redo operations UNDOABLE. NORMAL otherwise
-	 * @return
-	 * 
-	 * @throws DriverLoadException
-	 *             If there isn't a suitable driver for such a file
-	 * @throws DataSourceCreationException
-	 *             If the instance creation fails
-	 * @throws DriverException
-	 */
-	public DataSource getDataSource(DBSource dbSource, int mode)
-			throws DriverLoadException, DataSourceCreationException,
-			DriverException {
-		return getDataSource(new DBTableSourceDefinition(dbSource), mode,
-				new NullProgressMonitor());
-	}
-
-	/**
-	 * Gets a DataSource instance to access the wms source
-	 * 
-	 * @param wmsSource
-	 *            source to access
-	 * @param mode
-	 *            To enable undo/redo operations UNDOABLE. NORMAL otherwise
-	 * @return
-	 * 
-	 * @throws DataSourceCreationException
-	 *             If the instance creation fails
-	 * @throws DriverException
-	 */
-	public DataSource getDataSource(WMSSource wmsSource, int mode)
-			throws DataSourceCreationException, DriverException {
-		return getDataSource(new WMSSourceDefinition(wmsSource), mode,
-				new NullProgressMonitor());
-	}
-
-	/**
-	 * Gets a DataSource instance to access the system table source with the
-	 * {@link #DEFAULT} mode
-	 * 
-	 * @param systemSource
-	 *            source to access
-	 * @return
-	 * 
-	 * @throws DataSourceCreationException
-	 *             If the instance creation fails
-	 * @throws DriverException
-	 */
-	public DataSource getDataSource(SystemSource systemSource)
-			throws DataSourceCreationException, DriverException {
-		return getDataSource(new SystemSourceDefinition(systemSource), DEFAULT,
-				new NullProgressMonitor());
-	}
-
-	/**
-	 * Gets a DataSource instance to access the system table source
-	 * 
-	 * @param systemSource
-	 *            source to access
-	 * @param mode
-	 *            To enable undo/redo operations UNDOABLE. NORMAL otherwise
-	 * @return
-	 * 
-	 * @throws DataSourceCreationException
-	 *             If the instance creation fails
-	 * @throws DriverException
-	 */
-	public DataSource getDataSource(SystemSource systemSource, int mode)
-			throws DataSourceCreationException, DriverException {
-		return getDataSource(new SystemSourceDefinition(systemSource), mode,
-				new NullProgressMonitor());
-	}
-
-	/**
-	 * Gets a DataSource instance to access the wms source with the
-	 * {@link #DEFAULT} mode
-	 * 
-	 * @param wmsSource
-	 *            source to access
-	 * @return
-	 * 
-	 * @throws DataSourceCreationException
-	 *             If the instance creation fails
-	 * @throws DriverException
-	 */
-	public DataSource getDataSource(WMSSource wmsSource)
-			throws DataSourceCreationException, DriverException {
-		return getDataSource(new WMSSourceDefinition(wmsSource), DEFAULT,
-				new NullProgressMonitor());
-	}
-
-	/**
-	 * Returns a DataSource to access the source associated to the specified
-	 * name
-	 * 
-	 * @param tableName
-	 *            source name
-	 * 
-	 * @return DataSource
-	 * 
-	 * @throws DriverLoadException
-	 *             If the driver loading fails
-	 * @throws NoSuchTableException
-	 *             If the 'tableName' data source does not exists
-	 * @throws DataSourceCreationException
-	 *             If the DataSource could not be created
-	 */
-	public DataSource getDataSource(String tableName)
-			throws DriverLoadException, NoSuchTableException,
-			DataSourceCreationException {
-		return getDataSource(tableName, DEFAULT);
-	}
-
-	/**
-	 * Returns a DataSource to access the source associated to the specified
-	 * name
-	 * 
-	 * @param tableName
-	 *            source name
-	 * @param mode
-	 *            Any combination of DEFAULT, EDITABLE, NORMAL, STATUS_CHECK
-	 * 
-	 * @return DataSource
-	 * 
-	 * @throws DriverLoadException
-	 *             If the driver loading fails
-	 * @throws NoSuchTableException
-	 *             If the 'tableName' data source does not exists
-	 * @throws DataSourceCreationException
-	 *             If the DataSource could not be created
-	 */
-	public DataSource getDataSource(String tableName, int mode)
-			throws DriverLoadException, NoSuchTableException,
-			DataSourceCreationException {
-		return getDataSource(tableName, mode, new NullProgressMonitor());
-	}
-
-	private DataSource getDataSource(String tableName, int mode,
-			IProgressMonitor pm) throws NoSuchTableException,
-			DataSourceCreationException {
-		if (pm == null) {
-			pm = new NullProgressMonitor();
-		}
-		DataSource ds = sourceManager.getDataSource(tableName, pm);
-		if (pm.isCancelled()) {
-			ds = null;
-		} else {
-			ds = getModedDataSource(ds, mode);
-		}
-
-		return ds;
-	}
-
-	/**
-	 * Executes a SQL statement
-	 * 
-	 * @param sql
-	 * @param pm
-	 * @throws ParseException
-	 * @throws SemanticException
-	 * @throws DriverException
-	 * @throws ExecutionException
-	 */
-	public void executeSQL(String sql, IProgressMonitor pm)
-			throws ParseException, SemanticException, DriverException,
-			ExecutionException {
-		executeSQL(sql, pm, DEFAULT);
-	}
-
-	/**
-	 * Executes a SQL statement
-	 * 
-	 * @param sql
-	 * @throws ParseException
-	 * @throws SemanticException
-	 * @throws DriverException
-	 * @throws ExecutionException
-	 */
-	public void executeSQL(String sql) throws ParseException,
-			SemanticException, DriverException, ExecutionException {
-		executeSQL(sql, new NullProgressMonitor(), DEFAULT);
-	}
-
-	/**
-	 * Executes a SQL statement
-	 * 
-	 * @param sql
-	 *            sql statement
-	 * @param pm
-	 * 
-	 * @throws ParseException
-	 *             If the sql is not well formed
-	 * @throws SemanticException
-	 *             If the instruction contains semantic errors: unknown or
-	 *             ambiguous field references, operations with incompatible
-	 *             types, etc.
-	 * @throws DriverException
-	 *             If there is a problem accessing the sources
-	 * @throws ExecutionException
-	 *             If there is a problem while executing the SQL
-	 */
-	public void executeSQL(String sql, IProgressMonitor pm, int mode)
-			throws ParseException, SemanticException, DriverException,
-			ExecutionException {
-
-		if (!sql.trim().endsWith(";")) {
-			sql += ";";
-		}
-
-		fireInstructionExecuted(sql);
-
-		SQLProcessor ag = new SQLProcessor(this);
-		ag.execute(sql, pm);
-	}
-
-	public void fireInstructionExecuted(String sql) {
-		for (DataSourceFactoryListener listener : listeners) {
-			listener.sqlExecuted(new SQLEvent(sql, this));
-		}
-	}
-
-	/**
-	 * Frees all resources used during execution
-	 * 
-	 * @throws DataSourceFinalizationException
-	 *             If cannot free resources
-	 */
-	public void freeResources() throws DataSourceFinalizationException {
-
-		sourceManager.shutdown();
-
-		File[] tempFiles = tempDir.listFiles(new FileFilter() {
-
-			public boolean accept(File pathname) {
-				return pathname.getName().toLowerCase().startsWith("gdms");
-			}
-		});
-
-		for (int i = 0; i < tempFiles.length; i++) {
-			tempFiles[i].delete();
-		}
-	}
-
-	public String getI18nLocale() {
-		return I18N_LOCALE;
-	}
-
-	public void setI18nLocale(String I18N_LOCALE) {
-		this.I18N_LOCALE = I18N_LOCALE;
-	}
-
-	/**
-	 * Initializes the system
-	 * 
-	 * @param tempDir
-	 *            temporary directory to write data
-	 * @param tempDir
-	 * 
-	 * @throws InitializationException
-	 *             If the initialization fails
-	 */
-	private void initialize(String sourceInfoDir, String tempDir)
-			throws InitializationException {
-		try {
-			I18N.addI18n(I18N_LOCALE, "gdms", this.getClass());
-			indexManager = new IndexManager(this);
-			indexManager.addIndex(IndexManager.RTREE_SPATIAL_INDEX,
-					RTreeIndex.class);
-			indexManager.addIndex(IndexManager.BTREE_ALPHANUMERIC_INDEX,
-					BTreeIndex.class);
-
-			setTempDir(tempDir);
-			setResultDir(new File(tempDir));
-
-			Class.forName("org.hsqldb.jdbcDriver");
-
-			sourceManager = new DefaultSourceManager(this, sourceInfoDir);
-			sourceManager.init();
-
-		} catch (ClassNotFoundException e) {
-			throw new InitializationException(e);
-		} catch (IOException e) {
-			throw new InitializationException(e);
-		}
-	}
-
-	public void setTempDir(String tempDir) {
-		this.tempDir = new File(tempDir);
-
-		if (!this.tempDir.exists()) {
-			this.tempDir.mkdirs();
-		}
-	}
-
-	/**
-	 * Gets the path of a file in the temporary directory. Does not creates any
-	 * file
-	 * 
-	 * @return String
-	 */
-	public String getTempFile() {
-		String path;
-		do {
-			path = tempDir.getAbsolutePath() + File.separator + getUID();
-		} while (new File(path).exists());
-
-		return path;
-	}
-
-	/**
-	 * Gets the path of a file in the temporary directory with the specified
-	 * extension. Does not creates any file
-	 * 
-	 * @return String
-	 */
-	public String getTempFile(String extension) {
-		String path;
-		do {
-			path = tempDir.getAbsolutePath() + File.separator + getUID() + "."
-					+ extension;
-		} while (new File(path).exists());
-
-		return path;
-	}
-
-	public boolean addDataSourceFactoryListener(DataSourceFactoryListener e) {
-		return listeners.add(e);
-	}
-
-	public boolean removeDataSourceFactoryListener(DataSourceFactoryListener o) {
-		return listeners.remove(o);
-	}
-
-	public WarningListener getWarningListener() {
-		return warningListener;
-	}
-
-	public void setWarninglistener(WarningListener listener) {
-		this.warningListener = listener;
-	}
-
-	public String getUID() {
-		return sourceManager.getUID();
-	}
-
-	public SourceManager getSourceManager() {
-		return sourceManager;
-	}
-
-	/**
-	 * Sets the result directory. All SQL execution that implicitly creates a
-	 * new source will create a GDMS source in this directory. Initially it's
-	 * equal to the temporal directory
-	 * 
-	 * @param resultDir
-	 */
-	public void setResultDir(File resultDir) {
-		this.resultDir = resultDir;
-	}
-
-	/**
-	 * Gets the result directory.
-	 * 
-	 * @return
-	 */
-	public File getResultDir() {
-		return resultDir;
-	}
-
-	/**
-	 * Gets a new file in the results directory with "gdms" extension
-	 * 
-	 * @return
-	 */
-	public File getResultFile() {
-		return getResultFile("gdms");
-	}
-
-	/**
-	 * Get a new file in the results directory with the specified extension
-	 * 
-	 * @param extension
-	 * @return
-	 */
-	public File getResultFile(String extension) {
-		File file;
-		do {
-			file = new File(resultDir, getUID() + "." + extension);
-		} while (file.exists());
-
-		return file;
-	}
-
-	public File getTempDir() {
-		return tempDir;
-	}
-
-	public List<DataSourceFactoryListener> getListeners() {
-		return listeners;
-	}
-
-	public IndexManager getIndexManager() {
-		return indexManager;
-	}
-
-	/**
-	 * Registers on the source manager associated to this factory the specified
-	 * DataSourceDefinition with the specified name
-	 * 
-	 * @param name
-	 * @param def
-	 * @throws DriverException
-	 * @throws SourceAlreadyExistsException
-	 */
-	public void registerDataSource(String sourceName, DataSourceDefinition def)
-			throws SourceAlreadyExistsException {
-		sourceManager.register(sourceName, def);
-	}
-
-	public boolean exists(String sourceName) {
-		return sourceManager.exists(sourceName);
-	}
-
-	public void remove(String sourceName) {
-		sourceManager.remove(sourceName);
-	}
-
+        /**
+         * No editing capabilities, no status check
+         */
+        public static final int NORMAL = 0;
+        /**
+         * Checks that the source is opened before accessing it
+         */
+        public static final int STATUS_CHECK = 1;
+        /**
+         * Editing capabilities
+         */
+        public static final int EDITABLE = 2;
+        /**
+         * EDITABLE | STATUS_CHECK
+         */
+        public static final int DEFAULT = EDITABLE | STATUS_CHECK;
+        private String I18NLocale = "";
+        private File tempDir = new File(".");
+        private WarningListener warningListener = new NullWarningListener();
+        private DefaultSourceManager sourceManager;
+        private IndexManager indexManager;
+        private File resultDir;
+        private static final Logger LOG = Logger.getLogger(DataSourceFactory.class);
+
+        /**
+         * Creates a new {@code DataSourceFactory} with a <tt>sourceInfoDir</tt>
+         * set to a sub-folder '.gdms' in the user's home.
+         */
+        public DataSourceFactory() {
+                initialize(System.getProperty("user.home") + File.separator + ".gdms",
+                        ".");
+        }
+
+        /**
+         * Creates a new {@code DataSourceFactory}.
+         * @param sourceInfoDir the directory where the sources are stored
+         */
+        public DataSourceFactory(String sourceInfoDir) {
+                initialize(sourceInfoDir, ".");
+        }
+
+        /**
+         * Creates a new {@code DataSourceFactory}.
+         * @param sourceInfoDir the directory where the sources are stored
+         * @param tempDir the directory where temporary sources are stored
+         */
+        public DataSourceFactory(String sourceInfoDir, String tempDir) {
+                initialize(sourceInfoDir, tempDir);
+        }
+
+        /**
+         * Creates a data source defined by the DataSourceCreation object
+         *
+         * @param dsc
+         *
+         * @return the DataSourceDefinition of this created source
+         * @throws DriverException
+         *             if the source creation fails
+         */
+        public DataSourceDefinition createDataSource(DataSourceCreation dsc)
+                throws DriverException {
+                return sourceManager.createDataSource(dsc, DriverManager.DEFAULT_SINGLE_TABLE_NAME);
+        }
+        
+        /**
+         * Saves the specified contents into the source specified by the tableName
+         * parameter. A source must be registered with that name before
+         *
+         * @param tableName the name of the table to save to
+         * @param contents the DataSource whose content has to be saved
+         * @param pm a progress monitor to report progression to
+         * @throws DriverException
+         */
+        public void saveContents(String tableName, ReadAccess contents,
+                ProgressMonitor pm) throws DriverException {
+                boolean doOpenClose = contents instanceof DataSource;
+
+                if (doOpenClose) {
+                        ((DataSource) contents).open();
+                }
+                sourceManager.saveContents(tableName, contents, pm);
+                if (doOpenClose) {
+                        ((DataSource) contents).close();
+                }
+        }
+
+        /**
+         * Saves the specified contents into the source specified by the tableName
+         * parameter. A source must be registered with that name before
+         *
+         *
+         * @param tableName the name of the table to save to
+         * @param contents the DataSource whose content has to be saved
+         * @throws DriverException
+         */
+        public void saveContents(String tableName, ReadAccess contents)
+                throws DriverException {
+                saveContents(tableName, contents, new NullProgressMonitor());
+        }
+
+        /**
+         * Constructs the stack of DataSources to achieve the functionality
+         * specified in the mode parameter
+         *
+         * @param ds
+         *            DataSource
+         * @param mode
+         *            opening mode
+         * @param indexes
+         *
+         * @return DataSource
+         * @throws DataSourceCreationException
+         */
+        private DataSource getModedDataSource(DataSource ds, int mode) {
+                DataSource ret = ds;
+
+                // Decorator Stack, "()" means optional
+                //
+                // RightValueDecorator
+                // (StatusCheckDecorator)
+                // OCCounterDecorator
+                // (UndoableDataSourceDecorator)
+                // (EditionDecorator)
+                // CacheDecorator
+
+                ret = new CacheDecorator(ret);
+
+                if ((mode & EDITABLE) == EDITABLE) {
+                        ret = new EditionDecorator(ret);
+                }
+
+                if ((mode & EDITABLE) != 0) {
+                        ret = new OCCounterDecorator(ret);
+                }
+
+                if ((mode & STATUS_CHECK) == STATUS_CHECK) {
+                        ret = new StatusCheckDecorator(ret);
+                }
+
+                return new RightValueDecorator(ret);
+        }
+
+        /**
+         * Gets a DataSource instance to access the specified ObjectDriver
+         *
+         * @param object the ObjectDriver to load
+         * @param tableName
+         * @return a DataSource for this Driver
+         *
+         * @throws DriverLoadException
+         *             If there isn't a suitable driver for such a file
+         * @throws DriverException
+         */
+        public DataSource getDataSource(ObjectDriver object, String tableName) throws DriverException {
+                return getDataSource(object, tableName, DEFAULT);
+        }
+
+        /**
+         * Gets a DataSource instance to access the specified ObjectDriver
+         *
+         * @param object the ObjectDriver to load
+         * @param tableName 
+         * @param mode
+         *            To enable undo/redo operations UNDOABLE. NORMAL otherwise
+         * @return a DataSource for this Driver
+         * @throws DriverLoadException
+         *             If there isn't a suitable driver for such a file
+         * @throws DriverException
+         */
+        public DataSource getDataSource(ObjectDriver object, String tableName, int mode)
+                throws DriverException {
+                try {
+                        return getDataSource(new ObjectSourceDefinition(object, tableName), mode,
+                                new NullProgressMonitor());
+                } catch (DataSourceCreationException e) {
+                        throw new DriverException(e);
+                }
+        }
+
+        /**
+         * Gets a DataSource instance to access the MAIN table of the file
+         *
+         * @param file
+         *            file to access
+         *
+         * @return
+         *
+         * @throws DriverLoadException
+         *             If there isn't a suitable driver for such a file
+         * @throws DataSourceCreationException
+         *             If the instance creation fails
+         * @throws DriverException
+         */
+        public DataSource getDataSource(File file) throws DataSourceCreationException, DriverException {
+                return getDataSource(file, DEFAULT);
+        }
+
+        /**
+         * Gets a DataSource instance to access the MAIN table of the file
+         *
+         * @param file
+         *            file to access
+         * @param mode
+         *            To enable undo/redo operations UNDOABLE. NORMAL otherwise
+         * @return
+         *
+         * @throws DriverLoadException
+         *             If there isn't a suitable driver for such a file
+         * @throws DataSourceCreationException
+         *             If the instance creation fails
+         * @throws DriverException
+         */
+        public DataSource getDataSource(File file, int mode)
+                throws DataSourceCreationException,
+                DriverException {
+                return getDataSource(new FileSourceDefinition(file, DriverManager.DEFAULT_SINGLE_TABLE_NAME), mode,
+                        new NullProgressMonitor());
+        }
+        
+        public DataSource getDataSource(File file, String tableName) throws DataSourceCreationException, DriverException {
+                return getDataSource(new FileSourceDefinition(file, tableName), DEFAULT,
+                        new NullProgressMonitor());
+        }
+        
+        public DataSource getDataSource(File file, String tableName, int mode) throws DataSourceCreationException, DriverException {
+                return getDataSource(new FileSourceDefinition(file, tableName), mode,
+                        new NullProgressMonitor());
+        }
+
+        protected final DataSource getDataSource(DataSourceDefinition def, int mode,
+                ProgressMonitor pm) throws DataSourceCreationException {
+                try {
+                        String name = sourceManager.nameAndRegister(def);
+                        return getDataSource(name, mode, pm);
+                } catch (NoSuchTableException e) {
+                        throw new DataSourceCreationException(e);
+                } catch (SourceAlreadyExistsException e) {
+                        throw new DataSourceCreationException(e);
+                }
+        }
+
+        /**
+         * Gets a DataSource instance to access the database source
+         *
+         * @param dbSource
+         *            source to access
+         *
+         * @return
+         *
+         * @throws DriverLoadException
+         *             If there isn't a suitable driver for such a file
+         * @throws DataSourceCreationException
+         *             If the instance creation fails
+         * @throws DriverException
+         */
+        public DataSource getDataSource(DBSource dbSource)
+                throws DataSourceCreationException,
+                DriverException {
+                return getDataSource(dbSource, DEFAULT);
+        }
+
+        /**
+         * Gets a DataSource instance to access the database source
+         *
+         * @param dbSource
+         *            source to access
+         * @param mode
+         *            To enable undo/redo operations UNDOABLE. NORMAL otherwise
+         * @return
+         *
+         * @throws DriverLoadException
+         *             If there isn't a suitable driver for such a file
+         * @throws DataSourceCreationException
+         *             If the instance creation fails
+         * @throws DriverException
+         */
+        public DataSource getDataSource(DBSource dbSource, int mode)
+                throws DataSourceCreationException, DriverException {
+                return getDataSource(new DBTableSourceDefinition(dbSource), mode,
+                        new NullProgressMonitor());
+        }
+
+        /**
+         * Gets a DataSource instance to access the wms source
+         *
+         * @param wmsSource
+         *            source to access
+         * @param mode
+         *            To enable undo/redo operations UNDOABLE. NORMAL otherwise
+         * @return
+         *
+         * @throws DataSourceCreationException
+         *             If the instance creation fails
+         * @throws DriverException
+         */
+        public DataSource getDataSource(WMSSource wmsSource, int mode)
+                throws DataSourceCreationException, DriverException {
+                return getDataSource(new WMSSourceDefinition(wmsSource), mode,
+                        new NullProgressMonitor());
+        }
+
+        /**
+         * Gets a DataSource instance to access the system table source with the
+         * {@link #DEFAULT} mode
+         *
+         * @param systemSource
+         *            source to access
+         * @return
+         *
+         * @throws DataSourceCreationException
+         *             If the instance creation fails
+         * @throws DriverException
+         */
+        public DataSource getDataSource(SystemSource systemSource)
+                throws DataSourceCreationException, DriverException {
+                return getDataSource(new SystemSourceDefinition(systemSource), DEFAULT,
+                        new NullProgressMonitor());
+        }
+
+        /**
+         * Gets a DataSource instance to access the system table source
+         *
+         * @param systemSource
+         *            source to access
+         * @param mode
+         *            To enable undo/redo operations UNDOABLE. NORMAL otherwise
+         * @return
+         *
+         * @throws DataSourceCreationException
+         *             If the instance creation fails
+         * @throws DriverException
+         */
+        public DataSource getDataSource(SystemSource systemSource, int mode)
+                throws DataSourceCreationException, DriverException {
+                return getDataSource(new SystemSourceDefinition(systemSource), mode,
+                        new NullProgressMonitor());
+        }
+
+        /**
+         * Gets a DataSource instance to access the wms source with the
+         * {@link #DEFAULT} mode
+         *
+         * @param wmsSource
+         *            source to access
+         * @return
+         *
+         * @throws DataSourceCreationException
+         *             If the instance creation fails
+         * @throws DriverException
+         */
+        public DataSource getDataSource(WMSSource wmsSource)
+                throws DataSourceCreationException, DriverException {
+                return getDataSource(new WMSSourceDefinition(wmsSource), DEFAULT,
+                        new NullProgressMonitor());
+        }
+
+        /**
+         * Returns a DataSource to access the source associated to the specified
+         * name
+         *
+         * @param tableName
+         *            source name
+         *
+         * @return DataSource
+         *
+         * @throws DriverLoadException
+         *             If the driver loading fails
+         * @throws NoSuchTableException
+         *             If the 'tableName' data source does not exists
+         * @throws DataSourceCreationException
+         *             If the DataSource could not be created
+         */
+        public DataSource getDataSource(String tableName)
+                throws NoSuchTableException, DataSourceCreationException {
+                return getDataSource(tableName, DEFAULT);
+        }
+
+        /**
+         * Returns a DataSource to access the source associated to the specified
+         * name
+         *
+         * @param tableName
+         *            source name
+         * @param mode
+         *            Any combination of DEFAULT, EDITABLE, NORMAL, STATUS_CHECK
+         *
+         * @return DataSource
+         *
+         * @throws DriverLoadException
+         *             If the driver loading fails
+         * @throws NoSuchTableException
+         *             If the 'tableName' data source does not exists
+         * @throws DataSourceCreationException
+         *             If the DataSource could not be created
+         */
+        public DataSource getDataSource(String tableName, int mode)
+                throws NoSuchTableException, DataSourceCreationException {
+                return getDataSource(tableName, mode, new NullProgressMonitor());
+        }
+
+        private DataSource getDataSource(String tableName, int mode,
+                ProgressMonitor pm) throws NoSuchTableException,
+                DataSourceCreationException {
+                LOG.trace("Getting datasource " + tableName + " in mode " + mode);
+                if (pm == null) {
+                        pm = new NullProgressMonitor();
+                }
+                DataSource ds = sourceManager.getDataSource(tableName, pm);
+                if (pm.isCancelled()) {
+                        ds = null;
+                } else {
+                        ds = getModedDataSource(ds, mode);
+                }
+
+                return ds;
+        }
+
+        /**
+         * Frees all resources used during execution
+         *
+         * @throws DataSourceFinalizationException
+         *             If cannot free resources
+         */
+        public void freeResources() throws DataSourceFinalizationException {
+
+                sourceManager.shutdown();
+
+                File[] tempFiles = tempDir.listFiles(new GdmsFileFilter());
+
+                boolean success = true;
+                for (int i = 0; i < tempFiles.length; i++) {
+                        success &= tempFiles[i].delete();
+                }
+                if (!success) {
+                        LOG.warn("Error deleting files: not all resources were freed.");
+                }
+        }
+
+        private static class GdmsFileFilter implements FileFilter {
+
+                @Override
+                public boolean accept(File pathname) {
+                        return pathname.getName().toLowerCase().startsWith("gdms");
+                }
+        }
+
+        public String getI18nLocale() {
+                return I18NLocale;
+        }
+
+        public void setI18nLocale(String locale) {
+                this.I18NLocale = locale;
+        }
+
+        /**
+         * Initializes the system
+         *
+         * @param tempDir
+         *            temporary directory to write data
+         * @param tempDir
+         *
+         * @throws InitializationException
+         *             If the initialization fails
+         */
+        private void initialize(String sourceInfoDir, String tempDir) {
+                LOG.trace("DataSourceFactory initializing");
+                try {
+                        I18N.addI18n(I18NLocale, "gdms", this.getClass());
+                        indexManager = new IndexManager(this);
+                        indexManager.addIndex(IndexManager.RTREE_SPATIAL_INDEX,
+                                RTreeIndex.class);
+                        indexManager.addIndex(IndexManager.BTREE_ALPHANUMERIC_INDEX,
+                                BTreeIndex.class);
+
+                        setTempDir(tempDir);
+                        setResultDir(new File(tempDir));
+
+                        Class.forName("org.hsqldb.jdbcDriver");
+
+                        sourceManager = new DefaultSourceManager(this, sourceInfoDir);
+                        sourceManager.init();
+
+                } catch (ClassNotFoundException e) {
+                        throw new InitializationException(e);
+                } catch (IOException e) {
+                        throw new InitializationException(e);
+                }
+        }
+
+        /**
+         * Sets the temporary directory used by this DataSourceFactory to store files
+         * @param tempDir
+         */
+        public void setTempDir(String tempDir) {
+                this.tempDir = new File(tempDir);
+
+                if (!this.tempDir.exists()) {
+                        this.tempDir.mkdirs();
+                }
+        }
+
+        /**
+         * Gets the path of a file in the temporary directory. Does not creates any
+         * file
+         *
+         * @return String
+         */
+        public String getTempFile() {
+                String path;
+                do {
+                        path = tempDir.getAbsolutePath() + File.separator + getUID();
+                } while (new File(path).exists());
+
+                return path;
+        }
+
+        /**
+         * Gets the path of a file in the temporary directory with the specified
+         * extension. Does not creates any file
+         *
+         * @param extension the extension of the file
+         * @return the absolute path of the file
+         */
+        public String getTempFile(String extension) {
+                String path;
+                do {
+                        path = tempDir.getAbsolutePath() + File.separator + getUID() + "."
+                                + extension;
+                } while (new File(path).exists());
+
+                return path;
+        }
+        
+        /**
+         * Gets the WarningListener associated wit this DataSourceFactory
+         * @return
+         */
+        public WarningListener getWarningListener() {
+                return warningListener;
+        }
+
+        /**
+         * Sets the WarningListener associated with this DataSourceFactory
+         * @param listener
+         */
+        public void setWarninglistener(WarningListener listener) {
+                this.warningListener = listener;
+        }
+
+        /**
+         * Gets a unique valid identifier for a source.
+         * @return a unique String identifier
+         * @see SourceManager.getIUD()
+         */
+        public String getUID() {
+                return sourceManager.getUID();
+        }
+
+        /**
+         * Gets the SourceManager associated with this DataSourceFactory
+         * @return
+         */
+        public SourceManager getSourceManager() {
+                return sourceManager;
+        }
+
+        /**
+         * Sets the result directory. All SQL execution that implicitly creates a
+         * new source will create a GDMS source in this directory. Initially it's
+         * equal to the temporal directory
+         *
+         * @param resultDir
+         */
+        public void setResultDir(File resultDir) {
+                this.resultDir = resultDir;
+        }
+
+        /**
+         * Gets the result directory.
+         *
+         * @return
+         */
+        public File getResultDir() {
+                return resultDir;
+        }
+
+        /**
+         * Gets a new file in the results directory with "gdms" extension
+         *
+         * @return
+         */
+        public File getResultFile() {
+                return getResultFile("gdms");
+        }
+
+        /**
+         * Get a new file in the results directory with the specified extension
+         *
+         * @param extension
+         * @return
+         */
+        public File getResultFile(String extension) {
+                File file;
+                do {
+                        file = new File(resultDir, getUID() + "." + extension);
+                } while (file.exists());
+
+                return file;
+        }
+
+        /**
+         * Gets the Temp directory
+         * @return a File object for the temp directory
+         */
+        public File getTempDir() {
+                return tempDir;
+        }
+
+        /**
+         * Gets the IndexManager associated with this DataSourceFactory
+         * @return
+         */
+        public IndexManager getIndexManager() {
+                return indexManager;
+        }
+
+        /**
+         * Registers on the source manager associated to this factory the specified
+         * DataSourceDefinition with the specified name
+         *
+         * @param sourceName the name of the new source
+         * @param def the definition of the source
+         * @throws SourceAlreadyExistsException if a source already exists with this name
+         */
+        public void registerDataSource(String sourceName, DataSourceDefinition def){
+                sourceManager.register(sourceName, def);
+        }
+
+        /**
+         * Checks if a source exists
+         * @param sourceName the name of the source
+         * @return true if the source is found, false otherwise
+         */
+        public boolean exists(String sourceName) {
+                return sourceManager.exists(sourceName);
+        }
+
+        /**
+         * Removes a source
+         * @param sourceName the name of the source
+         */
+        public void remove(String sourceName) {
+                sourceManager.remove(sourceName);
+        }
+
+        /**
+         * Gets the Schema of every data loaded in this DataSourceFactory.
+         *
+         * This Schema does not contains any {@code Metadata}, but has a sub-schema for
+         * each set of Source that belongs to the same driver.
+         * @return the global GDMS schema for this DataSourceFactory
+         */
+        public Schema getSchema() {
+                return sourceManager.getSchema();
+        }
 }

@@ -64,6 +64,33 @@ public class DBTestSource extends TestSource {
 		this.dbSource = dbSource;
 	}
 
+        public boolean isConnected() throws Exception {
+                FileInputStream fis = new FileInputStream(sqlScriptFile);
+		DataInputStream dis = new DataInputStream(fis);
+		byte[] buffer = new byte[(int) fis.getChannel().size()];
+		dis.readFully(buffer);
+		String script = new String(buffer);
+
+		Class.forName(jdbcDriver);
+		String connectionString = dbSource.getPrefix() + ":";
+		if (dbSource.getHost() != null) {
+			connectionString += "//" + dbSource.getHost();
+
+			if (dbSource.getPort() != -1) {
+				connectionString += (":" + dbSource.getPort());
+			}
+			connectionString += "/";
+		}
+
+		connectionString += (dbSource.getDbName());
+                try {
+                        Connection c = DriverManager.getConnection(connectionString, dbSource.getUser(), dbSource.getPassword());
+                } catch (SQLException ex) {
+                        return false;
+                }
+                return true;
+        }
+
 	@Override
 	public void backup() throws Exception {
 		FileInputStream fis = new FileInputStream(sqlScriptFile);
@@ -85,6 +112,7 @@ public class DBTestSource extends TestSource {
 
 		connectionString += (dbSource.getDbName());
 
+                DriverManager.setLoginTimeout(2);
 		Connection c = DriverManager.getConnection(connectionString, dbSource
 				.getUser(), dbSource.getPassword());
 
@@ -105,7 +133,7 @@ public class DBTestSource extends TestSource {
 		c.close();
 
 		DBTableSourceDefinition def = new DBTableSourceDefinition(dbSource);
-		SourceTest.dsf.getSourceManager().register(name, def);
+		BaseTest.dsf.getSourceManager().register(name, def);
 	}
 
 }

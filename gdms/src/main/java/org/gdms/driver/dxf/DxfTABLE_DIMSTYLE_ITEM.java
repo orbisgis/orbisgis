@@ -21,7 +21,6 @@
  * michael.michaud@free.fr
  *
  */
-
 package org.gdms.driver.dxf;
 
 import java.io.RandomAccessFile;
@@ -37,34 +36,35 @@ import java.util.LinkedHashMap;
  * @version 0.5.0
  */
 // History
-public class DxfTABLE_DIMSTYLE_ITEM extends DxfTABLE_ITEM {
+public final class DxfTABLE_DIMSTYLE_ITEM extends DxfTABLE_ITEM {
 
-    public DxfTABLE_DIMSTYLE_ITEM(String name, int flags) {
-        super(name, flags);
-    }
+        private DxfTABLE_DIMSTYLE_ITEM(String name, int flags) {
+                super(name, flags);
+        }
 
-    public static Map readTable(RandomAccessFile raf) throws IOException {
-        DxfTABLE_DIMSTYLE_ITEM item = new DxfTABLE_DIMSTYLE_ITEM("DEFAULT", 0);
-        Map table  = new LinkedHashMap();
-        try {
-            DxfGroup group;
-            while (null != (group = DxfGroup.readGroup(raf)) && !group.equals(ENDTAB)) {
-                if (group.equals(DIMSTYLE)) {
-                    item = new DxfTABLE_DIMSTYLE_ITEM("DEFAULT", 0);
+        public static Map readTable(RandomAccessFile raf) throws IOException {
+                DxfTABLE_DIMSTYLE_ITEM item = new DxfTABLE_DIMSTYLE_ITEM("DEFAULT", 0);
+                Map table = new LinkedHashMap();
+                try {
+                        DxfGroup group;
+                        while (null != (group = DxfGroup.readGroup(raf)) && !group.equals(ENDTAB)) {
+                                if (group.equals(DIMSTYLE)) {
+                                        item = new DxfTABLE_DIMSTYLE_ITEM("DEFAULT", 0);
+                                } else if (group.getCode() == 2) {
+                                        item.setName(group.getValue());
+                                        table.put(item.getName(), item);
+                                } else if (group.getCode() == 5) {
+                                } // tag appeared in version 13 of DXF
+                                else if (group.getCode() == 100) {
+                                } // tag appeared in version 13 of DXF
+                                else if (group.getCode() == 70) {
+                                        item.setFlags(group.getIntValue());
+                                } else {
+                                }
+                        }
+                } catch (IOException ioe) {
+                        throw ioe;
                 }
-                else if (group.getCode()==2) {
-                    item.setName(group.getValue());
-                    table.put(item.getName(), item);
-                }
-                else if (group.getCode()==5) {}   // tag appeared in version 13 of DXF
-                else if (group.getCode()==100) {} // tag appeared in version 13 of DXF
-                else if (group.getCode()==70) {
-                    item.setFlags(group.getIntValue());
-                }
-                else {}
-            }
-        } catch(IOException ioe) {throw ioe;}
-        return table;
-    }
-
+                return table;
+        }
 }

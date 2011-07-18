@@ -46,151 +46,162 @@ import org.gdms.data.indexes.btree.DiskBTree;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.gdms.sql.evaluator.EvaluationException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class BTreeIndex implements DataSourceIndex {
 
-	private String fieldName;
-	private int fieldId;
-	private DiskBTree index;
-	private File indexFile;
+        private String fieldName;
+        private DiskBTree index;
+        private File indexFile;
 
-	public void setFieldName(String fieldName) {
-		this.fieldName = fieldName;
-	}
+        @Override
+        public void setFieldName(String fieldName) {
+                this.fieldName = fieldName;
+        }
 
-	public void buildIndex(DataSourceFactory dsf, DataSource dataSource,
-			IProgressMonitor pm) throws IndexException {
-		try {
-			fieldId = dataSource.getFieldIndexByName(fieldName);
-			index = new DiskBTree(255, 1024);
-			if (indexFile != null) {
-				index.newIndex(indexFile);
-			}
-			long rowCount = dataSource.getRowCount();
-			for (int i = 0; i < rowCount; i++) {
-				if (i / 1000 == i / 1000.0) {
-					if (pm.isCancelled()) {
-						return;
-					}
-					pm.progressTo((int) (100 * i / rowCount));
-				}
-				Value fieldValue = dataSource.getFieldValue(i, fieldId);
-				if (fieldValue.getType() != Type.NULL) {
-					index.insert(fieldValue, new Integer(i));
-				}
-			}
+        @Override
+        public void buildIndex(DataSourceFactory dsf, DataSource dataSource,
+                ProgressMonitor pm) throws IndexException {
+                try {
+                        long rowCount = dataSource.getRowCount();
+                        pm.startTask("Building index", rowCount);
+                        int fieldId = dataSource.getFieldIndexByName(fieldName);
+                        index = new DiskBTree(255, 1024);
+                        if (indexFile != null) {
+                                index.newIndex(indexFile);
+                        }
+                        for (int i = 0; i < rowCount; i++) {
+                                if (i >= 1000 && i % 1000 == 0) {
+                                        if (pm.isCancelled()) {
+                                                return;
+                                        }
+                                        pm.progressTo(i);
+                                }
+                                Value fieldValue = dataSource.getFieldValue(i, fieldId);
+                                if (fieldValue.getType() != Type.NULL) {
+                                        index.insert(fieldValue, Integer.valueOf(i));
+                                }
+                        }
+                        pm.progressTo(rowCount);
+                        pm.endTask();
 
-		} catch (IOException e) {
-			throw new IndexException("Cannot create the index", e);
-		} catch (AlreadyClosedException e) {
-			throw new IndexException(e);
-		} catch (DriverException e) {
-			throw new IndexException(e);
-		}
-	}
+                } catch (IOException e) {
+                        throw new IndexException("Cannot create the index", e);
+                } catch (AlreadyClosedException e) {
+                        throw new IndexException(e);
+                } catch (DriverException e) {
+                        throw new IndexException(e);
+                }
+        }
 
-	public void deleteRow(Value value, int row) throws IndexException {
-		if (!value.isNull()) {
-			try {
-				index.delete(value, row);
-			} catch (IOException e) {
-				throw new IndexException("Cannot delete at the index", e);
-			}
-		}
-	}
+        @Override
+        public void deleteRow(Value value, int row) throws IndexException {
+                if (!value.isNull()) {
+                        try {
+                                index.delete(value, row);
+                        } catch (IOException e) {
+                                throw new IndexException("Cannot delete at the index", e);
+                        }
+                }
+        }
 
-	public String getFieldName() {
-		return fieldName;
-	}
+        @Override
+        public String getFieldName() {
+                return fieldName;
+        }
 
-	public int[] getIterator(IndexQuery query)
-			throws IndexException {
-		AlphaQuery q = (AlphaQuery) query;
-		try {
-			int[] result = index.getRow(q.getMin(), q.isMinIncluded(), q
-					.getMax(), q.isMaxIncluded());
-			return result;
-		} catch (IOException e) {
-			throw new IndexException("Cannot access the index", e);
-		} catch (EvaluationException e) {
-			throw new IndexException("Cannot compute the value to "
-					+ "query the index", e);
-		}
-	}
+        @Override
+        public int[] getIterator(IndexQuery query)
+                throws IndexQueryException, IndexException {
+                if (!(query instanceof AlphaQuery)) {
+                        throw new IllegalArgumentException("Wrong query type. BTreeIndex only supports AlphaQuery.");
+                }
+                AlphaQuery q = (AlphaQuery) query;
+                try {
+                        return index.getRow(q.getMin(), q.isMinIncluded(), q.getMax(), q.isMaxIncluded());
+                } catch (IOException e) {
+                        throw new IndexException("Cannot access the index", e);
+                }
+        }
 
-	public void insertRow(Value value, int row) throws IndexException {
-		try {
-			if (value.isNull()) {
-				index.updateRows(row, 1);
-				/*
-				 * The index cannot hold null values
-				 */
-				return;
-			} else {
-				index.insert(value, row);
-			}
-		} catch (IOException e) {
-			throw new IndexException("Cannot insert at the index", e);
-		}
-	}
+        @Override
+        public void insertRow(Value value, int row) throws IndexException {
+                try {
+                        if (value.isNull()) {
+                                index.updateRows(row, 1);
+                                /*
+                                 * The index cannot hold null values
+                                 */
+                                return;
+                        } else {
+                                index.insert(value, row);
+                        }
+                } catch (IOException e) {
+                        throw new IndexException("Cannot insert at the index", e);
+                }
+        }
 
-	public void load() throws IndexException {
-		try {
-			index = new DiskBTree(255, 1024);
-			index.openIndex(indexFile);
-		} catch (IOException e) {
-			throw new IndexException("Cannot load index from file", e);
-		}
-	}
+        @Override
+        public void load() throws IndexException {
+                try {
+                        index = new DiskBTree(255, 1024);
+                        index.openIndex(indexFile);
+                } catch (IOException e) {
+                        throw new IndexException("Cannot load index from file", e);
+                }
+        }
 
-	public void save() throws IndexException {
-		try {
-			index.save();
-		} catch (IOException e) {
-			throw new IndexException("Cannot save index", e);
-		}
-	}
+        @Override
+        public void save() throws IndexException {
+                try {
+                        index.save();
+                } catch (IOException e) {
+                        throw new IndexException("Cannot save index", e);
+                }
+        }
 
-	public void setFieldValue(Value oldValue, Value newValue, int rowIndex)
-			throws IndexException {
-		if (!oldValue.isNull()) {
-			try {
-				index.delete(oldValue, rowIndex);
-			} catch (IOException e) {
-				throw new IndexException("Cannot delete old value from index");
-			}
-		}
+        @Override
+        public void setFieldValue(Value oldValue, Value newValue, int rowIndex)
+                throws IndexException {
+                if (!oldValue.isNull()) {
+                        try {
+                                index.delete(oldValue, rowIndex);
+                        } catch (IOException e) {
+                                throw new IndexException("Cannot delete old value from index", e);
+                        }
+                }
 
-		if (!newValue.isNull()) {
-			try {
-				index.insert(newValue, rowIndex);
-			} catch (IOException e) {
-				throw new IndexException("Cannot perform modification "
-						+ "in index. Index is corrupted. "
-						+ "It's recommended to rebuild the index from scratch");
-			}
-		}
-	}
+                if (!newValue.isNull()) {
+                        try {
+                                index.insert(newValue, rowIndex);
+                        } catch (IOException e) {
+                                throw new IndexException("Cannot perform modification "
+                                        + "in index. Index is corrupted. "
+                                        + "It's recommended to rebuild the index from scratch", e);
+                        }
+                }
+        }
 
-	public File getFile() {
-		return indexFile;
-	}
+        @Override
+        public File getFile() {
+                return indexFile;
+        }
 
-	public void setFile(File file) {
-		this.indexFile = file;
-	}
+        @Override
+        public void setFile(File file) {
+                this.indexFile = file;
+        }
 
-	public void close() throws IOException {
-		if (index != null) {
-			index.close();
-			index = null;
-		}
-	}
+        @Override
+        public void close() throws IOException {
+                if (index != null) {
+                        index.close();
+                        index = null;
+                }
+        }
 
-	public boolean isOpen() {
-		return index != null;
-	}
-
+        @Override
+        public boolean isOpen() {
+                return index != null;
+        }
 }

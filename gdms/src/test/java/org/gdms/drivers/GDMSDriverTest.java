@@ -49,7 +49,7 @@ import java.util.Date;
 
 import junit.framework.TestCase;
 
-import org.gdms.SourceTest;
+import org.gdms.BaseTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreation;
 import org.gdms.data.DataSourceCreationException;
@@ -57,24 +57,11 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.DigestUtilities;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.file.FileSourceCreation;
-import org.gdms.data.metadata.DefaultMetadata;
-import org.gdms.data.types.AutoIncrementConstraint;
+import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.DimensionConstraint;
 import org.gdms.data.types.GeometryConstraint;
-import org.gdms.data.types.LengthConstraint;
-import org.gdms.data.types.MaxConstraint;
-import org.gdms.data.types.MinConstraint;
-import org.gdms.data.types.NotNullConstraint;
-import org.gdms.data.types.PatternConstraint;
-import org.gdms.data.types.PrecisionConstraint;
-import org.gdms.data.types.PrimaryKeyConstraint;
-import org.gdms.data.types.RasterTypeConstraint;
-import org.gdms.data.types.ReadOnlyConstraint;
-import org.gdms.data.types.ScaleConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
-import org.gdms.data.types.UniqueConstraint;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -85,7 +72,7 @@ import org.grap.model.RasterMetadata;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import org.gdms.driver.gdms.GdmsDriver;
+import org.gdms.data.types.ConstraintFactory;
 import org.gdms.driver.gdms.GdmsReader;
 
 public class GDMSDriverTest extends TestCase {
@@ -94,18 +81,18 @@ public class GDMSDriverTest extends TestCase {
 
 	@Override
 	protected void setUp() throws Exception {
-		dsf = new DataSourceFactory("src/test/resources/backup/sources",
-				"src/test/resources/backup");
+		dsf = new DataSourceFactory(new File(BaseTest.backupDir,"/sources/").getAbsolutePath(),
+				BaseTest.backupDir.getAbsolutePath());
 	}
 
 	public void testSaveASGDMS() throws Exception {
-		File source = new File(SourceTest.internalData + "landcover2000.shp");
+		File source = new File(BaseTest.internalData + "landcover2000.shp");
 		saveAs(source);
 	}
 
 	private void saveAs(File source) throws DataSourceCreationException,
 			DriverException {
-		File gdmsFile = new File("src/test/resources/backup/saveAsGDMS.gdms");
+		File gdmsFile = new File(BaseTest.backupDir,"saveAsGDMS.gdms");
 		dsf.getSourceManager().register("gdms", gdmsFile);
 		DataSource ds = dsf.getDataSource(source);
 		ds.open();
@@ -137,7 +124,7 @@ public class GDMSDriverTest extends TestCase {
 		metadata.addField("time", TypeFactory.createType(Type.TIME));
 		metadata.addField("timestamp", TypeFactory.createType(Type.TIMESTAMP));
 
-		File file = new File("src/test/resources/backup/allgdms.gdms");
+		File file = new File(BaseTest.backupDir, "allgdms.gdms");
 		DataSourceCreation dsc = new FileSourceCreation(file, metadata);
 		file.delete();
 		dsf.createDataSource(dsc);
@@ -158,7 +145,7 @@ public class GDMSDriverTest extends TestCase {
 		ds.setInt(0, 8, 4);
 		ds.setLong(0, 9, 5L);
 		GeoRaster gr = GeoRasterFactory
-				.createGeoRaster("src/test/resources/sample.png");
+				.createGeoRaster(new File(BaseTest.internalData,"sample.png").getAbsolutePath());
 		Value grValue = ValueFactory.createValue(gr);
 		ds.setFieldValue(0, 10, grValue);
 		ds.setShort(0, 11, (short) 34);
@@ -187,33 +174,30 @@ public class GDMSDriverTest extends TestCase {
 	public void testAllConstraints() throws Exception {
 		DefaultMetadata metadata = new DefaultMetadata();
 		Type[] types = new Type[] {
-				TypeFactory.createType(Type.BINARY, new PrimaryKeyConstraint()),
-				TypeFactory.createType(Type.BOOLEAN, new UniqueConstraint()),
-				TypeFactory.createType(Type.BYTE, new MinConstraint(0)),
-				TypeFactory
-						.createType(Type.COLLECTION, new NotNullConstraint()),
-				TypeFactory.createType(Type.DATE, new ReadOnlyConstraint()),
-				TypeFactory.createType(Type.DOUBLE,
-						new AutoIncrementConstraint()),
+				TypeFactory.createType(Type.BINARY,ConstraintFactory.createConstraint(Constraint.PK)),
+				TypeFactory.createType(Type.BOOLEAN, ConstraintFactory.createConstraint(Constraint.UNIQUE)),
+				TypeFactory.createType(Type.BYTE, ConstraintFactory.createConstraint(Constraint.MIN, 0)),
+				TypeFactory.createType(Type.COLLECTION, ConstraintFactory.createConstraint(Constraint.NOT_NULL)),
+				TypeFactory.createType(Type.DATE, ConstraintFactory.createConstraint(Constraint.READONLY)),
+				TypeFactory.createType(Type.DOUBLE, ConstraintFactory.createConstraint(Constraint.AUTO_INCREMENT)),
 				TypeFactory.createType(Type.FLOAT),
-				TypeFactory.createType(Type.GEOMETRY,
-						new DimensionConstraint(3), new GeometryConstraint(
-								GeometryConstraint.LINESTRING)),
+				TypeFactory.createType(Type.GEOMETRY, ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, 3)
+                                        , ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.LINESTRING)),
 				TypeFactory.createType(Type.INT),
 				TypeFactory.createType(Type.LONG),
-				TypeFactory.createType(Type.RASTER, new RasterTypeConstraint(
-						ImagePlus.COLOR_256)),
-				TypeFactory.createType(Type.SHORT, new MaxConstraint(4),
-						new PrecisionConstraint(0), new ScaleConstraint(2)),
-				TypeFactory.createType(Type.STRING, new LengthConstraint(4),
-						new PatternConstraint("%")),
+				TypeFactory.createType(Type.RASTER, ConstraintFactory.createConstraint(Constraint.RASTER_TYPE, ImagePlus.COLOR_256)),
+				TypeFactory.createType(Type.SHORT, ConstraintFactory.createConstraint(Constraint.MAX, 4),
+						ConstraintFactory.createConstraint(Constraint.PRECISION, 0),
+                                                ConstraintFactory.createConstraint(Constraint.SCALE, 2)),
+				TypeFactory.createType(Type.STRING, ConstraintFactory.createConstraint(Constraint.LENGTH, 4),
+                                        ConstraintFactory.createConstraint(Constraint.PATTERN, "%")),
 				TypeFactory.createType(Type.TIME),
 				TypeFactory.createType(Type.TIMESTAMP) };
 		for (int i = 0; i < types.length; i++) {
 			metadata.addField("field" + i, types[i]);
 		}
 
-		File file = new File("src/test/resources/backup/allgdms.gdms");
+		File file = new File(BaseTest.backupDir,"allgdms.gdms");
 		DataSourceCreation dsc = new FileSourceCreation(file, metadata);
 		file.delete();
 		dsf.createDataSource(dsc);
@@ -240,7 +224,7 @@ public class GDMSDriverTest extends TestCase {
 	}
 
 	public void testRemoveRasterField() throws Exception {
-		File file = new File("src/test/resources/sample.png");
+		File file = new File(BaseTest.internalData,"sample.png");
 		DataSource ds = dsf.getDataSource(file);
 		ds.open();
 		String digest = DigestUtilities.getBase64Digest(ds);
@@ -251,15 +235,15 @@ public class GDMSDriverTest extends TestCase {
 	}
 
 	public void testKeepFullExtent() throws Exception {
-		File vectFile = new File(
-				"src/test/resources/backup/fullExtentVectGDMS.gdms");
+		File vectFile = new File(BaseTest.backupDir,
+				"fullExtentVectGDMS.gdms");
 		vectFile.delete();
-		testFullExtent(vectFile, new File(SourceTest.internalData
+		testFullExtent(vectFile, new File(BaseTest.internalData
 				+ "landcover2000.shp"));
-		File rasterFile = new File(
-				"src/test/resources/backup/fullExtentRasterGDMS.gdms");
+		File rasterFile = new File(BaseTest.backupDir,
+				"fullExtentRasterGDMS.gdms");
 		rasterFile.delete();
-		testFullExtent(rasterFile, new File(SourceTest.internalData
+		testFullExtent(rasterFile, new File(BaseTest.internalData
 				+ "sample.png"));
 	}
 
@@ -280,7 +264,7 @@ public class GDMSDriverTest extends TestCase {
 	}
 
 	public void testDifferentValueTypeAndFieldType() throws Exception {
-		File source = new File(SourceTest.internalData + "points.shp");
+		File source = new File(BaseTest.internalData + "points.shp");
 		saveAs(source);
 	}
 
@@ -379,19 +363,22 @@ public class GDMSDriverTest extends TestCase {
 	}
 
 	public void testCompatibleWith2_0() throws Exception {
-		DataSource ds = dsf.getDataSource(new File(
-				"src/test/resources/version2.gdms"));
+		DataSource ds = dsf.getDataSource(new File(BaseTest.internalData,
+				"version2.gdms"));
 		ds.open();
 		ds.getAsString();
 		ds.close();
 	}
 
         public void testOpenBadFile() throws Exception {
-                GdmsReader reader = new GdmsReader(new File("src/test/resources/badgdms.gdms"));
+                GdmsReader reader = new GdmsReader(new File(BaseTest.internalData,"badgdms.gdms"));
                 try {
-                reader.readMetadata();
-                assertTrue(false);
-                } catch(DriverException ex) {
+                        reader.open();
+                        reader.readMetadata();
+                        assertTrue(false);
+                } catch(DriverException e) {
+                } finally {
+                        reader.close();
                 }
         }
 }

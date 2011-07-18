@@ -37,15 +37,38 @@
 package org.gdms.data.indexes;
 
 import org.gdms.data.values.Value;
-import org.gdms.sql.evaluator.EvaluationException;
 
+/**
+ * Represents an index query based on ordered value and a specific range.
+ * @author Antoine Gourlay
+ */
 public interface AlphaQuery extends IndexQuery {
-	public Value getMin() throws EvaluationException;
 
-	public boolean isMinIncluded();
+        /**
+         * Gets the minimum allowed value.
+         * @return a value, can be {@code NullValue}.
+         * @throws EvaluationException
+         */
+        Value getMin() throws IndexQueryException;
 
-	public boolean isMaxIncluded();
+        /**
+         * Returns true if the return value of {@code getMin} must be included
+         * in the index query.
+         * @return
+         */
+        boolean isMinIncluded();
 
-	public Value getMax() throws EvaluationException;
+        /**
+         * Returns true if the return value of {@code getMax} must be included
+         * in the index query.
+         * @return
+         */
+        boolean isMaxIncluded();
 
+        /**
+         * Gets the maximum allowed value.
+         * @return a value, can be {@code NullValue}.
+         * @throws EvaluationException
+         */
+        Value getMax() throws IndexQueryException;
 }

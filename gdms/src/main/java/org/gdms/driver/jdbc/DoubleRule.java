@@ -39,25 +39,25 @@ package org.gdms.driver.jdbc;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 
-public class DoubleRule extends AbstractConversionRule implements
-		ConversionRule {
+public class DoubleRule extends AbstractConversionRule {
 
-	@Override
-	public int[] getValidConstraints() {
-		return addGlobalConstraints(Constraint.PRECISION, Constraint.SCALE);
-	}
+        @Override
+        public int[] getValidConstraints() {
+                return addGlobalConstraints(Constraint.PRECISION, Constraint.SCALE);
+        }
 
-	@Override
-	public int getOutputTypeCode() {
-		return Type.DOUBLE;
-	}
+        @Override
+        public int getOutputTypeCode() {
+                return Type.DOUBLE;
+        }
 
-	public String getTypeName() {
-		return "double";
-	}
+        @Override
+        public String getTypeName() {
+                return "double";
+        }
 
-	public boolean canApply(Type type) {
-		return type.getTypeCode() == Type.DOUBLE;
-	}
-
+        @Override
+        public boolean canApply(Type type) {
+                return type.getTypeCode() == Type.DOUBLE;
+        }
 }

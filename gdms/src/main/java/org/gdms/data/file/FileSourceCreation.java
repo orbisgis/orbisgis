@@ -43,17 +43,17 @@ import java.io.File;
 
 import org.gdms.data.AbstractDataSourceCreation;
 import org.gdms.data.DataSourceDefinition;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.Metadata;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.FileReadWriteDriver;
-import org.gdms.driver.ReadWriteDriver;
+import org.gdms.driver.Driver;
 
 public class FileSourceCreation extends AbstractDataSourceCreation {
 
 	private File file;
 
-	private Metadata driverMetadata;
+	private Metadata metadata;
 
 	/**
 	 * Builds a new FileSourceCreation
@@ -61,29 +61,31 @@ public class FileSourceCreation extends AbstractDataSourceCreation {
 	 * @param file
 	 *            Name of the file to create
 	 * @param dmd
-	 *            Information about the schema of the new source. If the driver
-	 *            is a spatial one, this parameter must be a
-	 *            SpatialDriverMetadata implementation
+	 *            Information about the schema of the new source. If null the source is supposed to
+         *            exist already.
 	 */
 	public FileSourceCreation(File file, Metadata dmd) {
 		this.file = file;
-		this.driverMetadata = dmd;
+		this.metadata = dmd;
 	}
 
-	public DataSourceDefinition create() throws DriverException {
+        @Override
+	public DataSourceDefinition create(String tableName) throws DriverException {
 
-		if (!file.exists()) {
-			((FileReadWriteDriver) getDriver()).createSource(file
-					.getAbsolutePath(), driverMetadata, getDataSourceFactory());
-		} else {
-			throw new DriverException("File already exists");
-		}
+                if (metadata != null) {
+                        if (!file.exists()) {
+                                ((FileReadWriteDriver) getDriver()).createSource(file
+                                                .getAbsolutePath(), metadata, getDataSourceFactory());
+                        } else {
+                                throw new DriverException("File already exists");
+                        }
+                }
 
-		return new FileSourceDefinition(file);
+		return new FileSourceDefinition(file, tableName);
 	}
 
 	@Override
-	protected ReadWriteDriver getDriverInstance() {
+	protected Driver getDriverInstance() {
 		return (FileReadWriteDriver) DriverUtilities.getDriver(
 				getDataSourceFactory().getSourceManager().getDriverManager(),
 				file);

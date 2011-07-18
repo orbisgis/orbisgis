@@ -6,14 +6,16 @@
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
  *
- *  Team leader Erwan BOCHER, scientific researcher,
+ * Team leader : Erwan BOCHER, scientific researcher,
  *
- *  User support leader : Gwendall Petit, geomatic engineer.
+ * User support leader : Gwendall Petit, geomatic engineer.
  *
+ * Previous computer developer : Pierre-Yves FADET, computer engineer, Thomas LEDUC, 
+ * scientific researcher, Fernando GONZALEZ CORTES, computer engineer.
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2010 Erwan BOCHER, Alexis GUEGANNO, Maxence LAURENT, Antoine GOURLAY
  *
  * This file is part of OrbisGIS.
  *
@@ -32,8 +34,7 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info@orbisgis.org
  */
 package org.gdms.data.types;
 
@@ -48,24 +49,26 @@ public class RasterTypeConstraint extends AbstractIntConstraint {
 	 *            Type of the raster. Any of the possible return values of
 	 *            {@link GeoRaster.getType()}
 	 */
-	public RasterTypeConstraint(int type) {
+	RasterTypeConstraint(int type) {
 		super(type);
 	}
 
-	public RasterTypeConstraint(byte[] constraintBytes) {
+	RasterTypeConstraint(byte[] constraintBytes) {
 		super(constraintBytes);
 	}
 
+        @Override
 	public String check(Value value) {
 		return null;
 	}
 
+        @Override
 	public int getConstraintCode() {
 		return RASTER_TYPE;
 	}
 
 	@Override
 	public int getType() {
-		return CONSTRAINT_TYPE_OTHER;
+		return CONSTRAINT_TYPE_RASTER;
 	}
 }

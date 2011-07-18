@@ -4,15 +4,14 @@
 // Any modifications to this file will be lost upon recompilation of the source schema. 
 // Generated on: 2010.10.28 at 10:28:11 PM CEST 
 //
-
-
 package org.gdms.source.directory;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
-
+import org.gdms.data.DataSourceDefinition;
+import org.gdms.data.object.ObjectSourceDefinition;
 
 /**
  * <p>Java class for object-definition-type complex type.
@@ -24,6 +23,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;extension base="{}definition-type">
  *       &lt;attribute name="class" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="tableName" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -34,34 +34,55 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "object-definition-type")
 public class ObjectDefinitionType
-    extends DefinitionType
-{
+        extends DefinitionType {
 
-    @XmlAttribute(name = "class", required = true)
-    protected String clazz;
+        @XmlAttribute(name = "class", required = true)
+        protected String clazz;
+        
+        @XmlAttribute(required = true)
+        protected String tableName;
 
-    /**
-     * Gets the value of the clazz property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getClazz() {
-        return clazz;
-    }
+        /**
+         * Gets the value of the clazz property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getClazz() {
+                return clazz;
+        }
 
-    /**
-     * Sets the value of the clazz property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setClazz(String value) {
-        this.clazz = value;
-    }
+        /**
+         * Sets the value of the clazz property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setClazz(String value) {
+                this.clazz = value;
+        }
 
+        @Override
+        public DataSourceDefinition toDataSourceDefinition() throws InstantiationException,
+                IllegalAccessException, ClassNotFoundException {
+                return ObjectSourceDefinition.createFromXML(this);
+        }
+
+        /**
+         * @return the tableName
+         */
+        public String getTableName() {
+                return tableName;
+        }
+
+        /**
+         * @param tableName the tableName to set
+         */
+        public void setTableName(String tableName) {
+                this.tableName = tableName;
+        }
 }

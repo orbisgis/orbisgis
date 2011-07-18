@@ -40,18 +40,16 @@ package org.gdms.data.db;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
+import org.apache.log4j.Logger;
 
-import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
 import org.gdms.data.DriverDataSource;
 import org.gdms.data.edition.Commiter;
 import org.gdms.data.edition.DeleteEditionInfo;
 import org.gdms.data.edition.EditionInfo;
-import org.gdms.data.edition.PhysicalDirection;
-import org.gdms.data.metadata.MetadataUtilities;
-import org.gdms.data.types.InvalidTypeException;
+import org.gdms.data.edition.PhysicalRowAddress;
+import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DBDriver;
@@ -67,263 +65,252 @@ import org.orbisgis.utils.I18N;
  * 
  */
 public class DBTableDataSourceAdapter extends DriverDataSource implements
-		Commiter, CommitListener {
+        Commiter, CommitListener {
 
-	private DBDriver driver;
+        private static final String GDMS_DRIVER_ERROR_CONNECTION_OPEN = "gdms.driver.error.connection.open";
+        private DBDriver driver;
+        private DBSource def;
+        protected Connection con;
+        private int[] cachedPKIndices;
+        private static final Logger LOG = Logger.getLogger(DBTableDataSourceAdapter.class);
 
-	private DBSource def;
+        /**
+         * Creates a new DBTableDataSourceAdapter
+         *
+         *
+         * @param src
+         * @param def
+         * @param driver
+         */
+        public DBTableDataSourceAdapter(Source src, DBSource def, DBDriver driver) {
+                super(src);
+                this.def = def;
+                this.driver = driver;
+                LOG.trace("Constructor");
+        }
 
-	protected Connection con;
+        @Override
+        public void close() throws DriverException {
+                LOG.trace("Closing");
+                driver.close(con);
+                fireCancel(this);
+                try {
+                        con.close();
+                        con = null;
+                } catch (SQLException e) {
+                        throw new DriverException(I18N.getString("gdms.datasource.error.datasource.close"), e);
+                }
 
-	private int[] cachedPKIndices;
+                DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory().getSourceManager();
+                sm.removeCommitListener(this);
+        }
 
-	/**
-	 * Creates a new DBTableDataSourceAdapter
-	 * 
-	 */
-	public DBTableDataSourceAdapter(Source src, DBSource def, DBDriver driver) {
-		super(src);
-		this.def = def;
-		this.driver = driver;
-	}
+        @Override
+        public DBDriver getDriver() {
+                return driver;
+        }
 
-	public void close() throws DriverException, AlreadyClosedException {
-		driver.close(con);
-		fireCancel(this);
-		try {
-			con.close();
-			con = null;
-		} catch (SQLException e) {
-			throw new DriverException(I18N
-					.getString("gdms.datasource.error.datasource.close"), e);
-		}
+        /**
+         * Gets a connection to the driver
+         *
+         * @return Connection
+         *
+         * @throws SQLException
+         *             if the connection cannot be established
+         */
+        private Connection getConnection() throws SQLException {
+                LOG.trace("Getting connection");
+                if (con == null) {
+                        con = driver.getConnection(def.getHost(), def.getPort(), def.isSsl(), def.getDbName(), def.getUser(), def.getPassword());
+                }
+                return con;
+        }
 
-		DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory()
-				.getSourceManager();
-		sm.removeCommitListener(this);
-	}
+        @Override
+        public void open() throws DriverException {
+                LOG.trace("Opening");
+                try {
+                        con = getConnection();
+                        driver.open(con, def.getTableName(), def.getSchemaName());
+                } catch (SQLException e) {
+                        throw new DriverException(I18N.getString(GDMS_DRIVER_ERROR_CONNECTION_OPEN), e);
+                }
 
-	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @return
-	 */
-	public DBDriver getDriver() {
-		return driver;
-	}
+                DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory().getSourceManager();
+                sm.addCommitListener(this);
+        }
 
-	/**
-	 * Get's a connection to the driver
-	 * 
-	 * @return Connection
-	 * 
-	 * @throws SQLException
-	 *             if the connection cannot be established
-	 */
-	private Connection getConnection() throws SQLException {
-		if (con == null) {
-			con = driver.getConnection(def.getHost(), def.getPort(), def.isSsl(), def
-					.getDbName(), def.getUser(), def.getPassword());
-		}
-		return con;
-	}
+        /**
+         * @throws DriverException
+         * @see org.gdms.data.DataSource#getPKNames()
+         */
+        private String[] getPKNames() throws DriverException {
+                final String[] ret = new String[getPKCardinality()];
 
-	public void open() throws DriverException {
-		try {
-			con = getConnection();
-			((DBDriver) driver).open(con, def.getTableName(), def
-					.getSchemaName());
-		} catch (SQLException e) {
-			throw new DriverException(I18N
-					.getString("gdms.driver.error.connection.open"), e);
-		}
+                for (int i = 0; i < ret.length; i++) {
+                        ret[i] = getPKName(i);
+                }
 
-		DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory()
-				.getSourceManager();
-		sm.addCommitListener(this);
-	}
+                return ret;
+        }
 
-	/**
-	 * @throws InvalidTypeException
-	 * @throws DriverException
-	 * @throws InvalidTypeException
-	 * @see org.gdms.data.DataSource#getPKNames()
-	 */
-	private String[] getPKNames() throws DriverException {
-		final String[] ret = new String[getPKCardinality()];
+        /**
+         * @param dataSource
+         * @see org.gdms.data.DataSource#saveData(org.gdms.data.DataSource)
+         */
+        @Override
+        public void saveData(DataSource dataSource) throws DriverException {
+                LOG.trace("Saving data");
+                dataSource.open();
 
-		for (int i = 0; i < ret.length; i++) {
-			ret[i] = getPKName(i);
-		}
+                DBReadWriteDriver readWriteDriver = ((DBReadWriteDriver) driver);
+                if (driver instanceof DBReadWriteDriver) {
+                        Connection localCon;
+                        try {
+                                localCon = getConnection();
+                                readWriteDriver.beginTrans(localCon);
+                        } catch (SQLException e) {
+                                throw new DriverException(I18N.getString(GDMS_DRIVER_ERROR_CONNECTION_OPEN), e);
+                        }
+                }
 
-		return ret;
-	}
+                for (int i = 0; i < dataSource.getRowCount(); i++) {
+                        Value[] row = new Value[dataSource.getFieldNames().length];
+                        for (int j = 0; j < row.length; j++) {
+                                row[j] = dataSource.getFieldValue(i, j);
+                        }
 
-	/**
-	 * @see org.gdms.data.DataSource#saveData(org.gdms.data.DataSource)
-	 */
-	public void saveData(DataSource dataSource) throws DriverException {
-		dataSource.open();
+                        try {
+                                Type[] fieldTypes = MetadataUtilities.getFieldTypes(dataSource.getMetadata());
+                                String sql = readWriteDriver.getInsertSQL(dataSource.getFieldNames(), fieldTypes, row);
 
-		DBReadWriteDriver readWriteDriver = ((DBReadWriteDriver) driver);
-		if (driver instanceof DBReadWriteDriver) {
-			Connection con;
-			try {
-				con = getConnection();
-				readWriteDriver.beginTrans(con);
-			} catch (SQLException e) {
-				throw new DriverException(I18N
-						.getString("gdms.driver.error.connection.open"), e);
-			}
-		}
+                                readWriteDriver.execute(con, sql);
+                        } catch (SQLException e) {
+                                if (driver instanceof DBReadWriteDriver) {
+                                        try {
+                                                Connection localCon = getConnection();
+                                                readWriteDriver.rollBackTrans(localCon);
+                                        } catch (SQLException e1) {
+                                                LOG.error("Error saving data.", e);
+                                                throw new DriverException(I18N.getString(GDMS_DRIVER_ERROR_CONNECTION_OPEN),
+                                                        e1);
+                                        }
+                                }
 
-		for (int i = 0; i < dataSource.getRowCount(); i++) {
-			Value[] row = new Value[dataSource.getFieldNames().length];
-			for (int j = 0; j < row.length; j++) {
-				row[j] = dataSource.getFieldValue(i, j);
-			}
+                                throw new DriverException(I18N.getString(GDMS_DRIVER_ERROR_CONNECTION_OPEN), e);
+                        }
+                }
 
-			try {
-				Type[] fieldTypes = MetadataUtilities.getFieldTypes(dataSource
-						.getMetadata());
-				String sql = readWriteDriver.getInsertSQL(dataSource
-						.getFieldNames(), fieldTypes, row);
+                if (driver instanceof DBReadWriteDriver) {
+                        try {
+                                Connection localCon = getConnection();
+                                readWriteDriver.commitTrans(localCon);
+                        } catch (SQLException e) {
+                                throw new DriverException(I18N.getString(GDMS_DRIVER_ERROR_CONNECTION_OPEN), e);
+                        }
+                }
 
-				readWriteDriver.execute(con, sql);
-			} catch (SQLException e) {
+                dataSource.close();
+        }
 
-				if (driver instanceof DBReadWriteDriver) {
-					try {
-						Connection con = getConnection();
-						readWriteDriver.rollBackTrans(con);
-					} catch (SQLException e1) {
-						throw new DriverException(I18N
-								.getString("gdms.driver.error.connection.open"),
-								e1);
-					}
-				}
+        public long[] getWhereFilter() throws IOException {
+                return null;
+        }
 
-				throw new DriverException(I18N
-						.getString("gdms.driver.error.connection.open"), e);
-			}
-		}
+        @Override
+        public boolean commit(List<PhysicalRowAddress> rowsDirections,
+                String[] fieldNames, List<EditionInfo> schemaActions,
+                List<EditionInfo> editionActions,
+                List<DeleteEditionInfo> deletedPKs, DataSource modifiedSource)
+                throws DriverException {
+                LOG.trace("Commiting");
+                try {
+                        ((DBReadWriteDriver) driver).beginTrans(getConnection());
+                } catch (SQLException e) {
+                        throw new DriverException(I18N.getString(GDMS_DRIVER_ERROR_CONNECTION_OPEN), e);
+                }
 
-		if (driver instanceof DBReadWriteDriver) {
-			try {
-				Connection con = getConnection();
-				readWriteDriver.commitTrans(con);
-			} catch (SQLException e) {
-				throw new DriverException(I18N
-						.getString("gdms.driver.error.connection.open"), e);
-			}
-		}
+                String sql = null;
+                try {
+                        for (EditionInfo info : schemaActions) {
+                                sql = info.getSQL(getPKNames(), fieldNames,
+                                        (DBReadWriteDriver) driver);
+                                ((DBReadWriteDriver) driver).execute(con, sql);
+                        }
+                        for (DeleteEditionInfo info : deletedPKs) {
+                                sql = info.getSQL(getPKNames(), fieldNames,
+                                        (DBReadWriteDriver) driver);
+                                ((DBReadWriteDriver) driver).execute(con, sql);
+                        }
+                        for (EditionInfo info : editionActions) {
+                                sql = info.getSQL(getPKNames(), fieldNames,
+                                        (DBReadWriteDriver) driver);
+                                if (sql != null) {
+                                        sql = info.getSQL(getPKNames(), fieldNames,
+                                                (DBReadWriteDriver) driver);
+                                        ((DBReadWriteDriver) driver).execute(con, sql);
+                                }
+                        }
+                } catch (SQLException e) {
+                        try {
+                                ((DBReadWriteDriver) driver).rollBackTrans(getConnection());
+                        } catch (SQLException e1) {
+                                LOG.error("Error commiting", e);
+                                throw new DriverException(I18N.getString(GDMS_DRIVER_ERROR_CONNECTION_OPEN), e1);
+                        }
+                        throw new DriverException(e.getMessage() + ":" + sql, e);
+                }
 
-		dataSource.close();
-	}
+                try {
+                        ((DBReadWriteDriver) driver).commitTrans(getConnection());
+                } catch (SQLException e) {
+                        throw new DriverException(I18N.getString(GDMS_DRIVER_ERROR_CONNECTION_OPEN), e);
+                }
 
-	public long[] getWhereFilter() throws IOException {
-		return null;
-	}
+                fireCommit(this);
 
-	@Override
-	public boolean commit(List<PhysicalDirection> rowsDirections,
-			String[] fieldNames, ArrayList<EditionInfo> schemaActions,
-			ArrayList<EditionInfo> editionActions,
-			ArrayList<DeleteEditionInfo> deletedPKs, DataSource modifiedSource)
-			throws DriverException {
-		try {
-			((DBReadWriteDriver) driver).beginTrans(getConnection());
-		} catch (SQLException e) {
-			throw new DriverException(I18N
-					.getString("gdms.driver.error.connection.open"), e);
-		}
+                return true;
+        }
 
-		String sql = null;
-		try {
-			for (EditionInfo info : schemaActions) {
-				sql = info.getSQL(getPKNames(), fieldNames,
-						(DBReadWriteDriver) driver);
-				((DBReadWriteDriver) driver).execute(con, sql);
-			}
-			for (DeleteEditionInfo info : deletedPKs) {
-				sql = info.getSQL(getPKNames(), fieldNames,
-						(DBReadWriteDriver) driver);
-				((DBReadWriteDriver) driver).execute(con, sql);
-			}
-			for (EditionInfo info : editionActions) {
-				sql = info.getSQL(getPKNames(), fieldNames,
-						(DBReadWriteDriver) driver);
-				if (sql != null) {
-					sql = info.getSQL(getPKNames(), fieldNames,
-							(DBReadWriteDriver) driver);
-					((DBReadWriteDriver) driver).execute(con, sql);
-				}
-			}
-		} catch (SQLException e) {
-			try {
-				((DBReadWriteDriver) driver).rollBackTrans(getConnection());
-			} catch (SQLException e1) {
-				throw new DriverException(I18N
-						.getString("gdms.driver.error.connection.open"), e1);
-			}
-			throw new DriverException(e.getMessage() + ":" + sql, e);
-		}
+        private int[] getPrimaryKeys() throws DriverException {
+                if (cachedPKIndices == null) {
+                        cachedPKIndices = MetadataUtilities.getPKIndices(getMetadata());
+                }
+                return cachedPKIndices;
+        }
 
-		try {
-			((DBReadWriteDriver) driver).commitTrans(getConnection());
-		} catch (SQLException e) {
-			throw new DriverException(I18N
-					.getString("gdms.driver.error.connection.open"), e);
-		}
+        private String getPKName(int fieldId) throws DriverException {
+                int[] fieldsId = getPrimaryKeys();
+                return getMetadata().getFieldName(fieldsId[fieldId]);
+        }
 
-		fireCommit(this);
+        private int getPKCardinality() throws DriverException {
+                return getPrimaryKeys().length;
+        }
 
-		return true;
-	}
+        @Override
+        public void commitDone(String name) throws DriverException {
+                sync();
+        }
 
-	/**
-	 * @throws InvalidTypeException
-	 * @see org.gdms.data.DataSource#getPrimaryKeys()
-	 */
-	private int[] getPrimaryKeys() throws DriverException {
-		if (cachedPKIndices == null) {
-			cachedPKIndices = MetadataUtilities.getPKIndices(getMetadata());
-		}
-		return cachedPKIndices;
-	}
+        @Override
+        public void syncWithSource() throws DriverException {
+                sync();
+        }
 
-	private String getPKName(int fieldId) throws DriverException {
-		int[] fieldsId = getPrimaryKeys();
-		return getMetadata().getFieldName(fieldsId[fieldId]);
-	}
+        private void sync() throws DriverException {
+                try {
+                        driver.close(con);
+                        con.close();
+                        con = null;
+                        con = getConnection();
+                        driver.open(con, def.getTableName(), def.getSchemaName());
+                } catch (SQLException e) {
+                        throw new DriverException(I18N.getString("gdms.driver.error.connection.close"), e);
+                }
+        }
 
-	private int getPKCardinality() throws DriverException {
-		return getPrimaryKeys().length;
-	}
-
-	public void commitDone(String name) throws DriverException {
-		sync();
-	}
-
-	public void syncWithSource() throws DriverException {
-		sync();
-	}
-
-	private void sync() throws DriverException {
-		try {
-			driver.close(con);
-			con.close();
-			con = null;
-			con = getConnection();
-			((DBDriver) driver).open(con, def.getTableName(), def
-					.getSchemaName());
-		} catch (SQLException e) {
-			throw new DriverException(I18N
-					.getString("gdms.driver.error.connection.close"), e);
-		}
-	}
-
-	public void isCommiting(String name, Object source) {
-	}
-
+        @Override
+        public void isCommiting(String name, Object source) {
+        }
 }

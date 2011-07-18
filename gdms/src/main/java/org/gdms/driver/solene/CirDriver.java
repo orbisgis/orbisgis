@@ -46,26 +46,23 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
 
-import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.metadata.DefaultMetadata;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.Metadata;
+import org.gdms.data.schema.Schema;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.DefaultTypeDefinition;
 import org.gdms.data.types.DimensionConstraint;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.InvalidTypeException;
-import org.gdms.data.types.NotNullConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
-import org.gdms.data.types.UniqueConstraint;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileReadWriteDriver;
+import org.gdms.driver.ReadAccess;
 import org.gdms.source.SourceManager;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -76,346 +73,385 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
+import org.apache.log4j.Logger;
+import org.gdms.data.schema.DefaultSchema;
+import org.gdms.data.schema.MetadataUtilities;
+import org.gdms.data.schema.SchemaMetadata;
+import org.gdms.data.types.ConstraintFactory;
 
-// call register('../../datas2tests/cir/faceTrouee.cir','moncir');
-// call register('/tmp/r.cir','r');
-// create table r as select * from moncir;
+public final class CirDriver implements FileReadWriteDriver, ReadAccess {
 
-public class CirDriver implements FileReadWriteDriver {
-	public static final String DRIVER_NAME = "Solene Cir driver";
+        public static final String DRIVER_NAME = "Solene Cir driver";
+        private static final String EXTENSION = "cir";
+        private Scanner in;
+        private List<Value[]> rows;
+        private Envelope envelope;
+        private PrintWriter out;
+        private Schema schema;
+        private File file;
+        private static final Logger LOG = Logger.getLogger(CirDriver.class);
+        // final static String COORD3D_WRITTING_FORMAT = "\t%g\t%g\t%g\r\n";
+        private static final String COORD3D_WRITTING_FORMAT = "\t%10.5f\t%10.5f\t%10.5f\r\n";
 
-	private String EXTENSION = "cir";
+        @Override
+        public void close() throws DriverException {
+                LOG.trace("Closing");
+                in.close();
+        }
 
-	private Scanner in;
+        @Override
+        public void open() throws DriverException {
+                LOG.trace("Opening " + file.getAbsolutePath());
+                try {
+                        rows = new ArrayList<Value[]>();
 
-	private List<Value[]> rows;
+                        in = new Scanner(file);
+                        in.useLocale(Locale.US); // essential to read float values
 
-	private Envelope envelope;
+                        final int nbFacesCir = in.nextInt();
+                        in.next(); // useless "supNumFaces"
+                        for (int i = 0; i < 10; i++) {
+                                in.next(); // 5 rows of 2 useless values
+                        }
 
-	private PrintWriter out;
+                        final GeometryFactory geometryFactory = new GeometryFactory();
+                        for (int i = 0; i < nbFacesCir; i++) {
+                                readFace(geometryFactory);
+                        }
 
-	// final static String COORD3D_WRITTING_FORMAT = "\t%g\t%g\t%g\r\n";
-	final static String COORD3D_WRITTING_FORMAT = "\t%10.5f\t%10.5f\t%10.5f\r\n";
+                } catch (FileNotFoundException e) {
+                        throw new DriverException(e);
+                } catch (InvalidTypeException e) {
+                        throw new DriverException(e);
+                }
+        }
 
-	public void close() throws DriverException {
-		in.close();
-	}
+        private void readFace(final GeometryFactory geometryFactory)
+                throws DriverException {
+                final String faceIdx = in.next();
+                if (!faceIdx.startsWith("f")) {
+                        throw new DriverException("Bad CIR file format (f) !");
+                }
+                final int nbContours = in.nextInt();
+                final Coordinate normal = readCoordinate();
+                for (int boundIdx = 0; boundIdx < nbContours; boundIdx++) {
+                        readBound(geometryFactory, faceIdx, boundIdx, normal);
+                }
+        }
 
-	public void open(File file) throws DriverException {
-		try {
-			rows = new ArrayList<Value[]>();
+        private void readBound(final GeometryFactory geometryFactory,
+                final String faceIdx, final int boundIdx, final Coordinate normal)
+                throws DriverException {
+                final String tmpNbHoles = in.next();
+                if (!tmpNbHoles.startsWith("c")) {
+                        throw new DriverException("Bad CIR file format (c) !");
+                }
+                final int nbHoles = Integer.parseInt(tmpNbHoles.substring(1));
 
-			in = new Scanner(file);
-			in.useLocale(Locale.US); // essential to read float values
+                final LinearRing shell = readLinearRing(geometryFactory);
+                final LinearRing[] holes = readHoles(geometryFactory, nbHoles);
 
-			final int nbFacesCir = in.nextInt();
-			in.next(); // useless "supNumFaces"
-			for (int i = 0; i < 10; i++) {
-				in.next(); // 5 rows of 2 useless values
-			}
+                Geometry geom = geometryFactory.createPolygon(shell, holes);
+                if (Geometry3DUtilities.scalarProduct(normal, Geometry3DUtilities.computeNormal((Polygon) geom)) < 0) {
+                        geom = Geometry3DUtilities.reverse((Polygon) geom);
+                }
 
-			final GeometryFactory geometryFactory = new GeometryFactory();
-			for (int i = 0; i < nbFacesCir; i++) {
-				_readFace(geometryFactory);
-			}
-		} catch (FileNotFoundException e) {
-			throw new DriverException(e);
-		}
-	}
+                if (null == envelope) {
+                        envelope = geom.getEnvelopeInternal();
+                } else {
+                        envelope.expandToInclude(geom.getEnvelopeInternal());
+                }
 
-	private final void _readFace(final GeometryFactory geometryFactory)
-			throws DriverException {
-		final String faceIdx = in.next();
-		if (!faceIdx.startsWith("f")) {
-			throw new DriverException("Bad CIR file format (f) !");
-		}
-		final int nbContours = in.nextInt();
-		final Coordinate normal = _readCoordinate();
-		for (int boundIdx = 0; boundIdx < nbContours; boundIdx++) {
-			_readBound(geometryFactory, faceIdx, boundIdx, normal);
-		}
-	}
+                rows.add(new Value[]{
+                                ValueFactory.createValue(faceIdx + "_" + boundIdx),
+                                ValueFactory.createValue(geom)});
+        }
 
-	private final void _readBound(final GeometryFactory geometryFactory,
-			final String faceIdx, final int boundIdx, final Coordinate normal)
-			throws DriverException {
-		final String tmpNbHoles = in.next();
-		if (!tmpNbHoles.startsWith("c")) {
-			throw new DriverException("Bad CIR file format (c) !");
-		}
-		final int nbHoles = Integer.parseInt(tmpNbHoles.substring(1));
+        private LinearRing readLinearRing(
+                final GeometryFactory geometryFactory) {
+                Coordinate[] points = null;
+                final int nbPoints = in.nextInt();
+                if (1 < nbPoints) {
+                        points = new Coordinate[nbPoints];
+                        for (int i = 0; i < nbPoints; i++) {
+                                points[i] = readCoordinate();
+                        }
+                }
+                return geometryFactory.createLinearRing(points);
+        }
 
-		final LinearRing shell = _readLinearRing(geometryFactory);
-		final LinearRing[] holes = _readHoles(geometryFactory, nbHoles);
+        private LinearRing[] readHoles(
+                final GeometryFactory geometryFactory, final int nbHoles)
+                throws DriverException {
+                LinearRing[] holes = null;
+                if (0 < nbHoles) {
+                        holes = new LinearRing[nbHoles];
+                        for (int i = 0; i < nbHoles; i++) {
+                                if (!in.next().equals("t")) {
+                                        throw new DriverException("Bad CIR file format (t) !");
+                                }
+                                holes[i] = readLinearRing(geometryFactory);
+                        }
+                }
+                return holes;
+        }
 
-		Geometry geom = geometryFactory.createPolygon(shell, holes);
-		if (Geometry3DUtilities.scalarProduct(normal, Geometry3DUtilities
-				.computeNormal((Polygon) geom)) < 0) {
-			geom = Geometry3DUtilities.reverse((Polygon) geom);
-		}
+        private Coordinate readCoordinate() {
+                return new Coordinate(in.nextDouble(), in.nextDouble(), in.nextDouble());
+        }
 
-		if (null == envelope) {
-			envelope = geom.getEnvelopeInternal();
-		} else {
-			envelope.expandToInclude(geom.getEnvelopeInternal());
-		}
+        @Override
+        public TypeDefinition[] getTypesDefinitions() {
+                final TypeDefinition[] result = new TypeDefinition[2];
+                result[0] = new DefaultTypeDefinition("STRING", Type.STRING, new int[]{
+                                Constraint.UNIQUE, Constraint.NOT_NULL});
+                result[1] = new DefaultTypeDefinition("GEOMETRY", Type.GEOMETRY,
+                        new int[]{Constraint.GEOMETRY_DIMENSION,
+                                Constraint.GEOMETRY_TYPE});
+                return result;
+        }
 
-		rows.add(new Value[] {
-				ValueFactory.createValue(faceIdx + "_" + boundIdx),
-				ValueFactory.createValue(geom) });
-	}
+        @Override
+        public void setDataSourceFactory(DataSourceFactory dsf) {
+        }
 
-	private final LinearRing _readLinearRing(
-			final GeometryFactory geometryFactory) {
-		Coordinate[] points = null;
-		final int nbPoints = in.nextInt();
-		if (1 < nbPoints) {
-			points = new Coordinate[nbPoints];
-			for (int i = 0; i < nbPoints; i++) {
-				points[i] = _readCoordinate();
-			}
-		}
-		return geometryFactory.createLinearRing(points);
-	}
+        @Override
+        public String getDriverId() {
+                return DRIVER_NAME;
+        }
 
-	private final LinearRing[] _readHoles(
-			final GeometryFactory geometryFactory, final int nbHoles)
-			throws DriverException {
-		LinearRing[] holes = null;
-		if (0 < nbHoles) {
-			holes = new LinearRing[nbHoles];
-			for (int i = 0; i < nbHoles; i++) {
-				if (!in.next().equals("t")) {
-					throw new DriverException("Bad CIR file format (t) !");
-				}
-				holes[i] = _readLinearRing(geometryFactory);
-			}
-		}
-		return holes;
-	}
+        @Override
+        public void copy(File in, File out) throws IOException {
+                FileUtils.copy(in, out);
+        }
 
-	private final Coordinate _readCoordinate() {
-		return new Coordinate(in.nextDouble(), in.nextDouble(), in.nextDouble());
-	}
+        @Override
+        public void createSource(String path, Metadata metadata,
+                DataSourceFactory dataSourceFactory) throws DriverException {
+                LOG.trace("Creating source file in " + path);
+                try {
+                        int spatialFieldIndex = -1;
+                        for (int fieldId = 0; fieldId < metadata.getFieldCount(); fieldId++) {
+                                final Constraint c = metadata.getFieldType(fieldId).getConstraint(Constraint.GEOMETRY_TYPE);
+                                if (null != c) {
+                                        spatialFieldIndex = fieldId;
+                                        break;
+                                }
+                        }
+                        checkGeometryConstraint(metadata, spatialFieldIndex);
 
-	public Metadata getMetadata() throws DriverException {
-		final DefaultMetadata metadata = new DefaultMetadata();
-		try {
-			metadata.addField("id", Type.STRING, new Constraint[] {
-					new UniqueConstraint(), new NotNullConstraint() });
-			metadata.addField("the_geom", Type.GEOMETRY, new Constraint[] {
-					new GeometryConstraint(GeometryConstraint.POLYGON),
-					new DimensionConstraint(3) });
-		} catch (InvalidTypeException e) {
-			throw new RuntimeException("Bug in the driver", e);
-		}
-		return metadata;
-	}
+                        final File outFile = new File(path);
+                        outFile.getParentFile().mkdirs();
+                        outFile.createNewFile();
+                } catch (IOException e) {
+                        throw new DriverException(e);
+                }
+        }
 
-	public TypeDefinition[] getTypesDefinitions() {
-		final TypeDefinition[] result = new TypeDefinition[2];
-		result[0] = new DefaultTypeDefinition("STRING", Type.STRING, new int[] {
-				Constraint.UNIQUE, Constraint.NOT_NULL });
-		result[1] = new DefaultTypeDefinition("GEOMETRY", Type.GEOMETRY,
-				new int[] { Constraint.GEOMETRY_DIMENSION,
-						Constraint.GEOMETRY_TYPE });
-		return result;
-	}
+        @Override
+        public void writeFile(final File file, final ReadAccess dataSource,
+                ProgressMonitor pm) throws DriverException {
+                LOG.trace("Writing to file " + file.getAbsolutePath());
 
-	public void setDataSourceFactory(DataSourceFactory dsf) {
-	}
+                final int spatialFieldIndex = MetadataUtilities.getSpatialFieldIndex(dataSource.getMetadata());
+                checkGeometryConstraint(dataSource.getMetadata(), spatialFieldIndex);
+                try {
+                        out = new PrintWriter(new FileOutputStream(file));
+                        final long rowCount = dataSource.getRowCount();
+                        pm.startTask("Writing file", rowCount);
 
-	public String getDriverId() {
-		return DRIVER_NAME;
-	}
+                        // write header part...
+                        out.printf("%d %d\r\n", rowCount, rowCount);
+                        for (int i = 0; i < 5; i++) {
+                                out.printf("\t\t%d %d\r\n", 99999, 99999);
+                        }
 
-	public Value getFieldValue(long rowIndex, int fieldId)
-			throws DriverException {
-		final Value[] fields = rows.get((int) rowIndex);
-		if ((fieldId < 0) || (fieldId > 1)) {
-			return ValueFactory.createNullValue();
-		} else {
-			return fields[fieldId];
-		}
-	}
+                        // write body part...
+                        for (long rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+                                if (rowIndex >= 100 && rowIndex % 100 == 0) {
+                                        if (pm.isCancelled()) {
+                                                break;
+                                        } else {
+                                                pm.progressTo(rowIndex);
+                                        }
+                                }
+                                Value v = dataSource.getFieldValue(rowIndex, spatialFieldIndex);
+                                if (!v.isNull()) {
+                                        Geometry g = v.getAsGeometry();
+                                        if (g instanceof Polygon) {
+                                                writeAPolygon((Polygon) g, rowIndex);
+                                        } else if (g instanceof MultiPolygon) {
+                                                writeAMultiPolygon((MultiPolygon) g, rowIndex);
+                                        } else {
+                                                throw new DriverException("Geometric field (row "
+                                                        + rowIndex + ") is not a (multi-)polygon !");
+                                        }
+                                }
+                        }
+                        pm.progressTo(rowCount);
+                        pm.endTask();
+                        out.close();
+                } catch (FileNotFoundException e) {
+                        throw new DriverException(e);
+                }
+        }
 
-	public long getRowCount() throws DriverException {
-		return rows.size();
-	}
+        private void checkGeometryConstraint(final Metadata metadata,
+                final int spatialFieldIndex) throws DriverException {
+                Type fieldType = metadata.getFieldType(spatialFieldIndex);
+                final GeometryConstraint c = (GeometryConstraint) fieldType.getConstraint(Constraint.GEOMETRY_TYPE);
+                DimensionConstraint dc = (DimensionConstraint) fieldType.getConstraint(Constraint.GEOMETRY_DIMENSION);
+                final int geometryType = c.getGeometryType();
+                if ((GeometryConstraint.POLYGON != geometryType)
+                        && (GeometryConstraint.MULTI_POLYGON != geometryType)) {
+                        throw new DriverException(
+                                "Geometric field must be a (multi-)polygon !");
+                }
+                if ((dc != null) && (dc.getDimension() == 2)) {
+                        throw new DriverException("Only 3d can be stored in this format !");
+                }
+        }
 
-	public Number[] getScope(int dimension) throws DriverException {
-		if (dimension == X) {
-			return new Number[] { envelope.getMinX(), envelope.getMaxX() };
-		} else if (dimension == Y) {
-			return new Number[] { envelope.getMinY(), envelope.getMaxY() };
-		} else {
-			return null;
-		}
-	}
+        private void writeAMultiPolygon(final MultiPolygon multiPolygon,
+                final long rowIndex) {
+                final int nbOfCtrs = multiPolygon.getNumGeometries();
+                out.printf("f%d %d\r\n", rowIndex + 1, nbOfCtrs);
+                // the normal of the multi-polygon is set to the normal of its 1st
+                // component (ie polygon)...
+                writeANode(Geometry3DUtilities.computeNormal((Polygon) multiPolygon.getGeometryN(0)));
+                for (int i = 0; i < nbOfCtrs; i++) {
+                        writeAContour((Polygon) multiPolygon.getGeometryN(i));
+                }
+        }
 
-	public void copy(File in, File out) throws IOException {
-		FileUtils.copy(in, out);
-	}
+        private void writeAPolygon(final Polygon polygon, final long rowIndex) {
+                out.printf("f%d 1\r\n", rowIndex + 1);
+                writeANode(Geometry3DUtilities.computeNormal(polygon));
+                writeAContour(polygon);
+        }
 
-	public void createSource(String path, Metadata metadata,
-			DataSourceFactory dataSourceFactory) throws DriverException {
-		try {
-			int spatialFieldIndex = -1;
-			for (int fieldId = 0; fieldId < metadata.getFieldCount(); fieldId++) {
-				final Constraint c = metadata.getFieldType(fieldId)
-						.getConstraint(Constraint.GEOMETRY_TYPE);
-				if (null != c) {
-					spatialFieldIndex = fieldId;
-					break;
-				}
-			}
-			checkGeometryConstraint(metadata, spatialFieldIndex);
+        private void writeAContour(final Polygon polygon) {
+                final LineString shell = polygon.getExteriorRing();
+                final int nbOfHoles = polygon.getNumInteriorRing();
+                out.printf("c%d\r\n", nbOfHoles);
+                writeALinearRing(shell);
+                for (int i = 0; i < nbOfHoles; i++) {
+                        out.printf("t\r\n");
+                        writeALinearRing(polygon.getInteriorRingN(i));
+                }
+        }
 
-			final File file = new File(path);
-			file.getParentFile().mkdirs();
-			file.createNewFile();
-		} catch (IOException e) {
-			throw new DriverException(e);
-		}
-	}
+        private void writeALinearRing(final LineString shell) {
+                final Coordinate[] nodes = shell.getCoordinates();
+                out.printf("%d\r\n", nodes.length);
+                for (Coordinate node : nodes) {
+                        writeANode(node);
+                }
+        }
 
-	public void writeFile(final File file, final DataSource dataSource,
-			IProgressMonitor pm) throws DriverException {
-		final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
-				dataSource);
-		final int spatialFieldIndex = sds.getSpatialFieldIndex();
-		checkGeometryConstraint(sds.getMetadata(), spatialFieldIndex);
-		try {
-			out = new PrintWriter(new FileOutputStream(file));
+        private void writeANode(final Coordinate node) {
+                if (Double.isNaN(node.z)) {
+                        out.printf(COORD3D_WRITTING_FORMAT, node.x, node.y, 0d);
+                } else {
+                        out.printf(COORD3D_WRITTING_FORMAT, node.x, node.y, node.z);
+                }
+        }
 
-			// write header part...
-			out.printf("%d %d\r\n", sds.getRowCount(), sds.getRowCount());
-			for (int i = 0; i < 5; i++) {
-				out.printf("\t\t%d %d\r\n", 99999, 99999);
-			}
+        @Override
+        public boolean isCommitable() {
+                return true;
+        }
 
-			// write body part...
-			for (long rowIndex = 0; rowIndex < dataSource.getRowCount(); rowIndex++) {
-				if (rowIndex / 100 == rowIndex / 100.0) {
-					if (pm.isCancelled()) {
-						break;
-					} else {
-						pm.progressTo((int) (100 * rowIndex / dataSource
-								.getRowCount()));
-					}
-				}
-				final Geometry g = sds.getGeometry(rowIndex);
-				if (g instanceof Polygon) {
-					writeAPolygon((Polygon) g, rowIndex);
-				} else if (g instanceof MultiPolygon) {
-					writeAMultiPolygon((MultiPolygon) g, rowIndex);
-				} else {
-					throw new DriverException("Geometric field (row "
-							+ rowIndex + ") is not a (multi-)polygon !");
-				}
-			}
-			out.close();
-		} catch (FileNotFoundException e) {
-			throw new DriverException(e);
-		}
-	}
+        @Override
+        public int getType() {
+                return SourceManager.FILE | SourceManager.VECTORIAL;
+        }
 
-	private final void checkGeometryConstraint(final Metadata metadata,
-			final int spatialFieldIndex) throws DriverException {
-		Type fieldType = metadata.getFieldType(spatialFieldIndex);
-		final GeometryConstraint c = (GeometryConstraint) fieldType
-				.getConstraint(Constraint.GEOMETRY_TYPE);
-		DimensionConstraint dc = (DimensionConstraint) fieldType
-				.getConstraint(Constraint.GEOMETRY_DIMENSION);
-		final int geometryType = c.getGeometryType();
-		if ((GeometryConstraint.POLYGON != geometryType)
-				&& (GeometryConstraint.MULTI_POLYGON != geometryType)) {
-			throw new DriverException(
-					"Geometric field must be a (multi-)polygon !");
-		}
-		if ((dc != null) && (dc.getDimension() == 2)) {
-			throw new DriverException("Only 3d can be stored in this format !");
-		}
-	}
+        @Override
+        public String validateMetadata(Metadata metadata) throws DriverException {
+                return null;
+        }
 
-	private final void writeAMultiPolygon(final MultiPolygon multiPolygon,
-			final long rowIndex) {
-		final int nbOfCtrs = multiPolygon.getNumGeometries();
-		out.printf("f%d %d\r\n", rowIndex + 1, nbOfCtrs);
-		// the normal of the multi-polygon is set to the normal of its 1st
-		// component (ie polygon)...
-		writeANode(Geometry3DUtilities.computeNormal((Polygon) multiPolygon
-				.getGeometryN(0)));
-		for (int i = 0; i < nbOfCtrs; i++) {
-			writeAContour((Polygon) multiPolygon.getGeometryN(i));
-		}
-	}
+        @Override
+        public String[] getFileExtensions() {
+                return new String[]{EXTENSION};
+        }
 
-	private final void writeAPolygon(final Polygon polygon, final long rowIndex) {
-		out.printf("f%d 1\r\n", rowIndex + 1);
-		writeANode(Geometry3DUtilities.computeNormal(polygon));
-		writeAContour(polygon);
-	}
+        @Override
+        public String getTypeDescription() {
+                return "Solene file";
+        }
 
-	private final void writeAContour(final Polygon polygon) {
-		final LineString shell = polygon.getExteriorRing();
-		final int nbOfHoles = polygon.getNumInteriorRing();
-		out.printf("c%d\r\n", nbOfHoles);
-		writeALinearRing(shell);
-		for (int i = 0; i < nbOfHoles; i++) {
-			out.printf("t\r\n");
-			writeALinearRing(polygon.getInteriorRingN(i));
-		}
-	}
+        @Override
+        public String getTypeName() {
+                return "CIR";
+        }
 
-	private final void writeALinearRing(final LineString shell) {
-		final Coordinate[] nodes = shell.getCoordinates();
-		out.printf("%d\r\n", nodes.length);
-		for (Coordinate node : nodes) {
-			writeANode(node);
-		}
-	}
+        @Override
+        public Schema getSchema() throws DriverException {
+                return schema;
+        }
 
-	private final void writeANode(final Coordinate node) {
-		if (Double.isNaN(node.z)) {
-			out.printf(COORD3D_WRITTING_FORMAT, node.x, node.y, 0d);
-		} else {
-			out.printf(COORD3D_WRITTING_FORMAT, node.x, node.y, node.z);
-		}
-	}
+        @Override
+        public ReadAccess getTable(String name) {
+                if (!name.equals("main")) {
+                        return null;
+                }
+                return this;
+        }
 
-	public boolean isCommitable() {
-		return true;
-	}
+        @Override
+        public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
+                final Value[] fields = rows.get((int) rowIndex);
+                if ((fieldId < 0) || (fieldId > 1)) {
+                        return ValueFactory.createNullValue();
+                } else {
+                        return fields[fieldId];
+                }
+        }
 
-	public int getType() {
-		return SourceManager.FILE | SourceManager.VECTORIAL;
-	}
+        @Override
+        public long getRowCount() throws DriverException {
+                return rows.size();
+        }
 
-	public String validateMetadata(Metadata metadata) throws DriverException {
-		return null;
-	}
+        @Override
+        public Number[] getScope(int dimension) throws DriverException {
+                if (dimension == X) {
+                        return new Number[]{envelope.getMinX(), envelope.getMaxX()};
+                } else if (dimension == Y) {
+                        return new Number[]{envelope.getMinY(), envelope.getMaxY()};
+                } else {
+                        return null;
+                }
+        }
 
-	@Override
-	public String[] getFileExtensions() {
-		return new String[] { EXTENSION };
-	}
+        @Override
+        public Metadata getMetadata() throws DriverException {
+                return schema.getTableByName("main");
+        }
 
-	@Override
-	public String getTypeDescription() {
-		return "Solene file";
-	}
+        @Override
+        public void setFile(File file) throws DriverException {
+                this.file = file;
+                schema = new DefaultSchema("Cir" + file.getAbsolutePath().hashCode());
 
-	@Override
-	public String getTypeName() {
-		return "CIR";
-	}
+                // building schema and metadata
+                final SchemaMetadata metadata = new SchemaMetadata(schema);
+                metadata.addField("id", Type.STRING, new Constraint[]{
+                                ConstraintFactory.createConstraint(Constraint.UNIQUE),
+                                ConstraintFactory.createConstraint(Constraint.NOT_NULL)});
+                metadata.addField("the_geom", Type.GEOMETRY, new Constraint[]{
+                                ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.POLYGON),
+                                ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, 3)});
+                schema.addTable("main", metadata);
+                // finished building schema
+        }
 
         @Override
         public boolean isOpen() {
                 // once .open() is called, the content of rows
-                // is always accessible.
+                // is always  accessible.
                 return rows != null;
         }
-
 }

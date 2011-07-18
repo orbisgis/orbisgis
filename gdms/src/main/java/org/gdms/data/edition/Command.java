@@ -45,16 +45,22 @@ import org.gdms.driver.DriverException;
  * Base interface for all the commands
  *
  */
-
 public interface Command {
-    /**
-     * do/redo the command
-     * @throws DriverException
-     */
-	public void redo() throws DriverException;
+
+        /**
+         * do/redo the command
+         * @throws DriverException
+         */
+        void redo() throws DriverException;
+
         /**
          * undo the command
          * @throws DriverException
          */
-	public void undo() throws DriverException;
+        void undo() throws DriverException;
+
+        /**
+         * Frees any resources hold by this command
+         */
+        void clear();
 }

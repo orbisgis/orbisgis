@@ -6,16 +6,16 @@
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
  *
- *  Team leader Erwan BOCHER, scientific researcher,
+ * Team leader : Erwan BOCHER, scientific researcher,
  *
- *  User support leader : Gwendall Petit, geomatic engineer.
+ * User support leader : Gwendall Petit, geomatic engineer.
  *
- * Previous computer developer : Pierre-Yves FADET, computer engineer, Thomas LEDUC, scientific researcher, Fernando GONZALEZ
- * CORTES, computer engineer.
+ * Previous computer developer : Pierre-Yves FADET, computer engineer, Thomas LEDUC, 
+ * scientific researcher, Fernando GONZALEZ CORTES, computer engineer.
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2010 Erwan BOCHER, Alexis GUEGANNO, Maxence LAURENT, Antoine GOURLAY
  *
  * This file is part of OrbisGIS.
  *
@@ -34,9 +34,8 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
- **/
+ * info@orbisgis.org
+ */
 package org.gdms.data.types;
 
 /**
@@ -53,14 +52,14 @@ public interface TypeDefinition {
 	 *
 	 * @return the typeName
 	 */
-	public abstract String getTypeName();
+	String getTypeName();
 
 	/**
 	 * Get the names of the constraint this data type can have
 	 *
 	 * @return the constraints
 	 */
-	public abstract int[] getValidConstraints();
+	int[] getValidConstraints();
 
 	/**
 	 * Instantiates a new data type that matches this definition. For example,
@@ -71,7 +70,7 @@ public interface TypeDefinition {
 	 *             If the type has some mandatory constraints
 	 * @return
 	 */
-	public abstract Type createType() throws InvalidTypeException;
+	Type createType();
 
 	/**
 	 * Instantiates a new data type that matches this definition. For example,
@@ -86,6 +85,5 @@ public interface TypeDefinition {
 	 *             definition
 	 * @return
 	 */
-	public abstract Type createType(Constraint[] constraints)
-			throws InvalidTypeException;
+	Type createType(Constraint[] constraints);
 }

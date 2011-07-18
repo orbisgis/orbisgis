@@ -41,8 +41,7 @@ import java.sql.SQLException;
 
 import org.gdms.data.db.DBSource;
 import org.gdms.driver.DBDriver;
-import org.gdms.driver.ReadOnlyDriver;
-import org.gdms.driver.driverManager.Driver;
+import org.gdms.driver.Driver;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.DBDriverFilter;
 import org.gdms.source.SourceManager;
@@ -111,7 +110,7 @@ public class ConnectionPanel extends MultiInputPanel {
 		String[] ids = new String[filtered.length];
 		String[] texts = new String[filtered.length];
 		for (int i = 0; i < texts.length; i++) {
-			ReadOnlyDriver rod = (ReadOnlyDriver) filtered[i];
+			Driver rod = filtered[i];
 			ids[i] = rod.getDriverId();
 			texts[i] = rod.getTypeDescription();
 		}

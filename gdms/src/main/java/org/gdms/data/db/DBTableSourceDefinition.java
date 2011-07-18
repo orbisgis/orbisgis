@@ -38,14 +38,15 @@ package org.gdms.data.db;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import org.apache.log4j.Logger;
 
 import org.gdms.data.AbstractDataSource;
 import org.gdms.data.AbstractDataSourceDefinition;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceDefinition;
-import org.gdms.data.metadata.Metadata;
-import org.gdms.data.metadata.MetadataUtilities;
+import org.gdms.data.schema.Metadata;
+import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
@@ -53,184 +54,194 @@ import org.gdms.driver.DBDriver;
 import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.DriverUtilities;
-import org.gdms.driver.ReadOnlyDriver;
+import org.gdms.driver.Driver;
+import org.gdms.driver.ReadAccess;
+import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.directory.DbDefinitionType;
 import org.gdms.source.directory.DefinitionType;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class DBTableSourceDefinition extends AbstractDataSourceDefinition {
-	protected DBSource def;
 
-	/**
-	 * Creates a new DBTableSourceDefinition
-	 * 
-	 * @param driverName
-	 *            Name of the driver used to access the data
-	 */
-	public DBTableSourceDefinition(DBSource def) {
-		this.def = def;
-	}
+        protected DBSource def;
+        private static final Logger LOG = Logger.getLogger(DBTableSourceDefinition.class);
 
-	public DataSource createDataSource(String tableName, IProgressMonitor pm)
-			throws DataSourceCreationException {
+        /**
+         * Creates a new DBTableSourceDefinition
+         *
+         * @param def
+         */
+        public DBTableSourceDefinition(DBSource def) {
+                LOG.trace("Constructor");
+                this.def = def;
+        }
 
-		((ReadOnlyDriver) getDriver())
-				.setDataSourceFactory(getDataSourceFactory());
+        @Override
+        public DataSource createDataSource(String tableName, ProgressMonitor pm)
+                throws DataSourceCreationException {
+                LOG.trace("Creating datasource");
 
-		AbstractDataSource adapter = new DBTableDataSourceAdapter(
-				getSource(tableName), def, (DBDriver) getDriver());
-		adapter.setDataSourceFactory(getDataSourceFactory());
+                (getDriver()).setDataSourceFactory(getDataSourceFactory());
 
-		return adapter;
-	}
+                AbstractDataSource adapter = new DBTableDataSourceAdapter(
+                        getSource(tableName), def, (DBDriver) getDriver());
+                adapter.setDataSourceFactory(getDataSourceFactory());
+                LOG.trace("Datasource created");
+                return adapter;
+        }
 
-	@Override
-	protected ReadOnlyDriver getDriverInstance() {
-		return DriverUtilities.getDriver(getDataSourceFactory()
-				.getSourceManager().getDriverManager(), def.getPrefix());
-	}
+        @Override
+        protected Driver getDriverInstance() {
+                return DriverUtilities.getDriver(getDataSourceFactory().getSourceManager().getDriverManager(), def.getPrefix());
+        }
 
-	public DBSource getSourceDefinition() {
-		return def;
-	}
+        public DBSource getSourceDefinition() {
+                return def;
+        }
 
-	public String getPrefix() {
-		return def.getPrefix();
-	}
+        public String getPrefix() {
+                return def.getPrefix();
+        }
 
-	public void createDataSource(DataSource contents, IProgressMonitor pm)
-			throws DriverException {
-		contents.open();
-		DBReadWriteDriver driver = (DBReadWriteDriver) getDriver();
-		((ReadOnlyDriver) driver).setDataSourceFactory(getDataSourceFactory());
-		Connection con;
-		try {
-			con = driver.getConnection(def.getHost(), def.getPort(), def.isSsl(), def
-					.getDbName(), def.getUser(), def.getPassword());
-		} catch (SQLException e) {
-			throw new DriverException(e);
-		}
-		if (driver instanceof DBReadWriteDriver) {
-			try {
-				((DBReadWriteDriver) driver).beginTrans(con);
-			} catch (SQLException e) {
-				throw new DriverException(e);
-			}
-		}
-		contents = getDataSourceWithPK(contents);
-		driver.createSource(def, contents.getMetadata());
+        @Override
+        public void createDataSource(ReadAccess contents, ProgressMonitor pm)
+                throws DriverException {
+                LOG.trace("Writing datasource to database");
+                final long rowCount = contents.getRowCount();
+                pm.startTask("Writing to database", rowCount);
+                DBReadWriteDriver driver = (DBReadWriteDriver) getDriver();
+                driver.setDataSourceFactory(getDataSourceFactory());
+                Connection con;
+                try {
+                        con = driver.getConnection(def.getHost(), def.getPort(), def.isSsl(), def.getDbName(), def.getUser(), def.getPassword());
+                } catch (SQLException e) {
+                        throw new DriverException(e);
+                }
 
-		for (int i = 0; i < contents.getRowCount(); i++) {
-			if (i / 100 == i / 100.0) {
-				if (pm.isCancelled()) {
-					break;
-				} else {
-					pm.progressTo((int) (100 * i / contents.getRowCount()));
-				}
-			}
-			Value[] row = new Value[contents.getFieldNames().length];
-			for (int j = 0; j < row.length; j++) {
-				row[j] = contents.getFieldValue(i, j);
-			}
+                try {
+                        driver.beginTrans(con);
+                } catch (SQLException e) {
+                        throw new DriverException(e);
+                }
 
-			try {
-				Type[] fieldTypes = MetadataUtilities.getFieldTypes(contents
-						.getMetadata());
-				String sqlInsert = driver.getInsertSQL(
-						contents.getFieldNames(), fieldTypes, row);
-				((DBReadWriteDriver) driver).execute(con, sqlInsert);
-			} catch (SQLException e) {
+                if (contents instanceof DataSource) {
+                        contents = getDataSourceWithPK((DataSource) contents);
+                }
 
-				if (driver instanceof DBReadWriteDriver) {
-					try {
-						((DBReadWriteDriver) driver).rollBackTrans(con);
-					} catch (SQLException e1) {
-						throw new DriverException(e1);
-					}
-				}
+                driver.createSource(def, contents.getMetadata());
 
-				throw new DriverException(e);
-			}
-		}
+                for (int i = 0; i < rowCount; i++) {
+                        if (i >= 100 && i % 100 == 0) {
+                                if (pm.isCancelled()) {
+                                        break;
+                                } else {
+                                        pm.progressTo(i);
+                                }
+                        }
+                        Value[] row = new Value[contents.getMetadata().getFieldNames().length];
+                        for (int j = 0; j < row.length; j++) {
+                                row[j] = contents.getFieldValue(i, j);
+                        }
 
-		if (driver instanceof DBReadWriteDriver) {
-			try {
-				((DBReadWriteDriver) driver).commitTrans(con);
-			} catch (SQLException e) {
-				throw new DriverException(e);
-			}
-		}
+                        try {
+                                Type[] fieldTypes = MetadataUtilities.getFieldTypes(contents.getMetadata());
+                                String sqlInsert = driver.getInsertSQL(
+                                        contents.getMetadata().getFieldNames(), fieldTypes, row);
+                                driver.execute(con, sqlInsert);
+                        } catch (SQLException e) {
+                                try {
+                                        driver.rollBackTrans(con);
+                                } catch (SQLException e1) {
+                                        LOG.error("Failed to rollback", e1);
+                                        throw new DriverException(e);
+                                }
 
-		contents.close();
-	}
+                                throw new DriverException(e);
+                        }
+                }
 
-	private DataSource getDataSourceWithPK(DataSource ds)
-			throws DriverException {
-		Metadata metadata = ds.getMetadata();
-		for (int i = 0; i < metadata.getFieldCount(); i++) {
-			Type fieldType = metadata.getFieldType(i);
-			if (fieldType.getConstraint(Constraint.PK) != null) {
-				return ds;
-			}
-		}
+                pm.progressTo(rowCount);
+                try {
+                        driver.commitTrans(con);
+                } catch (SQLException e) {
+                        throw new DriverException(e);
+                }
+                pm.endTask();
+        }
 
-		return new PKDataSourceAdapter(ds);
-	}
+        private DataSource getDataSourceWithPK(DataSource ds)
+                throws DriverException {
+                Metadata metadata = ds.getMetadata();
+                for (int i = 0; i < metadata.getFieldCount(); i++) {
+                        Type fieldType = metadata.getFieldType(i);
+                        if (fieldType.getConstraint(Constraint.PK) != null) {
+                                return ds;
+                        }
+                }
 
-	public DefinitionType getDefinition() {
-		DbDefinitionType ret = new DbDefinitionType();
-		ret.setDbName(def.getDbName());
-		ret.setHost(def.getHost());
-		ret.setPort(Integer.toString(def.getPort()));
-		ret.setTableName(def.getTableName());
-		ret.setPassword(def.getPassword());
-		ret.setUser(def.getUser());
-		ret.setPrefix(def.getPrefix());
-		ret.setSchemaName(def.getSchemaName());
+                return new PKDataSourceAdapter(ds);
+        }
 
-		return ret;
-	}
+        @Override
+        public DefinitionType getDefinition() {
+                DbDefinitionType ret = new DbDefinitionType();
+                ret.setDbName(def.getDbName());
+                ret.setHost(def.getHost());
+                ret.setPort(Integer.toString(def.getPort()));
+                ret.setTableName(def.getTableName());
+                ret.setPassword(def.getPassword());
+                ret.setUser(def.getUser());
+                ret.setPrefix(def.getPrefix());
+                ret.setSchemaName(def.getSchemaName());
 
-	public static DataSourceDefinition createFromXML(DbDefinitionType definition) {
-		DBSource dbSource = new DBSource(definition.getHost(), Integer
-				.parseInt(definition.getPort()), definition.getDbName(),
-				definition.getUser(), definition.getPassword(), definition
-						.getSchemaName(), definition.getTableName(), definition
-						.getPrefix());
+                return ret;
+        }
+
+        public static DataSourceDefinition createFromXML(DbDefinitionType definition) {
+                DBSource dbSource = new DBSource(definition.getHost(), Integer.parseInt(definition.getPort()), definition.getDbName(),
+                        definition.getUser(), definition.getPassword(), definition.getSchemaName(), definition.getTableName(), definition.getPrefix());
                 if (definition.getSsl() != null && definition.getSsl().equals("true")) {
                         dbSource.setSsl(true);
                 }
-		return new DBTableSourceDefinition(dbSource);
-	}
+                return new DBTableSourceDefinition(dbSource);
+        }
 
-	@Override
-	public boolean equals(DataSourceDefinition obj) {
-		if (obj instanceof DBTableSourceDefinition) {
-			DBTableSourceDefinition dsd = (DBTableSourceDefinition) obj;
-			if (equals(dsd.def.getDbms(), def.getDbms())
-					&& equals(dsd.def.getDbName(), def.getDbName())
-					&& equals(dsd.def.getHost(), def.getHost())
-					&& equals(dsd.def.getPassword(), def.getPassword())
-					&& (dsd.def.getPort() == def.getPort())
-					&& equals(dsd.def.getUser(), def.getUser())
-					&& equals(dsd.def.getTableName(), def.getTableName())
-					&& equals(dsd.def.getSchemaName(), def.getSchemaName())
-					&& equals(dsd.def.getPrefix(), def.getPrefix())) {
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			return false;
-		}
-	}
+        @Override
+        public boolean equals(Object obj) {
+                if (obj instanceof DBTableSourceDefinition) {
+                        DBTableSourceDefinition dsd = (DBTableSourceDefinition) obj;
+                        return (equals(dsd.def.getDbms(), def.getDbms())
+                                && equals(dsd.def.getDbName(), def.getDbName())
+                                && equals(dsd.def.getHost(), def.getHost())
+                                && equals(dsd.def.getPassword(), def.getPassword())
+                                && (dsd.def.getPort() == def.getPort())
+                                && equals(dsd.def.getUser(), def.getUser())
+                                && equals(dsd.def.getTableName(), def.getTableName())
+                                && equals(dsd.def.getSchemaName(), def.getSchemaName())
+                                && equals(dsd.def.getPrefix(), def.getPrefix()));
+                } else {
+                        return false;
+                }
+        }
 
-	private boolean equals(String str, String str2) {
-		if (str == null) {
-			return str == null;
-		} else {
-			return str.equals(str2);
-		}
-	}
+        @Override
+        public int hashCode() {
+                return 145 + this.def.hashCode();
+        }
 
+        private boolean equals(String str, String str2) {
+                if (str == null) {
+                        return true;
+                } else {
+                        return str.equals(str2);
+                }
+        }
+
+        @Override
+        public String getDriverTableName() {
+//                return def.getTableName();
+                // DB Table definition are what they are: definition for single tables from a DB,
+                // which means they only have a single table. Maybe we need a DB definition...
+                return DriverManager.DEFAULT_SINGLE_TABLE_NAME;
+        }
 }

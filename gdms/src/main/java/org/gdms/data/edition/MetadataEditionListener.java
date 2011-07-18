@@ -38,9 +38,9 @@ package org.gdms.data.edition;
 
 public interface MetadataEditionListener {
 
-	public void fieldAdded(FieldEditionEvent event);
+	void fieldAdded(FieldEditionEvent event);
 
-	public void fieldRemoved(FieldEditionEvent event);
+	void fieldRemoved(FieldEditionEvent event);
 
-	public void fieldModified(FieldEditionEvent event);
+	void fieldModified(FieldEditionEvent event);
 }

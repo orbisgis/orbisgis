@@ -34,21 +34,18 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-/**
- *
- */
 package org.gdms.data.indexes.btree;
 
 import org.gdms.data.values.Value;
 
-class LessComparator extends AbstractLessComparator implements RangeComparator {
+class LessComparator extends AbstractLessComparator {
 
-	public LessComparator(Value value) {
-		super(value);
-	}
+        LessComparator(Value value) {
+                super(value);
+        }
 
-	public boolean isInRange(Value v) {
-		return v.less(value).getAsBoolean();
-	}
-
+        @Override
+        public boolean isInRange(Value v) {
+                return v.less(value).getAsBoolean();
+        }
 }

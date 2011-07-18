@@ -261,7 +261,7 @@ public class FieldEditor extends AbstractUIPanel implements UIPanel {
 	}
 
 	private UIConstraintPanel getUIPanel(int constraintCode, String value) {
-		if (ConstraintFactory.getType(constraintCode) == Constraint.CONSTRAINT_TYPE_BOOLEAN) {
+		if (ConstraintFactory.getType(constraintCode) == Constraint.CONSTRAINT_TYPE_FIELD) {
 			return null;
 		} else if (ConstraintFactory.getType(constraintCode) == Constraint.CONSTRAINT_TYPE_CHOICE) {
 			String[] options = ConstraintFactory

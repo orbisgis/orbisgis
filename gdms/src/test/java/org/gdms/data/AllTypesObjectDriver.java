@@ -41,8 +41,10 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import org.gdms.data.metadata.DefaultMetadata;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.DefaultMetadata;
+import org.gdms.data.schema.DefaultSchema;
+import org.gdms.data.schema.Metadata;
+import org.gdms.data.schema.Schema;
 import org.gdms.data.types.DefaultTypeDefinition;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
@@ -51,6 +53,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
+import org.gdms.driver.ReadAccess;
 
 public class AllTypesObjectDriver implements ObjectDriver {
 
@@ -66,7 +69,7 @@ public class AllTypesObjectDriver implements ObjectDriver {
 
 	private static Type[] types;
 
-	private static Metadata metadata;
+	private static Schema schema;
 
 	static {
 		final int fc = names.length;
@@ -82,7 +85,8 @@ public class AllTypesObjectDriver implements ObjectDriver {
 				fieldsTypes[i] = csvTypeDef.createType(null);
 			}
 
-			metadata = new DefaultMetadata(fieldsTypes, fieldsNames);
+                        schema = new DefaultSchema("AllTypes");
+                        schema.addTable("main", new DefaultMetadata(fieldsTypes, fieldsNames));
 		} catch (InvalidTypeException e) {
 			throw new RuntimeException("Bug in the static part", e);
 		}
@@ -145,20 +149,7 @@ public class AllTypesObjectDriver implements ObjectDriver {
 		values = newValues;
 	}
 
-	/**
-	 * @see org.gdms.driver.ReadAccess#getFieldValue(long, int)
-	 */
-	public Value getFieldValue(long rowIndex, int fieldId)
-			throws DriverException {
-		return values[(int) rowIndex][fieldId];
-	}
-
-	/**
-	 * @see org.gdms.driver.ReadAccess#getRowCount()
-	 */
-	public long getRowCount() throws DriverException {
-		return values.length;
-	}
+	
 
 	/**
 	 * @see org.gdms.driver.ReadAccess#getFieldType(int)
@@ -172,13 +163,6 @@ public class AllTypesObjectDriver implements ObjectDriver {
 
 	public String getDriverId() {
 		return null;
-	}
-
-	/**
-	 * @see org.gdms.driver.ReadOnlyDriver#getMetadata()
-	 */
-	public Metadata getMetadata() throws DriverException {
-		return metadata;
 	}
 
 	public int getType(String driverType) {
@@ -219,10 +203,6 @@ public class AllTypesObjectDriver implements ObjectDriver {
 
 	}
 
-	public Number[] getScope(int dimension) throws DriverException {
-		return null;
-	}
-
 	public TypeDefinition[] getTypesDefinitions() {
 		final TypeDefinition[] result = new TypeDefinition[typesCodes.length];
 		for (int i = 0; i < typesCodes.length; i++) {
@@ -244,4 +224,48 @@ public class AllTypesObjectDriver implements ObjectDriver {
 	public String getTypeName() {
 		return null;
 	}
+
+    @Override
+    public boolean isCommitable() {
+        return false;
+    }
+
+    @Override
+    public String validateMetadata(Metadata metadata) throws DriverException {
+        return null;
+    }
+
+        @Override
+        public Schema getSchema() throws DriverException {
+                return schema;
+        }
+
+        @Override
+        public ReadAccess getTable(String name) {
+                if (!name.equals("main")) {
+                        return null;
+                }
+                return new ReadAccess() {
+
+                        @Override
+                        public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
+                                return values[(int) rowIndex][fieldId];
+                        }
+
+                        @Override
+                        public long getRowCount() throws DriverException {
+                                return values.length;
+                        }
+
+                        @Override
+                        public Number[] getScope(int dimension) throws DriverException {
+                                return null;
+                        }
+
+                        @Override
+                        public Metadata getMetadata() throws DriverException {
+                                return schema.getTableByName("main");
+                        }
+                };
+        }
 }

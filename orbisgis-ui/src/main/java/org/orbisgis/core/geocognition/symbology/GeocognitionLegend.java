@@ -7,7 +7,7 @@ import org.orbisgis.core.geocognition.GeocognitionElementFactory;
 import org.orbisgis.core.geocognition.GeocognitionExtensionElement;
 import org.orbisgis.core.geocognition.mapContext.GeocognitionException;
 import org.orbisgis.core.renderer.legend.Legend;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class GeocognitionLegend extends AbstractExtensionElement implements
 		GeocognitionExtensionElement {
@@ -36,12 +36,12 @@ public class GeocognitionLegend extends AbstractExtensionElement implements
 	}
 
 	@Override
-	public void close(IProgressMonitor progressMonitor) {
+	public void close(ProgressMonitor progressMonitor) {
 		legend.setJAXBObject(revertStatus);
 	}
 
 	@Override
-	public void open(IProgressMonitor progressMonitor)
+	public void open(ProgressMonitor progressMonitor)
 			throws UnsupportedOperationException, EditableElementException {
 		revertStatus = getJAXBObject();
 	}

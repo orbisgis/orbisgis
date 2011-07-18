@@ -39,7 +39,6 @@
  **/
 package org.gdms.data.edition;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.gdms.data.DataSource;
@@ -59,10 +58,10 @@ public interface Commiter {
 	 * @return If row order can have changed after commit
 	 * @throws DriverException
 	 */
-	public abstract boolean commit(List<PhysicalDirection> rowsDirections,
-			String[] fieldNames, ArrayList<EditionInfo> schemaActions,
-			ArrayList<EditionInfo> editionActions,
-			ArrayList<DeleteEditionInfo> deletedPKs, DataSource modifiedSource)
+	boolean commit(List<PhysicalRowAddress> rowsDirections,
+			String[] fieldNames, List<EditionInfo> schemaActions,
+			List<EditionInfo> editionActions,
+			List<DeleteEditionInfo> deletedPKs, DataSource modifiedSource)
 			throws DriverException;
 
 }

@@ -2,9 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
         <modelVersion>4.0.0</modelVersion>
         <groupId>org.orbisgis</groupId>
-        <artifactId>platform</artifactId>
+        <artifactId>orbisgis</artifactId>
         <packaging>pom</packaging>
-        <version>3.1</version>
+        <version>4.0</version>
         <name>platform</name>
         <organization>
                 <name>IRSTV CNRS-FR-2488</name>
@@ -14,21 +14,16 @@
         <modules>
                 <module>commons</module>
                 <module>gdms</module>
+                <module>gdmsql</module>
                 <module>grap</module>
                 <module>h2spatial</module>
                 <module>orbisgis-core</module>
                 <module>orbisgis-ui</module>
         </modules>
-        <scm>
-                <connection>
-			scm:svn:http://svn.orbisgis.org/trunk/orbisgis
-                </connection>
-                <developerConnection>
-			scm:svn:http://svn.orbisgis.org/trunk/orbisgis
-                </developerConnection>
-                <tag>HEAD</tag>
-                <url>http://geosysin.iict.ch/irstv-svn/platform</url>
-        </scm>
+	<properties>
+                <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+                <netbeans.hint.license>OrbisGIS</netbeans.hint.license>
+        </properties>
         <repositories>
                 <repository>
                         <id>geotools</id>

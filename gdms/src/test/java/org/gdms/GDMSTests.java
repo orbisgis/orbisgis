@@ -46,11 +46,11 @@ import org.gdms.data.GettersTest;
 import org.gdms.data.ListenerTest;
 import org.gdms.data.command.CommandStackTests;
 import org.gdms.data.db.DataBaseTests;
-import org.gdms.data.edition.ConstraintTest;
+import org.gdms.data.types.ConstraintTest;
 import org.gdms.data.edition.EditionTests;
 import org.gdms.data.edition.FailedEditionTest;
+import org.gdms.data.edition.IsEditableTests;
 import org.gdms.data.edition.MetadataTest;
-import org.gdms.data.edition.PKEditionTest;
 import org.gdms.data.edition.UndoRedoTests;
 import org.gdms.data.indexes.BTreeTest;
 import org.gdms.data.indexes.RTreeTest;
@@ -58,7 +58,6 @@ import org.gdms.data.values.ValuesTest;
 import org.gdms.drivers.CSVDriverTest;
 import org.gdms.drivers.DBDriverTest;
 import org.gdms.drivers.DBMetadataTest;
-import org.gdms.drivers.ExportTest;
 import org.gdms.drivers.GDMSDriverTest;
 import org.gdms.drivers.RasterTest;
 import org.gdms.drivers.ShapefileDriverTest;
@@ -69,85 +68,70 @@ import org.gdms.source.ChecksumTest;
 import org.gdms.source.SourceManagementTest;
 import org.gdms.spatial.SpatialDriverMetadataTest;
 import org.gdms.spatial.SpatialEditionTest;
-import org.gdms.sql.GrammarTest;
-import org.gdms.sql.InstructionTest;
-import org.gdms.sql.OptimizationTests;
-import org.gdms.sql.ProcessorTest;
-import org.gdms.sql.function.alphanumeric.AlphanumericFunctionTest;
-import org.gdms.sql.function.spatial.convert.ConvertFunctionTest;
-import org.gdms.sql.function.spatial.properties.PropertiesFunctionTest;
-import org.gdms.sql.function.spatial.io.IOSpatialFunctionTest;
-import org.gdms.sql.function.spatial.operators.OperatorsTest;
-import org.gdms.sql.function.spatial.predicates.PredicatesTest;
-import org.gdms.sql.function.statistics.StatisticFunctionsTest;
-import org.gdms.sql.strategies.CustomQueriesTest;
-import org.gdms.sql.strategies.SQLTest;
 
 /**
  * @author Fernando Gonzalez Cortes
  */
 public class GDMSTests extends TestCase {
 
-	public static Test suite() {
-		TestSuite suite = new TestSuite("Test for org.gdms.engine.test");
-		// $JUnit-BEGIN$
-		suite.addTestSuite(NoEmptyDataSetTest.class);
-		suite.addTestSuite(MetadataTest.class);
-		suite.addTestSuite(SpatialDriverMetadataTest.class);
-		suite.addTestSuite(EditionTests.class);
-		suite.addTestSuite(ConstraintTest.class);
-		suite.addTestSuite(PKEditionTest.class);
-		suite.addTestSuite(UndoRedoTests.class);
-		suite.addTestSuite(ListenerTest.class);
-		suite.addTestSuite(FailedEditionTest.class);
-		suite.addTestSuite(ValuesTest.class);
-		suite.addTestSuite(DataBaseTests.class);
-		suite.addTestSuite(CommandStackTests.class);
-		suite.addTestSuite(GettersTest.class);
-		suite.addTestSuite(SpatialEditionTest.class);
-		suite.addTestSuite(DataSourceTest.class);
-		suite.addTestSuite(DataSourceFactoryTests.class);
-		suite.addTestSuite(SourceManagementTest.class);
-		suite.addTestSuite(ChecksumTest.class);
-		// File drivers
-		suite.addTestSuite(ShapefileDriverTest.class);
-		suite.addTestSuite(CSVDriverTest.class);
-		suite.addTestSuite(GDMSDriverTest.class);
-		// Database drivers
-		suite.addTestSuite(DBDriverTest.class);
-		suite.addTestSuite(DBMetadataTest.class);
-		suite.addTestSuite(ExportTest.class);
-		// Raster drivers
-		suite.addTestSuite(RasterTest.class);
+        public static Test suite() {
+                TestSuite suite = new TestSuite("Test for org.gdms.engine.test");
+                // $JUnit-BEGIN$
 
-		// Indexes
-		suite.addTestSuite(BTreeTest.class);
-		suite.addTestSuite(RTreeTest.class);
-		// SQL related
-		suite.addTestSuite(InstructionTest.class);
-		suite.addTestSuite(ProcessorTest.class);
-		suite.addTestSuite(GrammarTest.class);
-		suite.addTestSuite(AlphanumericFunctionTest.class);
-		suite.addTestSuite(ConvertFunctionTest.class);
-		suite.addTestSuite(PropertiesFunctionTest.class);
-		suite.addTestSuite(IOSpatialFunctionTest.class);
-		suite.addTestSuite(OperatorsTest.class);
-		suite.addTestSuite(OptimizationTests.class);
-		suite.addTestSuite(PredicatesTest.class);
-		suite.addTestSuite(StatisticFunctionsTest.class);
-		suite.addTestSuite(SQLTest.class);
-		suite.addTestSuite(ConvertFunctionTest.class);
-		suite.addTestSuite(CustomQueriesTest.class);
-		// TODO suite.addTestSuite(ExplodeTest.class);
+                // verify test dataset
+                suite.addTestSuite(NoEmptyDataSetTest.class);
 
+                // basic DSF tests
+                suite.addTestSuite(DataSourceTest.class);
+                suite.addTestSuite(DataSourceFactoryTests.class);
+                suite.addTestSuite(GettersTest.class);
+                suite.addTestSuite(ListenerTest.class);
 
-                //Geometry utils
+                // edition tests
+                suite.addTestSuite(EditionTests.class);
+                suite.addTestSuite(ConstraintTest.class);
+                suite.addTestSuite(MetadataTest.class);
+                suite.addTestSuite(IsEditableTests.class);
+                suite.addTestSuite(CommandStackTests.class);
+                suite.addTestSuite(FailedEditionTest.class);
+                suite.addTestSuite(UndoRedoTests.class);
 
+                // values tests
+                suite.addTestSuite(ValuesTest.class);
+
+                // Database driver tests
+                suite.addTestSuite(DBDriverTest.class);
+                suite.addTestSuite(DBMetadataTest.class);
+                suite.addTestSuite(DataBaseTests.class);
+
+                
+ 
+                // File driver tests
+                suite.addTestSuite(ShapefileDriverTest.class);
+                suite.addTestSuite(CSVDriverTest.class);
+                suite.addTestSuite(GDMSDriverTest.class);
+
+                // Raster driver tests
+                suite.addTestSuite(RasterTest.class);
+
+                // source tests
+                suite.addTestSuite(SourceManagementTest.class);
+                suite.addTestSuite(ChecksumTest.class);
+               
+                // spatial tests
+                suite.addTestSuite(SpatialDriverMetadataTest.class);
+                suite.addTestSuite(SpatialEditionTest.class);
+
+                // Indexes
+                suite.addTestSuite(BTreeTest.class);
+                suite.addTestSuite(RTreeTest.class);
+                
+                // Geometry Utils
                 suite.addTestSuite(GeometryConvertTest.class);
                 suite.addTestSuite(GeometryEditTest.class);
                 suite.addTestSuite(GeometryTypeUtilTest.class);
 
-	// $JUnit-END$
-		return suite;
-	}
+                // $JUnit-END$
+                return suite;
+        }
 }

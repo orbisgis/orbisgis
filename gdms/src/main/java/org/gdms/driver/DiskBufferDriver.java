@@ -41,12 +41,14 @@ import java.io.File;
 import java.io.IOException;
 
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.DefaultSchema;
+import org.gdms.data.schema.Metadata;
+import org.gdms.data.schema.Schema;
+import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.driver.gdms.GdmsDriver;
 import org.gdms.driver.gdms.GdmsReader;
 import org.gdms.driver.gdms.GdmsWriter;
-import org.gdms.sql.strategies.AbstractBasicSQLDriver;
 
 /**
  * This driver writes all the content added with the {@link #addValues(Value[])}
@@ -54,20 +56,25 @@ import org.gdms.sql.strategies.AbstractBasicSQLDriver;
  * {@link #addValues(Value[])} are done, the method {@link #writingFinished()}
  * must be called.
  * 
- * 
- * 
  */
-public class DiskBufferDriver extends AbstractBasicSQLDriver {
+public class DiskBufferDriver implements ObjectDriver {
 
-	private Metadata metadata;
+        private Schema schema;
 	private GdmsWriter writer;
 	private File file;
 	private boolean firstRow = true;
 	private GdmsReader reader;
 
+        /**
+         * Creates a new DiskBufferManager.
+         * @param dsf the DataSourceFactory
+         * @param metadata this driver's content metadata
+         * @throws DriverException
+         */
 	public DiskBufferDriver(DataSourceFactory dsf, Metadata metadata)
 			throws DriverException {
-		this.metadata = metadata;
+                this.schema = new DefaultSchema("buffer" + this.hashCode());
+                schema.addTable("main", metadata);
 		// Create a temp file to populate
 		file = new File(dsf.getTempFile("gdms"));
 		try {
@@ -79,10 +86,10 @@ public class DiskBufferDriver extends AbstractBasicSQLDriver {
 
 	@Override
 	public void start() throws DriverException {
-		writingFinished();
 		try {
 			// Open file
 			reader = new GdmsReader(file);
+                        reader.open();
 			reader.readMetadata();
 		} catch (IOException e) {
 			throw new DriverException("Cannot open temporal file for reading",
@@ -95,7 +102,7 @@ public class DiskBufferDriver extends AbstractBasicSQLDriver {
 	 * This method must be called when all the contents have been added to the
 	 * file
 	 * 
-	 * @throws DriverException
+	 * @throws DriverException if the writing process cannot be finalized
 	 */
 	public void writingFinished() throws DriverException {
 		// Close writing
@@ -123,11 +130,6 @@ public class DiskBufferDriver extends AbstractBasicSQLDriver {
 	}
 
 	@Override
-	public Metadata getMetadata() throws DriverException {
-		return metadata;
-	}
-
-	@Override
 	public int getType() {
 		return new GdmsDriver().getType();
 	}
@@ -141,26 +143,10 @@ public class DiskBufferDriver extends AbstractBasicSQLDriver {
 		return new GdmsDriver().getDriverId();
 	}
 
-	@Override
-	public Value getFieldValue(long rowIndex, int fieldId)
-			throws DriverException {
-		return reader.getFieldValue(rowIndex, fieldId);
-	}
-
-	@Override
-	public long getRowCount() throws DriverException {
-		return reader.getRowCount();
-	}
-
-	@Override
-	public Number[] getScope(int dimension) throws DriverException {
-		return reader.getScope(dimension);
-	}
-
 	/**
 	 * Add a new row to the file
 	 * 
-	 * @param row
+	 * @param row an array of Value objects.
 	 * @throws DriverException
 	 */
 	public void addValues(Value... row) throws DriverException {
@@ -168,6 +154,10 @@ public class DiskBufferDriver extends AbstractBasicSQLDriver {
 		writer.addValues(row);
 	}
 
+        /**
+         * Returns the temp file associated with this driver.
+         * @return a file object.
+         */
 	public File getFile() {
 		return file;
 	}
@@ -175,7 +165,7 @@ public class DiskBufferDriver extends AbstractBasicSQLDriver {
 	private void writeMetadataOnce() throws DriverException {
 		if (firstRow) {
 			try {
-				writer.writeMetadata(0, getMetadata());
+				writer.writeMetadata(0, getSchema().getTableByName("main"));
 				firstRow = false;
 			} catch (IOException e) {
 				throw new DriverException("Cannot write metadata", e);
@@ -185,15 +175,76 @@ public class DiskBufferDriver extends AbstractBasicSQLDriver {
 	
 	/**
 	 * Get all value for a row index
-	 * @param rowIndex
-	 * @return
+	 * @param rowIndex an index within the DataSource
+	 * @return the row as an array of Value objects
 	 * @throws DriverException
 	 */
 	public Value[] getRow(long rowIndex) throws DriverException {
-		Value[] ret = new Value[getMetadata().getFieldCount()];
-		for (int i = 0; i < ret.length; i++) {
-			ret[i] = getFieldValue(rowIndex, i);
+		Value[] ret = new Value[getSchema().getTableByName("main").getFieldCount()];
+                final ReadAccess table = getTable("main");
+		for (int i = 0; i < ret.length; i++) {  
+			ret[i] = table.getFieldValue(rowIndex, i);
 		}
 		return ret;
 	}
+
+        @Override
+        public Schema getSchema() throws DriverException {
+                return schema;
+        }
+
+        @Override
+        public ReadAccess getTable(String name) {
+                if (name.equals("main")) {
+                        return new ReadAccess() {
+
+                                @Override
+                                public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
+                                        return reader.getFieldValue(rowIndex, fieldId);
+                                }
+
+                                @Override
+                                public long getRowCount() throws DriverException {
+                                        return reader.getRowCount();
+                                }
+
+                                @Override
+                                public Number[] getScope(int dimension) throws DriverException {
+                                        return reader.getScope(dimension);
+                                }
+
+                                @Override
+                                public Metadata getMetadata() throws DriverException {
+                                        return schema.getTableByName("main");
+                                }
+                        };
+                } else {
+                        return null;
+                }
+        }
+
+        @Override
+        public String getTypeName() {
+                return "GDMS";
+        }
+
+        @Override
+        public String getTypeDescription() {
+                return "GDMS Memory to disk driver";
+        }
+
+        @Override
+        public boolean isCommitable() {
+                return true;
+        }
+
+        @Override
+        public TypeDefinition[] getTypesDefinitions() {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public String validateMetadata(Metadata metadata) throws DriverException {
+                return null;
+        }
 }

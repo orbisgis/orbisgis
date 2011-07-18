@@ -39,21 +39,21 @@ package org.gdms.driver.jdbc;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 
-public class AutonumericRule extends AbstractConversionRule implements
-		ConversionRule {
+public class AutonumericRule extends AbstractConversionRule {
 
-	public boolean canApply(Type type) {
-		return (type.getTypeCode() == Type.INT)
-				&& type.getBooleanConstraint(Constraint.AUTO_INCREMENT);
-	}
+        @Override
+        public boolean canApply(Type type) {
+                return (type.getTypeCode() == Type.INT)
+                        && type.getBooleanConstraint(Constraint.AUTO_INCREMENT);
+        }
 
-	public String getTypeName() {
-		return "serial";
-	}
+        @Override
+        public String getTypeName() {
+                return "serial";
+        }
 
-	@Override
-	protected int getOutputTypeCode() {
-		return Type.INT;
-	}
-
+        @Override
+        protected int getOutputTypeCode() {
+                return Type.INT;
+        }
 }

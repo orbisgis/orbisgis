@@ -64,4 +64,8 @@ public class AddFieldCommand implements Command {
 		dataSource.undoAddField();
 	}
 
+        @Override
+        public void clear() {
+        }
+
 }

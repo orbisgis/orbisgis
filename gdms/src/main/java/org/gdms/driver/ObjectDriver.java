@@ -42,7 +42,7 @@ package org.gdms.driver;
  * 
  * @author Fernando Gonzalez Cortes
  */
-public interface ObjectDriver extends ReadOnlyDriver {
+public interface ObjectDriver extends Driver {
 	/**
 	 * Method to initialize the access
 	 * 

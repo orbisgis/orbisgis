@@ -36,11 +36,14 @@
  */
 package org.gdms.data.edition;
 
-import org.gdms.SourceTest;
+import java.io.File;
+import org.gdms.BaseTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.DigestUtilities;
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.file.FileSourceCreation;
+import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.values.Value;
 
 /**
@@ -48,26 +51,36 @@ import org.gdms.data.values.Value;
  *
  * @author Fernando Gonzalez Cortes
  */
-public class UndoRedoTests extends SourceTest {
+public class UndoRedoTests extends BaseTest {
 
 	public void testUndoRedoMetadata() throws Exception {
-		DataSource d = dsf.getDataSource(super.getAnyNonSpatialResource(),
+                dsf.getSourceManager().remove("big");
+                dsf.getSourceManager().register(
+                        "big",
+                        new FileSourceCreation(new File(BaseTest.internalData
+                        + "alltypes.shp"), null));
+		DataSource d = dsf.getDataSource("big",
 				DataSourceFactory.EDITABLE);
 
 		d.open();
 		Value[][] content = super.getDataSourceContents(d);
 		d.removeField(2);
 		d.undo();
-		assertTrue(super.equals(content, super.getDataSourceContents(d)));
+		assertTrue(BaseTest.equals(content, super.getDataSourceContents(d)));
 		d.commit();
 		d.close();
 		d.open();
-		assertTrue(super.equals(content, super.getDataSourceContents(d)));
+		assertTrue(BaseTest.equals(content, super.getDataSourceContents(d)));
 		d.close();
 	}
 
 	public void testAlphanumericModifyUndoRedo() throws Exception {
-		DataSource d = dsf.getDataSource(super.getAnyNonSpatialResource(),
+                dsf.getSourceManager().remove("big");
+                dsf.getSourceManager().register(
+                        "big",
+                        new FileSourceCreation(new File(BaseTest.internalData
+                        + "hedgerow.shp"), null));
+		DataSource d = dsf.getDataSource("big",
 				DataSourceFactory.EDITABLE);
 
 		d.open();
@@ -86,7 +99,12 @@ public class UndoRedoTests extends SourceTest {
 	}
 
 	public void testAlphanumericDeleteUndoRedo() throws Exception {
-		DataSource d = dsf.getDataSource(super.getAnyNonSpatialResource(),
+                dsf.getSourceManager().remove("big");
+                dsf.getSourceManager().register(
+                        "big",
+                        new FileSourceCreation(new File(BaseTest.internalData
+                        + "hedgerow.shp"), null));
+		DataSource d = dsf.getDataSource("big",
 				DataSourceFactory.EDITABLE);
 
 		d.open();
@@ -105,7 +123,12 @@ public class UndoRedoTests extends SourceTest {
 	}
 
 	public void testAlphanumericInsertUndoRedo() throws Exception {
-		DataSource d = dsf.getDataSource(super.getAnyNonSpatialResource(),
+                dsf.getSourceManager().remove("big");
+                dsf.getSourceManager().register(
+                        "big",
+                        new FileSourceCreation(new File(BaseTest.internalData
+                        + "hedgerow.shp"), null));
+		DataSource d = dsf.getDataSource("big",
 				DataSourceFactory.EDITABLE);
 
 		d.open();
@@ -136,8 +159,13 @@ public class UndoRedoTests extends SourceTest {
 	}
 
 	public void testSpatialModifyUndoRedo() throws Exception {
+                dsf.getSourceManager().remove("big");
+                dsf.getSourceManager().register(
+                        "big",
+                        new FileSourceCreation(new File(BaseTest.internalData
+                        + "hedgerow.shp"), null));
 		SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf
-				.getDataSource(super.getAnySpatialResource(),
+				.getDataSource("big",
 						DataSourceFactory.EDITABLE));
 
 		d.open();
@@ -163,8 +191,13 @@ public class UndoRedoTests extends SourceTest {
 	}
 
 	public void testSpatialDeleteUndoRedo() throws Exception {
+                dsf.getSourceManager().remove("big");
+                dsf.getSourceManager().register(
+                        "big",
+                        new FileSourceCreation(new File(BaseTest.internalData
+                        + "hedgerow.shp"), null));
 		SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf
-				.getDataSource(super.getAnySpatialResource(),
+				.getDataSource("big",
 						DataSourceFactory.EDITABLE));
 
 		d.open();
@@ -187,8 +220,13 @@ public class UndoRedoTests extends SourceTest {
 	}
 
 	public void testSpatialInsertUndoRedo() throws Exception {
+                dsf.getSourceManager().remove("big");
+                dsf.getSourceManager().register(
+                        "big",
+                        new FileSourceCreation(new File(BaseTest.internalData
+                        + "hedgerow.shp"), null));
 		SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf
-				.getDataSource(super.getAnySpatialResource(),
+				.getDataSource("big",
 						DataSourceFactory.EDITABLE));
 
 		d.open();
@@ -236,7 +274,12 @@ public class UndoRedoTests extends SourceTest {
 	}
 
 	public void testAlphanumericEditionUndoRedo() throws Exception {
-		DataSource d = dsf.getDataSource(super.getAnyNonSpatialResource(),
+                dsf.getSourceManager().remove("big");
+                dsf.getSourceManager().register(
+                        "big",
+                        new FileSourceCreation(new File(BaseTest.internalData
+                        + "hedgerow.shp"), null));
+		DataSource d = dsf.getDataSource("big",
 				DataSourceFactory.EDITABLE);
 
 		d.open();
@@ -246,9 +289,13 @@ public class UndoRedoTests extends SourceTest {
 	}
 
 	public void testSpatialEditionUndoRedo() throws Exception {
-		SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf
-				.getDataSource(super.getAnySpatialResource(),
-						DataSourceFactory.EDITABLE));
+                dsf.getSourceManager().remove("big");
+                dsf.getSourceManager().register(
+                        "big",
+                        new FileSourceCreation(new File(BaseTest.internalData
+                        + "hedgerow.shp"), null));
+		DataSource d = dsf.getDataSource("big",
+						DataSourceFactory.EDITABLE);
 
 		d.open();
 		testAlphanumericEditionUndoRedo(d);
@@ -257,8 +304,13 @@ public class UndoRedoTests extends SourceTest {
 	}
 
 	public void testAddTwoRowsAndUndoBoth() throws Exception {
+                dsf.getSourceManager().remove("big");
+                dsf.getSourceManager().register(
+                        "big",
+                        new FileSourceCreation(new File(BaseTest.internalData
+                        + "hedgerow.shp"), null));
 		SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf
-				.getDataSource(super.getAnySpatialResource(),
+				.getDataSource("big",
 						DataSourceFactory.EDITABLE));
 
 		d.open();
@@ -273,8 +325,13 @@ public class UndoRedoTests extends SourceTest {
 	}
 
 	public void testInsertModify() throws Exception {
+                dsf.getSourceManager().remove("big");
+                dsf.getSourceManager().register(
+                        "big",
+                        new FileSourceCreation(new File(BaseTest.internalData
+                        + "hedgerow.shp"), null));
 		SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf
-				.getDataSource(super.getAnySpatialResource(),
+				.getDataSource("big",
 						DataSourceFactory.EDITABLE));
 
 		d.open();

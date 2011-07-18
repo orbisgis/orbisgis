@@ -38,6 +38,11 @@ package org.gdms.data;
 
 import org.gdms.driver.DriverException;
 
+/**
+ * This decorator can count the number of time the underlying DataSource is open
+ * and closed
+ * @author nurgle
+ */
 public class OCCounterDecorator extends AbstractDataSourceDecorator {
 
 	private OpenCloseCounter ocCounter;
@@ -48,7 +53,7 @@ public class OCCounterDecorator extends AbstractDataSourceDecorator {
 	}
 
 	@Override
-	public void close() throws DriverException, AlreadyClosedException {
+	public void close() throws DriverException {
 		if (ocCounter.stop()) {
 			try {
 				getDataSource().close();

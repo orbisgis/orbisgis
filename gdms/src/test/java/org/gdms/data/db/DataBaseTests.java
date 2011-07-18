@@ -36,16 +36,16 @@
  */
 package org.gdms.data.db;
 
-import org.gdms.SourceTest;
+import org.gdms.BaseTest;
 import org.gdms.data.DataSource;
-import org.gdms.data.metadata.MetadataUtilities;
+import org.gdms.data.schema.MetadataUtilities;
 
 /**
  * DOCUMENT ME!
  * 
  * @author Fernando Gonzalez Cortes
  */
-public class DataBaseTests extends SourceTest {
+public class DataBaseTests extends BaseTest {
 	/**
 	 * Access to the PK field
 	 * 

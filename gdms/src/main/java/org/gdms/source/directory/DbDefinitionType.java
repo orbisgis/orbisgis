@@ -4,15 +4,14 @@
 // Any modifications to this file will be lost upon recompilation of the source schema. 
 // Generated on: 2010.10.28 at 10:28:11 PM CEST 
 //
-
-
 package org.gdms.source.directory;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
-
+import org.gdms.data.DataSourceDefinition;
+import org.gdms.data.db.DBTableSourceDefinition;
 
 /**
  * <p>Java class for db-definition-type complex type.
@@ -41,242 +40,243 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "db-definition-type")
 public class DbDefinitionType
-    extends DefinitionType
-{
+        extends DefinitionType {
 
-    @XmlAttribute(required = true)
-    protected String host;
-    @XmlAttribute(required = true)
-    protected String port;
-    @XmlAttribute(name = "db-name", required = true)
-    protected String dbName;
-    @XmlAttribute(name = "table-name", required = true)
-    protected String tableName;
-    @XmlAttribute(required = true)
-    protected String user;
-    @XmlAttribute(required = true)
-    protected String password;
-    @XmlAttribute(required = true)
-    protected String prefix;
-    @XmlAttribute(name = "schema-name", required = true)
-    protected String schemaName;
-    @XmlAttribute()
-    protected String ssl;
+        @XmlAttribute(required = true)
+        protected String host;
+        @XmlAttribute(required = true)
+        protected String port;
+        @XmlAttribute(name = "db-name", required = true)
+        protected String dbName;
+        @XmlAttribute(name = "table-name", required = true)
+        protected String tableName;
+        @XmlAttribute(required = true)
+        protected String user;
+        @XmlAttribute(required = true)
+        protected String password;
+        @XmlAttribute(required = true)
+        protected String prefix;
+        @XmlAttribute(name = "schema-name", required = true)
+        protected String schemaName;
+        @XmlAttribute()
+        protected String ssl;
 
-    /**
-     * Gets the value of the host property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getHost() {
-        return host;
-    }
+        /**
+         * Gets the value of the host property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getHost() {
+                return host;
+        }
 
-    /**
-     * Sets the value of the host property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setHost(String value) {
-        this.host = value;
-    }
+        /**
+         * Sets the value of the host property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setHost(String value) {
+                this.host = value;
+        }
 
-    /**
-     * Gets the value of the port property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getPort() {
-        return port;
-    }
+        /**
+         * Gets the value of the port property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getPort() {
+                return port;
+        }
 
-    /**
-     * Sets the value of the port property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setPort(String value) {
-        this.port = value;
-    }
+        /**
+         * Sets the value of the port property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setPort(String value) {
+                this.port = value;
+        }
 
-    /**
-     * Gets the value of the dbName property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getDbName() {
-        return dbName;
-    }
+        /**
+         * Gets the value of the dbName property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getDbName() {
+                return dbName;
+        }
 
-    /**
-     * Sets the value of the dbName property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setDbName(String value) {
-        this.dbName = value;
-    }
+        /**
+         * Sets the value of the dbName property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setDbName(String value) {
+                this.dbName = value;
+        }
 
-    /**
-     * Gets the value of the tableName property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getTableName() {
-        return tableName;
-    }
+        /**
+         * Gets the value of the tableName property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getTableName() {
+                return tableName;
+        }
 
-    /**
-     * Sets the value of the tableName property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setTableName(String value) {
-        this.tableName = value;
-    }
+        /**
+         * Sets the value of the tableName property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setTableName(String value) {
+                this.tableName = value;
+        }
 
-    /**
-     * Gets the value of the user property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getUser() {
-        return user;
-    }
+        /**
+         * Gets the value of the user property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getUser() {
+                return user;
+        }
 
-    /**
-     * Sets the value of the user property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setUser(String value) {
-        this.user = value;
-    }
+        /**
+         * Sets the value of the user property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setUser(String value) {
+                this.user = value;
+        }
 
-    /**
-     * Gets the value of the password property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getPassword() {
-        return password;
-    }
+        /**
+         * Gets the value of the password property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getPassword() {
+                return password;
+        }
 
-    /**
-     * Sets the value of the password property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setPassword(String value) {
-        this.password = value;
-    }
+        /**
+         * Sets the value of the password property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setPassword(String value) {
+                this.password = value;
+        }
 
-    /**
-     * Gets the value of the prefix property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getPrefix() {
-        return prefix;
-    }
+        /**
+         * Gets the value of the prefix property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getPrefix() {
+                return prefix;
+        }
 
-    /**
-     * Sets the value of the prefix property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setPrefix(String value) {
-        this.prefix = value;
-    }
+        /**
+         * Sets the value of the prefix property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setPrefix(String value) {
+                this.prefix = value;
+        }
 
-    /**
-     * Gets the value of the schemaName property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getSchemaName() {
-        return schemaName;
-    }
+        /**
+         * Gets the value of the schemaName property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getSchemaName() {
+                return schemaName;
+        }
 
-    /**
-     * Sets the value of the schemaName property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setSchemaName(String value) {
-        this.schemaName = value;
-    }
+        /**
+         * Sets the value of the schemaName property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setSchemaName(String value) {
+                this.schemaName = value;
+        }
 
-    /**
-     * Gets the value of the ssl property.
-     *
-     * @return
-     *     possible object is
-     *     {@link String }
-     *
-     */
-    public String getSsl() {
-        return ssl;
-    }
-
-    /**
-     * Sets the value of the ssl property.
-     *
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *
-     */
-    public void setSsl(String value) {
-        this.ssl = value;
-    }
-
+        @Override
+        public DataSourceDefinition toDataSourceDefinition() {
+                return DBTableSourceDefinition.createFromXML(this);
+        }
+        
+        /**
+         * Gets the value of the ssl property.
+         * 
+         * @return 
+         *      possible object is
+         *      {@link String }
+         */
+        public String getSsl() {
+                return ssl;
+        }
+        
+        /**
+         * Sets the value of the ssl property.
+         * 
+         * @param value 
+         *      allowed object is
+         *      {@link String }
+         */
+        public void setSsl(String value) {
+                this.ssl = value;
+        }
 }

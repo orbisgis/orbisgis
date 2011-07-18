@@ -21,7 +21,6 @@
  * michael.michaud@free.fr
  *
  */
-
 package org.gdms.driver.dxf;
 
 import java.io.IOException;
@@ -45,81 +44,76 @@ import com.vividsolutions.jts.geom.Polygon;
  * @version 0.5.0
  */
 // History
-public class DxfPOLYLINE extends DxfENTITY {
+public final class DxfPOLYLINE extends DxfENTITY {
 
-	public DxfPOLYLINE() {
-		super("DEFAULT");
-	}
+        private DxfPOLYLINE() {
+                super("DEFAULT");
+        }
 
-	public static DxfGroup readEntity(RandomAccessFile raf,
-			GenericObjectDriver driver) throws IOException, DriverException {
-		String geomType = "LineString";
-		CoordinateList coordList = new CoordinateList();
-		Value[] values = new Value[DxfFile.DXF_SCHEMACount];
-		/*
-		 * Feature feature = new BasicFeature(entities.getFeatureSchema());
-		 * feature.setAttribute("LTYPE", "BYLAYER");
-		 * feature.setAttribute("ELEVATION", new Double(0.0));
-		 * feature.setAttribute("THICKNESS", new Double(0.0));
-		 * feature.setAttribute("COLOR", new Integer(256)); // equivalent to
-		 * BYLAYER feature.setAttribute("TEXT", "");
-		 * feature.setAttribute("TEXT_HEIGHT", new Double(0.0));
-		 * feature.setAttribute("TEXT_STYLE", "STANDARD");
-		 */
-		double x = Double.NaN, y = Double.NaN, z = Double.NaN;
-		DxfGroup group = DxfFile.ENTITIES;
-		try {
-			while (!group.equals(DxfFile.ENDSEC)) {
-				if (group.getCode() == 8) {
-					values[1] = ValueFactory.createValue(group.getValue());
-					group = DxfGroup.readGroup(raf);
-				} else if (group.getCode() == 6) {
-					values[2] = ValueFactory.createValue(group.getValue());
-					group = DxfGroup.readGroup(raf);
-				} else if (group.getCode() == 38) {
-					values[3] = ValueFactory
-					.createValue(group.getDoubleValue());
-					group = DxfGroup.readGroup(raf);
-				} else if (group.getCode() == 39) {
-					values[4] = ValueFactory
-					.createValue(group.getDoubleValue());
-					group = DxfGroup.readGroup(raf);
-				} else if (group.getCode() == 62) {
-					values[5] = ValueFactory.createValue(group.getIntValue());
-					group = DxfGroup.readGroup(raf);
-				} else if (group.getCode() == 70) {
-					if ((group.getIntValue() & 1) == 1)
-						geomType = "Polygon";
-					group = DxfGroup.readGroup(raf);
-				} else if (group.equals(VERTEX)) {
-					group = DxfVERTEX.readEntity(raf, coordList);
-				} else if (group.equals(SEQEND)) {
-					group = DxfGroup.readGroup(raf);
-				} else if (group.getCode() == 0) {
-					// 0 group different from VERTEX and different from SEQEND
-					break;
-				} else {
-					group = DxfGroup.readGroup(raf);
-				}
-			}
-			if (geomType.equals("LineString")) {
-				values[0] = ValueFactory.createValue(new LineString(coordList
-						.toCoordinateArray(), DPM, 0));
-				driver.addValues(values);
-			} else if (geomType.equals("Polygon")) {
-				coordList.closeRing();
-				values[0] = ValueFactory.createValue(new Polygon(new LinearRing(coordList
-						.toCoordinateArray(), DPM, 0), DPM, 0));
-				driver.addValues(values);
-			} else {
-			}
-			// System.out.println("\t" +
-			// feature.getAttribute("LAYER").toString() +
-			// "\t" + feature.getAttribute("GEOMETRY").toString());
-		} catch (IOException ioe) {
-			throw ioe;
-		}
-		return group;
-	}
-
+        public static DxfGroup readEntity(RandomAccessFile raf,
+                GenericObjectDriver driver) throws IOException, DriverException {
+                String geomType = "LineString";
+                CoordinateList coordList = new CoordinateList();
+                Value[] values = new Value[DxfFile.DXF_SCHEMACount];
+                /*
+                 * Feature feature = new BasicFeature(entities.getFeatureSchema());
+                 * feature.setAttribute("LTYPE", "BYLAYER");
+                 * feature.setAttribute("ELEVATION", new Double(0.0));
+                 * feature.setAttribute("THICKNESS", new Double(0.0));
+                 * feature.setAttribute("COLOR", new Integer(256)); // equivalent to
+                 * BYLAYER feature.setAttribute("TEXT", "");
+                 * feature.setAttribute("TEXT_HEIGHT", new Double(0.0));
+                 * feature.setAttribute("TEXT_STYLE", "STANDARD");
+                 */
+                DxfGroup group = DxfFile.ENTITIES;
+                try {
+                        while (!group.equals(DxfFile.ENDSEC)) {
+                                if (group.getCode() == 8) {
+                                        values[1] = ValueFactory.createValue(group.getValue());
+                                        group = DxfGroup.readGroup(raf);
+                                } else if (group.getCode() == 6) {
+                                        values[2] = ValueFactory.createValue(group.getValue());
+                                        group = DxfGroup.readGroup(raf);
+                                } else if (group.getCode() == 38) {
+                                        values[3] = ValueFactory.createValue(group.getDoubleValue());
+                                        group = DxfGroup.readGroup(raf);
+                                } else if (group.getCode() == 39) {
+                                        values[4] = ValueFactory.createValue(group.getDoubleValue());
+                                        group = DxfGroup.readGroup(raf);
+                                } else if (group.getCode() == 62) {
+                                        values[5] = ValueFactory.createValue(group.getIntValue());
+                                        group = DxfGroup.readGroup(raf);
+                                } else if (group.getCode() == 70) {
+                                        if ((group.getIntValue() & 1) == 1) {
+                                                geomType = "Polygon";
+                                        }
+                                        group = DxfGroup.readGroup(raf);
+                                } else if (group.equals(VERTEX)) {
+                                        group = DxfVERTEX.readEntity(raf, coordList);
+                                } else if (group.equals(SEQEND)) {
+                                        group = DxfGroup.readGroup(raf);
+                                } else if (group.getCode() == 0) {
+                                        // 0 group different from VERTEX and different from SEQEND
+                                        break;
+                                } else {
+                                        group = DxfGroup.readGroup(raf);
+                                }
+                        }
+                        if (geomType.equals("LineString")) {
+                                values[0] = ValueFactory.createValue(new LineString(coordList.toCoordinateArray(), DPM, 0));
+                                driver.addValues(values);
+                        } else if (geomType.equals("Polygon")) {
+                                coordList.closeRing();
+                                values[0] = ValueFactory.createValue(new Polygon(new LinearRing(coordList.toCoordinateArray(), DPM, 0), DPM, 0));
+                                driver.addValues(values);
+                        } else {
+                        }
+                        // System.out.println("\t" +
+                        // feature.getAttribute("LAYER").toString() +
+                        // "\t" + feature.getAttribute("GEOMETRY").toString());
+                } catch (IOException ioe) {
+                        throw ioe;
+                }
+                return group;
+        }
 }

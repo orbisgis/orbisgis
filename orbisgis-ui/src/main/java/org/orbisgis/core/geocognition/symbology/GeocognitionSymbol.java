@@ -22,7 +22,7 @@ import org.orbisgis.core.renderer.symbol.collection.persistence.SimpleSymbolType
 import org.orbisgis.core.renderer.symbol.collection.persistence.SymbolCompositeType;
 import org.orbisgis.core.renderer.symbol.collection.persistence.SymbolList;
 import org.orbisgis.core.renderer.symbol.collection.persistence.SymbolType;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class GeocognitionSymbol extends AbstractExtensionElement implements
 		GeocognitionExtensionElement {
@@ -129,12 +129,12 @@ public class GeocognitionSymbol extends AbstractExtensionElement implements
 	}
 
 	@Override
-	public void close(IProgressMonitor progressMonitor) {
+	public void close(ProgressMonitor progressMonitor) {
 		symbol.setPersistentProperties(getPersistentProperties(revertStatus));
 	}
 
 	@Override
-	public void open(IProgressMonitor progressMonitor)
+	public void open(ProgressMonitor progressMonitor)
 			throws UnsupportedOperationException, EditableElementException {
 		revertStatus = getJAXBObject();
 	}

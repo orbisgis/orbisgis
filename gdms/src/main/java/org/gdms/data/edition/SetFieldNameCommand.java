@@ -63,4 +63,8 @@ public class SetFieldNameCommand implements Command {
 		dataSource.doSetFieldName(fieldIndex, previousName);
 	}
 
+        @Override
+        public void clear() {
+        }
+
 }

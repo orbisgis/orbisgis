@@ -47,7 +47,6 @@ import javax.swing.JLabel;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
@@ -67,11 +66,12 @@ import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.renderer.symbol.SymbolFactory;
 
 import com.vividsolutions.jts.geom.Envelope;
+import org.gdms.data.SQLDataSourceFactory;
 
 public class TestClassfication {
 
 	private static Range[] ranges;
-	static DataSourceFactory dsf = new DataSourceFactory();
+	static SQLDataSourceFactory dsf = new SQLDataSourceFactory();
 
 	public static void main(String[] args) throws Exception {
 

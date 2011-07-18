@@ -36,23 +36,24 @@
  */
 package org.gdms.data.indexes.btree;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.gdms.data.values.Value;
 
 public abstract class AbstractRangeComparator implements RangeComparator {
 
-	protected Value value;
+        protected Value value;
 
-	public AbstractRangeComparator(Value value) {
-		this.value = value;
-	}
+        public AbstractRangeComparator(Value value) {
+                this.value = value;
+        }
 
-	protected abstract int[] getAffectedChildren(int childIndexForValue,
-			ArrayList<Value> values);
+        protected abstract int[] getAffectedChildren(int childIndexForValue,
+                List<Value> values);
 
-	public int[] getRange(BTreeInteriorNode treeInteriorNode) {
-		int childIndex = treeInteriorNode.getChildForValue(value);
-		return getAffectedChildren(childIndex, treeInteriorNode.values);
-	}
+        @Override
+        public int[] getRange(BTreeInteriorNode treeInteriorNode) {
+                int childIndex = treeInteriorNode.getChildForValue(value);
+                return getAffectedChildren(childIndex, treeInteriorNode.values);
+        }
 }

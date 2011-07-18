@@ -21,6 +21,7 @@
  * michael.michaud@free.fr
  *
  */
+
 package org.gdms.driver.dxf;
 
 import java.io.IOException;
@@ -32,22 +33,22 @@ import java.io.RandomAccessFile;
  */
 public class DxfCLASSES {
 
-        public DxfCLASSES() {
-        }
+    public DxfCLASSES() {}
 
-        public static DxfCLASSES readClasses(RandomAccessFile raf) throws IOException {
-                DxfCLASSES classes = new DxfCLASSES();
-                DxfGroup group = null;
-                do {
-                        group = DxfGroup.readGroup(raf);
-                } while (null != (group) && !group.equals(DxfFile.ENDSEC));
+    public static DxfCLASSES readClasses(RandomAccessFile raf) throws IOException {
+        DxfCLASSES classes = new DxfCLASSES();
+            DxfGroup group = null;
+            do {
+                    group = DxfGroup.readGroup(raf);
+            } while (group != null && !group.equals(DxfFile.ENDSEC));
         return classes;
-        }
+    }
 
-        public String toString() {
-                StringBuffer sb = new StringBuffer(DxfFile.SECTION.toString());
-                sb.append(DxfFile.CLASSES.toString());
-                sb.append(DxfFile.ENDSEC.toString());
-                return sb.toString();
-        }
+        @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder(DxfFile.SECTION.toString());
+        sb.append(DxfFile.CLASSES.toString());
+        sb.append(DxfFile.ENDSEC.toString());
+        return sb.toString();
+    }
 }

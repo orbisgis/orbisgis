@@ -46,7 +46,7 @@ import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.operation.distance.GeometryLocation;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 import junit.framework.TestCase;
 
 /**
@@ -151,7 +151,7 @@ public class GeometryEditTest extends TestCase {
                 //Line intersects polygon
                 Polygon polygon = (Polygon) wKTReader.read("POLYGON (( 0 0, 10 0, 10 10 , 0 10, 0 0))");
                 LineString line = (LineString) wKTReader.read("LINESTRING (5 0, 5 10)");
-                ArrayList<Polygon> pols = GeometryEdit.splitPolygon(polygon, line);
+                List<Polygon> pols = GeometryEdit.splitPolygon(polygon, line);
                 assertTrue(pols.size() == 2);
                 Polygon pol1 = (Polygon) wKTReader.read("POLYGON (( 0 0, 5 0, 5 10 , 0 10, 0 0))");
                 Polygon pol2 = (Polygon) wKTReader.read("POLYGON ((5 0, 10 0 , 10 10, 5 10, 5 0))");
@@ -201,7 +201,7 @@ public class GeometryEditTest extends TestCase {
                 line = (LineString) wKTReader.read("LINESTRING (5 0, 5 10)");
                 pols = GeometryEdit.splitPolygon(polygon, line);
                 for (Polygon pol : pols) {
-                        assertTrue(GeometryTypeUtil.is2_5Geometry(pol));
+                        assertTrue(GeometryTypeUtil.is25Geometry(pol));
                 }
 
         }
@@ -227,7 +227,7 @@ public class GeometryEditTest extends TestCase {
                 Polygon polygon = (Polygon) wKTReader.read("POLYGON (( 0 0 ,10 0, 10 10, 0 10, 0 0 ))");
                 Polygon cutter = (Polygon) wKTReader.read("POLYGON (( 2 2  ,7 2, 7 7, 2 7, 2 2))");
                 //Test cut a polygon inside
-                ArrayList<Polygon> result = GeometryEdit.cutPolygon(polygon, cutter);
+                List<Polygon> result = GeometryEdit.cutPolygon(polygon, cutter);
                 assertTrue(result.get(0).getNumInteriorRing() == 1);
                 assertTrue(result.get(0).getInteriorRingN(0).getEnvelopeInternal().equals(cutter.getEnvelopeInternal()));
 

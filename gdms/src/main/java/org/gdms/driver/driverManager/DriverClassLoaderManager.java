@@ -37,8 +37,8 @@
  */
 package org.gdms.driver.driverManager;
 
-import java.util.Hashtable;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Esta clase mantiene la informaci�n sobre los classloader de los plugins con
@@ -46,8 +46,8 @@ import java.util.Vector;
  * PluginClassLoader que pueden cargarla
  *
  */
-public abstract class DriverClassLoaderManager {
-	private static Hashtable<String, Vector<DriverClassLoader>> nombresLista = new Hashtable<String, Vector<DriverClassLoader>>();
+public final class DriverClassLoaderManager {
+	private static HashMap<String, ArrayList<DriverClassLoader>> nombresLista = new HashMap<String, ArrayList<DriverClassLoader>>();
 
 	/**
 	 * Registra un class loader para una clase determinada
@@ -58,10 +58,10 @@ public abstract class DriverClassLoaderManager {
 	 *            Classloader que puede cargar la clase
 	 */
 	public static void registerClass(String className, DriverClassLoader cl) {
-		Vector<DriverClassLoader> lista = nombresLista.get(className);
+		ArrayList<DriverClassLoader> lista = nombresLista.get(className);
 
 		if (lista == null) {
-			lista = new Vector<DriverClassLoader>();
+			lista = new ArrayList<DriverClassLoader>();
 			lista.add(cl);
 			nombresLista.put(className, lista);
 		} else {
@@ -78,7 +78,10 @@ public abstract class DriverClassLoaderManager {
 	 *
 	 * @return Vector de classLoaders que pueden cargar una clase con ese nombre
 	 */
-	public static Vector<DriverClassLoader> getClassLoaderList(String className) {
+	public static ArrayList<DriverClassLoader> getClassLoaderList(String className) {
 		return nombresLista.get(className);
 	}
+
+    private DriverClassLoaderManager() {
+    }
 }

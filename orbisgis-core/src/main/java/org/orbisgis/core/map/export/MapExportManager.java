@@ -6,7 +6,7 @@ import java.io.UnsupportedEncodingException;
 
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -50,7 +50,7 @@ public interface MapExportManager {
 	 */
 	void exportSVG(MapContext mapContext, OutputStream outStream, double width,
 			double height, Envelope extent, Scale scale, int mapDpi,
-			IProgressMonitor pm) throws UnsupportedEncodingException,
+			ProgressMonitor pm) throws UnsupportedEncodingException,
 			IOException, IllegalArgumentException, DriverException;
 
 	/**

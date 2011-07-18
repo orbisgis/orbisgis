@@ -7,8 +7,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
-import org.gdms.sql.customQuery.system.RegisterCall;
 import org.gdms.sql.function.spatial.geometry.operators.ST_Buffer;
+import org.gdms.sql.function.system.RegisterCall;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorListener;

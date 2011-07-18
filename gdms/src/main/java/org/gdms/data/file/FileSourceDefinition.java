@@ -38,8 +38,11 @@
 package org.gdms.data.file;
 
 import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import org.apache.log4j.Logger;
 
 import org.gdms.data.AbstractDataSourceDefinition;
 import org.gdms.data.DataSource;
@@ -49,46 +52,70 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.FileReadWriteDriver;
-import org.gdms.driver.ReadOnlyDriver;
+import org.gdms.driver.Driver;
+import org.gdms.driver.ReadAccess;
+import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.gdms.GdmsDriver;
+import org.gdms.driver.shapefile.ShapefileDriver;
 import org.gdms.source.directory.DefinitionType;
 import org.gdms.source.directory.FileDefinitionType;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.utils.FileUtils;
 import org.orbisgis.utils.I18N;
 
 /**
  * Definition of file sources
  * 
- * 
  */
 public class FileSourceDefinition extends AbstractDataSourceDefinition {
 
-        public File file;
-        public int cachedType = -1;
-        public boolean listenerInitialiazed = false;
+        protected File file;
+        private int cachedType = -1;
+        private String tableName;
+        private static final Logger LOG = Logger.getLogger(FileSourceDefinition.class);
+        private List<String> sourceDependencies = new ArrayList<String>();
 
-        public FileSourceDefinition(File file) {
+        public FileSourceDefinition(File file, String tableName) {
+                LOG.trace("Constructor");
                 this.file = file;
+                this.tableName = tableName == null ? DriverManager.DEFAULT_SINGLE_TABLE_NAME : tableName;
         }
 
-        public FileSourceDefinition(String fileName) {
-                this.file = new File(fileName);
+        public FileSourceDefinition(File file, String[] dependingSources, String tableName) {
+                LOG.trace("Constructor");
+                this.file = file;
+                this.tableName = tableName == null ? DriverManager.DEFAULT_SINGLE_TABLE_NAME : tableName;
+
+                // adding dependencies
+                if (dependingSources != null) {
+                        sourceDependencies.addAll(Arrays.asList(dependingSources));
+                }
         }
 
-        public DataSource createDataSource(String tableName, IProgressMonitor pm)
+        public FileSourceDefinition(String fileName, String tableName) {
+                this(new File(fileName), tableName);
+        }
+
+        @Override
+        public DataSource createDataSource(String sourceName, ProgressMonitor pm)
                 throws DataSourceCreationException {
+                LOG.trace("Creating datasource");
                 if (!file.exists()) {
                         throw new DataSourceCreationException(file + " "
                                 + I18N.getString("gdms.datasource.error.noexits"));
                 }
-                ((ReadOnlyDriver) getDriver()).setDataSourceFactory(getDataSourceFactory());
+                Driver driver = getDriver();
+                driver.setDataSourceFactory(getDataSourceFactory());
 
                 FileDataSourceAdapter ds = new FileDataSourceAdapter(
-                        getSource(tableName), file, (FileDriver) getDriver(), true);
+                        getSource(sourceName), file, (FileDriver) driver, true);
+                LOG.trace("Datasource created");
                 return ds;
         }
 
-        protected ReadOnlyDriver getDriverInstance() {
+        @Override
+        protected Driver getDriverInstance() {
                 return DriverUtilities.getDriver(getDataSourceFactory().getSourceManager().getDriverManager(), file);
         }
 
@@ -96,25 +123,29 @@ public class FileSourceDefinition extends AbstractDataSourceDefinition {
                 return file;
         }
 
-        public void createDataSource(DataSource contents, IProgressMonitor pm)
+        @Override
+        public void createDataSource(ReadAccess contents, ProgressMonitor pm)
                 throws DriverException {
+                LOG.trace("Writing datasource to file");
                 FileReadWriteDriver d = (FileReadWriteDriver) getDriver();
                 d.setDataSourceFactory(getDataSourceFactory());
-                contents.open();
+
                 boolean fileExisted = file.exists();
                 try {
                         d.writeFile(file, contents, pm);
                 } catch (DriverException e) {
-                        contents.close();
-                        // keep the filesystem in the same state as before the call
                         if (!fileExisted) {
-                                file.delete();
+                                boolean ok = file.delete();
+                                if (!ok) {
+                                        LOG.warn("Failed to cleanup after error: deletion of "
+                                                + file.getName() + " failed.");
+                                }
                         }
                         throw e;
                 }
-                contents.close();
         }
 
+        @Override
         public DefinitionType getDefinition() {
                 FileDefinitionType ret = new FileDefinitionType();
                 ret.setPath(file.getAbsolutePath());
@@ -123,7 +154,7 @@ public class FileSourceDefinition extends AbstractDataSourceDefinition {
 
         public static DataSourceDefinition createFromXML(
                 FileDefinitionType definitionType) {
-                return new FileSourceDefinition(definitionType.getPath());
+                return new FileSourceDefinition(definitionType.getPath(), definitionType.getTableName());
         }
 
         @Override
@@ -133,41 +164,69 @@ public class FileSourceDefinition extends AbstractDataSourceDefinition {
         }
 
         @Override
-        public boolean equals(DataSourceDefinition obj) {
+        public boolean equals(Object obj) {
                 if (obj instanceof FileSourceDefinition) {
-                        FileSourceDefinition dsd = (FileSourceDefinition) obj;
-                        if (file.equals(dsd.file)) {
-                                return true;
-                        } else {
-                                return false;
-                        }
+                        FileSourceDefinition fdsd = (FileSourceDefinition) obj;
+                        return (file.equals(fdsd.file));
                 } else {
                         return false;
                 }
         }
 
         @Override
-        public void refresh() {
-                cachedType = -1;
+        public int hashCode() {
+                return 9701 + (this.file != null ? this.file.getAbsolutePath().hashCode() : 0);
         }
 
         @Override
         public int getType() {
                 if (cachedType == -1) {
                         try {
-                                if (getDriver().getTypeName().equals("GDMS") && !((FileDriver) getDriver()).isOpen()) {
+                                if (getDriver().getTypeName().equals("GDMS") && getDriver().getTable(
+                                        DriverManager.DEFAULT_SINGLE_TABLE_NAME).getMetadata() == null) {
                                         GdmsDriver d = (GdmsDriver) getDriver();
-                                        d.open(file);
+                                        d.open();
                                         int type = d.getType();
                                         d.close();
                                         cachedType = type;
                                 } else {
-                                        cachedType = getDriver().getType();
+                                        cachedType = super.getType();
                                 }
+
                         } catch (DriverException ex) {
-                                cachedType = getDriver().getType();
+                                LOG.warn("Failed to get FSD type from driver. Going for default.", ex);
+                                cachedType = super.getType();
                         }
                 }
                 return cachedType;
+        }
+
+        @Override
+        public String getDriverTableName() {
+                return tableName;
+        }
+
+        @Override
+        public List<String> getSourceDependencies() throws DriverException {
+                return sourceDependencies;
+        }
+
+        @Override
+        public void delete() {
+                Driver driver = getDriver();
+                if (driver instanceof ShapefileDriver) {
+                        try {
+                                FileUtils.deleteSHPFiles(file);
+                        } catch (IOException ex) {
+                                throw new DriverLoadException("Cannot purge the file", ex);
+                        }
+                } else if (driver instanceof GdmsDriver) {
+                        FileUtils.deleteFile(file);
+                }
+        }
+
+        @Override
+        public final void refresh() {
+                cachedType = -1;
         }
 }

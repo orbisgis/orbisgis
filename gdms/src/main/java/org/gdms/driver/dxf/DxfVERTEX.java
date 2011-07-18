@@ -21,14 +21,12 @@
  * michael.michaud@free.fr
  *
  */
-
 package org.gdms.driver.dxf;
 
 import java.io.RandomAccessFile;
 import java.io.IOException;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateList;
-
 
 /**
  * A VERTEX and a static readEntity method to read a VERTEX in a DXF file.
@@ -37,27 +35,33 @@ import com.vividsolutions.jts.geom.CoordinateList;
  */
 // History
 // 2006-11-12 : Bug fixed x==Double.NaN --> Double.isNaN(x)
-public class DxfVERTEX extends DxfENTITY {
+public final class DxfVERTEX extends DxfENTITY {
 
-    public DxfVERTEX() {super("DEFAULT");}
+        private DxfVERTEX() {
+                super("DEFAULT");
+        }
 
-    public static DxfGroup readEntity(RandomAccessFile raf, CoordinateList coordList)
-                                                            throws IOException {
-        Coordinate coord;
-        double x=Double.NaN, y=Double.NaN, z=Double.NaN;
-        DxfGroup group;
-        try {
-            while (null != (group = DxfGroup.readGroup(raf)) && group.getCode()!=0) {
-                if (group.getCode()==10) x = group.getDoubleValue();
-                else if (group.getCode()==20) y = group.getDoubleValue();
-                else if (group.getCode()==30) z = group.getDoubleValue();
-                else {}
-            }
-            if (!Double.isNaN(x) && !Double.isNaN(y)) {
-                coordList.add(new Coordinate(x,y,z));
-            }
-        } catch (IOException ioe) {throw ioe;}
-        return group;
-    }
-
+        public static DxfGroup readEntity(RandomAccessFile raf, CoordinateList coordList)
+                throws IOException {
+                double x = Double.NaN, y = Double.NaN, z = Double.NaN;
+                DxfGroup group;
+                try {
+                        while (null != (group = DxfGroup.readGroup(raf)) && group.getCode() != 0) {
+                                if (group.getCode() == 10) {
+                                        x = group.getDoubleValue();
+                                } else if (group.getCode() == 20) {
+                                        y = group.getDoubleValue();
+                                } else if (group.getCode() == 30) {
+                                        z = group.getDoubleValue();
+                                } else {
+                                }
+                        }
+                        if (!Double.isNaN(x) && !Double.isNaN(y)) {
+                                coordList.add(new Coordinate(x, y, z));
+                        }
+                } catch (IOException ioe) {
+                        throw ioe;
+                }
+                return group;
+        }
 }

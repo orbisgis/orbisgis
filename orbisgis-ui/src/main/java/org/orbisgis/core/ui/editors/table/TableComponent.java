@@ -89,13 +89,12 @@ import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.FieldEditionEvent;
 import org.gdms.data.edition.MetadataEditionListener;
 import org.gdms.data.edition.MultipleEditionEvent;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.sql.strategies.SortComparator;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.background.BackgroundManager;
@@ -113,7 +112,7 @@ import org.orbisgis.core.ui.plugins.views.tableEditor.TableEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.ui.preferences.lookandfeel.UIColorPreferences;
 import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.utils.I18N;
 
@@ -348,10 +347,10 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 		bm.backgroundOperation(new BackgroundJob() {
 
 			@Override
-			public void run(IProgressMonitor pm) {
+			public void run(ProgressMonitor pm) {
 				try {
 					ArrayList<Integer> filtered = new ArrayList<Integer>();
-					pm.startTask(I18N.getString("orbisgis.org.orbisgis.ui.table.tableComponent.searching")); //$NON-NLS-1$
+					pm.startTask(I18N.getString("orbisgis.org.orbisgis.ui.table.tableComponent.searching"), 100); //$NON-NLS-1$
 					for (int i = 0; i < tableModel.getRowCount(); i++) {
 						if (i / 100 == i / 100.0) {
 							if (pm.isCancelled()) {
@@ -640,7 +639,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 	}
 
 	private int getColumnOptimalWidth(int rowsToCheck, int maxWidth,
-			int column, IProgressMonitor pm) {
+			int column, ProgressMonitor pm) {
 		TableColumn col = table.getColumnModel().getColumn(column);
 		int margin = 5;
 		int headerMargin = 10;
@@ -822,7 +821,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 				bm.backgroundOperation(new BackgroundJob() {
 
 					@Override
-					public void run(IProgressMonitor pm) {
+					public void run(ProgressMonitor pm) {
 						final int width = getColumnOptimalWidth(table
 								.getRowCount(), Integer.MAX_VALUE,
 								selectedColumn, pm);
@@ -1204,7 +1203,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 		}
 
 		@Override
-		public void run(IProgressMonitor pm) {
+		public void run(ProgressMonitor pm) {
 			try {
 				int rowCount = (int) dataSource.getRowCount();
 				Value[][] cache = new Value[rowCount][1];

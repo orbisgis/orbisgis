@@ -47,8 +47,9 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 
 import org.gdms.data.db.DBSource;
-import org.gdms.data.metadata.Metadata;
-import org.gdms.data.metadata.MetadataUtilities;
+import org.gdms.data.schema.Metadata;
+import org.gdms.data.schema.MetadataUtilities;
+import org.gdms.data.schema.Schema;
 import org.gdms.data.types.AutoIncrementConstraint;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
@@ -61,6 +62,10 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.TableDescription;
 
 import com.vividsolutions.jts.geom.Geometry;
+import org.apache.log4j.Logger;
+import org.gdms.data.schema.DefaultMetadata;
+import org.gdms.data.schema.DefaultSchema;
+import org.gdms.driver.driverManager.DriverManager;
 
 /**
  * class that implements the methods of the database drivers related to SQL
@@ -69,458 +74,420 @@ import com.vividsolutions.jts.geom.Geometry;
  * 
  */
 public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
-	protected String tableName;
-	protected String schemaName;
 
-	private ValueWriter valueWriter = ValueWriter.internalValueWriter;
+        protected String tableName;
+        protected String schemaName;
+        protected Schema schema = new DefaultSchema("DB" + this.hashCode());
+        private Metadata metadata;
+        private ValueWriter valueWriter = ValueWriter.internalValueWriter;
+        private static final Logger LOG = Logger.getLogger(DefaultSQL.class);
 
-	/**
-	 * @return "schemaName"."tableName" or "tableName" if any schema have been
-	 *         specified or "" if neither schema nor table have been specified.
-	 * 
-	 *         NOTA : Current schema and table are specified by using open or
-	 *         createSource methods. open or createSource methods must have been
-	 *         called before.
-	 * 
-	 * @see org.gdms.driver.DBDriver.{@link #open(Connection, String)}
-	 * @see org.gdms.driver.DBDriver.{@link #open(Connection, String)}
-	 * @see org.gdms.driver.DBDriver.{@link #createSource(DBSource, Metadata)}
-	 */
-	protected String getTableAndSchemaName() {
-		String tableAndSchemaName = "";
-		if (tableName != null)
-			if (tableName.length() != 0) {
-				tableAndSchemaName = "\"" + tableName + "\"";
-				if (schemaName != null)
-					if (schemaName.length() != 0)
-						tableAndSchemaName = "\"" + schemaName + "\"" + "."
-								+ "\"" + tableName + "\"";
-			}
-		return tableAndSchemaName;
-	}
+        public DefaultSQL() {
+                metadata = new DefaultMetadata();
+                schema.addTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME, metadata);
+        }
 
-	/**
-	 * @see org.gdms.driver.DBReadWriteDriver#getInsertSQL(java.lang.String,
-	 *      java.lang.String[], org.gdms.data.types.Type[],
-	 *      org.gdms.data.values.Value[])
-	 */
-	public String getInsertSQL(String[] fieldNames, Type[] fieldTypes,
-			Value[] row) throws DriverException {
-		StringBuffer sql = new StringBuffer();
-		sql.append("INSERT INTO ").append(getTableAndSchemaName()).append(
-				" (\"").append(fieldNames[0]);
+        /**
+         * @return "schemaName"."tableName" or "tableName" if any schema have been
+         *         specified or "" if neither schema nor table have been specified.
+         *
+         *         NOTA : Current schema and table are specified by using open or
+         *         createSource methods. open or createSource methods must have been
+         *         called before.
+         *
+         * @see org.gdms.driver.DBDriver.{@link #open(Connection, String)}
+         * @see org.gdms.driver.DBDriver.{@link #open(Connection, String)}
+         * @see org.gdms.driver.DBDriver.{@link #createSource(DBSource, Metadata)}
+         */
+        protected String getTableAndSchemaName() {
+                String tableAndSchemaName = "";
+                if (tableName != null && tableName.length() != 0) {
+                                tableAndSchemaName = tableName;
+                                if (schemaName != null && schemaName.length() != 0) {
+                                        tableAndSchemaName = schemaName + "." + tableName;
+                                }
+                }
+                return tableAndSchemaName;
+        }
 
-		for (int i = 1; i < fieldNames.length; i++) {
-			sql.append("\", \"").append(fieldNames[i]);
-		}
+        @Override
+        public String getInsertSQL(String[] fieldNames, Type[] fieldTypes,
+                Value[] row) throws DriverException {
+                StringBuilder sql = new StringBuilder();
+                sql.append("INSERT INTO ").append(getTableAndSchemaName()).append(
+                        " (\"").append(fieldNames[0]);
 
-		sql.append("\") VALUES(");
+                for (int i = 1; i < fieldNames.length; i++) {
+                        sql.append("\", \"").append(fieldNames[i]);
+                }
 
-		String separator = "";
+                sql.append("\") VALUES(");
 
-		for (int i = 0; i < row.length; i++) {
-			if (isAutoNumerical(fieldTypes[i])) {
-				sql.append(separator).append(getAutoIncrementDefaultValue());
-			} else {
-				sql.append(separator).append(row[i].getStringValue(this));
-			}
-			separator = ", ";
-		}
+                String separator = "";
 
-		return sql.append(")").toString();
-	}
+                for (int i = 0; i < row.length; i++) {
+                        if (isAutoNumerical(fieldTypes[i])) {
+                                sql.append(separator).append(getAutoIncrementDefaultValue());
+                        } else {
+                                sql.append(separator).append(row[i].getStringValue(this));
+                        }
+                        separator = ", ";
+                }
 
-	/**
-	 * @see org.gdms.driver.DBReadWriteDriver#getUpdateSQL(java.lang.String,
-	 *      java.lang.String[], org.gdms.data.values.Value[],
-	 *      java.lang.String[], org.gdms.data.types.Type[],
-	 *      org.gdms.data.values.Value[])
-	 */
-	public String getUpdateSQL(String[] pkNames, Value[] pkValues,
-			String[] fieldNames, Type[] fieldTypes, Value[] row)
-			throws DriverException {
-		StringBuffer sql = new StringBuffer();
-		sql.append("UPDATE ").append(getTableAndSchemaName()).append(" SET ");
-		String separator = "";
-		for (int i = 0; i < fieldNames.length; i++) {
-			if (isAutoNumerical(fieldTypes[i])) {
-				continue;
-			} else {
-				String fieldValue = row[i].getStringValue(this);
-				sql.append(separator).append("\"").append(fieldNames[i])
-						.append("\" = ").append(fieldValue);
-				separator = ", ";
-			}
-		}
+                return sql.append(")").toString();
+        }
 
-		sql.append(" WHERE \"").append(pkNames[0]).append("\" = ").append(
-				pkValues[0].getStringValue(this));
+        @Override
+        public String getUpdateSQL(String[] pkNames, Value[] pkValues,
+                String[] fieldNames, Type[] fieldTypes, Value[] row)
+                throws DriverException {
+                StringBuilder sql = new StringBuilder();
+                sql.append("UPDATE ").append(getTableAndSchemaName()).append(" SET ");
+                String separator = "";
+                for (int i = 0; i < fieldNames.length; i++) {
+                        if (isAutoNumerical(fieldTypes[i])) {
+                                continue;
+                        } else {
+                                String fieldValue = row[i].getStringValue(this);
+                                sql.append(separator).append("\"").append(fieldNames[i]).append("\" = ").append(fieldValue);
+                                separator = ", ";
+                        }
+                }
 
-		for (int i = 1; i < pkNames.length; i++) {
-			sql.append(" AND \"").append(pkNames[0]).append("\" = ").append(
-					pkValues[0].getStringValue(this));
-		}
+                sql.append(" WHERE \"").append(pkNames[0]).append("\" = ").append(
+                        pkValues[0].getStringValue(this));
 
-		return sql.toString();
-	}
+                for (int i = 1; i < pkNames.length; i++) {
+                        sql.append(" AND \"").append(pkNames[0]).append("\" = ").append(
+                                pkValues[0].getStringValue(this));
+                }
 
-	public void rollBackTrans(Connection con) throws SQLException {
-		execute(con, "ROLLBACK;");
-	}
+                return sql.toString();
+        }
 
-	@Override
-	public String[] getSchemas(Connection c) throws DriverException {
-		DatabaseMetaData md = null;
-		ResultSet rs = null;
-		ArrayList<String> schemas = new ArrayList<String>();
-		try {
-			md = c.getMetaData();
-			rs = md.getSchemas();
-			int i = 0;
-			while (rs.next()) {
+        @Override
+        public void rollBackTrans(Connection con) throws SQLException {
+                LOG.trace("Transaction rollback");
+                execute(con, "ROLLBACK;");
+        }
 
-				schemas.add(rs.getString("TABLE_SCHEM"));
-				i++;
-			}
-			rs.close();
-			rs = null;
-		} catch (SQLException e) {
-			throw new DriverException(e);
-		}
-		return schemas.toArray(new String[schemas.size()]);
-	}
+        @Override
+        public String[] getSchemas(Connection c) throws DriverException {
+                DatabaseMetaData md = null;
+                ResultSet rs = null;
+                ArrayList<String> schemas = new ArrayList<String>();
+                try {
+                        md = c.getMetaData();
+                        rs = md.getSchemas();
+                        while (rs.next()) {
 
-	@Override
-	public TableDescription[] getTables(Connection c, String catalog,
-			String schemaPattern, String tableNamePattern, String[] types)
-			throws DriverException {
+                                schemas.add(rs.getString("TABLE_SCHEM"));
+                        }
+                        rs.close();
+                } catch (SQLException e) {
+                        throw new DriverException(e);
+                }
+                return schemas.toArray(new String[schemas.size()]);
+        }
 
-		// Retrieves the name, schema, and type of each Database.
+        @Override
+        public TableDescription[] getTables(Connection c, String catalog,
+                String schemaPattern, String tableNamePattern, String[] types)
+                throws DriverException {
 
-		DatabaseMetaData md = null;
-		ResultSet rs = null;
-		ArrayList<TableDescription> tables = new ArrayList<TableDescription>();
+                // Retrieves the name, schema, and type of each Database.
 
-		try {
-			md = c.getMetaData();
-			rs = md.getTables(catalog, schemaPattern, tableNamePattern, types);
-			int i = 0;
-			while (rs.next()) {
-				tables.add(new TableDescription(rs.getString("TABLE_NAME"), rs
-						.getString("TABLE_TYPE"), rs.getString("TABLE_SCHEM")));
-				i++;
-			}
-			rs.close();
-			rs = null;
-		} catch (SQLException e) {
-			throw new DriverException(e);
-		}
+                DatabaseMetaData md = null;
+                ResultSet rs = null;
+                ArrayList<TableDescription> tables = new ArrayList<TableDescription>();
 
-		return tables.toArray(new TableDescription[tables.size()]);
-	}
+                try {
+                        md = c.getMetaData();
+                        rs = md.getTables(catalog, schemaPattern, tableNamePattern, types);
+                        while (rs.next()) {
+                                tables.add(new TableDescription(rs.getString("TABLE_NAME"), rs.getString("TABLE_TYPE"), rs.getString("TABLE_SCHEM")));
+                        }
+                        rs.close();
+                } catch (SQLException e) {
+                        throw new DriverException(e);
+                }
 
-	@Override
-	public TableDescription[] getTables(Connection c) throws DriverException {
-		String[] types = { "TABLE", "VIEW" };
-		return getTables(c, null, null, null, types);
-	}
+                return tables.toArray(new TableDescription[tables.size()]);
+        }
 
-	/**
-	 * @see org.gdms.driver.ReadOnlyDriver#getTypesDefinitions()
-	 */
-	public TypeDefinition[] getTypesDefinitions() {
-		return getConversionRules();
-	}
+        @Override
+        public TableDescription[] getTables(Connection c) throws DriverException {
+                String[] types = {"TABLE", "VIEW"};
+                return getTables(c, null, null, null, types);
+        }
 
-	/**
-	 * @see org.gdms.data.values.ValueWriter#getNullStatementString()
-	 */
-	public String getNullStatementString() {
-		return valueWriter.getNullStatementString();
-	}
+        @Override
+        public TypeDefinition[] getTypesDefinitions() {
+                return getConversionRules();
+        }
 
-	/**
-	 * @see org.gdms.data.values.ValueWriter#getStatementString(boolean)
-	 */
-	public String getStatementString(boolean b) {
-		return valueWriter.getStatementString(b);
-	}
+        @Override
+        public String getNullStatementString() {
+                return valueWriter.getNullStatementString();
+        }
 
-	/**
-	 * @see org.gdms.data.values.ValueWriter#getStatementString(byte[])
-	 */
-	public String getStatementString(byte[] binary) {
-		return valueWriter.getStatementString(binary);
-	}
+        @Override
+        public String getStatementString(boolean b) {
+                return valueWriter.getStatementString(b);
+        }
 
-	/**
-	 * @see org.gdms.data.values.ValueWriter#getStatementString(java.sql.Date)
-	 */
-	public String getStatementString(Date d) {
-		return valueWriter.getStatementString(d);
-	}
+        @Override
+        public String getStatementString(byte[] binary) {
+                return valueWriter.getStatementString(binary);
+        }
 
-	/**
-	 * @see org.gdms.data.values.ValueWriter#getStatementString(double, int)
-	 */
-	public String getStatementString(double d, int sqlType) {
-		return valueWriter.getStatementString(d, sqlType);
-	}
+        @Override
+        public String getStatementString(Date d) {
+                return valueWriter.getStatementString(d);
+        }
 
-	/**
-	 * @see org.gdms.data.values.ValueWriter#getStatementString(com.vividsolutions.jts.geom.Geometry)
-	 */
-	public String getStatementString(Geometry g) {
-		return valueWriter.getStatementString(g);
-	}
+        @Override
+        public String getStatementString(double d, int sqlType) {
+                return valueWriter.getStatementString(d, sqlType);
+        }
 
-	/**
-	 * @see org.gdms.data.values.ValueWriter#getStatementString(int, int)
-	 */
-	public String getStatementString(int i, int sqlType) {
-		return valueWriter.getStatementString(i, sqlType);
-	}
+        @Override
+        public String getStatementString(Geometry g) {
+                return valueWriter.getStatementString(g);
+        }
 
-	/**
-	 * @see org.gdms.data.values.ValueWriter#getStatementString(long)
-	 */
-	public String getStatementString(long i) {
-		return valueWriter.getStatementString(i);
-	}
+        @Override
+        public String getStatementString(int i, int sqlType) {
+                return valueWriter.getStatementString(i, sqlType);
+        }
 
-	/**
-	 * @see org.gdms.data.values.ValueWriter#getStatementString(java.lang.String,
-	 *      int)
-	 */
-	public String getStatementString(String str, int sqlType) {
-		return valueWriter.getStatementString(str, sqlType);
-	}
+        @Override
+        public String getStatementString(long i) {
+                return valueWriter.getStatementString(i);
+        }
 
-	/**
-	 * @see org.gdms.data.values.ValueWriter#getStatementString(java.sql.Time)
-	 */
-	public String getStatementString(Time t) {
-		return valueWriter.getStatementString(t);
-	}
+        @Override
+        public String getStatementString(String str, int sqlType) {
+                return valueWriter.getStatementString(str, sqlType);
+        }
 
-	/**
-	 * @see org.gdms.data.values.ValueWriter#getStatementString(java.sql.Timestamp)
-	 */
-	public String getStatementString(Timestamp ts) {
-		return valueWriter.getStatementString(ts);
-	}
+        @Override
+        public String getStatementString(Time t) {
+                return valueWriter.getStatementString(t);
+        }
 
-	/**
-	 * @see org.gdms.driver.DBReadWriteDriver#beginTrans(java.sql.Connection)
-	 */
-	public void beginTrans(Connection con) throws SQLException {
-		execute(con, "BEGIN;");
-	}
+        @Override
+        public String getStatementString(Timestamp ts) {
+                return valueWriter.getStatementString(ts);
+        }
 
-	/**
-	 * @see org.gdms.driver.DBReadWriteDriver#commitTrans(java.sql.Connection)
-	 */
-	public void commitTrans(Connection con) throws SQLException {
-		execute(con, "COMMIT;");
-	}
+        @Override
+        public void beginTrans(Connection con) throws SQLException {
+                LOG.trace("Beginning transaction");
+                execute(con, "BEGIN;");
+        }
 
-	private ConversionRule getSuitableRule(Type fieldType)
-			throws DriverException {
-		ConversionRule[] rules = getConversionRules();
-		ConversionRule rule = null;
-		for (ConversionRule typeDefinition : rules) {
-			if (typeDefinition.canApply(fieldType)) {
-				rule = typeDefinition;
-				break;
-			}
-		}
-		if (rule == null) {
-			throw new DriverException(getTypeName() + " doesn't accept "
-					+ TypeFactory.getTypeName(fieldType.getTypeCode())
-					+ " types");
-		} else {
-			return rule;
-		}
-	}
+        @Override
+        public void commitTrans(Connection con) throws SQLException {
+                LOG.trace("Commiting transaction");
+                execute(con, "COMMIT;");
+        }
 
-	/**
-	 * Gets the rules used to
-	 * 
-	 * @return
-	 * @throws DriverException
-	 */
-	protected abstract ConversionRule[] getConversionRules();
+        private ConversionRule getSuitableRule(Type fieldType)
+                throws DriverException {
+                ConversionRule[] rules = getConversionRules();
+                ConversionRule rule = null;
+                for (ConversionRule typeDefinition : rules) {
+                        if (typeDefinition.canApply(fieldType)) {
+                                rule = typeDefinition;
+                                break;
+                        }
+                }
+                if (rule == null) {
+                        throw new DriverException(getTypeName() + " doesn't accept "
+                                + TypeFactory.getTypeName(fieldType.getTypeCode())
+                                + " types");
+                } else {
+                        return rule;
+                }
+        }
 
-	/**
-	 * @see org.gdms.driver.DBReadWriteDriver#createSource(org.gdms.data.db.DBSource,
-	 *      org.gdms.data.metadata.Metadata)
-	 */
-	public void createSource(DBSource source, Metadata metadata)
-			throws DriverException {
-		StringBuilder sql = null;
-		Connection c = null;
+        /**
+         * Gets the conversion rules.
+         *
+         * @return the conversion rules.
+         */
+        protected abstract ConversionRule[] getConversionRules();
 
-		this.tableName = source.getTableName();
-		this.schemaName = source.getSchemaName();
+        @Override
+        public void createSource(DBSource source, Metadata metadata)
+                throws DriverException {
+                LOG.trace("Creating source table");
+                StringBuilder sql = new StringBuilder();
+                Connection c = null;
 
-		try {
-			c = getConnection(source.getHost(), source.getPort(), source.isSsl(), source
-					.getDbName(), source.getUser(), source.getPassword());
-			beginTrans(c);
-			sql = new StringBuilder(getCreateTableKeyWord()
-					+ getTableAndSchemaName() + " (");
-			final int fc = metadata.getFieldCount();
-			String separator = "";
+                this.metadata = metadata;
+                this.tableName = source.getTableName();
+                this.schemaName = source.getSchemaName();
 
-			for (int i = 0; i < fc; i++) {
-				String fieldName = metadata.getFieldName(i);
-				Type fieldType = metadata.getFieldType(i);
-				ConversionRule rule = getSuitableRule(fieldType);
-				String fieldDefinition = rule.getSQL(fieldName, fieldType);
+                try {
+                        try {
+                                c = getConnection(source.getHost(), source.getPort(), source.isSsl(), source.getDbName(), source.getUser(), source.getPassword());
+                                beginTrans(c);
+                                sql.append(getCreateTableKeyWord()).append(" ");
+                                sql.append(getTableAndSchemaName());
+                                sql.append(" (");
+                                final int fc = metadata.getFieldCount();
+                                String separator = "";
 
-				if (fieldDefinition != null) {
-					sql.append(separator).append(fieldDefinition);
-					separator = ", ";
-				} else {
-					continue;
-				}
-			}
+                                for (int i = 0; i < fc; i++) {
+                                        String fieldName = metadata.getFieldName(i);
+                                        Type fieldType = metadata.getFieldType(i);
+                                        ConversionRule rule = getSuitableRule(fieldType);
+                                        String fieldDefinition = rule.getSQL(fieldName, fieldType);
 
-			final String[] pks = MetadataUtilities.getPKNames(metadata);
-			if (pks.length == 0) {
-				throw new DriverException("No primary key specified");
-			} else {
-				sql.append(", PRIMARY KEY(").append("\"").append(pks[0])
-						.append("\"");
-				for (int i = 1; i < pks.length; i++) {
-					sql.append(", ").append("\"").append(pks[i]).append("\"");
-				}
-				sql.append(')');
-			}
-			sql.append(");");
+                                        if (fieldDefinition != null) {
+                                                sql.append(separator).append(fieldDefinition);
+                                                separator = ", ";
+                                        } else {
+                                                continue;
+                                        }
+                                }
 
-			sql.append(getPostCreateTableSQL(metadata));
-			commitTrans(c);
+                                final String[] pks = MetadataUtilities.getPKNames(metadata);
+                                if (pks.length == 0) {
+                                        throw new DriverException("No primary key specified");
+                                } else {
+                                        sql.append(", PRIMARY KEY(").append(pks[0]);
+                                        for (int i = 1; i < pks.length; i++) {
+                                                sql.append(", ").append(pks[i]);
+                                        }
+                                        sql.append(')');
+                                }
+                                sql.append(");");
 
-			Statement st = c.createStatement();
-			st.execute(sql.toString());
-			st.close();
-			c.close();
-		} catch (SQLException e1) {
-			if (c != null) {
-				try {
-					rollBackTrans(c);
-				} catch (SQLException e) {
-					throw new DriverException(sql.toString(), e1);
-				}
-			}
-			throw new DriverException(sql.toString() + ": " + e1.getMessage(),
-					e1);
-		}
-	}
+                                sql.append(getPostCreateTableSQL(metadata));
+                                commitTrans(c);
+                                Statement st = null;
+                                try {
+                                        st = c.createStatement();
+                                        st.execute(sql.toString());
+                                } finally {
+                                        st.close();
+                                }
+                                LOG.trace("Source table " + this.tableName + " created");
+                        } catch (SQLException e1) {
+                                if (c != null) {
+                                        try {
+                                                rollBackTrans(c);
+                                        } catch (SQLException e) {
+                                                LOG.error("Failed to rollback", e);
+                                                throw new DriverException(sql.toString() + ": " + e1.getMessage(),
+                                                        e1);
+                                        }
+                                }
+                                throw new DriverException(sql.toString() + ": " + e1.getMessage(),
+                                        e1);
+                        }
+                } finally {
+                        if (c != null) {
+                                try {
+                                        c.close();
+                                } catch (SQLException ex) {
+                                        throw new DriverException(sql.toString() + ": " + ex.getMessage(),
+                                                ex);
+                                }
+                        }
+                }
 
-	protected String getCreateTableKeyWord() {
-		return "CREATE TABLE";
-	}
+        }
 
-	/**
-	 * Gets the instructions to execute after a table creation
-	 * 
-	 * @param source
-	 * @param metadata
-	 * @return
-	 * @throws DriverException
-	 */
-	protected String getPostCreateTableSQL(Metadata metadata)
-			throws DriverException {
-		// Nothing by default
-		return "";
-	}
+        protected String getCreateTableKeyWord() {
+                return "CREATE TABLE";
+        }
 
-	/**
-	 * @see org.gdms.driver.DBReadWriteDriver#execute(java.sql.Connection,
-	 *      java.lang.String)
-	 */
-	public void execute(Connection con, String sql) throws SQLException {
-		Statement st = con.createStatement();
-		st.execute(sql);
-		st.close();
-	}
+        /**
+         * Gets the instructions to execute after a table creation
+         *
+         * @param metadata
+         * @return
+         * @throws DriverException
+         */
+        protected String getPostCreateTableSQL(Metadata metadata)
+                throws DriverException {
+                // Nothing by default
+                return "";
+        }
 
-	/**
-	 * If the type is increased automatically
-	 * 
-	 * @param type
-	 * @return
-	 * @throws DriverException
-	 */
-	protected boolean isAutoNumerical(Type type) throws DriverException {
-		AutoIncrementConstraint c = (AutoIncrementConstraint) type
-				.getConstraint(Constraint.AUTO_INCREMENT);
-		if (c != null) {
-			return true;
-		} else {
-			return false;
-		}
-	}
+        @Override
+        public void execute(Connection con, String sql) throws SQLException {
+                LOG.trace("Executing SQL Statement againt db :\n" + sql);
+                Statement st = con.createStatement();
+                st.execute(sql);
+                st.close();
+        }
 
-	/**
-	 * Gets the value to show in insert statements for autoincrement fields
-	 * 
-	 * @return
-	 */
-	protected String getAutoIncrementDefaultValue() {
-		return "DEFAULT";
-	}
+        /**
+         * If the type is increased automatically
+         *
+         * @param type
+         * @return
+         * @throws DriverException
+         */
+        protected boolean isAutoNumerical(Type type) throws DriverException {
+                AutoIncrementConstraint c = (AutoIncrementConstraint) type.getConstraint(Constraint.AUTO_INCREMENT);
+                return c != null;
+        }
 
-	/**
-	 * @see org.gdms.driver.DBReadWriteDriver#getAddFieldSQL(java.lang.String,
-	 *      java.lang.String, org.gdms.data.types.Type)
-	 */
-	public String getAddFieldSQL(String fieldName, Type fieldType)
-			throws DriverException {
-		ConversionRule rule = getSuitableRule(fieldType);
-		return "ALTER TABLE " + getTableAndSchemaName() + " ADD "
-				+ rule.getSQL(fieldName, fieldType);
-	}
+        /**
+         * Gets the value to show in insert statements for autoincrement fields
+         *
+         * @return
+         */
+        protected String getAutoIncrementDefaultValue() {
+                return "DEFAULT";
+        }
 
-	/**
-	 * @see org.gdms.driver.DBReadWriteDriver#getChangeFieldNameSQL(java.lang.String,
-	 *      java.lang.String, java.lang.String)
-	 */
-	public String getChangeFieldNameSQL(String oldName, String newName)
-			throws DriverException {
-		return "ALTER TABLE " + getTableAndSchemaName() + " RENAME COLUMN \""
-				+ oldName + "\" TO \"" + newName + "\"";
-	}
+        @Override
+        public String getAddFieldSQL(String fieldName, Type fieldType)
+                throws DriverException {
+                ConversionRule rule = getSuitableRule(fieldType);
+                return "ALTER TABLE " + getTableAndSchemaName() + " ADD "
+                        + rule.getSQL(fieldName, fieldType);
+        }
 
-	/**
-	 * @see org.gdms.driver.DBReadWriteDriver#getDeleteFieldSQL(java.lang.String,
-	 *      java.lang.String)
-	 */
-	public String getDeleteFieldSQL(String fieldName) throws DriverException {
-		return "ALTER TABLE " + getTableAndSchemaName() + " DROP COLUMN \""
-				+ fieldName + "\"";
-	}
+        @Override
+        public String getChangeFieldNameSQL(String oldName, String newName)
+                throws DriverException {
+                return "ALTER TABLE " + getTableAndSchemaName() + " RENAME COLUMN "
+                        + oldName + " TO " + newName;
+        }
 
-	/**
-	 * @see org.gdms.driver.DBReadWriteDriver#getDeleteRecordSQL(java.lang.String,
-	 *      java.lang.String[], org.gdms.data.values.Value[])
-	 */
-	public String getDeleteRecordSQL(String[] names, Value[] pks)
-			throws DriverException {
-		// Delete sql statement
-		StringBuffer sql = new StringBuffer("DELETE FROM ").append(
-				getTableAndSchemaName()).append(" WHERE \"").append(names[0])
-				.append("\"=").append(pks[0].getStringValue(this));
+        @Override
+        public String getDeleteFieldSQL(String fieldName) throws DriverException {
+                return "ALTER TABLE " + getTableAndSchemaName() + " DROP COLUMN "
+                        + fieldName;
+        }
 
-		for (int i = 1; i < pks.length; i++) {
-			sql.append(" AND \"").append(names[i]).append("\"=").append(
-					pks[i].getStringValue(this));
-		}
+        @Override
+        public String getDeleteRecordSQL(String[] names, Value[] pks)
+                throws DriverException {
+                // Delete sql statement
+                StringBuffer sql = new StringBuffer("DELETE FROM ").append(
+                        getTableAndSchemaName()).append(" WHERE ").append(names[0]).append("=").append(pks[0].getStringValue(this));
 
-		return sql.toString();
-	}
+                for (int i = 1; i < pks.length; i++) {
+                        sql.append(" AND ").append(names[i]).append("=").append(
+                                pks[i].getStringValue(this));
+                }
+
+                return sql.toString();
+        }
+
+        @Override
+        public Schema getSchema() throws DriverException {
+                return schema;
+        }
 
         @Override
         public DriverException[] getLastNonBlockingErrors() {

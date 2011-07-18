@@ -40,14 +40,14 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import javax.imageio.ImageIO;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceFactory;
+import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.generic.GenericObjectDriver;
 import org.orbisgis.core.AbstractTest;
 import org.orbisgis.core.Services;
@@ -69,7 +69,7 @@ import org.orbisgis.core.renderer.symbol.SymbolFactory;
 
 public class LegendTest extends AbstractTest {
 
-	private DataSourceFactory dsf;
+	private SQLDataSourceFactory dsf;
 	private DataSource ds;
 	private String fieldName;
 	private LegendManager lm;
@@ -388,9 +388,9 @@ public class LegendTest extends AbstractTest {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		dsf = new DataSourceFactory("target", "target");
+		dsf = new SQLDataSourceFactory("target", "target");
 		ds = dsf.getDataSource(new GenericObjectDriver(new String[] { "long" },
-				new Type[] { TypeFactory.createType(Type.INT) }));
+				new Type[] { TypeFactory.createType(Type.INT) }), DriverManager.DEFAULT_SINGLE_TABLE_NAME);
 		ds.open();
 		fieldName = "long";
 

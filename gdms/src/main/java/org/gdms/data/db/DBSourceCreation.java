@@ -38,49 +38,56 @@ package org.gdms.data.db;
 
 import org.gdms.data.AbstractDataSourceCreation;
 import org.gdms.data.DataSourceDefinition;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.Metadata;
 import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.DriverUtilities;
 
 public class DBSourceCreation extends AbstractDataSourceCreation {
 
-	private DBSource source;
+        private DBSource source;
+        private Metadata metadata;
 
-	private Metadata metadata;
+        /**
+         * Builds a new DBSourceCreation
+         *
+         * @param source
+         *            information about the table to be created
+         * @param dmd
+         *            Information about the schema of the new source. If null the source is supposed to
+         *            exist already.
+         */
+        public DBSourceCreation(DBSource source, Metadata dmd) {
+                this.source = source;
+                this.metadata = dmd;
+        }
 
-	/**
-	 * Builds a new DBSourceCreation
-	 *
-	 * @param driverName
-	 *            Name of the driver to be used to create the source
-	 * @param source
-	 *            information about the table to be created
-	 * @param dmd
-	 *            Information about the schema of the new source. If the driver
-	 *            is a spatial one, this parameter must be a
-	 *            SpatialDriverMetadata implementation
-	 */
-	public DBSourceCreation(DBSource source, Metadata dmd) {
-		this.source = source;
-		this.metadata = dmd;
-	}
+        @Override
+        public DataSourceDefinition create(String tableName) throws DriverException {
+                // DB Table Definition only carry one table, so the tableName parameter
+                // is useless here. Maybe we need a DB Definition...
 
-	public DataSourceDefinition create() throws DriverException {
-		((DBReadWriteDriver) getDriver()).setDataSourceFactory(getDataSourceFactory());
-		((DBReadWriteDriver) getDriver()).createSource(source, metadata);
+                ((DBReadWriteDriver) getDriver()).setDataSourceFactory(getDataSourceFactory());
+                if (metadata != null) {
+                        ((DBReadWriteDriver) getDriver()).createSource(source, metadata);
+                }
 
-		return new DBTableSourceDefinition(source);
-	}
+                return new DBTableSourceDefinition(source);
+        }
 
-	@Override
-	protected DBReadWriteDriver getDriverInstance() {
-		return (DBReadWriteDriver) DriverUtilities.getDriver(
-				getDataSourceFactory().getSourceManager().getDriverManager(),
-				source.getPrefix());
-	}
+        @Override
+        public String[] getAvailableTables() throws DriverException {
+                return new String[]{source.getTableName()};
+        }
 
-	public String getPrefix() {
-		return source.getPrefix();
-	}
+        @Override
+        protected DBReadWriteDriver getDriverInstance() {
+                return (DBReadWriteDriver) DriverUtilities.getDriver(
+                        getDataSourceFactory().getSourceManager().getDriverManager(),
+                        source.getPrefix());
+        }
+
+        public String getPrefix() {
+                return source.getPrefix();
+        }
 }

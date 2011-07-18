@@ -34,9 +34,6 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-/**
- *
- */
 package org.gdms.data.indexes.btree;
 
 import org.gdms.data.values.Value;

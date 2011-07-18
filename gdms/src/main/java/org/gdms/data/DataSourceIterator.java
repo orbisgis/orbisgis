@@ -55,7 +55,7 @@ public class DataSourceIterator implements Iterator<Integer> {
 		try {
 			return index < ds.getRowCount();
 		} catch (DriverException e) {
-			throw new RuntimeException(e);
+			throw new IllegalStateException(e);
 		}
 	}
 

@@ -37,6 +37,7 @@
  */
 package org.gdms.driver;
 
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.values.Value;
 
 /**
@@ -46,51 +47,55 @@ import org.gdms.data.values.Value;
  */
 public interface ReadAccess {
 
-	public static final int X = 0;
+        int X = 0;
+        int Y = 1;
+        int Z = 2;
+        int TIME = 3;
 
-	public static final int Y = 1;
+        /**
+         * Get the value in the row according to a column
+         *
+         * @param rowIndex
+         *            row
+         * @param fieldId
+         *            column
+         *
+         * @return subclase de Value con el valor del origen de datos. Never null
+         *         (use ValueFactory.createNullValue() instead)
+         *
+         * @throws DriverException
+         *             Si se produce un error accediendo al DataSource
+         */
+        Value getFieldValue(long rowIndex, int fieldId)
+                throws DriverException;
 
-	public static final int Z = 2;
+        /**
+         * Get the number of elements in the source of data
+         *
+         * @return
+         *
+         * @throws DriverException
+         *             If some error happens accessing the data source
+         */
+        long getRowCount() throws DriverException;
 
-	public static final int TIME = 3;
+        /**
+         * returns the scope of the data source.
+         *
+         * @param dimension
+         *            Currently X, Y, Z or can be anything that a driver
+         *            implementation is waiting for, for example: TIME
+         * @return An array two elements indicating the bounds of the dimension. Can
+         *         return null if the source is not bounded or the bounds are not
+         *         known
+         * @throws DriverException
+         */
+        Number[] getScope(int dimension) throws DriverException;
 
-	/**
-	 * Get the value in the row according to a column
-	 * 
-	 * @param rowIndex
-	 *            row
-	 * @param fieldId
-	 *            column
-	 * 
-	 * @return subclase de Value con el valor del origen de datos. Never null
-	 *         (use ValueFactory.createNullValue() instead)
-	 * 
-	 * @throws DriverException
-	 *             Si se produce un error accediendo al DataSource
-	 */
-	public abstract Value getFieldValue(long rowIndex, int fieldId)
-			throws DriverException;
-
-	/**
-	 * Get the number of elements in the source of data
-	 * 
-	 * @return
-	 * 
-	 * @throws DriverException
-	 *             If some error happens accessing the data source
-	 */
-	public abstract long getRowCount() throws DriverException;
-
-	/**
-	 * returns the scope of the data source.
-	 * 
-	 * @param dimension
-	 *            Currently X, Y, Z or can be anything that a driver
-	 *            implementation is waiting for, for example: TIME
-	 * @return An array two elements indicating the bounds of the dimension. Can
-	 *         return null if the source is not bounded or the bounds are not
-	 *         known
-	 * @throws DriverException
-	 */
-	Number[] getScope(int dimension) throws DriverException;
+        /**
+         * Gets the metadata of this batch of rows
+         * @return a Metadata object
+         * @throws DriverException
+         */
+        Metadata getMetadata() throws DriverException;
 }

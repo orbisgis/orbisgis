@@ -47,7 +47,7 @@ import org.orbisgis.core.edition.EditableElementListener;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class ErrorEditor implements IEditor {
 
@@ -90,7 +90,7 @@ public class ErrorEditor implements IEditor {
 	private class DummyElement implements EditableElement {
 
 		@Override
-		public void close(IProgressMonitor progressMonitor)
+		public void close(ProgressMonitor progressMonitor)
 				throws UnsupportedOperationException {
 
 		}
@@ -106,7 +106,7 @@ public class ErrorEditor implements IEditor {
 		}
 
 		@Override
-		public void open(IProgressMonitor progressMonitor)
+		public void open(ProgressMonitor progressMonitor)
 				throws UnsupportedOperationException, EditableElementException {
 
 		}

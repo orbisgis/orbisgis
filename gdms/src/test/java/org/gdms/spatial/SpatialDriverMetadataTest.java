@@ -36,10 +36,10 @@
  */
 package org.gdms.spatial;
 
-import org.gdms.SourceTest;
+import org.gdms.BaseTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -51,7 +51,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 
-public class SpatialDriverMetadataTest extends SourceTest {
+public class SpatialDriverMetadataTest extends BaseTest {
 
 	public void testHasSpatialField() throws Exception {
 		String[] resources = super.getSpatialResources();
@@ -78,7 +78,7 @@ public class SpatialDriverMetadataTest extends SourceTest {
 	}
 
 	public void testSeveralGeometriesInOneSource() throws Exception {
-		DataSource ds = dsf.getDataSource(new SeveralSpatialFieldsDriver());
+		DataSource ds = dsf.getDataSource(new SeveralSpatialFieldsDriver(),"main");
 		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
 		sds.open();
 		sds.setDefaultGeometry("geom1");
@@ -107,7 +107,7 @@ public class SpatialDriverMetadataTest extends SourceTest {
 				gf.createPoint(new Coordinate(13450, 120)),
 		});
 		driver.addValues(new Value[]{ValueFactory.createValue(geom)});
-		DataSource ds = dsf.getDataSource(driver);
+		DataSource ds = dsf.getDataSource(driver,"main");
 		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
 		sds.open();
 		assertTrue(geom.getEnvelopeInternal().equals(sds.getFullExtent()));

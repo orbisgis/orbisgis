@@ -11,7 +11,7 @@ import org.gdms.driver.DriverException;
 import org.orbisgis.core.edition.AbstractEditableElement;
 import org.orbisgis.core.edition.EditableElementException;
 import org.orbisgis.core.ui.editors.table.TableEditableElement;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.I18N;
 
 public abstract class AbstractTableEditableElement extends
@@ -28,7 +28,7 @@ public abstract class AbstractTableEditableElement extends
         }
 
 	@Override
-	public void close(IProgressMonitor progressMonitor)
+	public void close(ProgressMonitor progressMonitor)
 			throws UnsupportedOperationException, EditableElementException {
 		DataSource ds = getDataSource();
 		ds.removeEditionListener(modificationListener);
@@ -36,7 +36,7 @@ public abstract class AbstractTableEditableElement extends
 	}
 
 	@Override
-	public void open(IProgressMonitor progressMonitor)
+	public void open(ProgressMonitor progressMonitor)
 			throws UnsupportedOperationException, EditableElementException {
 		DataSource ds = getDataSource();
 		ds.addEditionListener(modificationListener);

@@ -190,11 +190,13 @@ public class ShapefileHeader {
 		return maxY;
 	}
 
+        @Override
 	public String toString() {
-		String res = new String("ShapeFileHeader[ size " + fileLength
-				+ " version " + version + " shapeType " + shapeType
-				+ " bounds " + minX + "," + minY + "," + maxX + "," + maxY
-				+ " ]");
-		return res;
+		StringBuilder res = new StringBuilder();
+                res.append("ShapeFileHeader[ size ").append(fileLength).append(" version ");
+                res.append(version).append(" shapeType ").append(shapeType);
+                res.append(" bounds ").append(minX).append(",").append(minY);
+                res.append(",").append(maxX).append(",").append(maxY).append(" ]");
+		return res.toString();
 	}
 }
