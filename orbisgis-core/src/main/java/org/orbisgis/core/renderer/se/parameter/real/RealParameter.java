@@ -54,7 +54,7 @@ public interface RealParameter extends SeParameter, Comparable {
 
 	RealParameterContext getContext();
 
-    public abstract double getValue(SpatialDataSourceDecorator sds, long fid) throws ParameterException;
+    public abstract Double getValue(SpatialDataSourceDecorator sds, long fid) throws ParameterException;
 
 	@Override
 	String toString();

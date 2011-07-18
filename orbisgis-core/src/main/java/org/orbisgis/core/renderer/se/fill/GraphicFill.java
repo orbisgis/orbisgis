@@ -44,6 +44,7 @@ import java.awt.Shape;
 import java.awt.TexturePaint;
 
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -176,39 +177,66 @@ public final class GraphicFill extends Fill implements UomNode {
      */
     @Override
     public Paint getPaint(long fid, SpatialDataSourceDecorator sds, boolean selected, MapTransform mt) throws ParameterException, IOException {
+        double gX = 0.0;
+        double gY = 0.0;
+
+        if (gapX != null) {
+            gX = gapX.getValue(sds, fid);
+            if (gX < 0.0) {
+                gX = 0.0;
+            }
+        }
+
+        if (gapY != null) {
+            gY = gapY.getValue(sds, fid);
+            if (gY < 0.0) {
+                gY = 0.0;
+            }
+        }
+
         Rectangle2D bounds = graphic.getBounds(sds, fid, selected, mt);
+        gX = Uom.toPixel(gX, getUom(), mt.getDpi(), mt.getScaleDenominator(), bounds.getWidth());
+        gY = Uom.toPixel(gY, getUom(), mt.getDpi(), mt.getScaleDenominator(), bounds.getHeight());
+
+        return getPaint(fid, sds, selected, mt, graphic, gX, gY, bounds);
+    }
+
+    public static Paint getPaint(long fid, SpatialDataSourceDecorator sds, boolean selected,
+            MapTransform mt, GraphicCollection graphic, double gX, double gY, Rectangle2D bounds)
+            throws ParameterException, IOException {
 
         if (bounds != null) {
-            double gX = 0.0;
-            double gY = 0.0;
 
-            if (gapX != null) {
-                gX = gapX.getValue(sds, fid);
-                if (gX < 0.0) {
-                    gX = 0.0;
-                }
-            }
+            Point2D.Double geoRef = new Point2D.Double(0, 0);
+            Point2D ref = mt.getAffineTransform().transform(geoRef, null);
 
-            if (gapY != null) {
-                gY = gapY.getValue(sds, fid);
-                if (gY < 0.0) {
-                    gY = 0.0;
-                }
-            }
+            int tWidth = (int) (bounds.getWidth() + gX);
+            int tHeight = (int) (bounds.getHeight() + gY);
 
-            gX = Uom.toPixel(gX, getUom(), mt.getDpi(), mt.getScaleDenominator(), bounds.getWidth());
-            gY = Uom.toPixel(gY, getUom(), mt.getDpi(), mt.getScaleDenominator(), bounds.getHeight());
+            int deltaX = (int) (ref.getX() - Math.ceil(ref.getX() / tWidth) * tWidth);
+            int deltaY = (int) (ref.getY() - Math.ceil(ref.getY() / tHeight) * tHeight);
 
-            BufferedImage i = new BufferedImage((int) (bounds.getWidth() + gX), (int) (bounds.getHeight() + gY), BufferedImage.TYPE_INT_ARGB);
+
+            BufferedImage i = new BufferedImage(tWidth, tHeight, BufferedImage.TYPE_INT_ARGB);
             Graphics2D tile = i.createGraphics();
             tile.setRenderingHints(mt.getRenderingHints());
 
-            graphic.draw(tile, sds, fid, selected, mt, AffineTransform.getTranslateInstance(-bounds.getMinX() + gX / 2.0, -bounds.getMinY() + gY / 2.0));
+            int ix;
+            int iy;
+            for (ix = 0; ix < 2; ix++) {
+                for (iy = 0; iy < 2; iy++) {
+                    graphic.draw(tile, sds, fid, selected, mt,
+                            AffineTransform.getTranslateInstance(
+                            -bounds.getMinX() + gX / 2.0 + deltaX + tWidth * ix,
+                            -bounds.getMinY() + gY / 2.0 + deltaY + tHeight * iy));
+                }
+            }
 
             return new TexturePaint(i, new Rectangle2D.Double(0, 0, i.getWidth(), i.getHeight()));
         } else {
             return null;
         }
+
     }
 
     @Override

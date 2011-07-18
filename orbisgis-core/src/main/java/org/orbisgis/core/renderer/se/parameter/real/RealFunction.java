@@ -125,7 +125,7 @@ public class RealFunction implements RealParameter {
     }
 
     @Override
-    public double getValue(SpatialDataSourceDecorator sds, long fid) throws ParameterException {
+    public Double getValue(SpatialDataSourceDecorator sds, long fid) throws ParameterException {
         double result;
 
         switch (op) {

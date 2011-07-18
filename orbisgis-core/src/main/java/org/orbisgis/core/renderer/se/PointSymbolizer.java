@@ -45,7 +45,6 @@ import java.awt.geom.Point2D;
 import java.io.IOException;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.orbisgis.core.renderer.Drawer;
 import net.opengis.se._2_0.core.ExtensionType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.PointSymbolizerType;
@@ -191,11 +190,6 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
         }
 
         return of.createPointSymbolizer(s);
-    }
-
-    @Override
-    public void draw(Drawer drawer, long fid, boolean selected) {
-        drawer.drawPointSymbolizer(fid, selected);
     }
 
     public boolean isOnVertex() {

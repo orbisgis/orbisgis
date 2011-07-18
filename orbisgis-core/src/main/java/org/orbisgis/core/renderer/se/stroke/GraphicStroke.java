@@ -107,14 +107,17 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
 
         if (length != null) {
             double lineLength = ShapeHelper.getLineLength(shp);
-            naturalLength = Uom.toPixel(length.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), lineLength);
-            if (naturalLength <= GraphicStroke.MIN_LENGTH || naturalLength > lineLength) {
-                naturalLength = lineLength;
+            Double value = length.getValue(sds, fid);
+            if (value != null) {
+                naturalLength = Uom.toPixel(value, getUom(), mt.getDpi(), mt.getScaleDenominator(), lineLength);
+                if (naturalLength <= GraphicStroke.MIN_LENGTH || naturalLength > lineLength) {
+                    naturalLength = lineLength;
+                }
+                return naturalLength;
             }
-            return naturalLength;
-        } else {
-            return getGraphicWidth(sds, fid, mt);
         }
+
+        return getGraphicWidth(sds, fid, mt);
     }
 
     private double getGraphicWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {

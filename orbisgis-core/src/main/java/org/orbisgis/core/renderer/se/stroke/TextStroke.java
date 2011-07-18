@@ -86,22 +86,6 @@ public final class TextStroke extends Stroke {
 		}
 	}
 
-	/*@Override
-	public double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
-		if (lineLabel != null){
-			StyledText label = lineLabel.getLabel();
-		    if (label != null){
-                return label.getEmInPixel(sds, fid, mt)*2.0;
-			}
-		}
-		return 0;
-	}*/
-
-    /*@Override
-    public double getMinLength(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
-        return lineLabel.getLabel().getImage(sds, fid, true, mt).getWidth();
-    }*/
-
 	@Override
 	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt, double offset) throws ParameterException, IOException {
         if (this.lineLabel != null){

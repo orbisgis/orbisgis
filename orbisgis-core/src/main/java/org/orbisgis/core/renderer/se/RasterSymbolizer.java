@@ -50,7 +50,6 @@ import org.gdms.driver.DriverException;
 
 import org.orbisgis.core.map.MapTransform;
 
-import org.orbisgis.core.renderer.Drawer;
 import org.orbisgis.core.renderer.RenderContext;
 
 import net.opengis.se._2_0.raster.RasterSymbolizerType;
@@ -245,10 +244,4 @@ public class RasterSymbolizer extends Symbolizer {
      * Since a line symbolizer is an area one witout the fill element, we only provide the latter
      */
     private AreaSymbolizer outline;
-
-	@Override
-	public void draw(Drawer drawer, long fid, boolean selected) {
-		drawer.drawRasterSymbolizer(fid, selected);
-	}
-
 }

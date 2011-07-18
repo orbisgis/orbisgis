@@ -68,6 +68,13 @@ import org.orbisgis.core.renderer.se.stroke.PenStroke;
 
 public final class DensityFill extends Fill implements GraphicNode {
 
+    private boolean isHatched;
+    private PenStroke hatches;
+    private RealParameter orientation;
+    private GraphicCollection mark;
+    private RealParameter percentageCovered;
+
+
     public DensityFill() {
         this.setHatches(new PenStroke());
         this.setHatchesOrientation(new RealLiteral(45));
@@ -211,12 +218,21 @@ public final class DensityFill extends Fill implements GraphicNode {
             percentage = 100;
         }
 
-        if (percentage > 0.5) {// nothing to draw (TODO compare with an epsilon !!)
+        if (percentage > 0.5) {
             Paint painter = null;
 
             if (isHatched && hatches != null) {
-            } else if (mark != null) { // Marked
+            } else if (mark != null) {
+                Rectangle2D bounds = mark.getBounds(sds, fid, selected, mt);
 
+                double ratio = Math.sqrt(100 / percentage);
+                double gapX =  bounds.getWidth()*ratio - bounds.getWidth();
+                double gapY =  bounds.getHeight()*ratio - bounds.getHeight();
+
+                System.out.println ("New way : ...");
+                painter = GraphicFill.getPaint(fid, sds, selected, mt, mark, gapX, gapY, bounds);
+
+                /*// Marked
                 //RenderableGraphics g;
                 Rectangle2D bounds;
                 try {
@@ -267,6 +283,8 @@ public final class DensityFill extends Fill implements GraphicNode {
                     //finally set the painter
                     painter = new TexturePaint(i, new Rectangle2D.Double(0, 0, i.getWidth(), i.getHeight()));
                 }
+             */
+
             } else {
                 throw new ParameterException("Neither marks or hatches are defined");
             }
@@ -340,9 +358,4 @@ public final class DensityFill extends Fill implements GraphicNode {
         ObjectFactory of = new ObjectFactory();
         return of.createDensityFill(this.getJAXBType());
     }
-    private boolean isHatched;
-    private PenStroke hatches;
-    private RealParameter orientation;
-    private GraphicCollection mark;
-    private RealParameter percentageCovered;
 }

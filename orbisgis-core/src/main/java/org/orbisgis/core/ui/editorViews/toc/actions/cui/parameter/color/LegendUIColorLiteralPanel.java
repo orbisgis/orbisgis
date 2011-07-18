@@ -80,7 +80,7 @@ public abstract class LegendUIColorLiteralPanel extends LegendUIComponent implem
 				super.mouseClicked(e);
 				System.out.println("Picker !");
 
-				ColorPicker pick = new ColorPicker();
+				ColorPicker pick = new ColorPicker(color.getColor(null, -1));
 
 				if (UIFactory.showDialog(pick)) {
 					Color newC = pick.getColor();

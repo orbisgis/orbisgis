@@ -13,7 +13,6 @@ import net.opengis.se._2_0.raster.RasterSymbolizerType;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.Drawer;
 import org.orbisgis.core.renderer.RenderContext;
 import net.opengis.se._2_0.core.ExtensionType;
 import net.opengis.se._2_0.core.ObjectFactory;
@@ -208,8 +207,6 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
     public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, 
             boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
             throws ParameterException, IOException, DriverException;
-
-    public abstract void draw(Drawer drawer, long fid, boolean selected);
 
     public abstract JAXBElement<? extends SymbolizerType> getJAXBElement();
 }

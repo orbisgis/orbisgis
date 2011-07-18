@@ -132,9 +132,9 @@ public class Categorize2ColorTest extends TestCase {
             assertTrue(categorize.getClassValue(3).getColor(null, -1) == class4.getColor(null, -1));
 
             // Thresholds : 75, 100, 200
-            assertTrue(categorize.getThresholdValue(0).getValue(null, -1) == t4.getValue(null, -1));
-            assertTrue(categorize.getThresholdValue(1).getValue(null, -1) == t1.getValue(null, -1));
-            assertTrue(categorize.getThresholdValue(2).getValue(null, -1) == t2.getValue(null, -1));
+            assertEquals(categorize.getThresholdValue(0).getValue(null, -1), t4.getValue(null, -1));
+            assertEquals(categorize.getThresholdValue(1).getValue(null, -1), t1.getValue(null, -1));
+            assertEquals(categorize.getThresholdValue(2).getValue(null, -1), t2.getValue(null, -1));
 
 
             // Thresholds : 75, 100, 200, 500
@@ -145,9 +145,9 @@ public class Categorize2ColorTest extends TestCase {
             assertTrue(categorize.getClassValue(2).getColor(null, -1) == class3.getColor(null, -1));
             assertTrue(categorize.getClassValue(3).getColor(null, -1) == class4.getColor(null, -1));
 
-            assertTrue(categorize.getThresholdValue(0).getValue(null, -1) == t1.getValue(null, -1));
-            assertTrue(categorize.getThresholdValue(1).getValue(null, -1) == t2.getValue(null, -1));
-            assertTrue(categorize.getThresholdValue(2).getValue(null, -1) == t5.getValue(null, -1));
+            assertEquals(categorize.getThresholdValue(0).getValue(null, -1), t1.getValue(null, -1));
+            assertEquals(categorize.getThresholdValue(1).getValue(null, -1), t2.getValue(null, -1));
+            assertEquals(categorize.getThresholdValue(2).getValue(null, -1), t5.getValue(null, -1));
 
 
 

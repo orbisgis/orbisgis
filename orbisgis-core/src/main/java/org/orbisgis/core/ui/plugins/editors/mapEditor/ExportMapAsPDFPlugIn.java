@@ -165,9 +165,9 @@ public class ExportMapAsPDFPlugIn extends AbstractPlugIn {
                 g2dMap.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                         RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-                Renderer r = new PdfRenderer(templateMap, writer);
+                Renderer r = new PdfRenderer(templateMap, pageWidth, pageHeight);
 
-                r.draw(g2dMap, width, height, envelope, layer,
+                r.draw(g2dMap,(int) pageWidth, (int)pageHeight, envelope, layer,
                         new NullProgressMonitor());
 
                 ILayer[] layers = mapContext.getLayerModel().getLayersRecursively();

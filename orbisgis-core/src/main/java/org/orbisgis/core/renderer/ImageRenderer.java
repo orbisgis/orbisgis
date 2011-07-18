@@ -41,6 +41,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Symbolizer;
 
@@ -52,12 +53,15 @@ public class ImageRenderer extends Renderer {
 
     private ArrayList<BufferedImage> imgSymbs;
 
+    private HashMap<Symbolizer, Graphics2D> g2Symbs;
+
+
 
     @Override
-    public HashMap<Symbolizer, Graphics2D> getGraphics2D(ArrayList<Symbolizer> symbs, Graphics2D g2, MapTransform mt) {
+    protected void initGraphics2D(ArrayList<Symbolizer> symbs, Graphics2D g2, MapTransform mt) {
         imgSymbs = new ArrayList<BufferedImage>();
-        HashMap<Symbolizer, Graphics2D> g2Symbs = new HashMap<Symbolizer, Graphics2D>();
-
+        g2Symbs = new HashMap<Symbolizer, Graphics2D>();
+        
         HashMap<Integer, Graphics2D> g2Level = new HashMap<Integer, Graphics2D>();
 
         /**
@@ -82,34 +86,41 @@ public class ImageRenderer extends Renderer {
             }
             g2Symbs.put(s, sG2);
         }
-
-        return g2Symbs;
     }
 
     @Override
-    public void disposeLayer(Graphics2D g2) {
+    protected Graphics2D getGraphics2D(Symbolizer s) {
+        return g2Symbs.get(s);
+    }
+
+
+    @Override
+    protected void releaseGraphics2D(Graphics2D g2) {
+    }
+
+    @Override
+    protected void disposeLayer(Graphics2D g2) {
         for (BufferedImage img : imgSymbs) {
             g2.drawImage(img, null, null);
         }
     }
 
     @Override
-    public void beginFeature(String id) {
+    protected void beginLayer(String name) {
         // nothing to do
     }
 
     @Override
-    public void endFeature(String id) {
+    protected void endLayer(String name) {
         // nothing to do
     }
 
     @Override
-    public void beginLayer(String name) {
-        // nothing to do
+    protected void beginFeature(long id, SpatialDataSourceDecorator sds) {
     }
 
     @Override
-    public void endLayer(String name) {
-        // nothing to do
+    protected void endFeature(long id, SpatialDataSourceDecorator sds) {
     }
+
 }

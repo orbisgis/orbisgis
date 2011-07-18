@@ -37,7 +37,6 @@
  */
 package org.orbisgis.core.renderer.se.fill;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Shape;
@@ -280,7 +279,7 @@ public final class HatchedFill extends Fill implements StrokeNode {
         Line2D.Double l = new Line2D.Double();
 
 
-        // Inform graphic2f to only draw hatches within the shape !
+        // Inform graphic2g to only draw hatches within the shape !
         g2.clip(shp);
 
         if (vertical) {
@@ -303,6 +302,9 @@ public final class HatchedFill extends Fill implements StrokeNode {
                     }
 
                     stroke.draw(g2, sds, fid, l, selected, mt, 0.0);
+
+                    //g2.fillOval((int)(l.getX1() - 2),(int)(l.getY1() -2) , 4, 4);
+                    //g2.fillOval((int)(l.getX2() - 2),(int)(l.getY2() -2) , 4, 4);
                 }
             } else {
 
@@ -314,6 +316,9 @@ public final class HatchedFill extends Fill implements StrokeNode {
                     l.y2 = hymax;
 
                     stroke.draw(g2, sds, fid, l, selected, mt, 0.0);
+
+                    //g2.fillOval((int)(l.getX1() - 2),(int)(l.getY1() -2) , 4, 4);
+                    //g2.fillOval((int)(l.getX2() - 2),(int)(l.getY2() -2) , 4, 4);
                 }
             }
 
@@ -340,6 +345,8 @@ public final class HatchedFill extends Fill implements StrokeNode {
                     }
 
                     stroke.draw(g2, sds, fid, l, selected, mt, 0.0);
+                    //g2.fillOval((int)(l.getX1() - 2),(int)(l.getY1() -2) , 4, 4);
+                    //g2.fillOval((int)(l.getX2() - 2),(int)(l.getY2() -2) , 4, 4);
                 }
             } else {
 
@@ -366,6 +373,9 @@ public final class HatchedFill extends Fill implements StrokeNode {
                     }
 
                     stroke.draw(g2, sds, fid, l, selected, mt, 0.0);
+
+                    //g2.fillOval((int)(l.getX1() - 2),(int)(l.getY1() -2) , 4, 4);
+                    //g2.fillOval((int)(l.getX2() - 2),(int)(l.getY2() -2) , 4, 4);
 
                 }
             }

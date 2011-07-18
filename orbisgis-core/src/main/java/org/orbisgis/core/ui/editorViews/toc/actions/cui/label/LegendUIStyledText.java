@@ -138,6 +138,7 @@ public abstract class LegendUIStyledText extends LegendUIComponent {
             @Override
             protected void haloChanged(Halo halo) {
                 sText.setHalo(halo);
+				controller.structureChanged(this);
             }
         };
     }

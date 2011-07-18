@@ -37,15 +37,23 @@
  */
 package org.orbisgis.core.renderer;
 
+import com.itextpdf.text.pdf.PdfArray;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfDictionary;
 import com.itextpdf.text.pdf.PdfGraphics2D;
+import com.itextpdf.text.pdf.PdfName;
+import com.itextpdf.text.pdf.PdfString;
+import com.itextpdf.text.pdf.PdfStructureElement;
 import com.itextpdf.text.pdf.PdfTemplate;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.types.Type;
+import org.gdms.data.values.Value;
+import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Symbolizer;
@@ -55,83 +63,92 @@ import org.orbisgis.core.renderer.se.Symbolizer;
  * that a GeoPDF can use to offer interactivity
  * @author maxence
  */
-public class PdfRenderer extends Renderer {
+public class PdfRendererWithAttributes extends Renderer {
 
     private HashMap<Rule, ArrayList<PdfGraphics2D>> ruleGraphics;
-    private PdfTemplate pdfTemplate;
+    private PdfContentByte cb;
+    private PdfStructureElement top;
     private float height;
     private float width;
+    private float lx;
+    private float ly;
+    private PdfTemplate pTemp;
     private MapTransform mt;
-    private HashMap<Integer, Graphics2D> g2Levels;
 
-    public PdfRenderer(PdfTemplate pdfTemplate, float width, float height) {
+    public PdfRendererWithAttributes(PdfContentByte container, PdfStructureElement top, float width, float height, float lx, float ly) {
         super();
+        this.cb = container;
+        this.top = top;
         this.height = height;
         this.width = width;
-        this.pdfTemplate = pdfTemplate;
+        this.lx = lx;
+        this.ly = ly;
     }
 
     @Override
     protected Graphics2D getGraphics2D(Symbolizer s) {
-        return g2Levels.get(s.getLevel());
-    }
+        Graphics2D g2 = pTemp.createGraphics(width, height);
+        g2.addRenderingHints(mt.getRenderingHints());
 
-    @Override
-    protected void initGraphics2D(ArrayList<Symbolizer> symbs, Graphics2D g2, MapTransform mt) {
-        this.mt = mt;
-        g2Levels = new HashMap<Integer, Graphics2D>();
-
-        //HashMap<Integer, Graphics2D> g2Level = new HashMap<Integer, Graphics2D>();
-        List<Integer> levels = new LinkedList<Integer>();
-
-        /**
-         * Create one buffered image for each level present in the style. This way allows
-         * to render all symbolizer in one pass without encountering layer level issues
-         */
-        for (Symbolizer s : symbs) {
-
-            Graphics2D sG2;
-            // Does the level of the current symbolizer already have a graphic2s ?
-            if (!levels.contains(s.getLevel())) {
-                // It's a new level => register level
-                levels.add(s.getLevel());
-            }
-        }
-
-        Collections.sort(levels);
-
-        for (Integer level : levels) {
-            Graphics2D sg2 = pdfTemplate.createGraphics(width, height);
-            sg2.addRenderingHints(mt.getRenderingHints());
-            g2Levels.put(level, sg2);
-        }
-    }
-
-    @Override
-    public void disposeLayer(Graphics2D g2) {
-        for (Graphics2D sg2 : g2Levels.values()){
-            sg2.dispose();
-        }
+        return g2;
     }
 
     @Override
     protected void releaseGraphics2D(Graphics2D g2) {
         g2.dispose();
     }
-    
+
+    @Override
+    protected void initGraphics2D(ArrayList<Symbolizer> symbs, Graphics2D g2, MapTransform mt) {
+        this.mt = mt;
+
+
+    }
+
+    @Override
+    public void disposeLayer(Graphics2D g2) {
+    }
+
+    @Override
+    public void beginFeature(long id, SpatialDataSourceDecorator sds) {
+
+        try {
+            PdfStructureElement e = new PdfStructureElement(top, new PdfName("feature" + id));
+            PdfDictionary userProperties = new PdfDictionary();
+            userProperties.put(PdfName.O, PdfName.USERPROPERTIES);
+            PdfArray properties = new PdfArray();
+
+            for (int i = 0; i < sds.getFieldCount(); i++) {
+                if (sds.getFieldType(i).getTypeCode() != Type.GEOMETRY) {
+                    PdfDictionary property = new PdfDictionary();
+                    property.put(PdfName.N, new PdfString(sds.getFieldName(i)));
+                    Value v = sds.getFieldValue(id, i);
+                    property.put(PdfName.V, new PdfString(v.toString()));
+                    properties.add(property);
+                }
+            }
+
+            pTemp = cb.createTemplate(width, height);
+            cb.beginMarkedContentSequence(e);
+
+        } catch (DriverException ex) {
+            Logger.getLogger(PdfRendererWithAttributes.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Override
+    public void endFeature(long id, SpatialDataSourceDecorator sds) {
+        cb.addTemplate(pTemp, lx, ly);
+        cb.endMarkedContentSequence();
+    }
+
     @Override
     public void beginLayer(String name) {
+        //container.beginLayer(new PdfLayer(name, writer));
     }
 
     @Override
     public void endLayer(String name) {
-    }
-
-    @Override
-    protected void beginFeature(long id, SpatialDataSourceDecorator sds) {
-    }
-
-    @Override
-    protected void endFeature(long id, SpatialDataSourceDecorator sds) {
+        //container.endLayer();
     }
 }

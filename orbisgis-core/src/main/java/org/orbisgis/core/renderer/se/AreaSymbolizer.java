@@ -46,7 +46,6 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.AreaSymbolizerType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.orbisgis.core.renderer.Drawer;
 
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
@@ -160,19 +159,21 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
      * @throws DriverException
      */
     @Override
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, 
+    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
             boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
             throws ParameterException, IOException, DriverException {
 
-        ArrayList<Shape> shapes = this.getShapes(sds, fid, mt, the_geom);
+        //ArrayList<Shape> shapes = this.getShapes(sds, fid, mt, the_geom);
 
-        if (shapes != null) {
-            for (Shape shp : shapes) {
+        //if (shapes != null) {
+        //    for (Shape shp : shapes) {
+                Shape shp = mt.getShape(the_geom); // for testing purpose...
+        if (shp != null){
                 if (fill != null) {
                     fill.draw(g2, sds, fid, shp, selected, mt);
                 }
 
-                if (stroke != null && shp != null) {
+                if (stroke != null) {
                     double offset = 0.0;
                     if (perpendicularOffset != null) {
                         offset = Uom.toPixel(perpendicularOffset.getValue(sds, fid),
@@ -180,8 +181,9 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
                     }
                     stroke.draw(g2, sds, fid, shp, selected, mt, offset);
                 }
-            }
         }
+            //}
+       //}
     }
 
     @Override
@@ -212,10 +214,5 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
         }
 
         return of.createAreaSymbolizer(s);
-    }
-
-    @Override
-    public void draw(Drawer drawer, long fid, boolean selected) {
-        drawer.drawAreaSymbolizer(0, selected);
     }
 }

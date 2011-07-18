@@ -45,7 +45,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.orbisgis.core.renderer.Drawer;
 
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.TextSymbolizerType;
@@ -168,10 +167,5 @@ public final class TextSymbolizer extends VectorSymbolizer {
 		}
 
 		return of.createTextSymbolizer(s);
-	}
-
-	@Override
-	public void draw(Drawer drawer, long fid, boolean selected) {
-		drawer.drawTextSymbolizer(fid, selected);
 	}
 }

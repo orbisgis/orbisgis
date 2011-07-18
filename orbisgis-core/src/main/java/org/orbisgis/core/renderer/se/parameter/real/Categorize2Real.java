@@ -47,7 +47,7 @@ public final class Categorize2Real extends Categorize<RealParameter, RealLiteral
     }
 
     @Override
-    public double getValue(SpatialDataSourceDecorator sds, long fid) throws ParameterException{
+    public Double getValue(SpatialDataSourceDecorator sds, long fid) throws ParameterException{
 
 		if (sds == null){
 			throw new ParameterException("No feature");

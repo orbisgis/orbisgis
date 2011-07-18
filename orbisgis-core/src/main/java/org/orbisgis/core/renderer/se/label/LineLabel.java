@@ -10,6 +10,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
@@ -142,6 +143,7 @@ public class LineLabel extends Label {
 
         int way = 1;
 
+        // Do not laid out le label upside-down !
         if (ptStart.x > ptStop.x){
             // invert line way
             way = -1;
@@ -155,6 +157,8 @@ public class LineLabel extends Label {
 
         String text = label.getLabelText().getValue(sds, fid);
         String[] glyphs = text.split("");
+
+        ArrayList<Shape> outlines = new ArrayList<Shape>();
 
         for (String glyph : glyphs) {
             if (glyph != null && !glyph.isEmpty()) {
@@ -172,14 +176,15 @@ public class LineLabel extends Label {
                 at.concatenate(AffineTransform.getRotateInstance(theta));
 
                 currentPos += glyphWidth;
-                label.draw(g2, glyph, sds, fid, selected, mt, at, perm);
+                outlines.add(label.getOutline(g2, glyph, sds, fid, selected, mt, at, perm));
 
                 //g2.drawRenderedImage(ri , at);
             } else {
                 //System.out.println ("Space...");
-                currentPos += emWidth*way;
+                //currentPos += emWidth*way;
             }
         }
+        label.drawOutlines(g2, outlines, sds, fid, selected, mt);
     }
 
     @Override

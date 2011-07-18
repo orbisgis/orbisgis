@@ -49,7 +49,6 @@ import org.gdms.data.SpatialDataSourceDecorator;
 
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.Drawer;
 import org.orbisgis.core.renderer.RenderContext;
 
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -190,10 +189,5 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
 
 
         return of.createLineSymbolizer(s);
-    }
-
-    @Override
-    public void draw(Drawer drawer, long fid, boolean selected) {
-        drawer.drawLineSymbolizer(fid, selected);
     }
 }

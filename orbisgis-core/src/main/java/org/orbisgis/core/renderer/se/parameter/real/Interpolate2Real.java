@@ -53,7 +53,7 @@ public final class Interpolate2Real extends Interpolate<RealParameter, RealLiter
     }
 
     @Override
-    public double getValue(SpatialDataSourceDecorator sds, long fid) throws ParameterException {
+    public Double getValue(SpatialDataSourceDecorator sds, long fid) throws ParameterException {
 
 		double value = this.lookupValue.getValue(sds, fid);
 

@@ -148,19 +148,24 @@ public final class SolidFill extends Fill {
      */
 	@Override
 	public Paint getPaint(long fid, SpatialDataSourceDecorator sds, boolean selected, MapTransform mt) throws ParameterException {
-		Color c = new Color(128, 128, 128);
+
+        Color c, ac; // ac stands 4 colour + alpha channel
 
 		if (color != null){
 			c = color.getColor(sds, fid);
-		}
+		} else {
+		    c = new Color(128, 128, 128);
+        }
 		Double op = 1.0;
 
 		if (this.opacity != null) {
 			op = this.opacity.getValue(sds, fid);
-		}
+		    ac = ColorHelper.getColorWithAlpha(c, op);
+		} else {
+            ac = c;
+        }
 
 		// Add opacity to the color
-		Color ac = ColorHelper.getColorWithAlpha(c, op);
 
 
 		if (selected) {

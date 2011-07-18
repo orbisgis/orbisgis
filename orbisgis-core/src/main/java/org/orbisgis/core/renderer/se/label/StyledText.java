@@ -10,6 +10,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import org.gdms.data.SpatialDataSourceDecorator;
 
 import org.orbisgis.core.map.MapTransform;
@@ -306,8 +307,9 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
         draw(g2, text, sds, fid, selected, mt, at, perm);
     }
 
-    public void draw(Graphics2D g2, String text, SpatialDataSourceDecorator sds, long fid,
+    public Shape getOutline(Graphics2D g2, String text, SpatialDataSourceDecorator sds, long fid,
             boolean selected, MapTransform mt, AffineTransform at, RenderContext perm) throws ParameterException, IOException {
+
         Font font = getFont(sds, fid, mt);
         TextLayout tl = new TextLayout(text, font, g2.getFontRenderContext());
 
@@ -327,27 +329,46 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
 
         Shape outline = tl.getOutline(rat);
 
+        return outline;
+    }
+
+    public void drawOutlines(Graphics2D g2, ArrayList<Shape> outlines, SpatialDataSourceDecorator sds, long fid,
+            boolean selected, MapTransform mt) throws ParameterException, IOException {
+
         if (halo != null) {
-            //halo.draw(rg, sds, fid, selected, outline.getBounds(), mt, false);
-            halo.draw(g2, sds, fid, selected, outline, mt, true);
+            for (Shape outline : outlines) {
+                //halo.draw(rg, sds, fid, selected, outline.getBounds(), mt, false);
+                System.out.println ("Draw halo");
+                halo.draw(g2, sds, fid, selected, outline, mt, true);
+            }
         }
 
-        /**
-         * No fill and no stroke : apply default solidfill !
-         */
-        if (fill == null && stroke == null) {
-            SolidFill sf = new SolidFill(Color.BLACK, 1.0);
-            sf.setParent(this);
-            sf.draw(g2, sds, fid, outline, selected, mt);
-        }
+        for (Shape outline : outlines) {
+            /**
+             * No fill and no stroke : apply default solidfill !
+             */
+            if (fill == null && stroke == null) {
+                SolidFill sf = new SolidFill(Color.BLACK, 1.0);
+                sf.setParent(this);
+                sf.draw(g2, sds, fid, outline, selected, mt);
+            }
 
-        if (fill != null) {
-            fill.draw(g2, sds, fid, outline, selected, mt);
-        }
+            if (fill != null) {
+                fill.draw(g2, sds, fid, outline, selected, mt);
+            }
 
-        if (stroke != null) {
-            stroke.draw(g2, sds, fid, outline, selected, mt, 0.0);
+            if (stroke != null) {
+                stroke.draw(g2, sds, fid, outline, selected, mt, 0.0);
+            }
         }
+    }
+
+    public void draw(Graphics2D g2, String text, SpatialDataSourceDecorator sds, long fid,
+            boolean selected, MapTransform mt, AffineTransform at, RenderContext perm) throws ParameterException, IOException {
+
+        ArrayList<Shape> outlines = new ArrayList<Shape>();
+        outlines.add(getOutline(g2, text, sds, fid, selected, mt, at, perm));
+        drawOutlines(g2, outlines, sds, fid, selected, mt);
     }
 
     /**
@@ -386,7 +407,7 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
         }
 
         FontType font = new FontType();
-        if (this.getOwnUom() != null){
+        if (this.getOwnUom() != null) {
             font.setUom(getOwnUom().toURN());
         }
 

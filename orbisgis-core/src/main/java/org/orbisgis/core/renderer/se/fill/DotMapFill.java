@@ -162,6 +162,8 @@ public final class DotMapFill extends Fill implements GraphicNode {
 
         //Area area = new Area(shapes.get(0));
         Area area = new Area(shp);
+
+        // setting the seed to the scale denom will ensure that mark will not move when panning
         rand.setSeed((long) mt.getScaleDenominator());
         for (int i = 0; i < nb; i++) {
             Point2D.Double pos = findMarkPosition(area);

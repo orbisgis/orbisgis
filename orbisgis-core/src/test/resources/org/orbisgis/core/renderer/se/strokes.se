@@ -642,7 +642,7 @@
           <ViewBox>
 	    <Width>20</Width>
           </ViewBox>
-	  <GraphicStroke relativeOrientation="normal">
+	  <GraphicStroke>
                 <MarkGraphic>
                     <!--<OnlineResource ns4:href="http://bitbucket.org/ovnicraft/ogcserver/raw/649d8bf42a09/haiti/fonts/ERS_v2_Incidents_txt.ttf" />-->
 		    <OnlineResource ns4:href="file:///usr/share/fonts/TTF/luximb.ttf" />
@@ -657,6 +657,7 @@
                     </SolidFill>
 		    <PenStroke />
                 </MarkGraphic>
+		<RelativeOrientation>normal</RelativeOrientation>
 	  </GraphicStroke>
           <Transform>
             <Translate>
@@ -682,7 +683,7 @@
           <ViewBox>
 	    <Width>20</Width>
           </ViewBox>
-	  <GraphicStroke relativeOrientation="normalUp">
+	  <GraphicStroke>
                 <MarkGraphic>
                     <!--<OnlineResource ns4:href="http://bitbucket.org/ovnicraft/ogcserver/raw/649d8bf42a09/haiti/fonts/ERS_v2_Incidents_txt.ttf" />-->
 		    <OnlineResource ns4:href="file:///usr/share/fonts/TTF/luximb.ttf" />
@@ -696,6 +697,7 @@
                         <Opacity>100.0</Opacity>
                     </SolidFill>
                 </MarkGraphic>
+		<RelativeOrientation>normalUp</RelativeOrientation>
 	  </GraphicStroke>
           <Transform>
             <Translate>
@@ -720,7 +722,7 @@
           <ViewBox>
 	    <Width>20</Width>
           </ViewBox>
-	  <GraphicStroke relativeOrientation="portrayal">
+	  <GraphicStroke>
                 <MarkGraphic>
                     <!--<OnlineResource ns4:href="http://bitbucket.org/ovnicraft/ogcserver/raw/649d8bf42a09/haiti/fonts/ERS_v2_Incidents_txt.ttf" />-->
 		    <OnlineResource ns4:href="file:///usr/share/fonts/TTF/luximb.ttf" />
@@ -734,6 +736,7 @@
                         <Opacity>100.0</Opacity>
                     </SolidFill>
                 </MarkGraphic>
+		<RelativeOrientation>portrayal</RelativeOrientation>
 	  </GraphicStroke>
           <Transform>
             <Translate>
@@ -759,7 +762,7 @@
           <ViewBox>
 	    <Width>20</Width>
           </ViewBox>
-	  <GraphicStroke relativeOrientation="line">
+	  <GraphicStroke>
                 <MarkGraphic>
                     <!--<OnlineResource ns4:href="http://bitbucket.org/ovnicraft/ogcserver/raw/649d8bf42a09/haiti/fonts/ERS_v2_Incidents_txt.ttf" />-->
 		    <OnlineResource ns4:href="file:///usr/share/fonts/TTF/luximb.ttf" />
@@ -773,6 +776,7 @@
                         <Opacity>100.0</Opacity>
                     </SolidFill>
                 </MarkGraphic>
+		<RelativeOrientation>line</RelativeOrientation>
 	  </GraphicStroke>
           <Transform>
             <Translate>
@@ -798,7 +802,7 @@
           <ViewBox>
 	    <Width>20</Width>
           </ViewBox>
-	  <GraphicStroke relativeOrientation="line">
+	  <GraphicStroke>
                 <MarkGraphic>
                     <!--<OnlineResource ns4:href="http://bitbucket.org/ovnicraft/ogcserver/raw/649d8bf42a09/haiti/fonts/ERS_v2_Incidents_txt.ttf" />-->
 		    <OnlineResource ns4:href="file:///usr/share/fonts/TTF/luximb.ttf" />
@@ -814,6 +818,7 @@
                         <Opacity>100.0</Opacity>
                     </SolidFill>
                 </MarkGraphic>
+		<RelativeOrientation>line</RelativeOrientation>
 	  </GraphicStroke>
           <Transform>
             <Translate>

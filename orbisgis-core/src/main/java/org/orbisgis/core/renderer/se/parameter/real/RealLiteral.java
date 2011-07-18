@@ -71,7 +71,7 @@ public class RealLiteral extends Literal implements RealParameter {
 	}
 
 	@Override
-	public double getValue(SpatialDataSourceDecorator sds, long fid) {
+	public Double getValue(SpatialDataSourceDecorator sds, long fid) {
 		return v;
 	}
 

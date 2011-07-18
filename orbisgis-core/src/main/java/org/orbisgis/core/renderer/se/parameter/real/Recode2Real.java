@@ -75,7 +75,7 @@ public class Recode2Real extends Recode<RealParameter, RealLiteral> implements R
     }
 
     @Override
-    public double getValue(SpatialDataSourceDecorator sds, long fid) throws ParameterException{
+    public Double getValue(SpatialDataSourceDecorator sds, long fid) throws ParameterException{
 		if (sds == null){
 			throw new ParameterException("No feature");
 		}

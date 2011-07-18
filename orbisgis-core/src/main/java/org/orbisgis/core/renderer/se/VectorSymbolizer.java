@@ -105,7 +105,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
             geom = the_geom;
         }
 
-        geom = ShapeHelper.clipToExtent(geom, mt.getAdjustedExtent());
+        //geom = ShapeHelper.clipToExtent(geom, mt.getAdjustedExtent());
 
         ArrayList<Shape> shapes = new ArrayList<Shape>();
 
@@ -115,17 +115,19 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 
         while (!geom2Process.isEmpty()) {
             geom = geom2Process.remove(0);
-            if (geom instanceof GeometryCollection) {
-                for (int i = 0; i < geom.getNumGeometries(); i++) {
-                    geom2Process.add(geom.getGeometryN(i));
-                }
-            } else {
-                Shape shape = mt.getShape(geom);
-                if (shape != null) {
-                    if (transform != null) {
-                        shape = transform.getGraphicalAffineTransform(false, sds, fid, mt, (double) mt.getWidth(), (double) mt.getHeight()).createTransformedShape(shape); // TODO widht and height?
+            if (geom != null) {
+                if (geom instanceof GeometryCollection) {
+                    for (int i = 0; i < geom.getNumGeometries(); i++) {
+                        geom2Process.add(geom.getGeometryN(i));
                     }
-                    shapes.add(shape);
+                } else {
+                    Shape shape = mt.getShape(geom);
+                    if (shape != null) {
+                        if (transform != null) {
+                            shape = transform.getGraphicalAffineTransform(false, sds, fid, mt, (double) mt.getWidth(), (double) mt.getHeight()).createTransformedShape(shape); // TODO widht and height?
+                        }
+                        shapes.add(shape);
+                    }
                 }
             }
         }
@@ -152,7 +154,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
             geom = the_geom;
         }
 
-        geom = ShapeHelper.clipToExtent(geom, mt.getAdjustedExtent());
+        //geom = ShapeHelper.clipToExtent(geom, mt.getAdjustedExtent());
 
         ArrayList<Shape> shapes = new ArrayList<Shape>();
 
@@ -235,7 +237,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
             geom = the_geom;
         }
 
-        geom = ShapeHelper.clipToExtent(geom, mt.getAdjustedExtent());
+        //geom = ShapeHelper.clipToExtent(geom, mt.getAdjustedExtent());
 
 
         AffineTransform at = mt.getAffineTransform();
@@ -269,7 +271,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
             geom = the_geom;
         }
 
-        geom = ShapeHelper.clipToExtent(geom, mt.getAdjustedExtent());
+        //geom = ShapeHelper.clipToExtent(geom, mt.getAdjustedExtent());
 
 
         AffineTransform at = mt.getAffineTransform();
@@ -304,7 +306,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
             geom = the_geom;
         }
 
-        geom = ShapeHelper.clipToExtent(geom, mt.getAdjustedExtent());
+        //geom = ShapeHelper.clipToExtent(geom, mt.getAdjustedExtent());
 
         ArrayList<Point2D> points = new ArrayList<Point2D>();
 

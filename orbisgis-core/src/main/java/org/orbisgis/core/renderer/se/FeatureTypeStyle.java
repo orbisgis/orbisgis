@@ -237,7 +237,7 @@ public final class FeatureTypeStyle implements SymbolizerNode {
      */
     public void getSymbolizers(MapTransform mt,
             ArrayList<Symbolizer> layerSymbolizers,
-            ArrayList<Symbolizer> overlaySymbolizers,
+            //ArrayList<Symbolizer> overlaySymbolizers,
             ArrayList<Rule> rules,
             ArrayList<Rule> fallbackRules) {
 
@@ -256,18 +256,17 @@ public final class FeatureTypeStyle implements SymbolizerNode {
                     for (Symbolizer s : r.getCompositeSymbolizer().getSymbolizerList()) {
                         // Extract TextSymbolizer into specific set =>
                         // Label are always drawn on top
-                        if (s instanceof TextSymbolizer) {
-                            overlaySymbolizers.add(s);
-                        } else {
+                        //if (s instanceof TextSymbolizer) {
+                            //overlaySymbolizers.add(s);
+                        //} else {
                             layerSymbolizers.add(s);
-                        }
+                        //}
                     }
                 }
             }
         }
 
         Collections.sort(layerSymbolizers);
-        Collections.sort(overlaySymbolizers);
     }
 
     public void resetSymbolizerLevels() {

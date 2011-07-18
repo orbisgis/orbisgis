@@ -83,7 +83,6 @@ import org.gdms.data.FilterDataSourceDecorator;
 import org.orbisgis.core.renderer.se.FeatureTypeStyle;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Symbolizer;
-import org.orbisgis.core.renderer.se.TextSymbolizer;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 
@@ -107,39 +106,46 @@ public abstract class Renderer {
      * Is called just before a new layer is drawn
      * @return
      */
-    public abstract HashMap<Symbolizer, Graphics2D> getGraphics2D(ArrayList<Symbolizer> symbs,
-            Graphics2D g2, MapTransform mt);
+    //public abstract HashMap<Symbolizer, Graphics2D> getGraphics2D(ArrayList<Symbolizer> symbs,
+    //        Graphics2D g2, MapTransform mt);
 
+    protected abstract void initGraphics2D(ArrayList<Symbolizer> symbs, Graphics2D g2, MapTransform mt);
+
+    protected abstract Graphics2D getGraphics2D(Symbolizer s);
+
+    protected abstract void releaseGraphics2D(Graphics2D g2);
+    
+    
     /**
      * Is called once the layer has been rendered
      * @param g2 the graphics the layer has to be drawn on
      */
-    public abstract void disposeLayer(Graphics2D g2);
+    protected abstract void disposeLayer(Graphics2D g2);
 
 
     /**
      * Called before each feature
      * @param name the name of the feature
      */
-    public abstract void beginFeature(String name);
+    protected abstract void beginFeature(long id, SpatialDataSourceDecorator sds);
 
     /**
      * Called after each feature
      * @param name the name of the feature
      */
-    public abstract void endFeature(String name);
+    protected abstract void endFeature(long id, SpatialDataSourceDecorator sds);
 
     /**
      * Called before each layer
      * @param name the name of the layer
      */
-    public abstract void beginLayer(String name);
+    protected abstract void beginLayer(String name);
 
     /**
      * Called after each layer
      * @param name the name of the layer
      */
-    public abstract void endLayer(String name);
+    protected abstract void endLayer(String name);
 
 
     /**
@@ -155,12 +161,14 @@ public abstract class Renderer {
             IProgressMonitor pm) throws DriverException {
         Envelope extent = mt.getAdjustedExtent();
 
+        double gap = mt.getScaleDenominator() * 0.01;
+
         return new FilterDataSourceDecorator(sds, "ST_Intersects(ST_GeomFromText('POLYGON(("
-                + extent.getMinX() + " " + extent.getMinY() + ","
-                + extent.getMinX() + " " + extent.getMaxY() + ","
-                + extent.getMaxX() + " " + extent.getMaxY() + ","
-                + extent.getMaxX() + " " + extent.getMinY() + ","
-                + extent.getMinX() + " " + extent.getMinY() + "))'), "
+                + (extent.getMinX() - gap) + " " + (extent.getMinY() - gap) + ","
+                + (extent.getMinX() - gap) + " " + (extent.getMaxY() + gap) + ","
+                + (extent.getMaxX() + gap) + " " + (extent.getMaxY() + gap) + ","
+                + (extent.getMaxX() + gap) + " " + (extent.getMinY() - gap) + ","
+                + (extent.getMinX() - gap) + " " + (extent.getMinY() - gap) + "))'), "
                 + sds.getSpatialFieldName() + ")");
     }
 
@@ -201,8 +209,8 @@ public abstract class Renderer {
 
             ArrayList<Symbolizer> symbs = new ArrayList<Symbolizer>();
 
-            // i.e. TextSymbolizer are always drawn above all other layer !!
-            ArrayList<Symbolizer> overlays = new ArrayList<Symbolizer>();
+            // i.e. TextSymbolizer are always drawn above all other layer !! Should now be handle wth symbolizer level
+            //ArrayList<Symbolizer> overlays = new ArrayList<Symbolizer>();
 
             // Standard rules (with filter or no filter but not with elsefilter)
             ArrayList<Rule> rList = new ArrayList<Rule>();
@@ -211,7 +219,7 @@ public abstract class Renderer {
             ArrayList<Rule> fRList = new ArrayList<Rule>();
 
             // fetch symbolizers and rules
-            style.getSymbolizers(mt, symbs, overlays, rList, fRList);
+            style.getSymbolizers(mt, symbs, rList, fRList);
 
 
             long tV1b = System.currentTimeMillis();
@@ -293,12 +301,13 @@ public abstract class Renderer {
 
 
                 // Make sure TextSymbolizer are rendered on top
-                symbs.addAll(overlays);
+                //symbs.addAll(overlays);
 
 
 
                 // Get a graphics for each symbolizer
-                HashMap<Symbolizer, Graphics2D> g2Symbs = getGraphics2D(symbs, g2, mt);
+                //HashMap<Symbolizer, Graphics2D> g2Symbs = getGraphics2D(symbs, g2, mt);
+                initGraphics2D(symbs, g2, mt);
 
                 //for (Symbolizer s : symbs) {
                 for (Rule r : rList) {
@@ -317,7 +326,9 @@ public abstract class Renderer {
 
                     long tf1 = System.currentTimeMillis();
 
+                    long initFeats = 0;
                     for (fid = 0; fid < fds.getRowCount(); fid++) {
+                        initFeats -= System.currentTimeMillis();
                         if (layerCount % 1000 == 0) {
                             if (pm.isCancelled()) {
                                 return layerCount;
@@ -340,24 +351,28 @@ public abstract class Renderer {
 
                         boolean emphasis = selected.contains((int) originalIndex);
 
-                        beginFeature(Long.toString(originalIndex));
+                        initFeats += System.currentTimeMillis();
+                        
+                        beginFeature(originalIndex, sds);
                         for (Symbolizer s : r.getCompositeSymbolizer().getSymbolizerList()) {
                             Graphics2D g2S;
-                            if (s instanceof TextSymbolizer) {
+                            //if (s instanceof TextSymbolizer) {
                                 // TextSymbolizer always rendered on overlay
-                                g2S = overlayImage.createGraphics();
-                            } else {
-                                g2S = g2Symbs.get(s);
-                            }
+                                //g2S = overlayImage.createGraphics();
+                            //} else {
+                                //g2S = g2Symbs.get(s);
+                            g2S = getGraphics2D(s);
+                            //}
                             s.draw(g2S, sds, originalIndex, emphasis, mt, the_geom, perm);
                             //s.draw(g2, sds, originalIndex, emphasis, mt, the_geom, perm);
+                            releaseGraphics2D(g2);
                         }
-                        endFeature(Long.toString(originalIndex));
+                        endFeature(originalIndex, sds);
 
                         pm.progressTo((int) (100 * ++layerCount / total));
                     }
                     long tf2 = System.currentTimeMillis();
-                    logger.println("  -> Rule done in  " + (tf2 - tf1) + "[ms]");
+                    logger.println("  -> Rule done in  " + (tf2 - tf1) + "[ms]   featInit"  + initFeats + "[ms]");
 
                     pm.endTask();
                     endLayer(r.getName());
@@ -385,6 +400,7 @@ public abstract class Renderer {
         } catch (Exception ex) {
             java.util.logging.Logger.getLogger("Could not draw " + layer.getName()).log(Level.SEVERE, "Error while drawing " + layer.getName(), ex);
             ex.printStackTrace(System.err);
+            g2.setColor(Color.red);
             g2.drawString(ex.toString(), 20, 20);
 
         }
