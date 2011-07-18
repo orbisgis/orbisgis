@@ -63,9 +63,9 @@
 	</pluginRepositories>
 	<distributionManagement>
 		<repository>
-			<id>geosysin</id>
-			<name>Geosysin repository</name>
-			<url>scp://irstv@geosysin.iict.ch:/var/www/geosysin.iict.ch/irstv/trac/htdocs/maven-repo</url>
+			<id>IRSTV</id>
+			<name>IRSTV repository</name>
+			<url>sftp://irstv@www.orbisgis.org:/var/www/repo.orbisgis.org/htdocs</url>
 		</repository>
 	</distributionManagement>
 	<build>
