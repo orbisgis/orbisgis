@@ -76,42 +76,43 @@ import javax.xml.validation.Validator;
 
 import org.xml.sax.SAXException;
 
-public class XMLUtils {
+public final class XMLUtils {
 
-	/**
-	 * Returns null if the content is valid for the specified schema. If the
-	 * content is not valid it returns a description of why it is invalid
-	 * 
-	 * @param schemaFile
-	 * @param content
-	 * @return
-	 * @throws ParserConfigurationException
-	 * @throws SAXException
-	 * @throws IOException
-	 */
-	public static String validateXML(String schemaContent, String content)
-			throws ParserConfigurationException, SAXException, IOException {
-			
-		//Caution! This implementation substituted another that didn't worked in JWS.
-		SchemaFactory factory = SchemaFactory
-				.newInstance("http://www.w3.org/2001/XMLSchema");
+        /**
+         * Returns null if the content is valid for the specified schema. If the
+         * content is not valid it returns a description of why it is invalid
+         *
+         * @param schemaContent 
+         * @param content
+         * @return
+         * @throws ParserConfigurationException
+         * @throws SAXException
+         * @throws IOException
+         */
+        public static String validateXML(String schemaContent, String content)
+                throws ParserConfigurationException, SAXException, IOException {
 
-		// 2. Compile the schema.
-		// Here the schema is loaded from a java.io.File, but you could use
-		// a java.net.URL or a javax.xml.transform.Source instead.
-		StreamSource ss = new StreamSource(new ByteArrayInputStream(
-				schemaContent.getBytes()));
-		Schema schema = factory.newSchema(ss);
+                //Caution! This implementation substituted another that didn't worked in JWS.
+                SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
 
-		// 3. Get a validator from the schema.
-		Validator validator = schema.newValidator();
+                // 2. Compile the schema.
+                // Here the schema is loaded from a java.io.File, but you could use
+                // a java.net.URL or a javax.xml.transform.Source instead.
+                StreamSource ss = new StreamSource(new ByteArrayInputStream(
+                        schemaContent.getBytes()));
+                Schema schema = factory.newSchema(ss);
 
-		// 4. Parse the document you want to check.
-		Source source = new StreamSource(new ByteArrayInputStream(content
-				.getBytes()));
+                // 3. Get a validator from the schema.
+                Validator validator = schema.newValidator();
 
-		validator.validate(source);
+                // 4. Parse the document you want to check.
+                Source source = new StreamSource(new ByteArrayInputStream(content.getBytes()));
 
-		return null;
-	}
+                validator.validate(source);
+
+                return null;
+        }
+
+        private XMLUtils() {
+        }
 }

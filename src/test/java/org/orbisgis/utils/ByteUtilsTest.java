@@ -38,7 +38,6 @@ package org.orbisgis.utils;
 
 import junit.framework.TestCase;
 
-import org.orbisgis.utils.ByteUtils;
 
 public class ByteUtilsTest extends TestCase {
 

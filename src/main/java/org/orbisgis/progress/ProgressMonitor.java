@@ -36,103 +36,55 @@
  */
 package org.orbisgis.progress;
 
-public class ProgressMonitor implements IProgressMonitor {
+public interface ProgressMonitor {
 
-	private Task overallTask;
+        void init(String taskName, long end);
 
-	private Task currentTask;
+        /**
+         * Adds a new child task to the last added
+         *
+         * @param taskName
+         *            Task name
+         * @param end  
+         */
+        void startTask(String taskName, long end);
 
-	private boolean cancelled;
+        void endTask();
 
-	public ProgressMonitor(String taskName) {
-		init(taskName);
-	}
+        /**
+         * Gets the current name of the task. The name at init or the name at the
+         * last call to startTask if any
+         *
+         * @return
+         */
+        String getCurrentTaskName();
 
-	/**
-	 * @param taskName
-	 */
-	public void init(String taskName) {
-		overallTask = new Task(taskName);
-	}
+        /**
+         * Indicates the progress of the last added task
+         *
+         * @param progress
+         */
+        void progressTo(long progress);
 
-	/**
-	 * @param taskName
-	 * @param percentage
-	 */
-	public void startTask(String taskName) {
-		currentTask = new Task(taskName);
-	}
+        /**
+         * Gets the progress of the overall process
+         *
+         * @return
+         */
+        int getOverallProgress();
 
-	private class Task {
+        /**
+         * Gets the progress of the current process
+         *
+         * @return
+         */
+        int getCurrentProgress();
 
-		String taskName;
-
-		int percentage;
-
-		public Task(String taskName) {
-			this.taskName = taskName;
-			this.percentage = 0;
-		}
-
-	}
-
-	/**
-	 *
-	 */
-	public void endTask() {
-		currentTask = null;
-	}
-
-	/**
-	 * @param progress
-	 */
-	public void progressTo(int progress) {
-		if (currentTask != null) {
-			this.currentTask.percentage = progress;
-		} else {
-			overallTask.percentage = progress;
-		}
-	}
-
-	/**
-	 * @return
-	 */
-	public int getOverallProgress() {
-		return (int) overallTask.percentage;
-	}
-
-	public String toString() {
-		String ret = overallTask.taskName + ": " + overallTask.percentage
-				+ "\n";
-		if (currentTask != null) {
-			ret += currentTask.taskName + ": " + currentTask.percentage + "\n";
-		}
-
-		return ret;
-	}
-
-	public synchronized boolean isCancelled() {
-		return cancelled;
-	}
-
-	public synchronized void setCancelled(boolean cancelled) {
-		this.cancelled = cancelled;
-	}
-
-	public String getCurrentTaskName() {
-		if (currentTask != null) {
-			return currentTask.taskName;
-		} else {
-			return null;
-		}
-	}
-
-	public int getCurrentProgress() {
-		if (currentTask != null) {
-			return currentTask.percentage;
-		} else {
-			return 0;
-		}
-	}
-
+        /**
+         * Returns true if the process is cancelled and should end as quickly as
+         * possible
+         *
+         * @return
+         */
+        boolean isCancelled();
 }

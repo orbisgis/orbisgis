@@ -36,88 +36,285 @@
  */
 package org.orbisgis.utils;
 
-public class ByteUtils {
+/**
+ * Utility class for dealing with bytes.
+ *
+ * Every method in this class that takes an array as an argument returns an empty
+ * array when the argument is empty
+ */
+public final class ByteUtils {
 
-	public static int bytesToInt(byte[] b) {
-		return ((b[3] & 0xff) << 0) + ((b[2] & 0xff) << 8)
-				+ ((b[1] & 0xff) << 16) + ((b[0] & 0xff) << 24);
-	}
+        private static final int BYTESIZE = 0xFF;
 
-	public static byte[] intToBytes(int v) {
-		byte[] b = new byte[4];
-		b[0] = (byte) ((v >>> 24) & 0xFF);
-		b[1] = (byte) ((v >>> 16) & 0xFF);
-		b[2] = (byte) ((v >>> 8) & 0xFF);
-		b[3] = (byte) ((v >>> 0) & 0xFF);
+        /**
+         * Converts a byte array into an integer.
+         *
+         * Only the first four bytes of the argument are used.
+         * @param b an array of bytes of length >= 4
+         * @return the corresponding integer
+         */
+        public static int bytesToInt(byte[] b) {
+                if (b.length < 4) {
+                        throw new IllegalArgumentException("The length of the byte array should be >= 4");
+                }
+                return ((b[3] & BYTESIZE)) + ((b[2] & BYTESIZE) << 8)
+                        + ((b[1] & BYTESIZE) << 16) + ((b[0] & BYTESIZE) << 24);
+        }
 
-		return b;
-	}
+        /**
+         * Converts an integer to a byte array
+         * @param v an integer
+         * @return the corresponding byte array
+         */
+        public static byte[] intToBytes(int v) {
+                byte[] b = new byte[4];
+                b[0] = (byte) ((v >>> 24) & BYTESIZE);
+                b[1] = (byte) ((v >>> 16) & BYTESIZE);
+                b[2] = (byte) ((v >>> 8) & BYTESIZE);
+                b[3] = (byte) ((v) & BYTESIZE);
 
-	public static byte[] shortsToBytes(short[] shorts) {
-		byte[] ret = new byte[shorts.length * 2];
-		for (int i = 0; i < shorts.length; i++) {
-			ret[i * 2] = (byte) ((shorts[i] >>> 0) & 0xFF);
-			ret[i * 2 + 1] = (byte) ((shorts[i] >>> 8) & 0xFF);
-		}
+                return b;
+        }
 
-		return ret;
-	}
+        /**
+         * Converts an array of shorts into an array of bytes
+         * @param shorts an array of short
+         * @return the corresponding byte array
+         */
+        public static byte[] shortsToBytes(short[] shorts) {
+                byte[] ret = new byte[shorts.length * 2];
+                for (int i = 0; i < shorts.length; i++) {
+                        ret[i * 2] = (byte) ((shorts[i]) & BYTESIZE);
+                        ret[i * 2 + 1] = (byte) ((shorts[i] >>> 8) & BYTESIZE);
+                }
 
-	public static short[] bytesToShorts(byte[] bytes) {
-		short[] ret = new short[bytes.length / 2];
-		for (int i = 0; i < ret.length; i++) {
-			ret[i] = (short) (((bytes[i * 2] & 0xff) << 0) + ((bytes[i * 2 + 1] & 0xff) << 8));
-		}
+                return ret;
+        }
 
-		return ret;
-	}
+        /**
+         * Converts a short into an array of bytes
+         * @param theShort a short
+         * @return the corresponding byte array
+         */
+        public static byte[] shortToBytes(short theShort) {
+                return shortsToBytes(new short[]{theShort});
+        }
 
-	public static byte[] intsToBytes(int[] ints) {
-		byte[] ret = new byte[ints.length * 4];
-		for (int i = 0; i < ints.length; i++) {
-			ret[i * 4] = (byte) ((ints[i] >>> 0) & 0xFF);
-			ret[i * 4 + 1] = (byte) ((ints[i] >>> 8) & 0xFF);
-			ret[i * 4 + 2] = (byte) ((ints[i] >>> 16) & 0xFF);
-			ret[i * 4 + 3] = (byte) ((ints[i] >>> 24) & 0xFF);
-		}
-		return ret;
-	}
+        /**
+         * Converts an array of bytes into an array of shorts
+         * @param bytes an array of bytes
+         * @return the corresponding array of shorts
+         */
+        public static short[] bytesToShorts(byte[] bytes) {
+                short[] ret = new short[bytes.length / 2];
+                for (int i = 0; i < ret.length; i++) {
+                        ret[i] = (short) (((bytes[i * 2] & BYTESIZE)) + ((bytes[i * 2 + 1] & BYTESIZE) << 8));
+                }
 
-	public static int[] bytesToInts(byte[] bytes) {
-		int[] ret = new int[bytes.length / 4];
-		for (int i = 0; i < ret.length; i++) {
-			ret[i] = ((bytes[i * 4] & 0xff) << 0)
-					+ ((bytes[i * 4 + 1] & 0xff) << 8)
-					+ ((bytes[i * 4 + 2] & 0xff) << 16)
-					+ ((bytes[i * 4 + 3] & 0xff) << 24);
-		}
+                return ret;
+        }
 
-		return ret;
-	}
+        /**
+         * Converts an array of bytes into a short
+         * @param bytes an array of bytes
+         * @return the corresponding short
+         */
+        public static short bytesToShort(byte[] bytes) {
+                return bytesToShorts(bytes)[0];
+        }
 
-	public static byte[] floatsToBytes(float[] floats) {
-		byte[] ret = new byte[floats.length * 4];
-		for (int i = 0; i < floats.length; i++) {
-			int floatAsInt = Float.floatToIntBits(floats[i]);
-			ret[i * 4] = (byte) ((floatAsInt >>> 0) & 0xFF);
-			ret[i * 4 + 1] = (byte) ((floatAsInt >>> 8) & 0xFF);
-			ret[i * 4 + 2] = (byte) ((floatAsInt >>> 16) & 0xFF);
-			ret[i * 4 + 3] = (byte) ((floatAsInt >>> 24) & 0xFF);
-		}
-		return ret;
-	}
+        /**
+         * Converts an array of integers into an array of bytes
+         * @param ints an array of integers
+         * @return an array of bytes
+         */
+        public static byte[] intsToBytes(int[] ints) {
+                byte[] ret = new byte[ints.length * 4];
+                for (int i = 0; i < ints.length; i++) {
+                        ret[i * 4] = (byte) ((ints[i]) & BYTESIZE);
+                        ret[i * 4 + 1] = (byte) ((ints[i] >>> 8) & BYTESIZE);
+                        ret[i * 4 + 2] = (byte) ((ints[i] >>> 16) & BYTESIZE);
+                        ret[i * 4 + 3] = (byte) ((ints[i] >>> 24) & BYTESIZE);
+                }
+                return ret;
+        }
 
-	public static float[] bytesToFloats(byte[] bytes) {
-		float[] ret = new float[bytes.length / 4];
-		for (int i = 0; i < ret.length; i++) {
-			int floatAsInt = ((bytes[i * 4 + 3] & 0xff) << 24)
-					+ ((bytes[i * 4 + 2] & 0xff) << 16)
-					+ ((bytes[i * 4 + 1] & 0xff) << 8)
-					+ ((bytes[i * 4] & 0xff) << 0);
-			ret[i] = Float.intBitsToFloat(floatAsInt);
-		}
+        /**
+         * Converts an array of bytes into an array of integers
+         * @param bytes an array of bytes
+         * @return the corresponding array of integers
+         */
+        public static int[] bytesToInts(byte[] bytes) {
+                int[] ret = new int[bytes.length / 4];
+                for (int i = 0; i < ret.length; i++) {
+                        ret[i] = ((bytes[i * 4] & BYTESIZE))
+                                + ((bytes[i * 4 + 1] & BYTESIZE) << 8)
+                                + ((bytes[i * 4 + 2] & BYTESIZE) << 16)
+                                + ((bytes[i * 4 + 3] & BYTESIZE) << 24);
+                }
 
-		return ret;
-	}
+                return ret;
+        }
 
+        /**
+         * Converts an array of floats into an array of bytes
+         * @param floats an array of floats
+         * @return the corresponding array of bytes
+         */
+        public static byte[] floatsToBytes(float[] floats) {
+                byte[] ret = new byte[floats.length * 4];
+                for (int i = 0; i < floats.length; i++) {
+                        int floatAsInt = Float.floatToIntBits(floats[i]);
+                        ret[i * 4] = (byte) ((floatAsInt) & BYTESIZE);
+                        ret[i * 4 + 1] = (byte) ((floatAsInt >>> 8) & BYTESIZE);
+                        ret[i * 4 + 2] = (byte) ((floatAsInt >>> 16) & BYTESIZE);
+                        ret[i * 4 + 3] = (byte) ((floatAsInt >>> 24) & BYTESIZE);
+                }
+                return ret;
+        }
+
+        /**
+         * Converts a float into an array of bytes
+         * @param theFloat a float
+         * @return the corresponding array of bytes
+         */
+        public static byte[] floatToBytes(float theFloat) {
+                return floatsToBytes(new float[]{theFloat});
+        }
+
+        /**
+         * Converts an array of bytes into an array of floats
+         * @param bytes an array of bytes
+         * @return the corresponding array of floats
+         */
+        public static float[] bytesToFloats(byte[] bytes) {
+                float[] ret = new float[bytes.length / 4];
+                for (int i = 0; i < ret.length; i++) {
+                        int floatAsInt = ((bytes[i * 4 + 3] & BYTESIZE) << 24)
+                                + ((bytes[i * 4 + 2] & BYTESIZE) << 16)
+                                + ((bytes[i * 4 + 1] & BYTESIZE) << 8)
+                                + ((bytes[i * 4] & BYTESIZE));
+                        ret[i] = Float.intBitsToFloat(floatAsInt);
+                }
+
+                return ret;
+        }
+
+        /**
+         * Converts an array of bytes into a float
+         * @param bytes an array of bytes
+         * @return the corresponding float
+         */
+        public static float bytesToFloat(byte[] bytes) {
+                return bytesToFloats(bytes)[0];
+        }
+
+        /**
+         * Converts an array of longs into an array of bytes
+         * @param longs an array of longs
+         * @return the corresponding array of bytes
+         */
+        public static byte[] longsToBytes(long[] longs) {
+                byte[] ret = new byte[longs.length * 8];
+                for (int i = 0; i < longs.length; i++) {
+                        ret[i * 8] = (byte) (longs[i] >>> 56);
+                        ret[i * 8 + 1] = (byte) (longs[i] >>> 48);
+                        ret[i * 8 + 2] = (byte) (longs[i] >>> 40);
+                        ret[i * 8 + 3] = (byte) (longs[i] >>> 32);
+                        ret[i * 8 + 4] = (byte) (longs[i] >>> 24);
+                        ret[i * 8 + 5] = (byte) (longs[i] >>> 16);
+                        ret[i * 8 + 6] = (byte) (longs[i] >>> 8);
+                        ret[i * 8 + 7] = (byte) (longs[i]);
+                }
+
+                return ret;
+        }
+
+        /**
+         * Converts a long into an array of bytes
+         * @param theLong a long
+         * @return the corresponding array of bytes
+         */
+        public static byte[] longToBytes(long theLong) {
+                return longsToBytes(new long[]{theLong});
+        }
+
+        /**
+         * Converts an array of bytes into an array of longs
+         * @param bytes an array of bytes
+         * @return the corresponding array of longs
+         */
+        public static long[] bytesToLongs(byte[] bytes) {
+                long[] ret = new long[bytes.length / 8];
+                for (int i = 0; i < ret.length; i++) {
+                        ret[i] = (((long) bytes[i * 8] << 56)
+                                + ((long) (bytes[i * 8 + i * 8 + 1] & BYTESIZE) << 48)
+                                + ((long) (bytes[i * 8 + 2] & BYTESIZE) << 40)
+                                + ((long) (bytes[i * 8 + 3] & BYTESIZE) << 32)
+                                + ((long) (bytes[i * 8 + 4] & BYTESIZE) << 24)
+                                + ((bytes[i * 8 + 5] & BYTESIZE) << 16)
+                                + ((bytes[i * 8 + 6] & BYTESIZE) << 8)
+                                + ((bytes[i * 8 + 7] & BYTESIZE)));
+                }
+
+                return ret;
+        }
+
+        /**
+         * Converts an array of bytes into a long
+         * @param bytes an array of bytes
+         * @return the corresponding long
+         */
+        public static long bytesToLong(byte[] bytes) {
+                return bytesToLongs(bytes)[0];
+        }
+
+        /**
+         * Converts an array of doubles into an array of bytes
+         * @param doubles an array of doubles
+         * @return the corresponding array of bytes
+         */
+        public static byte[] doublesToBytes(double[] doubles) {
+                long[] longs = new long[doubles.length];
+                for (int i = 0; i < doubles.length; i++) {
+                        longs[i] = Double.doubleToLongBits(doubles[i]);
+                }
+                return longsToBytes(longs);
+        }
+
+        /**
+         * Converts a double into an array of bytes
+         * @param theDouble a double
+         * @return the corresponding array of bytes
+         */
+        public static byte[] doubleToBytes(double theDouble) {
+                return longToBytes(Double.doubleToLongBits(theDouble));
+        }
+
+        /**
+         * Converts an array of bytes into an array of doubles
+         * @param bytes an array of bytes
+         * @return the corresponding array of doubles
+         */
+        public static double[] bytesToDoubles(byte[] bytes) {
+                long[] inter = bytesToLongs(bytes);
+                double[] ret = new double[bytes.length / 8];
+                for (int i = 0; i < inter.length; i++) {
+                        ret[i] = Double.longBitsToDouble(inter[i]);
+                }
+
+                return ret;
+        }
+
+        /**
+         * Converts an array of bytes into a double
+         * @param bytes an array of double
+         * @return the corresponding float
+         */
+        public static double byteToDouble(byte[] bytes) {
+                return Double.longBitsToDouble(bytesToLong(bytes));
+        }
+
+        private ByteUtils() {
+        }
 }
