@@ -41,13 +41,13 @@ public class SpatialReferenceSystemTest extends BaseTest {
                         Point transformedGeom = (Point) spatialReferenceSystem.transform(wktReader.read(ds.getFieldValue(i, 1).getAsString()));
 
                         Point targetGeom = (Point) wktReader.read(ds.getFieldValue(i, 3).getAsString());
-                        System.out.println(spatialReferenceSystem.getCoordinateOperationSequence().getName()
-                                + " -> Transformed geom : "
-                                + transformedGeom.toText()
-                                + " -> Target " + targetGeom.toText());
-
-                        System.out.println(targetGeom.getCoordinate().distance(
-                                transformedGeom.getCoordinate()));
+//                        System.out.println(spatialReferenceSystem.getCoordinateOperationSequence().getName()
+//                                + " -> Transformed geom : "
+//                                + transformedGeom.toText()
+//                                + " -> Target " + targetGeom.toText());
+//
+//                        System.out.println(targetGeom.getCoordinate().distance(
+//                                transformedGeom.getCoordinate()));
                 }
                 ds.close();
         }

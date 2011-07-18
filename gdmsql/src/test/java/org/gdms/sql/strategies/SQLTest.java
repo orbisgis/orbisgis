@@ -442,7 +442,7 @@ public class SQLTest extends SQLBaseTest {
                 String fieldName = super.getNoPKFieldFor(ds);
                 String sql = "select * from " + ds + " order by \"" + fieldName
                         + "\" desc;";
-                System.out.println(sql);
+//                System.out.println(sql);
                 DataSource resultDataSource = dsf.getDataSourceFromSQL(sql);
                 resultDataSource.open();
                 int fieldIndex = resultDataSource.getFieldIndexByName(fieldName);
@@ -451,9 +451,9 @@ public class SQLTest extends SQLBaseTest {
                         Value v2 = resultDataSource.getFieldValue(i, fieldIndex);
                         if (v2.getType() != Type.NULL) {
                                 if (!v1.greaterEqual(v2).getAsBoolean()) {
-                                        System.out.println();
-                                        System.out.println(v1);
-                                        System.out.println(v2);
+//                                        System.out.println();
+//                                        System.out.println(v1);
+//                                        System.out.println(v2);
                                 }
                                 assertTrue(v1.greaterEqual(v2).getAsBoolean());
                         }
@@ -738,7 +738,7 @@ public class SQLTest extends SQLBaseTest {
                 DataSource d = dsf.getDataSourceFromSQL("select * from " + data
                         + " where exists (select * from " + data + ") ;");
                 d.open();
-                System.out.println(d.getRowCount());
+//                System.out.println(d.getRowCount());
                 d.close();
         }
 

@@ -147,7 +147,7 @@ public class CustomQueriesTest extends TestCase {
                 DataSource ds2 = dsf.getDataSource("memory");
                 ds1.open();
                 ds2.open();
-                System.out.println("'" + ds2.getAsString() + "'");
+//                System.out.println("'" + ds2.getAsString() + "'");
                 assertTrue(ds1.getAsString().equals(ds2.getAsString()));
                 ds1.close();
                 ds2.close();

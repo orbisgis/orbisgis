@@ -232,7 +232,7 @@ public class OperatorsTest extends FunctionTest {
 		assertTrue(res.getType() == Type.GEOMETRY);
 		assertTrue(res.getAsGeometry().contains(JTSMultiPolygon2D));
 		assertTrue(JTSMultiPolygon2D.contains(res.getAsGeometry()));
-		System.out.println(res.getAsGeometry());
+//		System.out.println(res.getAsGeometry());
 		assertTrue(res.getAsGeometry().getNumGeometries() == 1);
 
 		// Test too many parameters
