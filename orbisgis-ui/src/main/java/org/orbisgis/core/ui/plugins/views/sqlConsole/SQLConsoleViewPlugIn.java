@@ -132,7 +132,7 @@ public class SQLConsoleViewPlugIn extends ViewPlugIn {
 
                         public void execute(String text) {
                                 BackgroundManager bm = Services.getService(BackgroundManager.class);
-                                bm.backgroundOperation(new ExecuteScriptProcess(text));
+                                bm.backgroundOperation(new ExecuteScriptProcess(text, panel));
                         }
 
                         @Override

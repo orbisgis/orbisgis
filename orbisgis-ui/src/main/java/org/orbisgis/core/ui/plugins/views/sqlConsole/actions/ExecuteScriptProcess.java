@@ -56,15 +56,22 @@ import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editors.map.MapContextManager;
 import org.orbisgis.core.ui.plugins.views.output.OutputManager;
+import org.orbisgis.core.ui.plugins.views.sqlConsole.ui.SQLConsolePanel;
 import org.orbisgis.progress.ProgressMonitor;
 
 public class ExecuteScriptProcess implements BackgroundJob {
 
         private String script;
         private static final Logger logger = Logger.getLogger(ExecuteScriptProcess.class);
+        private SQLConsolePanel panel;
 
         public ExecuteScriptProcess(String script) {
                 this.script = script;
+        }
+        
+        public ExecuteScriptProcess(String script, SQLConsolePanel panel) {
+                this.script = script;
+                this.panel = panel;
         }
 
         public String getTaskName() {
@@ -85,6 +92,9 @@ public class ExecuteScriptProcess implements BackgroundJob {
                                 statements = engine.parse(script);
                         } catch (ParseException e) {
                                 Services.getErrorManager().error("Cannot parse script", e);
+                                if (panel != null) {
+                                        panel.setStatusMessage("Failed to parse the script.");
+                                }
                                 return;
                         }
 
@@ -180,6 +190,12 @@ public class ExecuteScriptProcess implements BackgroundJob {
                 }
 
                 long t2 = System.currentTimeMillis();
-                logger.debug("Execution time: " + ((t2 - t1) / 1000.0));
+                double lastExecTime = ((t2 - t1) / 1000.0);
+                logger.debug("Execution time: " + lastExecTime);
+                if (panel != null) {
+                        panel.setStatusMessage("Execution time: " + lastExecTime);
+                }
         }
+        
+        
 }
