@@ -335,6 +335,15 @@ case class Delete extends Operation
  */
 case class CreateTableAs(name: String) extends Operation
 
+/**
+ * Represents the creation of a view from a query.
+ * 
+ * @param name the name of the resulting view
+ * @author Antoine Gourlay
+ * @since 0.1
+ */
+case class CreateView(name: String) extends Operation
+
 
 /**
  * Represents the creation of an empty table from some metadata.
@@ -377,6 +386,16 @@ case class RenameTable(name: String, newname: String) extends Operation
  * @since 0.1
  */
 case class DropTables(names: Seq[String], ifExists: Boolean, purge: Boolean) extends Operation
+
+/**
+ * Represents a drop view instruction, i.e. unregisters views
+ * 
+ * @param names a list of names of views to drop
+ * @param ifExists true if no error should be thrown in the case of a non-existent table
+ * @author Antoine Gourlay
+ * @since 0.1
+ */
+case class DropViews(names: Seq[String], ifExists: Boolean) extends Operation
 
 /**
  * Represents an index-creation instruction.

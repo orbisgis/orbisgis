@@ -291,6 +291,13 @@ object LogicPlanBuilder {
             end = cr 
           }
         }
+      case T_CREATE_VIEW => {
+          // building the select statement, resulting in an Output o
+            val o = buildOperationTree(node.getChild(1).asInstanceOf[CommonTree])
+            val cr = CreateView(node.getChild(0).getText)
+            cr.children = o :: Nil
+            end = cr 
+        }
       case T_ALTER => {
           // alter table statement
           val children = getChilds(node)
@@ -322,7 +329,10 @@ object LogicPlanBuilder {
               case T_IF => ifE = true
               case T_PURGE => drop = true
             }}
-          end = DropTables(names, ifE, drop)
+          node.getChild(0).getType match {
+            case T_TABLE => end = DropTables(names, ifE, drop)
+            case T_VIEW => end = DropViews(names, ifE)
+          }
         }
       case T_INDEX => {
           node.getChild(0).getType match {

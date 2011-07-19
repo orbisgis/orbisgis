@@ -51,7 +51,6 @@ import org.gdms.data.object.ObjectDataSourceAdapter;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.DefaultSchema;
 
-import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.Schema;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
@@ -88,7 +87,7 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
         public SQLSourceDefinition(SqlStatement instruction) {
                 LOG.trace("Constructor");
                 this.statement = instruction;
-                schema = new DefaultSchema("SQL" + instruction.getSQL().hashCode());
+                schema = new DefaultSchema("SQL" + instruction.hashCode());
                 metadata = new DefaultMetadata();
                 schema.addTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME, metadata);
         }
@@ -218,19 +217,13 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
         public int getType() {
                 int type = SourceManager.SQL;
                 if (statement != null) {
-                        try {
-                                Metadata metadata = statement.getResultMetadata();
-                                if (metadata != null) {
-                                        for (int i = 0; i < metadata.getFieldCount(); i++) {
-                                                int typeCode = metadata.getFieldType(i).getTypeCode();
-                                                if (typeCode == Type.GEOMETRY) {
-                                                        type |= SourceManager.VECTORIAL;
-                                                } else if (typeCode == Type.RASTER) {
-                                                        type |= SourceManager.RASTER;
-                                                }
-                                        }
+                        for (int i = 0; i < metadata.getFieldCount(); i++) {
+                                int typeCode = metadata.getFieldType(i).getTypeCode();
+                                if (typeCode == Type.GEOMETRY) {
+                                        type |= SourceManager.VECTORIAL;
+                                } else if (typeCode == Type.RASTER) {
+                                        type |= SourceManager.RASTER;
                                 }
-                        } catch (DriverException e) {
                         }
                 }
                 return type;
@@ -247,7 +240,7 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
                         SQLEngine engine = new SQLEngine(getDataSourceFactory());
                         try {
                                 statement = engine.parse(tempSQL)[0];
-                        }  catch (ParseException ex) {
+                        } catch (ParseException ex) {
                                 throw new DriverException(ex);
                         }
                 }

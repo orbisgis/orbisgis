@@ -30,6 +30,7 @@ tokens {
     T_INNER_JOIN = 't_inner_join';
     T_OUTER_JOIN = 't_outer_join';
     T_CREATE_TABLE = 't_create_table';
+    T_CREATE_VIEW = 't_create_view';
     T_EXECUTOR = 't_executor';
 
     T_ADD = 'ADD';
@@ -404,8 +405,10 @@ statement
           | insert_statement
           | delete_statement
           | create_table_statement
+          | create_view_statement
           | alter_table_statement
           | drop_table_statement
+          | drop_view_statement
           | create_index_statement
           | drop_index_statement
           | call_statement
@@ -689,6 +692,20 @@ alter_action
 drop_table_statement
         : T_DROP T_TABLE (T_IF T_EXISTS)? table_id (COMMA table_id)* T_PURGE?
           -> ^(T_DROP ^(T_TABLE table_id+) T_IF? T_PURGE?)
+        ;
+
+// CREATE VIEW
+
+create_view_statement
+        : T_CREATE T_VIEW table=table_id 
+          T_AS select_statement  -> ^(T_CREATE_VIEW $table select_statement)
+        ;
+
+// DROP VIEW
+
+drop_view_statement
+        : T_DROP T_VIEW (T_IF T_EXISTS)? table_id (COMMA table_id)*
+          -> ^(T_DROP ^(T_VIEW table_id+) T_IF?)
         ;
 
 // CREATE INDEX
