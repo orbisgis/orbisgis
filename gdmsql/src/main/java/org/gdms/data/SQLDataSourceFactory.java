@@ -65,10 +65,11 @@ public class SQLDataSourceFactory extends DataSourceFactory {
 
         private static ThreadPoolExecutor executor;
 
-        static {
+        {
                 int nbProc = Runtime.getRuntime().availableProcessors();
                 LOG.info("Number of available processors: " + nbProc);
-                executor = new ThreadPoolExecutor(nbProc * 5, 10, 10, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+                final int nbThreads = nbProc * 5;
+                executor = new ThreadPoolExecutor(nbThreads, nbThreads, 10, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
         }
 
         /**
