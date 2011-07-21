@@ -215,7 +215,7 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
 
         @Override
         public int getType() {
-                int type = SourceManager.SQL;
+                int type = SourceManager.SQL | SourceManager.LIVE;
                 if (statement != null) {
                         for (int i = 0; i < metadata.getFieldCount(); i++) {
                                 int typeCode = metadata.getFieldType(i).getTypeCode();
@@ -251,7 +251,12 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
         public boolean equals(Object obj) {
                 if (obj instanceof SQLSourceDefinition) {
                         SQLSourceDefinition dsd = (SQLSourceDefinition) obj;
-                        return getSQL().equals(dsd.getSQL());
+                        final String sql = getSQL();
+                        if (sql != null) {
+                                return sql.equals(dsd.getSQL());
+                        } else {
+                                return statement.equals(dsd.statement);
+                        }
                 } else {
                         return false;
                 }

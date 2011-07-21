@@ -665,7 +665,9 @@ public final class DefaultSourceManager implements SourceManager {
                                 } else {
                                         ds = new OCCounterDecorator(ds);
                                         ds.setDataSourceFactory(dsf);
-                                        src.setDatasource(ds);
+                                        if ((dsd.getType() & SourceManager.LIVE) == 0) {
+                                                src.setDatasource(ds);
+                                        }
                                         dataSource = ds;
                                 }
                         }

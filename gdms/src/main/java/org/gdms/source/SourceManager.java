@@ -85,7 +85,14 @@ public interface SourceManager {
          * The source contains the parameters of a WMS connection
          */
         int WMS = 64;
+        /**
+         * The source is a system table
+         */
         int SYSTEM_TABLE = 128;
+        /**
+         * The source is a live view of some data
+         */
+        int LIVE = 256;
 
         /**
          * Sets the driver manager used to load the drivers of the sources
