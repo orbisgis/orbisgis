@@ -122,7 +122,7 @@ public class SqlStatement {
          * @return an array of source names.
          */
         public String[] getReferencedSources() {
-                return new String[0];
+                return graph.getReferencedSources();
         }
 
         /**

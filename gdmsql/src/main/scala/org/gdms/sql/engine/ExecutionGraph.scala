@@ -43,6 +43,7 @@ import org.gdms.driver.ReadAccess
 import org.gdms.data.schema.Metadata
 import org.gdms.sql.engine.commands.OutputCommand
 import org.gdms.sql.engine.operations.Operation
+import org.gdms.sql.engine.operations.Scan
 import org.gdms.sql.engine.physical.PhysicalPlanBuilder
 
 /**
@@ -70,6 +71,11 @@ class ExecutionGraph(op: Operation) {
   private var r: ReadAccess = null
   private var dsf: SQLDataSourceFactory = null
   private var start: OutputCommand = null
+  
+  private val refs: Array[String] = op.allChildren flatMap {c => c match {
+      case s: Scan => s.table :: Nil
+      case _ => Nil
+    } } toArray
 
   /**
    * Prepares the query for execution.
@@ -111,4 +117,6 @@ class ExecutionGraph(op: Operation) {
       case _ => r.getMetadata
     }
   }
+  
+  def getReferencedSources(): Array[String] = refs
 }
