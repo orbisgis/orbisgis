@@ -107,7 +107,8 @@ public class DefaultSwingWorkspace extends DefaultWorkspace implements
 					.debug("Using workspace "
 							+ workspaceFolder.getAbsolutePath());
 		} else {
-			Services.getErrorManager().error("Error while init workspace");
+			Services.getErrorManager().error("No workspace was chosen. Exiting OrbisGIS.");
+                        System.exit(0);
 		}
 	}
 
