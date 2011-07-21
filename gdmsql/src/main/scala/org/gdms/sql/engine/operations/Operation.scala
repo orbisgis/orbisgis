@@ -342,7 +342,7 @@ case class CreateTableAs(name: String) extends Operation
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class CreateView(name: String) extends Operation
+case class CreateView(name: String, orReplace: Boolean) extends Operation
 
 
 /**

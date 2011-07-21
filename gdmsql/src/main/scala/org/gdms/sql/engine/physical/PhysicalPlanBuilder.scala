@@ -120,10 +120,10 @@ object PhysicalPlanBuilder {
           new CustomQueryScanCommand(e,tables, a.function.asInstanceOf[TableFunction], alias)
         }
       case CreateTableAs(n) => new CreateTableCommand(n)
-      case a @ CreateView(n) => {
+      case a @ CreateView(n, o) => {
           val s = a.children.head
           a.children = Nil
-          new CreateViewCommand(n, s)}
+          new CreateViewCommand(n, s, o)}
       case CreateTable(n, cols) => new TableCreationCommand(n, cols)
       case DropTables(n, i ,p) => new DropTablesCommand(n, i, p)
       case DropViews(n, i) => new DropViewsCommand(n, i)

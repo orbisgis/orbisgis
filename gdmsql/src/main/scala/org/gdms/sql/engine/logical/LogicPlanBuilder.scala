@@ -294,7 +294,7 @@ object LogicPlanBuilder {
       case T_CREATE_VIEW => {
           // building the select statement, resulting in an Output o
             val o = buildOperationTree(node.getChild(1).asInstanceOf[CommonTree])
-            val cr = CreateView(node.getChild(0).getText)
+            val cr = CreateView(node.getChild(0).getText, node.getChildCount == 3)
             cr.children = o :: Nil
             end = cr 
         }

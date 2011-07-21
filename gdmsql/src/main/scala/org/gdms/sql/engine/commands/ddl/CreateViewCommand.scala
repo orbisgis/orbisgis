@@ -52,16 +52,20 @@ import org.gdms.sql.engine.commands.Row
 import org.gdms.sql.engine.operations.Operation
 import scalaz.concurrent.Promise
 
-class CreateViewCommand(table: String, op: Operation) extends Command with OutputCommand {
+class CreateViewCommand(table: String, op: Operation, orReplace: Boolean) extends Command with OutputCommand {
   
   override def doPrepare = {
-    if (dsf.getSourceManager.exists(table)) {
+    if (!orReplace && dsf.getSourceManager.exists(table)) {
       throw new SemanticException("There already is a registered table named '" + table + "'.")
     }
   }
 
   protected final def doWork(r: Iterable[Iterable[Promise[Iterable[Row]]]]) = {
     val s = new SqlStatement(null, new ExecutionGraph(op))
+    
+    if (orReplace) {
+      dsf.getSourceManager.remove(table)
+    }
     
     dsf.getSourceManager.register(table, new SQLSourceDefinition(s))
 

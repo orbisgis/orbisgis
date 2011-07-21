@@ -91,6 +91,7 @@ tokens {
     T_PUBLIC = 'PUBLIC';
     T_RAW = 'RAW';
     T_RENAME = 'RENAME';
+    T_REPLACE = 'REPLACE';
     T_ROW = 'ROW';
     T_ROWID = 'ROWID';
     T_ROWLABEL = 'ROWLABEL';
@@ -697,8 +698,8 @@ drop_table_statement
 // CREATE VIEW
 
 create_view_statement
-        : T_CREATE T_VIEW table=table_id 
-          T_AS select_statement  -> ^(T_CREATE_VIEW $table select_statement)
+        : T_CREATE (T_OR T_REPLACE)? T_VIEW table=table_id 
+          T_AS select_statement  -> ^(T_CREATE_VIEW $table select_statement T_OR?)
         ;
 
 // DROP VIEW
