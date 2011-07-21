@@ -87,4 +87,6 @@ public interface ProgressMonitor {
          * @return
          */
         boolean isCancelled();
+
+        void setCancelled(boolean cancelled);
 }

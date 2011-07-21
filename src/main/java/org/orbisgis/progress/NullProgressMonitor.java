@@ -78,4 +78,9 @@ public class NullProgressMonitor implements ProgressMonitor {
         public int getCurrentProgress() {
                 return 0;
         }
+
+        @Override
+        public void setCancelled(boolean cancelled) {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
 }

@@ -75,5 +75,13 @@ public class ByteUtilsTest extends TestCase {
 		int i = 1237610;
 		byte[] bytes = ByteUtils.intToBytes(i);
 		assertTrue(ByteUtils.bytesToInt(bytes) == i);
+                
+                byte[] bytes2 = ByteUtils.intsToBytes(new int[] { i });
+		assertTrue(ByteUtils.bytesToInts(bytes2)[0] == i);
 	}
+        
+        public void testBytes2Float() throws Exception {
+                byte[] b1 = ByteUtils.intToBytes(1055286886);
+                assertTrue(ByteUtils.bytesToFloat(b1) == 0.45f);
+        }
 }
