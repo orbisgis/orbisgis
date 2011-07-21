@@ -37,6 +37,7 @@
  */
 package org.gdms.data.sql;
 
+import biz.source_code.base64Coder.Base64Coder;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -284,4 +285,12 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
         public Schema getSchema() throws DriverException {
                 return schema;
         }
+
+        @Override
+        public String calculateChecksum(DataSource openDS) throws DriverException {
+                return null;
+        }
+        
+        
+        
 }

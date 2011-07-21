@@ -40,6 +40,8 @@ package org.gdms.data;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
 import org.apache.log4j.Logger;
 
 import org.gdms.data.db.DBSource;
@@ -108,7 +110,17 @@ public class DataSourceFactory {
          */
         public DataSourceFactory() {
                 initialize(System.getProperty("user.home") + File.separator + ".gdms",
-                        ".");
+                        ".", null);
+        }
+        
+        /**
+         * Creates a new {@code DataSourceFactory} with a <tt>sourceInfoDir</tt>
+         * set to a sub-folder '.gdms' in the user's home.
+         * @param sourceContextPaths an array of source contexts for additional source types.
+         */
+        public DataSourceFactory(String[] sourceContextPaths) {
+                initialize(System.getProperty("user.home") + File.separator + ".gdms",
+                        ".", sourceContextPaths);
         }
 
         /**
@@ -116,7 +128,16 @@ public class DataSourceFactory {
          * @param sourceInfoDir the directory where the sources are stored
          */
         public DataSourceFactory(String sourceInfoDir) {
-                initialize(sourceInfoDir, ".");
+                initialize(sourceInfoDir, ".", null);
+        }
+        
+        /**
+         * Creates a new {@code DataSourceFactory}.
+         * @param sourceInfoDir the directory where the sources are stored
+         * @param sourceContextPaths  an array of source contexts for additional source types.
+         */
+        public DataSourceFactory(String sourceInfoDir, String[] sourceContextPaths) {
+                initialize(sourceInfoDir, ".", sourceContextPaths);
         }
 
         /**
@@ -125,9 +146,19 @@ public class DataSourceFactory {
          * @param tempDir the directory where temporary sources are stored
          */
         public DataSourceFactory(String sourceInfoDir, String tempDir) {
-                initialize(sourceInfoDir, tempDir);
+                initialize(sourceInfoDir, tempDir, null);
         }
-
+        
+        
+/**
+         * Creates a new {@code DataSourceFactory}.
+         * @param sourceInfoDir the directory where the sources are stored
+         * @param tempDir the directory where temporary sources are stored
+         * @param sourceContextPaths an array of source contexts for additional source types.
+         */
+        public DataSourceFactory(String sourceInfoDir, String tempDir, String[] sourceContextPaths) {
+                initialize(sourceInfoDir, tempDir, sourceContextPaths);
+        }
         /**
          * Creates a data source defined by the DataSourceCreation object
          *
@@ -542,7 +573,7 @@ public class DataSourceFactory {
          * @throws InitializationException
          *             If the initialization fails
          */
-        private void initialize(String sourceInfoDir, String tempDir) {
+        private void initialize(String sourceInfoDir, String tempDir, String[] sourceContextPaths) {
                 LOG.trace("DataSourceFactory initializing");
                 try {
                         I18N.addI18n(I18NLocale, "gdms", this.getClass());
@@ -558,6 +589,9 @@ public class DataSourceFactory {
                         Class.forName("org.hsqldb.jdbcDriver");
 
                         sourceManager = new DefaultSourceManager(this, sourceInfoDir);
+                        for (int i = 0; i < sourceContextPaths.length; i++) {
+                                sourceManager.addSourceContextPath(sourceContextPaths[i]);
+                        }
                         sourceManager.init();
 
                 } catch (ClassNotFoundException e) {

@@ -279,4 +279,9 @@ public interface Source {
 	 */
 	boolean isSystemTableSource();
 
+        /**
+         * @return true if the source is a live source (e.g. a view). False otherwise
+         */
+        boolean isLiveSource();
+
 }

@@ -77,8 +77,7 @@ public class SQLDataSourceFactory extends DataSourceFactory {
          * set to a sub-folder '.gdms' in the user's home.
          */
         public SQLDataSourceFactory() {
-                super();
-                initialize();
+                super(new String[] {"org.gdms.source.sqldirectory"});
         }
 
         /**
@@ -86,8 +85,7 @@ public class SQLDataSourceFactory extends DataSourceFactory {
          * @param sourceInfoDir the directory where the sources are stored
          */
         public SQLDataSourceFactory(String sourceInfoDir) {
-                super(sourceInfoDir);
-                initialize();
+                super(sourceInfoDir, new String[] {"org.gdms.source.sqldirectory"});
         }
 
         /**
@@ -96,20 +94,7 @@ public class SQLDataSourceFactory extends DataSourceFactory {
          * @param tempDir the directory where temporary sources are stored
          */
         public SQLDataSourceFactory(String sourceInfoDir, String tempDir) {
-                super(sourceInfoDir, tempDir);
-                initialize();
-        }
-
-        private void initialize() {
-                try {
-                        getSourceManager().shutdown();
-                        getSourceManager().addSourceContextPath("org.gdms.source.sqldirectory");
-                        getSourceManager().init();
-                } catch (IOException ex) {
-                        throw new InitializationException(ex);
-                } catch (DataSourceFinalizationException ex) {
-                        throw new InitializationException(ex);
-                }
+                super(sourceInfoDir, tempDir, new String[] {"org.gdms.source.sqldirectory"});
         }
 
         /**

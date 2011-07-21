@@ -544,6 +544,11 @@ public final class ExtendedSource implements org.gdms.source.Source {
         public boolean isSystemTableSource() {
                 return (getType() & SourceManager.SYSTEM_TABLE) == SourceManager.SYSTEM_TABLE;
         }
+        
+        @Override
+        public boolean isLiveSource() {
+                return (getType() & SourceManager.LIVE) == SourceManager.LIVE;
+        }
 
         /**
          * Initializes this source's {@code DataSourceDefinition}.

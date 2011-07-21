@@ -186,7 +186,7 @@ public final class DefaultSourceManager implements SourceManager {
                         // Calculate the checksum
                         for (Source source : sourceElements) {
                                 ExtendedSource src = nameSource.get(source.getName());
-                                if (src.isSystemTableSource()) {
+                                if (src.isSystemTableSource() || src.isLiveSource()) {
                                         continue;
                                 }
                                 source.setChecksum(src.getChecksum());
