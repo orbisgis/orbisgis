@@ -589,8 +589,10 @@ public class DataSourceFactory {
                         Class.forName("org.hsqldb.jdbcDriver");
 
                         sourceManager = new DefaultSourceManager(this, sourceInfoDir);
-                        for (int i = 0; i < sourceContextPaths.length; i++) {
-                                sourceManager.addSourceContextPath(sourceContextPaths[i]);
+                        if (sourceContextPaths != null) {
+                                for (int i = 0; i < sourceContextPaths.length; i++) {
+                                        sourceManager.addSourceContextPath(sourceContextPaths[i]);
+                                }
                         }
                         sourceManager.init();
 
