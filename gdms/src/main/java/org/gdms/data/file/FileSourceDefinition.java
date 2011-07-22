@@ -182,13 +182,16 @@ public class FileSourceDefinition extends AbstractDataSourceDefinition {
         public int getType() {
                 if (cachedType == -1) {
                         try {
-                                if (getDriver().getTypeName().equals("GDMS") && getDriver().getTable(
-                                        DriverManager.DEFAULT_SINGLE_TABLE_NAME).getMetadata() == null) {
+                                if (getDriver().getTypeName().equals("GDMS")) {
                                         GdmsDriver d = (GdmsDriver) getDriver();
-                                        d.open();
-                                        int type = d.getType();
-                                        d.close();
-                                        cachedType = type;
+                                        if (d.getFile().exists()) {
+                                                d.open();
+                                                int type = d.getType();
+                                                d.close();
+                                                cachedType = type;
+                                        } else {
+                                                cachedType = super.getType();
+                                        }
                                 } else {
                                         cachedType = super.getType();
                                 }

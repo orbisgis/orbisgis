@@ -73,6 +73,7 @@ public final class GdmsDriver extends GDMSModelDriver implements FileReadWriteDr
         private GdmsReader reader;
         private OpenCloseCounter counter = new OpenCloseCounter("");
         private Schema schema;
+        private File file;
         private static final Logger LOG = Logger.getLogger(GdmsDriver.class);
 
         @Override
@@ -233,6 +234,7 @@ public final class GdmsDriver extends GDMSModelDriver implements FileReadWriteDr
                 try {
                         schema = new DefaultSchema("GDMS" + file.getAbsolutePath().hashCode());
                         reader = new GdmsReader(file);
+                        this.file = file;
                         Metadata m = reader.getMetadata();
                         schema.addTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME, m);
                 } catch (IOException ex) {
@@ -247,5 +249,12 @@ public final class GdmsDriver extends GDMSModelDriver implements FileReadWriteDr
                         open = reader != null;
                 }
                 return open;
+        }
+
+        /**
+         * @return the file
+         */
+        public File getFile() {
+                return file;
         }
 }
