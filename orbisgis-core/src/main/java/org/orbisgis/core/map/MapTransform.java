@@ -55,6 +55,7 @@ import com.vividsolutions.jts.awt.ShapeWriter;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import java.awt.Color;
 import java.awt.HeadlessException;
 import java.awt.Polygon;
 import java.awt.RenderingHints;
@@ -116,7 +117,7 @@ public class MapTransform implements PointTransformation {
         try {
             this.dpi = Toolkit.getDefaultToolkit().getScreenResolution();
         } catch (HeadlessException e) {
-            Services.getErrorManager().error("Could not retrieve current DPI. Use 96.0!");
+            Services.getOutputManager().println("Could not retrieve current DPI. Use 96.0!", Color.ORANGE);
             this.dpi = DEFAULT_DPI;
         }
     }

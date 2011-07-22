@@ -5,15 +5,6 @@
 package org.orbisgis.core.renderer.se.transform;
 
 import java.awt.geom.AffineTransform;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.transform.Scale;
-import org.orbisgis.core.renderer.se.transform.Rotate;
-import org.orbisgis.core.renderer.se.transform.Transform;
-import org.orbisgis.core.renderer.se.transform.Matrix;
-import org.orbisgis.core.renderer.se.transform.Translate;
 import junit.framework.TestCase;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.common.Uom;
