@@ -27,11 +27,6 @@
         </properties>
         <repositories>
                 <repository>
-                        <id>geotools</id>
-                        <name>Geotools repository</name>
-                        <url>http://maven.geotools.fr/repository</url>
-                </repository>
-                <repository>
                         <id>IRSTV</id>
                         <name>IRSTV repository</name>
                         <url>http://repo.orbisgis.org</url>
