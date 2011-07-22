@@ -163,27 +163,27 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
             boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
             throws ParameterException, IOException, DriverException {
 
-        //ArrayList<Shape> shapes = this.getShapes(sds, fid, mt, the_geom);
+        ArrayList<Shape> shapes = this.getShapes(sds, fid, mt, the_geom);
 
-        //if (shapes != null) {
-        //    for (Shape shp : shapes) {
-                Shape shp = mt.getShape(the_geom); // for testing purpose...
-        if (shp != null){
-                if (fill != null) {
-                    fill.draw(g2, sds, fid, shp, selected, mt);
-                }
-
-                if (stroke != null) {
-                    double offset = 0.0;
-                    if (perpendicularOffset != null) {
-                        offset = Uom.toPixel(perpendicularOffset.getValue(sds, fid),
-                                getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+        if (shapes != null) {
+            for (Shape shp : shapes) {
+                //Shape shp = mt.getShape(the_geom); // for testing purpose...
+                if (shp != null) {
+                    if (fill != null) {
+                        fill.draw(g2, sds, fid, shp, selected, mt);
                     }
-                    stroke.draw(g2, sds, fid, shp, selected, mt, offset);
+
+                    if (stroke != null) {
+                        double offset = 0.0;
+                        if (perpendicularOffset != null) {
+                            offset = Uom.toPixel(perpendicularOffset.getValue(sds, fid),
+                                    getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                        }
+                        stroke.draw(g2, sds, fid, shp, selected, mt, offset);
+                    }
                 }
+            }
         }
-            //}
-       //}
     }
 
     @Override

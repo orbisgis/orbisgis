@@ -116,7 +116,6 @@ public class PdfRenderer extends Renderer {
 
     @Override
     protected void releaseGraphics2D(Graphics2D g2) {
-        g2.dispose();
     }
     
     @Override

@@ -62,6 +62,7 @@ import java.awt.image.ColorModel;
 import java.awt.image.renderable.RenderContext;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.JAI;
+//import net.LiteShape.LiteShape;
 import org.orbisgis.core.Services;
 
 public class MapTransform implements PointTransformation {
@@ -451,6 +452,8 @@ public class MapTransform implements PointTransformation {
                 && (rectangle2dDouble.getWidth() <= 1)) {
             return rectangle2dDouble;
         }
+
+         //return new LiteShape(geom, this.trans, true);
         return getShapeWriter().toShape(geom);
     }
 

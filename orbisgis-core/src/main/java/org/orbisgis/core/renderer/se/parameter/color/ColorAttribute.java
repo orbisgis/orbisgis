@@ -44,7 +44,6 @@ import java.awt.Color;
 import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.ValueReferenceType;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 

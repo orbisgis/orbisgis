@@ -172,7 +172,6 @@ public abstract class Renderer {
                 + sds.getSpatialFieldName() + ")");
     }
 
-
     /**
      * Draws the content of the Vector Layer
      *
@@ -234,7 +233,7 @@ public abstract class Renderer {
             pm.endTask();
 
             if (featureInExtent != null) {
-                featureInExtent.open();
+                //featureInExtent.open();
 
                 // Assign filtered data source to each rule
                 HashMap<Rule, FilterDataSourceDecorator> rulesDs = new HashMap<Rule, FilterDataSourceDecorator>();
@@ -299,6 +298,9 @@ public abstract class Renderer {
                 // How many object to process ?
                 long total = 0;
 
+                long sTimer = 0;
+                long sTimeFull = 0;
+
 
                 // Make sure TextSymbolizer are rendered on top
                 //symbs.addAll(overlays);
@@ -312,10 +314,11 @@ public abstract class Renderer {
                 //for (Symbolizer s : symbs) {
                 for (Rule r : rList) {
                     total += rulesDs.get(r).getRowCount();
-                    logger.println("TOTAL : " + total);
                 }
+                logger.println("TOTAL : " + total);
 
                 for (Rule r : rList) {
+                    long tf1 = System.currentTimeMillis();
                     beginLayer(r.getName());
                     logger.println("Drawing rule " + r.getName());
                     pm.startTask("Drawing " + layer.getName() + " (Rule " + r.getName() + ")");
@@ -324,7 +327,6 @@ public abstract class Renderer {
 
                     int fid = 0;
 
-                    long tf1 = System.currentTimeMillis();
 
                     long initFeats = 0;
                     for (fid = 0; fid < fds.getRowCount(); fid++) {
@@ -351,10 +353,12 @@ public abstract class Renderer {
 
                         boolean emphasis = selected.contains((int) originalIndex);
 
-                        initFeats += System.currentTimeMillis();
-                        
                         beginFeature(originalIndex, sds);
+                        initFeats += System.currentTimeMillis();
+
                         for (Symbolizer s : r.getCompositeSymbolizer().getSymbolizerList()) {
+                            sTimeFull -= System.currentTimeMillis();
+
                             Graphics2D g2S;
                             //if (s instanceof TextSymbolizer) {
                                 // TextSymbolizer always rendered on overlay
@@ -363,9 +367,12 @@ public abstract class Renderer {
                                 //g2S = g2Symbs.get(s);
                             g2S = getGraphics2D(s);
                             //}
+                            sTimer -= System.currentTimeMillis();
                             s.draw(g2S, sds, originalIndex, emphasis, mt, the_geom, perm);
+                            sTimer += System.currentTimeMillis();
                             //s.draw(g2, sds, originalIndex, emphasis, mt, the_geom, perm);
-                            releaseGraphics2D(g2);
+                            releaseGraphics2D(g2S);
+                            sTimeFull += System.currentTimeMillis();
                         }
                         endFeature(originalIndex, sds);
 
@@ -380,6 +387,8 @@ public abstract class Renderer {
 
                 long tV3 = System.currentTimeMillis();
                 logger.println("All Rules done in" + (tV3 - tV2) + "[ms] (" + layerCount + "objects)");
+                logger.println("Effective draw time: " + sTimer + " [ms]");
+                logger.println("Full Symb time:      " + sTimeFull + " [ms]");
                 disposeLayer(g2);
 
                 for (Rule r : rulesDs.keySet()) {

@@ -38,7 +38,6 @@
  **/
 package org.orbisgis.core.layerModel;
 
-import java.awt.image.BufferedImage;
 import org.gdms.data.DataSource;
 
 import org.orbisgis.progress.IProgressMonitor;

@@ -10,7 +10,6 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.generic.GenericObjectDriver;
-import org.gdms.geometryUtils.EnvelopeUtil;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.DefaultDataManager;
 import org.orbisgis.core.Services;
@@ -20,6 +19,7 @@ import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
 
 import com.vividsolutions.jts.geom.Envelope;
+import org.gdms.geometryUtils.GeometryConvert;
 
 public class MapContextDemo {
 
@@ -53,7 +53,7 @@ public class MapContextDemo {
 
 			driver.addValues(new Value[]{ValueFactory.createValue(layerName + ".tiff"),
 					ValueFactory
-							.createValue(EnvelopeUtil.toGeometry(enveloppe))});
+							.createValue(GeometryConvert.toGeometry(enveloppe))});
 		}
 		dsf.getSourceManager().register("mosaic", driver);
 	}

@@ -128,6 +128,9 @@ public class PdfRendererWithAttributes extends Renderer {
                 }
             }
 
+            userProperties.put(PdfName.P, properties);
+            e.put(PdfName.A, userProperties);
+            
             pTemp = cb.createTemplate(width, height);
             cb.beginMarkedContentSequence(e);
 
