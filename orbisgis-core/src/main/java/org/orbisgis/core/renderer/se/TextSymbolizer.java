@@ -43,6 +43,7 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
 
@@ -130,7 +131,7 @@ public final class TextSymbolizer extends VectorSymbolizer {
             boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
             throws ParameterException, IOException, DriverException {
 
-		ArrayList<Shape> shapes = this.getShapes(sds, fid, mt, the_geom);
+		List<Shape> shapes = this.getShapes(sds, fid, mt, the_geom);
 
 		if (shapes != null) {
 			for (Shape shp : shapes) {

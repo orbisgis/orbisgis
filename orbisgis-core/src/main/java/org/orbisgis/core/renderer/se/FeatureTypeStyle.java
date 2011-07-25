@@ -35,8 +35,6 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-
-
 package org.orbisgis.core.renderer.se;
 
 import java.io.FileInputStream;
@@ -94,26 +92,32 @@ public final class FeatureTypeStyle implements SymbolizerNode {
             Unmarshaller u = jaxbContext.createUnmarshaller();
 
 
-            Schema schema = u.getSchema();
+            //Schema schema = u.getSchema();
             ValidationEventCollector validationCollector = new ValidationEventCollector();
             u.setEventHandler(validationCollector);
 
             JAXBElement<FeatureTypeStyleType> fts = (JAXBElement<FeatureTypeStyleType>) u.unmarshal(
                     new FileInputStream(seFile));
 
-            String errors = "";
+            StringBuffer errors = new StringBuffer();
             for (ValidationEvent event : validationCollector.getEvents()) {
                 String msg = event.getMessage();
                 ValidationEventLocator locator = event.getLocator();
                 int line = locator.getLineNumber();
                 int column = locator.getColumnNumber();
-                errors = errors + "Error at line " + line + " column " + column + " (" + msg + ")\n";
+                errors.append("Error at line ");
+                errors.append(line);
+                errors.append(" column ");
+                errors.append(column);
+                errors.append(" (");
+                errors.append(msg);
+                errors.append(")\n");
             }
 
-            if (errors.isEmpty()) {
+            if (errors.length() == 0) {
                 this.setFromJAXB(fts);
             } else {
-                throw new SeExceptions.InvalidStyle(errors);
+                throw new SeExceptions.InvalidStyle(errors.toString());
             }
 
         } catch (Exception ex) {
@@ -178,10 +182,7 @@ public final class FeatureTypeStyle implements SymbolizerNode {
 
         for (Rule r : rules) {
             for (Symbolizer s : r.getCompositeSymbolizer().getSymbolizerList()) {
-                if (s instanceof TextSymbolizer) {
-                } else {
-                    level = Math.max(level, s.getLevel());
-                }
+                level = Math.max(level, s.getLevel());
             }
         }
         return level;
@@ -236,32 +237,29 @@ public final class FeatureTypeStyle implements SymbolizerNode {
      * @todo take into account domain constraint
      */
     public void getSymbolizers(MapTransform mt,
-            ArrayList<Symbolizer> layerSymbolizers,
+            List<Symbolizer> layerSymbolizers,
             //ArrayList<Symbolizer> overlaySymbolizers,
-            ArrayList<Rule> rules,
-            ArrayList<Rule> fallbackRules) {
+            List<Rule> rules,
+            List<Rule> fallbackRules) {
 
         for (Rule r : this.rules) {
-            // Only process visible rules
-            if (r.isVisible()) {
-                // first check the domain
-                if (r.isDomainAllowed(mt)) {
-                    // Split standard rules and elseFilter rules
-                    if (!r.isFallbackRule()) {
-                        rules.add(r);
-                    } else {
-                        fallbackRules.add(r);
-                    }
+            // Only process visible rules with valid domain
+            if (r.isVisible() && r.isDomainAllowed(mt)) {
+                // Split standard rules and elseFilter rules
+                if (!r.isFallbackRule()) {
+                    rules.add(r);
+                } else {
+                    fallbackRules.add(r);
+                }
 
-                    for (Symbolizer s : r.getCompositeSymbolizer().getSymbolizerList()) {
-                        // Extract TextSymbolizer into specific set =>
-                        // Label are always drawn on top
-                        //if (s instanceof TextSymbolizer) {
-                            //overlaySymbolizers.add(s);
-                        //} else {
-                            layerSymbolizers.add(s);
-                        //}
-                    }
+                for (Symbolizer s : r.getCompositeSymbolizer().getSymbolizerList()) {
+                    // Extract TextSymbolizer into specific set =>
+                    // Label are always drawn on top
+                    //if (s instanceof TextSymbolizer) {
+                    //overlaySymbolizers.add(s);
+                    //} else {
+                    layerSymbolizers.add(s);
+                    //}
                 }
             }
         }
@@ -315,7 +313,7 @@ public final class FeatureTypeStyle implements SymbolizerNode {
         this.name = name;
     }
 
-    public ArrayList<Rule> getRules() {
+    public List<Rule> getRules() {
         return rules;
     }
 

@@ -125,10 +125,14 @@ public abstract class Stroke implements SymbolizerNode {
     /**
      *
      * @param g2 draw within this graphics2d
+     * @param sds the spatial data source
+     * @param fid feature id within sds
      * @param shp stroke this shape (note this is note a JTS Geometry, because
      *        stroke can be used to delineate graphics (such as MarkGraphic,
      *        PieChart or AxisChart)
-	 * @param feat the feature contains attribute
+     * @param selected emphasis or not the stroke (e.g invert colours)
+     * @param mt the well known mapTransform 
+     * @param  offset perpendicular offset to apply
      * @throws ParameterException
      * @throws IOException
      */

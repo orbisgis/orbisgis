@@ -48,6 +48,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.SymbolizerType;
 import org.gdms.data.SpatialDataSourceDecorator;
@@ -96,7 +97,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
      * @throws IOException
      * @throws DriverException
      */
-    public ArrayList<Shape> getShapes(SpatialDataSourceDecorator sds, long fid,
+    public List<Shape> getShapes(SpatialDataSourceDecorator sds, long fid,
             MapTransform mt, Geometry the_geom) throws ParameterException, IOException, DriverException {
 
         Geometry geom;
@@ -145,7 +146,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
      * @throws IOException
      * @throws DriverException
      */
-    public ArrayList<Shape> getLines(SpatialDataSourceDecorator sds, long fid,
+    public List<Shape> getLines(SpatialDataSourceDecorator sds, long fid,
             MapTransform mt, Geometry the_geom) throws ParameterException, IOException, DriverException {
 
         Geometry geom;
@@ -305,7 +306,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
      * @throws IOException
      * @throws DriverException
      */
-    public ArrayList<Point2D> getPoints(SpatialDataSourceDecorator sds, long fid,
+    public List<Point2D> getPoints(SpatialDataSourceDecorator sds, long fid,
             MapTransform mt, Geometry the_geom) throws ParameterException, IOException, DriverException {
 
         Geometry geom;

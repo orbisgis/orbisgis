@@ -115,7 +115,7 @@ public final class CompositeSymbolizer implements SymbolizerNode {
         symbolizers = new ArrayList<Symbolizer>();
     }
 
-    public ArrayList<Symbolizer> getSymbolizerList(){
+    public List<Symbolizer> getSymbolizerList(){
         return this.symbolizers;
     }
 

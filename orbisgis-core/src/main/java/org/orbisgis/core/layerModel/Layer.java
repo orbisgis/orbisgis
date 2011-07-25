@@ -341,7 +341,7 @@ public class Layer extends GdmsLayer {
 	}
 
 	@Override
-	public ArrayList<Rule> getRenderingRule() throws DriverException {
+	public List<Rule> getRenderingRule() throws DriverException {
 		return this.getFeatureTypeStyle().getRules();
 	}
 

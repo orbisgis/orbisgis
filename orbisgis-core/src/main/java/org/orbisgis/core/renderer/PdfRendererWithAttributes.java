@@ -48,6 +48,8 @@ import com.itextpdf.text.pdf.PdfTemplate;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.gdms.data.SpatialDataSourceDecorator;
@@ -65,7 +67,7 @@ import org.orbisgis.core.renderer.se.Symbolizer;
  */
 public class PdfRendererWithAttributes extends Renderer {
 
-    private HashMap<Rule, ArrayList<PdfGraphics2D>> ruleGraphics;
+    private Map<Rule, ArrayList<PdfGraphics2D>> ruleGraphics;
     private PdfContentByte cb;
     private PdfStructureElement top;
     private float height;
@@ -98,7 +100,7 @@ public class PdfRendererWithAttributes extends Renderer {
     }
 
     @Override
-    protected void initGraphics2D(ArrayList<Symbolizer> symbs, Graphics2D g2, MapTransform mt) {
+    protected void initGraphics2D(List<Symbolizer> symbs, Graphics2D g2, MapTransform mt) {
         this.mt = mt;
     }
 

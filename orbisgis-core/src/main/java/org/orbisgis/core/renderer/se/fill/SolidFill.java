@@ -72,12 +72,15 @@ public final class SolidFill extends Fill {
 	private ColorParameter color;
 	private RealParameter opacity;
 
+    static final double DEFAULT_OPACITY = 0.65;
+    static final float GRAY50 = 128.0f;
+
 
 	/**
 	 * fill with random color 60% opaque
 	 */
 	public SolidFill() {
-		this(new ColorLiteral(), new RealLiteral(0.65));
+		this(new ColorLiteral(), new RealLiteral(DEFAULT_OPACITY));
 	}
 
 	/**
@@ -85,7 +88,7 @@ public final class SolidFill extends Fill {
 	 * @param c
 	 */
 	public SolidFill(Color c) {
-		this(new ColorLiteral(c), new RealLiteral(0.65));
+		this(new ColorLiteral(c), new RealLiteral(DEFAULT_OPACITY));
 	}
 
 	/**
@@ -154,13 +157,11 @@ public final class SolidFill extends Fill {
 		if (color != null){
 			c = color.getColor(sds, fid);
 		} else {
-		    c = new Color(128, 128, 128);
+		    c = new Color(GRAY50, GRAY50, GRAY50);
         }
-		Double op = 1.0;
 
 		if (this.opacity != null) {
-			op = this.opacity.getValue(sds, fid);
-		    ac = ColorHelper.getColorWithAlpha(c, op);
+		    ac = ColorHelper.getColorWithAlpha(c, this.opacity.getValue(sds, fid));
 		} else {
             ac = c;
         }

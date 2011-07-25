@@ -66,7 +66,13 @@ import org.orbisgis.core.renderer.se.stroke.Stroke;
  */
 public final class HatchedFill extends Fill implements StrokeNode {
 
-    private final static double EPSILON = 0.01; // todo Eval !
+    static final double EPSILON = 0.01; // todo Eval !
+    static final double DEFAULT_PDIST = 10.0;
+    static final double DEFAULT_ALPHA = 45.0;
+    static final double TWO_PI_DEG = 360.0;
+    static final double PI_DEG = 180.0;
+    static final double DEFAULT_NATURAL_LENGTH = 100;
+    
     private RealParameter angle;
     private RealParameter distance;
     private RealParameter offset;
@@ -126,12 +132,12 @@ public final class HatchedFill extends Fill implements StrokeNode {
 
             try {
                 double pDist;
-                pDist = 10; // TODO DEFAULT VALUE
+                pDist = DEFAULT_PDIST;
                 if (this.distance != null) {
                     pDist = Uom.toPixel(this.distance.getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
                 }
 
-                double alpha = 45.0;
+                double alpha = DEFAULT_ALPHA;
                 if (this.angle != null) {
                     alpha = this.angle.getValue(sds, fid);
                 }
@@ -143,7 +149,7 @@ public final class HatchedFill extends Fill implements StrokeNode {
 
                 drawHatch(g2, sds, fid, shp, selected, mt, alpha, pDist, stroke, hOffset);
             } catch (RuntimeException eee) {
-                System.out.println("Suck " + eee);
+                System.out.println("Error " + eee);
                 eee.printStackTrace(System.out);
             }
         }
@@ -151,78 +157,101 @@ public final class HatchedFill extends Fill implements StrokeNode {
 
     }
 
+    /**
+     * Static method that draw hatches within provided shp
+     * 
+     * @param g2  the g2 to write on
+     * @param sds the spatial data source
+     * @param fidfeature if within sds
+     * @param shp the shape to hatch
+     * @param selected is the feature selected ? will emphasis hatches
+     * @param mt the well known map transform
+     * @param alpha hatches orientation
+     * @param pDist perpendicular distance between two hatch line (stroke width 
+     *         not taken into account so a 10mm wide black PenStroke + pDist=10mm
+     *         will produce a full black behaviour...)
+     * @param stroke the stroke to use to draw hatches
+     * @param hOffset offset between the references point and the reference hatch
+     * @throws ParameterException
+     * @throws IOException 
+     */
     public static void drawHatch(Graphics2D g2, SpatialDataSourceDecorator sds,
             long fid, Shape shp, boolean selected, MapTransform mt,
             double alpha, double pDist, Stroke stroke, double hOffset) throws ParameterException, IOException {
 
         while (alpha < 0.0) {
-            alpha += 360.0;
+            alpha += TWO_PI_DEG;
         }   // Make sure alpha is > 0
-        while (alpha > 360.0) {
-            alpha -= 360.0;
+        while (alpha > TWO_PI_DEG) {
+            alpha -= TWO_PI_DEG;
         } // and < 360.0
-        alpha = alpha * Math.PI / 180.0;         // and finally convert in radian
+        alpha = alpha * Math.PI / PI_DEG; // and finally convert in radian
 
-        double delta_ox = 0.0;
-        double delta_oy = 0.0;
+        double deltaOx = 0.0;
+        double deltaOy = 0.0;
 
         double beta = Math.PI / 2.0 + alpha;
-        delta_ox = Math.cos(beta) * hOffset;
-        delta_oy = Math.sin(beta) * hOffset;
+        deltaOx = Math.cos(beta) * hOffset;
+        deltaOy = Math.sin(beta) * hOffset;
 
 
 
         Double naturalLength = stroke.getNaturalLength(sds, fid, shp, mt);
         if (naturalLength.isInfinite()) {
-            naturalLength = 100.0;
+            naturalLength = DEFAULT_NATURAL_LENGTH;
         }
 
+        // the first hatch to generate is the reference one : it crosses the reference point
         Point2D.Double geoRef = new Point2D.Double(0, 0);
+        // Map geo ref point within g2 space
         Point2D ref = mt.getAffineTransform().transform(geoRef, null);
+        // Apply hatch offset to ref point
+        ref.setLocation(ref.getX() + deltaOx, ref.getY() + deltaOy);
 
-        ref.setLocation(ref.getX() + delta_ox, ref.getY() + delta_oy);
+        // Compute some var
+        double cosAlpha = Math.cos(alpha);
+        double sinAlpha = Math.sin(alpha);
 
-        double cos_alpha = Math.cos(alpha);
-        double sin_alpha = Math.sin(alpha);
-
-        if (Math.abs(sin_alpha) < EPSILON) {
-            sin_alpha = 0.0;
+        if (Math.abs(sinAlpha) < EPSILON) {
+            sinAlpha = 0.0;
         }
 
         boolean vertical = false;
 
-        if (Math.abs(cos_alpha) < EPSILON) {
-            cos_alpha = 0.0;
+        if (Math.abs(cosAlpha) < EPSILON) {
+            cosAlpha = 0.0;
             vertical = true;
         }
 
-        double delta_hx = cos_alpha * naturalLength;
-        double delta_hy = sin_alpha * naturalLength;
+        double deltaHx = cosAlpha * naturalLength;
+        double deltaHy = sinAlpha * naturalLength;
 
-        double delta_dx = pDist / sin_alpha;
-        double delta_dy = pDist / cos_alpha;
+        double deltaDx = pDist / sinAlpha;
+        double deltaDy = pDist / cosAlpha;
 
         Rectangle2D fbox = shp.getBounds2D();
 
 
-        int nb2start;
-        int nb2end;
+        /* the following block compute the number of times the hatching pattern shall be drawn */
+        
+        int nb2start; // how many pattern to skip from the ref point to the begining of the shape ?
+        int nb2end; // how many pattern to skip from the ref point to the end of the shape ?
 
         if (vertical) {
-            if (delta_dx >= 0.0) {
-                nb2start = (int) Math.ceil((fbox.getMinX() - ref.getX()) / delta_dx);
-                nb2end = (int) Math.floor(((fbox.getMaxX() - ref.getX()) / delta_dx));
+            if (deltaDx >= 0.0) {
+                nb2start = (int) Math.ceil((fbox.getMinX() - ref.getX()) / deltaDx);
+                nb2end = (int) Math.floor(((fbox.getMaxX() - ref.getX()) / deltaDx));
             } else {
-                nb2start = (int) Math.floor((fbox.getMinX() - ref.getX()) / delta_dx);
-                nb2end = (int) Math.ceil(((fbox.getMaxX() - ref.getX()) / delta_dx));
+                nb2start = (int) Math.floor((fbox.getMinX() - ref.getX()) / deltaDx);
+                nb2end = (int) Math.ceil(((fbox.getMaxX() - ref.getX()) / deltaDx));
             }
         } else {
-            if (cos_alpha < 0) {
-                nb2start = (int) Math.ceil((fbox.getMinX() - ref.getX()) / delta_hx);
-                nb2end = (int) Math.floor(((fbox.getMaxX() - ref.getX()) / delta_hx));
+            if (cosAlpha < 0) {
+                nb2start = (int) Math.ceil((fbox.getMinX() - ref.getX()) / deltaHx);
+                nb2end = (int) Math.floor(((fbox.getMaxX() - ref.getX()) / deltaHx));
             } else {
-                nb2start = (int) Math.floor((fbox.getMinX() - ref.getX()) / delta_hx);
-                nb2end = (int) Math.ceil(((fbox.getMaxX() - ref.getX()) / delta_hx));
+                nb2start = (int) Math.floor((fbox.getMinX() - ref.getX()) / deltaHx);
+                nb2end = (int) Math.ceil(((fbox.getMaxX() - ref.getX()) / deltaHx));
             }
         }
 
@@ -231,44 +260,46 @@ public final class HatchedFill extends Fill implements StrokeNode {
         double ref_yXmin;
         double ref_yXmax;
 
-        double cos_sin = cos_alpha * sin_alpha;
+        double cos_sin = cosAlpha * sinAlpha;
 
-        ref_yXmin = ref.getY() + nb2start * delta_hy;
-        ref_yXmax = ref.getY() + nb2end * delta_hy;
+        ref_yXmin = ref.getY() + nb2start * deltaHy;
+        ref_yXmax = ref.getY() + nb2end * deltaHy;
 
         double hxmin;
         double hxmax;
         if (vertical) {
-            hxmin = nb2start * delta_dx + ref.getX();
-            hxmax = nb2end * delta_dx + ref.getX();
+            hxmin = nb2start * deltaDx + ref.getX();
+            hxmax = nb2end * deltaDx + ref.getX();
         } else {
-            hxmin = nb2start * delta_hx + ref.getX();
-            hxmax = nb2end * delta_hx + ref.getX();
+            hxmin = nb2start * deltaHx + ref.getX();
+            hxmax = nb2end * deltaHx + ref.getX();
         }
 
         double hymin;
         double hymax;
-        double nb2draw_delta_y = nb2draw * delta_hy;
+        double nb2drawDeltaY = nb2draw * deltaHy;
+
+        // Compute hatches sub-set to draw (avoid all pattern which not stands within the clip area...)
 
         if (vertical) {
-            if (delta_hy < 0.0) {
-                hymin = Math.ceil((fbox.getMinY() - ref.getY()) / delta_hy) * delta_hy + ref.getY();
-                hymax = Math.floor((fbox.getMaxY() - ref.getY()) / delta_hy) * delta_hy + ref.getY();
+            if (deltaHy < 0.0) {
+                hymin = Math.ceil((fbox.getMinY() - ref.getY()) / deltaHy) * deltaHy + ref.getY();
+                hymax = Math.floor((fbox.getMaxY() - ref.getY()) / deltaHy) * deltaHy + ref.getY();
             } else {
-                hymin = Math.floor((fbox.getMinY() - ref.getY()) / delta_hy) * delta_hy + ref.getY();
-                hymax = Math.ceil((fbox.getMaxY() - ref.getY()) / delta_hy) * delta_hy + ref.getY();
+                hymin = Math.floor((fbox.getMinY() - ref.getY()) / deltaHy) * deltaHy + ref.getY();
+                hymax = Math.ceil((fbox.getMaxY() - ref.getY()) / deltaHy) * deltaHy + ref.getY();
             }
         } else {
             if (cos_sin < 0) {
-                hymin = Math.floor((fbox.getMinY() - ref_yXmin) / (delta_dy)) * delta_dy + ref_yXmin;
-                hymax = Math.ceil((fbox.getMaxY() - ref_yXmax) / (delta_dy)) * delta_dy + ref_yXmax - nb2draw_delta_y;
+                hymin = Math.floor((fbox.getMinY() - ref_yXmin) / (deltaDy)) * deltaDy + ref_yXmin;
+                hymax = Math.ceil((fbox.getMaxY() - ref_yXmax) / (deltaDy)) * deltaDy + ref_yXmax - nb2drawDeltaY;
             } else {
-                hymin = Math.floor((fbox.getMinY() - nb2draw_delta_y - ref_yXmin) / (delta_dy)) * delta_dy + ref_yXmin;
+                hymin = Math.floor((fbox.getMinY() - nb2drawDeltaY - ref_yXmin) / (deltaDy)) * deltaDy + ref_yXmin;
 
-                if (delta_dy < 0) {
-                    hymax = Math.floor((fbox.getMaxY() + nb2draw_delta_y - ref_yXmax) / (delta_dy)) * delta_dy + ref_yXmax - nb2draw_delta_y;
+                if (deltaDy < 0) {
+                    hymax = Math.floor((fbox.getMaxY() + nb2drawDeltaY - ref_yXmax) / (deltaDy)) * deltaDy + ref_yXmax - nb2drawDeltaY;
                 } else {
-                    hymax = Math.ceil((fbox.getMaxY() + nb2draw_delta_y - ref_yXmax) / (delta_dy)) * delta_dy + ref_yXmax - nb2draw_delta_y;
+                    hymax = Math.ceil((fbox.getMaxY() + nb2drawDeltaY - ref_yXmax) / (deltaDy)) * deltaDy + ref_yXmax - nb2drawDeltaY;
                 }
             }
         }
@@ -285,11 +316,11 @@ public final class HatchedFill extends Fill implements StrokeNode {
         if (vertical) {
 
             if (hxmin < hxmax) {
-                if (delta_dx < 0) {
-                    delta_dx *= -1;
+                if (deltaDx < 0) {
+                    deltaDx *= -1;
                 }
-                for (x = hxmin; x < hxmax + delta_dx / 2.0; x += delta_dx) {
-                    if (sin_alpha > 0) {
+                for (x = hxmin; x < hxmax + deltaDx / 2.0; x += deltaDx) {
+                    if (sinAlpha > 0) {
                         l.x1 = x;
                         l.y1 = hymin;
                         l.x2 = x;
@@ -309,7 +340,7 @@ public final class HatchedFill extends Fill implements StrokeNode {
             } else {
 
                 // Seems to been unreachable !
-                for (x = hxmin; x > hxmax - delta_dx / 2.0; x += delta_dx) {
+                for (x = hxmin; x > hxmax - deltaDx / 2.0; x += deltaDx) {
                     l.x1 = x;
                     l.y1 = hymin;
                     l.x2 = x;
@@ -324,22 +355,22 @@ public final class HatchedFill extends Fill implements StrokeNode {
 
         } else {
             if (hymin < hymax) {
-                if (delta_dy < 0.0) {
-                    delta_dy *= -1;
+                if (deltaDy < 0.0) {
+                    deltaDy *= -1;
                 }
 
-                for (y = hymin; y < hymax + delta_dy / 2.0; y += delta_dy) {
+                for (y = hymin; y < hymax + deltaDy / 2.0; y += deltaDy) {
 
-                    if (cos_alpha > 0) {
+                    if (cosAlpha > 0) {
                         // Line goes from the left to the right
                         l.x1 = hxmin;
                         l.y1 = y;
                         l.x2 = hxmax;
-                        l.y2 = y + nb2draw * delta_hy;
+                        l.y2 = y + nb2draw * deltaHy;
                     } else {
                         // Line goes from the right to the left
                         l.x1 = hxmax;
-                        l.y1 = y + nb2draw * delta_hy;
+                        l.y1 = y + nb2draw * deltaHy;
                         l.x2 = hxmin;
                         l.y2 = y;
                     }
@@ -350,24 +381,24 @@ public final class HatchedFill extends Fill implements StrokeNode {
                 }
             } else {
 
-                if (delta_dy > 0.0) {
-                    delta_dy *= -1;
+                if (deltaDy > 0.0) {
+                    deltaDy *= -1;
                 }
 
 
-                for (y = hymin; y > hymax - delta_dy / 2.0; y += delta_dy) {
+                for (y = hymin; y > hymax - deltaDy / 2.0; y += deltaDy) {
 
 
-                    if (cos_alpha > 0) {
+                    if (cosAlpha > 0) {
                         // Line goes from the left to the right
                         l.x1 = hxmin;
                         l.y1 = y;
                         l.x2 = hxmax;
-                        l.y2 = y + nb2draw * delta_hy;
+                        l.y2 = y + nb2draw * deltaHy;
                     } else {
                         // Line goes from the right to the left
                         l.x1 = hxmax;
-                        l.y1 = y + nb2draw * delta_hy;
+                        l.y1 = y + nb2draw * deltaHy;
                         l.x2 = hxmin;
                         l.y2 = y;
                     }

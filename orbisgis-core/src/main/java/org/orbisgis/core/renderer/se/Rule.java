@@ -283,10 +283,11 @@ public final class Rule implements SymbolizerNode {
 	}
 
 	public void setMaxScaleDenom(Double maxScaleDenom) {
-		if (maxScaleDenom != null && maxScaleDenom > 0)
+		if (maxScaleDenom != null && maxScaleDenom > 0){
 			this.maxScaleDenom = maxScaleDenom;
-		else
+        } else{
 			this.maxScaleDenom = null;
+        }
 	}
 
 	public Double getMinScaleDenom() {
@@ -294,10 +295,11 @@ public final class Rule implements SymbolizerNode {
 	}
 
 	public void setMinScaleDenom(Double minScaleDenom) {
-		if (minScaleDenom != null && minScaleDenom > 0)
+		if (minScaleDenom != null && minScaleDenom > 0){
 			this.minScaleDenom = minScaleDenom;
-		else
+        } else {
 			this.minScaleDenom = null;
+        }
 	}
 
 	public boolean isVisible() {

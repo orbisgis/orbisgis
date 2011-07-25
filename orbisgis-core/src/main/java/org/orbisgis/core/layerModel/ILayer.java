@@ -49,7 +49,7 @@ import org.orbisgis.core.renderer.legend.RasterLegend;
 import org.orbisgis.core.renderer.legend.WMSLegend;
 
 import com.vividsolutions.jts.geom.Envelope;
-import java.util.ArrayList;
+import java.util.List;
 import org.orbisgis.core.renderer.se.FeatureTypeStyle;
 import org.orbisgis.core.renderer.se.Rule;
 
@@ -359,6 +359,6 @@ public interface ILayer {
 	 */
 	Legend[] getRenderingLegend() throws DriverException;
 
-	ArrayList<Rule> getRenderingRule() throws DriverException;
+	List<Rule> getRenderingRule() throws DriverException;
 
 }

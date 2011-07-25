@@ -6,6 +6,7 @@
 package org.orbisgis.core.renderer.se.parameter;
 
 import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.ExpressionType;
 import net.opengis.fes._2.LiteralType;
@@ -18,7 +19,7 @@ import net.opengis.se._2_0.core.ParameterValueType;
  */
 public abstract class Literal implements SeParameter {
 
-	private ArrayList<LiteralListener> listeners;
+	private List<LiteralListener> listeners;
 
 	public Literal(){
 		listeners = new ArrayList<LiteralListener>();

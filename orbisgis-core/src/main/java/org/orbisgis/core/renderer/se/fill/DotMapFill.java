@@ -65,6 +65,9 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 public final class DotMapFill extends Fill implements GraphicNode {
 
+    static final int MAX_ATTEMPT = 100;
+
+    
     public DotMapFill() {
         rand = new Random();
     }
@@ -183,7 +186,7 @@ public final class DotMapFill extends Fill implements GraphicNode {
     private Point2D.Double findMarkPosition(Area area) {
         Rectangle2D bounds2D = area.getBounds2D();
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < MAX_ATTEMPT; i++) {
             double x = rand.nextDouble() * bounds2D.getWidth() + bounds2D.getMinX();
             double y = rand.nextDouble() * bounds2D.getHeight() + bounds2D.getMinY();
 

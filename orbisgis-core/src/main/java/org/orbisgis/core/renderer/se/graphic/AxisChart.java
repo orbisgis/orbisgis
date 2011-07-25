@@ -79,7 +79,7 @@ import org.orbisgis.core.renderer.se.transform.Transform;
  */
 public final class AxisChart extends Graphic implements UomNode, FillNode, StrokeNode, TransformNode {
 
-    private ArrayList<CategoryListener> listeners;
+    private List<CategoryListener> listeners;
     private Uom uom;
     private RealParameter normalizeTo;
     //private boolean isPolarChart;
@@ -89,7 +89,7 @@ public final class AxisChart extends Graphic implements UomNode, FillNode, Strok
     private Fill areaFill;
     private Transform transform;
     private Stroke lineStroke;
-    private ArrayList<Category> categories;
+    private List<Category> categories;
     private AxisChartSubType subtype;
     public static final double DEFAULT_GAP_PX = 5; //px
     public static final double INITIAL_GAP_PX = 5; //px
@@ -278,7 +278,7 @@ public final class AxisChart extends Graphic implements UomNode, FillNode, Strok
         this.subtype = subtype;
     }
 
-    public ArrayList<Category> getCategories() {
+    public List<Category> getCategories() {
         return categories;
     }
 
@@ -373,6 +373,7 @@ public final class AxisChart extends Graphic implements UomNode, FillNode, Strok
         double maxHeight = 0;
         double minHeight = 0;
 
+        // Determine min and max heights
         for (double h : heights) {
             if (h > maxHeight) {
                 maxHeight = h;
@@ -381,6 +382,7 @@ public final class AxisChart extends Graphic implements UomNode, FillNode, Strok
                 minHeight = h;
             }
         }
+        
         double cGap = DEFAULT_GAP_PX;
         if (categoryGap != null) {
             cGap = Uom.toPixel(categoryGap.getValue(sds, fid), getUom(), mt.getDpi(),
@@ -393,9 +395,10 @@ public final class AxisChart extends Graphic implements UomNode, FillNode, Strok
                     mt.getScaleDenominator(), null);
         }
 
+        // compute chart width, according to number of categories
         double width = (nCat - 1) * cGap + nCat * cWidth + INITIAL_GAP_PX;
 
-
+        // chart bounds
         Rectangle2D bounds = new Rectangle2D.Double(-width / 2, -maxHeight, width, maxHeight + -1 * minHeight);
 
         //AffineTransform at = null;
@@ -416,6 +419,8 @@ public final class AxisChart extends Graphic implements UomNode, FillNode, Strok
             currentX += cGap + cWidth;
         }
 
+
+        // First, draw bar chart
         for (i = 0; i < nCat; i++) {
             Category c = categories.get(i);
             if (c.getFill() != null || c.getStroke() != null) {
@@ -438,6 +443,7 @@ public final class AxisChart extends Graphic implements UomNode, FillNode, Strok
             }
         }
 
+        // then draw main area (if required) 
         if (areaFill != null) {
             Path2D area = new Path2D.Double();
 
@@ -455,6 +461,7 @@ public final class AxisChart extends Graphic implements UomNode, FillNode, Strok
             areaFill.draw(g2, sds, fid, shp, selected, mt);
         }
 
+        // then the line chart
         if (lineStroke != null) {
             Path2D line = new Path2D.Double();
             line.moveTo(xOffset[0] + cWidth / 2, -heights[0]);
@@ -470,6 +477,7 @@ public final class AxisChart extends Graphic implements UomNode, FillNode, Strok
             lineStroke.draw(g2, sds, fid, shp, selected, mt, 0.0);
         }
 
+        // and finally, points
         for (i = 0; i < nCat; i++) {
             Category c = categories.get(i);
             if (c.getGraphicCollection() != null) {
@@ -482,7 +490,9 @@ public final class AxisChart extends Graphic implements UomNode, FillNode, Strok
             }
         }
 
-        g2.setPaint(Color.black);
+        
+        /*  Following code try to draw x&y axis, TODO tyke into account AT
+                g2.setPaint(Color.black);
 
         Point2D origin = at.transform(new Point2D.Double(0, 0), null);
         Point2D maxX_y0 = at.transform(new Point2D.Double(0, 0), null);
@@ -490,6 +500,8 @@ public final class AxisChart extends Graphic implements UomNode, FillNode, Strok
         g2.drawLine((int) bounds.getMinX(), (int) bounds.getMinY(), (int) bounds.getMinX(), (int) bounds.getMaxY());
         g2.drawLine((int) bounds.getMinX(), (int) origin.getY(), (int) bounds.getMaxX(), (int) maxX_y0.getY());
 
+         *
+         */
 
         /*
         MarkGraphic arrow = new MarkGraphic();
@@ -527,6 +539,7 @@ public final class AxisChart extends Graphic implements UomNode, FillNode, Strok
         double maxHeight = 0;
         double minHeight = 0;
 
+        /* compute min & max height */
         for (double h : heights) {
             if (h > maxHeight) {
                 maxHeight = h;
@@ -536,6 +549,7 @@ public final class AxisChart extends Graphic implements UomNode, FillNode, Strok
             }
         }
 
+        // make sure min value > 0
         if (minHeight < 0.0) {
             throw new ParameterException("Negative measures are not allowed for polar charts!");
         }
@@ -557,6 +571,7 @@ public final class AxisChart extends Graphic implements UomNode, FillNode, Strok
         double ypos[] = new double[nCat];
 
         int i;
+        // Compute effective position for each category
         for (i = 0; i < nCat; i++) {
             ypos[i] = Math.sin(alpha) * heights[i];
             xpos[i] = Math.cos(alpha) * heights[i];
@@ -564,6 +579,8 @@ public final class AxisChart extends Graphic implements UomNode, FillNode, Strok
             alpha += beta;
         }
 
+        // First fill the area, with general fill & stroke  
+        // This is a net-chart
         if (this.areaFill != null || this.lineStroke != null) {
             Path2D.Double area = new Path2D.Double();
             area.moveTo(xpos[0], ypos[0]);
@@ -597,8 +614,8 @@ public final class AxisChart extends Graphic implements UomNode, FillNode, Strok
             }
             Shape shp;
 
-            // TODO::CREATE SLICE
-
+            // Draw specific categorie fill & stroke 
+            // this is a polar bar chart
             if (cat.getFill() != null || cat.getStroke() != null) {
                 Arc2D.Double slice = new Arc2D.Double(-heights[i], -heights[i],
                         2 * heights[i], 2 * heights[i],
@@ -791,48 +808,59 @@ public final class AxisChart extends Graphic implements UomNode, FillNode, Strok
 
     @Override
     public String dependsOnFeature() {
-        String result = "";
+        StringBuffer buf = new StringBuffer();
 
         if (areaFill != null) {
-            result += " " + this.areaFill.dependsOnFeature();
+            buf.append(" "); 
+            buf.append( this.areaFill.dependsOnFeature());
         }
 
         if (lineStroke != null) {
-            result += " " + this.lineStroke.dependsOnFeature();
+            buf.append(" "); 
+            buf.append( this.lineStroke.dependsOnFeature());
         }
 
         if (this.categoryGap != null) {
-            result += " " + categoryGap.dependsOnFeature();
+            buf.append(" "); 
+            buf.append( categoryGap.dependsOnFeature());
         }
 
         if (categoryWidth != null) {
-            result += " " + categoryWidth.dependsOnFeature();
+            buf.append(" "); 
+            buf.append( categoryWidth.dependsOnFeature());
         }
 
         if (axisScale != null) {
             if (axisScale.getAxisLength() != null) {
-                result += " " + axisScale.getAxisLength().dependsOnFeature();
+                buf.append(" "); 
+                buf.append( axisScale.getAxisLength().dependsOnFeature());
             }
             if (axisScale.getMeasureValue() != null) {
-                result += " " + axisScale.getMeasureValue().dependsOnFeature();
+                buf.append(" "); 
+                buf.append( axisScale.getMeasureValue().dependsOnFeature());
             }
         }
 
         for (Category c : categories) {
             if (c.getFill() != null) {
-                result += " " + c.getFill().dependsOnFeature();
+                buf.append(" "); 
+                buf.append( c.getFill().dependsOnFeature());
             }
             if (c.getStroke() != null) {
-                result += " " + c.getStroke().dependsOnFeature();
+                buf.append(" ");
+                buf.append( c.getStroke().dependsOnFeature());
             }
             if (c.getGraphicCollection() != null) {
-                result += " " + c.getGraphicCollection().dependsOnFeature();
+                buf.append(" ");
+                buf.append(c.getGraphicCollection().dependsOnFeature());
             }
             if (c.getMeasure() != null) {
-                result += " " + c.getMeasure().dependsOnFeature();
+                buf.append(" ");
+                buf.append(c.getMeasure().dependsOnFeature());
             }
         }
 
-        return result.trim();
+        String s = buf.toString().trim();
+        return s;
     }
 }

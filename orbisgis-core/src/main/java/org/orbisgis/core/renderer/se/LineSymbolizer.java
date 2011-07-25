@@ -41,7 +41,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.LineSymbolizerType;
 import net.opengis.se._2_0.core.ObjectFactory;
@@ -144,7 +144,7 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
             boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
             throws ParameterException, IOException, DriverException {
         if (stroke != null) {
-            ArrayList<Shape> shapes = this.getLines(sds, fid, mt, the_geom);
+            List<Shape> shapes = this.getLines(sds, fid, mt, the_geom);
 
 
             double offset = 0.0;

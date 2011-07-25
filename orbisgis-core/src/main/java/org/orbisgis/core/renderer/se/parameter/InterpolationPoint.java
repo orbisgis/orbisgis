@@ -1,9 +1,5 @@
 package org.orbisgis.core.renderer.se.parameter;
 
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 public class InterpolationPoint<Type> implements Comparable {
 
     public Type getValue() {

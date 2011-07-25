@@ -42,6 +42,7 @@ package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 
 import java.awt.GridLayout;
 import java.util.ArrayList;
+import java.util.List;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.RealLiteralInput;
@@ -52,13 +53,13 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.RealLiteralIn
  */
 public class LegendUISymbolizerLevelPanel extends LegendUIAbstractPanel {
 
-	ArrayList<RealLiteralInput> levels;
+	List<RealLiteralInput> levels;
 
 	public LegendUISymbolizerLevelPanel(LegendUIController controller){
 		super(controller);
 		this.setLayout(new GridLayout(0,1));
 
-		ArrayList<Rule> rules = controller.getEditedFeatureTypeStyle().getRules();
+		List<Rule> rules = controller.getEditedFeatureTypeStyle().getRules();
 
 		levels = new ArrayList<RealLiteralInput>();
 
@@ -77,7 +78,7 @@ public class LegendUISymbolizerLevelPanel extends LegendUIAbstractPanel {
 
 		System.out.println ("Bornes: " + ((double)sum));
 		for (Rule r : rules){
-			ArrayList<Symbolizer> ss = r.getCompositeSymbolizer().getSymbolizerList();
+			List<Symbolizer> ss = r.getCompositeSymbolizer().getSymbolizerList();
 			for (Symbolizer s: ss){
 				levels.add(new RealLiteralInputImpl(s.getName(), (double)s.getLevel(), 0.0, (double)max, s));
 			}

@@ -95,9 +95,13 @@ import org.orbisgis.core.ui.plugins.views.output.OutputManager;
  */
 public abstract class Renderer {
 
+    static final double EXTRA_EXTENT_FACTOR = 0.01;
+    static final int ONE_HUNDRED_I = 100;
+    static final int BATCH_SIZE = 1000;
+
+    static final int EXECP_POS = 20;
+    
     private static OutputManager logger = Services.getOutputManager();
-    // overlayImage is the one on witch label will be drawn
-    private BufferedImage overlayImage;
 
     /**
      * This method shall returns a graphics2D for each symbolizers in the list.
@@ -107,7 +111,7 @@ public abstract class Renderer {
      */
     //public abstract HashMap<Symbolizer, Graphics2D> getGraphics2D(ArrayList<Symbolizer> symbs,
     //        Graphics2D g2, MapTransform mt);
-    protected abstract void initGraphics2D(ArrayList<Symbolizer> symbs, Graphics2D g2, MapTransform mt);
+    protected abstract void initGraphics2D(List<Symbolizer> symbs, Graphics2D g2, MapTransform mt);
 
     protected abstract Graphics2D getGraphics2D(Symbolizer s);
 
@@ -156,7 +160,7 @@ public abstract class Renderer {
             IProgressMonitor pm) throws DriverException {
         Envelope extent = mt.getAdjustedExtent();
 
-        double gap = mt.getScaleDenominator() * 0.01;
+        double gap = mt.getScaleDenominator() * EXTRA_EXTENT_FACTOR;
 
         return new FilterDataSourceDecorator(sds, "ST_Intersects(ST_GeomFromText('POLYGON(("
                 + (extent.getMinX() - gap) + " " + (extent.getMinY() - gap) + ","
@@ -226,7 +230,7 @@ public abstract class Renderer {
             pm.startTask("Filtering (spatial)...");
             pm.progressTo(0);
             FilterDataSourceDecorator featureInExtent = featureInExtent(mt, sds, pm);
-            pm.progressTo(100);
+            pm.progressTo(ONE_HUNDRED_I);
             pm.endTask();
 
             if (featureInExtent != null) {
@@ -243,7 +247,7 @@ public abstract class Renderer {
                     pm.progressTo(0);
                     FilterDataSourceDecorator filteredDs = r.getFilteredDataSource(featureInExtent);
 
-                    if (filteredDs != featureInExtent) {
+                    if (!filteredDs.equals(featureInExtent)) {
                         filteredDs.open();
                     }
 
@@ -261,7 +265,7 @@ public abstract class Renderer {
                     } else {
                         elseWhere = "1 = 0";
                     }
-                    pm.progressTo(100);
+                    pm.progressTo(ONE_HUNDRED_I);
                     pm.endTask();
                 }
 
@@ -329,23 +333,21 @@ public abstract class Renderer {
                     long initFeats = 0;
                     for (fid = 0; fid < fds.getRowCount(); fid++) {
                         initFeats -= System.currentTimeMillis();
-                        if (layerCount % 1000 == 0) {
-                            if (pm.isCancelled()) {
-                                return layerCount;
-                            }
+                        if (layerCount % BATCH_SIZE == 0 && pm.isCancelled()) {
+                            return layerCount;
                         }
 
                         long originalIndex;
-                        if (fds == featureInExtent) {
+                        if (fds.equals(featureInExtent)) {
                             originalIndex = fds.getOriginalIndex(fid);
                         } else {
                             originalIndex = featureInExtent.getOriginalIndex(fds.getOriginalIndex(fid));
                         }
 
                         int fieldID = ShapeHelper.getGeometryFieldId(sds);
-                        Geometry the_geom = null;
+                        Geometry theGeom = null;
                         if (fieldID >= 0) {
-                            the_geom = sds.getGeometry(originalIndex);
+                            theGeom = sds.getGeometry(originalIndex);
                             //System.out.println ("TheGeom: " + the_geom);
                         }
 
@@ -366,7 +368,7 @@ public abstract class Renderer {
                             g2S = getGraphics2D(s);
                             //}
                             sTimer -= System.currentTimeMillis();
-                            s.draw(g2S, sds, originalIndex, emphasis, mt, the_geom, perm);
+                            s.draw(g2S, sds, originalIndex, emphasis, mt, theGeom, perm);
                             sTimer += System.currentTimeMillis();
                             //s.draw(g2, sds, originalIndex, emphasis, mt, the_geom, perm);
                             releaseGraphics2D(g2S);
@@ -374,7 +376,7 @@ public abstract class Renderer {
                         }
                         endFeature(originalIndex, sds);
 
-                        pm.progressTo((int) (100 * ++layerCount / total));
+                        pm.progressTo((int) (ONE_HUNDRED_I * ++layerCount / total));
                     }
                     long tf2 = System.currentTimeMillis();
                     logger.println("  -> Rule done in  " + (tf2 - tf1) + "[ms]   featInit" + initFeats + "[ms]");
@@ -389,12 +391,12 @@ public abstract class Renderer {
                 logger.println("Full Symb time:      " + sTimeFull + " [ms]");
                 disposeLayer(g2);
 
-                for (Rule r : rulesDs.keySet()) {
-                    FilterDataSourceDecorator fds = rulesDs.get(r);
-                    if (fds.isOpen() && fds != featureInExtent) {
+                for (FilterDataSourceDecorator fds : rulesDs.values()){
+                    if (fds.isOpen() && !fds.equals(featureInExtent)) {
                         fds.close();
                     }
                 }
+
                 long tV4 = System.currentTimeMillis();
                 logger.println("Images stacked :" + (tV4 - tV3) + "[ms]");
 
@@ -408,7 +410,7 @@ public abstract class Renderer {
             java.util.logging.Logger.getLogger("Could not draw " + layer.getName()).log(Level.SEVERE, "Error while drawing " + layer.getName(), ex);
             ex.printStackTrace(System.err);
             g2.setColor(Color.red);
-            g2.drawString(ex.toString(), 20, 20);
+            g2.drawString(ex.toString(), EXECP_POS, EXECP_POS);
 
         } finally {
             if (sds != null && sds.isOpen()) {
@@ -470,7 +472,7 @@ public abstract class Renderer {
      *            Progress monitor to report the status of the drawing
      */
     public void draw(MapTransform mt, Graphics2D g2, int width, int height,
-            ILayer layer, IProgressMonitor progressMonitor) {
+            ILayer lay, IProgressMonitor progressMonitor) {
 
         IProgressMonitor pm;
         if (progressMonitor == null) {
@@ -489,10 +491,10 @@ public abstract class Renderer {
 
         //ArrayList<Symbolizer> overlay = new ArrayList<Symbolizer>();
 
-        if (layer.acceptsChilds()) {
-            layers = layer.getLayersRecursively();
+        if (lay.acceptsChilds()) {
+            layers = lay.getLayersRecursively();
         } else {
-            layers = new ILayer[]{layer};
+            layers = new ILayer[]{lay};
         }
 
         long total1 = System.currentTimeMillis();
@@ -500,15 +502,12 @@ public abstract class Renderer {
         Envelope graphicExtent = new Envelope(0, 0, mt.getWidth(), mt.getHeight());
         DefaultRendererPermission perm = new DefaultRendererPermission(graphicExtent);
 
-        // at each new rendering, overlay is reseted
-        overlayImage = new BufferedImage(mt.getWidth(), mt.getHeight(), BufferedImage.TYPE_INT_ARGB);
-
         for (int i = layers.length - 1; i
                 >= 0; i--) {
             if (pm.isCancelled()) {
                 break;
             } else {
-                layer = layers[i];
+                ILayer layer = layers[i];
                 if (layer.isVisible() && extent.intersects(layer.getEnvelope())) {
                     logger.println(I18N.getString("orbisgis.org.orbisgis.renderer.drawing") + layer.getName()); //$NON-NLS-1$
                     long t1 = System.currentTimeMillis();
@@ -551,8 +550,8 @@ public abstract class Renderer {
                                 Services.getErrorManager().error(
                                         I18N.getString("orbisgis.org.orbisgis.renderer.cannotDraw") + layer.getName(), e); //$NON-NLS-1$
                             }
-                            pm.progressTo(100
-                                    - (100 * i) / layers.length);
+                            pm.progressTo(ONE_HUNDRED_I
+                                    - (ONE_HUNDRED_I * i) / layers.length);
                         }
                     }
                     long t2 = System.currentTimeMillis();
@@ -560,9 +559,6 @@ public abstract class Renderer {
                 }
             }
         }
-
-        // After everything is done, add overlay layers to map transform image
-        mt.getImage().createGraphics().drawImage(overlayImage, null, 0, 0);
 
         long total2 = System.currentTimeMillis();
         logger.println(I18N.getString("orbisgis.org.orbisgis.renderer.totalRenderingTime") + (total2 - total1)); //$NON-NLS-1$
@@ -627,12 +623,12 @@ public abstract class Renderer {
 
         private Quadtree quadtree;
         private Envelope drawExtent;
-        private Area extent;
+        //private Area extent;
 
         public DefaultRendererPermission(Envelope drawExtent) {
             this.drawExtent = drawExtent;
             this.quadtree = new Quadtree();
-            this.extent = new Area(new Rectangle2D.Double(drawExtent.getMinX(), drawExtent.getMinY(), drawExtent.getWidth(), drawExtent.getHeight()));
+            //this.extent = new Area(new Rectangle2D.Double(drawExtent.getMinX(), drawExtent.getMinY(), drawExtent.getWidth(), drawExtent.getHeight()));
         }
 
         @Override
@@ -656,16 +652,17 @@ public abstract class Renderer {
         public Geometry getValidGeometry(Geometry geometry, double distance) {
             List<Envelope> list = quadtree.query(geometry.getEnvelopeInternal());
             GeometryFactory geometryFactory = new GeometryFactory();
+            Geometry theGeom = geometry;
             for (Envelope envelope : list) {
-                geometry = geometry.difference(geometryFactory.toGeometry(
+                theGeom = theGeom.difference(geometryFactory.toGeometry(
                         envelope).buffer(distance, 1));
             }
-            geometry = geometry.intersection(geometryFactory.toGeometry(drawExtent));
+            theGeom = theGeom.intersection(geometryFactory.toGeometry(drawExtent));
 
-            if (geometry.isEmpty()) {
+            if (theGeom.isEmpty()) {
                 return null;
             } else {
-                return geometry;
+                return theGeom;
             }
         }
     }
