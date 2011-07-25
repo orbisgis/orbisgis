@@ -41,13 +41,13 @@ import com.itextpdf.text.pdf.PdfGraphics2D;
 import com.itextpdf.text.pdf.PdfTemplate;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Symbolizer;
 
 /**
@@ -57,12 +57,15 @@ import org.orbisgis.core.renderer.se.Symbolizer;
  */
 public class PdfRenderer extends Renderer {
 
-    private HashMap<Rule, ArrayList<PdfGraphics2D>> ruleGraphics;
     private PdfTemplate pdfTemplate;
     private float height;
     private float width;
     private MapTransform mt;
     private HashMap<Integer, Graphics2D> g2Levels;
+
+    Graphics2D baseG2;
+
+    //private Graphics2D tg;
 
     public PdfRenderer(PdfTemplate pdfTemplate, float width, float height) {
         super();
@@ -73,13 +76,18 @@ public class PdfRenderer extends Renderer {
 
     @Override
     protected Graphics2D getGraphics2D(Symbolizer s) {
-        return g2Levels.get(s.getLevel());
+        //return tg;
+        Graphics2D get = g2Levels.get(s.getLevel());
+        //pdfTemplate.saveState();
+        return get;
     }
 
     @Override
     protected void initGraphics2D(ArrayList<Symbolizer> symbs, Graphics2D g2, MapTransform mt) {
         this.mt = mt;
         g2Levels = new HashMap<Integer, Graphics2D>();
+
+        baseG2 = pdfTemplate.createGraphics(width, height);
 
         //HashMap<Integer, Graphics2D> g2Level = new HashMap<Integer, Graphics2D>();
         List<Integer> levels = new LinkedList<Integer>();
@@ -89,8 +97,7 @@ public class PdfRenderer extends Renderer {
          * to render all symbolizer in one pass without encountering layer level issues
          */
         for (Symbolizer s : symbs) {
-
-            Graphics2D sG2;
+            //Graphics2D sG2;
             // Does the level of the current symbolizer already have a graphic2s ?
             if (!levels.contains(s.getLevel())) {
                 // It's a new level => register level
@@ -101,21 +108,30 @@ public class PdfRenderer extends Renderer {
         Collections.sort(levels);
 
         for (Integer level : levels) {
-            Graphics2D sg2 = pdfTemplate.createGraphics(width, height);
+            Graphics2D sg2 = (Graphics2D) baseG2.create();
             sg2.addRenderingHints(mt.getRenderingHints());
             g2Levels.put(level, sg2);
         }
+
+        //tg = pdfTemplate.createGraphics(width, height);
     }
 
     @Override
     public void disposeLayer(Graphics2D g2) {
-        for (Graphics2D sg2 : g2Levels.values()){
-            sg2.dispose();
-        }
+        baseG2.dispose();
+        //for (Graphics2D sg2 : g2Levels.values()){
+        //    sg2.dispose();
+        //}
+
+        g2Levels.clear();
+        //tg.dispose();
     }
 
     @Override
     protected void releaseGraphics2D(Graphics2D g2) {
+        //g2.setPaint(null);
+        //g2.setStroke(null);
+        //pdfTemplate.restoreState();
     }
     
     @Override

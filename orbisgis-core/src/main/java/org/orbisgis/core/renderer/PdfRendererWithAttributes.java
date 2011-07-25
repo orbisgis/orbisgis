@@ -89,7 +89,6 @@ public class PdfRendererWithAttributes extends Renderer {
     protected Graphics2D getGraphics2D(Symbolizer s) {
         Graphics2D g2 = pTemp.createGraphics(width, height);
         g2.addRenderingHints(mt.getRenderingHints());
-
         return g2;
     }
 
@@ -101,8 +100,6 @@ public class PdfRendererWithAttributes extends Renderer {
     @Override
     protected void initGraphics2D(ArrayList<Symbolizer> symbs, Graphics2D g2, MapTransform mt) {
         this.mt = mt;
-
-
     }
 
     @Override

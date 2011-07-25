@@ -53,16 +53,13 @@ public class ImageRenderer extends Renderer {
 
     private ArrayList<BufferedImage> imgSymbs;
 
-    private HashMap<Symbolizer, Graphics2D> g2Symbs;
-
-
+    private HashMap<Integer, Graphics2D> g2Level = new HashMap<Integer, Graphics2D>();
 
     @Override
     protected void initGraphics2D(ArrayList<Symbolizer> symbs, Graphics2D g2, MapTransform mt) {
         imgSymbs = new ArrayList<BufferedImage>();
-        g2Symbs = new HashMap<Symbolizer, Graphics2D>();
         
-        HashMap<Integer, Graphics2D> g2Level = new HashMap<Integer, Graphics2D>();
+        g2Level = new HashMap<Integer, Graphics2D>();
 
         /**
          * Create one buffered image for each level present in the style. This way allows
@@ -72,10 +69,7 @@ public class ImageRenderer extends Renderer {
 
             Graphics2D sG2;
             // Does the level of the current symbolizer already have a graphic2s ?
-            if (g2Level.containsKey(s.getLevel())){
-                // This level already has a graphics
-                sG2 = g2Level.get(s.getLevel());
-            } else {
+            if (!g2Level.containsKey(s.getLevel())){
                 // It's a new level => create a new graphics2D
                 BufferedImage bufImg = new BufferedImage(mt.getWidth(), mt.getHeight(), BufferedImage.TYPE_INT_ARGB);
                 sG2 = bufImg.createGraphics();
@@ -84,13 +78,12 @@ public class ImageRenderer extends Renderer {
                 // Map the graphics with its level
                 g2Level.put(s.getLevel(), sG2);
             }
-            g2Symbs.put(s, sG2);
         }
     }
 
     @Override
     protected Graphics2D getGraphics2D(Symbolizer s) {
-        return g2Symbs.get(s);
+        return g2Level.get(s.getLevel());
     }
 
 
@@ -100,6 +93,13 @@ public class ImageRenderer extends Renderer {
 
     @Override
     protected void disposeLayer(Graphics2D g2) {
+        for (Integer key : g2Level.keySet()){
+            Graphics2D get = g2Level.get(key);
+            get.dispose();
+        }
+
+        g2Level.clear();
+        
         for (BufferedImage img : imgSymbs) {
             g2.drawImage(img, null, null);
         }

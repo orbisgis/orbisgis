@@ -338,7 +338,7 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
         if (halo != null) {
             for (Shape outline : outlines) {
                 //halo.draw(rg, sds, fid, selected, outline.getBounds(), mt, false);
-                System.out.println ("Draw halo");
+                //System.out.println ("Draw halo");
                 halo.draw(g2, sds, fid, selected, outline, mt, true);
             }
         }

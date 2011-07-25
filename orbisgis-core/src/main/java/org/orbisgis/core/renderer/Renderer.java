@@ -96,7 +96,6 @@ import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 public abstract class Renderer {
 
     private static OutputManager logger = Services.getOutputManager();
-
     // overlayImage is the one on witch label will be drawn
     private BufferedImage overlayImage;
 
@@ -108,20 +107,17 @@ public abstract class Renderer {
      */
     //public abstract HashMap<Symbolizer, Graphics2D> getGraphics2D(ArrayList<Symbolizer> symbs,
     //        Graphics2D g2, MapTransform mt);
-
     protected abstract void initGraphics2D(ArrayList<Symbolizer> symbs, Graphics2D g2, MapTransform mt);
 
     protected abstract Graphics2D getGraphics2D(Symbolizer s);
 
     protected abstract void releaseGraphics2D(Graphics2D g2);
-    
-    
+
     /**
      * Is called once the layer has been rendered
      * @param g2 the graphics the layer has to be drawn on
      */
     protected abstract void disposeLayer(Graphics2D g2);
-
 
     /**
      * Called before each feature
@@ -146,7 +142,6 @@ public abstract class Renderer {
      * @param name the name of the layer
      */
     protected abstract void endLayer(String name);
-
 
     /**
      * Create a view which correspond to feature in MapContext adjusted extend
@@ -197,10 +192,12 @@ public abstract class Renderer {
 
 
         int layerCount = 0;
+        SpatialDataSourceDecorator sds = null;
         try {
             long tV1 = System.currentTimeMillis();
 
-            SpatialDataSourceDecorator sds = layer.getSpatialDataSource();
+            sds = layer.getSpatialDataSource();
+            //sds.isOpen();
             sds.open();
 
             // Extract into drawSeLayer method !
@@ -233,7 +230,7 @@ public abstract class Renderer {
             pm.endTask();
 
             if (featureInExtent != null) {
-                //featureInExtent.open();
+                featureInExtent.open();
 
                 // Assign filtered data source to each rule
                 HashMap<Rule, FilterDataSourceDecorator> rulesDs = new HashMap<Rule, FilterDataSourceDecorator>();
@@ -274,6 +271,7 @@ public abstract class Renderer {
                     elseDs = featureInExtent;
                 } else {
                     elseDs = new FilterDataSourceDecorator(featureInExtent, elseWhere);
+                    elseDs.open();
                 }
 
 
@@ -361,10 +359,10 @@ public abstract class Renderer {
 
                             Graphics2D g2S;
                             //if (s instanceof TextSymbolizer) {
-                                // TextSymbolizer always rendered on overlay
-                                //g2S = overlayImage.createGraphics();
+                            // TextSymbolizer always rendered on overlay
+                            //g2S = overlayImage.createGraphics();
                             //} else {
-                                //g2S = g2Symbs.get(s);
+                            //g2S = g2Symbs.get(s);
                             g2S = getGraphics2D(s);
                             //}
                             sTimer -= System.currentTimeMillis();
@@ -379,7 +377,7 @@ public abstract class Renderer {
                         pm.progressTo((int) (100 * ++layerCount / total));
                     }
                     long tf2 = System.currentTimeMillis();
-                    logger.println("  -> Rule done in  " + (tf2 - tf1) + "[ms]   featInit"  + initFeats + "[ms]");
+                    logger.println("  -> Rule done in  " + (tf2 - tf1) + "[ms]   featInit" + initFeats + "[ms]");
 
                     pm.endTask();
                     endLayer(r.getName());
@@ -412,7 +410,12 @@ public abstract class Renderer {
             g2.setColor(Color.red);
             g2.drawString(ex.toString(), 20, 20);
 
+        } finally {
+            if (sds != null && sds.isOpen()) {
+                sds.close();
+            }
         }
+
         return layerCount;
     }
 
@@ -470,7 +473,7 @@ public abstract class Renderer {
             ILayer layer, IProgressMonitor progressMonitor) {
 
         IProgressMonitor pm;
-        if (progressMonitor == null){
+        if (progressMonitor == null) {
             pm = new NullProgressMonitor();
         } else {
             pm = progressMonitor;

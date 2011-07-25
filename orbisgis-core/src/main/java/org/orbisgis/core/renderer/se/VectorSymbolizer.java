@@ -42,6 +42,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.TopologyException;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
@@ -52,9 +53,9 @@ import net.opengis.se._2_0.core.SymbolizerType;
 import org.gdms.data.SpatialDataSourceDecorator;
 
 import org.gdms.driver.DriverException;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.common.ShapeHelper;
 
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -246,7 +247,15 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
             at.preConcatenate(transform.getGraphicalAffineTransform(false, sds, fid, mt, (double) mt.getWidth(), (double) mt.getHeight()));
         }
 
-        Point point = geom.getInteriorPoint();
+        Point point;
+
+        try {
+            // try/catch prevent to fail when such a point can't be computed
+            point = geom.getInteriorPoint();
+        } catch (TopologyException ex){
+            Services.getOutputManager().println("getPointShape :: TopologyException: " + ex);
+            point = geom.getCentroid();
+        }
         //Point point = geom.getCentroid();
 
         return at.transform(new Point2D.Double(point.getX(), point.getY()), null);
