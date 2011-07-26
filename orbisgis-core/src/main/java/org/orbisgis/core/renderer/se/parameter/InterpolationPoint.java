@@ -33,6 +33,23 @@ public class InterpolationPoint<Type> implements Comparable {
             return 0;
         }
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 97 * hash + (int) (Double.doubleToLongBits(this.d) ^ (Double.doubleToLongBits(this.d) >>> 32));
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object o){
+        if (o instanceof InterpolationPoint){
+            InterpolationPoint ip = (InterpolationPoint) o;
+            return this.d == ip.d;
+        }
+        return false;
+    }
+
     private double d;
     private Type v = null;
 }

@@ -411,14 +411,12 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
             shp = WellKnownName.CIRCLE.getShape(viewBox, sds, fid, mt.getScaleDenominator(), mt.getDpi(), markIndex, mimeType);
         }
 
-        // Apply AT
-        Shape atShp = shp;
 
         if (transform != null) {
             at.concatenate(this.transform.getGraphicalAffineTransform(false, sds, fid, mt, shp.getBounds().getWidth(), shp.getBounds().getHeight()));
         }
 
-        atShp = at.createTransformedShape(shp);
+        Shape atShp = at.createTransformedShape(shp);
 
         if (this.getFill() == null && this.getStroke() == null) {
             this.setFill(new SolidFill());

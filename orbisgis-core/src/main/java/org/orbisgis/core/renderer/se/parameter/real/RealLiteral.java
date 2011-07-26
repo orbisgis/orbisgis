@@ -126,4 +126,21 @@ public class RealLiteral extends Literal implements RealParameter {
 
         return 0;
     }
+
+    @Override
+    public boolean equals (Object o){
+        if (o instanceof RealLiteral){
+            RealLiteral rl = (RealLiteral) o;
+            return this.v == rl.v;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 67 * hash + (int) (Double.doubleToLongBits(this.v) ^ (Double.doubleToLongBits(this.v) >>> 32));
+        return hash;
+    }
 }

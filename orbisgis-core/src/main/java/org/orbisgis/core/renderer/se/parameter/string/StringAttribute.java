@@ -84,7 +84,7 @@ public class StringAttribute extends ValueReference implements StringParameter{
 
     @Override
     public void setRestrictionTo(String[] list) {
-        restriction = list;
+        restriction = list.clone();
     }
 
 }

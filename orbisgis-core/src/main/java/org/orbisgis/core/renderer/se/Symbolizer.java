@@ -153,11 +153,11 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
     if (st.getName() != null) {
     this.name = st.getName();
     }
-
+    
     if (st.getDescription() != null) {
     // TODO Load description from XML
     }
-
+    
     if (st.getVersion() != null){
     // TODO IMplement
     }
@@ -181,15 +181,18 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
 
     @Override
     public int compareTo(Object o) {
-        Symbolizer s = (Symbolizer) o;
+        if (o instanceof Symbolizer) {
+            Symbolizer s = (Symbolizer) o;
 
-        if (s.level < this.level) {
-            return 1;
-        } else if (s.level == this.level) {
-            return 0;
-        } else {
-            return -1;
+            if (s.level < this.level) {
+                return 1;
+            } else if (s.level == this.level) {
+                return 0;
+            } else {
+                return -1;
+            }
         }
+        return -1;
     }
 
     /**
@@ -204,7 +207,7 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
         return (Rule) pIt;
     }
 
-    public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, 
+    public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
             boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
             throws ParameterException, IOException, DriverException;
 

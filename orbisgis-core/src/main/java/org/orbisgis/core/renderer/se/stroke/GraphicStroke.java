@@ -176,7 +176,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
                 nbSegments = (int) ((lineLength / segLength) + 0.5);
                 //System.out.println("  Length Rapport : Split line in " + (int) nbSegments + " parts");
                 segments = ShapeHelper.splitLine(shp, (int) nbSegments);
-                segLength = lineLength / nbSegments;
+                //segLength = lineLength / nbSegments;
                 //nbToDraw = (int) nbSegments;
             } else {
                 nbSegments = lineLength / segLength;

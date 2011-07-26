@@ -50,14 +50,14 @@ public class ColorLiteral extends Literal implements ColorParameter{
     private Color color;
     private static Random rndGenerator;
 
+    static {
+        rndGenerator = new Random(13579);
+    }
 
     /**
      * Create a new random color 
      */
     public ColorLiteral(){
-        if (rndGenerator == null){
-            rndGenerator = new Random(13579);
-        }
         int r = (int)(rndGenerator.nextFloat()*255);
         int g = (int)(rndGenerator.nextFloat()*255);
         int b = (int)(rndGenerator.nextFloat()*255);

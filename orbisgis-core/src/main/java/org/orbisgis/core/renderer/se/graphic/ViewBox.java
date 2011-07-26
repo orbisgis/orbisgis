@@ -152,7 +152,7 @@ public final class ViewBox implements SymbolizerNode {
         } else { // nothing is defined
             dx = width;
             dy = height;
-			return null;
+			//return null; 
         }
 
 

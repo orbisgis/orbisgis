@@ -48,7 +48,7 @@ public class Recode2String extends Recode<StringParameter, StringLiteral> implem
 
     @Override
     public void setRestrictionTo(String[] list) {
-        restriction = list;
+        restriction = list.clone();
         for (int i=0;i<this.getNumMapItem();i++){
             getMapItemValue(i).setRestrictionTo(list);
         }

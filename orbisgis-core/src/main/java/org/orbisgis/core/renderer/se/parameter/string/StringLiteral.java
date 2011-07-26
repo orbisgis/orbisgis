@@ -38,7 +38,7 @@ public class StringLiteral extends Literal implements StringParameter{
 
     @Override
     public void setRestrictionTo(String[] list) {
-        restriction = list;
+        restriction = list.clone();
     }
 
     public String[] getRestriction(){

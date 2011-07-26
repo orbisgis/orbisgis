@@ -224,25 +224,29 @@ public final class Rule implements SymbolizerNode {
                 PointSymbolizer ps = (PointSymbolizer) s;
                 GraphicCollection gc = ps.getGraphicCollection();
                 int i;
-                String f = " ";
+                StringBuilder f = new StringBuilder();
                 for (i=0;i<gc.getNumGraphics();i++){
                     Graphic g = gc.getGraphic(i);
                     if (g instanceof MarkGraphic){
                         MarkGraphic mark = (MarkGraphic) g;
                         if (mark.getViewBox() != null){
-                            f += " " + mark.getViewBox().dependsOnFeature();
+                            f.append(" ");
+                            f.append(mark.getViewBox().dependsOnFeature());
                         }
                     } else if (g instanceof ExternalGraphic){
                         ExternalGraphic extG = (ExternalGraphic) g;
                         if (extG.getViewBox() != null){
-                            f += " " + extG.getViewBox().dependsOnFeature();
+                            f.append(" ");
+                            f.append(extG.getViewBox().dependsOnFeature());
                         }
                     }
                     // TODO add others cases !
                 }
-                f = f.trim();
-                if (!f.isEmpty()){
-                    String[] split = f.split(" ");
+                
+                // If view box depends on features => order by 
+                String result = f.toString().trim();
+                if (!result.isEmpty()){
+                    String[] split = result.split(" ");
                     return " ORDER BY " + split[0] + " DESC";
                 }else{
                     return "";

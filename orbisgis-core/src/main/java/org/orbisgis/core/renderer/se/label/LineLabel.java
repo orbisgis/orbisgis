@@ -66,7 +66,6 @@ public class LineLabel extends Label {
     public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, 
             Shape shp, boolean selected, MapTransform mt, RenderContext perm)
             throws ParameterException, IOException {
-        double emWidth = label.getEmInPixel(sds, fid, mt);
 
         Rectangle2D bounds = label.getBounds(g2, sds, fid, mt);
         double totalWidth = bounds.getWidth();
@@ -105,6 +104,7 @@ public class LineLabel extends Label {
 
         if (vA == null) {
             vA = VerticalAlignment.TOP;
+            // TODO implement !
         }
 
         if (hA == null) {
@@ -119,13 +119,16 @@ public class LineLabel extends Label {
             case RIGHT:
                 startAt = lineLength - totalWidth;
                 stopAt = lineLength;
+                break;
             case LEFT:
                 startAt = 0.0;
                 stopAt = totalWidth;
+                break;
             default:
             case CENTER:
                 startAt = (lineLength - totalWidth) / 2.0;
                 stopAt = (lineLength + totalWidth) / 2.0;
+                break;
 
         }
 
@@ -147,9 +150,9 @@ public class LineLabel extends Label {
         if (ptStart.x > ptStop.x){
             // invert line way
             way = -1;
-            double tmp = startAt;
+            //double tmp = startAt;
             startAt = stopAt;
-            stopAt = tmp;
+            //stopAt = tmp;
         }
 
         double currentPos = startAt;

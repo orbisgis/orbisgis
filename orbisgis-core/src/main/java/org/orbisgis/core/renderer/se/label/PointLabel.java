@@ -5,7 +5,6 @@
 package org.orbisgis.core.renderer.se.label;
 
 import com.vividsolutions.jts.awt.PolygonShape;
-import com.vividsolutions.jts.geom.Envelope;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
@@ -135,7 +134,7 @@ public final class PointLabel extends Label {
             }
         }
 
-        AffineTransform at = AffineTransform.getTranslateInstance(x, y);
+        AffineTransform at = AffineTransform.getTranslateInstance(x + deltaX, y + deltaY);
 
         label.draw(g2, sds, fid, selected, mt, at, perm);
     }

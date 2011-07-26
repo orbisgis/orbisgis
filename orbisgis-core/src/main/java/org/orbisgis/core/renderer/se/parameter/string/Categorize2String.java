@@ -102,7 +102,7 @@ public class Categorize2String extends Categorize<StringParameter, StringLiteral
 
     @Override
     public void setRestrictionTo(String[] list) {
-        restriction = list;
+        restriction = list.clone();
         for (int i=0;i<this.getNumClasses();i++){
             getClassValue(i).setRestrictionTo(list);
         }
