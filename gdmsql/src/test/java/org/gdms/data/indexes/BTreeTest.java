@@ -36,10 +36,11 @@
  */
 package org.gdms.data.indexes;
 
+import org.junit.Test;
+import org.junit.Before;
 import java.io.File;
 import java.io.IOException;
 
-import junit.framework.TestCase;
 
 import org.gdms.SQLBaseTest;
 import org.gdms.data.DataSource;
@@ -49,79 +50,81 @@ import org.gdms.data.indexes.btree.DiskBTree;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 
-public class BTreeTest extends TestCase {
+import static org.junit.Assert.*;
 
-	private File indexFile;
+public class BTreeTest {
 
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
+        private File indexFile;
 
-		indexFile = new File(SQLBaseTest.internalData, "backup/btreetest.idx");
-		if (indexFile.exists()) {
-			if (!indexFile.delete()) {
-				throw new IOException("Cannot delete the index file");
-			}
-		}
-	}
+        @Before
+        public void setUp() throws Exception {
+                indexFile = new File(SQLBaseTest.internalData, "btreetest.idx");
+                if (indexFile.exists()) {
+                        if (!indexFile.delete()) {
+                                throw new IOException("Cannot delete the index file");
+                        }
+                }
+        }
 
-	public void testIndexRealData() throws Exception {
-		SQLDataSourceFactory dsf = new SQLDataSourceFactory();
-		File file = new File(SQLBaseTest.internalData,"hedgerow.shp");
-		dsf.getSourceManager().register("hedges", file);
-		DataSource ds = dsf.getDataSourceFromSQL("select * from hedges order by \"type\" ;");
-		setUp();
-		testIndexRealData(new DiskBTree(255, 512, false), ds, "type", 100.0);
-		setUp();
-		testIndexRealData(new DiskBTree(3, 256, false), ds, "type", 1000.0);
-	}
+        @Test
+        public void testIndexRealData() throws Exception {
+                SQLDataSourceFactory dsf = new SQLDataSourceFactory();
+                dsf.setTempDir(SQLBaseTest.backupDir.getAbsolutePath());
+                dsf.setResultDir(SQLBaseTest.backupDir);
+                File file = new File(SQLBaseTest.internalData, "hedgerow.shp");
+                dsf.getSourceManager().register("hedges", file);
+                DataSource ds = dsf.getDataSourceFromSQL("select * from hedges order by \"type\" ;");
+                setUp();
+                testIndexRealData(new DiskBTree(255, 512, false), ds, "type", 100.0);
+                setUp();
+                testIndexRealData(new DiskBTree(3, 256, false), ds, "type", 1000.0);
+        }
 
-	private void testIndexRealData(BTree tree, DataSource ds, String fieldName,
-			double checkPeriod) throws Exception {
-		ds.open();
-		tree.newIndex(indexFile);
-		int fieldIndex = ds.getFieldIndexByName(fieldName);
+        private void testIndexRealData(BTree tree, DataSource ds, String fieldName,
+                double checkPeriod) throws Exception {
+                ds.open();
+                tree.newIndex(indexFile);
+                int fieldIndex = ds.getFieldIndexByName(fieldName);
                 if (fieldIndex == -1) {
                         throw new DriverException("The field " + fieldName + " does not exist!");
                 }
-		for (int i = 0; i < ds.getRowCount(); i++) {
-			if (i / (int) checkPeriod == i / checkPeriod) {
-				tree.checkTree();
-				tree.close();
-				tree.openIndex(indexFile);
-				tree.checkTree();
-				checkLookUp(tree, ds, fieldIndex);
-				tree.checkTree();
-			}
-			Value value = ds.getFieldValue(i, fieldIndex);
-			tree.insert(value, i);
-		}
-		for (int i = 0; i < ds.getRowCount(); i++) {
-			if (i / (int) checkPeriod == i / checkPeriod) {
-				tree.checkTree();
-				tree.save();
-				tree.checkTree();
-				checkLookUp(tree, ds, fieldIndex);
-			}
-			Value value = ds.getFieldValue(i, fieldIndex);
-			int size = tree.size();
-			tree.delete(value, i);
-			assertTrue(tree.size() + 1 == size);
-		}
+                for (int i = 0; i < ds.getRowCount(); i++) {
+                        if (i / (int) checkPeriod == i / checkPeriod) {
+                                tree.checkTree();
+                                tree.close();
+                                tree.openIndex(indexFile);
+                                tree.checkTree();
+                                checkLookUp(tree, ds, fieldIndex);
+                                tree.checkTree();
+                        }
+                        Value value = ds.getFieldValue(i, fieldIndex);
+                        tree.insert(value, i);
+                }
+                for (int i = 0; i < ds.getRowCount(); i++) {
+                        if (i / (int) checkPeriod == i / checkPeriod) {
+                                tree.checkTree();
+                                tree.save();
+                                tree.checkTree();
+                                checkLookUp(tree, ds, fieldIndex);
+                        }
+                        Value value = ds.getFieldValue(i, fieldIndex);
+                        int size = tree.size();
+                        tree.delete(value, i);
+                        assertEquals(tree.size() + 1, size);
+                }
 
-		ds.close();
-		tree.close();
-	}
+                ds.close();
+                tree.close();
+        }
 
-	private void checkLookUp(BTree tree, DataSource ds, int fieldIndex)
-			throws IOException, DriverException {
-		Value[] allValues = tree.getAllValues();
-		for (Value value : allValues) {
-			int[] rows = tree.getRow(value);
-			for (int row : rows) {
-				assertTrue(ds.getFieldValue(row, fieldIndex).equals(value)
-						.getAsBoolean());
-			}
-		}
-	}
+        private void checkLookUp(BTree tree, DataSource ds, int fieldIndex)
+                throws IOException, DriverException {
+                Value[] allValues = tree.getAllValues();
+                for (Value value : allValues) {
+                        int[] rows = tree.getRow(value);
+                        for (int row : rows) {
+                                assertTrue(ds.getFieldValue(row, fieldIndex).equals(value).getAsBoolean());
+                        }
+                }
+        }
 }

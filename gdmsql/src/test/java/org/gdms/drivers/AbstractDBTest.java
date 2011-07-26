@@ -40,74 +40,70 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 
-import junit.framework.TestCase;
 import org.gdms.SQLBaseTest;
 
 import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.db.DBSource;
 import org.gdms.source.SourceManager;
 
-public abstract class AbstractDBTest extends TestCase {
+public abstract class AbstractDBTest {
 
-	protected SQLDataSourceFactory dsf;
-	protected SourceManager sm;
+        protected SQLDataSourceFactory dsf;
+        protected SourceManager sm;
 
-	@Override
-	protected void setUp() throws Exception {
-		dsf = new SQLDataSourceFactory();
-		dsf.setTempDir(SQLBaseTest.internalData + "backup");
-		sm = dsf.getSourceManager();
-		sm.removeAll();
-	}
+        public void setUp() throws Exception {
+                dsf = new SQLDataSourceFactory();
+                dsf.setTempDir(SQLBaseTest.backupDir.getAbsolutePath());
+                dsf.setResultDir(SQLBaseTest.backupDir);
+                sm = dsf.getSourceManager();
+                sm.removeAll();
+        }
 
-	protected void executeScript(DBSource dbSource, String statement)
-			throws Exception {
-		Class.forName("org.postgresql.Driver").newInstance();
-		Class.forName("org.h2.Driver").newInstance();
-		Class.forName("org.hsqldb.jdbcDriver").newInstance();
-		String connectionString = dbSource.getPrefix() + ":";
-		if (dbSource.getHost() != null) {
-			connectionString += "//" + dbSource.getHost();
+        protected void executeScript(DBSource dbSource, String statement)
+                throws Exception {
+                Class.forName("org.postgresql.Driver").newInstance();
+                Class.forName("org.h2.Driver").newInstance();
+                Class.forName("org.hsqldb.jdbcDriver").newInstance();
+                String connectionString = dbSource.getPrefix() + ":";
+                if (dbSource.getHost() != null) {
+                        connectionString += "//" + dbSource.getHost();
 
-			if (dbSource.getPort() != -1) {
-				connectionString += (":" + dbSource.getPort());
-			}
-			connectionString += "/";
-		}
+                        if (dbSource.getPort() != -1) {
+                                connectionString += (":" + dbSource.getPort());
+                        }
+                        connectionString += "/";
+                }
 
-		connectionString += (dbSource.getDbName());
+                connectionString += (dbSource.getDbName());
 
-		Connection c = DriverManager.getConnection(connectionString, dbSource
-				.getUser(), dbSource.getPassword());
+                Connection c = DriverManager.getConnection(connectionString, dbSource.getUser(), dbSource.getPassword());
 
-		Statement st = c.createStatement();
-		st.execute(statement);
-		st.close();
-		c.close();
-	}
+                Statement st = c.createStatement();
+                st.execute(statement);
+                st.close();
+                c.close();
+        }
 
-	protected DBSource getPostgreSQLSource(String tableName) {
-		return new DBSource("127.0.0.1", 5432, "gisdb", "gis", "gis",
-				tableName, "jdbc:postgresql");
-	}
+        protected DBSource getPostgreSQLSource(String tableName) {
+                return new DBSource("127.0.0.1", 5432, "gisdb", "gis", "gis",
+                        tableName, "jdbc:postgresql");
+        }
 
-	protected DBSource getH2Source(String tableName) {
-		return new DBSource(null, -1, SQLBaseTest.internalData + "backup/" + tableName,
-				"sa", "", tableName, "jdbc:h2");
-	}
+        protected DBSource getH2Source(String tableName) {
+                return new DBSource(null, -1, SQLBaseTest.internalData + "backup/" + tableName,
+                        "sa", "", tableName, "jdbc:h2");
+        }
 
-	protected DBSource getHSQLDBSource(String tableName) {
-		return new DBSource(null, -1, SQLBaseTest.internalData + "backup/" + tableName,
-				"sa", "", tableName, "jdbc:hsqldb:file");
-	}
+        protected DBSource getHSQLDBSource(String tableName) {
+                return new DBSource(null, -1, SQLBaseTest.internalData + "backup/" + tableName,
+                        "sa", "", tableName, "jdbc:hsqldb:file");
+        }
 
-	protected void deleteTable(DBSource source) {
-		String script = "DROP TABLE " + source.getTableName() + ";";
-		try {
-			executeScript(source, script);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
+        protected void deleteTable(DBSource source) {
+                String script = "DROP TABLE " + source.getTableName() + ";";
+                try {
+                        executeScript(source, script);
+                } catch (Exception e) {
+                }
+        }
 }

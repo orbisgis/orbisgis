@@ -36,9 +36,10 @@
  */
 package org.gdms.sql.indexes;
 
+import org.junit.Before;
+import org.junit.Test;
 import java.io.File;
 
-import junit.framework.TestCase;
 
 import org.gdms.SQLBaseTest;
 import org.gdms.data.SQLDataSourceFactory;
@@ -48,106 +49,116 @@ import org.gdms.data.types.IncompatibleTypesException;
 import org.gdms.sql.engine.SQLEngine;
 import org.gdms.sql.engine.SemanticException;
 
-public class IndexManagementTest extends TestCase {
+import static org.junit.Assert.*;
 
-	private SQLDataSourceFactory dsf;
-	private IndexManager im;
+public class IndexManagementTest {
 
-	@Override
-	protected void setUp() throws Exception {
-		dsf = new SQLDataSourceFactory();
-		dsf.setTempDir(SQLBaseTest.internalData + "backup");
-		SourceManager sm = dsf.getSourceManager();
-		sm.removeAll();
-		sm.register("source", new File(SQLBaseTest.internalData,
-				"hedgerow.shp"));
-		im = dsf.getIndexManager();
-	}
+        private SQLDataSourceFactory dsf;
+        private IndexManager im;
 
-	public void testDeleteIndex() throws Exception {
-		testBuildSpatialIndexOnFirstFieldByDefault();
-		String sql = "select DeleteIndex(the_geom) from source";
-		dsf.executeSQL(sql);
-		assertTrue(im.getIndex("source", "the_geom") == null);
-	}
+        @Before
+        public void setUp() throws Exception {
+                dsf = new SQLDataSourceFactory();
+                dsf.setTempDir(SQLBaseTest.backupDir.getAbsolutePath());
+                dsf.setResultDir(SQLBaseTest.backupDir);
+                SourceManager sm = dsf.getSourceManager();
+                sm.removeAll();
+                sm.register("source", new File(SQLBaseTest.internalData,
+                        "hedgerow.shp"));
+                im = dsf.getIndexManager();
+        }
 
-	public void testBuildSpatialIndexSpecifyingField() throws Exception {
-		testBuildIndexSpecifyingField("BuildSpatialIndex", "the_geom");
-	}
+        @Test
+        public void testDeleteIndex() throws Exception {
+                testBuildSpatialIndexOnFirstFieldByDefault();
+                String sql = "select DeleteIndex(the_geom) from source";
+                dsf.executeSQL(sql);
+                assertNull(im.getIndex("source", "the_geom"));
+        }
 
-	public void testBuildAlphaIndexSpecifyingField() throws Exception {
-		testBuildIndexSpecifyingField("BuildAlphaIndex", "gid");
-	}
+        @Test
+        public void testBuildSpatialIndexSpecifyingField() throws Exception {
+                testBuildIndexSpecifyingField("BuildSpatialIndex", "the_geom");
+        }
 
-	public void testBuildSpatialIndexOnFirstFieldByDefault() throws Exception {
-		testBuildIndexOnFirstFieldByDefault("BuildSpatialIndex", "the_geom");
-	}
+        @Test
+        public void testBuildAlphaIndexSpecifyingField() throws Exception {
+                testBuildIndexSpecifyingField("BuildAlphaIndex", "gid");
+        }
 
-	public void testSpatialWrongParameters() throws Exception {
-		testSpatialWrongParameters("BuildSpatialIndex", "the_geom", "gid");
-	}
+        @Test
+        public void testBuildSpatialIndexOnFirstFieldByDefault() throws Exception {
+                testBuildIndexOnFirstFieldByDefault("BuildSpatialIndex", "the_geom");
+        }
 
-	public void testAlphaWrongParameters() throws Exception {
-		testWrongParameters("BuildAlphaIndex", "gid", "the_geom");
-	}
+        @Test
+        public void testSpatialWrongParameters() throws Exception {
+                testSpatialWrongParameters("BuildSpatialIndex", "the_geom", "gid");
+        }
 
-	public void testDeleteWrongParameters() throws Exception {
-		testWrongParametersDelete("DeleteIndex", "gid");
-	}
+        @Test
+        public void testAlphaWrongParameters() throws Exception {
+                testWrongParameters("BuildAlphaIndex", "gid", "the_geom");
+        }
 
-	private void testBuildIndexSpecifyingField(String indexCall, String field)
-			throws Exception {
-		String sql = "select " + indexCall + "(" + field + ") from source";
-		dsf.executeSQL(sql);
-		assertTrue(im.getIndex("source", field) != null);
-	}
+        @Test
+        public void testDeleteWrongParameters() throws Exception {
+                testWrongParametersDelete("DeleteIndex", "gid");
+        }
 
-	private void testBuildIndexOnFirstFieldByDefault(String indexCall,
-			String field) throws Exception {
-		String sql = "select " + indexCall + "() from source";
-		dsf.executeSQL(sql);
-		assertTrue(im.getIndex("source", field) != null);
-	}
+        private void testBuildIndexSpecifyingField(String indexCall, String field)
+                throws Exception {
+                String sql = "select " + indexCall + "(" + field + ") from source";
+                dsf.executeSQL(sql);
+                assertNotNull(im.getIndex("source", field));
+        }
 
-	private void testSpatialWrongParameters(String indexCall, String field,
-			String wrongField) throws Exception {
-		try {
-			testWrongParametersInSQL("select " + indexCall + "(" + "'" + field
-					+ "'" + ") from source;");
-			assertTrue(false);
-		} catch (IncompatibleTypesException e) {
-		}
-		testWrongParameters(indexCall, field, wrongField);
-	}
+        private void testBuildIndexOnFirstFieldByDefault(String indexCall,
+                String field) throws Exception {
+                String sql = "select " + indexCall + "() from source";
+                dsf.executeSQL(sql);
+                assertNotNull(im.getIndex("source", field));
+        }
 
-	private void testWrongParameters(String indexCall, String field,
-			String wrongField) throws Exception {
-		try {
-			testWrongParametersInSQL("select " + indexCall + "(" + wrongField
-					+ ") from source;");
-			assertTrue(false);
-		} catch (IncompatibleTypesException e) {
-		}
-		testWrongParametersDelete(indexCall, field);
-	}
+        private void testSpatialWrongParameters(String indexCall, String field,
+                String wrongField) throws Exception {
+                try {
+                        testWrongParametersInSQL("select " + indexCall + "(" + "'" + field
+                                + "'" + ") from source;");
+                        fail();
+                } catch (IncompatibleTypesException e) {
+                }
+                testWrongParameters(indexCall, field, wrongField);
+        }
 
-	private void testWrongParametersDelete(String indexCall, String field)
-			throws Exception {
-		try {
-			testWrongParametersInSQL("select " + indexCall + "(" + field
-					+ ") from source s1, source s2;");
-			assertTrue(false);
-		} catch (SemanticException e) {
-		}
-		try {
-			testWrongParametersInSQL("select " + indexCall + "();");
-			assertTrue(false);
-		} catch (SemanticException e) {
-		}
-	}
+        private void testWrongParameters(String indexCall, String field,
+                String wrongField) throws Exception {
+                try {
+                        testWrongParametersInSQL("select " + indexCall + "(" + wrongField
+                                + ") from source;");
+                        fail();
+                } catch (IncompatibleTypesException e) {
+                }
+                testWrongParametersDelete(indexCall, field);
+        }
 
-	private void testWrongParametersInSQL(String sql) throws Exception {
+        private void testWrongParametersDelete(String indexCall, String field)
+                throws Exception {
+                try {
+                        testWrongParametersInSQL("select " + indexCall + "(" + field
+                                + ") from source s1, source s2;");
+                        fail();
+                } catch (SemanticException e) {
+                }
+                try {
+                        testWrongParametersInSQL("select " + indexCall + "();");
+                        fail();
+                } catch (SemanticException e) {
+                }
+        }
+
+        private void testWrongParametersInSQL(String sql) throws Exception {
                 SQLEngine engine = new SQLEngine(dsf);
-		engine.execute(sql);
-	}
+                engine.execute(sql);
+        }
 }

@@ -36,9 +36,10 @@
  */
 package org.gdms.sql;
 
+import org.junit.Before;
+import org.junit.Test;
 import java.io.File;
 
-import junit.framework.TestCase;
 import org.gdms.SQLBaseTest;
 
 import org.gdms.data.SQLAllTypesObjectDriver;
@@ -50,72 +51,75 @@ import org.gdms.sql.engine.SQLEngine;
 import org.gdms.sql.engine.SqlStatement;
 import org.orbisgis.progress.NullProgressMonitor;
 
-public class InstructionTest extends TestCase {
+import static org.junit.Assert.*;
 
-	private SQLDataSourceFactory dsf;
-	private File resultDir;
-	private CancelledPM cancelPM;
+public class InstructionTest {
 
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		dsf = new SQLDataSourceFactory();
-		dsf.setTempDir(SQLBaseTest.internalData + "backup");
-		resultDir = new File(SQLBaseTest.internalData,"backup");
-		dsf.setResultDir(resultDir);
-		SourceManager sm = dsf.getSourceManager();
-		SQLAllTypesObjectDriver omd = new SQLAllTypesObjectDriver();
-		sm.register("alltypes", omd);
+        private SQLDataSourceFactory dsf;
+        private File resultDir;
+        private CancelledPM cancelPM;
 
-		cancelPM = new CancelledPM();
-	}
+        @Before
+        public void setUp() throws Exception {
+                dsf = new SQLDataSourceFactory();
+                dsf.setTempDir(SQLBaseTest.backupDir.getAbsolutePath());
+                dsf.setResultDir(SQLBaseTest.backupDir);
+                SourceManager sm = dsf.getSourceManager();
+                SQLAllTypesObjectDriver omd = new SQLAllTypesObjectDriver();
+                sm.register("alltypes", omd);
 
-	public void testGetScriptInstructionMetadata() throws Exception {
-		String script = "select * from alltypes; select * from alltypes;";
+                cancelPM = new CancelledPM();
+        }
+
+        @Test
+        public void testGetScriptInstructionMetadata() throws Exception {
+                String script = "select * from alltypes; select * from alltypes;";
                 SQLEngine engine = new SQLEngine(dsf);
                 SqlStatement[] st = engine.parse(script);
                 st[0].prepare(dsf);
                 st[1].prepare(dsf);
-		assertTrue(st[0].getResultMetadata() != null);
-		assertTrue(st[1].getResultMetadata() != null);
+                assertNotNull(st[0].getResultMetadata());
+                assertNotNull(st[1].getResultMetadata());
                 st[0].cleanUp();
                 st[1].cleanUp();
-	}
+        }
 
-	public void testCommentsInTheMiddleOfTheScript() throws Exception {
-		String script = "/*description*/\nselect * from mytable;\n/*select * from mytable*/;";
-		SQLEngine engine = new SQLEngine(dsf);
-		SqlStatement[] st = engine.parse(script);
-		assertTrue(st.length == 1);
+        @Test
+        public void testCommentsInTheMiddleOfTheScript() throws Exception {
+                String script = "/*description*/\nselect * from mytable;\n/*select * from mytable*/;";
+                SQLEngine engine = new SQLEngine(dsf);
+                SqlStatement[] st = engine.parse(script);
+                assertEquals(st.length, 1);
 
-	}
+        }
 
-	public void testSQLSource() throws Exception {
-		SQLEngine engine = new SQLEngine(dsf);
-		SqlStatement[] st = engine.parse("select * from alltypes;");
-		DataSource ds = dsf.getDataSource(st[0], SQLDataSourceFactory.DEFAULT,
-				null);
-                assertTrue((ds.getSource().getType() & SourceManager.SQL) == SourceManager.SQL);
-                String sql = ((SQLSourceDefinition)ds.getSource().getDataSourceDefinition()).getSQL();
-		assertTrue(sql.equals("select * from alltypes;"));
-	}
+        @Test
+        public void testSQLSource() throws Exception {
+                SQLEngine engine = new SQLEngine(dsf);
+                SqlStatement[] st = engine.parse("select * from alltypes;");
+                DataSource ds = dsf.getDataSource(st[0], SQLDataSourceFactory.DEFAULT,
+                        null);
+                assertEquals((ds.getSource().getType() & SourceManager.SQL), SourceManager.SQL);
+                String sql = ((SQLSourceDefinition) ds.getSource().getDataSourceDefinition()).getSQL();
+                assertEquals(sql, "select * from alltypes;");
+        }
 
-	public void testCancelledInstructions() throws Exception {
-		SQLEngine engine = new SQLEngine(dsf);
-		SqlStatement[] st = engine.parse("select * from alltypes;");
-		DataSource ds = dsf.getDataSource(st[0], SQLDataSourceFactory.DEFAULT,
-				cancelPM);
-		assertTrue(ds == null);
+        @Test
+        public void testCancelledInstructions() throws Exception {
+                SQLEngine engine = new SQLEngine(dsf);
+                SqlStatement[] st = engine.parse("select * from alltypes;");
+                DataSource ds = dsf.getDataSource(st[0], SQLDataSourceFactory.DEFAULT,
+                        cancelPM);
+                assertNull(ds);
 
-		assertTrue(dsf.getDataSourceFromSQL("select * from alltypes;", cancelPM) == null);
-	}
+                assertNull(dsf.getDataSourceFromSQL("select * from alltypes;", cancelPM));
+        }
 
-	private class CancelledPM extends NullProgressMonitor {
+        private class CancelledPM extends NullProgressMonitor {
 
-		@Override
-		public boolean isCancelled() {
-			return true;
-		}
-
-	}
+                @Override
+                public boolean isCancelled() {
+                        return true;
+                }
+        }
 }

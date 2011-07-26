@@ -33,11 +33,13 @@ import org.gdms.driver.shapefile.ShapefileDriver;
 import org.gdms.driver.solene.CirDriver;
 import org.gdms.source.SourceManager;
 import org.gdms.spatial.SeveralSpatialFieldsDriver;
+import org.junit.Ignore;
 
 /**
  *
  * @author Antoine Gourlay
  */
+@Ignore
 public class SQLBaseTest extends SourceTest<Value, Geometry> {
 
         public static SQLDataSourceFactory dsf;
@@ -57,20 +59,21 @@ public class SQLBaseTest extends SourceTest<Value, Geometry> {
         private static String fspatialField = "spatialField";
         private static String fnewGeometry = "newGeometry";
         private static String fwrite = "write";
+        public static final boolean postGisAvailable;
 
         static {
                 try {
+                        postGisAvailable = false;
+
                         dsf = new SQLDataSourceFactory();
-                        dsf.setTempDir(internalData + "backup");
-                        
+                        dsf.setTempDir(SQLBaseTest.backupDir.getAbsolutePath());
+                        dsf.setResultDir(SQLBaseTest.backupDir);
+
                         toTest.add(new FileTestSource("hedgerow", internalData
                                 + "hedgerow.shp"));
                         toTest.add(new FileTestSource("landcover2000dbf", internalData
                                 + "landcover2000.dbf"));
-                        toTest.add(new DBTestSource("pghedgerow", "org.postgresql.Driver",
-                                internalData + "hedgerow.sql", new DBSource("127.0.0.1",
-                                -1, "gdms", "postgres", "postgres", "hedgerow",
-                                "jdbc:postgresql")));
+
                         toTest.add(new FileTestSource(SHPTABLE, internalData
                                 + "landcover2000.shp"));
                         toTest.add(new ObjectTestSource("memory_spatial_object",
@@ -88,10 +91,17 @@ public class SQLBaseTest extends SourceTest<Value, Geometry> {
                                 + "repeatedRows.csv"));
                         toTest.add(new SQLTestSource("select_source", internalData
                                 + "repeatedRows.csv"));
-                        toTest.add(new DBTestSource("postgres", "org.postgresql.Driver",
-                                internalData + "testpostgres.sql", new DBSource(
-                                "127.0.0.1", -1, "gdms", "postgres", "postgres",
-                                "gisapps", "jdbc:postgresql")));
+
+                        if (postGisAvailable) {
+                                toTest.add(new DBTestSource("pghedgerow", "org.postgresql.Driver",
+                                        internalData + "hedgerow.sql", new DBSource("127.0.0.1",
+                                        -1, "gdms", "postgres", "postgres", "hedgerow",
+                                        "jdbc:postgresql")));
+                                toTest.add(new DBTestSource("postgres", "org.postgresql.Driver",
+                                        internalData + "testpostgres.sql", new DBSource(
+                                        "127.0.0.1", -1, "gdms", "postgres", "postgres",
+                                        "gisapps", "jdbc:postgresql")));
+                        }
 
                         if (!testDataInfo.exists()) {
                                 createDB();
@@ -135,11 +145,11 @@ public class SQLBaseTest extends SourceTest<Value, Geometry> {
                 return fields;
         }
 
-        protected void setUp() throws Exception {
+        public void setUp() throws Exception {
                 dsf.getSourceManager().removeAll();
         }
 
-        protected void tearDown() throws Exception {
+        public void tearDown() throws Exception {
                 dsf.freeResources();
         }
 
@@ -147,7 +157,6 @@ public class SQLBaseTest extends SourceTest<Value, Geometry> {
                 ArrayList<TestSourceData> sources = new ArrayList<TestSourceData>();
                 sources.add(new TestSourceData("hedgerow", null, false));
                 sources.add(new TestSourceData("landcover2000dbf", null, false));
-                sources.add(new TestSourceData("pghedgerow", null, false));
                 sources.add(new TestSourceData("memory_spatial_object", null, false));
                 sources.add(new TestSourceData(SHPTABLE, null, false));
                 sources.add(new TestSourceData("testh2", null, false));
@@ -155,7 +164,10 @@ public class SQLBaseTest extends SourceTest<Value, Geometry> {
                 sources.add(new TestSourceData("testcsv", null, false));
                 sources.add(new TestSourceData("repeatedRows", null, true));
                 sources.add(new TestSourceData("select_source", null, false));
-                sources.add(new TestSourceData("postgres", null, false));
+                if (postGisAvailable) {
+                        sources.add(new TestSourceData("pghedgerow", null, false));
+                        sources.add(new TestSourceData("postgres", null, false));
+                }
                 createTestDataInfo(sources);
         }
 
@@ -189,7 +201,7 @@ public class SQLBaseTest extends SourceTest<Value, Geometry> {
 
                                 TestSourceData sourceData = sources.get(i);
                                 getTestSource(sourceData.name).backup();
-                                DataSource testData = dsf.getDataSource(sourceData.name);
+                                DataSource testData = dsf.getDataSource(sourceData.name, DataSourceFactory.STATUS_CHECK);
                                 testData.open();
                                 ds.insertEmptyRow();
                                 long row = ds.getRowCount() - 1;

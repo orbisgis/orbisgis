@@ -36,6 +36,8 @@
  */
 package org.gdms.drivers;
 
+import org.junit.Test;
+import org.junit.Before;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.NoSuchTableException;
@@ -50,22 +52,32 @@ import com.vividsolutions.jts.geom.Geometry;
 import org.gdms.SQLBaseTest;
 import org.gdms.sql.engine.SQLEngine;
 
+import static org.junit.Assert.*;
+import static org.junit.Assume.*;
+
 public class ExportTest extends AbstractDBTest {
 
+        @Before
         @Override
-        protected void setUp() throws Exception {
+        public void setUp() throws Exception {
                 super.setUp();
                 deleteTable(getH2Source("h2landcoverfromshp"));
-                deleteTable(getPostgreSQLSource("pglandcoverfromshp"));
+                if (SQLBaseTest.postGisAvailable) {
+                        deleteTable(getPostgreSQLSource("pglandcoverfromshp"));
+                }
         }
 
+        @Test
         public void testSHP2H22PostgreSQL2SHP_2D() throws Exception {
+                assumeTrue(SQLBaseTest.postGisAvailable);
                 sm.remove("landcover2000");
                 testSHP2H22PostgreSQL2SHP("CALL register('" + SQLBaseTest.internalData + "p3d.shp', "
                         + "'landcover2000');", "gid", 2);
         }
 
+        @Test
         public void testSHP2H22PostgreSQL2SHP_3D() throws Exception {
+                assumeTrue(SQLBaseTest.postGisAvailable);
                 sm.remove("landcover2000");
                 testSHP2H22PostgreSQL2SHP(
                         "CALL register('" + SQLBaseTest.internalData + "p3d.shp', "
@@ -118,7 +130,7 @@ public class ExportTest extends AbstractDBTest {
                         Geometry g2 = v2.getAsGeometry();
 
                         if (dc1.getDimension() == 2) {
-                                assertTrue(g1.equals(g2));
+                                assertEquals(g1, g2);
                         } else {
                                 assertTrue(v1.equals(v2).getAsBoolean());
                         }
@@ -132,7 +144,9 @@ public class ExportTest extends AbstractDBTest {
 //				+ "mediumshape2D/landcover2000.shp', " + "'landcover2000');",
 //				"gid", 2);
 //	}
+        @Test
         public void testSHP2PostgreSQL2H22SHP_3D() throws Exception {
+                assumeTrue(SQLBaseTest.postGisAvailable);
                 sm.remove("landcover2000");
                 testSHP2PostgreSQL2H22SHP(
                         "CALL register('" + SQLBaseTest.internalData + "p3d.shp', "
@@ -161,6 +175,7 @@ public class ExportTest extends AbstractDBTest {
                 check(script, orderField);
         }
 
+        @Test
         public void testSHP3D2H2() throws Exception {
                 sm.remove("landcover2000");
                 String script = "CALL register('" + SQLBaseTest.internalData + "p3d.shp', "

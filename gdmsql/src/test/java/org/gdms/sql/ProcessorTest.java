@@ -36,9 +36,10 @@
  */
 package org.gdms.sql;
 
+import org.junit.Before;
+import org.junit.Test;
 import java.io.File;
 
-import junit.framework.TestCase;
 import org.gdms.SQLBaseTest;
 import org.gdms.data.NoSuchTableException;
 
@@ -58,17 +59,20 @@ import org.gdms.sql.engine.SemanticException;
 import org.gdms.sql.engine.SqlStatement;
 import org.gdms.sql.strategies.SumQuery;
 
-public class ProcessorTest extends TestCase {
+import static org.junit.Assert.*;
+
+public class ProcessorTest {
 
         private String dbFile;
         private Metadata allTypesMetadata;
         private static SQLDataSourceFactory dsf;
         private SQLEngine engine;
 
-        @Override
+        @Before
         public void setUp() throws Exception {
                 dsf = new SQLDataSourceFactory();
-                dsf.setTempDir(SQLBaseTest.internalData + "backup");
+                dsf.setTempDir(SQLBaseTest.backupDir.getAbsolutePath());
+                dsf.setResultDir(SQLBaseTest.backupDir);
                 SourceManager sm = dsf.getSourceManager();
                 SQLAllTypesObjectDriver omd = new SQLAllTypesObjectDriver();
                 allTypesMetadata = omd.getTable("main").getMetadata();
@@ -89,14 +93,17 @@ public class ProcessorTest extends TestCase {
                 engine = new SQLEngine(dsf);
         }
 
+        @Test
         public void testNormalWithoutFrom() throws Exception {
                 failWithSemanticException("select toto;");
         }
 
+        @Test
         public void testScalarProduct() throws Exception {
                 getValidatedStatement("select t1.\"int\" from alltypes t1, alltypes t2;");
         }
 
+        @Test
         public void testGetResultMetadataStar() throws Exception {
                 SqlStatement p = getValidatedStatement("select * from alltypes;");
                 p.prepare(dsf);
@@ -118,11 +125,13 @@ public class ProcessorTest extends TestCase {
                 compareMetadata(m1, m2);
         }
 
+        @Test
         public void testStarOfNonExistingTable() throws Exception {
                 failWithNoSuchTableException("select foo.* from alltypes "
                         + "where alltypes.\"float\" > 2;");
         }
 
+        @Test
         public void testGetResultMetadataField() throws Exception {
                 SqlStatement p = getValidatedStatement("select gis from gis;");
                 p.prepare(dsf);
@@ -133,6 +142,7 @@ public class ProcessorTest extends TestCase {
                 compareMetadata(m1, m2);
         }
 
+        @Test
         public void testGetResultMetadataOperations() throws Exception {
                 checkMultiplySumAndSubstractionOperators("byte", "byte", Type.BYTE);
                 checkMultiplySumAndSubstractionOperators("byte", "short", Type.SHORT);
@@ -185,54 +195,55 @@ public class ProcessorTest extends TestCase {
                 p.prepare(dsf);
                 Metadata m1 = p.getResultMetadata();
                 p.cleanUp();
-                assertTrue(m1.getFieldType(0).getTypeCode() == resultType);
+                assertEquals(m1.getFieldType(0).getTypeCode(), resultType);
                 p = getValidatedStatement("select \"" + field1 + "\" + \"" + field2
                         + "\" from alltypes;");
                 p.prepare(dsf);
                 m1 = p.getResultMetadata();
                 p.cleanUp();
-                assertTrue(m1.getFieldType(0).getTypeCode() == resultType);
+                assertEquals(m1.getFieldType(0).getTypeCode(), resultType);
                 p = getValidatedStatement("select \"" + field1 + "\" - \"" + field2
                         + "\" from alltypes;");
                 p.prepare(dsf);
                 m1 = p.getResultMetadata();
                 p.cleanUp();
-                assertTrue(m1.getFieldType(0).getTypeCode() == resultType);
+                assertEquals(m1.getFieldType(0).getTypeCode(), resultType);
         }
 
+        @Test
         public void testDivisionOperators() throws Exception {
                 SqlStatement p = getValidatedStatement("select 3/0 from alltypes;");
                 p.prepare(dsf);
                 Metadata m1 = p.getResultMetadata();
                 p.cleanUp();
-                assertTrue(m1.getFieldType(0).getTypeCode() == Type.INT);
+                assertEquals(m1.getFieldType(0).getTypeCode(), Type.INT);
                 p = getValidatedStatement("select 3.0/3 from alltypes;");
                 p.prepare(dsf);
                 m1 = p.getResultMetadata();
                 p.cleanUp();
-                assertTrue(m1.getFieldType(0).getTypeCode() == Type.DOUBLE);
+                assertEquals(m1.getFieldType(0).getTypeCode(), Type.DOUBLE);
         }
 
         private void compareMetadata(Metadata m1, Metadata m2)
                 throws DriverException {
-                assertTrue(m1.getFieldCount() == m2.getFieldCount());
+                assertEquals(m1.getFieldCount(), m2.getFieldCount());
                 for (int i = 0; i < m1.getFieldCount(); i++) {
                         assertTrue(m1.getFieldName(i).equals(m2.getFieldName(i)));
                         Type t1 = m1.getFieldType(i);
                         Type t2 = m2.getFieldType(i);
-                        assertTrue(t1.getTypeCode() == t2.getTypeCode());
-                        assertTrue(t1.getConstraints().length == t2.getConstraints().length);
+                        assertEquals(t1.getTypeCode(), t2.getTypeCode());
+                        assertEquals(t1.getConstraints().length, t2.getConstraints().length);
                         for (int j = 0; j < t1.getConstraints().length; j++) {
                                 Constraint c1 = t1.getConstraints()[j];
                                 Constraint c2 = t2.getConstraint(c1.getConstraintCode());
                                 assertTrue(c2 != null);
-                                assertTrue(c1.getConstraintCode() == c2.getConstraintCode());
-                                assertTrue(c1.getConstraintValue().equals(
-                                        c2.getConstraintValue()));
+                                assertEquals(c1.getConstraintCode(), c2.getConstraintCode());
+                                assertEquals(c1.getConstraintValue(), c2.getConstraintValue());
                         }
                 }
         }
 
+        @Test
         public void testIncompatibleTypes() throws Exception {
                 failWithIncompatibleTypes("select 3+'text' from alltypes;");
                 failWithIncompatibleTypes("select 'text'+'text' from alltypes;");
@@ -242,6 +253,7 @@ public class ProcessorTest extends TestCase {
                 failWithIncompatibleTypes("select * from alltypes where 3+true=4;");
         }
 
+        @Test
         public void testIncompatibleTypesInFunctions() throws Exception {
                 failWithIncompatibleTypes("select avg(4, 6) from alltypes;");
                 failWithIncompatibleTypes("select avg('a string') from alltypes;");
@@ -257,33 +269,31 @@ public class ProcessorTest extends TestCase {
         private void failWithIncompatibleTypes(String sql) throws Exception {
                 try {
                         getValidatedStatement(sql);
-                        assertTrue(false);
-                } catch (IncompatibleTypesException e) {
-                }
-        }
-        
-        private void failPreparedWithIncompatibleTypes(String sql) throws Exception {
-                try {
-                        getFullyValidatedStatement(sql);
-                        assertTrue(false);
+                        fail();
                 } catch (IncompatibleTypesException e) {
                 }
         }
 
-        
+        private void failPreparedWithIncompatibleTypes(String sql) throws Exception {
+                try {
+                        getFullyValidatedStatement(sql);
+                        fail();
+                } catch (IncompatibleTypesException e) {
+                }
+        }
 
         private void failWithSemanticException(String sql) throws Exception {
                 try {
                         getValidatedStatement(sql);
-                        assertTrue(false);
+                        fail();
                 } catch (SemanticException e) {
                 }
         }
-        
+
         private void failPreparedWithSemanticException(String sql) throws Exception {
                 try {
                         getFullyValidatedStatement(sql);
-                        assertTrue(false);
+                        fail();
                 } catch (SemanticException e) {
                 }
         }
@@ -291,7 +301,7 @@ public class ProcessorTest extends TestCase {
         private void failWithParseException(String sql) throws Exception {
                 try {
                         getValidatedStatement(sql);
-                        assertTrue(false);
+                        fail();
                 } catch (ParseException e) {
                 }
         }
@@ -300,11 +310,12 @@ public class ProcessorTest extends TestCase {
                 try {
                         SqlStatement p = getValidatedStatement(sql);
                         p.prepare(dsf);
-                        assertTrue(false);
+                        fail();
                 } catch (NoSuchTableException e) {
                 }
         }
 
+        @Test
         public void testProjectionAlias() throws Exception {
                 SqlStatement p = getValidatedStatement("select \"double\" as mydoublE, "
                         + "string as mySTR from alltypes;");
@@ -315,6 +326,7 @@ public class ProcessorTest extends TestCase {
                 assertTrue(m.getFieldName(1).equals("mySTR"));
         }
 
+        @Test
         public void testAmbiguousName() throws Exception {
                 failPreparedWithSemanticException("select \"long\" "
                         + " from alltypes t1, alltypes t2;");
@@ -326,6 +338,7 @@ public class ProcessorTest extends TestCase {
                         + " from alltypes t1, alltypes;");
         }
 
+        @Test
         public void testNonExistingIds() throws Exception {
                 // non
                 failPreparedWithSemanticException("select non.\"integer\" from alltypes;");
@@ -347,11 +360,13 @@ public class ProcessorTest extends TestCase {
                 failPreparedWithIncompatibleTypes("select * from alltypes where avg(\"boolean\") = 2;");
         }
 
+        @Test
         public void testDuplicatedTableReferences() throws Exception {
                 failWithSemanticException("select t1.\"long\" "
                         + " from alltypes t1, alltypes t1;");
         }
 
+        @Test
         public void testComparisonOperators() throws Exception {
                 validateAllComparison("double");
 //                validateAllComparison("date");
@@ -392,20 +407,24 @@ public class ProcessorTest extends TestCase {
                         + "\" from alltypes;");
         }
 
+        @Test
         public void testFieldAliasUsageInWhere() throws Exception {
                 failPreparedWithSemanticException("select string as length "
                         + "from alltypes where length = 'r' and string = 'e';");
         }
 
+        @Test
         public void testBetweenClauseTypes() throws Exception {
                 failWithIncompatibleTypes("select * from alltypes where \"int\" not between 3 and 'e';");
         }
 
+        @Test
         public void testInClauseTypes() throws Exception {
                 failPreparedWithIncompatibleTypes("select * from alltypes where \"int\" not in (3, 5, 'e');");
                 getValidatedStatement("select * from alltypes where \"int\" not in (3, 5, null);");
         }
 
+        @Test
         public void testLikeTypes() throws Exception {
                 failPreparedWithIncompatibleTypes("select * from alltypes "
                         + "where \"int\" like 'a%';");
@@ -417,6 +436,7 @@ public class ProcessorTest extends TestCase {
                         + "where string like 'string';");
         }
 
+        @Test
         public void testDelete() throws Exception {
                 failWithParseException("delete from 'AllTypes';");
                 failPreparedWithIncompatibleTypes("delete from alltypes where \"int\"='e';");
@@ -428,12 +448,14 @@ public class ProcessorTest extends TestCase {
                 getValidatedStatement("delete from alltypes where alltypes.\"int\"=3;");
         }
 
+        @Test
         public void testDrop() throws Exception {
                 failWithNoSuchTableException("drop table AllTypes;");
                 failWithNoSuchTableException("drop table alltypes, Gis;");
                 getValidatedStatement("drop table alltypes, gis;");
         }
 
+        @Test
         public void testGroupBy() throws Exception {
                 // INT field not found in group by
                 failWithSemanticException("select \"int\" from alltypes "
@@ -473,6 +495,7 @@ public class ProcessorTest extends TestCase {
                         + "group by \"int\" having \"int\"=5;");
         }
 
+        @Test
         public void testInsert() throws Exception {
                 getValidatedStatement("insert into alltypes (\"int\") values (4);");
                 getValidatedStatement("insert into gis values ('2', '2');");
@@ -490,12 +513,14 @@ public class ProcessorTest extends TestCase {
                 failWithSemanticException("insert into gis values ('2', id);");
         }
 
+        @Test
         public void testIs() throws Exception {
                 failWithNoSuchTableException("select * from Gis where id is not null;");
                 getValidatedStatement("select * from gis where id is not null;");
                 getValidatedStatement("select * from gis where id is null;");
         }
 
+        @Test
         public void testOrderBy() throws Exception {
                 failWithSemanticException("select * from gis order by Id;");
                 failWithSemanticException("select * from gis order by Gis.id;");
@@ -518,6 +543,7 @@ public class ProcessorTest extends TestCase {
                         + "group by \"float\" order by \"float\";");
         }
 
+        @Test
         public void testGroupAndOrderBy() throws Exception {
                 getValidatedStatement("select alltypes.string " + "from alltypes "
                         + "group by alltypes.string " + "order by alltypes.string;");
@@ -535,6 +561,7 @@ public class ProcessorTest extends TestCase {
                         + "group by string " + "order by string;");
         }
 
+        @Test
         public void testUnion() throws Exception {
                 failWithSemanticException("gis union alltypes;");
                 failWithSemanticException("(select * from gis) union alltypes;");
@@ -544,6 +571,7 @@ public class ProcessorTest extends TestCase {
                 getValidatedStatement("gis union gis;");
         }
 
+        @Test
         public void testUpdate() throws Exception {
                 getValidatedStatement("update gis set id = '3';");
                 getValidatedStatement("update gis set id = '3', "
@@ -562,11 +590,13 @@ public class ProcessorTest extends TestCase {
                 failWithNoSuchTableException("update Gis set id='d';");
         }
 
+        @Test
         public void testCreate() throws Exception {
                 getValidatedStatement("create table table2 as select * from gis;");
                 failWithNoSuchTableException("create table gis2 as select * from Gis;");
         }
 
+        @Test
         public void testAggregatedFunctions() throws Exception {
                 // id field not found
                 failWithSemanticException("select avg(id), avg(\"double\") "
@@ -586,6 +616,7 @@ public class ProcessorTest extends TestCase {
 
         }
 
+        @Test
         public void testFunctions() throws Exception {
                 // Non existing function in where clause
                 failWithSemanticException("select * "
@@ -604,6 +635,7 @@ public class ProcessorTest extends TestCase {
 
         }
 
+        @Test
         public void testValidateCustomQueries() throws Exception {
                 SumQuery query = new SumQuery();
                 if (FunctionManager.getFunction(query.getName()) == null) {
@@ -626,6 +658,7 @@ public class ProcessorTest extends TestCase {
                 failWithIncompatibleTypes("select * from sumquery(gis, 6+3*'e');");
         }
 
+        @Test
         public void testProductOfThreeTables() throws Exception {
                 getValidatedStatement("select t3.\"timestamp\", t2.string, t1.id "
                         + "from gis t1, alltypes t2, hsqldb t3;");
@@ -634,24 +667,28 @@ public class ProcessorTest extends TestCase {
                         + "where a.string = g.gis AND h.string= g.gis;");
         }
 
+        @Test
         public void testDifferentNumberOfFields() throws Exception {
                 getValidatedStatement("select t2.string, t1.id "
                         + "from gis t1, alltypes t2;");
         }
 
+        @Test
         public void testAggregatedFunctionDefaultName() throws Exception {
                 SqlStatement p = getValidatedStatement("select count(*) from alltypes;");
                 p.prepare(dsf);
                 Metadata m1 = p.getResultMetadata();
                 p.cleanUp();
-                assertTrue(m1.getFieldName(0).equals("unknown0"));
+                assertEquals(m1.getFieldName(0), "unknown0");
         }
 
+        @Test
         public void testGroupByWhereFullyClassifiedProj() throws Exception {
                 getValidatedStatement("select t.\"int\" from alltypes t"
                         + " where \"int\"=2 group by \"int\";");
         }
 
+        @Test
         public void testCreateDropIndex() throws Exception {
                 getValidatedStatement("create index on alltypes (\"int\");");
                 getValidatedStatement("drop index on alltypes (\"int\");");
@@ -664,7 +701,7 @@ public class ProcessorTest extends TestCase {
         private SqlStatement getValidatedStatement(String sql) throws Exception {
                 return engine.parse(sql)[0];
         }
-        
+
         private SqlStatement getFullyValidatedStatement(String sql) throws Exception {
                 final SqlStatement st = engine.parse(sql)[0];
                 st.prepare(dsf);

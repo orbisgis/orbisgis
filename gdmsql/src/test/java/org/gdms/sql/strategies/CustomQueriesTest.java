@@ -36,16 +36,16 @@
  */
 package org.gdms.sql.strategies;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.gdms.data.types.IncompatibleTypesException;
 import java.io.File;
 
-import junit.framework.TestCase;
 import org.gdms.SQLBaseTest;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.file.FileSourceCreation;
-import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
@@ -59,7 +59,9 @@ import org.gdms.sql.function.executor.ExecutorFunction;
 import org.gdms.sql.function.spatial.geometry.operators.ST_Buffer;
 import org.orbisgis.progress.ProgressMonitor;
 
-public class CustomQueriesTest extends TestCase {
+import static org.junit.Assert.*;
+
+public class CustomQueriesTest {
 
         private SQLDataSourceFactory dsf;
 
@@ -69,6 +71,7 @@ public class CustomQueriesTest extends TestCase {
                 FunctionManager.addFunction(GigaCustomQuery.class);
         }
 
+        @Test
         public void testCustomQuery() throws Exception {
                 DataSource d = dsf.getDataSourceFromSQL("select * from sumquery(ds, 'gid');");
 
@@ -76,15 +79,17 @@ public class CustomQueriesTest extends TestCase {
                 d.close();
         }
 
+        @Test
         public void testFilterCustom() throws Exception {
                 DataSource d = dsf.getDataSourceFromSQL("select * from sumquery(select * from ds where gid = 3, 'gid');");
 
                 d.open();
-                assertTrue(d.getInt(0, "sum") == 3);
-                assertTrue(d.getRowCount() == 1);
+                assertEquals(d.getInt(0, "sum"), 3);
+                assertEquals(d.getRowCount(), 1);
                 d.close();
         }
 
+        @Test
         public void testFieldTypesAndValues() throws Exception {
                 dsf.getSourceManager().register(
                         "ds2",
@@ -96,11 +101,12 @@ public class CustomQueriesTest extends TestCase {
                 try {
                         dsf.getDataSourceFromSQL("select * from fieldReferenceQuery(ds, ds2, 'the_geom',"
                                 + " 'the_geom') from ds, ds2 t2;");
-                        assertTrue(false);
+                        fail();
                 } catch (IncompatibleTypesException e) {
                 }
         }
 
+        @Test
         public void testFieldReferences() throws Exception {
                 dsf.getSourceManager().register(
                         "ds2",
@@ -118,6 +124,7 @@ public class CustomQueriesTest extends TestCase {
 
         }
 
+        @Test
         public void testRegister() throws Exception {
                 dsf.getSourceManager().remove("ds");
                 String path = SQLBaseTest.internalData + "points.shp";
@@ -148,11 +155,12 @@ public class CustomQueriesTest extends TestCase {
                 ds1.open();
                 ds2.open();
 //                System.out.println("'" + ds2.getAsString() + "'");
-                assertTrue(ds1.getAsString().equals(ds2.getAsString()));
+                assertEquals(ds1.getAsString(), ds2.getAsString());
                 ds1.close();
                 ds2.close();
         }
 
+        @Test
         public void testRegisterValidation() throws Exception {
                 // from clause
                 executeSuccess("CALL register('', '');");
@@ -171,7 +179,7 @@ public class CustomQueriesTest extends TestCase {
         private void executeFail(String string) throws Exception {
                 try {
                         dsf.executeSQL(string);
-                        assertTrue(false);
+                        fail();
                 } catch (IncompatibleTypesException e) {
                 }
         }
@@ -180,6 +188,7 @@ public class CustomQueriesTest extends TestCase {
                 dsf.executeSQL(string);
         }
 
+        @Test
         public void testFunctionQueryCollission() throws Exception {
                 final ST_Buffer buffer = new ST_Buffer();
                 final RegisterCall register = new RegisterCall();
@@ -192,6 +201,7 @@ public class CustomQueriesTest extends TestCase {
                                 }
 
                                 @Override
+                                @Test
                                 public void evaluate(SQLDataSourceFactory dsf, ReadAccess[] tables, Value[] args, ProgressMonitor pm) throws FunctionException {
                                         throw new UnsupportedOperationException();
                                 }
@@ -231,7 +241,7 @@ public class CustomQueriesTest extends TestCase {
                                         return true;
                                 }
                         }.getClass());
-                        assertTrue(false);
+                        fail();
                 } catch (Exception e) {
                 }
                 try {
@@ -287,11 +297,12 @@ public class CustomQueriesTest extends TestCase {
                                         return true;
                                 }
                         }.getClass());
-                        assertTrue(false);
+                        fail();
                 } catch (Exception e) {
                 }
         }
 
+        @Test
         public void testGigaQuery() throws Exception {
                 String sql = "select * from gigaquery();";
                 DataSource ds = dsf.getDataSourceFromSQL(sql, SQLDataSourceFactory.NORMAL);
@@ -306,6 +317,7 @@ public class CustomQueriesTest extends TestCase {
                 ds = null;
         }
 
+        @Test
         public void testFunctionRegister() throws Exception {
                 dsf.executeSQL("CALL FunctionRegister('org.gdms.sql.strategies.SumQuery2');");
                 DataSource d = dsf.getDataSourceFromSQL("select * from sumquery2(ds, 'gid');");
@@ -313,8 +325,8 @@ public class CustomQueriesTest extends TestCase {
                 d.close();
         }
 
-        @Override
-        protected void setUp() throws Exception {
+        @Before
+        public void setUp() throws Exception {
                 dsf = new SQLDataSourceFactory(SQLBaseTest.internalData + "backup",
                         SQLBaseTest.internalData + "backup");
                 dsf.getSourceManager().register(

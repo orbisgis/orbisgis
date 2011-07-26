@@ -36,76 +36,80 @@
  */
 package org.gdms.sql.customQuery.spatial.create;
 
+import org.junit.Test;
+import org.junit.After;
+import org.junit.Before;
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.FunctionTest;
-import org.gdms.sql.function.spatial.geometry.create.ST_CreateGrid;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
-import org.gdms.sql.function.FunctionManager;
+
+import static org.junit.Assert.*;
 
 public class CreateGridTest extends FunctionTest {
-	protected void setUp() throws Exception {
-		super.setUp();
-	}
 
-	protected void tearDown() throws Exception {
-		if (dsf.getSourceManager().exists("ds1ppp")) {
-			dsf.getSourceManager().remove("ds1ppp");
-		}
-		if (dsf.getSourceManager().exists("ds1pp")) {
-			dsf.getSourceManager().remove("ds1pp");
-		}
-		if (dsf.getSourceManager().exists("ds1p")) {
-			dsf.getSourceManager().remove("ds1p");
-		}
-		super.tearDown();
-	}
+        @Before
+        public void setUp() throws Exception {
+                super.setUp();
+        }
 
-	private void check(final DataSource dataSource, final boolean checkCentroid)
-			throws AlreadyClosedException, DriverException {
-		dataSource.open();
-		final long rowCount = dataSource.getRowCount();
-		final int fieldCount = dataSource.getFieldCount();
-		assertTrue(4 == rowCount);
-		assertTrue(2 == fieldCount);
-		for (long rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-			final Value[] fields = dataSource.getRow(rowIndex);
-			final Geometry geom = fields[0].getAsGeometry();
-			final int id = fields[1].getAsInt();
-			assertTrue(geom instanceof Polygon);
-			assertTrue(Math.abs(1 - geom.getArea()) < 0.000001);
-			assertTrue(4 == geom.getLength());
-			assertTrue(5 == geom.getNumPoints());
-			if (checkCentroid) {
-				assertTrue(0.5 + (id - 1) / 2 == geom.getCentroid()
-						.getCoordinate().x);
-				assertTrue(0.5 + (id - 1) % 2 == geom.getCentroid()
-						.getCoordinate().y);
-			}
+        @After
+        public void tearDown() throws Exception {
+                if (dsf.getSourceManager().exists("ds1ppp")) {
+                        dsf.getSourceManager().remove("ds1ppp");
+                }
+                if (dsf.getSourceManager().exists("ds1pp")) {
+                        dsf.getSourceManager().remove("ds1pp");
+                }
+                if (dsf.getSourceManager().exists("ds1p")) {
+                        dsf.getSourceManager().remove("ds1p");
+                }
+        }
 
-			for (int fieldIndex = 0; fieldIndex < fieldCount; fieldIndex++) {
-				System.out.print(fields[fieldIndex].toString() + ", ");
-			}
-			System.out.println();
-		}
-		dataSource.close();
-	}
+        private void check(final DataSource dataSource, final boolean checkCentroid)
+                throws AlreadyClosedException, DriverException {
+                dataSource.open();
+                final long rowCount = dataSource.getRowCount();
+                final int fieldCount = dataSource.getFieldCount();
+                assertEquals(4, rowCount);
+                assertEquals(2, fieldCount);
+                for (long rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+                        final Value[] fields = dataSource.getRow(rowIndex);
+                        final Geometry geom = fields[0].getAsGeometry();
+                        final int id = fields[1].getAsInt();
+                        assertTrue(geom instanceof Polygon);
+                        assertTrue(Math.abs(1 - geom.getArea()) < 0.000001);
+                        assertEquals(4, geom.getLength(), 0);
+                        assertEquals(5, geom.getNumPoints());
+                        if (checkCentroid) {
+                                assertEquals(0.5 + (id - 1) / 2,  geom.getCentroid().getCoordinate().x, 0);
+                                assertEquals(0.5 + (id - 1) % 2,  geom.getCentroid().getCoordinate().y, 0);
+                        }
 
-	public final void testEvaluate() throws Exception {
-		dsf.register("ds1p",
-				"select * from st_creategrid(ds1, 1.0, 1);");
-		check(dsf.getDataSource("ds1p"), true);
+                        for (int fieldIndex = 0; fieldIndex < fieldCount; fieldIndex++) {
+                                System.out.print(fields[fieldIndex].toString() + ", ");
+                        }
+                        System.out.println();
+                }
+                dataSource.close();
+        }
 
-		dsf.register("ds1pp",
-				"select * from st_creategrid(ds1,1,1,0);");
-		check(dsf.getDataSource("ds1pp"), true);
+        @Test
+        public final void testEvaluate() throws Exception {
+                dsf.register("ds1p",
+                        "select * from st_creategrid(ds1, 1.0, 1);");
+                check(dsf.getDataSource("ds1p"), true);
 
-		dsf.register("ds1ppp",
-				"select * from st_creategrid(ds1, 1,1,90);");
-		check(dsf.getDataSource("ds1ppp"), false);
-	}
+                dsf.register("ds1pp",
+                        "select * from st_creategrid(ds1,1,1,0);");
+                check(dsf.getDataSource("ds1pp"), true);
+
+                dsf.register("ds1ppp",
+                        "select * from st_creategrid(ds1, 1,1,90);");
+                check(dsf.getDataSource("ds1ppp"), false);
+        }
 }

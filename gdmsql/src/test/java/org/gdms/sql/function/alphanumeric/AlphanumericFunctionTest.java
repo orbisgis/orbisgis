@@ -36,6 +36,7 @@
  */
 package org.gdms.sql.function.alphanumeric;
 
+import org.junit.Test;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import org.gdms.data.schema.MetadataUtilities;
@@ -49,447 +50,430 @@ import org.gdms.sql.function.ScalarFunction;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.data.types.IncompatibleTypesException;
 
+import static org.junit.Assert.*;
+
 public class AlphanumericFunctionTest extends FunctionTest {
-	public void testAutoNumeric() throws Exception {
-		final ScalarFunction function = new AutoNumeric();
 
-		// Test too many parameters
-		try {
-			evaluate(function, ValueFactory.createValue(54));
-			assertTrue(false);
-		} catch (IncompatibleTypesException e) {
-		}
+        @Test
+        public void testAutoNumeric() throws Exception {
+                final ScalarFunction function = new AutoNumeric();
 
-		// Test return type and value
-		int type = evaluate(function, new Value[0]).getType();
-		assertTrue((Type.LONG == type) || (Type.INT == type));
-		assertTrue(1l == evaluate(function, new Value[0]).getAsLong());
-	}
+                // Test too many parameters
+                try {
+                        evaluate(function, ValueFactory.createValue(54));
+                        fail();
+                } catch (IncompatibleTypesException e) {
+                }
 
-	public void testToString() throws Exception {
-		// Test null input
-		ToStringFunction function = new ToStringFunction();
-		Value res = evaluate(function, new ColumnValue(Type.STRING,
-				ValueFactory.createNullValue()));
-		assertTrue(res.isNull());
+                // Test return type and value
+                int type = evaluate(function, new Value[0]).getType();
+                assertTrue((Type.LONG == type) || (Type.INT == type));
+                assertEquals(1l, evaluate(function, new Value[0]).getAsLong());
+        }
 
-		// Test normal input value and type
-		res = evaluate(function, ValueFactory.createValue(2));
-		assertTrue(res.getType() == Type.STRING);
-		assertTrue(res.getAsString().equals("2"));
+        @Test
+        public void testToString() throws Exception {
+                // Test null input
+                ToStringFunction function = new ToStringFunction();
+                Value res = evaluate(function, new ColumnValue(Type.STRING,
+                        ValueFactory.createNullValue()));
+                assertTrue(res.isNull());
 
-		// Test too many parameters
-		try {
-			res = evaluate(function, ValueFactory.createValue(54), ValueFactory
-					.createValue(7));
-			assertTrue(false);
-		} catch (IncompatibleTypesException e) {
+                // Test normal input value and type
+                res = evaluate(function, ValueFactory.createValue(2));
+                assertEquals(res.getType(), Type.STRING);
+                assertEquals(res.getAsString(), "2");
 
-		}
+                // Test too many parameters
+                try {
+                        res = evaluate(function, ValueFactory.createValue(54), ValueFactory.createValue(7));
+                        fail();
+                } catch (IncompatibleTypesException e) {
+                }
 
-	}
+        }
 
-	public void testString2Int() throws Exception {
-		// Test null input
-		String2IntFunction function = new String2IntFunction();
-		Value res = evaluate(function, new ColumnValue(Type.STRING,
-				ValueFactory.createNullValue()));
-		assertTrue(res.isNull());
+        @Test
+        public void testString2Int() throws Exception {
+                // Test null input
+                String2IntFunction function = new String2IntFunction();
+                Value res = evaluate(function, new ColumnValue(Type.STRING,
+                        ValueFactory.createNullValue()));
+                assertTrue(res.isNull());
 
-		// Test normal input value and type
-		res = evaluate(function, ValueFactory.createValue("2"));
-		assertTrue(res.getType() == Type.INT);
-		assertTrue(res.getAsInt() == 2);
+                // Test normal input value and type
+                res = evaluate(function, ValueFactory.createValue("2"));
+                assertEquals(res.getType(), Type.INT);
+                assertEquals(res.getAsInt(), 2);
 
-		// Test too many parameters
-		try {
-			res = evaluate(function, ValueFactory.createValue(54), ValueFactory
-					.createValue(7));
-			assertTrue(false);
-		} catch (IncompatibleTypesException e) {
+                // Test too many parameters
+                try {
+                        res = evaluate(function, ValueFactory.createValue(54), ValueFactory.createValue(7));
+                        fail();
+                } catch (IncompatibleTypesException e) {
+                }
 
-		}
+                // Test wrong parameter type
+                try {
+                        res = evaluate(function, ValueFactory.createValue(true));
+                        fail();
+                } catch (IncompatibleTypesException e) {
+                }
 
-		// Test wrong parameter type
-		try {
-			res = evaluate(function, ValueFactory.createValue(true));
-			assertTrue(false);
-		} catch (IncompatibleTypesException e) {
-		}
+        }
 
-	}
+        @Test
+        public void testString2Double() throws Exception {
+                // Test null input
+                String2DoubleFunction function = new String2DoubleFunction();
+                Value res = evaluate(function, new ColumnValue(Type.STRING,
+                        ValueFactory.createNullValue()));
+                assertTrue(res.isNull());
 
-	public void testString2Double() throws Exception {
-		// Test null input
-		String2DoubleFunction function = new String2DoubleFunction();
-		Value res = evaluate(function, new ColumnValue(Type.STRING,
-				ValueFactory.createNullValue()));
-		assertTrue(res.isNull());
+                // Test normal input value and type
+                res = evaluate(function, ValueFactory.createValue("2.3"));
+                assertEquals(res.getType(), Type.DOUBLE);
+                assertEquals(res.getAsDouble(), 2.3, 0);
 
-		// Test normal input value and type
-		res = evaluate(function, ValueFactory.createValue("2.3"));
-		assertTrue(res.getType() == Type.DOUBLE);
-		assertTrue(res.getAsDouble() == 2.3);
+                // Test too many parameters
+                try {
+                        res = evaluate(function, ValueFactory.createValue(54), ValueFactory.createValue(7));
+                        fail();
+                } catch (IncompatibleTypesException e) {
+                }
 
-		// Test too many parameters
-		try {
-			res = evaluate(function, ValueFactory.createValue(54), ValueFactory
-					.createValue(7));
-			assertTrue(false);
-		} catch (IncompatibleTypesException e) {
+                // Test wrong parameter type
+                try {
+                        res = evaluate(function, ValueFactory.createValue(true));
+                        fail();
+                } catch (IncompatibleTypesException e) {
+                }
 
-		}
+        }
 
-		// Test wrong parameter type
-		try {
-			res = evaluate(function, ValueFactory.createValue(true));
-			assertTrue(false);
-		} catch (IncompatibleTypesException e) {
-		}
+        @Test
+        public void testAverage() throws Exception {
+                // Test null input
+                Average avg = new Average();
+                Value res = evaluate(avg, new ColumnValue(Type.INT, ValueFactory.createNullValue()));
+                assertTrue(res.isNull());
+                avg = new Average();
+                res = evaluate(avg, new ColumnValue(Type.DOUBLE, ValueFactory.createNullValue()));
+                res = evaluate(avg, ValueFactory.createValue(5));
+                assertEquals(res.getAsDouble(), 5, 0);
 
-	}
+                // Test normal input value and type
+                avg = new Average();
+                res = evaluate(avg, ValueFactory.createValue(2));
+                res = evaluate(avg, ValueFactory.createValue(4));
+                res = evaluate(avg, new ColumnValue(Type.INT, ValueFactory.createNullValue()));
+                assertEquals(res.getAsDouble(), 3, 0);
 
-	public void testAverage() throws Exception {
-		// Test null input
-		Average avg = new Average();
-		Value res = evaluate(avg, new ColumnValue(Type.INT, ValueFactory
-				.createNullValue()));
-		assertTrue(res.isNull());
-		avg = new Average();
-		res = evaluate(avg, new ColumnValue(Type.DOUBLE, ValueFactory
-				.createNullValue()));
-		res = evaluate(avg, ValueFactory.createValue(5));
-		assertTrue(res.getAsDouble() == 5);
+                // Test too many parameters
+                try {
+                        res = evaluate(avg, ValueFactory.createValue(54), ValueFactory.createValue(6));
+                        fail();
+                } catch (IncompatibleTypesException e) {
+                }
 
-		// Test normal input value and type
-		avg = new Average();
-		res = evaluate(avg, ValueFactory.createValue(2));
-		res = evaluate(avg, ValueFactory.createValue(4));
-		res = evaluate(avg, new ColumnValue(Type.INT, ValueFactory
-				.createNullValue()));
-		assertTrue(res.getAsDouble() == 3);
+                // Test wrong parameter type
+                try {
+                        res = evaluate(avg, ValueFactory.createValue(true));
+                        fail();
+                } catch (IncompatibleTypesException e) {
+                }
 
-		// Test too many parameters
-		try {
-			res = evaluate(avg, ValueFactory.createValue(54), ValueFactory
-					.createValue(6));
-			assertTrue(false);
-		} catch (IncompatibleTypesException e) {
+                // Test zero rows
+                assertTrue(evaluateAggregatedZeroRows(new Average()).isNull());
+        }
 
-		}
+        @Test
+        public void testString2Boolean() throws Exception {
+                // Test null input
+                String2BooleanFunction function = new String2BooleanFunction();
+                Value res = evaluate(function, new ColumnValue(Type.STRING,
+                        ValueFactory.createNullValue()));
+                assertTrue(res.isNull());
 
-		// Test wrong parameter type
-		try {
-			res = evaluate(avg, ValueFactory.createValue(true));
-			assertTrue(false);
-		} catch (IncompatibleTypesException e) {
-		}
+                // Test normal input value and type
+                res = evaluate(function, ValueFactory.createValue("true"));
+                assertEquals(res.getType(), Type.BOOLEAN);
+                assertTrue(res.getAsBoolean());
 
-		// Test zero rows
-		assertTrue(evaluateAggregatedZeroRows(new Average()).isNull());
-	}
+                // Test too many parameters
+                try {
+                        res = evaluate(function, ValueFactory.createValue("true"),
+                                ValueFactory.createValue("false"));
+                        fail();
+                } catch (IncompatibleTypesException e) {
+                }
 
-	public void testString2Boolean() throws Exception {
-		// Test null input
-		String2BooleanFunction function = new String2BooleanFunction();
-		Value res = evaluate(function, new ColumnValue(Type.STRING,
-				ValueFactory.createNullValue()));
-		assertTrue(res.isNull());
+                // Test wrong parameter type
+                try {
+                        res = evaluate(function, ValueFactory.createValue(false));
+                        fail();
+                } catch (IncompatibleTypesException e) {
+                }
+        }
 
-		// Test normal input value and type
-		res = evaluate(function, ValueFactory.createValue("true"));
-		assertTrue(res.getType() == Type.BOOLEAN);
-		assertTrue(res.getAsBoolean() == true);
+        @Test
+        public void testConcatenate() throws Exception {
+                // Test null input
+                ConcatenateFunction function = new ConcatenateFunction();
+                Value res = evaluate(function, new ColumnValue(Type.STRING,
+                        ValueFactory.createValue("asd")), new ColumnValue(Type.STRING,
+                        ValueFactory.createNullValue()));
+                assertTrue(res.isNull());
 
-		// Test too many parameters
-		try {
-			res = evaluate(function, ValueFactory.createValue("true"),
-					ValueFactory.createValue("false"));
-			assertTrue(false);
-		} catch (IncompatibleTypesException e) {
-		}
+                // Test normal input value and type
+                res = evaluate(function, ValueFactory.createValue("ere"), ValueFactory.createValue("ere"));
+                assertEquals(res.getType(), Type.STRING);
+                assertEquals(res.getAsString(), "ereere");
 
-		// Test wrong parameter type
-		try {
-			res = evaluate(function, ValueFactory.createValue(false));
-			assertTrue(false);
-		} catch (IncompatibleTypesException e) {
-		}
-	}
+                // Test too many parameters
+                try {
+                        res = evaluate(function, ValueFactory.createValue("as"));
+                        fail();
+                } catch (IncompatibleTypesException e) {
+                }
 
-	public void testConcatenate() throws Exception {
-		// Test null input
-		ConcatenateFunction function = new ConcatenateFunction();
-		Value res = evaluate(function, new ColumnValue(Type.STRING,
-				ValueFactory.createValue("asd")), new ColumnValue(Type.STRING,
-				ValueFactory.createNullValue()));
-		assertTrue(res.isNull());
+                // Test wrong parameter type
+                try {
+                        res = evaluate(function, ValueFactory.createValue(3));
+                        fail();
+                } catch (IncompatibleTypesException e) {
+                }
+        }
 
-		// Test normal input value and type
-		res = evaluate(function, ValueFactory.createValue("ere"), ValueFactory
-				.createValue("ere"));
-		assertTrue(res.getType() == Type.STRING);
-		assertTrue(res.getAsString().equals("ereere"));
+        @Test
+        public void testCount() throws Exception {
+                // Test null input
+                Count function = new Count();
+                Value res = evaluate(function, new ColumnValue(Type.STRING,
+                        ValueFactory.createNullValue()));
+                assertEquals(res.getAsInt(), 0);
 
-		// Test too many parameters
-		try {
-			res = evaluate(function, ValueFactory.createValue("as"));
-			assertTrue(false);
-		} catch (IncompatibleTypesException e) {
-		}
+                // Test normal input value and type
+                function = new Count();
+                res = evaluate(function, ValueFactory.createValue(3));
+                res = evaluate(function, ValueFactory.createNullValue());
+                assertEquals(res.getType(), Type.LONG);
+                assertEquals(res.getAsInt(), 1);
 
-		// Test wrong parameter type
-		try {
-			res = evaluate(function, ValueFactory.createValue(3));
-			assertTrue(false);
-		} catch (IncompatibleTypesException e) {
-		}
-	}
+                // Test zero rows
+                assertEquals(evaluateAggregatedZeroRows(new Count()).getAsInt(), 0);
+        }
 
-	public void testCount() throws Exception {
-		// Test null input
-		Count function = new Count();
-		Value res = evaluate(function, new ColumnValue(Type.STRING,
-				ValueFactory.createNullValue()));
-		assertTrue(res.getAsInt() == 0);
+        @Test
+        public void testMax() throws Exception {
+                // Test null input
+                Max function = new Max();
+                Value res = evaluate(function, new ColumnValue(Type.BYTE, ValueFactory.createNullValue()));
+                assertTrue(res.isNull());
 
-		// Test normal input value and type
-		function = new Count();
-		res = evaluate(function, ValueFactory.createValue(3));
-		res = evaluate(function, ValueFactory.createNullValue());
-		assertTrue(res.getType() == Type.LONG);
-		assertTrue(res.getAsInt() == 1);
+                // Test normal input value and type
+                function = new Max();
+                res = evaluate(function, new ColumnValue(Type.BYTE, ValueFactory.createValue((byte) 3)));
+                res = evaluate(function, new ColumnValue(Type.BYTE, ValueFactory.createNullValue()));
+                assertEquals(res.getType(), Type.BYTE);
+                assertEquals(res.getAsInt(), 3);
 
-		// Test zero rows
-		assertTrue(evaluateAggregatedZeroRows(new Count()).getAsInt() == 0);
-	}
+                function = new Max();
+                res = evaluate(function, ValueFactory.createValue(3f));
+                res = evaluate(function, new ColumnValue(Type.FLOAT, ValueFactory.createNullValue()));
+                assertEquals(res.getType(), Type.FLOAT);
+                assertEquals(res.getAsInt(), 3);
 
-	public void testMax() throws Exception {
-		// Test null input
-		Max function = new Max();
-		Value res = evaluate(function, new ColumnValue(Type.BYTE, ValueFactory
-				.createNullValue()));
-		assertTrue(res.isNull());
+                // Test too many parameters
+                try {
+                        res = evaluate(function, ValueFactory.createValue(3), ValueFactory.createValue(3));
+                        fail();
+                } catch (IncompatibleTypesException e) {
+                }
 
-		// Test normal input value and type
-		function = new Max();
-		res = evaluate(function, new ColumnValue(Type.BYTE, ValueFactory
-				.createValue((byte) 3)));
-		res = evaluate(function, new ColumnValue(Type.BYTE, ValueFactory
-				.createNullValue()));
-		assertTrue(res.getType() == Type.BYTE);
-		assertTrue(res.getAsInt() == 3);
+                // Test wrong parameter type
+                try {
+                        res = evaluate(function, ValueFactory.createValue("f"));
+                        fail();
+                } catch (IncompatibleTypesException e) {
+                }
 
-		function = new Max();
-		res = evaluate(function, ValueFactory.createValue(3f));
-		res = evaluate(function, new ColumnValue(Type.FLOAT, ValueFactory
-				.createNullValue()));
-		assertTrue(res.getType() == Type.FLOAT);
-		assertTrue(res.getAsInt() == 3);
+                // Test zero rows
+                assertTrue(evaluateAggregatedZeroRows(new Max()).isNull());
+        }
 
-		// Test too many parameters
-		try {
-			res = evaluate(function, ValueFactory.createValue(3), ValueFactory
-					.createValue(3));
-			assertTrue(false);
-		} catch (IncompatibleTypesException e) {
-		}
+        @Test
+        public void testMin() throws Exception {
+                // Test null input
+                Min function = new Min();
+                Value res = evaluate(function, new ColumnValue(Type.BYTE, ValueFactory.createNullValue()));
+                assertTrue(res.isNull());
 
-		// Test wrong parameter type
-		try {
-			res = evaluate(function, ValueFactory.createValue("f"));
-			assertTrue(false);
-		} catch (IncompatibleTypesException e) {
-		}
+                // Test normal input value and type
+                function = new Min();
+                res = evaluate(function, new ColumnValue(Type.BYTE, ValueFactory.createValue((byte) 3)));
+                res = evaluate(function, new ColumnValue(Type.BYTE, ValueFactory.createNullValue()));
+                assertEquals(res.getType(), Type.BYTE);
+                assertEquals(res.getAsInt(), 3);
 
-		// Test zero rows
-		assertTrue(evaluateAggregatedZeroRows(new Max()).isNull());
-	}
+                function = new Min();
+                res = evaluate(function, ValueFactory.createValue(3f));
+                res = evaluate(function, new ColumnValue(Type.FLOAT, ValueFactory.createNullValue()));
+                assertEquals(res.getType(), Type.FLOAT);
+                assertEquals(res.getAsInt(), 3);
 
-	public void testMin() throws Exception {
-		// Test null input
-		Min function = new Min();
-		Value res = evaluate(function, new ColumnValue(Type.BYTE, ValueFactory
-				.createNullValue()));
-		assertTrue(res.isNull());
+                // Test too many parameters
+                try {
+                        res = evaluate(function, ValueFactory.createValue(3), ValueFactory.createValue(3));
+                        fail();
+                } catch (IncompatibleTypesException e) {
+                }
 
-		// Test normal input value and type
-		function = new Min();
-		res = evaluate(function, new ColumnValue(Type.BYTE, ValueFactory
-				.createValue((byte) 3)));
-		res = evaluate(function, new ColumnValue(Type.BYTE, ValueFactory
-				.createNullValue()));
-		assertTrue(res.getType() == Type.BYTE);
-		assertTrue(res.getAsInt() == 3);
+                // Test wrong parameter type
+                try {
+                        res = evaluate(function, ValueFactory.createValue("f"));
+                        fail();
+                } catch (IncompatibleTypesException e) {
+                }
 
-		function = new Min();
-		res = evaluate(function, ValueFactory.createValue(3f));
-		res = evaluate(function, new ColumnValue(Type.FLOAT, ValueFactory
-				.createNullValue()));
-		assertTrue(res.getType() == Type.FLOAT);
-		assertTrue(res.getAsInt() == 3);
+                // Test zero rows
+                assertTrue(evaluateAggregatedZeroRows(new Min()).isNull());
+        }
 
-		// Test too many parameters
-		try {
-			res = evaluate(function, ValueFactory.createValue(3), ValueFactory
-					.createValue(3));
-			assertTrue(false);
-		} catch (IncompatibleTypesException e) {
-		}
+        @Test
+        public void testPk() throws Exception {
+                Value res;
 
-		// Test wrong parameter type
-		try {
-			res = evaluate(function, ValueFactory.createValue("f"));
-			assertTrue(false);
-		} catch (IncompatibleTypesException e) {
-		}
+                // Test null input
+                ScalarFunction function = new Pk();
+                try {
+                        res = evaluate(function, new ColumnValue(Type.STRING, ValueFactory.createNullValue()));
+                        fail();
+                } catch (FunctionException e) {
+                }
 
-		// Test zero rows
-		assertTrue(evaluateAggregatedZeroRows(new Min()).isNull());
-	}
+                // Test too many parameters
+                try {
+                        res = evaluate(function, ValueFactory.createValue(54), ValueFactory.createValue(7));
+                        fail();
+                } catch (IncompatibleTypesException e) {
+                }
 
-	public void testPk() throws Exception {
-		Value res;
+                // Test return type and value
+                res = evaluate(function, ValueFactory.createValue(54));
+                assertEquals(Type.INT, res.getType());
 
-		// Test null input
-		ScalarFunction function = new Pk();
-		try {
-			res = evaluate(function, new ColumnValue(Type.STRING, ValueFactory
-					.createNullValue()));
-			assertTrue(false);
-		} catch (FunctionException e) {
-		}
+                // Test metadata modification
+                final Type fieldType = function.getType(new Type[]{TypeFactory.createType(Type.DATE)});
+                assertTrue(MetadataUtilities.isPrimaryKey(fieldType));
 
-		// Test too many parameters
-		try {
-			res = evaluate(function, ValueFactory.createValue(54), ValueFactory
-					.createValue(7));
-			assertTrue(false);
-		} catch (IncompatibleTypesException e) {
-		}
+                // Test redundancy
+                try {
+                        function.evaluate(dsf, new Value[]{ValueFactory.createValue(54)});
+                        fail();
+                } catch (FunctionException e) {
+                }
+        }
 
-		// Test return type and value
-		res = evaluate(function, ValueFactory.createValue(54));
-		assertTrue(Type.INT == res.getType());
+        @Test
+        public void testSum() throws Exception {
+                // Test null input
+                Sum function = new Sum();
+                Value res = evaluate(function, new ColumnValue(Type.BYTE, ValueFactory.createNullValue()));
+                assertTrue(res.isNull());
 
-		// Test metadata modification
-		final Type fieldType = function.getType(new Type[] { TypeFactory
-				.createType(Type.DATE) });
-		assertTrue(MetadataUtilities.isPrimaryKey(fieldType));
+                // Test normal input value and type
+                function = new Sum();
+                res = evaluate(function, new ColumnValue(Type.BYTE, ValueFactory.createValue((byte) 3)));
+                res = evaluate(function, new ColumnValue(Type.BYTE, ValueFactory.createValue((byte) 3)));
+                res = evaluate(function, new ColumnValue(Type.BYTE, ValueFactory.createNullValue()));
+                assertTrue(TypeFactory.isNumerical(res.getType()));
+                assertEquals(res.getAsInt(), 6);
 
-		// Test redundancy
-		try {
-			function.evaluate(dsf, new Value[] { ValueFactory.createValue(54) });
-			assertTrue(false);
-		} catch (FunctionException e) {
-		}
-	}
+                function = new Sum();
+                res = evaluate(function, ValueFactory.createValue(3f));
+                res = evaluate(function, new ColumnValue(Type.FLOAT, ValueFactory.createNullValue()));
+                assertEquals(res.getType(), Type.FLOAT);
+                assertEquals(res.getAsInt(), 3);
 
-	public void testSum() throws Exception {
-		// Test null input
-		Sum function = new Sum();
-		Value res = evaluate(function, new ColumnValue(Type.BYTE, ValueFactory
-				.createNullValue()));
-		assertTrue(res.isNull());
+                // Test too many parameters
+                try {
+                        res = evaluate(function, ValueFactory.createValue(3), ValueFactory.createValue(3));
+                        fail();
+                } catch (IncompatibleTypesException e) {
+                }
 
-		// Test normal input value and type
-		function = new Sum();
-		res = evaluate(function, new ColumnValue(Type.BYTE, ValueFactory
-				.createValue((byte) 3)));
-		res = evaluate(function, new ColumnValue(Type.BYTE, ValueFactory
-				.createValue((byte) 3)));
-		res = evaluate(function, new ColumnValue(Type.BYTE, ValueFactory
-				.createNullValue()));
-		assertTrue(TypeFactory.isNumerical(res.getType()));
-		assertTrue(res.getAsInt() == 6);
+                // Test wrong parameter type
+                try {
+                        res = evaluate(function, ValueFactory.createValue("f"));
+                        fail();
+                } catch (IncompatibleTypesException e) {
+                }
 
-		function = new Sum();
-		res = evaluate(function, ValueFactory.createValue(3f));
-		res = evaluate(function, new ColumnValue(Type.FLOAT, ValueFactory
-				.createNullValue()));
-		assertTrue(res.getType() == Type.FLOAT);
-		assertTrue(res.getAsInt() == 3);
+                // Test zero rows
+                assertTrue(evaluateAggregatedZeroRows(new Sum()).isNull());
+        }
 
-		// Test too many parameters
-		try {
-			res = evaluate(function, ValueFactory.createValue(3), ValueFactory
-					.createValue(3));
-			assertTrue(false);
-		} catch (IncompatibleTypesException e) {
-		}
+        @Test
+        public void testString2Date() throws Exception {
+                // Test null input
+                String2DateFunction function = new String2DateFunction();
+                Value res = evaluate(function, new ColumnValue(Type.STRING,
+                        ValueFactory.createNullValue()));
+                assertTrue(res.isNull());
+                res = evaluate(function, new ColumnValue(Type.STRING, ValueFactory.createValue("12/8/1923")), new ColumnValue(Type.STRING,
+                        ValueFactory.createNullValue()));
+                assertTrue(res.isNull());
 
-		// Test wrong parameter type
-		try {
-			res = evaluate(function, ValueFactory.createValue("f"));
-			assertTrue(false);
-		} catch (IncompatibleTypesException e) {
-		}
-
-		// Test zero rows
-		assertTrue(evaluateAggregatedZeroRows(new Sum()).isNull());
-	}
-
-	public void testString2Date() throws Exception {
-		// Test null input
-		String2DateFunction function = new String2DateFunction();
-		Value res = evaluate(function, new ColumnValue(Type.STRING,
-				ValueFactory.createNullValue()));
-		assertTrue(res.isNull());
-		res = evaluate(function, new ColumnValue(Type.STRING, ValueFactory
-				.createValue("12/8/1923")), new ColumnValue(Type.STRING,
-				ValueFactory.createNullValue()));
-		assertTrue(res.isNull());
-
-		// Test normal input value and type
-		String date = "12/9/1990";
-		res = evaluate(function, ValueFactory.createValue(date));
-		assertTrue(res.getType() == Type.DATE);
+                // Test normal input value and type
+                String date = "12/9/1990";
+                res = evaluate(function, ValueFactory.createValue(date));
+                assertEquals(res.getType(), Type.DATE);
                 DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-		assertTrue(res.getAsDate().getTime() == dateFormat
-				.parse(date).getTime());
+                assertEquals(res.getAsDate().getTime(), dateFormat.parse(date).getTime());
 
-		// Test too many parameters
-		try {
-			res = evaluate(function, ValueFactory.createValue("as"),
-					ValueFactory.createValue("as"), ValueFactory
-							.createValue("as"));
-			assertTrue(false);
-		} catch (IncompatibleTypesException e) {
-		}
+                // Test too many parameters
+                try {
+                        res = evaluate(function, ValueFactory.createValue("as"),
+                                ValueFactory.createValue("as"), ValueFactory.createValue("as"));
+                        fail();
+                } catch (IncompatibleTypesException e) {
+                }
 
-		// Test wrong parameter type
-		try {
-			res = evaluate(function, ValueFactory.createValue(3));
-			assertTrue(false);
-		} catch (IncompatibleTypesException e) {
-		}
-	}
+                // Test wrong parameter type
+                try {
+                        res = evaluate(function, ValueFactory.createValue(3));
+                        fail();
+                } catch (IncompatibleTypesException e) {
+                }
+        }
 
-	public void testStrLength() throws Exception {
-		// Test null input
-		StrLength function = new StrLength();
-		Value res = evaluate(function, new ColumnValue(Type.STRING,
-				ValueFactory.createNullValue()));
-		assertTrue(res.isNull());
+        @Test
+        public void testStrLength() throws Exception {
+                // Test null input
+                StrLength function = new StrLength();
+                Value res = evaluate(function, new ColumnValue(Type.STRING,
+                        ValueFactory.createNullValue()));
+                assertTrue(res.isNull());
 
-		// Test normal input value and type
-		res = evaluate(function, ValueFactory.createValue("fer"));
-		assertTrue(res.getType() == Type.INT);
-		assertTrue(res.getAsInt() == 3);
+                // Test normal input value and type
+                res = evaluate(function, ValueFactory.createValue("fer"));
+                assertEquals(res.getType(), Type.INT);
+                assertEquals(res.getAsInt(), 3);
 
-		// Test too many parameters
-		try {
-			res = evaluate(function, ValueFactory.createValue("as"),
-					ValueFactory.createValue("as"));
-			assertTrue(false);
-		} catch (IncompatibleTypesException e) {
-		}
+                // Test too many parameters
+                try {
+                        res = evaluate(function, ValueFactory.createValue("as"),
+                                ValueFactory.createValue("as"));
+                        fail();
+                } catch (IncompatibleTypesException e) {
+                }
 
-		// Test wrong parameter type
-		try {
-			res = evaluate(function, ValueFactory.createValue(3));
-			assertTrue(false);
-		} catch (IncompatibleTypesException e) {
-		}
-	}
+                // Test wrong parameter type
+                try {
+                        res = evaluate(function, ValueFactory.createValue(3));
+                        fail();
+                } catch (IncompatibleTypesException e) {
+                }
+        }
 }

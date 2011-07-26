@@ -36,7 +36,7 @@
  */
 package org.gdms.sql.customQuery.spatial.convert;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 import org.gdms.Geometries;
 import org.gdms.data.DataSource;
@@ -51,100 +51,104 @@ import org.gdms.data.types.IncompatibleTypesException;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
+import org.gdms.SQLBaseTest;
 import org.gdms.sql.engine.SQLEngine;
 import org.gdms.sql.engine.SemanticException;
 
-public class ExplodeTest extends TestCase {
-	private static SQLDataSourceFactory dsf = new SQLDataSourceFactory();
-	private int rowIndex;
+import static org.junit.Assert.*;
 
-	private void print(final DataSource dataSource) throws DriverException {
-		dataSource.open();
-		final long rowCount = dataSource.getRowCount();
-		final long fieldCount = dataSource.getFieldCount();
-		for (long row = 0; row < rowCount; row++) {
-			for (int field = 0; field < fieldCount; field++) {
-				System.err.printf("%s # ", dataSource.getFieldValue(row, field)
-						.toString());
-			}
-			System.err.println();
-		}
-		dataSource.close();
-	}
+public class ExplodeTest {
 
-	private void evaluate(final DataSource dataSource) throws DriverException {
-		print(dataSource);
+        private static SQLDataSourceFactory dsf = new SQLDataSourceFactory(SQLBaseTest.backupDir.getAbsolutePath());
+        private int rowIndex;
 
-		dataSource.open();
-		final long rowCount = dataSource.getRowCount();
-		rowIndex = 0;
-		while (rowIndex < rowCount) {
-			final Value inGCValue = dataSource.getFieldValue(rowIndex, 2);
+        private void print(final DataSource dataSource) throws DriverException {
+                dataSource.open();
+                final long rowCount = dataSource.getRowCount();
+                final long fieldCount = dataSource.getFieldCount();
+                for (long row = 0; row < rowCount; row++) {
+                        for (int field = 0; field < fieldCount; field++) {
+                                System.err.printf("%s # ", dataSource.getFieldValue(row, field).toString());
+                        }
+                        System.err.println();
+                }
+                dataSource.close();
+        }
 
-			if (inGCValue.isNull()) {
-				final Value field = dataSource.getFieldValue(rowIndex++, 1);
-				assertTrue(field.isNull());
-			} else {
-				evaluate(dataSource, inGCValue.getAsGeometry());
-			}
-		}
-		dataSource.close();
-	}
+        private void evaluate(final DataSource dataSource) throws DriverException {
+                print(dataSource);
 
-	private void evaluate(final DataSource dataSource, final Geometry inGC)
-			throws IncompatibleTypesException, DriverException {
-		if (inGC instanceof GeometryCollection) {
-			for (int i = 0; i < inGC.getNumGeometries(); i++) {
-				evaluate(dataSource, inGC.getGeometryN(i));
-			}
-		} else {
-			// breaking condition
-			final Geometry geometry = dataSource.getFieldValue(rowIndex++, 1)
-					.getAsGeometry();
-			assertFalse(geometry instanceof GeometryCollection);
-			assertTrue(inGC.equals(geometry));
-		}
-	}
+                dataSource.open();
+                final long rowCount = dataSource.getRowCount();
+                rowIndex = 0;
+                while (rowIndex < rowCount) {
+                        final Value inGCValue = dataSource.getFieldValue(rowIndex, 2);
 
-	public void testEvaluate() throws Exception {
-		final GenericObjectDriver driver1 = new GenericObjectDriver(new String[] {
-				"pk", "geom" }, new Type[] { TypeFactory.createType(Type.INT),
-				TypeFactory.createType(Type.GEOMETRY) });
+                        if (inGCValue.isNull()) {
+                                final Value field = dataSource.getFieldValue(rowIndex++, 1);
+                                assertTrue(field.isNull());
+                        } else {
+                                evaluate(dataSource, inGCValue.getAsGeometry());
+                        }
+                }
+                dataSource.close();
+        }
 
-		// insert all filled rows...
-		driver1.addValues(new Value[] { ValueFactory.createValue(1),
-				ValueFactory.createValue(Geometries.getMultiPoint3D()) });
-		driver1.addValues(new Value[] { ValueFactory.createValue(2),
-				ValueFactory.createValue(Geometries.getMultiPolygon2D()) });
-		driver1.addValues(new Value[] { ValueFactory.createValue(3),
-				ValueFactory.createValue(Geometries.getPoint()) });
-		driver1.addValues(new Value[] { ValueFactory.createValue(3),
-				ValueFactory.createNullValue() });
-		driver1.addValues(new Value[] { ValueFactory.createValue(4),
-				ValueFactory.createValue(Geometries.getGeometryCollection()) });
-		// and register this new driver...
-		dsf.getSourceManager().register("ds1", driver1);
-		dsf.register("ds1p",
-				"select pk, geom as g1, geom as g2 from ds1;");
-		evaluate(dsf.getDataSourceFromSQL("select ST_Explode() from ds1p;"));
-		evaluate(dsf.getDataSourceFromSQL("select ST_Explode('g1') from ds1p;"));
-	}
+        private void evaluate(final DataSource dataSource, final Geometry inGC)
+                throws IncompatibleTypesException, DriverException {
+                if (inGC instanceof GeometryCollection) {
+                        for (int i = 0; i < inGC.getNumGeometries(); i++) {
+                                evaluate(dataSource, inGC.getGeometryN(i));
+                        }
+                } else {
+                        // breaking condition
+                        final Geometry geometry = dataSource.getFieldValue(rowIndex++, 1).getAsGeometry();
+                        assertFalse(geometry instanceof GeometryCollection);
+                        assertEquals(inGC, geometry);
+                }
+        }
 
-	public void testWrongParameters() throws Exception {
-		try {
-			testWrongParameters("select * from ST_explode(ds1p, 'geom', 'geom');");
-			assertTrue(false);
-		} catch (SemanticException e) {
-		}
-		try {
-			testWrongParameters("select * from st_explode(ds1p, 0);");
-			assertTrue(false);
-		} catch (IncompatibleTypesException e) {
-		}
-	}
+        @Test
+        public void testEvaluate() throws Exception {
+                final GenericObjectDriver driver1 = new GenericObjectDriver(new String[]{
+                                "pk", "geom"}, new Type[]{TypeFactory.createType(Type.INT),
+                                TypeFactory.createType(Type.GEOMETRY)});
 
-	private void testWrongParameters(String sql) throws Exception {
+                // insert all filled rows...
+                driver1.addValues(new Value[]{ValueFactory.createValue(1),
+                                ValueFactory.createValue(Geometries.getMultiPoint3D())});
+                driver1.addValues(new Value[]{ValueFactory.createValue(2),
+                                ValueFactory.createValue(Geometries.getMultiPolygon2D())});
+                driver1.addValues(new Value[]{ValueFactory.createValue(3),
+                                ValueFactory.createValue(Geometries.getPoint())});
+                driver1.addValues(new Value[]{ValueFactory.createValue(3),
+                                ValueFactory.createNullValue()});
+                driver1.addValues(new Value[]{ValueFactory.createValue(4),
+                                ValueFactory.createValue(Geometries.getGeometryCollection())});
+                // and register this new driver...
+                dsf.getSourceManager().register("ds1", driver1);
+                dsf.register("ds1p",
+                        "select pk, geom as g1, geom as g2 from ds1;");
+                evaluate(dsf.getDataSourceFromSQL("select ST_Explode() from ds1p;"));
+                evaluate(dsf.getDataSourceFromSQL("select ST_Explode('g1') from ds1p;"));
+        }
+
+        @Test
+        public void testWrongParameters() throws Exception {
+                try {
+                        testWrongParameters("select * from ST_explode(ds1p, 'geom', 'geom');");
+                        fail();
+                } catch (SemanticException e) {
+                }
+                try {
+                        testWrongParameters("select * from st_explode(ds1p, 0);");
+                        fail();
+                } catch (IncompatibleTypesException e) {
+                }
+        }
+
+        private void testWrongParameters(String sql) throws Exception {
                 SQLEngine engine = new SQLEngine(dsf);
                 engine.parse(sql);
-	}
+        }
 }

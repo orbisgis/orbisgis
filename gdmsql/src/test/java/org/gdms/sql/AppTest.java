@@ -1,27 +1,22 @@
 package org.gdms.sql;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import junit.framework.TestCase;
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
-import org.antlr.runtime.tree.CommonTree;
-import org.gdms.SQLBaseTest;
-import org.gdms.data.DataSource;
-import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.sql.engine.parsing.GdmSQLLexer;
 import org.gdms.sql.engine.parsing.GdmSQLParser;
+import org.junit.Ignore;
+import org.junit.Test;
 
 /**
  * Unit test for simple App.
  */
-public class AppTest
-        extends TestCase {
+public class AppTest {
+
+        @Test
+        @Ignore
         public void testEngine() throws IOException {
                 String sql = "SELECT * toto";
 
@@ -45,7 +40,7 @@ public class AppTest
                         System.out.println("message: " + ex.getMessage());
                 }
         }
-//        public void testQuery() throws Exception {
+//        @Test public void testQuery() throws Exception {
 //                SQLDataSourceFactory dsf = new SQLDataSourceFactory(SQLBaseTest.backupDir.getAbsolutePath(), SQLBaseTest.backupDir.getAbsolutePath());
 //                String sql = "SELECT * FROM landcover2000 ;";
 //                dsf.getSourceManager().register("landcover2000",

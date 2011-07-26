@@ -36,64 +36,66 @@
  */
 package org.gdms.source;
 
-
+import org.junit.Before;
+import org.junit.Test;
 import java.io.File;
-import junit.framework.TestCase;
 
 import org.gdms.SQLTestSource;
 import org.gdms.SQLBaseTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.SQLDataSourceFactory;
 
-public class ChecksumTest extends TestCase {
+import static org.junit.Assert.*;
 
-	private SQLDataSourceFactory dsf;
-	private SourceManager sm;
+public class ChecksumTest {
 
-	public void testModifyingSourceOutsideFactory() throws Exception {
+        private SQLDataSourceFactory dsf;
+        private SourceManager sm;
 
+        @Test
+        public void testModifyingSourceOutsideFactory() throws Exception {
                 String name = "sql";
-		String sql = "select count(id) from file;";
-		SQLTestSource sts = new SQLTestSource(name, sql);
-		sts.backup();
-		dsf.register(name, sql);
-		testModifyingSourceOutsideFactory(name, true);
+                String sql = "select count(id) from file;";
+                SQLTestSource sts = new SQLTestSource(name, sql);
+                sts.backup();
+                dsf.register(name, sql);
+                testModifyingSourceOutsideFactory(name, true);
 
-	}
+        }
 
-	private synchronized void testModifyingSourceOutsideFactory(String name,
-			boolean upToDateValue) throws Exception {
-		assertTrue(sm.getSource(name).isUpToDate() == false);
-		sm.saveStatus();
-		assertTrue(sm.getSource(name).isUpToDate() == true);
+        private synchronized void testModifyingSourceOutsideFactory(String name,
+                boolean upToDateValue) throws Exception {
+                assertFalse(sm.getSource(name).isUpToDate());
+                sm.saveStatus();
+                assertTrue(sm.getSource(name).isUpToDate());
 
-		DataSource ds = SQLBaseTest.dsf.getDataSource(name);
-		ds.open();
-		ds.deleteRow(0);
-		if (upToDateValue) {
-			ds.close();
-		} else {
-			// To change modification time
-			wait(2000);
-			ds.commit();
-			ds.close();
-		}
+                DataSource ds = SQLBaseTest.dsf.getDataSource(name);
+                ds.open();
+                ds.deleteRow(0);
+                if (upToDateValue) {
+                        ds.close();
+                } else {
+                        // To change modification time
+                        wait(2000);
+                        ds.commit();
+                        ds.close();
+                }
 
-		instantiateDSF();
-		assertTrue(sm.getSource(name).isUpToDate() == upToDateValue);
-	}
+                instantiateDSF();
+                assertEquals(sm.getSource(name).isUpToDate(), upToDateValue);
+        }
 
-	@Override
-	protected void setUp() throws Exception {
-		SQLBaseTest.dsf.getSourceManager().removeAll();
-		instantiateDSF();
-		sm.removeAll();
-                sm.register("file", new File(SQLBaseTest.internalData,"landcover2000.shp"));
-	}
+        @Before
+        public void setUp() throws Exception {
+                SQLBaseTest.dsf.getSourceManager().removeAll();
+                instantiateDSF();
+                sm.removeAll();
+                sm.register("file", new File(SQLBaseTest.internalData, "landcover2000.shp"));
+        }
 
-	private void instantiateDSF() {
-		dsf = new SQLDataSourceFactory(SQLBaseTest.internalData
-				+ "source-management");
-		sm = dsf.getSourceManager();
-	}
+        private void instantiateDSF() {
+                dsf = new SQLDataSourceFactory(SQLBaseTest.internalData
+                        + "source-management");
+                sm = dsf.getSourceManager();
+        }
 }

@@ -36,6 +36,7 @@
  */
 package org.gdms.sql.function.spatial.properties;
 
+import org.junit.Test;
 import org.gdms.data.values.Value;
 import org.gdms.sql.FunctionTest;
 import org.gdms.sql.function.spatial.geometry.properties.ST_Area;
@@ -61,87 +62,102 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.spatial.geometry.properties.ST_CircleCompacity;
 import org.gdms.sql.function.spatial.geometry.properties.ST_InteriorRingN;
 
+import static org.junit.Assert.*;
+
 public class PropertiesFunctionTest extends FunctionTest {
 
+        @Test
         public void testArea() throws Exception {
                 double d = testSpatialFunction(new ST_Area(), JTSMultiPolygon2D, 1).getAsDouble();
-                assertTrue(JTSMultiPolygon2D.getArea() == d);
+                assertEquals(JTSMultiPolygon2D.getArea(), d, 0);
         }
 
+        @Test
         public void testDimension() throws Exception {
                 int d = testSpatialFunction(new ST_Dimension(), JTSMultiPolygon2D, 1).getAsInt();
-                assertTrue(JTSMultiPolygon2D.getDimension() == d);
+                assertEquals(JTSMultiPolygon2D.getDimension(), d);
                 d = testSpatialFunction(new ST_Dimension(), JTSMultiLineString2D, 1).getAsInt();
-                assertTrue(JTSMultiLineString2D.getDimension() == d);
+                assertEquals(JTSMultiLineString2D.getDimension(), d);
                 d = testSpatialFunction(new ST_Dimension(), JTSMultiPoint2D, 1).getAsInt();
-                assertTrue(JTSMultiPoint2D.getDimension() == d);
+                assertEquals(JTSMultiPoint2D.getDimension(), d);
         }
 
+        @Test
         public void testGeometryN() throws Exception {
                 Geometry d = evaluate(new ST_GeometryN(), new Value[]{ValueFactory.createValue(JTSGeometryCollection),
                                 ValueFactory.createValue(1)}).getAsGeometry();
-                assertTrue(JTSGeometryCollection.getGeometryN(1).equals(d));
+                assertEquals(JTSGeometryCollection.getGeometryN(1), d);
         }
 
+        @Test
         public void testGeometryType() throws Exception {
                 String v = testSpatialFunction(new ST_GeometryType(), JTSMultiPolygon2D, 1).getAsString();
-                assertTrue(JTSMultiPolygon2D.getGeometryType().equals(v));
+                assertEquals(JTSMultiPolygon2D.getGeometryType(), v);
         }
 
+        @Test
         public void testGetZValue() throws Exception {
                 Value v = testSpatialFunction(new ST_Z(), new GeometryFactory().createPoint(new Coordinate(0, 50)), 1);
                 assertTrue(v.isNull());
                 double d = testSpatialFunction(new ST_Z(),
                         new GeometryFactory().createPoint(new Coordinate(0, 50, 23)), 1).getAsDouble();
-                assertTrue(d == 23);
+                assertEquals(d, 23, 0);
         }
 
+        @Test
         public void testGetX() throws Exception {
                 Value v = testSpatialFunction(new ST_X(), new GeometryFactory().createPoint(new Coordinate(0, 50)), 1);
-                assertTrue(!v.isNull());
+                assertFalse(v.isNull());
                 double d = testSpatialFunction(new ST_X(),
                         new GeometryFactory().createPoint(new Coordinate(0, 50, 23)), 1).getAsDouble();
-                assertTrue(d == 0);
+                assertEquals(d, 0, 0);
         }
 
+        @Test
         public void testGetY() throws Exception {
                 Value v = testSpatialFunction(new ST_Y(), new GeometryFactory().createPoint(new Coordinate(0, 50)), 1);
-                assertTrue(!v.isNull());
+                assertFalse(v.isNull());
                 double d = testSpatialFunction(new ST_Y(),
                         new GeometryFactory().createPoint(new Coordinate(0, 50, 23)), 1).getAsDouble();
-                assertTrue(d == 50);
+                assertEquals(d, 50, 0);
         }
 
+        @Test
         public void testIsEmpty() throws Exception {
                 boolean v = testSpatialFunction(new ST_IsEmpty(),
                         new GeometryFactory().createLinearRing(new Coordinate[0]), 1).getAsBoolean();
                 assertTrue(v);
         }
 
+        @Test
         public void testIsSimple() throws Exception {
                 boolean v = testSpatialFunction(new ST_IsSimple(), JTSMultiLineString2D, 1).getAsBoolean();
-                assertTrue(v == JTSMultiLineString2D.isSimple());
+                assertEquals(v, JTSMultiLineString2D.isSimple());
         }
 
+        @Test
         public void testIsValid() throws Exception {
                 boolean v = testSpatialFunction(new ST_IsValid(), JTSMultiLineString2D, 1).getAsBoolean();
-                assertTrue(v == JTSMultiLineString2D.isValid());
+                assertEquals(v, JTSMultiLineString2D.isValid());
         }
 
+        @Test
         public void testLength() throws Exception {
                 double v = testSpatialFunction(new ST_Length(), JTSMultiLineString2D, 1).getAsDouble();
-                assertTrue(v == JTSMultiLineString2D.getLength());
+                assertEquals(v, JTSMultiLineString2D.getLength(), 0);
         }
 
+        @Test
         public void testNumPoints() throws Exception {
                 int v = testSpatialFunction(new ST_NumPoints(), JTSMultiLineString2D, 1).getAsInt();
-                assertTrue(v == JTSMultiLineString2D.getNumPoints());
+                assertEquals(v, JTSMultiLineString2D.getNumPoints());
         }
 
+        @Test
         public void testNumInteriorRing() throws Exception {
                 int v1 = testSpatialFunction(new ST_NumInteriorRings(), JTSPolygon2D, 1).getAsInt();
                 Polygon p1 = (Polygon) JTSPolygon2D;
-                assertTrue(p1.getNumInteriorRing() == v1);
+                assertEquals(p1.getNumInteriorRing(), v1);
 
                 int v2 = testSpatialFunction(new ST_NumInteriorRings(), JTSMultiPolygon2D, 1).getAsInt();
 
@@ -152,46 +168,47 @@ public class PropertiesFunctionTest extends FunctionTest {
          * Test interiorRingN function  
          * @throws Exception  
          */
+        @Test
         public void testInteriorRingN() throws Exception {
                 Polygon p = (Polygon) JTSPolygon2D;
                 Geometry v = evaluate(new ST_InteriorRingN(), new Value[]{ValueFactory.createValue(JTSPolygon2D), ValueFactory.createValue(1)}).getAsGeometry();
-                assertTrue(v.equals(p.getInteriorRingN(1)));
+                assertEquals(v, p.getInteriorRingN(1));
                 p = (Polygon) JTSPolygonWith2Holes;
                 v = evaluate(new ST_InteriorRingN(), new Value[]{ValueFactory.createValue(JTSPolygonWith2Holes), ValueFactory.createValue(1)}).getAsGeometry();
-                assertTrue(v.equals(p.getInteriorRingN(1)));
+                assertEquals(v, p.getInteriorRingN(1));
         }
-        
+
         /* 
-          * Test the circle compacity function 
-          */ 
-         public void testCircleCompacity() throws Exception { 
-                 //Test with a circle 
-                 Geometry circle = JTSPoint2D.buffer(20); 
-                 double v = evaluate(new ST_CircleCompacity(), new Value[]{ValueFactory.createValue(circle)}).getAsDouble(); 
-                 assertEquals(v, 1, 0.01); 
-                 //Test with a polygon 
-                 v = evaluate(new ST_CircleCompacity(), new Value[]{ValueFactory.createValue(JTSPolygon2D)}).getAsDouble(); 
-                 assertTrue(v < 1); 
-                 //More precise test with a polygon (a square, in fact). 
-                 GeometryFactory gf = new GeometryFactory(); 
-                 Polygon pl = gf.createPolygon(gf.createLinearRing(new Coordinate[]{ 
-                         new Coordinate(0,0), 
-                         new Coordinate(1,0), 
-                         new Coordinate(1,1), 
-                         new Coordinate(0,1), 
-                         new Coordinate(0,0), 
-                 }), new LinearRing[]{});  
-                 v = evaluate(new ST_CircleCompacity(), new Value[]{ValueFactory.createValue(pl)}).getAsDouble(); 
-                 assertEquals(Math.sqrt(Math.PI)/2, v, 0.01); 
-                 //Test with a multipolygon 
-                 Value r = evaluate(new ST_CircleCompacity(), new Value[]{ValueFactory.createValue(JTSMultiPolygon2D)}); 
-                 assertTrue(r.isNull()); 
-                 //Test with a point 
-                 r = evaluate(new ST_CircleCompacity(), new Value[]{ValueFactory.createValue(JTSPoint2D)}); 
-                 assertTrue(r.isNull()); 
-                 //Test with a linestring 
-                 r = evaluate(new ST_CircleCompacity(), new Value[]{ValueFactory.createValue(JTSLineString2D)}); 
-                 assertTrue(r.isNull()); 
-  
-         } 
+         * Test the circle compacity function 
+         */
+        @Test
+        public void testCircleCompacity() throws Exception {
+                //Test with a circle 
+                Geometry circle = JTSPoint2D.buffer(20);
+                double v = evaluate(new ST_CircleCompacity(), new Value[]{ValueFactory.createValue(circle)}).getAsDouble();
+                assertEquals(v, 1, 0.01);
+                //Test with a polygon 
+                v = evaluate(new ST_CircleCompacity(), new Value[]{ValueFactory.createValue(JTSPolygon2D)}).getAsDouble();
+                assertTrue(v < 1);
+                //More precise test with a polygon (a square, in fact). 
+                GeometryFactory gf = new GeometryFactory();
+                Polygon pl = gf.createPolygon(gf.createLinearRing(new Coordinate[]{
+                                new Coordinate(0, 0),
+                                new Coordinate(1, 0),
+                                new Coordinate(1, 1),
+                                new Coordinate(0, 1),
+                                new Coordinate(0, 0),}), new LinearRing[]{});
+                v = evaluate(new ST_CircleCompacity(), new Value[]{ValueFactory.createValue(pl)}).getAsDouble();
+                assertEquals(Math.sqrt(Math.PI) / 2, v, 0.01);
+                //Test with a multipolygon 
+                Value r = evaluate(new ST_CircleCompacity(), new Value[]{ValueFactory.createValue(JTSMultiPolygon2D)});
+                assertTrue(r.isNull());
+                //Test with a point 
+                r = evaluate(new ST_CircleCompacity(), new Value[]{ValueFactory.createValue(JTSPoint2D)});
+                assertTrue(r.isNull());
+                //Test with a linestring 
+                r = evaluate(new ST_CircleCompacity(), new Value[]{ValueFactory.createValue(JTSLineString2D)});
+                assertTrue(r.isNull());
+
+        }
 }

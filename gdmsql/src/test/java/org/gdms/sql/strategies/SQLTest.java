@@ -37,6 +37,10 @@
  */
 package org.gdms.sql.strategies;
 
+import org.junit.Ignore;
+import org.gdms.driver.DriverException;
+import org.junit.Before;
+import org.junit.Test;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
@@ -63,10 +67,13 @@ import com.vividsolutions.jts.io.WKTReader;
 import org.gdms.data.types.ConstraintFactory;
 import org.gdms.sql.engine.SemanticException;
 
+import static org.junit.Assert.*;
+
 public class SQLTest extends SQLBaseTest {
 
         public static DataSource d;
 
+        @Test
         public void testInsertWithFunction() throws Exception {
 
                 DefaultMetadata metadata = new DefaultMetadata();
@@ -76,18 +83,21 @@ public class SQLTest extends SQLBaseTest {
                 dsf.executeSQL("insert into source (f1) values (StringToInt('2'));");
         }
 
+        @Test
         public void testCreateAsTableCustomQuery() throws Exception {
                 dsf.executeSQL("create table custom as select * from st_explode(select * from "
                         + super.getSHPTABLE() + " where gid > 12);");
 
         }
 
+        @Test
         public void testCaseInsensitiveness() throws Exception {
                 dsf.executeSQL("seLECt st_BuffER(" + super.getSpatialFieldName(super.getSHPTABLE())
                         + ", 20) From " + super.getSHPTABLE());
                 dsf.executeSQL("CaLL REGisteR('memory.shp')");
         }
 
+        @Test
         public void testDropColumn() throws Exception {
                 dsf.getSourceManager().remove("temp");
                 dsf.executeSQL("create table temp as select * from "
@@ -96,6 +106,7 @@ public class SQLTest extends SQLBaseTest {
 
         }
 
+        @Test
         public void testDropColumnIfExits() throws Exception {
                 dsf.getSourceManager().remove("temp");
                 dsf.executeSQL("create table temp as select * from "
@@ -114,6 +125,7 @@ public class SQLTest extends SQLBaseTest {
                 }
         }
 
+        @Test
         public void testDeleteTable() throws Exception {
                 dsf.getSourceManager().remove("temp");
                 dsf.executeSQL("create table temp as select * from "
@@ -132,6 +144,7 @@ public class SQLTest extends SQLBaseTest {
                 ds.close();
         }
 
+        @Test
         public void testDeleteExistsTable() throws Exception {
                 dsf.getSourceManager().remove("temp");
                 dsf.executeSQL("create table temp as select * from "
@@ -143,11 +156,12 @@ public class SQLTest extends SQLBaseTest {
                 DataSource ds = dsf.getDataSource("temp");
 
                 ds.open();
-                assertTrue(ds.getRowCount() == 0);
+                assertEquals(ds.getRowCount(), 0);
                 ds.close();
 
         }
 
+        @Test
         public void testDropTablePurge() throws Exception {
                 dsf.getSourceManager().remove("temp");
                 dsf.executeSQL("create table temp as select * from "
@@ -158,21 +172,24 @@ public class SQLTest extends SQLBaseTest {
                 dsf.executeSQL("drop table tatoche purge;");
         }
 
+        @Test
         public void testDropTable() throws Exception {
                 dsf.executeSQL("drop table " + super.getSHPTABLE() + ";");
         }
 
+        @Test
         public void testDropTableIfExists() throws Exception {
                 dsf.getSourceManager().register("landcover2000",
                         new File(internalData + "landcover2000.shp"));
                 dsf.executeSQL("drop table if exists toto;");
-                assertTrue(!dsf.getSourceManager().exists("toto"));
+                assertFalse(dsf.getSourceManager().exists("toto"));
                 assertTrue(dsf.getSourceManager().exists("landcover2000"));
                 dsf.executeSQL("drop table if exists landcover2000;");
-                assertTrue(!dsf.getSourceManager().exists("landcover2000"));
+                assertFalse(dsf.getSourceManager().exists("landcover2000"));
 
         }
 
+        @Test
         public void testRenameTable() throws Exception {
                 dsf.getSourceManager().register("landcover2000",
                         new File(internalData + "landcover2000.shp"));
@@ -181,6 +198,7 @@ public class SQLTest extends SQLBaseTest {
                 assertTrue(dsf.getSourceManager().exists("erwan"));
         }
 
+        @Test
         public void testRenameColumn() throws Exception {
                 dsf.getSourceManager().register("hedgerow",
                         new File(internalData + "hedgerow.shp"));
@@ -195,6 +213,7 @@ public class SQLTest extends SQLBaseTest {
                 ds.close();
         }
 
+        @Test
         public void testRenameColumnExists() throws Exception {
                 dsf.executeSQL("create table temp as select *  from "
                         + super.getSHPTABLE() + ";");
@@ -209,6 +228,7 @@ public class SQLTest extends SQLBaseTest {
                 }
         }
 
+        @Test
         public void testAddColumn() throws Exception {
                 try {
                         dsf.executeSQL("create table temp as select *  from "
@@ -219,6 +239,7 @@ public class SQLTest extends SQLBaseTest {
                 }
         }
 
+        @Test
         public void testAddDuplicateColumn() throws Exception {
 
                 dsf.executeSQL("create table temp as select * from "
@@ -235,6 +256,7 @@ public class SQLTest extends SQLBaseTest {
                 }
         }
 
+        @Test
         public void testExcept() throws Exception {
                 try {
                         dsf.getSourceManager().remove("temp");
@@ -242,13 +264,14 @@ public class SQLTest extends SQLBaseTest {
                                 + super.getSHPTABLE() + ";");
                         DataSource dsOut = dsf.getDataSource("temp");
                         dsOut.open();
-                        assertTrue(dsOut.getFieldIndexByName("type") == -1);
+                        assertEquals(dsOut.getFieldIndexByName("type"), -1);
                         dsOut.close();
                 } finally {
                         dsf.getSourceManager().remove("temp");
                 }
         }
 
+        @Test
         public void testExceptList() throws Exception {
                 try {
                         dsf.getSourceManager().register("landcover2000",
@@ -257,14 +280,15 @@ public class SQLTest extends SQLBaseTest {
                         dsf.executeSQL("create table temp as select * except (type, the_geom) from landcover2000");
                         DataSource dsOut = dsf.getDataSource("temp");
                         dsOut.open();
-                        assertTrue(dsOut.getFieldIndexByName("type") == -1);
-                        assertTrue(dsOut.getFieldIndexByName("the_geom") == -1);
+                        assertEquals(dsOut.getFieldIndexByName("type"), -1);
+                        assertEquals(dsOut.getFieldIndexByName("the_geom"), -1);
                         dsOut.close();
                 } finally {
                         dsf.getSourceManager().remove("temp");
                 }
         }
 
+        @Test
         public void testExceptAlias() throws Exception {
                 try {
                         dsf.getSourceManager().remove("temp");
@@ -272,7 +296,7 @@ public class SQLTest extends SQLBaseTest {
                                 + super.getSHPTABLE() + " a;");
                         DataSource dsOut = dsf.getDataSource("temp");
                         dsOut.open();
-                        assertTrue(dsOut.getFieldIndexByName("the_geom") == -1);
+                        assertEquals(dsOut.getFieldIndexByName("the_geom"), -1);
                         dsOut.close();
                 } finally {
                         dsf.getSourceManager().remove("temp");
@@ -286,11 +310,12 @@ public class SQLTest extends SQLBaseTest {
                 d.open();
                 int index = d.getFieldIndexByName(fieldName);
                 for (int i = 0; i < d.getRowCount(); i++) {
-                        assertTrue(!d.isNull(i, index));
+                        assertFalse(d.isNull(i, index));
                 }
                 d.close();
         }
 
+        @Test
         public void testIsClause() throws Exception {
                 String[] resources = super.getResourcesWithNullValues();
                 for (String resource : resources) {
@@ -315,6 +340,7 @@ public class SQLTest extends SQLBaseTest {
                 d.close();
         }
 
+        @Test
         public void testBetweenClause() throws Exception {
                 String[] resources = super.getResourcesWithNumericField();
                 for (String resource : resources) {
@@ -339,6 +365,7 @@ public class SQLTest extends SQLBaseTest {
                 d.close();
         }
 
+        @Test
         public void testInClause() throws Exception {
                 String[] resources = super.getResourcesWithNumericField();
                 for (String resource : resources) {
@@ -369,10 +396,11 @@ public class SQLTest extends SQLBaseTest {
                 original.close();
 
                 d.open();
-                assertTrue(count == d.getDouble(0, 0));
+                assertEquals(count, d.getDouble(0, 0), 0);
                 d.close();
         }
 
+        @Test
         public void testAggregate() throws Exception {
                 String[] resources = super.getResourcesWithNumericField();
                 for (String resource : resources) {
@@ -396,6 +424,7 @@ public class SQLTest extends SQLBaseTest {
                 d.close();
         }
 
+        @Test
         public void testTwoTimesTheSameAggregate() throws Exception {
                 String[] resources = super.getResourcesWithNumericField();
                 for (String resource : resources) {
@@ -405,6 +434,7 @@ public class SQLTest extends SQLBaseTest {
                 }
         }
 
+        @Test
         public void testOrderByFunction() throws Exception {
                 DataSource resultDataSource = dsf.getDataSourceFromSQL("select * from "
                         + super.getSHPTABLE() + " order by ST_Area(the_geom);");
@@ -431,6 +461,7 @@ public class SQLTest extends SQLBaseTest {
 
         }
 
+        @Test
         public void testOrderByAsc() throws Exception {
                 String[] resources = super.getNonDBSmallResources();
                 for (String resource : resources) {
@@ -462,6 +493,7 @@ public class SQLTest extends SQLBaseTest {
 
         }
 
+        @Test
         public void testOrderByDesc() throws Exception {
                 String[] resources = super.getNonDBSmallResources();
                 for (String resource : resources) {
@@ -498,6 +530,7 @@ public class SQLTest extends SQLBaseTest {
                 resultDataSource.close();
         }
 
+        @Test
         public void testOrderByWithNullValues() throws Exception {
                 String[] resources = super.getResourcesWithNullValues();
                 for (String resource : resources) {
@@ -507,6 +540,7 @@ public class SQLTest extends SQLBaseTest {
                 }
         }
 
+        @Test
         public void testOrderByMultipleFields() throws Exception {
                 String ds = "hedgerow";
                 dsf.getSourceManager().remove(ds);
@@ -522,7 +556,6 @@ public class SQLTest extends SQLBaseTest {
                         Value v1 = resultDataSource.getFieldValue(i - 1, fieldIndex1);
                         Value v2 = resultDataSource.getFieldValue(i, fieldIndex1);
                         if (v1.less(v2).getAsBoolean()) {
-                                assertTrue(true);
                         } else {
                                 v1 = resultDataSource.getFieldValue(i - 1, fieldIndex2);
                                 v2 = resultDataSource.getFieldValue(i, fieldIndex2);
@@ -542,12 +575,13 @@ public class SQLTest extends SQLBaseTest {
                 int fieldIndex = d.getFieldIndexByName(fields[0]);
                 Set<Value> valueSet = new HashSet<Value>();
                 for (int i = 0; i < d.getRowCount(); i++) {
-                        assertTrue(!valueSet.contains(d.getFieldValue(i, fieldIndex)));
+                        assertFalse(valueSet.contains(d.getFieldValue(i, fieldIndex)));
                         valueSet.add(d.getFieldValue(i, fieldIndex));
                 }
                 d.close();
         }
 
+        @Test
         public void testDistinct() throws Exception {
                 String[] resources = super.getResourcesWithRepeatedRows();
                 for (String resource : resources) {
@@ -555,6 +589,7 @@ public class SQLTest extends SQLBaseTest {
                 }
         }
 
+        @Test
         public void testDistinctOnOneFieldCase() throws Exception {
                 dsf.getSourceManager().remove("hedgerow");
                 dsf.getSourceManager().register("hedgerow",
@@ -565,7 +600,7 @@ public class SQLTest extends SQLBaseTest {
                 int fieldIndex = d.getFieldIndexByName("type");
                 Set<Value> valueSet = new HashSet<Value>();
                 for (int i = 0; i < d.getRowCount(); i++) {
-                        assertTrue(!valueSet.contains(d.getFieldValue(i, fieldIndex)));
+                        assertFalse(valueSet.contains(d.getFieldValue(i, fieldIndex)));
                         valueSet.add(d.getFieldValue(i, fieldIndex));
                 }
                 d.close();
@@ -584,12 +619,13 @@ public class SQLTest extends SQLBaseTest {
                         Value v1 = d.getFieldValue(i, fieldIndex1);
                         Value v2 = d.getFieldValue(i, fieldIndex2);
                         Value col = ValueFactory.createValue(new Value[]{v1, v2});
-                        assertTrue(!valueSet.contains(col));
+                        assertFalse(valueSet.contains(col));
                         valueSet.add(col);
                 }
                 d.close();
         }
 
+        @Test
         public void testDistinctManyFields() throws Exception {
                 String[] resources = super.getResourcesWithRepeatedRows();
                 for (String resource : resources) {
@@ -606,12 +642,13 @@ public class SQLTest extends SQLBaseTest {
                 Set<Value> valueSet = new HashSet<Value>();
                 for (int i = 0; i < fields.length; i++) {
                         Value col = ValueFactory.createValue(d.getRow(i));
-                        assertTrue(!valueSet.contains(col));
+                        assertFalse(valueSet.contains(col));
                         valueSet.add(col);
                 }
                 d.close();
         }
 
+        @Test
         public void testDistinctAllFields() throws Exception {
                 String[] resources = super.getResourcesWithRepeatedRows();
                 for (String resource : resources) {
@@ -619,6 +656,7 @@ public class SQLTest extends SQLBaseTest {
                 }
         }
 
+        @Test
         public void testDistinctOnGeometricField() throws Exception {
                 final WKTReader wktr = new WKTReader();
                 final GenericObjectDriver driver = new GenericObjectDriver(
@@ -631,7 +669,7 @@ public class SQLTest extends SQLBaseTest {
                 dsf.getSourceManager().register("ds1", driver);
                 final DataSource dsResult = dsf.getDataSourceFromSQL("select distinct the_geom from ds1;");
                 dsResult.open();
-                assertTrue(dsResult.getRowCount() == 1);
+                assertEquals(dsResult.getRowCount(), 1);
                 dsResult.close();
         }
 
@@ -665,13 +703,14 @@ public class SQLTest extends SQLBaseTest {
                          */
                         DataSource testDS = dsf.getDataSourceFromSQL(sql);
                         testDS.open();
-                        assertTrue((testDS.getRowCount() / 2) == (testDS.getRowCount() / 2.0));
+                        assertEquals((testDS.getRowCount() / 2), (testDS.getRowCount() / 2.0), 0);
                         testDS.close();
                 }
                 originalDS.close();
                 d.close();
         }
 
+        @Test
         public void testUnion() throws Exception {
                 String[] ds = super.getNonSpatialResourcesSmallerThan(5000);
                 for (String string : ds) {
@@ -702,6 +741,7 @@ public class SQLTest extends SQLBaseTest {
                 d.close();
         }
 
+        @Test
         public void testSelect() throws Exception {
                 String[] resources = super.getResourcesWithNumericField();
                 for (String resource : resources) {
@@ -711,13 +751,14 @@ public class SQLTest extends SQLBaseTest {
                 }
         }
 
-//        public void testSelectFunction() throws Exception {
+//        @Test public void testSelectFunction() throws Exception {
 //
 //                dsf.getSourceManager().register("landcover2000",
 //                        new File(internalData + "landcover2000.shp"));
 //
 //
 //        }
+        @Test
         public void testSelectWhere() throws Exception {
                 dsf.getSourceManager().remove("hedgerow");
                 dsf.getSourceManager().register("hedgerow",
@@ -727,11 +768,12 @@ public class SQLTest extends SQLBaseTest {
                 DataSource ds = dsf.getDataSourceFromSQL(query);
                 ds.open();
                 assertTrue(ds.getRowCount() > 0);
-                assertTrue(ds.getFieldValue(0, ds.getFieldIndexByName("type")).getAsString().equals("talus"));
+                assertEquals(ds.getFieldValue(0, ds.getFieldIndexByName("type")).getAsString(), "talus");
                 ds.close();
 
         }
 
+        @Test
         public void testSelectWhereExists() throws Exception {
                 String data = super.getAnySpatialResource();
 
@@ -742,6 +784,7 @@ public class SQLTest extends SQLBaseTest {
                 d.close();
         }
 
+        @Test
         public void testSecondaryIndependence() throws Exception {
                 DataSource d = dsf.getDataSourceFromSQL("select * from "
                         + super.getNonDBSmallResources()[0] + ";",
@@ -755,12 +798,13 @@ public class SQLTest extends SQLBaseTest {
                         d.deleteRow(0);
                 }
                 d2.open();
-                assertTrue(!d.getAsString().equals(d2.getAsString()));
+                assertFalse(d.getAsString().equals(d2.getAsString()));
                 d2.getAsString();
                 d2.close();
                 d.close();
         }
 
+        @Test
         public void testGetSQLDataSourceFactory() throws Exception {
                 DataSource d = dsf.getDataSourceFromSQL("select * from "
                         + super.getSHPTABLE() + ";");
@@ -768,9 +812,10 @@ public class SQLTest extends SQLBaseTest {
                 DataSource d2 = dsf.getDataSourceFromSQL("select * from " + d.getName()
                         + ";");
 
-                assertTrue(dsf == d2.getDataSourceFactory());
+                assertEquals(dsf, d2.getDataSourceFactory());
         }
 
+        @Test
         public void testCreateAsSelect() throws Exception {
 
                 dsf.getSourceManager().remove("newShape");
@@ -787,6 +832,7 @@ public class SQLTest extends SQLBaseTest {
                 sourceDs.close();
         }
 
+        @Test
         public void testCreateAsUnion() throws Exception {
                 dsf.getSourceManager().remove("newShape");
                 dsf.executeSQL("create table newShape as " + super.getSHPTABLE()
@@ -795,11 +841,12 @@ public class SQLTest extends SQLBaseTest {
                 DataSource sourceDs = dsf.getDataSource(super.getSHPTABLE());
                 newDs.open();
                 sourceDs.open();
-                assertTrue(newDs.getRowCount() / 2.0 == sourceDs.getRowCount());
+                assertEquals(newDs.getRowCount() / 2.0, sourceDs.getRowCount(), 0);
                 newDs.close();
                 sourceDs.close();
         }
 
+        @Test
         public void testCreateAsView() throws Exception {
                 String dsName = super.getAnySpatialResource();
                 dsf.executeSQL("create view myview as select * from " + dsName + ";");
@@ -807,18 +854,20 @@ public class SQLTest extends SQLBaseTest {
                 DataSource dsIn = dsf.getDataSource(dsName);
                 ds.open();
                 dsIn.open();
-                assertTrue(ds.getRowCount() == dsIn.getRowCount());
+                assertEquals(ds.getRowCount(), dsIn.getRowCount());
                 ds.close();
                 dsIn.close();
         }
 
+        @Test
         public void testDropAsView() throws Exception {
                 String dsName = super.getAnySpatialResource();
                 dsf.executeSQL("create view myview as select * from " + dsName + ";");
                 dsf.executeSQL("drop view myview;");
-                assertTrue(!dsf.getSourceManager().exists("myview"));
+                assertFalse(dsf.getSourceManager().exists("myview"));
         }
 
+        @Test
         public void testAliasInFunction() throws Exception {
                 String dsName = super.getSHPTABLE();
                 String alias = "myalias";
@@ -826,32 +875,34 @@ public class SQLTest extends SQLBaseTest {
                         + super.getSpatialFieldName(dsName) + ", 20) as " + alias
                         + " from " + dsName + ";");
                 ds.open();
-                assertTrue(ds.getFieldName(0).equals(alias));
+                assertEquals(ds.getFieldName(0), alias);
                 ds.close();
         }
 
+        @Test
         public void testGroupByAndSumDouble() throws Exception {
                 dsf.getSourceManager().register("groupcsv",
                         new File(SQLBaseTest.internalData + "groupby.csv"));
                 DataSource ds = dsf.getDataSourceFromSQL("select count(category), category"
                         + " from groupcsv group by category;");
                 ds.open();
-                assertTrue(ds.getRowCount() == 2);
+                assertEquals(ds.getRowCount(), 2);
                 ds.close();
 
                 ds = dsf.getDataSourceFromSQL("select Sum(StringToDouble(id)), Count(id), country, category"
                         + " from groupcsv group by country, category order by country, category;");
                 ds.open();
-                assertTrue(ds.getRowCount() == 6);
-                assertTrue(ds.getInt(0, 0) == 5);
-                assertTrue(ds.getInt(1, 0) == 9);
-                assertTrue(ds.getInt(2, 0) == 8);
-                assertTrue(ds.getInt(3, 0) == 11);
-                assertTrue(ds.getInt(4, 0) == 3);
-                assertTrue(ds.getInt(5, 0) == 0);
+                assertEquals(ds.getRowCount(), 6);
+                assertEquals(ds.getInt(0, 0), 5);
+                assertEquals(ds.getInt(1, 0), 9);
+                assertEquals(ds.getInt(2, 0), 8);
+                assertEquals(ds.getInt(3, 0), 11);
+                assertEquals(ds.getInt(4, 0), 3);
+                assertEquals(ds.getInt(5, 0), 0);
                 ds.close();
         }
 
+        @Test
         public void testGroupByAliasedReference() throws Exception {
                 dsf.getSourceManager().register("groupcsv",
                         new File(SQLBaseTest.internalData + "groupby.csv"));
@@ -862,6 +913,7 @@ public class SQLTest extends SQLBaseTest {
                 ds.close();
         }
 
+        @Test
         public void testLimitOffset() throws Exception {
                 String resource = super.getSHPTABLE();
                 testLimitOffset("select * from " + resource + " where true");
@@ -887,7 +939,7 @@ public class SQLTest extends SQLBaseTest {
                 DataSource original = dsf.getDataSourceFromSQL(sql);
                 ds.open();
                 original.open();
-                assertTrue(ds.getRowCount() == 10);
+                assertEquals(ds.getRowCount(), 10);
                 for (int i = 0; i < 10; i++) {
                         assertTrue(equals(ds.getRow(i), original.getRow(i + 10)));
                 }
@@ -901,7 +953,7 @@ public class SQLTest extends SQLBaseTest {
                 DataSource original = dsf.getDataSourceFromSQL(sql);
                 ds.open();
                 original.open();
-                assertTrue(ds.getRowCount() == 10);
+                assertEquals(ds.getRowCount(), 10);
                 for (int i = 0; i < 10; i++) {
                         assertTrue(equals(ds.getRow(i), original.getRow(i)));
                 }
@@ -915,7 +967,7 @@ public class SQLTest extends SQLBaseTest {
                 DataSource original = dsf.getDataSourceFromSQL(sql);
                 ds.open();
                 original.open();
-                assertTrue(ds.getRowCount() == original.getRowCount() - 10);
+                assertEquals(ds.getRowCount(), original.getRowCount() - 10);
                 for (int i = 0; i < ds.getRowCount(); i++) {
                         assertTrue(equals(ds.getRow(i), original.getRow(i + 10)));
                 }
@@ -923,6 +975,7 @@ public class SQLTest extends SQLBaseTest {
                 original.close();
         }
 
+        @Test
         public void testGroupAndOrderBy() throws Exception {
                 String[] res = super.getNonDBSmallResources();
                 for (String resource : res) {
@@ -937,10 +990,11 @@ public class SQLTest extends SQLBaseTest {
                         + field + ";";
                 DataSource ds = dsf.getDataSourceFromSQL(sql);
                 ds.open();
-                assertTrue(ds.getMetadata().getFieldCount() == 1);
+                assertEquals(ds.getMetadata().getFieldCount(), 1);
                 ds.close();
         }
 
+        @Test
         public void testNot() throws Exception {
                 String resource = super.getSHPTABLE();
                 String stringField = super.getStringFieldFor(resource);
@@ -959,6 +1013,7 @@ public class SQLTest extends SQLBaseTest {
                 assertTrue(rc1 != rc2);
         }
 
+        @Test
         public void testNegativeValues() throws Exception {
                 String resource = super.getSHPTABLE();
                 String sql = "select 1 from " + resource
@@ -969,6 +1024,7 @@ public class SQLTest extends SQLBaseTest {
                 ds.close();
         }
 
+        @Test
         public void testLike() throws Exception {
                 String resource = super.getSHPTABLE();
                 String stringField = super.getStringFieldFor(resource);
@@ -976,33 +1032,35 @@ public class SQLTest extends SQLBaseTest {
                         + " NOT LIKE '%';";
                 DataSource ds = dsf.getDataSourceFromSQL(sql);
                 ds.open();
-                assertTrue(ds.getRowCount() == 0);
+                assertEquals(ds.getRowCount(), 0);
                 ds.close();
         }
 
+        @Test
+        @Ignore
         public void testFunctionsExecutedTwice() throws Exception {
                 // Test broken, but one could argue that the test wasn't
                 // very well thought
                 // TODO: needs to be rewritten - 12/09/2010
-//		final StringBuffer tics = new StringBuffer("");
-//		GenericObjectDriver omd = new GenericObjectDriver(
-//				new String[] { "the_geom" }, new Type[] { TypeFactory
-//						.createType(Type.GEOMETRY) }) {
-//			@Override
-//			public Value getFieldValue(long rowIndex, int fieldId)
-//					throws DriverException {
-//				tics.append("x");
-//				return super.getFieldValue(rowIndex, fieldId);
-//			}
-//		};
-//		omd.addValues(new Value[] { ValueFactory.createValue(Geometries
-//				.getPoint()) });
-//		dsf.getSourceManager().register("oneline", omd);
-//		dsf.getDataSourceFromSQL("select st_buffer(the_geom, 10) from oneline",
-//				SQLDataSourceFactory.NORMAL);
-//		assertTrue(tics.length() == 1);
+                final StringBuffer tics = new StringBuffer("");
+                GenericObjectDriver omd = new GenericObjectDriver(
+                        new String[]{"the_geom"}, new Type[]{TypeFactory.createType(Type.GEOMETRY)}) {
+
+                        @Override
+                        public Value getFieldValue(long rowIndex, int fieldId)
+                                throws DriverException {
+                                tics.append("x");
+                                return super.getFieldValue(rowIndex, fieldId);
+                        }
+                };
+                omd.addValues(new Value[]{ValueFactory.createValue(Geometries.getPoint())});
+                dsf.getSourceManager().register("oneline", omd);
+                dsf.getDataSourceFromSQL("select st_buffer(the_geom, 10) from oneline",
+                        SQLDataSourceFactory.NORMAL);
+                assertEquals(tics.length(), 1);
         }
 
+        @Test
         public void testImplicitRegisterInCreate() throws Exception {
                 String resourceName = super.getSHPTABLE();
                 dsf.executeSQL("create table newtable as select * from " + resourceName
@@ -1016,6 +1074,7 @@ public class SQLTest extends SQLBaseTest {
                 dataSource2.close();
         }
 
+        @Test
         public void testAggregatedExecution() throws Exception {
                 GenericObjectDriver omd = new GenericObjectDriver(new String[]{
                                 "the_geom", "alpha"}, new Type[]{
@@ -1034,14 +1093,15 @@ public class SQLTest extends SQLBaseTest {
                 DataSource ds = dsf.getDataSourceFromSQL("select st_union(the_geom) from source "
                         + "group by alpha;");
                 ds.open();
-                assertTrue(ds.getRowCount() == 2);
+                assertEquals(ds.getRowCount(), 2);
                 for (int i = 0; i < ds.getRowCount(); i++) {
-                        assertTrue(ds.getFieldValue(i, 0).getAsGeometry() != null);
+                        assertNotNull(ds.getFieldValue(i, 0).getAsGeometry());
                 }
                 ds.close();
 
         }
 
+        @Test
         public void testSelectCountStar() throws Exception {
                 dsf.getSourceManager().register("landcover2000",
                         new File(internalData + "landcover2000.shp"));
@@ -1051,11 +1111,12 @@ public class SQLTest extends SQLBaseTest {
 
                 ds.open();
                 dsSource.open();
-                assertTrue(ds.getFieldValue(0, 0).getAsInt() == dsSource.getRowCount());
+                assertEquals(ds.getFieldValue(0, 0).getAsInt(), dsSource.getRowCount());
                 ds.close();
                 dsSource.close();
         }
 
+        @Test
         public void testCreateIndex() throws Exception {
                 String resource = super.getAnySpatialResource();
                 dsf.executeSQL("create index on " + resource + " (\""
@@ -1068,6 +1129,7 @@ public class SQLTest extends SQLBaseTest {
                         + super.getSpatialFieldName(resource) + ");");
         }
 
+        @Test
         public void testDeepAggregatedFunction() throws Exception {
                 String[] resources = super.getResourcesWithNumericField();
                 for (String resource : resources) {
@@ -1078,13 +1140,14 @@ public class SQLTest extends SQLBaseTest {
                                 DataSource ds = dsf.getDataSourceFromSQL(sql);
                                 ds.open();
                                 for (int i = 0; i < ds.getRowCount(); i++) {
-                                        assertTrue(!ds.isNull(i, 0));
+                                        assertFalse(ds.isNull(i, 0));
                                 }
                                 ds.close();
                         }
                 }
         }
 
+        @Test
         public void testJoinThreeTablesTwoAreTheSameBug() throws Exception {
                 createSource("table1", "id", 1, 2, 3, 4, 5, 6, 7, 8);
                 createSource("table2", "id", 1, 2);
@@ -1092,16 +1155,17 @@ public class SQLTest extends SQLBaseTest {
                         + "FROM table1 n1, table1 n2, table2 e "
                         + "WHERE n1.id = e.id;");
                 ds.open();
-                assertTrue(ds.getRowCount() == 16);
+                assertEquals(ds.getRowCount(), 16);
                 ds.close();
         }
 
+        @Test
         public void testSortDoesNotIncludeField() throws Exception {
                 dsf.getSourceManager().register("test",
                         new File(internalData + "/test.csv"));
                 DataSource ds = dsf.getDataSourceFromSQL("SELECT gis from test order by id;");
                 ds.open();
-                assertTrue(ds.getMetadata().getFieldCount() == 1);
+                assertEquals(ds.getMetadata().getFieldCount(), 1);
                 ds.close();
         }
 
@@ -1114,6 +1178,7 @@ public class SQLTest extends SQLBaseTest {
          *
          * @throws Exception
          */
+        @Test
         public void testExistsSelect() throws Exception {
 
                 Type intType = TypeFactory.createType(Type.INT);
@@ -1144,12 +1209,13 @@ public class SQLTest extends SQLBaseTest {
                 DataSource ds = dsf.getDataSourceFromSQL(query);
                 ds.open();
 
-                assertTrue(ds.getInt(0, 0) == 2750);
+                assertEquals(ds.getInt(0, 0), 2750);
 
                 ds.close();
 
         }
 
+        @Test
         public void testSelectWhereInSubquery() throws Exception {
                 Type intType = TypeFactory.createType(Type.INT);
                 Type stringType = TypeFactory.createType(Type.STRING);
@@ -1172,39 +1238,42 @@ public class SQLTest extends SQLBaseTest {
                         + "(select code from dict where data = 'good');");
                 ds.open();
                 for (int i = 0; i < ds.getRowCount(); i++) {
-                        assertTrue(ds.getInt(i, 0) == 0);
+                        assertEquals(ds.getInt(i, 0), 0);
                 }
                 ds.close();
         }
 
+        @Test
         public void testExecuteTwiceOnTwoSourcesWithSameName() throws Exception {
                 createSource("source", "toto", 1, 2, 3);
                 String sql = "select * from source where toto < 2;";
                 DataSource ds = dsf.getDataSourceFromSQL(sql);
                 ds.open();
-                assertTrue(ds.getRowCount() == 1);
+                assertEquals(ds.getRowCount(), 1);
                 ds.close();
                 dsf.getSourceManager().remove("source");
 
                 createSource("source", "toto", 10);
                 ds = dsf.getDataSourceFromSQL(sql);
                 ds.open();
-                assertTrue(ds.getRowCount() == 0);
+                assertEquals(ds.getRowCount(), 0);
                 ds.close();
         }
 
+        @Test
         public void testUpdate() throws Exception {
                 createSource("source", "toto", 0, 1, 2, 3);
                 dsf.executeSQL("update source SET toto = toto + StringToInt('1');", null);
                 DataSource ds = dsf.getDataSource("source");
                 ds.open();
-                assertTrue(ds.getRowCount() == 4);
+                assertEquals(ds.getRowCount(), 4);
                 for (int i = 0; i < ds.getRowCount(); i++) {
-                        assertTrue(ds.getInt(i, 0) == i + 1);
+                        assertEquals(ds.getInt(i, 0), i + 1);
                 }
                 ds.close();
         }
 
+        @Test
         public void testUpdateGeometry() throws Exception {
                 dsf.getSourceManager().register("landcover2000",
                         new File(internalData + "landcover2000.shp"));
@@ -1220,23 +1289,25 @@ public class SQLTest extends SQLBaseTest {
 
                 for (Coordinate coordinate : coords) {
 
-                        assertTrue(coordinate.z == 1);
+                        assertEquals(coordinate.z, 1, 0);
                 }
 
                 sds.close();
 
         }
 
+        @Test
         public void testUpdateWhere() throws Exception {
                 createSource("source", "toto", 0, 1, 2, 3);
                 dsf.executeSQL("update source SET toto = 1 WHERE toto = 0;", null);
                 DataSource ds = dsf.getDataSource("source");
                 ds.open();
-                assertTrue(ds.getRowCount() == 4);
-                assertTrue(ds.getInt(0, 0) == 1);
+                assertEquals(ds.getRowCount(), 4);
+                assertEquals(ds.getInt(0, 0), 1);
                 ds.close();
         }
 
+        @Test
         public void testUpdateInSubquery() throws Exception {
                 dsf.getSourceManager().register("landcover",
                         new File(internalData + "landcover2000.shp"));
@@ -1262,7 +1333,7 @@ public class SQLTest extends SQLBaseTest {
 
                 DataSource ds = dsf.getDataSource("landcoverUpdated");
                 ds.open();
-                assertTrue(countRes == count);
+                assertEquals(countRes, count);
                 ds.close();
         }
 
@@ -1277,7 +1348,8 @@ public class SQLTest extends SQLBaseTest {
         }
 
         @Override
-        protected void setUp() throws Exception {
+        @Before
+        public void setUp() throws Exception {
                 setWritingTests(false);
                 super.setUp();
         }

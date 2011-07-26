@@ -36,6 +36,7 @@
  */
 package org.gdms.sql.function.spatial.convert;
 
+import org.junit.Test;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
@@ -60,8 +61,11 @@ import org.gdms.sql.function.spatial.geometry.convert.ST_EndPoint;
 import org.gdms.sql.function.spatial.geometry.convert.ST_Holes;
 import org.gdms.sql.function.spatial.geometry.convert.ST_StartPoint;
 
+import static org.junit.Assert.*;
+
 public class ConvertFunctionTest extends FunctionTest {
 
+        @Test
         public void testConstraint2D() throws Exception {
                 // Test null input
                 ST_Force_2D function = new ST_Force_2D();
@@ -72,20 +76,20 @@ public class ConvertFunctionTest extends FunctionTest {
                 // Test normal input value and type
                 Value vg1 = ValueFactory.createValue(JTSPoint3D);
                 res = evaluate(function, vg1);
-                assertTrue(res.getType() == Type.GEOMETRY);
+                assertEquals(res.getType(), Type.GEOMETRY);
                 assertTrue(res.equals(vg1).getAsBoolean());
 
                 // Test too many parameters
                 try {
                         res = evaluate(function, vg1, ValueFactory.createValue(JTSMultiLineString2D));
-                        assertTrue(false);
+                        fail();
                 } catch (IncompatibleTypesException e) {
                 }
 
                 // Test wrong parameter type
                 try {
                         res = evaluate(function, ValueFactory.createValue(true));
-                        assertTrue(false);
+                        fail();
                 } catch (IncompatibleTypesException e) {
                 }
 
@@ -93,8 +97,8 @@ public class ConvertFunctionTest extends FunctionTest {
                 Type type = TypeFactory.createType(Type.GEOMETRY,
                         ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.LINESTRING));
                 type = evaluate(function, type);
-                assertTrue(type.getTypeCode() == Type.GEOMETRY);
-                assertTrue(type.getIntConstraint(Constraint.GEOMETRY_DIMENSION) == 2);
+                assertEquals(type.getTypeCode(), Type.GEOMETRY);
+                assertEquals(type.getIntConstraint(Constraint.GEOMETRY_DIMENSION), 2);
 
                 // Test coordinates
                 try {
@@ -111,6 +115,7 @@ public class ConvertFunctionTest extends FunctionTest {
                 }
         }
 
+        @Test
         public void testConstraint3D() throws Exception {
                 // Test null input
                 ST_Force_3D function = new ST_Force_3D();
@@ -121,20 +126,20 @@ public class ConvertFunctionTest extends FunctionTest {
                 // Test normal input value and type
                 Value vg1 = ValueFactory.createValue(JTSMultiPolygon2D);
                 res = evaluate(function, vg1);
-                assertTrue(res.getType() == Type.GEOMETRY);
+                assertEquals(res.getType(), Type.GEOMETRY);
                 assertTrue(res.equals(vg1).getAsBoolean());
 
                 // Test too many parameters
                 try {
                         res = evaluate(function, vg1, ValueFactory.createValue(JTSMultiLineString2D));
-                        assertTrue(false);
+                        fail();
                 } catch (IncompatibleTypesException e) {
                 }
 
                 // Test wrong parameter type
                 try {
                         res = evaluate(function, ValueFactory.createValue(true));
-                        assertTrue(false);
+                        fail();
                 } catch (IncompatibleTypesException e) {
                 }
 
@@ -142,10 +147,11 @@ public class ConvertFunctionTest extends FunctionTest {
                 Type type = TypeFactory.createType(Type.GEOMETRY,
                         ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.LINESTRING));
                 type = evaluate(function, type);
-                assertTrue(type.getTypeCode() == Type.GEOMETRY);
-                assertTrue(type.getIntConstraint(Constraint.GEOMETRY_DIMENSION) == 3);
+                assertEquals(type.getTypeCode(), Type.GEOMETRY);
+                assertEquals(type.getIntConstraint(Constraint.GEOMETRY_DIMENSION), 3);
         }
 
+        @Test
         public void testST_ToMultiSegments() throws Exception {
 
                 ST_ToMultiSegments function = new ST_ToMultiSegments();
@@ -156,9 +162,10 @@ public class ConvertFunctionTest extends FunctionTest {
                 Value vg1 = ValueFactory.createValue(JTSMultiLineString2D);
                 res = evaluate(function, vg1);
 
-                assertTrue(res.getAsGeometry().getNumGeometries() == 3);
+                assertEquals(res.getAsGeometry().getNumGeometries(), 3);
         }
 
+        @Test
         public void testBoundary() throws Exception {
                 // Test null input
                 ST_Boundary function = new ST_Boundary();
@@ -168,21 +175,20 @@ public class ConvertFunctionTest extends FunctionTest {
 
                 // Test normal input value and type
                 res = evaluate(function, ValueFactory.createValue(JTSMultiPolygon2D));
-                assertTrue(res.getType() == Type.GEOMETRY);
-                assertTrue(res.getAsGeometry().equalsExact(
-                        JTSMultiPolygon2D.getBoundary()));
+                assertEquals(res.getType(), Type.GEOMETRY);
+                assertTrue(res.getAsGeometry().equalsExact(JTSMultiPolygon2D.getBoundary()));
 
                 // Test too many parameters
                 try {
                         res = evaluate(function, ValueFactory.createValue(JTSMultiPolygon2D), ValueFactory.createValue(JTSMultiLineString2D));
-                        assertTrue(false);
+                        fail();
                 } catch (IncompatibleTypesException e) {
                 }
 
                 // Test wrong parameter type
                 try {
                         res = evaluate(function, ValueFactory.createValue(true));
-                        assertTrue(false);
+                        fail();
                 } catch (IncompatibleTypesException e) {
                 }
 
@@ -191,27 +197,25 @@ public class ConvertFunctionTest extends FunctionTest {
                         ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.LINESTRING),
                         ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, 3));
                 type = evaluate(function, type);
-                assertTrue(type.getTypeCode() == Type.GEOMETRY);
+                assertEquals(type.getTypeCode(), Type.GEOMETRY);
         }
 
         public final void testToMultiline() throws Exception {
                 Geometry g = testSpatialFunction(new ST_ToMultiLine(),
                         JTSMultiPolygon2D, 1).getAsGeometry();
-                assertTrue(JTSMultiPolygon2D.getEnvelopeInternal().equals(
-                        g.getEnvelopeInternal()));
+                assertTrue(JTSMultiPolygon2D.getEnvelopeInternal().equals(g.getEnvelopeInternal()));
         }
 
         public final void testToMultipoint() throws Exception {
                 Geometry g = testSpatialFunction(new ST_ToMultiPoint(),
                         JTSMultiPolygon2D, 1).getAsGeometry();
-                assertTrue(JTSMultiPolygon2D.getCoordinates().length == g.getNumGeometries());
+                assertEquals(JTSMultiPolygon2D.getCoordinates().length, g.getNumGeometries());
 
         }
 
         public final void testCentroid() throws Exception {
-                Geometry g = testSpatialFunction(new ST_Centroid(), JTSMultiPolygon2D,
-                        1).getAsGeometry();
-                assertTrue(JTSMultiPolygon2D.getCentroid().equals(g));
+                Geometry g = testSpatialFunction(new ST_Centroid(), JTSMultiPolygon2D, 1).getAsGeometry();
+                assertEquals(JTSMultiPolygon2D.getCentroid(), g);
         }
 
         /**  
@@ -262,12 +266,12 @@ public class ConvertFunctionTest extends FunctionTest {
 
                 Geometry g = testSpatialFunction(new ST_Holes(),
                         JTSPolygonWith2Holes, 1).getAsGeometry();
-                assertTrue(g.getNumGeometries() == 2);
+                assertEquals(g.getNumGeometries(), 2);
 
                 g = g.getFactory().createGeometryCollection(new Geometry[]{JTSGeometryCollection, JTSPolygonWith2Holes});
 
                 g = testSpatialFunction(new ST_Holes(),
                         g, 1).getAsGeometry();
-                assertTrue(g.getNumGeometries() == 2);
+                assertEquals(g.getNumGeometries(), 2);
         }
 }

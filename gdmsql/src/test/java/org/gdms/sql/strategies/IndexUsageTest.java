@@ -38,41 +38,44 @@ package org.gdms.sql.strategies;
 
 import java.io.File;
 
-import junit.framework.TestCase;
 
 import org.gdms.SQLBaseTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.file.FileSourceCreation;
+import org.junit.Before;
 
-public class IndexUsageTest extends TestCase {
+import org.junit.Test;
 
-	private SQLDataSourceFactory dsf = new SQLDataSourceFactory();
+public class IndexUsageTest {
 
-	public void testConstant() throws Exception {
-		dsf.getSourceManager().register(
-				"cantons",
-				new FileSourceCreation(new File(SQLBaseTest.internalData
-						+ "landcover2000.shp"), null));
+        private SQLDataSourceFactory dsf;
 
-		DataSource ds = dsf.getDataSource("cantons");
-		ds.open();
-		System.out.println(ds.getRowCount());
-		ds.close();
+        @Before
+        public void setUp() {
+                dsf = new SQLDataSourceFactory(SQLBaseTest.backupDir.getAbsolutePath());
+        }
 
-		String sql = "select * from cantons where " + "st_Contains("
-				+ "st_GeomFromText('POLYGON((280000 2160000, "
-				+ "458000 2160000, 458000 2300000, 280000 2300000, "
-				+ "280000 2160000))'), the_geom);";
-		System.out.println(sql);
-		ds = dsf.getDataSourceFromSQL(sql);
-		ds.open();
-		System.out.println(ds.getRowCount());
-		ds.close();
-	}
+        @Test
+        public void testConstant() throws Exception {
+                dsf.getSourceManager().register(
+                        "cantons",
+                        new FileSourceCreation(new File(SQLBaseTest.internalData
+                        + "landcover2000.shp"), null));
 
-	public void testOrderOfFromTables() throws Exception {
+                DataSource ds = dsf.getDataSource("cantons");
+                ds.open();
+//                System.out.println(ds.getRowCount());
+                ds.close();
 
-	}
-
+                String sql = "select * from cantons where " + "st_Contains("
+                        + "st_GeomFromText('POLYGON((280000 2160000, "
+                        + "458000 2160000, 458000 2300000, 280000 2300000, "
+                        + "280000 2160000))'), the_geom);";
+                System.out.println(sql);
+//                ds = dsf.getDataSourceFromSQL(sql);
+                ds.open();
+//                System.out.println(ds.getRowCount());
+                ds.close();
+        }
 }

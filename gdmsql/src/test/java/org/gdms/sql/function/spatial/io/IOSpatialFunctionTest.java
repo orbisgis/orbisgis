@@ -36,6 +36,7 @@
  */
 package org.gdms.sql.function.spatial.io;
 
+import org.junit.Test;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.FunctionTest;
@@ -48,25 +49,29 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.io.WKTWriter;
 
+import static org.junit.Assert.*;
+
 public class IOSpatialFunctionTest extends FunctionTest {
 
-	public void testAsWKT() throws Exception {
-		String str = testSpatialFunction(new ST_AsWKT(), JTSMultiPolygon2D, 1).getAsString();
-		assertTrue(str.equals(new WKTWriter().write(JTSMultiPolygon2D)));
-		Point p3d = new GeometryFactory().createPoint(new Coordinate(3, 3, 3));
-		str = testSpatialFunction(new ST_AsWKT(), p3d, 1).getAsString();
-		assertTrue(str.equals(new WKTWriter(3).write(p3d)));
-	}
+        @Test
+        public void testAsWKT() throws Exception {
+                String str = testSpatialFunction(new ST_AsWKT(), JTSMultiPolygon2D, 1).getAsString();
+                assertEquals(str, new WKTWriter().write(JTSMultiPolygon2D));
+                Point p3d = new GeometryFactory().createPoint(new Coordinate(3, 3, 3));
+                str = testSpatialFunction(new ST_AsWKT(), p3d, 1).getAsString();
+                assertEquals(str, new WKTWriter(3).write(p3d));
+        }
 
-	public void testGeomFromText() throws Exception {
-		String wkt = new WKTWriter().write(JTSMultiPolygon2D);
-		Geometry g = testSpatialFunction(new ST_GeomFromText(), new int[] { Type.STRING }, 1,
-				ValueFactory.createValue(wkt)).getAsGeometry();
-		assertTrue(g.equals(JTSMultiPolygon2D));
-		Point p3d = new GeometryFactory().createPoint(new Coordinate(3, 3, 3));
-		wkt = new WKTWriter(3).write(p3d);
-		g = testSpatialFunction(new ST_GeomFromText(), new int[] { Type.STRING }, 1,
-				ValueFactory.createValue(wkt)).getAsGeometry();
-		assertTrue(g.equals(p3d));
-	}
+        @Test
+        public void testGeomFromText() throws Exception {
+                String wkt = new WKTWriter().write(JTSMultiPolygon2D);
+                Geometry g = testSpatialFunction(new ST_GeomFromText(), new int[]{Type.STRING}, 1,
+                        ValueFactory.createValue(wkt)).getAsGeometry();
+                assertEquals(g, JTSMultiPolygon2D);
+                Point p3d = new GeometryFactory().createPoint(new Coordinate(3, 3, 3));
+                wkt = new WKTWriter(3).write(p3d);
+                g = testSpatialFunction(new ST_GeomFromText(), new int[]{Type.STRING}, 1,
+                        ValueFactory.createValue(wkt)).getAsGeometry();
+                assertEquals(g, p3d);
+        }
 }

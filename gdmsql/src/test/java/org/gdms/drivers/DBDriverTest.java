@@ -36,6 +36,7 @@
  */
 package org.gdms.drivers;
 
+import org.junit.Test;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -48,10 +49,15 @@ import org.gdms.SQLBaseTest;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.db.DBSource;
 
+import static org.junit.Assert.*;
+import static org.junit.Assume.*;
+
 
 public class DBDriverTest extends SQLBaseTest {
 
+        @Test
         public void testShapefile2PostgreSQL() throws Exception {
+                assumeTrue(SQLBaseTest.postGisAvailable);
                 // Delete the table if exists
                 // DBSource dbSource = new DBSource("127.0.0.1", 5432, "gdms",
                 // "postgres",
@@ -85,7 +91,7 @@ public class DBDriverTest extends SQLBaseTest {
                 SpatialDataSourceDecorator file = new SpatialDataSourceDecorator(dsf.getDataSource("parcels"));
                 db.open();
                 file.open();
-                assertTrue(db.getRowCount() == file.getRowCount());
+                assertEquals(db.getRowCount(),file.getRowCount());
                 for (int i = 0; i < db.getRowCount(); i++) {
                         assertTrue(db.getGeometry(i).equalsExact(file.getGeometry(i)));
                 }
@@ -93,7 +99,9 @@ public class DBDriverTest extends SQLBaseTest {
                 file.close();
         }
 
+        @Test
         public void testReadSchemaPostGreSQL() throws Exception {
+                assumeTrue(SQLBaseTest.postGisAvailable);
                 DBSource dbSource = new DBSource("127.0.0.1", 5432,
                         "gisdb", "gis", "gis", "gis_schema",
                         "administratif", "jdbc:postgresql");
@@ -103,7 +111,9 @@ public class DBDriverTest extends SQLBaseTest {
                 dsf.executeSQL("select * from data_source ; ");
         }
 
+        @Test
         public void testReadMultiSchemasPostGreSQL() throws Exception {
+                assumeTrue(SQLBaseTest.postGisAvailable);
                 DBSource publicSchemaDbSource = new DBSource("localhost", 5432,
                         "gisdb", "gis", "gis",
                         "landcover2000", "jdbc:postgresql");
@@ -130,6 +140,7 @@ public class DBDriverTest extends SQLBaseTest {
 
         }
 
+        @Test
         public void testShapefile2H2() throws Exception {
                 // Delete the table if exists
                 String fileName = internalData + "backup/testShapefile2H2";
@@ -168,7 +179,7 @@ public class DBDriverTest extends SQLBaseTest {
                 SpatialDataSourceDecorator file = new SpatialDataSourceDecorator(dsf.getDataSource("parcels"));
                 db.open();
                 file.open();
-                assertTrue(db.getRowCount() == file.getRowCount());
+                assertEquals(db.getRowCount(),file.getRowCount());
                 for (int i = 0; i < db.getRowCount(); i++) {
                         assertTrue(db.getFieldValue(i, db.getSpatialFieldIndex()).equals(
                                 file.getFieldValue(i, file.getSpatialFieldIndex())).getAsBoolean());

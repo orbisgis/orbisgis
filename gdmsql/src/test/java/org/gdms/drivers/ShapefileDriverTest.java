@@ -36,9 +36,10 @@
  */
 package org.gdms.drivers;
 
+import org.junit.Test;
+import org.junit.Before;
 import java.io.File;
 
-import junit.framework.TestCase;
 
 import org.gdms.SQLBaseTest;
 import org.gdms.data.DataSource;
@@ -46,36 +47,39 @@ import org.gdms.data.DataSourceCreation;
 import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.file.FileSourceCreation;
 
+import static org.junit.Assert.*;
 
-public class ShapefileDriverTest extends TestCase {
-	private SQLDataSourceFactory dsf;
+public class ShapefileDriverTest {
 
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		dsf = new SQLDataSourceFactory();
-		dsf.setTempDir(SQLBaseTest.internalData + "backup");
-	}
+        private SQLDataSourceFactory dsf;
 
-	public void testSaveSQL() throws Exception {
-		dsf.getSourceManager().register(
-				"shape",
-				new FileSourceCreation(new File(SQLBaseTest.internalData
-						+ "landcover2000.shp"), null));
+        @Before
+        public void setUp() throws Exception {
+                dsf = new SQLDataSourceFactory();
+                dsf.setTempDir(SQLBaseTest.backupDir.getAbsolutePath());
+                dsf.setResultDir(SQLBaseTest.backupDir);
+        }
 
-		DataSource sql = dsf.getDataSourceFromSQL(
-				"select st_Buffer(the_geom, 20) from shape;",
-				SQLDataSourceFactory.DEFAULT);
-		DataSourceCreation target = new FileSourceCreation(new File(
-				SQLBaseTest.backupDir, "outputtestSaveSQL.shp"), null);
-		dsf.getSourceManager().register("buffer", target);
-		dsf.saveContents("buffer", sql);
+        @Test
+        public void testSaveSQL() throws Exception {
+                dsf.getSourceManager().register(
+                        "shape",
+                        new FileSourceCreation(new File(SQLBaseTest.internalData
+                        + "landcover2000.shp"), null));
 
-		DataSource ds = dsf.getDataSource("buffer");
-		ds.open();
-		sql.open();
-		assertTrue(ds.getRowCount() == sql.getRowCount());
-		sql.close();
-		ds.close();
-	}
+                DataSource sql = dsf.getDataSourceFromSQL(
+                        "select st_Buffer(the_geom, 20) from shape;",
+                        SQLDataSourceFactory.DEFAULT);
+                DataSourceCreation target = new FileSourceCreation(new File(
+                        SQLBaseTest.backupDir, "outputtestSaveSQL.shp"), null);
+                dsf.getSourceManager().register("buffer", target);
+                dsf.saveContents("buffer", sql);
+
+                DataSource ds = dsf.getDataSource("buffer");
+                ds.open();
+                sql.open();
+                assertEquals(ds.getRowCount(), sql.getRowCount());
+                sql.close();
+                ds.close();
+        }
 }

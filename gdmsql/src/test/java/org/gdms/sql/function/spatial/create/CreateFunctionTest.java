@@ -36,6 +36,7 @@
  */
 package org.gdms.sql.function.spatial.create;
 
+import org.junit.Test;
 import com.vividsolutions.jts.geom.CoordinateArrays;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.io.WKTReader;
@@ -45,45 +46,49 @@ import org.gdms.sql.FunctionTest;
 import org.gdms.sql.function.spatial.geometry.create.ST_MakeEnvelope;
 import org.gdms.sql.function.spatial.geometry.create.ST_RemoveDuplicateCoordinate;
 
+import static org.junit.Assert.*;
+
 public class CreateFunctionTest extends FunctionTest {
 
         /**
          * Test the make envelope function
          * @throws Exception
          */
+        @Test
         public void testST_MakeEnvelope() throws Exception {
 
                 ST_MakeEnvelope st_MakeEnvelope = new ST_MakeEnvelope();
                 Envelope env = JTSPolygon2D.getEnvelopeInternal();
                 Value[] values = new Value[]{ValueFactory.createValue(env.getMinX()), ValueFactory.createValue(env.getMinY()), ValueFactory.createValue(env.getMaxX()), ValueFactory.createValue(env.getMaxY())};
                 Value result = evaluate(st_MakeEnvelope, values);
-                assertTrue(env.getMinX() == result.getAsGeometry().getEnvelopeInternal().getMinX());
-                assertTrue(env.getMinY() == result.getAsGeometry().getEnvelopeInternal().getMinY());
-                assertTrue(env.getMaxX() == result.getAsGeometry().getEnvelopeInternal().getMaxX());
-                assertTrue(env.getMaxY() == result.getAsGeometry().getEnvelopeInternal().getMaxY());
+                assertEquals(env.getMinX(), result.getAsGeometry().getEnvelopeInternal().getMinX(), 0);
+                assertEquals(env.getMinY(), result.getAsGeometry().getEnvelopeInternal().getMinY(), 0);
+                assertEquals(env.getMaxX(), result.getAsGeometry().getEnvelopeInternal().getMaxX(), 0);
+                assertEquals(env.getMaxY(), result.getAsGeometry().getEnvelopeInternal().getMaxY(), 0);
         }
 
         /**
          * Remove repeated coordinates.
          * @throws Exception
          */
+        @Test
         public void testRemoveDuplicateCoordinate() throws Exception {
                 ST_RemoveDuplicateCoordinate sT_RemoveRepeatedPoints = new ST_RemoveDuplicateCoordinate();
                 WKTReader wktr = new WKTReader();
                 Value[] values = new Value[]{ValueFactory.createValue(wktr.read("LINESTRING(0 0, 1 0, 1 0, 2 10, 0 0 )"))};
                 Value result = evaluate(sT_RemoveRepeatedPoints, values);
                 assertTrue(JTSMultiPoint2D.getNumGeometries() != result.getAsGeometry().getNumGeometries());
-                assertTrue(!CoordinateArrays.hasRepeatedPoints(result.getAsGeometry().getCoordinates()));
+                assertFalse(CoordinateArrays.hasRepeatedPoints(result.getAsGeometry().getCoordinates()));
 
                 values = new Value[]{ValueFactory.createValue(wktr.read("POLYGON((0 0, 1 0, 1 0, 2 10, 0 0 ))"))};
                 result = evaluate(sT_RemoveRepeatedPoints, values);
                 assertTrue(JTSMultiPoint2D.getNumGeometries() != result.getAsGeometry().getNumGeometries());
-                assertTrue(!CoordinateArrays.hasRepeatedPoints(result.getAsGeometry().getCoordinates()));
+                assertFalse(CoordinateArrays.hasRepeatedPoints(result.getAsGeometry().getCoordinates()));
 
                 values = new Value[]{ValueFactory.createValue(wktr.read("POLYGON (( 155 186, 155 282, 276 282, 276 282, 276 186, 155 186 ), ( 198 253, 198 253, 198 218, 198 218, 244 222, 239 243, 198 253 ))"))};
                 result = evaluate(sT_RemoveRepeatedPoints, values);
                 assertTrue(JTSMultiPoint2D.getNumGeometries() != result.getAsGeometry().getNumGeometries());
-                assertTrue(!CoordinateArrays.hasRepeatedPoints(result.getAsGeometry().getCoordinates()));
+                assertFalse(CoordinateArrays.hasRepeatedPoints(result.getAsGeometry().getCoordinates()));
 
         }
 }
