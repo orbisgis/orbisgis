@@ -18,7 +18,7 @@
 		    <PenStroke />
 		</MarkGraphic>
 		<tse:Percentage>
-                    <Categorize threshholdsBelongTo="succeeding" fallbackValue="0">
+                    <Categorize thresholdsBelongTo="succeeding" fallbackValue="0">
                         <LookupValue>
                             <ns3:ValueReference>OUI_EEE92</ns3:ValueReference>
                         </LookupValue>
@@ -62,7 +62,7 @@
 		    <PenStroke />
 		</MarkGraphic>
 		<tse:Percentage>
-             <Categorize threshholdsBelongTo="succeeding" fallbackValue="0">
+             <Categorize thresholdsBelongTo="succeeding" fallbackValue="0">
                         <LookupValue>
                             <ns3:ValueReference>OUI_EEE92</ns3:ValueReference>
                         </LookupValue>

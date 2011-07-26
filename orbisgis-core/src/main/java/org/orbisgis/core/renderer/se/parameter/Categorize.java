@@ -15,7 +15,7 @@ import net.opengis.se._2_0.core.ExtensionParameterType;
 import net.opengis.se._2_0.core.ExtensionType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.ParameterValueType;
-import net.opengis.se._2_0.core.ThreshholdBelongsToType;
+import net.opengis.se._2_0.core.ThresholdBelongsToType;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
@@ -394,9 +394,9 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         }
 
         if (this.succeeding) {
-            c.setThreshholdBelongsTo(ThreshholdBelongsToType.SUCCEEDING);
+            c.setThresholdBelongsTo(ThresholdBelongsToType.SUCCEEDING);
         } else {
-            c.setThreshholdBelongsTo(ThreshholdBelongsToType.PRECEDING);
+            c.setThresholdBelongsTo(ThresholdBelongsToType.PRECEDING);
         }
         ObjectFactory of = new ObjectFactory();
 

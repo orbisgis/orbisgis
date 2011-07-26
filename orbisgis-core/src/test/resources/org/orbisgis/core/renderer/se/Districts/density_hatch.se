@@ -10,7 +10,7 @@
 	        <PenStroke>
 		  <SolidFill>
 		  <Color>
-                    <Categorize threshholdsBelongTo="succeeding" fallbackValue="#000000">
+                    <Categorize thresholdsBelongTo="succeeding" fallbackValue="#000000">
                         <LookupValue>
                             <ns3:ValueReference>OUI_EEE92</ns3:ValueReference>
                         </LookupValue>

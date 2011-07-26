@@ -38,7 +38,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;/sequence>
  *         &lt;element ref="{http://www.opengis.net/se/2.0/core}Extension" minOccurs="0"/>
  *       &lt;/sequence>
- *       &lt;attribute name="threshholdBelongsTo" type="{http://www.opengis.net/se/2.0/core}ThreshholdBelongsToType" />
+ *       &lt;attribute name="thresholdBelongsTo" type="{http://www.opengis.net/se/2.0/core}ThresholdBelongsToType" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -69,7 +69,7 @@ public class CategorizeType
     @XmlElement(name = "Extension")
     protected ExtensionType extension;
     @XmlAttribute
-    protected ThreshholdBelongsToType threshholdBelongsTo;
+    protected ThresholdBelongsToType thresholdBelongsTo;
 
     /**
      * Gets the value of the lookupValue property.
@@ -174,27 +174,27 @@ public class CategorizeType
     }
 
     /**
-     * Gets the value of the threshholdBelongsTo property.
+     * Gets the value of the thresholdBelongsTo property.
      * 
      * @return
      *     possible object is
-     *     {@link ThreshholdBelongsToType }
+     *     {@link ThresholdBelongsToType }
      *     
      */
-    public ThreshholdBelongsToType getThreshholdBelongsTo() {
-        return threshholdBelongsTo;
+    public ThresholdBelongsToType getThresholdBelongsTo() {
+        return thresholdBelongsTo;
     }
 
     /**
-     * Sets the value of the threshholdBelongsTo property.
+     * Sets the value of the thresholdBelongsTo property.
      * 
      * @param value
      *     allowed object is
-     *     {@link ThreshholdBelongsToType }
+     *     {@link ThresholdBelongsToType }
      *     
      */
-    public void setThreshholdBelongsTo(ThreshholdBelongsToType value) {
-        this.threshholdBelongsTo = value;
+    public void setThresholdBelongsTo(ThresholdBelongsToType value) {
+        this.thresholdBelongsTo = value;
     }
 
 }

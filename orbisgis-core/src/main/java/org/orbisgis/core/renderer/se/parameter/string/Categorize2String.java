@@ -44,7 +44,7 @@ import java.util.Iterator;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.CategorizeType;
 import net.opengis.se._2_0.core.ParameterValueType;
-import net.opengis.se._2_0.core.ThreshholdBelongsToType;
+import net.opengis.se._2_0.core.ThresholdBelongsToType;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.Categorize;
@@ -77,7 +77,7 @@ public class Categorize2String extends Categorize<StringParameter, StringLiteral
                     SeParameterFactory.createStringParameter(it.next().getValue()));
         }
 
-        if (t.getThreshholdBelongsTo() == ThreshholdBelongsToType.PRECEDING) {
+        if (t.getThresholdBelongsTo() == ThresholdBelongsToType.PRECEDING) {
             this.setThresholdsPreceding();
         } else {
             this.setThresholdsSucceeding();

@@ -28,9 +28,9 @@ import javax.xml.bind.annotation.XmlType;
  * </pre>
  * 
  */
-@XmlType(name = "ThreshholdBelongsToType")
+@XmlType(name = "ThresholdBelongsToType")
 @XmlEnum
-public enum ThreshholdBelongsToType {
+public enum ThresholdBelongsToType {
 
     @XmlEnumValue("succeeding")
     SUCCEEDING("succeeding"),
@@ -38,7 +38,7 @@ public enum ThreshholdBelongsToType {
     PRECEDING("preceding");
     private final String value;
 
-    ThreshholdBelongsToType(String v) {
+    ThresholdBelongsToType(String v) {
         value = v;
     }
 
@@ -46,8 +46,8 @@ public enum ThreshholdBelongsToType {
         return value;
     }
 
-    public static ThreshholdBelongsToType fromValue(String v) {
-        for (ThreshholdBelongsToType c: ThreshholdBelongsToType.values()) {
+    public static ThresholdBelongsToType fromValue(String v) {
+        for (ThresholdBelongsToType c: ThresholdBelongsToType.values()) {
             if (c.value.equals(v)) {
                 return c;
             }

@@ -10,7 +10,7 @@
 	        <PenStroke>
 		  <SolidFill>
 		  <Color>
-                    <Categorize threshholdsBelongTo="succeeding" fallbackValue="#000000">
+                    <Categorize thresholdsBelongTo="succeeding" fallbackValue="#000000">
                         <LookupValue>
                             <ns3:ValueReference>OUI_EEE92</ns3:ValueReference>
                         </LookupValue>
@@ -26,7 +26,7 @@
 		<Width>1</Width>
 	        </PenStroke>
 		<tse:Percentage>
-                    <Categorize threshholdsBelongTo="succeeding" fallbackValue="0">
+                    <Categorize thresholdsBelongTo="succeeding" fallbackValue="0">
                         <LookupValue>
                             <ns3:ValueReference>OUI_EEE92</ns3:ValueReference>
                         </LookupValue>
@@ -51,7 +51,7 @@
                     </Categorize>
 		</tse:Percentage>
 		<tse:Orientation>
-                    <Categorize threshholdsBelongTo="succeeding" fallbackValue="0">
+                    <Categorize thresholdsBelongTo="succeeding" fallbackValue="0">
                         <LookupValue>
                             <ns3:ValueReference>OUI_EEE92</ns3:ValueReference>
                         </LookupValue>
