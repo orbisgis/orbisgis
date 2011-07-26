@@ -1,5 +1,6 @@
 package org.orbisgis.core.geocognition;
 
+import org.junit.Test;
 import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -25,507 +26,482 @@ import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.renderer.symbol.SymbolFactory;
 import org.orbisgis.progress.NullProgressMonitor;
 
+import static org.junit.Assert.*;
+
 public class GeoCognitionTest extends AbstractGeocognitionTest {
 
-	public void testRootId() throws Exception {
-		assertTrue(gc.getRoot().getId().equals(""));
-		saveAndLoad();
-		assertTrue(gc.getRoot().getId().equals(""));
-	}
+        @Test
+        public void testRootId() throws Exception {
+                assertEquals(gc.getRoot().getId(), "");
+                saveAndLoad();
+                assertEquals(gc.getRoot().getId(), "");
+        }
 
-	public void testSymbolPersistence() throws Exception {
-		Symbol symbol = SymbolFactory.createPolygonSymbol();
-		gc.addElement("/org/mysymbol", symbol);
-		saveAndLoad();
-		Symbol symbol2 = gc.getElement("/org/mysymbol", Symbol.class);
-		assertTrue(symbol2.getPersistentProperties().equals(
-				symbol.getPersistentProperties()));
-	}
+        @Test
+        public void testSymbolPersistence() throws Exception {
+                Symbol symbol = SymbolFactory.createPolygonSymbol();
+                gc.addElement("/org/mysymbol", symbol);
+                saveAndLoad();
+                Symbol symbol2 = gc.getElement("/org/mysymbol", Symbol.class);
+                assertEquals(symbol2.getPersistentProperties(), symbol.getPersistentProperties());
+        }
 
-	public void testNonSupportedElement() throws Exception {
-		try {
-			gc.addElement("org.wont.add", new GeoCognitionTest());
-			assertTrue(false);
-		} catch (IllegalArgumentException e) {
-		}
-	}
+        @Test
+        public void testNonSupportedElement() throws Exception {
+                try {
+                        gc.addElement("org.wont.add", new GeoCognitionTest());
+                        fail();
+                } catch (IllegalArgumentException e) {
+                }
+        }
 
-	public void testNonUniqueId() throws Exception {
-		gc.addElement("org.wont.add", SymbolFactory.createPolygonSymbol());
-		try {
-			gc.addElement("org.wont.add", SymbolFactory.createPolygonSymbol());
-			assertTrue(false);
-		} catch (IllegalArgumentException e) {
-		}
-		try {
-			gc.addFolder("org.wont.add");
-			assertTrue(false);
-		} catch (IllegalArgumentException e) {
-		}
-		gc.addFolder("myfolder");
-		gc.addElement("/myfolder/org.wont.add/ST_Buffer", ST_Buffer.class);
-		try {
-			gc.addElement("/myfolder/org.wont.add/ST_Buffer", ST_Buffer.class);
-			assertTrue(false);
-		} catch (IllegalArgumentException e) {
-		}
-		try {
-			gc.addFolder("/myfolder/org.wont.add");
-			assertTrue(false);
-		} catch (IllegalArgumentException e) {
-		}
-	}
+        @Test
+        public void testNonUniqueId() throws Exception {
+                gc.addElement("org.wont.add", SymbolFactory.createPolygonSymbol());
+                try {
+                        gc.addElement("org.wont.add", SymbolFactory.createPolygonSymbol());
+                        fail();
+                } catch (IllegalArgumentException e) {
+                }
+                try {
+                        gc.addFolder("org.wont.add");
+                        fail();
+                } catch (IllegalArgumentException e) {
+                }
+                gc.addFolder("myfolder");
+                gc.addElement("/myfolder/org.wont.add/ST_Buffer", ST_Buffer.class);
+                try {
+                        gc.addElement("/myfolder/org.wont.add/ST_Buffer", ST_Buffer.class);
+                        fail();
+                } catch (IllegalArgumentException e) {
+                }
+                try {
+                        gc.addFolder("/myfolder/org.wont.add");
+                        fail();
+                } catch (IllegalArgumentException e) {
+                }
+        }
 
-	public void testAddParentDoesNotExist() throws Exception {
-		gc.addElement("/it.will.be.created/ST_Buffer", ST_Buffer.class);
-		assertTrue(gc.getGeocognitionElement("it.will.be.created") != null);
-	}
+        @Test
+        public void testAddParentDoesNotExist() throws Exception {
+                gc.addElement("/it.will.be.created/ST_Buffer", ST_Buffer.class);
+                assertNotNull(gc.getGeocognitionElement("it.will.be.created"));
+        }
 
-	public void testFunctionPersistence() throws Exception {
-		gc.addElement("/ST_Buffer", ST_Buffer.class);
-		saveAndLoad();
-		Class<?> classFunction = gc.getElement("/ST_Buffer", Class.class);
-		assertTrue(classFunction.getName().equals(ST_Buffer.class.getName()));
-	}
+        @Test
+        public void testFunctionPersistence() throws Exception {
+                gc.addElement("/ST_Buffer", ST_Buffer.class);
+                saveAndLoad();
+                Class<?> classFunction = gc.getElement("/ST_Buffer", Class.class);
+                assertEquals(classFunction.getName(), ST_Buffer.class.getName());
+        }
 
-	public void testCustomQueryPersistence() throws Exception {
-		gc.addElement("/Register", RegisterCall.class);
-		saveAndLoad();
-		Class<?> classCQ = gc.getElement("/Register", Class.class);
-		assertTrue(classCQ.getName().equals(RegisterCall.class.getName()));
-	}
+        @Test
+        public void testCustomQueryPersistence() throws Exception {
+                gc.addElement("/Register", RegisterCall.class);
+                saveAndLoad();
+                Class<?> classCQ = gc.getElement("/Register", Class.class);
+                assertEquals(classCQ.getName(), RegisterCall.class.getName());
+        }
 
-	public void testLegendPersistence() throws Exception {
-		UniqueSymbolLegend legend = LegendFactory.createUniqueSymbolLegend();
-		Symbol symbol = SymbolFactory.createPolygonSymbol(Color.pink);
-		legend.setSymbol(symbol);
-		UniqueSymbolLegend legend2 = LegendFactory.createUniqueSymbolLegend();
-		gc.addElement("org.mylegend", legend);
-		gc.addElement("org.mylegend2", legend2);
-		saveAndLoad();
-		legend = gc.getElement("org.mylegend", UniqueSymbolLegend.class);
-		assertTrue(legend.getSymbol().getPersistentProperties().equals(
-				symbol.getPersistentProperties()));
-		legend2 = gc.getElement("org.mylegend2", UniqueSymbolLegend.class);
-		assertTrue(legend2.getSymbol() == null);
-	}
+        @Test
+        public void testLegendPersistence() throws Exception {
+                UniqueSymbolLegend legend = LegendFactory.createUniqueSymbolLegend();
+                Symbol symbol = SymbolFactory.createPolygonSymbol(Color.pink);
+                legend.setSymbol(symbol);
+                UniqueSymbolLegend legend2 = LegendFactory.createUniqueSymbolLegend();
+                gc.addElement("org.mylegend", legend);
+                gc.addElement("org.mylegend2", legend2);
+                saveAndLoad();
+                legend = gc.getElement("org.mylegend", UniqueSymbolLegend.class);
+                assertTrue(legend.getSymbol().getPersistentProperties().equals(
+                        symbol.getPersistentProperties()));
+                legend2 = gc.getElement("org.mylegend2", UniqueSymbolLegend.class);
+                assertNull(legend2.getSymbol());
+        }
 
-	public void testMapContextPersistence() throws Exception {
-		MapContext mc = new DefaultMapContext();
-		mc.open(null);
-		DataManager dm = (DataManager) Services.getService(DataManager.class);
-		ILayer lyr = dm.createLayer(new File(
-				"src/test/resources/data/bv_sap.shp"));
-		mc.getLayerModel().addLayer(lyr);
-		mc.close(null);
-		gc.addElement("org.mymap", mc);
-		saveAndLoad();
-		mc = gc.getElement("org.mymap", MapContext.class);
-		mc.open(null);
-		assertTrue(mc.getLayerModel().getLayerCount() == 1);
-		mc.close(null);
-	}
+        @Test
+        public void testMapContextPersistence() throws Exception {
+                MapContext mc = new DefaultMapContext();
+                mc.open(null);
+                DataManager dm = (DataManager) Services.getService(DataManager.class);
+                ILayer lyr = dm.createLayer(new File(
+                        "src/test/resources/data/bv_sap.shp"));
+                mc.getLayerModel().addLayer(lyr);
+                mc.close(null);
+                gc.addElement("org.mymap", mc);
+                saveAndLoad();
+                mc = gc.getElement("org.mymap", MapContext.class);
+                mc.open(null);
+                assertEquals(mc.getLayerModel().getLayerCount(), 1);
+                mc.close(null);
+        }
 
-	public void testMapContextIsModifed() throws Exception {
-		MapContext mc = new DefaultMapContext();
-		mc.open(null);
-		DataManager dm = (DataManager) Services.getService(DataManager.class);
-		ILayer lyr = dm.createLayer(new File(
-				"src/test/resources/data/bv_sap.shp"));
-		mc.getLayerModel().addLayer(lyr);
-		mc.getLayerModel().addLayer(dm.createLayerCollection("group"));
-		mc.close(null);
-		gc.addElement("org.mymap", mc);
-		GeocognitionElement elem = gc.getGeocognitionElement("org.mymap");
-		elem.open(null);
-		assertTrue(!elem.isModified());
-		elem.close(null);
-	}
+        @Test
+        public void testMapContextIsModifed() throws Exception {
+                MapContext mc = new DefaultMapContext();
+                mc.open(null);
+                DataManager dm = (DataManager) Services.getService(DataManager.class);
+                ILayer lyr = dm.createLayer(new File(
+                        "src/test/resources/data/bv_sap.shp"));
+                mc.getLayerModel().addLayer(lyr);
+                mc.getLayerModel().addLayer(dm.createLayerCollection("group"));
+                mc.close(null);
+                gc.addElement("org.mymap", mc);
+                GeocognitionElement elem = gc.getGeocognitionElement("org.mymap");
+                elem.open(null);
+                assertFalse(elem.isModified());
+                elem.close(null);
+        }
 
-	public void testNotFoundSymbolReturnsNull() throws Exception {
-		assertTrue(gc.getElement("org.not.exists", Symbol.class) == null);
-	}
+        @Test
+        public void testNotFoundSymbolReturnsNull() throws Exception {
+                assertNull(gc.getElement("org.not.exists", Symbol.class));
+        }
 
-	public void testListenRemove() throws Exception {
-		Symbol s = SymbolFactory.createPolygonSymbol();
-		TestListener listener = new TestListener();
-		gc.addGeocognitionListener(listener);
-		gc.addElement("org.id1", s);
-		gc.removeElement("org.id1");
-		assertTrue(listener.removed == 1);
-		assertTrue(listener.removing == 1);
-		gc.addFolder("org.myfolder");
-		gc.addElement("/org.myfolder/org.id1", s);
-		gc.addElement("/org.myfolder/org.id2", s);
-		gc.removeElement("/org.myfolder/org.id1");
-		assertTrue(listener.removed == 2);
-		assertTrue(listener.removing == 2);
-		gc.removeElement("org.myfolder");
-		assertTrue(listener.removed == 3);
-		assertTrue(listener.removing == 3);
-		assertTrue(gc.getRoot().getElementCount() == 0);
-	}
+        @Test
+        public void testListenRemove() throws Exception {
+                Symbol s = SymbolFactory.createPolygonSymbol();
+                TestListener listener = new TestListener();
+                gc.addGeocognitionListener(listener);
+                gc.addElement("org.id1", s);
+                gc.removeElement("org.id1");
+                assertEquals(listener.removed, 1);
+                assertEquals(listener.removing, 1);
+                gc.addFolder("org.myfolder");
+                gc.addElement("/org.myfolder/org.id1", s);
+                gc.addElement("/org.myfolder/org.id2", s);
+                gc.removeElement("/org.myfolder/org.id1");
+                assertEquals(listener.removed, 2);
+                assertEquals(listener.removing, 2);
+                gc.removeElement("org.myfolder");
+                assertEquals(listener.removed, 3);
+                assertEquals(listener.removing, 3);
+                assertEquals(gc.getRoot().getElementCount(), 0);
+        }
 
-	public void testListenAddRemoveFromFolder() throws Exception {
-		TestListener listener = new TestListener();
-		gc.addGeocognitionListener(listener);
-		gc.addElement("org.id1", SymbolFactory.createPolygonSymbol());
-		assertTrue(listener.added == 1);
-		gc.getRoot().removeElement("org.id1");
-		assertTrue(listener.removed == 1);
-		assertTrue(listener.removing == 1);
-		gc.getRoot().addElement(gc.createFolder("ppp"));
-		assertTrue(listener.added == 2);
-	}
+        @Test
+        public void testListenAddRemoveFromFolder() throws Exception {
+                TestListener listener = new TestListener();
+                gc.addGeocognitionListener(listener);
+                gc.addElement("org.id1", SymbolFactory.createPolygonSymbol());
+                assertEquals(listener.added, 1);
+                gc.getRoot().removeElement("org.id1");
+                assertEquals(listener.removed, 1);
+                assertEquals(listener.removing, 1);
+                gc.getRoot().addElement(gc.createFolder("ppp"));
+                assertEquals(listener.added, 2);
+        }
 
-	public void testRemovalCancellation() throws Exception {
-		TestListener listener = new TestListener();
-		gc.addGeocognitionListener(listener);
-		gc.addElement("/ST_Buffer", ST_Buffer.class);
-		listener.cancel = true;
-		assertTrue(gc.removeElement("/ST_Buffer") == null);
-	}
+        @Test
+        public void testRemovalCancellation() throws Exception {
+                TestListener listener = new TestListener();
+                gc.addGeocognitionListener(listener);
+                gc.addElement("/ST_Buffer", ST_Buffer.class);
+                listener.cancel = true;
+                assertNull(gc.removeElement("/ST_Buffer"));
+        }
 
-	public void testListenAdd() throws Exception {
-		Symbol s = SymbolFactory.createPolygonSymbol();
-		TestListener listener = new TestListener();
-		gc.addGeocognitionListener(listener);
-		gc.addElement("org", s);
-		gc.addFolder("org.folder");
-		// Two elements are created here
-		gc.addElement("/org.another.folder/org.contains", s);
-		assertTrue(listener.added == 4);
-	}
+        @Test
+        public void testListenAdd() throws Exception {
+                Symbol s = SymbolFactory.createPolygonSymbol();
+                TestListener listener = new TestListener();
+                gc.addGeocognitionListener(listener);
+                gc.addElement("org", s);
+                gc.addFolder("org.folder");
+                // Two elements are created here
+                gc.addElement("/org.another.folder/org.contains", s);
+                assertEquals(listener.added, 4);
+        }
 
-	public void testListenMoveNotRemovePlusAdd() throws Exception {
-		Symbol s = SymbolFactory.createPolygonSymbol();
-		TestListener listener = new TestListener();
-		gc.addGeocognitionListener(listener);
-		gc.addElement("org", s);
-		gc.addFolder("org.folder");
-		int added = listener.added;
-		int removed = listener.removed;
-		int removing = listener.removing;
-		gc.move("/org", "/org.folder");
-		assertTrue(listener.moved == 1);
-		assertTrue(listener.added == added);
-		assertTrue(listener.removed == removed);
-		assertTrue(listener.removing == removing);
-	}
+        @Test
+        public void testListenMoveNotRemovePlusAdd() throws Exception {
+                Symbol s = SymbolFactory.createPolygonSymbol();
+                TestListener listener = new TestListener();
+                gc.addGeocognitionListener(listener);
+                gc.addElement("org", s);
+                gc.addFolder("org.folder");
+                int added = listener.added;
+                int removed = listener.removed;
+                int removing = listener.removing;
+                gc.move("/org", "/org.folder");
+                assertEquals(listener.moved, 1);
+                assertEquals(listener.added, added);
+                assertEquals(listener.removed, removed);
+                assertEquals(listener.removing, removing);
+        }
 
-	public void testClear() throws Exception {
-		Symbol s = SymbolFactory.createPolygonSymbol();
-		gc.addElement("org", s);
-		gc.addFolder("org.folder");
-		gc.clear();
-		assertTrue(gc.getRoot().getElementCount() == 0);
-	}
+        @Test
+        public void testClear() throws Exception {
+                Symbol s = SymbolFactory.createPolygonSymbol();
+                gc.addElement("org", s);
+                gc.addFolder("org.folder");
+                gc.clear();
+                assertEquals(gc.getRoot().getElementCount(), 0);
+        }
 
-	/*
-	 * TODO : plugin initialization public void testOpenSaveCloseMap() throws
-	 * Exception {
-	 * 
-	 * MapContext mc = new DefaultMapContext(); gc.addElement("id", mc);
-	 * GeocognitionElement element = gc.getGeocognitionElement("id");
-	 * element.open(new NullProgressMonitor()); String rootLayerName =
-	 * "root test layer"; mc.getLayerModel().setName(rootLayerName);
-	 * element.save(); element.close(new NullProgressMonitor()); try {
-	 * mc.getLayerModel(); assertTrue(false); } catch (IllegalStateException e)
-	 * { } element.open(new NullProgressMonitor());
-	 * assertTrue(mc.getLayerModel().getName().equals(rootLayerName));
-	 * mc.getLayerModel().setName("This will not be saved"); element.close(new
-	 * NullProgressMonitor()); element.open(new NullProgressMonitor());
-	 * assertTrue(mc.getLayerModel().getName().equals(rootLayerName));
-	 * element.close(new NullProgressMonitor()); }
-	 * 
-	 * public void testOpenSaveCloseLegend() throws Exception {
-	 * UniqueSymbolLegend legend = LegendFactory.createUniqueSymbolLegend();
-	 * gc.addElement("id", legend); GeocognitionElement element =
-	 * gc.getGeocognitionElement("id"); element.open(new NullProgressMonitor());
-	 * Symbol symbol = SymbolFactory.createPolygonSymbol(Color.pink);
-	 * legend.setSymbol(symbol); element.save(); element.close(new
-	 * NullProgressMonitor()); element.open(new NullProgressMonitor());
-	 * assertTrue(legend.getSymbol().getPersistentProperties().equals(
-	 * symbol.getPersistentProperties())); legend.setSymbol(null);
-	 * element.close(new NullProgressMonitor()); element.open(new
-	 * NullProgressMonitor());
-	 * assertTrue(legend.getSymbol().getPersistentProperties().equals(
-	 * symbol.getPersistentProperties())); element.close(new
-	 * NullProgressMonitor()); }
-	 * 
-	 * public void testOpenSaveCloseSymbol() throws Exception {
-	 * StandardPolygonSymbol symbol = (StandardPolygonSymbol) SymbolFactory
-	 * .createPolygonSymbol(); gc.addElement("id", symbol); GeocognitionElement
-	 * element = gc.getGeocognitionElement("id"); element.open(new
-	 * NullProgressMonitor()); symbol.setFillColor(Color.pink); element.save();
-	 * element.close(new NullProgressMonitor()); element.open(new
-	 * NullProgressMonitor());
-	 * assertTrue(symbol.getFillColor().equals(Color.pink));
-	 * symbol.setFillColor(Color.black); element.close(new
-	 * NullProgressMonitor()); element.open(new NullProgressMonitor());
-	 * assertTrue(symbol.getFillColor().equals(Color.pink)); element.close(new
-	 * NullProgressMonitor()); }
-	 */
+        @Test
+        public void testOpenSaveCloseBuiltinSQL() throws Exception {
+                Class<?> buffer = ST_Buffer.class;
+                gc.addElement("/ST_Buffer", buffer);
+                unsupportedBuiltInSQLEdition("/ST_Buffer");
+                Class<?> register = RegisterCall.class;
+                gc.addElement("/register", register);
+                unsupportedBuiltInSQLEdition("/register");
+        }
 
-	public void testOpenSaveCloseBuiltinSQL() throws Exception {
-		Class<?> buffer = ST_Buffer.class;
-		gc.addElement("/ST_Buffer", buffer);
-		unsupportedBuiltInSQLEdition("/ST_Buffer");
-		Class<?> register = RegisterCall.class;
-		gc.addElement("/register", register);
-		unsupportedBuiltInSQLEdition("/register");
-	}
+        private void unsupportedBuiltInSQLEdition(String id) throws Exception {
+                GeocognitionElement element = gc.getGeocognitionElement(id);
+                try {
+                        element.open(new NullProgressMonitor());
+                        fail();
+                } catch (UnsupportedOperationException e) {
+                }
+                try {
+                        element.save();
+                        fail();
+                } catch (UnsupportedOperationException e) {
+                }
+                try {
+                        element.close(new NullProgressMonitor());
+                        fail();
+                } catch (UnsupportedOperationException e) {
+                }
+        }
 
-	private void unsupportedBuiltInSQLEdition(String id) throws Exception {
-		GeocognitionElement element = gc.getGeocognitionElement(id);
-		try {
-			element.open(new NullProgressMonitor());
-			assertTrue(false);
-		} catch (UnsupportedOperationException e) {
-		}
-		try {
-			element.save();
-			assertTrue(false);
-		} catch (UnsupportedOperationException e) {
-		}
-		try {
-			element.close(new NullProgressMonitor());
-			assertTrue(false);
-		} catch (UnsupportedOperationException e) {
-		}
-	}
+        @Test
+        public void testMapContextLoadLayerWithoutSource() throws Exception {
+                MapContext mc = new DefaultMapContext();
+                mc.open(null);
+                ILayer layer = getDataManager().createLayer("linestring",
+                        new File("src/test/resources/data/linestring.shp"));
+                mc.getLayerModel().addLayer(layer);
+                mc.close(null);
 
-	public void testMapContextLoadLayerWithoutSource() throws Exception {
-		MapContext mc = new DefaultMapContext();
-		mc.open(null);
-		ILayer layer = getDataManager().createLayer("linestring",
-				new File("src/test/resources/data/linestring.shp"));
-		mc.getLayerModel().addLayer(layer);
-		mc.close(null);
+                gc.addElement("org.map", mc);
+                GeocognitionElement mapElement = gc.getGeocognitionElement("org.map");
+                getDataManager().getSourceManager().remove("linestring");
 
-		gc.addElement("org.map", mc);
-		GeocognitionElement mapElement = gc.getGeocognitionElement("org.map");
-		getDataManager().getSourceManager().remove("linestring");
+                saveAndLoad();
+                mapElement = gc.getGeocognitionElement("org.map");
+                CountingErrorManager em = new CountingErrorManager();
+                ErrorManager previous = Services.getErrorManager();
+                Services.setService(ErrorManager.class, em);
+                mapElement.open(null);
+                Services.setService(ErrorManager.class, previous);
+                assertEquals(((MapContext) mapElement.getObject()).getLayerModel().getLayerCount(), 0);
+                assertTrue(mapElement.isModified());
+                mapElement.close(null);
+        }
 
-		saveAndLoad();
-		mapElement = gc.getGeocognitionElement("org.map");
-		CountingErrorManager em = new CountingErrorManager();
-		ErrorManager previous = Services.getErrorManager();
-		Services.setService(ErrorManager.class, em);
-		mapElement.open(null);
-		Services.setService(ErrorManager.class, previous);
-		assertTrue(((MapContext) mapElement.getObject()).getLayerModel()
-				.getLayerCount() == 0);
-		assertTrue(mapElement.isModified());
-		mapElement.close(null);
-	}
+        @Test
+        public void testImportExport() throws Exception {
+                Symbol s = SymbolFactory.createPolygonSymbol();
+                gc.addFolder("org");
+                gc.addElement("/org/mysymbol", s);
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                gc.write(bos, "/org");
+                GeocognitionElement tree = gc.createTree(new ByteArrayInputStream(bos.toByteArray()));
+                gc.addGeocognitionElement("/newFolder", tree);
+                GeocognitionElement org = gc.getGeocognitionElement("org");
+                GeocognitionElement newFolder = gc.getGeocognitionElement("newFolder");
+                assertEquals(org.getElementCount(), newFolder.getElementCount());
+        }
 
-	public void testImportExport() throws Exception {
-		Symbol s = SymbolFactory.createPolygonSymbol();
-		gc.addFolder("org");
-		gc.addElement("/org/mysymbol", s);
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		gc.write(bos, "/org");
-		GeocognitionElement tree = gc.createTree(new ByteArrayInputStream(bos
-				.toByteArray()));
-		gc.addGeocognitionElement("/newFolder", tree);
-		GeocognitionElement org = gc.getGeocognitionElement("org");
-		GeocognitionElement newFolder = gc.getGeocognitionElement("newFolder");
-		assertTrue(org.getElementCount() == newFolder.getElementCount());
-	}
+        @Test
+        public void testFullPath() throws Exception {
+                gc.addFolder("org");
+                GeocognitionElement org = gc.getGeocognitionElement("org");
+                gc.addFolder(org.getIdPath() + "/orbisgis");
+                GeocognitionElement orbisgis = gc.getGeocognitionElement("/org/orbisgis");
+                gc.addFolder(orbisgis.getIdPath() + "/test");
+                GeocognitionElement test = gc.getGeocognitionElement("/org/orbisgis/test");
+                assertEquals(org.getElementCount(), 1);
+                assertEquals(orbisgis.getElementCount(), 1);
+                assertEquals(test.getElementCount(), 0);
+                assertEquals(org.getIdPath(), "/org");
+                assertEquals(orbisgis.getIdPath(), "/org/orbisgis");
+                assertEquals(test.getIdPath(), "/org/orbisgis/test");
+        }
 
-	public void testFullPath() throws Exception {
-		gc.addFolder("org");
-		GeocognitionElement org = gc.getGeocognitionElement("org");
-		gc.addFolder(org.getIdPath() + "/orbisgis");
-		GeocognitionElement orbisgis = gc
-				.getGeocognitionElement("/org/orbisgis");
-		gc.addFolder(orbisgis.getIdPath() + "/test");
-		GeocognitionElement test = gc
-				.getGeocognitionElement("/org/orbisgis/test");
-		assertTrue(org.getElementCount() == 1);
-		assertTrue(orbisgis.getElementCount() == 1);
-		assertTrue(test.getElementCount() == 0);
-		assertTrue(org.getIdPath().equals("/org"));
-		assertTrue(orbisgis.getIdPath().equals("/org/orbisgis"));
-		assertTrue(test.getIdPath().equals("/org/orbisgis/test"));
-	}
+        @Test
+        public void testMoveError() throws Exception {
+                Symbol s = SymbolFactory.createPolygonSymbol();
+                gc.addFolder("org");
+                gc.addElement("sym", s);
+                try {
+                        gc.move("/org", "/sym");
+                        fail();
+                } catch (IllegalArgumentException e) {
+                } catch (UnsupportedOperationException e) {
+                }
+                assertEquals(gc.getRoot().getElementCount(), 2);
+        }
 
-	public void testMoveError() throws Exception {
-		Symbol s = SymbolFactory.createPolygonSymbol();
-		gc.addFolder("org");
-		gc.addElement("sym", s);
-		try {
-			gc.move("/org", "/sym");
-			assertTrue(false);
-		} catch (IllegalArgumentException e) {
-		} catch (UnsupportedOperationException e) {
-		}
-		assertTrue(gc.getRoot().getElementCount() == 2);
-	}
+        @Test
+        public void testMoveSameName() throws Exception {
+                gc.addFolder("org");
+                gc.addFolder("/org/foo");
+                gc.addFolder("foo");
+                try {
+                        gc.move("/foo", "/org");
+                        fail();
+                } catch (UnsupportedOperationException e) {
+                }
+        }
 
-	public void testMoveSameName() throws Exception {
-		gc.addFolder("org");
-		gc.addFolder("/org/foo");
-		gc.addFolder("foo");
-		try {
-			gc.move("/foo", "/org");
-			assertTrue(false);
-		} catch (UnsupportedOperationException e) {
-		}
-	}
+        @Test
+        public void testModifyMapContextXML() throws Exception {
+                MapContext mc = new DefaultMapContext();
+                mc.open(null);
+                DataManager dm = (DataManager) Services.getService(DataManager.class);
+                ILayer lyr = dm.createLayer(new File(
+                        "src/test/resources/data/bv_sap.shp"));
+                mc.getLayerModel().addLayer(lyr);
+                mc.close(null);
+                gc.addElement("mymap", mc);
 
-	public void testModifyMapContextXML() throws Exception {
-		MapContext mc = new DefaultMapContext();
-		mc.open(null);
-		DataManager dm = (DataManager) Services.getService(DataManager.class);
-		ILayer lyr = dm.createLayer(new File(
-				"src/test/resources/data/bv_sap.shp"));
-		mc.getLayerModel().addLayer(lyr);
-		mc.close(null);
-		gc.addElement("mymap", mc);
+                GeocognitionElement element = gc.getGeocognitionElement("mymap");
+                String xml = element.getXMLContent();
+                MapContext mc2 = new DefaultMapContext();
+                gc.addElement("mymap2", mc2);
+                GeocognitionElement element2 = gc.getGeocognitionElement("mymap2");
+                element2.setXMLContent(xml);
 
-		GeocognitionElement element = gc.getGeocognitionElement("mymap");
-		String xml = element.getXMLContent();
-		MapContext mc2 = new DefaultMapContext();
-		gc.addElement("mymap2", mc2);
-		GeocognitionElement element2 = gc.getGeocognitionElement("mymap2");
-		element2.setXMLContent(xml);
+                mc2.open(null);
+                assertEquals(mc2.getLayerModel().getLayerCount(), 1);
+        }
 
-		mc2.open(null);
-		assertTrue(mc2.getLayerModel().getLayerCount() == 1);
-	}
+        @Test
+        public void testChangeMapIdConflict() throws Exception {
+                gc.addElement("A", new DefaultMapContext());
+                gc.addElement("B", new DefaultMapContext());
+                try {
+                        gc.getGeocognitionElement("A").setId("B");
+                        fail();
+                } catch (IllegalArgumentException e) {
+                }
+        }
 
-	public void testChangeMapIdConflict() throws Exception {
-		gc.addElement("A", new DefaultMapContext());
-		gc.addElement("B", new DefaultMapContext());
-		try {
-			gc.getGeocognitionElement("A").setId("B");
-			assertTrue(false);
-		} catch (IllegalArgumentException e) {
-		}
-	}
+        @Test
+        public void testFixedName() throws Exception {
+                gc.addElement("ST_Buffer", ST_Buffer.class);
+                try {
+                        gc.addElement("SuperBuffer", ST_Buffer.class);
+                        fail();
+                } catch (IllegalArgumentException e) {
+                }
+                try {
+                        gc.getGeocognitionElement("ST_Buffer").setId("fails");
+                        fail();
+                } catch (IllegalArgumentException e) {
+                }
+        }
 
-	public void testFixedName() throws Exception {
-		gc.addElement("ST_Buffer", ST_Buffer.class);
-		try {
-			gc.addElement("SuperBuffer", ST_Buffer.class);
-			assertTrue(false);
-		} catch (IllegalArgumentException e) {
-		}
-		try {
-			gc.getGeocognitionElement("ST_Buffer").setId("fails");
-			assertTrue(false);
-		} catch (IllegalArgumentException e) {
-		}
-	}
+        @Test
+        public void testKeepUnsupportedElement() throws Exception {
+                MapContext mc = new DefaultMapContext();
+                mc.open(null);
+                DataManager dm = (DataManager) Services.getService(DataManager.class);
+                ILayer lyr = dm.createLayer(new File(
+                        "src/test/resources/data/bv_sap.shp"));
+                mc.getLayerModel().addLayer(lyr);
+                mc.close(null);
+                gc.addElement("org.mymap", mc);
+                File temp = new File("target/temp.xml");
+                gc.write(new FileOutputStream(temp));
 
-	public void testKeepUnsupportedElement() throws Exception {
-		MapContext mc = new DefaultMapContext();
-		mc.open(null);
-		DataManager dm = (DataManager) Services.getService(DataManager.class);
-		ILayer lyr = dm.createLayer(new File(
-				"src/test/resources/data/bv_sap.shp"));
-		mc.getLayerModel().addLayer(lyr);
-		mc.close(null);
-		gc.addElement("org.mymap", mc);
-		File temp = new File("target/temp.xml");
-		gc.write(new FileOutputStream(temp));
+                // Create a geocognition without support for maps
+                gc = new DefaultGeocognition();
+                DefaultGeocognition.clearFactories();
 
-		// Create a geocognition without support for maps
-		gc = new DefaultGeocognition();
-		DefaultGeocognition.clearFactories();
+                failErrorManager.setIgnoreWarnings(true);
+                gc.read(new FileInputStream(temp));
+                failErrorManager.setIgnoreWarnings(false);
+                GeocognitionElement elem = gc.getGeocognitionElement("org.mymap");
+                assertNotNull(elem);
+                assertFalse((elem.getObject() instanceof MapContext));
+                gc.write(new FileOutputStream(temp));
 
-		failErrorManager.setIgnoreWarnings(true);
-		gc.read(new FileInputStream(temp));
-		failErrorManager.setIgnoreWarnings(false);
-		GeocognitionElement elem = gc.getGeocognitionElement("org.mymap");
-		assertTrue(elem != null);
-		assertTrue(!(elem.getObject() instanceof MapContext));
-		gc.write(new FileOutputStream(temp));
+                gc = new DefaultGeocognition();
+                gc.addElementFactory(new GeocognitionSymbolFactory());
+                gc.addElementFactory(new GeocognitionLegendFactory());
+                gc.addElementFactory(new GeocognitionMapContextFactory());
+                gc.read(new FileInputStream(temp));
+                elem = gc.getGeocognitionElement("org.mymap");
+                assertNotNull(elem);
+                assertTrue(new GeocognitionMapContextFactory().acceptContentTypeId(elem.getTypeId()));
+                MapContext map = gc.getElement("org.mymap", MapContext.class);
+                map.open(null);
+                assertTrue(map.getLayerModel().getLayerCount() > 0);
+                map.close(null);
+        }
 
-		gc = new DefaultGeocognition();
-		gc.addElementFactory(new GeocognitionSymbolFactory());
-		gc.addElementFactory(new GeocognitionLegendFactory());
-		gc.addElementFactory(new GeocognitionMapContextFactory());
-		gc.read(new FileInputStream(temp));
-		elem = gc.getGeocognitionElement("org.mymap");
-		assertTrue(elem != null);
-		assertTrue(new GeocognitionMapContextFactory().acceptContentTypeId(elem
-				.getTypeId()));
-		MapContext map = gc.getElement("org.mymap", MapContext.class);
-		map.open(null);
-		assertTrue(map.getLayerModel().getLayerCount() > 0);
-		map.close(null);
-	}
+        private class TestListener implements GeocognitionListener {
 
-	private class TestListener implements GeocognitionListener {
+                public int moved = 0;
+                private int added = 0;
+                private int removed = 0;
+                private int removing = 0;
+                private boolean cancel = false;
 
-		public int moved = 0;
-		private int added = 0;
-		private int removed = 0;
-		private int removing = 0;
-		private boolean cancel = false;
+                @Override
+                public void elementRemoved(Geocognition geocognition,
+                        GeocognitionElement element) {
+                        removed++;
+                }
 
-		@Override
-		public void elementRemoved(Geocognition geocognition,
-				GeocognitionElement element) {
-			removed++;
-		}
+                @Override
+                public void elementAdded(Geocognition geocognition,
+                        GeocognitionElement parent, GeocognitionElement newElement) {
+                        added++;
+                }
 
-		@Override
-		public void elementAdded(Geocognition geocognition,
-				GeocognitionElement parent, GeocognitionElement newElement) {
-			added++;
-		}
+                @Override
+                public boolean elementRemoving(Geocognition geocognition,
+                        GeocognitionElement element) {
+                        removing++;
+                        return !cancel;
+                }
 
-		@Override
-		public boolean elementRemoving(Geocognition geocognition,
-				GeocognitionElement element) {
-			removing++;
-			return !cancel;
-		}
+                @Override
+                public void elementMoved(Geocognition geocognition,
+                        GeocognitionElement element, GeocognitionElement oldParent) {
+                        moved++;
+                }
+        }
 
-		@Override
-		public void elementMoved(Geocognition geocognition,
-				GeocognitionElement element, GeocognitionElement oldParent) {
-			moved++;
-		}
+        private final class CountingErrorManager implements ErrorManager {
 
-	}
+                private int warnings = 0;
+                private int errors = 0;
 
-	private final class CountingErrorManager implements ErrorManager {
-		private int warnings = 0;
-		private int errors = 0;
+                @Override
+                public void warning(String userMsg, Throwable exception) {
+                        warnings++;
+                }
 
-		@Override
-		public void warning(String userMsg, Throwable exception) {
-			warnings++;
-		}
+                @Override
+                public void warning(String userMsg) {
+                        warnings++;
+                }
 
-		@Override
-		public void warning(String userMsg) {
-			warnings++;
-		}
+                @Override
+                public void removeErrorListener(ErrorListener listener) {
+                }
 
-		@Override
-		public void removeErrorListener(ErrorListener listener) {
+                @Override
+                public void error(String userMsg, Throwable exception) {
+                        errors++;
+                }
 
-		}
+                @Override
+                public void error(String userMsg) {
+                        errors++;
+                }
 
-		@Override
-		public void error(String userMsg, Throwable exception) {
-			errors++;
-		}
-
-		@Override
-		public void error(String userMsg) {
-			errors++;
-		}
-
-		@Override
-		public void addErrorListener(ErrorListener listener) {
-		}
-	}
-
+                @Override
+                public void addErrorListener(ErrorListener listener) {
+                }
+        }
 }

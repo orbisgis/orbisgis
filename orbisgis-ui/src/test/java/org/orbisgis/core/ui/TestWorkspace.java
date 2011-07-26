@@ -2,10 +2,12 @@ package org.orbisgis.core.ui;
 
 import java.io.File;
 import java.io.IOException;
+import org.junit.Ignore;
 
 import org.orbisgis.core.workspace.Workspace;
 import org.orbisgis.core.workspace.WorkspaceListener;
 
+@Ignore
 public class TestWorkspace implements Workspace {
 
 	private File workspaceFolder;

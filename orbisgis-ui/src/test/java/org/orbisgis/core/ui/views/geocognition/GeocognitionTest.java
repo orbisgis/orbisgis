@@ -1,5 +1,7 @@
 package org.orbisgis.core.ui.views.geocognition;
 
+import org.junit.Before;
+import org.junit.Test;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -7,7 +9,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import junit.framework.TestCase;
 
 import org.orbisgis.core.OrbisgisUIServices;
 import org.orbisgis.core.Services;
@@ -23,58 +24,59 @@ import org.orbisgis.core.ui.TestWorkspace;
 import org.orbisgis.core.ui.plugins.views.geocognition.GeocognitionView;
 import org.orbisgis.core.workspace.Workspace;
 
-public class GeocognitionTest extends TestCase {
+import static org.junit.Assert.*;
 
-	private static final String STARTUP_GEOCOGNITION_XML = "startup.geocognition.xml";
-	private DefaultGeocognition gc;
+public class GeocognitionTest {
 
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		Services.registerService(ErrorManager.class, "",
-				new DefaultErrorManager());
-		TestWorkspace workspace = new TestWorkspace();
-		workspace.setWorkspaceFolder("target");
-		Services.registerService(Workspace.class, "", workspace);
-		OrbisgisUIServices.installServices();
+        private static final String STARTUP_GEOCOGNITION_XML = "startup.geocognition.xml";
+        private DefaultGeocognition gc;
 
-		gc = new DefaultGeocognition();
-		gc.addElementFactory(new GeocognitionSymbolFactory());
-		gc.addElementFactory(new GeocognitionLegendFactory());
-		gc.addElementFactory(new GeocognitionMapContextFactory());
-	}
+        @Before
+        public void setUp() throws Exception {
+                Services.registerService(ErrorManager.class, "",
+                        new DefaultErrorManager());
+                TestWorkspace workspace = new TestWorkspace();
+                workspace.setWorkspaceFolder("target");
+                Services.registerService(Workspace.class, "", workspace);
+                OrbisgisUIServices.installServices();
 
-	public void testLoadAndCheckInitialGeocognition() throws Exception {
-		InputStream geocognitionStream = GeocognitionView.class
-				.getResourceAsStream(GeocognitionTest.STARTUP_GEOCOGNITION_XML);
-		gc.read(geocognitionStream);
-		GeocognitionElement[] elems = gc.getElements(new GeocognitionFilter() {
+                gc = new DefaultGeocognition();
+                gc.addElementFactory(new GeocognitionSymbolFactory());
+                gc.addElementFactory(new GeocognitionLegendFactory());
+                gc.addElementFactory(new GeocognitionMapContextFactory());
+        }
 
-			@Override
-			public boolean accept(GeocognitionElement element) {
-				return true;
-			}
-		});
+        @Test
+        public void testLoadAndCheckInitialGeocognition() throws Exception {
+                InputStream geocognitionStream = GeocognitionView.class.getResourceAsStream(GeocognitionTest.STARTUP_GEOCOGNITION_XML);
+                gc.read(geocognitionStream);
+                GeocognitionElement[] elems = gc.getElements(new GeocognitionFilter() {
 
-		for (GeocognitionElement elem : elems) {
-			assertTrue(elem.getObject() != null);
-		}
-	}
+                        @Override
+                        public boolean accept(GeocognitionElement element) {
+                                return true;
+                        }
+                });
 
-	public void testLoadInitialMap() throws Exception {
-		InputStream geocognitionStream = GeocognitionView.class
-				.getResourceAsStream(GeocognitionTest.STARTUP_GEOCOGNITION_XML);
-		gc.read(geocognitionStream);
-		assertTrue(gc.getGeocognitionElement(GeocognitionView.FIRST_MAP) != null);
-	}
+                for (GeocognitionElement elem : elems) {
+                        assertNotNull(elem.getObject());
+                }
+        }
 
-	private String getContent(File file) throws FileNotFoundException,
-			IOException {
-		FileInputStream fis = new FileInputStream(file);
-		DataInputStream dis = new DataInputStream(fis);
-		byte[] buffer = new byte[dis.available()];
-		dis.readFully(buffer);
-		String content = new String(buffer);
-		return content;
-	}
+        @Test
+        public void testLoadInitialMap() throws Exception {
+                InputStream geocognitionStream = GeocognitionView.class.getResourceAsStream(GeocognitionTest.STARTUP_GEOCOGNITION_XML);
+                gc.read(geocognitionStream);
+                assertNotNull(gc.getGeocognitionElement(GeocognitionView.FIRST_MAP));
+        }
+
+        private String getContent(File file) throws FileNotFoundException,
+                IOException {
+                FileInputStream fis = new FileInputStream(file);
+                DataInputStream dis = new DataInputStream(fis);
+                byte[] buffer = new byte[dis.available()];
+                dis.readFully(buffer);
+                String content = new String(buffer);
+                return content;
+        }
 }

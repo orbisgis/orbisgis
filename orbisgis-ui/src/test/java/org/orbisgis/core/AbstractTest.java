@@ -37,9 +37,7 @@
  */
 package org.orbisgis.core;
 
-import junit.framework.TestCase;
 
-import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.errorManager.ErrorListener;
@@ -47,91 +45,87 @@ import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.ui.TestWorkspace;
 import org.orbisgis.core.workspace.Workspace;
 
-public class AbstractTest extends TestCase {
+public abstract class AbstractTest {
 
-	protected FailErrorManager failErrorManager;
+        protected FailErrorManager failErrorManager;
 
-	@Override
-	protected void setUp() throws Exception {
-		failErrorManager = new FailErrorManager();
-		Services.registerService(ErrorManager.class, "", failErrorManager);
-		TestWorkspace workspace = new TestWorkspace();
-		workspace.setWorkspaceFolder("target");
-		Services.registerService(Workspace.class, "", workspace);
-		ApplicationInfo applicationInfo = new OrbisGISApplicationInfo();
-		Services.registerService(ApplicationInfo.class,
-				"Gets information about the application: "
-						+ "name, version, etc.", applicationInfo);
+        public void setUp() throws Exception {
+                failErrorManager = new FailErrorManager();
+                Services.registerService(ErrorManager.class, "", failErrorManager);
+                TestWorkspace workspace = new TestWorkspace();
+                workspace.setWorkspaceFolder("target");
+                Services.registerService(Workspace.class, "", workspace);
+                ApplicationInfo applicationInfo = new OrbisGISApplicationInfo();
+                Services.registerService(ApplicationInfo.class,
+                        "Gets information about the application: "
+                        + "name, version, etc.", applicationInfo);
 
-		OrbisgisUIServices.installServices();
+                OrbisgisUIServices.installServices();
 
-	}
+        }
 
-	public static void registerDataManager(SQLDataSourceFactory dsf) {
-		// Installation of the service
-		Services
-				.registerService(
-						DataManager.class,
-						"Access to the sources, to its properties (indexes, etc.) and its contents, either raster or vectorial",
-						new DefaultDataManager(dsf));
-	}
+        public static void registerDataManager(SQLDataSourceFactory dsf) {
+                // Installation of the service
+                Services.registerService(
+                        DataManager.class,
+                        "Access to the sources, to its properties (indexes, etc.) and its contents, either raster or vectorial",
+                        new DefaultDataManager(dsf));
+        }
 
-	public static void registerDataManager() {
-		SQLDataSourceFactory dsf = new SQLDataSourceFactory();
-		registerDataManager(dsf);
-	}
+        public static void registerDataManager() {
+                SQLDataSourceFactory dsf = new SQLDataSourceFactory();
+                registerDataManager(dsf);
+        }
 
-	protected SourceManager getsSourceManager() {
-		return getDataManager().getSourceManager();
-	}
+        protected SourceManager getsSourceManager() {
+                return getDataManager().getSourceManager();
+        }
 
-	protected DataManager getDataManager() {
-		return (DataManager) Services.getService(DataManager.class);
-	}
+        protected DataManager getDataManager() {
+                return (DataManager) Services.getService(DataManager.class);
+        }
 
-	protected class FailErrorManager implements ErrorManager {
+        protected class FailErrorManager implements ErrorManager {
 
-		private boolean ignoreWarnings;
-		private boolean ignoreErrors;
+                private boolean ignoreWarnings;
+                private boolean ignoreErrors;
 
-		public void setIgnoreWarnings(boolean ignore) {
-			this.ignoreWarnings = ignore;
-		}
+                public void setIgnoreWarnings(boolean ignore) {
+                        this.ignoreWarnings = ignore;
+                }
 
-		public void addErrorListener(ErrorListener listener) {
-		}
+                public void addErrorListener(ErrorListener listener) {
+                }
 
-		public void error(String userMsg) {
-			if (!ignoreErrors) {
-				throw new RuntimeException(userMsg);
-			}
-		}
+                public void error(String userMsg) {
+                        if (!ignoreErrors) {
+                                throw new RuntimeException(userMsg);
+                        }
+                }
 
-		public void error(String userMsg, Throwable exception) {
-			if (!ignoreErrors) {
-				throw new RuntimeException(userMsg, exception);
-			}
-		}
+                public void error(String userMsg, Throwable exception) {
+                        if (!ignoreErrors) {
+                                throw new RuntimeException(userMsg, exception);
+                        }
+                }
 
-		public void removeErrorListener(ErrorListener listener) {
-		}
+                public void removeErrorListener(ErrorListener listener) {
+                }
 
-		public void warning(String userMsg, Throwable exception) {
-			if (!ignoreWarnings) {
-				throw new RuntimeException(userMsg, exception);
-			}
-		}
+                public void warning(String userMsg, Throwable exception) {
+                        if (!ignoreWarnings) {
+                                throw new RuntimeException(userMsg, exception);
+                        }
+                }
 
-		public void warning(String userMsg) {
-			if (!ignoreWarnings) {
-				throw new RuntimeException(userMsg);
-			}
-		}
+                public void warning(String userMsg) {
+                        if (!ignoreWarnings) {
+                                throw new RuntimeException(userMsg);
+                        }
+                }
 
-		public void setIgnoreErrors(boolean b) {
-			this.ignoreErrors = b;
-		}
-
-	}
-
+                public void setIgnoreErrors(boolean b) {
+                        this.ignoreErrors = b;
+                }
+        }
 }
