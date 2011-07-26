@@ -36,12 +36,12 @@
  */
 package org.gdms.data.values;
 
+import com.vividsolutions.jts.io.ParseException;
 import org.junit.Before;
 import org.junit.Test;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.NumberFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;

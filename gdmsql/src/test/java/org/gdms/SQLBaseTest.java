@@ -3,9 +3,15 @@ package org.gdms;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.io.WKTWriter;
+import java.io.IOException;
 import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.log4j.Appender;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreation;
 import org.gdms.data.DataSourceCreationException;
@@ -34,7 +40,7 @@ import org.gdms.driver.shapefile.ShapefileDriver;
 import org.gdms.driver.solene.CirDriver;
 import org.gdms.source.SourceManager;
 import org.gdms.spatial.SeveralSpatialFieldsDriver;
-import org.junit.Ignore;
+import org.junit.BeforeClass;
 
 /**
  *
@@ -43,6 +49,7 @@ import org.junit.Ignore;
 public abstract class SQLBaseTest extends SourceTest<Value, Geometry> {
 
         public static SQLDataSourceFactory dsf;
+        private static boolean loaded = false;
         private static String fname = "name";
         private static String frowCount = "rowCount";
         private static String fisDB = "isDB";
@@ -59,77 +66,100 @@ public abstract class SQLBaseTest extends SourceTest<Value, Geometry> {
         private static String fspatialField = "spatialField";
         private static String fnewGeometry = "newGeometry";
         private static String fwrite = "write";
-        public static final boolean postGisAvailable;
-        public static final boolean h2Available;
-        public static final boolean hsqlDbAvailable;
+        public static boolean postGisAvailable;
+        public static boolean h2Available;
+        public static boolean hsqlDbAvailable;
+        private static final Logger LOG = Logger.getLogger(SQLBaseTest.class);
 
         static {
-                try {
-                        DriverManager.setLoginTimeout(1);
-                        dsf = new SQLDataSourceFactory();
-                        dsf.setTempDir(SQLBaseTest.backupDir.getAbsolutePath());
-                        dsf.setResultDir(SQLBaseTest.backupDir);
+                BasicConfigurator.configure();
+                Logger.getRootLogger().setLevel(Level.INFO);
+                ((Appender) Logger.getRootLogger().getAllAppenders().nextElement()).setLayout(new PatternLayout("%d %-5p %c - %m%n"));
+        }
 
-                        toTest.add(new FileTestSource("hedgerow", internalData
-                                + "hedgerow.shp"));
-                        toTest.add(new FileTestSource("landcover2000dbf", internalData
-                                + "landcover2000.dbf"));
+        @BeforeClass
+        public static void setUpClass() {
+                if (!loaded) {
+                        try {
+                                LOG.info("Initializing test resources.");
+                                DriverManager.setLoginTimeout(1);
 
-                        toTest.add(new FileTestSource(SHPTABLE, internalData
-                                + "landcover2000.shp"));
-                        toTest.add(new ObjectTestSource("memory_spatial_object",
-                                new SeveralSpatialFieldsDriver()));
-                        final DBTestSource dBTestH2 = new DBTestSource("testh2", "org.h2.Driver", internalData
-                                                   + "testh2.sql", new DBSource(null, 0, internalData
-                                                   + "backup/testh2", "sa", "", "POINT", "jdbc:h2"));
-                        h2Available = dBTestH2.isConnected();
-                        
-                        if (h2Available) {
-                                toTest.add(dBTestH2);
+                                dsf = new SQLDataSourceFactory();
+                                dsf.setTempDir(SQLBaseTest.backupDir.getAbsolutePath());
+                                dsf.setResultDir(SQLBaseTest.backupDir);
+
+                                toTest.add(new FileTestSource("hedgerow", internalData
+                                        + "hedgerow.shp"));
+                                toTest.add(new FileTestSource("landcover2000dbf", internalData
+                                        + "landcover2000.dbf"));
+
+                                toTest.add(new FileTestSource(SHPTABLE, internalData
+                                        + "landcover2000.shp"));
+                                toTest.add(new ObjectTestSource("memory_spatial_object",
+                                        new SeveralSpatialFieldsDriver()));
+                                final DBTestSource dBTestH2 = new DBTestSource("testh2", "org.h2.Driver", internalData
+                                        + "testh2.sql", new DBSource(null, 0, internalData
+                                        + "backup/testh2", "sa", "", "POINT", "jdbc:h2"));
+                                h2Available = dBTestH2.isConnected();
+
+                                if (h2Available) {
+                                        LOG.info("H2 database available.");
+                                        toTest.add(dBTestH2);
+                                } else {
+                                        LOG.warn("H2 database not available!!");
+                                        LOG.warn("Skipping H2 DB tests.");
+                                }
+                                final DBTestSource dBTestHsqlDb = new DBTestSource("testhsqldb", "org.hsqldb.jdbcDriver",
+                                        internalData + "testhsqldb.sql", new DBSource(null, 0,
+                                        internalData + "backup/testhsqldb", "sa", "",
+                                        "gisapps", "jdbc:hsqldb:file"));
+                                hsqlDbAvailable = dBTestHsqlDb.isConnected();
+
+                                if (hsqlDbAvailable) {
+                                        LOG.info("HsqlDb database available.");
+                                        toTest.add(dBTestHsqlDb);
+                                } else {
+                                        LOG.warn("HsqlDb database not available!!");
+                                        LOG.warn("Skipping HsqlDb DB tests.");
+                                }
+
+                                toTest.add(new FileTestSource("testcsv", internalData
+                                        + "test.csv"));
+                                toTest.add(new FileTestSource("repeatedRows", internalData
+                                        + "repeatedRows.csv"));
+                                toTest.add(new SQLTestSource("select_source", internalData
+                                        + "repeatedRows.csv"));
+
+                                final DBTestSource dBTestPostGIS = new DBTestSource("pghedgerow", "org.postgresql.Driver",
+                                        internalData + "hedgerow.sql", new DBSource("127.0.0.1",
+                                        -1, "gdms", "postgres", "postgres", "hedgerow",
+                                        "jdbc:postgresql"));
+                                postGisAvailable = dBTestPostGIS.isConnected();
+
+                                if (postGisAvailable) {
+                                        LOG.info("PostGIS database available.");
+                                        toTest.add(dBTestPostGIS);
+                                        toTest.add(new DBTestSource("postgres", "org.postgresql.Driver",
+                                                internalData + "testpostgres.sql", new DBSource(
+                                                "127.0.0.1", -1, "gdms", "postgres", "postgres",
+                                                "gisapps", "jdbc:postgresql")));
+                                } else {
+                                        LOG.warn("PostGIS database not available!!");
+                                        LOG.warn("Skipping PostGIS DB tests.");
+                                }
+
+                                if (!testDataInfo.exists()) {
+                                        createDB();
+                                }
+
+                                testMetaData = readDataInfo();
+
+                        } catch (Exception e) {
+                                testDataInfo.delete();
+                                LOG.error("Error initializing", e);
                         }
-                        final DBTestSource dBTestHsqlDb = new DBTestSource("testhsqldb", "org.hsqldb.jdbcDriver",
-                                                       internalData + "testhsqldb.sql", new DBSource(null, 0,
-                                                       internalData + "backup/testhsqldb", "sa", "",
-                                                       "gisapps", "jdbc:hsqldb:file"));
-                        hsqlDbAvailable = dBTestHsqlDb.isConnected();
-                        
-                        if (hsqlDbAvailable) {
-                                toTest.add(dBTestHsqlDb);
-                        }
-                        
-                        toTest.add(new FileTestSource("testcsv", internalData
-                                + "test.csv"));
-                        toTest.add(new FileTestSource("repeatedRows", internalData
-                                + "repeatedRows.csv"));
-                        toTest.add(new SQLTestSource("select_source", internalData
-                                + "repeatedRows.csv"));
-
-                        final DBTestSource dBTestPostGIS = new DBTestSource("pghedgerow", "org.postgresql.Driver",
-                                                                internalData + "hedgerow.sql", new DBSource("127.0.0.1",
-                                                                -1, "gdms", "postgres", "postgres", "hedgerow",
-                                                                "jdbc:postgresql"));
-                        postGisAvailable = dBTestPostGIS.isConnected();
-                        
-                        if (postGisAvailable) {
-                                toTest.add(dBTestPostGIS);
-                                toTest.add(new DBTestSource("postgres", "org.postgresql.Driver",
-                                        internalData + "testpostgres.sql", new DBSource(
-                                        "127.0.0.1", -1, "gdms", "postgres", "postgres",
-                                        "gisapps", "jdbc:postgresql")));
-                        }
-
-                        if (!testDataInfo.exists()) {
-                                createDB();
-                        }
-
-                        testMetaData = readDataInfo();
-
-                } catch (Exception e) {
-                        testDataInfo.delete();
-                        e.printStackTrace();
-                        throw new RuntimeException(e);
+                        loaded = true;
                 }
-
         }
 
         /**
@@ -169,6 +199,7 @@ public abstract class SQLBaseTest extends SourceTest<Value, Geometry> {
         }
 
         protected static void createDB() throws Exception {
+                LOG.info("Creating the list of available sources.");
                 ArrayList<TestSourceData> sources = new ArrayList<TestSourceData>();
                 sources.add(new TestSourceData("hedgerow", null, false));
                 sources.add(new TestSourceData("landcover2000dbf", null, false));
@@ -188,10 +219,12 @@ public abstract class SQLBaseTest extends SourceTest<Value, Geometry> {
                         sources.add(new TestSourceData("postgres", null, false));
                 }
                 createTestDataInfo(sources);
+                LOG.info("Created the list of available sources.");
         }
 
         private static void createTestDataInfo(ArrayList<TestSourceData> sources)
                 throws Exception {
+                LOG.info("Creating " + sources.size() + " sources.");
                 DefaultMetadata m = new DefaultMetadata();
                 m.addField(fname, Type.STRING);
                 m.addField(frowCount, Type.STRING);
@@ -215,12 +248,13 @@ public abstract class SQLBaseTest extends SourceTest<Value, Geometry> {
                 dsf.createDataSource(creation);
                 DataSource ds = dsf.getDataSource(testDataInfo);
                 ds.open();
+                LOG.info("Metadata size: " + ds.getMetadata().getFieldCount());
                 for (int i = 0; i < sources.size(); i++) {
                         try {
 
                                 TestSourceData sourceData = sources.get(i);
                                 getTestSource(sourceData.name).backup();
-                                System.out.println(sourceData.name);
+                                LOG.info(sourceData.name);
                                 DataSource testData = dsf.getDataSource(sourceData.name, DataSourceFactory.STATUS_CHECK);
                                 testData.open();
                                 ds.insertEmptyRow();
@@ -334,8 +368,9 @@ public abstract class SQLBaseTest extends SourceTest<Value, Geometry> {
                                 ds.setString(row, fhasRepeatedRows, Boolean.toString(sourceData.repeatedRows));
                                 ds.setString(row, fnullField, sourceData.nullField);
                                 testData.close();
+                                LOG.info("Traited source " + sourceData.name);
                         } catch (Exception e) {
-                                e.printStackTrace();
+                                LOG.error("Error in loop, for source " + sources.get(i).name, e);
                         }
                 }
                 ds.commit();
