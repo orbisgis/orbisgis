@@ -63,7 +63,7 @@ public class Categorize2String extends Categorize<StringParameter, StringLiteral
     public Categorize2String(JAXBElement<CategorizeType> expr) throws InvalidStyle {
         CategorizeType t = expr.getValue();
 
-        this.fallbackValue = new StringLiteral(t.getFallbackValue());
+        this.setFallbackValue(new StringLiteral(t.getFallbackValue()));
         this.setLookupValue(SeParameterFactory.createRealParameter(t.getLookupValue()));
 
 
@@ -90,7 +90,7 @@ public class Categorize2String extends Categorize<StringParameter, StringLiteral
         try {
             return getParameter(sds, fid).getValue(sds, fid);
         } catch (ParameterException ex) {
-            return this.fallbackValue.getValue( sds, fid);
+            return this.getFallbackValue().getValue( sds, fid);
         }
     }
 

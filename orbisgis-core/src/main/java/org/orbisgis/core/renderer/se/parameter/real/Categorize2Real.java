@@ -24,7 +24,7 @@ public final class Categorize2Real extends Categorize<RealParameter, RealLiteral
         CategorizeType t = expr.getValue();
 
 
-        this.fallbackValue = new RealLiteral(t.getFallbackValue());
+        this.setFallbackValue(new RealLiteral(t.getFallbackValue()));
         this.setLookupValue(SeParameterFactory.createRealParameter(t.getLookupValue()));
 
 
@@ -76,7 +76,7 @@ public final class Categorize2Real extends Categorize<RealParameter, RealLiteral
 	@Override
 	public void setContext(RealParameterContext ctx) {
 		this.ctx = ctx;
-		this.fallbackValue.setContext(ctx);
+		this.getFallbackValue().setContext(ctx);
 
 		for (int i=0; i<this.getNumClasses();i++){
 			RealParameter classValue = this.getClassValue(i);

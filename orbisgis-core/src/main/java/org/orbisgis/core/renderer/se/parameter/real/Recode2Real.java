@@ -66,7 +66,7 @@ public class Recode2Real extends Recode<RealParameter, RealLiteral> implements R
         RecodeType t = expr.getValue();
 		ctx = RealParameterContext.realContext;
 
-        this.fallbackValue = new RealLiteral(t.getFallbackValue());
+        this.setFallbackValue(new RealLiteral(t.getFallbackValue()));
         this.setLookupValue(SeParameterFactory.createStringParameter(t.getLookupValue()));
 
         for (MapItemType mi : t.getMapItem()){

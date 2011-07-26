@@ -6,6 +6,14 @@ public enum Uom {
 
 	PX, IN, MM, PT, PERCENT, GM, GFT;
 
+
+    private static final double PT_IN_INCH = 72.0;
+    private static final double MM_IN_INCH = 25.4;
+    private static final double IN_IN_FOOT = 12;
+    private static final double ONE_THOUSAND = 1000;
+    private static final double ONE_HUNDRED = 100;
+    
+    
 	/**
 	 * Convert a value to the corresponding value in pixel
 	 *
@@ -36,25 +44,25 @@ public enum Uom {
 			case IN:
 				return value * dpi; // [IN] * [PX]/[IN] => [PX]
 			case MM:
-				return (value / 25.4) * dpi; // [MM] * [IN]/[MM] * [PX]/[IN] => [PX]
+				return (value / MM_IN_INCH) * dpi; // [MM] * [IN]/[MM] * [PX]/[IN] => [PX]
 			case PT: // 1PT == 1/72[IN] whatever dpi is
-				return (value / 72.0) * dpi; // 1/72[IN] * 72 *[PX]/[IN] => [PX]
+				return (value / PT_IN_INCH) * dpi; // 1/72[IN] * 72 *[PX]/[IN] => [PX]
 			case GM:
 				if (scale == null){
 					throw new ParameterException("Scale is invalid");
 				}
-				return (value * 1000 * dpi) / (scale * 25.4);
+				return (value * ONE_THOUSAND * dpi) / (scale * MM_IN_INCH);
 			case GFT:
 				if (scale == null){
 					throw new ParameterException("Scale is invalid");
 				}
-				return (value * 12 * dpi) / (scale);
+				return (value * IN_IN_FOOT * dpi) / (scale);
 			case PERCENT:
 				if (v100p == null){
 					return value;
 					//throw new ParameterException("100% value is invalid");
 				}
-				return value * v100p / 100.0;
+				return value * v100p / ONE_HUNDRED;
 			case PX:
 			default:
 				return value; // [PX]

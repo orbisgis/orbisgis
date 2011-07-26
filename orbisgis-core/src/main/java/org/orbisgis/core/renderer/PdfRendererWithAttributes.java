@@ -40,16 +40,12 @@ package org.orbisgis.core.renderer;
 import com.itextpdf.text.pdf.PdfArray;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfDictionary;
-import com.itextpdf.text.pdf.PdfGraphics2D;
 import com.itextpdf.text.pdf.PdfName;
 import com.itextpdf.text.pdf.PdfString;
 import com.itextpdf.text.pdf.PdfStructureElement;
 import com.itextpdf.text.pdf.PdfTemplate;
 import java.awt.Graphics2D;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.gdms.data.SpatialDataSourceDecorator;
@@ -57,7 +53,6 @@ import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Symbolizer;
 
 /**
@@ -67,7 +62,6 @@ import org.orbisgis.core.renderer.se.Symbolizer;
  */
 public class PdfRendererWithAttributes extends Renderer {
 
-    private Map<Rule, ArrayList<PdfGraphics2D>> ruleGraphics;
     private PdfContentByte cb;
     private PdfStructureElement top;
     private float height;

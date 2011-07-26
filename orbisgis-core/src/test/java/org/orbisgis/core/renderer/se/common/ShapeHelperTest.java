@@ -10,6 +10,7 @@ import java.awt.geom.Path2D;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D.Double;
 import java.util.ArrayList;
+import java.util.List;
 import junit.framework.TestCase;
 
 /**
@@ -46,7 +47,7 @@ public class ShapeHelperTest extends TestCase {
 		line.lineTo(0, 40);
 
 		double coords[] = new double[6];
-		ArrayList<Shape> result1 = ShapeHelper.splitLine(line, 28.28);
+		List<Shape> result1 = ShapeHelper.splitLine(line, 28.28);
 
 
 		for (Shape shp : result1){

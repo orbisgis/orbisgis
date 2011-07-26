@@ -2,7 +2,6 @@ package org.orbisgis.core.renderer;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
-import java.awt.Shape;
 
 public class AllowAllRenderContext implements RenderContext {
 

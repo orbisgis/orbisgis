@@ -83,6 +83,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
  */
 public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource {
 
+
     private URL url;
     private PlanarImage rawImage;
     private SVGIcon svgIcon;
@@ -158,7 +159,7 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
 
         if (viewBox != null && mt != null && viewBox.usable()) {
             if (sds == null && !viewBox.dependsOnFeature().isEmpty()) {
-                throw new ParameterException("View box depends on feature");
+                throw new ParameterException("View box depends on feature"); // TODO I18n 
             }
 
             try {
@@ -198,11 +199,9 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
 
             if (viewBox != null && mt != null && viewBox.usable()) {
                 if (sds == null && !viewBox.dependsOnFeature().isEmpty()) {
-                    throw new ParameterException("View box depends on feature");
+                    throw new ParameterException("View box depends on feature"); // TODO I18n
                 }
 
-                double width = svgIcon.getIconWidth();
-                double height = svgIcon.getIconHeight();
 
                 Point2D dim = viewBox.getDimensionInPixel(sds, fid, svgInitialWidth, svgInitialHeight, mt.getScaleDenominator(), mt.getDpi());
 
@@ -212,10 +211,11 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
                 if (effectiveHeight > 0 && effectiveWidth > 0) {
                     return new Rectangle2D.Double(-effectiveWidth / 2, -effectiveHeight / 2, effectiveWidth, effectiveHeight);
                 } else {
+
+                    double width = svgInitialWidth;
+                    double height = svgInitialHeight;
                     effectiveWidth = null;
                     effectiveHeight = null;
-                    width = svgInitialWidth;
-                    height = svgInitialHeight;
                     return new Rectangle2D.Double(-width / 2, -height / 2, width, height);
                 }
             } else {
@@ -224,7 +224,7 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
                 return new Rectangle2D.Double(-width / 2, -height / 2, width, height);
             }
         } catch (URISyntaxException ex) {
-            throw new ParameterException("Invalid URI");
+            throw new ParameterException("Invalid URI", ex);
         }
     }
 
@@ -280,10 +280,10 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
             } else {
                 img = JAI.create("SubsampleAverage", rawImage, ratio_x, ratio_y, mt.getRenderingHints());
             }
-            fat.concatenate(AffineTransform.getTranslateInstance(-img.getWidth() / 2, -img.getHeight() / 2));
+            fat.concatenate(AffineTransform.getTranslateInstance(-img.getWidth() / 2.0, -img.getHeight() / 2.0));
             g2.drawRenderedImage(img, fat);
         } else {
-            fat.concatenate(AffineTransform.getTranslateInstance(-width / 2, -height / 2));
+            fat.concatenate(AffineTransform.getTranslateInstance(-width / 2.0, -height / 2.0));
             g2.drawRenderedImage(rawImage, fat);
         }
     }
@@ -309,7 +309,7 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
 
             if (viewBox != null && mt != null && viewBox.usable()) {
                 if (sds == null && !viewBox.dependsOnFeature().isEmpty()) {
-                    throw new ParameterException("View box depends on feature");
+                    throw new ParameterException("View box depends on feature"); // TODO I18n
                 }
 
                 double width = icon.getIconWidth();
@@ -332,7 +332,9 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
             }
             icon.setAntiAlias(true);
             Graphics2D g2 = (Graphics2D) img.getGraphics();
-            g2.addRenderingHints(mt.getRenderingHints());
+            if (mt != null) {
+                g2.addRenderingHints(mt.getRenderingHints());
+            }
             icon.paintIcon((Component) null, g2, 0, 0);
             return img;
         } catch (URISyntaxException ex) {
@@ -368,7 +370,7 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
 
         if (viewBox != null && mt != null && viewBox.usable()) {
             if (sds == null && !viewBox.dependsOnFeature().isEmpty()) {
-                throw new ParameterException("View box depends on feature");
+                throw new ParameterException("View box depends on feature"); // TODO I18n
             }
 
             try {
@@ -512,7 +514,7 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
 
         if (mimeType != null) {
             if (mimeType.equalsIgnoreCase("application/x-font-ttf")) {
-                return getTrueTypeGlyphMaxSize(sds, fid, scale, dpi, markIndex);
+                return getTrueTypeGlyphMaxSize(sds, fid, /*scale, dpi,*/ markIndex);
             }
         }
 
@@ -521,7 +523,7 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
     }
 
     private double getTrueTypeGlyphMaxSize(SpatialDataSourceDecorator sds, long fid,
-            Double scale, Double dpi, RealParameter markIndex)
+            /*Double scale, Double dpi,*/ RealParameter markIndex)
             throws IOException, ParameterException {
         try {
             InputStream iStream = url.openStream();

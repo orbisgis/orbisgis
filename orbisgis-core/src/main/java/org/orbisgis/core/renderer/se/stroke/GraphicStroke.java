@@ -8,6 +8,7 @@ import java.awt.geom.Rectangle2D;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
@@ -144,7 +145,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
             Shape shape, boolean selected, MapTransform mt, double offset)
             throws ParameterException, IOException {
 
-        ArrayList<Shape> shapes;
+        List<Shape> shapes;
 
         if (!this.isOffsetRapport() && Math.abs(offset) > 0.0) {
             shapes = ShapeHelper.perpendicularOffset(shape, offset);
@@ -165,7 +166,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
             double lineLength = ShapeHelper.getLineLength(shp);
 
             RelativeOrientation rOrient = this.getRelativeOrientation();
-            ArrayList<Shape> segments = null;
+            List<Shape> segments = null;
 
             double nbSegments;
 
@@ -194,7 +195,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
 
             if (segments != null) {
                 for (Shape seg : segments) {
-                    ArrayList<Shape> oSegs;
+                    List<Shape> oSegs;
                     if (this.isOffsetRapport() && Math.abs(offset) > 0.0) {
                         oSegs = ShapeHelper.perpendicularOffset(seg, offset);
                     } else {

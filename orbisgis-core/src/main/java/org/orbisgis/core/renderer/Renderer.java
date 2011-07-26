@@ -47,7 +47,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Vector;
 import java.util.logging.Level;
 
 import javax.imageio.ImageIO;
@@ -76,14 +75,18 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
 import ij.process.ColorProcessor;
 import java.awt.Color;
-import java.awt.geom.Area;
 import java.util.ArrayList;
 import java.util.HashMap;
+import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.FilterDataSourceDecorator;
+import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.sql.parser.ParseException;
+import org.gdms.sql.strategies.SemanticException;
 import org.orbisgis.core.renderer.se.FeatureTypeStyle;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
+import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 
 /**
@@ -376,7 +379,7 @@ public abstract class Renderer {
                         }
                         endFeature(originalIndex, sds);
 
-                        pm.progressTo((int) (ONE_HUNDRED_I * ++layerCount / total));
+                        pm.progressTo((int) (ONE_HUNDRED_I * (long)(++layerCount) / (long)total));
                     }
                     long tf2 = System.currentTimeMillis();
                     logger.println("  -> Rule done in  " + (tf2 - tf1) + "[ms]   featInit" + initFeats + "[ms]");
@@ -406,12 +409,20 @@ public abstract class Renderer {
                 logger.println("Total Rendering Time:" + (tV5 - tV1) + "[ms]");
             }
 
-        } catch (Exception ex) {
-            java.util.logging.Logger.getLogger("Could not draw " + layer.getName()).log(Level.SEVERE, "Error while drawing " + layer.getName(), ex);
-            ex.printStackTrace(System.err);
-            g2.setColor(Color.red);
-            g2.drawString(ex.toString(), EXECP_POS, EXECP_POS);
-
+        } catch (DriverLoadException ex){
+            printEx(ex, layer, g2);
+        } catch (DataSourceCreationException ex){
+            printEx(ex, layer, g2);
+        } catch (DriverException ex){
+            printEx(ex, layer, g2);
+        } catch (ParseException ex){
+            printEx(ex, layer, g2);
+        } catch (SemanticException ex){
+            printEx(ex, layer, g2);
+        } catch (ParameterException ex) {
+            printEx(ex, layer, g2);
+        } catch (IOException ex) {
+            printEx(ex, layer, g2);
         } finally {
             if (sds != null && sds.isOpen()) {
                 sds.close();
@@ -419,6 +430,13 @@ public abstract class Renderer {
         }
 
         return layerCount;
+    }
+
+    private static void printEx(Exception ex, ILayer layer, Graphics2D g2){
+            java.util.logging.Logger.getLogger("Could not draw " + layer.getName()).log(Level.SEVERE, "Error while drawing " + layer.getName(), ex);
+            ex.printStackTrace(System.err);
+            g2.setColor(Color.red);
+            g2.drawString(ex.toString(), EXECP_POS, EXECP_POS);
     }
 
     public void draw(Graphics2D g2dMap, int width, int height,
@@ -523,7 +541,7 @@ public abstract class Renderer {
                                 if (layers[j].isVisible()) {
                                     i = j;
                                     if (sameServer(layer, layers[j])) {
-                                        Vector<?> layerNames = layers[j].getWMSConnection().getStatus().getLayerNames();
+                                        List<?> layerNames = layers[j].getWMSConnection().getStatus().getLayerNames();
                                         for (Object layerName : layerNames) {
                                             status.addLayerName(layerName.toString());
                                         }
@@ -619,7 +637,7 @@ public abstract class Renderer {
         draw(img, extent, layer, new NullProgressMonitor());
     }
 
-    private class DefaultRendererPermission implements RenderContext {
+    private static class DefaultRendererPermission implements RenderContext {
 
         private Quadtree quadtree;
         private Envelope drawExtent;
@@ -685,10 +703,10 @@ public abstract class Renderer {
             int alpha = directColorModel.getAlphaMask();
 
             int[] components = new int[3];
-            bands = bands.toLowerCase();
-            components[0] = getComponent(bands.charAt(0), red, green, blue);
-            components[1] = getComponent(bands.charAt(1), red, green, blue);
-            components[2] = getComponent(bands.charAt(2), red, green, blue);
+            String bds = bands.toLowerCase();
+            components[0] = getComponent(bds.charAt(0), red, green, blue);
+            components[1] = getComponent(bds.charAt(1), red, green, blue);
+            components[2] = getComponent(bds.charAt(2), red, green, blue);
 
             directColorModel = new DirectColorModel(32, components[0],
                     components[1], components[2], alpha);

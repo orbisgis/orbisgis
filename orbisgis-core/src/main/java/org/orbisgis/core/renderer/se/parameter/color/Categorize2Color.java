@@ -23,7 +23,7 @@ public class Categorize2Color extends Categorize<ColorParameter, ColorLiteral> i
     public Categorize2Color(JAXBElement<CategorizeType> expr) throws InvalidStyle {
         CategorizeType t = expr.getValue();
 
-        this.fallbackValue = new ColorLiteral(t.getFallbackValue());
+        this.setFallbackValue(new ColorLiteral(t.getFallbackValue()));
         this.setLookupValue(SeParameterFactory.createRealParameter(t.getLookupValue()));
 
         Iterator<JAXBElement<ParameterValueType>> it = t.getThresholdAndValue().iterator();

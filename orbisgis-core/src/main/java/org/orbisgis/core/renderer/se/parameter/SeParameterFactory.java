@@ -80,8 +80,9 @@ public final class SeParameterFactory {
     }
 
     public static RealParameter createRealParameter(JAXBElement<? extends Object> expr) throws InvalidStyle {
-        if (expr == null)
+        if (expr == null){
             return null;
+        }
 
         if (expr.getDeclaredType() == net.opengis.fes._2.FunctionType.class) {
             return new RealFunction((JAXBElement<FunctionType>)expr);
@@ -99,11 +100,6 @@ public final class SeParameterFactory {
 
         } else if (expr.getDeclaredType() == net.opengis.se._2_0.core.InterpolateType.class) {
             return new Interpolate2Real((JAXBElement<InterpolateType>) expr);
-        } else if (expr.getDeclaredType() == net.opengis.fes._2.FunctionType.class) {
-
-
-        /*} else if (expr.getDeclaredType() == net.opengis.se._2_0.core.UnaryOperatorType.class) {
-            return new RealUnaryOperator((JAXBElement<UnaryOperatorType>) expr);*/
         }
 
         return null;
@@ -111,8 +107,9 @@ public final class SeParameterFactory {
     }
 
     public static RealParameter createRealParameter(ParameterValueType p) throws InvalidStyle {
-        if (p == null)
+        if (p == null){
             return null;
+        }
 
         String result = "";
 
@@ -129,8 +126,9 @@ public final class SeParameterFactory {
     }
 
     public static ColorParameter createColorParameter(JAXBElement<? extends ExpressionType> expr) throws InvalidStyle {
-        if (expr == null)
+        if (expr == null){
             return null;
+        }
 
         if (expr.getDeclaredType() == net.opengis.fes._2.FunctionType.class) {
             // TODO ??
@@ -156,8 +154,9 @@ public final class SeParameterFactory {
 
 
     public static ColorParameter createColorParameter(ParameterValueType p) throws InvalidStyle {
-        if (p == null)
+        if (p == null){
             return null;
+        }
 
         String result = "";
         for (Object o : p.getContent()) {
@@ -173,8 +172,9 @@ public final class SeParameterFactory {
 
 
     public static StringParameter createStringParameter(JAXBElement<? extends ExpressionType> expr) throws InvalidStyle {
-        if (expr == null)
+        if (expr == null){
             return null;
+        }
 
         if (expr.getDeclaredType() == FunctionType.class) {
             // TODO ??
@@ -196,20 +196,21 @@ public final class SeParameterFactory {
     }
 
     public static StringParameter createStringParameter(ParameterValueType p) throws InvalidStyle {
-        if (p == null)
+        if (p == null){
             return null;
+        }
 
 
-        String result = "";
+        StringBuilder result = new StringBuilder();
         for (Object o : p.getContent()) {
             if (o instanceof String) {
-                result += ((String) o);
+                result.append((String) o);
             } else if (o instanceof JAXBElement) {
                 return SeParameterFactory.createStringParameter((JAXBElement<? extends ExpressionType>) o);
             }
         }
         // has not return, so it's a literal !
-        return new StringLiteral(result);
+        return new StringLiteral(result.toString());
     }
 
     public static ParameterValueType createParameterValueType(String token){
@@ -219,11 +220,11 @@ public final class SeParameterFactory {
     }
 
     public static String extractToken(ParameterValueType p){
-        String res = "";
+        StringBuilder res = new StringBuilder();
         for (Object o : p.getContent()){
-            res += o.toString();
+            res.append(o.toString());
         }
-        return res;
+        return res.toString();
     }
 
 }

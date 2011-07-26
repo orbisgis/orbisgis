@@ -21,7 +21,7 @@ public class Recode2Color extends Recode<ColorParameter, ColorLiteral> implement
     public Recode2Color(JAXBElement<RecodeType> expr) throws InvalidStyle {
         RecodeType t = expr.getValue();
 
-        this.fallbackValue = new ColorLiteral(t.getFallbackValue());
+        this.setFallbackValue(new ColorLiteral(t.getFallbackValue()));
         this.setLookupValue(SeParameterFactory.createStringParameter(t.getLookupValue()));
 
         for (MapItemType mi : t.getMapItem()){

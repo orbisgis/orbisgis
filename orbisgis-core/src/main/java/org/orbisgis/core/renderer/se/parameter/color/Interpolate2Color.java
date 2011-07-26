@@ -63,7 +63,7 @@ public class Interpolate2Color extends Interpolate<ColorParameter, ColorLiteral>
     public Interpolate2Color(JAXBElement<InterpolateType> expr) throws InvalidStyle {
         InterpolateType t = expr.getValue();
         
-        this.fallbackValue = new ColorLiteral(t.getFallbackValue());
+        this.setFallbackValue(new ColorLiteral(t.getFallbackValue()));
 
         this.setLookupValue(SeParameterFactory.createRealParameter(t.getLookupValue()));
 
@@ -94,21 +94,23 @@ public class Interpolate2Color extends Interpolate<ColorParameter, ColorLiteral>
      */
     @Override
     public Color getColor(SpatialDataSourceDecorator sds, long fid) throws ParameterException{
-		double value = this.lookupValue.getValue(sds, fid);
+		double value = this.getLookupValue().getValue(sds, fid);
 
-		if (i_points.get(0).getData() >= value){
-			return i_points.get(0).getValue().getColor(sds, fid);
+        int numPt = getNumInterpolationPoint();
+        
+		if (getInterpolationPoint(0).getData() >= value){
+			return getInterpolationPoint(0).getValue().getColor(sds, fid);
 		}
 
-		if (i_points.get(i_points.size()-1).getData() <= value){
-			return i_points.get(i_points.size()-1).getValue().getColor(sds, fid);
+		if (getInterpolationPoint(numPt-1).getData() <= value){
+			return getInterpolationPoint(numPt-1 ).getValue().getColor(sds, fid);
 		}
 
 
 		int k = getFirstIP(value);
 
-		InterpolationPoint<ColorParameter> ip1 = i_points.get(k);
-		InterpolationPoint<ColorParameter> ip2 = i_points.get(k+1);
+		InterpolationPoint<ColorParameter> ip1 = getInterpolationPoint(k);
+		InterpolationPoint<ColorParameter> ip2 = getInterpolationPoint(k+1);
 
 		double d1 = ip1.getData();
 		double d2 = ip2.getData();
@@ -117,7 +119,7 @@ public class Interpolate2Color extends Interpolate<ColorParameter, ColorLiteral>
 		Color c2 = ip2.getValue().getColor(sds, fid);
 
 
-		switch(this.mode){
+		switch(this.getMode()){
 		case CUBIC:
 			return new Color((int)cubicInterpolation(d1, d2, value, c1.getRed(), c2.getRed(), -1.0, -1.0),
 					(int)cubicInterpolation(d1, d2, value, c1.getGreen(), c2.getGreen(), -1.0, -1.0),

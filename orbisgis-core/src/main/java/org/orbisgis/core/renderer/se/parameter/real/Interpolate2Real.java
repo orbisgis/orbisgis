@@ -30,7 +30,7 @@ public final class Interpolate2Real extends Interpolate<RealParameter, RealLiter
 		ctx = RealParameterContext.realContext;
         InterpolateType t = expr.getValue();
 
-        this.fallbackValue = new RealLiteral(t.getFallbackValue());
+        this.setFallbackValue(new RealLiteral(t.getFallbackValue()));
         this.setLookupValue(SeParameterFactory.createRealParameter(t.getLookupValue()));
 
         if (t.getMode() == ModeType.COSINE) {
@@ -55,22 +55,23 @@ public final class Interpolate2Real extends Interpolate<RealParameter, RealLiter
     @Override
     public Double getValue(SpatialDataSourceDecorator sds, long fid) throws ParameterException {
 
-		double value = this.lookupValue.getValue(sds, fid);
+		double value = this.getLookupValue().getValue(sds, fid);
 
-		if (i_points.get(0).getData() >= value){
-			return i_points.get(0).getValue().getValue(sds, fid);
+		if (getInterpolationPoint(0).getData() >= value){
+			return getInterpolationPoint(0).getValue().getValue(sds, fid);
 		}
 
-		if (i_points.get(i_points.size()-1).getData() <= value){
-			return i_points.get(i_points.size()-1).getValue().getValue(sds, fid);
+        int numPt = getNumInterpolationPoint();
+		if (getInterpolationPoint(numPt-1).getData() <= value){
+			return getInterpolationPoint(numPt -1).getValue().getValue(sds, fid);
 		}
 
 		int k = getFirstIP(value);
 
-		InterpolationPoint<RealParameter> ip1 = i_points.get(k);
-		InterpolationPoint<RealParameter> ip2 = i_points.get(k+1);
+		InterpolationPoint<RealParameter> ip1 = getInterpolationPoint(k);
+		InterpolationPoint<RealParameter> ip2 = getInterpolationPoint(k+1);
 
-		switch(this.mode){
+		switch(getMode()){
 		case CUBIC:
 			return cubicInterpolation(ip1.getData(), ip2.getData(), value,
 			ip1.getValue().getValue(sds, fid), ip2.getValue().getValue(sds, fid), -1.0, -1.0);
@@ -108,8 +109,8 @@ public final class Interpolate2Real extends Interpolate<RealParameter, RealLiter
 	@Override
 	public void setContext(RealParameterContext ctx) {
 		this.ctx = ctx;
-		this.fallbackValue.setContext(ctx);
-		for (InterpolationPoint<RealParameter> ip : this.i_points){
+		this.getFallbackValue().setContext(ctx);
+		for (InterpolationPoint<RealParameter> ip : getInterpolationPoints()){
 			RealParameter value = ip.getValue();
 			value.setContext(ctx);
 		}

@@ -24,22 +24,22 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  */
 public abstract class Interpolate<ToType extends SeParameter, FallbackType extends ToType> implements SeParameter {
 
-	protected InterpolationMode mode;
-	protected RealParameter lookupValue;
-	protected FallbackType fallbackValue;
-	protected ArrayList<InterpolationPoint<ToType>> i_points;
+	private  InterpolationMode mode;
+	private  RealParameter lookupValue;
+	private  FallbackType fallbackValue;
+	private  List<InterpolationPoint<ToType>> iPoints;
 
 	public enum InterpolationMode {
 		LINEAR, COSINE, CUBIC
 	}
 
     protected Interpolate(){
-		this.i_points = new ArrayList<InterpolationPoint<ToType>>();
+		this.iPoints = new ArrayList<InterpolationPoint<ToType>>();
 	}
 
 	public Interpolate(FallbackType fallbackValue) {
 		this.fallbackValue = fallbackValue;
-		this.i_points = new ArrayList<InterpolationPoint<ToType>>();
+		this.iPoints = new ArrayList<InterpolationPoint<ToType>>();
 	}
 
 	@Override
@@ -60,6 +60,19 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
 
 		return result;
 	}
+
+    public InterpolationMode getMode() {
+        return mode;
+    }
+
+    public void setMode(InterpolationMode mode) {
+        this.mode = mode;
+    }
+
+    protected  List<InterpolationPoint<ToType>> getInterpolationPoints() {
+        return iPoints;
+    }
+
 
 	public void setFallbackValue(FallbackType fallbackValue) {
 		this.fallbackValue = fallbackValue;
@@ -87,7 +100,7 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
 	 *  @return number of defined class
 	 */
 	public int getNumInterpolationPoint() {
-		return i_points.size();
+		return iPoints.size();
 	}
 
 	/**
@@ -96,12 +109,12 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
 	 *
 	 */
 	public void addInterpolationPoint(InterpolationPoint<ToType> point) {
-		i_points.add(point);
+		iPoints.add(point);
 		sortInterpolationPoint();
 	}
 
 	public InterpolationPoint<ToType> getInterpolationPoint(int i) {
-		return i_points.get(i);
+		return iPoints.get(i);
 	}
 
 	public void setInterpolationMode(InterpolationMode mode) {
@@ -113,7 +126,7 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
 	}
 
 	private void sortInterpolationPoint() {
-		Collections.sort(i_points);
+		Collections.sort(iPoints);
 	}
 
 	@Override
@@ -141,7 +154,7 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
 		List<InterpolationPointType> ips = i.getInterpolationPoint();
 
 
-		for (InterpolationPoint<ToType> ip : i_points) {
+		for (InterpolationPoint<ToType> ip : iPoints) {
 			InterpolationPointType ipt = new InterpolationPointType();
 
 			ipt.setValue(ip.getValue().getJAXBParameterValueType());
@@ -155,7 +168,7 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
 
 	protected int getFirstIP(double data) {
 		int i = -1;
-		for (InterpolationPoint ip : i_points) {
+		for (InterpolationPoint ip : iPoints) {
 			if (ip.getData() > data) {
 				return i;
 			}
@@ -167,7 +180,7 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
 
 	protected double cubicInterpolation(double d1, double d2, double x,
 			double v1, double v2, double v3, double v4){
-		double mu = (x - d1) / (d2 - d1);
+		//double mu = (x - d1) / (d2 - d1);
 
 		return 0.0;
 	}

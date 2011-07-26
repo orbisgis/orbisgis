@@ -50,7 +50,7 @@ public abstract class ValueReference implements SeParameter {
 		}
 	}
 
-	private void firePropertyNameChange() {
+	private synchronized void firePropertyNameChange() {
 		if (listeners != null) {
 			for (PropertyNameListener l : listeners) {
 				l.propertyNameChanged(this);

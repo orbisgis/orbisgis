@@ -42,6 +42,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Symbolizer;
@@ -52,9 +53,8 @@ import org.orbisgis.core.renderer.se.Symbolizer;
  */
 public class ImageRenderer extends Renderer {
 
-    private List<BufferedImage> imgSymbs;
-
-    private HashMap<Integer, Graphics2D> g2Level = new HashMap<Integer, Graphics2D>();
+    private List<BufferedImage> imgSymbs = null;
+    private Map<Integer, Graphics2D> g2Level = null;
 
     @Override
     protected void initGraphics2D(List<Symbolizer> symbs, Graphics2D g2, MapTransform mt) {

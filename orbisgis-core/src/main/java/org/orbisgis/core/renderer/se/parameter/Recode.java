@@ -200,7 +200,7 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
         return of.createRecode(r);
     }
 
-    protected FallbackType fallbackValue;
-    protected StringParameter lookupValue;
-    protected ArrayList<MapItem<ToType>> mapItems; // TODO switch to hash table <k: String, v: ToType>
+    private FallbackType fallbackValue;
+    private StringParameter lookupValue;
+    private ArrayList<MapItem<ToType>> mapItems; // TODO switch to hash table <k: String, v: ToType>
 }

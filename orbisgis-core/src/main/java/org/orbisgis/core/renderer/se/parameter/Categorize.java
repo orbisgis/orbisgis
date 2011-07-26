@@ -30,18 +30,18 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  */
 public abstract class Categorize<ToType extends SeParameter, FallbackType extends ToType> implements SeParameter, LiteralListener {
 
-    private static String SD_FACTOR_KEY = "SdFactor";
-    private static String METHOD_KEY = "method";
+    private static final String SD_FACTOR_KEY = "SdFactor";
+    private static final String METHOD_KEY = "method";
+
     private CategorizeMethod method;
     private boolean succeeding = true;
     private RealParameter lookupValue;
-    protected FallbackType fallbackValue;
+    private FallbackType fallbackValue;
     private ToType firstClass;
-    //private ArrayList<Category<ToType>> classes;
     private double sdFactor;
-    private ArrayList<ToType> classValues;
-    private ArrayList<RealParameter> thresholds;
-    private ArrayList<CategorizeListener> listeners;
+    private List<ToType> classValues;
+    private List<RealParameter> thresholds;
+    private List<CategorizeListener> listeners;
 
     private void fireClassAdded(int index) {
         for (CategorizeListener l : listeners) {
@@ -90,22 +90,24 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 
     @Override
     public final String dependsOnFeature() {
-        String result = "";
+        StringBuilder result = new StringBuilder();
 
         String lookup = this.getLookupValue().dependsOnFeature();
         if (lookup != null && !lookup.isEmpty()) {
-            result = lookup;
+            result.append(lookup);
         }
 
         int i;
         for (i = 0; i < this.getNumClasses(); i++) {
             String r = this.getClassValue(i).dependsOnFeature();
             if (r != null && !r.isEmpty()) {
-                result += " " + r;
+                result.append(" ");
+                result.append(r);
             }
         }
 
-        return result.trim();
+        String res = result.toString();
+        return res.trim();
     }
 
     public void setFallbackValue(FallbackType fallbackValue) {
@@ -158,8 +160,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
     }
 
     public boolean removeClass(int i) {
-        if (getNumClasses() > 1) {
-            if (i < getNumClasses() && i >= 0) {
+        if (getNumClasses() > 1 && i < getNumClasses() && i >= 0) {
                 if (i == 0) {
                     // when the first class is remove, the second one takes its place
                     firstClass = classValues.remove(0);
@@ -171,7 +172,6 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
                 this.method = CategorizeMethod.MANUAL;
                 fireClassRemoved(i);
                 return true;
-            }
         }
         return false;
     }
@@ -189,13 +189,14 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 
     public void setClassValue(int i, ToType value) {
         System.out.println("Set Class n° " + i + " value :" + value);
-        if (i == 0) {
+        int n = i;
+        if (n == 0) {
             firstClass = value;
-        } else if (i > 0 && i < getNumClasses() - 1) {
+        } else if (n > 0 && n < getNumClasses() - 1) {
             //classes.get(i - 1).setClassValue(value);
-            i--; // first class in not in the list
-            classValues.remove(i);
-            classValues.add(i, value);
+            n--; // first class in not in the list
+            classValues.remove(n);
+            classValues.add(n, value);
         } else {
             // TODO throw
         }
@@ -211,7 +212,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
                 ((RealLiteral) threshold).register(this);
             }
 
-            if (remove != threshold) {
+            if (! remove.equals(threshold)) {
                 sortClasses();
             }
         } else {
@@ -289,8 +290,8 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
      */
     public void categorizeByEqualsInterval(DataSource ds, ToType[] values) {
         method = CategorizeMethod.EQUAL_INTERVAL;
-        int n = values.length;
-        // compute n-1 thresholds and assign values
+        // int n = values.length;
+        // TODO compute n-1 thresholds and assign values
     }
 
     /**
@@ -300,8 +301,8 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
      */
     public void categorizeByNaturalBreaks(DataSource ds, ToType[] values) {
         method = CategorizeMethod.NATURAL_BREAKS;
-        int n = values.length;
-        // compute n-1 thresholds and assign values
+        //int n = values.length;
+        // TODO compute n-1 thresholds and assign values
     }
 
     /**
@@ -311,8 +312,8 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
      */
     public void categorizeByQuantile(DataSource ds, ToType[] values) {
         method = CategorizeMethod.QUANTILE;
-        int n = values.length;
-        // compute n-1 thresholds and assign values
+        //int n = values.length;
+        // TODO compute n-1 thresholds and assign values
     }
 
     /**
@@ -326,9 +327,9 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         method = CategorizeMethod.STANDARD_DEVIATION;
         // even => mean is a threshold
         // odd => mean is the central point of the central class
-        int n = values.length;
+        //int n = values.length;
 
-        // compute n-1 thresholds and assign values
+        // TODO compute n-1 thresholds and assign values
 
     }
 
@@ -432,4 +433,6 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 
         return of.createCategorize(c);
     }
+
+
 }

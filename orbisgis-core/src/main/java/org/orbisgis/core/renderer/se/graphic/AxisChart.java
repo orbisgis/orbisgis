@@ -619,7 +619,7 @@ public final class AxisChart extends Graphic implements UomNode, FillNode, Strok
             if (cat.getFill() != null || cat.getStroke() != null) {
                 Arc2D.Double slice = new Arc2D.Double(-heights[i], -heights[i],
                         2 * heights[i], 2 * heights[i],
-                        (-alphas[i] - beta / 2) / ShapeHelper._0_0175, beta / ShapeHelper._0_0175, Arc2D.PIE);
+                        (-alphas[i] - beta / 2) / ShapeHelper.ONE_DEG_IN_RAD, beta / ShapeHelper.ONE_DEG_IN_RAD, Arc2D.PIE);
 
                 shp = slice;
                 if (at != null) {

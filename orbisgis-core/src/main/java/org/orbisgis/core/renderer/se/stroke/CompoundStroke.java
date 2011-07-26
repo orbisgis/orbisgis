@@ -71,8 +71,8 @@ public final class CompoundStroke extends Stroke implements UomNode {
 
     private RealParameter preGap;
     private RealParameter postGap;
-    private ArrayList<CompoundStrokeElement> elements;
-    private ArrayList<StrokeAnnotationGraphic> annotations;
+    private List<CompoundStrokeElement> elements;
+    private List<StrokeAnnotationGraphic> annotations;
     private Uom uom;
 
     public CompoundStroke() {
@@ -143,11 +143,11 @@ public final class CompoundStroke extends Stroke implements UomNode {
         return postGap;
     }
 
-    public ArrayList<StrokeAnnotationGraphic> getAnnotations() {
+    public List<StrokeAnnotationGraphic> getAnnotations() {
         return annotations;
     }
 
-    public ArrayList<CompoundStrokeElement> getElements() {
+    public List<CompoundStrokeElement> getElements() {
         return elements;
     }
 
@@ -164,7 +164,7 @@ public final class CompoundStroke extends Stroke implements UomNode {
         double initGap = 0.0;
         double endGap = 0.0;
 
-        ArrayList<Shape> shapes;
+        List<Shape> shapes;
         // if not using offset rapport, compute perpendiculat offset first
         if (!this.isOffsetRapport() && Math.abs(offset) > 0.0) {
             shapes = ShapeHelper.perpendicularOffset(shape, offset);
@@ -183,7 +183,7 @@ public final class CompoundStroke extends Stroke implements UomNode {
                 initGap = Uom.toPixel(preGap.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
                 if (initGap > 0.0) {
                     //System.out.println ("Remove Global PreGap");
-                    ArrayList<Shape> splitLine = ShapeHelper.splitLine(shp, initGap);
+                    List<Shape> splitLine = ShapeHelper.splitLine(shp, initGap);
                     if (splitLine.size() == 2) {
                         shp = splitLine.get(1);
                     } else {
@@ -306,7 +306,7 @@ public final class CompoundStroke extends Stroke implements UomNode {
                     }
 
                     if (preGaps[i] != null && preGaps[i] > 0) {
-                        ArrayList<Shape> splitLine = ShapeHelper.splitLine(scrap, preGaps[i]);
+                        List<Shape> splitLine = ShapeHelper.splitLine(scrap, preGaps[i]);
                         //System.out.println("  preGap: " + preGaps[i]);
                         if (splitLine.size() > 1) {
                             scrap = splitLine.get(1);
@@ -319,7 +319,7 @@ public final class CompoundStroke extends Stroke implements UomNode {
 
                     if (lengths[i] > 0) {
                         // get two lines. first is the one we'll style with i'est element
-                        ArrayList<Shape> splitLine = ShapeHelper.splitLine(scrap, lengths[i]);
+                        List<Shape> splitLine = ShapeHelper.splitLine(scrap, lengths[i]);
                         //System.out.println("Extract: " + lengths[i]);
                         Shape seg = splitLine.remove(0);
 
@@ -343,7 +343,7 @@ public final class CompoundStroke extends Stroke implements UomNode {
                     }
 
                     if (postGaps[i] != null && postGaps[i] > 0) {
-                        ArrayList<Shape> splitLine = ShapeHelper.splitLine(scrap, postGaps[i]);
+                        List<Shape> splitLine = ShapeHelper.splitLine(scrap, postGaps[i]);
                         //System.out.println("postGap: " + postGaps[i]);
                         if (splitLine.size() > 1) {
                             scrap = splitLine.get(1);
@@ -357,7 +357,7 @@ public final class CompoundStroke extends Stroke implements UomNode {
                 }
 
 
-                ArrayList<Shape> splitLineInSeg = ShapeHelper.splitLineInSeg(shp, patternLength);
+                List<Shape> splitLineInSeg = ShapeHelper.splitLineInSeg(shp, patternLength);
                 for (Shape seg : splitLineInSeg) {
                     for (StrokeAnnotationGraphic annotation : annotations) {
                         GraphicCollection graphic = annotation.getGraphic();

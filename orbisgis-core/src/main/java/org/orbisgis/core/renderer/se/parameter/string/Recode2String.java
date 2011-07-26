@@ -22,7 +22,7 @@ public class Recode2String extends Recode<StringParameter, StringLiteral> implem
     public Recode2String(JAXBElement<RecodeType> expr) throws InvalidStyle {
         RecodeType t = expr.getValue();
 
-        this.fallbackValue = new StringLiteral(t.getFallbackValue());
+        this.setFallbackValue(new StringLiteral(t.getFallbackValue()));
         this.setLookupValue(SeParameterFactory.createStringParameter(t.getLookupValue()));
 
         for (MapItemType mi : t.getMapItem()) {
@@ -36,7 +36,7 @@ public class Recode2String extends Recode<StringParameter, StringLiteral> implem
             return getParameter(sds, fid).getValue(sds, fid);
         } catch (ParameterException ex) {
             Services.getOutputManager().println("Fallback:" + ex, Color.yellow);
-            return this.fallbackValue.getValue( sds, fid);
+            return this.getFallbackValue().getValue( sds, fid);
         }
     }
 

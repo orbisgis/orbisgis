@@ -44,6 +44,7 @@ import java.awt.Paint;
 import java.awt.Shape;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.bind.JAXBElement;
@@ -444,7 +445,7 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
 
         if (this.fill != null) {
 
-            ArrayList<Shape> shapes;
+            List<Shape> shapes;
             // if not using offset rapport, compute perpendiculat offset first
             if (!this.isOffsetRapport() && Math.abs(offset) > 0.0) {
                 shapes = ShapeHelper.perpendicularOffset(shape, offset);
@@ -464,7 +465,7 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
                     //value.split("");
 
                     Shape chute = shp;
-                    ArrayList<Shape> fragments = new ArrayList<Shape>();
+                    List<Shape> fragments = new ArrayList<Shape>();
                     BasicStroke bs = createBasicStroke(sds, fid, shp, mt, null, false);
 
                     double dashLengths[] = new double[split.length];
@@ -482,7 +483,7 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
 
                     //while (ShapeHelper.getLineLength(chute) > 0) {
                     while (chute != null) {
-                        ArrayList<Shape> splitLine = ShapeHelper.splitLine(chute, dashLengths[j]);
+                        List<Shape> splitLine = ShapeHelper.splitLine(chute, dashLengths[j]);
                         Shape seg = splitLine.remove(0);
                         if (splitLine.size() > 0) {
                             chute = splitLine.remove(0);

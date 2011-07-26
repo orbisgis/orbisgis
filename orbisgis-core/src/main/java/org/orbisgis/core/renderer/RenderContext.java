@@ -38,7 +38,6 @@ package org.orbisgis.core.renderer;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
-import java.awt.Shape;
 
 /**
  * Interface used at render process to control overlapings of symbols. The

@@ -61,7 +61,7 @@ public class PdfRenderer extends Renderer {
     //private MapTransform mt;
     private Map<Integer, Graphics2D> g2Levels;
 
-    Graphics2D baseG2;
+    private Graphics2D baseG2;
 
     //private Graphics2D tg;
 
@@ -70,6 +70,8 @@ public class PdfRenderer extends Renderer {
         this.height = height;
         this.width = width;
         this.pdfTemplate = pdfTemplate;
+        g2Levels = null;
+        baseG2 = null;
     }
 
     @Override

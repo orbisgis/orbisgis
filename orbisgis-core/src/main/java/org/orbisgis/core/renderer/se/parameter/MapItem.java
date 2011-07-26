@@ -63,23 +63,24 @@ public class MapItem<Type> implements Comparable {
 
     @Override
     public boolean equals(Object o){
-        MapItem<Type> item = (MapItem<Type>) o;
-        return item.key.toString().equals(this.key);
+        if (o != null && o instanceof MapItem){
+            return o.hashCode() == this.hashCode();
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 41 * hash + (this.key != null ? this.key.hashCode() : 0);
+        return hash;
     }
 
     @Override
     public int compareTo(Object o) {
         MapItem<Type> item = (MapItem<Type>) o;
         return item.key.toString().compareToIgnoreCase(this.key);
-    }
-
-
-    public boolean equals(MapItem item){
-        return item.key.equals(this.key);
-    }
-
-    public boolean equals(String key){
-        return key.equals(this.key);
     }
 
     private String key = null;

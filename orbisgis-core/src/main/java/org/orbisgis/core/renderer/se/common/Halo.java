@@ -26,9 +26,11 @@ import org.orbisgis.utils.I18N;
 
 public final class Halo implements SymbolizerNode, UomNode, FillNode {
 
+    private static final double DEFAULT_RADIUS = 5.0;
+    
     public Halo() {
         setFill(new SolidFill());
-        setRadius(new RealLiteral(5));
+        setRadius(new RealLiteral(DEFAULT_RADIUS));
     }
 
     public Halo(Fill fill, RealParameter radius) {
