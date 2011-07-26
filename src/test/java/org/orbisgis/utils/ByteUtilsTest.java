@@ -36,11 +36,13 @@
  */
 package org.orbisgis.utils;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 
-public class ByteUtilsTest extends TestCase {
+public class ByteUtilsTest {
 
+        @Test
 	public void testShortsBytes() throws Exception {
 		short[] shorts = new short[] { 1, 2, 3, 5, 1500, Short.MAX_VALUE };
 		byte[] shortBytes = ByteUtils.shortsToBytes(shorts);
@@ -51,6 +53,7 @@ public class ByteUtilsTest extends TestCase {
 		}
 	}
 
+        @Test
 	public void testFloats2Bytes() throws Exception {
 		float[] floats = new float[] { 4f, 2857685.235f, 3f, 356.234f };
 		byte[] floatBytes = ByteUtils.floatsToBytes(floats);
@@ -61,6 +64,7 @@ public class ByteUtilsTest extends TestCase {
 		}
 	}
 
+        @Test
 	public void testInts2Bytes() throws Exception {
 		int[] ints = new int[] { 1, 2, 3, 4, 1500 };
 		byte[] intBytes = ByteUtils.intsToBytes(ints);
@@ -71,6 +75,7 @@ public class ByteUtilsTest extends TestCase {
 		}
 	}
 
+        @Test
 	public void testInt2Byte() throws Exception {
 		int i = 1237610;
 		byte[] bytes = ByteUtils.intToBytes(i);
@@ -80,6 +85,7 @@ public class ByteUtilsTest extends TestCase {
 		assertTrue(ByteUtils.bytesToInts(bytes2)[0] == i);
 	}
         
+        @Test
         public void testBytes2Float() throws Exception {
                 byte[] b1 = ByteUtils.intToBytes(1055286886);
                 assertTrue(ByteUtils.bytesToFloat(b1) == 0.45f);

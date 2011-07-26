@@ -38,10 +38,12 @@ package org.orbisgis.progress;
 
 
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-public class ProgressMonitorTest extends TestCase {
+public class ProgressMonitorTest {
 
+        @Test
 	public void testUsage() throws Exception {
 		ProgressMonitor pm = new DefaultProgressMonitor("open file", 100);
 		pm.startTask("read header", 200);
