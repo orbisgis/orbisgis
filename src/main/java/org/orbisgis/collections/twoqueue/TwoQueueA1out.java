@@ -99,6 +99,7 @@ final class TwoQueueA1out<I, B> {
                 if (newest != null) {
                         v.previous = newest.previous;
                         v.next = newest;
+                        v.previous.next = v;
                         newest.previous = v;
                         newest = v;
                 } else {
