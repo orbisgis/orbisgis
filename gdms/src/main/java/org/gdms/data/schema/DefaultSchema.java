@@ -62,9 +62,6 @@ public class DefaultSchema implements Schema {
          * @throws IllegalArgumentException if the name is empty
          */
         public DefaultSchema(String name) {
-                if (name.isEmpty()) {
-                        throw new IllegalArgumentException("Schema name cannot be empty.");
-                }
                 this.name = name;
                 metadata = new HashMap<String, Metadata>();
                 schema = new HashMap<String, Schema>();

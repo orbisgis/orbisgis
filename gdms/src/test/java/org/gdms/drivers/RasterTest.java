@@ -36,11 +36,12 @@
  */
 package org.gdms.drivers;
 
+import org.junit.Before;
+import org.junit.Test;
 import java.io.File;
 
-import junit.framework.TestCase;
 
-import org.gdms.BaseTest;
+import org.gdms.TestBase;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SpatialDataSourceDecorator;
@@ -59,71 +60,79 @@ import org.grap.model.RasterMetadata;
 
 import com.vividsolutions.jts.geom.Envelope;
 
-public class RasterTest extends TestCase {
+import static org.junit.Assert.*;
 
-	private DataSourceFactory dsf;
+public class RasterTest {
 
-	public void testProducedRasterEnvelope() throws Exception {
-		DataSource ds = dsf.getDataSource("raster");
-		ds.open();
-		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
-		Envelope env = sds.getFullExtent();
-		assertTrue(env.getWidth() > 0);
-		assertTrue(env.getHeight() > 0);
-		ds.close();
-	}
+        private DataSourceFactory dsf;
 
-	public void testSQLResultSourceType() throws Exception {
-		int type = dsf.getSourceManager().getSource("raster").getType();
-		assertTrue((type & SourceManager.RASTER) > 0);
-	}
+        @Test
+        public void testProducedRasterEnvelope() throws Exception {
+                DataSource ds = dsf.getDataSource("raster");
+                ds.open();
+                SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
+                Envelope env = sds.getFullExtent();
+                assertTrue(env.getWidth() > 0);
+                assertTrue(env.getHeight() > 0);
+                ds.close();
+        }
 
-	public void setUp() throws Exception {
-		byte[] rasterData = new byte[4];
-		RasterMetadata rasterMetadata = new RasterMetadata(0, 0, 1, 1, 2, 2);
-		GeoRaster gr = GeoRasterFactory.createGeoRaster(rasterData,
-				rasterMetadata);
+        @Test
+        public void testSQLResultSourceType() throws Exception {
+                int type = dsf.getSourceManager().getSource("raster").getType();
+                assertTrue((type & SourceManager.RASTER) > 0);
+        }
 
-		dsf = new DataSourceFactory();
-		dsf.setTempDir(BaseTest.backupDir.getAbsolutePath());
-		DefaultMetadata metadata = new DefaultMetadata(new Type[] { TypeFactory
-				.createType(Type.RASTER) }, new String[] { "raster" });
-		GenericObjectDriver omd = new GenericObjectDriver(metadata);
-		omd.addValues(new Value[] { ValueFactory.createValue(gr) });
-		dsf.getSourceManager().register("raster", omd);
-	}
+        @Before
+        public void setUp() throws Exception {
+                byte[] rasterData = new byte[4];
+                RasterMetadata rasterMetadata = new RasterMetadata(0, 0, 1, 1, 2, 2);
+                GeoRaster gr = GeoRasterFactory.createGeoRaster(rasterData,
+                        rasterMetadata);
 
-	public void testOpenJPG() throws Exception {
-		File file = new File(BaseTest.internalData,"sample.jpg");
-		testOpen(file);
-	}
+                dsf = new DataSourceFactory();
+                dsf.setTempDir(TestBase.backupDir.getAbsolutePath());
+                dsf.setResultDir(TestBase.backupDir);
+                DefaultMetadata metadata = new DefaultMetadata(new Type[]{TypeFactory.createType(Type.RASTER)}, new String[]{"raster"});
+                GenericObjectDriver omd = new GenericObjectDriver(metadata);
+                omd.addValues(new Value[]{ValueFactory.createValue(gr)});
+                dsf.getSourceManager().register("raster", omd);
+        }
 
-	public void testOpenPNG() throws Exception {
-		File file = new File(BaseTest.internalData,"sample.png");
-		testOpen(file);
-	}
+        @Test
+        public void testOpenJPG() throws Exception {
+                File file = new File(TestBase.internalData, "sample.jpg");
+                testOpen(file);
+        }
 
-	public void testOpenASC() throws Exception {
-		File file = new File(BaseTest.internalData + "sample.asc");
-		testOpen(file);
-	}
+        @Test
+        public void testOpenPNG() throws Exception {
+                File file = new File(TestBase.internalData, "sample.png");
+                testOpen(file);
+        }
 
-	public void testOpenTIFF() throws Exception {
-		File file = new File(BaseTest.internalData
-				+ "littlelehavre.tif");
-		testOpen(file);
-	}
+        @Test
+        public void testOpenASC() throws Exception {
+                File file = new File(TestBase.internalData + "sample.asc");
+                testOpen(file);
+        }
 
-	private void testOpen(File file) throws Exception {
-		GeoRaster gr = GeoRasterFactory.createGeoRaster(file.getAbsolutePath());
-		gr.open();
-		int rasterType = gr.getType();
-		DataSource ds = dsf.getDataSource(file);
-		ds.open();
-		Metadata metadata = ds.getMetadata();
-		Type fieldType = metadata.getFieldType(0);
-		assertTrue(fieldType.getIntConstraint(Constraint.RASTER_TYPE) == rasterType);
-		ds.getFieldValue(0, 0);
-		ds.close();
-	}
+        @Test
+        public void testOpenTIFF() throws Exception {
+                File file = new File(TestBase.internalData + "littlelehavre.tif");
+                testOpen(file);
+        }
+
+        private void testOpen(File file) throws Exception {
+                GeoRaster gr = GeoRasterFactory.createGeoRaster(file.getAbsolutePath());
+                gr.open();
+                int rasterType = gr.getType();
+                DataSource ds = dsf.getDataSource(file);
+                ds.open();
+                Metadata metadata = ds.getMetadata();
+                Type fieldType = metadata.getFieldType(0);
+                assertEquals(fieldType.getIntConstraint(Constraint.RASTER_TYPE), rasterType);
+                ds.getFieldValue(0, 0);
+                ds.close();
+        }
 }

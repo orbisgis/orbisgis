@@ -44,12 +44,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import org.junit.Ignore;
 
 /**
  * DOCUMENT ME!
  *
  * @author Fernando Gonz�lez Cort�s
  */
+@Ignore
 public class TestUtilities {
 	/**
 	 * DOCUMENT ME!

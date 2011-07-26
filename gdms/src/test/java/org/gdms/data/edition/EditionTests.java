@@ -36,9 +36,10 @@
  */
 package org.gdms.data.edition;
 
+import org.junit.Test;
 import java.io.File;
 
-import org.gdms.BaseTest;
+import org.gdms.TestBase;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.NoSuchTableException;
@@ -60,13 +61,16 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.generic.GenericObjectDriver;
 
+import static org.junit.Assert.*;
+
 /**
  * DOCUMENT ME!
  * 
  * @author Fernando Gonzalez Cortes
  */
-public class EditionTests extends BaseTest {
+public class EditionTests extends TestBase {
 
+        @Test
 	public void testNoMemoryUntilEdition() throws Exception {
 		Metadata metadata = new DefaultMetadata(new Type[] { TypeFactory
 				.createType(Type.BOOLEAN) }, new String[] { "bool" });
@@ -113,6 +117,7 @@ public class EditionTests extends BaseTest {
 		d.close();
 	}
 
+	@Test
 	public void testDelete() throws Exception {
 		String[] resources = super.getNonDBSmallResources();
 		for (String ds : resources) {
@@ -150,6 +155,7 @@ public class EditionTests extends BaseTest {
 		d.close();
 	}
 
+	@Test
 	public void testSetDeletedRow() throws Exception {
 		String[] resources = super.getNonDBSmallResources();
 		for (String ds : resources) {
@@ -185,6 +191,7 @@ public class EditionTests extends BaseTest {
 		d.close();
 	}
 
+	@Test
 	public void testSetAfterDeletedPreviousRow() throws Exception {
 		String[] resources = super.getNonDBSmallResources();
 		for (String ds : resources) {
@@ -223,17 +230,18 @@ public class EditionTests extends BaseTest {
 		Value[] rowToTest;
 		rowToTest = firstRow.clone();
 		rowToTest[fieldIndex] = secondRow[fieldIndex];
-		assertTrue(BaseTest.equals(rowToTest, d.getRow(0)));
+		assertTrue(equals(rowToTest, d.getRow(0)));
 
 		rowToTest = secondRow.clone();
 		rowToTest[fieldIndex] = lastRow[fieldIndex];
-		assertTrue(BaseTest.equals(rowToTest, d.getRow(1)));
+		assertTrue(equals(rowToTest, d.getRow(1)));
 
-		assertTrue(BaseTest.equals(firstRow[fieldIndex], d.getFieldValue(last + 1,
+		assertTrue(equals(firstRow[fieldIndex], d.getFieldValue(last + 1,
 				fieldIndex)));
 		d.close();
 	}
 
+	@Test
 	public void testUpdate() throws Exception {
 		String[] resources = super.getNonDBSmallResources();
 		for (String ds : resources) {
@@ -257,7 +265,8 @@ public class EditionTests extends BaseTest {
 		d.close();
 	}
 
-	public void testValuesDuringEdition() throws Exception {
+	@Test
+        public void testValuesDuringEdition() throws Exception {
 		String[] resources = super.getNonDBSmallResources();
 		for (String ds : resources) {
 			testValuesDuringTransaction(ds);
@@ -301,7 +310,8 @@ public class EditionTests extends BaseTest {
 		d.close();
 	}
 
-	public void testAdd() throws Exception {
+	@Test
+        public void testAdd() throws Exception {
 		String[] resources = super.getNonDBSmallResources();
 		for (String ds : resources) {
 			testAdd(ds);
@@ -324,7 +334,8 @@ public class EditionTests extends BaseTest {
 		d.close();
 	}
 
-	public void testSQLInjection() throws Exception {
+	@Test
+        public void testSQLInjection() throws Exception {
 		String[] resources = super.getDBResources();
 		for (String ds : resources) {
 			testSQLInjection(ds);
@@ -358,7 +369,8 @@ public class EditionTests extends BaseTest {
 		d.close();
 	}
 
-	public void testInsertFilled() throws Exception {
+	@Test
+        public void testInsertFilled() throws Exception {
 		String[] resources = super.getResourcesWithPK();
 		for (String ds : resources) {
 			testInsertFilledRow(ds);
@@ -387,7 +399,8 @@ public class EditionTests extends BaseTest {
 		d.close();
 	}
 
-	public void testEditingNullValues() throws Exception {
+	@Test
+        public void testEditingNullValues() throws Exception {
 		String[] resources = super.getResourcesWithPK();
 		for (String ds : resources) {
 			testEditingNullValues(ds);
@@ -401,11 +414,12 @@ public class EditionTests extends BaseTest {
 
 		int rc = (int) d.getRowCount();
 		d.insertEmptyRow();
-		assertTrue(d.getRowCount() == rc + 1);
+		assertEquals(d.getRowCount(), rc + 1);
 		d.close();
 	}
 
-	public void testRowCount() throws Exception {
+	@Test
+        public void testRowCount() throws Exception {
 		String[] resources = super.getNonDBSmallResources();
 		for (String ds : resources) {
 			testRowCount(ds);
@@ -430,7 +444,8 @@ public class EditionTests extends BaseTest {
 		d.close();
 	}
 
-	public void testInsertAt() throws Exception {
+	@Test
+        public void testInsertAt() throws Exception {
 		String[] resources = super.getNonDBSmallResources();
 		for (String ds : resources) {
 			testInsertAt(ds);
@@ -468,14 +483,15 @@ public class EditionTests extends BaseTest {
 		d.close();
 
 		d.open();
-		assertTrue(d.getRowCount() == 1);
-		assertTrue(d.getMetadata().getFieldCount() == 2);
+		assertEquals(d.getRowCount(),1);
+		assertEquals(d.getMetadata().getFieldCount(),2);
 		assertTrue(equals(d.getFieldValue(0, 0), v1));
 		assertTrue(equals(d.getFieldValue(0, 1), v2));
 		d.close();
 	}
 
-	public void testCancelEdition() throws Exception {
+	@Test
+        public void testCancelEdition() throws Exception {
 		String dsName = super.getAnySpatialResource();
 		DataSource ds = dsf.getDataSource(dsName);
 		ds.open();
@@ -484,12 +500,13 @@ public class EditionTests extends BaseTest {
 		ds.insertEmptyRow();
 		ds.close();
 		ds.open();
-		assertTrue(ds.getAsString().equals(beforeEdition));
-		assertTrue(ds.getRowCount() == rc);
+		assertEquals(ds.getAsString(),beforeEdition);
+		assertEquals(ds.getRowCount(),rc);
 		ds.close();
 	}
 
-	public void testTwoCommitsClose() throws Exception {
+	@Test
+        public void testTwoCommitsClose() throws Exception {
 		twoCommitClose(true);
 		twoCommitClose(false);
 	}
@@ -505,23 +522,24 @@ public class EditionTests extends BaseTest {
 		}
 		long rc = ds.getRowCount();
 		ds.insertFilledRow(ds.getRow(0));
-		assertTrue(ds.getRowCount() == rc + 1);
+		assertEquals(ds.getRowCount(),rc + 1);
 		ds.commit();
-		assertTrue(ds.getRowCount() == rc + 1);
+		assertEquals(ds.getRowCount(),rc + 1);
 		ds.deleteRow(0);
 		ds.commit();
-		assertTrue(ds.getRowCount() == rc);
+		assertEquals(ds.getRowCount(),rc);
 		ds.close();
 		if (openTwice) {
 			ds.close();
 		}
-		assertTrue(!ds.isOpen());
+		assertFalse(ds.isOpen());
 		ds.open();
-		assertTrue(ds.getRowCount() == rc);
+		assertEquals(ds.getRowCount(),rc);
 		ds.close();
 	}
 
-	public void testSecondDSIsUpdated() throws Exception {
+	@Test
+        public void testSecondDSIsUpdated() throws Exception {
 		String dsName = super.getNonDBSmallResources()[1];
 		DataSource ds1 = dsf.getDataSource(dsName);
 		DataSource ds2 = dsf.getDataSource(dsName);
@@ -529,34 +547,36 @@ public class EditionTests extends BaseTest {
 		ds2.open();
 		long rc = ds1.getRowCount();
 		ds1.deleteRow(0);
-		assertTrue(ds1.getRowCount() == rc - 1);
-		assertTrue(ds2.getRowCount() == rc);
+		assertEquals(ds1.getRowCount(),rc - 1);
+		assertEquals(ds2.getRowCount(),rc);
 		ds1.commit();
-		assertTrue(ds1.getRowCount() == rc - 1);
-		assertTrue(ds2.getRowCount() == rc - 1);
+		assertEquals(ds1.getRowCount(),rc - 1);
+		assertEquals(ds2.getRowCount(),rc - 1);
 		ds1.close();
-		assertTrue(!ds1.isOpen());
+		assertFalse(ds1.isOpen());
 		assertTrue(ds2.isOpen());
 		ds1.open();
-		assertTrue(ds1.getRowCount() == rc - 1);
-		assertTrue(ds2.getRowCount() == rc - 1);
+		assertEquals(ds1.getRowCount(),rc - 1);
+		assertEquals(ds2.getRowCount(),rc - 1);
 		ds1.close();
 		ds2.close();
 	}
 
-	public void testSyncWithSource() throws Exception {
+	@Test
+        public void testSyncWithSource() throws Exception {
 		String dsName = super.getNonDBSmallResources()[0];
 		DataSource ds = dsf.getDataSource(dsName);
 		ds.open();
 		long rc = ds.getRowCount();
 		ds.deleteRow(0);
-		assertTrue(rc - 1 == ds.getRowCount());
+		assertEquals(rc - 1,ds.getRowCount());
 		ds.syncWithSource();
-		assertTrue(rc == ds.getRowCount());
+		assertEquals(rc,ds.getRowCount());
 		ds.close();
 	}
 
-	public void testInsertWrongNumberOfRows() throws Exception {
+	@Test
+        public void testInsertWrongNumberOfRows() throws Exception {
 		GenericObjectDriver omd = new GenericObjectDriver(
 				new String[] { "field" }, new Type[] { TypeFactory
 						.createType(Type.STRING) });
@@ -565,19 +585,20 @@ public class EditionTests extends BaseTest {
 		try {
 			ds.insertFilledRow(new Value[] { ValueFactory.createValue(""),
 					ValueFactory.createValue("hi") });
-			assertTrue(false);
+			fail();
 		} catch (IllegalArgumentException e) {
 		}
 		try {
 			ds.insertFilledRow(new Value[0]);
-			assertTrue(false);
+			fail();
 		} catch (IllegalArgumentException e) {
 		}
 		ds.commit();
 		ds.close();
 	}
 
-	public void testCheckValuesInAddedField() throws Exception {
+	@Test
+        public void testCheckValuesInAddedField() throws Exception {
 		GenericObjectDriver omd = new GenericObjectDriver(
 				new String[] { "field" }, new Type[] { TypeFactory
 						.createType(Type.STRING) });
@@ -587,9 +608,9 @@ public class EditionTests extends BaseTest {
 		ds.insertEmptyRow();
 		String bye = "bye";
 		int fieldIndex = ds.getFieldIndexByName("newfield");
-		assertTrue(ds.check(fieldIndex, ValueFactory.createValue(bye)) == null);
+		assertNull(ds.check(fieldIndex, ValueFactory.createValue(bye)));
 		ds.setFieldValue(0, fieldIndex, ValueFactory.createValue(bye));
-		assertTrue(ds.getString(0, fieldIndex).equals(bye));
+		assertEquals(ds.getString(0, fieldIndex),bye);
 		ds.close();
 	}
 }

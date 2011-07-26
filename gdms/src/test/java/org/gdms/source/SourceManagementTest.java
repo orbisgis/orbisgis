@@ -36,6 +36,8 @@
  */
 package org.gdms.source;
 
+import org.junit.Before;
+import org.junit.Test;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -43,10 +45,9 @@ import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 
-import junit.framework.TestCase;
 
 import org.gdms.DBTestSource;
-import org.gdms.BaseTest;
+import org.gdms.TestBase;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SourceAlreadyExistsException;
@@ -64,407 +65,422 @@ import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.generic.GenericObjectDriver;
 
-public class SourceManagementTest extends TestCase {
+import static org.junit.Assert.*;
 
-	private static final String SOURCE = "source";
-	private static final String SOURCEMOD = "sourcd";
-	private SourceManager sm;
-	private DataSourceFactory dsf;
-	private File testFile;
-	private DBSource testDB;
-	private WMSSource testWMS;
-	private GenericObjectDriver obj;
+public class SourceManagementTest {
 
-	public void testRegisterTwice() throws Exception {
+        private static final String SOURCE = "source";
+        private static final String SOURCEMOD = "sourcd";
+        private SourceManager sm;
+        private DataSourceFactory dsf;
+        private File testFile;
+        private DBSource testDB;
+        private WMSSource testWMS;
+        private GenericObjectDriver obj;
+
+        @Test
+        public void testRegisterTwice() throws Exception {
                 sm.remove(SOURCE);
                 sm.register(SOURCE, new File("b.shp"));
-		try {
-			sm.register(SOURCE, new File("a.shp"));
-			assertTrue(false);
-		} catch (SourceAlreadyExistsException e) {
-			// we check that the failed registration has broken nothing
-			sm.remove(SOURCE);
-			sm.register(SOURCE, testFile);
-			DataSource ds = dsf.getDataSource(SOURCE);
-			ds.open();
-			ds.close();
-		}
-	}
+                try {
+                        sm.register(SOURCE, new File("a.shp"));
+                        fail();
+                } catch (SourceAlreadyExistsException e) {
+                        // we check that the failed registration has broken nothing
+                        sm.remove(SOURCE);
+                        sm.register(SOURCE, testFile);
+                        DataSource ds = dsf.getDataSource(SOURCE);
+                        ds.open();
+                        ds.close();
+                }
+        }
 
-	public void testRemoveAll() throws Exception {
-		Source src = sm.getSource(SOURCE);
-		associateFile(src, "statisticsFile");
-		associateString(src, "statistics");
-		sm.removeAll();
-		setUp();
-		src = sm.getSource(SOURCE);
-		assertTrue(src.getStringPropertyNames().length == 0);
-		assertTrue(src.getFilePropertyNames().length == 0);
-	}
+        @Test
+        public void testRemoveAll() throws Exception {
+                Source src = sm.getSource(SOURCE);
+                associateFile(src, "statisticsFile");
+                associateString(src, "statistics");
+                sm.removeAll();
+                setUp();
+                src = sm.getSource(SOURCE);
+                assertEquals(src.getStringPropertyNames().length, 0);
+                assertEquals(src.getFilePropertyNames().length, 0);
+        }
 
-	public void testRemoveFileProperty() throws Exception {
-		Source source = sm.getSource(SOURCE);
-		String fileProp = "testFileProp";
-		associateFile(source, fileProp);
-		source.deleteProperty(fileProp);
+        @Test
+        public void testRemoveFileProperty() throws Exception {
+                Source source = sm.getSource(SOURCE);
+                String fileProp = "testFileProp";
+                associateFile(source, fileProp);
+                source.deleteProperty(fileProp);
 
-		File dir = sm.getSourceInfoDirectory();
-		File[] content = dir.listFiles(new FilenameFilter() {
-
-                        @Override
-                        public boolean accept(File dir, String name) {
-                                return !name.startsWith(".");
-                        }
-                });
-		assertTrue(content.length == 1);
-		assertTrue(content[0].getName().equals("directory.xml"));
-	}
-
-	public void testOverrideFileProperty() throws Exception {
-		Source source = sm.getSource(SOURCE);
-		String fileProp = "testFileProp";
-		associateFile(source, fileProp);
-
-		File file = source.createFileProperty(fileProp);
-		FileOutputStream fis = new FileOutputStream(file);
-		fis.write("newcontent".getBytes());
-		fis.close();
-
-		source.deleteProperty(fileProp);
-		File dir = sm.getSourceInfoDirectory();
-		File[] content = dir.listFiles(new FilenameFilter() {
+                File dir = sm.getSourceInfoDirectory();
+                File[] content = dir.listFiles(new FilenameFilter() {
 
                         @Override
                         public boolean accept(File dir, String name) {
                                 return !name.startsWith(".");
                         }
                 });
-		assertTrue(content.length == 1);
-		assertTrue(content[0].getName().equals("directory.xml"));
-	}
+                assertEquals(content.length, 1);
+                assertEquals(content[0].getName(), "directory.xml");
+        }
 
-	public void testRemoveStringProperty() throws Exception {
-		Source source = sm.getSource(SOURCE);
-		String stringProp = "testFileProp";
-		associateString(source, stringProp);
-		source.deleteProperty(stringProp);
+        @Test
+        public void testOverrideFileProperty() throws Exception {
+                Source source = sm.getSource(SOURCE);
+                String fileProp = "testFileProp";
+                associateFile(source, fileProp);
 
-		assertTrue(source.getStringPropertyNames().length == 0);
-		assertTrue(source.getFilePropertyNames().length == 0);
-	}
+                File file = source.createFileProperty(fileProp);
+                FileOutputStream fis = new FileOutputStream(file);
+                fis.write("newcontent".getBytes());
+                fis.close();
 
-	public void testAssociateFile() throws Exception {
-		String statistics = "statistics";
-		Source source = sm.getSource(SOURCE);
-		String rcStr = associateFile(source, statistics);
+                source.deleteProperty(fileProp);
+                File dir = sm.getSourceInfoDirectory();
+                File[] content = dir.listFiles(new FilenameFilter() {
 
-		assertTrue(sm.getSource(SOURCE).getFilePropertyNames().length == 1);
+                        @Override
+                        public boolean accept(File dir, String name) {
+                                return !name.startsWith(".");
+                        }
+                });
+                assertEquals(content.length, 1);
+                assertEquals(content[0].getName(), "directory.xml");
+        }
 
-		sm.saveStatus();
-		instantiateDSF();
+        @Test
+        public void testRemoveStringProperty() throws Exception {
+                Source source = sm.getSource(SOURCE);
+                String stringProp = "testFileProp";
+                associateString(source, stringProp);
+                source.deleteProperty(stringProp);
 
-		assertTrue(sm.getSource(SOURCE).getFilePropertyNames().length == 1);
+                assertEquals(source.getStringPropertyNames().length, 0);
+                assertEquals(source.getFilePropertyNames().length, 0);
+        }
 
-		String statsContent = source
-				.getFilePropertyContentsAsString(statistics);
-		assertTrue(statsContent.equals(rcStr));
+        @Test
+        public void testAssociateFile() throws Exception {
+                String statistics = "statistics";
+                Source source = sm.getSource(SOURCE);
+                String rcStr = associateFile(source, statistics);
 
-		File f = source.getFileProperty(statistics);
-		DataInputStream dis = new DataInputStream(new FileInputStream(f));
-		byte[] content = new byte[dis.available()];
-		dis.readFully(content);
-		assertTrue(new String(content).equals(rcStr));
-	}
+                assertEquals(sm.getSource(SOURCE).getFilePropertyNames().length, 1);
 
-	private String associateFile(Source source, String propertyName)
-			throws Exception {
-		if (source.hasProperty(propertyName)) {
-			source.deleteProperty(propertyName);
-		}
-		File stats = source.createFileProperty(propertyName);
-		DataSource ds = dsf.getDataSource(source.getName());
-		ds.open();
-		long rc = ds.getRowCount();
-		ds.close();
+                sm.saveStatus();
+                instantiateDSF();
 
-		FileOutputStream fis = new FileOutputStream(stats);
-		String rcStr = Long.toString(rc);
-		fis.write(rcStr.getBytes());
-		fis.close();
+                assertEquals(sm.getSource(SOURCE).getFilePropertyNames().length, 1);
 
-		return rcStr;
-	}
+                String statsContent = source.getFilePropertyContentsAsString(statistics);
+                assertEquals(statsContent, rcStr);
 
-	public void testAssociateStringProperty() throws Exception {
-		Source source = sm.getSource(SOURCE);
-		String statistics = "statistics";
-		String rcStr = associateString(source, statistics);
+                File f = source.getFileProperty(statistics);
+                DataInputStream dis = new DataInputStream(new FileInputStream(f));
+                byte[] content = new byte[dis.available()];
+                dis.readFully(content);
+                assertEquals(new String(content), rcStr);
+        }
 
-		assertTrue(sm.getSource(SOURCE).getStringPropertyNames().length == 1);
+        private String associateFile(Source source, String propertyName)
+                throws Exception {
+                if (source.hasProperty(propertyName)) {
+                        source.deleteProperty(propertyName);
+                }
+                File stats = source.createFileProperty(propertyName);
+                DataSource ds = dsf.getDataSource(source.getName());
+                ds.open();
+                long rc = ds.getRowCount();
+                ds.close();
 
-		sm.saveStatus();
-		instantiateDSF();
+                FileOutputStream fis = new FileOutputStream(stats);
+                String rcStr = Long.toString(rc);
+                fis.write(rcStr.getBytes());
+                fis.close();
 
-		assertTrue(sm.getSource(SOURCE).getStringPropertyNames().length == 1);
+                return rcStr;
+        }
 
-		String statsContent = source.getProperty(statistics);
-		assertTrue(statsContent.equals(rcStr));
-	}
+        @Test
+        public void testAssociateStringProperty() throws Exception {
+                Source source = sm.getSource(SOURCE);
+                String statistics = "statistics";
+                String rcStr = associateString(source, statistics);
 
-	private String associateString(Source source, String propertyName)
-			throws Exception {
-		DataSource ds = dsf.getDataSource(SOURCE);
-		ds.open();
-		long rc = ds.getRowCount();
-		ds.close();
+                assertEquals(sm.getSource(SOURCE).getStringPropertyNames().length, 1);
 
-		String rcStr = Long.toString(rc);
-		source.putProperty(propertyName, rcStr);
-		return rcStr;
-	}
+                sm.saveStatus();
+                instantiateDSF();
 
-	public void testKeepPropertiesAfterRenaming() throws Exception {
-		Source source = sm.getSource(SOURCE);
+                assertEquals(sm.getSource(SOURCE).getStringPropertyNames().length, 1);
 
-		associateString(source, "test");
-		associateFile(source, "testfile");
-		assertTrue(sm.getSource(SOURCE).getFilePropertyNames().length == 1);
-		assertTrue(sm.getSource(SOURCE).getStringPropertyNames().length == 1);
+                String statsContent = source.getProperty(statistics);
+                assertEquals(statsContent, rcStr);
+        }
 
-		String memento = sm.getMemento();
+        private String associateString(Source source, String propertyName)
+                throws Exception {
+                DataSource ds = dsf.getDataSource(SOURCE);
+                ds.open();
+                long rc = ds.getRowCount();
+                ds.close();
 
-		sm.rename(SOURCE, SOURCEMOD);
+                String rcStr = Long.toString(rc);
+                source.putProperty(propertyName, rcStr);
+                return rcStr;
+        }
 
-		assertTrue(memento.length() > SOURCE.length() + 2);
-		assertTrue(memento.substring(SOURCE.length() + 2).equals(
-				sm.getMemento().substring(SOURCEMOD.length() + 2)));
+        @Test
+        public void testKeepPropertiesAfterRenaming() throws Exception {
+                Source source = sm.getSource(SOURCE);
 
-	}
+                associateString(source, "test");
+                associateFile(source, "testfile");
+                assertEquals(sm.getSource(SOURCE).getFilePropertyNames().length, 1);
+                assertEquals(sm.getSource(SOURCE).getStringPropertyNames().length, 1);
 
-	public void testReturnNullWhenNoProperty() throws Exception {
-		Source source = sm.getSource(SOURCE);
-		assert (source.getFileProperty("skjbnskb") == null);
-		assert (source.getProperty("skjbnskb") == null);
-	}
+                String memento = sm.getMemento();
 
-	public void testMoveAndChangeSourceDirectory() throws Exception {
-		String statistics = "statistics";
-		Source source = sm.getSource(SOURCE);
-		associateFile(source, statistics);
-		associateString(source, statistics);
-		String memento = sm.getMemento();
+                sm.rename(SOURCE, SOURCEMOD);
 
-		String newSourceInfoDir = BaseTest.internalData
-				+ "source-management2";
-		sm.setSourceInfoDirectory(newSourceInfoDir);
+                assertTrue(memento.length() > SOURCE.length() + 2);
+                assertEquals(memento.substring(SOURCE.length() + 2),
+                        sm.getMemento().substring(SOURCEMOD.length() + 2));
 
-		instantiateDSF();
+        }
+
+        @Test
+        public void testReturnNullWhenNoProperty() throws Exception {
+                Source source = sm.getSource(SOURCE);
+                assertNull(source.getFileProperty("skjbnskb"));
+                assertNull(source.getProperty("skjbnskb"));
+        }
+
+        @Test
+        public void testMoveAndChangeSourceDirectory() throws Exception {
+                String statistics = "statistics";
+                Source source = sm.getSource(SOURCE);
+                associateFile(source, statistics);
+                associateString(source, statistics);
+                String memento = sm.getMemento();
+
+                String newSourceInfoDir = TestBase.internalData
+                        + "source-management2";
+                sm.setSourceInfoDirectory(newSourceInfoDir);
+
+                instantiateDSF();
 
                 memento = sm.getMemento();
-		sm.changeSourceInfoDirectory(newSourceInfoDir);
-		assertTrue(memento.equals(sm.getMemento()));
-	}
+                sm.changeSourceInfoDirectory(newSourceInfoDir);
+                assertEquals(memento, sm.getMemento());
+        }
 
-	public void testSameSourceSameDSInstance() throws Exception {
-		DataSource ds1 = dsf.getDataSource(SOURCE, DataSourceFactory.NORMAL);
-		DataSource ds2 = dsf.getDataSource(SOURCE, DataSourceFactory.NORMAL);
-		ds1.open();
-		assertTrue(ds2.isOpen());
-		ds2.close();
-	}
+        @Test
+        public void testSameSourceSameDSInstance() throws Exception {
+                DataSource ds1 = dsf.getDataSource(SOURCE, DataSourceFactory.NORMAL);
+                DataSource ds2 = dsf.getDataSource(SOURCE, DataSourceFactory.NORMAL);
+                ds1.open();
+                assertTrue(ds2.isOpen());
+                ds2.close();
+        }
 
-	public void testPersistence() throws Exception {
-		sm.removeAll();
+        @Test
+        public void testPersistence() throws Exception {
+                sm.removeAll();
 
-		DBTestSource dbTestSource = new DBTestSource("testhsqldb",
-				"org.hsqldb.jdbcDriver", BaseTest.internalData
-						+ "testhsqldb.sql", testDB);
-		dbTestSource.backup();
+                DBTestSource dbTestSource = new DBTestSource("testhsqldb",
+                        "org.hsqldb.jdbcDriver", TestBase.internalData
+                        + "testhsqldb.sql", testDB);
 
-		sm.register("myfile", testFile);
-		sm.register("db", testDB);
-		sm.register("wms", testWMS);
-		sm.register("obj", obj);
+                sm.register("myfile", testFile);
+                sm.register("db", testDB);
+                sm.register("wms", testWMS);
+                sm.register("obj", obj);
 
-		String fileContent = getContent("myfile");
-		String dbContent = getContent("db");
-		String wmsContent = getContent("wms");
-		String objContent = getContent("obj");
+                String fileContent = getContent("myfile");
+                String dbContent = getContent("db");
+                String wmsContent = getContent("wms");
+                String objContent = getContent("obj");
 
-		sm.saveStatus();
-		instantiateDSF();
+                sm.saveStatus();
+                instantiateDSF();
 
-		assertTrue(fileContent.equals(getContent("myfile")));
-		assertTrue(dbContent.equals(getContent("db")));
-		assertTrue(wmsContent.equals(getContent("wms")));
-		assertTrue(objContent.equals(getContent("obj")));
+                assertEquals(fileContent, getContent("myfile"));
+                assertEquals(dbContent, getContent("db"));
+                assertEquals(wmsContent, getContent("wms"));
+                assertEquals(objContent, getContent("obj"));
 
-	}
+        }
 
-	private String getContent(String name) throws Exception {
-		DataSource ds = dsf.getDataSource(name);
-		ds.open();
-		String ret = ds.getAsString();
-		ds.close();
+        private String getContent(String name) throws Exception {
+                DataSource ds = dsf.getDataSource(name);
+                ds.open();
+                String ret = ds.getAsString();
+                ds.close();
 
-		return ret;
-	}
+                return ret;
+        }
 
-	public void testObjectDriverType() throws Exception {
-		GenericObjectDriver driver = new GenericObjectDriver(new String[] { "pk",
-				"geom" }, new Type[] { TypeFactory.createType(Type.INT),
-				TypeFactory.createType(Type.GEOMETRY) });
-		sm.register("spatial", driver);
-		Source src = sm.getSource("spatial");
-		assertTrue((src.getType() & SourceManager.MEMORY) == SourceManager.MEMORY);
-		assertTrue((src.getType() & SourceManager.VECTORIAL) == SourceManager.VECTORIAL);
-		driver = new GenericObjectDriver(new String[] { "pk" },
-				new Type[] { TypeFactory.createType(Type.INT) });
-		sm.register("alpha", driver);
-		src = sm.getSource("alpha");
-		assertTrue((src.getType() & SourceManager.MEMORY) == SourceManager.MEMORY);
-		assertTrue((src.getType() & SourceManager.VECTORIAL) == 0);
-	}
+        @Test
+        public void testObjectDriverType() throws Exception {
+                GenericObjectDriver driver = new GenericObjectDriver(new String[]{"pk",
+                                "geom"}, new Type[]{TypeFactory.createType(Type.INT),
+                                TypeFactory.createType(Type.GEOMETRY)});
+                sm.register("spatial", driver);
+                Source src = sm.getSource("spatial");
+                assertEquals((src.getType() & SourceManager.MEMORY), SourceManager.MEMORY);
+                assertEquals((src.getType() & SourceManager.VECTORIAL), SourceManager.VECTORIAL);
+                driver = new GenericObjectDriver(new String[]{"pk"},
+                        new Type[]{TypeFactory.createType(Type.INT)});
+                sm.register("alpha", driver);
+                src = sm.getSource("alpha");
+                assertEquals((src.getType() & SourceManager.MEMORY), SourceManager.MEMORY);
+                assertEquals((src.getType() & SourceManager.VECTORIAL), 0);
+        }
 
-	public void testGetAlreadyRegisteredSourceAnonimously() throws Exception {
-		sm.removeAll();
+        @Test
+        public void testGetAlreadyRegisteredSourceAnonimously() throws Exception {
+                sm.removeAll();
 
-		sm.register("myfile", testFile);
-		sm.register("myDB", testDB);
-		sm.register("myWMS", testWMS);
-		sm.register("myObj", obj);
+                sm.register("myfile", testFile);
+                sm.register("myDB", testDB);
+                sm.register("myWMS", testWMS);
+                sm.register("myObj", obj);
 
-		DataSource ds = dsf.getDataSource(testFile);
-		assertTrue(ds.getName().equals("myfile"));
+                DataSource ds = dsf.getDataSource(testFile);
+                assertEquals(ds.getName(), "myfile");
 
-		ds = dsf.getDataSource(testDB);
-		assertTrue(ds.getName().equals("myDB"));
+                ds = dsf.getDataSource(testDB);
+                assertEquals(ds.getName(), "myDB");
 
-		ds = dsf.getDataSource(testWMS);
-		assertTrue(ds.getName().equals("myWMS"));
+                ds = dsf.getDataSource(testWMS);
+                assertEquals(ds.getName(), "myWMS");
 
-		ds = dsf.getDataSource(obj,"main");
-		assertTrue(ds.getName().equals("myObj"));
-	}
+                ds = dsf.getDataSource(obj, "main");
+                assertEquals(ds.getName(), "myObj");
+        }
 
-	public void testCannotRegisterTwice() throws Exception {
-		sm.removeAll();
+        @Test
+        public void testCannotRegisterTwice() throws Exception {
+                sm.removeAll();
 
-		sm.register("myfile", testFile);
-		sm.register("myDB", testDB);
-		sm.register("myWMS", testWMS);
-		sm.register("myObj", obj);
+                sm.register("myfile", testFile);
+                sm.register("myDB", testDB);
+                sm.register("myWMS", testWMS);
+                sm.register("myObj", obj);
 
-		try {
-			sm.register("a", testFile);
-			assertTrue(false);
-		} catch (SourceAlreadyExistsException e) {
-		}
-		try {
-			sm.register("b", testDB);
-			assertTrue(false);
-		} catch (SourceAlreadyExistsException e) {
-		}
-		try {
-			sm.register("w", testWMS);
-			assertTrue(false);
-		} catch (SourceAlreadyExistsException e) {
-		}
-		try {
-			sm.register("c", obj);
-			assertTrue(false);
-		} catch (SourceAlreadyExistsException e) {
-		}
-		try {
-			sm.nameAndRegister(testFile);
-			assertTrue(false);
-		} catch (SourceAlreadyExistsException e) {
-		}
-		try {
-			sm.nameAndRegister(testDB);
-			assertTrue(false);
-		} catch (SourceAlreadyExistsException e) {
-		}
-		try {
-			sm.nameAndRegister(testWMS);
-			assertTrue(false);
-		} catch (SourceAlreadyExistsException e) {
-		}
-		try {
-			sm.nameAndRegister(obj,"main");
-			assertTrue(false);
-		} catch (SourceAlreadyExistsException e) {
-		}
-	}
+                try {
+                        sm.register("a", testFile);
+                        fail();
+                } catch (SourceAlreadyExistsException e) {
+                }
+                try {
+                        sm.register("b", testDB);
+                        fail();
+                } catch (SourceAlreadyExistsException e) {
+                }
+                try {
+                        sm.register("w", testWMS);
+                        fail();
+                } catch (SourceAlreadyExistsException e) {
+                }
+                try {
+                        sm.register("c", obj);
+                        fail();
+                } catch (SourceAlreadyExistsException e) {
+                }
+                try {
+                        sm.nameAndRegister(testFile);
+                        fail();
+                } catch (SourceAlreadyExistsException e) {
+                }
+                try {
+                        sm.nameAndRegister(testDB);
+                        fail();
+                } catch (SourceAlreadyExistsException e) {
+                }
+                try {
+                        sm.nameAndRegister(testWMS);
+                        fail();
+                } catch (SourceAlreadyExistsException e) {
+                }
+                try {
+                        sm.nameAndRegister(obj, "main");
+                        fail();
+                } catch (SourceAlreadyExistsException e) {
+                }
+        }
 
-	public void testSaveWithAnOpenHSQLDBDataSource() throws Exception {
+        @Test
+        public void testSaveWithAnOpenHSQLDBDataSource() throws Exception {
                 sm.remove("db");
-		sm.register("db", testDB);
-		DataSource ds = dsf.getDataSource("db");
-		ds.open();
-		sm.saveStatus();
-		ds.getFieldValue(0, 0);
-		ds.close();
-	}
+                sm.register("db", testDB);
+                DataSource ds = dsf.getDataSource("db");
+                ds.open();
+                sm.saveStatus();
+                ds.getFieldValue(0, 0);
+                ds.close();
+        }
 
-	public void testUnknownSources() throws Exception {
+        @Test
+        public void testUnknownSources() throws Exception {
                 try {
                         sm.register("toto", new FileSourceCreation(new File("toto.pptx"), null));
                         fail();
                 } catch (DriverLoadException e) {
                 }
-	}
+        }
 
-	public void testListenCommits() throws Exception {
-		DriverManager dm = new DriverManager();
-		dm.registerDriver(ReadAndWriteDriver.class);
+        @Test
+        public void testListenCommits() throws Exception {
+                DriverManager dm = new DriverManager();
+                dm.registerDriver(ReadAndWriteDriver.class);
                 sm.remove("object");
                 sm.remove("file");
                 sm.remove("db");
-		SourceManager sourceManager = dsf.getSourceManager();
-		sourceManager.setDriverManager(dm);
-		sourceManager.register("object", new ObjectSourceDefinition(
-				new ReadAndWriteDriver(),"main"));
-		sourceManager.register("file", new FakeFileSourceDefinition(
-				new ReadAndWriteDriver()));
-		sourceManager.register("db", new FakeDBTableSourceDefinition(
-				new ReadAndWriteDriver(), "jdbc:closefailing"));
+                SourceManager sourceManager = dsf.getSourceManager();
+                sourceManager.setDriverManager(dm);
+                sourceManager.register("object", new ObjectSourceDefinition(
+                        new ReadAndWriteDriver(), "main"));
+                sourceManager.register("file", new FakeFileSourceDefinition(
+                        new ReadAndWriteDriver()));
+                sourceManager.register("db", new FakeDBTableSourceDefinition(
+                        new ReadAndWriteDriver(), "jdbc:closefailing"));
 
-		testListenCommits(dsf.getDataSource("object"));
-		testListenCommits(dsf.getDataSource("file"));
-		testListenCommits(dsf.getDataSource("db"));
+                testListenCommits(dsf.getDataSource("object"));
+                testListenCommits(dsf.getDataSource("file"));
+                testListenCommits(dsf.getDataSource("db"));
 
-	}
+        }
 
-	private void testListenCommits(DataSource ds) throws DriverException {
-		ds.open();
-		ds.close();
+        private void testListenCommits(DataSource ds) throws DriverException {
+                ds.open();
+                ds.close();
+        }
 
-//		assertTrue(((DefaultSourceManager) dsf.getSourceManager()).commitListeners.isEmpty());
-	}
-
-	@Override
-	protected void setUp() throws Exception {
-		instantiateDSF();
+        @Before
+        public void setUp() throws Exception {
+                instantiateDSF();
                 try {
-		sm.removeAll();
+                        sm.removeAll();
                 } catch (IOException e) {
                 }
-		testFile = new File(BaseTest.internalData + "test.csv");
-		testDB = new DBSource(null, 0, BaseTest.internalData
-				+ "backup/testhsqldb", "sa", "", "gisapps", "jdbc:hsqldb:file");
-		testWMS = new WMSSource("127.0.0.1", "cantons", "EPSG:1234",
-				"format/pig");
-		obj = new GenericObjectDriver();
+                testFile = new File(TestBase.internalData + "test.csv");
+                testDB = new DBSource(null, 0, TestBase.internalData
+                        + "backup/testhsqldb", "sa", "", "gisapps", "jdbc:hsqldb:file");
+                testWMS = new WMSSource("127.0.0.1", "cantons", "EPSG:1234",
+                        "format/pig");
+                obj = new GenericObjectDriver();
                 sm.remove(SOURCE);
                 sm.register(SOURCE, testFile);
-	}
+        }
 
-	private void instantiateDSF() {
-		dsf = new DataSourceFactory(BaseTest.internalData
-				+ "source-management");
-		sm = dsf.getSourceManager();
+        private void instantiateDSF() {
+                dsf = new DataSourceFactory(TestBase.internalData
+                        + "source-management");
+                sm = dsf.getSourceManager();
 
-	}
-
+        }
 }

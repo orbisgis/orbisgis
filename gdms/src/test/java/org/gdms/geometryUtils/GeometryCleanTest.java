@@ -37,15 +37,17 @@
  */
 package org.gdms.geometryUtils;
 
+import org.junit.Test;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
-import junit.framework.TestCase;
+
+import static org.junit.Assert.*;
 
 /**
  *
  * @author ebocher
  */
-public class GeometryCleanTest extends TestCase {
+public class GeometryCleanTest {
 
         public WKTReader wKTReader = new WKTReader();
 
@@ -53,35 +55,33 @@ public class GeometryCleanTest extends TestCase {
          * Test remove duplicate coordinates
          * @throws Exception
          */
+        @Test
         public void testRemoveDuplicateCoordinates() throws Exception {
 
                 //Test linestring
                 Geometry geom = wKTReader.read("LINESTRING(0 8, 1 8 , 3 8,  8  8, 10 8, 20 8)");
                 Geometry result = GeometryClean.removeDuplicateCoordinates(geom);
-                assertTrue(result.getCoordinates().length == 6);
+                assertEquals(result.getCoordinates().length, 6);
 
-                
+
                 //Test duplicate coordinates
                 geom = wKTReader.read("LINESTRING(0 8, 1 8 ,1 8, 3 8,  8  8, 10 8, 10 8, 20 8, 0 8)");
                 result = GeometryClean.removeDuplicateCoordinates(geom);
-                assertTrue(result.getCoordinates().length == 7);
+                assertEquals(result.getCoordinates().length, 7);
 
                 //Test point
                 geom = wKTReader.read("POINT(0 8)");
                 result = GeometryClean.removeDuplicateCoordinates(geom);
-                assertTrue(result.getCoordinates().length == 1);
+                assertEquals(result.getCoordinates().length, 1);
 
                 //Test multipoint
                 geom = wKTReader.read("MULTIPOINT((0 8), (1 8))");
                 result = GeometryClean.removeDuplicateCoordinates(geom);
-                assertTrue(result.getCoordinates().length == 2);
+                assertEquals(result.getCoordinates().length, 2);
 
                 //Test polygon with hole
                 geom = wKTReader.read("POLYGON (( 0 0, 10 0, 10 10 , 0 10, 0 0), (2 2, 7 2, 7 2, 7 7, 2 7, 2 2))");
                 result = GeometryClean.removeDuplicateCoordinates(geom);
-                assertTrue(result.getCoordinates().length == 10);
-
-
-
+                assertEquals(result.getCoordinates().length, 10);
         }
 }

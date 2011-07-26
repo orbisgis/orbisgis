@@ -35,53 +35,51 @@
  * or contact directly:
  * info@orbisgis.org
  */
-
 package org.gdms.data.storage;
 
+import org.junit.Test;
 import java.io.File;
 import java.util.Arrays;
-import junit.framework.TestCase;
 import org.orbisgis.utils.ByteUtils;
+
+import static org.junit.Assert.*;
 
 /**
  *
  * @author Antoine Gourlay
  */
-public class BufferManagerTest extends TestCase {
-    
-    public BufferManagerTest(String testName) {
-        super(testName);
-    }
+public class BufferManagerTest {
 
-    public void testBufferManagerSize() throws Exception {
-            BufferManager bf = new BufferManager(0);
-            // smaller size: 50 MB
-            assertTrue(bf.getBufferSize() == 50 * 1024 * 1024);
+        @Test
+        public void testBufferManagerSize() throws Exception {
+                BufferManager bf = new BufferManager(0);
+                // smaller size: 50 MB
+                assertEquals(bf.getBufferSize(), 50 * 1024 * 1024);
 
-            bf = new BufferManager(52 * 1024 * 1024);
-            assertTrue(bf.getBufferSize() == 52 * 1024 * 1024);
-    }
+                bf = new BufferManager(52 * 1024 * 1024);
+                assertEquals(bf.getBufferSize(), 52 * 1024 * 1024);
+        }
 
-    public void testBufferManagerReadWrite() throws Exception {
-            File f = File.createTempFile("blocktestx", null);
-            f.delete();
+        @Test
+        public void testBufferManagerReadWrite() throws Exception {
+                File f = File.createTempFile("blocktestx", null);
+                f.delete();
 
-            BlockProvider b = new FileBlockProvider(45, f);
-            BufferManager bf = new BufferManager(0);
+                BlockProvider b = new FileBlockProvider(45, f);
+                BufferManager bf = new BufferManager(0);
 
-            bf.registerBlockProvider(b);
-            Block bl = b.newBlock();
+                bf.registerBlockProvider(b);
+                Block bl = b.newBlock();
 
-            bl.setContent(ByteUtils.longToBytes(123456789));
-            bf.saveBlock(bl);
+                bl.setContent(ByteUtils.longToBytes(123456789));
+                bf.saveBlock(bl);
 
-            BufferManager bf2 = new BufferManager(0);
+                BufferManager bf2 = new BufferManager(0);
 
-            bf2.registerBlockProvider(b);
+                bf2.registerBlockProvider(b);
 
-            Block bl2 = bf2.getBlock(bl.getId());
-            
-            assertTrue(ByteUtils.bytesToLong(Arrays.copyOfRange(bl2.getContent(), 0, 8)) == 123456789);
-    }
-    
+                Block bl2 = bf2.getBlock(bl.getId());
+
+                assertEquals(ByteUtils.bytesToLong(Arrays.copyOfRange(bl2.getContent(), 0, 8)), 123456789);
+        }
 }

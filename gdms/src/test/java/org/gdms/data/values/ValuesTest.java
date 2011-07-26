@@ -36,6 +36,8 @@
  */
 package org.gdms.data.values;
 
+import org.junit.Before;
+import org.junit.Test;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.NumberFormat;
@@ -46,7 +48,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import junit.framework.TestCase;
 
 import org.gdms.Geometries;
 import org.gdms.data.types.Type;
@@ -61,14 +62,16 @@ import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 import java.text.DateFormat;
 
-public class ValuesTest extends TestCase {
+import static org.junit.Assert.*;
+
+public class ValuesTest {
 
         private java.sql.Date d;
 
+        @Test
         public void testArrayValue() throws Exception {
                 Value[] v = new Value[7];
 
@@ -85,17 +88,17 @@ public class ValuesTest extends TestCase {
                 ValueCollection av2 = ValueFactory.createValue(v);
 
                 assertTrue((av.equals(av2)).getAsBoolean());
-                assertTrue(av.hashCode() == av2.hashCode());
+                assertEquals(av.hashCode(), av2.hashCode());
 
                 for (int i = 0; i < 7; i++) {
-                        assertTrue((av.get(i).equals(
-                                ValueFactory.createValue(i))).getAsBoolean());
+                        assertTrue((av.get(i).equals(ValueFactory.createValue(i))).getAsBoolean());
                 }
         }
 
         /**
          * Tests the NullValues operations
          */
+        @Test
         public void testNullValueOperations() throws Exception {
                 Value n = ValueFactory.createNullValue();
 
@@ -160,8 +163,6 @@ public class ValuesTest extends TestCase {
                 assertTrue((n.greaterEqual(n)).isNull());
                 n.like(n);
 
-                assertTrue(true);
-
         }
 
         /**
@@ -170,6 +171,7 @@ public class ValuesTest extends TestCase {
          * @throws IncompatibleTypesException
          *             DOCUMENT ME!
          */
+        @Test
         public void testStringValueEquals() throws IncompatibleTypesException {
                 Value v1 = ValueFactory.createValue("hola");
                 Value v2 = ValueFactory.createValue("hola");
@@ -182,9 +184,10 @@ public class ValuesTest extends TestCase {
         /**
          * DOCUMENT ME!
          */
+        @Test
         public void testEscape() {
-                assertTrue(ValueWriterImpl.escapeString("pp'pp").equals("pp''pp"));
-                assertTrue(ValueWriterImpl.escapeString("pp''pp").equals("pp''''pp"));
+                assertEquals(ValueWriterImpl.escapeString("pp'pp"), "pp''pp");
+                assertEquals(ValueWriterImpl.escapeString("pp''pp"), "pp''''pp");
         }
 
         /**
@@ -193,6 +196,7 @@ public class ValuesTest extends TestCase {
          * @throws Exception
          *             DOCUMENT ME!
          */
+        @Test
         public void testCreateByType() throws Exception {
                 assertTrue((ValueFactory.createValueByType("1",
                         Type.LONG).equals(ValueFactory.createValue(1L))).getAsBoolean());
@@ -250,6 +254,7 @@ public class ValuesTest extends TestCase {
                         ValueFactory.createValue(ts))).getAsBoolean());
         }
 
+        @Test
         public void testToStringFromStringCoherente() throws Exception {
                 Value v = ValueFactory.createValue(1300.5566d);
                 assertTrue((v.equals(ValueFactory.createValueByType(v.toString(), Type.DOUBLE))).getAsBoolean());
@@ -298,27 +303,30 @@ public class ValuesTest extends TestCase {
                 assertTrue((v.equals(ValueFactory.createValueByType(v.toString(), Type.TIMESTAMP))).getAsBoolean());
         }
 
+        @Test
         public void testDecimalDigits() throws Exception {
-                assertTrue(((NumericValue) ValueFactory.createValue(2.3d)).getDecimalDigitsCount() == 1);
-                assertTrue(((NumericValue) ValueFactory.createValue(2d)).getDecimalDigitsCount() == 0);
-                assertTrue(((NumericValue) ValueFactory.createValue(23)).getDecimalDigitsCount() == 0);
-                assertTrue(((NumericValue) ValueFactory.createValue(2.030f)).getDecimalDigitsCount() == 2);
-                assertTrue(((NumericValue) ValueFactory.createValue(2.00000000002d)).getDecimalDigitsCount() == 11);
+                assertEquals(((NumericValue) ValueFactory.createValue(2.3d)).getDecimalDigitsCount(), 1);
+                assertEquals(((NumericValue) ValueFactory.createValue(2d)).getDecimalDigitsCount(), 0);
+                assertEquals(((NumericValue) ValueFactory.createValue(23)).getDecimalDigitsCount(), 0);
+                assertEquals(((NumericValue) ValueFactory.createValue(2.030f)).getDecimalDigitsCount(), 2);
+                assertEquals(((NumericValue) ValueFactory.createValue(2.00000000002d)).getDecimalDigitsCount(), 11);
         }
 
+        @Test
         public void testValuesTypes() throws Exception {
-                assertTrue(ValueFactory.createValue(false).getType() == Type.BOOLEAN);
-                assertTrue(ValueFactory.createValue(new byte[]{2, 3}).getType() == Type.BINARY);
-                assertTrue(ValueFactory.createValue(new Date()).getType() == Type.DATE);
-                assertTrue(ValueFactory.createValue(3.0d).getType() == Type.DOUBLE);
-                assertTrue(ValueFactory.createValue(3.5f).getType() == Type.FLOAT);
-                assertTrue(ValueFactory.createValue(4).getType() == Type.INT);
-                assertTrue(ValueFactory.createValue(4L).getType() == Type.LONG);
-                assertTrue(ValueFactory.createValue("").getType() == Type.STRING);
-                assertTrue(ValueFactory.createValue(new Time(1)).getType() == Type.TIME);
-                assertTrue(ValueFactory.createValue(new Timestamp(1)).getType() == Type.TIMESTAMP);
+                assertEquals(ValueFactory.createValue(false).getType(), Type.BOOLEAN);
+                assertEquals(ValueFactory.createValue(new byte[]{2, 3}).getType(), Type.BINARY);
+                assertEquals(ValueFactory.createValue(new Date()).getType(), Type.DATE);
+                assertEquals(ValueFactory.createValue(3.0d).getType(), Type.DOUBLE);
+                assertEquals(ValueFactory.createValue(3.5f).getType(), Type.FLOAT);
+                assertEquals(ValueFactory.createValue(4).getType(), Type.INT);
+                assertEquals(ValueFactory.createValue(4L).getType(), Type.LONG);
+                assertEquals(ValueFactory.createValue("").getType(), Type.STRING);
+                assertEquals(ValueFactory.createValue(new Time(1)).getType(), Type.TIME);
+                assertEquals(ValueFactory.createValue(new Timestamp(1)).getType(), Type.TIMESTAMP);
         }
 
+        @Test
         public void testBinaryValueConversion() throws Exception {
                 Value binary = ValueFactory.createValue(new byte[]{3, 5, 7});
                 Set<Integer> set = new HashSet<Integer>();
@@ -326,6 +334,7 @@ public class ValuesTest extends TestCase {
                 checkConversions(binary, set);
         }
 
+        @Test
         public void testBooleanValueConversion() throws Exception {
                 Value value = ValueFactory.createValue(false);
                 Set<Integer> set = new HashSet<Integer>();
@@ -333,6 +342,7 @@ public class ValuesTest extends TestCase {
                 checkConversions(value, set);
         }
 
+        @Test
         public void testByteValueConversion() throws Exception {
                 Value value = ValueFactory.createValue((byte) 4);
                 Set<Integer> set = new HashSet<Integer>();
@@ -345,6 +355,7 @@ public class ValuesTest extends TestCase {
                 checkConversions(value, set);
         }
 
+        @Test
         public void testDateValueConversion() throws Exception {
                 Value value = ValueFactory.createValue(new Date());
                 Set<Integer> set = new HashSet<Integer>();
@@ -352,6 +363,7 @@ public class ValuesTest extends TestCase {
                 checkConversions(value, set);
         }
 
+        @Test
         public void testDoubleValueConversion() throws Exception {
                 Value value = ValueFactory.createValue(4.3d);
                 Set<Integer> set = new HashSet<Integer>();
@@ -364,6 +376,7 @@ public class ValuesTest extends TestCase {
                 checkConversions(value, set);
         }
 
+        @Test
         public void testFloatValueConversion() throws Exception {
                 Value value = ValueFactory.createValue(3.7f);
                 Set<Integer> set = new HashSet<Integer>();
@@ -376,6 +389,7 @@ public class ValuesTest extends TestCase {
                 checkConversions(value, set);
         }
 
+        @Test
         public void testGeometryValueConversion() throws Exception {
                 Value value = ValueFactory.createValue(Geometries.getMultiPoint3D());
                 Set<Integer> set = new HashSet<Integer>();
@@ -383,6 +397,7 @@ public class ValuesTest extends TestCase {
                 checkConversions(value, set);
         }
 
+        @Test
         public void testIntValueConversion() throws Exception {
                 Value value = ValueFactory.createValue(Integer.MAX_VALUE);
                 Set<Integer> set = new HashSet<Integer>();
@@ -395,6 +410,7 @@ public class ValuesTest extends TestCase {
                 checkConversions(value, set);
         }
 
+        @Test
         public void testLongValueConversion() throws Exception {
                 Value value = ValueFactory.createValue(Long.MAX_VALUE);
                 Set<Integer> set = new HashSet<Integer>();
@@ -407,6 +423,7 @@ public class ValuesTest extends TestCase {
                 checkConversions(value, set);
         }
 
+        @Test
         public void testShortValueConversion() throws Exception {
                 Value value = ValueFactory.createValue(Short.MAX_VALUE);
                 Set<Integer> set = new HashSet<Integer>();
@@ -419,6 +436,7 @@ public class ValuesTest extends TestCase {
                 checkConversions(value, set);
         }
 
+        @Test
         public void testStringValueConversion() throws Exception {
                 Value value = ValueFactory.createValue("gdms");
                 Set<Integer> set = new HashSet<Integer>();
@@ -426,6 +444,7 @@ public class ValuesTest extends TestCase {
                 checkConversions(value, set);
         }
 
+        @Test
         public void testTimeValueConversion() throws Exception {
                 Value value = ValueFactory.createValue(new Time(System.currentTimeMillis()));
                 Set<Integer> set = new HashSet<Integer>();
@@ -433,6 +452,7 @@ public class ValuesTest extends TestCase {
                 checkConversions(value, set);
         }
 
+        @Test
         public void testTimestampValueConversion() throws Exception {
                 Value value = ValueFactory.createValue(new Timestamp(System.currentTimeMillis()));
                 Set<Integer> set = new HashSet<Integer>();
@@ -440,6 +460,7 @@ public class ValuesTest extends TestCase {
                 checkConversions(value, set);
         }
 
+        @Test
         public void testValueCollectionConversion() throws Exception {
                 Value value = ValueFactory.createValue(new Value[]{ValueFactory.createValue(2d),
                                 ValueFactory.createValue("hello")});
@@ -448,6 +469,7 @@ public class ValuesTest extends TestCase {
                 checkConversions(value, set);
         }
 
+        @Test
         public void testNullValueConversion() throws Exception {
                 Value value = ValueFactory.createNullValue();
                 Set<Integer> set = new HashSet<Integer>();
@@ -466,7 +488,7 @@ public class ValuesTest extends TestCase {
                                         } else {
                                                 try {
                                                         value.getAsBinary();
-                                                        assertTrue(false);
+                                                        fail();
                                                 } catch (IncompatibleTypesException e) {
                                                 }
                                         }
@@ -477,7 +499,7 @@ public class ValuesTest extends TestCase {
                                         } else {
                                                 try {
                                                         value.getAsBoolean();
-                                                        assertTrue(false);
+                                                        fail();
                                                 } catch (IncompatibleTypesException e) {
                                                 }
                                         }
@@ -488,7 +510,7 @@ public class ValuesTest extends TestCase {
                                         } else {
                                                 try {
                                                         value.getAsByte();
-                                                        assertTrue(false);
+                                                        fail();
                                                 } catch (IncompatibleTypesException e) {
                                                 }
                                         }
@@ -499,7 +521,7 @@ public class ValuesTest extends TestCase {
                                         } else {
                                                 try {
                                                         value.getAsDate();
-                                                        assertTrue(false);
+                                                        fail();
                                                 } catch (IncompatibleTypesException e) {
                                                 }
                                         }
@@ -510,7 +532,7 @@ public class ValuesTest extends TestCase {
                                         } else {
                                                 try {
                                                         value.getAsDouble();
-                                                        assertTrue(false);
+                                                        fail();
                                                 } catch (IncompatibleTypesException e) {
                                                 }
                                         }
@@ -521,7 +543,7 @@ public class ValuesTest extends TestCase {
                                         } else {
                                                 try {
                                                         value.getAsFloat();
-                                                        assertTrue(false);
+                                                        fail();
                                                 } catch (IncompatibleTypesException e) {
                                                 }
                                         }
@@ -532,7 +554,7 @@ public class ValuesTest extends TestCase {
                                         } else {
                                                 try {
                                                         value.getAsGeometry();
-                                                        assertTrue(false);
+                                                        fail();
                                                 } catch (IncompatibleTypesException e) {
                                                 }
                                         }
@@ -543,7 +565,7 @@ public class ValuesTest extends TestCase {
                                         } else {
                                                 try {
                                                         value.getAsInt();
-                                                        assertTrue(false);
+                                                        fail();
                                                 } catch (IncompatibleTypesException e) {
                                                 }
                                         }
@@ -554,7 +576,7 @@ public class ValuesTest extends TestCase {
                                         } else {
                                                 try {
                                                         value.getAsLong();
-                                                        assertTrue(false);
+                                                        fail();
                                                 } catch (IncompatibleTypesException e) {
                                                 }
                                         }
@@ -565,7 +587,7 @@ public class ValuesTest extends TestCase {
                                         } else {
                                                 try {
                                                         value.getAsShort();
-                                                        assertTrue(false);
+                                                        fail();
                                                 } catch (IncompatibleTypesException e) {
                                                 }
                                         }
@@ -576,7 +598,7 @@ public class ValuesTest extends TestCase {
                                         } else {
                                                 try {
                                                         value.getAsString();
-                                                        assertTrue(false);
+                                                        fail();
                                                 } catch (IncompatibleTypesException e) {
                                                 }
                                         }
@@ -587,7 +609,7 @@ public class ValuesTest extends TestCase {
                                         } else {
                                                 try {
                                                         value.getAsTime();
-                                                        assertTrue(false);
+                                                        fail();
                                                 } catch (IncompatibleTypesException e) {
                                                 }
                                         }
@@ -598,7 +620,7 @@ public class ValuesTest extends TestCase {
                                         } else {
                                                 try {
                                                         value.getAsTimestamp();
-                                                        assertTrue(false);
+                                                        fail();
                                                 } catch (IncompatibleTypesException e) {
                                                 }
                                         }
@@ -609,7 +631,7 @@ public class ValuesTest extends TestCase {
                                         } else {
                                                 try {
                                                         value.getAsValueCollection();
-                                                        assertTrue(false);
+                                                        fail();
                                                 } catch (IncompatibleTypesException e) {
                                                 }
                                         }
@@ -645,8 +667,9 @@ public class ValuesTest extends TestCase {
         // throws IncompatibleTypesException {
         // Value newValue = value.toType(secondType.getTypeCode()).toType(
         // firstType.getTypeCode());
-        // assertTrue(( newValue.equals(value)).getAsBoolean());
+        // assertEquals(( newValue,value));
         // }
+        @Test
         public void testValuesIO() throws Exception {
                 Value v;
                 v = ValueFactory.createValue(false);
@@ -679,6 +702,7 @@ public class ValuesTest extends TestCase {
                 checkIO(v);
         }
 
+        @Test
         public void testCheckByteRasterIO() throws Exception {
                 RasterMetadata rasterMetadata = new RasterMetadata(0, 0, 10, 10, 2, 2);
                 byte[] bytePixels = new byte[]{60, 120, (byte) 190, (byte) 240};
@@ -686,12 +710,13 @@ public class ValuesTest extends TestCase {
                         rasterMetadata);
                 GeoRaster gr = checkRasterMetadataIO(grBytes);
                 byte[] savedPixels = gr.getBytePixels();
-                assertTrue(savedPixels.length == bytePixels.length);
+                assertEquals(savedPixels.length, bytePixels.length);
                 for (int i = 0; i < savedPixels.length; i++) {
-                        assertTrue(i + "", savedPixels[i] == bytePixels[i]);
+                        assertEquals(i + "", savedPixels[i], bytePixels[i]);
                 }
         }
 
+        @Test
         public void testCheckShortRasterIO() throws Exception {
                 RasterMetadata rasterMetadata = new RasterMetadata(0, 0, 10, 10, 2, 2);
                 short[] shortPixels = new short[]{1, 20000, (short) 40000,
@@ -700,12 +725,13 @@ public class ValuesTest extends TestCase {
                         rasterMetadata);
                 GeoRaster gr = checkRasterMetadataIO(grBytes);
                 short[] savedPixels = gr.getShortPixels();
-                assertTrue(savedPixels.length == shortPixels.length);
+                assertEquals(savedPixels.length, shortPixels.length);
                 for (int i = 0; i < savedPixels.length; i++) {
-                        assertTrue(i + "", savedPixels[i] == shortPixels[i]);
+                        assertEquals(i + "", savedPixels[i], shortPixels[i]);
                 }
         }
 
+        @Test
         public void testCheckFloatRasterIO() throws Exception {
                 RasterMetadata rasterMetadata = new RasterMetadata(0, 0, 10, 10, 2, 2);
                 float[] floatPixels = new float[]{1.2f, 2000123.2f, -322225.2f, 4.3f};
@@ -713,12 +739,11 @@ public class ValuesTest extends TestCase {
                         rasterMetadata);
                 GeoRaster gr = checkRasterMetadataIO(grBytes);
                 float[] savedPixels = gr.getFloatPixels();
-                assertTrue(savedPixels.length == floatPixels.length);
-                for (int i = 0; i < savedPixels.length; i++) {
-                        assertTrue(i + "", savedPixels[i] == floatPixels[i]);
-                }
+                assertEquals(savedPixels.length, floatPixels.length);
+                assertArrayEquals(savedPixels, floatPixels, 0);
         }
 
+        @Test
         public void testCheckIntRasterIO() throws Exception {
                 RasterMetadata rasterMetadata = new RasterMetadata(0, 0, 10, 10, 2, 2);
                 int[] intPixels = new int[]{1, Integer.MAX_VALUE / 2,
@@ -727,17 +752,15 @@ public class ValuesTest extends TestCase {
                         rasterMetadata);
                 GeoRaster gr = checkRasterMetadataIO(grBytes);
                 int[] savedPixels = gr.getIntPixels();
-                assertTrue(savedPixels.length == intPixels.length);
-                for (int i = 0; i < savedPixels.length; i++) {
-                        assertTrue(i + "", savedPixels[i] == intPixels[i]);
-                }
+                assertEquals(savedPixels.length, intPixels.length);
+                assertArrayEquals(savedPixels, intPixels);
         }
 
         private GeoRaster checkRasterMetadataIO(GeoRaster grSource) {
                 Value v = ValueFactory.createValue(grSource);
                 Value v2 = ValueFactory.createValue(v.getType(), v.getBytes());
                 GeoRaster gr = v2.getAsRaster();
-                assertTrue(gr.getMetadata().equals(grSource.getMetadata()));
+                assertEquals(gr.getMetadata(), grSource.getMetadata());
 
                 return gr;
         }
@@ -747,14 +770,12 @@ public class ValuesTest extends TestCase {
                 assertTrue((v2.equals(v)).getAsBoolean());
         }
 
+        @Test(expected = ParseException.class)
         public void testEmptyStringIsNotValidGeometry() throws Exception {
-                try {
-                        ValueFactory.createValueByType("", Type.GEOMETRY);
-                        assertTrue(false);
-                } catch (ParseException e) {
-                }
+                ValueFactory.createValueByType("", Type.GEOMETRY);
         }
 
+        @Test
         public void test3DGeoms() throws Exception {
                 GeometryFactory gf = new GeometryFactory();
                 Coordinate[] coords2D = new Coordinate[]{new Coordinate(10, 10, 10),
@@ -797,10 +818,11 @@ public class ValuesTest extends TestCase {
         }
 
         private void checkDifferent(Value p1, Value p2) {
-                assertTrue(p1.equals(p2).getAsBoolean() == false);
+                assertFalse(p1.equals(p2).getAsBoolean());
                 assertTrue(p1.equals(p1).getAsBoolean());
         }
 
+        @Test
         public void testNullOperations() throws Exception {
                 Value nullv = ValueFactory.createNullValue();
                 Value numv = ValueFactory.createValue(4d);
@@ -831,6 +853,7 @@ public class ValuesTest extends TestCase {
                 assertTrue(nullv.lessEqual(numv).isNull());
         }
 
+        @Test
         public void testNumericValueComparisons() throws Exception {
 
                 Value v1 = ValueFactory.createValue(1);
@@ -840,51 +863,53 @@ public class ValuesTest extends TestCase {
                 Value v5 = ValueFactory.createValue(18f);
 
                 // same value
-                assertTrue(v1.compareTo(v1) == 0);
+                assertEquals(v1.compareTo(v1), 0);
 
                 // opposite comparisons
-                assertTrue(v1.compareTo(v2) == -1);
-                assertTrue(v2.compareTo(v1) == 1);
+                assertEquals(v1.compareTo(v2), -1);
+                assertEquals(v2.compareTo(v1), 1);
 
                 // different types
-                assertTrue(v1.compareTo(v3) == 1);
-                assertTrue(v2.compareTo(v4) == -1);
-                assertTrue(v2.compareTo(v5) == 0);
+                assertEquals(v1.compareTo(v3), 1);
+                assertEquals(v2.compareTo(v4), -1);
+                assertEquals(v2.compareTo(v5), 0);
         }
 
+        @Test
         public void testBooleanComparisons() throws Exception {
                 Value v1 = ValueFactory.createValue(true);
                 Value v2 = ValueFactory.createValue(false);
 
-                assertTrue(v1.compareTo(v1) == 0);
-                assertTrue(v2.compareTo(v2) == 0);
+                assertEquals(v1.compareTo(v1), 0);
+                assertEquals(v2.compareTo(v2), 0);
 
-                assertTrue(v1.compareTo(v2) == 1);
-                assertTrue(v2.compareTo(v1) == -1);
+                assertEquals(v1.compareTo(v2), 1);
+                assertEquals(v2.compareTo(v1), -1);
         }
 
+        @Test
         public void testTimeValuesComparisons() throws Exception {
                 DateFormat dateInstance = new SimpleDateFormat("yyyy/MM/dd");
                 Value v1 = ValueFactory.createValue(dateInstance.parse("2002/11/21"));
                 Value v2 = ValueFactory.createValue(dateInstance.parse("2010/01/11"));
 
-                assertTrue(v1.compareTo(v1) == 0);
-                assertTrue(v1.compareTo(v2) == -1);
-                assertTrue(v2.compareTo(v1) == 1);
+                assertEquals(v1.compareTo(v1), 0);
+                assertEquals(v1.compareTo(v2), -1);
+                assertEquals(v2.compareTo(v1), 1);
 
                 v1 = ValueFactory.createValue(Time.valueOf("18:01:59"));
                 v2 = ValueFactory.createValue(Time.valueOf("23:00:05"));
 
-                assertTrue(v1.compareTo(v1) == 0);
-                assertTrue(v1.compareTo(v2) == -1);
-                assertTrue(v2.compareTo(v1) == 1);
+                assertEquals(v1.compareTo(v1), 0);
+                assertEquals(v1.compareTo(v2), -1);
+                assertEquals(v2.compareTo(v1), 1);
 
                 v1 = ValueFactory.createValue(Timestamp.valueOf("2002-11-21 18:01:59"));
                 v2 = ValueFactory.createValue(Timestamp.valueOf("2010-01-11 23:00:05"));
 
-                assertTrue(v1.compareTo(v1) == 0);
-                assertTrue(v1.compareTo(v2) == -1);
-                assertTrue(v2.compareTo(v1) == 1);
+                assertEquals(v1.compareTo(v1), 0);
+                assertEquals(v1.compareTo(v2), -1);
+                assertEquals(v2.compareTo(v1), 1);
 
         }
 
@@ -893,12 +918,13 @@ public class ValuesTest extends TestCase {
          * empty multipolygons. indeed, a NullPointerException used to happen...  
          * @throws Exception  
          */
+        @Test
         public void testGeometryCollectionStringRepresentation() throws Exception {
                 GeometryFactory gf = new GeometryFactory();
                 GeometryCollection mp = gf.createMultiPolygon(new Polygon[]{});
                 Value val = ValueFactory.createValue(mp);
                 String str = val.toString();
-                assertTrue(str.equals("MULTIPOLYGON EMPTY"));
+                assertEquals(str, "MULTIPOLYGON EMPTY");
                 Polygon poly = gf.createPolygon(gf.createLinearRing(new Coordinate[]{}), new LinearRing[]{});
                 assertTrue(poly.isEmpty());
                 mp = gf.createMultiPolygon(new Polygon[]{poly,});
@@ -928,10 +954,9 @@ public class ValuesTest extends TestCase {
                 assertNotNull(str);
         }
 
-        @Override
-        protected void setUp() throws Exception {
+        @Before
+        public void setUp() throws Exception {
                 d = new java.sql.Date(new SimpleDateFormat("yyyy/MM/dd").parse(
                         "1980/2/12").getTime());
-                super.setUp();
         }
 }

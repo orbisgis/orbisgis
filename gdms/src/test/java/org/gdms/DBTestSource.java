@@ -133,7 +133,8 @@ public class DBTestSource extends TestSource {
 		c.close();
 
 		DBTableSourceDefinition def = new DBTableSourceDefinition(dbSource);
-		BaseTest.dsf.getSourceManager().register(name, def);
+                TestBase.dsf.getSourceManager().remove(name);
+		TestBase.dsf.getSourceManager().register(name, def);
 	}
 
 }

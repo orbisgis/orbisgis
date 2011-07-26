@@ -36,7 +36,10 @@
  */
 package org.gdms.drivers;
 
+import org.gdms.TestBase;
+import org.junit.Test;
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBSourceCreation;
 import org.gdms.data.schema.DefaultMetadata;
@@ -46,9 +49,14 @@ import org.gdms.data.types.ConstraintFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 
+import static org.junit.Assert.*;
+import static org.junit.Assume.*;
+
 public class DBMetadataTest extends AbstractDBTest {
 
+        @Test
         public void testReadString() throws Exception {
+                assumeTrue(TestBase.postGisAvailable);
                 String tableName = "testpostgresqlmetadatastring";
                 testString("CREATE TABLE " + tableName
                         + " (id integer primary key, limitedstring varchar(12), "
@@ -62,6 +70,7 @@ public class DBMetadataTest extends AbstractDBTest {
                         getHSQLDBSource(tableName));
         }
 
+        @Test
         public void testH2ReadString() throws Exception {
                 String tableName;
                 tableName = "testh2metadatastring2";
@@ -72,13 +81,13 @@ public class DBMetadataTest extends AbstractDBTest {
                         + "unlimitedstring varchar);");
                 sm.register("source", source);
 
-                DataSource ds = dsf.getDataSource("source");
+                DataSource ds = dsf.getDataSource("source", DataSourceFactory.STATUS_CHECK);
                 ds.open();
                 Metadata m = ds.getMetadata();
-                assertTrue(m.getFieldName(1).equals("limitedstring"));
-                assertTrue(m.getFieldType(1).getConstraints().length == 0);
-                assertTrue(m.getFieldName(2).equals("unlimitedstring"));
-                assertTrue(m.getFieldType(2).getConstraints().length == 0);
+                assertEquals(m.getFieldName(1), "limitedstring");
+                assertEquals(m.getFieldType(1).getConstraints().length, 0);
+                assertEquals(m.getFieldName(2), "unlimitedstring");
+                assertEquals(m.getFieldType(2).getConstraints().length, 0);
                 ds.close();
         }
 
@@ -91,15 +100,17 @@ public class DBMetadataTest extends AbstractDBTest {
                 DataSource ds = dsf.getDataSource("source");
                 ds.open();
                 Metadata m = ds.getMetadata();
-                assertTrue(m.getFieldName(1).equals("limitedstring"));
-                assertTrue(m.getFieldType(1).getIntConstraint(Constraint.LENGTH) == 12);
-                assertTrue(m.getFieldType(1).getConstraints().length == 1);
-                assertTrue(m.getFieldName(2).equals("unlimitedstring"));
-                assertTrue(m.getFieldType(2).getConstraints().length == 0);
+                assertEquals(m.getFieldName(1), "limitedstring");
+                assertEquals(m.getFieldType(1).getIntConstraint(Constraint.LENGTH), 12);
+                assertEquals(m.getFieldType(1).getConstraints().length, 1);
+                assertEquals(m.getFieldName(2), "unlimitedstring");
+                assertEquals(m.getFieldType(2).getConstraints().length, 0);
                 ds.close();
         }
 
-        public void testReadNumeric() throws Exception {
+        @Test
+        public void testReadNumericPG() throws Exception {
+                assumeTrue(TestBase.postGisAvailable);
                 String tableName = "testpostgresqlmetadatanumeric";
                 testReadNumeric(getPostgreSQLSource(tableName), "CREATE TABLE "
                         + tableName
@@ -107,7 +118,11 @@ public class DBMetadataTest extends AbstractDBTest {
                         + " limitednumeric2 numeric(12, 3), "
                         + "unlimitedinteger int4) ; ");
                 sm.removeAll();
-                tableName = "testh2metadatanumeric";
+        }
+
+        @Test
+        public void testReadNumericOthers() throws Exception {
+                String tableName = "testh2metadatanumeric";
                 testReadNumeric(
                         getH2Source(tableName),
                         "CREATE TABLE "
@@ -132,25 +147,31 @@ public class DBMetadataTest extends AbstractDBTest {
                 executeScript(source, createSQL);
                 sm.register("source", source);
 
-                DataSource ds = dsf.getDataSource("source");
+                DataSource ds = dsf.getDataSource("source", DataSourceFactory.STATUS_CHECK);
                 ds.open();
                 Metadata m = ds.getMetadata();
-                assertTrue(m.getFieldName(1).equals("limitednumeric1"));
-                assertTrue(m.getFieldType(1).getIntConstraint(Constraint.PRECISION) == 12);
-                assertTrue(m.getFieldType(1).getConstraints().length == 1);
-                assertTrue(m.getFieldName(2).equals("limitednumeric2"));
-                assertTrue(m.getFieldType(2).getIntConstraint(Constraint.PRECISION) == 12);
-                assertTrue(m.getFieldType(2).getIntConstraint(Constraint.SCALE) == 3);
-                assertTrue(m.getFieldType(2).getConstraints().length == 2);
-                assertTrue(m.getFieldName(3).equals("unlimitedinteger"));
-                assertTrue(m.getFieldType(3).getConstraints().length == 0);
+                assertEquals(m.getFieldName(1), "limitednumeric1");
+                assertEquals(m.getFieldType(1).getIntConstraint(Constraint.PRECISION), 12);
+                assertEquals(m.getFieldType(1).getConstraints().length, 1);
+                assertEquals(m.getFieldName(2), "limitednumeric2");
+                assertEquals(m.getFieldType(2).getIntConstraint(Constraint.PRECISION), 12);
+                assertEquals(m.getFieldType(2).getIntConstraint(Constraint.SCALE), 3);
+                assertEquals(m.getFieldType(2).getConstraints().length, 2);
+                assertEquals(m.getFieldName(3), "unlimitedinteger");
+                assertEquals(m.getFieldType(3).getConstraints().length, 0);
                 ds.close();
         }
 
-        public void testWriteString() throws Exception {
+        @Test
+        public void testWriteStringPG() throws Exception {
+                assumeTrue(TestBase.postGisAvailable);
                 String tableName = "test_metadata_write_string";
                 testWriteString(getPostgreSQLSource(tableName), 4, 4);
-                tableName = "test_metadata_write_string";
+        }
+
+        @Test
+        public void testWriteStringOthers() throws Exception {
+                String tableName = "test_metadata_write_string";
                 testWriteString(getH2Source(tableName), 4, -1);
                 tableName = "test_metadata_write_string";
                 testWriteString(getHSQLDBSource(tableName), 4, 4);
@@ -169,75 +190,85 @@ public class DBMetadataTest extends AbstractDBTest {
                 deleteTable(source);
                 dsf.createDataSource(new DBSourceCreation(source, metadata));
                 // read it
-                DataSource ds = dsf.getDataSource(source);
+                DataSource ds = dsf.getDataSource(source, DataSourceFactory.STATUS_CHECK);
                 ds.open();
                 Metadata m = ds.getMetadata();
-                assertTrue(m.getFieldName(1).equals("myLimitedString"));
-                assertTrue(m.getFieldType(1).getIntConstraint(Constraint.LENGTH) == storedConstraint);
+                assertEquals(m.getFieldName(1), "myLimitedString");
+                assertEquals(m.getFieldType(1).getIntConstraint(Constraint.LENGTH), storedConstraint);
                 if (storedConstraint == -1) {
-                        assertTrue(m.getFieldType(1).getConstraints().length == 0);
+                        assertEquals(m.getFieldType(1).getConstraints().length, 0);
                 } else {
-                        assertTrue(m.getFieldType(1).getConstraints().length == 1);
+                        assertEquals(m.getFieldType(1).getConstraints().length, 1);
 
                 }
-                assertTrue(m.getFieldName(2).equals("myUnlimitedString"));
-                assertTrue(m.getFieldType(2).getConstraints().length == 0);
+                assertEquals(m.getFieldName(2), "myUnlimitedString");
+                assertEquals(m.getFieldType(2).getConstraints().length, 0);
                 ds.close();
         }
 
-        public void testWriteNumeric() throws Exception {
+        @Test
+        public void testWriteNumericPG() throws Exception {
+                assumeTrue(TestBase.postGisAvailable);
                 String tableName = "test_metadata_write_string";
                 DBSource pgSource = getPostgreSQLSource(tableName);
+                testTypeIO(TypeFactory.createType(Type.BYTE), TypeFactory.createType(Type.SHORT), pgSource);
+                testTypeIO(TypeFactory.createType(Type.BYTE,
+                        new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 4)}), TypeFactory.createType(Type.SHORT), pgSource);
+                testTypeIO(TypeFactory.createType(Type.SHORT), TypeFactory.createType(Type.SHORT), pgSource);
+                testTypeIO(TypeFactory.createType(Type.INT), TypeFactory.createType(Type.INT), pgSource);
+                testTypeIO(TypeFactory.createType(Type.LONG), TypeFactory.createType(Type.LONG), pgSource);
+                testTypeIO(TypeFactory.createType(Type.LONG), TypeFactory.createType(Type.LONG), pgSource);
+                testTypeIO(TypeFactory.createType(Type.SHORT,
+                        new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 5)}), TypeFactory.createType(Type.INT), pgSource);
+                testTypeIO(TypeFactory.createType(Type.INT,
+                        new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 14)}), TypeFactory.createType(Type.LONG), pgSource);
+                testTypeIO(TypeFactory.createType(Type.INT,
+                        new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 34)}), TypeFactory.createType(Type.DOUBLE), pgSource);
+                testTypeIO(TypeFactory.createType(Type.INT, ConstraintFactory.createConstraint(Constraint.PRECISION, 6),
+                        ConstraintFactory.createConstraint(Constraint.LENGTH, 8)),
+                        TypeFactory.createType(Type.INT), pgSource);
+
+        }
+
+        @Test
+        public void testWriteNumericOthers() throws Exception {
+                String tableName = "test_metadata_write_string";
                 DBSource h2Source = getH2Source(tableName);
                 DBSource hsqldbSource = getHSQLDBSource(tableName);
 
-                testTypeIO(TypeFactory.createType(Type.BYTE), TypeFactory.createType(Type.SHORT), pgSource);
                 testTypeIO(TypeFactory.createType(Type.BYTE), TypeFactory.createType(Type.BYTE), h2Source);
                 testTypeIO(TypeFactory.createType(Type.BYTE), TypeFactory.createType(Type.BYTE), hsqldbSource);
 
-                testTypeIO(TypeFactory.createType(Type.BYTE,
-                        new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 4)}), TypeFactory.createType(Type.SHORT), pgSource);
                 testTypeIO(TypeFactory.createType(Type.BYTE,
                         new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 4)}), TypeFactory.createType(Type.SHORT), h2Source);
                 testTypeIO(TypeFactory.createType(Type.BYTE,
                         new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 4)}), TypeFactory.createType(Type.SHORT), hsqldbSource);
 
-                testTypeIO(TypeFactory.createType(Type.SHORT), TypeFactory.createType(Type.SHORT), pgSource);
                 testTypeIO(TypeFactory.createType(Type.SHORT), TypeFactory.createType(Type.SHORT), h2Source);
                 testTypeIO(TypeFactory.createType(Type.SHORT), TypeFactory.createType(Type.SHORT), hsqldbSource);
 
-                testTypeIO(TypeFactory.createType(Type.INT), TypeFactory.createType(Type.INT), pgSource);
+
                 testTypeIO(TypeFactory.createType(Type.INT), TypeFactory.createType(Type.INT), h2Source);
                 testTypeIO(TypeFactory.createType(Type.INT), TypeFactory.createType(Type.INT), hsqldbSource);
 
-                testTypeIO(TypeFactory.createType(Type.LONG), TypeFactory.createType(Type.LONG), pgSource);
-                testTypeIO(TypeFactory.createType(Type.LONG), TypeFactory.createType(Type.LONG), h2Source);
-                testTypeIO(TypeFactory.createType(Type.LONG), TypeFactory.createType(Type.LONG), pgSource);
 
-                testTypeIO(TypeFactory.createType(Type.SHORT,
-                        new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 5)}), TypeFactory.createType(Type.INT), pgSource);
+                testTypeIO(TypeFactory.createType(Type.LONG), TypeFactory.createType(Type.LONG), h2Source);
+
                 testTypeIO(TypeFactory.createType(Type.SHORT,
                         new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 5)}), TypeFactory.createType(Type.INT), h2Source);
                 testTypeIO(TypeFactory.createType(Type.SHORT,
                         new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 5)}), TypeFactory.createType(Type.INT), hsqldbSource);
 
                 testTypeIO(TypeFactory.createType(Type.INT,
-                        new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 14)}), TypeFactory.createType(Type.LONG), pgSource);
-                testTypeIO(TypeFactory.createType(Type.INT,
                         new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 14)}), TypeFactory.createType(Type.LONG), h2Source);
                 testTypeIO(TypeFactory.createType(Type.INT,
                         new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 14)}), TypeFactory.createType(Type.LONG), hsqldbSource);
 
                 testTypeIO(TypeFactory.createType(Type.INT,
-                        new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 34)}), TypeFactory.createType(Type.DOUBLE), pgSource);
-                testTypeIO(TypeFactory.createType(Type.INT,
                         new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 34)}), TypeFactory.createType(Type.DOUBLE), h2Source);
                 testTypeIO(TypeFactory.createType(Type.INT,
                         new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 34)}), TypeFactory.createType(Type.DOUBLE), hsqldbSource);
 
-                testTypeIO(TypeFactory.createType(Type.INT, ConstraintFactory.createConstraint(Constraint.PRECISION, 6),
-                        ConstraintFactory.createConstraint(Constraint.LENGTH, 8)),
-                        TypeFactory.createType(Type.INT), pgSource);
                 testTypeIO(TypeFactory.createType(Type.INT, ConstraintFactory.createConstraint(Constraint.PRECISION, 6),
                         ConstraintFactory.createConstraint(Constraint.LENGTH, 8)),
                         TypeFactory.createType(Type.INT), h2Source);
@@ -256,18 +287,17 @@ public class DBMetadataTest extends AbstractDBTest {
                 deleteTable(source);
                 dsf.createDataSource(new DBSourceCreation(source, metadata));
                 // read it
-                DataSource ds = dsf.getDataSource(source);
+                DataSource ds = dsf.getDataSource(source, DataSourceFactory.STATUS_CHECK);
                 ds.open();
                 Metadata m = ds.getMetadata();
                 Type readType = m.getFieldType(1);
-                assertTrue(readType.getTypeCode() == outType.getTypeCode());
+                assertEquals(readType.getTypeCode(), outType.getTypeCode());
                 Constraint[] readConstraints = readType.getConstraints();
                 Constraint[] outConstraints = outType.getConstraints();
-                assertTrue(readConstraints.length == outConstraints.length);
+                assertEquals(readConstraints.length, outConstraints.length);
                 for (int i = 0; i < outConstraints.length; i++) {
                         int constr = readConstraints[i].getConstraintCode();
-                        assertTrue(readType.getConstraintValue(constr).equals(
-                                outType.getConstraintValue(constr)));
+                        assertEquals(readType.getConstraintValue(constr), outType.getConstraintValue(constr));
                 }
                 ds.close();
         }

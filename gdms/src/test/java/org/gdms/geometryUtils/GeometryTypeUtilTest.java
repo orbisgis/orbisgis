@@ -79,7 +79,7 @@ public class GeometryTypeUtilTest extends TestCase {
          */
         public void testGeometryHasZ() throws Exception{
                Geometry geom = wKTReader.read("POINT(0 0)");
-               assertTrue(!GeometryTypeUtil.is25Geometry(geom));
+               assertFalse(GeometryTypeUtil.is25Geometry(geom));
                geom = wKTReader.read("MULTIPOINT((0 0) , (1 1 10))");
                assertTrue(GeometryTypeUtil.is25Geometry(geom));
                geom = wKTReader.read("LINESTRING(0 0 12, 1 1 12)");

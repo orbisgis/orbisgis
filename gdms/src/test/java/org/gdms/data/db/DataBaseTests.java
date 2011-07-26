@@ -36,16 +36,19 @@
  */
 package org.gdms.data.db;
 
-import org.gdms.BaseTest;
+import org.junit.Before;
+import org.junit.Test;
+import org.gdms.TestBase;
 import org.gdms.data.DataSource;
 import org.gdms.data.schema.MetadataUtilities;
+import static org.junit.Assert.*;
 
 /**
  * DOCUMENT ME!
  * 
  * @author Fernando Gonzalez Cortes
  */
-public class DataBaseTests extends BaseTest {
+public class DataBaseTests extends TestBase {
 	/**
 	 * Access to the PK field
 	 * 
@@ -62,6 +65,7 @@ public class DataBaseTests extends BaseTest {
 		d.close();
 	}
 
+        @Test
 	public void testPKAccess() throws Exception {
 		String[] resources = super.getResourcesWithPK();
 		for (String ds : resources) {
@@ -69,8 +73,8 @@ public class DataBaseTests extends BaseTest {
 		}
 	}
 
-	@Override
-	protected void setUp() throws Exception {
+	@Before
+	public void setUp() throws Exception {
 		setWritingTests(false);
 		super.setUp();
 	}

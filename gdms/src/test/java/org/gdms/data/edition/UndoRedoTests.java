@@ -36,318 +36,326 @@
  */
 package org.gdms.data.edition;
 
+import org.junit.Test;
 import java.io.File;
-import org.gdms.BaseTest;
+import org.gdms.TestBase;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.DigestUtilities;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.file.FileSourceCreation;
-import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.values.Value;
+
+import static org.junit.Assert.*;
 
 /**
  * DOCUMENT ME!
  *
  * @author Fernando Gonzalez Cortes
  */
-public class UndoRedoTests extends BaseTest {
+public class UndoRedoTests extends TestBase {
 
-	public void testUndoRedoMetadata() throws Exception {
+        @Test
+        public void testUndoRedoMetadata() throws Exception {
                 dsf.getSourceManager().remove("big");
                 dsf.getSourceManager().register(
                         "big",
-                        new FileSourceCreation(new File(BaseTest.internalData
+                        new FileSourceCreation(new File(TestBase.internalData
                         + "alltypes.shp"), null));
-		DataSource d = dsf.getDataSource("big",
-				DataSourceFactory.EDITABLE);
+                DataSource d = dsf.getDataSource("big",
+                        DataSourceFactory.EDITABLE);
 
-		d.open();
-		Value[][] content = super.getDataSourceContents(d);
-		d.removeField(2);
-		d.undo();
-		assertTrue(BaseTest.equals(content, super.getDataSourceContents(d)));
-		d.commit();
-		d.close();
-		d.open();
-		assertTrue(BaseTest.equals(content, super.getDataSourceContents(d)));
-		d.close();
-	}
+                d.open();
+                Value[][] content = super.getDataSourceContents(d);
+                d.removeField(2);
+                d.undo();
+                assertTrue(equals(content, super.getDataSourceContents(d)));
+                d.commit();
+                d.close();
+                d.open();
+                assertTrue(equals(content, super.getDataSourceContents(d)));
+                d.close();
+        }
 
-	public void testAlphanumericModifyUndoRedo() throws Exception {
+        @Test
+        public void testAlphanumericModifyUndoRedo() throws Exception {
                 dsf.getSourceManager().remove("big");
                 dsf.getSourceManager().register(
                         "big",
-                        new FileSourceCreation(new File(BaseTest.internalData
+                        new FileSourceCreation(new File(TestBase.internalData
                         + "hedgerow.shp"), null));
-		DataSource d = dsf.getDataSource("big",
-				DataSourceFactory.EDITABLE);
+                DataSource d = dsf.getDataSource("big",
+                        DataSourceFactory.EDITABLE);
 
-		d.open();
-		Value v2 = d.getFieldValue(1, 0);
-		Value v1 = d.getFieldValue(0, 0);
-		d.setFieldValue(0, 0, v2);
-		for (int i = 0; i < 100; i++) {
-			d.undo();
-			assertTrue(equals(d.getFieldValue(0, 0), v1));
-			d.redo();
-			assertTrue(equals(d.getFieldValue(0, 0), v2));
-		}
-		d.undo();
-		d.commit();
-		d.close();
-	}
+                d.open();
+                Value v2 = d.getFieldValue(1, 0);
+                Value v1 = d.getFieldValue(0, 0);
+                d.setFieldValue(0, 0, v2);
+                for (int i = 0; i < 100; i++) {
+                        d.undo();
+                        assertTrue(equals(d.getFieldValue(0, 0), v1));
+                        d.redo();
+                        assertTrue(equals(d.getFieldValue(0, 0), v2));
+                }
+                d.undo();
+                d.commit();
+                d.close();
+        }
 
-	public void testAlphanumericDeleteUndoRedo() throws Exception {
+        @Test
+        public void testAlphanumericDeleteUndoRedo() throws Exception {
                 dsf.getSourceManager().remove("big");
                 dsf.getSourceManager().register(
                         "big",
-                        new FileSourceCreation(new File(BaseTest.internalData
+                        new FileSourceCreation(new File(TestBase.internalData
                         + "hedgerow.shp"), null));
-		DataSource d = dsf.getDataSource("big",
-				DataSourceFactory.EDITABLE);
+                DataSource d = dsf.getDataSource("big",
+                        DataSourceFactory.EDITABLE);
 
-		d.open();
-		Value v1 = d.getFieldValue(1, 0);
-		Value v2 = d.getFieldValue(2, 0);
-		d.deleteRow(1);
-		for (int i = 0; i < 100; i++) {
-			d.undo();
-			assertTrue(equals(d.getFieldValue(1, 0), v1));
-			d.redo();
-			assertTrue(equals(d.getFieldValue(1, 0), v2));
-		}
-		d.undo();
-		d.commit();
-		d.close();
-	}
+                d.open();
+                Value v1 = d.getFieldValue(1, 0);
+                Value v2 = d.getFieldValue(2, 0);
+                d.deleteRow(1);
+                for (int i = 0; i < 100; i++) {
+                        d.undo();
+                        assertTrue(equals(d.getFieldValue(1, 0), v1));
+                        d.redo();
+                        assertTrue(equals(d.getFieldValue(1, 0), v2));
+                }
+                d.undo();
+                d.commit();
+                d.close();
+        }
 
-	public void testAlphanumericInsertUndoRedo() throws Exception {
+        @Test
+        public void testAlphanumericInsertUndoRedo() throws Exception {
                 dsf.getSourceManager().remove("big");
                 dsf.getSourceManager().register(
                         "big",
-                        new FileSourceCreation(new File(BaseTest.internalData
+                        new FileSourceCreation(new File(TestBase.internalData
                         + "hedgerow.shp"), null));
-		DataSource d = dsf.getDataSource("big",
-				DataSourceFactory.EDITABLE);
+                DataSource d = dsf.getDataSource("big",
+                        DataSourceFactory.EDITABLE);
 
-		d.open();
-		Value v1 = d.getFieldValue(1, 0);
-		d.insertEmptyRowAt(1);
-		for (int i = 0; i < 100; i++) {
-			d.undo();
-			assertTrue(equals(d.getFieldValue(1, 0), v1));
-			d.redo();
-			assertTrue(d.getFieldValue(1, 0).isNull());
-		}
-		d.undo();
-		d.commit();
-		d.close();
-	}
+                d.open();
+                Value v1 = d.getFieldValue(1, 0);
+                d.insertEmptyRowAt(1);
+                for (int i = 0; i < 100; i++) {
+                        d.undo();
+                        assertTrue(equals(d.getFieldValue(1, 0), v1));
+                        d.redo();
+                        assertTrue(d.getFieldValue(1, 0).isNull());
+                }
+                d.undo();
+                d.commit();
+                d.close();
+        }
 
-	private void testSpatialModifyUndoRedo(SpatialDataSourceDecorator d)
-			throws Exception {
-		Value v2 = d.getFieldValue(1, 0);
-		Value v1 = d.getFieldValue(0, 0);
-		d.setFieldValue(0, 0, v2);
-		for (int i = 0; i < 100; i++) {
-			d.undo();
-			assertTrue(equals(d.getFieldValue(0, 0), v1));
-			d.redo();
-			assertTrue(equals(d.getFieldValue(0, 0), v2));
-		}
-	}
+        private void testSpatialModifyUndoRedo(SpatialDataSourceDecorator d)
+                throws Exception {
+                Value v2 = d.getFieldValue(1, 0);
+                Value v1 = d.getFieldValue(0, 0);
+                d.setFieldValue(0, 0, v2);
+                for (int i = 0; i < 100; i++) {
+                        d.undo();
+                        assertTrue(equals(d.getFieldValue(0, 0), v1));
+                        d.redo();
+                        assertTrue(equals(d.getFieldValue(0, 0), v2));
+                }
+        }
 
-	public void testSpatialModifyUndoRedo() throws Exception {
+        @Test
+        public void testSpatialModifyUndoRedo() throws Exception {
                 dsf.getSourceManager().remove("big");
                 dsf.getSourceManager().register(
                         "big",
-                        new FileSourceCreation(new File(BaseTest.internalData
+                        new FileSourceCreation(new File(TestBase.internalData
                         + "hedgerow.shp"), null));
-		SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf
-				.getDataSource("big",
-						DataSourceFactory.EDITABLE));
+                SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf.getDataSource("big",
+                        DataSourceFactory.EDITABLE));
 
-		d.open();
-		testSpatialModifyUndoRedo(d);
-		d.undo();
-		d.commit();
-		d.close();
-	}
+                d.open();
+                testSpatialModifyUndoRedo(d);
+                d.undo();
+                d.commit();
+                d.close();
+        }
 
-	private void testSpatialDeleteUndoRedo(SpatialDataSourceDecorator d)
-			throws Exception {
-		long rc = d.getRowCount();
-		Value v1 = d.getFieldValue(1, 0);
-		Value v2 = d.getFieldValue(2, 0);
-		d.deleteRow(1);
-		for (int i = 0; i < 100; i++) {
-			d.undo();
-			assertTrue(equals(d.getFieldValue(1, 0), v1));
-			d.redo();
-			assertTrue(equals(d.getFieldValue(1, 0), v2));
-			assertTrue(rc - 1 == d.getRowCount());
-		}
-	}
+        private void testSpatialDeleteUndoRedo(SpatialDataSourceDecorator d)
+                throws Exception {
+                long rc = d.getRowCount();
+                Value v1 = d.getFieldValue(1, 0);
+                Value v2 = d.getFieldValue(2, 0);
+                d.deleteRow(1);
+                for (int i = 0; i < 100; i++) {
+                        d.undo();
+                        assertTrue(equals(d.getFieldValue(1, 0), v1));
+                        d.redo();
+                        assertTrue(equals(d.getFieldValue(1, 0), v2));
+                        assertEquals(rc - 1, d.getRowCount());
+                }
+        }
 
-	public void testSpatialDeleteUndoRedo() throws Exception {
+        @Test
+        public void testSpatialDeleteUndoRedo() throws Exception {
                 dsf.getSourceManager().remove("big");
                 dsf.getSourceManager().register(
                         "big",
-                        new FileSourceCreation(new File(BaseTest.internalData
+                        new FileSourceCreation(new File(TestBase.internalData
                         + "hedgerow.shp"), null));
-		SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf
-				.getDataSource("big",
-						DataSourceFactory.EDITABLE));
+                SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf.getDataSource("big",
+                        DataSourceFactory.EDITABLE));
 
-		d.open();
-		testSpatialDeleteUndoRedo(d);
-		d.undo();
-		d.commit();
-		d.close();
-	}
+                d.open();
+                testSpatialDeleteUndoRedo(d);
+                d.undo();
+                d.commit();
+                d.close();
+        }
 
-	private void testSpatialInsertUndoRedo(SpatialDataSourceDecorator d)
-			throws Exception {
-		long rc = d.getRowCount();
-		d.insertEmptyRow();
-		for (int i = 0; i < 100; i++) {
-			d.undo();
-			assertTrue(rc == d.getRowCount());
-			d.redo();
-			assertTrue(rc == d.getRowCount() - 1);
-		}
-	}
+        private void testSpatialInsertUndoRedo(SpatialDataSourceDecorator d)
+                throws Exception {
+                long rc = d.getRowCount();
+                d.insertEmptyRow();
+                for (int i = 0; i < 100; i++) {
+                        d.undo();
+                        assertEquals(rc, d.getRowCount());
+                        d.redo();
+                        assertEquals(rc, d.getRowCount() - 1);
+                }
+        }
 
-	public void testSpatialInsertUndoRedo() throws Exception {
+        @Test
+        public void testSpatialInsertUndoRedo() throws Exception {
                 dsf.getSourceManager().remove("big");
                 dsf.getSourceManager().register(
                         "big",
-                        new FileSourceCreation(new File(BaseTest.internalData
+                        new FileSourceCreation(new File(TestBase.internalData
                         + "hedgerow.shp"), null));
-		SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf
-				.getDataSource("big",
-						DataSourceFactory.EDITABLE));
+                SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf.getDataSource("big",
+                        DataSourceFactory.EDITABLE));
 
-		d.open();
-		testSpatialInsertUndoRedo(d);
-		d.undo();
-		d.commit();
-		d.close();
-	}
+                d.open();
+                testSpatialInsertUndoRedo(d);
+                d.undo();
+                d.commit();
+                d.close();
+        }
 
-	public void testAlphanumericEditionUndoRedo(DataSource d) throws Exception {
-		byte[] snapshot1 = DigestUtilities.getDigest(d);
-		d.setFieldValue(0, 0, d.getFieldValue(1, 0));
-		byte[] snapshot2 = DigestUtilities.getDigest(d);
-		d.setFieldValue(0, 0, d.getFieldValue(2, 0));
-		byte[] snapshot3 = DigestUtilities.getDigest(d);
-		d.deleteRow(0);
-		byte[] snapshot4 = DigestUtilities.getDigest(d);
-		d.setFieldValue(0, 1, d.getFieldValue(1, 1));
-		byte[] snapshot5 = DigestUtilities.getDigest(d);
-		d.insertEmptyRowAt(0);
-		byte[] snapshot6 = DigestUtilities.getDigest(d);
-		d.setFieldName(1, "newName");
-		byte[] snapshot7 = DigestUtilities.getDigest(d);
-		d.removeField(1);
-		d.undo();
-		assertTrue(DigestUtilities.equals(snapshot7, DigestUtilities.getDigest(d)));
-		d.undo();
-		assertTrue(DigestUtilities.equals(snapshot6, DigestUtilities.getDigest(d)));
-		d.undo();
-		assertTrue(DigestUtilities.equals(snapshot5, DigestUtilities.getDigest(d)));
-		d.redo();
-		assertTrue(DigestUtilities.equals(snapshot6, DigestUtilities.getDigest(d)));
-		d.undo();
-		d.undo();
-		assertTrue(DigestUtilities.equals(snapshot4, DigestUtilities.getDigest(d)));
-		d.undo();
-		assertTrue(DigestUtilities.equals(snapshot3, DigestUtilities.getDigest(d)));
-		d.undo();
-		assertTrue(DigestUtilities.equals(snapshot2, DigestUtilities.getDigest(d)));
-		d.redo();
-		assertTrue(DigestUtilities.equals(snapshot3, DigestUtilities.getDigest(d)));
-		d.undo();
-		d.undo();
-		assertTrue(DigestUtilities.equals(snapshot1, DigestUtilities.getDigest(d)));
-	}
+        public void testAlphanumericEditionUndoRedo(DataSource d) throws Exception {
+                byte[] snapshot1 = DigestUtilities.getDigest(d);
+                d.setFieldValue(0, 0, d.getFieldValue(1, 0));
+                byte[] snapshot2 = DigestUtilities.getDigest(d);
+                d.setFieldValue(0, 0, d.getFieldValue(2, 0));
+                byte[] snapshot3 = DigestUtilities.getDigest(d);
+                d.deleteRow(0);
+                byte[] snapshot4 = DigestUtilities.getDigest(d);
+                d.setFieldValue(0, 1, d.getFieldValue(1, 1));
+                byte[] snapshot5 = DigestUtilities.getDigest(d);
+                d.insertEmptyRowAt(0);
+                byte[] snapshot6 = DigestUtilities.getDigest(d);
+                d.setFieldName(1, "newName");
+                byte[] snapshot7 = DigestUtilities.getDigest(d);
+                d.removeField(1);
+                d.undo();
+                assertTrue(DigestUtilities.equals(snapshot7, DigestUtilities.getDigest(d)));
+                d.undo();
+                assertTrue(DigestUtilities.equals(snapshot6, DigestUtilities.getDigest(d)));
+                d.undo();
+                assertTrue(DigestUtilities.equals(snapshot5, DigestUtilities.getDigest(d)));
+                d.redo();
+                assertTrue(DigestUtilities.equals(snapshot6, DigestUtilities.getDigest(d)));
+                d.undo();
+                d.undo();
+                assertTrue(DigestUtilities.equals(snapshot4, DigestUtilities.getDigest(d)));
+                d.undo();
+                assertTrue(DigestUtilities.equals(snapshot3, DigestUtilities.getDigest(d)));
+                d.undo();
+                assertTrue(DigestUtilities.equals(snapshot2, DigestUtilities.getDigest(d)));
+                d.redo();
+                assertTrue(DigestUtilities.equals(snapshot3, DigestUtilities.getDigest(d)));
+                d.undo();
+                d.undo();
+                assertTrue(DigestUtilities.equals(snapshot1, DigestUtilities.getDigest(d)));
+        }
 
-	public void testAlphanumericEditionUndoRedo() throws Exception {
+        @Test
+        public void testAlphanumericEditionUndoRedo() throws Exception {
                 dsf.getSourceManager().remove("big");
                 dsf.getSourceManager().register(
                         "big",
-                        new FileSourceCreation(new File(BaseTest.internalData
+                        new FileSourceCreation(new File(TestBase.internalData
                         + "hedgerow.shp"), null));
-		DataSource d = dsf.getDataSource("big",
-				DataSourceFactory.EDITABLE);
+                DataSource d = dsf.getDataSource("big",
+                        DataSourceFactory.EDITABLE);
 
-		d.open();
-		testAlphanumericEditionUndoRedo(d);
-		d.commit();
-		d.close();
-	}
+                d.open();
+                testAlphanumericEditionUndoRedo(d);
+                d.commit();
+                d.close();
+        }
 
-	public void testSpatialEditionUndoRedo() throws Exception {
+        @Test
+        public void testSpatialEditionUndoRedo() throws Exception {
                 dsf.getSourceManager().remove("big");
                 dsf.getSourceManager().register(
                         "big",
-                        new FileSourceCreation(new File(BaseTest.internalData
+                        new FileSourceCreation(new File(TestBase.internalData
                         + "hedgerow.shp"), null));
-		DataSource d = dsf.getDataSource("big",
-						DataSourceFactory.EDITABLE);
+                DataSource d = dsf.getDataSource("big",
+                        DataSourceFactory.EDITABLE);
 
-		d.open();
-		testAlphanumericEditionUndoRedo(d);
-		d.commit();
-		d.close();
-	}
+                d.open();
+                testAlphanumericEditionUndoRedo(d);
+                d.commit();
+                d.close();
+        }
 
-	public void testAddTwoRowsAndUndoBoth() throws Exception {
+        @Test
+        public void testAddTwoRowsAndUndoBoth() throws Exception {
                 dsf.getSourceManager().remove("big");
                 dsf.getSourceManager().register(
                         "big",
-                        new FileSourceCreation(new File(BaseTest.internalData
+                        new FileSourceCreation(new File(TestBase.internalData
                         + "hedgerow.shp"), null));
-		SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf
-				.getDataSource("big",
-						DataSourceFactory.EDITABLE));
+                SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf.getDataSource("big",
+                        DataSourceFactory.EDITABLE));
 
-		d.open();
-		Value[] row = d.getRow(0);
-		long rc = d.getRowCount();
-		d.insertFilledRow(row);
-		d.insertFilledRow(row);
-		d.undo();
-		d.undo();
-		assertTrue(d.getRowCount() == rc);
-		d.close();
-	}
+                d.open();
+                Value[] row = d.getRow(0);
+                long rc = d.getRowCount();
+                d.insertFilledRow(row);
+                d.insertFilledRow(row);
+                d.undo();
+                d.undo();
+                assertEquals(d.getRowCount(), rc);
+                d.close();
+        }
 
-	public void testInsertModify() throws Exception {
+        @Test
+        public void testInsertModify() throws Exception {
                 dsf.getSourceManager().remove("big");
                 dsf.getSourceManager().register(
                         "big",
-                        new FileSourceCreation(new File(BaseTest.internalData
+                        new FileSourceCreation(new File(TestBase.internalData
                         + "hedgerow.shp"), null));
-		SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf
-				.getDataSource("big",
-						DataSourceFactory.EDITABLE));
+                SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf.getDataSource("big",
+                        DataSourceFactory.EDITABLE));
 
-		d.open();
-		int ri = (int) d.getRowCount();
-		d.insertEmptyRow();
-		Value v1 = d.getFieldValue(0, 0);
-		Value v2 = d.getFieldValue(0, 1);
-		d.setFieldValue(ri, 0, v1);
-		d.setFieldValue(ri, 1, v2);
-		d.undo();
-		d.undo();
-		d.undo();
-		d.redo();
-		d.redo();
-		d.redo();
-		assertTrue(equals(d.getFieldValue(ri, 0), v1));
-		assertTrue(equals(d.getFieldValue(ri, 1), v2));
-	}
+                d.open();
+                int ri = (int) d.getRowCount();
+                d.insertEmptyRow();
+                Value v1 = d.getFieldValue(0, 0);
+                Value v2 = d.getFieldValue(0, 1);
+                d.setFieldValue(ri, 0, v1);
+                d.setFieldValue(ri, 1, v2);
+                d.undo();
+                d.undo();
+                d.undo();
+                d.redo();
+                d.redo();
+                d.redo();
+                assertTrue(equals(d.getFieldValue(ri, 0), v1));
+                assertTrue(equals(d.getFieldValue(ri, 1), v2));
+        }
 }

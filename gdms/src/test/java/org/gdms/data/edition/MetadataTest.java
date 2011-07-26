@@ -36,14 +36,15 @@
  */
 package org.gdms.data.edition;
 
+import org.junit.Test;
+import org.junit.Before;
 import java.io.File;
 
-import org.gdms.BaseTest;
+import org.gdms.TestBase;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ListenerCounter;
 import org.gdms.data.file.FileSourceCreation;
-import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Constraint;
@@ -53,14 +54,18 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 
-public class MetadataTest extends BaseTest {
+import static org.junit.Assert.*;
 
+public class MetadataTest extends TestBase {
+
+        @Before
         @Override
         public void setUp() throws Exception {
                 super.setUp();
                 setWritingTests(true);
         }
 
+        @Test
         public void testEqualsMetadata() throws Exception {
                 DefaultMetadata metadata1 = new DefaultMetadata();
                 metadata1.addField("name", Type.STRING);
@@ -71,13 +76,12 @@ public class MetadataTest extends BaseTest {
                 metadata2.addField("name", Type.STRING);
                 metadata2.addField("gid", Type.INT);
 
-                assertTrue(metadata1.equals(metadata1));
-                assertTrue(metadata2.equals(metadata2));
+                assertEquals(metadata1, metadata1);
+                assertEquals(metadata2, metadata2);
                 assertFalse(metadata1.equals(metadata2));
-
-
         }
 
+        @Test
         public void testMetadataAddAndRename() throws Exception {
                 DefaultMetadata metadata1 = new DefaultMetadata();
                 metadata1.addField("name", Type.STRING);
@@ -90,13 +94,14 @@ public class MetadataTest extends BaseTest {
 
                 metadata1.addAndRenameAll(metadata2);
 
-                assertTrue(metadata1.getFieldIndex("name") == 0);
-                assertTrue(metadata1.getFieldIndex("surname") == 1);
-                assertTrue(metadata1.getFieldIndex("location") == 2);
-                assertTrue(metadata1.getFieldIndex("name_0") == 3);
-                assertTrue(metadata1.getFieldIndex("gid") == 4);
+                assertEquals(metadata1.getFieldIndex("name"), 0);
+                assertEquals(metadata1.getFieldIndex("surname"), 1);
+                assertEquals(metadata1.getFieldIndex("location"), 2);
+                assertEquals(metadata1.getFieldIndex("name_0"), 3);
+                assertEquals(metadata1.getFieldIndex("gid"), 4);
         }
 
+        @Test
         public void testFieldIndex() throws Exception {
                 DefaultMetadata metadata = new DefaultMetadata();
                 metadata.addField("name", Type.STRING);
@@ -104,16 +109,17 @@ public class MetadataTest extends BaseTest {
                 metadata.addField("location", Type.STRING);
 
                 // field index should be 0-based
-                assertTrue(metadata.getFieldIndex("surname") == 1);
+                assertEquals(metadata.getFieldIndex("surname"), 1);
 
         }
 
+        @Test
         public void testFieldIndexDataSource() throws Exception {
 
                 DataSource ds = dsf.getDataSource(new File(internalData
                         + "hedgerow.shp"));
                 ds.open();
-                assertTrue(ds.getMetadata().getFieldIndex(ds.getMetadata().getFieldName(1)) == ds.getFieldIndexByName(ds.getFieldName(1)));
+                assertEquals(ds.getMetadata().getFieldIndex(ds.getMetadata().getFieldName(1)), ds.getFieldIndexByName(ds.getFieldName(1)));
                 ds.close();
         }
 
@@ -134,41 +140,39 @@ public class MetadataTest extends BaseTest {
                 d.commit();
                 d.close();
                 d.open();
-                assertTrue(fc + 1 == d.getMetadata().getFieldCount());
+                assertEquals(fc + 1, d.getMetadata().getFieldCount());
 //                System.out.println(d.getMetadata().getFieldCount() + " fields");
 //                for (int j = 0; j < d.getFieldCount(); j++) {
 //                        System.out.println(j + " field " + d.getFieldName(j));
 //                }
 //                System.out.println(d.getFieldName(fc));
-                assertTrue(d.getFieldName(fc).equals(name + "_" + i));
-                assertTrue(d.getFieldType(fc).getTypeCode() == Type.STRING);
+                assertEquals(d.getFieldName(fc), name + "_" + i);
+                assertEquals(d.getFieldType(fc).getTypeCode(), Type.STRING);
 
-                assertTrue(d.getFieldType(fc).getConstraintValue(Constraint.PK) == null);
-                assertTrue(d.getFieldType(fc).getConstraintValue(Constraint.READONLY) == null);
+                assertNull(d.getFieldType(fc).getConstraintValue(Constraint.PK));
+                assertNull(d.getFieldType(fc).getConstraintValue(Constraint.READONLY));
                 d.close();
         }
 
-        public void testAddFieldExistsMetadata() {
+        @Test(expected = DriverException.class)
+        public void testAddFieldExistsMetadata() throws Exception {
                 DefaultMetadata metadata = new DefaultMetadata();
-                try {
-                        // Add a String field
-                        metadata.addField("name", Type.STRING);
-                        // Add a second string field
-                        metadata.addField("surname", Type.STRING);
-                        // Add an existing field name
-                        metadata.addField("name", Type.STRING);
 
-                        assertTrue(false);
-                } catch (DriverException e) {
-                }
+                // Add a String field
+                metadata.addField("name", Type.STRING);
+                // Add a second string field
+                metadata.addField("surname", Type.STRING);
+                // Add an existing field name
+                metadata.addField("name", Type.STRING);
 
         }
 
+        @Test
         public void testAddField() throws Exception {
                 dsf.getSourceManager().remove("landcover");
                 dsf.getSourceManager().register(
                         "landcover",
-                        new FileSourceCreation(new File(BaseTest.internalData
+                        new FileSourceCreation(new File(TestBase.internalData
                         + "landcover2000.shp"), null));
                 testAddField("landcover", TypeFactory.createType(Type.STRING, "String"));
         }
@@ -183,15 +187,16 @@ public class MetadataTest extends BaseTest {
                 d.commit();
                 d.close();
                 d.open();
-                assertTrue(fc - 1 == m.getFieldCount());
+                assertEquals(fc - 1, m.getFieldCount());
                 d.close();
         }
 
+        @Test
         public void testDeleteField() throws Exception {
                 dsf.getSourceManager().remove("big");
                 dsf.getSourceManager().register(
                         "big",
-                        new FileSourceCreation(new File(BaseTest.internalData
+                        new FileSourceCreation(new File(TestBase.internalData
                         + "landcover2000.shp"), null));
                 testDeleteField("big");
 
@@ -206,10 +211,11 @@ public class MetadataTest extends BaseTest {
                 d.commit();
                 d.close();
                 d.open();
-                assertTrue(d.getMetadata().getFieldName(1).equals("nuevo"));
+                assertEquals(d.getMetadata().getFieldName(1), "nuevo");
                 d.close();
         }
 
+        @Test
         public void testModifyField() throws Exception {
                 String[] resources = super.getNonDBSmallResources();
                 for (String resource : resources) {
@@ -227,19 +233,20 @@ public class MetadataTest extends BaseTest {
                 d.removeField(1);
                 d.addField("nuevo", type);
                 d.setFieldName(1, "jjjj");
-                assertTrue(elc.fieldDeletions == 1);
-                assertTrue(elc.fieldInsertions == 1);
-                assertTrue(elc.fieldModifications == 1);
-                assertTrue(elc.total == 3);
+                assertEquals(elc.fieldDeletions, 1);
+                assertEquals(elc.fieldInsertions, 1);
+                assertEquals(elc.fieldModifications, 1);
+                assertEquals(elc.total, 3);
                 d.close();
         }
 
+        @Test
         public void testMetadataEditionListenerTest() throws Exception {
                 dsf.getSourceManager().remove("big");
                 dsf.getSourceManager().register(
-				"big",
-				new FileSourceCreation(new File(BaseTest.internalData
-						+ "hedgerow.shp"), null));
+                        "big",
+                        new FileSourceCreation(new File(TestBase.internalData
+                        + "hedgerow.shp"), null));
                 testMetadataEditionListenerTest("big",
                         TypeFactory.createType(Type.STRING, "STRING"));
         }
@@ -258,10 +265,11 @@ public class MetadataTest extends BaseTest {
                 d.commit();
                 d.close();
                 d.open();
-                assertTrue(BaseTest.equals(d.getFieldValue(0, d.getFieldIndexByName("extra")), newValue));
+                assertTrue(equals(d.getFieldValue(0, d.getFieldIndexByName("extra")), newValue));
                 d.close();
         }
 
+        @Test
         public void testEditionWithFieldAdded() throws Exception {
                 testEditionWithFieldAdded(super.getResourcesWithoutNumericField()[0], TypeFactory.createType(Type.STRING, "STRING"));
         }
@@ -272,22 +280,23 @@ public class MetadataTest extends BaseTest {
                 String fieldName = d.getFieldName(1);
                 Value testValue = d.getFieldValue(0, 2);
                 d.removeField(1);
-                assertTrue(BaseTest.equals(testValue, d.getFieldValue(0, 1)));
+                assertTrue(equals(testValue, d.getFieldValue(0, 1)));
                 new UndoRedoTests().testAlphanumericEditionUndoRedo(d);
                 d.commit();
                 d.close();
 
                 d.open();
-                assertTrue(d.getFieldIndexByName(fieldName) == -1);
+                assertEquals(d.getFieldIndexByName(fieldName), -1);
                 d.close();
         }
 
+        @Test
         public void testEditionWithFieldRemoved() throws Exception {
                 dsf.getSourceManager().remove("ile");
                 dsf.getSourceManager().register(
-				"land",
-				new FileSourceCreation(new File(BaseTest.internalData
-						+ "landcover2000.shp"), null));
+                        "land",
+                        new FileSourceCreation(new File(TestBase.internalData
+                        + "landcover2000.shp"), null));
                 testEditionWithFieldRemoved("land");
         }
 
@@ -297,22 +306,21 @@ public class MetadataTest extends BaseTest {
                 int pkIndex = d.getFieldIndexByName(super.getPKFieldFor(dsName));
                 try {
                         d.removeField(pkIndex);
-                        assertTrue(false);
+                        fail();
                 } catch (DriverException e) {
-                        assertTrue(true);
                 }
                 try {
                         d.setFieldName(pkIndex, "s1234d");
                         d.commit();
                         d.close();
                         d.open();
-                        assertTrue(d.getFieldIndexByName("s1234d") != -1);
+                        assertFalse(d.getFieldIndexByName("s1234d") == -1);
                         d.close();
                 } catch (DriverException e) {
-                        assertTrue(true);
                 }
         }
 
+        @Test
         public void testRemovePK() throws Exception {
                 String[] resources = super.getNonDBResourcesWithPK();
                 for (String resource : resources) {
@@ -329,17 +337,18 @@ public class MetadataTest extends BaseTest {
                 d.deleteRow(0);
                 d.setFieldValue(0, 2, d.getFieldValue(1, 2));
                 d.removeField(1);
-                assertTrue(BaseTest.equals(d.getFieldValue(0, 1), content[2][2]));
+                assertTrue(equals(d.getFieldValue(0, 1), content[2][2]));
                 d.setFieldValue(0, 0, d.getFieldValue(1, 0));
-                assertTrue(BaseTest.equals(d.getFieldValue(0, 0), content[2][0]));
+                assertTrue(equals(d.getFieldValue(0, 0), content[2][0]));
                 d.close();
         }
 
+        @Test
         public void testFieldDeletionEditionWhileEdition() throws Exception {
                 dsf.getSourceManager().remove("big");
                 dsf.getSourceManager().register(
                         "big",
-                        new FileSourceCreation(new File(BaseTest.internalData
+                        new FileSourceCreation(new File(TestBase.internalData
                         + "landcover2000.shp"), null));
                 testFieldDeletionEditionWhileEdition("big");
         }
@@ -356,17 +365,18 @@ public class MetadataTest extends BaseTest {
                 d.setFieldValue(0, 1, d.getFieldValue(1, 1));
                 d.addField(nouveau, type);
                 d.setFieldValue(0, lastField, newValue);
-                assertTrue(BaseTest.equals(d.getFieldValue(0, lastField), newValue));
+                assertTrue(equals(d.getFieldValue(0, lastField), newValue));
                 d.commit();
                 d.close();
 
                 d.open();
-                assertTrue(d.getMetadata().getFieldName(lastField).toLowerCase().equals(nouveau));
-                assertTrue(BaseTest.equals(d.getFieldValue(0, lastField), newValue));
-                assertTrue(BaseTest.equals(d.getFieldValue(0, 1), testValue));
+                assertEquals(d.getMetadata().getFieldName(lastField).toLowerCase(), nouveau);
+                assertTrue(equals(d.getFieldValue(0, lastField), newValue));
+                assertTrue(equals(d.getFieldValue(0, 1), testValue));
                 d.close();
         }
 
+        @Test
         public void testFieldInsertionEditionWhileEdition() throws Exception {
                 testFieldInsertionEditionWhileEdition(super.getNonDBSmallResources()[0],
                         TypeFactory.createType(Type.STRING, "String"));
@@ -379,17 +389,18 @@ public class MetadataTest extends BaseTest {
                 int fc = d.getMetadata().getFieldCount();
                 Type type = (d.getDriver()).getTypesDefinitions()[0].createType();
                 d.addField("new", type);
-                assertTrue(d.getMetadata().getFieldType(fc).getTypeCode() == type.getTypeCode());
+                assertEquals(d.getMetadata().getFieldType(fc).getTypeCode(), type.getTypeCode());
                 d.commit();
                 d.close();
 
                 d = dsf.getDataSource(dsName);
                 d.open();
-                assertTrue(d.getMetadata().getFieldCount() == fc + 1);
-                assertTrue(d.getMetadata().getFieldType(fc).getTypeCode() == type.getTypeCode());
+                assertEquals(d.getMetadata().getFieldCount(), fc + 1);
+                assertEquals(d.getMetadata().getFieldType(fc).getTypeCode(), type.getTypeCode());
                 d.close();
         }
 
+        @Test
         public void testTypeInAddField() throws Exception {
                 String[] resources = super.getNonDBSmallResources();
                 for (String resource : resources) {

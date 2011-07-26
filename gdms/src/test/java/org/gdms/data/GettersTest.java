@@ -36,21 +36,26 @@
  */
 package org.gdms.data;
 
-import junit.framework.TestCase;
-
+import org.gdms.TestBase;
+import org.gdms.SourceTest;
+import org.junit.Before;
+import org.junit.Test;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.ReadAccess;
 
-public class GettersTest extends TestCase {
+import static org.junit.Assert.*;
 
-	private DataSourceFactory dsf;
+public class GettersTest {
 
-	public void testAllGeters() throws Exception {
-		AllTypesObjectDriver testD = new AllTypesObjectDriver();
+        private DataSourceFactory dsf;
+
+        @Test
+        public void testAllGeters() throws Exception {
+                AllTypesObjectDriver testD = new AllTypesObjectDriver();
                 ReadAccess test = testD.getTable("main");
-		DataSource d = dsf.getDataSource("alltypes");
-		d.open();
+                DataSource d = dsf.getDataSource("alltypes");
+                d.open();
 		assertTrue(ValueFactory.createValue(d.getBinary(0, 0)).equals(
 				test.getFieldValue(0, 0)).getAsBoolean());
 		assertTrue(ValueFactory.createValue(d.getBinary(0, "binary")).equals(
@@ -99,48 +104,49 @@ public class GettersTest extends TestCase {
 				test.getFieldValue(0, 11)).getAsBoolean());
 		assertTrue(ValueFactory.createValue(d.getTime(0, "time")).equals(
 				test.getFieldValue(0, 11)).getAsBoolean());
-		d.close();
-	}
+                d.close();
+        }
 
-	public void testSetters() throws Exception {
-		DataSource d = dsf.getDataSource("alltypes");
-		d.open();
-		d.setBinary(0, 0, d.getFieldValue(1, 0).getAsBinary());
-		d.setBinary(0, "binary", d.getFieldValue(1, 0).getAsBinary());
-		d.setBoolean(0, 1, d.getFieldValue(1, 1).getAsBoolean());
-		d.setBoolean(0, "boolean", d.getFieldValue(1, 1).getAsBoolean());
-		d.setByte(0, 2, d.getFieldValue(1, 2).getAsByte());
-		d.setByte(0, "byte", d.getFieldValue(1, 2).getAsByte());
-		d.setDate(0, 3, d.getFieldValue(1, 3).getAsDate());
-		d.setDate(0, "date", d.getFieldValue(1, 3).getAsDate());
-		d.setDouble(0, 4, d.getFieldValue(1, 4).getAsDouble());
-		d.setDouble(0, "double", d.getFieldValue(1, 4).getAsDouble());
-		d.setFloat(0, 5, d.getFieldValue(1, 5).getAsFloat());
-		d.setFloat(0, "float", d.getFieldValue(1, 5).getAsFloat());
-		d.setInt(0, 6, d.getFieldValue(1, 6).getAsInt());
-		d.setInt(0, "int", d.getFieldValue(1, 6).getAsInt());
-		d.setLong(0, 7, d.getFieldValue(1, 7).getAsLong());
-		d.setLong(0, "long", d.getFieldValue(1, 7).getAsLong());
-		d.setShort(0, 8, d.getFieldValue(1, 8).getAsShort());
-		d.setShort(0, "short", d.getFieldValue(1, 8).getAsShort());
-		d.setString(0, 9, d.getFieldValue(1, 9).getAsString());
-		d.setString(0, "string", d.getFieldValue(1, 9).getAsString());
-		d.setTimestamp(0, "timestamp", d.getFieldValue(1, 10).getAsTimestamp());
-		d.setTime(0, 11, d.getFieldValue(1, 11).getAsTime());
-		d.setTime(0, "time", d.getFieldValue(1, 11).getAsTime());
+        @Test
+        public void testSetters() throws Exception {
+                DataSource d = dsf.getDataSource("alltypes");
+                d.open();
+                d.setBinary(0, 0, d.getFieldValue(1, 0).getAsBinary());
+                d.setBinary(0, "binary", d.getFieldValue(1, 0).getAsBinary());
+                d.setBoolean(0, 1, d.getFieldValue(1, 1).getAsBoolean());
+                d.setBoolean(0, "boolean", d.getFieldValue(1, 1).getAsBoolean());
+                d.setByte(0, 2, d.getFieldValue(1, 2).getAsByte());
+                d.setByte(0, "byte", d.getFieldValue(1, 2).getAsByte());
+                d.setDate(0, 3, d.getFieldValue(1, 3).getAsDate());
+                d.setDate(0, "date", d.getFieldValue(1, 3).getAsDate());
+                d.setDouble(0, 4, d.getFieldValue(1, 4).getAsDouble());
+                d.setDouble(0, "double", d.getFieldValue(1, 4).getAsDouble());
+                d.setFloat(0, 5, d.getFieldValue(1, 5).getAsFloat());
+                d.setFloat(0, "float", d.getFieldValue(1, 5).getAsFloat());
+                d.setInt(0, 6, d.getFieldValue(1, 6).getAsInt());
+                d.setInt(0, "int", d.getFieldValue(1, 6).getAsInt());
+                d.setLong(0, 7, d.getFieldValue(1, 7).getAsLong());
+                d.setLong(0, "long", d.getFieldValue(1, 7).getAsLong());
+                d.setShort(0, 8, d.getFieldValue(1, 8).getAsShort());
+                d.setShort(0, "short", d.getFieldValue(1, 8).getAsShort());
+                d.setString(0, 9, d.getFieldValue(1, 9).getAsString());
+                d.setString(0, "string", d.getFieldValue(1, 9).getAsString());
+                d.setTimestamp(0, "timestamp", d.getFieldValue(1, 10).getAsTimestamp());
+                d.setTime(0, 11, d.getFieldValue(1, 11).getAsTime());
+                d.setTime(0, "time", d.getFieldValue(1, 11).getAsTime());
 
-		for (int i = 0; i < d.getMetadata().getFieldCount(); i++) {
-			assertTrue(d.getFieldValue(0, i).equals(d.getFieldValue(1, i))
-					.getAsBoolean());
-		}
-		d.close();
-	}
+                for (int i = 0; i < d.getMetadata().getFieldCount(); i++) {
+                        assertEquals(d.getFieldValue(0, i),d.getFieldValue(1, i));
+                }
+                d.close();
+        }
 
-	@Override
-	protected void setUp() throws Exception {
-		dsf = new DataSourceFactory();
-		dsf.getSourceManager().register("alltypes",
-				new ObjectSourceDefinition(new AllTypesObjectDriver(),"main"));
-		super.setUp();
-	}
+        @Before
+        public void setUp() throws Exception {
+                dsf = new DataSourceFactory();
+                dsf.setTempDir(TestBase.backupDir.getAbsolutePath());
+                dsf.setResultDir(TestBase.backupDir);
+                dsf.getSourceManager().register("alltypes",
+                        new ObjectSourceDefinition(new AllTypesObjectDriver(), "main"));
+        }
 }

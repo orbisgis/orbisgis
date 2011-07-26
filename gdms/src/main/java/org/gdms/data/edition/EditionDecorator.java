@@ -659,6 +659,10 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
                 if (null == fields) {
                         ArrayList<Field> fieldArray = new ArrayList<Field>();
                         Metadata metadata = getDataSource().getMetadata();
+                        if (metadata == null) {
+                                throw new DriverException("Error initializing metadata; cannot get the metadata of"
+                                        + " the inner source.");
+                        }
                         final int fc = metadata.getFieldCount();
 
                         for (int i = 0; i < fc; i++) {

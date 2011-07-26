@@ -36,8 +36,10 @@
  */
 package org.gdms.data;
 
+import org.gdms.TestBase;
+import org.junit.Before;
+import org.junit.Test;
 import java.io.File;
-import junit.framework.TestCase;
 
 import org.gdms.data.edition.FakeDBTableSourceDefinition;
 import org.gdms.data.edition.FakeFileSourceDefinition;
@@ -49,251 +51,263 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.SourceManager;
 
-public class ListenerTest extends TestCase {
+import static org.junit.Assert.*;
 
-	public ListenerCounter listener = new ListenerCounter();
-	private DataSourceFactory dsf;
+public class ListenerTest {
 
-	private void editDataSource(DataSource d) throws DriverException {
-		d.deleteRow(0);
-		d.insertEmptyRow();
-		d.insertEmptyRowAt(0);
-		Value[] row = d.getRow(0);
-		d.insertFilledRow(row);
-		d.insertFilledRowAt(0, row);
-		d.setFieldValue(0, 0, d.getFieldValue(1, 0));
-	}
+        public ListenerCounter listener = new ListenerCounter();
+        private DataSourceFactory dsf;
 
-	public void testEditionNotification() throws Exception {
-		DataSource d = dsf.getDataSource("object");
+        private void editDataSource(DataSource d) throws DriverException {
+                d.deleteRow(0);
+                d.insertEmptyRow();
+                d.insertEmptyRowAt(0);
+                Value[] row = d.getRow(0);
+                d.insertFilledRow(row);
+                d.insertFilledRowAt(0, row);
+                d.setFieldValue(0, 0, d.getFieldValue(1, 0));
+        }
 
-		d.addEditionListener(listener);
-		d.open();
-		editDataSource(d);
-		assertTrue(listener.deletions == 1);
-		assertTrue(listener.insertions == 4);
-		assertTrue(listener.modifications == 1);
-		assertTrue(listener.total == 6);
-		d.close();
-	}
+        @Test
+        public void testEditionNotification() throws Exception {
+                DataSource d = dsf.getDataSource("object");
 
-	public void testComplexChange() throws Exception {
-		DataSource d = dsf.getDataSource("object");
+                d.addEditionListener(listener);
+                d.open();
+                editDataSource(d);
+                assertEquals(listener.deletions, 1);
+                assertEquals(listener.insertions, 4);
+                assertEquals(listener.modifications, 1);
+                assertEquals(listener.total, 6);
+                d.close();
+        }
 
-		d.addEditionListener(listener);
-		d.open();
-		d.setDispatchingMode(DataSource.STORE);
-		editDataSource(d);
-		d.setDispatchingMode(DataSource.DISPATCH);
-		assertTrue(listener.deletions == 1);
-		assertTrue(listener.insertions == 4);
-		assertTrue(listener.modifications == 1);
-		assertTrue(listener.total == 6);
-		d.close();
-	}
+        @Test
+        public void testComplexChange() throws Exception {
+                DataSource d = dsf.getDataSource("object");
 
-	public void testUndoRedoChanges() throws Exception {
-		DataSource d = dsf.getDataSource("object", DataSourceFactory.EDITABLE);
+                d.addEditionListener(listener);
+                d.open();
+                d.setDispatchingMode(DataSource.STORE);
+                editDataSource(d);
+                d.setDispatchingMode(DataSource.DISPATCH);
+                assertEquals(listener.deletions, 1);
+                assertEquals(listener.insertions, 4);
+                assertEquals(listener.modifications, 1);
+                assertEquals(listener.total, 6);
+                d.close();
+        }
 
-		d.addEditionListener(listener);
-		d.open();
-		editDataSource(d);
-		for (int i = 0; i < 6; i++) {
-			d.undo();
-		}
-		d.redo();
-		d.undo();
-		d.deleteRow(0);
-		assertTrue(listener.total == 15);
-		assertTrue(listener.undoRedo == 8);
-		d.close();
-	}
+        @Test
+        public void testUndoRedoChanges() throws Exception {
+                DataSource d = dsf.getDataSource("object", DataSourceFactory.EDITABLE);
 
-	public void testIgnoreChanges() throws Exception {
-		DataSource d = dsf.getDataSource("object", DataSourceFactory.EDITABLE);
+                d.addEditionListener(listener);
+                d.open();
+                editDataSource(d);
+                for (int i = 0; i < 6; i++) {
+                        d.undo();
+                }
+                d.redo();
+                d.undo();
+                d.deleteRow(0);
+                assertEquals(listener.total, 15);
+                assertEquals(listener.undoRedo, 8);
+                d.close();
+        }
 
-		d.addEditionListener(listener);
-		d.open();
-		d.setDispatchingMode(DataSource.IGNORE);
-		editDataSource(d);
-		for (int i = 0; i < 6; i++) {
-			d.undo();
-		}
-		d.redo();
-		d.undo();
-		assertTrue(listener.total == 0);
-		d.close();
-	}
+        @Test
+        public void testIgnoreChanges() throws Exception {
+                DataSource d = dsf.getDataSource("object", DataSourceFactory.EDITABLE);
 
-	public void testOpen() throws Exception {
-		testOpen(dsf.getDataSource("object", DataSourceFactory.EDITABLE));
-		testOpen(dsf.getDataSource("object", DataSourceFactory.NORMAL));
-		testOpen(dsf.getDataSource("file", DataSourceFactory.EDITABLE));
-		testOpen(dsf.getDataSource("file", DataSourceFactory.NORMAL));
-		testOpen(dsf.getDataSource("db", DataSourceFactory.EDITABLE));
-		testOpen(dsf.getDataSource("db", DataSourceFactory.NORMAL));
-	}
+                d.addEditionListener(listener);
+                d.open();
+                d.setDispatchingMode(DataSource.IGNORE);
+                editDataSource(d);
+                for (int i = 0; i < 6; i++) {
+                        d.undo();
+                }
+                d.redo();
+                d.undo();
+                assertEquals(listener.total, 0);
+                d.close();
+        }
 
-	private void testOpen(DataSource d) throws Exception {
-		listener = new ListenerCounter();
-		d.addDataSourceListener(listener);
-		d.open();
-		assertTrue(listener.total == 1);
-		assertTrue(listener.open == 1);
-		d.close();
-	}
+        @Test
+        public void testOpen() throws Exception {
+                testOpen(dsf.getDataSource("object", DataSourceFactory.EDITABLE));
+                testOpen(dsf.getDataSource("object", DataSourceFactory.NORMAL));
+                testOpen(dsf.getDataSource("file", DataSourceFactory.EDITABLE));
+                testOpen(dsf.getDataSource("file", DataSourceFactory.NORMAL));
+                testOpen(dsf.getDataSource("db", DataSourceFactory.EDITABLE));
+                testOpen(dsf.getDataSource("db", DataSourceFactory.NORMAL));
+        }
 
-	public void testOpenTwice() throws Exception {
-		testOpenTwice(dsf.getDataSource("object", DataSourceFactory.EDITABLE));
-		testOpenTwice(dsf.getDataSource("object", DataSourceFactory.NORMAL));
-		testOpenTwice(dsf.getDataSource("file", DataSourceFactory.EDITABLE));
-		testOpenTwice(dsf.getDataSource("file", DataSourceFactory.NORMAL));
-		testOpenTwice(dsf.getDataSource("db", DataSourceFactory.EDITABLE));
-		testOpenTwice(dsf.getDataSource("db", DataSourceFactory.NORMAL));
+        private void testOpen(DataSource d) throws Exception {
+                listener = new ListenerCounter();
+                d.addDataSourceListener(listener);
+                d.open();
+                assertEquals(listener.total, 1);
+                assertEquals(listener.open, 1);
+                d.close();
+        }
 
-	}
+        @Test
+        public void testOpenTwice() throws Exception {
+                testOpenTwice(dsf.getDataSource("object", DataSourceFactory.EDITABLE));
+                testOpenTwice(dsf.getDataSource("object", DataSourceFactory.NORMAL));
+                testOpenTwice(dsf.getDataSource("file", DataSourceFactory.EDITABLE));
+                testOpenTwice(dsf.getDataSource("file", DataSourceFactory.NORMAL));
+                testOpenTwice(dsf.getDataSource("db", DataSourceFactory.EDITABLE));
+                testOpenTwice(dsf.getDataSource("db", DataSourceFactory.NORMAL));
 
-	private void testOpenTwice(DataSource d) throws Exception {
-		listener = new ListenerCounter();
-		d.addDataSourceListener(listener);
-		d.open();
-		d.open();
-		assertTrue(listener.total == 1);
-		assertTrue(listener.open == 1);
-		d.close();
-		d.close();
-	}
+        }
 
-	public void testCancel() throws Exception {
-		testCancel(dsf.getDataSource("object", DataSourceFactory.EDITABLE));
-		testCancel(dsf.getDataSource("object", DataSourceFactory.NORMAL));
-		testCancel(dsf.getDataSource("file", DataSourceFactory.EDITABLE));
-		testCancel(dsf.getDataSource("file", DataSourceFactory.NORMAL));
-		testCancel(dsf.getDataSource("db", DataSourceFactory.EDITABLE));
-		testCancel(dsf.getDataSource("db", DataSourceFactory.NORMAL));
-	}
+        private void testOpenTwice(DataSource d) throws Exception {
+                listener = new ListenerCounter();
+                d.addDataSourceListener(listener);
+                d.open();
+                d.open();
+                assertEquals(listener.total, 1);
+                assertEquals(listener.open, 1);
+                d.close();
+                d.close();
+        }
 
-	private void testCancel(DataSource d) throws Exception {
-		listener = new ListenerCounter();
-		d.addDataSourceListener(listener);
-		d.open();
-		d.close();
-		assertTrue(listener.total == 2);
-		assertTrue(listener.cancel == 1);
-	}
+        @Test
+        public void testCancel() throws Exception {
+                testCancel(dsf.getDataSource("object", DataSourceFactory.EDITABLE));
+                testCancel(dsf.getDataSource("object", DataSourceFactory.NORMAL));
+                testCancel(dsf.getDataSource("file", DataSourceFactory.EDITABLE));
+                testCancel(dsf.getDataSource("file", DataSourceFactory.NORMAL));
+                testCancel(dsf.getDataSource("db", DataSourceFactory.EDITABLE));
+                testCancel(dsf.getDataSource("db", DataSourceFactory.NORMAL));
+        }
 
-	public void testCancelButOpenTwice() throws Exception {
-		testCancelButOpenTwice(dsf.getDataSource("object",
-				DataSourceFactory.EDITABLE));
-		testCancelButOpenTwice(dsf.getDataSource("object",
-				DataSourceFactory.NORMAL));
-		testCancelButOpenTwice(dsf.getDataSource("file",
-				DataSourceFactory.EDITABLE));
-		testCancelButOpenTwice(dsf.getDataSource("file",
-				DataSourceFactory.NORMAL));
-		testCancelButOpenTwice(dsf.getDataSource("db",
-				DataSourceFactory.EDITABLE));
-		testCancelButOpenTwice(dsf
-				.getDataSource("db", DataSourceFactory.NORMAL));
-	}
+        private void testCancel(DataSource d) throws Exception {
+                listener = new ListenerCounter();
+                d.addDataSourceListener(listener);
+                d.open();
+                d.close();
+                assertEquals(listener.total, 2);
+                assertEquals(listener.cancel, 1);
+        }
 
-	private void testCancelButOpenTwice(DataSource d) throws Exception {
-		listener = new ListenerCounter();
-		d.addDataSourceListener(listener);
-		d.open();
-		d.open();
-		assertTrue(listener.total == 1);
-		assertTrue(listener.open == 1);
-		d.close();
-		assertTrue(listener.total == 1);
-		assertTrue(listener.open == 1);
-		assertTrue(listener.cancel == 0);
-		d.close();
-		assertTrue(listener.total == 2);
-		assertTrue(listener.open == 1);
-		assertTrue(listener.cancel == 1);
-	}
+        @Test
+        public void testCancelButOpenTwice() throws Exception {
+                testCancelButOpenTwice(dsf.getDataSource("object",
+                        DataSourceFactory.EDITABLE));
+                testCancelButOpenTwice(dsf.getDataSource("object",
+                        DataSourceFactory.NORMAL));
+                testCancelButOpenTwice(dsf.getDataSource("file",
+                        DataSourceFactory.EDITABLE));
+                testCancelButOpenTwice(dsf.getDataSource("file",
+                        DataSourceFactory.NORMAL));
+                testCancelButOpenTwice(dsf.getDataSource("db",
+                        DataSourceFactory.EDITABLE));
+                testCancelButOpenTwice(dsf.getDataSource("db", DataSourceFactory.NORMAL));
+        }
 
-	public void testCommit() throws Exception {
-		testCommit(dsf.getDataSource("object", DataSourceFactory.EDITABLE));
-		testCommit(dsf.getDataSource("file", DataSourceFactory.EDITABLE));
-		testCommit(dsf.getDataSource("db", DataSourceFactory.EDITABLE));
-	}
+        private void testCancelButOpenTwice(DataSource d) throws Exception {
+                listener = new ListenerCounter();
+                d.addDataSourceListener(listener);
+                d.open();
+                d.open();
+                assertEquals(listener.total, 1);
+                assertEquals(listener.open, 1);
+                d.close();
+                assertEquals(listener.total, 1);
+                assertEquals(listener.open, 1);
+                assertEquals(listener.cancel, 0);
+                d.close();
+                assertEquals(listener.total, 2);
+                assertEquals(listener.open, 1);
+                assertEquals(listener.cancel, 1);
+        }
 
-	private void testCommit(DataSource d) throws Exception {
-		listener = new ListenerCounter();
-		d.addDataSourceListener(listener);
-		d.open();
-		d.commit();
-		assertTrue(listener.total == 2);
-		assertTrue(listener.commit == 1);
-		d.close();
-	}
+        @Test
+        public void testCommit() throws Exception {
+                testCommit(dsf.getDataSource("object", DataSourceFactory.EDITABLE));
+                testCommit(dsf.getDataSource("file", DataSourceFactory.EDITABLE));
+                testCommit(dsf.getDataSource("db", DataSourceFactory.EDITABLE));
+        }
 
-	public void testResync() throws Exception {
-		testResync(dsf.getDataSource("object"));
-		testResync(dsf.getDataSource("file"));
-		testResync(dsf.getDataSource("db"));
-	}
+        private void testCommit(DataSource d) throws Exception {
+                listener = new ListenerCounter();
+                d.addDataSourceListener(listener);
+                d.open();
+                d.commit();
+                assertEquals(listener.total, 2);
+                assertEquals(listener.commit, 1);
+                d.close();
+        }
 
-	private void testResync(DataSource d1) throws Exception {
-		listener = new ListenerCounter();
-		d1.addDataSourceListener(listener);
-		d1.addEditionListener(listener);
-		d1.open();
-		d1.deleteRow(0);
-		d1.syncWithSource();
-		assertTrue(listener.total == 3);
-		assertTrue(listener.resync == 1);
-		assertTrue(listener.deletions == 1);
-		assertTrue(listener.open == 1);
-		d1.close();
-	}
+        @Test
+        public void testResync() throws Exception {
+                testResync(dsf.getDataSource("object"));
+                testResync(dsf.getDataSource("file"));
+                testResync(dsf.getDataSource("db"));
+        }
 
-	public void testResyncEventOnAnotherDSCommit() throws Exception {
-		DataSource d1 = dsf.getDataSource("file");
-		DataSource d2 = dsf.getDataSource("file");
-		DataSource d3 = dsf.getDataSource("file");
-		listener = new ListenerCounter();
-		d1.addDataSourceListener(listener);
-		d1.addEditionListener(listener);
-		d2.addEditionListener(listener);
-		d3.addEditionListener(listener);
-		d1.open();
-		d2.open();
-		d1.deleteRow(0);
-		d1.commit();
-		d1.close();
-		assertTrue(listener.deletions == 1);
-		// Second open call doesn't actually open anything
-		assertTrue(listener.open == 1);
-		assertTrue(listener.commit == 1);
-		// The closed one 'd3' should not receive the resync event
-		assertTrue(listener.resync == 2);
-		assertTrue(listener.total == 5);
-	}
+        private void testResync(DataSource d1) throws Exception {
+                listener = new ListenerCounter();
+                d1.addDataSourceListener(listener);
+                d1.addEditionListener(listener);
+                d1.open();
+                d1.deleteRow(0);
+                d1.syncWithSource();
+                assertEquals(listener.total, 3);
+                assertEquals(listener.resync, 1);
+                assertEquals(listener.deletions, 1);
+                assertEquals(listener.open, 1);
+                d1.close();
+        }
 
-	@Override
-	protected void setUp() throws Exception {
-		ReadDriver.initialize();
-		ReadDriver.isEditable = true;
-		ReadDriver.pk = false;
+        @Test
+        public void testResyncEventOnAnotherDSCommit() throws Exception {
+                DataSource d1 = dsf.getDataSource("file");
+                DataSource d2 = dsf.getDataSource("file");
+                DataSource d3 = dsf.getDataSource("file");
+                listener = new ListenerCounter();
+                d1.addDataSourceListener(listener);
+                d1.addEditionListener(listener);
+                d2.addEditionListener(listener);
+                d3.addEditionListener(listener);
+                d1.open();
+                d2.open();
+                d1.deleteRow(0);
+                d1.commit();
+                d1.close();
+                assertEquals(listener.deletions, 1);
+                // Second open call doesn't actually open anything
+                assertEquals(listener.open, 1);
+                assertEquals(listener.commit, 1);
+                // The closed one 'd3' should not receive the resync event
+                assertEquals(listener.resync, 2);
+                assertEquals(listener.total, 5);
+        }
 
-		dsf = new DataSourceFactory();
-		dsf.setTempDir("src/test/resources/backup");
-		DriverManager dm = new DriverManager();
-		dm.registerDriver(ReadAndWriteDriver.class);
-		
-		SourceManager sourceManager = dsf.getSourceManager();
-		sourceManager.setDriverManager(dm);
-		sourceManager.register("object", new ObjectSourceDefinition(
-				new ReadAndWriteDriver(),"main"));
+        @Before
+        public void setUp() throws Exception {
+                ReadDriver.initialize();
+                ReadDriver.isEditable = true;
+                ReadDriver.pk = false;
+
+                dsf = new DataSourceFactory();
+                dsf.setTempDir(TestBase.backupDir.getAbsolutePath());
+                dsf.setResultDir(TestBase.backupDir);
+                DriverManager dm = new DriverManager();
+                dm.registerDriver(ReadAndWriteDriver.class);
+
+                SourceManager sourceManager = dsf.getSourceManager();
+                sourceManager.setDriverManager(dm);
+                sourceManager.register("object", new ObjectSourceDefinition(
+                        new ReadAndWriteDriver(), "main"));
                 final ReadAndWriteDriver fileReadAndWriteDriver = new ReadAndWriteDriver();
                 fileReadAndWriteDriver.setFile(new File("."));
-		sourceManager.register("file", new FakeFileSourceDefinition(
-				fileReadAndWriteDriver));
-		sourceManager.register("db", new FakeDBTableSourceDefinition(
-				new ReadAndWriteDriver(), "jdbc:closefailing"));
-	}
-
+                sourceManager.register("file", new FakeFileSourceDefinition(
+                        fileReadAndWriteDriver));
+                sourceManager.register("db", new FakeDBTableSourceDefinition(
+                        new ReadAndWriteDriver(), "jdbc:closefailing"));
+        }
 }

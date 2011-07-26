@@ -2,14 +2,15 @@ package org.gdms.data.crs;
 
 import java.io.File;
 
-import org.gdms.BaseTest;
+import org.gdms.TestBase;
 import org.gdms.data.DataSource;
 
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.io.WKTReader;
+import org.junit.Test;
 
 
-public class SpatialReferenceSystemTest extends BaseTest {
+public class SpatialReferenceSystemTest extends TestBase {
 
         /**
          * A csv file with some validate data is used to test the CTS lib.
@@ -24,6 +25,7 @@ public class SpatialReferenceSystemTest extends BaseTest {
         public File crsFileValidator = new File(internalData + "crsData.csv");
         double EPSILON = 0.000001;
 
+        @Test
         public void testSRSTransform() throws Exception {
                 DataSource ds = dsf.getDataSource(crsFileValidator);
                 ds.open();

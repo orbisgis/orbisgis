@@ -36,26 +36,29 @@
  */
 package org.gdms;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-public class NoEmptyDataSetTest extends BaseTest {
+public class NoEmptyDataSetTest extends TestBase {
 
-	public void testNoEmptyDataSetTest() throws Exception {
+	@Test
+        public void testNoEmptyDataSetTest() throws Exception {
 		testNoEmptyDataSetTest(false);
 		testNoEmptyDataSetTest(true);
 	}
 
 	private void testNoEmptyDataSetTest(boolean writingTest) throws Exception {
 		setWritingTests(writingTest);
-		assertTrue(super.getSmallResources().length > 0);
-		assertTrue(super.getResourcesWithPK().length > 0);
-		assertTrue(super.getDBResources().length > 0);
-		assertTrue(super.getSmallResourcesWithNullValues().length > 0);
-		assertTrue(super.getResourcesWithNumericField().length > 0);
-		assertTrue(super.getResourcesWithNullValues().length > 0);
-		assertTrue(super.getResourcesWithRepeatedRows().length > 0);
-		assertTrue(super.getSpatialResources().length > 0);
-		assertTrue(super.getAnyNonSpatialResource() != null);
-		assertTrue(super.getAnySpatialResource() != null);
+		assertTrue(getSmallResources().length > 0);
+		assertTrue(getResourcesWithPK().length > 0);
+		assertTrue(getDBResources().length > 0);
+		assertTrue(getSmallResourcesWithNullValues().length > 0);
+		assertTrue(getResourcesWithNumericField().length > 0);
+		assertTrue(getResourcesWithNullValues().length > 0);
+		assertTrue(getResourcesWithRepeatedRows().length > 0);
+		assertTrue(getSpatialResources().length > 0);
+		assertNotNull(getAnyNonSpatialResource());
+		assertNotNull(getAnySpatialResource());
 	}
 
 }

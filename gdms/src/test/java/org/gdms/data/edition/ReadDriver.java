@@ -285,7 +285,7 @@ public class ReadDriver extends DefaultDBDriver implements ObjectDriver,
         }
 
         public TableDescription[] getTables(Connection c) throws DriverException {
-                return null;
+                return new TableDescription[0];
         }
 
         public int getType() {
@@ -318,7 +318,7 @@ public class ReadDriver extends DefaultDBDriver implements ObjectDriver,
 
         @Override
         public String getTypeName() {
-                return null;
+                return "";
         }
 
         @Override

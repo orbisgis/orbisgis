@@ -36,13 +36,14 @@
  */
 package org.gdms.data.indexes;
 
+import org.junit.Test;
+import org.junit.Before;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import junit.framework.TestCase;
 
-import org.gdms.BaseTest;
+import org.gdms.TestBase;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.indexes.btree.BTree;
@@ -51,270 +52,275 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 
-public class BTreeTest extends TestCase {
+import static org.junit.Assert.*;
 
-	private ArrayList<Value> v;
-	private File indexFile;
+public class BTreeTest {
 
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
+        private ArrayList<Value> v;
+        private File indexFile;
 
-		v = new ArrayList<Value>();
-		v.add(ValueFactory.createValue(23));
-		v.add(ValueFactory.createValue(29));
-		v.add(ValueFactory.createValue(2));
-		v.add(ValueFactory.createValue(3));
-		v.add(ValueFactory.createValue(5));
-		v.add(ValueFactory.createValue(11));
-		v.add(ValueFactory.createValue(7));
-		v.add(ValueFactory.createValue(13));
-		v.add(ValueFactory.createValue(17));
-		v.add(ValueFactory.createValue(19));
-		v.add(ValueFactory.createValue(31));
-		v.add(ValueFactory.createValue(37));
-		v.add(ValueFactory.createValue(41));
-		v.add(ValueFactory.createValue(43));
-		v.add(ValueFactory.createValue(47));
+        @Before
+        public void setUp() throws Exception {
+                v = new ArrayList<Value>();
+                v.add(ValueFactory.createValue(23));
+                v.add(ValueFactory.createValue(29));
+                v.add(ValueFactory.createValue(2));
+                v.add(ValueFactory.createValue(3));
+                v.add(ValueFactory.createValue(5));
+                v.add(ValueFactory.createValue(11));
+                v.add(ValueFactory.createValue(7));
+                v.add(ValueFactory.createValue(13));
+                v.add(ValueFactory.createValue(17));
+                v.add(ValueFactory.createValue(19));
+                v.add(ValueFactory.createValue(31));
+                v.add(ValueFactory.createValue(37));
+                v.add(ValueFactory.createValue(41));
+                v.add(ValueFactory.createValue(43));
+                v.add(ValueFactory.createValue(47));
 
-		indexFile = new File("src/test/resources/backup", "btreetest.idx");
-		if (indexFile.exists()) {
-			if (!indexFile.delete()) {
-				throw new IOException("Cannot delete the index file");
-			}
-		}
-	}
+                indexFile = new File(TestBase.internalData, "btreetest.idx");
+                if (indexFile.exists()) {
+                        if (!indexFile.delete()) {
+                                throw new IOException("Cannot delete the index file");
+                        }
+                }
+        }
 
-	private void checkLookUp(BTree tree) throws IOException {
-		tree.checkTree();
-		assertTrue(tree.size() == tree.getAllValues().length);
-		Value[] keys = tree.getAllValues();
-		for (int i = 0; i < keys.length; i++) {
-			int[] indexes = tree.getRow(keys[i]);
-			for (int index : indexes) {
-				assertTrue("value: " + keys[i], v.get(index).equals(keys[i])
-						.getAsBoolean());
-			}
-		}
-	}
+        private void checkLookUp(BTree tree) throws IOException {
+                tree.checkTree();
+                assertEquals(tree.size(), tree.getAllValues().length);
+                Value[] keys = tree.getAllValues();
+                for (int i = 0; i < keys.length; i++) {
+                        int[] indexes = tree.getRow(keys[i]);
+                        for (int index : indexes) {
+                                assertTrue("value: " + keys[i], v.get(index).equals(keys[i]).getAsBoolean());
+                        }
+                }
+        }
 
-	public void testLeafAndIntermediateOverLoad() throws Exception {
-		BTree tree = new DiskBTree(3, 256, false);
-		tree.newIndex(indexFile);
-		makeInsertions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
-		tree.close();
-		tree = new DiskBTree(3, 256, false);
-		setUp();
-		tree.newIndex(indexFile);
-		makeInsertions(tree, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0);
-		tree.close();
-	}
+        @Test
+        public void testLeafAndIntermediateOverLoad() throws Exception {
+                BTree tree = new DiskBTree(3, 256, false);
+                tree.newIndex(indexFile);
+                makeInsertions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
+                tree.close();
+                tree = new DiskBTree(3, 256, false);
+                setUp();
+                tree.newIndex(indexFile);
+                makeInsertions(tree, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0);
+                tree.close();
+        }
 
-	public void testDeletions() throws Exception {
-		BTree tree = new DiskBTree(3, 256, false);
-		tree.newIndex(indexFile);
-		makeInsertions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
-		makeDeletions(tree, 2, 4, 6, 8, 9, 7, 5, 3, 1, 0);
-		makeInsertions(tree, 0, 0, 1, 1, 1, 2, 2, 2, 3, 4);
-		makeDeletions(tree, 1, 0, 1, 0, 2, 2, 4, 3, 1, 2);
-		tree.close();
-	}
+        @Test
+        public void testDeletions() throws Exception {
+                BTree tree = new DiskBTree(3, 256, false);
+                tree.newIndex(indexFile);
+                makeInsertions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
+                makeDeletions(tree, 2, 4, 6, 8, 9, 7, 5, 3, 1, 0);
+                makeInsertions(tree, 0, 0, 1, 1, 1, 2, 2, 2, 3, 4);
+                makeDeletions(tree, 1, 0, 1, 0, 2, 2, 4, 3, 1, 2);
+                tree.close();
+        }
 
-	private void makeDeletions(BTree tree, int... vIndexes) throws IOException {
-		for (int index : vIndexes) {
-			Value value = v.get(index);
-			tree.delete(value, index);
-			checkLookUp(tree);
-			tree.save();
-			checkLookUp(tree);
-		}
-	}
+        private void makeDeletions(BTree tree, int... vIndexes) throws IOException {
+                for (int index : vIndexes) {
+                        Value value = v.get(index);
+                        tree.delete(value, index);
+                        checkLookUp(tree);
+                        tree.save();
+                        checkLookUp(tree);
+                }
+        }
 
-	private void makeInsertions(BTree tree, int... vIndexes) throws IOException {
-		for (int index : vIndexes) {
-			tree.insert(v.get(index), index);
-			checkLookUp(tree);
-			tree.save();
-			checkLookUp(tree);
-		}
-	}
+        private void makeInsertions(BTree tree, int... vIndexes) throws IOException {
+                for (int index : vIndexes) {
+                        tree.insert(v.get(index), index);
+                        checkLookUp(tree);
+                        tree.save();
+                        checkLookUp(tree);
+                }
+        }
 
-	public void testRepeatedValues() throws Exception {
-		BTree tree = new DiskBTree(3, 256, false);
-		tree.newIndex(indexFile);
-		makeInsertions(tree, 0, 0, 1, 1, 1, 2, 2, 2, 3, 4);
-		makeDeletions(tree, 4, 2, 2, 1, 1, 0, 3, 2, 1, 0);
-	}
+        @Test
+        public void testRepeatedValues() throws Exception {
+                BTree tree = new DiskBTree(3, 256, false);
+                tree.newIndex(indexFile);
+                makeInsertions(tree, 0, 0, 1, 1, 1, 2, 2, 2, 3, 4);
+                makeDeletions(tree, 4, 2, 2, 1, 1, 0, 3, 2, 1, 0);
+        }
 
-	public void testIndexRealData() throws Exception {
-		DataSourceFactory dsf = new DataSourceFactory();
-		File file = new File(BaseTest.internalData + "hedgerow.shp");
-		dsf.getSourceManager().register("hedges", file);
-		testIndexRealData(new DiskBTree(3, 64, false), dsf
-				.getDataSource(file), "type", 100.0);
-		setUp();
-		testIndexRealData(new DiskBTree(32, 64, false), dsf
-				.getDataSource(file), "type", 100.0);
-	}
+        @Test
+        public void testIndexRealData() throws Exception {
+                DataSourceFactory dsf = new DataSourceFactory();
+                dsf.setTempDir(TestBase.backupDir.getAbsolutePath());
+                dsf.setResultDir(TestBase.backupDir);
+                File file = new File(TestBase.internalData + "hedgerow.shp");
+                dsf.getSourceManager().register("hedges", file);
+                testIndexRealData(new DiskBTree(3, 64, false), dsf.getDataSource(file), "type", 100.0);
+                setUp();
+                testIndexRealData(new DiskBTree(32, 64, false), dsf.getDataSource(file), "type", 100.0);
+        }
 
-	private void testIndexRealData(BTree tree, DataSource ds, String fieldName,
-			double checkPeriod) throws Exception {
-		ds.open();
-		tree.newIndex(indexFile);
-		int fieldIndex = ds.getFieldIndexByName(fieldName);
+        private void testIndexRealData(BTree tree, DataSource ds, String fieldName,
+                double checkPeriod) throws Exception {
+                ds.open();
+                tree.newIndex(indexFile);
+                int fieldIndex = ds.getFieldIndexByName(fieldName);
                 if (fieldIndex == -1) {
                         throw new DriverException("The field " + fieldName + " does not exist!");
                 }
-		for (int i = 0; i < ds.getRowCount(); i++) {
-			if (i / (int) checkPeriod == i / checkPeriod) {
-				tree.checkTree();
-				tree.close();
-				tree.openIndex(indexFile);
-				tree.checkTree();
-				checkLookUp(tree, ds, fieldIndex);
-				tree.checkTree();
-			}
-			Value value = ds.getFieldValue(i, fieldIndex);
-			tree.insert(value, i);
-		}
-		for (int i = 0; i < ds.getRowCount(); i++) {
-			if (i / (int) checkPeriod == i / checkPeriod) {
-				tree.checkTree();
-				tree.save();
-				tree.checkTree();
-				checkLookUp(tree, ds, fieldIndex);
-			}
-			Value value = ds.getFieldValue(i, fieldIndex);
-			int size = tree.size();
-			tree.delete(value, i);
-			assertTrue(tree.size() + 1 == size);
-		}
+                for (int i = 0; i < ds.getRowCount(); i++) {
+                        if (i / (int) checkPeriod == i / checkPeriod) {
+                                tree.checkTree();
+                                tree.close();
+                                tree.openIndex(indexFile);
+                                tree.checkTree();
+                                checkLookUp(tree, ds, fieldIndex);
+                                tree.checkTree();
+                        }
+                        Value value = ds.getFieldValue(i, fieldIndex);
+                        tree.insert(value, i);
+                }
+                for (int i = 0; i < ds.getRowCount(); i++) {
+                        if (i / (int) checkPeriod == i / checkPeriod) {
+                                tree.checkTree();
+                                tree.save();
+                                tree.checkTree();
+                                checkLookUp(tree, ds, fieldIndex);
+                        }
+                        Value value = ds.getFieldValue(i, fieldIndex);
+                        int size = tree.size();
+                        tree.delete(value, i);
+                        assertEquals(tree.size() + 1, size);
+                }
 
-		ds.close();
-		tree.close();
-	}
+                ds.close();
+                tree.close();
+        }
 
-	private void checkLookUp(BTree tree, DataSource ds, int fieldIndex)
-			throws IOException, DriverException {
-		Value[] allValues = tree.getAllValues();
-		for (Value value : allValues) {
-			int[] rows = tree.getRow(value);
-			for (int row : rows) {
-				assertTrue(ds.getFieldValue(row, fieldIndex).equals(value)
-						.getAsBoolean());
-			}
-		}
-	}
+        private void checkLookUp(BTree tree, DataSource ds, int fieldIndex)
+                throws IOException, DriverException {
+                Value[] allValues = tree.getAllValues();
+                for (Value value : allValues) {
+                        int[] rows = tree.getRow(value);
+                        for (int row : rows) {
+                                assertTrue(ds.getFieldValue(row, fieldIndex).equals(value).getAsBoolean());
+                        }
+                }
+        }
 
-	public void testSmallNode() throws Exception {
-		testInsertions(3, 32);
-	}
+        @Test
+        public void testSmallNode() throws Exception {
+                testInsertions(3, 32);
+        }
 
-	private void testInsertions(int n, int blockSize) throws IOException,
-			Exception {
-		BTree tree = new DiskBTree(n, blockSize, false);
-		tree.newIndex(indexFile);
-		makeInsertions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
-		tree.close();
-		tree = new DiskBTree(3, 64, false);
-		setUp();
-		tree.newIndex(indexFile);
-		makeInsertions(tree, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0);
-		tree.close();
-	}
+        private void testInsertions(int n, int blockSize) throws IOException,
+                Exception {
+                BTree tree = new DiskBTree(n, blockSize, false);
+                tree.newIndex(indexFile);
+                makeInsertions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
+                tree.close();
+                tree = new DiskBTree(3, 64, false);
+                setUp();
+                tree.newIndex(indexFile);
+                makeInsertions(tree, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0);
+                tree.close();
+        }
 
-	public void testNodeBiggerThanBlock() throws Exception {
-		testInsertions(256, 32);
-	}
+        @Test
+        public void testNodeBiggerThanBlock() throws Exception {
+                testInsertions(256, 32);
+        }
 
-	public void testEmptyIndex() throws Exception {
-		BTree tree = new DiskBTree(5, 64, false);
-		tree.newIndex(indexFile);
-		tree.save();
-		tree.close();
-		tree.openIndex(indexFile);
-		assertTrue(tree.size() == 0);
-		tree.checkTree();
-	}
+        @Test
+        public void testEmptyIndex() throws Exception {
+                BTree tree = new DiskBTree(5, 64, false);
+                tree.newIndex(indexFile);
+                tree.save();
+                tree.close();
+                tree.openIndex(indexFile);
+                assertEquals(tree.size(), 0);
+                tree.checkTree();
+        }
 
-	public void testIndexWithZeroElements() throws Exception {
-		BTree tree = new DiskBTree(5, 64, false);
-		tree.newIndex(indexFile);
-		makeInsertions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
-		makeDeletions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
-		assertTrue(tree.size() == 0);
-		tree.save();
-		tree.close();
-		tree.openIndex(indexFile);
-		assertTrue(tree.size() == 0);
-		assertTrue(tree.getRow(ValueFactory.createValue(0)).length == 0);
-	}
+        @Test
+        public void testIndexWithZeroElements() throws Exception {
+                BTree tree = new DiskBTree(5, 64, false);
+                tree.newIndex(indexFile);
+                makeInsertions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
+                makeDeletions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
+                assertEquals(tree.size(), 0);
+                tree.save();
+                tree.close();
+                tree.openIndex(indexFile);
+                assertEquals(tree.size(), 0);
+                assertEquals(tree.getRow(ValueFactory.createValue(0)).length, 0);
+        }
 
-	public void testEmptySpaces() throws Exception {
-		BTree tree = new DiskBTree(5, 32, false);
-		tree.newIndex(indexFile);
-		// populate the index
-		makeInsertions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
-		tree.close();
-		tree.openIndex(indexFile);
-		// clean it and keep the number of empty nodes
-		makeDeletions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
-		int emptyBlocks = ((DiskBTree) tree).getEmptyBlocks();
-		assertTrue(emptyBlocks == 0);
-		tree.close();
-		tree.openIndex(indexFile);
-		// The number of empty nodes have not changed after closing
-		assertTrue(emptyBlocks == ((DiskBTree) tree).getEmptyBlocks());
-		makeInsertions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
-		assertTrue(((DiskBTree) tree).getEmptyBlocks() == 0);
-		// clean it again
-		makeDeletions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
-		assertTrue(emptyBlocks == ((DiskBTree) tree).getEmptyBlocks());
-	}
+        @Test
+        public void testEmptySpaces() throws Exception {
+                BTree tree = new DiskBTree(5, 32, false);
+                tree.newIndex(indexFile);
+                // populate the index
+                makeInsertions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
+                tree.close();
+                tree.openIndex(indexFile);
+                // clean it and keep the number of empty nodes
+                makeDeletions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
+                int emptyBlocks = ((DiskBTree) tree).getEmptyBlocks();
+                assertEquals(emptyBlocks, 0);
+                tree.close();
+                tree.openIndex(indexFile);
+                // The number of empty nodes have not changed after closing
+                assertEquals(emptyBlocks, ((DiskBTree) tree).getEmptyBlocks());
+                makeInsertions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
+                assertEquals(((DiskBTree) tree).getEmptyBlocks(), 0);
+                // clean it again
+                makeDeletions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
+                assertEquals(emptyBlocks, ((DiskBTree) tree).getEmptyBlocks());
+        }
 
-	public void testRangeQueries() throws Exception {
-		BTree tree = new DiskBTree(3, 256, false);
-		tree.newIndex(indexFile);
-		tree.insert(ValueFactory.createValue(0), 0);
-		tree.insert(ValueFactory.createValue(0), 1);
-		tree.insert(ValueFactory.createValue(1), 2);
-		tree.insert(ValueFactory.createValue(1), 3);
-		tree.insert(ValueFactory.createValue(1), 4);
-		tree.insert(ValueFactory.createValue(2), 5);
-		tree.insert(ValueFactory.createValue(2), 6);
-		tree.insert(ValueFactory.createValue(2), 7);
-		tree.insert(ValueFactory.createValue(3), 8);
-		tree.insert(ValueFactory.createValue(4), 9);
-		tree.checkTree();
-		assertTrue(tree.getRow(ValueFactory.createNullValue(), false,
-				ValueFactory.createValue(1), true).length == 5);
-		assertTrue(tree.getRow(ValueFactory.createNullValue(), false,
-				ValueFactory.createValue(1), false).length == 2);
-		assertTrue(tree.getRow(ValueFactory.createValue(3), true, ValueFactory
-				.createValue(3), true).length == 1);
-		assertTrue(tree.getRow(ValueFactory.createValue(1), false, ValueFactory
-				.createValue(4), false).length == 4);
-		assertTrue(tree.getRow(ValueFactory.createValue(1), false, ValueFactory
-				.createNullValue(), false).length == 5);
-		assertTrue(tree.getRow(ValueFactory.createNullValue(), true,
-				ValueFactory.createNullValue(), false).length == 10);
-		assertTrue(tree.getRow(ValueFactory.createNullValue(), true,
-				ValueFactory.createValue(0), false).length == 0);
-	}
+        @Test
+        public void testRangeQueries() throws Exception {
+                BTree tree = new DiskBTree(3, 256, false);
+                tree.newIndex(indexFile);
+                tree.insert(ValueFactory.createValue(0), 0);
+                tree.insert(ValueFactory.createValue(0), 1);
+                tree.insert(ValueFactory.createValue(1), 2);
+                tree.insert(ValueFactory.createValue(1), 3);
+                tree.insert(ValueFactory.createValue(1), 4);
+                tree.insert(ValueFactory.createValue(2), 5);
+                tree.insert(ValueFactory.createValue(2), 6);
+                tree.insert(ValueFactory.createValue(2), 7);
+                tree.insert(ValueFactory.createValue(3), 8);
+                tree.insert(ValueFactory.createValue(4), 9);
+                tree.checkTree();
+                assertEquals(tree.getRow(ValueFactory.createNullValue(), false,
+                        ValueFactory.createValue(1), true).length, 5);
+                assertEquals(tree.getRow(ValueFactory.createNullValue(), false,
+                        ValueFactory.createValue(1), false).length, 2);
+                assertEquals(tree.getRow(ValueFactory.createValue(3), true, ValueFactory.createValue(3), true).length, 1);
+                assertEquals(tree.getRow(ValueFactory.createValue(1), false, ValueFactory.createValue(4), false).length, 4);
+                assertEquals(tree.getRow(ValueFactory.createValue(1), false, ValueFactory.createNullValue(), false).length, 5);
+                assertEquals(tree.getRow(ValueFactory.createNullValue(), true,
+                        ValueFactory.createNullValue(), false).length, 10);
+                assertEquals(tree.getRow(ValueFactory.createNullValue(), true,
+                        ValueFactory.createValue(0), false).length, 0);
+        }
 
-	public void testNotExistentValues() throws Exception {
-		BTree tree = new DiskBTree(5, 32, false);
-		tree.newIndex(indexFile);
-		// populate the index
-		makeInsertions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
-		String snapshot = tree.toString();
-		tree.delete(ValueFactory.createValue(19257), 2834);
-		tree.delete(ValueFactory.createValue(0), 2834);
-		tree.checkTree();
-		assertTrue(tree.getRow(ValueFactory.createValue(2834)).length == 0);
-		String snapshot2 = tree.toString();
-		assertTrue(snapshot.equals(snapshot2));
-		tree.close();
-	}
-
+        @Test
+        public void testNotExistentValues() throws Exception {
+                BTree tree = new DiskBTree(5, 32, false);
+                tree.newIndex(indexFile);
+                // populate the index
+                makeInsertions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
+                String snapshot = tree.toString();
+                tree.delete(ValueFactory.createValue(19257), 2834);
+                tree.delete(ValueFactory.createValue(0), 2834);
+                tree.checkTree();
+                assertEquals(tree.getRow(ValueFactory.createValue(2834)).length, 0);
+                String snapshot2 = tree.toString();
+                assertEquals(snapshot, snapshot2);
+                tree.close();
+        }
 }

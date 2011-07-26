@@ -65,7 +65,7 @@ public class FileTestSource extends TestSource {
 		copyGroup(new File(prefix), getDestDirectory());
 
 		FileSourceDefinition def = new FileSourceDefinition(backupFile, DriverManager.DEFAULT_SINGLE_TABLE_NAME);
-		BaseTest.dsf.getSourceManager().register(name, def);
+		TestBase.dsf.getSourceManager().register(name, def);
 	}
 
 	public File getBackupFile() {

@@ -66,6 +66,7 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadAccess;
 import org.gdms.driver.TableDescription;
+import org.gdms.driver.driverManager.DriverManager;
 
 /**
  * Class with the implementation of the methods in database driver interfaces
@@ -327,6 +328,7 @@ public abstract class DefaultDBDriver extends DefaultSQL implements ReadAccess {
                         this.conn = con;
                         this.tableName = tableName;
                         this.schemaName = schemaName;
+                        String thename = null;
                         if (this.schemaName == null) {
                                 final TableDescription[] tables = getTables(con);
                                 if (tables == null) {
@@ -338,11 +340,16 @@ public abstract class DefaultDBDriver extends DefaultSQL implements ReadAccess {
                                                 break;
                                         }
                                 }
+                                schema = new DefaultSchema(tableName);
+                                thename = DriverManager.DEFAULT_SINGLE_TABLE_NAME;
+                        } else {
+                                schema = new DefaultSchema(schemaName);
+                                thename = tableName;
+                                
                         }
                         getData();
 
-                        schema = new DefaultSchema(schemaName);
-                        schema.addTable(tableName, getInternalMetadata());
+                        schema.addTable(thename, getInternalMetadata());
                 } catch (SQLException e) {
                         throw new DriverException(e.getMessage(), e);
                 }
@@ -372,7 +379,7 @@ public abstract class DefaultDBDriver extends DefaultSQL implements ReadAccess {
          */
         protected String getSelectSQL(String orderFieldName) throws DriverException {
                 String sql = "SELECT * FROM " + getTableAndSchemaName();
-                if (orderFieldName != null) {
+                if (orderFieldName != null && !orderFieldName.trim().isEmpty()) {
                         sql += " ORDER BY " + orderFieldName;
                 }
                 return sql;

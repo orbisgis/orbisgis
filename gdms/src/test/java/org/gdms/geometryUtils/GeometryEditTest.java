@@ -37,6 +37,7 @@
  */
 package org.gdms.geometryUtils;
 
+import org.junit.Test;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
@@ -45,15 +46,15 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.operation.distance.GeometryLocation;
-import java.util.ArrayList;
 import java.util.List;
-import junit.framework.TestCase;
+
+import static org.junit.Assert.*;
 
 /**
  *
  * @author ebocher
  */
-public class GeometryEditTest extends TestCase {
+public class GeometryEditTest {
 
         public WKTReader wKTReader = new WKTReader();
 
@@ -61,12 +62,13 @@ public class GeometryEditTest extends TestCase {
          * Test to split a linestring according a point
          * @throws Exception
          */
+        @Test
         public void testSplitLineString() throws Exception {
                 LineString line = (LineString) wKTReader.read("LINESTRING(0 8, 1 8 , 3 8,  8  8, 10 8, 20 8, 25 8, 30 8, 50 8, 100 8)");
                 Point point = (Point) wKTReader.read("POINT(1.5 4 )");
                 LineString[] results = GeometryEdit.splitLineString(line, point, 4);
-                assertTrue(results[0].equals(wKTReader.read("LINESTRING(0 8, 1 8 , 1.5 8)")));
-                assertTrue(results[1].equals(wKTReader.read("LINESTRING(1.5 8 , 3 8,  8  8, 10 8, 20 8, 25 8, 30 8, 50 8, 100 8)")));
+                assertEquals(results[0], wKTReader.read("LINESTRING(0 8, 1 8 , 1.5 8)"));
+                assertEquals(results[1], wKTReader.read("LINESTRING(1.5 8 , 3 8,  8  8, 10 8, 20 8, 25 8, 30 8, 50 8, 100 8)"));
 
         }
 
@@ -74,108 +76,109 @@ public class GeometryEditTest extends TestCase {
          * Find the closet point to a linestring based on distance
          * @throws Exception
          */
+        @Test
         public void testSnapedPoint() throws Exception {
                 LineString line = (LineString) wKTReader.read("LINESTRING(0 8, 1 8 , 3 8,  8  8, 10 8, 20 8, 25 8, 30 8, 50 8, 100 8)");
                 Point point = (Point) wKTReader.read("POINT(1.5 4 )");
                 //Test a point in a segment
                 GeometryLocation geomLocation = GeometryEdit.getVertexToSnap(line, point, 4);
-                assertTrue(geomLocation.getSegmentIndex() == 1);
+                assertEquals(geomLocation.getSegmentIndex(), 1);
                 assertTrue(geomLocation.getCoordinate().equals2D(new Coordinate(1.5, 8)));
                 //Test a point on an existing coordinate
                 point = (Point) wKTReader.read("POINT(1 4 )");
                 geomLocation = GeometryEdit.getVertexToSnap(line, point, 4);
-                assertTrue(geomLocation.getSegmentIndex() == 0);
+                assertEquals(geomLocation.getSegmentIndex(), 0);
                 assertTrue(geomLocation.getCoordinate().equals2D(new Coordinate(1, 8)));
                 //Test a point on an existing coordinate
                 point = (Point) wKTReader.read("POINT(1 4 )");
                 geomLocation = GeometryEdit.getVertexToSnap(line, point, 1);
-                assertTrue(geomLocation == null);
+                assertNull(geomLocation);
         }
 
         /**
          * Insert a vertex into a lineString
          * @throws Exception
          */
+        @Test
         public void testInsertVertexInLineString() throws Exception {
                 LineString lineString = (LineString) wKTReader.read("LINESTRING(0 8, 1 8 , 3 8,  8  8, 10 8, 20 8)");
                 Point point = (Point) wKTReader.read("POINT(1.5 4 )");
                 //Test a point in a segment
                 LineString result = GeometryEdit.insertVertexInLineString(lineString, point, 4);
-                assertTrue(result.equals(wKTReader.read("LINESTRING(0 8, 1 8 , 1.5 8, 3 8,  8  8, 10 8, 20 8)")));
+                assertEquals(result, wKTReader.read("LINESTRING(0 8, 1 8 , 1.5 8, 3 8,  8  8, 10 8, 20 8)"));
                 //Test a point on an existing coordinate
                 point = (Point) wKTReader.read("POINT(1 4 )");
                 result = GeometryEdit.insertVertexInLineString(lineString, point, 4);
                 //Because the geometry is not modified
-                assertTrue(result == null);
+                assertNull(result);
         }
 
         /**
          * Insert a vertex into a linearring
          * @throws Exception
          */
+        @Test
         public void testInsertVertexInLinearRing() throws Exception {
                 LinearRing linearRing = (LinearRing) wKTReader.read("LINEARRING(0 8, 1 8 , 3 8,  8  8, 10 8, 20 8, 0 8)");
                 Point point = (Point) wKTReader.read("POINT(1.5 4 )");
                 //Test a point in a segment
                 LinearRing result = GeometryEdit.insertVertexInLinearRing(linearRing, point, 4);
-                assertTrue(result.equals(wKTReader.read("LINEARRING(0 8, 1 8 , 1.5 8, 3 8,  8  8, 10 8, 20 8, 0 8)")));
+                assertEquals(result, wKTReader.read("LINEARRING(0 8, 1 8 , 1.5 8, 3 8,  8  8, 10 8, 20 8, 0 8)"));
                 //Test a point on an existing coordinate
                 point = (Point) wKTReader.read("POINT(1 4 )");
                 result = GeometryEdit.insertVertexInLinearRing(linearRing, point, 4);
                 //Because the geometry is not modified
-                assertTrue(result == null);
+                assertNull(result);
         }
 
         /**
          * Insert a vertex into a linearring
          * @throws Exception
          */
+        @Test
         public void testInsertVertexInPolygon() throws Exception {
                 Polygon polygon = (Polygon) wKTReader.read("POLYGON ((118 134, 118 278, 266 278, 266 134, 118 134 ))");
                 Point point = (Point) wKTReader.read("POINT(196 278 )");
                 //Test a point in a segment
                 Polygon result = GeometryEdit.insertVertexInPolygon(polygon, point, 4);
-                assertTrue(result.equals(wKTReader.read("POLYGON ((118 134, 118 278,196 278, 266 278, 266 134, 118 134 ))")));
+                assertEquals(result, wKTReader.read("POLYGON ((118 134, 118 278,196 278, 266 278, 266 134, 118 134 ))"));
                 //Test a point on an existing coordinate
                 point = (Point) wKTReader.read("POINT(196 300 )");
                 result = GeometryEdit.insertVertexInPolygon(polygon, point, 4);
                 //Because the geometry is not modified
-                assertTrue(result == null);
+                assertNull(result);
         }
 
         /**
          * Test to split a polygon with a linestring
          * @throws Exception
          */
+        @Test
         public void testSplitPolygon() throws Exception {
                 //Line intersects polygon
                 Polygon polygon = (Polygon) wKTReader.read("POLYGON (( 0 0, 10 0, 10 10 , 0 10, 0 0))");
                 LineString line = (LineString) wKTReader.read("LINESTRING (5 0, 5 10)");
                 List<Polygon> pols = GeometryEdit.splitPolygon(polygon, line);
-                assertTrue(pols.size() == 2);
+                assertEquals(pols.size(), 2);
                 Polygon pol1 = (Polygon) wKTReader.read("POLYGON (( 0 0, 5 0, 5 10 , 0 10, 0 0))");
                 Polygon pol2 = (Polygon) wKTReader.read("POLYGON ((5 0, 10 0 , 10 10, 5 10, 5 0))");
 
                 for (Polygon pol : pols) {
-                        if (pol.getEnvelopeInternal().equals(pol1.getEnvelopeInternal())) {
-                                assertTrue(true);
-                        } else if (pol.getEnvelopeInternal().equals(pol2.getEnvelopeInternal())) {
-                                assertTrue(true);
-                        } else {
-                                assertTrue(false);
+                        if (!pol.getEnvelopeInternal().equals(pol1.getEnvelopeInternal())
+                                && !pol.getEnvelopeInternal().equals(pol2.getEnvelopeInternal())) {
+                                fail();
                         }
-
                 }
 
                 //Line within the polygon
                 line = (LineString) wKTReader.read("LINESTRING (5 1, 5 8)");
                 pols = GeometryEdit.splitPolygon(polygon, line);
-                assertTrue(pols == null);
+                assertNull(pols);
 
                 //Line with one point intersection
                 line = (LineString) wKTReader.read("LINESTRING (5 1, 5 12)");
                 pols = GeometryEdit.splitPolygon(polygon, line);
-                assertTrue(pols == null);
+                assertNull(pols);
 
                 //Line intersects a polygon with a hole
                 polygon = (Polygon) wKTReader.read("POLYGON (( 0 0, 10 0, 10 10 , 0 10, 0 0), (2 2, 7 2, 7 7, 2 7, 2 2))");
@@ -185,14 +188,10 @@ public class GeometryEditTest extends TestCase {
                 pol1 = (Polygon) wKTReader.read("POLYGON (( 0 0, 5 0, 5 2 ,2 2, 2 7, 5 7,  5 10, 0 10, 0 0))");
                 pol2 = (Polygon) wKTReader.read("POLYGON ((5 0, 5 2, 7 2, 7 7 , 5 7, 5 10, 10 10, 10 0, 5 0))");
                 for (Polygon pol : pols) {
-                        if (pol.getEnvelopeInternal().equals(pol1.getEnvelopeInternal())) {
-                                assertTrue(true);
-                        } else if (pol.getEnvelopeInternal().equals(pol2.getEnvelopeInternal())) {
-                                assertTrue(true);
-                        } else {
-                                assertTrue(false);
+                        if (!pol.getEnvelopeInternal().equals(pol1.getEnvelopeInternal())
+                                && !pol.getEnvelopeInternal().equals(pol2.getEnvelopeInternal())) {
+                                fail();
                         }
-
                 }
 
                 //Line intersects 2,5 polygon
@@ -210,6 +209,7 @@ public class GeometryEditTest extends TestCase {
          * Move a geometry to a new coordinate
          * @throws Exception
          */
+        @Test
         public void testMoveGeometry() throws Exception {
                 Geometry geom = (Polygon) wKTReader.read("POLYGON (( 0 0 ,10 0, 10 10, 0 10, 0 0 ))");
                 Point point = (Point) wKTReader.read("POINT (20 10)");
@@ -223,19 +223,19 @@ public class GeometryEditTest extends TestCase {
          * Test cut a polygon
          * @throws Exception
          */
+        @Test
         public void testCutPolygon() throws Exception {
                 Polygon polygon = (Polygon) wKTReader.read("POLYGON (( 0 0 ,10 0, 10 10, 0 10, 0 0 ))");
                 Polygon cutter = (Polygon) wKTReader.read("POLYGON (( 2 2  ,7 2, 7 7, 2 7, 2 2))");
                 //Test cut a polygon inside
                 List<Polygon> result = GeometryEdit.cutPolygon(polygon, cutter);
-                assertTrue(result.get(0).getNumInteriorRing() == 1);
-                assertTrue(result.get(0).getInteriorRingN(0).getEnvelopeInternal().equals(cutter.getEnvelopeInternal()));
+                assertEquals(result.get(0).getNumInteriorRing(), 1);
+                assertEquals(result.get(0).getInteriorRingN(0).getEnvelopeInternal(), cutter.getEnvelopeInternal());
 
                 //Test cut a polygon outside
                 cutter = (Polygon) wKTReader.read("POLYGON (( 2 -1.8153735632183903, 7.177873563218391 -1.8153735632183903, 7.177873563218391 7, 2 7, 2 -1.8153735632183903 ))");
                 result = GeometryEdit.cutPolygon(polygon, cutter);
-                assertTrue(result.get(0).equals(wKTReader.read("POLYGON (( 2 0, 0 0, 0 10, 10 10, 10 0, 7.177873563218391 0, 7.177873563218391 7, 2 7, 2 0 ))")));
-
+                assertEquals(result.get(0), wKTReader.read("POLYGON (( 2 0, 0 0, 0 10, 10 10, 10 0, 7.177873563218391 0, 7.177873563218391 7, 2 7, 2 0 ))"));
 
         }
 }

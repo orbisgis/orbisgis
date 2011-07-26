@@ -37,17 +37,19 @@
  */
 package org.gdms.geometryUtils;
 
+import org.junit.Test;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateArrays;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
-import junit.framework.TestCase;
+
+import static org.junit.Assert.*;
 
 /**
  *
  * @author ebocher
  */
-public class CoordinatesUtilsTest extends TestCase {
+public class CoordinatesUtilsTest {
 
         private WKTReader wKTReader = new WKTReader();
 
@@ -55,10 +57,11 @@ public class CoordinatesUtilsTest extends TestCase {
          * Test remove duplicate coordinates
          * @throws Exception
          */
+        @Test
         public void testRemoveDuplicateCoordinates() throws Exception {
                 //Test remove with a linestring
                 Geometry geom = wKTReader.read("LINESTRING(0 8 10, 1 8 ,1 8, 3 8,  8  8, 10 8, 10 8, 20 8, 0 8)");
                 Coordinate[] coords = CoordinateArrays.removeRepeatedPoints(geom.getCoordinates());
-                assertTrue(coords.length == 7);
+                assertEquals(coords.length, 7);
         }
 }

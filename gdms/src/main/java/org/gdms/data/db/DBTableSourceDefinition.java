@@ -239,9 +239,6 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition {
 
         @Override
         public String getDriverTableName() {
-//                return def.getTableName();
-                // DB Table definition are what they are: definition for single tables from a DB,
-                // which means they only have a single table. Maybe we need a DB definition...
-                return DriverManager.DEFAULT_SINGLE_TABLE_NAME;
+                return def.getSchemaName() == null ? def.getTableName() : DriverManager.DEFAULT_SINGLE_TABLE_NAME;
         }
 }

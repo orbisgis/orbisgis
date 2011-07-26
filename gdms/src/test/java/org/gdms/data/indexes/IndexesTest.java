@@ -36,13 +36,14 @@
  */
 package org.gdms.data.indexes;
 
+import org.junit.Before;
+import org.junit.Test;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import junit.framework.TestCase;
 
-import org.gdms.BaseTest;
+import org.gdms.TestBase;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
@@ -59,391 +60,404 @@ import org.orbisgis.utils.FileUtils;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
-public class IndexesTest extends TestCase {
+import static org.junit.Assert.*;
 
-	private DataSourceFactory dsf;
-	private SourceManager sm;
-	private IndexManager im;
+public class IndexesTest {
 
-	public void testIndexPersistence() throws Exception {
-		im.buildIndex("source", "gid", IndexManager.BTREE_ALPHANUMERIC_INDEX,
-				null);
-		sm.saveStatus();
-		instantiateDSF();
-		DataSource ds = dsf.getDataSource("source");
-		ds.open();
-		ds.queryIndex(new DefaultAlphaQuery("gid", null, true, ValueFactory
-				.createValue(10), false));
-		ds.close();
-	}
+        private DataSourceFactory dsf;
+        private SourceManager sm;
+        private IndexManager im;
 
-	public void testRemoveIndexFilesOnIndexRemoval() throws Exception {
-		im.buildIndex("source", "gid", IndexManager.BTREE_ALPHANUMERIC_INDEX,
-				null);
-		sm.saveStatus();
-		instantiateDSF();
-		Source src = sm.getSource("source");
-		String propertyName = IndexManager.INDEX_PROPERTY_PREFIX + "-gid-"
-				+ IndexManager.BTREE_ALPHANUMERIC_INDEX;
-		File indexFile = src.getFileProperty(propertyName);
-		im.deleteIndex("source", "gid");
+        @Test
+        public void testIndexPersistence() throws Exception {
+                im.buildIndex("source", "gid", IndexManager.BTREE_ALPHANUMERIC_INDEX,
+                        null);
+                sm.saveStatus();
+                instantiateDSF();
+                DataSource ds = dsf.getDataSource("source");
+                ds.open();
+                ds.queryIndex(new DefaultAlphaQuery("gid", null, true, ValueFactory.createValue(10), false));
+                ds.close();
+        }
 
-		DataSource ds = dsf.getDataSource("source");
-		ds.open();
-		DefaultAlphaQuery DefaultAlphaQuery = new DefaultAlphaQuery("gid",
-				null, true, null, false);
-		Iterator<Integer> queryResult = ds.queryIndex(DefaultAlphaQuery);
-		assertTrue(queryResult instanceof FullIterator);
-		ds.close();
-		assertTrue(!indexFile.exists());
-	}
+        @Test
+        public void testRemoveIndexFilesOnIndexRemoval() throws Exception {
+                im.buildIndex("source", "gid", IndexManager.BTREE_ALPHANUMERIC_INDEX,
+                        null);
+                sm.saveStatus();
+                instantiateDSF();
+                Source src = sm.getSource("source");
+                String propertyName = IndexManager.INDEX_PROPERTY_PREFIX + "-gid-"
+                        + IndexManager.BTREE_ALPHANUMERIC_INDEX;
+                File indexFile = src.getFileProperty(propertyName);
+                im.deleteIndex("source", "gid");
 
-	public void testCreateIndexTwice() throws Exception {
-		int numFiles1 = sm.getSourceInfoDirectory().listFiles().length;
-		im.buildIndex("source", "gid", IndexManager.BTREE_ALPHANUMERIC_INDEX,
-				null);
-		int numFiles2 = sm.getSourceInfoDirectory().listFiles().length;
-		assertTrue(numFiles2 - 1 == numFiles1);
-		try {
-			im.buildIndex("source", "gid",
-					IndexManager.BTREE_ALPHANUMERIC_INDEX, null);
-			assertTrue(false);
-		} catch (IndexException e) {
-		}
-		int numFiles3 = sm.getSourceInfoDirectory().listFiles().length;
-		assertTrue(numFiles2 == numFiles3);
-		sm.saveStatus();
-		int numFiles4 = sm.getSourceInfoDirectory().listFiles().length;
-		assertTrue(numFiles3 == numFiles4);
-	}
+                DataSource ds = dsf.getDataSource("source");
+                ds.open();
+                DefaultAlphaQuery DefaultAlphaQuery = new DefaultAlphaQuery("gid",
+                        null, true, null, false);
+                Iterator<Integer> queryResult = ds.queryIndex(DefaultAlphaQuery);
+                assertTrue(queryResult instanceof FullIterator);
+                ds.close();
+                assertFalse(indexFile.exists());
+        }
 
-	public void testCreateIndexOnWrongField() throws Exception {
-		int numFiles1 = sm.getSourceInfoDirectory().listFiles().length;
-		try {
-			im.buildIndex("source", "the_geom",
-					IndexManager.BTREE_ALPHANUMERIC_INDEX, null);
-			assertTrue(false);
-		} catch (IndexException e) {
-		}
-		int numFiles2 = sm.getSourceInfoDirectory().listFiles().length;
-		assertTrue(numFiles2 == numFiles1);
-		sm.saveStatus();
-		int numFiles3 = sm.getSourceInfoDirectory().listFiles().length;
-		assertTrue(numFiles3 == numFiles2);
+        @Test
+        public void testCreateIndexTwice() throws Exception {
+                int numFiles1 = sm.getSourceInfoDirectory().listFiles().length;
+                im.buildIndex("source", "gid", IndexManager.BTREE_ALPHANUMERIC_INDEX,
+                        null);
+                int numFiles2 = sm.getSourceInfoDirectory().listFiles().length;
+                assertEquals(numFiles2 - 1, numFiles1);
+                try {
+                        im.buildIndex("source", "gid",
+                                IndexManager.BTREE_ALPHANUMERIC_INDEX, null);
+                        fail();
+                } catch (IndexException e) {
+                }
+                int numFiles3 = sm.getSourceInfoDirectory().listFiles().length;
+                assertEquals(numFiles2, numFiles3);
+                sm.saveStatus();
+                int numFiles4 = sm.getSourceInfoDirectory().listFiles().length;
+                assertEquals(numFiles3, numFiles4);
+        }
 
-	}
+        @Test
+        public void testCreateIndexOnWrongField() throws Exception {
+                int numFiles1 = sm.getSourceInfoDirectory().listFiles().length;
+                try {
+                        im.buildIndex("source", "the_geom",
+                                IndexManager.BTREE_ALPHANUMERIC_INDEX, null);
+                        fail();
+                } catch (IndexException e) {
+                }
+                int numFiles2 = sm.getSourceInfoDirectory().listFiles().length;
+                assertEquals(numFiles2, numFiles1);
+                sm.saveStatus();
+                int numFiles3 = sm.getSourceInfoDirectory().listFiles().length;
+                assertEquals(numFiles3, numFiles2);
 
-	public void testCancelIndexCreation() throws Exception {
-		int numFiles1 = sm.getSourceInfoDirectory().listFiles().length;
-		im.buildIndex("source", "the_geom",
-				IndexManager.BTREE_ALPHANUMERIC_INDEX,
-				new NullProgressMonitor() {
+        }
 
-					@Override
-					public boolean isCancelled() {
-						return true;
-					}
+        @Test
+        public void testCancelIndexCreation() throws Exception {
+                int numFiles1 = sm.getSourceInfoDirectory().listFiles().length;
+                im.buildIndex("source", "the_geom",
+                        IndexManager.BTREE_ALPHANUMERIC_INDEX,
+                        new NullProgressMonitor() {
 
-				});
-		int numFiles2 = sm.getSourceInfoDirectory().listFiles().length;
-		assertTrue(numFiles2 == numFiles1);
-		sm.saveStatus();
-		int numFiles3 = sm.getSourceInfoDirectory().listFiles().length;
-		assertTrue(numFiles3 == numFiles2);
+                                @Override
+                                public boolean isCancelled() {
+                                        return true;
+                                }
+                        });
+                int numFiles2 = sm.getSourceInfoDirectory().listFiles().length;
+                assertEquals(numFiles2, numFiles1);
+                sm.saveStatus();
+                int numFiles3 = sm.getSourceInfoDirectory().listFiles().length;
+                assertEquals(numFiles3, numFiles2);
 
-	}
+        }
 
-	public void testAlreadyInstantiatedDataSourceUsesIndex() throws Exception {
-		DataSource ds = dsf.getDataSource("source");
-		ds.open();
-		im.buildIndex("source", "gid", IndexManager.BTREE_ALPHANUMERIC_INDEX,
-				null);
-		DefaultAlphaQuery DefaultAlphaQuery = new DefaultAlphaQuery("gid",
-				null, true, ValueFactory.createValue(10), false);
-		Iterator<Integer> it = ds.queryIndex(DefaultAlphaQuery);
-		int count = getCount(it);
-		im.deleteIndex("source", "gid");
-		it = ds.queryIndex(DefaultAlphaQuery);
-		assertTrue(it instanceof FullIterator);
-		ds.close();
-		assertTrue(count == 9);
-	}
+        @Test
+        public void testAlreadyInstantiatedDataSourceUsesIndex() throws Exception {
+                DataSource ds = dsf.getDataSource("source");
+                ds.open();
+                im.buildIndex("source", "gid", IndexManager.BTREE_ALPHANUMERIC_INDEX,
+                        null);
+                DefaultAlphaQuery DefaultAlphaQuery = new DefaultAlphaQuery("gid",
+                        null, true, ValueFactory.createValue(10), false);
+                Iterator<Integer> it = ds.queryIndex(DefaultAlphaQuery);
+                int count = getCount(it);
+                im.deleteIndex("source", "gid");
+                it = ds.queryIndex(DefaultAlphaQuery);
+                assertTrue(it instanceof FullIterator);
+                ds.close();
+                assertEquals(count, 9);
+        }
 
-	private int getCount(Iterator<Integer> it) {
-		int count = 0;
-		while (it.hasNext()) {
-			it.next();
-			count++;
-		}
-		return count;
-	}
+        private int getCount(Iterator<Integer> it) {
+                int count = 0;
+                while (it.hasNext()) {
+                        it.next();
+                        count++;
+                }
+                return count;
+        }
 
-	public void testDeleteNonExistingIndex() throws Exception {
-		try {
-			im.deleteIndex("source", "gid");
-			assertTrue(false);
-		} catch (IllegalArgumentException e) {
-		}
-	}
+        @Test(expected = IllegalArgumentException.class)
+        public void testDeleteNonExistingIndex() throws Exception {
+                im.deleteIndex("source", "gid");
+        }
 
-	public void testEditIndexedDataSource() throws Exception {
-		im.buildIndex("source", "gid", IndexManager.BTREE_ALPHANUMERIC_INDEX,
-				null);
-		DefaultAlphaQuery DefaultAlphaQuery = new DefaultAlphaQuery("gid",
-				null, true, ValueFactory.createValue(10), false);
-		DataSource ds1 = dsf.getDataSource("source");
-		DataSource ds2 = dsf.getDataSource("source");
-		ds1.open();
-		ds2.open();
-		ds2.deleteRow(0);
-		int countOriginal = getCount(ds1.queryIndex(DefaultAlphaQuery));
-		int countEdited = getCount(ds2.queryIndex(DefaultAlphaQuery));
-		ds1.close();
-		ds2.close();
+        @Test
+        public void testEditIndexedDataSource() throws Exception {
+                im.buildIndex("source", "gid", IndexManager.BTREE_ALPHANUMERIC_INDEX,
+                        null);
+                DefaultAlphaQuery DefaultAlphaQuery = new DefaultAlphaQuery("gid",
+                        null, true, ValueFactory.createValue(10), false);
+                DataSource ds1 = dsf.getDataSource("source");
+                DataSource ds2 = dsf.getDataSource("source");
+                ds1.open();
+                ds2.open();
+                ds2.deleteRow(0);
+                int countOriginal = getCount(ds1.queryIndex(DefaultAlphaQuery));
+                int countEdited = getCount(ds2.queryIndex(DefaultAlphaQuery));
+                ds1.close();
+                ds2.close();
 
-		assertTrue(countOriginal - 1 == countEdited);
-	}
+                assertEquals(countOriginal - 1, countEdited);
+        }
 
-	public void testAlphaDeletion() throws Exception {
-		im.buildIndex("source", "gid", IndexManager.BTREE_ALPHANUMERIC_INDEX,
-				null);
+        @Test
+        public void testAlphaDeletion() throws Exception {
+                im.buildIndex("source", "gid", IndexManager.BTREE_ALPHANUMERIC_INDEX,
+                        null);
 
-		DefaultAlphaQuery DefaultAlphaQuery = new DefaultAlphaQuery("gid",
-				null, false, null, false);
-		testDeletion(DefaultAlphaQuery);
-	}
+                DefaultAlphaQuery DefaultAlphaQuery = new DefaultAlphaQuery("gid",
+                        null, false, null, false);
+                testDeletion(DefaultAlphaQuery);
+        }
 
-	public void testSpatialDeletion() throws Exception {
-		im.buildIndex("source", "the_geom", IndexManager.RTREE_SPATIAL_INDEX,
-				null);
+        @Test
+        public void testSpatialDeletion() throws Exception {
+                im.buildIndex("source", "the_geom", IndexManager.RTREE_SPATIAL_INDEX,
+                        null);
 
-		DataSource ds = dsf.getDataSource("source");
-		ds.open();
-		Envelope env = new SpatialDataSourceDecorator(ds).getFullExtent();
-		ds.close();
-		SpatialIndexQuery spatialQuery = new DefaultSpatialIndexQuery(env,
-				"the_geom");
-		testDeletion(spatialQuery);
-	}
+                DataSource ds = dsf.getDataSource("source");
+                ds.open();
+                Envelope env = new SpatialDataSourceDecorator(ds).getFullExtent();
+                ds.close();
+                SpatialIndexQuery spatialQuery = new DefaultSpatialIndexQuery(env,
+                        "the_geom");
+                testDeletion(spatialQuery);
+        }
 
-	private void testDeletion(IndexQuery query) throws NoSuchTableException,
-			DataSourceCreationException, DriverException {
-		DataSource ds = dsf.getDataSource("source");
-		ds.open();
-		for (int i = 0; i < ds.getRowCount();) {
-			ds.deleteRow(0);
-		}
-		Iterator<Integer> it = ds.queryIndex(query);
-		int count = getCount(it);
-		assertTrue(count == 0);
-		ds.close();
-	}
+        private void testDeletion(IndexQuery query) throws NoSuchTableException,
+                DataSourceCreationException, DriverException {
+                DataSource ds = dsf.getDataSource("source");
+                ds.open();
+                for (int i = 0; i < ds.getRowCount();) {
+                        ds.deleteRow(0);
+                }
+                Iterator<Integer> it = ds.queryIndex(query);
+                int count = getCount(it);
+                assertEquals(count, 0);
+                ds.close();
+        }
 
-	public void testAlphaInsertionAtTheBeginning() throws Exception {
-		im.buildIndex("source", "gid", IndexManager.BTREE_ALPHANUMERIC_INDEX,
-				null);
-		IndexQuery DefaultAlphaQuery = new DefaultAlphaQuery("gid", null,
-				false, null, false);
-		testInsertionAtTheBeginning(DefaultAlphaQuery);
-	}
+        @Test
+        public void testAlphaInsertionAtTheBeginning() throws Exception {
+                im.buildIndex("source", "gid", IndexManager.BTREE_ALPHANUMERIC_INDEX,
+                        null);
+                IndexQuery DefaultAlphaQuery = new DefaultAlphaQuery("gid", null,
+                        false, null, false);
+                testInsertionAtTheBeginning(DefaultAlphaQuery);
+        }
 
-	public void testSpatialInsertionAtTheBeginning() throws Exception {
-		im.buildIndex("source", "the_geom", IndexManager.RTREE_SPATIAL_INDEX,
-				null);
+        @Test
+        public void testSpatialInsertionAtTheBeginning() throws Exception {
+                im.buildIndex("source", "the_geom", IndexManager.RTREE_SPATIAL_INDEX,
+                        null);
 
-		DataSource ds = dsf.getDataSource("source");
-		ds.open();
-		Envelope env = new SpatialDataSourceDecorator(ds).getFullExtent();
-		ds.close();
-		SpatialIndexQuery spatialQuery = new DefaultSpatialIndexQuery(env,
-				"the_geom");
-		testInsertionAtTheBeginning(spatialQuery);
-	}
+                DataSource ds = dsf.getDataSource("source");
+                ds.open();
+                Envelope env = new SpatialDataSourceDecorator(ds).getFullExtent();
+                ds.close();
+                SpatialIndexQuery spatialQuery = new DefaultSpatialIndexQuery(env,
+                        "the_geom");
+                testInsertionAtTheBeginning(spatialQuery);
+        }
 
-	private void testInsertionAtTheBeginning(IndexQuery DefaultAlphaQuery)
-			throws NoSuchTableException, DataSourceCreationException,
-			DriverException {
-		DataSource ds = dsf.getDataSource("source");
-		ds.open();
-		ds.insertFilledRowAt(0, ds.getRow(2));
-		ds.insertEmptyRowAt(0);
-		Iterator<Integer> it = ds.queryIndex(DefaultAlphaQuery);
-		// There is no element at row 0. There is no repeated element
-		HashSet<Integer> repeated = new HashSet<Integer>();
-		while (it.hasNext()) {
-			int row = it.next();
-			assertTrue(Integer.toString(row), !repeated.contains(row));
-			repeated.add(row);
-			assertTrue(row > 0);
-		}
-		ds.close();
-	}
+        private void testInsertionAtTheBeginning(IndexQuery DefaultAlphaQuery)
+                throws NoSuchTableException, DataSourceCreationException,
+                DriverException {
+                DataSource ds = dsf.getDataSource("source");
+                ds.open();
+                ds.insertFilledRowAt(0, ds.getRow(2));
+                ds.insertEmptyRowAt(0);
+                Iterator<Integer> it = ds.queryIndex(DefaultAlphaQuery);
+                // There is no element at row 0. There is no repeated element
+                HashSet<Integer> repeated = new HashSet<Integer>();
+                while (it.hasNext()) {
+                        int row = it.next();
+                        assertTrue(Integer.toString(row), !repeated.contains(row));
+                        repeated.add(row);
+                        assertTrue(row > 0);
+                }
+                ds.close();
+        }
 
-	public void testReplaceBaseIndexOnCommit() throws Exception {
-		im.buildIndex("source", "gid", IndexManager.BTREE_ALPHANUMERIC_INDEX,
-				null);
-		im.buildIndex("source", "the_geom", IndexManager.RTREE_SPATIAL_INDEX,
-				null);
-		DataSource ds = dsf.getDataSource("source");
-		ds.open();
-		for (int i = 0; i < ds.getRowCount();) {
-			ds.deleteRow(0);
-		}
-		ds.commit();
-		checkReplacedIndex(ds);
-		ds.close();
-		checkReplacedIndex(ds);
-		instantiateDSF();
-		checkReplacedIndex(dsf.getDataSource("source"));
-	}
+        @Test
+        public void testReplaceBaseIndexOnCommit() throws Exception {
+                im.buildIndex("source", "gid", IndexManager.BTREE_ALPHANUMERIC_INDEX,
+                        null);
+                im.buildIndex("source", "the_geom", IndexManager.RTREE_SPATIAL_INDEX,
+                        null);
+                DataSource ds = dsf.getDataSource("source");
+                ds.open();
+                for (int i = 0; i < ds.getRowCount();) {
+                        ds.deleteRow(0);
+                }
+                ds.commit();
+                checkReplacedIndex(ds);
+                ds.close();
+                checkReplacedIndex(ds);
+                instantiateDSF();
+                checkReplacedIndex(dsf.getDataSource("source"));
+        }
 
-	private void checkReplacedIndex(DataSource ds) throws DriverException {
-		ds.open();
-		DefaultAlphaQuery DefaultAlphaQuery = new DefaultAlphaQuery("gid",
-				null, false, null, false);
-		SpatialIndexQuery spatialQuery = new DefaultSpatialIndexQuery(
-				new SpatialDataSourceDecorator(ds).getFullExtent(), "the_geom");
-		Iterator<Integer> it = ds.queryIndex(DefaultAlphaQuery);
-		int count = getCount(it);
-		assertTrue(count == 0);
-		it = ds.queryIndex(spatialQuery);
-		count = getCount(it);
-		assertTrue(count == 0);
-		ds.close();
-	}
+        private void checkReplacedIndex(DataSource ds) throws DriverException {
+                ds.open();
+                DefaultAlphaQuery DefaultAlphaQuery = new DefaultAlphaQuery("gid",
+                        null, false, null, false);
+                SpatialIndexQuery spatialQuery = new DefaultSpatialIndexQuery(
+                        new SpatialDataSourceDecorator(ds).getFullExtent(), "the_geom");
+                Iterator<Integer> it = ds.queryIndex(DefaultAlphaQuery);
+                int count = getCount(it);
+                assertEquals(count, 0);
+                it = ds.queryIndex(spatialQuery);
+                count = getCount(it);
+                assertEquals(count, 0);
+                ds.close();
+        }
 
-	public void testDataSourceInEditionLosesIndex() throws Exception {
-		im.buildIndex("source", "gid", IndexManager.BTREE_ALPHANUMERIC_INDEX,
-				null);
-		im.buildIndex("source", "the_geom", IndexManager.RTREE_SPATIAL_INDEX,
-				null);
-		IndexQuery DefaultAlphaQuery = new DefaultAlphaQuery("gid",
-				ValueFactory.createValue(Integer.MAX_VALUE), false,
-				ValueFactory.createValue(Integer.MIN_VALUE), false);
-		DataSource ds = dsf.getDataSource("source");
-		ds.open();
-		Geometry geom = ds.getFieldValue(1, 0).getAsGeometry();
-		ds.deleteRow(0);
-		Iterator<Integer> it = ds.queryIndex(DefaultAlphaQuery);
-		int count = getCount(it);
-		assertTrue(count == 0);
-		im.deleteIndex("source", "gid");
-		// Check the alpha index is gone
-		it = ds.queryIndex(DefaultAlphaQuery);
-		count = getCount(it);
-		assertTrue(count == ds.getRowCount());
-		// Check the spatial index remains
-		SpatialIndexQuery spatialQuery = new DefaultSpatialIndexQuery(geom
-				.getEnvelopeInternal(), "the_geom");
-		it = ds.queryIndex(spatialQuery);
-		assertTrue(contains(ds, it, geom));
-		ds.close();
-	}
+        @Test
+        public void testDataSourceInEditionLosesIndex() throws Exception {
+                im.buildIndex("source", "gid", IndexManager.BTREE_ALPHANUMERIC_INDEX,
+                        null);
+                im.buildIndex("source", "the_geom", IndexManager.RTREE_SPATIAL_INDEX,
+                        null);
+                IndexQuery DefaultAlphaQuery = new DefaultAlphaQuery("gid",
+                        ValueFactory.createValue(Integer.MAX_VALUE), false,
+                        ValueFactory.createValue(Integer.MIN_VALUE), false);
+                DataSource ds = dsf.getDataSource("source");
+                ds.open();
+                Geometry geom = ds.getFieldValue(1, 0).getAsGeometry();
+                ds.deleteRow(0);
+                Iterator<Integer> it = ds.queryIndex(DefaultAlphaQuery);
+                int count = getCount(it);
+                assertEquals(count, 0);
+                im.deleteIndex("source", "gid");
+                // Check the alpha index is gone
+                it = ds.queryIndex(DefaultAlphaQuery);
+                count = getCount(it);
+                assertEquals(count, ds.getRowCount());
+                // Check the spatial index remains
+                SpatialIndexQuery spatialQuery = new DefaultSpatialIndexQuery(geom.getEnvelopeInternal(), "the_geom");
+                it = ds.queryIndex(spatialQuery);
+                assertTrue(contains(ds, it, geom));
+                ds.close();
+        }
 
-	private boolean contains(DataSource ds, Iterator<Integer> it, Geometry geom)
-			throws IncompatibleTypesException, DriverException {
-		while (it.hasNext()) {
-			int row = it.next();
-			Geometry geom2 = ds.getFieldValue(row, 0).getAsGeometry();
-			if (geom2.equals(geom)) {
-				return true;
-			}
-		}
+        private boolean contains(DataSource ds, Iterator<Integer> it, Geometry geom)
+                throws IncompatibleTypesException, DriverException {
+                while (it.hasNext()) {
+                        int row = it.next();
+                        Geometry geom2 = ds.getFieldValue(row, 0).getAsGeometry();
+                        if (geom2.equals(geom)) {
+                                return true;
+                        }
+                }
 
-		return false;
-	}
+                return false;
+        }
 
-	public void testCreateIndexOnEditedSource() throws Exception {
-		DataSource ds = dsf.getDataSource("source");
-		ds.open();
-		ds.setInt(0, "gid", 999999);
-		im.buildIndex("source", "gid", IndexManager.BTREE_ALPHANUMERIC_INDEX,
-				null);
-		IndexQuery DefaultAlphaQuery = new DefaultAlphaQuery("gid",
-				ValueFactory.createValue(999999));
-		Iterator<Integer> it = ds.queryIndex(DefaultAlphaQuery);
-		assertTrue(it.next() == 0);
-		assertTrue(!it.hasNext());
-		DataSource ds2 = dsf.getDataSource("source");
-		ds2.open();
-		it = ds2.queryIndex(DefaultAlphaQuery);
-		assertTrue(!it.hasNext());
-		ds2.close();
-		ds.close();
-	}
+        @Test
+        public void testCreateIndexOnEditedSource() throws Exception {
+                DataSource ds = dsf.getDataSource("source");
+                ds.open();
+                ds.setInt(0, "gid", 999999);
+                im.buildIndex("source", "gid", IndexManager.BTREE_ALPHANUMERIC_INDEX,
+                        null);
+                IndexQuery DefaultAlphaQuery = new DefaultAlphaQuery("gid",
+                        ValueFactory.createValue(999999));
+                Iterator<Integer> it = ds.queryIndex(DefaultAlphaQuery);
+                assertEquals(it.next(), (Integer) 0);
+                assertFalse(it.hasNext());
+                DataSource ds2 = dsf.getDataSource("source");
+                ds2.open();
+                it = ds2.queryIndex(DefaultAlphaQuery);
+                assertFalse(it.hasNext());
+                ds2.close();
+                ds.close();
+        }
 
-	public void testIndexedEditionAfterCommit() throws Exception {
-		DataSource ds = dsf.getDataSource("source");
-		ds.open();
-		ds.deleteRow(0);
-		ds.commit();
-		ds.deleteRow(0);
-		im.buildIndex("source", "gid", IndexManager.BTREE_ALPHANUMERIC_INDEX,
-				null);
-		DefaultAlphaQuery tenQuery = new DefaultAlphaQuery("gid", null, true,
-				ValueFactory.createValue(10), true);
-		int indexResultCount = getCount(ds.queryIndex(tenQuery));
-		assertTrue(indexResultCount <= 10);
-		ds.commit();
-		ds.close();
-	}
+        @Test
+        public void testIndexedEditionAfterCommit() throws Exception {
+                DataSource ds = dsf.getDataSource("source");
+                ds.open();
+                ds.deleteRow(0);
+                ds.commit();
+                ds.deleteRow(0);
+                im.buildIndex("source", "gid", IndexManager.BTREE_ALPHANUMERIC_INDEX,
+                        null);
+                DefaultAlphaQuery tenQuery = new DefaultAlphaQuery("gid", null, true,
+                        ValueFactory.createValue(10), true);
+                int indexResultCount = getCount(ds.queryIndex(tenQuery));
+                assertTrue(indexResultCount <= 10);
+                ds.commit();
+                ds.close();
+        }
 
-	public void testSyncWithIndexedSource() throws Exception {
-		DefaultAlphaQuery tenQuery = new DefaultAlphaQuery("gid", null, true,
-				ValueFactory.createValue(10), true);
-		DataSource ds = dsf.getDataSource("source");
-		ds.open();
-		int indexResultCount = getCount(ds.queryIndex(tenQuery));
-		im.buildIndex("source", "gid", IndexManager.BTREE_ALPHANUMERIC_INDEX,
-				null);
-		int count2 = getCount(ds.queryIndex(tenQuery));
-		assertTrue(count2 < indexResultCount);
-		ds.deleteRow(0);
-		ds.syncWithSource();
-		int countReverted = getCount(ds.queryIndex(tenQuery));
-		assertTrue(countReverted < indexResultCount);
-		ds.close();
-	}
+        @Test
+        public void testSyncWithIndexedSource() throws Exception {
+                DefaultAlphaQuery tenQuery = new DefaultAlphaQuery("gid", null, true,
+                        ValueFactory.createValue(10), true);
+                DataSource ds = dsf.getDataSource("source");
+                ds.open();
+                int indexResultCount = getCount(ds.queryIndex(tenQuery));
+                im.buildIndex("source", "gid", IndexManager.BTREE_ALPHANUMERIC_INDEX,
+                        null);
+                int count2 = getCount(ds.queryIndex(tenQuery));
+                assertTrue(count2 < indexResultCount);
+                ds.deleteRow(0);
+                ds.syncWithSource();
+                int countReverted = getCount(ds.queryIndex(tenQuery));
+                assertTrue(countReverted < indexResultCount);
+                ds.close();
+        }
 
-	public void testCreateIndexRevertAndModify() throws Exception {
-		DataSource ds = dsf.getDataSource("source");
-		ds.open();
-		im.buildIndex("source", "the_geom", IndexManager.RTREE_SPATIAL_INDEX,
-				null);
-		ds.setFieldValue(3, 0, ds.getFieldValue(1, 0));
-		ds.syncWithSource();
-		ds.setFieldValue(3, 0, ds.getFieldValue(1, 0));
+        @Test
+        public void testCreateIndexRevertAndModify() throws Exception {
+                DataSource ds = dsf.getDataSource("source");
+                ds.open();
+                im.buildIndex("source", "the_geom", IndexManager.RTREE_SPATIAL_INDEX,
+                        null);
+                ds.setFieldValue(3, 0, ds.getFieldValue(1, 0));
+                ds.syncWithSource();
+                ds.setFieldValue(3, 0, ds.getFieldValue(1, 0));
 
-		SpatialIndexQuery spatialQuery = new DefaultSpatialIndexQuery(
-				new SpatialDataSourceDecorator(ds).getFullExtent(), "the_geom");
-		assertTrue(getCount(ds.queryIndex(spatialQuery)) == ds.getRowCount());
-		ds.close();
-	}
+                SpatialIndexQuery spatialQuery = new DefaultSpatialIndexQuery(
+                        new SpatialDataSourceDecorator(ds).getFullExtent(), "the_geom");
+                assertEquals(getCount(ds.queryIndex(spatialQuery)), ds.getRowCount());
+                ds.close();
+        }
 
-	@Override
-	protected void setUp() throws Exception {
-		instantiateDSF();
+        @Before
+        public void setUp() throws Exception {
+                instantiateDSF();
 
-		sm.removeAll();
-		File parent = new File(BaseTest.internalData);
-		File backup = new File("src/test/resources/backup");
-		File destshp = new File(backup, "hedgerow.shp");
-		File destdbf = new File(backup, "hedgerow.dbf");
-		File destshx = new File(backup, "hedgerow.shx");
-		destshp.delete();
-		destdbf.delete();
-		destshx.delete();
-		FileUtils.copy(new File(parent, "hedgerow.shp"), destshp);
-		FileUtils.copy(new File(parent, "hedgerow.dbf"), destdbf);
-		FileUtils.copy(new File(parent, "hedgerow.shx"), destshx);
-		sm.register("source", destshp);
-	}
+                sm.removeAll();
+                File parent = new File(TestBase.internalData);
+                File backup = new File("src/test/resources/backup");
+                File destshp = new File(backup, "hedgerow.shp");
+                File destdbf = new File(backup, "hedgerow.dbf");
+                File destshx = new File(backup, "hedgerow.shx");
+                destshp.delete();
+                destdbf.delete();
+                destshx.delete();
+                FileUtils.copy(new File(parent, "hedgerow.shp"), destshp);
+                FileUtils.copy(new File(parent, "hedgerow.dbf"), destdbf);
+                FileUtils.copy(new File(parent, "hedgerow.shx"), destshx);
+                sm.register("source", destshp);
+        }
 
-	private void instantiateDSF() {
-		dsf = new DataSourceFactory();
-		dsf.setTempDir("src/test/resources/backup");
-		sm = dsf.getSourceManager();
-		im = dsf.getIndexManager();
-	}
-
+        private void instantiateDSF() {
+                dsf = new DataSourceFactory();
+                dsf.setTempDir(TestBase.backupDir.getAbsolutePath());
+                dsf.setResultDir(TestBase.backupDir);
+                sm = dsf.getSourceManager();
+                im = dsf.getIndexManager();
+        }
 }

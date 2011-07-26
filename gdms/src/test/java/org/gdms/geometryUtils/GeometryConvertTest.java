@@ -37,16 +37,18 @@
  */
 package org.gdms.geometryUtils;
 
+import org.junit.Test;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.io.WKTReader;
-import junit.framework.TestCase;
+
+import static org.junit.Assert.*;
 
 /**
  *
  * @author ebocher
  */
-public class GeometryConvertTest extends TestCase {
+public class GeometryConvertTest {
 
         public WKTReader wKTReader = new WKTReader();
 
@@ -54,33 +56,32 @@ public class GeometryConvertTest extends TestCase {
          * Convert a geometry into multi-segments
          * @throws Exception
          */
+        @Test
         public void testToSegmentsMultiLineString() throws Exception {
 
                 //Test linestring
                 Geometry geom = wKTReader.read("LINESTRING(0 8, 1 8 , 3 8,  8  8, 10 8, 20 8)");
                 MultiLineString result = GeometryConvert.toSegmentsMultiLineString(geom);
-                assertTrue(result.getNumGeometries() == 5);
+                assertEquals(result.getNumGeometries(), 5);
 
                 //Test linearring
                 geom = wKTReader.read("LINEARRING(0 8, 1 8 , 3 8,  8  8, 10 8, 20 8, 0 8)");
                 result = GeometryConvert.toSegmentsMultiLineString(geom);
-                assertTrue(result.getNumGeometries() == 6);
+                assertEquals(result.getNumGeometries(), 6);
 
                 //Test duplicate coordinates
                 geom = wKTReader.read("LINEARRING(0 8, 1 8 ,1 8, 3 8,  8  8, 10 8, 10 8, 20 8, 0 8)");
                 result = GeometryConvert.toSegmentsMultiLineString(geom);
-                assertTrue(result.getNumGeometries() == 6);
+                assertEquals(result.getNumGeometries(), 6);
 
                 //Test point
                 geom = wKTReader.read("POINT(0 8)");
                 result = GeometryConvert.toSegmentsMultiLineString(geom);
-                assertTrue(result == null);
+                assertNull(result);
 
-                 //Test multipoint
+                //Test multipoint
                 geom = wKTReader.read("MULTIPOINT((0 8), (1 8))");
                 result = GeometryConvert.toSegmentsMultiLineString(geom);
-                assertTrue(result==null);
+                assertNull(result);
         }
-        
-
-        }
+}

@@ -36,28 +36,32 @@
  */
 package org.gdms.data.command;
 
+import org.junit.Test;
 import junit.framework.TestCase;
 
 import org.gdms.data.edition.Command;
 import org.gdms.data.edition.CommandStack;
 import org.gdms.driver.DriverException;
 
-public class CommandStackTests extends TestCase {
+import static org.junit.Assert.*;
+
+public class CommandStackTests {
+        @Test
 	public void testNormal() throws Exception {
 		CommandStack cs = new CommandStack();
 		cs.setLimit(3);
 		cs.setUseLimit(true);
 
-		assertTrue(!cs.canRedo());
-		assertTrue(!cs.canUndo());
+		assertFalse(cs.canRedo());
+		assertFalse(cs.canUndo());
 
 		cs.put(new C());
-		assertTrue(!cs.canRedo());
+		assertFalse(cs.canRedo());
 		assertTrue(cs.canUndo());
 
 		cs.put(new C());
 		cs.put(new C());
-		assertTrue(!cs.canRedo());
+		assertFalse(cs.canRedo());
 		assertTrue(cs.canUndo());
 
 		cs.undo();
@@ -68,9 +72,10 @@ public class CommandStackTests extends TestCase {
 		assertTrue(cs.canUndo());
 		cs.undo();
 		assertTrue(cs.canRedo());
-		assertTrue(!cs.canUndo());
+		assertFalse(cs.canUndo());
 	}
 
+	@Test
 	public void testLimit() throws Exception {
 		CommandStack cs = new CommandStack();
 		cs.setLimit(2);
@@ -79,12 +84,13 @@ public class CommandStackTests extends TestCase {
 		cs.put(new C(1));
 		cs.put(new C(2));
 		cs.put(new C(3));
-		assertTrue(cs.undo().equals(new C(3)));
-		assertTrue(cs.undo().equals(new C(2)));
+		assertEquals(cs.undo(),new C(3));
+		assertEquals(cs.undo(),new C(2));
 		assertTrue(cs.canRedo());
-		assertTrue(!cs.canUndo());
+		assertFalse(cs.canUndo());
 	}
 
+	@Test
 	public void testPutUndoPut() throws Exception {
 		CommandStack cs = new CommandStack();
 		cs.setUseLimit(false);
@@ -93,13 +99,13 @@ public class CommandStackTests extends TestCase {
 		cs.put(new C(2));
 		cs.put(new C(3));
 		cs.put(new C(4));
-		assertTrue(cs.undo().equals(new C(4)));
-		assertTrue(cs.undo().equals(new C(3)));
-		assertTrue(cs.undo().equals(new C(2)));
-		assertTrue(cs.redo().equals(new C(2)));
+		assertEquals(cs.undo(),new C(4));
+		assertEquals(cs.undo(),new C(3));
+		assertEquals(cs.undo(),new C(2));
+		assertEquals(cs.redo(),new C(2));
 		assertTrue(cs.canRedo());
 		cs.put(new C(3));
-		assertTrue(!cs.canRedo());
+		assertFalse(cs.canRedo());
 		assertTrue(cs.canUndo());
 	}
 

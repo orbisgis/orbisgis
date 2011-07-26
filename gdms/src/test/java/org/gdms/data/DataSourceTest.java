@@ -36,9 +36,10 @@
  */
 package org.gdms.data;
 
+import org.junit.Test;
 import java.io.File;
 
-import org.gdms.BaseTest;
+import org.gdms.TestBase;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.DefaultSchema;
 import org.gdms.data.schema.Metadata;
@@ -50,194 +51,198 @@ import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.ReadAccess;
 import org.orbisgis.utils.FileUtils;
 
-public class DataSourceTest extends BaseTest {
+import static org.junit.Assert.*;
 
-	public void testReadWriteAccessInDataSourceOutOfTransaction()
-			throws Exception {
-		DataSource ds = dsf.getDataSource(super.getAnyNonSpatialResource());
+public class DataSourceTest extends TestBase {
 
-		try {
-			ds.getFieldValue(0, 0);
-			assertTrue(false);
-		} catch (ClosedDataSourceException e) {
-		}
-		try {
-			ds.getMetadata();
-			assertTrue(false);
-		} catch (ClosedDataSourceException e) {
-		}
-		try {
-			ds.getFieldIndexByName("");
-			assertTrue(false);
-		} catch (ClosedDataSourceException e) {
-		}
-		try {
-			ds.getRowCount();
-			assertTrue(false);
-		} catch (ClosedDataSourceException e) {
-		}
-		try {
-			ds.getScope(DataSource.X);
-			assertTrue(false);
-		} catch (ClosedDataSourceException e) {
-		}
-		try {
-			ds.isNull(0, 0);
-			assertTrue(false);
-		} catch (ClosedDataSourceException e) {
-		}
-		try {
-			ds.deleteRow(0);
-			assertTrue(false);
-		} catch (ClosedDataSourceException e) {
-		}
-		try {
-			ds.insertEmptyRow();
-			assertTrue(false);
-		} catch (ClosedDataSourceException e) {
-		}
-		try {
-			ds.insertEmptyRowAt(0);
-			assertTrue(false);
-		} catch (ClosedDataSourceException e) {
-		}
-		try {
-			ds.insertFilledRow(new Value[0]);
-			assertTrue(false);
-		} catch (ClosedDataSourceException e) {
-		}
-		try {
-			ds.insertFilledRowAt(0, new Value[0]);
-			assertTrue(false);
-		} catch (ClosedDataSourceException e) {
-		}
-		try {
-			ds.isModified();
-			assertTrue(false);
-		} catch (ClosedDataSourceException e) {
-		}
-		try {
-			ds.redo();
-			assertTrue(false);
-		} catch (ClosedDataSourceException e) {
-		}
-		try {
-			ds.setFieldValue(0, 0, null);
-			assertTrue(false);
-		} catch (ClosedDataSourceException e) {
-		}
-		try {
-			ds.undo();
-			assertTrue(false);
-		} catch (ClosedDataSourceException e) {
-		}
-	}
+        @Test
+        public void testReadWriteAccessInDataSourceOutOfTransaction()
+                throws Exception {
+                DataSource ds = dsf.getDataSource(super.getAnyNonSpatialResource());
 
-	public void testSaveDataWithOpenDataSource() throws Exception {
-		DataSource ds = dsf.getDataSource(super.getNonDBSmallResources()[0]);
+                try {
+                        ds.getFieldValue(0, 0);
+                        fail();
+                } catch (ClosedDataSourceException e) {
+                }
+                try {
+                        ds.getMetadata();
+                        fail();
+                } catch (ClosedDataSourceException e) {
+                }
+                try {
+                        ds.getFieldIndexByName("");
+                        fail();
+                } catch (ClosedDataSourceException e) {
+                }
+                try {
+                        ds.getRowCount();
+                        fail();
+                } catch (ClosedDataSourceException e) {
+                }
+                try {
+                        ds.getScope(DataSource.X);
+                        fail();
+                } catch (ClosedDataSourceException e) {
+                }
+                try {
+                        ds.isNull(0, 0);
+                        fail();
+                } catch (ClosedDataSourceException e) {
+                }
+                try {
+                        ds.deleteRow(0);
+                        fail();
+                } catch (ClosedDataSourceException e) {
+                }
+                try {
+                        ds.insertEmptyRow();
+                        fail();
+                } catch (ClosedDataSourceException e) {
+                }
+                try {
+                        ds.insertEmptyRowAt(0);
+                        fail();
+                } catch (ClosedDataSourceException e) {
+                }
+                try {
+                        ds.insertFilledRow(new Value[0]);
+                        fail();
+                } catch (ClosedDataSourceException e) {
+                }
+                try {
+                        ds.insertFilledRowAt(0, new Value[0]);
+                        fail();
+                } catch (ClosedDataSourceException e) {
+                }
+                try {
+                        ds.isModified();
+                        fail();
+                } catch (ClosedDataSourceException e) {
+                }
+                try {
+                        ds.redo();
+                        fail();
+                } catch (ClosedDataSourceException e) {
+                }
+                try {
+                        ds.setFieldValue(0, 0, null);
+                        fail();
+                } catch (ClosedDataSourceException e) {
+                }
+                try {
+                        ds.undo();
+                        fail();
+                } catch (ClosedDataSourceException e) {
+                }
+        }
 
-		ds.open();
-		try {
-			ds.saveData(null);
-		} catch (IllegalStateException e) {
-			assertTrue(true);
-		}
-		ds.close();
-	}
+        @Test
+        public void testSaveDataWithOpenDataSource() throws Exception {
+                DataSource ds = dsf.getDataSource(super.getNonDBSmallResources()[0]);
 
-	public void testRemovedDataSource() throws Exception {
-		String dsName = super.getNonDBSmallResources()[0];
-		DataSource ds = dsf.getDataSource(dsName);
+                ds.open();
+                try {
+                        ds.saveData(null);
+                        fail();
+                } catch (IllegalStateException e) {
+                }
+                ds.close();
+        }
 
-		ds.open();
-		ds.close();
-		dsf.getSourceManager().remove(ds.getName());
+        @Test
+        public void testRemovedDataSource() throws Exception {
+                String dsName = super.getNonDBSmallResources()[0];
+                DataSource ds = dsf.getDataSource(dsName);
 
-		try {
-			dsf.getDataSource(dsName);
-			assertTrue(false);
-		} catch (NoSuchTableException e) {
-			assertTrue(true);
-		}
-		ds.open();
-		ds.getFieldNames();
-		ds.close();
-	}
+                ds.open();
+                ds.close();
+                dsf.getSourceManager().remove(ds.getName());
 
-	public void testAlreadyClosed() throws Exception {
-		DataSource ds = dsf.getDataSource(super.getNonDBSmallResources()[0]);
+                try {
+                        dsf.getDataSource(dsName);
+                        fail();
+                } catch (NoSuchTableException e) {
+                }
+                ds.open();
+                ds.getFieldNames();
+                ds.close();
+        }
 
-		ds.open();
-		ds.close();
-		try {
-			ds.close();
-			assertFalse(true);
-		} catch (AlreadyClosedException e) {
-			assertTrue(true);
-		}
-	}
+        @Test(expected = AlreadyClosedException.class)
+        public void testAlreadyClosed() throws Exception {
+                DataSource ds = dsf.getDataSource(super.getNonDBSmallResources()[0]);
 
-	public void testFailedOpenClosedDataSource() throws Exception {
-		File volatileCsv = new File("target/test.csv");
-		FileUtils.copy(new File(internalData + "test.csv"), volatileCsv);
-		DataSource ds = dsf.getDataSource(volatileCsv);
-		volatileCsv.delete();
-		try {
-			ds.open();
-			assertTrue(false);
-		} catch (DriverException e) {
-			assertTrue(!ds.isOpen());
-		}
-	}
+                ds.open();
+                ds.close();
 
-	public void testCommitNonEditableDataSource() throws Exception {
-		DataSource ds = dsf.getDataSource(new ObjectDriver() {
+                // should fail
+                ds.close();
+        }
 
-			public String getDriverId() {
-				return null;
-			}
+        @Test
+        public void testFailedOpenClosedDataSource() throws Exception {
+                File volatileCsv = new File("target/test.csv");
+                FileUtils.copy(new File(internalData + "test.csv"), volatileCsv);
+                DataSource ds = dsf.getDataSource(volatileCsv);
+                volatileCsv.delete();
+                try {
+                        ds.open();
+                        fail();
+                } catch (DriverException e) {
+                        assertFalse(ds.isOpen());
+                }
+        }
 
-			public void setDataSourceFactory(DataSourceFactory dsf) {
-			}
+        @Test
+        public void testCommitNonEditableDataSource() throws Exception {
+                DataSource ds = dsf.getDataSource(new ObjectDriver() {
 
-			public Metadata getMetadata() throws DriverException {
-				return new DefaultMetadata();
-			}
+                        public String getDriverId() {
+                                return null;
+                        }
 
-			public void stop() throws DriverException {
-			}
+                        public void setDataSourceFactory(DataSourceFactory dsf) {
+                        }
 
-			public void start() throws DriverException {
-			}
+                        public Metadata getMetadata() throws DriverException {
+                                return new DefaultMetadata();
+                        }
 
-			public int getType() {
-				return 0;
-			}
+                        public void stop() throws DriverException {
+                        }
 
-			@Override
-			public String getTypeDescription() {
-				return null;
-			}
+                        public void start() throws DriverException {
+                        }
 
-			@Override
-			public String getTypeName() {
-				return null;
-			}
+                        public int getType() {
+                                return 0;
+                        }
 
-            @Override
-            public boolean isCommitable() {
-                return false;
-            }
+                        @Override
+                        public String getTypeDescription() {
+                                return null;
+                        }
 
-            @Override
-            public TypeDefinition[] getTypesDefinitions() {
-                return new TypeDefinition[0];
-            }
+                        @Override
+                        public String getTypeName() {
+                                return null;
+                        }
 
-            @Override
-            public String validateMetadata(Metadata metadata) throws DriverException {
-                return null;
-            }
+                        @Override
+                        public boolean isCommitable() {
+                                return false;
+                        }
+
+                        @Override
+                        public TypeDefinition[] getTypesDefinitions() {
+                                return new TypeDefinition[0];
+                        }
+
+                        @Override
+                        public String validateMetadata(Metadata metadata) throws DriverException {
+                                return null;
+                        }
 
                         @Override
                         public Schema getSchema() throws DriverException {
@@ -274,16 +279,14 @@ public class DataSourceTest extends BaseTest {
                                         }
                                 };
                         }
+                }, "main");
 
-		},"main");
-
-		ds.open();
-		try {
-			ds.commit();
-			assertFalse(true);
-		} catch (NonEditableDataSourceException e) {
-		}
-		ds.close();
-	}
-
+                ds.open();
+                try {
+                        ds.commit();
+                        fail();
+                } catch (NonEditableDataSourceException e) {
+                }
+                ds.close();
+        }
 }

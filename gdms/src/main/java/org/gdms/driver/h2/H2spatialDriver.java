@@ -284,7 +284,7 @@ public final class H2spatialDriver extends DefaultDBDriver implements ReadAccess
 
         @Override
         public long getRowCount() throws DriverException {
-                return H2spatialDriver.super.getTable(tableName).getRowCount();
+                return H2spatialDriver.super.getRowCount();
         }
 
         @Override

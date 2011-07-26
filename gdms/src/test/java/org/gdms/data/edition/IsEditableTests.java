@@ -36,18 +36,23 @@
  */
 package org.gdms.data.edition;
 
-import org.gdms.BaseTest;
+import org.junit.Before;
+import org.junit.Test;
+import org.gdms.TestBase;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.SourceManager;
 
-public class IsEditableTests extends BaseTest {
+import static org.junit.Assert.*;
+
+public class IsEditableTests extends TestBase {
 
 	private DataSourceFactory dsf;
 
-	public void testObject() throws Exception {
+	@Test
+        public void testObject() throws Exception {
 		DataSource ds = dsf.getDataSource("readObject");
 		assertFalse(ds.isEditable());
 		ds = dsf.getDataSource("readWriteObject");
@@ -56,7 +61,8 @@ public class IsEditableTests extends BaseTest {
 		assertTrue(ds.isEditable());
 	}
 
-	public void testFile() throws Exception {
+	@Test
+        public void testFile() throws Exception {
 		DataSource ds = dsf.getDataSource("readFile");
 		assertFalse(ds.isEditable());
 		ds = dsf.getDataSource("readWriteFile");
@@ -65,7 +71,8 @@ public class IsEditableTests extends BaseTest {
 		assertTrue(ds.isEditable());
 	}
 
-	public void testDB() throws Exception {
+	@Test
+        public void testDB() throws Exception {
 		DataSource ds = dsf.getDataSource("readDB");
 		assertFalse(ds.isEditable());
 		ds = dsf.getDataSource("readWriteDB");
@@ -74,11 +81,13 @@ public class IsEditableTests extends BaseTest {
 		assertTrue(ds.isEditable());
 	}
 
-	@Override
-	protected void setUp() throws Exception {
+	@Before
+	public void setUp() throws Exception {
 		ReadDriver.initialize();
 
 		dsf = new DataSourceFactory();
+                dsf.setTempDir(TestBase.backupDir.getAbsolutePath());
+                dsf.setResultDir(TestBase.backupDir);
 		DriverManager dm = new DriverManager();
 		dm.registerDriver(ReadDriver.class);
 		SourceManager sourceManager = dsf.getSourceManager();

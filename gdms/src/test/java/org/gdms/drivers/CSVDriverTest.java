@@ -36,11 +36,12 @@
  */
 package org.gdms.drivers;
 
+import org.junit.Test;
+import org.junit.Before;
 import java.io.File;
 import java.io.IOException;
 
-import junit.framework.TestCase;
-import org.gdms.BaseTest;
+import org.gdms.TestBase;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
@@ -49,56 +50,62 @@ import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.ValueFactory;
 
-public class CSVDriverTest extends TestCase {
+import static org.junit.Assert.*;
 
-	private File file;
-	private DataSourceFactory dsf;
+public class CSVDriverTest {
 
-	@Override
-	protected void setUp() throws Exception {
-		File file1 = new File(BaseTest.backupDir,"csvdrivertest.csv");
-		if (file1.exists()) {
-			if (!file1.delete()) {
-				throw new IOException("Cannot delete file " + file1);
-			}
-		}
-		file = file1;
+        private File file;
+        private DataSourceFactory dsf;
 
-		dsf = new DataSourceFactory();
-		DefaultMetadata metadata = new DefaultMetadata();
-		metadata.addField("f1", Type.STRING);
-		metadata.addField("f2", Type.STRING);
-		FileSourceCreation fsc = new FileSourceCreation(file, metadata);
-		dsf.createDataSource(fsc);
-	}
+        @Before
+        public void setUp() throws Exception {
+                File file1 = new File(TestBase.backupDir, "csvdrivertest.csv");
+                if (file1.exists()) {
+                        if (!file1.delete()) {
+                                throw new IOException("Cannot delete file " + file1);
+                        }
+                }
+                file = file1;
 
-	public void testScapeSemiColon() throws Exception {
-		DataSource ds = dsf.getDataSource(file);
-		ds.open();
-		ds.insertEmptyRow();
-		ds.setFieldValue(0, 0, ValueFactory.createValue("a;b"));
-		ds.setFieldValue(0, 1, ValueFactory.createValue("c\\d"));
-		ds.commit();
-		ds.close();
+                dsf = new DataSourceFactory();
+                dsf.setTempDir(TestBase.backupDir.getAbsolutePath());
+                dsf.setResultDir(TestBase.backupDir);
+                DefaultMetadata metadata = new DefaultMetadata();
+                metadata.addField("f1", Type.STRING);
+                metadata.addField("f2", Type.STRING);
+                FileSourceCreation fsc = new FileSourceCreation(file, metadata);
+                dsf.createDataSource(fsc);
+        }
 
-		ds.open();
-		assertTrue(ds.getString(0, 0).equals("a;b"));
-		assertTrue(ds.getString(0, 1).equals("c\\d"));
-		ds.close();
-	}
+        @Test
+        public void testScapeSemiColon() throws Exception {
+                DataSource ds = dsf.getDataSource(file);
+                ds.open();
+                ds.insertEmptyRow();
+                ds.setFieldValue(0, 0, ValueFactory.createValue("a;b"));
+                ds.setFieldValue(0, 1, ValueFactory.createValue("c\\d"));
+                ds.commit();
+                ds.close();
 
-	public void testNullValues() throws Exception {
-		DataSource ds = dsf.getDataSource(file);
-		ds.open();
-		ds.insertEmptyRow();
-		ds.setFieldValue(0, 0, ValueFactory.createNullValue());
-		ds.setFieldValue(0, 1, ValueFactory.createNullValue());
-		ds.commit();
-		ds.close();
+                ds.open();
+                assertEquals(ds.getString(0, 0), "a;b");
+                assertEquals(ds.getString(0, 1), "c\\d");
+                ds.close();
+        }
 
-		ds.open();
-		assertTrue(ds.isNull(0, 0));
-		assertTrue(ds.isNull(0, 1));
-		ds.close();
-	}
+        @Test
+        public void testNullValues() throws Exception {
+                DataSource ds = dsf.getDataSource(file);
+                ds.open();
+                ds.insertEmptyRow();
+                ds.setFieldValue(0, 0, ValueFactory.createNullValue());
+                ds.setFieldValue(0, 1, ValueFactory.createNullValue());
+                ds.commit();
+                ds.close();
+
+                ds.open();
+                assertTrue(ds.isNull(0, 0));
+                assertTrue(ds.isNull(0, 1));
+                ds.close();
+        }
 }

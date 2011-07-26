@@ -36,12 +36,13 @@
  */
 package org.gdms.data.indexes;
 
+import org.junit.Before;
+import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 
-import junit.framework.TestCase;
 
-import org.gdms.BaseTest;
+import org.gdms.TestBase;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
@@ -53,106 +54,110 @@ import org.gdms.source.SourceManager;
 
 import com.vividsolutions.jts.geom.Envelope;
 
-public class RTreeTest extends TestCase {
+import static org.junit.Assert.*;
 
-	private File indexFile;
-	private DataSourceFactory dsf;
+public class RTreeTest {
 
-	private void checkLookUp(DiskRTree tree, DataSource ds, int fieldIndex)
-			throws Exception {
-		tree.checkTree();
-		assertTrue(tree.size() == tree.getAllValues().length);
-		Envelope[] keys = tree.getAllValues();
-		for (int i = 0; i < keys.length; i++) {
-			int[] indexes = tree.getRow(keys[i]);
-                                assertTrue(contains(indexes, ds, fieldIndex, keys[i]));
+        private File indexFile;
+        private DataSourceFactory dsf;
+
+        private void checkLookUp(DiskRTree tree, DataSource ds, int fieldIndex)
+                throws Exception {
+                tree.checkTree();
+                assertEquals(tree.size(), tree.getAllValues().length);
+                Envelope[] keys = tree.getAllValues();
+                for (int i = 0; i < keys.length; i++) {
+                        int[] indexes = tree.getRow(keys[i]);
+                        assertTrue(contains(indexes, ds, fieldIndex, keys[i]));
+                }
+
+        }
+
+        private boolean contains(int[] indexes, DataSource ds, int fieldIndex,
+                Envelope geometry) throws Exception {
+                for (int i : indexes) {
+                        if (ds.getFieldValue(i, fieldIndex).getAsGeometry().getEnvelopeInternal().equals(geometry)) {
+                                return true;
                         }
+                }
 
-	}
+                return false;
+        }
 
-	private boolean contains(int[] indexes, DataSource ds, int fieldIndex,
-			Envelope geometry) throws Exception {
-		for (int i : indexes) {
-			if (ds.getFieldValue(i, fieldIndex).getAsGeometry()
-					.getEnvelopeInternal().equals(geometry)) {
-				return true;
-			}
-		}
+        @Test
+        public void testIndexNGreaterThanBlock() throws Exception {
+                testIndexRealData("points", 256, 32, 1000.0);
+        }
 
-		return false;
-	}
+        @Test
+        public void testIndexPoints() throws Exception {
+                testIndexRealData("points", 16, 1024, 1000.0);
+        }
 
-	public void testIndexNGreaterThanBlock() throws Exception {
-		testIndexRealData("points", 256, 32, 1000.0);
-	}
+        @Test
+        public void testIndexPointsWithSmallN() throws Exception {
+                testIndexRealData("points", 3, 32, 1000.0);
+        }
 
-	public void testIndexPoints() throws Exception {
-		testIndexRealData("points", 16, 1024, 1000.0);
-	}
+        private void testIndexRealData(String source, int n, int blockSize,
+                double checkPeriod) throws Exception {
+                DiskRTree tree = new DiskRTree(n, blockSize, false);
+                tree.newIndex(indexFile);
+                testIndexRealData(source, checkPeriod, tree);
+                tree.close();
+        }
 
-	public void testIndexPointsWithSmallN() throws Exception {
-		testIndexRealData("points", 3, 32, 1000.0);
-	}
+        private void testIndexRealData(String source, double checkPeriod, DiskRTree tree)
+                throws NoSuchTableException, DataSourceCreationException,
+                DriverException, IOException, Exception {
+                DataSource ds = dsf.getDataSource(source);
+                String fieldName = "the_geom";
 
-	private void testIndexRealData(String source, int n, int blockSize,
-			double checkPeriod) throws Exception {
-		DiskRTree tree = new DiskRTree(n, blockSize, false);
-		tree.newIndex(indexFile);
-		testIndexRealData(source, checkPeriod, tree);
-		tree.close();
-	}
+                ds.open();
+                int fieldIndex = ds.getFieldIndexByName(fieldName);
+                for (int i = 0; i < ds.getRowCount(); i++) {
+                        if (i / (int) checkPeriod == i / checkPeriod) {
+                                tree.checkTree();
+                                tree.close();
+                                tree.openIndex(indexFile);
+                                tree.checkTree();
+                                checkLookUp(tree, ds, fieldIndex);
+                        }
+                        Envelope value = ds.getFieldValue(i, fieldIndex).getAsGeometry().getEnvelopeInternal();
+                        tree.insert(value, i);
+                }
+                for (int i = 0; i < ds.getRowCount(); i++) {
+                        if (i / (int) checkPeriod == i / checkPeriod) {
+                                tree.checkTree();
+                                tree.save();
+                                tree.checkTree();
+                                checkLookUp(tree, ds, fieldIndex);
+                        }
+                        Value value = ds.getFieldValue(i, fieldIndex);
+                        tree.delete(value.getAsGeometry().getEnvelopeInternal(), i);
+                }
 
-	private void testIndexRealData(String source, double checkPeriod, DiskRTree tree)
-			throws NoSuchTableException, DataSourceCreationException,
-			DriverException, IOException, Exception {
-		DataSource ds = dsf.getDataSource(source);
-		String fieldName = "the_geom";
+                ds.close();
+        }
 
-		ds.open();
-		int fieldIndex = ds.getFieldIndexByName(fieldName);
-		for (int i = 0; i < ds.getRowCount(); i++) {
-			if (i / (int) checkPeriod == i / checkPeriod) {
-				tree.checkTree();
-				tree.close();
-				tree.openIndex(indexFile);
-				tree.checkTree();
-				checkLookUp(tree, ds, fieldIndex);
-			}
-			Envelope value = ds.getFieldValue(i, fieldIndex).getAsGeometry()
-					.getEnvelopeInternal();
-			tree.insert(value, i);
-		}
-		for (int i = 0; i < ds.getRowCount(); i++) {
-			if (i / (int) checkPeriod == i / checkPeriod) {
-				tree.checkTree();
-				tree.save();
-				tree.checkTree();
-				checkLookUp(tree, ds, fieldIndex);
-			}
-			Value value = ds.getFieldValue(i, fieldIndex);
-			tree.delete(value.getAsGeometry().getEnvelopeInternal(), i);
-		}
+        @Before
+        public void setUp() throws Exception {
+                indexFile = new File(TestBase.backupDir, "rtreetest.idx");
+                if (indexFile.exists()) {
+                        if (!indexFile.delete()) {
+                                throw new IOException("Cannot delete the index file");
+                        }
+                }
 
-		ds.close();
-	}
+                dsf = new DataSourceFactory();
+                dsf.setTempDir(TestBase.backupDir.getAbsolutePath());
+                dsf.setResultDir(TestBase.backupDir);
 
-	@Override
-	protected void setUp() throws Exception {
-		indexFile = new File(BaseTest.backupDir, "rtreetest.idx");
-		if (indexFile.exists()) {
-			if (!indexFile.delete()) {
-				throw new IOException("Cannot delete the index file");
-			}
-		}
-
-		dsf = new DataSourceFactory();
-		dsf.setTempDir(BaseTest.backupDir.getAbsolutePath());
-
-		SourceManager sm = dsf.getSourceManager();
-		sm.register("points", new File(BaseTest.internalData,"points.shp"));
-		sm.register("lines", new File(BaseTest.internalData
-				+ "hedgerow.shp"));
-		sm.register("pols", new File(BaseTest.internalData
-				+ "landcover2000.shp"));
-	}
+                SourceManager sm = dsf.getSourceManager();
+                sm.register("points", new File(TestBase.internalData, "points.shp"));
+                sm.register("lines", new File(TestBase.internalData
+                        + "hedgerow.shp"));
+                sm.register("pols", new File(TestBase.internalData
+                        + "landcover2000.shp"));
+        }
 }

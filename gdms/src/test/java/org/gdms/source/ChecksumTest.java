@@ -36,103 +36,106 @@
  */
 package org.gdms.source;
 
+import org.junit.Before;
+import org.junit.Test;
 import java.io.File;
 
-import junit.framework.TestCase;
 
 import org.gdms.DBTestSource;
 import org.gdms.FileTestSource;
-import org.gdms.BaseTest;
+import org.gdms.TestBase;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.db.DBSource;
 
-public class ChecksumTest extends TestCase {
+import static org.junit.Assert.*;
 
-	private DataSourceFactory dsf;
-	private SourceManager sm;
+public class ChecksumTest {
 
-	public void testModifyingSourceOutsideFactory() throws Exception {
-		File testFile = new File(BaseTest.internalData + "test.csv");
-		String name = "file";
-		FileTestSource fts = new FileTestSource(name, testFile
-				.getAbsolutePath());
-		fts.backup();
-		sm.register(name, fts.getBackupFile());
-		testModifyingSourceOutsideFactory(name, false);
+        private DataSourceFactory dsf;
+        private SourceManager sm;
 
-		name = "db";
-		DBSource testDB = new DBSource(null, 0, BaseTest.internalData
-				+ "backup/testhsqldb", "sa", "", "gisapps", "jdbc:hsqldb:file");
-		DBTestSource dbTestSource = new DBTestSource(name,
-				"org.hsqldb.jdbcDriver", BaseTest.internalData
-						+ "testhsqldb.sql", testDB);
-		dbTestSource.backup();
-		sm.register(name, testDB);
-		testModifyingSourceOutsideFactory(name, false);
-	}
+        @Test
+        public void testModifyingSourceOutsideFactory() throws Exception {
+                File testFile = new File(TestBase.internalData + "test.csv");
+                String name = "file";
+                FileTestSource fts = new FileTestSource(name, testFile.getAbsolutePath());
+                fts.backup();
+                sm.register(name, fts.getBackupFile());
+                testModifyingSourceOutsideFactory(name, false);
 
-	private synchronized void testModifyingSourceOutsideFactory(String name,
-			boolean upToDateValue) throws Exception {
-		assertFalse(sm.getSource(name).isUpToDate());
-		sm.saveStatus();
-		assertTrue(sm.getSource(name).isUpToDate());
+                name = "db";
+                DBSource testDB = new DBSource(null, 0, TestBase.internalData
+                        + "backup/testhsqldb", "sa", "", "gisapps", "jdbc:hsqldb:file");
+                DBTestSource dbTestSource = new DBTestSource(name,
+                        "org.hsqldb.jdbcDriver", TestBase.internalData
+                        + "testhsqldb.sql", testDB);
+                dbTestSource.backup();
+                sm.register(name, testDB);
+                testModifyingSourceOutsideFactory(name, false);
+        }
 
-		DataSource ds = BaseTest.dsf.getDataSource(name);
-		ds.open();
-		ds.deleteRow(0);
-		if (upToDateValue) {
-			ds.close();
-		} else {
-			// To change modification time
-			wait(2000);
-			ds.commit();
-			ds.close();
-		}
+        private synchronized void testModifyingSourceOutsideFactory(String name,
+                boolean upToDateValue) throws Exception {
+                assertFalse(sm.getSource(name).isUpToDate());
+                sm.saveStatus();
+                assertTrue(sm.getSource(name).isUpToDate());
 
-		instantiateDSF();
-		assertTrue(sm.getSource(name).isUpToDate() == upToDateValue);
-	}
+                DataSource ds = TestBase.dsf.getDataSource(name);
+                ds.open();
+                ds.deleteRow(0);
+                if (upToDateValue) {
+                        ds.close();
+                } else {
+                        // To change modification time
+                        wait(2000);
+                        ds.commit();
+                        ds.close();
+                }
 
-	public void testUpdateOnSave() throws Exception {
-		File testFile = new File(BaseTest.internalData + "test.csv");
-		String name = "file";
-		FileTestSource fts = new FileTestSource(name, testFile
-				.getAbsolutePath());
-		fts.backup();
-		sm.register(name, fts.getBackupFile());
-		sm.saveStatus();
+                instantiateDSF();
+                assertEquals(sm.getSource(name).isUpToDate(), upToDateValue);
+        }
 
-		modificationWithOtherFactory(fts.getBackupFile());
+        @Test
+        public void testUpdateOnSave() throws Exception {
+                File testFile = new File(TestBase.internalData + "test.csv");
+                String name = "file";
+                FileTestSource fts = new FileTestSource(name, testFile.getAbsolutePath());
+                fts.backup();
+                sm.register(name, fts.getBackupFile());
+                sm.saveStatus();
 
-		instantiateDSF();
-		assertTrue(sm.getSource(name).isUpToDate() == false);
-		sm.saveStatus();
-		instantiateDSF();
-		assertTrue(sm.getSource(name).isUpToDate() == true);
-	}
+                modificationWithOtherFactory(fts.getBackupFile());
 
-	private synchronized void modificationWithOtherFactory(File file)
-			throws Exception {
-		// Modification with another factory
-		DataSource ds = BaseTest.dsf.getDataSource(file);
-		ds.open();
-		ds.deleteRow(0);
-		wait(2000);
-		ds.commit();
-		ds.close();
-	}
+                instantiateDSF();
+                assertFalse(sm.getSource(name).isUpToDate());
+                sm.saveStatus();
+                instantiateDSF();
+                assertTrue(sm.getSource(name).isUpToDate());
+        }
 
-	@Override
-	protected void setUp() throws Exception {
-		BaseTest.dsf.getSourceManager().removeAll();
-		instantiateDSF();
-		sm.removeAll();
-	}
+        private synchronized void modificationWithOtherFactory(File file)
+                throws Exception {
+                // Modification with another factory
+                DataSource ds = dsf.getDataSource(file);
+                ds.open();
+                ds.deleteRow(0);
+                wait(2000);
+                ds.commit();
+                ds.close();
+        }
 
-	private void instantiateDSF() {
-		dsf = new DataSourceFactory(BaseTest.internalData
-				+ "source-management");
-		sm = dsf.getSourceManager();
-	}
+        @Before
+        public void setUp() throws Exception {
+                TestBase.dsf.getSourceManager().removeAll();
+                instantiateDSF();
+                sm.removeAll();
+        }
+
+        private void instantiateDSF() {
+                dsf = new DataSourceFactory(TestBase.internalData
+                        + "source-management");
+                sm = dsf.getSourceManager();
+        }
 }

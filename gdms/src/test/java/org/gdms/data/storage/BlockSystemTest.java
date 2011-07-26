@@ -38,6 +38,7 @@
 
 package org.gdms.data.storage;
 
+import org.junit.Test;
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.util.Arrays;
@@ -45,22 +46,15 @@ import junit.framework.TestCase;
 import org.gdms.driver.ReadWriteBufferManager;
 import org.orbisgis.utils.ByteUtils;
 
+import static org.junit.Assert.*;
+
 /**
  *
  * @author Antoine Gourlay
  */
-public class BlockSystemTest extends TestCase {
+public class BlockSystemTest {
     
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testCreateNewFile() throws Exception {
             File f = File.createTempFile("blocktest", null);
             f.delete();
@@ -75,16 +69,17 @@ public class BlockSystemTest extends TestCase {
 
             m.position(0);
             // version number
-            assertTrue(m.getInt() == 1);
+            assertEquals(m.getInt(),1);
 
             // default block size
-            assertTrue(m.getInt() == FileBlockProvider.DEFAULT_BLOCK_SIZE);
+            assertEquals(m.getInt(),FileBlockProvider.DEFAULT_BLOCK_SIZE);
 
             // last block id
             long count = m.getLong();
-            assertTrue(count == -1);
+            assertEquals(count,-1);
     }
 
+    @Test
     public void testReadWriteBlock() throws Exception {
             File f = File.createTempFile("blocktest", null);
             f.delete();
@@ -102,7 +97,7 @@ public class BlockSystemTest extends TestCase {
 
             b = new FileBlockProvider(45, f);
             bl = b.readBlock(id);
-            assertTrue(ByteUtils.bytesToLong(Arrays.copyOfRange(bl.getContent(), 0, 8)) == 123456789);
+            assertEquals(ByteUtils.bytesToLong(Arrays.copyOfRange(bl.getContent(), 0, 8)),123456789);
 
             // add a second block and check there is now 2 blocks
 
@@ -118,32 +113,33 @@ public class BlockSystemTest extends TestCase {
             m.position(8);
             // block count - 1
             long count = m.getLong();
-            assertTrue(count == 1);
+            assertEquals(count,1);
 
             raf.close();
 
             // open bock blocks and read content
             b = new FileBlockProvider(45, f);
             bl = b.readBlock(0);
-            assertTrue(ByteUtils.bytesToLong(Arrays.copyOfRange(bl.getContent(), 0, 8)) == 123456789);
+            assertEquals(ByteUtils.bytesToLong(Arrays.copyOfRange(bl.getContent(), 0, 8)),123456789);
 
             bl = b.readBlock(1);
-            assertTrue(ByteUtils.bytesToLong(Arrays.copyOfRange(bl.getContent(), 0, 8)) == 987654321);
+            assertEquals(ByteUtils.bytesToLong(Arrays.copyOfRange(bl.getContent(), 0, 8)),987654321);
 
             // truncate to 1 block
             b.truncateToBlock(0);
-            assertTrue(b.getNumberOfBlocks() == 1);
+            assertEquals(b.getNumberOfBlocks(),1);
             b.close();
 
             b = new FileBlockProvider(45, f);
-            assertTrue(b.getNumberOfBlocks() == 1);
+            assertEquals(b.getNumberOfBlocks(),1);
 
             bl = b.readBlock(0);
-            assertTrue(ByteUtils.bytesToLong(Arrays.copyOfRange(bl.getContent(), 0, 8)) == 123456789);
+            assertEquals(ByteUtils.bytesToLong(Arrays.copyOfRange(bl.getContent(), 0, 8)),123456789);
 
             b.close();
     }
 
+    @Test
     public void testOtherBlockSize() throws Exception {
             File f = File.createTempFile("blocktest", null);
             f.delete();
@@ -156,7 +152,7 @@ public class BlockSystemTest extends TestCase {
 
             m.position(4);
             // default block size
-            assertTrue(m.getInt() == 2 * FileBlockProvider.DEFAULT_BLOCK_SIZE);
+            assertEquals(m.getInt(),2 * FileBlockProvider.DEFAULT_BLOCK_SIZE);
 
             raf.close();
     }

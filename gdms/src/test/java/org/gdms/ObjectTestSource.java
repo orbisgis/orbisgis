@@ -53,7 +53,7 @@ class ObjectTestSource extends TestSource {
 
 	@Override
 	public void backup() throws Exception {
-		BaseTest.dsf.getSourceManager().register(name,
+		TestBase.dsf.getSourceManager().register(name,
 				new ObjectSourceDefinition(driver,"main"));
 	}
 

@@ -36,6 +36,8 @@
  */
 package org.gdms.drivers;
 
+import org.junit.Test;
+import org.junit.Before;
 import ij.ImagePlus;
 import ij.process.ByteProcessor;
 import ij.process.ColorProcessor;
@@ -47,9 +49,8 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import junit.framework.TestCase;
 
-import org.gdms.BaseTest;
+import org.gdms.TestBase;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreation;
 import org.gdms.data.DataSourceCreationException;
@@ -75,308 +76,315 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import org.gdms.data.types.ConstraintFactory;
 import org.gdms.driver.gdms.GdmsReader;
 
-public class GDMSDriverTest extends TestCase {
+import static org.junit.Assert.*;
 
-	private DataSourceFactory dsf;
+public class GDMSDriverTest {
 
-	@Override
-	protected void setUp() throws Exception {
-		dsf = new DataSourceFactory(new File(BaseTest.backupDir,"/sources/").getAbsolutePath(),
-				BaseTest.backupDir.getAbsolutePath());
-	}
+        private DataSourceFactory dsf;
 
-	public void testSaveASGDMS() throws Exception {
-		File source = new File(BaseTest.internalData + "landcover2000.shp");
-		saveAs(source);
-	}
+        @Before
+        public void setUp() throws Exception {
+                dsf = new DataSourceFactory(new File(TestBase.backupDir, "/sources/").getAbsolutePath(),
+                        TestBase.backupDir.getAbsolutePath());
+        }
 
-	private void saveAs(File source) throws DataSourceCreationException,
-			DriverException {
-		File gdmsFile = new File(BaseTest.backupDir,"saveAsGDMS.gdms");
-		dsf.getSourceManager().register("gdms", gdmsFile);
-		DataSource ds = dsf.getDataSource(source);
-		ds.open();
-		dsf.saveContents("gdms", ds);
-		ds.close();
+        @Test
+        public void testSaveASGDMS() throws Exception {
+                File source = new File(TestBase.internalData + "landcover2000.shp");
+                saveAs(source);
+        }
 
-		ds = dsf.getDataSource(gdmsFile);
-		ds.open();
-		ds.getAsString();
-		ds.close();
-	}
+        private void saveAs(File source) throws DataSourceCreationException,
+                DriverException {
+                File gdmsFile = new File(TestBase.backupDir, "saveAsGDMS.gdms");
+                dsf.getSourceManager().register("gdms", gdmsFile);
+                DataSource ds = dsf.getDataSource(source);
+                ds.open();
+                dsf.saveContents("gdms", ds);
+                ds.close();
 
-	public void testAllTypes() throws Exception {
-		DefaultMetadata metadata = new DefaultMetadata();
-		metadata.addField("binary", TypeFactory.createType(Type.BINARY));
-		metadata.addField("boolean", TypeFactory.createType(Type.BOOLEAN));
-		metadata.addField("byte", TypeFactory.createType(Type.BYTE));
-		metadata
-				.addField("collection", TypeFactory.createType(Type.COLLECTION));
-		metadata.addField("date", TypeFactory.createType(Type.DATE));
-		metadata.addField("double", TypeFactory.createType(Type.DOUBLE));
-		metadata.addField("float", TypeFactory.createType(Type.FLOAT));
-		metadata.addField("geometry", TypeFactory.createType(Type.GEOMETRY));
-		metadata.addField("int", TypeFactory.createType(Type.INT));
-		metadata.addField("long", TypeFactory.createType(Type.LONG));
-		metadata.addField("raster", TypeFactory.createType(Type.RASTER));
-		metadata.addField("short", TypeFactory.createType(Type.SHORT));
-		metadata.addField("string", TypeFactory.createType(Type.STRING));
-		metadata.addField("time", TypeFactory.createType(Type.TIME));
-		metadata.addField("timestamp", TypeFactory.createType(Type.TIMESTAMP));
+                ds = dsf.getDataSource(gdmsFile);
+                ds.open();
+                ds.getAsString();
+                ds.close();
+        }
 
-		File file = new File(BaseTest.backupDir, "allgdms.gdms");
-		DataSourceCreation dsc = new FileSourceCreation(file, metadata);
-		file.delete();
-		dsf.createDataSource(dsc);
+        @Test
+        public void testAllTypes() throws Exception {
+                DefaultMetadata metadata = new DefaultMetadata();
+                metadata.addField("binary", TypeFactory.createType(Type.BINARY));
+                metadata.addField("boolean", TypeFactory.createType(Type.BOOLEAN));
+                metadata.addField("byte", TypeFactory.createType(Type.BYTE));
+                metadata.addField("collection", TypeFactory.createType(Type.COLLECTION));
+                metadata.addField("date", TypeFactory.createType(Type.DATE));
+                metadata.addField("double", TypeFactory.createType(Type.DOUBLE));
+                metadata.addField("float", TypeFactory.createType(Type.FLOAT));
+                metadata.addField("geometry", TypeFactory.createType(Type.GEOMETRY));
+                metadata.addField("int", TypeFactory.createType(Type.INT));
+                metadata.addField("long", TypeFactory.createType(Type.LONG));
+                metadata.addField("raster", TypeFactory.createType(Type.RASTER));
+                metadata.addField("short", TypeFactory.createType(Type.SHORT));
+                metadata.addField("string", TypeFactory.createType(Type.STRING));
+                metadata.addField("time", TypeFactory.createType(Type.TIME));
+                metadata.addField("timestamp", TypeFactory.createType(Type.TIMESTAMP));
 
-		DataSource ds = dsf.getDataSource(file);
-		ds.open();
-		ds.insertEmptyRow();
-		ds.setBinary(0, 0, new byte[] { 3, 3 });
-		ds.setBoolean(0, 1, true);
-		ds.setByte(0, 2, (byte) 5);
-		ds.setFieldValue(0, 3, ValueFactory
-				.createValue(new Value[] { ValueFactory.createValue(true) }));
-		ds.setDate(0, 4, new Date());
-		ds.setDouble(0, 5, 4d);
-		ds.setFloat(0, 6, 5.2f);
-		ds.setFieldValue(0, 7, ValueFactory.createValue(new GeometryFactory()
-				.createPoint(new Coordinate(3, 3))));
-		ds.setInt(0, 8, 4);
-		ds.setLong(0, 9, 5L);
-		GeoRaster gr = GeoRasterFactory
-				.createGeoRaster(new File(BaseTest.internalData,"sample.png").getAbsolutePath());
-		Value grValue = ValueFactory.createValue(gr);
-		ds.setFieldValue(0, 10, grValue);
-		ds.setShort(0, 11, (short) 34);
-		ds.setString(0, 12, "sd");
-		ds.setTime(0, 13, new Time(12424L));
-		ds.setTimestamp(0, 14, new Timestamp(2525234L));
+                File file = new File(TestBase.backupDir, "allgdms.gdms");
+                DataSourceCreation dsc = new FileSourceCreation(file, metadata);
+                file.delete();
+                dsf.createDataSource(dsc);
 
-		Value[] nullValues = new Value[15];
-		for (int i = 0; i < nullValues.length; i++) {
-			nullValues[i] = ValueFactory.createNullValue();
-		}
-		ds.insertFilledRow(nullValues);
-		String digest = DigestUtilities.getBase64Digest(ds);
-		ds.commit();
-		ds.close();
+                DataSource ds = dsf.getDataSource(file);
+                ds.open();
+                ds.insertEmptyRow();
+                ds.setBinary(0, 0, new byte[]{3, 3});
+                ds.setBoolean(0, 1, true);
+                ds.setByte(0, 2, (byte) 5);
+                ds.setFieldValue(0, 3, ValueFactory.createValue(new Value[]{ValueFactory.createValue(true)}));
+                ds.setDate(0, 4, new Date());
+                ds.setDouble(0, 5, 4d);
+                ds.setFloat(0, 6, 5.2f);
+                ds.setFieldValue(0, 7, ValueFactory.createValue(new GeometryFactory().createPoint(new Coordinate(3, 3))));
+                ds.setInt(0, 8, 4);
+                ds.setLong(0, 9, 5L);
+                GeoRaster gr = GeoRasterFactory.createGeoRaster(new File(TestBase.internalData, "sample.png").getAbsolutePath());
+                Value grValue = ValueFactory.createValue(gr);
+                ds.setFieldValue(0, 10, grValue);
+                ds.setShort(0, 11, (short) 34);
+                ds.setString(0, 12, "sd");
+                ds.setTime(0, 13, new Time(12424L));
+                ds.setTimestamp(0, 14, new Timestamp(2525234L));
 
-		ds = dsf.getDataSource(file);
-		DataSource ds2 = dsf.getDataSource(file);
-		ds.open();
-		ds2.open();
-		assertTrue(digest.equals(DigestUtilities.getBase64Digest(ds2)));
-		ds2.close();
-		ds.close();
-	}
+                Value[] nullValues = new Value[15];
+                for (int i = 0; i < nullValues.length; i++) {
+                        nullValues[i] = ValueFactory.createNullValue();
+                }
+                ds.insertFilledRow(nullValues);
+                String digest = DigestUtilities.getBase64Digest(ds);
+                ds.commit();
+                ds.close();
 
-	public void testAllConstraints() throws Exception {
-		DefaultMetadata metadata = new DefaultMetadata();
-		Type[] types = new Type[] {
-				TypeFactory.createType(Type.BINARY,ConstraintFactory.createConstraint(Constraint.PK)),
-				TypeFactory.createType(Type.BOOLEAN, ConstraintFactory.createConstraint(Constraint.UNIQUE)),
-				TypeFactory.createType(Type.BYTE, ConstraintFactory.createConstraint(Constraint.MIN, 0)),
-				TypeFactory.createType(Type.COLLECTION, ConstraintFactory.createConstraint(Constraint.NOT_NULL)),
-				TypeFactory.createType(Type.DATE, ConstraintFactory.createConstraint(Constraint.READONLY)),
-				TypeFactory.createType(Type.DOUBLE, ConstraintFactory.createConstraint(Constraint.AUTO_INCREMENT)),
-				TypeFactory.createType(Type.FLOAT),
-				TypeFactory.createType(Type.GEOMETRY, ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, 3)
-                                        , ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.LINESTRING)),
-				TypeFactory.createType(Type.INT),
-				TypeFactory.createType(Type.LONG),
-				TypeFactory.createType(Type.RASTER, ConstraintFactory.createConstraint(Constraint.RASTER_TYPE, ImagePlus.COLOR_256)),
-				TypeFactory.createType(Type.SHORT, ConstraintFactory.createConstraint(Constraint.MAX, 4),
-						ConstraintFactory.createConstraint(Constraint.PRECISION, 0),
-                                                ConstraintFactory.createConstraint(Constraint.SCALE, 2)),
-				TypeFactory.createType(Type.STRING, ConstraintFactory.createConstraint(Constraint.LENGTH, 4),
-                                        ConstraintFactory.createConstraint(Constraint.PATTERN, "%")),
-				TypeFactory.createType(Type.TIME),
-				TypeFactory.createType(Type.TIMESTAMP) };
-		for (int i = 0; i < types.length; i++) {
-			metadata.addField("field" + i, types[i]);
-		}
+                ds = dsf.getDataSource(file);
+                DataSource ds2 = dsf.getDataSource(file);
+                ds.open();
+                ds2.open();
+                assertTrue(digest.equals(DigestUtilities.getBase64Digest(ds2)));
+                ds2.close();
+                ds.close();
+        }
 
-		File file = new File(BaseTest.backupDir,"allgdms.gdms");
-		DataSourceCreation dsc = new FileSourceCreation(file, metadata);
-		file.delete();
-		dsf.createDataSource(dsc);
+        @Test
+        public void testAllConstraints() throws Exception {
+                DefaultMetadata metadata = new DefaultMetadata();
+                Type[] types = new Type[]{
+                        TypeFactory.createType(Type.BINARY, ConstraintFactory.createConstraint(Constraint.PK)),
+                        TypeFactory.createType(Type.BOOLEAN, ConstraintFactory.createConstraint(Constraint.UNIQUE)),
+                        TypeFactory.createType(Type.BYTE, ConstraintFactory.createConstraint(Constraint.MIN, 0)),
+                        TypeFactory.createType(Type.COLLECTION, ConstraintFactory.createConstraint(Constraint.NOT_NULL)),
+                        TypeFactory.createType(Type.DATE, ConstraintFactory.createConstraint(Constraint.READONLY)),
+                        TypeFactory.createType(Type.DOUBLE, ConstraintFactory.createConstraint(Constraint.AUTO_INCREMENT)),
+                        TypeFactory.createType(Type.FLOAT),
+                        TypeFactory.createType(Type.GEOMETRY, ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, 3), ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.LINESTRING)),
+                        TypeFactory.createType(Type.INT),
+                        TypeFactory.createType(Type.LONG),
+                        TypeFactory.createType(Type.RASTER, ConstraintFactory.createConstraint(Constraint.RASTER_TYPE, ImagePlus.COLOR_256)),
+                        TypeFactory.createType(Type.SHORT, ConstraintFactory.createConstraint(Constraint.MAX, 4),
+                        ConstraintFactory.createConstraint(Constraint.PRECISION, 0),
+                        ConstraintFactory.createConstraint(Constraint.SCALE, 2)),
+                        TypeFactory.createType(Type.STRING, ConstraintFactory.createConstraint(Constraint.LENGTH, 4),
+                        ConstraintFactory.createConstraint(Constraint.PATTERN, "%")),
+                        TypeFactory.createType(Type.TIME),
+                        TypeFactory.createType(Type.TIMESTAMP)};
+                for (int i = 0; i < types.length; i++) {
+                        metadata.addField("field" + i, types[i]);
+                }
 
-		DataSource ds = dsf.getDataSource(file);
-		ds.open();
-		for (int i = 0; i < ds.getMetadata().getFieldCount(); i++) {
-			checkType(ds.getFieldType(i), types[i]);
-			assertTrue(ds.getFieldName(i).equals("field" + i));
-		}
+                File file = new File(TestBase.backupDir, "allgdms.gdms");
+                DataSourceCreation dsc = new FileSourceCreation(file, metadata);
+                file.delete();
+                dsf.createDataSource(dsc);
 
-		ds.close();
-	}
+                DataSource ds = dsf.getDataSource(file);
+                ds.open();
+                for (int i = 0; i < ds.getMetadata().getFieldCount(); i++) {
+                        checkType(ds.getFieldType(i), types[i]);
+                        assertEquals(ds.getFieldName(i), "field" + i);
+                }
 
-	private void checkType(Type fieldType, Type type) {
-		assertTrue(fieldType.getTypeCode() == type.getTypeCode());
-		Constraint[] cons = fieldType.getConstraints();
-		Constraint[] cons2 = type.getConstraints();
-		assertTrue(cons.length == cons2.length);
-		for (int i = 0; i < cons2.length; i++) {
-			assertTrue(cons[i].getConstraintValue().equals(
-					cons2[i].getConstraintValue()));
-		}
-	}
+                ds.close();
+        }
 
-	public void testRemoveRasterField() throws Exception {
-		File file = new File(BaseTest.internalData,"sample.png");
-		DataSource ds = dsf.getDataSource(file);
-		ds.open();
-		String digest = DigestUtilities.getBase64Digest(ds);
-		ds.removeField(0);
-		ds.undo();
-		assertTrue(digest.equals(DigestUtilities.getBase64Digest(ds)));
-		ds.close();
-	}
+        private void checkType(Type fieldType, Type type) {
+                assertEquals(fieldType.getTypeCode(), type.getTypeCode());
+                Constraint[] cons = fieldType.getConstraints();
+                Constraint[] cons2 = type.getConstraints();
+                assertEquals(cons.length, cons2.length);
+                for (int i = 0; i < cons2.length; i++) {
+                        assertEquals(cons[i].getConstraintValue(), cons2[i].getConstraintValue());
+                }
+        }
 
-	public void testKeepFullExtent() throws Exception {
-		File vectFile = new File(BaseTest.backupDir,
-				"fullExtentVectGDMS.gdms");
-		vectFile.delete();
-		testFullExtent(vectFile, new File(BaseTest.internalData
-				+ "landcover2000.shp"));
-		File rasterFile = new File(BaseTest.backupDir,
-				"fullExtentRasterGDMS.gdms");
-		rasterFile.delete();
-		testFullExtent(rasterFile, new File(BaseTest.internalData
-				+ "sample.png"));
-	}
+        @Test
+        public void testRemoveRasterField() throws Exception {
+                File file = new File(TestBase.internalData, "sample.png");
+                DataSource ds = dsf.getDataSource(file);
+                ds.open();
+                String digest = DigestUtilities.getBase64Digest(ds);
+                ds.removeField(0);
+                ds.undo();
+                assertTrue(digest.equals(DigestUtilities.getBase64Digest(ds)));
+                ds.close();
+        }
 
-	private void testFullExtent(File gdmsFile, File original)
-			throws DataSourceCreationException, DriverException {
-		String name = dsf.getSourceManager().nameAndRegister(gdmsFile);
-		DataSource ds = dsf.getDataSource(original);
-		ds.open();
-		Envelope fe = new SpatialDataSourceDecorator(ds).getFullExtent();
-		dsf.saveContents(name, ds);
-		ds.close();
+        @Test
+        public void testKeepFullExtent() throws Exception {
+                File vectFile = new File(TestBase.backupDir,
+                        "fullExtentVectGDMS.gdms");
+                vectFile.delete();
+                testFullExtent(vectFile, new File(TestBase.internalData
+                        + "landcover2000.shp"));
+                File rasterFile = new File(TestBase.backupDir,
+                        "fullExtentRasterGDMS.gdms");
+                rasterFile.delete();
+                testFullExtent(rasterFile, new File(TestBase.internalData
+                        + "sample.png"));
+        }
 
-		ds = dsf.getDataSource(gdmsFile);
-		ds.open();
-		assertTrue(fe
-				.equals(new SpatialDataSourceDecorator(ds).getFullExtent()));
-		ds.close();
-	}
+        private void testFullExtent(File gdmsFile, File original)
+                throws DataSourceCreationException, DriverException {
+                String name = dsf.getSourceManager().nameAndRegister(gdmsFile);
+                DataSource ds = dsf.getDataSource(original);
+                ds.open();
+                Envelope fe = new SpatialDataSourceDecorator(ds).getFullExtent();
+                dsf.saveContents(name, ds);
+                ds.close();
 
-	public void testDifferentValueTypeAndFieldType() throws Exception {
-		File source = new File(BaseTest.internalData + "points.shp");
-		saveAs(source);
-	}
+                ds = dsf.getDataSource(gdmsFile);
+                ds.open();
+                assertEquals(fe, new SpatialDataSourceDecorator(ds).getFullExtent());
+                ds.close();
+        }
 
-	public void testKeepNoDataValue() throws Exception {
-		DataSource ds = dsf.getDataSource(new File("../../datatestjunit/"
-				+ "gdms/tif440606.gdms"));
-		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
-		sds.open();
-		GeoRaster gr = sds.getRaster(0);
-		gr.setNodataValue(345);
-		assertTrue(gr.getNoDataValue() == 345);
-		gr = sds.getRaster(0);
-		assertTrue(gr.getNoDataValue() == 345);
-		sds.close();
-	}
+        @Test
+        public void testDifferentValueTypeAndFieldType() throws Exception {
+                File source = new File(TestBase.internalData + "points.shp");
+                saveAs(source);
+        }
 
-	public void testRasterMetadataPixelArrayInconsistencyFloat()
-			throws Exception {
-		RasterMetadata rm = new RasterMetadata(0, 0, 10, 10, 2, 2);
-		FloatProcessor fp = new FloatProcessor(3, 3);
-		float[] pixels = (float[]) fp.getPixels();
-		for (int i = 0; i < pixels.length; i++) {
-			pixels[i] = i;
-		}
-		GeoRaster gr = GeoRasterFactory.createGeoRaster(fp, rm);
+        @Test
+        public void testKeepNoDataValue() throws Exception {
+                DataSource ds = dsf.getDataSource(new File("../../datatestjunit/"
+                        + "gdms/tif440606.gdms"));
+                SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
+                sds.open();
+                GeoRaster gr = sds.getRaster(0);
+                gr.setNodataValue(345);
+                assertEquals(gr.getNoDataValue(), 345, 0);
+                gr = sds.getRaster(0);
+                assertEquals(gr.getNoDataValue(), 345, 0);
+                sds.close();
+        }
 
-		float[] result = (float[]) testRasterMetadataPixelArrayInconsistency(gr);
-		assertTrue(result[2] == 3);
-		assertTrue(result.length == 4);
-	}
+        @Test
+        public void testRasterMetadataPixelArrayInconsistencyFloat()
+                throws Exception {
+                RasterMetadata rm = new RasterMetadata(0, 0, 10, 10, 2, 2);
+                FloatProcessor fp = new FloatProcessor(3, 3);
+                float[] pixels = (float[]) fp.getPixels();
+                for (int i = 0; i < pixels.length; i++) {
+                        pixels[i] = i;
+                }
+                GeoRaster gr = GeoRasterFactory.createGeoRaster(fp, rm);
 
-	public void testRasterMetadataPixelArrayInconsistencyInt() throws Exception {
-		RasterMetadata rm = new RasterMetadata(0, 0, 10, 10, 2, 2);
-		ColorProcessor fp = new ColorProcessor(3, 3);
-		int[] pixels = (int[]) fp.getPixels();
-		for (int i = 0; i < pixels.length; i++) {
-			pixels[i] = i;
-		}
-		GeoRaster gr = GeoRasterFactory.createGeoRaster(fp, rm);
+                float[] result = (float[]) testRasterMetadataPixelArrayInconsistency(gr);
+                assertEquals(result[2], 3, 0);
+                assertEquals(result.length, 4);
+        }
 
-		int[] result = (int[]) testRasterMetadataPixelArrayInconsistency(gr);
-		assertTrue(result[2] == 3);
-		assertTrue(result.length == 4);
-	}
+        @Test
+        public void testRasterMetadataPixelArrayInconsistencyInt() throws Exception {
+                RasterMetadata rm = new RasterMetadata(0, 0, 10, 10, 2, 2);
+                ColorProcessor fp = new ColorProcessor(3, 3);
+                int[] pixels = (int[]) fp.getPixels();
+                for (int i = 0; i < pixels.length; i++) {
+                        pixels[i] = i;
+                }
+                GeoRaster gr = GeoRasterFactory.createGeoRaster(fp, rm);
 
-	public void testRasterMetadataPixelArrayInconsistencyByte()
-			throws Exception {
-		RasterMetadata rm = new RasterMetadata(0, 0, 10, 10, 2, 2);
-		ByteProcessor fp = new ByteProcessor(3, 3);
-		byte[] pixels = (byte[]) fp.getPixels();
-		for (int i = 0; i < pixels.length; i++) {
-			pixels[i] = (byte) i;
-		}
-		GeoRaster gr = GeoRasterFactory.createGeoRaster(fp, rm);
+                int[] result = (int[]) testRasterMetadataPixelArrayInconsistency(gr);
+                assertEquals(result[2], 3);
+                assertEquals(result.length, 4);
+        }
 
-		byte[] result = (byte[]) testRasterMetadataPixelArrayInconsistency(gr);
-		assertTrue(result[2] == 3);
-		assertTrue(result.length == 4);
-	}
+        @Test
+        public void testRasterMetadataPixelArrayInconsistencyByte()
+                throws Exception {
+                RasterMetadata rm = new RasterMetadata(0, 0, 10, 10, 2, 2);
+                ByteProcessor fp = new ByteProcessor(3, 3);
+                byte[] pixels = (byte[]) fp.getPixels();
+                for (int i = 0; i < pixels.length; i++) {
+                        pixels[i] = (byte) i;
+                }
+                GeoRaster gr = GeoRasterFactory.createGeoRaster(fp, rm);
 
-	public void testRasterMetadataPixelArrayInconsistencyShort()
-			throws Exception {
-		RasterMetadata rm = new RasterMetadata(0, 0, 10, 10, 2, 2);
-		ShortProcessor fp = new ShortProcessor(3, 3);
-		short[] pixels = (short[]) fp.getPixels();
-		for (int i = 0; i < pixels.length; i++) {
-			pixels[i] = (short) i;
-		}
-		GeoRaster gr = GeoRasterFactory.createGeoRaster(fp, rm);
+                byte[] result = (byte[]) testRasterMetadataPixelArrayInconsistency(gr);
+                assertEquals(result[2], 3);
+                assertEquals(result.length, 4);
+        }
 
-		short[] result = (short[]) testRasterMetadataPixelArrayInconsistency(gr);
-		assertTrue(result[2] == 3);
-		assertTrue(result.length == 4);
-	}
+        @Test
+        public void testRasterMetadataPixelArrayInconsistencyShort()
+                throws Exception {
+                RasterMetadata rm = new RasterMetadata(0, 0, 10, 10, 2, 2);
+                ShortProcessor fp = new ShortProcessor(3, 3);
+                short[] pixels = (short[]) fp.getPixels();
+                for (int i = 0; i < pixels.length; i++) {
+                        pixels[i] = (short) i;
+                }
+                GeoRaster gr = GeoRasterFactory.createGeoRaster(fp, rm);
 
-	private Object testRasterMetadataPixelArrayInconsistency(GeoRaster gr)
-			throws Exception {
-		// Create the source
-		File out = new File(dsf.getTempFile(".gdms"));
-		DefaultMetadata dm = new DefaultMetadata(new Type[] { TypeFactory
-				.createType(Type.RASTER) }, new String[] { "raster" });
-		FileSourceCreation fsc = new FileSourceCreation(out, dm);
-		dsf.createDataSource(fsc);
+                short[] result = (short[]) testRasterMetadataPixelArrayInconsistency(gr);
+                assertEquals(result[2], 3);
+                assertEquals(result.length, 4);
+        }
 
-		// Register the source
-		DataSource ds = dsf.getDataSource(out);
-		ds.open();
-		ds.insertFilledRow(new Value[] { ValueFactory.createValue(gr) });
-		ds.commit();
+        private Object testRasterMetadataPixelArrayInconsistency(GeoRaster gr)
+                throws Exception {
+                // Create the source
+                File out = new File(dsf.getTempFile(".gdms"));
+                DefaultMetadata dm = new DefaultMetadata(new Type[]{TypeFactory.createType(Type.RASTER)}, new String[]{"raster"});
+                FileSourceCreation fsc = new FileSourceCreation(out, dm);
+                dsf.createDataSource(fsc);
 
-		GeoRaster readRaster = ds.getFieldValue(0, 0).getAsRaster();
-		Object pixels = readRaster.getImagePlus().getProcessor().getPixels();
-		assertTrue(readRaster.getMetadata().getNCols() == 2);
-		ds.close();
-		return pixels;
-	}
+                // Register the source
+                DataSource ds = dsf.getDataSource(out);
+                ds.open();
+                ds.insertFilledRow(new Value[]{ValueFactory.createValue(gr)});
+                ds.commit();
 
-	public void testCompatibleWith2_0() throws Exception {
-		DataSource ds = dsf.getDataSource(new File(BaseTest.internalData,
-				"version2.gdms"));
-		ds.open();
-		ds.getAsString();
-		ds.close();
-	}
+                GeoRaster readRaster = ds.getFieldValue(0, 0).getAsRaster();
+                Object pixels = readRaster.getImagePlus().getProcessor().getPixels();
+                assertEquals(readRaster.getMetadata().getNCols(), 2);
+                ds.close();
+                return pixels;
+        }
 
+        @Test
+        public void testCompatibleWith2_0() throws Exception {
+                DataSource ds = dsf.getDataSource(new File(TestBase.internalData,
+                        "version2.gdms"));
+                ds.open();
+                ds.getAsString();
+                ds.close();
+        }
+
+        @Test
         public void testOpenBadFile() throws Exception {
-                GdmsReader reader = new GdmsReader(new File(BaseTest.internalData,"badgdms.gdms"));
+                GdmsReader reader = new GdmsReader(new File(TestBase.internalData, "badgdms.gdms"));
                 try {
                         reader.open();
                         reader.readMetadata();
-                        assertTrue(false);
-                } catch(DriverException e) {
+                        fail();
+                } catch (DriverException e) {
                 } finally {
                         reader.close();
                 }

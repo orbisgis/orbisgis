@@ -36,6 +36,7 @@
  */
 package org.gdms.drivers;
 
+import org.junit.Test;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -49,7 +50,7 @@ import java.util.HashMap;
 
 import org.gdms.DBTestSource;
 import org.gdms.Geometries;
-import org.gdms.BaseTest;
+import org.gdms.TestBase;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.NoSuchTableException;
@@ -74,7 +75,10 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import org.gdms.data.types.ConstraintFactory;
 
-public class DBDriverTest extends BaseTest {
+import static org.junit.Assert.*;
+import static org.junit.Assume.*;
+
+public class DBDriverTest extends TestBase {
 
         private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         private static SimpleDateFormat stf = new SimpleDateFormat("HH:mm:ss");
@@ -112,33 +116,33 @@ public class DBDriverTest extends BaseTest {
         private DBSource postgreSQLDBSource = new DBSource("127.0.0.1", 5432,
                 "GeographicalDataBase", "claudeau", "claudeau", "alltypes", "jdbc:postgresql");
         private DBTestSource postgreSQLSrc = new DBTestSource("source",
-                "org.postgresql.Driver", BaseTest.internalData
+                "org.postgresql.Driver", TestBase.internalData
                 + "postgresAllTypes.sql", postgreSQLDBSource);
         private DBSource hsqldbDBSource = new DBSource(null, 0,
-                BaseTest.backupDir + File.separator + "hsqldbAllTypes", "sa",
+                TestBase.backupDir + File.separator + "hsqldbAllTypes", "sa",
                 null, "alltypes", "jdbc:hsqldb:file");
         private DBTestSource hsqldbSrc = new DBTestSource("source",
-                "org.hsqldb.jdbcDriver", BaseTest.internalData
+                "org.hsqldb.jdbcDriver", TestBase.internalData
                 + "hsqldbAllTypes.sql", hsqldbDBSource);
-        private DBSource h2DBSource = new DBSource(null, 0, BaseTest.backupDir
+        private DBSource h2DBSource = new DBSource(null, 0, TestBase.backupDir
                 + File.separator + "h2AllTypes", "sa", null, "alltypes", "jdbc:h2");
         private DBTestSource h2Src = new DBTestSource("source", "org.h2.Driver",
-                BaseTest.internalData + "h2AllTypes.sql", h2DBSource);
+                TestBase.internalData + "h2AllTypes.sql", h2DBSource);
         private DBSource schemaPostgreSQLDBSource = new DBSource("127.0.0.1", 5432,
                 "gisdb", "gis", "gis", "gis_schema", "schema_test", "jdbc:postgresql");
         private DBTestSource schemaPostgreSQLSrc = new DBTestSource("source",
-                "org.postgresql.Driver", BaseTest.internalData
+                "org.postgresql.Driver", TestBase.internalData
                 + "postgresSchemaTest.sql", schemaPostgreSQLDBSource);
         private DBSource schemaHsqldbDBSource = new DBSource(null, 0,
-                BaseTest.backupDir + File.separator + "hsqldbSchemaTest", "sa",
+                TestBase.backupDir + File.separator + "hsqldbSchemaTest", "sa",
                 null, "gis_schema", "schema_test", "jdbc:hsqldb:file");
         private DBTestSource schemaHsqldbSrc = new DBTestSource("source",
-                "org.hsqldb.jdbcDriver", BaseTest.internalData
+                "org.hsqldb.jdbcDriver", TestBase.internalData
                 + "hsqldbSchemaTest.sql", schemaHsqldbDBSource);
-        private DBSource schemaH2DBSource = new DBSource(null, 0, BaseTest.backupDir
+        private DBSource schemaH2DBSource = new DBSource(null, 0, TestBase.backupDir
                 + File.separator + "h2SchemaTest", "sa", null, "gis_schema", "schema_test", "jdbc:h2");
         private DBTestSource schemaH2Src = new DBTestSource("source", "org.h2.Driver",
-                BaseTest.internalData + "h2SchemaTest.sql", schemaH2DBSource);
+                TestBase.internalData + "h2SchemaTest.sql", schemaH2DBSource);
 
         private void testReadAllTypes(DBSource dbSource, DBTestSource src)
                 throws Exception {
@@ -149,7 +153,7 @@ public class DBDriverTest extends BaseTest {
         private void readAllTypes() throws NoSuchTableException,
                 DataSourceCreationException, DriverException,
                 NonEditableDataSourceException {
-                DataSource ds = BaseTest.dsf.getDataSource("source");
+                DataSource ds = TestBase.dsf.getDataSource("source");
 
                 ds.open();
                 Metadata m = ds.getMetadata();
@@ -170,32 +174,40 @@ public class DBDriverTest extends BaseTest {
                 ds.close();
                 ds.open();
                 Value[] reCommitedRow = ds.getRow(0);
-                assertTrue(BaseTest.equals(reCommitedRow, commitedRow, ds.getMetadata()));
-                assertTrue(BaseTest.equals(firstRow, commitedRow, ds.getMetadata()));
+                assertTrue(equals(reCommitedRow, commitedRow, ds.getMetadata()));
+                assertTrue(equals(firstRow, commitedRow, ds.getMetadata()));
                 ds.commit();
                 ds.close();
         }
 
+        @Test
         public void testReadSchemaPostgreSQL() throws Exception {
+                assumeTrue(TestBase.postGisAvailable);
                 testReadAllTypes(schemaPostgreSQLDBSource, schemaPostgreSQLSrc);
         }
 
+        @Test
         public void testReadSchemaHSQLDB() throws Exception {
                 testReadAllTypes(schemaHsqldbDBSource, schemaHsqldbSrc);
         }
 
+        @Test
         public void testReadSchemaH2() throws Exception {
                 testReadAllTypes(schemaH2DBSource, schemaH2Src);
         }
 
+        @Test
         public void testReadAllTypesPostgreSQL() throws Exception {
+                assumeTrue(TestBase.postGisAvailable);
                 testReadAllTypes(postgreSQLDBSource, postgreSQLSrc);
         }
 
+        @Test
         public void testReadAllTypesHSQLDB() throws Exception {
                 testReadAllTypes(hsqldbDBSource, hsqldbSrc);
         }
 
+        @Test
         public void testReadAllTypesH2() throws Exception {
                 testReadAllTypes(h2DBSource, h2Src);
         }
@@ -212,7 +224,7 @@ public class DBDriverTest extends BaseTest {
                 metadata.addField("f5", Type.DOUBLE);
                 metadata.addField("f6", Type.FLOAT);
                 metadata.addField("f7", Type.INT, ConstraintFactory.createConstraint(Constraint.NOT_NULL),
-                                ConstraintFactory.createConstraint(Constraint.AUTO_INCREMENT));
+                        ConstraintFactory.createConstraint(Constraint.AUTO_INCREMENT));
                 metadata.addField("f8", Type.LONG);
                 metadata.addField("f9", Type.SHORT, ConstraintFactory.createConstraint(Constraint.NOT_NULL));
                 metadata.addField("f10", Type.STRING, ConstraintFactory.createConstraint(Constraint.LENGTH, 50));
@@ -249,27 +261,31 @@ public class DBDriverTest extends BaseTest {
                 return (type.getConstraint(constraint) != null);
         }
 
+        @Test
         public void testCreateAllTypesH2() throws Exception {
                 DBTestSource src = new DBTestSource("source", "org.h2.Driver",
-                        BaseTest.internalData + "removeAllTypes.sql", h2DBSource);
-                BaseTest.dsf.getSourceManager().removeAll();
+                        TestBase.internalData + "removeAllTypes.sql", h2DBSource);
+                TestBase.dsf.getSourceManager().removeAll();
                 src.backup();
                 testCreateAllTypes(h2DBSource, true, false);
         }
 
+        @Test
         public void testCreateAllTypesHSQLDB() throws Exception {
                 DBTestSource src = new DBTestSource("source", "org.hsqldb.jdbcDriver",
-                        BaseTest.internalData + "removeAllTypes.sql", hsqldbDBSource);
-                BaseTest.dsf.getSourceManager().removeAll();
+                        TestBase.internalData + "removeAllTypes.sql", hsqldbDBSource);
+                TestBase.dsf.getSourceManager().removeAll();
                 src.backup();
                 testCreateAllTypes(hsqldbDBSource, true, true);
         }
 
+        @Test
         public void testCreateAllTypesPostgreSQL() throws Exception {
+                assumeTrue(TestBase.postGisAvailable);
                 DBTestSource src = new DBTestSource("source", "org.postgresql.Driver",
-                        BaseTest.internalData + "removeAllTypes.sql",
+                        TestBase.internalData + "removeAllTypes.sql",
                         postgreSQLDBSource);
-                BaseTest.dsf.getSourceManager().removeAll();
+                TestBase.dsf.getSourceManager().removeAll();
                 src.backup();
                 testCreateAllTypes(postgreSQLDBSource, false, true);
         }
@@ -284,7 +300,7 @@ public class DBDriverTest extends BaseTest {
                                 Constraint.GEOMETRY_DIMENSION, dimension)};
                 } else {
                         constraints = new Constraint[]{geometryConstraint,
-                                        ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, dimension)};
+                                ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, dimension)};
                 }
                 metadata.addField("f1", Type.GEOMETRY, constraints);
                 metadata.addField("f2", Type.INT, ConstraintFactory.createConstraint(Constraint.PK));
@@ -298,31 +314,33 @@ public class DBDriverTest extends BaseTest {
                 Type spatialType = met.getFieldType(spatialIndex);
                 GeometryConstraint gc = (GeometryConstraint) spatialType.getConstraint(Constraint.GEOMETRY_TYPE);
                 DimensionConstraint dc = (DimensionConstraint) spatialType.getConstraint(Constraint.GEOMETRY_DIMENSION);
-                assertTrue((gc == null)
-                        || (gc.getGeometryType() == geometryConstraint.getGeometryType()));
+                assertTrue((gc == null) || (gc.getGeometryType() == geometryConstraint.getGeometryType()));
                 assertTrue((dc == null) || dc.getDimension() == dimension);
                 ds.close();
         }
 
+        @Test
         public void testPostgreSQLGeometryConstraint() throws Exception {
+                assumeTrue(TestBase.postGisAvailable);
                 DBTestSource src = new DBTestSource("source", "org.postgresql.Driver",
-                        BaseTest.internalData + "removeAllTypes.sql",
+                        TestBase.internalData + "removeAllTypes.sql",
                         postgreSQLDBSource);
                 for (int i = 0; i < geometryConstraints.length; i++) {
                         for (int dim = 2; dim <= 3; dim++) {
-                                BaseTest.dsf.getSourceManager().removeAll();
+                                TestBase.dsf.getSourceManager().removeAll();
                                 src.backup();
-                                testSQLGeometryConstraint(postgreSQLDBSource, (GeometryConstraint)
-                                        geometryConstraints[i], dim);
+                                testSQLGeometryConstraint(postgreSQLDBSource, (GeometryConstraint) geometryConstraints[i], dim);
                         }
                 }
         }
 
+        @Test
         public void testPostgreSQLRemoveColumnAddColumnSameName() throws Exception {
+                assumeTrue(TestBase.postGisAvailable);
                 DBTestSource src = postgreSQLSrc;
-                BaseTest.dsf.getSourceManager().removeAll();
+                TestBase.dsf.getSourceManager().removeAll();
                 src.backup();
-                DataSource ds = BaseTest.dsf.getDataSource(postgreSQLDBSource);
+                DataSource ds = TestBase.dsf.getDataSource(postgreSQLDBSource);
                 ds.open();
                 ds.addField("the_geom", TypeFactory.createType(Type.GEOMETRY));
                 ds.commit();
@@ -338,11 +356,13 @@ public class DBDriverTest extends BaseTest {
                 ds.close();
         }
 
+        @Test
         public void testPostgreSQLReadWriteAllGeometryTypes() throws Exception {
+                assumeTrue(TestBase.postGisAvailable);
                 DBTestSource src = new DBTestSource("source", "org.postgresql.Driver",
-                        BaseTest.internalData + "removeAllTypes.sql",
+                        TestBase.internalData + "removeAllTypes.sql",
                         postgreSQLDBSource);
-                BaseTest.dsf.getSourceManager().removeAll();
+                TestBase.dsf.getSourceManager().removeAll();
                 src.backup();
 
                 DefaultMetadata metadata = new DefaultMetadata();
@@ -372,31 +392,34 @@ public class DBDriverTest extends BaseTest {
                 ds.open();
                 SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
                 for (int i = 0; i < geometries.length; i++) {
-                        assertTrue(geometries[i].equals(sds.getGeometry(i)));
+                        assertEquals(geometries[i], sds.getGeometry(i));
                 }
                 ds.close();
         }
 
+        @Test
         public void testHSQLDBCommitTwice() throws Exception {
                 DBSource dbSource = new DBSource(null, -1,
                         "src/test/resources/backup/testHSQLDBCommit", "sa", "",
                         "mytable", "jdbc:hsqldb:file");
                 DefaultMetadata metadata = new DefaultMetadata(new Type[]{
-                        TypeFactory.createType(Type.STRING, ConstraintFactory.createConstraint(Constraint.PK))},
+                                TypeFactory.createType(Type.STRING, ConstraintFactory.createConstraint(Constraint.PK))},
                         new String[]{"field1"});
                 testCommitTwice(dbSource, metadata);
         }
 
+        @Test
         public void testH2CommitTwice() throws Exception {
                 DBSource dbSource = new DBSource(null, -1,
                         "src/test/resources/backup/testH2Commit", "sa", "", "mytable",
                         "jdbc:h2");
                 DefaultMetadata metadata = new DefaultMetadata(new Type[]{
-                        TypeFactory.createType(Type.STRING, ConstraintFactory.createConstraint(Constraint.PK))},
+                                TypeFactory.createType(Type.STRING, ConstraintFactory.createConstraint(Constraint.PK))},
                         new String[]{"field1"});
                 testCommitTwice(dbSource, metadata);
         }
 
+        @Test
         public void testDoublePrimaryKey() throws Exception {
                 DefaultMetadata metadata = new DefaultMetadata(
                         new Type[]{
@@ -420,7 +443,7 @@ public class DBDriverTest extends BaseTest {
                         // ignore, something else will fail
                 }
                 dsf.createDataSource(new DBSourceCreation(dbSource, metadata));
-                dsf.getSourceManager().register("table", dbSource);
+                dsf.getSourceManager().register("tototable", dbSource);
                 DataSource ds = dsf.getDataSource(dbSource);
                 ds.open();
                 Value[] row = new Value[metadata.getFieldCount()];
