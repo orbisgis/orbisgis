@@ -40,37 +40,41 @@ package org.orbisgis.core;
 import java.io.File;
 
 import org.gdms.source.SourceManager;
+import org.junit.Before;
+import org.junit.Test;
 
 public class FormatTest extends AbstractTest {
 
-	private SourceManager sourceManager;
+        private SourceManager sourceManager;
 
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		super.registerDataManager();
-		sourceManager = ((DataManager) Services.getService(DataManager.class))
-				.getDataSourceFactory().getSourceManager();
-		sourceManager.removeAll();
-		
-	}
+        @Override
+        @Before
+        public void setUp() throws Exception {
+                super.setUp();
+                registerDataManager();
+                sourceManager = ((DataManager) Services.getService(DataManager.class)).getDataSourceFactory().getSourceManager();
+                sourceManager.removeAll();
 
-	public void testTiff() throws Exception {
-		File file = new File("src/test/resources/data/ace.tiff");
-		sourceManager.register("tiff", file);
-		getDataManager().createLayer("tiff");
-	}
+        }
 
-	public void testAsc() throws Exception {
-		File file = new File("src/test/resources/data/3x3.asc");
-		sourceManager.register("asc", file);
-		getDataManager().createLayer("asc");
-	}
+        @Test
+        public void testTiff() throws Exception {
+                File file = new File("src/test/resources/data/ace.tiff");
+                sourceManager.register("tiff", file);
+                getDataManager().createLayer("tiff");
+        }
 
-	public void testShapefile() throws Exception {
-		File file = new File("src/test/resources/data/bv_sap.shp");
-		sourceManager.register("shp", file);
-		getDataManager().createLayer("shp");
-	}
+        @Test
+        public void testAsc() throws Exception {
+                File file = new File("src/test/resources/data/3x3.asc");
+                sourceManager.register("asc", file);
+                getDataManager().createLayer("asc");
+        }
 
+        @Test
+        public void testShapefile() throws Exception {
+                File file = new File("src/test/resources/data/bv_sap.shp");
+                sourceManager.register("shp", file);
+                getDataManager().createLayer("shp");
+        }
 }

@@ -36,37 +36,41 @@
  */
 package org.orbisgis.core;
 
+import org.junit.Before;
+import org.junit.Test;
 import java.awt.image.BufferedImage;
 
-import junit.framework.TestCase;
 
 import org.orbisgis.core.map.MapTransform;
 
 import com.vividsolutions.jts.geom.Envelope;
 
-public class MapTransformTest extends TestCase {
+import static org.junit.Assert.*;
 
-	private BufferedImage img;
-	private Envelope extent;
-	private MapTransform mt;
+public class MapTransformTest {
 
-	@Override
-	protected void setUp() throws Exception {
-		img = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
-		mt = new MapTransform();
-		extent = new Envelope(0, 100, 0, 100);
-	}
+        private BufferedImage img;
+        private Envelope extent;
+        private MapTransform mt;
 
-	public void testExtentAndImage() throws Exception {
-		mt.setExtent(extent);
-		mt.setImage(img);
-		assertTrue(mt.getAdjustedExtent().equals(extent));
-	}
+        @Before
+        public void setUp() throws Exception {
+                img = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
+                mt = new MapTransform();
+                extent = new Envelope(0, 100, 0, 100);
+        }
 
-	public void testImageAndExtent() throws Exception {
-		mt.setImage(img);
-		mt.setExtent(extent);
-		assertTrue(mt.getAdjustedExtent().equals(extent));
-	}
+        @Test
+        public void testExtentAndImage() throws Exception {
+                mt.setExtent(extent);
+                mt.setImage(img);
+                assertEquals(mt.getAdjustedExtent(), extent);
+        }
 
+        @Test
+        public void testImageAndExtent() throws Exception {
+                mt.setImage(img);
+                mt.setExtent(extent);
+                assertEquals(mt.getAdjustedExtent(), extent);
+        }
 }

@@ -67,7 +67,9 @@ import org.orbisgis.core.renderer.symbol.SymbolFactory;
 
 import com.vividsolutions.jts.geom.Envelope;
 import org.gdms.data.SQLDataSourceFactory;
+import org.junit.Ignore;
 
+@Ignore
 public class TestClassfication {
 
 	private static Range[] ranges;
