@@ -142,6 +142,7 @@ public class DBDriverTest extends SQLBaseTest {
 
         @Test
         public void testShapefile2H2() throws Exception {
+                assumeTrue(SQLBaseTest.h2Available);
                 // Delete the table if exists
                 String fileName = internalData + "backup/testShapefile2H2";
                 DBSource dbSource = new DBSource("", 0, "gdms", "sa", fileName,

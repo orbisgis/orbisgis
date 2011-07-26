@@ -177,6 +177,7 @@ public class ExportTest extends AbstractDBTest {
 
         @Test
         public void testSHP3D2H2() throws Exception {
+                assumeTrue(SQLBaseTest.h2Available);
                 sm.remove("landcover2000");
                 String script = "CALL register('" + SQLBaseTest.internalData + "p3d.shp', "
                         + "'landcover2000');";

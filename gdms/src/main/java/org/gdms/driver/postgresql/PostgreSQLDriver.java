@@ -696,14 +696,6 @@ public final class PostgreSQLDriver extends DefaultDBDriver implements ReadAcces
         }
 
         @Override
-        public ReadAccess getTable(String name) {
-                if (!name.equals(tableName)) {
-                        return null;
-                }
-                return this;
-        }
-
-        @Override
         public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
                 LOG.trace("Getting value for row " + rowIndex);
                 wnd.moveTo(rowIndex);

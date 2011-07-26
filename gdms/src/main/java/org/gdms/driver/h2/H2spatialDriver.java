@@ -241,14 +241,6 @@ public final class H2spatialDriver extends DefaultDBDriver implements ReadAccess
         }
 
         @Override
-        public ReadAccess getTable(final String name) {
-                if (!name.equals(this.tableName)) {
-                        return null;
-                }
-                return this;
-        }
-
-        @Override
         public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
                 Value value = null;
 
@@ -269,7 +261,7 @@ public final class H2spatialDriver extends DefaultDBDriver implements ReadAccess
                                         throw new DriverException(e);
                                 }
                         } else {
-                                value = H2spatialDriver.super.getTable(tableName).getFieldValue(rowIndex, fieldId - 1);
+                                value = super.getFieldValue(rowIndex, fieldId - 1);
                         }
 
                         if (getResultSet().wasNull()) {

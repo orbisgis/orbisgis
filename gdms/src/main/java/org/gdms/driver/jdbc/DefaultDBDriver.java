@@ -325,10 +325,10 @@ public abstract class DefaultDBDriver extends DefaultSQL implements ReadAccess {
                         statement = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
                                 ResultSet.CONCUR_READ_ONLY,
                                 ResultSet.CLOSE_CURSORS_AT_COMMIT);
+                        statement.setQueryTimeout(60);
                         this.conn = con;
                         this.tableName = tableName;
                         this.schemaName = schemaName;
-                        String thename = null;
                         if (this.schemaName == null) {
                                 final TableDescription[] tables = getTables(con);
                                 if (tables == null) {
@@ -340,16 +340,13 @@ public abstract class DefaultDBDriver extends DefaultSQL implements ReadAccess {
                                                 break;
                                         }
                                 }
-                                schema = new DefaultSchema(tableName);
-                                thename = DriverManager.DEFAULT_SINGLE_TABLE_NAME;
-                        } else {
-                                schema = new DefaultSchema(schemaName);
-                                thename = tableName;
-                                
+
                         }
+
+                        schema = new DefaultSchema(tableName);
                         getData();
 
-                        schema.addTable(thename, getInternalMetadata());
+                        schema.addTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME, getInternalMetadata());
                 } catch (SQLException e) {
                         throw new DriverException(e.getMessage(), e);
                 }
@@ -475,7 +472,7 @@ public abstract class DefaultDBDriver extends DefaultSQL implements ReadAccess {
 
         @Override
         public ReadAccess getTable(String name) {
-                if (!name.equalsIgnoreCase(tableName)) {
+                if (!name.equals(DriverManager.DEFAULT_SINGLE_TABLE_NAME)) {
                         return null;
                 }
                 return this;

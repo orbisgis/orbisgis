@@ -72,6 +72,7 @@ public class DBMetadataTest extends AbstractDBTest {
 
         @Test
         public void testH2ReadString() throws Exception {
+                assumeTrue(TestBase.h2Available);
                 String tableName;
                 tableName = "testh2metadatastring2";
                 DBSource source = getH2Source(tableName);
@@ -121,7 +122,8 @@ public class DBMetadataTest extends AbstractDBTest {
         }
 
         @Test
-        public void testReadNumericOthers() throws Exception {
+        public void testReadNumericH2() throws Exception {
+                assumeTrue(TestBase.h2Available);
                 String tableName = "testh2metadatanumeric";
                 testReadNumeric(
                         getH2Source(tableName),
@@ -131,7 +133,12 @@ public class DBMetadataTest extends AbstractDBTest {
                         + " limitednumeric2 numeric(12, 3), "
                         + "\"unlimitedinteger\" int4) ; ");
                 sm.removeAll();
-                tableName = "testhsqldbmetadatanumeric";
+        }
+
+        @Test
+        public void testReadNumericHsqlDb() throws Exception {
+                assumeTrue(TestBase.hsqlDbAvailable);
+                String tableName = "testhsqldbmetadatanumeric";
                 testReadNumeric(
                         getHSQLDBSource(tableName),
                         "CREATE TABLE "
@@ -139,6 +146,7 @@ public class DBMetadataTest extends AbstractDBTest {
                         + " (id integer primary key, limitednumeric1 numeric(12),"
                         + " limitednumeric2 numeric(12, 3), "
                         + "unlimitedinteger int) ; ");
+                sm.removeAll();
         }
 
         private void testReadNumeric(DBSource source, String createSQL)
@@ -170,10 +178,16 @@ public class DBMetadataTest extends AbstractDBTest {
         }
 
         @Test
-        public void testWriteStringOthers() throws Exception {
+        public void testWriteStringH2() throws Exception {
+                assumeTrue(TestBase.h2Available);
                 String tableName = "test_metadata_write_string";
                 testWriteString(getH2Source(tableName), 4, -1);
-                tableName = "test_metadata_write_string";
+        }
+
+        @Test
+        public void testWriteStringHsqlDb() throws Exception {
+                assumeTrue(TestBase.hsqlDbAvailable);
+                String tableName = "test_metadata_write_string";
                 testWriteString(getHSQLDBSource(tableName), 4, 4);
         }
 
@@ -231,47 +245,58 @@ public class DBMetadataTest extends AbstractDBTest {
         }
 
         @Test
-        public void testWriteNumericOthers() throws Exception {
+        public void testWriteNumericH2() throws Exception {
+                assumeTrue(TestBase.h2Available);
                 String tableName = "test_metadata_write_string";
                 DBSource h2Source = getH2Source(tableName);
-                DBSource hsqldbSource = getHSQLDBSource(tableName);
 
                 testTypeIO(TypeFactory.createType(Type.BYTE), TypeFactory.createType(Type.BYTE), h2Source);
-                testTypeIO(TypeFactory.createType(Type.BYTE), TypeFactory.createType(Type.BYTE), hsqldbSource);
-
                 testTypeIO(TypeFactory.createType(Type.BYTE,
                         new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 4)}), TypeFactory.createType(Type.SHORT), h2Source);
-                testTypeIO(TypeFactory.createType(Type.BYTE,
-                        new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 4)}), TypeFactory.createType(Type.SHORT), hsqldbSource);
-
                 testTypeIO(TypeFactory.createType(Type.SHORT), TypeFactory.createType(Type.SHORT), h2Source);
-                testTypeIO(TypeFactory.createType(Type.SHORT), TypeFactory.createType(Type.SHORT), hsqldbSource);
-
 
                 testTypeIO(TypeFactory.createType(Type.INT), TypeFactory.createType(Type.INT), h2Source);
-                testTypeIO(TypeFactory.createType(Type.INT), TypeFactory.createType(Type.INT), hsqldbSource);
-
 
                 testTypeIO(TypeFactory.createType(Type.LONG), TypeFactory.createType(Type.LONG), h2Source);
 
                 testTypeIO(TypeFactory.createType(Type.SHORT,
                         new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 5)}), TypeFactory.createType(Type.INT), h2Source);
-                testTypeIO(TypeFactory.createType(Type.SHORT,
-                        new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 5)}), TypeFactory.createType(Type.INT), hsqldbSource);
-
                 testTypeIO(TypeFactory.createType(Type.INT,
                         new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 14)}), TypeFactory.createType(Type.LONG), h2Source);
                 testTypeIO(TypeFactory.createType(Type.INT,
-                        new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 14)}), TypeFactory.createType(Type.LONG), hsqldbSource);
-
-                testTypeIO(TypeFactory.createType(Type.INT,
                         new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 34)}), TypeFactory.createType(Type.DOUBLE), h2Source);
-                testTypeIO(TypeFactory.createType(Type.INT,
-                        new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 34)}), TypeFactory.createType(Type.DOUBLE), hsqldbSource);
 
                 testTypeIO(TypeFactory.createType(Type.INT, ConstraintFactory.createConstraint(Constraint.PRECISION, 6),
                         ConstraintFactory.createConstraint(Constraint.LENGTH, 8)),
                         TypeFactory.createType(Type.INT), h2Source);
+        }
+
+        @Test
+        public void testWriteNumericHsqlDb() throws Exception {
+                assumeTrue(TestBase.hsqlDbAvailable);
+                String tableName = "test_metadata_write_string";
+                DBSource hsqldbSource = getHSQLDBSource(tableName);
+
+                testTypeIO(TypeFactory.createType(Type.BYTE), TypeFactory.createType(Type.BYTE), hsqldbSource);
+
+                testTypeIO(TypeFactory.createType(Type.BYTE,
+                        new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 4)}), TypeFactory.createType(Type.SHORT), hsqldbSource);
+
+                testTypeIO(TypeFactory.createType(Type.SHORT), TypeFactory.createType(Type.SHORT), hsqldbSource);
+
+
+                testTypeIO(TypeFactory.createType(Type.INT), TypeFactory.createType(Type.INT), hsqldbSource);
+
+
+                testTypeIO(TypeFactory.createType(Type.SHORT,
+                        new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 5)}), TypeFactory.createType(Type.INT), hsqldbSource);
+
+                testTypeIO(TypeFactory.createType(Type.INT,
+                        new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 14)}), TypeFactory.createType(Type.LONG), hsqldbSource);
+
+                testTypeIO(TypeFactory.createType(Type.INT,
+                        new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 34)}), TypeFactory.createType(Type.DOUBLE), hsqldbSource);
+
                 testTypeIO(TypeFactory.createType(Type.INT, ConstraintFactory.createConstraint(Constraint.PRECISION, 6),
                         ConstraintFactory.createConstraint(Constraint.LENGTH, 8)),
                         TypeFactory.createType(Type.INT), hsqldbSource);

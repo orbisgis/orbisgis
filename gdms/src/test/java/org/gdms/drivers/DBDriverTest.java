@@ -263,6 +263,7 @@ public class DBDriverTest extends TestBase {
 
         @Test
         public void testCreateAllTypesH2() throws Exception {
+                assumeTrue(TestBase.h2Available);
                 DBTestSource src = new DBTestSource("source", "org.h2.Driver",
                         TestBase.internalData + "removeAllTypes.sql", h2DBSource);
                 TestBase.dsf.getSourceManager().removeAll();
@@ -272,6 +273,7 @@ public class DBDriverTest extends TestBase {
 
         @Test
         public void testCreateAllTypesHSQLDB() throws Exception {
+                assumeTrue(TestBase.hsqlDbAvailable);
                 DBTestSource src = new DBTestSource("source", "org.hsqldb.jdbcDriver",
                         TestBase.internalData + "removeAllTypes.sql", hsqldbDBSource);
                 TestBase.dsf.getSourceManager().removeAll();
@@ -399,6 +401,7 @@ public class DBDriverTest extends TestBase {
 
         @Test
         public void testHSQLDBCommitTwice() throws Exception {
+                assumeTrue(TestBase.hsqlDbAvailable);
                 DBSource dbSource = new DBSource(null, -1,
                         "src/test/resources/backup/testHSQLDBCommit", "sa", "",
                         "mytable", "jdbc:hsqldb:file");
@@ -410,6 +413,7 @@ public class DBDriverTest extends TestBase {
 
         @Test
         public void testH2CommitTwice() throws Exception {
+                assumeTrue(TestBase.h2Available);
                 DBSource dbSource = new DBSource(null, -1,
                         "src/test/resources/backup/testH2Commit", "sa", "", "mytable",
                         "jdbc:h2");
@@ -421,6 +425,7 @@ public class DBDriverTest extends TestBase {
 
         @Test
         public void testDoublePrimaryKey() throws Exception {
+                assumeTrue(TestBase.h2Available);
                 DefaultMetadata metadata = new DefaultMetadata(
                         new Type[]{
                                 TypeFactory.createType(Type.STRING,

@@ -239,6 +239,6 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition {
 
         @Override
         public String getDriverTableName() {
-                return def.getSchemaName() == null ? def.getTableName() : DriverManager.DEFAULT_SINGLE_TABLE_NAME;
+                return DriverManager.DEFAULT_SINGLE_TABLE_NAME;
         }
 }
