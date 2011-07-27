@@ -58,15 +58,9 @@ public class SortComparator implements Comparator<Integer> {
                         int orderDir = orders.get(i) ? 1 : -1;
                         Value v1 = columnCache[o1][i];
                         Value v2 = columnCache[o2][i];
-                        if (v1.isNull()) {
-                                return -1 * orderDir;
-                        } else if (v2.isNull()) {
-                                return 1 * orderDir;
-                        } else {
-                                Value l1 = v1.less(v2);
-                                if (!l1.isNull()) {
-                                        return l1.getAsBoolean() ? -1 : 1;
-                                }
+                        int comp = v1.compareTo(v2);
+                        if (comp != 0) {
+                                return orderDir * comp;
                         }
                 }
                 /*
