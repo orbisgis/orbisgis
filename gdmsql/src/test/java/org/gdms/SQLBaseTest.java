@@ -100,9 +100,7 @@ public abstract class SQLBaseTest extends SourceTest<Value, Geometry> {
                                 final DBTestSource dBTestH2 = new DBTestSource("testh2", "org.h2.Driver", internalData
                                         + "testh2.sql", new DBSource(null, 0, internalData
                                         + "backup/testh2", "sa", "", "POINT", "jdbc:h2"));
-//                                h2Available = dBTestH2.isConnected();
-                                // h2 tests disabled for now...
-                                 h2Available = false;
+                                h2Available = dBTestH2.isConnected();
 
                                 if (h2Available) {
                                         LOG.info("H2 database available.");
