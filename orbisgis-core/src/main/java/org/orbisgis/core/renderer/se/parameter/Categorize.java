@@ -22,7 +22,8 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 /**
- *
+ * Categorization is defined as the "transformation of continuous values to distinct values.
+ * This is for example needed to generate  choropleth maps from continuous attributes".
  * @param <ToType> One of ColorParameter, RealParameter, StringParameter
  * @param <FallbackType> the Literal implementation of <ToType>
  * @author maxence
@@ -43,30 +44,9 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
     private List<RealParameter> thresholds;
     private List<CategorizeListener> listeners;
 
-    private void fireClassAdded(int index) {
-        for (CategorizeListener l : listeners) {
-            l.classAdded(index);
-        }
-    }
-
-    private void fireClassRemoved(int index) {
-        for (CategorizeListener l : listeners) {
-            l.classRemoved(index);
-        }
-    }
-
-    private void fireClassMoved(int i, int j) {
-        for (CategorizeListener l : listeners) {
-            l.classMoved(i, j);
-        }
-    }
-
-    public void register(CategorizeListener l) {
-        if (!listeners.contains(l)) {
-            listeners.add(l);
-        }
-    }
-
+    /**
+     * Describes the methods that can be used to build a categorization.
+     */
     public enum CategorizeMethod {
 
         MANUAL, NATURAL_BREAKS, QUANTILE, EQUAL_INTERVAL, STANDARD_DEVIATION
@@ -110,10 +90,18 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         return res.trim();
     }
 
+    /**
+     * Set the fall bacj value that is returned when a value can't be processed.
+     * @param fallbackValue 
+     */
     public void setFallbackValue(FallbackType fallbackValue) {
         this.fallbackValue = fallbackValue;
     }
 
+    /**
+     * Get the value that is returned when an input can't be processed.
+     * @return 
+     */
     public final FallbackType getFallbackValue() {
         return fallbackValue;
     }
@@ -159,10 +147,15 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         fireClassAdded(tIndex + 1);
     }
 
+    /**
+     * Remove class number i in the categorization.
+     * @param i
+     * @return 
+     */
     public boolean removeClass(int i) {
         if (getNumClasses() > 1 && i < getNumClasses() && i >= 0) {
                 if (i == 0) {
-                    // when the first class is remove, the second one takes its place
+                    // when the first class is removed, the second one takes its place.
                     firstClass = classValues.remove(0);
                     thresholds.remove(0);
                 } else {
@@ -176,6 +169,11 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         return false;
     }
 
+    /**
+     * Gets the value associated to class number i.
+     * @param i
+     * @return 
+     */
     public ToType getClassValue(int i) {
         System.out.println("GET CLASS VALUE");
         if (i == 0) {
@@ -187,6 +185,11 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         }
     }
 
+    /**
+     * Sets the calue associated to class number i (if any) to <code>value</code>.
+     * @param i
+     * @param value 
+     */
     public void setClassValue(int i, ToType value) {
         System.out.println("Set Class n° " + i + " value :" + value);
         int n = i;
@@ -202,6 +205,11 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         }
     }
 
+    /**
+     * Replace the ith threshold value with the parameter threshold.
+     * @param i
+     * @param threshold 
+     */
     public void setThresholdValue(int i, RealParameter threshold) {
         if (i >= 0 && i < getNumClasses() - 1) {
             RealParameter remove = thresholds.remove(i);
@@ -226,6 +234,11 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         sortClasses();
     }
 
+    /**
+     * Get the ith threshold value of this categorization.
+     * @param i
+     * @return 
+     */
     public RealParameter getThresholdValue(int i) {
         return thresholds.get(i);
     }
@@ -234,6 +247,11 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         succeeding = true;
     }
 
+    /**
+     * Returns true if, when a value is equal to a threshold, it falls into the interval
+     * that comes right after this threshold.
+     * @return 
+     */
     public boolean areThresholdsSucceeding() {
         return succeeding;
     }
@@ -242,19 +260,21 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         succeeding = false;
     }
 
+    /**
+     * Returns true if, when a value is equal to a threshold, it falls into the interval
+     * that comes right before this threshold.
+     * @return 
+     */
     public boolean areThresholdsPreceding() {
         return (!succeeding);
     }
 
+    /**
+     * sort the threshold values.
+     */
     private void sortClasses() {
         Collections.sort(thresholds);
         fireNewThresoldsOrder();
-    }
-
-    private void fireNewThresoldsOrder() {
-        for (CategorizeListener l : listeners) {
-            l.thresholdResorted();
-        }
     }
 
     protected ToType getParameter(SpatialDataSourceDecorator sds, long fid) {
@@ -333,10 +353,19 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 
     }
 
+    /**
+     * Return the categorization method associated to this instance.
+     * @return 
+     *  The categorization method.
+     */
     public CategorizeMethod getMethod() {
         return method;
     }
 
+    /**
+     * Set the categorization method associated to this instance.
+     * @param method 
+     */
     public void setMethod(CategorizeMethod method) {
         this.method = method;
     }
@@ -434,5 +463,45 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         return of.createCategorize(c);
     }
 
+    //**********************************************************************************
+     /* Management of the listeners associated to this categorization.
+     * 
+     **********************************************************************************/
+
+    /**
+     * Add a listener to this Categorize instance.
+     * @param l 
+     */
+    public void register(CategorizeListener l) {
+        if (!listeners.contains(l)) {
+            listeners.add(l);
+        }
+    }
+    
+    private void fireClassAdded(int index) {
+        for (CategorizeListener l : listeners) {
+            l.classAdded(index);
+        }
+    }
+
+    private void fireClassRemoved(int index) {
+        for (CategorizeListener l : listeners) {
+            l.classRemoved(index);
+        }
+    }
+
+    private void fireClassMoved(int i, int j) {
+        for (CategorizeListener l : listeners) {
+            l.classMoved(i, j);
+        }
+    }
+    /**
+     * Notify a change in the order of the thresholds.
+     */
+    private void fireNewThresoldsOrder() {
+        for (CategorizeListener l : listeners) {
+            l.thresholdResorted();
+        }
+    }
 
 }

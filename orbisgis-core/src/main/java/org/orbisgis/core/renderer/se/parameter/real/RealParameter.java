@@ -50,11 +50,29 @@ public interface RealParameter extends SeParameter, Comparable {
 
 	//void setBounds(Double min, Double max);
 
+        /**
+         * Associates a new RealParameterContext to this RealParameter.
+         * @param ctx 
+         */
 	void setContext(RealParameterContext ctx);
 
+        /**
+         * Retrieve the context (if any) associated to this RealParameter. The context 
+         * can be used to determine the range of valid values.
+         * @return 
+         */
 	RealParameterContext getContext();
 
-    public abstract Double getValue(SpatialDataSourceDecorator sds, long fid) throws ParameterException;
+        /**
+         * Tries to retrieve the value associated to this RealParameter in sds, at line fid.
+         * Note that it is up to the realization of this method (or containing class) to provide the name or index
+         * of the column where to look in in the datasource.
+         * @param sds
+         * @param fid
+         * @return
+         * @throws ParameterException 
+         */
+        Double getValue(SpatialDataSourceDecorator sds, long fid) throws ParameterException;
 
 	@Override
 	String toString();

@@ -78,7 +78,7 @@ public class RealLiteral extends Literal implements RealParameter {
 	public void setValue(double value) {
 		v = value;
 		checkContext();
-        fireChange();
+                fireChange();
 	}
 
 	@Override
@@ -97,6 +97,11 @@ public class RealLiteral extends Literal implements RealParameter {
 		return ctx;
 	}
 
+        /**
+         * Check that the registered double (that determines the double value of this)
+         * is valid, according to the inner RealParameterContext. If it is not, the
+         * double value is set to one of the extrem authorized values.
+         */
 	private void checkContext(){
 		if (ctx != null && ! Double.isNaN(v)) {
 			if (ctx.getMin() != null && this.v < ctx.getMin()) {

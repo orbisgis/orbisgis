@@ -55,6 +55,10 @@ import org.orbisgis.core.renderer.se.parameter.string.*;
 
 public abstract class Recode<ToType extends SeParameter, FallbackType extends ToType> implements SeParameter {
 
+    private FallbackType fallbackValue;
+    private StringParameter lookupValue;
+    private ArrayList<MapItem<ToType>> mapItems; // TODO switch to hash table <k: String, v: ToType>
+    
     protected Recode(){
         mapItems = new ArrayList<MapItem<ToType>>();
     }
@@ -199,8 +203,4 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
         ObjectFactory of = new ObjectFactory();
         return of.createRecode(r);
     }
-
-    private FallbackType fallbackValue;
-    private StringParameter lookupValue;
-    private ArrayList<MapItem<ToType>> mapItems; // TODO switch to hash table <k: String, v: ToType>
 }

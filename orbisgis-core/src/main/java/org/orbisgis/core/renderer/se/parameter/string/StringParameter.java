@@ -15,7 +15,7 @@ public interface StringParameter extends SeParameter {
     /*
      * TODO Is (DataSource, featureId) the right way to access a feature ?
      */
-    public abstract String getValue(SpatialDataSourceDecorator sds, long fid) throws ParameterException;
+    String getValue(SpatialDataSourceDecorator sds, long fid) throws ParameterException;
 
-    public void setRestrictionTo(String[] list);
+    void setRestrictionTo(String[] list);
 }

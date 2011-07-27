@@ -43,7 +43,8 @@ package org.orbisgis.core.renderer.se.parameter.real;
 import java.awt.Font;
 
 /**
- *
+ * Instances of this define the boundaries where the value of a RealParameter can stand.
+ * 
  * @author maxence
  */
 public class RealParameterContext {
@@ -51,14 +52,30 @@ public class RealParameterContext {
 	protected Double min;
 	protected Double max;
 
+        /**
+         * Instanciates a new RealParameterContext, with min as the lowest authorized
+         * value and max as the highest.<br/>
+         * Note that null values mean unbounded limit.
+         * @param min
+         * @param max 
+         */
 	public RealParameterContext(Double min, Double max){
 		this.min = min;
 		this.max = max;
 	}
 
+        /**
+         * Retrieve the lowest authorized value, or null if such a value is not set.
+         * @return 
+         */
 	public Double getMin(){
 		return min;
 	}
+
+        /**
+         * Retrieve the highest authorized value, or null if such a value is not set.
+         * @return 
+         */
 	public Double getMax(){
 		return max;
 	}

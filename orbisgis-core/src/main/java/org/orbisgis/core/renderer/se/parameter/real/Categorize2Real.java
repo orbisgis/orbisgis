@@ -13,30 +13,30 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 
 public final class Categorize2Real extends Categorize<RealParameter, RealLiteral> implements RealParameter {
 
-	private RealParameterContext ctx;
+        private RealParameterContext ctx;
 
-    public Categorize2Real(RealParameter initialClass, RealLiteral fallback, RealParameter lookupValue){
-        super(initialClass, fallback, lookupValue);
-		this.setContext(ctx);
-    }
-
-    public Categorize2Real(JAXBElement<CategorizeType> expr) throws InvalidStyle {
-        CategorizeType t = expr.getValue();
-
-
-        this.setFallbackValue(new RealLiteral(t.getFallbackValue()));
-        this.setLookupValue(SeParameterFactory.createRealParameter(t.getLookupValue()));
-
-
-        Iterator<JAXBElement<ParameterValueType>> it = t.getThresholdAndValue().iterator();
-
-        this.setClassValue(0, SeParameterFactory.createRealParameter(it.next().getValue()));
-
-        // Fetch class values and thresholds
-        while (it.hasNext()){
-            this.addClass(SeParameterFactory.createRealParameter(it.next().getValue()),
-                    SeParameterFactory.createRealParameter(it.next().getValue()));
+        public Categorize2Real(RealParameter initialClass, RealLiteral fallback, RealParameter lookupValue) {
+                super(initialClass, fallback, lookupValue);
+                this.setContext(ctx);
         }
+
+        public Categorize2Real(JAXBElement<CategorizeType> expr) throws InvalidStyle {
+                CategorizeType t = expr.getValue();
+
+
+                this.setFallbackValue(new RealLiteral(t.getFallbackValue()));
+                this.setLookupValue(SeParameterFactory.createRealParameter(t.getLookupValue()));
+
+
+                Iterator<JAXBElement<ParameterValueType>> it = t.getThresholdAndValue().iterator();
+
+                this.setClassValue(0, SeParameterFactory.createRealParameter(it.next().getValue()));
+
+                // Fetch class values and thresholds
+                while (it.hasNext()) {
+                        this.addClass(SeParameterFactory.createRealParameter(it.next().getValue()),
+                                SeParameterFactory.createRealParameter(it.next().getValue()));
+                }
 
         if (t.getThresholdBelongsTo() == ThresholdBelongsToType.PRECEDING)
             this.setThresholdsPreceding();

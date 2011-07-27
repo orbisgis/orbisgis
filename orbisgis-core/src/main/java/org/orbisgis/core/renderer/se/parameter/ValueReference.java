@@ -12,16 +12,28 @@ import org.gdms.driver.DriverException;
 
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
+/**
+ * An (abstract) representation of a Value in a GDMS table. 
+ * @author alexis
+ */
 public abstract class ValueReference implements SeParameter {
 
 	protected String fieldName;
 	private int fieldId;
 	private ArrayList<PropertyNameListener> listeners;
 
+        /**
+         * Creates a new ValueReference, without column name or valid index to a value.
+         */
 	public ValueReference() {
 		this.fieldId = -1;
 	}
 
+        /**
+         * Creates a new ValueReference, that will searches its values in a column named
+         * filedName.
+         * @param fieldName 
+         */
 	public ValueReference(String fieldName) {
 		this.fieldId = -1;
 		this.fieldName = fieldName;
@@ -40,6 +52,10 @@ public abstract class ValueReference implements SeParameter {
 		this(expr.getValue());
 	}
 
+        /**
+         * Add a listener to this ValueReference.
+         * @param l 
+         */
 	public synchronized void register(PropertyNameListener l) {
 		if (listeners == null) {
 			this.listeners = new ArrayList<PropertyNameListener>();
@@ -63,6 +79,10 @@ public abstract class ValueReference implements SeParameter {
 		return getColumnName();
 	}
 
+        /**
+         * Set the name of the column where the data will be retrieved.
+         * @param fieldName 
+         */
 	public final void setColumnName(String fieldName) {
 		// look for field before assigning the name !
 		this.fieldId = -1;
@@ -70,10 +90,22 @@ public abstract class ValueReference implements SeParameter {
 		firePropertyNameChange();
 	}
 
+        /**
+         * Retrieve the name of the column where the value can be retrieved in the table
+         * @return 
+         */
 	public String getColumnName() {
 		return fieldName;
 	}
 
+        /**
+         * Get the GDMS value associated to this Reference in the given table (representing
+         * by the SpatialDataSourceDecorator sds) at line fid.
+         * @param sds
+         * @param fid
+         * @return
+         * @throws DriverException 
+         */
 	public Value getFieldValue(SpatialDataSourceDecorator sds, long fid) throws DriverException {
 		if (this.fieldId == -1) {
 			this.fieldId = sds.getMetadata().getFieldIndex(fieldName);

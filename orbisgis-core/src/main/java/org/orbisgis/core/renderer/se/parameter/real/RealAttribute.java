@@ -35,7 +35,7 @@ public class RealAttribute extends ValueReference implements RealParameter {
             }
             return value.getAsDouble();
         } catch (Exception e) {
-            throw new ParameterException("Could not fetch feature attribute \"" + fieldName + "\"");
+            throw new ParameterException("Could not fetch feature attribute \"" + fieldName + "\"", e);
         }
     }
 
