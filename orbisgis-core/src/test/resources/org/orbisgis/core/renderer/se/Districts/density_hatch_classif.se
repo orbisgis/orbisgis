@@ -62,7 +62,7 @@
                             <ExtensionParameter name="method">MANUAL</ExtensionParameter>
                         </Extension>
                     </Categorize>
-		</tse:Orientation>
+                </tse:Orientation>
             </tse:DensityFill>
             <PenStroke>
                 <SolidFill>
