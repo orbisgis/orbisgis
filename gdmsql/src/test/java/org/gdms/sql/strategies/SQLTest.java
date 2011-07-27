@@ -69,6 +69,7 @@ import org.gdms.sql.engine.SemanticException;
 
 import static org.junit.Assert.*;
 
+@Ignore
 public class SQLTest extends SQLBaseTest {
 
         public static DataSource d;
