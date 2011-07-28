@@ -178,7 +178,10 @@ public final class SolidFill extends Fill {
 		if (color != null){
 			c = color.getColor(sds, fid);
 		} else {
-		    c = new Color(GRAY50, GRAY50, GRAY50);
+                        //We must cast the colours to int values, because we want to use 
+                        //GRAY50 to build RGB value - As it equals 128.0f, we need a cast
+                        //because Color(float, float, float) needs values between 0 and 1.
+		    c = new Color((int) GRAY50, (int) GRAY50, (int) GRAY50);
         }
 
 		if (this.opacity != null) {
