@@ -429,10 +429,18 @@ public final class HatchedFill extends Fill implements StrokeNode {
         return null;
     }
 
+    /**
+     * Get the orientatino of the hatches.
+     * @return 
+     */
     public RealParameter getAngle() {
         return angle;
     }
 
+    /**
+     * Set the orientatino of the hatches.
+     * @return 
+     */
     public void setAngle(RealParameter angle) {
         this.angle = angle;
         if (angle != null) {
@@ -440,10 +448,18 @@ public final class HatchedFill extends Fill implements StrokeNode {
         }
     }
 
+    /**
+     * Get the perpendicular distance between two hatches
+     * @return 
+     */
     public RealParameter getDistance() {
         return distance;
     }
 
+    /**
+     * Set the perpendicular distance between two hatches
+     * @return 
+     */
     public void setDistance(RealParameter distance) {
         this.distance = distance;
         if (distance != null) {
@@ -452,10 +468,18 @@ public final class HatchedFill extends Fill implements StrokeNode {
 
     }
 
+    /**
+     * get the offset of the hatches.
+     * @return 
+     */
     public RealParameter getOffset() {
         return offset;
     }
 
+    /**
+     * Set the offset of the hatches.
+     * @return 
+     */
     public void setOffset(RealParameter offset) {
         this.offset = offset;
         if (offset != null) {

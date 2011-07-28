@@ -44,27 +44,50 @@ import net.opengis.fes._2.LiteralType;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.se.parameter.Literal;
 
+/**
+ * The representation of a real literal, bounded in a real context. Boundaries are set
+ * using a RealParameterContext.
+ * @author alexis
+ */
 public class RealLiteral extends Literal implements RealParameter {
 
 	public static final RealLiteral ZERO = new RealLiteral(0.0);
 	private double v;
 	private RealParameterContext ctx;
-
+        
+        /**
+         * Create a new RealLiteral, in a <code>realContext</code> context.
+         * Embedded value is <code>1.0</code>
+         */
 	public RealLiteral() {
 		v = 1.0;
 		ctx = RealParameterContext.realContext;
 	}
 
+        /**
+         * Create a new RealLiteral with value <code>literal</code> in a realContext.
+         * @param literal 
+         */
 	public RealLiteral(double literal) {
 		v = literal;
 		ctx = RealParameterContext.realContext;
 	}
 
+        /**
+         * Create a new RealLiteral with value <code>d</code>, by transforming d
+         * to a double, in a realContext.
+         * @param literal 
+         */
 	public RealLiteral(String d) {
 		this.v = new Double(d);
 		ctx = RealParameterContext.realContext;
 	}
 
+        /**
+         * Create a new RealLiteral with value <code>l</code>, by transforming l
+         * to a double, in a realContext.
+         * @param literal 
+         */
 	public RealLiteral(JAXBElement<LiteralType> l) {
 		this(l.getValue().getContent().get(0).toString());
 		ctx = RealParameterContext.realContext;
@@ -75,6 +98,10 @@ public class RealLiteral extends Literal implements RealParameter {
 		return v;
 	}
 
+        /**
+         * sets the double value embedded in this RealLiteral
+         * @param value 
+         */
 	public void setValue(double value) {
 		v = value;
 		checkContext();

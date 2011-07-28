@@ -51,7 +51,10 @@ public interface RealParameter extends SeParameter, Comparable {
 	//void setBounds(Double min, Double max);
 
         /**
-         * Associates a new RealParameterContext to this RealParameter.
+         * Associates a new RealParameterContext to this RealParameter. Realizations of
+         * this interface should modify (if possible) their embedded value (if any),
+         * or the value returned with <code>getValue()</code> if it does not fit
+         * in the new RealParameterContext.
          * @param ctx 
          */
 	void setContext(RealParameterContext ctx);

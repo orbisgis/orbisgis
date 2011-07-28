@@ -51,6 +51,18 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 
+/**
+ * Defines a function on real numbers. A function is defined with a operation and
+ * a set of operands. Available operations are :<br/>
+ *   * addition - <code>ADD</code><br/>
+ *   * Multiplication - <code>MUL</code><br/>
+ *   * Division - <code>DIV</code><br/>
+ *   * Substraction - <code>SUB</code><br/>
+ *   * Square root - <code>SQRT</code><br/>
+ *   * Decimal logarithm - <code>LOG</code><br/>
+ *   * Neperian logarithm - <code>LN</code>
+ * @author maxence, alexis
+ */
 public class RealFunction implements RealParameter {
 
     private enum Operators {

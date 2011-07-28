@@ -12,15 +12,29 @@ public class RealAttribute extends ValueReference implements RealParameter {
 
     private RealParameterContext ctx;
 
+    /**
+     * Create a new instance of RealAttribute, with an empty associated field name.
+     * @param fieldName 
+     */
     public RealAttribute() {
         ctx = RealParameterContext.realContext;
     }
 
+    /**
+     * Create a new instance of RealAttribute, setting the fieldName of the column where
+     * the values will be searched.
+     * @param fieldName 
+     */
     public RealAttribute(String fieldName) {
         super(fieldName);
         ctx = RealParameterContext.realContext;
     }
 
+    /**
+     * Create a new instance of RealAttribute, setting the fieldName of the column where
+     * the values will be searched.
+     * @param fieldName 
+     */
     public RealAttribute(JAXBElement<ValueReferenceType> expr) throws InvalidStyle {
         super(expr);
         ctx = RealParameterContext.realContext;
