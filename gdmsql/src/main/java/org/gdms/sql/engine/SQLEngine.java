@@ -52,7 +52,6 @@ import org.gdms.driver.ReadAccess;
 import org.gdms.sql.engine.parsing.GdmSQLLexer;
 import org.gdms.sql.engine.parsing.GdmSQLParser;
 import org.gdms.sql.engine.parsing.GdmSQLParser.start_rule_return;
-import org.gdms.sql.parser.ParseException;
 
 /**
  * Main entry class for parsing & processing SQL
@@ -83,21 +82,42 @@ public final class SQLEngine {
                 }
         }
 
+        /**
+         * Executes an SQL statement.
+         * @param statement a SQL statement
+         */
         public void execute(SqlStatement statement) {
                 statement.prepare(dsf);
                 statement.execute();
         }
 
+        /**
+         * Executes a SQL script (its first statement if it has several statements) and gets its result.
+         * @param sql a SQL script
+         * @return a dataset
+         * @throws ParseException 
+         */
         public ReadAccess query(String sql) throws ParseException {
                 SqlStatement[] sts = parse(sql);
                 return query(sts[0]);
         }
 
+        /**
+         * Executes a SQL Statement and gets its result.
+         * @param sql
+         * @return 
+         */
         public ReadAccess query(SqlStatement sql) {
                 sql.prepare(dsf);
                 return sql.execute();
         }
 
+        /**
+         * Parses a SQL script into several SQL Statements.
+         * @param sql a SQL script
+         * @return an array of statements
+         * @throws ParseException if there is an error while parsing
+         */
         public SqlStatement[] parse(String sql) throws ParseException {
                 ANTLRInputStream input;
                 try {
@@ -123,10 +143,10 @@ public final class SQLEngine {
                         throw new ParseException(getErrorLocation(ex) + " "
                                 + getErrorString(ex.token, ex.getUnexpectedType(), -1), ex);
                 } catch (IllegalArgumentException ex) {
-                        if (ex.getCause() != null && ex.getCause() instanceof RecognitionException) {
-                                RecognitionException e = (RecognitionException)ex.getCause();
+                        if (ex.getCause() instanceof RecognitionException) {
+                                RecognitionException e = (RecognitionException) ex.getCause();
                                 throw new ParseException(getErrorLocation(e) + " "
-                                + getErrorString(e.token, e.getUnexpectedType(), -1), ex);
+                                        + getErrorString(e.token, e.getUnexpectedType(), -1), ex);
                         } else {
                                 throw ex;
                         }
@@ -134,11 +154,11 @@ public final class SQLEngine {
                 LOG.info("Parsing: " + tree.toStringTree());
                 final ExecutionGraph[] graphs = ExecutionGraphBuilder.build(tree);
                 final SqlStatement[] sts = new SqlStatement[graphs.length];
-                
+
                 for (int i = 0; i < graphs.length; i++) {
                         sts[i] = new SqlStatement(sql, graphs[i]);
                 }
-                
+
                 return sts;
         }
 
@@ -170,7 +190,7 @@ public final class SQLEngine {
                 b.append('.');
                 return b.toString();
         }
-        
+
         private String displayTokenName(int token) {
                 String str = GdmSQLParser.tokenNames[token];
                 str = str.replace("T_", "");

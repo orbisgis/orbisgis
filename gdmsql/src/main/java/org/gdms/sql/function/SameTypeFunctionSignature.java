@@ -39,10 +39,19 @@
 package org.gdms.sql.function;
 
 /**
- *
+ * Shorthand function signature for a signature that
+ * <ul>
+ * <li>takes a single scalar argument</li>
+ * <li>returns the same type as its argument</li>
+ * </ul>
+ * @author Antoine Gourlay
  */
 public class SameTypeFunctionSignature extends BasicFunctionSignature {
 
+        /**
+         * Creates a function signature with an argument.
+         * @param arg the argument
+         */
         public SameTypeFunctionSignature(ScalarArgument arg) {
                 super(arg.getTypeCode(), arg);
         }

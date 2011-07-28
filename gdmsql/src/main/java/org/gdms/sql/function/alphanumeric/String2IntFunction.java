@@ -48,7 +48,6 @@ import org.gdms.sql.function.ScalarArgument;
 import org.gdms.sql.function.BasicFunctionSignature;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionSignature;
-import org.gdms.sql.function.FunctionValidator;
 
 /**
  * Converts a string into an integer.

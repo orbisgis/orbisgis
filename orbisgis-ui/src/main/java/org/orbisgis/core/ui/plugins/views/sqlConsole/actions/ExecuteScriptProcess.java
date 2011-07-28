@@ -47,7 +47,7 @@ import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.engine.SQLEngine;
 import org.gdms.sql.engine.SqlStatement;
-import org.gdms.sql.parser.ParseException;
+import org.gdms.sql.engine.ParseException;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;

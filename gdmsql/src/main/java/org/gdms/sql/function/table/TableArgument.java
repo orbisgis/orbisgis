@@ -43,13 +43,17 @@ import org.gdms.driver.DriverException;
 import org.gdms.sql.function.Argument;
 
 /**
- *
+ * An argument that represents a table (i.e. a dataset).
  * @author Antoine Gourlay
  */
 public class TableArgument implements Argument {
 
         private TableDefinition def;
 
+        /**
+         * Creates a TableArgument with the specified table definition.
+         * @param def a table definition. null equals {@link TableDefinition.ANY}.
+         */
         public TableArgument(TableDefinition def) {
                 if (def == null) {
                         def = TableDefinition.ANY;
@@ -67,6 +71,12 @@ public class TableArgument implements Argument {
                 return true;
         }
 
+        /**
+         * Returns true if the given metadata is valid for this argument.
+         * @param m some metadata
+         * @return true if valid
+         * @throws DriverException 
+         */
         public boolean isValid(Metadata m) throws DriverException {
                 return def.isValid(m);
         }

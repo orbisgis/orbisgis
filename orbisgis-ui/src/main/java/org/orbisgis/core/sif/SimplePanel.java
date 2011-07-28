@@ -68,7 +68,7 @@ import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.generic.GenericObjectDriver;
 import org.gdms.sql.engine.SemanticException;
-import org.gdms.sql.parser.ParseException;
+import org.gdms.sql.engine.ParseException;
 import org.orbisgis.utils.I18N;
 
 public class SimplePanel extends JPanel {

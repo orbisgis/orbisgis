@@ -43,7 +43,7 @@ import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.db.DBSource;
 import org.gdms.driver.DBDriver;
 import org.gdms.driver.DriverException;
-import org.gdms.sql.parser.ParseException;
+import org.gdms.sql.engine.ParseException;
 import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.progress.ProgressMonitor;

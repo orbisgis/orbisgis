@@ -37,7 +37,6 @@
  */
 package org.gdms.data;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -50,7 +49,7 @@ import org.gdms.data.sql.SQLSourceDefinition;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.engine.SQLEngine;
 import org.gdms.sql.engine.SqlStatement;
-import org.gdms.sql.parser.ParseException;
+import org.gdms.sql.engine.ParseException;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
 
@@ -194,7 +193,7 @@ public class SQLDataSourceFactory extends DataSourceFactory {
          * Gets a DataSource instance to access the result of the instruction
          *
          * @param instruction
-         *            Instruction to evaluate. {@link SQLProcessor}
+         *            Instruction to evaluate.
          * @param mode
          *            The DataSource mode {@link #EDITABLE} {@link #STATUS_CHECK}
          *            {@link #NORMAL} {@link #DEFAULT}

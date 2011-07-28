@@ -35,10 +35,10 @@
  * or contact directly:
  * info@orbisgis.org
  */
-package org.gdms.sql.parser;
+package org.gdms.sql.engine;
 
 /**
- *
+ * This exception denotes that something happened during the parsing of a SQL script.
  * @author Antoine Gourlay
  */
 public class ParseException extends Exception {

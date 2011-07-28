@@ -52,7 +52,7 @@ import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.gdms.source.SourceManager;
 import org.gdms.sql.function.FunctionManager;
-import org.gdms.sql.parser.ParseException;
+import org.gdms.sql.engine.ParseException;
 import org.gdms.data.types.IncompatibleTypesException;
 import org.gdms.sql.engine.SQLEngine;
 import org.gdms.sql.engine.SemanticException;

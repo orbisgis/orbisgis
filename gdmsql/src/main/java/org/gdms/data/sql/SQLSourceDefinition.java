@@ -37,7 +37,6 @@
  */
 package org.gdms.data.sql;
 
-import biz.source_code.base64Coder.Base64Coder;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,7 +63,7 @@ import org.gdms.source.directory.DefinitionType;
 import org.gdms.source.sqldirectory.SqlDefinitionType;
 import org.gdms.sql.engine.SQLEngine;
 import org.gdms.sql.engine.SqlStatement;
-import org.gdms.sql.parser.ParseException;
+import org.gdms.sql.engine.ParseException;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 

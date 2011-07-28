@@ -43,7 +43,7 @@ import java.io.IOException;
 
 import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.sql.engine.SQLEngine;
-import org.gdms.sql.parser.ParseException;
+import org.gdms.sql.engine.ParseException;
 
 /**
  * Main class for command-line invocation of gdms

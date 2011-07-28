@@ -43,7 +43,7 @@ import org.junit.Test;
 import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.sql.engine.SQLEngine;
 import org.gdms.sql.engine.SemanticException;
-import org.gdms.sql.parser.ParseException;
+import org.gdms.sql.engine.ParseException;
 
 import static org.junit.Assert.*;
 

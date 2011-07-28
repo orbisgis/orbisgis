@@ -43,7 +43,7 @@ import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.FunctionSignature;
 
 /**
- *
+ * Signature of a Table function.
  * @author Antoine Gourlay
  */
 public class TableFunctionSignature implements FunctionSignature {
@@ -51,11 +51,21 @@ public class TableFunctionSignature implements FunctionSignature {
         private TableDefinition returnTableDef;
         private Argument[] args;
 
+        /**
+         * Creates a signature with the specified return table definition and the specified arguments.
+         * @param returnTableDef a table definition
+         * @param args some arguments. Can be null.
+         */
         public TableFunctionSignature(TableDefinition returnTableDef, Argument... args) {
                 this.returnTableDef = returnTableDef;
                 this.args = args == null ? new Argument[0] : args;
         }
 
+        /**
+         * Creates a signature with the specified return table definition and the specified argument.
+         * @param returnTableDef a table definition
+         * @param arg a non-null argument.
+         */
         public TableFunctionSignature(TableDefinition returnTableDef, Argument arg) {
                 this.returnTableDef = returnTableDef;
                 this.args = new Argument[] { arg };
@@ -77,7 +87,7 @@ public class TableFunctionSignature implements FunctionSignature {
         }
 
         /**
-         * @return the returnTableDef
+         * @return the table definition
          */
         public TableDefinition getReturnTableDefinition() {
                 return returnTableDef;

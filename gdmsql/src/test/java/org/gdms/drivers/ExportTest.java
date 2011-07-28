@@ -47,7 +47,7 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.engine.SemanticException;
-import org.gdms.sql.parser.ParseException;
+import org.gdms.sql.engine.ParseException;
 import com.vividsolutions.jts.geom.Geometry;
 import org.gdms.SQLBaseTest;
 import org.gdms.sql.engine.SQLEngine;

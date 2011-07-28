@@ -80,5 +80,9 @@ public interface TableFunction extends Function {
          */
         Metadata getMetadata(Metadata[] tables) throws DriverException;
 
+        /**
+         * This method is called once the function is finished executing.
+         * @throws DriverException 
+         */
         void workFinished() throws DriverException;
 }

@@ -45,10 +45,22 @@ package org.gdms.sql.function;
  */
 public interface Argument {
 
+        /**
+         * Gets an (optional) description of that Argument.
+         * @return a possibly null String
+         */
         String getDescription();
 
+        /**
+         * Returns true if this is a scalar argument.
+         * @return 
+         */
         boolean isScalar();
 
+        /**
+         * Returns true if this is a 'table' (i.e. a dataset) argument.
+         * @return 
+         */
         boolean isTable();
 
 }

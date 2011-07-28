@@ -65,7 +65,7 @@ import org.gdms.sql.function.ScalarArgument;
 import org.gdms.sql.function.table.TableFunctionSignature;
 import org.gdms.sql.function.table.AbstractTableFunction;
 import org.gdms.sql.function.table.TableArgument;
-import org.gdms.sql.parser.ParseException;
+import org.gdms.sql.engine.ParseException;
 import org.orbisgis.progress.ProgressMonitor;
 
 public class ST_KMeans extends AbstractTableFunction {

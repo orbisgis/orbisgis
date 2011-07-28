@@ -48,13 +48,13 @@ import org.gdms.data.types.IncompatibleTypesException;
 import org.gdms.sql.engine.SemanticException;
 
 /**
- * Helper class for validating arguments and functions
+ * Helper class for validating arguments and functions.
  * @author Antoine Gourlay
  */
 public final class FunctionValidator {
 
         /**
-         * Fails if any of the values is null
+         * Fails if any of the values is null.
          * @param values an array of values
          * @throws FunctionException if any of the values is null
          */
@@ -67,7 +67,7 @@ public final class FunctionValidator {
         }
 
         /**
-         * Fails if <code>argumentType.length != i</code>
+         * Fails if <code>argumentType.length != i</code>.
          * @param function a function
          * @param argumentsTypes an array of argument types
          * @param i the expected number of argument
@@ -83,7 +83,7 @@ public final class FunctionValidator {
         }
 
         /**
-         * Fails if the value does not have the requested type
+         * Fails if the value does not have the requested type.
          * @param value a value
          * @param type the requested type
          * @throws FunctionException if the value does not have the requested type
@@ -97,7 +97,7 @@ public final class FunctionValidator {
         }
 
         /**
-         * Fails if the given type is not numeric
+         * Fails if the given type is not numeric.
          * @param function a function
          * @param type the type to test
          * @throws IncompatibleTypesException if the given type is not numeric
@@ -111,8 +111,16 @@ public final class FunctionValidator {
                 }
         }
 
+        /**
+         * Fails if a specific field does not exist.
+         * @param customQuery
+         * @param fieldName
+         * @param fieldIndex
+         * @throws DriverException
+         * @throws SemanticException 
+         */
         public static void failIfFieldDoesNotExist(final TableFunction customQuery,
-                final String fieldName, final int fieldIndex) throws DriverException, SemanticException {
+                final String fieldName, final int fieldIndex) throws DriverException {
                 if (-1 == fieldIndex) {
                         throw new SemanticException(customQuery.getName()
                                 + ": no fieldname '" + fieldName + "' in your table !");
@@ -133,7 +141,7 @@ public final class FunctionValidator {
         public static void failIfFieldIsNotOfType(final TableFunction customQuery,
                 final String fieldName, final int fieldIndex,
                 final int typeCodeOfField, final Metadata metadata)
-                throws DriverException, SemanticException {
+                throws DriverException {
                 failIfFieldDoesNotExist(customQuery, fieldName, fieldIndex);
 
                 final Type[] fieldTypes = MetadataUtilities.getFieldTypes(metadata);
@@ -172,7 +180,7 @@ public final class FunctionValidator {
          */
         public static void failIfNotSpatialDataSource(
                 final TableFunction customQuery, final Metadata metadata,
-                final int argNumber) throws SemanticException, DriverException {
+                final int argNumber) throws DriverException {
                 if (!MetadataUtilities.isGeometry(metadata)) {
                         throw new SemanticException(customQuery.getName()
                                 + " requires a spatial table as argument number "
@@ -190,7 +198,7 @@ public final class FunctionValidator {
          */
         public static void failIfNotRasterDataSource(
                 final TableFunction customQuery, final Metadata metadata,
-                final int argNumber) throws SemanticException, DriverException {
+                final int argNumber) throws DriverException {
                 if (!MetadataUtilities.isRaster(metadata)) {
                         throw new SemanticException(customQuery.getName()
                                 + " requires a raster table as argument number "
@@ -270,7 +278,7 @@ public final class FunctionValidator {
          * @throws SemanticException
          * @throws DriverException
          */
-        public static void failIfTablesDoNotMatchSignature(Metadata[] metadata, FunctionSignature[] signs) throws SemanticException, DriverException {
+        public static void failIfTablesDoNotMatchSignature(Metadata[] metadata, FunctionSignature[] signs) throws DriverException {
                 if (metadata == null) {
                         metadata = new Metadata[0];
                 }
