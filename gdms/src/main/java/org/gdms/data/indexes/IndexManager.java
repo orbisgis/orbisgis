@@ -140,7 +140,6 @@ public class IndexManager {
                         index.setFile(indexFile);
                         index.setFieldName(fieldName);
                         index.buildIndex(dsf, ds, pm);
-                        ds.close();
                         if (pm.isCancelled()) {
                                 src.deleteProperty(propertyName);
                                 return;
