@@ -12,16 +12,13 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.io.File;
 
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
-import javax.media.jai.RenderableGraphics;
 
 import javax.swing.JFrame;
 
@@ -68,7 +65,7 @@ public class GraphicCollectionTest extends TestCase {
         super.tearDown();
     }
 
-    public void testGraphic() throws IOException, ParameterException, InvalidStyle {
+    public void variousGraphicDisplay() throws IOException, ParameterException, InvalidStyle {
         JFrame frame = new JFrame();
         frame.setTitle("Test GraphicCollection");
 
@@ -132,5 +129,72 @@ public class GraphicCollectionTest extends TestCase {
             Logger.getLogger(GraphicCollectionTest.class.getName()).log(Level.SEVERE, null, ex);
         }
         
+    }
+    
+    public void testMoveUp() throws Exception{
+            GraphicCollection gc = new GraphicCollection();
+            PointTextGraphic ptg1 = new PointTextGraphic();
+            PointTextGraphic ptg2 = new PointTextGraphic();
+            PointTextGraphic ptg3 = new PointTextGraphic();
+            PointTextGraphic ptg4 = new PointTextGraphic();
+            gc.addGraphic(ptg1);
+            gc.addGraphic(ptg2);
+            gc.addGraphic(ptg3);
+            gc.addGraphic(ptg4);
+            assertEquals(gc.getNumGraphics(), 4);
+            assertTrue(gc.getGraphic(0) == ptg1);
+            assertTrue(gc.getGraphic(1) == ptg2);
+            assertTrue(gc.getGraphic(2) == ptg3);
+            assertTrue(gc.getGraphic(3) == ptg4);
+            //We move ptg2 up
+            gc.moveGraphicUp(1);
+            assertTrue(gc.getGraphic(0) == ptg2);
+            assertTrue(gc.getGraphic(1) == ptg1);
+            assertTrue(gc.getGraphic(2) == ptg3);
+            assertTrue(gc.getGraphic(3) == ptg4);
+            //We move ptg2 up. Nothing is supposed to happen, as it is the uppest element.
+            gc.moveGraphicUp(0);
+            assertTrue(gc.getGraphic(0) == ptg2);
+            assertTrue(gc.getGraphic(1) == ptg1);
+            assertTrue(gc.getGraphic(2) == ptg3);
+            assertTrue(gc.getGraphic(3) == ptg4);
+            //We move ptg4 up. 
+            gc.moveGraphicUp(3);
+            assertTrue(gc.getGraphic(0) == ptg2);
+            assertTrue(gc.getGraphic(1) == ptg1);
+            assertTrue(gc.getGraphic(2) == ptg4);
+            assertTrue(gc.getGraphic(3) == ptg3);
+    }
+    
+    public void testMoveDown() throws Exception{
+            GraphicCollection gc = new GraphicCollection();
+            PointTextGraphic ptg1 = new PointTextGraphic();
+            PointTextGraphic ptg2 = new PointTextGraphic();
+            PointTextGraphic ptg3 = new PointTextGraphic();
+            PointTextGraphic ptg4 = new PointTextGraphic();
+            gc.addGraphic(ptg1);
+            gc.addGraphic(ptg2);
+            gc.addGraphic(ptg3);
+            gc.addGraphic(ptg4);
+            assertEquals(gc.getNumGraphics(), 4);
+            //We move ptg2 down
+            gc.moveGraphicDown(1);
+            assertTrue(gc.getGraphic(0) == ptg1);
+            assertTrue(gc.getGraphic(1) == ptg3);
+            assertTrue(gc.getGraphic(2) == ptg2);
+            assertTrue(gc.getGraphic(3) == ptg4);
+            //We move ptg1 down
+            gc.moveGraphicDown(0);
+            assertTrue(gc.getGraphic(0) == ptg3);
+            assertTrue(gc.getGraphic(1) == ptg1);
+            assertTrue(gc.getGraphic(2) == ptg2);
+            assertTrue(gc.getGraphic(3) == ptg4);
+            //We move ptg1 down. Nothing is supposed to happen, as it is the lowest element.
+            gc.moveGraphicDown(3);
+            assertTrue(gc.getGraphic(0) == ptg3);
+            assertTrue(gc.getGraphic(1) == ptg1);
+            assertTrue(gc.getGraphic(2) == ptg2);
+            assertTrue(gc.getGraphic(3) == ptg4);
+            
     }
 }

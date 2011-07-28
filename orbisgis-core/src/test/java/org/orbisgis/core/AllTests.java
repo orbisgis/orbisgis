@@ -52,6 +52,7 @@ import org.orbisgis.core.renderer.se.parameter.color.Recode2ColorTest;
 import org.orbisgis.core.renderer.se.parameter.real.Interpolate2RealTest;
 import org.orbisgis.core.renderer.se.parameter.real.RealFunctionTest;
 import org.orbisgis.core.renderer.se.transform.TransformTest;
+import org.orbisgis.core.renderer.se.graphic.GraphicCollectionTest;
 
 public class AllTests extends TestCase {
 
@@ -77,6 +78,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite(Interpolate2RealTest.class);
         suite.addTestSuite(RealFunctionTest.class);
         suite.addTestSuite(TransformTest.class);
+        suite.addTestSuite(GraphicCollectionTest.class);
 		// $JUnit-END$
 		return suite;
 	}

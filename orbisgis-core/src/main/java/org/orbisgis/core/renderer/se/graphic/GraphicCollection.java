@@ -145,14 +145,18 @@ public final class GraphicCollection implements SymbolizerNode {
     }
 
     /**
+     * Move the graphic at index i (if any) down in the collection, ie at position
+     * i+1. If <code> i >= n-1 </code>, where n is the size of the collection, or 
+     * if <code> 0 > i </code>, nothing is done.
      * 
      * @param index
      * @return 
      */
     public boolean moveGraphicDown(int index) {
         if (index >= 0 && index < graphics.size() - 1) {
-            Graphic g = graphics.remove(index);
-            graphics.add(index + 1, g);
+            Graphic g = graphics.get(index);
+            graphics.set(index, graphics.get(index+1));
+            graphics.set(index + 1, g);
             return true;
         } else {
             return false;
@@ -160,14 +164,17 @@ public final class GraphicCollection implements SymbolizerNode {
     }
 
     /**
-     * 
+     * Move the graphic at index i (if any) up in the collection, ie at position i-1.
+     * If <code>0 >= i</code> or <code>i > n-1 </code>, where n is the size of the collection,
+     * nothing is done.
      * @param index
      * @return 
      */
     public boolean moveGraphicUp(int index) {
         if (index > 0 && index < graphics.size()) {
-            Graphic g = graphics.remove(index);
-            graphics.add(index - 1, g);
+            Graphic g = graphics.get(index);
+            graphics.set(index, graphics.get(index-1));
+            graphics.set(index - 1, g);
             return true;
         } else {
             return false;
