@@ -72,7 +72,15 @@ class LoopJoinCommand extends Command {
   
   override def getMetadata = {
     val d = new DefaultMetadata()
-    children foreach { c => d.addAndRenameAll(c.getMetadata) }
+    children foreach { c => addAndRename(d, c.getMetadata) }
     SQLMetadata("", d)
+  }
+  
+  private def addAndRename(d: DefaultMetadata, m: SQLMetadata) {
+    // fields are given an internal name 'field$table'
+    // for reference by expressions upper in the query tree
+    m.getFieldNames.zipWithIndex foreach { n =>
+        d.addField(n._1 + "$" + m.table,m.getFieldType(n._2))
+    }
   }
 }

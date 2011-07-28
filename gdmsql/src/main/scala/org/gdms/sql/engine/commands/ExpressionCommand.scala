@@ -63,14 +63,14 @@ trait ExpressionCommand extends Command {
       case s: CustomQueryScanCommand => s.getMetadata :: (s.children flatMap getFieldMetadata)
       case a: AggregateCommand => a.getMetadata :: Nil
       case _ => c.children flatMap getFieldMetadata
-  }
+    }
   }
 
   protected override def doPrepare = {
     // prevent ambiguous field names
     
     
-     val allM = children flatMap getFieldMetadata
+    val allM = children flatMap getFieldMetadata
     
     // set the index of every field in the expressions
     exp.foreach { e =>
@@ -106,16 +106,48 @@ trait ExpressionCommand extends Command {
       case f: FieldEvaluator => {
           f.table match {
             case None => {
+                // no table name specified
                 m.getFieldIndex(f.name) match {
-                  case -1 =>
+                  case -1 => {
+                      // the field is not directly referenced (maybe through a join?)
+                      
+                      val pot = m.getFieldNames.filter(n => n.startsWith(f.name))
+                      pot.size match {
+                        case 1 => {
+                            // there is a single field in the join with that name. Success.
+                            val i = m.getFieldIndex(pot.head)
+                            f.index = i
+                            f.sqlType = m.getFieldType(i).getTypeCode
+                          }
+                        case 0 => // there is no field with that name, maybe it will be resolved later.
+                          
+                        // there is too many fields with that name. Failure (ambiguous).
+                        case i => throw new SemanticException("Field name '" + f.name + "' is ambiguous.")
+                      }
+                    }
                   case i =>
+                    // the field is directly referenced, no problem. Success.
                     f.index = i
                     f.sqlType = m.getFieldType(i).getTypeCode
                 }
               }
+              
+            // the table is direcly referenced...
             case Some(t) if m.table == t => m.getFieldIndex(f.name) match {
-                case -1 => throw new SemanticException("There is no field '" + f.name + "' in table" + t + ".")
+                // ... but there is no such field in that table. Failure (unknown field).
+                case -1 => throw new SemanticException("There is no field '" + f.name + "' in table " + t + ".")
                 case i =>
+                  // ... and there is a field with that name. Success.
+                  f.index = i
+                  f.sqlType = m.getFieldType(i).getTypeCode
+              }
+              
+            // a table is referenced, but indirectly, we look for an internal field name for it
+            case Some(t) => m.getFieldIndex(f.name + "$" + t) match {
+                // there is none. Failure (unknown field).
+                case -1 => throw new SemanticException("There is no field '" + t + "." + f.name + "'.")
+                case i =>
+                  // there is one, we keep it. Success.
                   f.index = i
                   f.sqlType = m.getFieldType(i).getTypeCode
               }
