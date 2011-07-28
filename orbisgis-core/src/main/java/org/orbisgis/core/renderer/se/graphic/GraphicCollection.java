@@ -62,11 +62,14 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 /**
  * This class doesn't exists within XSD. Actually, it the CompositeGraphic element which has been move up
- *
+ * It is a set of graphic symbols, as defined in SE.
  * @author maxence
  */
 public final class GraphicCollection implements SymbolizerNode {
 
+    private ArrayList<Graphic> graphics;
+    private SymbolizerNode parent;
+    
     public GraphicCollection() {
         graphics = new ArrayList<Graphic>();
     }
@@ -92,16 +95,29 @@ public final class GraphicCollection implements SymbolizerNode {
         }
     }
 
+    /**
+     * Get the number of inner graphic symbols.
+     * @return 
+     */
     public int getNumGraphics() {
         return graphics.size();
     }
 
+    /**
+     * Get the ith Graphic element of this Collection.
+     * @param i
+     * @return 
+     *  The Graphic at index i.
+     * @throws IndexOutOfBoundsException if <code>i &gt;= getNumGraphics() &amp;&amp; i &lt; 0 </code>
+     */
     public Graphic getGraphic(int i) {
         return graphics.get(i);
     }
 
     /**
-     *
+     * Add a graphic in this collection, at index i if<code>i &lt;= getNumGraphics()-1 &amp;&amp; i &gt;= 0 </code>,
+     * or in the end of the collection (ie at index n+1, if the collection contains
+     * n elements before the insertion) if this condition is no satisfied.
      * @param graphic
      * @param index
      */
@@ -116,6 +132,10 @@ public final class GraphicCollection implements SymbolizerNode {
         }
     }
 
+    /**
+     * Add a graphic at the end of the collection
+     * @param graphic 
+     */
     public void addGraphic(Graphic graphic) {
         if (graphic != null) {
             graphics.add(graphic);
@@ -124,6 +144,11 @@ public final class GraphicCollection implements SymbolizerNode {
         }
     }
 
+    /**
+     * 
+     * @param index
+     * @return 
+     */
     public boolean moveGraphicDown(int index) {
         if (index >= 0 && index < graphics.size() - 1) {
             Graphic g = graphics.remove(index);
@@ -134,6 +159,11 @@ public final class GraphicCollection implements SymbolizerNode {
         }
     }
 
+    /**
+     * 
+     * @param index
+     * @return 
+     */
     public boolean moveGraphicUp(int index) {
         if (index > 0 && index < graphics.size()) {
             Graphic g = graphics.remove(index);
@@ -144,6 +174,12 @@ public final class GraphicCollection implements SymbolizerNode {
         }
     }
 
+    /**
+     * Delete graphic at index i in the collection.
+     * @param i
+     * @return 
+     * true if a Graphic has been removed, false otherwise.
+     */
     public boolean delGraphic(int i) {
         try {
             graphics.remove(i);
@@ -270,6 +306,4 @@ public final class GraphicCollection implements SymbolizerNode {
         }
     }
 
-    private ArrayList<Graphic> graphics;
-    private SymbolizerNode parent;
 }

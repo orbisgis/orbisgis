@@ -63,9 +63,19 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
+/**
+ * Descriptor for dot maps. Each point represents a given quantity. Points are randomly placed
+ * in the polygon that contains them.
+ * @author alexis
+ */
 public final class DotMapFill extends Fill implements GraphicNode {
 
     static final int MAX_ATTEMPT = 100;
+
+    private GraphicCollection mark;
+    private RealParameter quantityPerMark;
+    private RealParameter totalQuantity;
+    private Random rand;
 
     
     public DotMapFill() {
@@ -240,9 +250,4 @@ public final class DotMapFill extends Fill implements GraphicNode {
         ObjectFactory of = new ObjectFactory();
         return of.createDotMapFill(this.getJAXBType());
     }
-
-    private GraphicCollection mark;
-    private RealParameter quantityPerMark;
-    private RealParameter totalQuantity;
-    private Random rand;
 }

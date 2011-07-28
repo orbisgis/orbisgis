@@ -17,9 +17,9 @@ import net.opengis.se._2_0.core.PointTextGraphicType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.transform.Transform;
 
 /**
+ * Generic class to represent graphic symbols as defined in SE.
  * @todo create subclasses: AlternativeGraphic, GraphicReference
  * @author maxence
  */

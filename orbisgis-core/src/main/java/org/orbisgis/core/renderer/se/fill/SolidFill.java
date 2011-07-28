@@ -72,12 +72,18 @@ public final class SolidFill extends Fill {
 	private ColorParameter color;
 	private RealParameter opacity;
 
-    static final double DEFAULT_OPACITY = 0.65;
-    static final float GRAY50 = 128.0f;
+        /**
+         * Default value for opacity : 0.65
+         */
+        public static final double DEFAULT_OPACITY = 0.65;
+        /**
+        * Default colour value.
+        */
+        public static final float GRAY50 = 128.0f;
 
 
 	/**
-	 * fill with random color 60% opaque
+	 * fill with random color 65% opaque
 	 */
 	public SolidFill() {
 		this(new ColorLiteral(), new RealLiteral(DEFAULT_OPACITY));
@@ -120,14 +126,25 @@ public final class SolidFill extends Fill {
 		}
 	}
 
+        /**
+         * Set the colour value for this SolidFill.
+         * @param color 
+         */
 	public void setColor(ColorParameter color) {
 		this.color = color;
 	}
 
+        /**
+         * Get the current colour value for this SolidFill.
+         */
 	public ColorParameter getColor() {
 		return color;
 	}
 
+        /**
+         * Set the opacity value for this SolidFill.
+         * @param opacity 
+         */
 	public void setOpacity(RealParameter opacity) {
 		this.opacity = opacity;
 
@@ -136,6 +153,10 @@ public final class SolidFill extends Fill {
 		}
 	}
 
+        /**
+         * Get the current opacity associated to this SolidFill.
+         * @return 
+         */
 	public RealParameter getOpacity() {
 		return opacity;
 	}
@@ -189,16 +210,16 @@ public final class SolidFill extends Fill {
 
 	@Override
 	public String dependsOnFeature() {
-        String c = "";
-		if (color != null) {
-            c = color.dependsOnFeature();
-		}
+                String c = "";
+                if (color != null) {
+                    c = color.dependsOnFeature();
+                }
 
-        String o = "";
-		if (opacity != null) {
-            o = opacity.dependsOnFeature();
-		}
-		return (c + " " + o).trim();
+                String o = "";
+                if (opacity != null) {
+                    o = opacity.dependsOnFeature();
+                }
+                return (c + " " + o).trim();
 	}
 
 	@Override
