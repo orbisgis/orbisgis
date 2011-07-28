@@ -67,11 +67,17 @@ import org.orbisgis.core.renderer.se.stroke.Stroke;
 public final class HatchedFill extends Fill implements StrokeNode {
 
     static final double EPSILON = 0.01; // todo Eval !
-    static final double DEFAULT_PDIST = 10.0;
-    static final double DEFAULT_ALPHA = 45.0;
+    /**
+     * The default perpendicular distance between two hatches.
+     */
+    public static final double DEFAULT_PDIST = 10.0;
+    /**
+     * Default orientation value for hatches.
+     */
+    public static final double DEFAULT_ALPHA = 45.0;
     static final double TWO_PI_DEG = 360.0;
     static final double PI_DEG = 180.0;
-    static final double DEFAULT_NATURAL_LENGTH = 100;
+    public static final double DEFAULT_NATURAL_LENGTH = 100;
     
     private RealParameter angle;
     private RealParameter distance;
