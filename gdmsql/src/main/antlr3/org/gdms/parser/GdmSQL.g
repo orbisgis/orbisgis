@@ -156,7 +156,6 @@ tokens {
     T_DEC = 'DEC';
     T_DECLARE = 'DECLARE';
     T_DISABLE = 'DISABLE';
-    T_DOUBLE = 'DOUBLE';
     T_EACH = 'EACH';
     T_ENABLE = 'ENABLE';
     T_END = 'END';
