@@ -15,7 +15,9 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 /**
- *
+ * Transformation of continuous values by a function defined on a number of nodes. 
+ * This is used to adjust the value distribution of an attribute to the desired distribution 
+ * of a continuous symbolization control variable (like size, width, color, etc...).
  * @author maxence
  * @param <ToType> One of RealParameter or ColorParameter
  * @param <FallbackType> extends ToType (the LirealOne, please)...
@@ -24,174 +26,201 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  */
 public abstract class Interpolate<ToType extends SeParameter, FallbackType extends ToType> implements SeParameter {
 
-	private  InterpolationMode mode;
-	private  RealParameter lookupValue;
-	private  FallbackType fallbackValue;
-	private  List<InterpolationPoint<ToType>> iPoints;
+        private InterpolationMode mode;
+        private RealParameter lookupValue;
+        private FallbackType fallbackValue;
+        private List<InterpolationPoint<ToType>> iPoints;
 
-	public enum InterpolationMode {
-		LINEAR, COSINE, CUBIC
-	}
-
-    protected Interpolate(){
-		this.iPoints = new ArrayList<InterpolationPoint<ToType>>();
-	}
-
-	public Interpolate(FallbackType fallbackValue) {
-		this.fallbackValue = fallbackValue;
-		this.iPoints = new ArrayList<InterpolationPoint<ToType>>();
-	}
-
-	@Override
-	public final String dependsOnFeature() {
-        String result = "";
-        String lookup = this.getLookupValue().dependsOnFeature();
-        if (lookup != null && !lookup.isEmpty()){
-            result = lookup;
+        /**
+         * Supported interpolation modes.
+         */
+        public enum InterpolationMode {
+                LINEAR, COSINE, CUBIC
         }
 
-		int i;
-		for (i = 0; i < this.getNumInterpolationPoint(); i++) {
-            String r = this.getInterpolationPoint(i).getValue().dependsOnFeature();
-            if (r!= null && !r.isEmpty()){
-                result += r;
-			}
-		}
+        protected Interpolate() {
+                this.iPoints = new ArrayList<InterpolationPoint<ToType>>();
+        }
 
-		return result;
-	}
+        public Interpolate(FallbackType fallbackValue) {
+                this.fallbackValue = fallbackValue;
+                this.iPoints = new ArrayList<InterpolationPoint<ToType>>();
+        }
 
-    public InterpolationMode getMode() {
-        return mode;
-    }
+        @Override
+        public final String dependsOnFeature() {
+                StringBuilder result = new StringBuilder();
+                String lookup = this.getLookupValue().dependsOnFeature();
+                if (lookup != null && !lookup.isEmpty()) {
+                        result.append(lookup);
+                }
+                int i;
+                for (i = 0; i < this.getNumInterpolationPoint(); i++) {
+                        String r = this.getInterpolationPoint(i).getValue().dependsOnFeature();
+                        if (r != null && !r.isEmpty()) {
+                                result.append(r);
+                        }
+                }
+                return result.toString().trim();
+        }
 
-    public void setMode(InterpolationMode mode) {
-        this.mode = mode;
-    }
+        /**
+         * Retrieve the mode that is used to process the interpolation.
+         * @return 
+         */
+        public InterpolationMode getMode() {
+                return mode;
+        }
 
-    protected  List<InterpolationPoint<ToType>> getInterpolationPoints() {
-        return iPoints;
-    }
+        /**
+         * Set the mode that must be used to process the interpolation.
+         * @param mode 
+         */
+        public void setMode(InterpolationMode mode) {
+                this.mode = mode;
+        }
+
+        /**
+         * Retrieve the list of interpolation points.
+         * @return 
+         */
+        protected List<InterpolationPoint<ToType>> getInterpolationPoints() {
+                return iPoints;
+        }
+
+        /**
+         * Set the default value to be returned if an input can't be processed.
+         * @param fallbackValue 
+         */
+        public void setFallbackValue(FallbackType fallbackValue) {
+                this.fallbackValue = fallbackValue;
+        }
+
+        /**
+         * Retrieve the default value that is returned when an input can't be processed.
+         * @return 
+         */
+        public FallbackType getFallbackValue() {
+                return fallbackValue;
+        }
+
+        /**
+         * Set the lookup value that will be used to retrieve the data to process.
+         * @param lookupValue 
+         */
+        public void setLookupValue(RealParameter lookupValue) {
+                this.lookupValue = lookupValue;
+                if (this.lookupValue != null) {
+                        this.lookupValue.setContext(RealParameterContext.realContext);
+                }
+        }
+
+        /**
+         * Get the lookup value that will be used to retrieve the data to process.
+         * @return 
+         */
+        public RealParameter getLookupValue() {
+                return lookupValue;
+        }
+
+        /**
+         * Return the number of classes defined within the classification. According to this number (n),
+         *  available class value ID are [0;n] and ID for threshold are [0;n-1
+         *
+         *  @return number of defined class
+         */
+        public int getNumInterpolationPoint() {
+                return iPoints.size();
+        }
+
+        /**
+         * Add a new interpolation point.
+         * The new point is inserted at the right place in the interpolation point list, according to its data
+         *
+         */
+        public void addInterpolationPoint(InterpolationPoint<ToType> point) {
+                iPoints.add(point);
+                sortInterpolationPoint();
+        }
+
+        public InterpolationPoint<ToType> getInterpolationPoint(int i) {
+                return iPoints.get(i);
+        }
+
+        public void setInterpolationMode(InterpolationMode mode) {
+                this.mode = mode;
+        }
+
+        public InterpolationMode getInterpolationMode() {
+                return mode;
+        }
+
+        private void sortInterpolationPoint() {
+                Collections.sort(iPoints);
+        }
+
+        @Override
+        public ParameterValueType getJAXBParameterValueType() {
+                ParameterValueType p = new ParameterValueType();
+                p.getContent().add(this.getJAXBExpressionType());
+                return p;
+        }
+
+        @Override
+        public JAXBElement<? extends ExpressionType> getJAXBExpressionType() {
+                InterpolateType i = new InterpolateType();
+
+                if (fallbackValue != null) {
+                        i.setFallbackValue(fallbackValue.toString());
+                }
+                if (lookupValue != null) {
+                        i.setLookupValue(lookupValue.getJAXBParameterValueType());
+                }
+
+                if (mode != null) {
+                        i.setMode(ModeType.fromValue(mode.toString()));
+                }
+
+                List<InterpolationPointType> ips = i.getInterpolationPoint();
 
 
-	public void setFallbackValue(FallbackType fallbackValue) {
-		this.fallbackValue = fallbackValue;
-	}
+                for (InterpolationPoint<ToType> ip : iPoints) {
+                        InterpolationPointType ipt = new InterpolationPointType();
 
-	public FallbackType getFallbackValue() {
-		return fallbackValue;
-	}
+                        ipt.setValue(ip.getValue().getJAXBParameterValueType());
+                        ipt.setData(ip.getData());
+                        ips.add(ipt);
+                }
 
-	public void setLookupValue(RealParameter lookupValue) {
-		this.lookupValue = lookupValue;
-		if (this.lookupValue != null){
-			this.lookupValue.setContext(RealParameterContext.realContext);
-		}
-	}
+                ObjectFactory of = new ObjectFactory();
+                return of.createInterpolate(i);
+        }
 
-	public RealParameter getLookupValue() {
-		return lookupValue;
-	}
+        protected int getFirstIP(double data) {
+                int i = -1;
+                for (InterpolationPoint ip : iPoints) {
+                        if (ip.getData() > data) {
+                                return i;
+                        }
+                        i++;
+                }
+                return -1;
+        }
 
-	/**
-	 * Return the number of classes defined within the classification. According to this number (n),
-	 *  available class value ID are [0;n] and ID for threshold are [0;n-1
-	 *
-	 *  @return number of defined class
-	 */
-	public int getNumInterpolationPoint() {
-		return iPoints.size();
-	}
+        protected double cubicInterpolation(double d1, double d2, double x,
+                double v1, double v2, double v3, double v4) {
+                //double mu = (x - d1) / (d2 - d1);
 
-	/**
-	 * Add a new interpolation point.
-	 * The new point is inserted at the right place in the interpolation point list, according to its data
-	 *
-	 */
-	public void addInterpolationPoint(InterpolationPoint<ToType> point) {
-		iPoints.add(point);
-		sortInterpolationPoint();
-	}
+                return 0.0;
+        }
 
-	public InterpolationPoint<ToType> getInterpolationPoint(int i) {
-		return iPoints.get(i);
-	}
+        protected double cosineInterpolation(double d1, double d2, double x, double v1, double v2) {
+                double mu = (x - d1) / (d2 - d1);
+                double mu2 = (1 - Math.cos(mu * Math.PI)) * 0.5;
+                return v1 + mu2 * (v2 - v1);
+        }
 
-	public void setInterpolationMode(InterpolationMode mode) {
-		this.mode = mode;
-	}
-
-	public InterpolationMode getInterpolationMode() {
-		return mode;
-	}
-
-	private void sortInterpolationPoint() {
-		Collections.sort(iPoints);
-	}
-
-	@Override
-	public ParameterValueType getJAXBParameterValueType() {
-		ParameterValueType p = new ParameterValueType();
-		p.getContent().add(this.getJAXBExpressionType());
-		return p;
-	}
-
-	@Override
-	public JAXBElement<? extends ExpressionType> getJAXBExpressionType() {
-		InterpolateType i = new InterpolateType();
-
-		if (fallbackValue != null) {
-			i.setFallbackValue(fallbackValue.toString());
-		}
-		if (lookupValue != null) {
-			i.setLookupValue(lookupValue.getJAXBParameterValueType());
-		}
-
-		if (mode != null) {
-			i.setMode(ModeType.fromValue(mode.toString()));
-		}
-
-		List<InterpolationPointType> ips = i.getInterpolationPoint();
-
-
-		for (InterpolationPoint<ToType> ip : iPoints) {
-			InterpolationPointType ipt = new InterpolationPointType();
-
-			ipt.setValue(ip.getValue().getJAXBParameterValueType());
-			ipt.setData(ip.getData());
-			ips.add(ipt);
-		}
-
-		ObjectFactory of = new ObjectFactory();
-		return of.createInterpolate(i);
-	}
-
-	protected int getFirstIP(double data) {
-		int i = -1;
-		for (InterpolationPoint ip : iPoints) {
-			if (ip.getData() > data) {
-				return i;
-			}
-			i++;
-		}
-		return -1;
-	}
-
-
-	protected double cubicInterpolation(double d1, double d2, double x,
-			double v1, double v2, double v3, double v4){
-		//double mu = (x - d1) / (d2 - d1);
-
-		return 0.0;
-	}
-
-	protected double cosineInterpolation(double d1, double d2, double x, double v1, double v2) {
-		double mu = (x - d1) / (d2 - d1);
-		double mu2 = (1 - Math.cos(mu * Math.PI)) * 0.5;
-		return v1 + mu2*(v2-v1);
-	}
-
-	protected double linearInterpolation(double d1, double d2, double x, double v1, double v2) {
-		return v1 + (v2 - v1) * (x - d1) / (d2 - d1);
-	}
+        protected double linearInterpolation(double d1, double d2, double x, double v1, double v2) {
+                return v1 + (v2 - v1) * (x - d1) / (d2 - d1);
+        }
 }
