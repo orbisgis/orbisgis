@@ -65,7 +65,11 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 /**
  * Descriptor for dot maps. Each point represents a given quantity. Points are randomly placed
- * in the polygon that contains them.
+ * in the polygon that contains them.<br/>
+ * A DotMapFill is defined with three things : <br/>
+ *   * The quantity represented by a single dot<br/>
+ *   * The total quantity to represent<br/>
+ *   * The symbol associated to each single dot.
  * @author alexis
  */
 public final class DotMapFill extends Fill implements GraphicNode {
@@ -77,11 +81,18 @@ public final class DotMapFill extends Fill implements GraphicNode {
     private RealParameter totalQuantity;
     private Random rand;
 
-    
+    /**
+     * Creates a new DotMapFill, with uninstanciated values.
+     */
     public DotMapFill() {
         rand = new Random();
     }
 
+    /**
+     * Creates a new DotMapFill using directly the values stored in the Jaxb tree.
+     * @param f
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     */
     public DotMapFill(JAXBElement<DotMapFillType> f) throws InvalidStyle {
         this();
         DotMapFillType dmf = f.getValue();
@@ -112,6 +123,10 @@ public final class DotMapFill extends Fill implements GraphicNode {
         return mark;
     }
 
+    /**
+     * Set the quantity represented by a single dot.
+     * @param quantityPerMark 
+     */
     public void setQuantityPerMark(RealParameter quantityPerMark) {
         if (quantityPerMark != null) {
             this.quantityPerMark = quantityPerMark;
@@ -119,10 +134,18 @@ public final class DotMapFill extends Fill implements GraphicNode {
         }
     }
 
+    /**
+     * Get the quantity represented by a single dot.
+     * @return The quantity represented by a single dot
+     */
     public RealParameter getQantityPerMark() {
         return quantityPerMark;
     }
 
+    /**
+     * Get the total quantity to be represented for this symbolizer.
+     * @param totalQuantity 
+     */
     public void setTotalQuantity(RealParameter totalQuantity) {
         if (totalQuantity != null) {
             this.totalQuantity = totalQuantity;
@@ -130,6 +153,10 @@ public final class DotMapFill extends Fill implements GraphicNode {
         }
     }
 
+    /**
+     * Set the total quantity to be represented for this symbolizer.
+     * @return 
+     */
     public RealParameter getTotalQantity() {
         return totalQuantity;
     }
