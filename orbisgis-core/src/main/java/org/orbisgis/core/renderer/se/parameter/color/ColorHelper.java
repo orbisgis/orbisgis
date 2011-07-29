@@ -51,6 +51,12 @@ import java.awt.image.BufferedImage;
  */
 public final class ColorHelper {
 
+        /**
+         * Set constructor to private, as we're not supposed to instanciate any instance
+         * of this class.
+         */
+        private ColorHelper(){}
+        
     /**
      * return a new color based on the given color with the specified alpha value
      * @param c
@@ -144,12 +150,15 @@ public final class ColorHelper {
         float gm  = g+m;
         float bm = b+m;
 
-        if (rm < 0.0)
-            rm = 0f;
-        if (gm < 0.0)
-            gm = 0f;
-        if (bm < 0.0)
-            bm = 0f;
+        if (rm < 0.0) {
+                        rm = 0f;
+                }
+        if (gm < 0.0) {
+                        gm = 0f;
+                }
+        if (bm < 0.0) {
+                        bm = 0f;
+                }
 
         //System.out.println ("" + (r+m) + "   " + (g+m) + "   " + (b+m));
         return new Color(rm, gm, bm);

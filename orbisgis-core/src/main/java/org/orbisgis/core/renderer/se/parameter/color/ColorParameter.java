@@ -47,13 +47,20 @@ import org.orbisgis.core.renderer.se.parameter.SeParameter;
 
 
 /**
- * represent a color parameter
- * According to XSD, this color should not embed any alpha value !
- * Anyway, if alpha is defined within a ColorParameter, the value will be loosed
+ * Represent a color parameter
+ * According to XSD, this color should not embed any <code>alpha</code> value !
+ * Consequently, if <code>alpha</code> is defined within a ColorParameter, the value will be loosed
  * at serialization time !
  * @author maxence
  */
 public interface ColorParameter extends SeParameter {
     
-    public abstract Color getColor(SpatialDataSourceDecorator sds, long fid) throws ParameterException;
+    /**
+     * Retrieve the colour associated to this parameter, from the datasource sds, at index fid.
+     * @param sds
+     * @param fid
+     * @return
+     * @throws ParameterException 
+     */
+    Color getColor(SpatialDataSourceDecorator sds, long fid) throws ParameterException;
 }

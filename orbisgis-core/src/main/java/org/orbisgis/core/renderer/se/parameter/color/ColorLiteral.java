@@ -45,6 +45,10 @@ import net.opengis.fes._2.LiteralType;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.se.parameter.Literal;
 
+/**
+ * 
+ * @author maxence, alexis
+ */
 public class ColorLiteral extends Literal implements ColorParameter{
 
     private Color color;
@@ -64,6 +68,10 @@ public class ColorLiteral extends Literal implements ColorParameter{
         color = new Color(r,g,b);
     }
 
+    /**
+     * Create a <code>ColorLiteral</code> with the given <code>Color</code>.
+     * @param color 
+     */
     public ColorLiteral(Color color){
         this.color = color;
     }
@@ -77,6 +85,10 @@ public class ColorLiteral extends Literal implements ColorParameter{
         this.color = Color.decode(htmlColor.trim());
     }
 
+    /**
+     * Build a ColorLiteral from a Literal SE value.
+     * @param l 
+     */
     public ColorLiteral(JAXBElement<LiteralType> l) {
         this(l.getValue().getContent().get(0).toString());
     }
@@ -86,6 +98,10 @@ public class ColorLiteral extends Literal implements ColorParameter{
         return color;
     }
 
+    /**
+     * Set the <code>Color</code> embedded in this <code>ColorLiteral</code> instance.
+     * @param color 
+     */
     public void setColor(Color color){
         this.color = color;
 		this.fireChange();

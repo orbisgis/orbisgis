@@ -49,12 +49,25 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 import org.orbisgis.core.renderer.se.parameter.ValueReference;
 
+/**
+ * Used to dinamycally retrieve color values from a table.
+ * @author alexis
+ */
 public class ColorAttribute extends ValueReference implements ColorParameter {
 
+    /**
+     * Instanciates the attribute with the name of the column where to search.
+     * @param fieldName 
+     */
     public ColorAttribute(String fieldName) {
         super(fieldName);
     }
 
+    /**
+     * Build a <code>colorAttribute</code> from its JAXB representation.
+     * @param expr
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     */
     public ColorAttribute(JAXBElement<ValueReferenceType> expr) throws InvalidStyle {
         super(expr);
     }
@@ -64,7 +77,7 @@ public class ColorAttribute extends ValueReference implements ColorParameter {
         try {
             return Color.getColor(getFieldValue(sds, fid).getAsString());
         } catch (Exception e) {
-            throw new ParameterException("Could not fetch feature attribute \"" + getColumnName() + "\"");
+            throw new ParameterException("Could not fetch feature attribute \"" + getColumnName() + "\"",e);
         }
     }
 }
