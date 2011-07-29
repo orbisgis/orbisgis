@@ -23,9 +23,23 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 /**
  * Categorization is defined as the "transformation of continuous values to distinct values.
- * This is for example needed to generate  choropleth maps from continuous attributes".
+ * This is for example needed to generate  choropleth maps from continuous attributes".</p>
+ * <p>A <code>Categorize</code> instance is built from many objects : 
+ * <ul>
+ * <li>A <code>RealParameter</code> used to retrieve the value to calssify</li>
+ * <li>A fallback value, whose type (<code>FallBackType</code>) is compatible with
+ *      the values of the classes.</li>
+ * <li>The list of class values</li>
+ * <li>The list of thresholds between successive classes.</li>
+ * </ul>
+ * </p>
+ * <p>To build a categorization with n intervals, (n-1) thresholds are needed. The
+ * first interval ranges from <i>-Infinity</i> to the first threshold.</p>
+ * <p>It is also possible to determine whether the threshold values are associated to their 
+ * preceding or succeeding interval.
  * @param <ToType> One of ColorParameter, RealParameter, StringParameter
- * @param <FallbackType> the Literal implementation of <ToType>
+ * @param <FallbackType> the Literal implementation of <ToType>. It is needed to store 
+ * a default value, when a analyzed input can't be placed in any category.
  * @author maxence
  *
  */
@@ -35,7 +49,15 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
     private static final String METHOD_KEY = "method";
 
     private CategorizeMethod method;
+    /**
+     * If set to true
+     */
     private boolean succeeding = true;
+    /**
+     * Gives the ability to retrieve the value that needs to be classified. The 
+     * RealParameter embeded all the needed informations (particularly the name of
+     * the column where to search).
+     */
     private RealParameter lookupValue;
     private FallbackType fallbackValue;
     private ToType firstClass;
@@ -106,13 +128,22 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         return fallbackValue;
     }
 
-    public void setLookupValue(RealParameter lookupValue) {
+    /**
+     * Set the lookup value. After using this methods, attributes to be processed in this
+     * categorization will be retrieved using <code>lookupValue</code>
+     * @param lookupValue 
+     */
+    public final void setLookupValue(RealParameter lookupValue) {
         this.lookupValue = lookupValue;
         if (lookupValue != null) {
             lookupValue.setContext(RealParameterContext.realContext);
         }
     }
 
+    /**
+     * Get the current lookup value.
+     * @return 
+     */
     public final RealParameter getLookupValue() {
         return lookupValue;
     }
@@ -186,20 +217,20 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
     }
 
     /**
-     * Sets the calue associated to class number i (if any) to <code>value</code>.
+     * Sets the value associated to class number i (if any) to <code>val</code>.
      * @param i
-     * @param value 
+     * @param val 
      */
-    public void setClassValue(int i, ToType value) {
-        System.out.println("Set Class n° " + i + " value :" + value);
+    public void setClassValue(int i, ToType val) {
+        System.out.println("Set Class n° " + i + " value :" + val);
         int n = i;
         if (n == 0) {
-            firstClass = value;
+            firstClass = val;
         } else if (n > 0 && n < getNumClasses() - 1) {
             //classes.get(i - 1).setClassValue(value);
             n--; // first class in not in the list
             classValues.remove(n);
-            classValues.add(n, value);
+            classValues.add(n, val);
         } else {
             // TODO throw
         }
@@ -243,6 +274,10 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         return thresholds.get(i);
     }
 
+    /**
+     * After using this method, threshold values will be associated to their 
+     * succeeding interval.
+     */
     public void setThresholdsSucceeding() {
         succeeding = true;
     }
@@ -256,6 +291,10 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         return succeeding;
     }
 
+    /**
+     * After using this method, threshold values will be associated to their 
+     * preceeding interval.
+     */
     public void setThresholdsPreceding() {
         succeeding = false;
     }
@@ -370,10 +409,19 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         this.method = method;
     }
 
+    /**
+     * get the standard deviation. useful only when the classifying method is 
+     * <code>STANDARD_DEVIATION</code>
+     * @return 
+     */
     public double getSdFactor() {
         return sdFactor;
     }
 
+    /**
+     * Set the standard deviation
+     * @param sdFactor 
+     */
     public void setSdFactor(double sdFactor) {
         this.sdFactor = sdFactor;
     }
