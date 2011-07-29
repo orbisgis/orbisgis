@@ -66,25 +66,45 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
+/**
+ * A "GraphicFill" defines repeated-graphic filling (stippling) pattern for an area geometry.
+ * It is defined with a GraphicCollection (that will be used to draw the filling symbol), a Uom,
+ * and a gap vector. The gap vector is represented by its two (X and Y) coordinates,
+ * stored as <code>RealParameter</code> instances.
+ * @author alexis, maxence
+ */
 public final class GraphicFill extends Fill implements UomNode {
 
     private GraphicCollection graphic;
     private Uom uom;
+    /**
+     * Distance between two graphics in the fill, in X direction.
+     */
     private RealParameter gapX;
+    /**
+     * Distance between two graphics in the fill, in Y direction.
+     */
     private RealParameter gapY;
 
+    /**
+     * Creates a new GraphicFill, with the gap's measures set to null.
+     */
     public GraphicFill() {
         this.setGapX(null);
         this.setGapY(null);
     }
 
+    /**
+     * Creates a new GraphicFill directly from the Jaxb representation of the style.
+     * @param gft
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     */
     public GraphicFill(GraphicFillType gft) throws InvalidStyle {
         if (gft.getGraphic() != null) {
             this.setGraphic(new GraphicCollection(gft.getGraphic(), this));
         }
-
-        if (gft.getTileGap() != null) {
-            TileGapType gap = gft.getTileGap();
+        TileGapType gap = gft.getTileGap();
+        if (gap != null) {
             if (gap.getX() != null) {
                 this.setGapX(SeParameterFactory.createRealParameter(gap.getX()));
             }
@@ -98,15 +118,28 @@ public final class GraphicFill extends Fill implements UomNode {
         }
     }
 
+    /**
+     * Creates a new GraphicFill directly from the Jaxb representation of the style.
+     * @param f
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     */
     GraphicFill(JAXBElement<GraphicFillType> f) throws InvalidStyle {
         this(f.getValue());
     }
 
+    /**
+     * Set the GraphicCollection embedded in this GraphicFill. This is set as the parent of <code>graphic</code>
+     * @return 
+     */
     public void setGraphic(GraphicCollection graphic) {
         this.graphic = graphic;
         graphic.setParent(this);
     }
 
+    /**
+     * Get the GraphicCollection embedded in this GraphicFill.
+     * @return 
+     */
     public GraphicCollection getGraphic() {
         return graphic;
     }
@@ -130,6 +163,10 @@ public final class GraphicFill extends Fill implements UomNode {
         }
     }
 
+    /**
+     * Set the gap, upon X direction, between two symbols.
+     * @param gap 
+     */
     public void setGapX(RealParameter gap) {
         gapX = gap;
         if (gap != null) {
@@ -137,6 +174,10 @@ public final class GraphicFill extends Fill implements UomNode {
         }
     }
 
+    /**
+     * Set the gap, upon Y direction, between two symbols.
+     * @param gap 
+     */
     public void setGapY(RealParameter gap) {
         gapY = gap;
         if (gap != null) {
@@ -144,10 +185,19 @@ public final class GraphicFill extends Fill implements UomNode {
         }
     }
 
+
+    /**
+     * Get the gap, upon X direction, between two symbols.
+     * @param gap 
+     */
     public RealParameter getGapX() {
         return gapX;
     }
 
+    /**
+     * Get the gap, upon Y direction, between two symbols.
+     * @param gap 
+     */
     public RealParameter getGapY() {
         return gapY;
     }
@@ -241,22 +291,21 @@ public final class GraphicFill extends Fill implements UomNode {
 
     @Override
     public String dependsOnFeature() {
-
-        String gx = "";
-        String gy = "";
-        String g = "";
+        StringBuilder sb = new StringBuilder();
 
         if (gapX != null) {
-            gx = gapX.dependsOnFeature();
+            sb.append(gapX.dependsOnFeature());
         }
         if (gapY != null) {
-            gy = gapY.dependsOnFeature();
+            sb.append(" ");
+            sb.append(gapY.dependsOnFeature());
         }
         if (graphic != null) {
-            g = graphic.dependsOnFeature();
+            sb.append(" ");
+            sb.append(graphic.dependsOnFeature());
         }
 
-        return (gx + " " + gy + " " + g).trim();
+        return sb.toString().trim();
     }
 
     @Override

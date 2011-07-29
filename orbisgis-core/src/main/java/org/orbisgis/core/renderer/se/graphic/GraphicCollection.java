@@ -70,10 +70,21 @@ public final class GraphicCollection implements SymbolizerNode {
     private ArrayList<Graphic> graphics;
     private SymbolizerNode parent;
     
+    /**
+     * Create a new, orphan and empty GraphicCollection.
+     */
     public GraphicCollection() {
         graphics = new ArrayList<Graphic>();
     }
 
+    /**
+     * Create a new GraphicCollection, with parent node <code>parent</code>. The collection
+     * is filled using graphic elements found in <code>g</code>
+     * @param g
+     * @param parent
+     *          The parent node of this GraphicCollection
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     */
     public GraphicCollection(JAXBElement<? extends GraphicType> g, SymbolizerNode parent) throws InvalidStyle {
         this();
         this.setParent(parent);
@@ -196,6 +207,11 @@ public final class GraphicCollection implements SymbolizerNode {
         }
     }
 
+    /**
+     * Delete the <code>Graphic</code> instance <code>graphic</code> of this collection.
+     * @param graphic
+     * @return 
+     */
     public boolean delGraphic(Graphic graphic) {
         return (graphics.remove(graphic));
     }
@@ -215,6 +231,16 @@ public final class GraphicCollection implements SymbolizerNode {
         parent = node;
     }
 
+    /**
+     * Get the minimum horizontal rectangle that contains this GraphicCollection.
+     * @param sds
+     * @param fid
+     * @param selected
+     * @param mt
+     * @return
+     * @throws ParameterException
+     * @throws IOException 
+     */
     public Rectangle2D getBounds(SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt)
             throws ParameterException, IOException {
 
@@ -286,12 +312,17 @@ public final class GraphicCollection implements SymbolizerNode {
         }
     }
 
-    public final String dependsOnFeature() {
-        String result = "";
+    /**
+     * Print the list of features this GraphicCollection depends on.
+     * @return 
+     */
+    public String dependsOnFeature() {
+        StringBuilder result = new StringBuilder("");
         for (Graphic g : this.graphics) {
-            result += " " + g.dependsOnFeature();
+            result.append(" ");
+            result.append(g.dependsOnFeature());
         }
-        return result.trim();
+        return result.toString().trim();
     }
 
     public JAXBElement<? extends GraphicType> getJAXBElement() {
