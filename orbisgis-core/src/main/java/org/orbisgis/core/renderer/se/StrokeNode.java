@@ -43,10 +43,19 @@ package org.orbisgis.core.renderer.se;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 
 /**
- *
+ * This interface must be implemented by every <code>Symbolizer</code> that can contain
+ * a <code>Stroke</code> element.
  * @author maxence
  */
 public interface StrokeNode {
+        /**
+         * Get the Stroke associated to the current node.
+         * @return 
+         */
 	Stroke getStroke();
+        /**
+         * replace the <code>Str</code> associated to the current node with <code>s</code>
+         * @param s 
+         */
 	void setStroke(Stroke s);
 }

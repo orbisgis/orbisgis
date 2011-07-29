@@ -11,10 +11,22 @@ import org.orbisgis.core.renderer.se.common.Uom;
  * @author maxence
  */
 public interface SymbolizerNode{
+    /**
+     * Get the unit of measure associated with the current node.
+     * @return 
+     */
     Uom getUom(); // todo extract !
 
+    /**
+     * get the parent of this current <code>SymbolizerNode</code>
+     * @return 
+     */
     SymbolizerNode getParent();
 
+    /**
+     * Set the parent of this <code>SymbolizerNode</code>
+     * @param node 
+     */
     void setParent(SymbolizerNode node);
 
 

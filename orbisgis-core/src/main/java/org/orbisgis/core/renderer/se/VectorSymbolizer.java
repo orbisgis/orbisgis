@@ -63,10 +63,12 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.transform.Transform;
 
 /**
- * This class contains common element shared by Point,Line,Area 
- * and Text Symbolizer. Those vector layers all contains :
- *   - an unit of measure (Uom)
- *   - an affine transformation def (transform)
+ * This class contains the common elements shared by <code>PointSymbolizer</code>,<code>LineSymbolizer</code>
+ * ,<code>AreaSymbolizer</code> and <code>TextSymbolizer</code>. Those vector layers all contains 
+ * the elements defined in <code>Symbolizer</code>, and :<ul>
+ *  <li> - an unit of measure (Uom)</li>
+ *  <li> - an affine transformation def (transform)</li>
+ * </ul>
  *
  * @author maxence
  */
@@ -98,13 +100,13 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
      * @throws DriverException
      */
     public List<Shape> getShapes(SpatialDataSourceDecorator sds, long fid,
-            MapTransform mt, Geometry the_geom) throws ParameterException, IOException, DriverException {
+            MapTransform mt, Geometry theGeom) throws ParameterException, IOException, DriverException {
 
         Geometry geom;
-        if (the_geom == null) {
+        if (theGeom == null) {
             geom = this.getTheGeom(sds, fid); // geom + function
         } else {
-            geom = the_geom;
+            geom = theGeom;
         }
 
         //geom = ShapeHelper.clipToExtent(geom, mt.getAdjustedExtent());
@@ -230,13 +232,13 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
      * @throws IOException
      * @throws DriverException
      */
-    public Point2D getPointShape(SpatialDataSourceDecorator sds, long fid, MapTransform mt, Geometry the_geom) throws ParameterException, IOException, DriverException {
+    public Point2D getPointShape(SpatialDataSourceDecorator sds, long fid, MapTransform mt, Geometry theGeom) throws ParameterException, IOException, DriverException {
         Geometry geom;
 
-        if (the_geom == null) {
+        if (theGeom == null) {
             geom = this.getTheGeom(sds, fid); // geom + function
         } else {
-            geom = the_geom;
+            geom = theGeom;
         }
 
         //geom = ShapeHelper.clipToExtent(geom, mt.getAdjustedExtent());
@@ -272,13 +274,13 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
      * @throws IOException
      * @throws DriverException
      */
-    public Point2D getFirstPointShape(SpatialDataSourceDecorator sds, long fid, MapTransform mt, Geometry the_geom) throws ParameterException, IOException, DriverException {
+    public Point2D getFirstPointShape(SpatialDataSourceDecorator sds, long fid, MapTransform mt, Geometry theGeom) throws ParameterException, IOException, DriverException {
         Geometry geom;
 
-        if (the_geom == null) {
+        if (theGeom == null) {
             geom = this.getTheGeom(sds, fid); // geom + function
         } else {
-            geom = the_geom;
+            geom = theGeom;
         }
 
         //geom = ShapeHelper.clipToExtent(geom, mt.getAdjustedExtent());
@@ -300,20 +302,20 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
      * @param sds
      * @param fid
      * @param mt
-     * @param the_geom
+     * @param theGeom
      * @return
      * @throws ParameterException
      * @throws IOException
      * @throws DriverException
      */
     public List<Point2D> getPoints(SpatialDataSourceDecorator sds, long fid,
-            MapTransform mt, Geometry the_geom) throws ParameterException, IOException, DriverException {
+            MapTransform mt, Geometry theGeom) throws ParameterException, IOException, DriverException {
 
         Geometry geom;
-        if (the_geom == null) {
+        if (theGeom == null) {
             geom = this.getTheGeom(sds, fid); // geom + function
         } else {
-            geom = the_geom;
+            geom = theGeom;
         }
 
         //geom = ShapeHelper.clipToExtent(geom, mt.getAdjustedExtent());
@@ -335,6 +337,11 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
         return points;
     }
 
+    /**
+     * Retrieve the geometric transformation that must be applied to the geometries.
+     * @return 
+     *  The transformation associated to this Symbolizer.
+     */
     public Transform getTransform() {
         return transform;
     }
@@ -358,6 +365,10 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
         }
     }
 
+    /**
+     * Get the geometric transformation that must be applied to the geometries.
+     * @param transform 
+     */
     public void setTransform(Transform transform) {
         this.transform = transform;
         transform.setParent(this);

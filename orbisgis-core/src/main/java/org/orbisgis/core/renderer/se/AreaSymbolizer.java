@@ -67,12 +67,25 @@ import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.renderer.se.transform.Transform;
 
+/**
+ * A "AreaSymbolizer" specifies the rendering of a polygon or other area/surface geometry, 
+ * including its interior fill and border stroke.</p>
+ * <p>In addition of the properties inherited from <code>VectorSymbolizer</code> an <code>
+ * AreaSymbolizer</code> is defined with a perpendicular offset, a <code>Stroke</code> (to draw its limit, 
+ * and as a <code>StrokeNode</code>) and a <code>Fill</code> (to paint its interior, and 
+ * as a <code>FillNode</code>).
+ * @author maxence, alexis
+ */
 public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, StrokeNode {
 
     private RealParameter perpendicularOffset;
     private Stroke stroke;
     private Fill fill;
 
+    /**
+     * Build a new AreaSymbolizer, named "Area Symbolizer". It is defined with a 
+     * <code>SolidFill</code> and a <code>PenStroke</code>
+     */
     public AreaSymbolizer() {
         super();
         name = "Area symbolizer";
@@ -81,6 +94,11 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
         this.setStroke(new PenStroke());
     }
 
+    /**
+     * Build a new <code>AreaSymbolizer</code>, using a JAXB element to fill its properties.
+     * @param st
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     */
     public AreaSymbolizer(JAXBElement<AreaSymbolizerType> st) throws InvalidStyle {
         super(st);
 
@@ -138,10 +156,29 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
         return fill;
     }
 
+    /**
+     * Get the current perpendicular offset associated to this Symbolizer. It allows to
+     * draw polygons larger or smaller than their actual geometry. The meaning of the 
+     * value is dependant of the <code>Uom</code> instance associated to this <code>Symbolizer</code>.
+     * 
+     * @return 
+     *          The offset as a <code>RealParameter</code>. A positive value will cause the
+     *          polygons to be drawn larger than their original size, while a negative value
+     *          will cause the drawing of smaller polygons.
+     */
     public RealParameter getPerpendicularOffset() {
         return perpendicularOffset;
     }
 
+    /**
+     * Set the current perpendicular offset associated to this Symbolizer. It allows to
+     * draw polygons larger or smaller than their actual geometry. The meaning of the 
+     * value is dependant of the <code>Uom</code> instance associated to this <code>Symbolizer</code>.
+     * @param perpendicularOffset 
+     *          The offset as a <code>RealParameter</code>. A positive value will cause the
+     *          polygons to be drawn larger than their original size, while a negative value
+     *          will cause the drawing of smaller polygons.
+     */
     public void setPerpendicularOffset(RealParameter perpendicularOffset) {
         this.perpendicularOffset = perpendicularOffset;
         if (this.perpendicularOffset != null) {

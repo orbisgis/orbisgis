@@ -8,7 +8,7 @@ package org.orbisgis.core.renderer.se;
 import org.orbisgis.core.renderer.se.fill.Fill;
 
 /**
- *
+ * Interface to be implemented by every node that can contain a <code>Fill</code> element.
  * @author maxence
  */
 public interface FillNode {
