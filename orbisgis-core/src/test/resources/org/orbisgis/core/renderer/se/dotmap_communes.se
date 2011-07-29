@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <FeatureTypeStyle xmlns="http://www.opengis.net/se/2.0/core" xmlns:tse="http://www.opengis.net/se/2.0/thematic" xmlns:ns2="http://www.opengis.net/ows/2.0" xmlns:ns3="http://www.opengis.net/fes/2.0" xmlns:ns4="http://www.w3.org/1999/xlink" version="2.0.0">
-    <Rule>
-        <CompositeSymbolizer>
-            <AreaSymbolizer uom="urn:ogc:def:uom:se::mm" version="2.0.0">
-                <Name>Symbolizer Name</Name>
-                <tse:DotMapFill>
-                    <MarkGraphic>
-                        <WellKnownName>circle</WellKnownName>
-                        <ViewBox>
-                            <Width>1</Width>
-                        </ViewBox>
-                        <SolidFill>
-                            <Color>#00FF00</Color>
-                            <Opacity>60</Opacity>
-                        </SolidFill>
-                        <PenStroke>
-                            <Width>0.1</Width>
-                        </PenStroke>
-                    </MarkGraphic>
-                    <tse:ValuePerMark>1000</tse:ValuePerMark>
-                    <tse:ValueToRepresent>
-		    	        <ns3:ValueReference>NFOYNI98</ns3:ValueReference>
-                    </tse:ValueToRepresent>
-                </tse:DotMapFill>
-            </AreaSymbolizer>
-        </CompositeSymbolizer>
-    </Rule>
+	<Rule>
+		<CompositeSymbolizer>
+			<AreaSymbolizer uom="urn:ogc:def:uom:se::mm" version="2.0.0">
+				<Name>Symbolizer Name</Name>
+				<tse:DotMapFill>
+					<MarkGraphic>
+						<WellKnownName>circle</WellKnownName>
+						<ViewBox>
+							<Width>1</Width>
+						</ViewBox>
+						<SolidFill>
+							<Color>#00FF00</Color>
+							<Opacity>60</Opacity>
+						</SolidFill>
+						<PenStroke>
+							<Width>0.1</Width>
+						</PenStroke>
+					</MarkGraphic>
+					<tse:ValuePerMark>1000</tse:ValuePerMark>
+					<tse:ValueToRepresent>
+						<ns3:ValueReference>NFOYNI98</ns3:ValueReference>
+					</tse:ValueToRepresent>
+				</tse:DotMapFill>
+			</AreaSymbolizer>
+		</CompositeSymbolizer>
+	</Rule>
 </FeatureTypeStyle>
