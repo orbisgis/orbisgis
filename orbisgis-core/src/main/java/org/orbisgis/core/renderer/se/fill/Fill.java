@@ -70,6 +70,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  */
 public abstract class Fill implements SymbolizerNode {
 
+    protected SymbolizerNode parent;
     /**
      * Create a new fill based on the jaxbelement
      *
@@ -160,5 +161,4 @@ public abstract class Fill implements SymbolizerNode {
     public abstract FillType getJAXBType();
 
 
-    protected SymbolizerNode parent;
 }
