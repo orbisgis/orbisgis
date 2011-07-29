@@ -51,6 +51,10 @@ import java.awt.image.BufferedImage;
  */
 public final class ColorHelper {
 
+        public static final int MAX_RGB_VALUE = 255;
+        
+        private static final float INTERVAL_SIZE = 60.0f;
+        private static final float DEGREES = 360.0f;
         /**
          * Set constructor to private, as we're not supposed to instanciate any instance
          * of this class.
@@ -64,18 +68,19 @@ public final class ColorHelper {
      * @return new color with alpha channel
      */
     public static Color getColorWithAlpha(Color c, double alpha) {
-        int a = (int) (255.0 * alpha);
+        int a = (int) (MAX_RGB_VALUE * alpha);
 
         if (a < 0) {
             a = 0;
-        } else if (a > 255) {
-            a = 255;
+        } else if (a > MAX_RGB_VALUE) {
+            a = MAX_RGB_VALUE;
         }
 
 		if (c != null){
         	return new Color(c.getRed(), c.getGreen(), c.getBlue(), a);
 		}else{
-        	return new Color(255, 255, 255, a); // WhiteTrans
+        	return new Color(MAX_RGB_VALUE, MAX_RGB_VALUE, 
+                        MAX_RGB_VALUE, a); // WhiteTrans
 		}
 
     }
@@ -87,14 +92,14 @@ public final class ColorHelper {
     public static Color invert(Color c){
         //  TODO : improve
         int a = c.getAlpha();
-        int r = 255 - c.getRed();
-        int g = 255 - c.getGreen();
-        int b = 255 - c.getBlue();
+        int r = MAX_RGB_VALUE - c.getRed();
+        int g = MAX_RGB_VALUE - c.getGreen();
+        int b = MAX_RGB_VALUE - c.getBlue();
 
         // if the resulting color is to light (e.g. initial color is black, resulting color is white...)
         if ((r + g + b > 740) || (r + g + b < 20)){
             // return a standard yellow
-            return new Color(255, 255, 40, a);
+            return new Color(MAX_RGB_VALUE, MAX_RGB_VALUE, 40, a);
         }
         else{
             return new Color(r,g,b,a);
@@ -103,7 +108,8 @@ public final class ColorHelper {
 
 
     /**
-     *
+     * HSL stands for hue, saturation, and lightness, and is a cylindrical representation
+     * of RGB values.
      * @param h [0°;360°]
      * @param s [0;1]
      * @param l [0;1]
@@ -112,11 +118,9 @@ public final class ColorHelper {
     public static Color getColorFromHSL(double h, double s, double l){
         float chroma = (float) ((1 - Math.abs(2 * l - 1)) * s);
 
-        double h2 = h / 60;
-        float x = (float) (chroma * (1 - Math.abs((h2 % 2) - 1)));
+        final double h2 = h / INTERVAL_SIZE;
+        final float x = (float) (chroma * (1 - Math.abs((h2 % 2) - 1)));
         float r=0f, g=0f, b=0f;
-
-        //System.out.println ("h2: " + h2);
 
         if (h2 < 1.0){
             r = chroma;
@@ -151,16 +155,15 @@ public final class ColorHelper {
         float bm = b+m;
 
         if (rm < 0.0) {
-                        rm = 0f;
-                }
+            rm = 0f;
+        }
         if (gm < 0.0) {
-                        gm = 0f;
-                }
+            gm = 0f;
+        }
         if (bm < 0.0) {
-                        bm = 0f;
-                }
+            bm = 0f;
+        }
 
-        //System.out.println ("" + (r+m) + "   " + (g+m) + "   " + (b+m));
         return new Color(rm, gm, bm);
     }
 
@@ -168,7 +171,7 @@ public final class ColorHelper {
         BufferedImage colorSpace = new BufferedImage(150,250, BufferedImage.TYPE_INT_RGB);
         Graphics g2 = colorSpace.getGraphics();
 
-        double dh = 360.0 / (colorSpace.getHeight() - 1);
+        double dh = (double) DEGREES / (colorSpace.getHeight() - 1);
         double dl = 1.0 / (colorSpace.getWidth() - 1);
 
         g2.setColor(Color.red);
@@ -205,11 +208,11 @@ public final class ColorHelper {
         if (max == min){
             return 0f;
         } else if (max == r){
-            return (60* (g-b)/(max-min) + 360) % 360;
+            return (INTERVAL_SIZE* (g-b)/(max-min) + (int)DEGREES) % (int)DEGREES;
         } else if (max == g){
-            return 60*(b-r)/(max-min) + 120;
+            return INTERVAL_SIZE*(b-r)/(max-min) + 120;
         } else { // max == b
-            return 60*(r-g)/(max-min) + 240;
+            return INTERVAL_SIZE*(r-g)/(max-min) + 240;
         }
     }
 
@@ -221,6 +224,6 @@ public final class ColorHelper {
         int max = Math.max(r, Math.max(g, b));
         int min = Math.min(r, Math.min(g, b));
 
-        return ((max + min)*0.5f) / 255;
+        return ((max + min)*0.5f) / (float) MAX_RGB_VALUE;
     }
 }
