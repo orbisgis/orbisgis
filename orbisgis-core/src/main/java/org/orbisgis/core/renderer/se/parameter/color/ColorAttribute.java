@@ -64,7 +64,7 @@ public class ColorAttribute extends ValueReference implements ColorParameter {
         try {
             return Color.getColor(getFieldValue(sds, fid).getAsString());
         } catch (Exception e) {
-            throw new ParameterException("Could not fetch feature attribute \"" + fieldName + "\"");
+            throw new ParameterException("Could not fetch feature attribute \"" + getColumnName() + "\"");
         }
     }
 }

@@ -77,7 +77,7 @@ public class StringAttribute extends ValueReference implements StringParameter{
 			Value fieldValue = getFieldValue(sds, fid);
 			return fieldValue.toString();
         } catch (Exception e) {
-            throw new ParameterException("Could not fetch feature attribute \""+ fieldName +"\" (" + e + ")");
+            throw new ParameterException("Could not fetch feature attribute \""+ getColumnName() +"\" (" + e + ")");
         }
     }
 

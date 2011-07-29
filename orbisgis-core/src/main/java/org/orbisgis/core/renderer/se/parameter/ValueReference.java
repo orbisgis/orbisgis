@@ -18,7 +18,7 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
  */
 public abstract class ValueReference implements SeParameter {
 
-	protected String fieldName;
+	private String fieldName;
 	private int fieldId;
 	private ArrayList<PropertyNameListener> listeners;
 

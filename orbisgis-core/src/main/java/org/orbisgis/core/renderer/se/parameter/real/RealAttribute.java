@@ -49,13 +49,13 @@ public class RealAttribute extends ValueReference implements RealParameter {
             }
             return value.getAsDouble();
         } catch (Exception e) {
-            throw new ParameterException("Could not fetch feature attribute \"" + fieldName + "\"", e);
+            throw new ParameterException("Could not fetch feature attribute \"" + getColumnName() + "\"", e);
         }
     }
 
     @Override
     public String toString() {
-        return "<" + this.fieldName + ">";
+        return "<" + getColumnName() + ">";
     }
 
     @Override

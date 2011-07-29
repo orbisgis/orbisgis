@@ -18,7 +18,7 @@ public class GeometryAttribute extends ValueReference {
         try {
             return getFieldValue(sds, fid).getAsGeometry();
         } catch (DriverException ex) {
-            throw new ParameterException("Could not fetch feature attribute \"" + fieldName + "\"");
+            throw new ParameterException("Could not fetch feature attribute \"" + getColumnName() + "\"");
         }
     }
 
