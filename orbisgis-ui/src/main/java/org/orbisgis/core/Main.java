@@ -78,6 +78,8 @@ public class Main {
 	public static String I18N_SETLOCALE = "";
 
 	public static String MIN_JAVA_VERSION = "1.6.";
+        
+        public static String PLUGIN_DIRECTORY = "lib/ext";
 
 	public static void main(String[] args) throws Exception {
 		Splash splash = new Splash();
@@ -134,6 +136,9 @@ public class Main {
 				wrsk.setWorkspaceFolder(commandLine.getOption(WORKSPACE)
 						.getArg(0));
 			}
+                        if (commandLine.hasOption("pluginDir")) {
+                                PLUGIN_DIRECTORY = commandLine.getOption("pluginDir").getArg(0);
+                        }
 			wrsk.init(commandLine.hasOption(CLEAN));
 
 			// Install OrbisGIS core services
@@ -144,7 +149,7 @@ public class Main {
 
 			BasicConfiguration bc = Services
 					.getService(BasicConfiguration.class);
-			String sTimer = bc.getProperty(WorkspaceConfiguration
+                        String sTimer = bc.getProperty(WorkspaceConfiguration
 					.getTimerProperty());
 			int iTimer = WorkspaceConfiguration.convert(sTimer);
 			if (iTimer > 0)
@@ -213,6 +218,7 @@ public class Main {
 		commandLine.addOptionSpec(new OptionSpec(I18N_FILE, 1));
 		commandLine.addOptionSpec(new OptionSpec(WORKSPACE, 1));
 		commandLine.addOptionSpec(new OptionSpec(CLEAN, 0));
+                commandLine.addOptionSpec(new OptionSpec("pluginDir", 1));
 		try {
 			commandLine.parse(args);
 		} catch (ParseException e) {
