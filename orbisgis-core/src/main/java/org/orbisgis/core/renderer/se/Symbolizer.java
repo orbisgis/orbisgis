@@ -30,25 +30,36 @@ import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
  */
 public abstract class Symbolizer implements SymbolizerNode, Comparable {
 
-    protected static final String DEFAULT_NAME = "Default Symbolizer";
-    protected static final String VERSION = "2.0.0";
+    /**
+     * The default name affected to a new Symbolizer instance.
+     */
+    public static final String DEFAULT_NAME = "Default Symbolizer";
+    /**
+     * The current version of the Symbolizer
+     */
+    public static final String VERSION = "2.0.0";
     protected String name;
     protected String desc;
     protected GeometryAttribute the_geom;
     private SymbolizerNode parent;
     protected int level;
 
+    /**
+     * Build an empty Symbolizer, with the default name and no description.
+     */
     public Symbolizer() {
         name = Symbolizer.DEFAULT_NAME;
         desc = "";
         level = -1;
     }
 
-    @Override
-    public String toString() {
-        return name;
-    }
-
+    /**
+     * Build a Symbolizer from a JAXB element. This constructor will only retrieve
+     * the name and description - it's up to the inheriting classes to retrieve the other 
+     * needed informations.
+     * @param st
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     */
     public Symbolizer(JAXBElement<? extends SymbolizerType> st) throws InvalidStyle {
         SymbolizerType t = st.getValue();
 
@@ -77,10 +88,29 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
         }
     }
 
+    /**
+     * Gets the name of this Symbolizer.
+     * @return 
+     *  the name of the Symbolizer.
+     */
+    @Override
+    public String toString() {
+        return name;
+    }
+
+    /**
+     * Gets the name of this <code>Symbolizer</code>.
+     * @return 
+     *  the name of the <code>Symbolizer</code>.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Set <code>name</code> as the name of this <code>Symbolizer</code>
+     * @param name 
+     */
     public void setName(String name) {
         if (name == null || name.equalsIgnoreCase("")) {
             this.name = Symbolizer.DEFAULT_NAME;
@@ -89,18 +119,34 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
         }
     }
 
+    /**
+     * Get the description associated to this <code>Symbolizer</code>.
+     * @return 
+     */
     public String getDescription() {
         return desc;
     }
 
+    /**
+     * Set the description associated to this <code>Symbolizer</code>.
+     * @param description 
+     */
     public void setDescription(String description) {
         desc = description;
     }
 
+    /**
+     * Get the display level of this <code>Symbolizer</code>
+     * @return 
+     */
     public int getLevel() {
         return level;
     }
 
+    /**
+     * Set the display level of this <code>Symbolizer</code>
+     * @param level 
+     */
     public void setLevel(int level) {
         this.level = level;
     }
@@ -109,8 +155,8 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
         return the_geom;
     }
 
-    public void setGeometry(GeometryAttribute the_geom) {
-        this.the_geom = the_geom;
+    public void setGeometry(GeometryAttribute theGeom) {
+        this.the_geom = theGeom;
     }
 
     public Geometry getTheGeom(SpatialDataSourceDecorator sds, long fid) throws DriverException, ParameterException {
@@ -179,6 +225,16 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
         }
     }
 
+    /**
+     * Makes a comparison between this and o. Be aware that <b>this operation is absolutely
+     * not concistent with <code>equals(Object o)</code> !!!</b>
+     * @param o
+     * @return 
+     * <ul><li>-1 if <code>(!o instanceof Symbolizer) || o.level &lt; this.level </code></li>
+     * <li>0 if <code>(o instanceof Symbolizer) &amp;&amp; s.level == this.level</code></li>
+     * <li>1 otherwise</li>
+     * </ul> 
+     */
     @Override
     public int compareTo(Object o) {
         if (o instanceof Symbolizer) {
@@ -208,8 +264,12 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
     }
 
     public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
-            boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
+            boolean selected, MapTransform mt, Geometry theGeom, RenderContext perm)
             throws ParameterException, IOException, DriverException;
 
+    /**
+     * Get a JAXB representation of this Symbolizer.
+     * @return 
+     */
     public abstract JAXBElement<? extends SymbolizerType> getJAXBElement();
 }
