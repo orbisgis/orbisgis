@@ -59,24 +59,10 @@ public final class CompositeSymbolizer implements SymbolizerNode {
         private SymbolizerNode parent;
         
         /**
-         * Get a Jaxb representation of this <code>CompositeSymbolizer</code>.
-         * @return 
+         * Build a new, empty, CompositeSymbolizer.
          */
-        public JAXBElement<? extends SymbolizerType> getJAXBElement() {
-                if (symbolizers.size() == 1) {
-                        return symbolizers.get(0).getJAXBElement();
-                } else if (symbolizers.size() > 1) {
-                        ObjectFactory of = new ObjectFactory();
-                        CompositeSymbolizerType cs = of.createCompositeSymbolizerType();
-                        List<JAXBElement<? extends SymbolizerType>> sList = cs.getSymbolizer();
-                        for (Symbolizer s : symbolizers) {
-                                sList.add(s.getJAXBElement());
-                        }
-
-                        return of.createCompositeSymbolizer(cs);
-                } else {
-                        return null;
-                }
+        public CompositeSymbolizer() {
+                symbolizers = new ArrayList<Symbolizer>();
         }
 
         /**
@@ -107,6 +93,27 @@ public final class CompositeSymbolizer implements SymbolizerNode {
                         this.addSymbolizer(Symbolizer.createSymbolizerFromJAXBElement(st));
                 }
         }
+        
+        /**
+         * Get a Jaxb representation of this <code>CompositeSymbolizer</code>.
+         * @return 
+         */
+        public JAXBElement<? extends SymbolizerType> getJAXBElement() {
+                if (symbolizers.size() == 1) {
+                        return symbolizers.get(0).getJAXBElement();
+                } else if (symbolizers.size() > 1) {
+                        ObjectFactory of = new ObjectFactory();
+                        CompositeSymbolizerType cs = of.createCompositeSymbolizerType();
+                        List<JAXBElement<? extends SymbolizerType>> sList = cs.getSymbolizer();
+                        for (Symbolizer s : symbolizers) {
+                                sList.add(s.getJAXBElement());
+                        }
+
+                        return of.createCompositeSymbolizer(cs);
+                } else {
+                        return null;
+                }
+        }
 
         /*
         public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException, DriverException{
@@ -116,12 +123,6 @@ public final class CompositeSymbolizer implements SymbolizerNode {
         }
         }
         }*/
-        /**
-         * Build a new, empty, CompositeSymbolizer.
-         */
-        public CompositeSymbolizer() {
-                symbolizers = new ArrayList<Symbolizer>();
-        }
 
         /**
          * Get the list of <code>Symbolizer</code>s contained in this <code>CompositeSymbolizer</code>
