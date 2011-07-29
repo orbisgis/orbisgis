@@ -38,23 +38,25 @@ public final class Categorize2Real extends Categorize<RealParameter, RealLiteral
                                 SeParameterFactory.createRealParameter(it.next().getValue()));
                 }
 
-        if (t.getThresholdBelongsTo() == ThresholdBelongsToType.PRECEDING)
-            this.setThresholdsPreceding();
-        else
-            this.setThresholdsSucceeding();
+                if (t.getThresholdBelongsTo() == ThresholdBelongsToType.PRECEDING) {
+                        this.setThresholdsPreceding();
+                }
+                else {
+                        this.setThresholdsSucceeding();
+                }
              
-        super.setPropertyFromJaxB(t);
-    }
+                super.setPropertyFromJaxB(t);
+        }
 
-    @Override
-    public Double getValue(SpatialDataSourceDecorator sds, long fid) throws ParameterException{
+        @Override
+        public Double getValue(SpatialDataSourceDecorator sds, long fid) throws ParameterException{
 
 		if (sds == null){
 			throw new ParameterException("No feature");
 		}
 
 		return getParameter(sds, fid).getValue(sds, fid);
-    }
+        }
 
 
 	@Override
@@ -95,9 +97,14 @@ public final class Categorize2Real extends Categorize<RealParameter, RealLiteral
 		return ctx;
 	}
 
-    @Override
-    public int compareTo(Object o) {
-        return 0;
-    }
+        /**
+         * Always return 0, whatever the object is...
+         * @param o
+         * @return 
+         */
+        @Override
+        public int compareTo(Object o) {
+                return 0;
+        }
 
 }
