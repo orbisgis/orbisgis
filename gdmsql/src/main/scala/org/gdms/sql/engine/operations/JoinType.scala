@@ -90,4 +90,4 @@ case class Inner(cond: Expression) extends JoinType
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class Cross extends JoinType
+case class Cross() extends JoinType

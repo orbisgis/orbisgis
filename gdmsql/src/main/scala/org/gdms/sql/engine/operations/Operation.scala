@@ -126,7 +126,7 @@ case class CustomQueryScan(customQuery: String, exp: Seq[Expression],
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class Output extends Operation {
+case class Output() extends Operation {
   
   override def doValidate = {
     val aliases = allChildren flatMap { _ match {
@@ -323,7 +323,7 @@ case class StaticInsert(table: String, exps: Seq[Array[Expression]], fields: Opt
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class Delete extends Operation
+case class Delete() extends Operation
 
 
 /**

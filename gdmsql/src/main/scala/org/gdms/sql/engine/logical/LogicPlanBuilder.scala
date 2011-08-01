@@ -78,7 +78,7 @@ object LogicPlanBuilder {
 
     node.getType match {
       case T_SELECT => {
-          val o = new Output
+          val o = new Output()
           var last: Operation = o
           var lim: Int = -1
           var off: Int = 0
