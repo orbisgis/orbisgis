@@ -413,7 +413,7 @@ public class MapContextTest extends AbstractTest {
 				legendFieldIndex));
 		layer.setLegend(labelLegend);
 		mc.close(null);
-
+                
 		DataSource ds = getDataManager().getDataSourceFactory().getDataSource(
 				shp);
 		ds.open();

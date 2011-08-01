@@ -38,6 +38,7 @@
 package org.orbisgis.core;
 
 import java.awt.Color;
+import java.io.File;
 import junit.framework.TestCase;
 
 import org.gdms.data.DataSourceFactory;
@@ -74,15 +75,16 @@ public class AbstractTest extends TestCase {
 
 	public static void registerDataManager(DataSourceFactory dsf) {
 		// Installation of the service
-		Services
-				.registerService(
-						DataManager.class,
-						"Access to the sources, to its properties (indexes, etc.) and its contents, either raster or vectorial",
-						new DefaultDataManager(dsf));
+		Services.registerService(DataManager.class,
+                        "Access to the sources, to its properties (indexes, etc.) and its contents, "
+                        + "either raster or vectorial",
+                        new DefaultDataManager(dsf));
 	}
 
 	public static void registerDataManager() {
 		DataSourceFactory dsf = new DataSourceFactory();
+                dsf.setResultDir(new File("target/"));
+                dsf.setTempDir("target/");
 		registerDataManager(dsf);
 	}
 
