@@ -38,8 +38,8 @@
 
 package org.gdms.sql.engine.commands
 
+import scalaz.Scalaz._
 import scalaz.concurrent.Promise
-import scalaz.concurrent.Promise._
 import org.gdms.sql.engine.GdmSQLPredef._
 
 /**
