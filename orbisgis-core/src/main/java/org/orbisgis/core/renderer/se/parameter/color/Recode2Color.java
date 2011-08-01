@@ -32,9 +32,8 @@ public class Recode2Color extends Recode<ColorParameter, ColorLiteral> implement
 
     @Override
     public Color getColor(SpatialDataSourceDecorator sds, long fid) throws ParameterException{
-		if (sds == null){
-			throw new ParameterException("No feature");
-		}
+        //If we can't retrieve any information in sds, getParameter will provide a 
+        //default value, so we won't obtain any error.
         return getParameter(sds, fid).getColor(sds, fid);
     }
 }
