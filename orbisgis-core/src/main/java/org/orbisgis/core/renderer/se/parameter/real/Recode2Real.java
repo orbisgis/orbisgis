@@ -35,7 +35,6 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-
 package org.orbisgis.core.renderer.se.parameter.real;
 
 import javax.xml.bind.JAXBElement;
@@ -50,68 +49,82 @@ import org.orbisgis.core.renderer.se.parameter.Recode;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 
+/**
+ * <code>Recode</code> implementation that maps input values to real values.
+ * @author maxence, alexis
+ */
 public class Recode2Real extends Recode<RealParameter, RealLiteral> implements RealParameter {
 
-	private Double min;
-	private Double max;
+        RealParameterContext ctx;
 
-	RealParameterContext ctx;
-
-    public Recode2Real(RealLiteral fallback, StringParameter lookupValue){
-        super(fallback, lookupValue);
-		ctx = RealParameterContext.realContext;
-    }
-
-    public Recode2Real(JAXBElement<RecodeType> expr) throws InvalidStyle {
-        RecodeType t = expr.getValue();
-		ctx = RealParameterContext.realContext;
-
-        this.setFallbackValue(new RealLiteral(t.getFallbackValue()));
-        this.setLookupValue(SeParameterFactory.createStringParameter(t.getLookupValue()));
-
-        for (MapItemType mi : t.getMapItem()){
-            this.addMapItem(mi.getKey(), SeParameterFactory.createRealParameter(mi.getValue()));
+        /**
+         * Creates a new instance of <code>Recode2Real</code>. The default result value
+         * will be <code>fallback</code>, and the values that need to be processed
+         * will be retrieved using <code>lookupValue</code>
+         * @param fallback
+         * @param lookupValue 
+         */
+        public Recode2Real(RealLiteral fallback, StringParameter lookupValue) {
+                super(fallback, lookupValue);
+                ctx = RealParameterContext.realContext;
         }
-    }
 
-    @Override
-    public Double getValue(SpatialDataSourceDecorator sds, long fid) throws ParameterException{
-		if (sds == null){
-			throw new ParameterException("No feature");
-		}
+        /**
+         * Creates a new instance of <code>Recode2Real</code>. All the needed objects
+         * will be created using the JAXB element given in parameter. Particularly,
+         * the <code>MapItem</code>s used in the current recode will be retrieved 
+         * from this XML representation.
+         * @param expr
+         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         */
+        public Recode2Real(JAXBElement<RecodeType> expr) throws InvalidStyle {
+                RecodeType t = expr.getValue();
+                ctx = RealParameterContext.realContext;
 
-        return getParameter(sds, fid).getValue(sds, fid);
-    }
+                this.setFallbackValue(new RealLiteral(t.getFallbackValue()));
+                this.setLookupValue(SeParameterFactory.createStringParameter(t.getLookupValue()));
 
-	@Override
-	public int addMapItem(String key, RealParameter p){
-		p.setContext(ctx);
-		return super.addMapItem(key, p);
-	}
+                for (MapItemType mi : t.getMapItem()) {
+                        this.addMapItem(mi.getKey(), SeParameterFactory.createRealParameter(mi.getValue()));
+                }
+        }
 
-	@Override
-	public void setContext(RealParameterContext ctx) {
-		this.ctx = ctx;
+        @Override
+        public Double getValue(SpatialDataSourceDecorator sds, long fid) throws ParameterException {
+                if (sds == null) {
+                        throw new ParameterException("No feature");
+                }
 
-		if (getFallbackValue() != null){
-			this.getFallbackValue().setContext(ctx);
-		}
-	}
+                return getParameter(sds, fid).getValue(sds, fid);
+        }
 
-	@Override
-	public String toString(){
-		return "NA";
-	}
+        @Override
+        public int addMapItem(String key, RealParameter p) {
+                p.setContext(ctx);
+                return super.addMapItem(key, p);
+        }
 
+        @Override
+        public void setContext(RealParameterContext ctx) {
+                this.ctx = ctx;
 
-	@Override
-	public RealParameterContext getContext() {
-		return ctx;
-	}
+                if (getFallbackValue() != null) {
+                        this.getFallbackValue().setContext(ctx);
+                }
+        }
 
-    @Override
-    public int compareTo(Object o) {
-        return 0;
-    }
+        @Override
+        public String toString() {
+                return "NA";
+        }
+
+        @Override
+        public RealParameterContext getContext() {
+                return ctx;
+        }
+
+        @Override
+        public int compareTo(Object o) {
+                return 0;
+        }
 }
-

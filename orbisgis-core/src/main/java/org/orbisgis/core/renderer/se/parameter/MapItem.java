@@ -38,25 +38,56 @@
 
 package org.orbisgis.core.renderer.se.parameter;
 
+/**
+ * A "Map" entry, where values of type <code>Type</code> are mapped according to
+ * <code>String</code> keys.
+ * @author maxence, alexis
+ * @param <Type> 
+ */
 public class MapItem<Type> implements Comparable {
 
+    private String key = null;
+    private Type value = null;
+
+    /**
+     * Create a new <code>MapItem</code>, where <code>value</code> is referenced by 
+     * <code>key</code>.
+     * @param value
+     * @param key 
+     */
     public MapItem(Type value, String key){
         this.value = value;
         this.key = key;
     }
 
+    /**
+     * Get the value stored in this <code>MapItem</code>
+     * @return 
+     */
     public Type getValue(){
         return value;
     }
 
+    /**
+     * Set the value stored in this <code>MapItem</code>.
+     * @param value 
+     */
     public void setValue(Type value){
         this.value = value;
     }
 
+    /**
+     * Get the key stored in this <code>MapItem</code>
+     * @return 
+     */
     public String getKey(){
         return key;
     }
-
+    
+    /**
+     * Set the key stored in this <code>MapItem</code>.
+     * @param value 
+     */
     public void setKey(String key){
         this.key = key;
     }
@@ -82,8 +113,5 @@ public class MapItem<Type> implements Comparable {
         MapItem<Type> item = (MapItem<Type>) o;
         return item.key.toString().compareToIgnoreCase(this.key);
     }
-
-    private String key = null;
-    private Type value = null;
 
 }

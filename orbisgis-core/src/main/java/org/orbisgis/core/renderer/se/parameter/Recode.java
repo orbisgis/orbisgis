@@ -53,6 +53,12 @@ import org.orbisgis.core.Services;
 
 import org.orbisgis.core.renderer.se.parameter.string.*;
 
+/**
+ * Recoding is defined as the "transformation of discrete values to any other values".
+ * @author maxence, alexis
+ * @param <ToType> One of the SeParameter child types.
+ * @param <FallbackType> The literal type associated to ToType.
+ */
 public abstract class Recode<ToType extends SeParameter, FallbackType extends ToType> implements SeParameter {
 
     private FallbackType fallbackValue;
@@ -88,19 +94,35 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
         return result;
     }
 
+    /**
+     * Set the value that will be used if a data can't be processed well.
+     * @param fallbackValue 
+     */
     public void setFallbackValue(FallbackType fallbackValue) {
         this.fallbackValue = fallbackValue;
     }
 
+    /**
+     * Get the value that will be used if a data can't be processed well.
+     * @param fallbackValue 
+     */
     public FallbackType getFallbackValue() {
         return fallbackValue;
     }
 
+    /**
+     * Set the value that will be used to retrieve data to be processed.
+     * @param lookupValue 
+     */
     // TODO  On doit pouvoir récuperer des string ou des couleurs
     public void setLookupValue(StringParameter lookupValue) {
         this.lookupValue = lookupValue;
     }
 
+    /**
+     * Get the value that will be used to retrieve data to be processed.
+     * @param lookupValue 
+     */
     public StringParameter getLookupValue() {
         return lookupValue;
     }
@@ -117,7 +139,7 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
      * Add a new map item
      * @param key
      * @param value
-	 * @return index of new map item or -1 when key already exists
+     * @return index of new map item or -1 when key already exists
      */
     public int addMapItem(String key, ToType value) {
         MapItem<ToType> item = new MapItem<ToType>(value, key);
@@ -131,30 +153,55 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
 		return mapItems.size() - 1;
     }
 
+    /**
+     * Get the value associated to the <code>key</code> given in argument, if any.
+     * @param key
+     * @return 
+     */
     public ToType getMapItemValue(String key) {
         MapItem<ToType> item = new MapItem<ToType>(null, key);
         return mapItems.get(mapItems.indexOf(item)).getValue();
     }
 
+    /**
+     * Get the ith <code>MapItem</code> in this <code>Recode</code> instance
+     * @param i
+     * @return 
+     */
+    public MapItem<ToType> getMapItem(int i){
+        return mapItems.get(i);
+    }
 
-	public MapItem<ToType> getMapItem(int i){
-		return mapItems.get(i);
-	}
-
-
+    /**
+     * Get the value stored in the ith <code>MapItem</code> in this <code>Recode</code> instance.
+     * @param i
+     * @return 
+     */
     public ToType getMapItemValue(int i) {
         return mapItems.get(i).getValue();
     }
 
+    /**
+     * Get the key stored in the ith <code>MapItem</code> in this <code>Recode</code> instance.
+     * @param i
+     * @return 
+     */
     public String getMapItemKey(int i) {
         return mapItems.get(i).getKey();
     }
 
+    /**
+     * Remove the <code>MapItem</code> whose key is <code>key</code>
+     * @param key 
+     */
     public void removeMapItem(String key) {
         MapItem<ToType> item = new MapItem<ToType>(null, key);
         mapItems.remove(item);
     }
-
+    /**
+     * Remove the ith <code>MapItem</code>
+     * @param key 
+     */
 	public void removeMapItem(int i){
 		if (i >= 0 && i < mapItems.size()){
 			mapItems.remove(i);
