@@ -179,7 +179,20 @@
                                         </descriptorRefs>
                                 </configuration>
                         </plugin>
-
+                        <plugin>
+                                <groupId>org.codehaus.mojo</groupId>
+                                <artifactId>exec-maven-plugin</artifactId>
+                                <version>1.2</version>
+                                <configuration>
+                                        <executable>java</executable>
+                                        <classpathScope>runtime</classpathScope>
+                                        <arguments>
+                                                <argument>-classpath</argument>
+                                                <classpath />
+                                                <argument>org.orbisgis.core.Main</argument>
+                                        </arguments>
+                                </configuration>
+                        </plugin>
                 </plugins>
         </build>
 </project>
