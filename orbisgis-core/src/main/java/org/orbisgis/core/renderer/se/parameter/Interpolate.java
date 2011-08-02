@@ -148,9 +148,9 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
         }
 
         /**
-         * Add a new interpolation point.
-         * The new point is inserted at the right place in the interpolation point list, according to its data
-         *
+         * Add a new interpolation point. The new point is inserted at the right 
+         * place in the interpolation point list, according to its data
+         * @param point 
          */
         public void addInterpolationPoint(InterpolationPoint<ToType> point) {
                 iPoints.add(point);

@@ -13,15 +13,33 @@ import org.orbisgis.core.renderer.se.parameter.InterpolationPoint;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 
+/**
+ * Interpolate a real value to a real value. Interpolation points must be
+ * instances of <code>InterpolationPoint&lt;RealParameter></code>.
+ * @author alexis
+ */
 public final class Interpolate2Real extends Interpolate<RealParameter, RealLiteral> implements RealParameter {
 
         private RealParameterContext ctx;
 
+        /**
+         * Create a new <code>Interpolate2Real</code> instance, without any 
+         * <code>InterpolationPoint&lt;RealParameter></code> associated with it.
+         * They will have to be added before any call to <code>getValue</code>.
+         * @param fallback 
+         */
         public Interpolate2Real(RealLiteral fallback) {
                 super(fallback);
                 ctx = RealParameterContext.REAL_CONTEXT;
         }
 
+        /**
+         * Create a new <code>Interpolate2Real</code> instance. All its inner 
+         * elements are computed from the <code>JAXBElement&lt;InterpolateType></code>
+         * given in argument.
+         * @param expr
+         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         */
         public Interpolate2Real(JAXBElement<InterpolateType> expr) throws InvalidStyle {
                 super();
                 ctx = RealParameterContext.REAL_CONTEXT;
@@ -49,6 +67,16 @@ public final class Interpolate2Real extends Interpolate<RealParameter, RealLiter
 
         }
 
+        /**
+         * Retrieve the <code>Double</code> that must be associated to the datum at index
+         * <code>fid</code> in <code>sds</code>. The resulting value is obtained by
+         * using the value from the <code>SpatialDataSourceDecorator</code>, the 
+         * interpolation points and the interpolation method.
+         * @param ds
+         * @param fid The index where to search in the original source.
+         * @return
+         * The interpolated <code>Double</code> value.
+         */
         @Override
         public Double getValue(SpatialDataSourceDecorator sds, long fid) throws ParameterException {
 
@@ -80,9 +108,17 @@ public final class Interpolate2Real extends Interpolate<RealParameter, RealLiter
                                         ip1.getValue().getValue(sds, fid), ip2.getValue().getValue(sds, fid));
 
                 }
+                //as we've analyzed the three only possible cases in the switch,
+                //we're not supposed to reach this point... 
                 return 0.0;
         }
 
+        /**
+         * Set the default value to be returned if an input can't be processed.
+         * Once set, the <code>RealParameterContext</code> of <code>l</code> is set
+         * to the one of this <code>Interpolate2Real</code> instance.
+         * @param fallbackValue 
+         */
         @Override
         public void setFallbackValue(RealLiteral l) {
                 super.setFallbackValue(l);
@@ -90,7 +126,14 @@ public final class Interpolate2Real extends Interpolate<RealParameter, RealLiter
                         l.setContext(ctx);
                 }
         }
-
+        
+        /**
+         * Add a new interpolation point. The new point is inserted at the right 
+         * place in the interpolation point list, according to its data. The 
+         * <code>RealParameterContext</code> of <code>point</code> is set
+         * to the one of this <code>Interpolate2Real</code> instance.
+         * @param point 
+         */
         @Override
         public void addInterpolationPoint(InterpolationPoint<RealParameter> point) {
                 RealParameter value = point.getValue();
@@ -103,6 +146,12 @@ public final class Interpolate2Real extends Interpolate<RealParameter, RealLiter
                 return "NA";
         }
 
+        /**
+         * Set the context in which the values are processed. When using this method,
+         * all the inner interpolation points of this <code>Interpolate2Real</code>
+         * have their <code>RealParameterContext</code> set to <code>ctx</code>.
+         * @param ctx 
+         */
         @Override
         public void setContext(RealParameterContext ctx) {
                 this.ctx = ctx;
