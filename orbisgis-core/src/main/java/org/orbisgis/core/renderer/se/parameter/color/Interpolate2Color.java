@@ -55,7 +55,7 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
  * instances of <code>InterpolationPoint&lt;ColorParameter></code>.
  * @author maxence, alexis
  */
-public class Interpolate2Color extends Interpolate<ColorParameter, ColorLiteral> implements ColorParameter {
+public final class Interpolate2Color extends Interpolate<ColorParameter, ColorLiteral> implements ColorParameter {
 
         /**
          * Create a new <code>Interpolate2Color</code> instance, without any 
