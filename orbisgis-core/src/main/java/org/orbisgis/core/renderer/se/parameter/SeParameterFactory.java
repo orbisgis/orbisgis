@@ -71,14 +71,25 @@ import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 
 /**
- *
- * @author maxence
+ * This class will build <code>SeParameter</code> instances using the given <code>JAXBElement</code> instances.
+ * @author alexis, maxence
  */
 public final class SeParameterFactory {
 
     private SeParameterFactory() {
     }
 
+    /**
+     * Using the <code>JAXBElement</code> given in argument, tries to build a new 
+     * <code>RealParameter</code>.
+     * @param expr
+     * @return
+     * <ul><li><code>null</code> if <code>expr == null</code>, or if expr does not represent 
+     * a <code>RealParameter</code> of any kind</li>
+     * <li>A <code>RealParameter</code> otherwise. </li>
+     * </ul>
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     */
     public static RealParameter createRealParameter(JAXBElement<? extends Object> expr) throws InvalidStyle {
         if (expr == null){
             return null;
@@ -106,6 +117,17 @@ public final class SeParameterFactory {
 
     }
 
+    /**
+     * Creates a <code>RealParameter</code> using the given <code>ParametervalueType</code>
+     * @param p
+     * @return
+     * <ul>
+     * <li><code>null</code> if <code>expr == null</code>, or if expr does not represent 
+     * a <code>RealParameter</code> of any kind</li>
+     * <li>A <code>RealParameter</code> otherwise.</li>
+     * </ul>
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     */
     public static RealParameter createRealParameter(ParameterValueType p) throws InvalidStyle {
         if (p == null){
             return null;
@@ -125,6 +147,15 @@ public final class SeParameterFactory {
         return new RealLiteral(result);
     }
 
+    /**
+     * Build a <code>ColorParameter</code> from the given <code>JAXBElement</code>.
+     * @param expr
+     * @return
+     * <ul><li><code>null</code> if <code>expr == null</code> or if there is not any
+     * way to build a <code>ColorParameter</code> from the given argument.</li>
+     * <li>A <code>ColorParameter</code> otherwise.</li>
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     */
     public static ColorParameter createColorParameter(JAXBElement<? extends ExpressionType> expr) throws InvalidStyle {
         if (expr == null){
             return null;
@@ -152,7 +183,18 @@ public final class SeParameterFactory {
 
     }
 
-
+    
+    /**
+     * Creates a <code>ColorParameter</code> using the given <code>ParametervalueType</code>
+     * @param p
+     * @return
+     * <ul>
+     * <li><code>null</code> if <code>expr == null</code>, or if <code>expr</code> does not represent 
+     * a <code>ColorParameter</code> of any kind</li>
+     * <li>A <code>ColorParameter</code> otherwise.</li>
+     * </ul>
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     */
     public static ColorParameter createColorParameter(ParameterValueType p) throws InvalidStyle {
         if (p == null){
             return null;
@@ -171,6 +213,15 @@ public final class SeParameterFactory {
     }
 
 
+    /**
+     * Build a <code>StringParameter</code> from the given <code>JAXBElement</code>.
+     * @param expr
+     * @return
+     * <ul><li><code>null</code> if <code>expr == null</code> or if there is not any
+     * way to build a <code>StringParameter</code> from the given argument.</li>
+     * <li>A <code>StringParameter</code> otherwise.</li>
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     */
     public static StringParameter createStringParameter(JAXBElement<? extends ExpressionType> expr) throws InvalidStyle {
         if (expr == null){
             return null;
@@ -194,13 +245,22 @@ public final class SeParameterFactory {
         return null;
 
     }
-
+    
+    /**
+     * Creates a <code>StringParameter</code> using the given <code>ParametervalueType</code>
+     * @param p
+     * @return
+     * <ul>
+     * <li><code>null</code> if <code>expr == null</code>, or if <code>expr</code> does not represent 
+     * a <code>StringParameter</code> of any kind</li>
+     * <li>A <code>StringParameter</code> otherwise.</li>
+     * </ul>
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     */
     public static StringParameter createStringParameter(ParameterValueType p) throws InvalidStyle {
         if (p == null){
             return null;
         }
-
-
         StringBuilder result = new StringBuilder();
         for (Object o : p.getContent()) {
             if (o instanceof String) {
@@ -213,12 +273,22 @@ public final class SeParameterFactory {
         return new StringLiteral(result.toString());
     }
 
+    /**
+     * Create a <code>ParameterValueType</code> from the string given in argument.
+     * @param token
+     * @return 
+     */
     public static ParameterValueType createParameterValueType(String token){
         ParameterValueType p = new ParameterValueType();
         p.getContent().add(token);
         return p;
     }
 
+    /**
+     * Get a string representation of the content of <code>p</code>
+     * @param p
+     * @return 
+     */
     public static String extractToken(ParameterValueType p){
         StringBuilder res = new StringBuilder();
         for (Object o : p.getContent()){

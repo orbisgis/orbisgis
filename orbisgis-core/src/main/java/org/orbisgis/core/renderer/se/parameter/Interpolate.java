@@ -17,10 +17,15 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 /**
  * Transformation of continuous values by a function defined on a number of nodes. 
  * This is used to adjust the value distribution of an attribute to the desired distribution 
- * of a continuous symbolization control variable (like size, width, color, etc...).
+ * of a continuous symbolization control variable (like size, width, color, etc...).</p>
+ * <p><code>Interpolate</code> are defined by : 
+ * <ul><li>The interpolation mode</li>
+ * <li>The list of interpolation points</li>
+ * <li>The <code>RealParameter</code> used to retrieve the values to interpolate</li>
+ * <li>The <code>FallbackType</code> value used when a data can't be processed</li>
  * @author maxence
  * @param <ToType> One of RealParameter or ColorParameter
- * @param <FallbackType> extends ToType (the LirealOne, please)...
+ * @param <FallbackType> extends ToType (the LiteralOne, please...)
  * @todo find a nice way to compute interpolation for RealParameter and ColorParameter
  *
  */
@@ -38,10 +43,19 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
                 LINEAR, COSINE, CUBIC
         }
 
+        /**
+         * The default constructor only instanciates an empty list of 
+         * <code>InterpolationPoint</code>
+         */
         protected Interpolate() {
                 this.iPoints = new ArrayList<InterpolationPoint<ToType>>();
         }
 
+        /**
+         * Build an <code>Interpolate</code> instance where the default value for 
+         * unprocessable cases is <code>fallbackValue</code>
+         * @param fallbackValue 
+         */
         public Interpolate(FallbackType fallbackValue) {
                 this.fallbackValue = fallbackValue;
                 this.iPoints = new ArrayList<InterpolationPoint<ToType>>();
@@ -143,18 +157,37 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
                 sortInterpolationPoint();
         }
 
+        /**
+         * Get the ith <code>InterpolationPoint</code> in the list of interpolation
+         * points.
+         * @param i
+         * @return The ith <code>InterpolationPoint</code>
+         * @throws IndexOutOfBoundsException - if i is out of range 
+         *      <code>(index &lt; 0 || index >= size())</code>
+         */
         public InterpolationPoint<ToType> getInterpolationPoint(int i) {
                 return iPoints.get(i);
         }
 
+        /**
+         * Set the <code>InterpolationMode</code> used to process the values.
+         * @param mode one of the <code>Interpolate.InterpolationMode</code> values
+         */
         public void setInterpolationMode(InterpolationMode mode) {
                 this.mode = mode;
         }
 
+        /**
+         * Get the <code>InterpolationMode</code> used to process the values.
+         * @return 
+         */
         public InterpolationMode getInterpolationMode() {
                 return mode;
         }
 
+        /**
+         * Sort the interpolation points.
+         */
         private void sortInterpolationPoint() {
                 Collections.sort(iPoints);
         }

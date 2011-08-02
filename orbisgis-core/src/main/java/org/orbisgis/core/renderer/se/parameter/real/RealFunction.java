@@ -73,6 +73,11 @@ public class RealFunction implements RealParameter {
     private RealParameterContext ctx;
     private ArrayList<RealParameter> operands;
 
+    /**
+     * buld an empty <code>RealFunction</code>, where only the name of the operation
+     * is defined.
+     * @param name 
+     */
     public RealFunction(String name) {
         ctx = RealParameterContext.realContext;
         this.op = Operators.valueOf(name.toUpperCase());
@@ -80,6 +85,14 @@ public class RealFunction implements RealParameter {
         operands = new ArrayList<RealParameter>();
     }
 
+    /**
+     * Build a <code>RealFunction</code> from a <code>FunctionType</code> instance.
+     * As the <code>FunctionType</code>'s tree can contain informations to build both
+     * the operation and the operands, this constructor will naturally try to build them
+     * all.
+     * @param fcn
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     */
     public RealFunction(FunctionType fcn) throws InvalidStyle {
         this(fcn.getName());
         for (JAXBElement<? extends Object> expr : fcn.getExpression()) {
@@ -87,12 +100,17 @@ public class RealFunction implements RealParameter {
         }
     }
 
+    /**
+     * Build a <code>RealFunction</code> from a <code>JAXBElement</code> instance.
+     * @param fcn
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     */
     public RealFunction(JAXBElement<FunctionType> fcn) throws InvalidStyle {
         this(fcn.getValue());
     }
 
     /**
-     * Return i'est operand
+     * Return i'th operand
      *
      * @param i
      * @return the real parameter
@@ -199,9 +217,6 @@ public class RealFunction implements RealParameter {
     @Override
     public void setContext(RealParameterContext ctx) {
         this.ctx = ctx;
-        //for (RealParameter p : operands) {
-        //    p.setContext(ctx);
-        //}
     }
 
     @Override
