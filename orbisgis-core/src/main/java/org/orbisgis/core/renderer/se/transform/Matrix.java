@@ -52,6 +52,15 @@ public final class Matrix implements Transformation {
                 setF(new RealLiteral(DEF_F));
         }
 
+        /**
+         * Create a new <code>Matrix</code> from <code>double</code> values.
+         * @param a
+         * @param b
+         * @param c
+         * @param d
+         * @param e
+         * @param f 
+         */
         public Matrix(double a, double b, double c, double d, double e, double f) {
                 setA(new RealLiteral(a));
                 setB(new RealLiteral(b));
@@ -62,7 +71,8 @@ public final class Matrix implements Transformation {
         }
 
         /**
-         * a null cell means new RealLiteral(0.0)
+         * Create a new <code>Matrix</code> from <code>RealParameter</code> instances. 
+         * <code>null</code> values will be transformed to <code>new RealLiteral(0.0)</code>
          * @param a
          * @param b
          * @param c
@@ -93,6 +103,11 @@ public final class Matrix implements Transformation {
                 }
         }
 
+        /**
+         * Creates a hard copy of <code>m</code>
+         * @param m
+         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         */
         Matrix(MatrixType m) throws InvalidStyle {
                 this();
                 if (m.getA() != null) {

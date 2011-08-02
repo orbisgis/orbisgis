@@ -18,106 +18,136 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 /**
- *
+ * Represents a translation in an euclidean plane. As it can be represented with
+ * a 2D vector, it is defined by two <code>RealParameter</code>s.
  * @author maxence
  */
 public class Translate implements Transformation {
 
-    private RealParameter x;
-    private RealParameter y;
+        private RealParameter x;
+        private RealParameter y;
 
-    public Translate(RealParameter x, RealParameter y) {
-        setX(x);
-		setY(y);
-    }
-
-    Translate(TranslateType t) throws InvalidStyle {
-        if (t.getX() != null)
-            setX(SeParameterFactory.createRealParameter(t.getX()));
-        if (t.getY() != null)
-            setY(SeParameterFactory.createRealParameter(t.getY()));
-    }
-
-
-
-
-    @Override
-    public boolean allowedForGeometries() {
-        return true;
-    }
-
-    @Override
-    public AffineTransform getAffineTransform(SpatialDataSourceDecorator sds, long fid, Uom uom, MapTransform mt, Double width, Double height) throws ParameterException {
-        double tx = 0.0;
-        if (x != null) {
-            tx = Uom.toPixel(x.getValue(sds, fid), uom, mt.getDpi(), mt.getScaleDenominator(), width);
+        /**
+         * Create a new <code>Translate</code>
+         * @param x The translation about X-axis
+         * @param y The translation about Y-axis
+         */
+        public Translate(RealParameter x, RealParameter y) {
+                setX(x);
+                setY(y);
         }
 
-        double ty = 0.0;
-        if (y != null) {
-            ty = Uom.toPixel(y.getValue(sds, fid), uom, mt.getDpi(), mt.getScaleDenominator(), height);
+        /**
+         * Create a new <code>Translate</code>, using the informations contained in 
+         * <code>t</code>
+         * @param t
+         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         */
+        Translate(TranslateType t) throws InvalidStyle {
+                if (t.getX() != null) {
+                        setX(SeParameterFactory.createRealParameter(t.getX()));
+                }
+                if (t.getY() != null) {
+                        setY(SeParameterFactory.createRealParameter(t.getY()));
+                }
         }
 
-        return AffineTransform.getTranslateInstance(tx, ty);
-    }
+        @Override
+        public boolean allowedForGeometries() {
+                return true;
+        }
 
+        @Override
+        public AffineTransform getAffineTransform(SpatialDataSourceDecorator sds, long fid, Uom uom, MapTransform mt, Double width, Double height) throws ParameterException {
+                double tx = 0.0;
+                if (x != null) {
+                        tx = Uom.toPixel(x.getValue(sds, fid), uom, mt.getDpi(), mt.getScaleDenominator(), width);
+                }
 
-    @Override
-    public String dependsOnFeature() {
-        String result = "";
-        if (x!= null)
-            result = x.dependsOnFeature();
+                double ty = 0.0;
+                if (y != null) {
+                        ty = Uom.toPixel(y.getValue(sds, fid), uom, mt.getDpi(), mt.getScaleDenominator(), height);
+                }
 
-        if (y!= null)
-            result += " " + y.dependsOnFeature();
+                return AffineTransform.getTranslateInstance(tx, ty);
+        }
 
-        return result.trim();
-    }
+        @Override
+        public String dependsOnFeature() {
+                String result = "";
+                if (x != null) {
+                        result = x.dependsOnFeature();
+                }
 
-    @Override
-    public JAXBElement<?> getJAXBElement(){
-        TranslateType t = this.getJAXBType();
-        ObjectFactory of = new ObjectFactory();
-        return of.createTranslate(t);
-    }
+                if (y != null) {
+                        result += " " + y.dependsOnFeature();
+                }
 
-    @Override
-    public TranslateType getJAXBType(){
-        TranslateType t = new TranslateType();
+                return result.trim();
+        }
 
-        if (x != null)
-            t.setX(x.getJAXBParameterValueType());
+        @Override
+        public JAXBElement<?> getJAXBElement() {
+                TranslateType t = this.getJAXBType();
+                ObjectFactory of = new ObjectFactory();
+                return of.createTranslate(t);
+        }
 
-        if (y != null)
-            t.setY(y.getJAXBParameterValueType());
+        @Override
+        public TranslateType getJAXBType() {
+                TranslateType t = new TranslateType();
 
-        return t;
-    }
+                if (x != null) {
+                        t.setX(x.getJAXBParameterValueType());
+                }
 
-    public RealParameter getX() {
-        return x;
-    }
+                if (y != null) {
+                        t.setY(y.getJAXBParameterValueType());
+                }
 
-    public RealParameter getY() {
-        return y;
-    }
+                return t;
+        }
 
-	public void setY(RealParameter y) {
-		this.y = y;
-		if (y != null){
-			y.setContext(RealParameterContext.realContext);
-		}
-	}
+        /**
+         * Get the translation about the X-axis
+         * @return The translation about the X-axis
+         */
+        public RealParameter getX() {
+                return x;
+        }
 
-	public void setX(RealParameter x) {
-		this.x = x;
-		if (x != null){
-			x.setContext(RealParameterContext.realContext);
-		}
-	}
+        /**
+         * Get the translation about the Y-axis
+         * @return The translation about the Y-axis
+         */
+        public RealParameter getY() {
+                return y;
+        }
 
-    @Override
-    public String toString(){
-        return "Translate";
-    }
+        /**
+         * Set the translation about the Y-axis
+         * @param y 
+         */
+        public final void setY(RealParameter y) {
+                this.y = y;
+                if (y != null) {
+                        y.setContext(RealParameterContext.realContext);
+                }
+        }
+
+        /**
+         * Set the translation about the X-axis
+         * @param y 
+         */
+        public final void setX(RealParameter x) {
+                this.x = x;
+                if (x != null) {
+                        x.setContext(RealParameterContext.realContext);
+                }
+        }
+
+        @Override
+        public String toString() {
+                return "Translate";
+        }
 }
