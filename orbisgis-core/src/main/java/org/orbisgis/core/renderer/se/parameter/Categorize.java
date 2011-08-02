@@ -136,7 +136,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
     public final void setLookupValue(RealParameter lookupValue) {
         this.lookupValue = lookupValue;
         if (lookupValue != null) {
-            lookupValue.setContext(RealParameterContext.realContext);
+            lookupValue.setContext(RealParameterContext.REAL_CONTEXT);
         }
     }
 
@@ -166,7 +166,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
      */
     public void addClass(RealParameter threshold, ToType value) {
         thresholds.add(threshold);
-        threshold.setContext(RealParameterContext.realContext);
+        threshold.setContext(RealParameterContext.REAL_CONTEXT);
         if (threshold instanceof RealLiteral) {
             ((RealLiteral) threshold).register(this);
         }
@@ -245,7 +245,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         if (i >= 0 && i < getNumClasses() - 1) {
             RealParameter remove = thresholds.remove(i);
             thresholds.add(i, threshold);
-            threshold.setContext(RealParameterContext.realContext);
+            threshold.setContext(RealParameterContext.REAL_CONTEXT);
 
             if (threshold instanceof RealLiteral) {
                 ((RealLiteral) threshold).register(this);

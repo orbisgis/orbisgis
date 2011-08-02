@@ -93,7 +93,7 @@ public final class PointLabel extends Label {
     public void setRotation(RealParameter rotation) {
         this.rotation = rotation;
         if (this.rotation != null) {
-            this.rotation.setContext(RealParameterContext.realContext);
+            this.rotation.setContext(RealParameterContext.REAL_CONTEXT);
         }
     }
 

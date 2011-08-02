@@ -51,7 +51,7 @@ public final class ExclusionRectangle extends ExclusionZone {
     public void setX(RealParameter x) {
         this.x = x;
 		if (x != null){
-			x.setContext(RealParameterContext.nonNegativeContext);
+			x.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
 		}
     }
 
@@ -62,7 +62,7 @@ public final class ExclusionRectangle extends ExclusionZone {
     public void setY(RealParameter y) {
         this.y = y;
 		if (this.y != null){
-			y.setContext(RealParameterContext.nonNegativeContext);
+			y.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
 		}
     }
 

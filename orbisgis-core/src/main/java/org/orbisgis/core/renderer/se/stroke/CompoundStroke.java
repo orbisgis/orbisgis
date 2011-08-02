@@ -123,7 +123,7 @@ public final class CompoundStroke extends Stroke implements UomNode {
         this.preGap = preGap;
 
         if (preGap != null) {
-            this.preGap.setContext(RealParameterContext.nonNegativeContext);
+            this.preGap.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
         }
     }
 
@@ -131,7 +131,7 @@ public final class CompoundStroke extends Stroke implements UomNode {
         this.postGap = postGap;
 
         if (postGap != null) {
-            this.postGap.setContext(RealParameterContext.nonNegativeContext);
+            this.postGap.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
         }
     }
 

@@ -149,7 +149,7 @@ public final class SolidFill extends Fill {
 		this.opacity = opacity;
 
 		if (opacity != null) {
-			this.opacity.setContext(RealParameterContext.percentageContext);
+			this.opacity.setContext(RealParameterContext.PERCENTAGE_CONTEXT);
 		}
 	}
 

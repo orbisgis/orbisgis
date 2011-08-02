@@ -17,7 +17,7 @@ public class RealAttribute extends ValueReference implements RealParameter {
      * @param fieldName 
      */
     public RealAttribute() {
-        ctx = RealParameterContext.realContext;
+        ctx = RealParameterContext.REAL_CONTEXT;
     }
 
     /**
@@ -27,7 +27,7 @@ public class RealAttribute extends ValueReference implements RealParameter {
      */
     public RealAttribute(String fieldName) {
         super(fieldName);
-        ctx = RealParameterContext.realContext;
+        ctx = RealParameterContext.REAL_CONTEXT;
     }
 
     /**
@@ -37,7 +37,7 @@ public class RealAttribute extends ValueReference implements RealParameter {
      */
     public RealAttribute(JAXBElement<ValueReferenceType> expr) throws InvalidStyle {
         super(expr);
-        ctx = RealParameterContext.realContext;
+        ctx = RealParameterContext.REAL_CONTEXT;
     }
 
     @Override

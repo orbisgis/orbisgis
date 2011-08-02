@@ -51,7 +51,7 @@ public final class ExclusionRadius extends ExclusionZone {
     public void setRadius(RealParameter radius) {
         this.radius = radius;
 		if (this.radius != null){
-			this.radius.setContext(RealParameterContext.nonNegativeContext);
+			this.radius.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
 		}
     }
 

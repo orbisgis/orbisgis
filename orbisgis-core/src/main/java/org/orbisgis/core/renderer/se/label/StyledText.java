@@ -215,7 +215,7 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
     public void setFontSize(RealParameter fontSize) {
         this.fontSize = fontSize;
         if (this.fontSize != null) {
-            this.fontSize.setContext(RealParameterContext.nonNegativeContext);
+            this.fontSize.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
         }
     }
 

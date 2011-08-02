@@ -125,7 +125,7 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
         public void setLookupValue(RealParameter lookupValue) {
                 this.lookupValue = lookupValue;
                 if (this.lookupValue != null) {
-                        this.lookupValue.setContext(RealParameterContext.realContext);
+                        this.lookupValue.setContext(RealParameterContext.REAL_CONTEXT);
                 }
         }
 

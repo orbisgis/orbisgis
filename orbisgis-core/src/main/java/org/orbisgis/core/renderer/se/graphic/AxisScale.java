@@ -40,7 +40,7 @@ public final class AxisScale {
     public void setMeasure(RealParameter value) {
 		if (value != null){
             this.measure = value;
-			measure.setContext(RealParameterContext.realContext);
+			measure.setContext(RealParameterContext.REAL_CONTEXT);
 		}
     }
 
@@ -55,7 +55,7 @@ public final class AxisScale {
     public void setAxisLength(RealParameter data) {
 		if (data != null){
             this.axisLength = data;
-			axisLength.setContext(RealParameterContext.nonNegativeContext);
+			axisLength.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
 		}
     }
 

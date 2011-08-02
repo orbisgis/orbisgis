@@ -266,7 +266,7 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
     this.opacity = opacity;
 
     if (opacity != null) {
-    this.opacity.setContext(RealParameterContext.percentageContext);
+    this.opacity.setContext(RealParameterContext.PERCENTAGE_CONTEXT);
     }
     //updateBasicStroke();
     }
@@ -278,7 +278,7 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
         this.width = width;
 
         if (width != null) {
-            width.setContext(RealParameterContext.nonNegativeContext);
+            width.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
         }
         //updateBasicStroke();
     }
@@ -294,7 +294,7 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
     public void setDashOffset(RealParameter dashOffset) {
         this.dashOffset = dashOffset;
         if (dashOffset != null) {
-            dashOffset.setContext(RealParameterContext.realContext);
+            dashOffset.setContext(RealParameterContext.REAL_CONTEXT);
         }
         //updateBasicStroke();
     }

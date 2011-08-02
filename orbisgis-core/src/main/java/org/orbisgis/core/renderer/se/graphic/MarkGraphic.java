@@ -251,13 +251,13 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
     public void setPerpendicularOffset(RealParameter pOffset) {
         this.pOffset = pOffset;
         if (this.pOffset != null) {
-            this.pOffset.setContext(RealParameterContext.realContext);
+            this.pOffset.setContext(RealParameterContext.REAL_CONTEXT);
         }
     }
 
     private void setMarkIndex(RealParameter mIndex) {
         this.markIndex = mIndex;
-        this.markIndex.setContext(RealParameterContext.nonNegativeContext);
+        this.markIndex.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
     }
 
     /*

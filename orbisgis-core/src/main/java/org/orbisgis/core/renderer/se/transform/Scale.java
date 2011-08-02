@@ -54,7 +54,7 @@ public final class Scale implements Transformation {
     public void setX(RealParameter x) {
         this.x = x;
 		if (this.x != null){
-			this.x.setContext(RealParameterContext.realContext);
+			this.x.setContext(RealParameterContext.REAL_CONTEXT);
 		}
     }
 
@@ -65,7 +65,7 @@ public final class Scale implements Transformation {
     public void setY(RealParameter y) {
         this.y = y;
 		if (this.y != null){
-			this.y.setContext(RealParameterContext.realContext);
+			this.y.setContext(RealParameterContext.REAL_CONTEXT);
 		}
     }
 

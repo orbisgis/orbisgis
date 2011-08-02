@@ -55,7 +55,7 @@ import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
  */
 public class Recode2Real extends Recode<RealParameter, RealLiteral> implements RealParameter {
 
-        RealParameterContext ctx;
+        private RealParameterContext ctx;
 
         /**
          * Creates a new instance of <code>Recode2Real</code>. The default result value
@@ -66,7 +66,7 @@ public class Recode2Real extends Recode<RealParameter, RealLiteral> implements R
          */
         public Recode2Real(RealLiteral fallback, StringParameter lookupValue) {
                 super(fallback, lookupValue);
-                ctx = RealParameterContext.realContext;
+                ctx = RealParameterContext.REAL_CONTEXT;
         }
 
         /**
@@ -79,7 +79,7 @@ public class Recode2Real extends Recode<RealParameter, RealLiteral> implements R
          */
         public Recode2Real(JAXBElement<RecodeType> expr) throws InvalidStyle {
                 RecodeType t = expr.getValue();
-                ctx = RealParameterContext.realContext;
+                ctx = RealParameterContext.REAL_CONTEXT;
 
                 this.setFallbackValue(new RealLiteral(t.getFallbackValue()));
                 this.setLookupValue(SeParameterFactory.createStringParameter(t.getLookupValue()));

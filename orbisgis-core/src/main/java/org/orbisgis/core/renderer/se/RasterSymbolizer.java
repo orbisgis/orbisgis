@@ -154,7 +154,7 @@ public class RasterSymbolizer extends Symbolizer {
     public void setOpacity(RealParameter opacity) {
         this.opacity = opacity;
 		if (this.opacity != null){
-			this.opacity.setContext(RealParameterContext.percentageContext);
+			this.opacity.setContext(RealParameterContext.PERCENTAGE_CONTEXT);
 		}
     }
 

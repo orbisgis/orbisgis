@@ -182,7 +182,7 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
     public void setPerpendicularOffset(RealParameter perpendicularOffset) {
         this.perpendicularOffset = perpendicularOffset;
         if (this.perpendicularOffset != null) {
-            this.perpendicularOffset.setContext(RealParameterContext.realContext);
+            this.perpendicularOffset.setContext(RealParameterContext.REAL_CONTEXT);
         }
     }
 

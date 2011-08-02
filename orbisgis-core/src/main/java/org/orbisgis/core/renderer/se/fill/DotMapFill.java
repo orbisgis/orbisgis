@@ -130,7 +130,7 @@ public final class DotMapFill extends Fill implements GraphicNode {
     public void setQuantityPerMark(RealParameter quantityPerMark) {
         if (quantityPerMark != null) {
             this.quantityPerMark = quantityPerMark;
-            this.quantityPerMark.setContext(RealParameterContext.realContext);
+            this.quantityPerMark.setContext(RealParameterContext.REAL_CONTEXT);
         }
     }
 
@@ -149,7 +149,7 @@ public final class DotMapFill extends Fill implements GraphicNode {
     public void setTotalQuantity(RealParameter totalQuantity) {
         if (totalQuantity != null) {
             this.totalQuantity = totalQuantity;
-            this.totalQuantity.setContext(RealParameterContext.realContext);
+            this.totalQuantity.setContext(RealParameterContext.REAL_CONTEXT);
         }
     }
 

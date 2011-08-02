@@ -122,7 +122,7 @@ public final class DensityFill extends Fill implements GraphicNode {
     public void setHatchesOrientation(RealParameter orientation) {
         this.orientation = orientation;
         if (this.orientation != null) {
-            this.orientation.setContext(RealParameterContext.realContext);
+            this.orientation.setContext(RealParameterContext.REAL_CONTEXT);
         }
     }
 
@@ -160,7 +160,7 @@ public final class DensityFill extends Fill implements GraphicNode {
     public void setPercentageCovered(RealParameter percent) {
         this.percentageCovered = percent;
         if (this.percentageCovered != null) {
-            this.percentageCovered.setContext(RealParameterContext.percentageContext);
+            this.percentageCovered.setContext(RealParameterContext.PERCENTAGE_CONTEXT);
         }
     }
 

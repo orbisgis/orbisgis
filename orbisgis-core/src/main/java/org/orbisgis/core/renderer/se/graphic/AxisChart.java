@@ -233,7 +233,7 @@ public final class AxisChart extends Graphic implements UomNode, FillNode, Strok
     public void setCategoryGap(RealParameter categoryGap) {
         this.categoryGap = categoryGap;
         if (this.categoryGap != null) {
-            this.categoryGap.setContext(RealParameterContext.nonNegativeContext);
+            this.categoryGap.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
         }
     }
 
@@ -244,7 +244,7 @@ public final class AxisChart extends Graphic implements UomNode, FillNode, Strok
     public void setCategoryWidth(RealParameter categoryWidth) {
         this.categoryWidth = categoryWidth;
         if (categoryWidth != null) {
-            categoryWidth.setContext(RealParameterContext.nonNegativeContext);
+            categoryWidth.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
         }
     }
 
@@ -266,7 +266,7 @@ public final class AxisChart extends Graphic implements UomNode, FillNode, Strok
     public void setNormalizeTo(RealParameter normalizeTo) {
         this.normalizeTo = normalizeTo;
         if (normalizeTo != null) {
-            normalizeTo.setContext(RealParameterContext.realContext);
+            normalizeTo.setContext(RealParameterContext.REAL_CONTEXT);
         }
     }
 

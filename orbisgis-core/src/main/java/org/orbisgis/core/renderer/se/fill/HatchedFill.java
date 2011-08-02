@@ -450,7 +450,7 @@ public final class HatchedFill extends Fill implements StrokeNode {
     public void setAngle(RealParameter angle) {
         this.angle = angle;
         if (angle != null) {
-            angle.setContext(RealParameterContext.realContext);
+            angle.setContext(RealParameterContext.REAL_CONTEXT);
         }
     }
 
@@ -469,7 +469,7 @@ public final class HatchedFill extends Fill implements StrokeNode {
     public void setDistance(RealParameter distance) {
         this.distance = distance;
         if (distance != null) {
-            this.distance.setContext(RealParameterContext.nonNegativeContext);
+            this.distance.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
         }
 
     }
@@ -489,7 +489,7 @@ public final class HatchedFill extends Fill implements StrokeNode {
     public void setOffset(RealParameter offset) {
         this.offset = offset;
         if (offset != null) {
-            offset.setContext(RealParameterContext.realContext);
+            offset.setContext(RealParameterContext.REAL_CONTEXT);
         }
     }
 

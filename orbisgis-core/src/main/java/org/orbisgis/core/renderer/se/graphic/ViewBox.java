@@ -79,7 +79,7 @@ public final class ViewBox implements SymbolizerNode {
     public void setWidth(RealParameter width) {
         x = width;
 		if (x!= null){
-			x.setContext(RealParameterContext.realContext);
+			x.setContext(RealParameterContext.REAL_CONTEXT);
 		}
     }
 
@@ -90,7 +90,7 @@ public final class ViewBox implements SymbolizerNode {
     public void setHeight(RealParameter height) {
         y = height;
 		if (y!= null){
-			y.setContext(RealParameterContext.realContext);
+			y.setContext(RealParameterContext.REAL_CONTEXT);
 		}
     }
 

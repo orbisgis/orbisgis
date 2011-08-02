@@ -79,7 +79,7 @@ public class RealFunction implements RealParameter {
      * @param name 
      */
     public RealFunction(String name) {
-        ctx = RealParameterContext.realContext;
+        ctx = RealParameterContext.REAL_CONTEXT;
         this.op = Operators.valueOf(name.toUpperCase());
 
         operands = new ArrayList<RealParameter>();

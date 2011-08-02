@@ -19,12 +19,12 @@ public final class Interpolate2Real extends Interpolate<RealParameter, RealLiter
 
         public Interpolate2Real(RealLiteral fallback) {
                 super(fallback);
-                ctx = RealParameterContext.realContext;
+                ctx = RealParameterContext.REAL_CONTEXT;
         }
 
         public Interpolate2Real(JAXBElement<InterpolateType> expr) throws InvalidStyle {
                 super();
-                ctx = RealParameterContext.realContext;
+                ctx = RealParameterContext.REAL_CONTEXT;
                 InterpolateType t = expr.getValue();
 
                 this.setFallbackValue(new RealLiteral(t.getFallbackValue()));

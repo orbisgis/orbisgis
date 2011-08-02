@@ -74,7 +74,7 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
     public void setRadius(RealParameter radius) {
         this.radius = radius;
         if (this.radius != null) {
-            this.radius.setContext(RealParameterContext.realContext);
+            this.radius.setContext(RealParameterContext.REAL_CONTEXT);
         }
     }
 

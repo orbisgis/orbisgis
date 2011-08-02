@@ -60,7 +60,7 @@ public final class Rotate implements Transformation {
     public void setRotation(RealParameter rotation) {
         this.rotation = rotation;
 		if (rotation != null){
-			rotation.setContext(RealParameterContext.realContext);
+			rotation.setContext(RealParameterContext.REAL_CONTEXT);
 		}
     }
 
@@ -71,7 +71,7 @@ public final class Rotate implements Transformation {
     public void setX(RealParameter x) {
         this.x = x;
 		if (this.x != null){
-			this.x.setContext(RealParameterContext.realContext);
+			this.x.setContext(RealParameterContext.REAL_CONTEXT);
 		}
     }
 
@@ -82,7 +82,7 @@ public final class Rotate implements Transformation {
     public void setY(RealParameter y) {
         this.y = y;
 		if (this.y != null){
-			this.y.setContext(RealParameterContext.realContext);
+			this.y.setContext(RealParameterContext.REAL_CONTEXT);
 		}
     }
 

@@ -230,7 +230,7 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode, Tran
                     // don't throw anything since radius does not depends on features
                 }
             }
-            holeRadius.setContext(RealParameterContext.nonNegativeContext);
+            holeRadius.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
         }
     }
 
@@ -241,7 +241,7 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode, Tran
     public void setRadius(RealParameter radius) {
         this.radius = radius;
         if (radius != null) {
-            radius.setContext(RealParameterContext.nonNegativeContext);
+            radius.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
         }
     }
 

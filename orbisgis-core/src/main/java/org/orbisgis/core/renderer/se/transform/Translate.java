@@ -131,7 +131,7 @@ public class Translate implements Transformation {
         public final void setY(RealParameter y) {
                 this.y = y;
                 if (y != null) {
-                        y.setContext(RealParameterContext.realContext);
+                        y.setContext(RealParameterContext.REAL_CONTEXT);
                 }
         }
 
@@ -142,7 +142,7 @@ public class Translate implements Transformation {
         public final void setX(RealParameter x) {
                 this.x = x;
                 if (x != null) {
-                        x.setContext(RealParameterContext.realContext);
+                        x.setContext(RealParameterContext.REAL_CONTEXT);
                 }
         }
 

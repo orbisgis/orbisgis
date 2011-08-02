@@ -133,7 +133,7 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
     public void setOpacity(RealParameter opacity) {
         this.opacity = opacity;
         if (this.opacity != null) {
-            this.opacity.setContext(RealParameterContext.percentageContext);
+            this.opacity.setContext(RealParameterContext.PERCENTAGE_CONTEXT);
         }
     }
 

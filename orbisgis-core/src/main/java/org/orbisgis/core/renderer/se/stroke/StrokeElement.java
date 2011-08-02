@@ -87,7 +87,7 @@ public final class StrokeElement extends CompoundStrokeElement implements Stroke
 		this.preGap = preGap;
 
 		if (preGap != null) {
-			this.preGap.setContext(RealParameterContext.nonNegativeContext);
+			this.preGap.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
 		}
 	}
 
@@ -95,7 +95,7 @@ public final class StrokeElement extends CompoundStrokeElement implements Stroke
 		this.postGap = postGap;
 
 		if (postGap != null) {
-			this.postGap.setContext(RealParameterContext.nonNegativeContext);
+			this.postGap.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
 		}
 	}
 
@@ -114,7 +114,7 @@ public final class StrokeElement extends CompoundStrokeElement implements Stroke
 	public void setLength(RealParameter length) {
 		this.length = length;
 		if (length != null) {
-			length.setContext(RealParameterContext.nonNegativeContext);
+			length.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
 		}
 	}
 

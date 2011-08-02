@@ -126,7 +126,7 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
     public void setPerpendicularOffset(RealParameter perpendicularOffset) {
         this.perpendicularOffset = perpendicularOffset;
         if (this.perpendicularOffset != null) {
-            this.perpendicularOffset.setContext(RealParameterContext.realContext);
+            this.perpendicularOffset.setContext(RealParameterContext.REAL_CONTEXT);
         }
     }
 

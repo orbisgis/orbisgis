@@ -35,9 +35,6 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-
-
-
 package org.orbisgis.core.renderer.se.parameter.real;
 
 import java.awt.Font;
@@ -49,8 +46,18 @@ import java.awt.Font;
  */
 public class RealParameterContext {
 
-	protected Double min;
-	protected Double max;
+	public final static RealParameterContext PERCENTAGE_CONTEXT;
+        public final static RealParameterContext NON_NEGATIVE_CONTEXT;
+        public final static RealParameterContext REAL_CONTEXT;
+        
+        protected Double min;
+        protected Double max;
+        
+        static {
+                PERCENTAGE_CONTEXT = new RealParameterContext(0.0, 1.0);
+                NON_NEGATIVE_CONTEXT = new RealParameterContext(0.0, null);
+                REAL_CONTEXT = new RealParameterContext(null, null);
+        }
 
         /**
          * Instanciates a new RealParameterContext, with min as the lowest authorized
@@ -59,53 +66,44 @@ public class RealParameterContext {
          * @param min
          * @param max 
          */
-	public RealParameterContext(Double min, Double max){
-		this.min = min;
-		this.max = max;
-	}
+        public RealParameterContext(Double min, Double max) {
+                this.min = min;
+                this.max = max;
+        }
 
         /**
          * Retrieve the lowest authorized value, or null if such a value is not set.
          * @return 
          */
-	public Double getMin(){
-		return min;
-	}
+        public Double getMin() {
+                return min;
+        }
 
         /**
          * Retrieve the highest authorized value, or null if such a value is not set.
          * @return 
          */
-	public Double getMax(){
-		return max;
-	}
+        public Double getMax() {
+                return max;
+        }
 
-    @Override
-	public String toString(){
-		return " [" + min + ";" + max + "]";
-	}
+        @Override
+        public String toString() {
+                return " [" + min + ";" + max + "]";
+        }
 
-	static {
-		percentageContext = new RealParameterContext(0.0, 1.0);
-		nonNegativeContext = new RealParameterContext(0.0, null);
-		realContext = new RealParameterContext(null, null);
-	};
+        public class MarkIndexContext extends RealParameterContext {
 
-	public static RealParameterContext percentageContext;
-	public static RealParameterContext nonNegativeContext;
-	public static RealParameterContext realContext;
+                private Font font;
 
-	public class MarkIndexContext extends RealParameterContext {
+                public MarkIndexContext(Font font) {
+                        super(0.0, 0.0);
+                        this.font = font;
+                        this.max = (double) (font.getNumGlyphs() - 1);
+                }
 
-		private Font font;
-		public MarkIndexContext(Font font){
-			super(0.0, 0.0);
-			this.font = font;
-			this.max = (double)(font.getNumGlyphs() - 1);
-		}
-
-		public Font getFont(){
-			return font;
-		}
-	}
+                public Font getFont() {
+                        return font;
+                }
+        }
 }

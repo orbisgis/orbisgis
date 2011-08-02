@@ -82,7 +82,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
     public void setLength(RealParameter length) {
         this.length = length;
         if (this.length != null) {
-            this.length.setContext(RealParameterContext.nonNegativeContext);
+            this.length.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
         }
     }
 

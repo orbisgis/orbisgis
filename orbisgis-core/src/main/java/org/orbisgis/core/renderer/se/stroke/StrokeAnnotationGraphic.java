@@ -110,7 +110,7 @@ public final class StrokeAnnotationGraphic implements SymbolizerNode {
 		this.relativePosition = relativePosition;
 
 		if (relativePosition != null) {
-			relativePosition.setContext(RealParameterContext.percentageContext);
+			relativePosition.setContext(RealParameterContext.PERCENTAGE_CONTEXT);
 		}
 	}
 

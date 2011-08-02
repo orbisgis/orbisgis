@@ -140,7 +140,7 @@ public final class Matrix implements Transformation {
                 } else {
                         this.a = a;
                 }
-                this.a.setContext(RealParameterContext.realContext);
+                this.a.setContext(RealParameterContext.REAL_CONTEXT);
         }
 
         public RealParameter getB() {
@@ -153,7 +153,7 @@ public final class Matrix implements Transformation {
                 } else {
                         this.b = b;
                 }
-                this.b.setContext(RealParameterContext.realContext);
+                this.b.setContext(RealParameterContext.REAL_CONTEXT);
         }
 
         public RealParameter getC() {
@@ -166,7 +166,7 @@ public final class Matrix implements Transformation {
                 } else {
                         this.c = c;
                 }
-                this.c.setContext(RealParameterContext.realContext);
+                this.c.setContext(RealParameterContext.REAL_CONTEXT);
         }
 
         public RealParameter getD() {
@@ -179,7 +179,7 @@ public final class Matrix implements Transformation {
                 } else {
                         this.d = d;
                 }
-                this.d.setContext(RealParameterContext.realContext);
+                this.d.setContext(RealParameterContext.REAL_CONTEXT);
         }
 
         public RealParameter getE() {
@@ -192,7 +192,7 @@ public final class Matrix implements Transformation {
                 } else {
                         this.e = e;
                 }
-                this.e.setContext(RealParameterContext.realContext);
+                this.e.setContext(RealParameterContext.REAL_CONTEXT);
         }
 
         public RealParameter getF() {
@@ -205,7 +205,7 @@ public final class Matrix implements Transformation {
                 } else {
                         this.f = f;
                 }
-                this.f.setContext(RealParameterContext.realContext);
+                this.f.setContext(RealParameterContext.REAL_CONTEXT);
         }
 
         @Override

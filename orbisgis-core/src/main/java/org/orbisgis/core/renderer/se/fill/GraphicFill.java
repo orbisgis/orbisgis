@@ -170,7 +170,7 @@ public final class GraphicFill extends Fill implements UomNode {
     public void setGapX(RealParameter gap) {
         gapX = gap;
         if (gap != null) {
-            gap.setContext(RealParameterContext.nonNegativeContext);
+            gap.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
         }
     }
 
@@ -181,7 +181,7 @@ public final class GraphicFill extends Fill implements UomNode {
     public void setGapY(RealParameter gap) {
         gapY = gap;
         if (gap != null) {
-            gap.setContext(RealParameterContext.nonNegativeContext);
+            gap.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
         }
     }
 

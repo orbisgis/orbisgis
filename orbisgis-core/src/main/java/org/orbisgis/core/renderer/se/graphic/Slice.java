@@ -28,7 +28,7 @@ public class Slice implements SymbolizerNode, FillNode {
     public void setGap(RealParameter gap) {
         this.gap = gap;
 		if (gap != null){
-			gap.setContext(RealParameterContext.nonNegativeContext);
+			gap.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
 		}
     }
 
@@ -47,7 +47,7 @@ public class Slice implements SymbolizerNode, FillNode {
     public void setValue(RealParameter value) {
         this.value = value;
 		if (value != null){
-			value.setContext(RealParameterContext.realContext);
+			value.setContext(RealParameterContext.REAL_CONTEXT);
 		}
     }
 
