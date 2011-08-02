@@ -77,21 +77,20 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
 
     @Override
     public final String dependsOnFeature() {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         String lookup = this.getLookupValue().dependsOnFeature();
         if (lookup != null && !lookup.isEmpty()){
-            result = lookup;
+            result.append(lookup);
         }
-
         int i;
         for (i = 0; i < this.getNumMapItem(); i++) {
             String r = this.getMapItemValue(i).dependsOnFeature();
             if (r != null && !r.isEmpty()){
-                result += " " + r;
+                result .append(" ");
+                result .append(r);
             }
         }
-
-        return result;
+        return result.toString().trim();
     }
 
     /**
