@@ -40,9 +40,12 @@
 package org.orbisgis.core.renderer.se.parameter;
 
 /**
- *
+ * <code>LiteralListener</code> are listeners dedicated to <code>Literal</code> objects.
  * @author maxence
  */
 public interface LiteralListener {
+        /**
+         * Notify a change to the classes spying the <code>Literal</code> instance(s).
+         */
 	void literalChanged();
 }
