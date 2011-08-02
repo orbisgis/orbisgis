@@ -133,18 +133,18 @@ public final class SeParameterFactory {
             return null;
         }
 
-        String result = "";
+        StringBuilder result = new StringBuilder();
 
         for (Object o : p.getContent()) {
             if (o instanceof String) {
-                result += o.toString();
+                result.append(o.toString());
             } else if (o instanceof JAXBElement) {
                 return SeParameterFactory.createRealParameter((JAXBElement<? extends ExpressionType>) o);
             }
         }
 
         // has not return, so it's a literal !
-        return new RealLiteral(result);
+        return new RealLiteral(result.toString());
     }
 
     /**
@@ -199,17 +199,16 @@ public final class SeParameterFactory {
         if (p == null){
             return null;
         }
-
-        String result = "";
+        StringBuilder result = new StringBuilder();
         for (Object o : p.getContent()) {
             if (o instanceof String) {
-                result += ((String) o);
+                result.append((String) o);
             } else if (o instanceof JAXBElement) {
                 return SeParameterFactory.createColorParameter((JAXBElement<? extends ExpressionType>) o);
             }
         }
         // has not return, so it's a literal !
-        return new ColorLiteral(result);
+        return new ColorLiteral(result.toString());
     }
 
 
