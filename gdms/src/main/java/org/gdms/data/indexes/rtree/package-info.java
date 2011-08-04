@@ -39,23 +39,21 @@
  * or contact directly:
  * info@orbisgis.org
  */
-package org.gdms.data.values;
-
-import org.orbisgis.collections.twoqueue.TwoQueueBuffer;
 
 /**
- *
- * @param <K> 
- * @param <B> 
- * @author Antoine Gourlay
+ * Contains the actual implementation of disk and memory RTree structure.
+ * 
+ * <p>
+ * The class {@link DiskRTree} is the main entry point for the structure. It can be queried for geometries that 
+ * ranges.<br />
+ * The structure can be either:
+ * <ul>
+ * <li>in memory only</li>
+ * <li>on disk, with a cache in memory</li>
+ * </ul>
+ * </p>
+ * <p>
+ * The actual tree implemented is the usual R-tree structure.
+ * </p>
  */
-abstract class ValueTwoQueueBuffer<K, B extends Value> extends TwoQueueBuffer<K, B> {
-
-        public ValueTwoQueueBuffer(int maxSize) {
-                super(maxSize);
-        }
-
-        @Override
-        protected void unload(B b) {
-        }
-}
+package org.gdms.data.indexes.rtree;

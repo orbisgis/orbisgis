@@ -48,9 +48,15 @@ import org.gdms.data.types.Type;
 import org.grap.model.GeoRaster;
 
 import com.vividsolutions.jts.geom.Geometry;
+import ij.ImagePlus;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.Locale;
 import org.apache.log4j.Logger;
+import org.gdms.data.InitializationException;
 import org.gdms.data.types.IncompatibleTypesException;
+import org.grap.model.RasterMetadata;
 
 /**
  * Factory to instantiate Value instances from basic types
@@ -61,6 +67,7 @@ public final class ValueFactory {
         private static final Logger LOG = Logger.getLogger(ValueFactory.class);
         public static final BooleanValue TRUE = new DefaultBooleanValue(true);
         public static final BooleanValue FALSE = new DefaultBooleanValue(false);
+        
         /**
          * Max size of the Value cache.
          */
@@ -656,6 +663,10 @@ public final class ValueFactory {
                 } else {
                         throw new IllegalArgumentException("Wrong type: " + valueType);
                 }
+        }
+        
+        public static int getRasterHeaderSize() {
+                return DefaultRasterValue.getHeaderSize();
         }
 
         private ValueFactory() {

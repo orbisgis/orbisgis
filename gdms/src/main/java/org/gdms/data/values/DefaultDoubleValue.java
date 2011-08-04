@@ -48,7 +48,7 @@ import org.orbisgis.utils.ByteUtils;
  *
  * @author Fernando Gonzalez Cortes
  */
-public class DefaultDoubleValue extends DefaultNumericValue implements DoubleValue {
+class DefaultDoubleValue extends DefaultNumericValue implements DoubleValue {
 
         private double value;
         public static final ValueTwoQueueBuffer<Double, DoubleValue> BUF =

@@ -39,23 +39,21 @@
  * or contact directly:
  * info@orbisgis.org
  */
-package org.gdms.data.values;
-
-import org.orbisgis.collections.twoqueue.TwoQueueBuffer;
 
 /**
- *
- * @param <K> 
- * @param <B> 
- * @author Antoine Gourlay
+ * Contains the necessary java interfaces for implementing drivers.
+ * 
+ * <p>
+ * The {@link Driver} interface is the root interface for all drivers. Subinterfaces include:
+ * <ul>
+ * <li>DBDriver for read-only database table drivers</li>
+ * <li>DBReadWriteDriver for writable database table drivers.</li>
+ * <li>FileDriver for read-only file drivers</li>
+ * <li>FileReadWriteDriver for writable file drivers</li>
+ * <li>ObjectDriver for read-only memory-object drivers</li>
+ * <li>ObjectReadWriteDriver for writable memory-object drivers</li>
+ * </ul>
+ * </p>
+ * 
  */
-abstract class ValueTwoQueueBuffer<K, B extends Value> extends TwoQueueBuffer<K, B> {
-
-        public ValueTwoQueueBuffer(int maxSize) {
-                super(maxSize);
-        }
-
-        @Override
-        protected void unload(B b) {
-        }
-}
+package org.gdms.driver;

@@ -43,7 +43,7 @@ import com.vividsolutions.jts.io.WKBWriter;
 import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.io.WKTWriter;
 
-public final class WKBUtil {
+final class WKBUtil {
 
 	private static volatile WKBWriter writer3D = null;
 	private static volatile WKBWriter writer2D = null;

@@ -54,7 +54,7 @@ import org.gdms.data.values.ValueFactory;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.io.ParseException;
 import java.util.List;
-import org.gdms.data.values.DefaultValueCollection;
+import org.gdms.data.types.Type;
 
 public class RTreeLeaf extends AbstractRTreeNode {
 
@@ -369,7 +369,7 @@ public class RTreeLeaf extends AbstractRTreeNode {
                 int valuesBytesLength = dis.readInt();
                 byte[] valuesBytes = new byte[valuesBytesLength];
                 dis.read(valuesBytes);
-                ValueCollection col = (ValueCollection) DefaultValueCollection.readBytes(valuesBytes);
+                ValueCollection col = ValueFactory.createValue(Type.COLLECTION, bytes).getAsValueCollection();
                 Value[] values = col.getValues();
                 ret.geometries = new ArrayList<Envelope>();
                 for (int i = 0; i < values.length / 4; i++) {

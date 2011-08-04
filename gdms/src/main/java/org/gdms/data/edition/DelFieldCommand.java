@@ -48,7 +48,6 @@ import java.nio.channels.FileChannel;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
-import org.gdms.data.values.DefaultValueCollection;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
@@ -166,8 +165,7 @@ public class DelFieldCommand implements Command {
                         fieldFile = new File(factory.getTempFile());
                         FileChannel channel = new FileOutputStream(fieldFile).getChannel();
                         WriteBufferManager wb = new WriteBufferManager(channel);
-                        ValueCollection v = new DefaultValueCollection();
-                        v.setValues(fieldValues);
+                        ValueCollection v = ValueFactory.createValue(fieldValues);
                         wb.put(v.getBytes());
                         wb.flush();
                         channel.close();

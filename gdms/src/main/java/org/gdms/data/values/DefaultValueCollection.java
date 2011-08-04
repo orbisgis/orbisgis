@@ -56,7 +56,7 @@ import org.gdms.data.types.IncompatibleTypesException;
  *
  * @author Fernando Gonzalez Cortes
  */
-public class DefaultValueCollection extends AbstractValue implements ValueCollection {
+class DefaultValueCollection extends AbstractValue implements ValueCollection {
 
         private List<Value> values = new ArrayList<Value>();
 

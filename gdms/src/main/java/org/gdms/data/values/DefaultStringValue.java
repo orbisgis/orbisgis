@@ -51,7 +51,7 @@ import org.gdms.data.types.IncompatibleTypesException;
  *
  * @author Fernando Gonzalez Cortes
  */
-public class DefaultStringValue extends AbstractValue implements Serializable, StringValue {
+class DefaultStringValue extends AbstractValue implements Serializable, StringValue {
 
         private static final String NOTNUMBER = " is not a number";
         private String value;

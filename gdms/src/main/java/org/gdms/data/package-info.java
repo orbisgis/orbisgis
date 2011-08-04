@@ -39,23 +39,8 @@
  * or contact directly:
  * info@orbisgis.org
  */
-package org.gdms.data.values;
-
-import org.orbisgis.collections.twoqueue.TwoQueueBuffer;
 
 /**
- *
- * @param <K> 
- * @param <B> 
- * @author Antoine Gourlay
+ * Contains the entry point of the Gdms library, the {@link DataSourceFactory}.
  */
-abstract class ValueTwoQueueBuffer<K, B extends Value> extends TwoQueueBuffer<K, B> {
-
-        public ValueTwoQueueBuffer(int maxSize) {
-                super(maxSize);
-        }
-
-        @Override
-        protected void unload(B b) {
-        }
-}
+package org.gdms.data;

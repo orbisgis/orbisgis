@@ -39,23 +39,30 @@
  * or contact directly:
  * info@orbisgis.org
  */
-package org.gdms.data.values;
-
-import org.orbisgis.collections.twoqueue.TwoQueueBuffer;
-
 /**
- *
- * @param <K> 
- * @param <B> 
- * @author Antoine Gourlay
+ * Contains the actual implementation of disk and memory BTree structure.
+ * 
+ * <p>
+ * The class {@link DiskBTree} is the main entry point for the structure. It can be queried for alphanumeric
+ * ranges.<br />
+ * The structure can be either:
+ * <ul>
+ * <li>in memory only</li>
+ * <li>on disk, with a cache in memory</li>
+ * </ul>
+ * </p>
+ * <p>
+ * The actual tree implemented is a B+tree structure. The  keys are the {@link Value} objects being ordered, the
+ * records are the row indexes corresponding to the keys:
+ * <ul>
+ * <li>The leaf nodes store the actual indexes (records) and the corresponding Value objects (key).</li>
+ * <li>The ordering is based on the comparison of the Values objects.</li>
+ * <li>The internal nodes store the bound keys (Value objects) of its children.</li>
+ * </ul>
+ * </p>
+ * <p>
+ * The implementation only supports generic range queries. There is no special optimization for equality queries or full
+ * tree traversal.
+ * </p>
  */
-abstract class ValueTwoQueueBuffer<K, B extends Value> extends TwoQueueBuffer<K, B> {
-
-        public ValueTwoQueueBuffer(int maxSize) {
-                super(maxSize);
-        }
-
-        @Override
-        protected void unload(B b) {
-        }
-}
+package org.gdms.data.indexes.btree;

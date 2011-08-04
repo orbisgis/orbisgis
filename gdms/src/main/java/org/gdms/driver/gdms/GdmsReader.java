@@ -59,14 +59,14 @@ import org.gdms.driver.ReadBufferManager;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import java.util.Map;
-import org.gdms.data.values.DefaultRasterValue;
 
 /**
  * Reader dedicated to the GDMS file format. Used by the GdmsDriver to retrieve informations.
  *
  */
 public class GdmsReader {
-
+        private static final int RASTERHEADERSIZE = ValueFactory.getRasterHeaderSize();
+        
         private FileInputStream fis;
         private ReadBufferManager rbm;
         private int rowCount;
@@ -286,7 +286,7 @@ public class GdmsReader {
                                                         return ValueFactory.createNullValue();
                                                 } else {
                                                         // Read header
-                                                        byte[] valueBytes = new byte[DefaultRasterValue.HEADER_SIZE];
+                                                        byte[] valueBytes = new byte[RASTERHEADERSIZE];
                                                         rbm.get(valueBytes);
                                                         Value lazyRasterValue = ValueFactory.createLazyValue(fieldType, valueBytes,
                                                                 new RasterByteProvider(rowIndex,
