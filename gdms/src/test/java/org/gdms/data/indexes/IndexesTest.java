@@ -440,7 +440,7 @@ public class IndexesTest {
 
                 sm.removeAll();
                 File parent = new File(TestBase.internalData);
-                File backup = new File("src/test/resources/backup");
+                File backup = TestBase.backupDir;
                 File destshp = new File(backup, "hedgerow.shp");
                 File destdbf = new File(backup, "hedgerow.dbf");
                 File destshx = new File(backup, "hedgerow.shx");
