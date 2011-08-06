@@ -369,7 +369,7 @@ public class RTreeLeaf extends AbstractRTreeNode {
                 int valuesBytesLength = dis.readInt();
                 byte[] valuesBytes = new byte[valuesBytesLength];
                 dis.read(valuesBytes);
-                ValueCollection col = ValueFactory.createValue(Type.COLLECTION, bytes).getAsValueCollection();
+                ValueCollection col = ValueFactory.createValue(Type.COLLECTION, valuesBytes).getAsValueCollection();
                 Value[] values = col.getValues();
                 ret.geometries = new ArrayList<Envelope>();
                 for (int i = 0; i < values.length / 4; i++) {
