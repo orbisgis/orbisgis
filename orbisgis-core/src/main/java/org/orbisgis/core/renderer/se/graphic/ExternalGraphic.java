@@ -1,10 +1,8 @@
 package org.orbisgis.core.renderer.se.graphic;
 
 import java.awt.Graphics2D;
-import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
-import java.awt.image.RenderedImage;
 
 import java.io.IOException;
 

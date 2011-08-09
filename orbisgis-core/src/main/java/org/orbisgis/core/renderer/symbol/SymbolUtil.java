@@ -26,6 +26,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
+import net.LiteShape.LiteShape;
 
 @Deprecated
 public class SymbolUtil {
@@ -44,7 +45,8 @@ public class SymbolUtil {
 			return;
 		}
 
-		Shape shape = mt.getShapeWriter().toShape(geometry);
+        Shape shape = new LiteShape(geometry, mt.getAffineTransform(), false); 
+		// Shape shape = mt.getShapeWriter().toShape(geometry);
 		if (!(shape instanceof GeneralPath) && renderingFill) {
 			g.setStroke(fillStroke);
 			g.setPaint(fillPaint);
@@ -111,14 +113,15 @@ public class SymbolUtil {
 
 	public static void flash(final Geometry geometry, Graphics2D graphics,
 			MapTransform mt, final int millisecondDelay) {
-		flash(mt.getShapeWriter().toShape(geometry), graphics, Color.red,
+
+		flash(mt.getShape(geometry), graphics, Color.red,
 				new BasicStroke(5, BasicStroke.CAP_ROUND,
 						BasicStroke.JOIN_ROUND), millisecondDelay);
 	}
 
 	public static void flash(final Geometry geometry, Graphics2D graphics,
 			MapTransform mt) {
-		flash(mt.getShapeWriter().toShape(geometry), graphics, Color.red,
+		flash(mt.getShape(geometry), graphics, Color.red,
 				new BasicStroke(5, BasicStroke.CAP_ROUND,
 						BasicStroke.JOIN_ROUND), 100);
 	}

@@ -15,6 +15,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
+import net.LiteShape.LiteShape;
 
 @Deprecated
 public class Shading3DPolygon extends AbstractPolygonSymbol implements
@@ -142,8 +143,8 @@ public class Shading3DPolygon extends AbstractPolygonSymbol implements
 	public Envelope draw(Graphics2D g, Geometry geom, MapTransform mt,
 			RenderContext permission) throws DriverException {
 
-		// LiteShape ls = new LiteShape(geom, at, false);
-		Shape ls = mt.getShapeWriter().toShape(geom);
+		LiteShape ls = new LiteShape(geom, mt.getAffineTransform(), false);
+		//Shape ls = mt.getShapeWriter().toShape(geom);
 		if (fillColor != null) {
 			g.setPaint(fillColor);
 			g.fill(ls);

@@ -101,7 +101,7 @@ public class GeometryProperties {
 
 		else if (fieldName.equals(ENVELOPE_AREA)) {
 
-			v = ValueFactory.createValue(geom.getEnvelopeInternal().getArea());
+			v = ValueFactory.createValue(geom.getEnvelope().getArea());
 		}
 
 		return v;

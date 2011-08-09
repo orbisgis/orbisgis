@@ -25,6 +25,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
+import net.LiteShape.LiteShape;
 
 @Deprecated
 public class ImageSymbol extends AbstractSymbol implements Symbol {
@@ -65,8 +66,8 @@ public class ImageSymbol extends AbstractSymbol implements Symbol {
 
 	public Envelope draw(Graphics2D g, Geometry geom, MapTransform mt,
 			RenderContext permission) throws DriverException {
-		// LiteShape ls = new LiteShape(geom, at, false);
-		Shape ls = mt.getShapeWriter().toShape(geom);
+		LiteShape ls = new LiteShape(geom, mt.getAffineTransform(), false);
+		//Shape ls = mt.getShapeWriter().toShape(geom);
 		PathIterator pi = ls.getPathIterator(null);
 		double[] coords = new double[6];
 		while (!pi.isDone()) {

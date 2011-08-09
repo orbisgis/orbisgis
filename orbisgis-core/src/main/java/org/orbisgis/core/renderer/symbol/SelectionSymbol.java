@@ -14,6 +14,7 @@ import org.orbisgis.core.renderer.RenderContext;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import net.LiteShape.LiteShape;
 
 @Deprecated
 public class SelectionSymbol extends AbstractGeometrySymbol {
@@ -73,8 +74,8 @@ public class SelectionSymbol extends AbstractGeometrySymbol {
 		}
 
 		if (paintingHandles) {
-			// LiteShape ls = new LiteShape(geom, at, false);
-			Shape ls = mt.getShapeWriter().toShape(geom);
+			LiteShape ls = new LiteShape(geom, mt.getAffineTransform(), false);
+			//Shape ls = mt.getShapeWriter().toShape(geom);
 			PathIterator pi = ls.getPathIterator(null);
 			double[] coords = new double[6];
 

@@ -48,6 +48,7 @@ import org.orbisgis.core.renderer.RenderContext;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import net.LiteShape.LiteShape;
 
 @Deprecated
 public class HalfCircleRightPointSymbol extends AbstractHalfCirclePointSymbol {
@@ -60,8 +61,8 @@ public class HalfCircleRightPointSymbol extends AbstractHalfCirclePointSymbol {
 	@Override
 	public Envelope draw(Graphics2D g, Geometry geom, MapTransform mt,
 			RenderContext permission) throws DriverException {
-		// LiteShape ls = new LiteShape(geom, at, false);
-		Shape ls = mt.getShapeWriter().toShape(geom);
+	    LiteShape ls = new LiteShape(geom, mt.getAffineTransform(), false);
+		//Shape ls = mt.getShapeWriter().toShape(geom);
 		PathIterator pi = ls.getPathIterator(null);
 		double[] coords = new double[6];
 

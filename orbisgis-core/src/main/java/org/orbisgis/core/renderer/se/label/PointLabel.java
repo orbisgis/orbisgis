@@ -4,7 +4,7 @@
  */
 package org.orbisgis.core.renderer.se.label;
 
-import com.vividsolutions.jts.awt.PolygonShape;
+//import com.vividsolutions.jts.awt.PolygonShape;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
@@ -108,29 +108,22 @@ public final class PointLabel extends Label {
         double deltaX = 0;
         double deltaY = 0;
 
-        if (shp instanceof PolygonShape) {
-            //shp = perm.getValidShape(shp, 0);
-            // TODO Validate !
-            x = shp.getBounds2D().getCenterX();
-            y = shp.getBounds2D().getCenterY();
-        } else {
-            Rectangle2D bounds = this.label.getBounds(g2, sds, fid, mt);
-            x = shp.getBounds2D().getCenterX() + bounds.getWidth() / 2;
-            y = shp.getBounds2D().getCenterY() - bounds.getHeight() / 2;
+        Rectangle2D bounds = this.label.getBounds(g2, sds, fid, mt);
+        x = shp.getBounds2D().getCenterX() + bounds.getWidth() / 2;
+        y = shp.getBounds2D().getCenterY() - bounds.getHeight() / 2;
 
-            if (this.exclusionZone != null) {
-                if (this.exclusionZone instanceof ExclusionRadius) {
-                    double radius = ((ExclusionRadius) (this.exclusionZone)).getRadius().getValue(sds, fid);
-                    radius = Uom.toPixel(radius, getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-                    deltaX = radius;
-                    deltaY = radius;
-                } else {
-                    deltaX = ((ExclusionRectangle) (this.exclusionZone)).getX().getValue(sds, fid);
-                    deltaY = ((ExclusionRectangle) (this.exclusionZone)).getY().getValue(sds, fid);
+        if (this.exclusionZone != null) {
+            if (this.exclusionZone instanceof ExclusionRadius) {
+                double radius = ((ExclusionRadius) (this.exclusionZone)).getRadius().getValue(sds, fid);
+                radius = Uom.toPixel(radius, getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                deltaX = radius;
+                deltaY = radius;
+            } else {
+                deltaX = ((ExclusionRectangle) (this.exclusionZone)).getX().getValue(sds, fid);
+                deltaY = ((ExclusionRectangle) (this.exclusionZone)).getY().getValue(sds, fid);
 
-                    deltaX = Uom.toPixel(deltaX, getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-                    deltaY = Uom.toPixel(deltaY, getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-                }
+                deltaX = Uom.toPixel(deltaX, getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                deltaY = Uom.toPixel(deltaY, getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
             }
         }
 
