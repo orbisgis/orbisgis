@@ -223,6 +223,7 @@ public final class CompoundStroke extends Stroke implements UomNode {
                     if (elem instanceof StrokeElement) {
                         sElem = (StrokeElement) elem;
                     } else if (elem instanceof AlternativeStrokeElements) {
+                        // do not retrieve the most suitable element, just take the first one...
                         AlternativeStrokeElements aElem = (AlternativeStrokeElements) elem;
                         sElem = aElem.getElements().get(0);
                     }
@@ -237,6 +238,10 @@ public final class CompoundStroke extends Stroke implements UomNode {
                         lengths[i] = sElem.getStroke().getNaturalLength(sds, fid, shp, mt);
                         //System.out.println("Natural length: " + lengths[i]);
                     }
+
+                    /*if (lengths[i] < 2){
+                        lengths[i] = 2;
+                    }*/
 
                     if (sElem.getPreGap() != null) {
                         preGaps[i] = Uom.toPixel(sElem.getPreGap().getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
@@ -317,10 +322,11 @@ public final class CompoundStroke extends Stroke implements UomNode {
                         }
                     }
 
-                    if (lengths[i] > 0) {
+                    if (lengths[i] >= 0) {
                         // get two lines. first is the one we'll style with i'est element
                         List<Shape> splitLine = ShapeHelper.splitLine(scrap, lengths[i]);
-                        //System.out.println("Extract: " + lengths[i]);
+                        System.out.println("Extract: " + lengths[i]);
+                        System.out.println ("Split ? " + splitLine.size());
                         Shape seg = splitLine.remove(0);
 
                         //System.out.println ("StrokeElement Seg: ");
@@ -357,61 +363,63 @@ public final class CompoundStroke extends Stroke implements UomNode {
                 }
 
 
-                List<Shape> splitLineInSeg = ShapeHelper.splitLineInSeg(shp, patternLength);
-                for (Shape seg : splitLineInSeg) {
-                    for (StrokeAnnotationGraphic annotation : annotations) {
-                        GraphicCollection graphic = annotation.getGraphic();
-                        Rectangle2D bounds = graphic.getBounds(sds, fid, selected, mt);
+                if (annotations.size() > 0) {
+                    List<Shape> splitLineInSeg = ShapeHelper.splitLineInSeg(shp, patternLength);
+                    for (Shape seg : splitLineInSeg) {
+                        for (StrokeAnnotationGraphic annotation : annotations) {
+                            GraphicCollection graphic = annotation.getGraphic();
+                            Rectangle2D bounds = graphic.getBounds(sds, fid, selected, mt);
 
-                        RelativeOrientation rOrient = annotation.getRelativeOrientation();
-                        if (rOrient == null) {
-                            rOrient = RelativeOrientation.NORMAL;
-                        }
+                            RelativeOrientation rOrient = annotation.getRelativeOrientation();
+                            if (rOrient == null) {
+                                rOrient = RelativeOrientation.NORMAL;
+                            }
 
-                        double gWidth = bounds.getWidth();
-                        double gHeight = bounds.getHeight();
+                            double gWidth = bounds.getWidth();
+                            double gHeight = bounds.getHeight();
 
-                        double gLength;
-                        switch (rOrient) {
-                            case NORMAL:
-                            case NORMAL_UP:
-                                gLength = gWidth;
-                                break;
-                            case LINE:
-                                gLength = gHeight;
-                                break;
-                            case PORTRAYAL:
-                            default:
-                                gLength = Math.sqrt(gWidth * gWidth + gHeight * gHeight);
-                                break;
-                        }
-
-                        double pos = (ShapeHelper.getLineLength(seg) - gLength) * annotation.getRelativePosition().getValue(sds, fid) + gLength / 2.0;
-
-                        Point2D.Double pt = ShapeHelper.getPointAt(seg, pos);
-
-                        AffineTransform at = AffineTransform.getTranslateInstance(pt.x, pt.y);
-                        if (rOrient != RelativeOrientation.PORTRAYAL) {
-
-                            Point2D.Double ptA = ShapeHelper.getPointAt(seg, pos - gLength / 2.0);
-                            Point2D.Double ptB = ShapeHelper.getPointAt(seg, pos + gLength / 2.0);
-
-                            double theta = Math.atan2(ptB.y - ptA.y, ptB.x - ptA.x);
-
+                            double gLength;
                             switch (rOrient) {
-                                case LINE:
-                                    theta += 0.5 * Math.PI;
-                                    break;
+                                case NORMAL:
                                 case NORMAL_UP:
-                                    if (theta < -Math.PI / 2 || theta > Math.PI / 2) {
-                                        theta += Math.PI;
-                                    }
+                                    gLength = gWidth;
+                                    break;
+                                case LINE:
+                                    gLength = gHeight;
+                                    break;
+                                case PORTRAYAL:
+                                default:
+                                    gLength = Math.sqrt(gWidth * gWidth + gHeight * gHeight);
                                     break;
                             }
-                            at.concatenate(AffineTransform.getRotateInstance(theta));
-                        }
 
-                        graphic.draw(g2, sds, fid, selected, mt, at);
+                            double pos = (ShapeHelper.getLineLength(seg) - gLength) * annotation.getRelativePosition().getValue(sds, fid) + gLength / 2.0;
+
+                            Point2D.Double pt = ShapeHelper.getPointAt(seg, pos);
+
+                            AffineTransform at = AffineTransform.getTranslateInstance(pt.x, pt.y);
+                            if (rOrient != RelativeOrientation.PORTRAYAL) {
+
+                                Point2D.Double ptA = ShapeHelper.getPointAt(seg, pos - gLength / 2.0);
+                                Point2D.Double ptB = ShapeHelper.getPointAt(seg, pos + gLength / 2.0);
+
+                                double theta = Math.atan2(ptB.y - ptA.y, ptB.x - ptA.x);
+
+                                switch (rOrient) {
+                                    case LINE:
+                                        theta += 0.5 * Math.PI;
+                                        break;
+                                    case NORMAL_UP:
+                                        if (theta < -Math.PI / 2 || theta > Math.PI / 2) {
+                                            theta += Math.PI;
+                                        }
+                                        break;
+                                }
+                                at.concatenate(AffineTransform.getRotateInstance(theta));
+                            }
+
+                            graphic.draw(g2, sds, fid, selected, mt, at);
+                        }
                     }
                 }
             }
@@ -532,6 +540,7 @@ public final class CompoundStroke extends Stroke implements UomNode {
             return false;
         }
     }
+
     public void addElement(CompoundStrokeElement element) {
         if (element != null) {
             elements.add(element);

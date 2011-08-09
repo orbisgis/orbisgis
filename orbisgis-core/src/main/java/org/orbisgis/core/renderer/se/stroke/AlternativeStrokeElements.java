@@ -49,7 +49,7 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
  */
 public class AlternativeStrokeElements extends CompoundStrokeElement {
 
-	private ArrayList<StrokeElement> elements;
+	private List<StrokeElement> elements;
 
 
     public AlternativeStrokeElements(){
@@ -91,7 +91,7 @@ public class AlternativeStrokeElements extends CompoundStrokeElement {
 		return result.trim();
 	}
 
-    public ArrayList<StrokeElement> getElements() {
+    public List<StrokeElement> getElements() {
         return elements;
     }
 

@@ -3,6 +3,8 @@ package org.orbisgis.core.renderer.se.stroke;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Line2D;
+import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -111,7 +113,8 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
             Double value = length.getValue(sds, fid);
             if (value != null) {
                 naturalLength = Uom.toPixel(value, getUom(), mt.getDpi(), mt.getScaleDenominator(), lineLength);
-                if (naturalLength <= GraphicStroke.MIN_LENGTH || naturalLength > lineLength) {
+                //if (naturalLength <= GraphicStroke.MIN_LENGTH || naturalLength > lineLength) {
+                if (naturalLength > lineLength) {
                     naturalLength = lineLength;
                 }
                 return naturalLength;
@@ -136,7 +139,8 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
                 return gHeight;
             case PORTRAYAL:
             default:
-                return Math.sqrt(gWidth * gWidth + gHeight * gHeight);
+                return gWidth;
+                //return Math.sqrt(gWidth * gWidth + gHeight * gHeight);
         }
     }
 
@@ -160,7 +164,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
         double gWidth = getGraphicWidth(sds, fid, mt);
         for (Shape shp : shapes) {
             //System.out.println("Process shape n°" + shapeCounter + "/" + shapes.size());
-            double segLength = getNaturalLength(sds, fid, shp, mt);
+            final double segLength = getNaturalLength(sds, fid, shp, mt);
 
             //System.out.println("SegLength <-> gWidth: " + segLength + "<->" + gWidth);
             double lineLength = ShapeHelper.getLineLength(shp);
@@ -180,7 +184,11 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
                 //nbToDraw = (int) nbSegments;
             } else {
                 nbSegments = lineLength / segLength;
-                //System.out.println("  No linear rapport: NbSegement: " + nbSegments);
+                if (nbSegments == 0 && getParent() instanceof StrokeElement){
+                    nbSegments = 1;
+                }
+
+                System.out.println("  No linear rapport: NbSegement: " + nbSegments);
                 //segLength = lineLength / nbSegments;
                 //System.out.println("    BUGGY ? (new) SegLength (?): " + (lineLength / nbSegments));
                 // Effective number of graphic to draw (skip the last one if not space left...)
@@ -207,21 +215,32 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
                         if (oSeg != null) {
 
                             //System.out.println ("Going to plot a point:");
-                            segLength = ShapeHelper.getLineLength(oSeg);
-                            if (segLength >= 1) {
-                                //System.out.println("oSeg Length: " + segLength);
-                                Point2D.Double pt = ShapeHelper.getPointAt(oSeg, segLength / 2);
+                            double realSegLength = ShapeHelper.getLineLength(oSeg);
+                            System.out.println("oSeg Length: " + realSegLength);
+
+                            // Is there enough space on the real segment ?  otherwise is the graphic part of a compound stroke ?
+                            if (realSegLength > 0.9*segLength || getParent() instanceof StrokeElement){
+                            //if (segLength >= 1) {
+                                System.out.println("oSeg Length: " + segLength);
+                                Point2D.Double pt;
+                                if (segLength < MIN_LENGTH){
+                                    pt = ShapeHelper.getPointAt(oSeg, 0);
+                                } else {
+                                    pt = ShapeHelper.getPointAt(oSeg, realSegLength / 2);
+                                }
                                 AffineTransform at = AffineTransform.getTranslateInstance(pt.x, pt.y);
 
                                 if (rOrient != RelativeOrientation.PORTRAYAL) {
-                                    //Point2D.Double ptA = ShapeHelper.getPointAt(oSeg, 0.5 * (segLength - gWidth));
-                                    //Point2D.Double ptB = ShapeHelper.getPointAt(oSeg, 0.75 * (segLength - gWidth));
+                                    Point2D.Double ptA;
+                                    Point2D.Double ptB;
 
-                                    //System.out.println("pos ptA: " + (0.5 * (segLength - gWidth)));
-                                    //System.out.println("pos ptB: " + (0.5 * (segLength + gWidth)));
-
-                                    Point2D.Double ptA = ShapeHelper.getPointAt(oSeg, 0.5 * (segLength - gWidth));
-                                    Point2D.Double ptB = ShapeHelper.getPointAt(oSeg, 0.5 * (segLength + gWidth));
+                                    if (segLength < MIN_LENGTH){
+                                        ptA = pt;
+                                        ptB = ShapeHelper.getPointAt(oSeg, gWidth);
+                                    } else {
+                                        ptA = ShapeHelper.getPointAt(oSeg, 0.5 * (realSegLength - gWidth));
+                                        ptB = ShapeHelper.getPointAt(oSeg, 0.5 * (realSegLength + gWidth));
+                                    }
 
                                     double theta = Math.atan2(ptB.y - ptA.y, ptB.x - ptA.x);
                                     //System.out.println("(" + ptA.x + ";" + ptA.y + ")" + "(" + ptB.x + ";" + ptB.y + ")" + "   => Angle: " + (theta / 0.0175));
