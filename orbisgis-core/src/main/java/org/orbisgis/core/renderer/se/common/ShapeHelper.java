@@ -272,8 +272,10 @@ public class ShapeHelper {
      * @return list of equal-length segment
      */
     public static List<Shape> splitLineInSeg(Shape line, double segLength) {
-        ArrayList<Shape> shapes = new ArrayList<Shape>();
+        List<Shape> shapes = new ArrayList<Shape>();
         double totalLength = ShapeHelper.getLineLength(line);
+
+        System.out.println("Line To SplitLength: " + totalLength);
 
         if (segLength <= 0.0 || segLength >= totalLength) {
             shapes.add(line);
@@ -335,6 +337,7 @@ public class ShapeHelper {
                 // On termine le segment, l'ajoute à la liste de shapes
                 segment.lineTo(x1, y1);
                 p = 0;
+                System.out.println("   SegLength: " + ShapeHelper.getLineLength(segment));
                 shapes.add(segment);
 
                 // Et commence le nouveau segment à
@@ -342,7 +345,7 @@ public class ShapeHelper {
                 segment.moveTo(x1, y1);
 
             } else {
-                // Le point courant dépasse la limite de longueur
+                // Le point courant ne dépasse pas la limite de longueur
                 segment.lineTo(x2, y2);
                 x1 = x2;
                 y1 = y2;
@@ -352,6 +355,7 @@ public class ShapeHelper {
         //last segment end with last point
         //segment.lineTo(x1, y1);
 
+        System.out.println("   SegLength: " + ShapeHelper.getLineLength(segment));
         shapes.add(segment);
 
         return shapes;

@@ -40,7 +40,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, UomNode {
 
     private SymbolizerNode parent;
-    private StringParameter labelText;
+    private StringParameter text;
     private StringParameter fontFamily;
     private StringParameter fontWeight;
     private StringParameter fontStyle;
@@ -57,7 +57,7 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
     }
 
     public StyledText(String label) {
-        setLabelText(new StringLiteral(label));
+        setText(new StringLiteral(label));
         setFontFamily(new StringLiteral("Arial"));
         setFontWeight(new StringLiteral("Normal"));
         setFontStyle(new StringLiteral("Normal"));
@@ -108,8 +108,8 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
             this.setHalo(new Halo(sl.getHalo()));
         }
 
-        if (sl.getLabelText() != null) {
-            this.setLabelText(SeParameterFactory.createStringParameter(sl.getLabelText()));
+        if (sl.getText() != null) {
+            this.setText(SeParameterFactory.createStringParameter(sl.getText()));
         }
     }
 
@@ -175,13 +175,13 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
         }
     }
 
-    public StringParameter getLabelText() {
-        return labelText;
+    public StringParameter getText() {
+        return text;
     }
 
-    public void setLabelText(StringParameter labelText) {
-        if (labelText != null) {
-            this.labelText = labelText;
+    public void setText(StringParameter text) {
+        if (text != null) {
+            this.text = text;
         }
     }
 
@@ -287,7 +287,7 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
 
     public Rectangle2D getBounds(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
             MapTransform mt) throws ParameterException, IOException {
-        String text = labelText.getValue(sds, fid);
+        String text = this.text.getValue(sds, fid);
         return getBounds(g2, text, sds, fid, mt);
     }
 
@@ -303,7 +303,7 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
 
     public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
             boolean selected, MapTransform mt, AffineTransform at, RenderContext perm) throws ParameterException, IOException {
-        String text = labelText.getValue(sds, fid);
+        String text = this.text.getValue(sds, fid);
         draw(g2, text, sds, fid, selected, mt, at, perm);
     }
 
@@ -390,8 +390,8 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
     public StyledTextType getJAXBType() {
         StyledTextType l = new StyledTextType();
 
-        if (labelText != null) {
-            l.setLabelText(labelText.getJAXBParameterValueType());
+        if (text != null) {
+            l.setText(text.getJAXBParameterValueType());
         }
 
         if (halo != null) {
@@ -435,8 +435,8 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
     public String dependsOnFeature() {
 
         String result = "";
-        if (labelText != null) {
-            result += " " + labelText.dependsOnFeature();
+        if (text != null) {
+            result += " " + text.dependsOnFeature();
         }
         if (fontFamily != null) {
             result += " " + fontFamily.dependsOnFeature();

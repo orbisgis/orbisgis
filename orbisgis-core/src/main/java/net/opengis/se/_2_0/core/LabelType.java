@@ -38,7 +38,9 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "LabelType", propOrder = {
-    "styledText"
+    "styledText",
+    "horizontalAlignment",
+    "verticalAlignment"
 })
 @XmlSeeAlso({
     PointLabelType.class,
@@ -50,6 +52,10 @@ public abstract class LabelType {
     protected StyledTextType styledText;
     @XmlAttribute
     protected String uom;
+    @XmlElement(name = "HorizontalAlignment")
+    protected ParameterValueType horizontalAlignment;
+    @XmlElement(name = "VerticalAlignment")
+    protected ParameterValueType verticalAlignment;
 
     /**
      * Gets the value of the styledText property.
@@ -98,5 +104,56 @@ public abstract class LabelType {
     public void setUom(String value) {
         this.uom = value;
     }
+
+
+    /**
+     * Gets the value of the horizontalAlignment property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link ParameterValueType }
+     *     
+     */
+    public ParameterValueType getHorizontalAlignment() {
+        return horizontalAlignment;
+    }
+
+    /**
+     * Sets the value of the horizontalAlignment property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link ParameterValueType }
+     *     
+     */
+    public void setHorizontalAlignment(ParameterValueType value) {
+        this.horizontalAlignment = value;
+    }
+
+    /**
+     * Gets the value of the verticalAlignment property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link ParameterValueType }
+     *     
+     */
+    public ParameterValueType getVerticalAlignment() {
+        return verticalAlignment;
+    }
+
+    /**
+     * Sets the value of the verticalAlignment property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link ParameterValueType }
+     *     
+     */
+    public void setVerticalAlignment(ParameterValueType value) {
+        this.verticalAlignment = value;
+    }
+
+
 
 }

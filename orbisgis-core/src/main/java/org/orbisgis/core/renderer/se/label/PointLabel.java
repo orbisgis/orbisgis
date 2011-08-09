@@ -18,7 +18,6 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
 
 import net.opengis.se._2_0.core.ObjectFactory;
-import net.opengis.se._2_0.core.ParameterValueType;
 import net.opengis.se._2_0.core.PointLabelType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -50,18 +49,6 @@ public final class PointLabel extends Label {
     public PointLabel(PointLabelType plt) throws InvalidStyle {
         super(plt);
 
-        if (plt.getHorizontalAlignment() != null) {
-            this.hAlign = HorizontalAlignment.fromString(SeParameterFactory.extractToken(plt.getHorizontalAlignment()));
-        } else {
-            this.hAlign = HorizontalAlignment.RIGHT;
-        }
-
-        if (plt.getVerticalAlignment() != null) {
-            this.vAlign = VerticalAlignment.fromString(SeParameterFactory.extractToken(plt.getVerticalAlignment()));
-        } else {
-            this.vAlign = VerticalAlignment.TOP;
-        }
-
         if (plt.getExclusionZone() != null) {
             setExclusionZone(ExclusionZone.createFromJAXBElement(plt.getExclusionZone()));
         }
@@ -69,8 +56,6 @@ public final class PointLabel extends Label {
         if (plt.getRotation() != null) {
             setRotation(SeParameterFactory.createRealParameter(plt.getRotation()));
         }
-
-
     }
 
     PointLabel(JAXBElement<PointLabelType> pl) throws InvalidStyle {
@@ -135,39 +120,22 @@ public final class PointLabel extends Label {
     @Override
     public JAXBElement<PointLabelType> getJAXBElement() {
         ObjectFactory of = new ObjectFactory();
-        return of.createPointLabel(getPointLabelType());
+        return of.createPointLabel(getJAXBType());
     }
 
-    public PointLabelType getPointLabelType() {
+    public PointLabelType getJAXBType() {
         PointLabelType pl = new PointLabelType();
 
-        if (uom != null) {
-            pl.setUom(uom.toString());
-        }
+        setJAXBProperties(pl);
 
         if (exclusionZone != null) {
             pl.setExclusionZone(exclusionZone.getJAXBElement());
-        }
-
-        if (hAlign != null) {
-            ParameterValueType h = new ParameterValueType();
-            h.getContent().add(hAlign.toString());
-            pl.setHorizontalAlignment(h);
-        }
-
-        if (hAlign != null) {
-            ParameterValueType v = new ParameterValueType();
-            v.getContent().add(vAlign.toString());
-            pl.setHorizontalAlignment(v);
         }
 
         if (rotation != null) {
             pl.setRotation(rotation.getJAXBParameterValueType());
         }
 
-        if (label != null) {
-            pl.setStyledText(label.getJAXBType());
-        }
         return pl;
     }
 

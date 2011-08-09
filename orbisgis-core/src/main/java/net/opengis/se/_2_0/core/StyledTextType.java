@@ -30,7 +30,7 @@ import net.opengis.se._2_0.thematic.DotMapFillType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.opengis.net/se/2.0/core}LabelText" minOccurs="0"/>
+ *         &lt;element ref="{http://www.opengis.net/se/2.0/core}Text" minOccurs="0"/>
  *         &lt;element ref="{http://www.opengis.net/se/2.0/core}Font" minOccurs="0"/>
  *         &lt;element ref="{http://www.opengis.net/se/2.0/core}Halo" minOccurs="0"/>
  *         &lt;element ref="{http://www.opengis.net/se/2.0/core}Fill" minOccurs="0"/>
@@ -45,7 +45,7 @@ import net.opengis.se._2_0.thematic.DotMapFillType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "StyledTextType", propOrder = {
-    "labelText",
+    "text",
     "font",
     "halo",
     "fill",
@@ -53,8 +53,8 @@ import net.opengis.se._2_0.thematic.DotMapFillType;
 })
 public class StyledTextType {
 
-    @XmlElement(name = "LabelText")
-    protected ParameterValueType labelText;
+    @XmlElement(name = "Text")
+    protected ParameterValueType text;
     @XmlElement(name = "Font")
     protected FontType font;
     @XmlElement(name = "Halo")
@@ -65,27 +65,27 @@ public class StyledTextType {
     protected JAXBElement<? extends StrokeType> stroke;
 
     /**
-     * Gets the value of the labelText property.
+     * Gets the value of the text property.
      * 
      * @return
      *     possible object is
      *     {@link ParameterValueType }
      *     
      */
-    public ParameterValueType getLabelText() {
-        return labelText;
+    public ParameterValueType getText() {
+        return text;
     }
 
     /**
-     * Sets the value of the labelText property.
+     * Sets the value of the text property.
      * 
      * @param value
      *     allowed object is
      *     {@link ParameterValueType }
      *     
      */
-    public void setLabelText(ParameterValueType value) {
-        this.labelText = value;
+    public void setText(ParameterValueType value) {
+        this.text = value;
     }
 
     /**

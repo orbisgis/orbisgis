@@ -80,11 +80,11 @@ public abstract class LegendUIStyledText extends LegendUIComponent {
 
         this.sText = styledText;
 
-        this.text = new LegendUIMetaStringPanel("Text", controller, this,sText.getLabelText(), false) {
+        this.text = new LegendUIMetaStringPanel("Text", controller, this,sText.getText(), false) {
 
             @Override
             public void stringChanged(StringParameter newString) {
-                sText.setLabelText(newString);
+                sText.setText(newString);
             }
         };
         text.init();

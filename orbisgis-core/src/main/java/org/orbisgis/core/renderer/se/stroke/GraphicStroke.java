@@ -3,8 +3,6 @@ package org.orbisgis.core.renderer.se.stroke;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Line2D;
-import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -216,12 +214,11 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
 
                             //System.out.println ("Going to plot a point:");
                             double realSegLength = ShapeHelper.getLineLength(oSeg);
-                            System.out.println("oSeg Length: " + realSegLength);
+                            //System.out.println("oSeg Length: " + realSegLength + "/" + segLength);
 
                             // Is there enough space on the real segment ?  otherwise is the graphic part of a compound stroke ?
-                            if (realSegLength > 0.9*segLength || getParent() instanceof StrokeElement){
+                            if (realSegLength > 0.9*segLength || (getParent() instanceof StrokeElement && segLength == 0.0)){
                             //if (segLength >= 1) {
-                                System.out.println("oSeg Length: " + segLength);
                                 Point2D.Double pt;
                                 if (segLength < MIN_LENGTH){
                                     pt = ShapeHelper.getPointAt(oSeg, 0);

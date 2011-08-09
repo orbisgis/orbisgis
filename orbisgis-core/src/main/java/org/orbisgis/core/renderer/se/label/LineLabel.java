@@ -24,7 +24,6 @@ import net.opengis.se._2_0.core.ParameterValueType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 
 /**
  *
@@ -41,18 +40,6 @@ public class LineLabel extends Label {
 
     public LineLabel(LineLabelType t) throws InvalidStyle {
         super(t);
-
-        if (t.getHorizontalAlignment() != null) {
-            this.hAlign = HorizontalAlignment.fromString(SeParameterFactory.extractToken(t.getHorizontalAlignment()));
-        } else {
-            this.hAlign = HorizontalAlignment.CENTER;
-        }
-
-        if (t.getVerticalAlignment() != null) {
-            this.vAlign = VerticalAlignment.fromString(SeParameterFactory.extractToken(t.getVerticalAlignment()));
-        } else {
-            this.vAlign = VerticalAlignment.MIDDLE;
-        }
     }
 
     public LineLabel(JAXBElement<LineLabelType> l) throws InvalidStyle {
@@ -111,7 +98,13 @@ public class LineLabel extends Label {
             hA = HorizontalAlignment.CENTER;
         }
 
+        System.out.println ("hA: " + hA);
+        
         double lineLength = ShapeHelper.getLineLength(shp);
+
+        System.out.println ("Label/Line : "+ totalWidth + "/" + lineLength);
+        
+        
         double startAt;
         double stopAt;
 
@@ -119,15 +112,19 @@ public class LineLabel extends Label {
             case RIGHT:
                 startAt = lineLength - totalWidth;
                 stopAt = lineLength;
+        
+                System.out.println ("RIGHT: " + startAt + ";" + stopAt);
                 break;
             case LEFT:
                 startAt = 0.0;
                 stopAt = totalWidth;
+                System.out.println ("LEFT: " + startAt + ";" + stopAt);
                 break;
             default:
             case CENTER:
                 startAt = (lineLength - totalWidth) / 2.0;
                 stopAt = (lineLength + totalWidth) / 2.0;
+                System.out.println ("CENTER: " + startAt + ";" + stopAt);
                 break;
 
         }
@@ -158,7 +155,7 @@ public class LineLabel extends Label {
         double currentPos = startAt;
         double glyphWidth;
 
-        String text = label.getLabelText().getValue(sds, fid);
+        String text = label.getText().getValue(sds, fid);
         String[] glyphs = text.split("");
 
         ArrayList<Shape> outlines = new ArrayList<Shape>();
@@ -199,26 +196,7 @@ public class LineLabel extends Label {
     public LineLabelType getJAXBType() {
         LineLabelType ll = new LineLabelType();
 
-        if (uom != null) {
-            ll.setUom(uom.toString());
-        }
-
-        if (hAlign != null) {
-            ParameterValueType h = new ParameterValueType();
-            h.getContent().add(hAlign.toString());
-            ll.setHorizontalAlignment(h);
-        }
-
-        if (hAlign != null) {
-            ParameterValueType v = new ParameterValueType();
-            v.getContent().add(vAlign.toString());
-            ll.setHorizontalAlignment(v);
-        }
-
-        if (label != null) {
-            ll.setStyledText(label.getJAXBType());
-        }
-
+        setJAXBProperties(ll);
         return ll;
     }
 

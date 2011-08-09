@@ -15,12 +15,14 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
 
 import net.opengis.se._2_0.core.LineLabelType;
+import net.opengis.se._2_0.core.ParameterValueType;
 import net.opengis.se._2_0.core.PointLabelType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 
 /**
  *
@@ -28,20 +30,30 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  */
 public abstract class Label implements SymbolizerNode, UomNode {
 
+    protected SymbolizerNode parent;
+    protected Uom uom;
+    protected StyledText label;
+    protected HorizontalAlignment hAlign;
+    protected VerticalAlignment vAlign;
+    
     public enum HorizontalAlignment {
 
         LEFT, CENTER, RIGHT;
 
         public static HorizontalAlignment fromString(String token) {
-            if (token.equals("left")) {
+            if (token.equalsIgnoreCase("left")) {
                 return LEFT;
             }
 
-            if (token.equals("center")) {
+            if (token.equalsIgnoreCase("center")) {
                 return CENTER;
             }
 
-            return RIGHT; // default value
+            if (token.equalsIgnoreCase("right")) {
+                return RIGHT;
+            }
+
+            return CENTER; // default value
         }
 
         public static String[] getList() {
@@ -58,13 +70,13 @@ public abstract class Label implements SymbolizerNode, UomNode {
         TOP, MIDDLE, BASELINE, BOTTOM;
 
         public static VerticalAlignment fromString(String token) {
-            if (token.equals("bottom")) {
+            if (token.equalsIgnoreCase("bottom")) {
                 return BOTTOM;
             }
-            if (token.equals("middle")) {
+            if (token.equalsIgnoreCase("middle")) {
                 return MIDDLE;
             }
-            if (token.equals("baseline")) {
+            if (token.equalsIgnoreCase("baseline")) {
                 return BASELINE;
             }
 
@@ -79,12 +91,7 @@ public abstract class Label implements SymbolizerNode, UomNode {
             return list;
         }
     }
-    protected SymbolizerNode parent;
-    protected Uom uom;
-    protected StyledText label;
-    protected HorizontalAlignment hAlign;
-    protected VerticalAlignment vAlign;
-
+    
     public static Label createLabelFromJAXBElement(JAXBElement<? extends LabelType> l) throws InvalidStyle {
         if (l.getDeclaredType() == PointLabelType.class) {
             return new PointLabel((JAXBElement<PointLabelType>) l);
@@ -107,6 +114,20 @@ public abstract class Label implements SymbolizerNode, UomNode {
         if (t.getStyledText() != null) {
             this.setLabel(new StyledText(t.getStyledText()));
         }
+
+
+        if (t.getHorizontalAlignment() != null) {
+            this.hAlign = HorizontalAlignment.fromString(SeParameterFactory.extractToken(t.getHorizontalAlignment()));
+        } else {
+            this.hAlign = HorizontalAlignment.CENTER;
+        }
+
+        if (t.getVerticalAlignment() != null) {
+            this.vAlign = VerticalAlignment.fromString(SeParameterFactory.extractToken(t.getVerticalAlignment()));
+        } else {
+            this.vAlign = VerticalAlignment.MIDDLE;
+        }
+
     }
 
     protected Label(JAXBElement<? extends LabelType> l) throws InvalidStyle {
@@ -168,6 +189,28 @@ public abstract class Label implements SymbolizerNode, UomNode {
     public void setvAlign(VerticalAlignment vAlign) {
         if (vAlign != null) {
             this.vAlign = vAlign;
+        }
+    }
+
+    protected void setJAXBProperties(LabelType lt) {
+        if (uom != null) {
+            lt.setUom(uom.toString());
+        }
+
+        if (label != null){
+        lt.setStyledText(label.getJAXBType());
+        }
+
+        if (hAlign != null) {
+            ParameterValueType h = new ParameterValueType();
+            h.getContent().add(hAlign.toString());
+            lt.setHorizontalAlignment(h);
+        }
+
+        if (vAlign != null) {
+            ParameterValueType v = new ParameterValueType();
+            v.getContent().add(vAlign.toString());
+            lt.setVerticalAlignment(v);
         }
     }
 

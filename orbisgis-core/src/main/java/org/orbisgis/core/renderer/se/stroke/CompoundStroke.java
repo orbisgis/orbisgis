@@ -153,8 +153,7 @@ public final class CompoundStroke extends Stroke implements UomNode {
 
     @Override
     public Double getNaturalLength(SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) throws ParameterException, IOException {
-        return Double.POSITIVE_INFINITY;
-        //throw new UnsupportedOperationException("Nesting a compound stroke within a compound stroke is forbidden !!!");
+        return Double.POSITIVE_INFINITY; //throw new UnsupportedOperationException("Nesting a compound stroke within a compound stroke is forbidden !!!");
     }
 
     @Override
@@ -365,6 +364,8 @@ public final class CompoundStroke extends Stroke implements UomNode {
 
                 if (annotations.size() > 0) {
                     List<Shape> splitLineInSeg = ShapeHelper.splitLineInSeg(shp, patternLength);
+                    //List<Shape> splitLineInSeg = new ArrayList<Shape>();
+                    //splitLineInSeg.add(shp);
                     for (Shape seg : splitLineInSeg) {
                         for (StrokeAnnotationGraphic annotation : annotations) {
                             GraphicCollection graphic = annotation.getGraphic();

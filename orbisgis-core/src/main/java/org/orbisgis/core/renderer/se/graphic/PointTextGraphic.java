@@ -163,7 +163,7 @@ public final class PointTextGraphic extends Graphic implements UomNode {
         PointTextGraphicType t = new PointTextGraphicType();
 
         if (pointLabel != null) {
-            t.setPointLabel(pointLabel.getPointLabelType());
+            t.setPointLabel(pointLabel.getJAXBType());
         }
 
         if (x != null || y != null) {
