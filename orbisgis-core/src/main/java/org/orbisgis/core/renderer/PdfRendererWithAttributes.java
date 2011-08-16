@@ -70,8 +70,11 @@ public class PdfRendererWithAttributes extends Renderer {
     private float ly;
     private PdfTemplate pTemp;
     private MapTransform mt;
+    private String fieldName;
 
-    public PdfRendererWithAttributes(PdfContentByte container, PdfStructureElement top, float width, float height, float lx, float ly) {
+    public PdfRendererWithAttributes(PdfContentByte container,
+                                     PdfStructureElement top, float width,
+                                     float height, float lx, float ly) {
         super();
         this.cb = container;
         this.top = top;
@@ -94,7 +97,8 @@ public class PdfRendererWithAttributes extends Renderer {
     }
 
     @Override
-    protected void initGraphics2D(List<Symbolizer> symbs, Graphics2D g2, MapTransform mt) {
+    protected void initGraphics2D(List<Symbolizer> symbs, Graphics2D g2,
+                                  MapTransform mt) {
         this.mt = mt;
     }
 
@@ -104,9 +108,27 @@ public class PdfRendererWithAttributes extends Renderer {
 
     @Override
     public void beginFeature(long id, SpatialDataSourceDecorator sds) {
+        int fieldNameIndex;
+        try {
+            fieldNameIndex = sds.getFieldIndexByName(fieldName);
+        } catch (DriverException ex) {
+            Logger.getLogger(PdfRendererWithAttributes.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger("Field name used for attributes does not exist: by default, we use feature + id");
+            fieldNameIndex = -1;
+
+        }
 
         try {
-            PdfStructureElement e = new PdfStructureElement(top, new PdfName("feature" + id));
+            String attributeName;
+
+            if (fieldNameIndex > -1) {
+                attributeName = sds.getFieldValue(id, fieldNameIndex).toString();
+            } else {
+                attributeName = "feature " + (id + 1);
+            }
+
+
+            PdfStructureElement e = new PdfStructureElement(top, new PdfName(attributeName));
             PdfDictionary userProperties = new PdfDictionary();
             userProperties.put(PdfName.O, PdfName.USERPROPERTIES);
             PdfArray properties = new PdfArray();
@@ -123,7 +145,7 @@ public class PdfRendererWithAttributes extends Renderer {
 
             userProperties.put(PdfName.P, properties);
             e.put(PdfName.A, userProperties);
-            
+
             pTemp = cb.createTemplate(width, height);
             cb.beginMarkedContentSequence(e);
 
