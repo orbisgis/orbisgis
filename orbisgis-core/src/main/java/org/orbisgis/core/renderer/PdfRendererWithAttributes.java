@@ -74,7 +74,8 @@ public class PdfRendererWithAttributes extends Renderer {
 
     public PdfRendererWithAttributes(PdfContentByte container,
                                      PdfStructureElement top, float width,
-                                     float height, float lx, float ly) {
+                                     float height, float lx, float ly,
+                                     String FieldName) {
         super();
         this.cb = container;
         this.top = top;
@@ -82,6 +83,7 @@ public class PdfRendererWithAttributes extends Renderer {
         this.width = width;
         this.lx = lx;
         this.ly = ly;
+        this.fieldName = fieldName;
     }
 
     @Override
