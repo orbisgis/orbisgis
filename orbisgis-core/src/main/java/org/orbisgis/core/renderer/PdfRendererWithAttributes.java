@@ -75,7 +75,7 @@ public class PdfRendererWithAttributes extends Renderer {
     public PdfRendererWithAttributes(PdfContentByte container,
                                      PdfStructureElement top, float width,
                                      float height, float lx, float ly,
-                                     String FieldName) {
+                                     String fieldName) {
         super();
         this.cb = container;
         this.top = top;
