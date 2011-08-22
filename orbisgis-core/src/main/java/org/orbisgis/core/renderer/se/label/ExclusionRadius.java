@@ -22,58 +22,59 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  */
 public final class ExclusionRadius extends ExclusionZone {
 
-    private RealParameter radius;
+        private RealParameter radius;
 
-    public ExclusionRadius(){
-        setRadius(new RealLiteral(3));
-    }
-
-    public ExclusionRadius(double radius){
-        setRadius(new RealLiteral(radius));
-    }
-
-    ExclusionRadius(JAXBElement<ExclusionRadiusType> ert) throws InvalidStyle {
-        ExclusionRadiusType e = ert.getValue();
-
-        if (e.getRadius() != null){
-            setRadius(SeParameterFactory.createRealParameter(e.getRadius()));
+        public ExclusionRadius() {
+                setRadius(new RealLiteral(3));
         }
 
-        if (e.getUom() != null){
-            setUom(Uom.fromOgcURN(e.getUom()));
-        }
-    }
-
-    public RealParameter getRadius() {
-        return radius;
-    }
-
-    public void setRadius(RealParameter radius) {
-        this.radius = radius;
-		if (this.radius != null){
-			this.radius.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
-		}
-    }
-
-    @Override
-    public JAXBElement<ExclusionRadiusType> getJAXBElement() {
-        ExclusionRadiusType r = new ExclusionRadiusType();
-
-        if (uom != null) {
-            r.setUom(uom.toString());
-        }
-        if (radius != null) {
-            r.setRadius(radius.getJAXBParameterValueType());
+        public ExclusionRadius(double radius) {
+                setRadius(new RealLiteral(radius));
         }
 
-        ObjectFactory of = new ObjectFactory();
-        return of.createExclusionRadius(r);
-    }
+        ExclusionRadius(JAXBElement<ExclusionRadiusType> ert) throws InvalidStyle {
+                ExclusionRadiusType e = ert.getValue();
 
-	@Override
-	public String dependsOnFeature() {
-        if (radius != null)
-            return radius.dependsOnFeature();
-        return "";
-	}
+                if (e.getRadius() != null) {
+                        setRadius(SeParameterFactory.createRealParameter(e.getRadius()));
+                }
+
+                if (e.getUom() != null) {
+                        setUom(Uom.fromOgcURN(e.getUom()));
+                }
+        }
+
+        public RealParameter getRadius() {
+                return radius;
+        }
+
+        public void setRadius(RealParameter radius) {
+                this.radius = radius;
+                if (this.radius != null) {
+                        this.radius.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
+                }
+        }
+
+        @Override
+        public JAXBElement<ExclusionRadiusType> getJAXBElement() {
+                ExclusionRadiusType r = new ExclusionRadiusType();
+
+                if (uom != null) {
+                        r.setUom(uom.toString());
+                }
+                if (radius != null) {
+                        r.setRadius(radius.getJAXBParameterValueType());
+                }
+
+                ObjectFactory of = new ObjectFactory();
+                return of.createExclusionRadius(r);
+        }
+
+        @Override
+        public String dependsOnFeature() {
+                if (radius != null) {
+                        return radius.dependsOnFeature();
+                }
+                return "";
+        }
 }

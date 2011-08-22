@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.orbisgis.core.renderer.se.label;
 
 import javax.xml.bind.JAXBElement;
@@ -22,49 +21,48 @@ import org.orbisgis.core.renderer.se.common.Uom;
  */
 public abstract class ExclusionZone implements SymbolizerNode, UomNode {
 
-    public abstract JAXBElement<? extends ExclusionZoneType> getJAXBElement();
+        public abstract JAXBElement<? extends ExclusionZoneType> getJAXBElement();
+        protected SymbolizerNode parent;
+        protected Uom uom;
 
-    protected SymbolizerNode parent;
-    protected Uom uom;
-
-    public static ExclusionZone createFromJAXBElement(JAXBElement<? extends ExclusionZoneType> ezt) throws InvalidStyle {
-        if (ezt.getDeclaredType() == ExclusionRadiusType.class){
-            return new ExclusionRadius((JAXBElement<ExclusionRadiusType>)ezt);
+        public static ExclusionZone createFromJAXBElement(JAXBElement<? extends ExclusionZoneType> ezt) throws InvalidStyle {
+                if (ezt.getDeclaredType() == ExclusionRadiusType.class) {
+                        return new ExclusionRadius((JAXBElement<ExclusionRadiusType>) ezt);
+                } else if (ezt.getDeclaredType() == ExclusionRectangleType.class) {
+                        return new ExclusionRectangle((JAXBElement<ExclusionRectangleType>) ezt);
+                } else {
+                        return null;
+                }
         }
-        else if (ezt.getDeclaredType() == ExclusionRectangleType.class){
-            return new ExclusionRectangle((JAXBElement<ExclusionRectangleType>)ezt);
+
+        @Override
+        public Uom getUom() {
+                if (uom == null) {
+                        return parent.getUom();
+                } else {
+                        return uom;
+                }
         }
-        else
-            return null;
-    }
 
-    @Override
-    public Uom getUom() {
-        if (uom == null)
-            return parent.getUom();
-        else
-            return uom;
-    }
+        @Override
+        public Uom getOwnUom() {
+                return uom;
+        }
 
-	@Override
-	public Uom getOwnUom(){
-		return uom;
-	}
+        @Override
+        public void setUom(Uom uom) {
+                this.uom = uom;
+        }
 
-	@Override
-	public void setUom(Uom uom){
-		this.uom = uom;
-	}
+        @Override
+        public SymbolizerNode getParent() {
+                return parent;
+        }
 
-    @Override
-    public SymbolizerNode getParent() {
-        return parent;
-    }
+        @Override
+        public void setParent(SymbolizerNode node) {
+                parent = node;
+        }
 
-    @Override
-    public void setParent(SymbolizerNode node) {
-        parent = node;
-    }
-
-	public abstract String dependsOnFeature();
+        public abstract String dependsOnFeature();
 }

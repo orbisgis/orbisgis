@@ -91,10 +91,12 @@ public final class ExclusionRectangle extends ExclusionZone {
 	public String dependsOnFeature() {
         String result = "";
 
-        if (x != null)
-            result = x.dependsOnFeature();
-        if (y != null)
-            result += " " + y.dependsOnFeature();
+        if (x != null) {
+                        result = x.dependsOnFeature();
+                }
+        if (y != null) {
+                        result += " " + y.dependsOnFeature();
+                }
 
         return result.trim();
 	}
