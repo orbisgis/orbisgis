@@ -15,19 +15,27 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 /**
- *
- * @author maxence
+ * An {@code ExclusionZone} where the forbidden area is defined as a rectangle. It is 
+ * defined thanks to a x and y values. Their meaning is of course dependant of the inner
+ * UOM instance.
+ * @author alexis, maxence
  */
 public final class ExclusionRectangle extends ExclusionZone {
 
     private RealParameter x;
     private RealParameter y;
 
+    /**
+     * Build a {@code ExclusionZone} with default width and length set to 3. 
+     */
     public ExclusionRectangle(){
         this.setX(new RealLiteral(3));
         this.setY(new RealLiteral(3));
     }
 
+    /**
+     * Build a {@code ExclusionZone} from the JAXBElement given in argument. 
+     */
     ExclusionRectangle(JAXBElement<ExclusionRectangleType> ert) throws InvalidStyle {
         ExclusionRectangleType e = ert.getValue();
 
@@ -44,10 +52,19 @@ public final class ExclusionRectangle extends ExclusionZone {
         }
     }
 
+    /**
+     * Get the x-length of the rectangle.
+     * @return 
+     * the x-length as a {@code RealParameter} 
+     */
     public RealParameter getX() {
         return x;
     }
 
+    /**
+     * Set the x-length of the rectangle.
+     * @param x 
+     */
     public void setX(RealParameter x) {
         this.x = x;
 		if (x != null){
@@ -55,10 +72,19 @@ public final class ExclusionRectangle extends ExclusionZone {
 		}
     }
 
+    /**
+     * Get the y-length of the rectangle.
+     * @return 
+     * the y-length as a {@code RealParameter} 
+     */
     public RealParameter getY() {
         return y;
     }
 
+    /**
+     * Set the y-length of the rectangle.
+     * @param x 
+     */
     public void setY(RealParameter y) {
         this.y = y;
 		if (this.y != null){

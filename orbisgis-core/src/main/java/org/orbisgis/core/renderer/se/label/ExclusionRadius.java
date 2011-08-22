@@ -17,21 +17,33 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 /**
- *
+ * An {@code ExclusionZone} where the forbidden area is defined as a circle. It is 
+ * defined thanks to radius value. Its meaning is of course dependant of the inner
+ * UOM instance. The resulting exclusion zone is a circle centered on the point associated
+ * to the {@code LabelPoint}, 
  * @author maxence
  */
 public final class ExclusionRadius extends ExclusionZone {
 
         private RealParameter radius;
 
+        /**
+         * Build a new {@code ExclusionRadius} with radius 3.
+         */
         public ExclusionRadius() {
                 setRadius(new RealLiteral(3));
         }
 
+        /**
+         * Build a new {@code ExclusionRadius} with radius value set to {@code radius}.
+         */
         public ExclusionRadius(double radius) {
                 setRadius(new RealLiteral(radius));
         }
 
+        /**
+         * Build a new {@code ExclusionRadius} from the given JAXBElement.
+         */
         ExclusionRadius(JAXBElement<ExclusionRadiusType> ert) throws InvalidStyle {
                 ExclusionRadiusType e = ert.getValue();
 
@@ -44,10 +56,19 @@ public final class ExclusionRadius extends ExclusionZone {
                 }
         }
 
+        /**
+         * Get the radius defining this {@code ExclusionRadius}
+         * @return 
+         * The radius as a {@code RealParameter}.
+         */
         public RealParameter getRadius() {
                 return radius;
         }
 
+        /**
+         * Set the radius defining this {@code ExclusionRadius}
+         * @param radius 
+         */
         public void setRadius(RealParameter radius) {
                 this.radius = radius;
                 if (this.radius != null) {

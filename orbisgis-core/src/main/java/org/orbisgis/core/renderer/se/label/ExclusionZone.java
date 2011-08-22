@@ -16,15 +16,27 @@ import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 
 /**
- *
- * @author maxence
+ * An {@code ExclusionZone} defines an area around a {@code PointLabel} where other 
+ * labels' displaying will be forbidden.
+ * @author alexis, maxence
  */
 public abstract class ExclusionZone implements SymbolizerNode, UomNode {
-
-        public abstract JAXBElement<? extends ExclusionZoneType> getJAXBElement();
         protected SymbolizerNode parent;
         protected Uom uom;
 
+        /**
+         * Gets a JAXB representation of this {@code ExclusionZone}
+         * @return 
+         */
+        public abstract JAXBElement<? extends ExclusionZoneType> getJAXBElement();
+
+        /**
+         * Build an {@code ExclusionZone} from a JAXBElement.
+         * @param ezt
+         * @return
+         * Whether a {@code ExclusionRadius}, or a {@code ExclusionRectangle}, but as a {@code ExclusionZone}.
+         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         */
         public static ExclusionZone createFromJAXBElement(JAXBElement<? extends ExclusionZoneType> ezt) throws InvalidStyle {
                 if (ezt.getDeclaredType() == ExclusionRadiusType.class) {
                         return new ExclusionRadius((JAXBElement<ExclusionRadiusType>) ezt);

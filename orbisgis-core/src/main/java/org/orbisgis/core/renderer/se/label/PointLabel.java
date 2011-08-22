@@ -28,8 +28,12 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 /**
- *
- * @author maxence
+ * A label located at a single point. In addition to all the {@code Label} characteristics,
+ * it has two additional properties : 
+ * <ul><li>A rotation angle, in degrees.</li>
+ * <li>An exclusion zone, ie a zone around the label where no other text will be displayed.</li>
+ * </ul>
+ * @author alexis, maxence
  */
 public final class PointLabel extends Label {
 
@@ -37,7 +41,10 @@ public final class PointLabel extends Label {
     private ExclusionZone exclusionZone;
 
     /**
-     *
+     * Creates a new {@code PointLabel} with default values as detailed in 
+     * {@link org.orbisgis.core.renderer.se.label.Label#Label() Label} and
+     * {@link org.orbisgis.core.renderer.se.label.StyledText#StyledText() StyledText}.
+     * This {@code PointLabel} will be top and right aligned.
      */
     public PointLabel() {
         super();
@@ -46,35 +53,62 @@ public final class PointLabel extends Label {
         sethAlign(HorizontalAlignment.RIGHT);
     }
 
+    /**
+     * Creates a new {@code PointLabel} from a {@code PointLabelType} instance.
+     * @param plt
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     */
     public PointLabel(PointLabelType plt) throws InvalidStyle {
         super(plt);
-
         if (plt.getExclusionZone() != null) {
             setExclusionZone(ExclusionZone.createFromJAXBElement(plt.getExclusionZone()));
         }
-
         if (plt.getRotation() != null) {
             setRotation(SeParameterFactory.createRealParameter(plt.getRotation()));
         }
     }
 
+    /**
+     * Creates a new {@code PointLabel} from a {@code JAXBElement} instance.
+     * @param plt
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     */
     PointLabel(JAXBElement<PointLabelType> pl) throws InvalidStyle {
         this(pl.getValue());
     }
 
+    /**
+     * Get the exclusion zone defined for this {@code PointLabel}. In this zone, 
+     * we won't draw any other text.
+     * @return 
+     * An {@link ExclusionZone} instance.
+     */
     public ExclusionZone getExclusionZone() {
         return exclusionZone;
     }
 
+    /**
+     * Set the exclusion zone defined for this {@code PointLabel}.
+     * @param exclusionZone 
+     */
     public void setExclusionZone(ExclusionZone exclusionZone) {
         this.exclusionZone = exclusionZone;
         exclusionZone.setParent(this);
     }
 
+    /**
+     * Get the rotation that must be applied to this {@code PointLabel} before rendering.
+     * @return 
+     * The rotation, in degrees, as a {@link RealParameter}
+     */
     public RealParameter getRotation() {
         return rotation;
     }
 
+    /**
+     * Set the rotation that must be applied to this {@code PointLabel} before rendering.
+     * @param rotation 
+     */
     public void setRotation(RealParameter rotation) {
         this.rotation = rotation;
         if (this.rotation != null) {
@@ -123,6 +157,10 @@ public final class PointLabel extends Label {
         return of.createPointLabel(getJAXBType());
     }
 
+    /**
+     * Get a JAXB representation of this element.
+     * @return 
+     */
     public PointLabelType getJAXBType() {
         PointLabelType pl = new PointLabelType();
 

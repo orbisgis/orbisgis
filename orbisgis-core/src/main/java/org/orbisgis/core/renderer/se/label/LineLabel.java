@@ -20,28 +20,43 @@ import org.orbisgis.core.renderer.RenderContext;
 
 import net.opengis.se._2_0.core.LineLabelType;
 import net.opengis.se._2_0.core.ObjectFactory;
-import net.opengis.se._2_0.core.ParameterValueType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 /**
- *
- * @author maxence
+ * A {@code LineLabel} is a text of some kinf associated to a Line (polygon or not).
+ * @author alexis, maxence
  * @todo implements
  */
 public class LineLabel extends Label {
 
+    /**
+         * Build a new default {@code LineLabel}, using the defaults in 
+         * {@link org.orbisgis.core.renderer.se.label.StyledText#StyledText()  StyledText}.
+         * The label will be centered (horizontally), and in the middle (vertically)
+         * of the graphic.
+         */
     public LineLabel() {
         super();
         setvAlign(VerticalAlignment.MIDDLE);
         sethAlign(HorizontalAlignment.CENTER);
     }
 
+    /**
+     * Build a {@code LineLabel} from a {@code LineLabelType}
+     * @param t
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     */
     public LineLabel(LineLabelType t) throws InvalidStyle {
         super(t);
     }
 
+    /**
+     * Build a {@code LineLabel} from a JABElement.
+     * @param l
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     */
     public LineLabel(JAXBElement<LineLabelType> l) throws InvalidStyle {
         this(l.getValue());
     }
@@ -193,6 +208,10 @@ public class LineLabel extends Label {
         return of.createLineLabel(this.getJAXBType());
     }
 
+    /**
+     * Get a JAXB representation of this {@code LineLabelType}.
+     * @return 
+     */
     public LineLabelType getJAXBType() {
         LineLabelType ll = new LineLabelType();
 

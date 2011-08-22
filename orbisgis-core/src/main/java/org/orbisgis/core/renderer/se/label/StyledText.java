@@ -37,6 +37,18 @@ import org.orbisgis.core.renderer.se.StrokeNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
+/**
+ * This class embed all the informations needed to represent text of any kind on a map.
+ * A <code>StyledText</code> is defined with several values :
+ * <ul><li>A text value</li>
+ * <li>A font</li>
+ * <li>A weight (Normal or Bold)</li>
+ * <li>A style (Normal, Italic or Oblique)</li>
+ * <li>A size</li>
+ * <li>A stroke</li></ul>
+ * Color and opacity of the text are defined using a <code>Fill</code> instance
+ * @author maxence, alexis
+ */
 public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, UomNode {
 
     private SymbolizerNode parent;
@@ -52,10 +64,22 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
     private String[] weights = {"Normal", "Bold"};
     private String[] styles = {"Normal", "Italic", "Oblique"};
 
+    /**
+     * Fill a new StyledText with default values. Inner text is <code>Label</code>,
+     * it will be displayed in Arial, with a normal weight, a normal style, a 12 font size.
+     * It is displayed in black, and completely opaque.
+     */
     public StyledText() {
         this("Label");
     }
 
+    
+    /**
+     * Fill a new <code>StyledText</code> with the given text value and default values. The text 
+     * will be displayed in Arial, with a normal weight, a normal style, a 12 font size.
+     * It is displayed in black, and completely opaque.
+     * @param label 
+     */
     public StyledText(String label) {
         setText(new StringLiteral(label));
         setFontFamily(new StringLiteral("Arial"));
@@ -71,6 +95,11 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
         this.setFill(f);
     }
 
+    /**
+     * Build a <code>StyledText</code> from the JAXB element given in argument.
+     * @param sl
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     */
     public StyledText(StyledTextType sl) throws InvalidStyle {
         if (sl.getFill() != null) {
             this.setFill(Fill.createFromJAXBElement(sl.getFill()));
@@ -114,7 +143,8 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
     }
 
     /**
-     * For font, use this.uom, if no -> une parent's one
+     * Tries to retrieve the UOM of the font if any. If non can be found, return the UOM
+     * of the parent node.
      * @return
      */
     public Uom getFontUom() {
@@ -164,10 +194,19 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
         }
     }
 
+    /**
+     * Return the halo associated to this <code>StyledText</code>.
+     * @return 
+     * A <code>Halo</code> instance, or null if it has not been set.
+     */
     public Halo getHalo() {
         return halo;
     }
 
+    /**
+     * Set the halo associated to this <code>StyledText</code>
+     * @param halo 
+     */
     public void setHalo(Halo halo) {
         this.halo = halo;
         if (halo != null) {
@@ -175,10 +214,18 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
         }
     }
 
+    /**
+     * Get the text contained in this <code>StyledText</code>
+     * @return the text contained in this <code>StyledText</code> as a <code>StringParameter</code> instance.
+     */
     public StringParameter getText() {
         return text;
     }
 
+    /**
+     * Set the text contained in this <code>StyledText</code>
+     * @param text 
+     */
     public void setText(StringParameter text) {
         if (text != null) {
             this.text = text;
@@ -198,20 +245,38 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
         }
     }
 
+    /**
+     * Get the font family used to represent this <code>StyledText</code>
+     * @return 
+     * The fontFamily as a <code>StringParameter</code>
+     */
     public StringParameter getFontFamily() {
         return fontFamily;
     }
 
+    /**
+     * Set the font family used to represent this <code>StyledText</code>
+     * @param fontFamily 
+     */
     public void setFontFamily(StringParameter fontFamily) {
         if (fontFamily != null) {
             this.fontFamily = fontFamily;
         }
     }
 
+    /**
+     * Get the font size used to represent this <code>StyledText</code>
+     * @return 
+     * The font size as a <code>RealParameter</code>
+     */
     public RealParameter getFontSize() {
         return fontSize;
     }
 
+    /**
+     * Set the font size used to represent this <code>StyledText</code>
+     * @param fontFamily 
+     */
     public void setFontSize(RealParameter fontSize) {
         this.fontSize = fontSize;
         if (this.fontSize != null) {
@@ -219,10 +284,19 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
         }
     }
 
+    /**
+     * Get the font style used to represent this <code>StyledText</code>
+     * @return 
+     * The font style as a <code>StringParameter</code>
+     */
     public StringParameter getFontStyle() {
         return fontStyle;
     }
 
+    /**
+     * Set the font style used to represent this <code>StyledText</code>
+     * @param fontFamily 
+     */
     public void setFontStyle(StringParameter fontStyle) {
         if (fontStyle != null) {
             this.fontStyle = fontStyle;
@@ -230,10 +304,19 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
         }
     }
 
+    /**
+     * Get the font weight used to represent this <code>StyledText</code>
+     * @return 
+     * The font weight as a <code>StringParameter</code>
+     */
     public StringParameter getFontWeight() {
         return fontWeight;
     }
 
+    /**
+     * Set the font weight used to represent this <code>StyledText</code>
+     * @param fontFamily 
+     */
     public void setFontWeight(StringParameter fontWeight) {
         if (fontWeight != null) {
             this.fontWeight = fontWeight;
@@ -287,8 +370,8 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
 
     public Rectangle2D getBounds(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
             MapTransform mt) throws ParameterException, IOException {
-        String text = this.text.getValue(sds, fid);
-        return getBounds(g2, text, sds, fid, mt);
+        String txt = this.text.getValue(sds, fid);
+        return getBounds(g2, txt, sds, fid, mt);
     }
 
     public Rectangle2D getBounds(Graphics2D g2, String text, SpatialDataSourceDecorator sds, long fid,
@@ -303,8 +386,8 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
 
     public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
             boolean selected, MapTransform mt, AffineTransform at, RenderContext perm) throws ParameterException, IOException {
-        String text = this.text.getValue(sds, fid);
-        draw(g2, text, sds, fid, selected, mt, at, perm);
+        String txt = this.text.getValue(sds, fid);
+        draw(g2, txt, sds, fid, selected, mt, at, perm);
     }
 
     public Shape getOutline(Graphics2D g2, String text, SpatialDataSourceDecorator sds, long fid,
