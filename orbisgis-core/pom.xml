@@ -145,21 +145,10 @@
             <version>1.4.1</version>
         </dependency>
         <dependency>
-            <groupId>ij</groupId>
-            <artifactId>imagej</artifactId>
-            <version>1.43</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.13</version>
             <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>fr.cts</groupId>
-            <artifactId>cts</artifactId>
-            <version>0.0.3</version>
         </dependency>
         <dependency>
             <groupId>org.gdms</groupId>
