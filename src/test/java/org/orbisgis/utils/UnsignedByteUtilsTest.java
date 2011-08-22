@@ -67,6 +67,7 @@ public class UnsignedByteUtilsTest {
                 // signed = unsigned = 32511
                 
                 assertEquals(32511, UnsignedByteUtils.unsignedShortBytesToInt(a));
+                assertEquals(32511, UnsignedByteUtils.unsignedShortToInt((short)32511));
                 
                 byte[] b = new byte[2];
                 b[0] = (byte) 0xEA;
@@ -75,6 +76,7 @@ public class UnsignedByteUtilsTest {
                 // unsigned = 34282
                 
                 assertEquals(34282, UnsignedByteUtils.unsignedShortBytesToInt(b));
+                assertEquals(34282, UnsignedByteUtils.unsignedShortToInt((short)-31254));
         }
         
         public void testUnsignedInt() {
@@ -86,6 +88,7 @@ public class UnsignedByteUtilsTest {
                 // signed = unsigned = 78 000 001
                 
                 assertEquals(78000001, UnsignedByteUtils.unsignedIntBytesToLong(a));
+                assertEquals(78000001, UnsignedByteUtils.unsignedIntToLong(78000001));
                 
                 byte[] b = new byte[4];
                 b[3] = (byte) 0xAC;
@@ -96,5 +99,6 @@ public class UnsignedByteUtilsTest {
                 // unsigned = 2 894 966 426
                 
                 assertEquals(2894966426l, UnsignedByteUtils.unsignedIntBytesToLong(a));
+                assertEquals(2894966426l, UnsignedByteUtils.unsignedIntToLong(-1400000870));
         }
 }
