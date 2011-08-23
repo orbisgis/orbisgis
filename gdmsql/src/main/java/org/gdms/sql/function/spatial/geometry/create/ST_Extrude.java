@@ -41,7 +41,7 @@ import org.gdms.sql.function.FunctionException;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -298,7 +298,7 @@ public final class ST_Extrude extends AbstractTableFunction {
                                         TypeFactory.createType(Type.STRING),
                                         TypeFactory.createType(Type.SHORT),
                                         TypeFactory.createType(Type.GEOMETRY, new Constraint[]{
-                                                ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.POLYGON),
+                                                ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.POLYGON),
                                                 ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, 3)})}, new String[]{
                                         "gid", "shellHoleId", "type", "index", "the_geom"});
                 } catch (InvalidTypeException e) {

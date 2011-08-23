@@ -53,7 +53,7 @@ import org.gdms.data.DigestUtilities;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -661,7 +661,7 @@ public class SQLTest extends SQLBaseTest {
                 final WKTReader wktr = new WKTReader();
                 final GenericObjectDriver driver = new GenericObjectDriver(
                         new String[]{"the_geom"}, new Type[]{TypeFactory.createType(Type.GEOMETRY,
-                                ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.POINT))});
+                                ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.POINT))});
 
                 final String g1 = "POINT (0 0)";
                 driver.addValues(new Value[]{ValueFactory.createValue(wktr.read(g1))});

@@ -56,7 +56,7 @@ import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.Metadata;
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -242,7 +242,7 @@ public final class ST_VectorizeLine extends AbstractTableFunction {
                 return new DefaultMetadata(new Type[]{
                                 TypeFactory.createType(Type.DOUBLE),
                                 TypeFactory.createType(Type.GEOMETRY, ConstraintFactory.createConstraint(
-                                Constraint.GEOMETRY_TYPE, GeometryConstraint.MULTI_LINESTRING),
+                                Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.MULTI_LINESTRING),
                                 ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, 2))},
                         new String[]{"gid", "the_geom"});
         }

@@ -36,7 +36,7 @@
  */
 package org.gdms;
 
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.GeometryTypeConstraint;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -81,19 +81,19 @@ public class Geometries {
 
 	public static Geometry getGeometry(int geometryType, int dimension) {
 		switch (geometryType) {
-		case GeometryConstraint.LINESTRING:
+		case GeometryTypeConstraint.LINESTRING:
 			return getLinestring();
-		case GeometryConstraint.MULTI_LINESTRING:
+		case GeometryTypeConstraint.MULTI_LINESTRING:
 			return getMultilineString();
-		case GeometryConstraint.POINT:
+		case GeometryTypeConstraint.POINT:
 			if (dimension == 2) {
 				return getPoint();
 			} else {
 				return getPoint3D();
 			}
-		case GeometryConstraint.POLYGON:
+		case GeometryTypeConstraint.POLYGON:
 			return getPolygon();
-		case GeometryConstraint.MULTI_POLYGON:
+		case GeometryTypeConstraint.MULTI_POLYGON:
 			return getMultiPolygon2D();
 		default:
 			return getPoint();

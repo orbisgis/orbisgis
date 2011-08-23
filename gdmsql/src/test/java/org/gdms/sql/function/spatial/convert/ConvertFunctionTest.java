@@ -38,7 +38,7 @@ package org.gdms.sql.function.spatial.convert;
 
 import org.junit.Test;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -95,7 +95,7 @@ public class ConvertFunctionTest extends FunctionTest {
 
                 // Test return type
                 Type type = TypeFactory.createType(Type.GEOMETRY,
-                        ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.LINESTRING));
+                        ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.LINESTRING));
                 type = evaluate(function, type);
                 assertEquals(type.getTypeCode(), Type.GEOMETRY);
                 assertEquals(type.getIntConstraint(Constraint.GEOMETRY_DIMENSION), 2);
@@ -145,7 +145,7 @@ public class ConvertFunctionTest extends FunctionTest {
 
                 // Test return type
                 Type type = TypeFactory.createType(Type.GEOMETRY,
-                        ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.LINESTRING));
+                        ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.LINESTRING));
                 type = evaluate(function, type);
                 assertEquals(type.getTypeCode(), Type.GEOMETRY);
                 assertEquals(type.getIntConstraint(Constraint.GEOMETRY_DIMENSION), 3);
@@ -194,7 +194,7 @@ public class ConvertFunctionTest extends FunctionTest {
 
                 // Test return type
                 Type type = TypeFactory.createType(Type.GEOMETRY,
-                        ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.LINESTRING),
+                        ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.LINESTRING),
                         ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, 3));
                 type = evaluate(function, type);
                 assertEquals(type.getTypeCode(), Type.GEOMETRY);

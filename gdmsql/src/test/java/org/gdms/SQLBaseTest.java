@@ -24,7 +24,7 @@ import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.DimensionConstraint;
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.data.types.IncompatibleTypesException;
@@ -312,7 +312,7 @@ public abstract class SQLBaseTest extends SourceTest<Value, Geometry> {
                                                         break;
                                                 case Type.GEOMETRY:
                                                         spatialField = fieldName;
-                                                        GeometryConstraint c = (GeometryConstraint) fieldType.getConstraint(Constraint.GEOMETRY_TYPE);
+                                                        GeometryTypeConstraint c = (GeometryTypeConstraint) fieldType.getConstraint(Constraint.GEOMETRY_TYPE);
                                                         if (c != null) {
                                                                 geometryType = c.getGeometryType();
                                                         }
