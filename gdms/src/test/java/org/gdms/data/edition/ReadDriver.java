@@ -70,6 +70,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import org.gdms.data.schema.DefaultSchema;
 import org.gdms.data.types.ConstraintFactory;
+import org.gdms.driver.AbstractDataSet;
 
 public class ReadDriver extends DefaultDBDriver implements ObjectDriver,
         FileDriver, DBDriver {
@@ -326,7 +327,7 @@ public class ReadDriver extends DefaultDBDriver implements ObjectDriver,
                 if (!name.equals("main")) {
                         return null;
                 }
-                return new DataSet() {
+                return new AbstractDataSet() {
 
                         @Override
                         public Value getFieldValue(long rowIndex, int fieldId)

@@ -257,4 +257,15 @@ public final class GdmsDriver extends GDMSModelDriver implements FileReadWriteDr
         public File getFile() {
                 return file;
         }
+
+        @Override
+        public Value[] getRow(long rowIndex) throws DriverException {
+                Value[] ret = new Value[getMetadata().getFieldCount()];
+
+                for (int i = 0; i < ret.length; i++) {
+                        ret[i] = getFieldValue(rowIndex, i);
+                }
+
+                return ret;
+        }
 }

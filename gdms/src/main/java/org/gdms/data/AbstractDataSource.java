@@ -50,6 +50,7 @@ import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.data.types.IncompatibleTypesException;
+import org.gdms.driver.AbstractDataSet;
 
 /**
  * Contains the DataSource methods that are executed by calling other DataSource
@@ -57,21 +58,7 @@ import org.gdms.data.types.IncompatibleTypesException;
  * 
  * 
  */
-public abstract class AbstractDataSource implements DataSource {
-
-        /**
-         * @see org.gdms.data.DataSource#getRow(long)
-         */
-        @Override
-        public Value[] getRow(long rowIndex) throws DriverException {
-                Value[] ret = new Value[getMetadata().getFieldCount()];
-
-                for (int i = 0; i < ret.length; i++) {
-                        ret[i] = getFieldValue(rowIndex, i);
-                }
-
-                return ret;
-        }
+public abstract class AbstractDataSource extends AbstractDataSet implements DataSource {
 
         /**
          * This method select the rows in the datasource where the value at fieldId match value

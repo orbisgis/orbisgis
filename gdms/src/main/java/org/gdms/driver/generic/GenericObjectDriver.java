@@ -280,4 +280,15 @@ public class GenericObjectDriver extends GDMSModelDriver implements
         public Metadata getMetadata() throws DriverException {
                 return schema.getTableByName("main");
         }
+
+        @Override
+        public Value[] getRow(long rowIndex) throws DriverException {
+                Value[] ret = new Value[getMetadata().getFieldCount()];
+
+                for (int i = 0; i < ret.length; i++) {
+                        ret[i] = getFieldValue(rowIndex, i);
+                }
+
+                return ret;
+        }
 }

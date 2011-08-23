@@ -70,12 +70,13 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.DefaultSchema;
+import org.gdms.driver.AbstractDataSet;
 
 /**
  * CSV file driver where the first row is used to define the field names
  * 
  */
-public final class CSVDriver implements FileReadWriteDriver, ValueWriter, DataSet {
+public final class CSVDriver extends AbstractDataSet implements FileReadWriteDriver, ValueWriter {
 
         public static final String DRIVER_NAME = "csv";
         private static final char FIELD_SEPARATOR = ';';

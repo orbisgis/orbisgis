@@ -606,4 +606,15 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DataSet {
         public Metadata getMetadata() throws DriverException {
                 return schema.getTableByName(tableName);
         }
+
+        @Override
+        public Value[] getRow(long rowIndex) throws DriverException {
+                Value[] ret = new Value[getMetadata().getFieldCount()];
+
+                for (int i = 0; i < ret.length; i++) {
+                        ret[i] = getFieldValue(rowIndex, i);
+                }
+
+                return ret;
+        }
 }

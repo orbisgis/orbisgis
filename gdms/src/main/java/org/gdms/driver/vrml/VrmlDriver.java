@@ -37,6 +37,7 @@
  */
 package org.gdms.driver.vrml;
 
+import com.vividsolutions.jts.awt.PointShapeFactory.X;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -73,12 +74,13 @@ import org.apache.log4j.Logger;
 import org.gdms.data.schema.DefaultSchema;
 import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.data.schema.SchemaMetadata;
+import org.gdms.driver.AbstractDataSet;
 
 /**
  * @author Thomas LEDUC
  * 
  */
-public final class VrmlDriver implements FileReadWriteDriver, DataSet {
+public final class VrmlDriver extends AbstractDataSet implements FileReadWriteDriver {
 
         private Scanner in;
         private PrintWriter out;
@@ -325,7 +327,7 @@ public final class VrmlDriver implements FileReadWriteDriver, DataSet {
         public void setFile(File file) {
                 this.file = file;
         }
-        
+
         @Override
         public boolean isOpen() {
                 // once .open() is called, the content of rows

@@ -10,12 +10,13 @@ import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.Schema;
 import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.values.Value;
+import org.gdms.driver.AbstractDataSet;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.DataSet;
 import org.gdms.source.SourceManager;
 
-public final class DXFDriver implements FileDriver, DataSet {
+public final class DXFDriver extends AbstractDataSet implements FileDriver {
 
         private DataSet result;
         private static final Logger LOG = Logger.getLogger(DXFDriver.class);

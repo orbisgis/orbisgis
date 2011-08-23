@@ -40,6 +40,7 @@ import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.values.Value;
+import org.gdms.driver.AbstractDataSet;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.DataSet;
 import org.gdms.sql.function.FunctionSignature;
@@ -54,7 +55,7 @@ public class FieldReferenceQuery extends AbstractTableFunction {
 
         public DataSet evaluate(SQLDataSourceFactory dsf, DataSet[] tables,
                 Value[] values, ProgressMonitor pm) {
-                return new DataSet() {
+                return new AbstractDataSet() {
 
                         @Override
                         public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {

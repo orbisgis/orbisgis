@@ -98,4 +98,17 @@ public interface DataSet {
          * @throws DriverException
          */
         Metadata getMetadata() throws DriverException;
+
+        /**
+         * Gets the value of all fields at the specified row
+         *
+         * @param rowIndex
+         * index of the row to be retrieved
+         *
+         * @return Value[]
+         *
+         * @throws DriverException
+         * If the access fails
+         */
+        Value[] getRow(long rowIndex) throws DriverException;
 }

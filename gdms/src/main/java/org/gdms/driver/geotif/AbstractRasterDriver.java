@@ -64,11 +64,12 @@ import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.data.schema.Schema;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.ConstraintFactory;
+import org.gdms.driver.AbstractDataSet;
 import org.gdms.driver.DataSet;
 import org.orbisgis.wkt.parser.PRJUtils;
 import org.orbisgis.wkt.parser.ParseException;
 
-public abstract class AbstractRasterDriver implements FileReadWriteDriver, DataSet {
+public abstract class AbstractRasterDriver extends AbstractDataSet implements FileReadWriteDriver {
 
         protected GeoRaster geoRaster;
         protected RasterMetadata metadata;

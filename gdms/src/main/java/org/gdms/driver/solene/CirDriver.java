@@ -36,6 +36,7 @@
  */
 package org.gdms.driver.solene;
 
+import com.vividsolutions.jts.awt.PointShapeFactory.X;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -78,8 +79,9 @@ import org.gdms.data.schema.DefaultSchema;
 import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.data.schema.SchemaMetadata;
 import org.gdms.data.types.ConstraintFactory;
+import org.gdms.driver.AbstractDataSet;
 
-public final class CirDriver implements FileReadWriteDriver, DataSet {
+public final class CirDriver extends AbstractDataSet implements FileReadWriteDriver {
 
         public static final String DRIVER_NAME = "Solene Cir driver";
         private static final String EXTENSION = "cir";

@@ -51,6 +51,7 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.AbstractDataSet;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.DataSet;
@@ -245,7 +246,7 @@ public class AllTypesObjectDriver implements ObjectDriver {
                 if (!name.equals("main")) {
                         return null;
                 }
-                return new DataSet() {
+                return new AbstractDataSet() {
 
                         @Override
                         public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {

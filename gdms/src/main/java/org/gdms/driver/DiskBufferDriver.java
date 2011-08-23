@@ -206,7 +206,7 @@ public class DiskBufferDriver implements ObjectDriver {
         @Override
         public DataSet getTable(String name) {
                 if (name.equals("main")) {
-                        return new DataSet() {
+                        return new AbstractDataSet() {
 
                                 @Override
                                 public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {

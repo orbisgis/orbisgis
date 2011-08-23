@@ -36,6 +36,7 @@
  */
 package org.gdms.data;
 
+import org.gdms.driver.AbstractDataSet;
 import org.junit.Test;
 import java.io.File;
 
@@ -256,7 +257,7 @@ public class DataSourceTest extends TestBase {
                                 if (!name.equals("main")) {
                                         return null;
                                 }
-                                return new DataSet() {
+                                return new AbstractDataSet() {
 
                                         @Override
                                         public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {

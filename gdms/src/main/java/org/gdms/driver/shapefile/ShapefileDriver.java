@@ -83,12 +83,13 @@ import org.apache.log4j.Logger;
 import org.gdms.data.schema.DefaultSchema;
 import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.data.types.ConstraintFactory;
+import org.gdms.driver.AbstractDataSet;
 import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.driverManager.DriverManager;
 import org.orbisgis.wkt.parser.PRJUtils;
 import org.orbisgis.wkt.parser.ParseException;
 
-public final class ShapefileDriver implements FileReadWriteDriver, DataSet {
+public final class ShapefileDriver extends AbstractDataSet implements FileReadWriteDriver {
 
         public static final String DRIVER_NAME = "Shapefile driver";
         private static final GeometryFactory GF = new GeometryFactory();

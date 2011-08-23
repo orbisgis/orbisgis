@@ -56,6 +56,7 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
+import org.gdms.driver.AbstractDataSet;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.driver.DataSet;
@@ -63,7 +64,7 @@ import org.gdms.source.SourceManager;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 
-public final class DBFDriver implements FileReadWriteDriver, DataSet {
+public final class DBFDriver extends AbstractDataSet implements FileReadWriteDriver {
 
         public static final String STRING = "String";
         public static final String DOUBLE = "Double";

@@ -57,12 +57,13 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.AbstractDataSet;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.DataSet;
 import org.gdms.source.SourceManager;
 
-public final class ValDriver implements FileDriver, DataSet {
+public final class ValDriver extends AbstractDataSet implements FileDriver {
 
         public static final String DRIVER_NAME = "Solene Val driver";
         private static final String EXTENSION = "val";
