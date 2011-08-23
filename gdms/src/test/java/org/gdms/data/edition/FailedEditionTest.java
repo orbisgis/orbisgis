@@ -44,7 +44,6 @@ import org.gdms.TestBase;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NonEditableDataSourceException;
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.indexes.DefaultSpatialIndexQuery;
 import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.object.ObjectSourceDefinition;
@@ -100,9 +99,9 @@ public class FailedEditionTest extends TestBase {
 
         @Test
         public void testSpatialObjectfailedCommit() throws Exception {
-                SpatialDataSourceDecorator ds = new SpatialDataSourceDecorator(dsf.getDataSource("object"));
+                DataSource ds = dsf.getDataSource("object");
                 ds.open();
-                failedCommit(ds, new DefaultSpatialIndexQuery(ds.getFullExtent(),
+                failedCommit(dsf.getDataSource("object"), new DefaultSpatialIndexQuery(ds.getFullExtent(),
                         SPATIAL_FIELD_NAME));
         }
 
@@ -123,7 +122,7 @@ public class FailedEditionTest extends TestBase {
 
         @Test
         public void testSpatialDBfailedOnWrite() throws Exception {
-                SpatialDataSourceDecorator ds = new SpatialDataSourceDecorator(dsf.getDataSource("executeDB"));
+                DataSource ds = dsf.getDataSource("executeDB");
                 ds.open();
                 ReadDriver.setCurrentDataSource(ds);
                 failedCommit(ds, new DefaultSpatialIndexQuery(ds.getFullExtent(),

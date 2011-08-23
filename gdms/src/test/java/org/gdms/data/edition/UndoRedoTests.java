@@ -42,7 +42,6 @@ import org.gdms.TestBase;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.DigestUtilities;
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.values.Value;
 
@@ -151,7 +150,7 @@ public class UndoRedoTests extends TestBase {
                 d.close();
         }
 
-        private void testSpatialModifyUndoRedo(SpatialDataSourceDecorator d)
+        private void testSpatialModifyUndoRedo(DataSource d)
                 throws Exception {
                 Value v2 = d.getFieldValue(1, 0);
                 Value v1 = d.getFieldValue(0, 0);
@@ -171,8 +170,7 @@ public class UndoRedoTests extends TestBase {
                         "big",
                         new FileSourceCreation(new File(TestBase.internalData
                         + "hedgerow.shp"), null));
-                SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf.getDataSource("big",
-                        DataSourceFactory.EDITABLE));
+                DataSource d = dsf.getDataSource("big", DataSourceFactory.EDITABLE);
 
                 d.open();
                 testSpatialModifyUndoRedo(d);
@@ -181,7 +179,7 @@ public class UndoRedoTests extends TestBase {
                 d.close();
         }
 
-        private void testSpatialDeleteUndoRedo(SpatialDataSourceDecorator d)
+        private void testSpatialDeleteUndoRedo(DataSource d)
                 throws Exception {
                 long rc = d.getRowCount();
                 Value v1 = d.getFieldValue(1, 0);
@@ -203,8 +201,7 @@ public class UndoRedoTests extends TestBase {
                         "big",
                         new FileSourceCreation(new File(TestBase.internalData
                         + "hedgerow.shp"), null));
-                SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf.getDataSource("big",
-                        DataSourceFactory.EDITABLE));
+                DataSource d = dsf.getDataSource("big", DataSourceFactory.EDITABLE);
 
                 d.open();
                 testSpatialDeleteUndoRedo(d);
@@ -213,7 +210,7 @@ public class UndoRedoTests extends TestBase {
                 d.close();
         }
 
-        private void testSpatialInsertUndoRedo(SpatialDataSourceDecorator d)
+        private void testSpatialInsertUndoRedo(DataSource d)
                 throws Exception {
                 long rc = d.getRowCount();
                 d.insertEmptyRow();
@@ -232,8 +229,7 @@ public class UndoRedoTests extends TestBase {
                         "big",
                         new FileSourceCreation(new File(TestBase.internalData
                         + "hedgerow.shp"), null));
-                SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf.getDataSource("big",
-                        DataSourceFactory.EDITABLE));
+                DataSource d = dsf.getDataSource("big", DataSourceFactory.EDITABLE);
 
                 d.open();
                 testSpatialInsertUndoRedo(d);
@@ -318,8 +314,7 @@ public class UndoRedoTests extends TestBase {
                         "big",
                         new FileSourceCreation(new File(TestBase.internalData
                         + "hedgerow.shp"), null));
-                SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf.getDataSource("big",
-                        DataSourceFactory.EDITABLE));
+                DataSource d = dsf.getDataSource("big", DataSourceFactory.EDITABLE);
 
                 d.open();
                 Value[] row = d.getRow(0);
@@ -339,8 +334,7 @@ public class UndoRedoTests extends TestBase {
                         "big",
                         new FileSourceCreation(new File(TestBase.internalData
                         + "hedgerow.shp"), null));
-                SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf.getDataSource("big",
-                        DataSourceFactory.EDITABLE));
+                DataSource d = dsf.getDataSource("big", DataSourceFactory.EDITABLE);
 
                 d.open();
                 int ri = (int) d.getRowCount();

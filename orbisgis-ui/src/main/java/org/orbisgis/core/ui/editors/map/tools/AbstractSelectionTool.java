@@ -70,7 +70,6 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Iterator;
 
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.indexes.DefaultSpatialIndexQuery;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
@@ -86,6 +85,7 @@ import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import org.gdms.data.DataSource;
 
 /**
  * Tool to select geometries
@@ -146,7 +146,7 @@ public abstract class AbstractSelectionTool extends Selection {
                 Geometry selectionRect = p.getEnvelope(ToolManager.toolsGeometryFactory);
 
                 ILayer activeLayer = getLayer(mc);
-                SpatialDataSourceDecorator ds = activeLayer.getSpatialDataSource();
+                DataSource ds = activeLayer.getSpatialDataSource();
                 try {
                         Iterator<Integer> l = queryLayer(activeLayer.getSpatialDataSource(), p);
                         while (l.hasNext()) {
@@ -186,7 +186,7 @@ public abstract class AbstractSelectionTool extends Selection {
 
         protected abstract ILayer getLayer(MapContext mc);
 
-        private Iterator<Integer> queryLayer(SpatialDataSourceDecorator ds,
+        private Iterator<Integer> queryLayer(DataSource ds,
                 Rectangle2DDouble rect) throws DriverException {
                 String geomFieldName = ds.getMetadata().getFieldName(
                         ds.getSpatialFieldIndex());
@@ -220,7 +220,7 @@ public abstract class AbstractSelectionTool extends Selection {
 
                 Geometry selectionRect = rect.getEnvelope(ToolManager.toolsGeometryFactory);
 
-                SpatialDataSourceDecorator ds = activeLayer.getSpatialDataSource();
+                DataSource ds = activeLayer.getSpatialDataSource();
                 try {
                         ArrayList<Integer> newSelection = new ArrayList<Integer>();
                         Iterator<Integer> l = queryLayer(ds, rect);

@@ -72,7 +72,6 @@ import javax.swing.JPopupMenu;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceListener;
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.edition.EditionEvent;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MultipleEditionEvent;
@@ -703,7 +702,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
                         return;
                 }
 
-                SpatialDataSourceDecorator sds = activeLayer.getSpatialDataSource();
+                DataSource sds = activeLayer.getSpatialDataSource();
                 int[] selection = activeLayer.getSelection();
                 try {
                         for (int selectedRow : selection) {

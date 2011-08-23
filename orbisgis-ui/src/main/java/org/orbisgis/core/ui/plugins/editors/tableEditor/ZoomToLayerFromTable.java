@@ -38,7 +38,6 @@
 
 package org.orbisgis.core.ui.plugins.editors.tableEditor;
 
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
@@ -59,6 +58,7 @@ import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Envelope;
+import org.gdms.data.DataSource;
 
 public class ZoomToLayerFromTable extends AbstractPlugIn {
 
@@ -73,8 +73,7 @@ public class ZoomToLayerFromTable extends AbstractPlugIn {
 			public void run(ProgressMonitor pm) {
 				try {
 
-					SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
-							element.getDataSource());
+					DataSource sds = element.getDataSource();
 
 					Envelope rect = sds.getFullExtent();
 

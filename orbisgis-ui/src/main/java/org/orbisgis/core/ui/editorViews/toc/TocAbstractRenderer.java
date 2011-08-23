@@ -42,7 +42,7 @@ import java.io.IOException;
 
 import javax.swing.Icon;
 
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryConstraint;
@@ -62,7 +62,7 @@ public abstract class TocAbstractRenderer {
 			if (layer.isWMS()) {
 				return OrbisGISIcon.SERVER_CONNECT;
 			} else {
-				SpatialDataSourceDecorator dataSource = layer.getSpatialDataSource();
+				DataSource dataSource = layer.getSpatialDataSource();
 				if (!dataSource.isOpen()) {
 					return null;
 				}

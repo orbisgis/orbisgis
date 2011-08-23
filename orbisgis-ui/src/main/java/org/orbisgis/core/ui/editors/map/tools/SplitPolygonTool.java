@@ -47,7 +47,8 @@ import java.util.List;
 import java.util.Observable;
 
 import javax.swing.AbstractButton;
-import org.gdms.data.SpatialDataSourceDecorator;
+
+import org.gdms.data.DataSource;
 
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
@@ -97,7 +98,7 @@ public class SplitPolygonTool extends AbstractLineTool {
         @Override
         protected void lineDone(LineString ls, MapContext vc, ToolManager tm) throws TransitionException {
                 Handler handler = tm.getCurrentHandlers().get(0);
-                SpatialDataSourceDecorator sds = vc.getActiveLayer().getSpatialDataSource();
+                DataSource sds = vc.getActiveLayer().getSpatialDataSource();
                 try {
                         Geometry geom = sds.getGeometry(handler.getGeometryIndex());
                         if (ToolUtilities.geometryTypeIs(vc, GeometryConstraint.MULTI_POLYGON)) {

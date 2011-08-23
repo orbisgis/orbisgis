@@ -94,10 +94,10 @@ public class LayerModelTest extends AbstractTest {
                         lc = (ILayer) layer;
                         lc.getChildren();
                 } else {
-                        if (layer.getSpatialDataSource().isDefaultRaster()) {
+                        if (layer.getSpatialDataSource().isRaster()) {
                                 GeoRaster fc = layer.getSpatialDataSource().getRaster(0);
                                 assertNotNull(fc);
-                        } else if (layer.getSpatialDataSource().isDefaultVectorial()) {
+                        } else if (layer.getSpatialDataSource().isVectorial()) {
                                 DataSource fc = layer.getSpatialDataSource();
                                 assertNotNull(fc);
                         }

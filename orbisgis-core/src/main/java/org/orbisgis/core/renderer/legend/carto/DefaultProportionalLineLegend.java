@@ -43,7 +43,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
@@ -68,6 +67,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
+import org.gdms.data.DataSource;
 import org.gdms.data.types.IncompatibleTypesException;
 
 public class DefaultProportionalLineLegend extends AbstractCartoLegend
@@ -110,7 +110,7 @@ public class DefaultProportionalLineLegend extends AbstractCartoLegend
 	}
 
 	@Override
-	public void preprocess(SpatialDataSourceDecorator sds)
+	public void preprocess(DataSource sds)
 			throws RenderException, ClassificationMethodException {
 		proportionnalMethod = new ProportionalMethod(sds, field);
 		proportionnalMethod.setMethod(method);
@@ -123,7 +123,7 @@ public class DefaultProportionalLineLegend extends AbstractCartoLegend
 		}
 	}
 
-	public Symbol getSymbol(SpatialDataSourceDecorator sds, long row)
+	public Symbol getSymbol(DataSource sds, long row)
 			throws RenderException {
 		try {
 			// TODO what's the use of this variable

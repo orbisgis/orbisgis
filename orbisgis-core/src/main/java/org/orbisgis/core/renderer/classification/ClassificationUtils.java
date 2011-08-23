@@ -39,7 +39,6 @@ package org.orbisgis.core.renderer.classification;
 import java.util.Arrays;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
 
@@ -52,7 +51,7 @@ public class ClassificationUtils {
 		if (GeometryProperties.isFieldName(fieldName)) {
 			for (int i = 0; i < values.length; i++) {
 				values[i] = GeometryProperties.getPropertyValue(fieldName,
-						new SpatialDataSourceDecorator(ds).getGeometry(i))
+						ds.getGeometry(i))
 						.getAsDouble();
 			}
 		} else {

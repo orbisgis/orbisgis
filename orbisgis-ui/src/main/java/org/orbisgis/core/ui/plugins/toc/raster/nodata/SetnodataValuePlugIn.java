@@ -40,7 +40,7 @@ import ij.ImagePlus;
 
 import java.io.IOException;
 
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
 import org.orbisgis.core.Services;
@@ -64,7 +64,7 @@ public class SetnodataValuePlugIn extends AbstractPlugIn {
 	public boolean accepts(MapContext mc, ILayer layer) {
 		try {
 			if (layer.isRaster()) {
-				SpatialDataSourceDecorator ds = layer.getSpatialDataSource();
+				DataSource ds = layer.getSpatialDataSource();
 				if (ds.getRaster(0).getType() != ImagePlus.COLOR_RGB) {
 					return true;
 				}

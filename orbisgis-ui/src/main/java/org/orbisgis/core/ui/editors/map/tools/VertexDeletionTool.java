@@ -43,11 +43,9 @@ import java.util.Observable;
 
 import javax.swing.AbstractButton;
 
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.core.ui.editors.map.tool.CannotChangeGeometryException;
 import org.orbisgis.core.ui.editors.map.tool.DrawingException;
 import org.orbisgis.core.ui.editors.map.tool.FinishedAutomatonException;
 import org.orbisgis.core.ui.editors.map.tool.Handler;
@@ -58,6 +56,7 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Geometry;
+import org.gdms.data.DataSource;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.geometryUtils.GeometryException;
 
@@ -90,7 +89,7 @@ public class VertexDeletionTool extends VertexDeletion {
                 Point2D p = tm.getLastRealMousePosition();
                 ArrayList<Handler> handlers = tm.getCurrentHandlers();
                 ILayer activeLayer = mc.getActiveLayer();
-                SpatialDataSourceDecorator sds = activeLayer.getSpatialDataSource();
+                DataSource sds = activeLayer.getSpatialDataSource();
 
                 for (Handler handler : handlers) {
                         if (p.distance(handler.getPoint()) < tm.getTolerance()) {

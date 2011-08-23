@@ -63,7 +63,6 @@ import java.util.Observable;
 
 import javax.swing.AbstractButton;
 
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
@@ -76,6 +75,7 @@ import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
+import org.gdms.data.DataSource;
 
 public class PointTool extends AbstractPointTool {
 
@@ -113,7 +113,7 @@ public class PointTool extends AbstractPointTool {
 					.createMultiPoint(new Point[] { point });
 		}
 
-		SpatialDataSourceDecorator sds = mc.getActiveLayer().getSpatialDataSource();
+		DataSource sds = mc.getActiveLayer().getSpatialDataSource();
 		try {
 			Value[] row = new Value[sds.getMetadata().getFieldCount()];
                         g.setSRID(sds.getSRID());

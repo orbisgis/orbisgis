@@ -36,6 +36,8 @@
  */
 package org.gdms.data;
 
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -44,13 +46,17 @@ import java.util.List;
 
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.MetadataUtilities;
+import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.data.types.IncompatibleTypesException;
+import org.gdms.data.types.SRIDConstraint;
 import org.gdms.driver.AbstractDataSet;
+import org.gdms.driver.DriverUtilities;
+import org.grap.model.GeoRaster;
 
 /**
  * Contains the DataSource methods that are executed by calling other DataSource
@@ -59,6 +65,8 @@ import org.gdms.driver.AbstractDataSet;
  * 
  */
 public abstract class AbstractDataSource extends AbstractDataSet implements DataSource {
+
+        private int spatialFieldIndex = -1;
 
         /**
          * This method select the rows in the datasource where the value at fieldId match value
@@ -525,5 +533,74 @@ public abstract class AbstractDataSource extends AbstractDataSet implements Data
         @Override
         public void printStack() {
                 System.out.println("<" + this.getClass().getName() + "/>");
+        }
+
+        @Override
+        public Envelope getFullExtent() throws DriverException {
+                return DriverUtilities.getFullExtent(this);
+        }
+
+        @Override
+        public GeoRaster getRaster(long rowIndex) throws DriverException {
+                Value fieldValue = getFieldValue(rowIndex,
+                        getSpatialFieldIndex());
+                if (fieldValue.isNull()) {
+                        return null;
+                } else {
+                        return fieldValue.getAsRaster();
+                }
+        }
+
+        @Override
+        public Geometry getGeometry(long rowIndex) throws DriverException {
+                Value fieldValue = getFieldValue(rowIndex,
+                        getSpatialFieldIndex());
+                if (fieldValue.isNull()) {
+                        return null;
+                } else {
+                        return fieldValue.getAsGeometry();
+                }
+        }
+
+        @Override
+        public int getSpatialFieldIndex() throws DriverException {
+                if (spatialFieldIndex == -1) {
+                        spatialFieldIndex = MetadataUtilities.getSpatialFieldIndex(getMetadata());
+                }
+                return spatialFieldIndex;
+        }
+
+        @Override
+        public void setDefaultSpatialFieldName(String fieldName) throws DriverException {
+                final int tmpSpatialFieldIndex = getFieldIndexByName(fieldName);
+                if (-1 == tmpSpatialFieldIndex) {
+                        throw new DriverException(fieldName + " is not a field !");
+                } else {
+                        int fieldType = getMetadata().getFieldType(tmpSpatialFieldIndex).getTypeCode();
+                        if ((fieldType == Type.GEOMETRY) || (fieldType == Type.RASTER)) {
+                                spatialFieldIndex = tmpSpatialFieldIndex;
+                        } else {
+                                throw new DriverException(fieldName
+                                        + " is not a spatial field !");
+                        }
+                }
+        }
+
+        @Override
+        public void setGeometry(long rowIndex, Geometry geom)
+                throws DriverException {
+                setFieldValue(rowIndex, getSpatialFieldIndex(), ValueFactory.createValue(geom));
+        }
+
+        @Override
+        public boolean isVectorial() throws DriverException {
+                Type fieldType = getMetadata().getFieldType(getSpatialFieldIndex());
+                return fieldType.getTypeCode() == Type.GEOMETRY;
+        }
+
+        @Override
+        public boolean isRaster() throws DriverException {
+                Type fieldType = getMetadata().getFieldType(getSpatialFieldIndex());
+                return fieldType.getTypeCode() == Type.RASTER;
         }
 }

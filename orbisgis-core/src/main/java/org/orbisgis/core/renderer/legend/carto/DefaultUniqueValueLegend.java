@@ -40,7 +40,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -55,6 +54,7 @@ import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.renderer.symbol.SymbolManager;
 
 import com.vividsolutions.jts.geom.Geometry;
+import org.gdms.data.DataSource;
 
 public class DefaultUniqueValueLegend extends AbstractClassifiedLegend
 		implements UniqueValueLegend {
@@ -72,7 +72,7 @@ public class DefaultUniqueValueLegend extends AbstractClassifiedLegend
 		return values.indexOf(value);
 	}
 
-	public Symbol getSymbol(SpatialDataSourceDecorator sds, long row)
+	public Symbol getSymbol(DataSource sds, long row)
 			throws RenderException {
 		try {
 			int fieldIndex = sds.getFieldIndexByName(getClassificationField());

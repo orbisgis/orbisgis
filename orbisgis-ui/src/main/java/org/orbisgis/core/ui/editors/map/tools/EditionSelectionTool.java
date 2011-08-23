@@ -6,7 +6,7 @@ import java.awt.geom.Point2D;
 import java.util.Observable;
 
 import javax.swing.AbstractButton;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 
 import org.orbisgis.core.layerModel.ILayer;
@@ -64,7 +64,7 @@ public class EditionSelectionTool extends AbstractSelectionTool {
         @Override
         public void transitionTo_MakeMove(MapContext mc, ToolManager tm)
                 throws TransitionException, FinishedAutomatonException {
-                SpatialDataSourceDecorator ds = getLayer(mc).getSpatialDataSource();
+                DataSource ds = getLayer(mc).getSpatialDataSource();
                 for (int i = 0; i < selected.size(); i++) {
                         Handler handler = selected.get(i);
                         Geometry g;

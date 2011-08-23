@@ -485,4 +485,9 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
         public String getDriverTableName() {
                 return internalDataSource.getDriverTableName();
         }
+
+        @Override
+        public int getSRID() throws DriverException {
+                return internalDataSource.getSRID();
+        }
 }

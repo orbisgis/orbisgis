@@ -62,7 +62,6 @@ import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSourceIterator;
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.indexes.DefaultSpatialIndexQuery;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
@@ -90,6 +89,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
+import org.gdms.data.DataSource;
 
 public class Renderer {
 
@@ -164,13 +164,13 @@ public class Renderer {
 								.getWMSConnection().getClient(), status);
 						drawWMS(g2, width, height, extent, conn);
 					} else {
-						SpatialDataSourceDecorator sds = layer.getSpatialDataSource();
+						DataSource sds = layer.getSpatialDataSource();
 						if (sds != null) {
 							try {
-								if (sds.isDefaultVectorial()) {
+								if (sds.isVectorial()) {
 									drawVectorLayer(mt, layer, g2, width,
 											height, extent, permission, pm);
-								} else if (sds.isDefaultRaster()) {
+								} else if (sds.isRaster()) {
 									try {
 										drawRasterLayer(mt, layer, g2, width,
 												height, extent, pm);
@@ -307,7 +307,7 @@ public class Renderer {
 			throws DriverException {
 
 		Legend[] legends = layer.getRenderingLegend();
-		SpatialDataSourceDecorator sds = layer.getSpatialDataSource();
+		DataSource sds = layer.getSpatialDataSource();
 
 		try {
 
@@ -404,7 +404,7 @@ public class Renderer {
 	}
 
 	private Iterator<Integer> getIterator(Envelope adjustedExtent,
-			SpatialDataSourceDecorator sds) throws DriverException {
+			DataSource sds) throws DriverException {
 		if (adjustedExtent.equals(sds.getFullExtent())) {
 			return new DataSourceIterator(sds);
 		} else {

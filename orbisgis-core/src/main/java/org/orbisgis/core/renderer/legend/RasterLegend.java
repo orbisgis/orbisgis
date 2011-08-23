@@ -44,7 +44,7 @@ import java.awt.Image;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.ColorModel;
 
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.grap.lut.LutDisplay;
 import org.orbisgis.core.renderer.symbol.Symbol;
 
@@ -86,7 +86,7 @@ public class RasterLegend extends AbstractLegend implements Legend {
 		return 1;
 	}
 
-	public Symbol getSymbol(SpatialDataSourceDecorator sds, long row)
+	public Symbol getSymbol(DataSource sds, long row)
 			throws RenderException {
 		return null;
 	}

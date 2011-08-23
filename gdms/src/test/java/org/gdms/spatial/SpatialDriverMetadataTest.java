@@ -40,7 +40,6 @@ import org.junit.Test;
 import org.junit.Before;
 import org.gdms.TestBase;
 import org.gdms.data.DataSource;
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -66,7 +65,7 @@ public class SpatialDriverMetadataTest extends TestBase {
         }
 
         private void testHasSpatialField(String dsName) throws Exception {
-                SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(dsf.getDataSource(dsName));
+                DataSource sds = dsf.getDataSource(dsName);
                 sds.open();
                 Metadata sdm = sds.getMetadata();
                 boolean has = false;
@@ -82,26 +81,6 @@ public class SpatialDriverMetadataTest extends TestBase {
         }
 
         @Test
-        public void testSeveralGeometriesInOneSource() throws Exception {
-                DataSource ds = dsf.getDataSource(new SeveralSpatialFieldsDriver(), "main");
-                SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
-                sds.open();
-                sds.setDefaultGeometry("geom1");
-                assertTrue(sds.getGeometry(0).equals(sds.getGeometry("geom1", 0)));
-                assertFalse(sds.getGeometry(0).equals(sds.getGeometry("geom2", 0)));
-                assertFalse(sds.getGeometry(0).equals(sds.getGeometry("geom3", 0)));
-                sds.setDefaultGeometry("geom2");
-                assertFalse(sds.getGeometry(0).equals(sds.getGeometry("geom1", 0)));
-                assertTrue(sds.getGeometry(0).equals(sds.getGeometry("geom2", 0)));
-                assertFalse(sds.getGeometry(0).equals(sds.getGeometry("geom3", 0)));
-                sds.setDefaultGeometry("geom3");
-                assertFalse(sds.getGeometry(0).equals(sds.getGeometry("geom1", 0)));
-                assertFalse(sds.getGeometry(0).equals(sds.getGeometry("geom2", 0)));
-                assertTrue(sds.getGeometry(0).equals(sds.getGeometry("geom3", 0)));
-                sds.close();
-        }
-
-        @Test
         public void testFullExtentWhenDriverDoesntProvideIt() throws Exception {
                 GenericObjectDriver driver = new GenericObjectDriver(
                         new String[]{"geom"}, new Type[]{TypeFactory.createType(Type.GEOMETRY)});
@@ -112,10 +91,9 @@ public class SpatialDriverMetadataTest extends TestBase {
                                 gf.createPoint(new Coordinate(13450, 120)),});
                 driver.addValues(new Value[]{ValueFactory.createValue(geom)});
                 DataSource ds = dsf.getDataSource(driver, "main");
-                SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
-                sds.open();
-                assertEquals(geom.getEnvelopeInternal(), sds.getFullExtent());
-                sds.close();
+                ds.open();
+                assertEquals(geom.getEnvelopeInternal(), ds.getFullExtent());
+                ds.close();
         }
 
         @Before

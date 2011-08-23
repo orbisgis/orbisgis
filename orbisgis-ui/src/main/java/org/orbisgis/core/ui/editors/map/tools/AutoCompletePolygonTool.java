@@ -45,7 +45,7 @@ import java.util.Observable;
 
 import javax.swing.AbstractButton;
 
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
@@ -84,7 +84,7 @@ public class AutoCompletePolygonTool extends AbstractPolygonTool {
         @Override
         protected void polygonDone(Polygon pol,
                 MapContext mc, ToolManager tm) throws TransitionException {
-                SpatialDataSourceDecorator sds = mc.getActiveLayer().getSpatialDataSource();
+                DataSource sds = mc.getActiveLayer().getSpatialDataSource();
                 try {
                         ArrayList<Handler> handlers = tm.getCurrentHandlers();
                         Geometry geom = pol;
@@ -146,7 +146,7 @@ public class AutoCompletePolygonTool extends AbstractPolygonTool {
 
         }
 
-        private Geometry execute(Handler handler, Geometry drawingGeom, SpatialDataSourceDecorator sds) throws DriverException {
+        private Geometry execute(Handler handler, Geometry drawingGeom, DataSource sds) throws DriverException {
                 System.out.println(drawingGeom.toText());
                 Geometry result = drawingGeom;
 

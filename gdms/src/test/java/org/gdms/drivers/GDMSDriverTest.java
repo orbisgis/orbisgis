@@ -56,7 +56,6 @@ import org.gdms.data.DataSourceCreation;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.DigestUtilities;
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.types.Constraint;
@@ -254,13 +253,13 @@ public class GDMSDriverTest {
                 String name = dsf.getSourceManager().nameAndRegister(gdmsFile);
                 DataSource ds = dsf.getDataSource(original);
                 ds.open();
-                Envelope fe = new SpatialDataSourceDecorator(ds).getFullExtent();
+                Envelope fe = ds.getFullExtent();
                 dsf.saveContents(name, ds);
                 ds.close();
 
                 ds = dsf.getDataSource(gdmsFile);
                 ds.open();
-                assertEquals(fe, new SpatialDataSourceDecorator(ds).getFullExtent());
+                assertEquals(fe, ds.getFullExtent());
                 ds.close();
         }
 
@@ -274,14 +273,13 @@ public class GDMSDriverTest {
         public void testKeepNoDataValue() throws Exception {
                 DataSource ds = dsf.getDataSource(new File("../../datatestjunit/"
                         + "gdms/tif440606.gdms"));
-                SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
-                sds.open();
-                GeoRaster gr = sds.getRaster(0);
+                ds.open();
+                GeoRaster gr = ds.getRaster(0);
                 gr.setNodataValue(345);
                 assertEquals(gr.getNoDataValue(), 345, 0);
-                gr = sds.getRaster(0);
+                gr = ds.getRaster(0);
                 assertEquals(gr.getNoDataValue(), 345, 0);
-                sds.close();
+                ds.close();
         }
 
         @Test

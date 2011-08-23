@@ -47,7 +47,6 @@ import java.util.Random;
 
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.edition.EditionEvent;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MultipleEditionEvent;
@@ -77,14 +76,14 @@ import com.vividsolutions.jts.geom.Envelope;
 
 public class Layer extends GdmsLayer {
 
-	private SpatialDataSourceDecorator dataSource;
+	private DataSource dataSource;
 	private HashMap<String, LegendDecorator[]> fieldLegend = new HashMap<String, LegendDecorator[]>();
 	private RefreshSelectionEditionListener editionListener;
 	private int[] selection = new int[0];
 
 	public Layer(String name, DataSource ds) {
 		super(name);
-		this.dataSource = new SpatialDataSourceDecorator(ds);
+		this.dataSource = ds;
 		editionListener = new RefreshSelectionEditionListener();
 	}
 
@@ -129,7 +128,7 @@ public class Layer extends GdmsLayer {
 		return legend;
 	}
 
-	public SpatialDataSourceDecorator getSpatialDataSource() {
+	public DataSource getSpatialDataSource() {
 		return dataSource;
 	}
 
@@ -179,8 +178,7 @@ public class Layer extends GdmsLayer {
 					}
 
 				} else if (fieldTypeCode == Type.RASTER) {
-					GeoRaster gr = dataSource.getRaster(metadata
-							.getFieldName(i), 0);
+					GeoRaster gr = dataSource.getFieldValue(0, i).getAsRaster();
 					RasterLegend rasterLegend;
 					rasterLegend = new RasterLegend(gr.getDefaultColorModel(),
 							1f);
@@ -324,11 +322,11 @@ public class Layer extends GdmsLayer {
 	}
 
 	public boolean isRaster() throws DriverException {
-		return dataSource.isDefaultRaster();
+		return dataSource.isRaster();
 	}
 
 	public boolean isVectorial() throws DriverException {
-		return dataSource.isDefaultVectorial();
+		return dataSource.isVectorial();
 	}
 
 	public GeoRaster getRaster() throws DriverException {

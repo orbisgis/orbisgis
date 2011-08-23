@@ -45,7 +45,7 @@ import java.util.Observable;
 
 import javax.swing.AbstractButton;
 
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
@@ -81,7 +81,7 @@ public class CutPolygonTool extends AbstractPolygonTool {
         @Override
         protected void polygonDone(Polygon pol,
                 MapContext mc, ToolManager tm) throws TransitionException {
-                SpatialDataSourceDecorator sds = mc.getActiveLayer().getSpatialDataSource();
+                DataSource sds = mc.getActiveLayer().getSpatialDataSource();
                 try {
                         ArrayList<Handler> handlers = tm.getCurrentHandlers();
                         for (Handler handler : handlers) {

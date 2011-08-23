@@ -55,7 +55,6 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.NonEditableDataSourceException;
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBSourceCreation;
 import org.gdms.data.schema.DefaultMetadata;
@@ -392,9 +391,8 @@ public class DBDriverTest extends TestBase {
                 ds.close();
 
                 ds.open();
-                SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
                 for (int i = 0; i < geometries.length; i++) {
-                        assertEquals(geometries[i], sds.getGeometry(i));
+                        assertEquals(geometries[i], ds.getGeometry(i));
                 }
                 ds.close();
         }

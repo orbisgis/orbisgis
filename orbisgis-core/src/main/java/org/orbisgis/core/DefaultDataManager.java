@@ -46,7 +46,6 @@ import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SQLDataSourceFactory;
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.indexes.IndexManager;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
@@ -108,15 +107,13 @@ public class DefaultDataManager implements DataManager {
 		}
 	}
 
-	public ILayer createLayer(DataSource ds) throws LayerException {
-		int type = ds.getSource().getType();
+	public ILayer createLayer(DataSource sds) throws LayerException {
+		int type = sds.getSource().getType();
 		if ((type & SourceManager.WMS) == SourceManager.WMS) {
-			return new WMSLayer(ds.getName(), ds);
+			return new WMSLayer(sds.getName(), sds);
 		} else {
 			boolean hasSpatialData = true;
 			if ((type & SourceManager.VECTORIAL) == SourceManager.VECTORIAL) {
-				SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
-						ds);
 				int sfi;
 				try {
 					sds.open();
@@ -133,7 +130,7 @@ public class DefaultDataManager implements DataManager {
 				}
 			}
 			if (hasSpatialData) {
-				return new Layer(ds.getName(), ds);
+				return new Layer(sds.getName(), sds);
 			} else {
 				throw new LayerException("The source contains no spatial info");
 			}

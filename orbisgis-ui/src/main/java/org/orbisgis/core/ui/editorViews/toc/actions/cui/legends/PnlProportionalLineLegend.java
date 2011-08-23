@@ -64,7 +64,6 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
@@ -90,6 +89,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
 
 import com.vividsolutions.jts.geom.Envelope;
+import org.gdms.data.DataSource;
 
 public class PnlProportionalLineLegend extends JPanel implements ILegendPanel {
 
@@ -362,8 +362,7 @@ public class PnlProportionalLineLegend extends JPanel implements ILegendPanel {
 
 	private void syncWithLegend() {
 		try {
-			SpatialDataSourceDecorator sds = legendContext.getLayer()
-					.getSpatialDataSource();
+			DataSource sds = legendContext.getLayer().getSpatialDataSource();
 			Metadata m = sds.getMetadata();
 			ArrayList<String> fieldNames = new ArrayList<String>();
 

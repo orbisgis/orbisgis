@@ -42,7 +42,6 @@ import java.util.Observable;
 
 import javax.swing.AbstractButton;
 
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
@@ -56,6 +55,7 @@ import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
+import org.gdms.data.DataSource;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.geometryUtils.GeometryEdit;
 import org.gdms.geometryUtils.GeometryException;
@@ -89,7 +89,7 @@ public class VertexAditionTool extends VertexAdition {
                 Point p = tm.getToolsFactory().createPoint(new Coordinate(tm.getValues()[0], tm.getValues()[1]));
                 try {
                         ILayer activeLayer = mc.getActiveLayer();
-                        SpatialDataSourceDecorator sds = activeLayer.getSpatialDataSource();
+                        DataSource sds = activeLayer.getSpatialDataSource();
                         int[] selection = activeLayer.getSelection();
                         for (int i = 0; i < selection.length; i++) {
                                 int geomIndex = selection[i];
@@ -119,7 +119,7 @@ public class VertexAditionTool extends VertexAdition {
                 Point p = tm.getToolsFactory().createPoint(new Coordinate(tm.getLastRealMousePosition().getX(), tm.getLastRealMousePosition().getY()));
                 try {
                         ILayer activeLayer = mc.getActiveLayer();
-                        SpatialDataSourceDecorator sds = activeLayer.getSpatialDataSource();
+                        DataSource sds = activeLayer.getSpatialDataSource();
                         int[] selection = activeLayer.getSelection();
                         for (int i = 0; i < selection.length; i++) {
                                 int geomIndex = selection[i];

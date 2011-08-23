@@ -44,7 +44,6 @@ import org.gdms.TestBase;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.DigestUtilities;
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.indexes.DefaultSpatialIndexQuery;
 import org.gdms.data.indexes.IndexManager;
@@ -85,7 +84,7 @@ public class SpatialEditionTest extends TestBase {
                 dsf.getIndexManager().buildIndex(dsName,
                         super.getSpatialFieldName(dsName),
                         IndexManager.RTREE_SPATIAL_INDEX, null);
-                SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf.getDataSource(dsName));
+                DataSource d = dsf.getDataSource(dsName);
 
                 d.open();
                 int sfi = d.getSpatialFieldIndex();
@@ -126,7 +125,7 @@ public class SpatialEditionTest extends TestBase {
                 d.close();
         }
 
-        private boolean contains(SpatialDataSourceDecorator sds,
+        private boolean contains(DataSource sds,
                 Iterator<Integer> list, Geometry geometry) throws DriverException {
                 while (list.hasNext()) {
                         Integer dir = list.next();
@@ -153,7 +152,7 @@ public class SpatialEditionTest extends TestBase {
                         super.getSpatialFieldName(dsName),
                         IndexManager.RTREE_SPATIAL_INDEX, null);
 
-                SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf.getDataSource(dsName));
+                DataSource d = dsf.getDataSource(dsName);
 
                 d.open();
                 long rc = d.getRowCount();
@@ -206,7 +205,7 @@ public class SpatialEditionTest extends TestBase {
                 dsf.getIndexManager().buildIndex(dsName,
                         super.getSpatialFieldName(dsName),
                         IndexManager.RTREE_SPATIAL_INDEX, null);
-                SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf.getDataSource(dsName));
+                DataSource d = dsf.getDataSource(dsName);
 
                 d.open();
                 long originalRowCount = d.getRowCount();
@@ -239,7 +238,7 @@ public class SpatialEditionTest extends TestBase {
         }
 
         private void testAdd(String dsName) throws Exception {
-                SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf.getDataSource(dsName));
+                DataSource d = dsf.getDataSource(dsName);
 
                 d.open();
 
@@ -254,7 +253,7 @@ public class SpatialEditionTest extends TestBase {
                 d.commit();
                 d.close();
 
-                d = new SpatialDataSourceDecorator(dsf.getDataSource(dsName));
+                d = dsf.getDataSource(dsName);
                 d.open();
                 byte[] secondDigest = DigestUtilities.getDigest(d, previousRowCount);
                 DigestUtilities.equals(digest, secondDigest);
@@ -290,7 +289,7 @@ public class SpatialEditionTest extends TestBase {
                         new FileSourceCreation(new File(
                         "src/test/resources/backup/big.shp"), null));
 
-                SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf.getDataSource(dsName));
+                DataSource d = dsf.getDataSource(dsName);
 
                 d.open();
                 Coordinate[] coords = new Coordinate[3];
@@ -308,7 +307,7 @@ public class SpatialEditionTest extends TestBase {
                 d.commit();
                 d.close();
 
-                d = new SpatialDataSourceDecorator(dsf.getDataSource(dsName));
+                d = dsf.getDataSource(dsName);
                 d.open();
                 assertEquals(d.getRowCount(), n);
                 for (int i = 0; i < n; i++) {
@@ -380,7 +379,7 @@ public class SpatialEditionTest extends TestBase {
 
         }
 
-        private boolean fullExtentContainsAll(SpatialDataSourceDecorator sds)
+        private boolean fullExtentContainsAll(DataSource sds)
                 throws DriverException {
                 Envelope fe = sds.getFullExtent();
                 for (int i = 0; i < sds.getRowCount(); i++) {
@@ -399,8 +398,7 @@ public class SpatialEditionTest extends TestBase {
                 return true;
         }
 
-        private void testEditedSpatialDataSourceFullExtent(
-                SpatialDataSourceDecorator d) throws Exception {
+        private void testEditedSpatialDataSourceFullExtent(DataSource d) throws Exception {
 
                 int sfi = d.getSpatialFieldIndex();
                 Envelope originalExtent = d.getFullExtent();
@@ -467,7 +465,7 @@ public class SpatialEditionTest extends TestBase {
                         dsf.getIndexManager().buildIndex(resource,
                                 super.getSpatialFieldName(resource),
                                 IndexManager.RTREE_SPATIAL_INDEX, null);
-                        SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf.getDataSource(resource, DataSourceFactory.EDITABLE));
+                        DataSource d = dsf.getDataSource(resource, DataSourceFactory.EDITABLE);
                         d.open();
                         testEditedSpatialDataSourceFullExtent(d);
                         d.commit();
@@ -481,8 +479,7 @@ public class SpatialEditionTest extends TestBase {
                 dsf.getIndexManager().buildIndex(dsName,
                         super.getSpatialFieldName(dsName),
                         IndexManager.RTREE_SPATIAL_INDEX, null);
-                DataSource d = dsf.getDataSource(dsName);
-                SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(d);
+                DataSource sds = dsf.getDataSource(dsName);
                 sds.open();
                 DefaultSpatialIndexQuery query = new DefaultSpatialIndexQuery(sds.getFullExtent(), super.getSpatialFieldName(sds.getName()));
 
@@ -531,22 +528,20 @@ public class SpatialEditionTest extends TestBase {
                 Point p2 = gf.createPoint(new Coordinate(20, 20));
                 omd.addValues(new Value[]{ValueFactory.createValue(p1)});
                 omd.addValues(new Value[]{ValueFactory.createValue(p2)});
-                DataSource d = dsf.getDataSource(omd, "main");
-                dsf.getIndexManager().buildIndex(d.getName(), "geom",
+                DataSource sds = dsf.getDataSource(omd, "main");
+                dsf.getIndexManager().buildIndex(sds.getName(), "geom",
                         IndexManager.RTREE_SPATIAL_INDEX, null);
-                SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(d);
                 sds.open();
                 Envelope extent = sds.getFullExtent();
                 Geometry pointOutside = gf.createPoint(new Coordinate(
                         extent.getMinX() - 15, extent.getMinY() - 15));
-                Value[] row = d.getRow(0);
+                Value[] row = sds.getRow(0);
                 row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(pointOutside);
-                d.insertFilledRow(row);
+                sds.insertFilledRow(row);
                 sds.commit();
                 sds.close();
 
-                d = dsf.getDataSource(d.getName());
-                sds = new SpatialDataSourceDecorator(d);
+                sds = dsf.getDataSource(sds.getName());
                 sds.open();
                 IndexQuery query = new DefaultSpatialIndexQuery(sds.getFullExtent(),
                         "geom");

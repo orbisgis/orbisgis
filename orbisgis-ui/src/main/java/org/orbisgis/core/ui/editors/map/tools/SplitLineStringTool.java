@@ -51,8 +51,7 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Point;
-import java.util.ArrayList;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
@@ -91,7 +90,7 @@ public class SplitLineStringTool extends AbstractPointTool {
         protected void pointDone(Point point, MapContext mc, ToolManager tm)
                 throws TransitionException {
                 Handler handler = tm.getCurrentHandlers().get(0);
-                SpatialDataSourceDecorator sds = mc.getActiveLayer().getSpatialDataSource();
+                DataSource sds = mc.getActiveLayer().getSpatialDataSource();
                 int uiTolerance = tm.getUITolerance();
                 try {
                         Geometry geom = sds.getGeometry(handler.getGeometryIndex());

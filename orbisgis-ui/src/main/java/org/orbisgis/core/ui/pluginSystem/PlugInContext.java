@@ -41,7 +41,6 @@ import java.util.ArrayList;
 
 import javax.swing.tree.TreePath;
 
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.gdms.source.Source;
 import org.gdms.source.SourceManager;
@@ -69,6 +68,7 @@ import org.orbisgis.core.ui.plugins.views.mapEditor.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.tableEditor.TableEditorPlugIn;
 
 import com.vividsolutions.jts.util.Assert;
+import org.gdms.data.DataSource;
 
 /**
  * Adapt context to OrbisGIS from OpenJump Project.
@@ -157,7 +157,7 @@ public class PlugInContext {
 								return false;
 							break;
 						case IS_MODIFIED:
-							SpatialDataSourceDecorator dataSource = layer
+							DataSource dataSource = layer
 									.getSpatialDataSource();
 							if ((dataSource == null)
 									|| !dataSource.isModified())
@@ -553,7 +553,7 @@ public class PlugInContext {
 	 */
 	public boolean areSelectedLayersSelectedInEditing() {
 		MapContext mapContext = null;
-		SpatialDataSourceDecorator sds = null;
+		DataSource sds = null;
 		if ((mapContext = getMapContext()) != null) {
 			ILayer[] selectedLayers = mapContext.getSelectedLayers();
 			if (selectedLayers.length > 0) {
@@ -574,7 +574,7 @@ public class PlugInContext {
 	 */
 	public boolean areSelectedLayersSelectedEditable() {
 		MapContext mapContext = null;
-		SpatialDataSourceDecorator sds = null;
+		DataSource sds = null;
 		if ((mapContext = getMapContext()) != null) {
 			ILayer[] selectedLayers = mapContext.getSelectedLayers();
 			if (selectedLayers.length > 0) {

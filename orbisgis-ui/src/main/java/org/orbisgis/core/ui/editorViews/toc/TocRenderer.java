@@ -54,7 +54,7 @@ import javax.swing.JPanel;
 import javax.swing.JTree;
 import javax.swing.tree.TreeCellRenderer;
 
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
@@ -163,7 +163,7 @@ public class TocRenderer extends TocAbstractRenderer implements
 				iconAndLabel.setIcon(icon);
 			}
 			String name = node.getName();
-			SpatialDataSourceDecorator dataSource = node.getSpatialDataSource();
+			DataSource dataSource = node.getSpatialDataSource();
 			if ((dataSource != null) && (dataSource.isModified())) {
 				name += "*"; //$NON-NLS-1$
 			}

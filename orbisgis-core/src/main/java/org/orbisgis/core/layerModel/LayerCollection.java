@@ -43,7 +43,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
 import org.orbisgis.core.layerModel.persistence.LayerCollectionType;
@@ -54,6 +53,7 @@ import org.orbisgis.core.renderer.legend.WMSLegend;
 import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Envelope;
+import org.gdms.data.DataSource;
 
 public class LayerCollection extends AbstractLayer {
 	private List<ILayer> layerCollection;
@@ -396,7 +396,7 @@ public class LayerCollection extends AbstractLayer {
          * so it is null. 
          * @return
          */
-	public SpatialDataSourceDecorator getSpatialDataSource() {
+	public DataSource getSpatialDataSource() {
 		return null;
 	}
 

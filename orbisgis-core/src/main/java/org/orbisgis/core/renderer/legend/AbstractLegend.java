@@ -38,7 +38,7 @@ package org.orbisgis.core.renderer.legend;
 
 import java.util.ArrayList;
 
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.legend.carto.persistence.LegendType;
 
 public abstract class AbstractLegend implements Legend {
@@ -75,7 +75,7 @@ public abstract class AbstractLegend implements Legend {
 		}
 	}
 
-	public void preprocess(SpatialDataSourceDecorator sds)
+	public void preprocess(DataSource sds)
 			throws RenderException {
 	}
 

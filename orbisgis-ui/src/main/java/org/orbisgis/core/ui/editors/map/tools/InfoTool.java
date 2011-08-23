@@ -45,7 +45,6 @@ import javax.swing.AbstractButton;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.engine.ParseException;
@@ -93,10 +92,9 @@ public class InfoTool extends AbstractRectangleTool {
 			boolean smallerThanTolerance, MapContext vc, ToolManager tm)
 			throws TransitionException {
 		ILayer layer = vc.getSelectedLayers()[0];
-		DataSource ds = layer.getSpatialDataSource();
+		DataSource sds = layer.getSpatialDataSource();
 		String sql = null;
 		try {
-			SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
 			GeometryFactory gf = ToolManager.toolsGeometryFactory;
 			double minx = rect.getMinX();
 			double miny = rect.getMinY();
@@ -112,7 +110,7 @@ public class InfoTool extends AbstractRectangleTool {
 					new LinearRing[0]);
 			WKTWriter writer = new WKTWriter();
 			sql = "select * from " + layer.getName() + " where ST_intersects("
-					+ sds.getSpatialFieldName() + ", ST_geomfromtext('"
+					+ sds.getMetadata().getFieldName(sds.getSpatialFieldIndex()) + ", ST_geomfromtext('"
 					+ writer.write(geomEnvelope) + "'));";
 			BackgroundManager bm = (BackgroundManager) Services
 					.getService(BackgroundManager.class);

@@ -39,7 +39,6 @@ package org.orbisgis.core.layerModel;
 import java.util.Set;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
@@ -225,7 +224,7 @@ public interface ILayer {
 	 *         up by a SpatialDataSourceDecorator (Layer collections and WMS
 	 *         layers, for example)
 	 */
-	SpatialDataSourceDecorator getSpatialDataSource();
+	DataSource getSpatialDataSource();
 
 	/**
 	 * Gets the legend used to draw the default spatial field in this layer if

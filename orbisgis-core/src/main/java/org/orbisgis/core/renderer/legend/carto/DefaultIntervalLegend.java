@@ -40,7 +40,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
@@ -57,6 +56,7 @@ import org.orbisgis.core.renderer.symbol.SymbolManager;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
 
 import com.vividsolutions.jts.geom.Geometry;
+import org.gdms.data.DataSource;
 
 public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
 		IntervalLegend {
@@ -101,7 +101,7 @@ public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
 		fireLegendInvalid();
 	}
 
-	public Symbol getSymbol(SpatialDataSourceDecorator sds, long row)
+	public Symbol getSymbol(DataSource sds, long row)
 			throws RenderException {
 		try {
 			Value value;

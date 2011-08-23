@@ -44,7 +44,6 @@ import java.io.File;
 import org.gdms.TestBase;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Constraint;
@@ -70,8 +69,7 @@ public class RasterTest {
         public void testProducedRasterEnvelope() throws Exception {
                 DataSource ds = dsf.getDataSource("raster");
                 ds.open();
-                SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
-                Envelope env = sds.getFullExtent();
+                Envelope env = ds.getFullExtent();
                 assertTrue(env.getWidth() > 0);
                 assertTrue(env.getHeight() > 0);
                 ds.close();

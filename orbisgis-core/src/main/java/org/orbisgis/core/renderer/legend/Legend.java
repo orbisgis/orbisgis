@@ -38,7 +38,7 @@ package org.orbisgis.core.renderer.legend;
 
 import java.awt.Graphics2D;
 
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.symbol.Symbol;
 
 /**
@@ -85,7 +85,7 @@ public interface Legend {
 	 * @throws RenderException
 	 *             If there is some problem during the preprocess
 	 */
-	void preprocess(SpatialDataSourceDecorator sds) throws RenderException;
+	void preprocess(DataSource sds) throws RenderException;
 
 	/**
 	 * Gets the symbol to draw the specified row of the specified DataSource
@@ -101,7 +101,7 @@ public interface Legend {
 	 *             if there is some problem that makes impossible the drawing of
 	 *             the layer
 	 */
-	Symbol getSymbol(SpatialDataSourceDecorator sds, long row)
+	Symbol getSymbol(DataSource sds, long row)
 			throws RenderException;
 
 	/**

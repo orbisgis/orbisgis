@@ -40,7 +40,6 @@ package org.orbisgis.core.ui.editors.map.tools;
 import java.text.ParseException;
 import java.util.ArrayList;
 
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
@@ -53,11 +52,12 @@ import org.orbisgis.core.ui.editors.map.tool.Automaton;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import org.gdms.data.DataSource;
 
 public class ToolUtilities {
 
 	public static double getActiveLayerInitialZ(MapContext mapContext) {
-		SpatialDataSourceDecorator sds = mapContext.getActiveLayer()
+		DataSource sds = mapContext.getActiveLayer()
 				.getSpatialDataSource();
 		try {
 			Type type = sds.getFieldType(sds.getSpatialFieldIndex());
@@ -78,7 +78,7 @@ public class ToolUtilities {
 	 * @throws DriverException
 	 * @throws TransitionException
 	 */
-	public static Value[] populateNotNullFields(SpatialDataSourceDecorator sds,
+	public static Value[] populateNotNullFields(DataSource sds,
 			Value[] row) throws DriverException, TransitionException {
 		Value[] ret = new Value[row.length];
 		for (int i = 0; i < sds.getFieldCount(); i++) {
@@ -182,7 +182,7 @@ public class ToolUtilities {
 			return false;
 		} else {
 			try {
-				SpatialDataSourceDecorator sds = activeLayer.getSpatialDataSource();
+				DataSource sds = activeLayer.getSpatialDataSource();
 				Type type = sds.getFieldType(sds.getSpatialFieldIndex());
 				int geometryType = type
 						.getIntConstraint(Constraint.GEOMETRY_TYPE);

@@ -36,6 +36,7 @@
  */
 package org.gdms.drivers;
 
+import org.gdms.data.DataSource;
 import org.junit.Test;
 import java.io.File;
 import java.io.FileFilter;
@@ -46,7 +47,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.gdms.SQLBaseTest;
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.db.DBSource;
 
 import static org.junit.Assert.*;
@@ -87,8 +87,8 @@ public class DBDriverTest extends SQLBaseTest {
                 dsf.executeSQL(load);
 
                 // Get each value
-                SpatialDataSourceDecorator db = new SpatialDataSourceDecorator(dsf.getDataSource("lands"));
-                SpatialDataSourceDecorator file = new SpatialDataSourceDecorator(dsf.getDataSource("parcels"));
+                DataSource db = dsf.getDataSource("lands");
+                DataSource file = dsf.getDataSource("parcels");
                 db.open();
                 file.open();
                 assertEquals(db.getRowCount(),file.getRowCount());
@@ -127,9 +127,9 @@ public class DBDriverTest extends SQLBaseTest {
                 String otherSchemaSourceName = dsf.getSourceManager().getUniqueName(otherSchemaDbSource.getTableName());
                 dsf.getSourceManager().register(otherSchemaSourceName, otherSchemaDbSource);
 
-                SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(dsf.getDataSource(otherSchemaDbSource));
+                DataSource sds = dsf.getDataSource(otherSchemaDbSource);
                 sds.open();
-                sds.isDefaultVectorial();
+                sds.isVectorial();
                 sds.close();
 
                 assertFalse(otherSchemaSourceName.equals(publicSchemaSourceName));
@@ -176,8 +176,8 @@ public class DBDriverTest extends SQLBaseTest {
                 dsf.executeSQL(load);
 
                 // Get each value
-                SpatialDataSourceDecorator db = new SpatialDataSourceDecorator(dsf.getDataSource("lands"));
-                SpatialDataSourceDecorator file = new SpatialDataSourceDecorator(dsf.getDataSource("parcels"));
+                DataSource db = dsf.getDataSource("lands");
+                DataSource file = dsf.getDataSource("parcels");
                 db.open();
                 file.open();
                 assertEquals(db.getRowCount(),file.getRowCount());

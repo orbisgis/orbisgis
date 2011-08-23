@@ -43,7 +43,6 @@
  **/
 package org.orbisgis.core.ui.plugins.views.geomark;
 
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
@@ -53,6 +52,7 @@ import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.progress.ProgressMonitor;
 
 import com.vividsolutions.jts.geom.Envelope;
+import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SQLDataSourceFactory;
@@ -74,8 +74,7 @@ public class OG_Geomark extends AbstractExecutorFunction {
                         + "-";
 
                 try {
-                        final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
-                                dsf.getDataSource(values[0].getAsString()));
+                        final DataSource sds = dsf.getDataSource(values[0].getAsString());
                         sds.open();
                         final int rowCount = (int) sds.getRowCount();
                         for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {

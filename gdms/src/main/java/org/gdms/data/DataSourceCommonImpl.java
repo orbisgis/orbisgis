@@ -38,6 +38,8 @@ package org.gdms.data;
 
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
+import org.gdms.data.types.Constraint;
+import org.gdms.data.types.SRIDConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
@@ -52,59 +54,36 @@ public abstract class DataSourceCommonImpl extends AbstractDataSource {
         private static final String NO_EDITION = "The DataSource wasn't retrieved with edition capabilities";
 
 	protected DataSourceFactory dsf;
+        private int srid = -1;
 
-	/**
-	 * @see org.gdms.data.DataSource#getDataSourceFactory()
-	 */
-        @Override
+	@Override
 	public final DataSourceFactory getDataSourceFactory() {
 		return dsf;
 	}
 
-	/**
-	 * @see org.gdms.data.DataSource#setDataSourceFactory(DataSourceFactory)
-	 */
-        @Override
+	@Override
 	public final void setDataSourceFactory(DataSourceFactory dsf) {
 		this.dsf = dsf;
 	}
 
-	/**
-	 * Redoes the last undone edition action
-	 *
-	 * @throws DriverException
-	 */
-        @Override
+	@Override
 	public void redo() throws DriverException {
 		throw new UnsupportedOperationException(
 				NOT_SUPPORTED_UNDOABLE);
 	}
 
-	/**
-	 * Undoes the last edition action
-	 *
-	 * @throws DriverException
-	 */
-        @Override
+	@Override
 	public void undo() throws DriverException {
 		throw new UnsupportedOperationException(
 				NOT_SUPPORTED_UNDOABLE);
 	}
 
-	/**
-	 * @return true if there is an edition action to redo
-	 *
-	 */
-        @Override
+	@Override
 	public boolean canRedo() {
 		return false;
 	}
 
-	/**
-	 * @return true if there is an edition action to undo
-	 *
-	 */
-        @Override
+	@Override
 	public boolean canUndo() {
 		return false;
 	}
@@ -204,5 +183,17 @@ public abstract class DataSourceCommonImpl extends AbstractDataSource {
 	public boolean isModified() {
 		return false;
 	}
+        
+        @Override
+        public int getSRID() throws DriverException {
+                if (getSpatialFieldIndex() != -1 && srid == -1) {
+                        Constraint[] c = getMetadata().getFieldType(getSpatialFieldIndex()).getConstraints(Constraint.SRID);
+                        if (c.length != 0) {
+                                srid = ((SRIDConstraint) c[0]).getConstraintCode();
+                        }
+                }
+
+                return srid;
+        }
 
 }

@@ -47,7 +47,6 @@ import java.util.Map;
 import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.NonEditableDataSourceException;
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.indexes.IndexException;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.types.Constraint;
@@ -70,6 +69,7 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.operation.linemerge.LineMerger;
 import com.vividsolutions.jts.operation.polygonize.Polygonizer;
 import com.vividsolutions.jts.operation.union.UnaryUnionOp;
+import org.gdms.data.DataSource;
 import org.gdms.data.types.ConstraintFactory;
 import org.gdms.driver.DataSet;
 
@@ -163,8 +163,7 @@ public final class PlanarGraph {
 
                 GenericObjectDriver nodeDriver = new GenericObjectDriver(edgeMedata);
 
-                SpatialDataSourceDecorator sdsEdges = new SpatialDataSourceDecorator(
-                        dsf.getDataSource(omedges, "main"));
+                DataSource sdsEdges = dsf.getDataSource(omedges, "main");
 
                 // Create the node Layer
                 Map nodes = new HashMap();
@@ -244,11 +243,9 @@ public final class PlanarGraph {
 
                 }
 
-                SpatialDataSourceDecorator sdsFaces = new SpatialDataSourceDecorator(
-                        dsf.getDataSource(faceDriver, "main"));
+                DataSource sdsFaces = dsf.getDataSource(faceDriver, "main");
 
-                SpatialDataSourceDecorator sdsEdges = new SpatialDataSourceDecorator(
-                        dsf.getDataSource(omEdges, "main"));
+                DataSource sdsEdges = dsf.getDataSource(omEdges, "main");
 
                 sdsFaces.open();
                 sdsEdges.open();
@@ -339,7 +336,7 @@ public final class PlanarGraph {
          * @return geometries whose envelopes intersect the given envelope
          * @throws DriverException 
          */
-        public List query(SpatialDataSourceDecorator sdsFaces, Envelope envelope)
+        public List query(DataSource sdsFaces, Envelope envelope)
                 throws DriverException {
 
                 if (!envelope.intersects(sdsFaces.getFullExtent())) {

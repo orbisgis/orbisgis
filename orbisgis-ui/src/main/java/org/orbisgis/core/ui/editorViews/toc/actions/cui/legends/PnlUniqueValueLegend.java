@@ -47,7 +47,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
@@ -76,7 +76,7 @@ public class PnlUniqueValueLegend extends PnlAbstractClassifiedLegend {
 	@Override
 	protected void addAllAction() {
 		ILayer layer = legendContext.getLayer();
-		SpatialDataSourceDecorator sdsd = layer.getSpatialDataSource();
+		DataSource sdsd = layer.getSpatialDataSource();
 		String selitem = (String) cmbFields.getSelectedItem();
 
 		legend.clear();
@@ -122,7 +122,7 @@ public class PnlUniqueValueLegend extends PnlAbstractClassifiedLegend {
 
 		if (rowCount < 32) {
 			try {
-				SpatialDataSourceDecorator ds = legendContext.getLayer()
+				DataSource ds = legendContext.getLayer()
 						.getSpatialDataSource();
 				ArrayList<String> options = new ArrayList<String>();
 				ArrayList<Value> values = new ArrayList<Value>();

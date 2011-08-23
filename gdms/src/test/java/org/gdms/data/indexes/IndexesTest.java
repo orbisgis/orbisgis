@@ -48,7 +48,6 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.source.Source;
@@ -226,7 +225,7 @@ public class IndexesTest {
 
                 DataSource ds = dsf.getDataSource("source");
                 ds.open();
-                Envelope env = new SpatialDataSourceDecorator(ds).getFullExtent();
+                Envelope env = ds.getFullExtent();
                 ds.close();
                 SpatialIndexQuery spatialQuery = new DefaultSpatialIndexQuery(env,
                         "the_geom");
@@ -262,7 +261,7 @@ public class IndexesTest {
 
                 DataSource ds = dsf.getDataSource("source");
                 ds.open();
-                Envelope env = new SpatialDataSourceDecorator(ds).getFullExtent();
+                Envelope env = ds.getFullExtent();
                 ds.close();
                 SpatialIndexQuery spatialQuery = new DefaultSpatialIndexQuery(env,
                         "the_geom");
@@ -312,7 +311,7 @@ public class IndexesTest {
                 DefaultAlphaQuery DefaultAlphaQuery = new DefaultAlphaQuery("gid",
                         null, false, null, false);
                 SpatialIndexQuery spatialQuery = new DefaultSpatialIndexQuery(
-                        new SpatialDataSourceDecorator(ds).getFullExtent(), "the_geom");
+                        ds.getFullExtent(), "the_geom");
                 Iterator<Integer> it = ds.queryIndex(DefaultAlphaQuery);
                 int count = getCount(it);
                 assertEquals(count, 0);
@@ -429,7 +428,7 @@ public class IndexesTest {
                 ds.setFieldValue(3, 0, ds.getFieldValue(1, 0));
 
                 SpatialIndexQuery spatialQuery = new DefaultSpatialIndexQuery(
-                        new SpatialDataSourceDecorator(ds).getFullExtent(), "the_geom");
+                        ds.getFullExtent(), "the_geom");
                 assertEquals(getCount(ds.queryIndex(spatialQuery)), ds.getRowCount());
                 ds.close();
         }

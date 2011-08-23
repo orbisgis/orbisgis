@@ -50,7 +50,6 @@ import org.gdms.SQLBaseTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.DigestUtilities;
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Constraint;
@@ -1281,9 +1280,8 @@ public class SQLTest extends SQLBaseTest {
                 dsf.getSourceManager().remove("temp");
                 dsf.executeSQL("create table temp as select st_addz(the_geom, gid ) as the_geom, gid  from landcover2000 where gid = 1;");
 
-                DataSource ds = dsf.getDataSource("temp");
+                DataSource sds = dsf.getDataSource("temp");
 
-                SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
                 sds.open();
 
                 Coordinate[] coords = sds.getGeometry(0).getCoordinates();

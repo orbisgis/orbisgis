@@ -41,7 +41,6 @@ package org.orbisgis.core.ui.plugins.editors.mapEditor;
 
 import javax.swing.JButton;
 
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
@@ -60,6 +59,7 @@ import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import org.gdms.data.DataSource;
 
 public class ZoomToSelectedFeaturesPlugIn extends AbstractPlugIn {
 
@@ -93,20 +93,20 @@ public class ZoomToSelectedFeaturesPlugIn extends AbstractPlugIn {
 						try {
 							int[] selectedRow = lyr.getSelection();
 
-							SpatialDataSourceDecorator sds = lyr
+							DataSource sds = lyr
 									.getSpatialDataSource();
 
 							Geometry geometry = null;
 							Envelope geometryEnvelope = null;
 							for (int i = 0; i < selectedRow.length; i++) {
-								if (sds.isDefaultVectorial()) {
+								if (sds.isVectorial()) {
 									geometry = sds.getGeometry(selectedRow[i]);
 									if (geometry != null) {
 										geometryEnvelope = geometry
 												.buffer(0.01)
 												.getEnvelopeInternal();
 									}
-								} else if (sds.isDefaultRaster()) {
+								} else if (sds.isRaster()) {
 									geometryEnvelope = sds.getRaster(
 											selectedRow[i]).getMetadata()
 											.getEnvelope();

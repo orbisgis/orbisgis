@@ -37,6 +37,8 @@
  */
 package org.gdms.data;
 
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -55,6 +57,7 @@ import org.gdms.driver.DataSet;
 import org.gdms.driver.Driver;
 import org.gdms.source.Source;
 import org.gdms.data.types.IncompatibleTypesException;
+import org.grap.model.GeoRaster;
 
 /**
  * Interface to access any data source
@@ -968,4 +971,70 @@ public interface DataSource extends DataSet {
          * @throws DriverException
          */
         void syncWithSource() throws DriverException;
+
+        /**
+         * Gets the full extent of the data accessed
+         *
+         * @return Envelope
+         *
+         * @throws DriverException
+         * if the operation fails
+         */
+        Envelope getFullExtent() throws DriverException;
+
+        /**
+         * Gets the default geometry of the DataSource as a JTS geometry or null if
+         * the row doesn't have a geometry value
+         *
+         * @param rowIndex
+         * @return
+         * @throws DriverException
+         */
+        Geometry getGeometry(long rowIndex) throws DriverException;
+
+        GeoRaster getRaster(long rowIndex) throws DriverException;
+
+        int getSRID() throws DriverException;
+
+        /**
+         * Set the field name for the getGeometry(int) method. If this method is not
+         * called, the default geometry is the first spatial field
+         *
+         * @param fieldName
+         * @throws DriverException
+         */
+        void setDefaultSpatialFieldName(String fieldName) throws DriverException;
+
+        /**
+         * Returns the index of the field containing spatial data
+         *
+         * @return
+         * @throws DriverException
+         */
+        int getSpatialFieldIndex() throws DriverException;
+
+        /**
+         * Sets the default geometry of the DataSource to a JTS geometry
+         *
+         * @param rowIndex
+         * @param geom
+         * @throws DriverException
+         */
+        void setGeometry(long rowIndex, Geometry geom) throws DriverException;
+
+        /**
+         * Returns true if the default geometry is raster and false otherwise
+         *
+         * @return
+         * @throws DriverException
+         */
+        boolean isRaster() throws DriverException;
+
+        /**
+         * Returns true if the default geometry is vectorial and false otherwise
+         *
+         * @return
+         * @throws DriverException
+         */
+        boolean isVectorial() throws DriverException;
 }

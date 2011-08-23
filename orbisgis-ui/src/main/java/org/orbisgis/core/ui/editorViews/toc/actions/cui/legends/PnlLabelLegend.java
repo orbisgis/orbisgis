@@ -54,7 +54,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.apache.batik.ext.swing.GridBagConstants;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
@@ -159,8 +159,7 @@ public class PnlLabelLegend extends JPanel implements ILegendPanel {
 		if (!syncing) {
 			syncing = true;
 			try {
-				SpatialDataSourceDecorator sds = legendContext.getLayer()
-						.getSpatialDataSource();
+				DataSource sds = legendContext.getLayer().getSpatialDataSource();
 				Metadata m = sds.getMetadata();
 				ArrayList<String> fieldNames = new ArrayList<String>();
 

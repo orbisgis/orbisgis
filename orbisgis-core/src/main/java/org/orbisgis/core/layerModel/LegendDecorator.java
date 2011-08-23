@@ -40,7 +40,7 @@ import java.awt.Graphics2D;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.gdms.data.edition.EditionEvent;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MultipleEditionEvent;
@@ -57,7 +57,7 @@ public class LegendDecorator implements Legend, EditionListener {
 
 	private Legend legend;
 	private ArrayList<Symbol> symbols = new ArrayList<Symbol>();
-	private SpatialDataSourceDecorator sds;
+	private DataSource sds;
 
 	private boolean valid = true;
 
@@ -69,12 +69,12 @@ public class LegendDecorator implements Legend, EditionListener {
 		return legend.getName();
 	}
 
-	public Symbol getSymbol(SpatialDataSourceDecorator sds, long row)
+	public Symbol getSymbol(DataSource sds, long row)
 			throws RenderException {
 		return symbols.get((int) row);
 	}
 
-	public void initialize(SpatialDataSourceDecorator ds)
+	public void initialize(DataSource ds)
 			throws RenderException {
 		this.sds = ds;
 		legend.preprocess(sds);
@@ -171,7 +171,7 @@ public class LegendDecorator implements Legend, EditionListener {
 		return legend.getJAXBObject();
 	}
 
-	public void preprocess(SpatialDataSourceDecorator sds)
+	public void preprocess(DataSource sds)
 			throws RenderException {
 		legend.preprocess(sds);
 	}
