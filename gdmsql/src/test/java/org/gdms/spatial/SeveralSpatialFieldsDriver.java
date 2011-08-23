@@ -51,7 +51,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
 import java.util.List;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 
 public class SeveralSpatialFieldsDriver extends GenericObjectDriver {
 
@@ -130,9 +130,9 @@ public class SeveralSpatialFieldsDriver extends GenericObjectDriver {
 
 	public Number[] getScope(int dimension) throws DriverException {
 		calculateEnvelopes();
-		if (dimension == ReadAccess.X) {
+		if (dimension == DataSet.X) {
 			return new Number[] { envelope.getMinX(), envelope.getMaxX() };
-		} else if (dimension == ReadAccess.Y) {
+		} else if (dimension == DataSet.Y) {
 			return new Number[] { envelope.getMinY(), envelope.getMaxY() };
 		} else {
 			return null;

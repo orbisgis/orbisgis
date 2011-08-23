@@ -59,7 +59,7 @@ import org.gdms.data.wms.WMSSource;
 import org.gdms.data.wms.WMSSourceDefinition;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.DefaultSourceManager;
 import org.gdms.source.SourceManager;
@@ -182,7 +182,7 @@ public class DataSourceFactory {
          * @param pm a progress monitor to report progression to
          * @throws DriverException
          */
-        public void saveContents(String tableName, ReadAccess contents,
+        public void saveContents(String tableName, DataSet contents,
                 ProgressMonitor pm) throws DriverException {
                 boolean doOpenClose = contents instanceof DataSource;
 
@@ -204,7 +204,7 @@ public class DataSourceFactory {
          * @param contents the DataSource whose content has to be saved
          * @throws DriverException
          */
-        public void saveContents(String tableName, ReadAccess contents)
+        public void saveContents(String tableName, DataSet contents)
                 throws DriverException {
                 saveContents(tableName, contents, new NullProgressMonitor());
         }

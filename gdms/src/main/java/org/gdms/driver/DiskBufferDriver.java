@@ -191,7 +191,7 @@ public class DiskBufferDriver implements ObjectDriver {
 	 */
 	public Value[] getRow(long rowIndex) throws DriverException {
 		Value[] ret = new Value[getSchema().getTableByName("main").getFieldCount()];
-                final ReadAccess table = getTable("main");
+                final DataSet table = getTable("main");
 		for (int i = 0; i < ret.length; i++) {  
 			ret[i] = table.getFieldValue(rowIndex, i);
 		}
@@ -204,9 +204,9 @@ public class DiskBufferDriver implements ObjectDriver {
         }
 
         @Override
-        public ReadAccess getTable(String name) {
+        public DataSet getTable(String name) {
                 if (name.equals("main")) {
-                        return new ReadAccess() {
+                        return new DataSet() {
 
                                 @Override
                                 public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {

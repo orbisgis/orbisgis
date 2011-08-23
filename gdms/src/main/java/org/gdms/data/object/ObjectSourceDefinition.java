@@ -45,7 +45,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.ObjectReadWriteDriver;
 import org.gdms.driver.Driver;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.source.directory.DefinitionType;
 import org.gdms.source.directory.ObjectDefinitionType;
 import org.orbisgis.progress.ProgressMonitor;
@@ -79,7 +79,7 @@ public class ObjectSourceDefinition extends AbstractDataSourceDefinition {
         }
 
         @Override
-        public void createDataSource(ReadAccess contents, ProgressMonitor pm) throws DriverException {
+        public void createDataSource(DataSet contents, ProgressMonitor pm) throws DriverException {
                 LOG.trace("Writing datasource to object");
                 ((ObjectReadWriteDriver) driver).write(contents, pm);
         }

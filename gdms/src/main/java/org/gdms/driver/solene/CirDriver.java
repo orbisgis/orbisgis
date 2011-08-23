@@ -60,7 +60,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileReadWriteDriver;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.source.SourceManager;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.FileUtils;
@@ -79,7 +79,7 @@ import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.data.schema.SchemaMetadata;
 import org.gdms.data.types.ConstraintFactory;
 
-public final class CirDriver implements FileReadWriteDriver, ReadAccess {
+public final class CirDriver implements FileReadWriteDriver, DataSet {
 
         public static final String DRIVER_NAME = "Solene Cir driver";
         private static final String EXTENSION = "cir";
@@ -249,7 +249,7 @@ public final class CirDriver implements FileReadWriteDriver, ReadAccess {
         }
 
         @Override
-        public void writeFile(final File file, final ReadAccess dataSource,
+        public void writeFile(final File file, final DataSet dataSource,
                 ProgressMonitor pm) throws DriverException {
                 LOG.trace("Writing to file " + file.getAbsolutePath());
 
@@ -393,7 +393,7 @@ public final class CirDriver implements FileReadWriteDriver, ReadAccess {
         }
 
         @Override
-        public ReadAccess getTable(String name) {
+        public DataSet getTable(String name) {
                 if (!name.equals("main")) {
                         return null;
                 }

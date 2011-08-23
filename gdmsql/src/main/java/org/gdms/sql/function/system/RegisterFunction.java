@@ -3,7 +3,7 @@ package org.gdms.sql.function.system;
 import org.apache.log4j.Logger;
 import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.values.Value;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.executor.AbstractExecutorFunction;
 import org.gdms.sql.function.executor.ExecutorFunctionSignature;
@@ -18,7 +18,7 @@ public final class RegisterFunction extends AbstractExecutorFunction {
         private static final Logger LOG = Logger.getLogger(RegisterFunction.class);
 
         @Override
-        public void evaluate(SQLDataSourceFactory dsf, ReadAccess[] tables,
+        public void evaluate(SQLDataSourceFactory dsf, DataSet[] tables,
                 Value[] values, ProgressMonitor pm) throws FunctionException {
                 LOG.trace("Evaluating");
                 String className = values[0].getAsString();

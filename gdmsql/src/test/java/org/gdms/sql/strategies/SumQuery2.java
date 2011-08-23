@@ -43,7 +43,7 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.table.TableDefinition;
@@ -62,7 +62,7 @@ public class SumQuery2 extends AbstractTableFunction {
          * @see org.gdms.sql.customQuery.CustomQuery#evaluate(SQLDataSourceFactory,
          *      org.gdms.data.DataSource[], Value[])
          */
-        public ReadAccess evaluate(SQLDataSourceFactory dsf, ReadAccess[] tables,
+        public DataSet evaluate(SQLDataSourceFactory dsf, DataSet[] tables,
                 Value[] values, ProgressMonitor pm) throws FunctionException {
                 if (tables.length != 1) {
                         throw new FunctionException("SUM only operates on one table");

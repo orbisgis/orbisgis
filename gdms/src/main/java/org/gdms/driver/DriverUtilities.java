@@ -129,16 +129,16 @@ public final class DriverUtilities {
         }
 
         /**
-         * gets the full extent of a ReadAccess data set.
-         * The extent is computed using the {@link ReadAccess#getScope(int) }
+         * gets the full extent of a DataSet data set.
+         * The extent is computed using the {@link DataSet#getScope(int) }
          * method.
          * @param r
          * @return an Envelope for the Extent, or null if it cannot be computed
          * @throws DriverException
          */
-        public static Envelope getFullExtent(ReadAccess r) throws DriverException {
-                Number[] xScope = r.getScope(ReadAccess.X);
-                Number[] yScope = r.getScope(ReadAccess.Y);
+        public static Envelope getFullExtent(DataSet r) throws DriverException {
+                Number[] xScope = r.getScope(DataSet.X);
+                Number[] yScope = r.getScope(DataSet.Y);
                 if ((xScope != null) && (yScope != null)) {
                         return new Envelope(new Coordinate(xScope[0].doubleValue(),
                                 yScope[0].doubleValue()), new Coordinate(xScope[1].doubleValue(),

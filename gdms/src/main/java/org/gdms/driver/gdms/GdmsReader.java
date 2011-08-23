@@ -53,7 +53,7 @@ import org.gdms.data.values.ByteProvider;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.ReadBufferManager;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -386,10 +386,10 @@ public class GdmsReader {
         }
 
         public Number[] getScope(int dimension) {
-                if (dimension == ReadAccess.X) {
+                if (dimension == DataSet.X) {
                         return new Number[]{getFullExtent().getMinX(),
                                         getFullExtent().getMaxX()};
-                } else if (dimension == ReadAccess.Y) {
+                } else if (dimension == DataSet.Y) {
                         return new Number[]{getFullExtent().getMinY(),
                                         getFullExtent().getMaxY()};
                 } else {

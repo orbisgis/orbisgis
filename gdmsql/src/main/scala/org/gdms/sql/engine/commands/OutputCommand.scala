@@ -38,7 +38,7 @@
 
 package org.gdms.sql.engine.commands
 
-import org.gdms.driver.ReadAccess
+import org.gdms.driver.DataSet
 
 /**
  * Implementations of this trait designate "terminal" commands, i.e. the ones that can be at the top
@@ -49,6 +49,6 @@ import org.gdms.driver.ReadAccess
  */
 trait OutputCommand extends Command {
 
-  def getResult: ReadAccess
+  def getResult: DataSet
 
 }

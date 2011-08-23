@@ -53,7 +53,7 @@ import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.driver.Driver;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.gdms.GdmsDriver;
@@ -124,7 +124,7 @@ public class FileSourceDefinition extends AbstractDataSourceDefinition {
         }
 
         @Override
-        public void createDataSource(ReadAccess contents, ProgressMonitor pm)
+        public void createDataSource(DataSet contents, ProgressMonitor pm)
                 throws DriverException {
                 LOG.trace("Writing datasource to file");
                 FileReadWriteDriver d = (FileReadWriteDriver) getDriver();

@@ -60,7 +60,7 @@ import org.gdms.driver.DBDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.ObjectDriver;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.TableDescription;
 import org.gdms.driver.jdbc.ConversionRule;
 import org.gdms.driver.jdbc.DefaultDBDriver;
@@ -101,7 +101,7 @@ public class ReadDriver extends DefaultDBDriver implements ObjectDriver,
                 isEditable = false;
         }
 
-        public boolean write(ReadAccess dataWare, ProgressMonitor pm)
+        public boolean write(DataSet dataWare, ProgressMonitor pm)
                 throws DriverException {
                 if (failOnWrite) {
                         throw new DriverException();
@@ -111,7 +111,7 @@ public class ReadDriver extends DefaultDBDriver implements ObjectDriver,
                 return false;
         }
 
-        private ArrayList<String> getContent(ReadAccess d) throws DriverException {
+        private ArrayList<String> getContent(DataSet d) throws DriverException {
                 ArrayList<String> newValues = new ArrayList<String>();
                 for (int i = 0; i < d.getRowCount(); i++) {
                         newValues.add(d.getFieldValue(i, 1).getAsString());
@@ -242,7 +242,7 @@ public class ReadDriver extends DefaultDBDriver implements ObjectDriver,
                 DataSourceFactory dataSourceFactory) throws DriverException {
         }
 
-        public void writeFile(File file, ReadAccess dataSource, ProgressMonitor pm)
+        public void writeFile(File file, DataSet dataSource, ProgressMonitor pm)
                 throws DriverException {
                 if (failOnWrite) {
                         throw new DriverException();
@@ -322,11 +322,11 @@ public class ReadDriver extends DefaultDBDriver implements ObjectDriver,
         }
 
         @Override
-        public ReadAccess getTable(String name) {
+        public DataSet getTable(String name) {
                 if (!name.equals("main")) {
                         return null;
                 }
-                return new ReadAccess() {
+                return new DataSet() {
 
                         @Override
                         public Value getFieldValue(long rowIndex, int fieldId)

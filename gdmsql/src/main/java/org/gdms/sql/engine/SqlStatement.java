@@ -40,7 +40,7 @@ package org.gdms.sql.engine;
 import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.schema.Metadata;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 
 /**
  * This class represents a SQL Statement to be executed.
@@ -92,8 +92,8 @@ public class SqlStatement {
          * Note: the result of the statement is written to disk before returning.
          * @return the result of the statement, or null if there is none.
          */
-        public ReadAccess execute() {
-                ReadAccess rd = graph.execute();
+        public DataSet execute() {
+                DataSet rd = graph.execute();
                 doCleanUp();
                 return rd;
         }

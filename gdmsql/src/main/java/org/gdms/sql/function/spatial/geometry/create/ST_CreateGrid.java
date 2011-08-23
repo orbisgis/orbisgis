@@ -59,7 +59,7 @@ import com.vividsolutions.jts.geom.LinearRing;
 import org.apache.log4j.Logger;
 import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.driver.DriverUtilities;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.table.AbstractTableFunction;
 import org.gdms.sql.function.table.TableArgument;
@@ -82,11 +82,11 @@ public final class ST_CreateGrid extends AbstractTableFunction {
         private static final Logger LOG = Logger.getLogger(ST_CreateGrid.class);
 
         @Override
-	public ReadAccess evaluate(SQLDataSourceFactory dsf, ReadAccess[] tables,
+	public DataSet evaluate(SQLDataSourceFactory dsf, DataSet[] tables,
 			Value[] values, ProgressMonitor pm) throws FunctionException {
             LOG.trace("Evaluating");
 		try {
-                        final ReadAccess inSds = tables[0];
+                        final DataSet inSds = tables[0];
 
 			deltaX = values[0].getAsDouble();
 			deltaY = values[1].getAsDouble();
@@ -164,7 +164,7 @@ public final class ST_CreateGrid extends AbstractTableFunction {
 	}
 
 	private Envelope prepareOrientedGrid(
-			final ReadAccess inSds, final double angle)
+			final DataSet inSds, final double angle)
 			throws DriverException {
 		double xMin = Double.MAX_VALUE;
 		double xMax = Double.MIN_VALUE;

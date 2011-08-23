@@ -48,7 +48,7 @@ import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.CommonTree;
 import org.apache.log4j.Logger;
 import org.gdms.data.SQLDataSourceFactory;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.sql.engine.parsing.GdmSQLLexer;
 import org.gdms.sql.engine.parsing.GdmSQLParser;
 import org.gdms.sql.engine.parsing.GdmSQLParser.start_rule_return;
@@ -97,7 +97,7 @@ public final class SQLEngine {
          * @return a dataset
          * @throws ParseException 
          */
-        public ReadAccess query(String sql) throws ParseException {
+        public DataSet query(String sql) throws ParseException {
                 SqlStatement[] sts = parse(sql);
                 return query(sts[0]);
         }
@@ -107,7 +107,7 @@ public final class SQLEngine {
          * @param sql
          * @return 
          */
-        public ReadAccess query(SqlStatement sql) {
+        public DataSet query(SqlStatement sql) {
                 sql.prepare(dsf);
                 return sql.execute();
         }

@@ -59,10 +59,10 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.source.SourceManager;
 
-public final class ValDriver implements FileDriver, ReadAccess {
+public final class ValDriver implements FileDriver, DataSet {
 
         public static final String DRIVER_NAME = "Solene Val driver";
         private static final String EXTENSION = "val";
@@ -175,7 +175,7 @@ public final class ValDriver implements FileDriver, ReadAccess {
         }
 
         @Override
-        public ReadAccess getTable(String name) {
+        public DataSet getTable(String name) {
                 if (!name.equals("main")) {
                         return null;
                 }

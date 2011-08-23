@@ -65,7 +65,7 @@ public interface FileReadWriteDriver extends FileDriver {
 	 * @param dataWare
 	 *            DataWare with the contents
 	 */
-	void writeFile(File file, ReadAccess dataSource, ProgressMonitor pm)
+	void writeFile(File file, DataSet dataSource, ProgressMonitor pm)
 			throws DriverException;
 
 	/**

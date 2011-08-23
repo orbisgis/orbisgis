@@ -43,17 +43,17 @@ import org.apache.log4j.Logger;
 
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 
 public class Cluster {
 	private List<Long> listOfDataPointsIndex = null;
 	private int dimension;
-	private ReadAccess inDs;
+	private DataSet inDs;
 	private int cellIndexFieldId;
 
         private static final Logger LOG = Logger.getLogger(Cluster.class);
 
-	public Cluster(final int dimension, final ReadAccess inDs,
+	public Cluster(final int dimension, final DataSet inDs,
 			final int cellIndexFieldId) {
             LOG.trace("Constructor");
 		this.dimension = dimension;

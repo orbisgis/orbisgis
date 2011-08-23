@@ -41,7 +41,7 @@ package org.gdms.sql.engine.commands
 import org.gdms.data.DataSource
 import org.gdms.data.schema.Metadata
 import org.gdms.data.values.Value
-import org.gdms.driver.ReadAccess
+import org.gdms.driver.DataSet
 import org.gdms.sql.evaluator.Expression
 import org.gdms.sql.function.table.TableFunction
 import org.orbisgis.progress.NullProgressMonitor
@@ -59,7 +59,7 @@ import org.gdms.sql.engine.GdmSQLPredef._
  *    (or in the futur a sub-query...)
  *
  * This Command is also an Output command so as not to need another OutputCommand
- * on top of it to feed it to an operator that needs ReadAccess objects. Having
+ * on top of it to feed it to an operator that needs DataSet objects. Having
  * a QueryOutputCommand on top adds one unnecessary level of caching which consume
  * more disk space and slows down the execution.
  *
@@ -78,7 +78,7 @@ class CustomQueryScanCommand(e: Seq[Expression], tables: Seq[Either[String, Outp
 
   private var openedTables: List[Either[DataSource, OutputCommand]] = Nil
 
-  private var ds: ReadAccess = null;
+  private var ds: DataSet = null;
 
   override def doPrepare = {
     super.doPrepare
@@ -112,7 +112,7 @@ class CustomQueryScanCommand(e: Seq[Expression], tables: Seq[Either[String, Outp
     } toIterable
   }
 
-  private def getRow(ds: ReadAccess, count: Int)(i: Long) : Array[Value] = {
+  private def getRow(ds: DataSet, count: Int)(i: Long) : Array[Value] = {
     (0 until count) map ( ds.getFieldValue(i, _)) toArray
   }
 

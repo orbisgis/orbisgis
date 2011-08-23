@@ -54,7 +54,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.generic.GenericObjectDriver;
 import org.gdms.sql.engine.SemanticException;
@@ -71,7 +71,7 @@ import org.orbisgis.progress.ProgressMonitor;
 public class ST_KMeans extends AbstractTableFunction {
 
         private SQLDataSourceFactory dsf;
-        private ReadAccess inDs;
+        private DataSet inDs;
         private String cellIndexFieldName;
         private int cellIndexFieldId;
         private Metadata metadata;
@@ -94,7 +94,7 @@ public class ST_KMeans extends AbstractTableFunction {
         }
 
         @Override
-        public ReadAccess evaluate(SQLDataSourceFactory dsf, ReadAccess[] tables,
+        public DataSet evaluate(SQLDataSourceFactory dsf, DataSet[] tables,
                 Value[] values, ProgressMonitor pm) throws FunctionException {
                 LOG.trace("Evaluating");
                 this.dsf = dsf;
@@ -170,7 +170,7 @@ public class ST_KMeans extends AbstractTableFunction {
                 }
         }
 
-        private ReadAccess populateResultingDatasource(final Cluster[] newClusters)
+        private DataSet populateResultingDatasource(final Cluster[] newClusters)
                 throws DriverException {
                 LOG.trace("Populating resulting datasource");
                 final GenericObjectDriver driver = new GenericObjectDriver(

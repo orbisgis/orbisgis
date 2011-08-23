@@ -59,7 +59,7 @@ import com.vividsolutions.jts.geom.LinearRing;
 import org.apache.log4j.Logger;
 import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.driver.DriverUtilities;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.sql.function.table.AbstractTableFunction;
 import org.gdms.sql.function.table.TableArgument;
 import org.gdms.sql.function.table.TableDefinition;
@@ -82,13 +82,13 @@ public final class ST_BigCreateGrid extends AbstractTableFunction {
         private static final Logger LOG = Logger.getLogger(ST_BigCreateGrid.class);
 
         @Override
-	public ReadAccess evaluate(SQLDataSourceFactory dsf, ReadAccess[] tables,
+	public DataSet evaluate(SQLDataSourceFactory dsf, DataSet[] tables,
 			Value[] values, ProgressMonitor pm) throws FunctionException {
             LOG.trace("Evaluating");
 		try {
 			deltaX = values[0].getAsDouble();
 			deltaY = values[1].getAsDouble();
-			final ReadAccess inSds = tables[0];
+			final DataSet inSds = tables[0];
 
 			// built the driver for the resulting datasource and register it...
 			DiskBufferDriver driver = new DiskBufferDriver(dsf,
@@ -163,7 +163,7 @@ public final class ST_BigCreateGrid extends AbstractTableFunction {
 	}
 
 	private Envelope prepareOrientedGrid(
-			final ReadAccess inSds, final double angle)
+			final DataSet inSds, final double angle)
 			throws DriverException {
 		double xMin = Double.MAX_VALUE;
 		double xMax = Double.MIN_VALUE;

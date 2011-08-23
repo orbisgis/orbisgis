@@ -63,7 +63,7 @@ import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.source.CommitListener;
 import org.orbisgis.progress.NullProgressMonitor;
 
@@ -176,10 +176,10 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
                 if (cachedScope == null) {
                         return new Number[]{0, 0};
                 } else {
-                        if (dimension == ReadAccess.X) {
+                        if (dimension == DataSet.X) {
                                 return new Number[]{cachedScope.getMinX(),
                                                 cachedScope.getMaxX()};
-                        } else if (dimension == ReadAccess.Y) {
+                        } else if (dimension == DataSet.Y) {
                                 return new Number[]{cachedScope.getMinY(),
                                                 cachedScope.getMaxY()};
                         } else {
@@ -524,8 +524,8 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
                                 editionActions.add(new NoEditionInfo(getPK(i), i));
                         }
 
-                        Number[] xScope = getDataSource().getScope(ReadAccess.X);
-                        Number[] yScope = getDataSource().getScope(ReadAccess.Y);
+                        Number[] xScope = getDataSource().getScope(DataSet.X);
+                        Number[] yScope = getDataSource().getScope(DataSet.Y);
                         if ((xScope != null) && (yScope != null)) {
                                 cachedScope = new Envelope(new Coordinate(xScope[0].doubleValue(), yScope[0].doubleValue()),
                                         new Coordinate(xScope[1].doubleValue(), yScope[1].doubleValue()));

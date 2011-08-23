@@ -45,7 +45,7 @@ import org.gdms.data.values.Value;
  * 
  * @author Fernando Gonzalez Cortes
  */
-public interface ReadAccess {
+public interface DataSet {
 
         int X = 0;
         int Y = 1;

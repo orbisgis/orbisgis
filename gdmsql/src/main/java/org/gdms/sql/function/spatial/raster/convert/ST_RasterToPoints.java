@@ -63,7 +63,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import org.apache.log4j.Logger;
 import org.gdms.data.schema.MetadataUtilities;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.sql.function.table.AbstractTableFunction;
 import org.gdms.sql.function.table.TableArgument;
 import org.gdms.sql.function.table.TableFunctionSignature;
@@ -74,10 +74,10 @@ public final class ST_RasterToPoints extends AbstractTableFunction {
         private static final Logger LOG = Logger.getLogger(ST_RasterToPoints.class);
 
         @Override
-        public ReadAccess evaluate(SQLDataSourceFactory dsf, ReadAccess[] tables,
+        public DataSet evaluate(SQLDataSourceFactory dsf, DataSet[] tables,
                 Value[] values, ProgressMonitor pm) throws FunctionException {
                 LOG.trace("Evaluating");
-                final ReadAccess sds = tables[0];
+                final DataSet sds = tables[0];
                 final int spatialFieldIndex;
                 try {
                         if (1 == values.length) {

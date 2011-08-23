@@ -39,13 +39,13 @@ package org.gdms.driver.dbf;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 
 public class DefaultRowProvider implements RowProvider {
 
-        private ReadAccess dataSource;
+        private DataSet dataSource;
 
-        public DefaultRowProvider(ReadAccess dataSource) {
+        public DefaultRowProvider(DataSet dataSource) {
                 this.dataSource = dataSource;
         }
 

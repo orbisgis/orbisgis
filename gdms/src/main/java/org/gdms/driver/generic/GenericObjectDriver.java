@@ -52,14 +52,14 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.GDMSModelDriver;
 import org.gdms.driver.ObjectReadWriteDriver;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.SourceManager;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
 
 public class GenericObjectDriver extends GDMSModelDriver implements
-        ObjectReadWriteDriver, ReadAccess {
+        ObjectReadWriteDriver, DataSet {
 
         protected List<List<Value>> contents = new ArrayList<List<Value>>();
         private String[] columnsNames;
@@ -67,7 +67,7 @@ public class GenericObjectDriver extends GDMSModelDriver implements
         private boolean commitable = true;
         public static final String DRIVER_NAME = "Generic driver";
         private Schema schema;
-        private ReadAccess realSource;
+        private DataSet realSource;
         private static final Logger LOG = Logger.getLogger(GenericObjectDriver.class);
 
         /**
@@ -113,7 +113,7 @@ public class GenericObjectDriver extends GDMSModelDriver implements
                 dataSource.close();
         }
 
-        public GenericObjectDriver(final ReadAccess set, boolean noCopy) throws DriverException {
+        public GenericObjectDriver(final DataSet set, boolean noCopy) throws DriverException {
                 Metadata metadata;
                 if (set == null) {
                         metadata = new DefaultMetadata();
@@ -138,12 +138,12 @@ public class GenericObjectDriver extends GDMSModelDriver implements
                 }
         }
 
-        public GenericObjectDriver(final ReadAccess set) throws DriverException {
+        public GenericObjectDriver(final DataSet set) throws DriverException {
                 this(set, false);
         }
 
         @Override
-        public final boolean write(ReadAccess dataSource, ProgressMonitor pm)
+        public final boolean write(DataSet dataSource, ProgressMonitor pm)
                 throws DriverException {
                 LOG.trace("Writing");
                 final long rowCount = dataSource.getRowCount();
@@ -250,7 +250,7 @@ public class GenericObjectDriver extends GDMSModelDriver implements
         }
 
         @Override
-        public ReadAccess getTable(String name) {
+        public DataSet getTable(String name) {
                 if (!name.equals("main")) {
                         return null;
                 }

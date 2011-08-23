@@ -46,7 +46,7 @@ import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.source.SourceManager;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionSignature;
@@ -62,7 +62,7 @@ import org.orbisgis.progress.ProgressMonitor;
 public final class ExportCall extends AbstractExecutorFunction {
 
         @Override
-        public void evaluate(SQLDataSourceFactory dsf, ReadAccess[] tables, Value[] values, ProgressMonitor pm) throws FunctionException {
+        public void evaluate(SQLDataSourceFactory dsf, DataSet[] tables, Value[] values, ProgressMonitor pm) throws FunctionException {
                 final SourceManager sourceManager = dsf.getSourceManager();
 
                 if (values.length == 2) {

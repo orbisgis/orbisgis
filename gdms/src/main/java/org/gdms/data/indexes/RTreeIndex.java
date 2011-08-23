@@ -50,7 +50,7 @@ import org.orbisgis.progress.ProgressMonitor;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 
 public class RTreeIndex implements DataSourceIndex {
 
@@ -64,7 +64,7 @@ public class RTreeIndex implements DataSourceIndex {
         }
 
         @Override
-        public void buildIndex(DataSourceFactory dsf, ReadAccess dataSource,
+        public void buildIndex(DataSourceFactory dsf, DataSet dataSource,
                 ProgressMonitor pm) throws IndexException {
                 try {
                         int fieldId = dataSource.getMetadata().getFieldIndex(fieldName);

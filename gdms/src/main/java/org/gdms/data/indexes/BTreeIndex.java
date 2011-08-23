@@ -45,7 +45,7 @@ import org.gdms.data.indexes.btree.DiskBTree;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.orbisgis.progress.ProgressMonitor;
 
 public class BTreeIndex implements DataSourceIndex {
@@ -60,7 +60,7 @@ public class BTreeIndex implements DataSourceIndex {
         }
 
         @Override
-        public void buildIndex(DataSourceFactory dsf, ReadAccess dataSource,
+        public void buildIndex(DataSourceFactory dsf, DataSet dataSource,
                 ProgressMonitor pm) throws IndexException {
                 try {
                         long rowCount = dataSource.getRowCount();

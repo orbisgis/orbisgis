@@ -64,11 +64,11 @@ import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.data.schema.Schema;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.ConstraintFactory;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.orbisgis.wkt.parser.PRJUtils;
 import org.orbisgis.wkt.parser.ParseException;
 
-public abstract class AbstractRasterDriver implements FileReadWriteDriver, ReadAccess {
+public abstract class AbstractRasterDriver implements FileReadWriteDriver, DataSet {
 
         protected GeoRaster geoRaster;
         protected RasterMetadata metadata;
@@ -139,7 +139,7 @@ public abstract class AbstractRasterDriver implements FileReadWriteDriver, ReadA
         }
 
         @Override
-        public void writeFile(File file, ReadAccess dataSource, ProgressMonitor pm)
+        public void writeFile(File file, DataSet dataSource, ProgressMonitor pm)
                 throws DriverException {
                 LOG.trace("Writing file");
                 checkMetadata(dataSource.getMetadata());
@@ -214,7 +214,7 @@ public abstract class AbstractRasterDriver implements FileReadWriteDriver, ReadA
         }
 
         @Override
-        public ReadAccess getTable(String name) {
+        public DataSet getTable(String name) {
                 if (!name.equals("main")) {
                         return null;
                 }
@@ -246,9 +246,9 @@ public abstract class AbstractRasterDriver implements FileReadWriteDriver, ReadA
         @Override
         public Number[] getScope(int dimension) throws DriverException {
                 switch (dimension) {
-                        case ReadAccess.X:
+                        case DataSet.X:
                                 return new Number[]{envelope.getMinX(), envelope.getMaxX()};
-                        case ReadAccess.Y:
+                        case DataSet.Y:
                                 return new Number[]{envelope.getMinY(), envelope.getMaxY()};
                         default:
                                 return null;

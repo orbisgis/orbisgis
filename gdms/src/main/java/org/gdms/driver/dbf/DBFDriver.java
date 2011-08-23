@@ -58,12 +58,12 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileReadWriteDriver;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.source.SourceManager;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 
-public final class DBFDriver implements FileReadWriteDriver, ReadAccess {
+public final class DBFDriver implements FileReadWriteDriver, DataSet {
 
         public static final String STRING = "String";
         public static final String DOUBLE = "Double";
@@ -103,7 +103,7 @@ public final class DBFDriver implements FileReadWriteDriver, ReadAccess {
         }
 
         @Override
-        public void writeFile(File file, ReadAccess dataSource, ProgressMonitor pm)
+        public void writeFile(File file, DataSet dataSource, ProgressMonitor pm)
                 throws DriverException {
                 writeFile(file, new DefaultRowProvider(dataSource), dataSourceFactory.getWarningListener(), pm);
         }
@@ -161,7 +161,7 @@ public final class DBFDriver implements FileReadWriteDriver, ReadAccess {
         }
 
         @Override
-        public ReadAccess getTable(String name) {
+        public DataSet getTable(String name) {
                 if (!name.equals("main")) {
                         return null;
                 }

@@ -18,12 +18,12 @@ import com.vividsolutions.jts.index.SpatialIndex;
 import com.vividsolutions.jts.index.strtree.STRtree;
 import com.vividsolutions.jts.operation.union.CascadedPolygonUnion;
 import org.apache.log4j.Logger;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 
 public final class InternalGapFinder {
 
 	private static final double EPSYLON = 10e-6;
-	private ReadAccess sds;
+	private DataSet sds;
 
 	private ProgressMonitor pm;
 
@@ -33,7 +33,7 @@ public final class InternalGapFinder {
 
         private static final Logger LOG = Logger.getLogger(InternalGapFinder.class);
 
-	public InternalGapFinder(ReadAccess sds, int spatialFieldIndex, ProgressMonitor pm) {
+	public InternalGapFinder(DataSet sds, int spatialFieldIndex, ProgressMonitor pm) {
             LOG.trace("Constructor");
 		this.sds = sds;
 		this.pm = pm;

@@ -42,7 +42,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 
 import static org.junit.Assert.*;
 
@@ -53,7 +53,7 @@ public class GettersTest {
         @Test
         public void testAllGeters() throws Exception {
                 AllTypesObjectDriver testD = new AllTypesObjectDriver();
-                ReadAccess test = testD.getTable("main");
+                DataSet test = testD.getTable("main");
                 DataSource d = dsf.getDataSource("alltypes");
                 d.open();
 		assertTrue(ValueFactory.createValue(d.getBinary(0, 0)).equals(

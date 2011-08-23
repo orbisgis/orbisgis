@@ -50,7 +50,7 @@ import org.gdms.data.indexes.ResultIterator;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.source.Source;
 
 /**
@@ -116,7 +116,7 @@ public abstract class DriverDataSource extends DataSourceCommonImpl {
         }
 
         /**
-         * @see org.gdms.driver.ReadAccess#getFieldValue(long, int)
+         * @see org.gdms.driver.DataSet#getFieldValue(long, int)
          */
         @Override
         public synchronized Value getFieldValue(long rowIndex, int fieldId)
@@ -126,7 +126,7 @@ public abstract class DriverDataSource extends DataSourceCommonImpl {
         }
 
         /**
-         * @see org.gdms.driver.ReadAccess#getRowCount()
+         * @see org.gdms.driver.DataSet#getRowCount()
          */
         @Override
         public long getRowCount() throws DriverException {
@@ -182,7 +182,7 @@ public abstract class DriverDataSource extends DataSourceCommonImpl {
         }
 
         @Override
-        public ReadAccess getDriverTable() {
+        public DataSet getDriverTable() {
                 return getDriver().getTable(getDriverTableName());
         }
 

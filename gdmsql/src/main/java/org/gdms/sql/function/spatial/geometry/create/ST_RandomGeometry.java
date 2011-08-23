@@ -53,7 +53,7 @@ import org.orbisgis.progress.ProgressMonitor;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import org.apache.log4j.Logger;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.table.AbstractTableFunction;
 import org.gdms.sql.function.table.TableFunctionSignature;
@@ -66,7 +66,7 @@ public final class ST_RandomGeometry extends AbstractTableFunction {
         private static final Logger LOG = Logger.getLogger(ST_RandomGeometry.class);
 
         @Override
-	public ReadAccess evaluate(SQLDataSourceFactory dsf, ReadAccess[] tables,
+	public DataSet evaluate(SQLDataSourceFactory dsf, DataSet[] tables,
 			Value[] values, ProgressMonitor pm) throws FunctionException {
             LOG.trace("Evaluating");
 		final String choice = values[0].getAsString();

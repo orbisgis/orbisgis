@@ -53,7 +53,7 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.generic.GenericObjectDriver;
 import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.table.TableDefinition;
@@ -69,10 +69,10 @@ public final class ST_RasterToXYZ extends AbstractTableFunction {
         private static final Logger logger = Logger.getLogger(ST_RasterToXYZ.class);
 
         @Override
-        public ReadAccess evaluate(SQLDataSourceFactory dsf, ReadAccess[] tables,
+        public DataSet evaluate(SQLDataSourceFactory dsf, DataSet[] tables,
                 Value[] values, ProgressMonitor pm) throws FunctionException {
                 logger.trace("Evaluating");
-                final ReadAccess sds = tables[0];
+                final DataSet sds = tables[0];
                 final int spatialFieldIndex;
                 try {
                         if (1 == values.length) {

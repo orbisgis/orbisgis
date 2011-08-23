@@ -51,7 +51,7 @@ import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.Driver;
 import org.gdms.source.Source;
 import org.gdms.data.types.IncompatibleTypesException;
@@ -60,7 +60,7 @@ import org.gdms.data.types.IncompatibleTypesException;
  * Interface to access any data source
  * 
  */
-public interface DataSource extends ReadAccess {
+public interface DataSource extends DataSet {
 
         /**
          * All edition events will be notified to the listeners
@@ -884,7 +884,7 @@ public interface DataSource extends ReadAccess {
          * Gets the driver table this DataSource is over. Can be null
          * @return
          */
-        ReadAccess getDriverTable();
+        DataSet getDriverTable();
 
         /**
          * Gets the name of the table this DataSource accesses.

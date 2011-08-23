@@ -42,7 +42,7 @@ import org.gdms.sql.function.FunctionException;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.table.TableDefinition;
@@ -73,11 +73,11 @@ public final class ST_InternalGapFinder extends AbstractTableFunction {
 	}
 
         @Override
-	public ReadAccess evaluate(SQLDataSourceFactory dsf, ReadAccess[] tables,
+	public DataSet evaluate(SQLDataSourceFactory dsf, DataSet[] tables,
 			Value[] values, ProgressMonitor pm) throws FunctionException {
             LOG.trace("Evaluating");
 		try {
-			final ReadAccess sds = tables[0];
+			final DataSet sds = tables[0];
 
 			final String spatialFieldName = values[0].toString();
 			int spatialFieldIndex = sds.getMetadata().getFieldIndex(spatialFieldName);

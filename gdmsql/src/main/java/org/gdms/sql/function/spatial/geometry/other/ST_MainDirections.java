@@ -61,7 +61,7 @@ import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.driver.DriverUtilities;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.sql.function.ScalarArgument;
 import org.gdms.sql.function.table.AbstractTableFunction;
@@ -73,12 +73,12 @@ public final class ST_MainDirections extends AbstractTableFunction {
 	private static final GeometryFactory geometryFactory = new GeometryFactory();
 
         @Override
-	public ReadAccess evaluate(SQLDataSourceFactory dsf, ReadAccess[] tables,
+	public DataSet evaluate(SQLDataSourceFactory dsf, DataSet[] tables,
 			Value[] values, ProgressMonitor pm) throws FunctionException {
 		try {
 			final int nbOfClasses = values[0].getAsInt();
 			final double subdivisionOfAngle = Math.PI / nbOfClasses;
-			final ReadAccess inSds = tables[0];
+			final DataSet inSds = tables[0];
 
                         final long rowCount = inSds.getRowCount();
                         pm.startTask("Computing", rowCount);

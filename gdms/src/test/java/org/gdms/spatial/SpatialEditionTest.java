@@ -57,7 +57,7 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.generic.GenericObjectDriver;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -498,11 +498,11 @@ public class SpatialEditionTest extends TestBase {
                         IndexManager.RTREE_SPATIAL_INDEX, null);
                 DataSource d = dsf.getDataSource(dsName);
                 d.open();
-                Number[] scope = d.getScope(ReadAccess.X);
+                Number[] scope = d.getScope(DataSet.X);
                 for (int i = 0; i < d.getRowCount(); i++) {
                         d.deleteRow(0);
                 }
-                Number[] newScope = d.getScope(ReadAccess.X);
+                Number[] newScope = d.getScope(DataSet.X);
                 assertTrue((scope[0] != newScope[0]) || (scope[1] != newScope[1]));
         }
 

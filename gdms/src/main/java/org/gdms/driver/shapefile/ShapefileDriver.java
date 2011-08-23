@@ -62,7 +62,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileReadWriteDriver;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.dbf.DBFDriver;
 import org.gdms.source.SourceManager;
 import org.orbisgis.progress.ProgressMonitor;
@@ -88,13 +88,13 @@ import org.gdms.driver.driverManager.DriverManager;
 import org.orbisgis.wkt.parser.PRJUtils;
 import org.orbisgis.wkt.parser.ParseException;
 
-public final class ShapefileDriver implements FileReadWriteDriver, ReadAccess {
+public final class ShapefileDriver implements FileReadWriteDriver, DataSet {
 
         public static final String DRIVER_NAME = "Shapefile driver";
         private static final GeometryFactory GF = new GeometryFactory();
         private Envelope envelope;
         private DBFDriver dbfDriver;
-        private ReadAccess driver;
+        private DataSet driver;
         private ShapefileReader reader;
         private IndexFile shxFile;
         private DataSourceFactory dataSourceFactory;
@@ -151,7 +151,7 @@ public final class ShapefileDriver implements FileReadWriteDriver, ReadAccess {
                         dbfDriver.setFile(dbf);
                         dbfDriver.open();
 
-                        // registering ReadAccess
+                        // registering DataSet
                         driver = dbfDriver.getTable("main");
 
                         Constraint dc;
@@ -367,7 +367,7 @@ public final class ShapefileDriver implements FileReadWriteDriver, ReadAccess {
                         + "source doesn't contain any spatial field");
         }
 
-        private int getGeometryDimension(ReadAccess dataSource, Metadata metadata)
+        private int getGeometryDimension(DataSet dataSource, Metadata metadata)
                 throws DriverException {
                 for (int i = 0; i < metadata.getFieldCount(); i++) {
                         if (metadata.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
@@ -435,7 +435,7 @@ public final class ShapefileDriver implements FileReadWriteDriver, ReadAccess {
         }
 
         @Override
-        public void writeFile(final File file, final ReadAccess dataSource,
+        public void writeFile(final File file, final DataSet dataSource,
                 ProgressMonitor pm) throws DriverException {
                 LOG.trace("Writing file " + file.getAbsolutePath());
                 WarningListener warningListener = dataSourceFactory.getWarningListener();
@@ -511,7 +511,7 @@ public final class ShapefileDriver implements FileReadWriteDriver, ReadAccess {
                 return new File(prefix + suffix);
         }
 
-        private ShapeType getFirstShapeType(ReadAccess sds,
+        private ShapeType getFirstShapeType(DataSet sds,
                 int dimension) throws DriverException {
                 final int spatialFieldIndex = MetadataUtilities.getSpatialFieldIndex(sds.getMetadata());
                 for (int i = 0; i < sds.getRowCount(); i++) {
@@ -556,7 +556,7 @@ public final class ShapefileDriver implements FileReadWriteDriver, ReadAccess {
                 }
         }
 
-        private int computeSize(ReadAccess dataSource,
+        private int computeSize(DataSet dataSource,
                 ShapeType type) throws DriverException, ShapefileException {
                 final int spatialFieldIndex = MetadataUtilities.getSpatialFieldIndex(dataSource.getMetadata());
                 int fileLength = 100;
@@ -652,7 +652,7 @@ public final class ShapefileDriver implements FileReadWriteDriver, ReadAccess {
         }
 
         @Override
-        public ReadAccess getTable(String name) {
+        public DataSet getTable(String name) {
                 if (!name.equals("main")) {
                         return null;
                 }

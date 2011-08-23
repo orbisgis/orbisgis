@@ -47,7 +47,7 @@ import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.Driver;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.source.Source;
 
 /**
@@ -205,7 +205,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
          * @param fieldId
          * @return
          * @throws DriverException
-         * @see org.gdms.driver.ReadAccess#getFieldValue(long, int)
+         * @see org.gdms.driver.DataSet#getFieldValue(long, int)
          */
         @Override
         public Value getFieldValue(long rowIndex, int fieldId)
@@ -225,7 +225,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
         /**
          * @return
          * @throws DriverException
-         * @see org.gdms.driver.ReadAccess#getRowCount()
+         * @see org.gdms.driver.DataSet#getRowCount()
          */
         @Override
         public long getRowCount() throws DriverException {
@@ -236,7 +236,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
          * @param dimension
          * @return
          * @throws DriverException
-         * @see org.gdms.driver.ReadAccess#getScope(int)
+         * @see org.gdms.driver.DataSet#getScope(int)
          */
         @Override
         public Number[] getScope(int dimension) throws DriverException {
@@ -477,7 +477,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
         }
 
         @Override
-        public ReadAccess getDriverTable() {
+        public DataSet getDriverTable() {
                 return internalDataSource.getDriverTable();
         }
 

@@ -79,7 +79,7 @@ import org.gdms.data.wms.WMSSource;
 import org.gdms.data.wms.WMSSourceDefinition;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.asc.AscDriver;
 import org.gdms.driver.csv.CSVDriver;
 import org.gdms.driver.dbf.DBFDriver;
@@ -777,7 +777,7 @@ public final class DefaultSourceManager implements SourceManager {
                 return createDataSource(dsc, DriverManager.DEFAULT_SINGLE_TABLE_NAME);
         }
 
-        public void saveContents(String sourceName, ReadAccess contents,
+        public void saveContents(String sourceName, DataSet contents,
                 ProgressMonitor pm) throws DriverException {
                 LOG.trace("Saving source to " + sourceName);
                 ExtendedSource extendedSource = getExtendedSource(sourceName);

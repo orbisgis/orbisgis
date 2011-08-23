@@ -14,7 +14,7 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.Driver;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.generic.GenericObjectDriver;
 import org.gdms.source.SourceManager;
@@ -70,7 +70,7 @@ public class WMSSourceDefinition extends AbstractDataSourceDefinition {
         }
 
         @Override
-        public void createDataSource(ReadAccess contents, ProgressMonitor pm)
+        public void createDataSource(DataSet contents, ProgressMonitor pm)
                 throws DriverException {
                 throw new UnsupportedOperationException("Cannot create WMS sources");
         }

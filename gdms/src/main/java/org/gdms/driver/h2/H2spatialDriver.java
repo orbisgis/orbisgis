@@ -52,7 +52,7 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.jdbc.BinaryRule;
 import org.gdms.driver.jdbc.BooleanRule;
 import org.gdms.driver.jdbc.ConversionRule;
@@ -81,7 +81,7 @@ import org.apache.log4j.Logger;
  * @author Erwan Bocher
  * 
  */
-public final class H2spatialDriver extends DefaultDBDriver implements ReadAccess {
+public final class H2spatialDriver extends DefaultDBDriver implements DataSet {
 
         private static Exception driverException;
         private static WKBReader wkbreader = new WKBReader();

@@ -57,7 +57,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import org.apache.log4j.Logger;
 import org.gdms.driver.DriverUtilities;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.table.AbstractTableFunction;
 import org.gdms.sql.function.table.TableArgument;
@@ -71,13 +71,13 @@ public final class ST_CreatePointsGrid extends AbstractTableFunction {
         private static final Logger LOG = Logger.getLogger(ST_CreatePointsGrid.class);
 
         @Override
-        public ReadAccess evaluate(SQLDataSourceFactory dsf, ReadAccess[] tables,
+        public DataSet evaluate(SQLDataSourceFactory dsf, DataSet[] tables,
                 Value[] values, ProgressMonitor pm) throws FunctionException {
                 LOG.trace("Evaluating");
                 try {
                         deltaX = values[0].getAsDouble();
                         deltaY = values[1].getAsDouble();
-                        final ReadAccess inSds = tables[0];
+                        final DataSet inSds = tables[0];
 
                         // built the driver for the resulting datasource and register it...
                         final DiskBufferDriver driver = new DiskBufferDriver(dsf,

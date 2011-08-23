@@ -62,9 +62,9 @@ public interface Driver {
         /**
          * Get an access to a table returned by this driver
          * @param name the name of the table
-         * @return a ReadAccess object accessing the table
+         * @return a DataSet object accessing the table
          */
-        ReadAccess getTable(String name);
+        DataSet getTable(String name);
 
         /**
          * Method to pass references to the driver

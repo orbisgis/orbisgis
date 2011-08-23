@@ -15,7 +15,7 @@ import org.orbisgis.progress.ProgressMonitor;
 
 import com.vividsolutions.jts.geom.Envelope;
 import java.util.List;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 
 /**
  * Class to write gdms files
@@ -42,7 +42,7 @@ public class GdmsWriter {
 		raf.close();
 	}
 
-	public void write(ReadAccess dataSource, ProgressMonitor pm)
+	public void write(DataSet dataSource, ProgressMonitor pm)
 			throws IOException, DriverException {
 		writeMetadata(dataSource.getRowCount(), dataSource.getMetadata());
 		// Write the file building the row indexes in memory

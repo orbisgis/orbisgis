@@ -55,7 +55,7 @@ import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.Driver;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.directory.DbDefinitionType;
 import org.gdms.source.directory.DefinitionType;
@@ -104,7 +104,7 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition {
         }
 
         @Override
-        public void createDataSource(ReadAccess contents, ProgressMonitor pm)
+        public void createDataSource(DataSet contents, ProgressMonitor pm)
                 throws DriverException {
                 LOG.trace("Writing datasource to database");
                 final long rowCount = contents.getRowCount();

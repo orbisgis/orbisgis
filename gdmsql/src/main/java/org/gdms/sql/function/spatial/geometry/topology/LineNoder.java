@@ -79,14 +79,14 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 
 public final class LineNoder {
-	private ReadAccess sds;
+	private DataSet sds;
 	private GeometryFactory geometryFactory = new GeometryFactory();
         private int spatialFieldIndex;
 
-	public LineNoder(final ReadAccess sds, int spatialFieldIndex) {
+	public LineNoder(final DataSet sds, int spatialFieldIndex) {
 		this.sds = sds;
                 this.spatialFieldIndex = spatialFieldIndex;
 	}

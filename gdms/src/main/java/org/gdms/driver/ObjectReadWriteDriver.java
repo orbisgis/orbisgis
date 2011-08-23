@@ -53,6 +53,6 @@ public interface ObjectReadWriteDriver extends ObjectDriver, Driver {
          * @return
          * @throws DriverException
          */
-        boolean write(ReadAccess dataSource, ProgressMonitor pm)
+        boolean write(DataSet dataSource, ProgressMonitor pm)
                 throws DriverException;
 }

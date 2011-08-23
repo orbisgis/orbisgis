@@ -65,7 +65,7 @@ import com.vividsolutions.jts.geom.Polygon;
 import org.apache.log4j.Logger;
 import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.data.types.ConstraintFactory;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.table.AbstractTableFunction;
 import org.gdms.sql.function.table.TableArgument;
@@ -77,14 +77,14 @@ public final class ST_Extrude extends AbstractTableFunction {
         private static final Logger LOG = Logger.getLogger(ST_Extrude.class);
 
         @Override
-        public ReadAccess evaluate(SQLDataSourceFactory dsf, ReadAccess[] tables,
+        public DataSet evaluate(SQLDataSourceFactory dsf, DataSet[] tables,
                 Value[] values, ProgressMonitor pm) throws FunctionException {
                 LOG.trace("Evaluating");
                 try {
                         final String idFieldName = values[0].getAsString();
                         final String heightFieldName = values[1].getAsString();
 
-                        final ReadAccess sds = tables[0];
+                        final DataSet sds = tables[0];
                         int spatialFieldIndex;
 
                         if (3 == values.length) {

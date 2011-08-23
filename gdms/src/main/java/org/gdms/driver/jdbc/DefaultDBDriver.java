@@ -64,7 +64,7 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.TableDescription;
 import org.gdms.driver.driverManager.DriverManager;
 
@@ -73,7 +73,7 @@ import org.gdms.driver.driverManager.DriverManager;
  * that are related to JDBC
  * 
  */
-public abstract class DefaultDBDriver extends DefaultSQL implements ReadAccess {
+public abstract class DefaultDBDriver extends DefaultSQL implements DataSet {
 
         private ResultSet resultSet;
         private long rowCount = -1;
@@ -471,7 +471,7 @@ public abstract class DefaultDBDriver extends DefaultSQL implements ReadAccess {
         }
 
         @Override
-        public ReadAccess getTable(String name) {
+        public DataSet getTable(String name) {
                 if (!name.equals(DriverManager.DEFAULT_SINGLE_TABLE_NAME)) {
                         return null;
                 }

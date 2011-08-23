@@ -57,7 +57,7 @@ import org.orbisgis.progress.ProgressMonitor;
 
 import com.vividsolutions.jts.geom.Geometry;
 import org.apache.log4j.Logger;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.sql.function.table.AbstractTableFunction;
 import org.gdms.sql.function.table.TableArgument;
 import org.gdms.sql.function.table.TableFunctionSignature;
@@ -67,11 +67,11 @@ public final class ST_ToLineNoder extends AbstractTableFunction {
     private static final Logger LOG = Logger.getLogger(ST_ToLineNoder.class);
 
         @Override
-	public ReadAccess evaluate(SQLDataSourceFactory dsf, ReadAccess[] tables,
+	public DataSet evaluate(SQLDataSourceFactory dsf, DataSet[] tables,
 			Value[] values, ProgressMonitor pm) throws FunctionException {
             LOG.trace("Evaluating");
 		try {
-			final ReadAccess sds = tables[0];
+			final DataSet sds = tables[0];
 
                         final String spatialFieldName = values[0].toString();
                         final int spatialFieldIndex = sds.getMetadata().getFieldIndex(spatialFieldName);

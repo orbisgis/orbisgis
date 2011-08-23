@@ -12,12 +12,12 @@ import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.source.SourceManager;
 
-public final class DXFDriver implements FileDriver, ReadAccess {
+public final class DXFDriver implements FileDriver, DataSet {
 
-        private ReadAccess result;
+        private DataSet result;
         private static final Logger LOG = Logger.getLogger(DXFDriver.class);
         private Schema schema;
         private File file;
@@ -90,7 +90,7 @@ public final class DXFDriver implements FileDriver, ReadAccess {
         }
 
         @Override
-        public ReadAccess getTable(String name) {
+        public DataSet getTable(String name) {
                 if (!name.equals("main")) {
                         return null;
                 }

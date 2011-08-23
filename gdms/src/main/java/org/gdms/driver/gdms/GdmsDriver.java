@@ -50,13 +50,13 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.driver.GDMSModelDriver;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.SourceManager;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 
-public final class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver, ReadAccess {
+public final class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver, DataSet {
 
         // version 1 : not supported anymore
         // version 2 : supported
@@ -95,7 +95,7 @@ public final class GdmsDriver extends GDMSModelDriver implements FileReadWriteDr
         }
 
         @Override
-        public void writeFile(File file, ReadAccess dataSource, ProgressMonitor pm)
+        public void writeFile(File file, DataSet dataSource, ProgressMonitor pm)
                 throws DriverException {
                 LOG.trace("Writing gdms file");
                 try {
@@ -202,7 +202,7 @@ public final class GdmsDriver extends GDMSModelDriver implements FileReadWriteDr
         }
 
         @Override
-        public ReadAccess getTable(String name) {
+        public DataSet getTable(String name) {
                 return this;
         }
 

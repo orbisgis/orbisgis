@@ -41,7 +41,7 @@ package org.gdms.sql.function.executor;
 
 import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.values.Value;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 import org.orbisgis.progress.ProgressMonitor;
@@ -66,6 +66,6 @@ public interface ExecutorFunction extends Function {
 	 *             If some error happens and the execution of the query should
 	 *             be stopped
 	 */
-	void evaluate(SQLDataSourceFactory dsf, ReadAccess[] tables,
+	void evaluate(SQLDataSourceFactory dsf, DataSet[] tables,
                 Value[] args,ProgressMonitor pm) throws FunctionException;
 }

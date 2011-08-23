@@ -58,7 +58,7 @@ import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.Source;
 import org.gdms.data.types.IncompatibleTypesException;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.utils.FileUtils;
@@ -202,7 +202,7 @@ public class IndexManager {
                 buildIndex(tableName, fieldName, null, pm);
         }
 
-        public void buildIndex(ReadAccess src, String fieldName, String indexId,
+        public void buildIndex(DataSet src, String fieldName, String indexId,
                 ProgressMonitor pm) throws IndexException, NoSuchTableException {
                 if (src instanceof DataSource) {
                         DataSource ds = (DataSource) src;
@@ -342,7 +342,7 @@ public class IndexManager {
          * @throws IndexException
          * @throws NoSuchTableException
          */
-        public DataSourceIndex getIndex(ReadAccess src, String fieldName) throws IndexException, NoSuchTableException {
+        public DataSourceIndex getIndex(DataSet src, String fieldName) throws IndexException, NoSuchTableException {
                 if (src instanceof DataSource) {
                         DataSource ds = (DataSource) src;
                         return getIndex(ds.getName(), fieldName);
@@ -616,7 +616,7 @@ public class IndexManager {
          * @param fieldName a field name
          * @return true if there is an index on the data set.
          */
-        public boolean isIndexed(ReadAccess src, String fieldName) {
+        public boolean isIndexed(DataSet src, String fieldName) {
                 if (src instanceof DataSource) {
                         DataSource ds = (DataSource) src;
                         try {

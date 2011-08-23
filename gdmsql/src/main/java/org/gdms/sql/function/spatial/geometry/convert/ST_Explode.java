@@ -56,7 +56,7 @@ import org.orbisgis.progress.ProgressMonitor;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import org.apache.log4j.Logger;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.sql.function.table.AbstractTableFunction;
 import org.gdms.sql.function.table.TableArgument;
 import org.gdms.sql.function.table.TableFunctionSignature;
@@ -82,12 +82,12 @@ public final class ST_Explode extends AbstractTableFunction {
         }
 
         @Override
-        public ReadAccess evaluate(SQLDataSourceFactory dsf, ReadAccess[] tables,
+        public DataSet evaluate(SQLDataSourceFactory dsf, DataSet[] tables,
                 Value[] values, ProgressMonitor pm) throws FunctionException {
                 LOG.trace("Evaluating");
                 try {
                         int spatialFieldIndex;
-                        final ReadAccess sds = tables[0];
+                        final DataSet sds = tables[0];
                         if (1 == values.length) {
                                 // if no spatial's field's name is provided, the default (first)
                                 // one is arbitrarily chosen.

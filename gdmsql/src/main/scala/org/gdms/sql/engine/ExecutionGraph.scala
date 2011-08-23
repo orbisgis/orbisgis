@@ -39,7 +39,7 @@
 package org.gdms.sql.engine
 
 import org.gdms.data.SQLDataSourceFactory
-import org.gdms.driver.ReadAccess
+import org.gdms.driver.DataSet
 import org.gdms.data.schema.Metadata
 import org.gdms.sql.engine.commands.OutputCommand
 import org.gdms.sql.engine.operations.Operation
@@ -53,10 +53,10 @@ import org.gdms.sql.engine.physical.PhysicalPlanBuilder
  * <li>The <tt>prepare</tt> method must be called first.</li>
  * <li>Then <tt>getResultMetadata</tt> can be called to get the result metadata
  * before actually running the query.</li>
- * <li>Then <tt>execute can be called (once)</tt> and returns a <code>ReadAccess</code> object
+ * <li>Then <tt>execute can be called (once)</tt> and returns a <code>DataSet</code> object
  * ready to be read.</tt>
  * <li>Then <tt>cleanUp</tt> must be called to free any remaining resources. Note
- * that the <code>ReadAccess</code> object returned by <tt>execute</tt> remains
+ * that the <code>DataSet</code> object returned by <tt>execute</tt> remains
  * accessible after this call.
  * </ul>
  *
@@ -68,7 +68,7 @@ import org.gdms.sql.engine.physical.PhysicalPlanBuilder
  */
 class ExecutionGraph(op: Operation) {
 
-  private var r: ReadAccess = null
+  private var r: DataSet = null
   private var dsf: SQLDataSourceFactory = null
   private var start: OutputCommand = null
   
@@ -95,7 +95,7 @@ class ExecutionGraph(op: Operation) {
    * Runs the query and returns the result.
    * @return the result of the query
    */
-  def execute(): ReadAccess = {
+  def execute(): DataSet = {
     start.execute
     r
   }

@@ -49,7 +49,7 @@ import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.system.RegisterCall;
@@ -202,7 +202,7 @@ public class CustomQueriesTest {
 
                                 @Override
                                 @Test
-                                public void evaluate(SQLDataSourceFactory dsf, ReadAccess[] tables, Value[] args, ProgressMonitor pm) throws FunctionException {
+                                public void evaluate(SQLDataSourceFactory dsf, DataSet[] tables, Value[] args, ProgressMonitor pm) throws FunctionException {
                                         throw new UnsupportedOperationException();
                                 }
 

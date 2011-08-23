@@ -42,7 +42,7 @@ import org.gdms.data.schema.Schema;
 
 import org.gdms.driver.DriverException;
 import org.gdms.driver.Driver;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.source.directory.DefinitionType;
 import org.orbisgis.progress.ProgressMonitor;
 
@@ -71,7 +71,7 @@ public interface DataSourceDefinition {
          * @param pm
          * @throws DriverException 
          */
-        void createDataSource(ReadAccess contents, ProgressMonitor pm)
+        void createDataSource(DataSet contents, ProgressMonitor pm)
                 throws DriverException;
 
         /**

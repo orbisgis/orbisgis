@@ -59,7 +59,7 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.TableDescription;
 import org.gdms.driver.jdbc.AutonumericRule;
 import org.gdms.driver.jdbc.BooleanRule;
@@ -84,7 +84,7 @@ import org.gdms.data.types.SRIDConstraint;
 /**
  *
  */
-public final class PostgreSQLDriver extends DefaultDBDriver implements ReadAccess {
+public final class PostgreSQLDriver extends DefaultDBDriver implements DataSet {
 
         public static final String DRIVER_NAME = "postgresql";
         private static final String GEOMETRYFIELDNAME = "GEOMETRY";

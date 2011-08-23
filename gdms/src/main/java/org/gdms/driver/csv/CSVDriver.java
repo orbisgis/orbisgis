@@ -56,7 +56,7 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.data.values.ValueWriter;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileReadWriteDriver;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.source.SourceManager;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.FileUtils;
@@ -75,7 +75,7 @@ import org.gdms.data.schema.DefaultSchema;
  * CSV file driver where the first row is used to define the field names
  * 
  */
-public final class CSVDriver implements FileReadWriteDriver, ValueWriter, ReadAccess {
+public final class CSVDriver implements FileReadWriteDriver, ValueWriter, DataSet {
 
         public static final String DRIVER_NAME = "csv";
         private static final char FIELD_SEPARATOR = ';';
@@ -150,7 +150,7 @@ public final class CSVDriver implements FileReadWriteDriver, ValueWriter, ReadAc
         }
 
         @Override
-        public void writeFile(final File file, final ReadAccess dataSource,
+        public void writeFile(final File file, final DataSet dataSource,
                 ProgressMonitor pm) throws DriverException {
                 LOG.trace("Writing File");
                 CSVWriter writer = null;
@@ -339,7 +339,7 @@ public final class CSVDriver implements FileReadWriteDriver, ValueWriter, ReadAc
         }
 
         @Override
-        public ReadAccess getTable(String name) {
+        public DataSet getTable(String name) {
                 if (!name.equals("main")) {
                         return null;
                 }

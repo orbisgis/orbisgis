@@ -71,7 +71,7 @@ import com.vividsolutions.jts.operation.linemerge.LineMerger;
 import com.vividsolutions.jts.operation.polygonize.Polygonizer;
 import com.vividsolutions.jts.operation.union.UnaryUnionOp;
 import org.gdms.data.types.ConstraintFactory;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 
 public final class PlanarGraph {
 
@@ -93,7 +93,7 @@ public final class PlanarGraph {
         // ************************************************
         // Create edge layer/
         // ************************************************
-        public GenericObjectDriver createEdges(ReadAccess sds, int spatialFieldIndex) throws DriverException {
+        public GenericObjectDriver createEdges(DataSet sds, int spatialFieldIndex) throws DriverException {
 
                 // Schema edge
                 pm.startTask("Create edges graph", 0);
@@ -137,7 +137,7 @@ public final class PlanarGraph {
         // ************************************************
         // extract lines from a feature collection
         // ************************************************
-        public Geometry getLines(ReadAccess sds, int spatialFieldIndex)
+        public Geometry getLines(DataSet sds, int spatialFieldIndex)
                 throws DriverException {
 
                 LineNoder linenoder = new LineNoder(sds, spatialFieldIndex);
@@ -220,7 +220,7 @@ public final class PlanarGraph {
         // ************************************************
         // Create face layer
         // ************************************************
-        public GenericObjectDriver createFaces(ReadAccess inputSDS,
+        public GenericObjectDriver createFaces(DataSet inputSDS,
                 GenericObjectDriver omEdges) throws DriverException,
                 NonEditableDataSourceException, NoSuchTableException,
                 IndexException {

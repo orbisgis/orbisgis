@@ -45,7 +45,7 @@ import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.values.Value;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.source.SourceManager;
 import org.gdms.sql.function.executor.AbstractExecutorFunction;
 import org.gdms.sql.function.executor.ExecutorFunctionSignature;
@@ -60,7 +60,7 @@ public final class RegisterCall extends AbstractExecutorFunction {
         private static final Logger LOG = Logger.getLogger(RegisterCall.class);
 
         @Override
-        public void evaluate(SQLDataSourceFactory dsf, ReadAccess[] tables,
+        public void evaluate(SQLDataSourceFactory dsf, DataSet[] tables,
                 Value[] values, ProgressMonitor pm) throws FunctionException {
                 LOG.trace("Evaluating");
                 try {

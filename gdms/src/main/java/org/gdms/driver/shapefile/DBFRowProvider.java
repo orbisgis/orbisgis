@@ -39,16 +39,16 @@ package org.gdms.driver.shapefile;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.dbf.RowProvider;
 
 public class DBFRowProvider implements RowProvider {
 
-	private ReadAccess dataSource;
+	private DataSet dataSource;
 
 	private DBFMetadata metadata;
 
-	public DBFRowProvider(ReadAccess ds) throws DriverException {
+	public DBFRowProvider(DataSet ds) throws DriverException {
 		this.dataSource = ds;
 		this.metadata = new DBFMetadata(dataSource.getMetadata());
 	}

@@ -41,7 +41,7 @@ import org.gdms.sql.function.FunctionException;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.sql.function.Function;
 import org.orbisgis.progress.ProgressMonitor;
 
@@ -66,7 +66,7 @@ public interface TableFunction extends Function {
          * @throws FunctionException
          *             if the custom query execution fails
          */
-        ReadAccess evaluate(SQLDataSourceFactory dsf, ReadAccess[] tables,
+        DataSet evaluate(SQLDataSourceFactory dsf, DataSet[] tables,
                 Value[] values, ProgressMonitor pm) throws FunctionException;
 
         /**

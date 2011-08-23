@@ -41,7 +41,7 @@ import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.table.TableDefinition;
 import org.gdms.sql.function.ScalarArgument;
@@ -52,9 +52,9 @@ import org.orbisgis.progress.ProgressMonitor;
 
 public class FieldReferenceQuery extends AbstractTableFunction {
 
-        public ReadAccess evaluate(SQLDataSourceFactory dsf, ReadAccess[] tables,
+        public DataSet evaluate(SQLDataSourceFactory dsf, DataSet[] tables,
                 Value[] values, ProgressMonitor pm) {
-                return new ReadAccess() {
+                return new DataSet() {
 
                         @Override
                         public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {

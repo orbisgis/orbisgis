@@ -48,7 +48,7 @@ import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.orbisgis.utils.FileUtils;
 
 import static org.junit.Assert.*;
@@ -252,11 +252,11 @@ public class DataSourceTest extends TestBase {
                         }
 
                         @Override
-                        public ReadAccess getTable(String name) {
+                        public DataSet getTable(String name) {
                                 if (!name.equals("main")) {
                                         return null;
                                 }
-                                return new ReadAccess() {
+                                return new DataSet() {
 
                                         @Override
                                         public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {

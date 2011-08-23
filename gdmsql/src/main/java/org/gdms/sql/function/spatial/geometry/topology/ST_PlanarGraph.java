@@ -45,7 +45,7 @@ import org.gdms.data.indexes.IndexException;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.generic.GenericObjectDriver;
 import org.gdms.sql.function.FunctionSignature;
@@ -76,11 +76,11 @@ public final class ST_PlanarGraph extends AbstractTableFunction {
         }
 
         @Override
-        public ReadAccess evaluate(SQLDataSourceFactory dsf, ReadAccess[] tables,
+        public DataSet evaluate(SQLDataSourceFactory dsf, DataSet[] tables,
                 Value[] values, ProgressMonitor pm) throws FunctionException {
                 LOG.trace("Evaluating");
                 try {
-                        final ReadAccess sds = tables[0];
+                        final DataSet sds = tables[0];
 
                         final String spatialFieldName = values[0].toString();
                         final int spatialFieldIndex = sds.getMetadata().getFieldIndex(spatialFieldName);

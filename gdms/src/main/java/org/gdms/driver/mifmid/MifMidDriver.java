@@ -53,14 +53,14 @@ import org.gdms.data.schema.SchemaMetadata;
 import org.gdms.data.types.TypeDefinition;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.source.SourceManager;
 
 public final class MifMidDriver implements FileDriver {
 
         private static final String NOT_SUPPORTED = "This driver is readonly.";
         private MifMidReader mm;
-        private ReadAccess driver;
+        private DataSet driver;
         private Schema schema;
         private SchemaMetadata metadata;
         private File file;
@@ -133,7 +133,7 @@ public final class MifMidDriver implements FileDriver {
         }
 
         @Override
-        public ReadAccess getTable(String name) {
+        public DataSet getTable(String name) {
                 if (name.equals("main")) {
                         return driver;
                 } else {

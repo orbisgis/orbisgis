@@ -53,7 +53,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 
 public class SQLAllTypesObjectDriver implements ObjectDriver {
 
@@ -152,7 +152,7 @@ public class SQLAllTypesObjectDriver implements ObjectDriver {
 	
 
 	/**
-	 * @see org.gdms.driver.ReadAccess#getFieldType(int)
+	 * @see org.gdms.driver.DataSet#getFieldType(int)
 	 */
 	public Type getFieldType(int i) throws DriverException {
 		return types[i];
@@ -241,11 +241,11 @@ public class SQLAllTypesObjectDriver implements ObjectDriver {
         }
 
         @Override
-        public ReadAccess getTable(String name) {
+        public DataSet getTable(String name) {
                 if (!name.equals("main")) {
                         return null;
                 }
-                return new ReadAccess() {
+                return new DataSet() {
 
                         @Override
                         public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {

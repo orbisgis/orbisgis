@@ -55,7 +55,7 @@ import org.gdms.data.schema.Schema;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.Driver;
-import org.gdms.driver.ReadAccess;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.generic.GenericObjectDriver;
 import org.gdms.source.SourceManager;
@@ -119,7 +119,7 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
                 LOG.trace("Executing SQLSource");
                 getDataSourceFactory().fireInstructionExecuted(statement.getSQL());
                 statement.prepare(getDataSourceFactory());
-                ReadAccess source = statement.execute();
+                DataSet source = statement.execute();
                 DataSource def = null;
                 if (!pm.isCancelled()) {
                         if (source == null) {
@@ -160,7 +160,7 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
         }
 
         @Override
-        public void createDataSource(ReadAccess contents, ProgressMonitor pm)
+        public void createDataSource(DataSet contents, ProgressMonitor pm)
                 throws DriverException {
                 throw new DriverException("Read only source");
         }
