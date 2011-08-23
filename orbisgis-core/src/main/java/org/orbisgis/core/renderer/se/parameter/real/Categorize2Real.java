@@ -11,15 +11,36 @@ import org.orbisgis.core.renderer.se.parameter.Categorize;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 
+/**
+ * A categorization from {@code RealParameter} to {@code RealParamter}
+ * @author alexis, maxence
+ */
 public final class Categorize2Real extends Categorize<RealParameter, RealLiteral> implements RealParameter {
 
         private RealParameterContext ctx;
 
+        /**
+         * Build a new {@code Categorize2Real} with the given parameters. Built using 
+         * {@link Categorize#Categorize(org.orbisgis.core.renderer.se.parameter.SeParameter, 
+         * org.orbisgis.core.renderer.se.parameter.SeParameter, 
+         * org.orbisgis.core.renderer.se.parameter.real.RealParameter) Categorize}
+         * @param initialClass
+         * The value of the first class.
+         * @param fallback
+         * The default value if an input can't be processed.
+         * @param lookupValue 
+         * The {@code RealParameter} used to retrieve the input values.
+         */
         public Categorize2Real(RealParameter initialClass, RealLiteral fallback, RealParameter lookupValue) {
                 super(initialClass, fallback, lookupValue);
                 this.setContext(ctx);
         }
 
+        /**
+         * Build a new {@code Categorize2Real} from a JAXB element.
+         * @param expr
+         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         */
         public Categorize2Real(JAXBElement<CategorizeType> expr) throws InvalidStyle {
                 CategorizeType t = expr.getValue();
 

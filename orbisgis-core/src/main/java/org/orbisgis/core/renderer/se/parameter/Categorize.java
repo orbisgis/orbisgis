@@ -39,8 +39,8 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * preceding or succeeding interval.
  * @param <ToType> One of ColorParameter, RealParameter, StringParameter
  * @param <FallbackType> the Literal implementation of <ToType>. It is needed to store 
- * a default value, when a analyzed input can't be placed in any category.
- * @author maxence
+ * a default value, when an analyzed input can't be placed in any category.
+ * @author maxence, alexis
  *
  */
 public abstract class Categorize<ToType extends SeParameter, FallbackType extends ToType> implements SeParameter, LiteralListener {
@@ -74,14 +74,27 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         MANUAL, NATURAL_BREAKS, QUANTILE, EQUAL_INTERVAL, STANDARD_DEVIATION
     }
 
+    /**
+     * Build a {@code Categorize} objects with empty class and threshold values.
+     */
     protected Categorize() {
-        //this.classes = new ArrayList<Category<ToType>>();
         this.classValues = new ArrayList<ToType>();
         this.thresholds = new ArrayList<RealParameter>();
         this.listeners = new ArrayList<CategorizeListener>();
         this.sdFactor = 1.0;
     }
 
+    /**
+     * Build a {@code Categorize} with the given parameters. The method is registered
+     * as {@code MANUAL}. Note that thresholds are leaved empty (Consequently, there is only
+     * one category, from negative infinity to positive infinity).
+     * @param firstClassValue
+     *  The value of the first class used in this categorization.
+     * @param fallbackValue
+     *  The fallback value used if an input can't be processed.
+     * @param lookupValue 
+     *  The {@link RealParameter} used to retrieve the values to classify.
+     */
     public Categorize(ToType firstClassValue, FallbackType fallbackValue, RealParameter lookupValue) {
         this();
         setClassValue(0, firstClassValue);

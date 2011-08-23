@@ -51,15 +51,35 @@ import org.orbisgis.core.renderer.se.parameter.Categorize;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
-
+/**
+ * A categorization from {@code RealParameter} to {@code StringParamter}
+ * @author alexis, maxence
+ */
 public final class Categorize2String extends Categorize<StringParameter, StringLiteral> implements StringParameter {
 
     private String[] restriction;
 
+        /**
+         * Build a new {@code Categorize2String} with the given parameters. Built using 
+         * {@link Categorize#Categorize(org.orbisgis.core.renderer.se.parameter.SeParameter, 
+         * org.orbisgis.core.renderer.se.parameter.SeParameter, 
+         * org.orbisgis.core.renderer.se.parameter.real.RealParameter) Categorize}
+         * @param initialClass
+         * The value of the first class.
+         * @param fallback
+         * The default value if an input can't be processed.
+         * @param lookupValue 
+         * The {@code RealParameter} used to retrieve the input values.
+         */
     public Categorize2String(StringParameter initialClass, StringLiteral fallback, RealParameter lookupValue) {
         super(initialClass, fallback, lookupValue);
     }
 
+        /**
+         * Build a new {@code Categorize2String} from a JAXB element.
+         * @param expr
+         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         */
     public Categorize2String(JAXBElement<CategorizeType> expr) throws InvalidStyle {
         CategorizeType t = expr.getValue();
 
