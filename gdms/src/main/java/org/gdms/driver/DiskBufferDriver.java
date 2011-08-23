@@ -46,6 +46,7 @@ import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.Schema;
 import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.values.Value;
+import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.gdms.GdmsDriver;
 import org.gdms.driver.gdms.GdmsReader;
 import org.gdms.driver.gdms.GdmsWriter;
@@ -57,13 +58,13 @@ import org.gdms.driver.gdms.GdmsWriter;
  * must be called.
  * 
  */
-public class DiskBufferDriver implements ObjectDriver {
+public class DiskBufferDriver extends AbstractDataSet implements ObjectDriver {
 
         private Schema schema;
-	private GdmsWriter writer;
-	private File file;
-	private boolean firstRow = true;
-	private GdmsReader reader;
+        private GdmsWriter writer;
+        private File file;
+        private boolean firstRow = true;
+        private GdmsReader reader;
 
         /**
          * Creates a new DiskBufferManager.
@@ -71,132 +72,117 @@ public class DiskBufferDriver implements ObjectDriver {
          * @param metadata this driver's content metadata
          * @throws DriverException
          */
-	public DiskBufferDriver(DataSourceFactory dsf, Metadata metadata)
-			throws DriverException {
+        public DiskBufferDriver(DataSourceFactory dsf, Metadata metadata)
+                throws DriverException {
                 this(new File(dsf.getTempFile("gdms")), metadata);
-	}
-        
+        }
+
         /**
          * Creates a new DiskBufferManager.
          * @param file 
          * @param metadata this driver's content metadata
          * @throws DriverException
          */
-	public DiskBufferDriver(File file, Metadata metadata)
-			throws DriverException {
+        public DiskBufferDriver(File file, Metadata metadata)
+                throws DriverException {
                 this.schema = new DefaultSchema("buffer" + this.hashCode());
                 schema.addTable("main", metadata);
-		this.file = file;
-		try {
-			writer = new GdmsWriter(file);
-		} catch (IOException e) {
-			throw new DriverException("Cannot start writing process", e);
-		}
-	}
+                this.file = file;
+                try {
+                        writer = new GdmsWriter(file);
+                } catch (IOException e) {
+                        throw new DriverException("Cannot start writing process", e);
+                }
+        }
 
-	@Override
-	public void start() throws DriverException {
-		try {
-			// Open file
-			reader = new GdmsReader(file);
+        @Override
+        public void start() throws DriverException {
+                try {
+                        // Open file
+                        reader = new GdmsReader(file);
                         reader.open();
-			reader.readMetadata();
-		} catch (IOException e) {
-			throw new DriverException("Cannot open temporal file for reading",
-					e);
-		}
-		writer = null;
-	}
+                        reader.readMetadata();
+                } catch (IOException e) {
+                        throw new DriverException("Cannot open temporal file for reading",
+                                e);
+                }
+                writer = null;
+        }
 
-	/**
-	 * This method must be called when all the contents have been added to the
-	 * file
-	 * 
-	 * @throws DriverException if the writing process cannot be finalized
-	 */
-	public void writingFinished() throws DriverException {
-		// Close writing
-		try {
-			if (writer != null) {
-				writeMetadataOnce();
-				writer.writeRowIndexes();
-				writer.writeExtent();
-				writer.writeWritenRowCount();
-				writer.close();
-				writer = null;
-			}
-		} catch (IOException e) {
-			throw new DriverException("Cannot finalize writing process", e);
-		}
-	}
+        /**
+         * This method must be called when all the contents have been added to the
+         * file
+         * 
+         * @throws DriverException if the writing process cannot be finalized
+         */
+        public void writingFinished() throws DriverException {
+                // Close writing
+                try {
+                        if (writer != null) {
+                                writeMetadataOnce();
+                                writer.writeRowIndexes();
+                                writer.writeExtent();
+                                writer.writeWritenRowCount();
+                                writer.close();
+                                writer = null;
+                        }
+                } catch (IOException e) {
+                        throw new DriverException("Cannot finalize writing process", e);
+                }
+        }
 
-	@Override
-	public void stop() throws DriverException {
-		try {
-			reader.close();
-		} catch (IOException e) {
-			throw new DriverException("Cannot close gdms reader", e);
-		}
-	}
+        @Override
+        public void stop() throws DriverException {
+                try {
+                        reader.close();
+                } catch (IOException e) {
+                        throw new DriverException("Cannot close gdms reader", e);
+                }
+        }
 
-	@Override
-	public int getType() {
-		return new GdmsDriver().getType();
-	}
+        @Override
+        public int getType() {
+                return new GdmsDriver().getType();
+        }
 
-	@Override
-	public void setDataSourceFactory(DataSourceFactory dsf) {
-	}
+        @Override
+        public void setDataSourceFactory(DataSourceFactory dsf) {
+        }
 
-	@Override
-	public String getDriverId() {
-		return new GdmsDriver().getDriverId();
-	}
+        @Override
+        public String getDriverId() {
+                return new GdmsDriver().getDriverId();
+        }
 
-	/**
-	 * Add a new row to the file
-	 * 
-	 * @param row an array of Value objects.
-	 * @throws DriverException
-	 */
-	public void addValues(Value... row) throws DriverException {
-		writeMetadataOnce();
-		writer.addValues(row);
-	}
+        /**
+         * Add a new row to the file
+         * 
+         * @param row an array of Value objects.
+         * @throws DriverException
+         */
+        public void addValues(Value... row) throws DriverException {
+                writeMetadataOnce();
+                writer.addValues(row);
+        }
 
         /**
          * Returns the temp file associated with this driver.
          * @return a file object.
          */
-	public File getFile() {
-		return file;
-	}
+        public File getFile() {
+                return file;
+        }
 
-	private void writeMetadataOnce() throws DriverException {
-		if (firstRow) {
-			try {
-				writer.writeMetadata(0, getSchema().getTableByName("main"));
-				firstRow = false;
-			} catch (IOException e) {
-				throw new DriverException("Cannot write metadata", e);
-			}
-		}
-	}
-	
-	/**
-	 * Get all value for a row index
-	 * @param rowIndex an index within the DataSource
-	 * @return the row as an array of Value objects
-	 * @throws DriverException
-	 */
-	public Value[] getRow(long rowIndex) throws DriverException {
-		Value[] ret = new Value[getSchema().getTableByName("main").getFieldCount()];
-                final DataSet table = getTable("main");
-		for (int i = 0; i < ret.length; i++) {  
-			ret[i] = table.getFieldValue(rowIndex, i);
-		}
-		return ret;
-	}
+        private void writeMetadataOnce() throws DriverException {
+                if (firstRow) {
+                        try {
+                                writer.writeMetadata(0, getSchema().getTableByName("main"));
+                                firstRow = false;
+                        } catch (IOException e) {
+                                throw new DriverException("Cannot write metadata", e);
+                        }
+                }
+        }
 
         @Override
         public Schema getSchema() throws DriverException {
@@ -205,32 +191,31 @@ public class DiskBufferDriver implements ObjectDriver {
 
         @Override
         public DataSet getTable(String name) {
-                if (name.equals("main")) {
-                        return new AbstractDataSet() {
-
-                                @Override
-                                public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
-                                        return reader.getFieldValue(rowIndex, fieldId);
-                                }
-
-                                @Override
-                                public long getRowCount() throws DriverException {
-                                        return reader.getRowCount();
-                                }
-
-                                @Override
-                                public Number[] getScope(int dimension) throws DriverException {
-                                        return reader.getScope(dimension);
-                                }
-
-                                @Override
-                                public Metadata getMetadata() throws DriverException {
-                                        return schema.getTableByName("main");
-                                }
-                        };
+                if (name.equals(DriverManager.DEFAULT_SINGLE_TABLE_NAME)) {
+                        return this;
                 } else {
                         return null;
                 }
+        }
+
+        @Override
+        public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
+                return reader.getFieldValue(rowIndex, fieldId);
+        }
+
+        @Override
+        public long getRowCount() throws DriverException {
+                return reader.getRowCount();
+        }
+
+        @Override
+        public Number[] getScope(int dimension) throws DriverException {
+                return reader.getScope(dimension);
+        }
+
+        @Override
+        public Metadata getMetadata() throws DriverException {
+                return schema.getTableByName("main");
         }
 
         @Override

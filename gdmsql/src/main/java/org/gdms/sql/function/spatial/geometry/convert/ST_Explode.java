@@ -132,7 +132,7 @@ public final class ST_Explode extends AbstractTableFunction {
                         driver.writingFinished();
                         pm.endTask();
                         driver.start();
-                        return driver.getTable("main");
+                        return driver;
                 } catch (DriverLoadException e) {
                         throw new FunctionException(e);
                 } catch (DriverException e) {

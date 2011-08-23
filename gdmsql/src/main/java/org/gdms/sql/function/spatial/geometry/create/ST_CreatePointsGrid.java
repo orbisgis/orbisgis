@@ -87,7 +87,7 @@ public final class ST_CreatePointsGrid extends AbstractTableFunction {
 
                         driver.writingFinished();
                         driver.start();
-                        return driver.getTable("main");
+                        return driver;
                 } catch (DriverLoadException e) {
                         throw new FunctionException(e);
                 } catch (DriverException e) {
