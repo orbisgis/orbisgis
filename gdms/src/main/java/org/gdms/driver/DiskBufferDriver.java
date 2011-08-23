@@ -73,10 +73,20 @@ public class DiskBufferDriver implements ObjectDriver {
          */
 	public DiskBufferDriver(DataSourceFactory dsf, Metadata metadata)
 			throws DriverException {
+                this(new File(dsf.getTempFile("gdms")), metadata);
+	}
+        
+        /**
+         * Creates a new DiskBufferManager.
+         * @param file 
+         * @param metadata this driver's content metadata
+         * @throws DriverException
+         */
+	public DiskBufferDriver(File file, Metadata metadata)
+			throws DriverException {
                 this.schema = new DefaultSchema("buffer" + this.hashCode());
                 schema.addTable("main", metadata);
-		// Create a temp file to populate
-		file = new File(dsf.getTempFile("gdms"));
+		this.file = file;
 		try {
 			writer = new GdmsWriter(file);
 		} catch (IOException e) {
