@@ -165,9 +165,6 @@ import org.gdms.sql.function.spatial.geometry.properties.ST_Z;
 import org.gdms.sql.function.spatial.geometry.qa.ST_InternalGapFinder;
 import org.gdms.sql.function.spatial.geometry.simplify.ST_Simplify;
 import org.gdms.sql.function.spatial.geometry.simplify.ST_SimplifyPreserveTopology;
-import org.gdms.sql.function.spatial.geometry.topology.ST_Graph;
-import org.gdms.sql.function.spatial.geometry.topology.ST_PlanarGraph;
-import org.gdms.sql.function.spatial.geometry.topology.ST_ToLineNoder;
 import org.gdms.sql.function.spatial.geometry.trigo.ST_Azimut;
 import org.gdms.sql.function.spatial.mixed.ST_Envelope;
 import org.gdms.sql.function.spatial.raster.algebra.ST_RasterAlgebra;
@@ -335,7 +332,6 @@ public final class FunctionManager {
                 addFunction(ST_MeanSpacing.class);
                 addFunction(ST_Transform.class);
                 addFunction(ST_Force_2D.class);
-                addFunction(ST_Graph.class);
                 addFunction(ST_MainDirections.class);
                 addFunction(ST_Holes.class);
 
@@ -350,8 +346,6 @@ public final class FunctionManager {
                 addFunction(ST_BigCreateGrid.class);
                 addFunction(ST_RandomGeometry.class);
                 addFunction(ST_InternalGapFinder.class);
-                addFunction(ST_ToLineNoder.class);
-                addFunction(ST_PlanarGraph.class);
                 addFunction(ST_RasterizeLine.class);
                 addFunction(ST_RasterToPoints.class);
                 addFunction(ST_RasterToPolygons.class);
