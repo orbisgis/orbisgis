@@ -52,7 +52,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
-public class Categorize2String extends Categorize<StringParameter, StringLiteral> implements StringParameter {
+public final class Categorize2String extends Categorize<StringParameter, StringLiteral> implements StringParameter {
 
     private String[] restriction;
 
