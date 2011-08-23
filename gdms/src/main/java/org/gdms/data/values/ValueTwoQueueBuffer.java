@@ -41,7 +41,7 @@
  */
 package org.gdms.data.values;
 
-import org.orbisgis.collections.twoqueue.TwoQueueBuffer;
+import org.orbisgis.collections.twoqueue.SynchronizedTwoQueueBuffer;
 
 /**
  *
@@ -49,9 +49,9 @@ import org.orbisgis.collections.twoqueue.TwoQueueBuffer;
  * @param <B> 
  * @author Antoine Gourlay
  */
-abstract class ValueTwoQueueBuffer<K, B extends Value> extends TwoQueueBuffer<K, B> {
+abstract class ValueTwoQueueBuffer<K, B extends Value> extends SynchronizedTwoQueueBuffer<K, B> {
 
-        public ValueTwoQueueBuffer(int maxSize) {
+        ValueTwoQueueBuffer(int maxSize) {
                 super(maxSize);
         }
 
