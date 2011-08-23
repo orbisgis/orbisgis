@@ -50,8 +50,12 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.ValueReference;
 
 /**
- * Used to dinamycally retrieve color values from a table.
- * @author alexis
+ * The {@code ValueReference} implementation of {@code ColorParameter}. That means that 
+ * this class is used to retrieve color values by using a GDMS 
+ * {@code SpatialDataSourceDecorator} as specified in {@link ValueReference ValueReference}.</p>
+ * <p>Note that the {@code SpatialDataSourceDecorator} is not directly attached to the class,
+ * and must be specified each time you call {@code getValue}.
+ * @author alexis, maxence
  */
 public class ColorAttribute extends ValueReference implements ColorParameter {
 

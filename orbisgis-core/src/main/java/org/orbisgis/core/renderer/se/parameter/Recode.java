@@ -55,9 +55,12 @@ import org.orbisgis.core.renderer.se.parameter.string.*;
 
 /**
  * Recoding is defined as the "transformation of discrete values to any other values".
+ * It is a way to map values of one type to values of another (but eventually the same)
+ * type.
  * @author maxence, alexis
  * @param <ToType> One of the SeParameter child types.
- * @param <FallbackType> The literal type associated to ToType.
+ * @param <FallbackType> The literal type associated to ToType. it is used to define the default value,
+ * when an input value can't be processed for whatever reason.
  */
 public abstract class Recode<ToType extends SeParameter, FallbackType extends ToType> implements SeParameter {
 
@@ -65,10 +68,18 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
     private StringParameter lookupValue;
     private ArrayList<MapItem<ToType>> mapItems; // TODO switch to hash table <k: String, v: ToType>
     
+    /**
+     * Build a new instance of Recode with an empty map of items.
+     */
     protected Recode(){
         mapItems = new ArrayList<MapItem<ToType>>();
     }
 
+    /**
+     * 
+     * @param fallbackValue
+     * @param lookupValue 
+     */
     public Recode(FallbackType fallbackValue, StringParameter lookupValue) {
         this.fallbackValue = fallbackValue;
         this.lookupValue = lookupValue;

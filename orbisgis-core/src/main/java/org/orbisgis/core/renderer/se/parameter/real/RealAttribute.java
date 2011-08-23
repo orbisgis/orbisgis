@@ -8,12 +8,20 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.ValueReference;
 
+/**
+ * The {@code ValueReference} implementation of {@code RealParameter}. That means that 
+ * this class is used to retrieve real (numeric) values by using a GDMS 
+ * {@code SpatialDataSourceDecorator} as specified in {@link ValueReference ValueReference}.</p>
+ * <p>Note that the {@code SpatialDataSourceDecorator} is not directly attached to the class,
+ * and must be specified each time you call {@code getValue}.
+ * @author alexis, maxence
+ */
 public class RealAttribute extends ValueReference implements RealParameter {
 
     private RealParameterContext ctx;
 
     /**
-     * Create a new instance of RealAttribute, with an empty associated field name.
+     * Create a new instance of {@code RealAttribute}, with an empty associated field name.
      * @param fieldName 
      */
     public RealAttribute() {
@@ -21,7 +29,7 @@ public class RealAttribute extends ValueReference implements RealParameter {
     }
 
     /**
-     * Create a new instance of RealAttribute, setting the fieldName of the column where
+     * Create a new instance of {@code RealAttribute}, setting the fieldName of the column where
      * the values will be searched.
      * @param fieldName 
      */
@@ -31,8 +39,8 @@ public class RealAttribute extends ValueReference implements RealParameter {
     }
 
     /**
-     * Create a new instance of RealAttribute, setting the fieldName of the column where
-     * the values will be searched.
+     * Create a new instance of {@code RealAttribute}, using a {@code JAXBElement} to retrieve
+     * all the needed informations.
      * @param fieldName 
      */
     public RealAttribute(JAXBElement<ValueReferenceType> expr) throws InvalidStyle {

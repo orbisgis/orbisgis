@@ -12,7 +12,7 @@ import org.orbisgis.core.renderer.se.parameter.Recode;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 
 /**
- * <code>Recode</code> implementation that maps input values to color values.
+ * <code>Recode</code> implementation that maps input values to {@code String} values.
  * @author maxence, alexis
  */
 public final class Recode2String extends Recode<StringParameter, StringLiteral> implements StringParameter {
@@ -20,7 +20,7 @@ public final class Recode2String extends Recode<StringParameter, StringLiteral> 
         private String[] restriction;
         
         /**
-         * Creates a new instance of <code>Recode2Strnig</code>. The default result value
+         * Creates a new instance of <code>Recode2String</code>. The default result value
          * will be <code>fallback</code>, and the values that need to be processed
          * will be retrieved using <code>lookupValue</code>
          * @param fallback

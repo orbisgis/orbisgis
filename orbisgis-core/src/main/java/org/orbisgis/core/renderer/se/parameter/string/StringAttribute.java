@@ -52,13 +52,22 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.ValueReference;
 
+/**
+ * The {@code ValueReference} implementation of {@code StringParameter}. That means that 
+ * this class is used to retrieve string values by using a GDMS 
+ * {@code SpatialDataSourceDecorator} as specified in {@link ValueReference ValueReference}.</p>
+ * <p>Note that the {@code SpatialDataSourceDecorator} is not directly attached to the class,
+ * and must be specified each time you call {@code getValue}.
+ * @author alexis, maxence
+ */
 public class StringAttribute extends ValueReference implements StringParameter{
 
 
     private String[] restriction;
 
     /**
-     * 
+     * Creates a new {@code StringAttribute}, that will searches its values in a column named
+     * filedName.
      * @param fieldName
      * @param ds
      * @throws DriverException
@@ -67,6 +76,11 @@ public class StringAttribute extends ValueReference implements StringParameter{
         super(fieldName);
     }
 
+    /**
+     * Create a new instance of {@code StringAttribute}, using a {@code JAXBElement} to retrieve
+     * all the needed informations.
+     * @param fieldName 
+     */
     public StringAttribute(JAXBElement<ValueReferenceType> expr) throws InvalidStyle {
         super(expr);
     }
