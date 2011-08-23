@@ -151,14 +151,14 @@ public abstract class TwoQueueBuffer<I, B> {
          * Gets the memory size of this buffer.
          * @return the number of blocks in memory
          */
-        public final int size() {
+        public int size() {
                 return a1in.size() + am.size();
         }
 
         /**
          * Clears all blocks from memory back to disk.
          */
-        public final void clear() {
+        public void clear() {
                 am.clear();
                 a1in.clear();
                 a1out.clear();
@@ -168,7 +168,7 @@ public abstract class TwoQueueBuffer<I, B> {
          * Checks if this buffer is empty.
          * @return true if there is no blocks in memory
          */
-        public final boolean isEmpty() {
+        public boolean isEmpty() {
                 return a1in.isEmpty();
         }
         
