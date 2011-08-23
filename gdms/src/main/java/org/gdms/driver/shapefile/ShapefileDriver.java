@@ -53,8 +53,8 @@ import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.Schema;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.DefaultTypeDefinition;
-import org.gdms.data.types.DimensionConstraint;
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.Dimension3DConstraint;
+import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
@@ -159,29 +159,29 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                         Constraint gc;
                         // In case of a geometric type, the GeometryConstraint is mandatory
                         if (type.id == ShapeType.POINT.id) {
-                                gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.POINT);
-                                dc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, 2);
+                                gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.POINT);
+                                dc = ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 2);
                         } else if (type.id == ShapeType.ARC.id) {
-                                gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.MULTI_LINESTRING);
-                                dc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, 2);
+                                gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.MULTI_LINESTRING);
+                                dc = ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 2);
                         } else if (type.id == ShapeType.POLYGON.id) {
-                                gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.MULTI_POLYGON);
-                                dc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, 2);
+                                gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.MULTI_POLYGON);
+                                dc = ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 2);
                         } else if (type.id == ShapeType.MULTIPOINT.id) {
-                                gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.MULTI_POINT);
-                                dc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, 2);
+                                gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.MULTI_POINT);
+                                dc = ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 2);
                         } else if (type.id == ShapeType.POINTZ.id) {
-                                gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.POINT);
-                                dc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, 3);
+                                gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.POINT);
+                                dc = ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 3);
                         } else if (type.id == ShapeType.ARCZ.id) {
-                                gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.MULTI_LINESTRING);
-                                dc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, 3);
+                                gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.MULTI_LINESTRING);
+                                dc = ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 3);
                         } else if (type.id == ShapeType.POLYGONZ.id) {
-                                gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.MULTI_POLYGON);
-                                dc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, 3);
+                                gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.MULTI_POLYGON);
+                                dc = ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 3);
                         } else if (type.id == ShapeType.MULTIPOINTZ.id) {
-                                gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.MULTI_POINT);
-                                dc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, 3);
+                                gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.MULTI_POINT);
+                                dc = ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 3);
                         } else {
                                 throw new DriverException("Unknown geometric type !");
                         }
@@ -234,7 +234,7 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                 List<TypeDefinition> result = new LinkedList<TypeDefinition>(Arrays.asList(new DBFDriver().getTypesDefinitions()));
                 result.add(new DefaultTypeDefinition("Geometry", Type.GEOMETRY,
                         new int[]{Constraint.GEOMETRY_TYPE,
-                                Constraint.GEOMETRY_DIMENSION}));
+                                Constraint.DIMENSION_3D_GEOMETRY}));
                 return result.toArray(new TypeDefinition[result.size()]);
         }
 
@@ -332,7 +332,7 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
 
                         ShapefileWriter writer = new ShapefileWriter(shpFis.getChannel(),
                                 shxFis.getChannel());
-                        GeometryConstraint gc = getGeometryType(metadata);
+                        GeometryTypeConstraint gc = getGeometryType(metadata);
                         int dimension = getGeometryDimension(null, metadata);
                         if (gc == null) {
                                 throw new DriverException("Shapefiles need a "
@@ -356,11 +356,11 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
 //
 //
 //        }
-        private GeometryConstraint getGeometryType(Metadata metadata)
+        private GeometryTypeConstraint getGeometryType(Metadata metadata)
                 throws DriverException {
                 for (int i = 0; i < metadata.getFieldCount(); i++) {
                         if (metadata.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
-                                return (GeometryConstraint) metadata.getFieldType(i).getConstraint(Constraint.GEOMETRY_TYPE);
+                                return (GeometryTypeConstraint) metadata.getFieldType(i).getConstraint(Constraint.GEOMETRY_TYPE);
                         }
                 }
 
@@ -372,8 +372,8 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                 throws DriverException {
                 for (int i = 0; i < metadata.getFieldCount(); i++) {
                         if (metadata.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
-                                DimensionConstraint c = (DimensionConstraint) metadata.getFieldType(i).getConstraint(
-                                        Constraint.GEOMETRY_DIMENSION);
+                                Dimension3DConstraint c = (Dimension3DConstraint) metadata.getFieldType(i).getConstraint(
+                                        Constraint.DIMENSION_3D_GEOMETRY);
                                 if (c == null) {
                                         if (dataSource != null) {
                                                 for (int j = 0; j < dataSource.getRowCount(); j++) {
@@ -403,27 +403,27 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
         private ShapeType getShapeType(int geometryType, int dimension)
                 throws DriverException {
                 switch (geometryType) {
-                        case GeometryConstraint.POINT:
+                        case GeometryTypeConstraint.POINT:
                                 if (dimension == 2) {
                                         return ShapeType.POINT;
                                 } else {
                                         return ShapeType.POINTZ;
                                 }
-                        case GeometryConstraint.MULTI_POINT:
+                        case GeometryTypeConstraint.MULTI_POINT:
                                 if (dimension == 2) {
                                         return ShapeType.MULTIPOINT;
                                 } else {
                                         return ShapeType.MULTIPOINTZ;
                                 }
-                        case GeometryConstraint.LINESTRING:
-                        case GeometryConstraint.MULTI_LINESTRING:
+                        case GeometryTypeConstraint.LINESTRING:
+                        case GeometryTypeConstraint.MULTI_LINESTRING:
                                 if (dimension == 2) {
                                         return ShapeType.ARC;
                                 } else {
                                         return ShapeType.ARCZ;
                                 }
-                        case GeometryConstraint.POLYGON:
-                        case GeometryConstraint.MULTI_POLYGON:
+                        case GeometryTypeConstraint.POLYGON:
+                        case GeometryTypeConstraint.MULTI_POLYGON:
                                 if (dimension == 2) {
                                         return ShapeType.POLYGON;
                                 } else {
@@ -458,7 +458,7 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                                 shxFis.getChannel());
                         Envelope fullExtent = DriverUtilities.getFullExtent(dataSource);
                         Metadata outMetadata = dataSource.getMetadata();
-                        GeometryConstraint gc = getGeometryType(outMetadata);
+                        GeometryTypeConstraint gc = getGeometryType(outMetadata);
                         int dimension = getGeometryDimension(dataSource, outMetadata);
                         ShapeType shapeType;
                         if (gc == null) {
@@ -601,15 +601,15 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                                                 + " and "
                                                 + m.getFieldName(i) + " found";
                                 } else {
-                                        GeometryConstraint gc = (GeometryConstraint) fieldType.getConstraint(Constraint.GEOMETRY_TYPE);
+                                        GeometryTypeConstraint gc = (GeometryTypeConstraint) fieldType.getConstraint(Constraint.GEOMETRY_TYPE);
                                         if (gc == null) {
                                                 return "A geometry type have to be specified";
-                                        } else if (gc.getGeometryType() == GeometryConstraint.LINESTRING) {
+                                        } else if (gc.getGeometryType() == GeometryTypeConstraint.LINESTRING) {
                                                 return "Linestrings are not allowed. Use Multilinestrings instead";
-                                        } else if (gc.getGeometryType() == GeometryConstraint.POLYGON) {
+                                        } else if (gc.getGeometryType() == GeometryTypeConstraint.POLYGON) {
                                                 return "Polygons are not allowed. Use Multipolygons instead";
                                         }
-                                        DimensionConstraint dc = (DimensionConstraint) fieldType.getConstraint(Constraint.GEOMETRY_DIMENSION);
+                                        Dimension3DConstraint dc = (Dimension3DConstraint) fieldType.getConstraint(Constraint.DIMENSION_3D_GEOMETRY);
                                         if (dc == null) {
                                                 return "A geometry dimension have to be specified";
                                         }

@@ -59,7 +59,7 @@ import org.gdms.data.DigestUtilities;
 import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -182,7 +182,7 @@ public class GDMSDriverTest {
                         TypeFactory.createType(Type.DATE, ConstraintFactory.createConstraint(Constraint.READONLY)),
                         TypeFactory.createType(Type.DOUBLE, ConstraintFactory.createConstraint(Constraint.AUTO_INCREMENT)),
                         TypeFactory.createType(Type.FLOAT),
-                        TypeFactory.createType(Type.GEOMETRY, ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, 3), ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.LINESTRING)),
+                        TypeFactory.createType(Type.GEOMETRY, ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 3), ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.LINESTRING)),
                         TypeFactory.createType(Type.INT),
                         TypeFactory.createType(Type.LONG),
                         TypeFactory.createType(Type.RASTER, ConstraintFactory.createConstraint(Constraint.RASTER_TYPE, ImagePlus.COLOR_256)),

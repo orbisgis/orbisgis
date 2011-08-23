@@ -49,9 +49,9 @@ public final class ConstraintFactory {
 
         static {
                 samples.put(Constraint.AUTO_INCREMENT, new AutoIncrementConstraint());
-                samples.put(Constraint.GEOMETRY_DIMENSION, new DimensionConstraint(2));
-                samples.put(Constraint.GEOMETRY_TYPE, new GeometryConstraint(
-                        GeometryConstraint.LINESTRING));
+                samples.put(Constraint.DIMENSION_3D_GEOMETRY, new Dimension3DConstraint(2));
+                samples.put(Constraint.GEOMETRY_TYPE, new GeometryTypeConstraint(
+                        GeometryTypeConstraint.LINESTRING));
                 samples.put(Constraint.LENGTH, new LengthConstraint(3));
                 samples.put(Constraint.MAX, new MaxConstraint(3));
                 samples.put(Constraint.MIN, new MinConstraint(3));
@@ -79,11 +79,11 @@ public final class ConstraintFactory {
                         case Constraint.SRID:
                                 c = new SRIDConstraint(constraintBytes);
                                 break;
-                        case Constraint.GEOMETRY_DIMENSION:
-                                c = new DimensionConstraint(constraintBytes);
+                        case Constraint.DIMENSION_3D_GEOMETRY:
+                                c = new Dimension3DConstraint(constraintBytes);
                                 break;
                         case Constraint.GEOMETRY_TYPE:
-                                c = new GeometryConstraint(constraintBytes);
+                                c = new GeometryTypeConstraint(constraintBytes);
                                 break;
                         case Constraint.LENGTH:
                                 c = new LengthConstraint(constraintBytes);
@@ -147,7 +147,7 @@ public final class ConstraintFactory {
                         case Constraint.SRID:
                                 c = "SRID";
                                 break;
-                        case Constraint.GEOMETRY_DIMENSION:
+                        case Constraint.DIMENSION_3D_GEOMETRY:
                                 c = "Dimension";
                                 break;
                         case Constraint.GEOMETRY_TYPE:
@@ -252,10 +252,10 @@ public final class ConstraintFactory {
          */
         public static Constraint createConstraint(int code, int i) {
                 switch (code) {
-                        case Constraint.GEOMETRY_DIMENSION:
-                                return new DimensionConstraint(i);
+                        case Constraint.DIMENSION_3D_GEOMETRY:
+                                return new Dimension3DConstraint(i);
                         case Constraint.GEOMETRY_TYPE:
-                                return new GeometryConstraint(i);
+                                return new GeometryTypeConstraint(i);
                         case Constraint.LENGTH:
                                 return new LengthConstraint(i);
                         case Constraint.MAX:

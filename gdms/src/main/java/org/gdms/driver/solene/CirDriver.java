@@ -52,8 +52,8 @@ import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.Schema;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.DefaultTypeDefinition;
-import org.gdms.data.types.DimensionConstraint;
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.Dimension3DConstraint;
+import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
@@ -208,7 +208,7 @@ public final class CirDriver extends AbstractDataSet implements FileReadWriteDri
                 result[0] = new DefaultTypeDefinition("STRING", Type.STRING, new int[]{
                                 Constraint.UNIQUE, Constraint.NOT_NULL});
                 result[1] = new DefaultTypeDefinition("GEOMETRY", Type.GEOMETRY,
-                        new int[]{Constraint.GEOMETRY_DIMENSION,
+                        new int[]{Constraint.DIMENSION_3D_GEOMETRY,
                                 Constraint.GEOMETRY_TYPE});
                 return result;
         }
@@ -301,11 +301,11 @@ public final class CirDriver extends AbstractDataSet implements FileReadWriteDri
         private void checkGeometryConstraint(final Metadata metadata,
                 final int spatialFieldIndex) throws DriverException {
                 Type fieldType = metadata.getFieldType(spatialFieldIndex);
-                final GeometryConstraint c = (GeometryConstraint) fieldType.getConstraint(Constraint.GEOMETRY_TYPE);
-                DimensionConstraint dc = (DimensionConstraint) fieldType.getConstraint(Constraint.GEOMETRY_DIMENSION);
+                final GeometryTypeConstraint c = (GeometryTypeConstraint) fieldType.getConstraint(Constraint.GEOMETRY_TYPE);
+                Dimension3DConstraint dc = (Dimension3DConstraint) fieldType.getConstraint(Constraint.DIMENSION_3D_GEOMETRY);
                 final int geometryType = c.getGeometryType();
-                if ((GeometryConstraint.POLYGON != geometryType)
-                        && (GeometryConstraint.MULTI_POLYGON != geometryType)) {
+                if ((GeometryTypeConstraint.POLYGON != geometryType)
+                        && (GeometryTypeConstraint.MULTI_POLYGON != geometryType)) {
                         throw new DriverException(
                                 "Geometric field must be a (multi-)polygon !");
                 }
@@ -444,8 +444,8 @@ public final class CirDriver extends AbstractDataSet implements FileReadWriteDri
                                 ConstraintFactory.createConstraint(Constraint.UNIQUE),
                                 ConstraintFactory.createConstraint(Constraint.NOT_NULL)});
                 metadata.addField("the_geom", Type.GEOMETRY, new Constraint[]{
-                                ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.POLYGON),
-                                ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, 3)});
+                                ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.POLYGON),
+                                ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 3)});
                 schema.addTable("main", metadata);
                 // finished building schema
         }

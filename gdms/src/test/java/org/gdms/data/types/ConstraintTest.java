@@ -130,8 +130,8 @@ public class ConstraintTest {
 
         @Test
         public void testGeometryType() throws Exception {
-                setType(TypeFactory.createType(Type.GEOMETRY, new GeometryConstraint(
-                        GeometryConstraint.POINT)));
+                setType(TypeFactory.createType(Type.GEOMETRY, new GeometryTypeConstraint(
+                        GeometryTypeConstraint.POINT)));
                 setValidValues(ValueFactory.createValue(Geometries.getPoint()),
                         ValueFactory.createValue(new GeometryFactory().createGeometryCollection(new Geometry[0])),
                         ValueFactory.createNullValue());
@@ -140,9 +140,19 @@ public class ConstraintTest {
         }
 
         @Test
-        public void testGeometryDimension() throws Exception {
+        public void testDimension3DConstraint() throws Exception {
                 setType(TypeFactory.createType(Type.GEOMETRY,
-                        new DimensionConstraint(3)));
+                        new Dimension3DConstraint(3)));
+                setValidValues(ValueFactory.createValue(Geometries.getPoint3D()),
+                        ValueFactory.createNullValue());
+                setInvalidValues(ValueFactory.createValue(Geometries.getMultiPolygon2D()));
+                doEdition();
+        }
+
+        @Test
+        public void testDimension2DConstraint() throws Exception {
+                setType(TypeFactory.createType(Type.GEOMETRY,
+                        new GeometryDimensionConstraint(0)));
                 setValidValues(ValueFactory.createValue(Geometries.getPoint3D()),
                         ValueFactory.createNullValue());
                 setInvalidValues(ValueFactory.createValue(Geometries.getMultiPolygon2D()));

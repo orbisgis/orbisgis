@@ -47,7 +47,7 @@ import org.gdms.geometryUtils.GeometryTypeUtil;
  * Constraint indicating the dimension of the geometry: 2D or 3D
  * 
  */
-public class DimensionConstraint extends AbstractIntConstraint {
+public class Dimension3DConstraint extends AbstractIntConstraint {
 
 	/**
 	 * The dimension of the coordinates in the geometries. 2 if the geometries
@@ -55,20 +55,20 @@ public class DimensionConstraint extends AbstractIntConstraint {
 	 * 
 	 * @param constraintValue
 	 */
-	DimensionConstraint(final int constraintValue) {
+	Dimension3DConstraint(final int constraintValue) {
 		super(constraintValue);
 		if ((constraintValue < 2) || (constraintValue > 3)) {
 			throw new IllegalArgumentException("Only 2 and 3 are allowed");
 		}
 	}
 
-	DimensionConstraint(byte[] constraintBytes) {
+	Dimension3DConstraint(byte[] constraintBytes) {
 		super(constraintBytes);
 	}
 
         @Override
 	public int getConstraintCode() {
-		return Constraint.GEOMETRY_DIMENSION;
+		return Constraint.DIMENSION_3D_GEOMETRY;
 	}
 
         @Override

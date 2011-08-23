@@ -50,7 +50,7 @@ public interface Constraint {
         int AUTO_INCREMENT = 1;
         int SRID = 2;
         int GEOMETRY_TYPE = 4;
-        int GEOMETRY_DIMENSION = 8;
+        int DIMENSION_3D_GEOMETRY = 8;
         int LENGTH = 16;
         int MAX = 32;
         int MIN = 64;
@@ -64,9 +64,11 @@ public interface Constraint {
         int RASTER_TYPE = 16384;
         int DEFAULT_STRING_VALUE = 32768;
         int FK = 65536;
-        int ALL = AUTO_INCREMENT | SRID | GEOMETRY_DIMENSION
+        int DIMENSION_2D_GEOMETRY = 131072;
+
+        int ALL = AUTO_INCREMENT | SRID | DIMENSION_3D_GEOMETRY
                 | GEOMETRY_TYPE | LENGTH | MAX | MIN | NOT_NULL | PATTERN | PK
-                | PRECISION | READONLY | SCALE | UNIQUE | RASTER_TYPE;
+                | PRECISION | READONLY | SCALE | UNIQUE | RASTER_TYPE| DIMENSION_2D_GEOMETRY;
         int CONSTRAINT_TYPE_FIELD = 0;
         int CONSTRAINT_TYPE_CHOICE = 1;
         int CONSTRAINT_TYPE_STRING_LITERAL = 2;

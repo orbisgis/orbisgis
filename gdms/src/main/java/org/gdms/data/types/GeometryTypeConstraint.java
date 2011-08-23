@@ -54,16 +54,16 @@ import com.vividsolutions.jts.io.WKTWriter;
  * Constraint indicating the type of the geometry: point, multilinestring, ...
  * 
  */
-public class GeometryConstraint extends AbstractIntConstraint {
-	private static final String MULTI_POLYGON_TEXT = "Multi polygon";
+public class GeometryTypeConstraint extends AbstractIntConstraint {
+	private static final String MULTI_POLYGON_TEXT = "MultiPolygon";
 
 	private static final String POLYGON_TEXT = "Polygon";
 
-	private static final String MULTI_LINESTRING_TEXT = "Multi linestring";
+	private static final String MULTI_LINESTRING_TEXT = "MultiLinestring";
 
 	private static final String LINESTRING_TEXT = "Linestring";
 
-	private static final String MULTI_POINT_TEXT = "Multi point";
+	private static final String MULTI_POINT_TEXT = "MultiPoint";
 
 	private static final String POINT_TEXT = "Point";
 
@@ -83,11 +83,11 @@ public class GeometryConstraint extends AbstractIntConstraint {
 
 	public static final int GEOMETRY_COLLECTION = 22;
 
-	GeometryConstraint(final int constraintValue) {
+	GeometryTypeConstraint(final int constraintValue) {
 		super(constraintValue);
 	}
 
-	GeometryConstraint(byte[] constraintBytes) {
+	GeometryTypeConstraint(byte[] constraintBytes) {
 		super(constraintBytes);
 	}
 

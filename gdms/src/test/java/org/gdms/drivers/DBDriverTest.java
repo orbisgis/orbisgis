@@ -61,8 +61,8 @@ import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.DimensionConstraint;
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.Dimension3DConstraint;
+import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -83,12 +83,12 @@ public class DBDriverTest extends TestBase {
         private static SimpleDateFormat stf = new SimpleDateFormat("HH:mm:ss");
         private static HashMap<Integer, Value> sampleValues = new HashMap<Integer, Value>();
         private static Constraint[] geometryConstraints = new Constraint[]{
-                ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.POINT),
-                ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.LINESTRING),
-                ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.POLYGON),
-                ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.MULTI_POINT),
-                ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.MULTI_LINESTRING),
-                ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.MULTI_POLYGON), null};
+                ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.POINT),
+                ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.LINESTRING),
+                ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.POLYGON),
+                ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.MULTI_POINT),
+                ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.MULTI_LINESTRING),
+                ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.MULTI_POLYGON), null};
 
         static {
                 try {
@@ -292,16 +292,16 @@ public class DBDriverTest extends TestBase {
         }
 
         private void testSQLGeometryConstraint(DBSource dbSource,
-                GeometryConstraint geometryConstraint, int dimension)
+                GeometryTypeConstraint geometryConstraint, int dimension)
                 throws Exception {
                 DefaultMetadata metadata = new DefaultMetadata();
                 Constraint[] constraints;
                 if (geometryConstraint == null) {
                         constraints = new Constraint[]{ConstraintFactory.createConstraint(
-                                Constraint.GEOMETRY_DIMENSION, dimension)};
+                                Constraint.DIMENSION_3D_GEOMETRY, dimension)};
                 } else {
                         constraints = new Constraint[]{geometryConstraint,
-                                ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, dimension)};
+                                ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, dimension)};
                 }
                 metadata.addField("f1", Type.GEOMETRY, constraints);
                 metadata.addField("f2", Type.INT, ConstraintFactory.createConstraint(Constraint.PK));
@@ -313,8 +313,8 @@ public class DBDriverTest extends TestBase {
                 int spatialIndex = ds.getFieldIndexByName("f1");
                 Metadata met = ds.getMetadata();
                 Type spatialType = met.getFieldType(spatialIndex);
-                GeometryConstraint gc = (GeometryConstraint) spatialType.getConstraint(Constraint.GEOMETRY_TYPE);
-                DimensionConstraint dc = (DimensionConstraint) spatialType.getConstraint(Constraint.GEOMETRY_DIMENSION);
+                GeometryTypeConstraint gc = (GeometryTypeConstraint) spatialType.getConstraint(Constraint.GEOMETRY_TYPE);
+                Dimension3DConstraint dc = (Dimension3DConstraint) spatialType.getConstraint(Constraint.DIMENSION_3D_GEOMETRY);
                 assertTrue((gc == null) || (gc.getGeometryType() == geometryConstraint.getGeometryType()));
                 assertTrue((dc == null) || dc.getDimension() == dimension);
                 ds.close();
@@ -330,7 +330,7 @@ public class DBDriverTest extends TestBase {
                         for (int dim = 2; dim <= 3; dim++) {
                                 TestBase.dsf.getSourceManager().removeAll();
                                 src.backup();
-                                testSQLGeometryConstraint(postgreSQLDBSource, (GeometryConstraint) geometryConstraints[i], dim);
+                                testSQLGeometryConstraint(postgreSQLDBSource, (GeometryTypeConstraint) geometryConstraints[i], dim);
                         }
                 }
         }
@@ -352,7 +352,7 @@ public class DBDriverTest extends TestBase {
                 ds.close();
                 ds.open();
                 ds.addField("the_geom", TypeFactory.createType(Type.GEOMETRY,
-                        ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.POINT)));
+                        ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.POINT)));
                 ds.commit();
                 ds.close();
         }
