@@ -24,20 +24,46 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.utils.I18N;
 
+/**
+ * A {@code Halo} is a type of {@code Fill} that is applied to the background of font glyphs.
+ * It is mainly used to improve the readability of text labels on the map.
+ * @author alexis
+ */
 public final class Halo implements SymbolizerNode, UomNode, FillNode {
 
-    private static final double DEFAULT_RADIUS = 5.0;
+        /**
+         * The default radius for new {@code Halo} instances. Set to 5.0, and UOM dependant.
+         */
+    public static final double DEFAULT_RADIUS = 5.0;
+
+    private Uom uom;
+    private RealParameter radius;
+    private Fill fill;
+    private SymbolizerNode parent;
     
+    /**
+     * Build a new default {@code Halo}, with a solid fill and a radius set to {@code DEFAULT_RADIUS}
+     */
     public Halo() {
         setFill(new SolidFill());
         setRadius(new RealLiteral(DEFAULT_RADIUS));
     }
 
+    /**
+     * Build a new {@code Halo} with the given {@code Fill} and a radius set to {@code radius}
+     * @param fill
+     * @param radius 
+     */
     public Halo(Fill fill, RealParameter radius) {
         this.fill = fill;
         this.radius = radius;
     }
 
+    /**
+     * Build a new {@code Halo} from the given JAXB type element.
+     * @param halo
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     */
     public Halo(HaloType halo) throws InvalidStyle {
         if (halo.getFill() != null) {
             this.setFill(Fill.createFromJAXBElement(halo.getFill()));
@@ -71,13 +97,6 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
         this.uom = uom;
     }
 
-    public void setRadius(RealParameter radius) {
-        this.radius = radius;
-        if (this.radius != null) {
-            this.radius.setContext(RealParameterContext.REAL_CONTEXT);
-        }
-    }
-
     @Override
     public void setFill(Fill fill) {
         this.fill = fill;
@@ -89,10 +108,6 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
         return fill;
     }
 
-    public RealParameter getRadius() {
-        return radius;
-    }
-
     @Override
     public SymbolizerNode getParent() {
         return parent;
@@ -101,6 +116,26 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
     @Override
     public void setParent(SymbolizerNode node) {
         parent = node;
+    }
+
+    /**
+     * Get the radius of this {@code Halo}.
+     * @return 
+     * The radius of this {@code Halo} as a {@code RealParameter}.
+     */
+    public RealParameter getRadius() {
+        return radius;
+    }
+
+    /**
+     * Set the radius of this {@code Halo}.
+     * @param radius 
+     */
+    public void setRadius(RealParameter radius) {
+        this.radius = radius;
+        if (this.radius != null) {
+            this.radius.setContext(RealParameterContext.REAL_CONTEXT);
+        }
     }
 
     /**
@@ -146,6 +181,10 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
         return (radius.dependsOnFeature() + " " + fill.dependsOnFeature()).trim();
     }
 
+    /**
+     * Get a JAXB rperesentation of this object.
+     * @return 
+     */
     public HaloType getJAXBType() {
         HaloType h = new HaloType();
 
@@ -163,8 +202,4 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
 
         return h;
     }
-    private Uom uom;
-    private RealParameter radius;
-    private Fill fill;
-    private SymbolizerNode parent;
 }
