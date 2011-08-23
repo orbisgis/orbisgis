@@ -40,7 +40,6 @@ import java.io.File;
 import java.io.IOException;
 
 import org.gdms.data.AlreadyClosedException;
-import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.indexes.rtree.DiskRTree;
 import org.gdms.data.types.Type;
@@ -51,6 +50,7 @@ import org.orbisgis.progress.ProgressMonitor;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import org.gdms.driver.ReadAccess;
 
 public class RTreeIndex implements DataSourceIndex {
 
@@ -64,10 +64,10 @@ public class RTreeIndex implements DataSourceIndex {
         }
 
         @Override
-        public void buildIndex(DataSourceFactory dsf, DataSource dataSource,
+        public void buildIndex(DataSourceFactory dsf, ReadAccess dataSource,
                 ProgressMonitor pm) throws IndexException {
                 try {
-                        int fieldId = dataSource.getFieldIndexByName(fieldName);
+                        int fieldId = dataSource.getMetadata().getFieldIndex(fieldName);
                         if (fieldId == -1) {
                                 throw new IndexException("Cannot find the field " + fieldName + " to index");
                         }

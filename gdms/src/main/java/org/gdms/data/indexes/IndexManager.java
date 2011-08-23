@@ -58,6 +58,7 @@ import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.Source;
 import org.gdms.data.types.IncompatibleTypesException;
+import org.gdms.driver.ReadAccess;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.utils.FileUtils;
@@ -201,6 +202,64 @@ public class IndexManager {
                 buildIndex(tableName, fieldName, null, pm);
         }
 
+        public void buildIndex(ReadAccess src, String fieldName, String indexId,
+                ProgressMonitor pm) throws IndexException, NoSuchTableException {
+                if (src instanceof DataSource) {
+                        DataSource ds = (DataSource) src;
+                        buildIndex(ds.getName(), fieldName, pm);
+                } else {
+                        // building temp index
+                        if (pm == null) {
+                                pm = new NullProgressMonitor();
+                        }
+                        String tempName = "tempindex" + src.hashCode();
+
+                        // Get index id if null
+                        try {
+                                if (indexId == null) {
+                                        int code = src.getMetadata().getFieldType(src.getMetadata().getFieldIndex(fieldName)).getTypeCode();
+                                        if (code == Type.GEOMETRY) {
+                                                indexId = RTREE_SPATIAL_INDEX;
+                                        } else {
+                                                indexId = BTREE_ALPHANUMERIC_INDEX;
+                                        }
+                                }
+
+                                // build index
+
+                                IndexDefinition def = new IndexDefinition(tempName, fieldName);
+                                if (indexCache.get(def) != null) {
+                                        throw new IndexException("There is already an "
+                                                + "index on that field for that temp source on "
+                                                + fieldName);
+                                }
+                                File indexFile = new File(dsf.getTempFile("idx"));
+                                DataSourceIndex index = null;
+                                index = instantiateIndex(indexId);
+                                index.setFile(indexFile);
+                                index.setFieldName(fieldName);
+                                index.buildIndex(dsf, src, pm);
+                                if (pm.isCancelled()) {
+                                        return;
+                                }
+                                index.save();
+                                index.close();
+
+                                indexCache.put(def, index);
+                                fireIndexCreated(tempName, fieldName, indexId, pm);
+                        } catch (DriverLoadException e) {
+                                throw new IndexException("Cannot read source", e);
+                        } catch (IncompatibleTypesException e) {
+                               throw new IndexException("Cannot create an "
+                                        + "index with that field type: " + fieldName, e);
+                        } catch (IOException e) {
+                                throw new IndexException("Cannot associate index with source", e);
+                        } catch (DriverException e) {
+                                throw new IndexException("Cannot access data to index", e);
+                        }
+                }
+        }
+
         private void fireIndexCreated(String dsName, String fieldName,
                 String indexId, ProgressMonitor pm) throws IndexException {
                 for (IndexManagerListener listener : listeners) {
@@ -271,6 +330,27 @@ public class IndexManager {
                 }
 
                 return ret;
+        }
+
+        /**
+         * Gets the index for the specified dataset. All instances of DataSource
+         * that access to the specified source will use the same index instance.
+         *
+         * @param src a dataset
+         * @param fieldName the name of the indexed field
+         * @return the index, or null if not found.
+         * @throws IndexException
+         * @throws NoSuchTableException
+         */
+        public DataSourceIndex getIndex(ReadAccess src, String fieldName) throws IndexException, NoSuchTableException {
+                if (src instanceof DataSource) {
+                        DataSource ds = (DataSource) src;
+                        return getIndex(ds.getName(), fieldName);
+                } else {
+                        String code = "tempindex" + String.valueOf(src.hashCode());
+                        IndexDefinition def = new IndexDefinition(code, fieldName);
+                        return indexCache.get(def);
+                }
         }
 
         private static class IndexDefinition {
@@ -525,6 +605,24 @@ public class IndexManager {
                         if (indexProperty.startsWith(INDEX_PROPERTY_PREFIX + "-"
                                 + fieldName + "-")) {
                                 return true;
+                        }
+                }
+                return false;
+        }
+
+        /**
+         * Returns true if there is an index of the specified field of this readable source.
+         * @param src a data set
+         * @param fieldName a field name
+         * @return true if there is an index on the data set.
+         */
+        public boolean isIndexed(ReadAccess src, String fieldName) {
+                if (src instanceof DataSource) {
+                        DataSource ds = (DataSource) src;
+                        try {
+                                return isIndexed(ds.getName(), fieldName);
+                        } catch (NoSuchTableException ex) {
+                                return false;
                         }
                 }
                 return false;

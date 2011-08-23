@@ -39,9 +39,9 @@ package org.gdms.data.indexes;
 import java.io.File;
 import java.io.IOException;
 
-import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
+import org.gdms.driver.ReadAccess;
 import org.orbisgis.progress.ProgressMonitor;
 
 public interface DataSourceIndex extends AdHocIndex {
@@ -97,7 +97,7 @@ public interface DataSourceIndex extends AdHocIndex {
          * @param pm
          * @throws IndexException
          */
-        void buildIndex(DataSourceFactory dsf, DataSource ds,
+        void buildIndex(DataSourceFactory dsf, ReadAccess ds,
                 ProgressMonitor pm) throws IndexException;
 
         /**

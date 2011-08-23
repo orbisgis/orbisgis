@@ -40,12 +40,12 @@ import java.io.File;
 import java.io.IOException;
 
 import org.gdms.data.AlreadyClosedException;
-import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.indexes.btree.DiskBTree;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.ReadAccess;
 import org.orbisgis.progress.ProgressMonitor;
 
 public class BTreeIndex implements DataSourceIndex {
@@ -60,12 +60,12 @@ public class BTreeIndex implements DataSourceIndex {
         }
 
         @Override
-        public void buildIndex(DataSourceFactory dsf, DataSource dataSource,
+        public void buildIndex(DataSourceFactory dsf, ReadAccess dataSource,
                 ProgressMonitor pm) throws IndexException {
                 try {
                         long rowCount = dataSource.getRowCount();
                         pm.startTask("Building index", rowCount);
-                        int fieldId = dataSource.getFieldIndexByName(fieldName);
+                        int fieldId = dataSource.getMetadata().getFieldIndex(fieldName);
                         index = new DiskBTree(255, 1024);
                         if (indexFile != null) {
                                 index.newIndex(indexFile);
