@@ -98,7 +98,7 @@ public class ConvertFunctionTest extends FunctionTest {
                         ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.LINESTRING));
                 type = evaluate(function, type);
                 assertEquals(type.getTypeCode(), Type.GEOMETRY);
-                assertEquals(type.getIntConstraint(Constraint.GEOMETRY_DIMENSION), 2);
+                assertEquals(type.getIntConstraint(Constraint.DIMENSION_3D_GEOMETRY), 2);
 
                 // Test coordinates
                 try {
@@ -148,7 +148,7 @@ public class ConvertFunctionTest extends FunctionTest {
                         ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.LINESTRING));
                 type = evaluate(function, type);
                 assertEquals(type.getTypeCode(), Type.GEOMETRY);
-                assertEquals(type.getIntConstraint(Constraint.GEOMETRY_DIMENSION), 3);
+                assertEquals(type.getIntConstraint(Constraint.DIMENSION_3D_GEOMETRY), 3);
         }
 
         @Test
@@ -195,7 +195,7 @@ public class ConvertFunctionTest extends FunctionTest {
                 // Test return type
                 Type type = TypeFactory.createType(Type.GEOMETRY,
                         ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.LINESTRING),
-                        ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, 3));
+                        ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 3));
                 type = evaluate(function, type);
                 assertEquals(type.getTypeCode(), Type.GEOMETRY);
         }

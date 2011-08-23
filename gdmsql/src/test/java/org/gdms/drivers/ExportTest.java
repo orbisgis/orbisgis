@@ -42,7 +42,6 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.DimensionConstraint;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
@@ -50,6 +49,7 @@ import org.gdms.sql.engine.SemanticException;
 import org.gdms.sql.engine.ParseException;
 import com.vividsolutions.jts.geom.Geometry;
 import org.gdms.SQLBaseTest;
+import org.gdms.data.types.Dimension3DConstraint;
 import org.gdms.sql.engine.SQLEngine;
 
 import static org.junit.Assert.*;
@@ -119,8 +119,8 @@ public class ExportTest extends AbstractDBTest {
                         + " from landcover2000 order by " + orderField + ";");
                 ds.open();
                 dsRes.open();
-                DimensionConstraint dc1 = (DimensionConstraint) ds.getMetadata().getFieldType(0).getConstraint(Constraint.GEOMETRY_DIMENSION);
-                DimensionConstraint dc2 = (DimensionConstraint) dsRes.getMetadata().getFieldType(0).getConstraint(Constraint.GEOMETRY_DIMENSION);
+                Dimension3DConstraint dc1 = (Dimension3DConstraint) ds.getMetadata().getFieldType(0).getConstraint(Constraint.DIMENSION_3D_GEOMETRY);
+                Dimension3DConstraint dc2 = (Dimension3DConstraint) dsRes.getMetadata().getFieldType(0).getConstraint(Constraint.DIMENSION_3D_GEOMETRY);
                 assertTrue((dc2 == null) || (dc1 == null)
                         || (dc1.getDimension() == dc2.getDimension()));
                 for (int i = 0; i < ds.getRowCount(); i++) {

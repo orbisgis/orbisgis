@@ -243,7 +243,7 @@ public final class ST_VectorizeLine extends AbstractTableFunction {
                                 TypeFactory.createType(Type.DOUBLE),
                                 TypeFactory.createType(Type.GEOMETRY, ConstraintFactory.createConstraint(
                                 Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.MULTI_LINESTRING),
-                                ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, 2))},
+                                ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 2))},
                         new String[]{"gid", "the_geom"});
         }
 

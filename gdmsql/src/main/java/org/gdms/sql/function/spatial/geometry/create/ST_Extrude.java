@@ -299,7 +299,7 @@ public final class ST_Extrude extends AbstractTableFunction {
                                         TypeFactory.createType(Type.SHORT),
                                         TypeFactory.createType(Type.GEOMETRY, new Constraint[]{
                                                 ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.POLYGON),
-                                                ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, 3)})}, new String[]{
+                                                ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 3)})}, new String[]{
                                         "gid", "shellHoleId", "type", "index", "the_geom"});
                 } catch (InvalidTypeException e) {
                         throw new DriverException(

@@ -85,10 +85,10 @@ public final class ST_Force_2D extends AbstractScalarSpatialFunction {
                 if (argsTypes != null) {
                         Type type = argsTypes[0];
                         Constraint[] constrs = type.getConstraints(Constraint.ALL
-                                & ~Constraint.GEOMETRY_DIMENSION);
+                                & ~Constraint.DIMENSION_3D_GEOMETRY);
                         Constraint[] result = new Constraint[constrs.length + 1];
                         System.arraycopy(constrs, 0, result, 0, constrs.length);
-                        result[result.length - 1] = ConstraintFactory.createConstraint(Constraint.GEOMETRY_DIMENSION, 2);
+                        result[result.length - 1] = ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 2);
                         return TypeFactory.createType(Type.GEOMETRY, result);
                 } else {
                         return TypeFactory.createType(Type.GEOMETRY);

@@ -23,7 +23,7 @@ import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.DimensionConstraint;
+import org.gdms.data.types.Dimension3DConstraint;
 import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
@@ -316,7 +316,7 @@ public abstract class SQLBaseTest extends SourceTest<Value, Geometry> {
                                                         if (c != null) {
                                                                 geometryType = c.getGeometryType();
                                                         }
-                                                        DimensionConstraint dc = (DimensionConstraint) fieldType.getConstraint(Constraint.GEOMETRY_DIMENSION);
+                                                        Dimension3DConstraint dc = (Dimension3DConstraint) fieldType.getConstraint(Constraint.DIMENSION_3D_GEOMETRY);
                                                         if (dc != null) {
                                                                 dimension = dc.getDimension();
                                                         }
