@@ -40,7 +40,7 @@ package org.orbisgis.core.ui.plugins.toc;
 import javax.swing.JOptionPane;
 
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
@@ -94,7 +94,7 @@ public class EditLegendPlugIn extends AbstractPlugIn {
 		try {
 			Type typ = layer.getSpatialDataSource().getMetadata().getFieldType(
 					layer.getSpatialDataSource().getSpatialFieldIndex());
-			GeometryConstraint cons = (GeometryConstraint) typ
+			GeometryTypeConstraint cons = (GeometryTypeConstraint) typ
 					.getConstraint(Constraint.GEOMETRY_TYPE);
 
 			LegendsPanel pan = new LegendsPanel();

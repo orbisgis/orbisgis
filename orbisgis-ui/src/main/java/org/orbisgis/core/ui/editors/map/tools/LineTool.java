@@ -63,7 +63,7 @@ import java.util.Observable;
 
 import javax.swing.AbstractButton;
 
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -96,7 +96,7 @@ public class LineTool extends AbstractLineTool {
         }
 
         public boolean isEnabled(MapContext vc, ToolManager tm) {
-                return ToolUtilities.geometryTypeIs(vc, GeometryConstraint.LINESTRING)
+                return ToolUtilities.geometryTypeIs(vc, GeometryTypeConstraint.LINESTRING)
                         && ToolUtilities.isActiveLayerEditable(vc);
         }
 
@@ -109,7 +109,7 @@ public class LineTool extends AbstractLineTool {
                 throws TransitionException {
                 Geometry g = ls;
                 if (ToolUtilities.geometryTypeIs(mc,
-                        GeometryConstraint.MULTI_LINESTRING)) {
+                        GeometryTypeConstraint.MULTI_LINESTRING)) {
                         g = ToolManager.toolsGeometryFactory.createMultiLineString(new LineString[]{ls});
                 }
 

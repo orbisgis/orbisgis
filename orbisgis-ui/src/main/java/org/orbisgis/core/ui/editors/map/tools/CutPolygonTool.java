@@ -46,7 +46,7 @@ import java.util.Observable;
 import javax.swing.AbstractButton;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -113,7 +113,7 @@ public class CutPolygonTool extends AbstractPolygonTool {
         }
 
         public boolean isEnabled(MapContext vc, ToolManager tm) {
-                return (ToolUtilities.geometryTypeIs(vc, GeometryConstraint.POLYGON) || ToolUtilities.geometryTypeIs(vc, GeometryConstraint.MULTI_POLYGON)) && ToolUtilities.isActiveLayerEditable(vc) && ToolUtilities.isSelectionEqualsTo(vc, 1);
+                return (ToolUtilities.geometryTypeIs(vc, GeometryTypeConstraint.POLYGON) || ToolUtilities.geometryTypeIs(vc, GeometryTypeConstraint.MULTI_POLYGON)) && ToolUtilities.isActiveLayerEditable(vc) && ToolUtilities.isSelectionEqualsTo(vc, 1);
         }
 
         public boolean isVisible(MapContext vc, ToolManager tm) {

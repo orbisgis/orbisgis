@@ -42,7 +42,7 @@ import java.awt.geom.NoninvertibleTransformException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.GeometryTypeConstraint;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
@@ -65,13 +65,13 @@ public abstract class AbstractLineSymbol extends AbstractGeometrySymbol
 		return geom instanceof LineString || geom instanceof MultiLineString;
 	}
 
-	public boolean acceptGeometryType(GeometryConstraint geometryConstraint) {
-		if (geometryConstraint == null) {
+	public boolean acceptGeometryType(GeometryTypeConstraint GeometryTypeConstraint) {
+		if (GeometryTypeConstraint == null) {
 			return true;
 		} else {
-			int geometryType = geometryConstraint.getGeometryType();
-			return (geometryType == GeometryConstraint.LINESTRING)
-					|| (geometryType == GeometryConstraint.MULTI_LINESTRING);
+			int geometryType = GeometryTypeConstraint.getGeometryType();
+			return (geometryType == GeometryTypeConstraint.LINESTRING)
+					|| (geometryType == GeometryTypeConstraint.MULTI_LINESTRING);
 		}
 	}
 

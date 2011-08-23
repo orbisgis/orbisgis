@@ -63,7 +63,7 @@ import java.util.Observable;
 
 import javax.swing.AbstractButton;
 
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -96,7 +96,7 @@ public class PointTool extends AbstractPointTool {
 	}
 
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
-		return ToolUtilities.geometryTypeIs(vc, GeometryConstraint.POINT)
+		return ToolUtilities.geometryTypeIs(vc, GeometryTypeConstraint.POINT)
 				&& ToolUtilities.isActiveLayerEditable(vc);
 	}
 
@@ -108,7 +108,7 @@ public class PointTool extends AbstractPointTool {
 	protected void pointDone(Point point, MapContext mc, ToolManager tm)
 			throws TransitionException {
 		Geometry g = point;
-		if (ToolUtilities.geometryTypeIs(mc, GeometryConstraint.MULTI_POINT)) {
+		if (ToolUtilities.geometryTypeIs(mc, GeometryTypeConstraint.MULTI_POINT)) {
 			g = ToolManager.toolsGeometryFactory
 					.createMultiPoint(new Point[] { point });
 		}

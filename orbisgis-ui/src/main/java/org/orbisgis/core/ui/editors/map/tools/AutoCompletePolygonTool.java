@@ -46,7 +46,7 @@ import java.util.Observable;
 import javax.swing.AbstractButton;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -92,14 +92,14 @@ public class AutoCompletePolygonTool extends AbstractPolygonTool {
                                 geom = execute(handler, geom, sds);
                         }
                         Value[] row = new Value[sds.getMetadata().getFieldCount()];
-                        if (ToolUtilities.geometryTypeIs(mc, GeometryConstraint.POLYGON)) {
+                        if (ToolUtilities.geometryTypeIs(mc, GeometryTypeConstraint.POLYGON)) {
                                 for (int i = 0; i < geom.getNumGeometries(); i++) {
                                         geom.getGeometryN(i).setSRID(sds.getSRID());
                                         row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(geom.getGeometryN(i));
                                         row = ToolUtilities.populateNotNullFields(sds, row);
                                         sds.insertFilledRow(row);
                                 }
-                        } else if (ToolUtilities.geometryTypeIs(mc, GeometryConstraint.MULTI_POLYGON)) {
+                        } else if (ToolUtilities.geometryTypeIs(mc, GeometryTypeConstraint.MULTI_POLYGON)) {
                                 if (geom instanceof Polygon) {
                                         Polygon polygon = (Polygon) geom;
                                         geom = geom.getFactory().createMultiPolygon(new Polygon[]{polygon});
@@ -170,7 +170,7 @@ public class AutoCompletePolygonTool extends AbstractPolygonTool {
         }
 
         public boolean isEnabled(MapContext vc, ToolManager tm) {
-                return (ToolUtilities.geometryTypeIs(vc, GeometryConstraint.POLYGON) || ToolUtilities.geometryTypeIs(vc, GeometryConstraint.MULTI_POLYGON)) && ToolUtilities.isActiveLayerEditable(vc) && ToolUtilities.isSelectionGreaterOrEqualsThan(vc, 1);
+                return (ToolUtilities.geometryTypeIs(vc, GeometryTypeConstraint.POLYGON) || ToolUtilities.geometryTypeIs(vc, GeometryTypeConstraint.MULTI_POLYGON)) && ToolUtilities.isActiveLayerEditable(vc) && ToolUtilities.isSelectionGreaterOrEqualsThan(vc, 1);
 
 
         }

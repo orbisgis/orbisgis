@@ -36,6 +36,7 @@
  */
 package org.orbisgis.core.renderer.symbol;
 
+import org.gdms.data.types.GeometryTypeConstraint;
 import org.junit.Test;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -44,7 +45,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
 
-import org.gdms.data.types.GeometryConstraint;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.AbstractTest;
 import org.orbisgis.core.Services;
@@ -85,7 +85,7 @@ public class SymbolTest extends AbstractTest {
                 }
 
                 @Override
-                public boolean acceptGeometryType(GeometryConstraint geometryConstraint) {
+                public boolean acceptGeometryType(GeometryTypeConstraint geometryConstraint) {
                         return false;
                 }
 

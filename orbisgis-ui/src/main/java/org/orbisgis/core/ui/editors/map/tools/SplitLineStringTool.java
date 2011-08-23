@@ -52,7 +52,7 @@ import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Point;
 import org.gdms.data.DataSource;
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -78,7 +78,7 @@ public class SplitLineStringTool extends AbstractPointTool {
         }
 
         public boolean isEnabled(MapContext vc, ToolManager tm) {
-                return (ToolUtilities.geometryTypeIs(vc, GeometryConstraint.LINESTRING) || ToolUtilities.geometryTypeIs(vc, GeometryConstraint.MULTI_LINESTRING))
+                return (ToolUtilities.geometryTypeIs(vc, GeometryTypeConstraint.LINESTRING) || ToolUtilities.geometryTypeIs(vc, GeometryTypeConstraint.MULTI_LINESTRING))
                         && ToolUtilities.isActiveLayerEditable(vc) && ToolUtilities.isSelectionEqualsTo(vc, 1);
         }
 
@@ -96,12 +96,12 @@ public class SplitLineStringTool extends AbstractPointTool {
                         Geometry geom = sds.getGeometry(handler.getGeometryIndex());
                         uiTolerance = tm.getUITolerance();
                         Value[] row = sds.getRow(handler.getGeometryIndex());
-                        if (ToolUtilities.geometryTypeIs(mc, GeometryConstraint.MULTI_LINESTRING)) {
+                        if (ToolUtilities.geometryTypeIs(mc, GeometryTypeConstraint.MULTI_LINESTRING)) {
                                MultiLineString result =  GeometryEdit.splitMultiLineString((MultiLineString) geom,point, uiTolerance);
                                 if (result != null) {
                                     sds.setGeometry(handler.getGeometryIndex(), result);
                                 }
-                        } else if (ToolUtilities.geometryTypeIs(mc, GeometryConstraint.LINESTRING)) {
+                        } else if (ToolUtilities.geometryTypeIs(mc, GeometryTypeConstraint.LINESTRING)) {
                                 LineString[] lines = GeometryEdit.splitLineString((LineString) geom, point, uiTolerance);
                                 if (lines != null) {
                                         sds.setGeometry(handler.getGeometryIndex(), lines[0]);

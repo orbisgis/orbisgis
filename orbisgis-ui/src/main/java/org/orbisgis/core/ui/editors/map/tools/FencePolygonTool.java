@@ -71,7 +71,7 @@ import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.ConstraintFactory;
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.driver.gdms.GdmsWriter;
 
 public class FencePolygonTool extends AbstractPolygonTool {
@@ -146,7 +146,7 @@ public class FencePolygonTool extends AbstractPolygonTool {
                         writer = new GdmsWriter(file);
 
 
-                        Metadata md = new DefaultMetadata(new Type[]{TypeFactory.createType(Type.GEOMETRY, ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryConstraint.POLYGON))}, new String[]{"the_geom"});
+                        Metadata md = new DefaultMetadata(new Type[]{TypeFactory.createType(Type.GEOMETRY, ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.POLYGON))}, new String[]{"the_geom"});
 
                         writer.writeMetadata(1, md);
                         writer.addValues(new Value[]{ValueFactory.createValue(g)});

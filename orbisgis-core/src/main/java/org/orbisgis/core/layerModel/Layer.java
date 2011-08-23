@@ -52,7 +52,6 @@ import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MultipleEditionEvent;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
@@ -73,6 +72,7 @@ import org.orbisgis.core.renderer.symbol.SymbolFactory;
 import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Envelope;
+import org.gdms.data.types.GeometryTypeConstraint;
 
 public class Layer extends GdmsLayer {
 
@@ -88,7 +88,7 @@ public class Layer extends GdmsLayer {
 	}
 
 	private UniqueSymbolLegend getDefaultVectorialLegend(Type fieldType) {
-		GeometryConstraint gc = (GeometryConstraint) fieldType
+		GeometryTypeConstraint gc = (GeometryTypeConstraint) fieldType
 				.getConstraint(Constraint.GEOMETRY_TYPE);
 
 		final Random r = new Random();
@@ -107,19 +107,19 @@ public class Layer extends GdmsLayer {
 			legend.setSymbol(composite);
 		} else {
 			switch (gc.getGeometryType()) {
-			case GeometryConstraint.POINT:
-			case GeometryConstraint.MULTI_POINT:
+			case GeometryTypeConstraint.POINT:
+			case GeometryTypeConstraint.MULTI_POINT:
 				legend.setSymbol(pointSym);
 				break;
-			case GeometryConstraint.LINESTRING:
-			case GeometryConstraint.MULTI_LINESTRING:
+			case GeometryTypeConstraint.LINESTRING:
+			case GeometryTypeConstraint.MULTI_LINESTRING:
 				legend.setSymbol(lineSym);
 				break;
-			case GeometryConstraint.POLYGON:
-			case GeometryConstraint.MULTI_POLYGON:
+			case GeometryTypeConstraint.POLYGON:
+			case GeometryTypeConstraint.MULTI_POLYGON:
 				legend.setSymbol(polSym);
 				break;
-			case GeometryConstraint.GEOMETRY_COLLECTION:
+			case GeometryTypeConstraint.GEOMETRY_COLLECTION:
 				legend.setSymbol(composite);
 				break;
 			}

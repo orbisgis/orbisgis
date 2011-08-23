@@ -46,7 +46,7 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.driver.TableDescription;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
@@ -132,14 +132,14 @@ class TableNode {
 
 		int geomType = tableDescription.getGeometryType();
 
-		if ((geomType == GeometryConstraint.POLYGON)
-				|| (geomType == GeometryConstraint.MULTI_POLYGON)) {
+		if ((geomType == GeometryTypeConstraint.POLYGON)
+				|| (geomType == GeometryTypeConstraint.MULTI_POLYGON)) {
 			return OrbisGISIcon.LAYER_POLYGON;
-		} else if ((geomType == GeometryConstraint.LINESTRING)
-				|| (geomType == GeometryConstraint.MULTI_LINESTRING)) {
+		} else if ((geomType == GeometryTypeConstraint.LINESTRING)
+				|| (geomType == GeometryTypeConstraint.MULTI_LINESTRING)) {
 			return OrbisGISIcon.LAYER_LINE;
-		} else if ((geomType == GeometryConstraint.POINT)
-				|| (geomType == GeometryConstraint.MULTI_POINT)) {
+		} else if ((geomType == GeometryTypeConstraint.POINT)
+				|| (geomType == GeometryTypeConstraint.MULTI_POINT)) {
 			return OrbisGISIcon.LAYER_POINT;
 		}//any other geom type
 		else if (geomType != 0)

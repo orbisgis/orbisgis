@@ -40,7 +40,7 @@ import java.util.Observable;
 
 import javax.swing.AbstractButton;
 
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -76,7 +76,7 @@ public class PolygonTool extends AbstractPolygonTool {
 	protected void polygonDone(com.vividsolutions.jts.geom.Polygon pol,
 			MapContext mc, ToolManager tm) throws TransitionException {
 		Geometry g = pol;
-		if (ToolUtilities.geometryTypeIs(mc, GeometryConstraint.MULTI_POLYGON)) {
+		if (ToolUtilities.geometryTypeIs(mc, GeometryTypeConstraint.MULTI_POLYGON)) {
 			g = ToolManager.toolsGeometryFactory
 					.createMultiPolygon(new Polygon[] { pol });
 		}
@@ -94,7 +94,7 @@ public class PolygonTool extends AbstractPolygonTool {
 	}
 
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
-		return ToolUtilities.geometryTypeIs(vc, GeometryConstraint.POLYGON)
+		return ToolUtilities.geometryTypeIs(vc, GeometryTypeConstraint.POLYGON)
 				&& ToolUtilities.isActiveLayerEditable(vc);
 	}
 

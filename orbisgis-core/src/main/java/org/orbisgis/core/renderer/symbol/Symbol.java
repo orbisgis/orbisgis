@@ -40,7 +40,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.Map;
 
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
@@ -77,12 +77,12 @@ public interface Symbol {
 	 * Returns true if this symbol is suitable for a geometry field with the
 	 * specified geometry type constraint.
 	 * 
-	 * @param geometryConstraint
+	 * @param GeometryTypeConstraint
 	 *            The geometry constraint. Null if there is no geometry type
 	 *            constraint, this is, the field can have any type of geometries
 	 * @return
 	 */
-	boolean acceptGeometryType(GeometryConstraint geometryConstraint);
+	boolean acceptGeometryType(GeometryTypeConstraint GeometryTypeConstraint);
 
 	/**
 	 * Sets the name of the symbol

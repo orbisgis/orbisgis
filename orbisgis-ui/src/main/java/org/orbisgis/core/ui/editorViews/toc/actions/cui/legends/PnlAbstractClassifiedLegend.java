@@ -54,7 +54,7 @@ import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.GeometryTypeConstraint;
 import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.renderer.legend.carto.ClassifiedLegend;
 import org.orbisgis.core.renderer.symbol.Symbol;
@@ -129,7 +129,7 @@ public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 
 			private SymbolFilter getSymbolFilter() {
 				return new ConstraintSymbolFilter(legendContext
-						.getGeometryConstraint());
+						.getGeometryTypeConstraint());
 			}
 
 		});
@@ -165,24 +165,24 @@ public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 		Symbol pointSymbol = SymbolFactory.createPointCircleSymbol(outline,
 				fill, 10);
 		Symbol polygonSymbol = SymbolFactory.createPolygonSymbol(outline, fill);
-		GeometryConstraint geometryConstraint = legendContext
-				.getGeometryConstraint();
+		GeometryTypeConstraint geometryTypeConstraint = legendContext
+				.getGeometryTypeConstraint();
 		Symbol s;
-		if (geometryConstraint == null) {
+		if (geometryTypeConstraint == null) {
 			s = SymbolFactory.createSymbolComposite(polygonSymbol, lineSymbol,
 					pointSymbol);
 		} else {
-			switch (geometryConstraint.getGeometryType()) {
-			case GeometryConstraint.LINESTRING:
-			case GeometryConstraint.MULTI_LINESTRING:
+			switch (geometryTypeConstraint.getGeometryType()) {
+			case GeometryTypeConstraint.LINESTRING:
+			case GeometryTypeConstraint.MULTI_LINESTRING:
 				s = lineSymbol;
 				break;
-			case GeometryConstraint.POINT:
-			case GeometryConstraint.MULTI_POINT:
+			case GeometryTypeConstraint.POINT:
+			case GeometryTypeConstraint.MULTI_POINT:
 				s = pointSymbol;
 				break;
-			case GeometryConstraint.POLYGON:
-			case GeometryConstraint.MULTI_POLYGON:
+			case GeometryTypeConstraint.POLYGON:
+			case GeometryTypeConstraint.MULTI_POLYGON:
 				s = polygonSymbol;
 				break;
 			default:

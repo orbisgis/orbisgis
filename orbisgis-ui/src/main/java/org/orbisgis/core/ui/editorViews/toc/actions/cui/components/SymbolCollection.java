@@ -223,7 +223,7 @@ public class SymbolCollection extends javax.swing.JPanel implements UIPanel {
 	private String acceptsGeometry(Symbol symbol) {
 		if (!symbol.acceptsChildren()) {
 			if (!symbol.acceptGeometryType(legendContext
-					.getGeometryConstraint())) {
+					.getGeometryTypeConstraint())) {
 				return "The symbol type is not applicable";
 			} else {
 				return null;

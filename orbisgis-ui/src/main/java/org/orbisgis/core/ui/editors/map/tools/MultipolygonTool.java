@@ -40,7 +40,7 @@ import java.util.Observable;
 
 import javax.swing.AbstractButton;
 
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -85,7 +85,7 @@ public class MultipolygonTool extends AbstractMultipolygonTool {
 
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
 		return ToolUtilities.geometryTypeIs(vc,
-				GeometryConstraint.MULTI_POLYGON)
+				GeometryTypeConstraint.MULTI_POLYGON)
 				&& ToolUtilities.isActiveLayerEditable(vc);
 	}
 

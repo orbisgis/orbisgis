@@ -45,7 +45,7 @@ import javax.swing.Icon;
 import org.gdms.data.DataSource;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
@@ -71,23 +71,23 @@ public abstract class TocAbstractRenderer {
 				Metadata metadata = dataSource.getMetadata();
 				Type fieldType = metadata.getFieldType(spatialField);
 				if (fieldType.getTypeCode() == Type.GEOMETRY) {
-					GeometryConstraint geomTypeConstraint = (GeometryConstraint) fieldType
+					GeometryTypeConstraint geomTypeConstraint = (GeometryTypeConstraint) fieldType
 							.getConstraint(Constraint.GEOMETRY_TYPE);
 					if (geomTypeConstraint == null) {
 						return OrbisGISIcon.LAYER_MIXE;
 					} else {
 						int geomType = geomTypeConstraint.getGeometryType();
 
-						if ((geomType == GeometryConstraint.POLYGON)
-								|| (geomType == GeometryConstraint.MULTI_POLYGON)) {
+						if ((geomType == GeometryTypeConstraint.POLYGON)
+								|| (geomType == GeometryTypeConstraint.MULTI_POLYGON)) {
 							return OrbisGISIcon.LAYER_POLYGON;
-						} else if ((geomType == GeometryConstraint.LINESTRING)
-								|| (geomType == GeometryConstraint.MULTI_LINESTRING)) {
+						} else if ((geomType == GeometryTypeConstraint.LINESTRING)
+								|| (geomType == GeometryTypeConstraint.MULTI_LINESTRING)) {
 							return OrbisGISIcon.LAYER_LINE;
-						} else if ((geomType == GeometryConstraint.POINT)
-								|| (geomType == GeometryConstraint.MULTI_POINT)) {
+						} else if ((geomType == GeometryTypeConstraint.POINT)
+								|| (geomType == GeometryTypeConstraint.MULTI_POINT)) {
 							return OrbisGISIcon.LAYER_POINT;
-						} else if ((geomType == GeometryConstraint.GEOMETRY_COLLECTION)) {
+						} else if ((geomType == GeometryTypeConstraint.GEOMETRY_COLLECTION)) {
 							return OrbisGISIcon.LAYER_MIXE;
 						} else {
 							throw new RuntimeException(I18N.getString("orbisgis.org.orbisgis.toc.tocAbstractRenderer.bug")); //$NON-NLS-1$

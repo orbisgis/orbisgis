@@ -61,7 +61,7 @@ public class ToolUtilities {
 				.getSpatialDataSource();
 		try {
 			Type type = sds.getFieldType(sds.getSpatialFieldIndex());
-			if (type.getIntConstraint(Constraint.GEOMETRY_DIMENSION) == 3) {
+			if (type.getIntConstraint(Constraint.DIMENSION_3D_GEOMETRY) == 3) {
 				return 0;
 			}
 		} catch (DriverException e) {

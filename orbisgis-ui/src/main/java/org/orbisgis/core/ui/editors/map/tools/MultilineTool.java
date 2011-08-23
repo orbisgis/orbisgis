@@ -40,7 +40,7 @@ import java.util.Observable;
 
 import javax.swing.AbstractButton;
 
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -75,7 +75,7 @@ public class MultilineTool extends AbstractMultilineTool {
 
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
 		return ToolUtilities.geometryTypeIs(vc,
-				GeometryConstraint.MULTI_LINESTRING)
+				GeometryTypeConstraint.MULTI_LINESTRING)
 				&& ToolUtilities.isActiveLayerEditable(vc);
 	}
 

@@ -45,7 +45,7 @@ import java.awt.Shape;
 import java.awt.geom.PathIterator;
 import java.util.Map;
 
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
@@ -74,14 +74,14 @@ public class ArrowSymbol extends AbstractPointSymbol implements
 	}
 
 	@Override
-	public boolean acceptGeometryType(GeometryConstraint geometryConstraint) {
-		if (geometryConstraint == null) {
+	public boolean acceptGeometryType(GeometryTypeConstraint GeometryTypeConstraint) {
+		if (GeometryTypeConstraint == null) {
 			return true;
 		} else {
-			int geometryType = geometryConstraint.getGeometryType();
-			return (geometryType == GeometryConstraint.MULTI_POINT)
-					|| (geometryType == GeometryConstraint.LINESTRING)
-					|| (geometryType == GeometryConstraint.MULTI_LINESTRING);
+			int geometryType = GeometryTypeConstraint.getGeometryType();
+			return (geometryType == GeometryTypeConstraint.MULTI_POINT)
+					|| (geometryType == GeometryTypeConstraint.LINESTRING)
+					|| (geometryType == GeometryTypeConstraint.MULTI_LINESTRING);
 		}
 	}
 

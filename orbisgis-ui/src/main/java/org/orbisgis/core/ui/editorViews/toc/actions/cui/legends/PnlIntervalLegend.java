@@ -50,7 +50,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
@@ -365,24 +365,24 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 				fillColor, 10);
 		Symbol polygonSymbol = SymbolFactory.createPolygonSymbol(outline,
 				fillColor);
-		GeometryConstraint geometryConstraint = legendContext
-				.getGeometryConstraint();
-		if (geometryConstraint == null) {
+		GeometryTypeConstraint geometryTypeConstraint = legendContext
+				.getGeometryTypeConstraint();
+		if (geometryTypeConstraint == null) {
 			s = SymbolFactory.createSymbolComposite(polygonSymbol, lineSymbol,
 					pointSymbol);
 		} else {
-			int geometry = geometryConstraint.getGeometryType();
+			int geometry = geometryTypeConstraint.getGeometryType();
 			switch (geometry) {
-			case GeometryConstraint.LINESTRING:
-			case GeometryConstraint.MULTI_LINESTRING:
+			case GeometryTypeConstraint.LINESTRING:
+			case GeometryTypeConstraint.MULTI_LINESTRING:
 				s = lineSymbol;
 				break;
-			case GeometryConstraint.POINT:
-			case GeometryConstraint.MULTI_POINT:
+			case GeometryTypeConstraint.POINT:
+			case GeometryTypeConstraint.MULTI_POINT:
 				s = pointSymbol;
 				break;
-			case GeometryConstraint.POLYGON:
-			case GeometryConstraint.MULTI_POLYGON:
+			case GeometryTypeConstraint.POLYGON:
+			case GeometryTypeConstraint.MULTI_POLYGON:
 				s = polygonSymbol;
 				break;
 			default:

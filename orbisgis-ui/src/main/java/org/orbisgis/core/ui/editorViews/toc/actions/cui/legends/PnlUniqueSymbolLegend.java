@@ -70,7 +70,7 @@ public class PnlUniqueSymbolLegend extends javax.swing.JPanel implements
 	private LegendContext legendContext;
 
 	private SymbolFilter getSymbolFilter() {
-		return new ConstraintSymbolFilter(legendContext.getGeometryConstraint());
+		return new ConstraintSymbolFilter(legendContext.getGeometryTypeConstraint());
 	}
 
 	/**

@@ -36,14 +36,14 @@
  */
 package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.GeometryTypeConstraint;
 import org.orbisgis.core.renderer.symbol.Symbol;
 
 public class ConstraintSymbolFilter implements SymbolFilter {
 
-	private GeometryConstraint[] constraint;
+	private GeometryTypeConstraint[] constraint;
 
-	public ConstraintSymbolFilter(GeometryConstraint... constraint) {
+	public ConstraintSymbolFilter(GeometryTypeConstraint... constraint) {
 		this.constraint = constraint;
 	}
 
