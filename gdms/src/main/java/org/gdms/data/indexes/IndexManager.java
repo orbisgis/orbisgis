@@ -202,6 +202,17 @@ public class IndexManager {
                 buildIndex(tableName, fieldName, null, pm);
         }
 
+       /**
+         * Builds the specified index on the specified field of the datasource.
+         * Saves the index in a file
+         *
+         * @param src the source
+         * @param fieldName name of the field to index
+         * @param indexId the index type; can be null.
+         * @param pm a progress monitor; can be null.
+         * @throws IndexException if there is a problem building the index.
+         * @throws NoSuchTableException if the table <tt>dsName</tt> does not exist.
+         */
         public void buildIndex(DataSet src, String fieldName, String indexId,
                 ProgressMonitor pm) throws IndexException, NoSuchTableException {
                 if (src instanceof DataSource) {
@@ -258,6 +269,22 @@ public class IndexManager {
                                 throw new IndexException("Cannot access data to index", e);
                         }
                 }
+        }
+        
+        /**
+         * Builds the specified index on the specified field of the DataSet.
+         * The index type if determined based on the field type.
+         * Saves the index in a file.
+         *
+         * @param src the source
+         * @param fieldName name of the field to index
+         * @param pm a progress monitor; can be null.
+         * @throws NoSuchTableException
+         * @throws IndexException
+         */
+        public void buildIndex(DataSet src, String fieldName,
+                ProgressMonitor pm) throws NoSuchTableException, IndexException {
+                buildIndex(src, fieldName, null, pm);
         }
 
         private void fireIndexCreated(String dsName, String fieldName,
