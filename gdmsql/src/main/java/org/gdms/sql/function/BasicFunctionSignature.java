@@ -42,7 +42,11 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 
 /**
- *
+ * A BasicFunctionSignature is a simple implementation of {@code FunctionSignature}
+ * that is composed of a single return {@code Type} and an array of {@code ScalarArgument}.
+ * It is mainly used to represent the signature of {@code ScalarFunction}, that will return
+ * a {@code Value} computed using input as defined in the arguments, and compatible
+ * with the specified return {@code Type}
  * @author Antoine Gourlay
  */
 public class BasicFunctionSignature implements FunctionSignature {
@@ -52,10 +56,11 @@ public class BasicFunctionSignature implements FunctionSignature {
 
         public BasicFunctionSignature(Type type, ScalarArgument... args) {
                 this.type = type;
-                if (args == null) {
-                        args = new ScalarArgument[0];
+                ScalarArgument[] sargs = args;
+                if (sargs == null) {
+                        sargs = new ScalarArgument[0];
                 }
-                this.args = args;
+                this.args = sargs;
         }
 
         public BasicFunctionSignature(int typeCode, ScalarArgument... args) {
