@@ -1,4 +1,4 @@
-/**
+/* 
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information. OrbisGIS is
@@ -40,28 +40,29 @@
 package org.gdms.sql.function;
 
 /**
- *
+ * {@code AbstractScalarFunction}  is the basis class for functions that 
+ * compute a {@code Value} by processing the values given in argument.
  * @author Antoine Gourlay
  */
 public abstract class AbstractScalarFunction implements ScalarFunction {
 
         @Override
-        public boolean isAggregate() {
+        public final boolean isAggregate() {
                 return false;
         }
 
         @Override
-        public boolean isScalar() {
+        public final boolean isScalar() {
                 return true;
         }
 
         @Override
-        public boolean isTable() {
+        public final boolean isTable() {
                 return false;
         }
 
         @Override
-        public boolean isExecutor() {
+        public final boolean isExecutor() {
                 return false;
         }
 

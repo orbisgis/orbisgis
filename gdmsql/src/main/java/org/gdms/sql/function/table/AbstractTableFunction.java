@@ -48,22 +48,22 @@ import org.gdms.driver.DriverException;
 public abstract class AbstractTableFunction implements TableFunction {
 
         @Override
-        public boolean isScalar() {
+        public final boolean isScalar() {
                 return false;
         }
 
         @Override
-        public boolean isTable() {
+        public final boolean isTable() {
                 return true;
         }
 
         @Override
-        public boolean isAggregate() {
+        public final boolean isAggregate() {
                 return false;
         }
 
         @Override
-        public boolean isExecutor() {
+        public final boolean isExecutor() {
                 return false;
         }
 

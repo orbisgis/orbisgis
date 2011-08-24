@@ -46,22 +46,22 @@ package org.gdms.sql.function.executor;
 public abstract class AbstractExecutorFunction implements ExecutorFunction {
 
         @Override
-        public boolean isScalar() {
+        public final boolean isScalar() {
                 return false;
         }
 
         @Override
-        public boolean isTable() {
+        public final boolean isTable() {
                 return false;
         }
 
         @Override
-        public boolean isAggregate() {
+        public final boolean isAggregate() {
                 return false;
         }
 
         @Override
-        public boolean isExecutor() {
+        public final boolean isExecutor() {
                 return true;
         }
 
