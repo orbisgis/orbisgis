@@ -47,6 +47,23 @@ import org.gdms.sql.function.Argument;
  * @author Antoine Gourlay
  */
 public class TableArgument implements Argument {
+        
+        /**
+         * Default {@code TableArgument} for tables that contain a spatial (ie geometric or raster) column.
+         */
+	public static final TableArgument SPATIAL = new TableArgument(TableDefinition.SPATIAL);
+        /**
+         * Default {@code TableArgument} for tables that contain a geometric column.
+         */
+	public static final TableArgument GEOMETRY = new TableArgument(TableDefinition.GEOMETRY);
+        /**
+         * Default {@code TableArgument} for tables that contain a raster column.
+         */
+	public static final TableArgument RASTER = new TableArgument(TableDefinition.RASTER);
+        /**
+         * Default {@code TableArgument} for table of any kind.
+         */
+	public static final TableArgument ANY = new TableArgument(TableDefinition.ANY);
 
         private TableDefinition def;
 
@@ -54,11 +71,12 @@ public class TableArgument implements Argument {
          * Creates a TableArgument with the specified table definition.
          * @param def a table definition. null equals {@link TableDefinition.ANY}.
          */
-        public TableArgument(TableDefinition def) {
+        public TableArgument(final TableDefinition def) {
                 if (def == null) {
-                        def = TableDefinition.ANY;
+                        this.def = TableDefinition.ANY;
+                } else {
+                        this.def = def;
                 }
-                this.def = def;
         }
 
         @Override
