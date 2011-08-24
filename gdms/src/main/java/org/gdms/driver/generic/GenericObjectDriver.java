@@ -38,11 +38,13 @@ package org.gdms.driver.generic;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import org.apache.log4j.Logger;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.DefaultSchema;
 import org.gdms.data.schema.Metadata;
@@ -290,5 +292,10 @@ public class GenericObjectDriver extends GDMSModelDriver implements
                 }
 
                 return ret;
+        }
+
+        @Override
+        public Iterator<Integer> queryIndex(DataSourceFactory dsf, IndexQuery queryIndex) throws DriverException {
+                return dsf.getIndexManager().iterateUsingIndexQuery(this, queryIndex);
         }
 }

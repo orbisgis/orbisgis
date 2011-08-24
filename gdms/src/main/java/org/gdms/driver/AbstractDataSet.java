@@ -41,6 +41,14 @@
  */
 package org.gdms.driver;
 
+import java.util.Iterator;
+import org.gdms.data.DataSourceFactory;
+import org.gdms.data.NoSuchTableException;
+import org.gdms.data.indexes.FullIterator;
+import org.gdms.data.indexes.IndexException;
+import org.gdms.data.indexes.IndexQuery;
+import org.gdms.data.indexes.IndexQueryException;
+import org.gdms.data.indexes.ResultIterator;
 import org.gdms.data.values.Value;
 
 /**
@@ -58,5 +66,11 @@ public abstract class AbstractDataSet implements DataSet {
                 }
 
                 return ret;
+        }
+        
+        @Override
+        public Iterator<Integer> queryIndex(DataSourceFactory dsf, IndexQuery queryIndex)
+                throws DriverException {
+                return dsf.getIndexManager().iterateUsingIndexQuery(this, queryIndex);
         }
 }

@@ -47,12 +47,14 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import org.apache.log4j.Logger;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.WarningListener;
+import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.schema.DefaultSchema;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.SchemaMetadata;
@@ -616,5 +618,10 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DataSet {
                 }
 
                 return ret;
+        }
+
+        @Override
+        public Iterator<Integer> queryIndex(DataSourceFactory dsf, IndexQuery queryIndex) throws DriverException {
+                return dsf.getIndexManager().iterateUsingIndexQuery(this, queryIndex);
         }
 }

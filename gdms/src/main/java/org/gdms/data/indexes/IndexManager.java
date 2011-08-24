@@ -44,6 +44,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -541,6 +542,69 @@ public class IndexManager {
                         return dsi.getIterator(indexQuery);
                 } else {
                         return null;
+                }
+        }
+        
+        /**
+         * Queries the specified source, using the specified query on an index if there is one.
+         * Otherwise returns a full iterator of the source.
+         *
+         * @param dsName the name of the source
+         * @param indexQuery a query to execute against the source
+         * @return The iterator or null if there is no index in the specified field
+         * @throws DriverException
+         */
+        public Iterator<Integer> iterateUsingIndexQuery(String dsName, IndexQuery indexQuery)
+                throws DriverException {
+                try {
+                        int[] ret = queryIndex(dsName, indexQuery);
+
+                        if (ret != null) {
+                                return new ResultIterator(ret);
+                        } else {
+                                return new FullIterator(dsf.getDataSource(dsName));
+                        }
+                } catch (IndexException e) {
+                        throw new DriverException(e);
+                } catch (IndexQueryException e) {
+                        throw new DriverException(e);
+                } catch (NoSuchTableException e) {
+                        throw new DriverException(e);
+                } catch (DataSourceCreationException e) {
+                        throw new DriverException(e);
+                }
+        }
+        
+        /**
+         * Queries the specified source, using the specified query on an index if there is one.
+         * Otherwise returns a full iterator of the source.
+         *
+         * @param src the source
+         * @param indexQuery a query to execute against the source
+         * @return The iterator or null if there is no index in the specified field
+         * @throws DriverException
+         */
+        public Iterator<Integer> iterateUsingIndexQuery(DataSet src, IndexQuery indexQuery)
+                throws DriverException {
+                if (src instanceof DataSource) {
+                        DataSource ds = (DataSource) src;
+                        return iterateUsingIndexQuery(ds.getName(), indexQuery);
+                }
+                
+                try {
+                        int[] ret = queryIndex("tempindex" + src.hashCode(), indexQuery);
+
+                        if (ret != null) {
+                                return new ResultIterator(ret);
+                        } else {
+                                return new FullIterator(src);
+                        }
+                } catch (IndexException e) {
+                        throw new DriverException(e);
+                } catch (IndexQueryException e) {
+                        throw new DriverException(e);
+                } catch (NoSuchTableException e) {
+                        throw new DriverException(e);
                 }
         }
 

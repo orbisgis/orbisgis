@@ -42,7 +42,7 @@ package org.gdms.data.indexes;
 import java.util.Iterator;
 import org.apache.log4j.Logger;
 
-import org.gdms.data.DataSource;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 
 public class FullIterator implements Iterator<Integer> {
@@ -53,7 +53,7 @@ public class FullIterator implements Iterator<Integer> {
 
         private static final Logger LOG = Logger.getLogger(FullIterator.class);
 
-	public FullIterator(DataSource source) throws DriverException {
+	public FullIterator(DataSet source) throws DriverException {
 		rowCount = source.getRowCount();
                 LOG.trace("Constructor");
 	}

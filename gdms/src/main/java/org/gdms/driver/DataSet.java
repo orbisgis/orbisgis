@@ -37,6 +37,9 @@
  */
 package org.gdms.driver;
 
+import java.util.Iterator;
+import org.gdms.data.DataSourceFactory;
+import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.values.Value;
 
@@ -111,4 +114,17 @@ public interface DataSet {
          * If the access fails
          */
         Value[] getRow(long rowIndex) throws DriverException;
+
+        /**
+         * Queries the index with the specified query. The use of the query depends
+         * on the index implementation. The parameter specifies the type of index
+         * and the field it is built on. If there is no index matching those
+         * criteria the method returns an iterator on all the source
+         *
+         * @param dsf 
+         * @param queryIndex
+         * @return
+         * @throws DriverException
+         */
+        Iterator<Integer> queryIndex(DataSourceFactory dsf, IndexQuery queryIndex) throws DriverException;
 }

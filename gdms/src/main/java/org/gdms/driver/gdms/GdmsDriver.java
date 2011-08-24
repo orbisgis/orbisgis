@@ -38,10 +38,12 @@ package org.gdms.driver.gdms;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 import org.apache.log4j.Logger;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.OpenCloseCounter;
+import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.schema.DefaultSchema;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.Schema;
@@ -267,5 +269,10 @@ public final class GdmsDriver extends GDMSModelDriver implements FileReadWriteDr
                 }
 
                 return ret;
+        }
+
+        @Override
+        public Iterator<Integer> queryIndex(DataSourceFactory dsf, IndexQuery queryIndex) throws DriverException {
+                return dsf.getIndexManager().iterateUsingIndexQuery(this, queryIndex);
         }
 }
