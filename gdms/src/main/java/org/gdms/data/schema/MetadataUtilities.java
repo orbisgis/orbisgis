@@ -297,6 +297,46 @@ public final class MetadataUtilities {
         }
 
         /**
+         * Returns the geometry field index.
+         *
+         * @param metadata
+         * @return
+         * @throws DriverException
+         */
+        public static int getGeometryFieldIndex(Metadata metadata)
+                throws DriverException {
+                int spatialFieldIndex = -1;
+                for (int i = 0; i < metadata.getFieldCount(); i++) {
+                        int typeCode = metadata.getFieldType(i).getTypeCode();
+                        if ((typeCode == Type.GEOMETRY)) {
+                                spatialFieldIndex = i;
+                                break;
+                        }
+                }
+                return spatialFieldIndex;
+        }
+
+        /**
+         * Returns the raster field index.
+         *
+         * @param metadata
+         * @return
+         * @throws DriverException
+         */
+        public static int getRasterFieldIndex(Metadata metadata)
+                throws DriverException {
+                int spatialFieldIndex = -1;
+                for (int i = 0; i < metadata.getFieldCount(); i++) {
+                        int typeCode = metadata.getFieldType(i).getTypeCode();
+                        if ((typeCode == Type.RASTER)) {
+                                spatialFieldIndex = i;
+                                break;
+                        }
+                }
+                return spatialFieldIndex;
+        }
+
+        /**
          * Returns true if there is a spatial field in the specified Metadata object.
          * @param metadata
          * @return
