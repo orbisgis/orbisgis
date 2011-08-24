@@ -75,7 +75,7 @@ import org.gdms.driver.driverManager.DriverManager;
  * that are related to JDBC
  * 
  */
-public abstract class DefaultDBDriver extends DefaultSQL implements DataSet {
+public abstract class DefaultDBDriver extends DefaultSQL {
 
         private ResultSet resultSet;
         private long rowCount = -1;

@@ -41,14 +41,15 @@
  */
 package org.gdms.driver;
 
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.Iterator;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.NoSuchTableException;
-import org.gdms.data.indexes.FullIterator;
-import org.gdms.data.indexes.IndexException;
 import org.gdms.data.indexes.IndexQuery;
-import org.gdms.data.indexes.IndexQueryException;
-import org.gdms.data.indexes.ResultIterator;
+import org.gdms.data.types.IncompatibleTypesException;
 import org.gdms.data.values.Value;
 
 /**
@@ -67,10 +68,204 @@ public abstract class AbstractDataSet implements DataSet {
 
                 return ret;
         }
-        
+
         @Override
         public Iterator<Integer> queryIndex(DataSourceFactory dsf, IndexQuery queryIndex)
                 throws DriverException {
                 return dsf.getIndexManager().iterateUsingIndexQuery(this, queryIndex);
+        }
+
+        @Override
+        public final int getInt(long row, String fieldName) throws DriverException {
+                return getInt(row, getMetadata().getFieldIndex(fieldName));
+        }
+
+        @Override
+        public final int getInt(long row, int fieldId) throws DriverException {
+                try {
+                        return getFieldValue(row, fieldId).getAsInt();
+                } catch (IncompatibleTypesException e) {
+                        throw new DriverException(e);
+                }
+        }
+
+        @Override
+        public final byte[] getBinary(long row, String fieldName) throws DriverException {
+                return getBinary(row, getMetadata().getFieldIndex(fieldName));
+        }
+
+        @Override
+        public final byte[] getBinary(long row, int fieldId) throws DriverException {
+                try {
+                        return getFieldValue(row, fieldId).getAsBinary();
+                } catch (IncompatibleTypesException e) {
+                        throw new DriverException(e);
+                }
+        }
+
+        @Override
+        public final boolean getBoolean(long row, String fieldName)
+                throws DriverException {
+                return getBoolean(row, getMetadata().getFieldIndex(fieldName));
+        }
+
+        @Override
+        public final boolean getBoolean(long row, int fieldId) throws DriverException {
+                try {
+                        return getFieldValue(row, fieldId).getAsBoolean();
+                } catch (IncompatibleTypesException e) {
+                        throw new DriverException(e);
+                }
+        }
+
+        @Override
+        public final byte getByte(long row, String fieldName) throws DriverException {
+                return getByte(row, getMetadata().getFieldIndex(fieldName));
+        }
+
+        @Override
+        public final byte getByte(long row, int fieldId) throws DriverException {
+                try {
+                        return getFieldValue(row, fieldId).getAsByte();
+                } catch (IncompatibleTypesException e) {
+                        throw new DriverException(e);
+                }
+        }
+
+        @Override
+        public final Date getDate(long row, String fieldName) throws DriverException {
+                return getDate(row, getMetadata().getFieldIndex(fieldName));
+        }
+
+        @Override
+        public final Date getDate(long row, int fieldId) throws DriverException {
+                try {
+                        return getFieldValue(row, fieldId).getAsDate();
+                } catch (IncompatibleTypesException e) {
+                        throw new DriverException(e);
+                }
+        }
+
+        @Override
+        public final double getDouble(long row, String fieldName) throws DriverException {
+                return getDouble(row, getMetadata().getFieldIndex(fieldName));
+        }
+
+        @Override
+        public final double getDouble(long row, int fieldId) throws DriverException {
+                try {
+                        return getFieldValue(row, fieldId).getAsDouble();
+                } catch (IncompatibleTypesException e) {
+                        throw new DriverException(e);
+                }
+        }
+
+        @Override
+        public final float getFloat(long row, String fieldName) throws DriverException {
+                return getFloat(row, getMetadata().getFieldIndex(fieldName));
+        }
+
+        @Override
+        public final float getFloat(long row, int fieldId) throws DriverException {
+                try {
+                        return getFieldValue(row, fieldId).getAsFloat();
+                } catch (IncompatibleTypesException e) {
+                        throw new DriverException(e);
+                }
+        }
+
+        @Override
+        public final long getLong(long row, String fieldName) throws DriverException {
+                return getLong(row, getMetadata().getFieldIndex(fieldName));
+        }
+
+        @Override
+        public final long getLong(long row, int fieldId) throws DriverException {
+                try {
+                        return getFieldValue(row, fieldId).getAsLong();
+                } catch (IncompatibleTypesException e) {
+                        throw new DriverException(e);
+                }
+        }
+
+        @Override
+        public final short getShort(long row, String fieldName) throws DriverException {
+                return getShort(row, getMetadata().getFieldIndex(fieldName));
+        }
+
+        @Override
+        public final short getShort(long row, int fieldId) throws DriverException {
+                try {
+                        return getFieldValue(row, fieldId).getAsShort();
+                } catch (IncompatibleTypesException e) {
+                        throw new DriverException(e);
+                }
+        }
+
+        @Override
+        public final String getString(long row, String fieldName) throws DriverException {
+                return getString(row, getMetadata().getFieldIndex(fieldName));
+        }
+
+        @Override
+        public final String getString(long row, int fieldId) throws DriverException {
+                try {
+                        return getFieldValue(row, fieldId).getAsString();
+                } catch (IncompatibleTypesException e) {
+                        throw new DriverException(e);
+                }
+        }
+
+        @Override
+        public final Timestamp getTimestamp(long row, String fieldName)
+                throws DriverException {
+                return getTimestamp(row, getMetadata().getFieldIndex(fieldName));
+        }
+
+        @Override
+        public final Timestamp getTimestamp(long row, int fieldId) throws DriverException {
+                try {
+                        return getFieldValue(row, fieldId).getAsTimestamp();
+                } catch (IncompatibleTypesException e) {
+                        throw new DriverException(e);
+                }
+        }
+
+        @Override
+        public final Time getTime(long row, String fieldName) throws DriverException {
+                return getTime(row, getMetadata().getFieldIndex(fieldName));
+        }
+
+        @Override
+        public final Time getTime(long row, int fieldId) throws DriverException {
+                try {
+                        return getFieldValue(row, fieldId).getAsTime();
+                } catch (IncompatibleTypesException e) {
+                        throw new DriverException(e);
+                }
+        }
+
+        @Override
+        public Geometry getGeometry(long rowIndex, int fieldId) throws DriverException {
+                try {
+                        return getFieldValue(rowIndex, fieldId).getAsGeometry();
+                } catch (IncompatibleTypesException e) {
+                        throw new DriverException(e);
+                }
+        }
+
+        @Override
+        public Envelope getFullExtent() throws DriverException {
+                return DriverUtilities.getFullExtent(this);
+        }
+
+        @Override
+        public final boolean isNull(long row, int fieldId) throws DriverException {
+                return getFieldValue(row, fieldId).isNull();
+        }
+
+        @Override
+        public final boolean isNull(long row, String fieldName) throws DriverException {
+                return isNull(row, getMetadata().getFieldIndex(fieldName));
         }
 }

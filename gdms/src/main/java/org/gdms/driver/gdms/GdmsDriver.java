@@ -38,12 +38,10 @@ package org.gdms.driver.gdms;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 import org.apache.log4j.Logger;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.OpenCloseCounter;
-import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.schema.DefaultSchema;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.Schema;
@@ -58,7 +56,7 @@ import org.gdms.source.SourceManager;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 
-public final class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver, DataSet {
+public final class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver {
 
         // version 1 : not supported anymore
         // version 2 : supported
@@ -258,21 +256,5 @@ public final class GdmsDriver extends GDMSModelDriver implements FileReadWriteDr
          */
         public File getFile() {
                 return file;
-        }
-
-        @Override
-        public Value[] getRow(long rowIndex) throws DriverException {
-                Value[] ret = new Value[getMetadata().getFieldCount()];
-
-                for (int i = 0; i < ret.length; i++) {
-                        ret[i] = getFieldValue(rowIndex, i);
-                }
-
-                return ret;
-        }
-
-        @Override
-        public Iterator<Integer> queryIndex(DataSourceFactory dsf, IndexQuery queryIndex) throws DriverException {
-                return dsf.getIndexManager().iterateUsingIndexQuery(this, queryIndex);
         }
 }

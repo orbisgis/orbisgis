@@ -44,7 +44,7 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.types.TypeFactory;
 
-public class GDMSModelDriver {
+public abstract class GDMSModelDriver extends AbstractDataSet {
 
 	public TypeDefinition[] getTypesDefinitions() {
 		try {

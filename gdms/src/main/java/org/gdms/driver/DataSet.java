@@ -37,6 +37,11 @@
  */
 package org.gdms.driver;
 
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.Iterator;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.indexes.IndexQuery;
@@ -127,4 +132,244 @@ public interface DataSet {
          * @throws DriverException
          */
         Iterator<Integer> queryIndex(DataSourceFactory dsf, IndexQuery queryIndex) throws DriverException;
+
+        /**
+         * Gets a binary at the specified row and column
+         * @param row
+         * @param fieldName
+         * @return
+         * @throws DriverException
+         */
+        byte[] getBinary(long row, String fieldName) throws DriverException;
+
+        /**
+         * Gets a binary at the specified row and column
+         * @param row
+         * @param fieldId
+         * @return
+         * @throws DriverException
+         */
+        byte[] getBinary(long row, int fieldId) throws DriverException;
+
+        /**
+         * Gets a boolean at the specified row and column
+         * @param row
+         * @param fieldName
+         * @return
+         * @throws DriverException
+         */
+        boolean getBoolean(long row, String fieldName) throws DriverException;
+
+        /**
+         * Gets a boolean at the specified row and column
+         * @param row
+         * @param fieldId
+         * @return
+         * @throws DriverException
+         */
+        boolean getBoolean(long row, int fieldId) throws DriverException;
+
+        /**
+         * Gets a byte at the specified row and column
+         * @param row
+         * @param fieldName
+         * @return
+         * @throws DriverException
+         */
+        byte getByte(long row, String fieldName) throws DriverException;
+
+        /**
+         * Gets a byte at the specified row and column
+         * @param row
+         * @param fieldId
+         * @return
+         * @throws DriverException
+         */
+        byte getByte(long row, int fieldId) throws DriverException;
+
+        /**
+         * Gets a date at the specified row and column
+         * @param row
+         * @param fieldName
+         * @return
+         * @throws DriverException
+         */
+        Date getDate(long row, String fieldName) throws DriverException;
+
+        /**
+         * Gets a date at the specified row and column
+         * @param row
+         * @param fieldId
+         * @return
+         * @throws DriverException
+         */
+        Date getDate(long row, int fieldId) throws DriverException;
+
+        /**
+         * Gets a double at the specified row and column
+         * @param row
+         * @param fieldName
+         * @return
+         * @throws DriverException
+         */
+        double getDouble(long row, String fieldName) throws DriverException;
+
+        /**
+         * Gets a double at the specified row and column
+         * @param row
+         * @param fieldId
+         * @return
+         * @throws DriverException
+         */
+        double getDouble(long row, int fieldId) throws DriverException;
+
+        /**
+         * Gets a float at the specified row and column
+         * @param row
+         * @param fieldName
+         * @return
+         * @throws DriverException
+         */
+        float getFloat(long row, String fieldName) throws DriverException;
+
+        /**
+         * Gets a float at the specified row and column
+         * @param row
+         * @param fieldId
+         * @return
+         * @throws DriverException
+         */
+        float getFloat(long row, int fieldId) throws DriverException;
+
+        /**
+         * Gets the geometry at the specified row and column
+         *
+         * @param rowIndex
+         * @param fieldId 
+         * @return
+         * @throws DriverException
+         */
+        Geometry getGeometry(long rowIndex, int fieldId) throws DriverException;
+
+        /**
+         * Gets an int at the specified row and column
+         * @param row
+         * @param fieldName
+         * @return
+         * @throws DriverException
+         */
+        int getInt(long row, String fieldName) throws DriverException;
+
+        /**
+         * Gets an int at the specified row and column
+         * @param row
+         * @param fieldId
+         * @return
+         * @throws DriverException
+         */
+        int getInt(long row, int fieldId) throws DriverException;
+
+        /**
+         * Gets a long at the specified row and column
+         * @param row
+         * @param fieldName
+         * @return
+         * @throws DriverException
+         */
+        long getLong(long row, String fieldName) throws DriverException;
+
+        /**
+         * Gets a long at the specified row and column
+         * @param row
+         * @param fieldId
+         * @return
+         * @throws DriverException
+         */
+        long getLong(long row, int fieldId) throws DriverException;
+
+        /**
+         * Gets a short at the specified row and column
+         * @param row
+         * @param fieldName
+         * @return
+         * @throws DriverException
+         */
+        short getShort(long row, String fieldName) throws DriverException;
+
+        /**
+         * Gets a short at the specified row and column
+         * @param row
+         * @param fieldId
+         * @return
+         * @throws DriverException
+         */
+        short getShort(long row, int fieldId) throws DriverException;
+
+        /**
+         * Gets a string at the specified row and column
+         * @param row
+         * @param fieldName
+         * @return
+         * @throws DriverException
+         */
+        String getString(long row, String fieldName) throws DriverException;
+
+        /**
+         * Gets a string at the specified row and column
+         * @param row
+         * @param fieldId
+         * @return
+         * @throws DriverException
+         */
+        String getString(long row, int fieldId) throws DriverException;
+
+        /**
+         * Gets a time at the specified row and column
+         * @param row
+         * @param fieldName
+         * @return
+         * @throws DriverException
+         */
+        Time getTime(long row, String fieldName) throws DriverException;
+
+        /**
+         * Gets a time at the specified row and column
+         * @param row
+         * @param fieldId
+         * @return
+         * @throws DriverException
+         */
+        Time getTime(long row, int fieldId) throws DriverException;
+
+        /**
+         * Gets a timestamp at the specified row and column
+         * @param row
+         * @param fieldName
+         * @return
+         * @throws DriverException
+         */
+        Timestamp getTimestamp(long row, String fieldName) throws DriverException;
+
+        /**
+         * Gets a timestamp at the specified row and column
+         * @param row
+         * @param fieldId
+         * @return
+         * @throws DriverException
+         */
+        Timestamp getTimestamp(long row, int fieldId) throws DriverException;
+
+        boolean isNull(long row, String fieldName) throws DriverException;
+
+        boolean isNull(long row, int fieldId) throws DriverException;
+
+        /**
+         * Gets the full extent of the data accessed
+         *
+         * @return Envelope
+         *
+         * @throws DriverException
+         * if the operation fails
+         */
+        Envelope getFullExtent() throws DriverException;
 }

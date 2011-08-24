@@ -65,6 +65,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import org.apache.log4j.Logger;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.DefaultSchema;
+import org.gdms.driver.AbstractDataSet;
 import org.gdms.driver.driverManager.DriverManager;
 
 /**
@@ -73,7 +74,7 @@ import org.gdms.driver.driverManager.DriverManager;
  * @author Fernando Gonzalez Cortes
  * 
  */
-public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
+public abstract class DefaultSQL extends AbstractDataSet implements DBReadWriteDriver, ValueWriter {
 
         protected String tableName;
         protected String schemaName;

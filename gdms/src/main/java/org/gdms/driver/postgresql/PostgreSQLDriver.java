@@ -84,7 +84,7 @@ import org.gdms.data.types.SRIDConstraint;
 /**
  *
  */
-public final class PostgreSQLDriver extends DefaultDBDriver implements DataSet {
+public final class PostgreSQLDriver extends DefaultDBDriver {
 
         public static final String DRIVER_NAME = "postgresql";
         private static final String GEOMETRYFIELDNAME = "GEOMETRY";
