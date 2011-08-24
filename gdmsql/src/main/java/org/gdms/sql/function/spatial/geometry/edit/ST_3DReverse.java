@@ -67,11 +67,6 @@ public class ST_3DReverse extends AbstractScalarSpatialFunction {
         }
 
         @Override
-        public boolean isAggregate() {
-                return false;
-        }       
-
-        @Override
         public String getDescription() {
                 return "Reverse the coordinates order from a linestring or a multilinestring according its Z start and end values";
         }

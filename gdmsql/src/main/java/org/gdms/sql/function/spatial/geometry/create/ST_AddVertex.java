@@ -85,11 +85,6 @@ public final class ST_AddVertex extends AbstractScalarSpatialFunction {
         }
 
         @Override
-        public boolean isAggregate() {
-                return false;
-        }
-
-        @Override
         public String getDescription() {
                 return "Adds a set of vertex to a polygon or linestring. ";
         }

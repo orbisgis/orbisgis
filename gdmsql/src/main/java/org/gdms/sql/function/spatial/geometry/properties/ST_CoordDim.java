@@ -67,11 +67,6 @@ public class ST_CoordDim extends AbstractSpatialPropertyFunction {
         }
 
         @Override
-        public boolean isAggregate() {
-                return false;
-        }
-
-        @Override
         public Type getType(Type[] argsTypes) throws InvalidTypeException {
                 return TypeFactory.createType(Type.INT);
         }

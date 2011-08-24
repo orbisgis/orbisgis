@@ -73,11 +73,6 @@ public class ST_InteriorRingN extends AbstractScalarSpatialFunction {
         }
 
         @Override
-        public boolean isAggregate() {
-                return false;
-        }
-
-        @Override
         public String getDescription() {
                 return "Return the N'th interior ring of the polygon geometry. Return NULL if the geometry is not a polygon or the given N is out of range.";
         }

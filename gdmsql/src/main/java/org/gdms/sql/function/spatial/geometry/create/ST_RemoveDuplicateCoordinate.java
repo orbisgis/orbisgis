@@ -65,11 +65,6 @@ public final class ST_RemoveDuplicateCoordinate extends AbstractScalarSpatialFun
         }
 
         @Override
-        public boolean isAggregate() {
-                return false;
-        }
-
-        @Override
         public String getDescription() {
                 return "Remove repeated points into a geometry. ";
         }

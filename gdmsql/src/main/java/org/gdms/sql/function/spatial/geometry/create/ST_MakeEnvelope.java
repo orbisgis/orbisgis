@@ -93,11 +93,6 @@ public class ST_MakeEnvelope extends AbstractScalarSpatialFunction {
         }
 
         @Override
-        public boolean isAggregate() {
-                return false;
-        }
-
-        @Override
         public String getDescription() {
                 return "Creates a rectangular Polygon formed from the given xmin, ymin, xmax, ymax. A SRID can be specified.";
         }

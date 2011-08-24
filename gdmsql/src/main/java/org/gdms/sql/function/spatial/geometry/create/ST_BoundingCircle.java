@@ -68,11 +68,6 @@ public final class ST_BoundingCircle extends AbstractScalarSpatialFunction {
         }
 
         @Override
-        public boolean isAggregate() {
-                return false;
-        }
-
-        @Override
         public String getDescription() {
                 return "Compute the minimum bounding circle";
         }

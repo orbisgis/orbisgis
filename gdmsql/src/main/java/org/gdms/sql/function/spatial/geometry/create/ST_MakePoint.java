@@ -85,11 +85,6 @@ public final class ST_MakePoint extends AbstractScalarSpatialFunction {
 	}
 
 	@Override
-	public boolean isAggregate() {
-		return false;
-	}
-
-        @Override
 	public String getDescription() {
 		return "Create a point  geometry. ";
 	}

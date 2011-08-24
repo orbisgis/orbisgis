@@ -68,11 +68,6 @@ public final class ST_OctogonalEnvelope extends AbstractScalarSpatialFunction {
         }
 
         @Override
-        public boolean isAggregate() {
-                return false;
-        }
-
-        @Override
         public String getDescription() {
                 return "Compute the octogonal envelope using a given geometry";
         }

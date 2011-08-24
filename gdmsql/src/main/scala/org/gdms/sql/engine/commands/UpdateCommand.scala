@@ -44,7 +44,7 @@ import org.gdms.data.schema.DefaultMetadata
 import org.gdms.data.types.Type
 import org.gdms.data.types.TypeFactory
 import org.gdms.data.values.ValueFactory
-import org.gdms.driver.generic.GenericObjectDriver
+import org.gdms.driver.memory.MemoryDataSetDriver
 import org.gdms.sql.engine.GdmSQLPredef._
 import scalaz.Scalaz._
 
@@ -65,7 +65,7 @@ class UpdateCommand(e: Seq[(String, Expression)]) extends Command with Expressio
   // number of updated rows
   var ro: Long = 0
   
-  var res: GenericObjectDriver = null
+  var res: MemoryDataSetDriver = null
 
   // for ExpressionCommand to properly init the expressions
   override val exp = e map( _._2 )
@@ -99,7 +99,7 @@ class UpdateCommand(e: Seq[(String, Expression)]) extends Command with Expressio
     val c = recfind(children).get.asInstanceOf[ScanCommand]
     ds = c.ds
     
-    res = new GenericObjectDriver(new DefaultMetadata(Array(TypeFactory.createType(Type.LONG)), Array("Updated")))
+    res = new MemoryDataSetDriver(new DefaultMetadata(Array(TypeFactory.createType(Type.LONG)), Array("Updated")))
   }
 
   // commit before the close() from ScanCommand

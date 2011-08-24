@@ -56,7 +56,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.MemoryDriver;
 import org.gdms.driver.DataSet;
 
-public class SQLAllTypesObjectDriver implements MemoryDriver {
+public class SQLAllTypesObjectDriver extends AbstractDataSet implements MemoryDriver {
 
         private Value[][] values = new Value[2][12];
         private static String[] names = new String[]{"binary", "boolean", "byte",
@@ -231,31 +231,30 @@ public class SQLAllTypesObjectDriver implements MemoryDriver {
         }
 
         @Override
+        public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
+                return values[(int) rowIndex][fieldId];
+        }
+
+        @Override
+        public long getRowCount() throws DriverException {
+                return values.length;
+        }
+
+        @Override
+        public Number[] getScope(int dimension) throws DriverException {
+                return null;
+        }
+
+        @Override
+        public Metadata getMetadata() throws DriverException {
+                return schema.getTableByName("main");
+        }
+
+        @Override
         public DataSet getTable(String name) {
                 if (!name.equals("main")) {
                         return null;
                 }
-                return new AbstractDataSet() {
-
-                        @Override
-                        public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
-                                return values[(int) rowIndex][fieldId];
-                        }
-
-                        @Override
-                        public long getRowCount() throws DriverException {
-                                return values.length;
-                        }
-
-                        @Override
-                        public Number[] getScope(int dimension) throws DriverException {
-                                return null;
-                        }
-
-                        @Override
-                        public Metadata getMetadata() throws DriverException {
-                                return schema.getTableByName("main");
-                        }
-                };
+                return this;
         }
 }

@@ -48,8 +48,8 @@ import org.gdms.data.schema.DefaultMetadata
 import org.gdms.data.types.Type
 import org.gdms.data.types.TypeFactory
 import org.gdms.data.values.ValueFactory
-import org.gdms.driver.generic.GenericObjectDriver
 import scalaz.concurrent.Promise
+import org.gdms.driver.memory.MemoryDataSetDriver
 import scalaz.Scalaz._
 
 /**
@@ -70,7 +70,7 @@ class DeleteCommand extends Command with OutputCommand {
   
   var indexes: TreeSet[Long] = new TreeSet
   
-  var res: GenericObjectDriver = null
+  var res: MemoryDataSetDriver = null
 
   protected def doWork(r: Iterable[Iterable[Promise[Iterable[Row]]]]) = {
     val m = children.head.getMetadata
@@ -96,7 +96,7 @@ class DeleteCommand extends Command with OutputCommand {
     val c = recfind(children).get.asInstanceOf[ScanCommand]
     ds = c.ds
     
-    res = new GenericObjectDriver(new DefaultMetadata(Array(TypeFactory.createType(Type.LONG)), Array("Deleted")))
+    res = new MemoryDataSetDriver(new DefaultMetadata(Array(TypeFactory.createType(Type.LONG)), Array("Deleted")))
   }
 
   // commit before the close() from ScanCommand

@@ -67,11 +67,6 @@ public final class ST_Centroid extends AbstractScalarSpatialFunction {
 	}
 
         @Override
-	public boolean isAggregate() {
-		return false;
-	}
-
-        @Override
 	public String getDescription() {
 		return "Compute the geometry centroid. The result is a point.";
 	}

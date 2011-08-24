@@ -92,11 +92,6 @@ public class Pk extends AbstractScalarFunction {
         }
 
         @Override
-        public boolean isAggregate() {
-                return false;
-        }
-
-        @Override
         public Type getType(Type[] types) {
                 final int typeCode = types[0].getTypeCode();
                 final Constraint[] constraints = types[0].getConstraints();

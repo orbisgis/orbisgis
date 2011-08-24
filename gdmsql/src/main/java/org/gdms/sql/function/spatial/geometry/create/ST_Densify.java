@@ -71,11 +71,6 @@ public final class ST_Densify extends AbstractScalarSpatialFunction {
         }
 
         @Override
-        public boolean isAggregate() {
-                return false;
-        }
-
-        @Override
         public String getDescription() {
                 return "Makes denser a geometry using a given distance tolerance. ";
         }

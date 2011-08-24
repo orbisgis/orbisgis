@@ -195,92 +195,89 @@ public class DataSourceTest extends TestBase {
                 }
         }
 
+        private class NonEditableDriver extends AbstractDataSet implements MemoryDriver {
+
+                public String getDriverId() {
+                        return null;
+                }
+
+                public void setDataSourceFactory(DataSourceFactory dsf) {
+                }
+
+                public void stop() throws DriverException {
+                }
+
+                public void start() throws DriverException {
+                }
+
+                public int getType() {
+                        return 0;
+                }
+
+                @Override
+                public String getTypeDescription() {
+                        return null;
+                }
+
+                @Override
+                public String getTypeName() {
+                        return null;
+                }
+
+                @Override
+                public boolean isCommitable() {
+                        return false;
+                }
+
+                @Override
+                public TypeDefinition[] getTypesDefinitions() {
+                        return new TypeDefinition[0];
+                }
+
+                @Override
+                public String validateMetadata(Metadata metadata) throws DriverException {
+                        return null;
+                }
+
+                @Override
+                public Schema getSchema() throws DriverException {
+                        Schema s = new DefaultSchema("test0");
+                        s.addTable("main", new DefaultMetadata());
+                        return s;
+                }
+
+                @Override
+                public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
+                        return null;
+                }
+
+                @Override
+                public long getRowCount() throws DriverException {
+                        return 0;
+                }
+
+                @Override
+                public Number[] getScope(int dimension) throws DriverException {
+                        return null;
+                }
+
+                @Override
+                public Metadata getMetadata() throws DriverException {
+                        return new DefaultMetadata();
+                }
+
+                @Override
+                public DataSet getTable(String name) {
+                        if (!name.equals("main")) {
+                                return null;
+                        }
+                        return this;
+                }
+        }
+
         @Test
         public void testCommitNonEditableDataSource() throws Exception {
-                DataSource ds = dsf.getDataSource(new MemoryDriver() {
-
-                        public String getDriverId() {
-                                return null;
-                        }
-
-                        public void setDataSourceFactory(DataSourceFactory dsf) {
-                        }
-
-                        public Metadata getMetadata() throws DriverException {
-                                return new DefaultMetadata();
-                        }
-
-                        public void stop() throws DriverException {
-                        }
-
-                        public void start() throws DriverException {
-                        }
-
-                        public int getType() {
-                                return 0;
-                        }
-
-                        @Override
-                        public String getTypeDescription() {
-                                return null;
-                        }
-
-                        @Override
-                        public String getTypeName() {
-                                return null;
-                        }
-
-                        @Override
-                        public boolean isCommitable() {
-                                return false;
-                        }
-
-                        @Override
-                        public TypeDefinition[] getTypesDefinitions() {
-                                return new TypeDefinition[0];
-                        }
-
-                        @Override
-                        public String validateMetadata(Metadata metadata) throws DriverException {
-                                return null;
-                        }
-
-                        @Override
-                        public Schema getSchema() throws DriverException {
-                                Schema s = new DefaultSchema("test0");
-                                s.addTable("main", new DefaultMetadata());
-                                return s;
-                        }
-
-                        @Override
-                        public DataSet getTable(String name) {
-                                if (!name.equals("main")) {
-                                        return null;
-                                }
-                                return new AbstractDataSet() {
-
-                                        @Override
-                                        public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
-                                                return null;
-                                        }
-
-                                        @Override
-                                        public long getRowCount() throws DriverException {
-                                                return 0;
-                                        }
-
-                                        @Override
-                                        public Number[] getScope(int dimension) throws DriverException {
-                                                return null;
-                                        }
-
-                                        @Override
-                                        public Metadata getMetadata() throws DriverException {
-                                                return new DefaultMetadata();
-                                        }
-                                };
-                        }
-                }, "main");
+                DataSource ds = dsf.getDataSource(new NonEditableDriver(), "main");
 
                 ds.open();
                 try {

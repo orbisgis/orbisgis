@@ -73,11 +73,6 @@ public class ST_PrecisionReducer extends AbstractScalarSpatialFunction {
         }
 
         @Override
-        public boolean isAggregate() {
-                return false;
-        }
-
-        @Override
         public String getDescription() {
                 return "A function to reduce the geometry precision. Decimal_Place is the number of decimals to keep.";
         }

@@ -77,11 +77,6 @@ public final class ST_MakeLine extends AbstractScalarSpatialFunction {
         }
 
         @Override
-        public boolean isAggregate() {
-                return false;
-        }
-
-        @Override
         public String getDescription() {
                 return "Create a line from two point geometries. ";
         }

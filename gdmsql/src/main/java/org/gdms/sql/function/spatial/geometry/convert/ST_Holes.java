@@ -84,11 +84,6 @@ public class ST_Holes extends AbstractScalarSpatialFunction {
         }
 
         @Override
-        public boolean isAggregate() {
-                return false;
-        }
-
-        @Override
         public String getDescription() {
                 return "Return all holes as a geometry collection.";
         }

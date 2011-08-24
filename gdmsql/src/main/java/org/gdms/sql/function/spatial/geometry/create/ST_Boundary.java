@@ -67,11 +67,6 @@ public final class ST_Boundary extends AbstractScalarSpatialFunction {
         }
 
         @Override
-        public boolean isAggregate() {
-                return false;
-        }
-
-        @Override
         public String getDescription() {
                 return "Compute the geometry boundary";
         }

@@ -68,11 +68,6 @@ public final class ST_MinimumDiameter extends AbstractScalarSpatialFunction {
 	}
 
         @Override
-	public boolean isAggregate() {
-		return false;
-	}
-
-        @Override
 	public String getDescription() {
 		return "Compute the minimum diameter to a geometry";
 	}
