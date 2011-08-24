@@ -63,6 +63,14 @@ public interface Type {
 
 	int NULL = -1;
 	int COLLECTION = 16384;
+        
+        int POINT = 32768;
+        int LINESTRING = 65536;
+        int POLYGON = 131072;
+        int MULTIPOLYGON = 262144;
+        int MULTILINESTRING = 524288;
+        int MULTIPOINT = 1048576;
+        int GEOMETRYCOLLECTION = 2097152;
 
 	/**
 	 * Returns the array of the constraints this type has
