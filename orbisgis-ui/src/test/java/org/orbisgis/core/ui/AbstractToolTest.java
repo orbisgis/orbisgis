@@ -43,7 +43,7 @@ import javax.swing.JLabel;
 
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.DefaultDataManager;
 import org.orbisgis.core.Services;
@@ -93,7 +93,7 @@ public abstract class AbstractToolTest {
         }
 
         private void createSource(String name, Type geomType) {
-                GenericObjectDriver omd = new GenericObjectDriver(
+                MemoryDataSetDriver omd = new MemoryDataSetDriver(
                         new String[]{"the_geom"}, new Type[]{geomType});
                 dataManager.getSourceManager().register(name, omd);
         }

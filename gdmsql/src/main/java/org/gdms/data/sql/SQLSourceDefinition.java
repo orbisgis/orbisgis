@@ -47,7 +47,7 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.SQLDataSourceFactory;
-import org.gdms.data.object.ObjectDataSourceAdapter;
+import org.gdms.data.memory.MemoryDataSourceAdapter;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.DefaultSchema;
 
@@ -57,7 +57,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.Driver;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.driverManager.DriverManager;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.source.SourceManager;
 import org.gdms.source.directory.DefinitionType;
 import org.gdms.source.sqldirectory.SqlDefinitionType;
@@ -126,9 +126,9 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
                                 throw new IllegalArgumentException(
                                         "The query produces no result: " + statement.getSQL());
                         } else {
-                                GenericObjectDriver d = new GenericObjectDriver(source, true);
+                                MemoryDataSetDriver d = new MemoryDataSetDriver(source, true);
                                 d.setCommitable(false);
-                                def = new ObjectDataSourceAdapter(getSource(tableName), d);
+                                def = new MemoryDataSourceAdapter(getSource(tableName), d);
                                 LOG.trace("Built temp ObjectDataSourceAdapter with SQL Query results");
                         }
                 }

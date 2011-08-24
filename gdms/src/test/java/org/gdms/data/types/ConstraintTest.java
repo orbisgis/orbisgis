@@ -15,7 +15,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -402,7 +402,7 @@ public class ConstraintTest {
         }
 
         private DataSource getDataSource() throws DriverException {
-                GenericObjectDriver omd = new GenericObjectDriver(
+                MemoryDataSetDriver omd = new MemoryDataSetDriver(
                         new String[]{"string"}, new Type[]{type});
                 DataSource dataSource = dsf.getDataSource(omd, "main");
                 return dataSource;

@@ -53,10 +53,10 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ObjectDriver;
+import org.gdms.driver.MemoryDriver;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.sql.engine.SemanticException;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionSignature;
@@ -173,7 +173,7 @@ public class ST_KMeans extends AbstractTableFunction {
         private DataSet populateResultingDatasource(final Cluster[] newClusters)
                 throws DriverException {
                 LOG.trace("Populating resulting datasource");
-                final GenericObjectDriver driver = new GenericObjectDriver(
+                final MemoryDataSetDriver driver = new MemoryDataSetDriver(
                         new String[]{cellIndexFieldName, "clusterNumber"},
                         new Type[]{metadata.getFieldType(cellIndexFieldId),
                                 TypeFactory.createType(Type.INT)});
@@ -224,7 +224,7 @@ public class ST_KMeans extends AbstractTableFunction {
                         }
                 }
 
-                ObjectDriver d = new GenericObjectDriver(inDs, true);
+                MemoryDriver d = new MemoryDataSetDriver(inDs, true);
                 String name = dsf.getSourceManager().nameAndRegister(d, "main");
 
                 final String query = "select " + queryAvgSb.toString() + ", "

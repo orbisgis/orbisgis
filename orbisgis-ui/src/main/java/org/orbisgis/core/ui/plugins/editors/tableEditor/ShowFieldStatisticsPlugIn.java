@@ -50,7 +50,7 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.driverManager.DriverManager;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.sql.engine.ParseException;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
@@ -91,7 +91,7 @@ public class ShowFieldStatisticsPlugIn extends AbstractPlugIn {
 
 					dsResult = dsf.getDataSourceFromSQL(query);
 				} else {
-					GenericObjectDriver subds = getSubData(fieldName, ds,
+					MemoryDataSetDriver subds = getSubData(fieldName, ds,
 							selected);
 
 					query = getQuery(fieldName, dsf.getDataSource(subds, DriverManager.DEFAULT_SINGLE_TABLE_NAME))
@@ -153,7 +153,7 @@ public class ShowFieldStatisticsPlugIn extends AbstractPlugIn {
 				OrbisGISIcon.TABLE_SHOWFIELDSTAT, wbContext);
 	}
 
-	private GenericObjectDriver getSubData(String fieldName, DataSource ds,
+	private MemoryDataSetDriver getSubData(String fieldName, DataSource ds,
 			int[] selected) throws DriverException {
 
 		int fieldIndex = ds.getFieldIndexByName(fieldName);
@@ -162,7 +162,7 @@ public class ShowFieldStatisticsPlugIn extends AbstractPlugIn {
 		DefaultMetadata metadata = new DefaultMetadata();
 		metadata.addField(fieldName, fieldType);
 
-		GenericObjectDriver driver = new GenericObjectDriver(metadata);
+		MemoryDataSetDriver driver = new MemoryDataSetDriver(metadata);
 
 		for (int i = 0; i < selected.length; i++) {
 

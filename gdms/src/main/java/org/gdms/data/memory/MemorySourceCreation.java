@@ -39,27 +39,27 @@
  * or contact directly:
  * info@orbisgis.org
  */
-package org.gdms.data.object;
+package org.gdms.data.memory;
 
 import org.gdms.data.AbstractDataSourceCreation;
 import org.gdms.data.DataSourceDefinition;
 import org.gdms.driver.Driver;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ObjectDriver;
+import org.gdms.driver.MemoryDriver;
 
 /**
- * Used to create Object sources from an existing ObjectDriver.
+ * Used to create Object sources from an existing MemoryDriver.
  * @author Antoine Gourlay
  */
-public class ObjectSourceCreation extends AbstractDataSourceCreation {
+public class MemorySourceCreation extends AbstractDataSourceCreation {
         
-        private ObjectDriver obj;
+        private MemoryDriver obj;
 
         /**
-         * Builds a new ObjectSourceCreation from an existing ObjectDriver.
+         * Builds a new MemorySourceCreation from an existing MemoryDriver.
          * @param obj 
          */
-        public ObjectSourceCreation(ObjectDriver obj) {
+        public MemorySourceCreation(MemoryDriver obj) {
                 this.obj = obj;
         }
 
@@ -70,7 +70,7 @@ public class ObjectSourceCreation extends AbstractDataSourceCreation {
 
         @Override
         public DataSourceDefinition create(String tableName) throws DriverException {
-                return new ObjectSourceDefinition(obj, tableName);
+                return new MemorySourceDefinition(obj, tableName);
         }
 
         @Override

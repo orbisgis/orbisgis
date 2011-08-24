@@ -44,10 +44,10 @@ import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.indexes.DefaultSpatialIndexQuery;
 import org.gdms.data.indexes.IndexManager;
 import org.gdms.data.indexes.SpatialIndexQuery;
-import org.gdms.data.object.ObjectSourceDefinition;
+import org.gdms.data.memory.MemorySourceDefinition;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.source.SourceManager;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -137,8 +137,8 @@ public class DataSourceFactoryTests extends TestBase {
         @Test(expected = SourceAlreadyExistsException.class)
         public void testRegisteringCollission() throws Exception {
                 String name = "e" + System.currentTimeMillis();
-                ObjectSourceDefinition def = new ObjectSourceDefinition(
-                        new GenericObjectDriver(null, null), "main");
+                MemorySourceDefinition def = new MemorySourceDefinition(
+                        new MemoryDataSetDriver(null, null), "main");
                 sm.register(name, def);
 
                 sm.register(name, def);
@@ -335,6 +335,6 @@ public class DataSourceFactoryTests extends TestBase {
 
         @Test(expected = IllegalArgumentException.class)
         public void testCreationNotRegisteredSource() throws Exception {
-                dsf.saveContents("notexists", dsf.getDataSource(new GenericObjectDriver(), "main"));
+                dsf.saveContents("notexists", dsf.getDataSource(new MemoryDataSetDriver(), "main"));
         }
 }

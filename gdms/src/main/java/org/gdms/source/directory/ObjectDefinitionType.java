@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 import org.gdms.data.DataSourceDefinition;
-import org.gdms.data.object.ObjectSourceDefinition;
+import org.gdms.data.memory.MemorySourceDefinition;
 
 /**
  * <p>Java class for object-definition-type complex type.
@@ -69,7 +69,7 @@ public class ObjectDefinitionType
         @Override
         public DataSourceDefinition toDataSourceDefinition() throws InstantiationException,
                 IllegalAccessException, ClassNotFoundException {
-                return ObjectSourceDefinition.createFromXML(this);
+                return MemorySourceDefinition.createFromXML(this);
         }
 
         /**

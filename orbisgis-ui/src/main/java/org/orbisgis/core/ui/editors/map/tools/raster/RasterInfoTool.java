@@ -48,7 +48,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.grap.model.GeoRaster;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
@@ -112,7 +112,7 @@ public class RasterInfoTool extends AbstractPointTool {
 			for (int i = 0; i < types.length; i++) {
 				types[i] = TypeFactory.createType(Type.STRING);
 			}
-			GenericObjectDriver omd = new GenericObjectDriver(columnsNames, types);
+			MemoryDataSetDriver omd = new MemoryDataSetDriver(columnsNames, types);
 			omd.addValues(new Value[] { ValueFactory.createValue(pixelX),
 					ValueFactory.createValue(pixelY),
 					ValueFactory.createValue(pixelValue),

@@ -42,7 +42,7 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.sql.function.ScalarFunction;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.data.types.IncompatibleTypesException;
@@ -93,7 +93,7 @@ public abstract class FunctionTest {
                 JTSGeometryCollection = gf.createGeometryCollection(new Geometry[]{
                                 JTSMultiPolygon2D, JTSMultiLineString2D, JTSPolygon2D});
                 // first datasource
-                final GenericObjectDriver driver1 = new GenericObjectDriver(
+                final MemoryDataSetDriver driver1 = new MemoryDataSetDriver(
                         new String[]{"pk", "geom"},
                         new Type[]{
                                 TypeFactory.createType(Type.INT,
@@ -116,7 +116,7 @@ public abstract class FunctionTest {
                 }
 
                 // second datasource
-                final GenericObjectDriver driver2 = new GenericObjectDriver(
+                final MemoryDataSetDriver driver2 = new MemoryDataSetDriver(
                         new String[]{"pk", "geom"},
                         new Type[]{TypeFactory.createType(Type.INT,
                                 ConstraintFactory.createConstraint(Constraint.PK)),

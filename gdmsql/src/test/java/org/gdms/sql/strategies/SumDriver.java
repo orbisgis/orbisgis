@@ -83,10 +83,10 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ObjectDriver;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.MemoryDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 
-class SumDriver extends GenericObjectDriver {
+class SumDriver extends MemoryDataSetDriver {
 
 	private double sum;
 

@@ -58,7 +58,7 @@ import org.gdms.driver.gdms.GdmsWriter;
  * must be called.
  * 
  */
-public class DiskBufferDriver extends AbstractDataSet implements ObjectDriver {
+public class DiskBufferDriver extends AbstractDataSet implements MemoryDriver {
 
         private Schema schema;
         private GdmsWriter writer;

@@ -57,7 +57,7 @@ import org.gdms.data.NoSuchTableException;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.schema.Metadata;
-import org.gdms.data.object.ObjectSourceDefinition;
+import org.gdms.data.memory.MemorySourceDefinition;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -66,7 +66,7 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.driverManager.DriverManager;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.sql.engine.SemanticException;
 import org.gdms.sql.engine.ParseException;
 import org.orbisgis.utils.I18N;
@@ -323,7 +323,7 @@ public class SimplePanel extends JPanel {
     }
 
     private void registerUISource(SQLUIPanel sqlPanel) {
-        GenericObjectDriver omd = new GenericObjectDriver(
+        MemoryDataSetDriver omd = new MemoryDataSetDriver(
                 sqlPanel.getFieldNames(), getGDMSTypes(sqlPanel.getFieldTypes()));
         omd.addValues(getGDMSValues(sqlPanel.getValues(),
                                     sqlPanel.getFieldTypes()));
@@ -331,7 +331,7 @@ public class SimplePanel extends JPanel {
             UIFactory.dsf.remove(dsName);
         }
         UIFactory.dsf.registerDataSource(dsName,
-                                         new ObjectSourceDefinition(omd, DriverManager.DEFAULT_SINGLE_TABLE_NAME));
+                                         new MemorySourceDefinition(omd, DriverManager.DEFAULT_SINGLE_TABLE_NAME));
     }
 
     private Value[] getGDMSValues(String[] values, int[] types) {

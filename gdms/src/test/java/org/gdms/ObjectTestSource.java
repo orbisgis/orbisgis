@@ -39,14 +39,14 @@
  */
 package org.gdms;
 
-import org.gdms.data.object.ObjectSourceDefinition;
-import org.gdms.driver.ObjectDriver;
+import org.gdms.data.memory.MemorySourceDefinition;
+import org.gdms.driver.MemoryDriver;
 
 class ObjectTestSource extends TestSource {
 
-	private ObjectDriver driver;
+	private MemoryDriver driver;
 
-	public ObjectTestSource(String name, ObjectDriver driver) {
+	public ObjectTestSource(String name, MemoryDriver driver) {
 		super(name);
 		this.driver = driver;
 	}
@@ -54,7 +54,7 @@ class ObjectTestSource extends TestSource {
 	@Override
 	public void backup() throws Exception {
 		TestBase.dsf.getSourceManager().register(name,
-				new ObjectSourceDefinition(driver,"main"));
+				new MemorySourceDefinition(driver,"main"));
 	}
 
 }

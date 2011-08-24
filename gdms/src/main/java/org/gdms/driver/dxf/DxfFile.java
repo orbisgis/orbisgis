@@ -35,7 +35,7 @@ import org.gdms.data.types.ConstraintFactory;
 import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 
 /**
  * A whole dataset contained in a DXF file, and main methods to read from and to
@@ -68,7 +68,7 @@ public class DxfFile {
 	public final static DefaultMetadata DXF_SCHEMA = new DefaultMetadata();
 	static int DXF_SCHEMACount = 9;
 	private int coordinatePrecision = 2;;
-	GenericObjectDriver driver;
+	MemoryDataSetDriver driver;
 
 	public DxfFile() throws DriverException {
 		initializeDXF_SCHEMA();
@@ -114,7 +114,7 @@ public class DxfFile {
 			throws IOException, DriverException {
 		DxfFile dxfFile = new DxfFile();
 		initializeDXF_SCHEMA();
-		dxfFile.driver = new GenericObjectDriver(DXF_SCHEMA);
+		dxfFile.driver = new MemoryDataSetDriver(DXF_SCHEMA);
 		// BufferedReader br = new BufferedReader(new InputStreamReader(is));
 		DxfGroup group = null;
 		while (null != (group = DxfGroup.readGroup(raf))) {
@@ -152,7 +152,7 @@ public class DxfFile {
 		return dxfFile;
 	}
 
-	public GenericObjectDriver read() {
+	public MemoryDataSetDriver read() {
 		return driver;
 	}
 

@@ -34,7 +34,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.gdms.driver.generic;
+package org.gdms.driver.memory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,15 +53,15 @@ import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.GDMSModelDriver;
-import org.gdms.driver.ObjectReadWriteDriver;
+import org.gdms.driver.EditableMemoryDriver;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.SourceManager;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
 
-public class GenericObjectDriver extends GDMSModelDriver implements
-        ObjectReadWriteDriver, DataSet {
+public class MemoryDataSetDriver extends GDMSModelDriver implements
+        EditableMemoryDriver {
 
         protected List<List<Value>> contents = new ArrayList<List<Value>>();
         private String[] columnsNames;
@@ -70,7 +70,7 @@ public class GenericObjectDriver extends GDMSModelDriver implements
         public static final String DRIVER_NAME = "Generic driver";
         private Schema schema;
         private DataSet realSource;
-        private static final Logger LOG = Logger.getLogger(GenericObjectDriver.class);
+        private static final Logger LOG = Logger.getLogger(MemoryDataSetDriver.class);
 
         /**
          * Create a new empty source of data in memory. The source will have as many
@@ -82,7 +82,7 @@ public class GenericObjectDriver extends GDMSModelDriver implements
          * @param columnsNames
          * @param columnsTypes  
          */
-        public GenericObjectDriver(String[] columnsNames, Type[] columnsTypes) {
+        public MemoryDataSetDriver(String[] columnsNames, Type[] columnsTypes) {
                 LOG.trace("Constructor");
                 this.columnsNames = columnsNames == null ? new String[0] : columnsNames;
                 this.columnsTypes = columnsTypes == null ? new Type[0] : columnsTypes;
@@ -90,11 +90,11 @@ public class GenericObjectDriver extends GDMSModelDriver implements
                 schema.addTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME, new DefaultMetadata(this.columnsTypes, this.columnsNames));
         }
 
-        public GenericObjectDriver() {
+        public MemoryDataSetDriver() {
                 this(new String[0], new Type[0]);
         }
 
-        public GenericObjectDriver(final Metadata metadata) throws DriverException {
+        public MemoryDataSetDriver(final Metadata metadata) throws DriverException {
                 LOG.trace("Constructor from metadata");
                 this.columnsNames = new String[metadata.getFieldCount()];
                 this.columnsTypes = new Type[metadata.getFieldCount()];
@@ -106,7 +106,7 @@ public class GenericObjectDriver extends GDMSModelDriver implements
                 schema.addTable("main", new DefaultMetadata(columnsTypes, columnsNames));
         }
 
-        public GenericObjectDriver(final DataSource dataSource)
+        public MemoryDataSetDriver(final DataSource dataSource)
                 throws DriverException {
                 this(dataSource.getMetadata());
                 LOG.trace("For datasource " + dataSource.getName());
@@ -115,7 +115,7 @@ public class GenericObjectDriver extends GDMSModelDriver implements
                 dataSource.close();
         }
 
-        public GenericObjectDriver(final DataSet set, boolean noCopy) throws DriverException {
+        public MemoryDataSetDriver(final DataSet set, boolean noCopy) throws DriverException {
                 Metadata metadata;
                 if (set == null) {
                         metadata = new DefaultMetadata();
@@ -140,7 +140,7 @@ public class GenericObjectDriver extends GDMSModelDriver implements
                 }
         }
 
-        public GenericObjectDriver(final DataSet set) throws DriverException {
+        public MemoryDataSetDriver(final DataSet set) throws DriverException {
                 this(set, false);
         }
 

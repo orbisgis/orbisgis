@@ -48,7 +48,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.sql.function.FunctionSignature;
 import org.orbisgis.progress.ProgressMonitor;
 
@@ -89,7 +89,7 @@ public final class ST_MainDirections extends AbstractTableFunction {
 			// * inSds.getFullExtent().getWidth()
 			// + inSds.getFullExtent().getHeight()
 			// * inSds.getFullExtent().getHeight());
-			final GenericObjectDriver driver = new GenericObjectDriver(
+			final MemoryDataSetDriver driver = new MemoryDataSetDriver(
 					getMetadata(null));
 			final Map<Integer, Double> distancesAccumulations = new HashMap<Integer, Double>();
 

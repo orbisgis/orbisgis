@@ -62,7 +62,7 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.table.TableDefinition;
 import org.grap.model.GeoRaster;
@@ -158,7 +158,7 @@ public final class ST_VectorizeLine extends AbstractTableFunction {
                                 pm.progressTo(nrows);
                                 pm.endTask();
                         }
-                        final GenericObjectDriver driver = new GenericObjectDriver(
+                        final MemoryDataSetDriver driver = new MemoryDataSetDriver(
                                 getMetadata(null));
                         for (float pixelValue : map.keySet()) {
                                 final Set<LineString> setOfLineString = map.get(pixelValue);

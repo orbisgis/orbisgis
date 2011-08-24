@@ -7,16 +7,16 @@ import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.Metadata;
-import org.gdms.data.object.ObjectDataSourceAdapter;
+import org.gdms.data.memory.MemoryDataSourceAdapter;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ObjectDriver;
+import org.gdms.driver.MemoryDriver;
 import org.gdms.driver.Driver;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.source.SourceManager;
 import org.gdms.source.directory.DefinitionType;
 import org.gdms.source.directory.WmsDefinitionType;
@@ -35,7 +35,7 @@ public class WMSSourceDefinition extends AbstractDataSourceDefinition {
         @Override
         protected Driver getDriverInstance() {
                 try {
-                        GenericObjectDriver ret = new GenericObjectDriver(getWMSMetadata());
+                        MemoryDataSetDriver ret = new MemoryDataSetDriver(getWMSMetadata());
                         ret.addValues(new Value[]{
                                         ValueFactory.createValue(wmsSource.getHost()),
                                         ValueFactory.createValue(wmsSource.getLayer()),
@@ -63,8 +63,8 @@ public class WMSSourceDefinition extends AbstractDataSourceDefinition {
                 LOG.trace("Creating datasource");
                 getDriver().setDataSourceFactory(getDataSourceFactory());
 
-                ObjectDataSourceAdapter ds = new ObjectDataSourceAdapter(
-                        getSource(tableName), (ObjectDriver) getDriver());
+                MemoryDataSourceAdapter ds = new MemoryDataSourceAdapter(
+                        getSource(tableName), (MemoryDriver) getDriver());
                 LOG.trace("Datasource created");
                 return ds;
         }

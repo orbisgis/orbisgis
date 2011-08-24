@@ -56,7 +56,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.grap.model.GeoRaster;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
@@ -183,7 +183,7 @@ public class WandTool extends AbstractPointTool {
 			throws DriverLoadException, NoSuchTableException,
 			DataSourceCreationException, DriverException,
 			NonEditableDataSourceException {
-		final GenericObjectDriver driver = new GenericObjectDriver(
+		final MemoryDataSetDriver driver = new MemoryDataSetDriver(
 				new String[] { "the_geom", "area" }, new Type[] { //$NON-NLS-1$ //$NON-NLS-2$
 						TypeFactory.createType(Type.GEOMETRY),
 						TypeFactory.createType(Type.DOUBLE) });

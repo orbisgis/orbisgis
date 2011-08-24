@@ -52,7 +52,7 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.table.TableDefinition;
 import org.gdms.sql.function.ScalarArgument;
@@ -108,7 +108,7 @@ public final class ST_RasterizeLine extends AbstractTableFunction {
                 try {
                         int value = values[2].getAsInt();
 
-                        final GenericObjectDriver driver = new GenericObjectDriver(
+                        final MemoryDataSetDriver driver = new MemoryDataSetDriver(
                                 getMetadata(null));
                         long dsGeomRowCount = sds.getRowCount();
                         long dsRasterRowCount = dsRaster.getRowCount();

@@ -7,7 +7,7 @@ import java.util.List;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.orbisgis.progress.ProgressMonitor;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -29,7 +29,7 @@ public final class InternalGapFinder {
 
         private int spatialFieldIndex;
 
-	private GenericObjectDriver driver;
+	private MemoryDataSetDriver driver;
 
         private static final Logger LOG = Logger.getLogger(InternalGapFinder.class);
 
@@ -86,7 +86,7 @@ public final class InternalGapFinder {
 
                         pm.startTask("Gap processing", nbOfGeometries);
 
-			driver = new GenericObjectDriver(sds.getMetadata());
+			driver = new MemoryDataSetDriver(sds.getMetadata());
 			final Value[] fieldsValues = new Value[spatialFieldIndex];
 
 			GeometryFactory gf = new GeometryFactory();
@@ -152,7 +152,7 @@ public final class InternalGapFinder {
 			pm.endTask();
 	}
 
-	public GenericObjectDriver getObjectMemoryDriver() {
+	public MemoryDataSetDriver getObjectMemoryDriver() {
 		return driver;
 	}
 

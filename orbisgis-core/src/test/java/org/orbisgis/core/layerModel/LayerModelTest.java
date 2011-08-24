@@ -46,7 +46,7 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.driverManager.DriverManager;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.source.SourceManager;
 import org.grap.model.GeoRaster;
 import org.orbisgis.core.AbstractTest;
@@ -66,14 +66,14 @@ public class LayerModelTest extends AbstractTest {
         @Override
         @Before
         public void setUp() throws Exception {
-                GenericObjectDriver omd = new GenericObjectDriver(
+                MemoryDataSetDriver omd = new MemoryDataSetDriver(
                         new String[]{"the_geom"}, new Type[]{TypeFactory.createType(Type.GEOMETRY)});
                 dsf.getSourceManager().register("vector1", omd);
                 dummy = dsf.getDataSource(omd, DriverManager.DEFAULT_SINGLE_TABLE_NAME);
-                omd = new GenericObjectDriver();
+                omd = new MemoryDataSetDriver();
                 dsf.getSourceManager().register("vector2", omd);
                 dummy2 = dsf.getDataSource("vector2");
-                omd = new GenericObjectDriver();
+                omd = new MemoryDataSetDriver();
                 dsf.getSourceManager().register("vector3", omd);
                 dummy3 = dsf.getDataSource("vector3");
                 super.setUp();

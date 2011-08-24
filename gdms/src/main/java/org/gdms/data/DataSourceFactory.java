@@ -51,14 +51,14 @@ import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.indexes.BTreeIndex;
 import org.gdms.data.indexes.IndexManager;
 import org.gdms.data.indexes.RTreeIndex;
-import org.gdms.data.object.ObjectSourceDefinition;
+import org.gdms.data.memory.MemorySourceDefinition;
 import org.gdms.data.schema.Schema;
 import org.gdms.data.system.SystemSource;
 import org.gdms.data.system.SystemSourceDefinition;
 import org.gdms.data.wms.WMSSource;
 import org.gdms.data.wms.WMSSourceDefinition;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ObjectDriver;
+import org.gdms.driver.MemoryDriver;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.DefaultSourceManager;
@@ -252,9 +252,9 @@ public class DataSourceFactory {
         }
 
         /**
-         * Gets a DataSource instance to access the specified ObjectDriver
+         * Gets a DataSource instance to access the specified MemoryDriver
          *
-         * @param object the ObjectDriver to load
+         * @param object the MemoryDriver to load
          * @param tableName
          * @return a DataSource for this Driver
          *
@@ -262,14 +262,14 @@ public class DataSourceFactory {
          *             If there isn't a suitable driver for such a file
          * @throws DriverException
          */
-        public DataSource getDataSource(ObjectDriver object, String tableName) throws DriverException {
+        public DataSource getDataSource(MemoryDriver object, String tableName) throws DriverException {
                 return getDataSource(object, tableName, DEFAULT);
         }
 
         /**
-         * Gets a DataSource instance to access the specified ObjectDriver
+         * Gets a DataSource instance to access the specified MemoryDriver
          *
-         * @param object the ObjectDriver to load
+         * @param object the MemoryDriver to load
          * @param tableName 
          * @param mode
          *            To enable undo/redo operations UNDOABLE. NORMAL otherwise
@@ -278,10 +278,10 @@ public class DataSourceFactory {
          *             If there isn't a suitable driver for such a file
          * @throws DriverException
          */
-        public DataSource getDataSource(ObjectDriver object, String tableName, int mode)
+        public DataSource getDataSource(MemoryDriver object, String tableName, int mode)
                 throws DriverException {
                 try {
-                        return getDataSource(new ObjectSourceDefinition(object, tableName), mode,
+                        return getDataSource(new MemorySourceDefinition(object, tableName), mode,
                                 new NullProgressMonitor());
                 } catch (DataSourceCreationException e) {
                         throw new DriverException(e);

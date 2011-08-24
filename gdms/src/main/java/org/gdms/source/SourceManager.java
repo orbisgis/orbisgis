@@ -48,7 +48,7 @@ import org.gdms.data.db.DBSource;
 import org.gdms.data.schema.Schema;
 import org.gdms.data.wms.WMSSource;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ObjectDriver;
+import org.gdms.driver.MemoryDriver;
 import org.gdms.driver.driverManager.DriverManager;
 
 public interface SourceManager {
@@ -190,7 +190,7 @@ public interface SourceManager {
          *            object to register
          * @throws SourceAlreadyExistsException 
          */
-        void register(String name, ObjectDriver driver);
+        void register(String name, MemoryDriver driver);
 
         /**
          * Registers the specified DataSourceDefinition with the specified name
@@ -258,7 +258,7 @@ public interface SourceManager {
          * @param tableName 
          * @return the name of the registered source
          */
-        String nameAndRegister(ObjectDriver driver, String tableName);
+        String nameAndRegister(MemoryDriver driver, String tableName);
 
         /**
          * Registers generating the name automatically

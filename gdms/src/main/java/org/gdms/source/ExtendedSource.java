@@ -53,11 +53,11 @@ import org.gdms.data.InitializationException;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.file.FileSourceDefinition;
-import org.gdms.data.object.ObjectSourceDefinition;
+import org.gdms.data.memory.MemorySourceDefinition;
 import org.gdms.data.wms.WMSSource;
 import org.gdms.data.wms.WMSSourceDefinition;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ObjectDriver;
+import org.gdms.driver.MemoryDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.directory.FileProperty;
 import org.gdms.source.directory.Property;
@@ -508,9 +508,9 @@ public final class ExtendedSource implements org.gdms.source.Source {
         }
 
         @Override
-        public ObjectDriver getObject() {
-                if (def instanceof ObjectSourceDefinition) {
-                        return ((ObjectSourceDefinition) def).getObject();
+        public MemoryDriver getObject() {
+                if (def instanceof MemorySourceDefinition) {
+                        return ((MemorySourceDefinition) def).getObject();
                 }
                 return null;
         }

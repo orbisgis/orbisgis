@@ -59,7 +59,7 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DiskBufferDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverManager;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 
 import static org.junit.Assert.*;
 
@@ -577,7 +577,7 @@ public class EditionTests extends TestBase {
 
 	@Test
         public void testInsertWrongNumberOfRows() throws Exception {
-		GenericObjectDriver omd = new GenericObjectDriver(
+		MemoryDataSetDriver omd = new MemoryDataSetDriver(
 				new String[] { "field" }, new Type[] { TypeFactory
 						.createType(Type.STRING) });
 		DataSource ds = dsf.getDataSource(omd,"main");
@@ -599,7 +599,7 @@ public class EditionTests extends TestBase {
 
 	@Test
         public void testCheckValuesInAddedField() throws Exception {
-		GenericObjectDriver omd = new GenericObjectDriver(
+		MemoryDataSetDriver omd = new MemoryDataSetDriver(
 				new String[] { "field" }, new Type[] { TypeFactory
 						.createType(Type.STRING) });
 		DataSource ds = dsf.getDataSource(omd,"main");

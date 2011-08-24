@@ -46,7 +46,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.sql.function.table.TableDefinition;
 import org.gdms.sql.function.ScalarArgument;
 import org.orbisgis.progress.ProgressMonitor;
@@ -92,7 +92,7 @@ public final class ST_CreateGrid extends AbstractTableFunction {
 			deltaY = values[1].getAsDouble();
 			
 			// built the driver for the resulting datasource and register it...
-			final GenericObjectDriver driver = new GenericObjectDriver(
+			final MemoryDataSetDriver driver = new MemoryDataSetDriver(
 					getMetadata(null));
 
 			if (3 == values.length) {
@@ -127,7 +127,7 @@ public final class ST_CreateGrid extends AbstractTableFunction {
 		return "select " + getName() + "(4000,1000[,15]) from myTable;";
 	}
 
-	private void createGrid(final GenericObjectDriver driver,
+	private void createGrid(final MemoryDataSetDriver driver,
 			final Envelope env, final ProgressMonitor pm)
 			throws DriverException {
 		final int nbX = (int) Math.ceil((env.getMaxX() - env.getMinX()
@@ -224,7 +224,7 @@ public final class ST_CreateGrid extends AbstractTableFunction {
 		}
 	}
 
-	private void createGridCell(final GenericObjectDriver driver,
+	private void createGridCell(final MemoryDataSetDriver driver,
 			final Coordinate[] summits, final int gridCellIndex) {
 		final LinearRing g = GF.createLinearRing(summits);
 		final Geometry gg = GF.createPolygon(g, null);

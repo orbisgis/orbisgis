@@ -55,7 +55,7 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ObjectDriver;
+import org.gdms.driver.MemoryDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.Source;
 import org.gdms.data.types.IncompatibleTypesException;
@@ -704,7 +704,7 @@ public class IndexManager {
                 }
         }
 
-        public AdHocIndex getAdHocIndex(ObjectDriver rightSource, String tableName, String fieldName,
+        public AdHocIndex getAdHocIndex(MemoryDriver rightSource, String tableName, String fieldName,
                 String indexId, ProgressMonitor pm) throws IndexException,
                 NoSuchTableException {
                 if (pm == null) {

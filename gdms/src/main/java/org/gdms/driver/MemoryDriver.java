@@ -42,7 +42,7 @@ package org.gdms.driver;
  * 
  * @author Fernando Gonzalez Cortes
  */
-public interface ObjectDriver extends Driver {
+public interface MemoryDriver extends Driver, DataSet {
 	/**
 	 * Method to initialize the access
 	 * 
@@ -51,7 +51,7 @@ public interface ObjectDriver extends Driver {
 	void start() throws DriverException;
 
 	/**
-	 * Method to finalize the object
+	 * Method to finalize the access
 	 * 
 	 * @throws DriverException
 	 */

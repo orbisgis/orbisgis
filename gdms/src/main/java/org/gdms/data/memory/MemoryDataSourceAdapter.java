@@ -34,7 +34,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.gdms.data.object;
+package org.gdms.data.memory;
 
 import java.io.IOException;
 import java.util.List;
@@ -47,30 +47,30 @@ import org.gdms.data.edition.DeleteEditionInfo;
 import org.gdms.data.edition.EditionInfo;
 import org.gdms.data.edition.PhysicalRowAddress;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ObjectDriver;
-import org.gdms.driver.ObjectReadWriteDriver;
+import org.gdms.driver.MemoryDriver;
+import org.gdms.driver.EditableMemoryDriver;
 import org.gdms.source.CommitListener;
 import org.gdms.source.Source;
 import org.gdms.source.SourceManager;
 import org.orbisgis.progress.NullProgressMonitor;
 
 /**
- * DataSource implementation for accessing <code>ObjectDriver</code> sources.
+ * DataSource implementation for accessing <code>MemoryDriver</code> sources.
  * @author Antoine Gourlay
  */
-public class ObjectDataSourceAdapter extends DriverDataSource implements
+public class MemoryDataSourceAdapter extends DriverDataSource implements
 		Commiter, CommitListener {
 
-	private ObjectDriver driver;
+	private MemoryDriver driver;
 
-        private static final Logger LOG = Logger.getLogger(ObjectDataSourceAdapter.class);
+        private static final Logger LOG = Logger.getLogger(MemoryDataSourceAdapter.class);
 
         /**
-         * Creates a new ObjectDataSourceAdapter on the given source and driver.
+         * Creates a new MemoryDataSourceAdapter on the given source and driver.
          * @param source a source object
-         * @param driver an ObjectDriver
+         * @param driver an MemoryDriver
          */
-	public ObjectDataSourceAdapter(Source source, ObjectDriver driver) {
+	public MemoryDataSourceAdapter(Source source, MemoryDriver driver) {
 		super(source);
 		this.driver = driver;
                 LOG.trace("Constructor");
@@ -100,12 +100,12 @@ public class ObjectDataSourceAdapter extends DriverDataSource implements
 	public void saveData(DataSource ds) throws DriverException {
             LOG.trace("Saving data");
 		ds.open();
-		((ObjectReadWriteDriver) driver).write(ds, new NullProgressMonitor());
+		((EditableMemoryDriver) driver).write(ds, new NullProgressMonitor());
 		ds.close();
 	}
 
         @Override
-	public ObjectDriver getDriver() {
+	public MemoryDriver getDriver() {
 		return driver;
 	}
 
@@ -120,7 +120,7 @@ public class ObjectDataSourceAdapter extends DriverDataSource implements
 			List<DeleteEditionInfo> deletedPKs, DataSource modifiedSource)
 			throws DriverException {
             LOG.trace("Commiting");
-		boolean rowChanged = ((ObjectReadWriteDriver) driver).write(modifiedSource,
+		boolean rowChanged = ((EditableMemoryDriver) driver).write(modifiedSource,
 				new NullProgressMonitor());
 		driver.stop();
 		fireCommit(this);

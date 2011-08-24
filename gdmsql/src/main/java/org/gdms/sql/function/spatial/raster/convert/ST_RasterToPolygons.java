@@ -54,7 +54,7 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.table.TableDefinition;
 import org.gdms.sql.function.ScalarArgument;
@@ -95,7 +95,7 @@ public final class ST_RasterToPolygons extends AbstractTableFunction {
                                 spatialFieldIndex = MetadataUtilities.getSpatialFieldIndex(sds.getMetadata());
                         }
 
-                        final GenericObjectDriver driver = new GenericObjectDriver(
+                        final MemoryDataSetDriver driver = new MemoryDataSetDriver(
                                 getMetadata(null));
 
                         final long rowCount = sds.getRowCount();

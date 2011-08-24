@@ -46,7 +46,7 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.data.types.IncompatibleTypesException;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -110,7 +110,7 @@ public class ExplodeTest {
 
         @Test
         public void testEvaluate() throws Exception {
-                final GenericObjectDriver driver1 = new GenericObjectDriver(new String[]{
+                final MemoryDataSetDriver driver1 = new MemoryDataSetDriver(new String[]{
                                 "pk", "geom"}, new Type[]{TypeFactory.createType(Type.INT),
                                 TypeFactory.createType(Type.GEOMETRY)});
 

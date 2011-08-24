@@ -51,7 +51,7 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.driverManager.DriverManager;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.orbisgis.core.AbstractTest;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.DefaultMapContext;
@@ -403,7 +403,7 @@ public class LegendTest extends AbstractTest {
         public void setUp() throws Exception {
                 super.setUp();
                 dsf = new SQLDataSourceFactory("target", "target");
-                ds = dsf.getDataSource(new GenericObjectDriver(new String[]{"long"},
+                ds = dsf.getDataSource(new MemoryDataSetDriver(new String[]{"long"},
                         new Type[]{TypeFactory.createType(Type.INT)}), DriverManager.DEFAULT_SINGLE_TABLE_NAME);
                 ds.open();
                 fieldName = "long";

@@ -40,7 +40,7 @@ import org.gdms.TestBase;
 import org.gdms.SourceTest;
 import org.junit.Before;
 import org.junit.Test;
-import org.gdms.data.object.ObjectSourceDefinition;
+import org.gdms.data.memory.MemorySourceDefinition;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DataSet;
 
@@ -147,6 +147,6 @@ public class GettersTest {
                 dsf.setTempDir(TestBase.backupDir.getAbsolutePath());
                 dsf.setResultDir(TestBase.backupDir);
                 dsf.getSourceManager().register("alltypes",
-                        new ObjectSourceDefinition(new AllTypesObjectDriver(), "main"));
+                        new MemorySourceDefinition(new AllTypesObjectDriver(), "main"));
         }
 }

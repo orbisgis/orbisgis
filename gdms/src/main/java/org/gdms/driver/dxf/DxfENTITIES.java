@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 import org.gdms.driver.DriverException;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 
 /**
  * The ENTITIES section of a DXF file containing all data itself
@@ -44,7 +44,7 @@ public final class DxfENTITIES {
 	}
 
 	public static DxfENTITIES readEntities(RandomAccessFile raf,
-			GenericObjectDriver driver) throws IOException, DriverException {
+			MemoryDataSetDriver driver) throws IOException, DriverException {
 		DxfENTITIES dxfEntities = new DxfENTITIES();
 		try {
 			DxfGroup group = new DxfGroup(2, "ENTITIES");

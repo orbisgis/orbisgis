@@ -30,7 +30,7 @@ import java.io.RandomAccessFile;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Point;
@@ -50,7 +50,7 @@ public final class DxfPOINT extends DxfENTITY {
 	}
 
 	public static DxfGroup readEntity(RandomAccessFile raf,
-			GenericObjectDriver driver) throws IOException, DriverException {
+			MemoryDataSetDriver driver) throws IOException, DriverException {
 
 		Value[] values = new Value[DxfFile.DXF_SCHEMACount];
 		/*

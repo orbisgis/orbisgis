@@ -51,7 +51,7 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.source.SourceManager;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
@@ -92,7 +92,7 @@ public class RasterTest {
                 dsf.setTempDir(TestBase.backupDir.getAbsolutePath());
                 dsf.setResultDir(TestBase.backupDir);
                 DefaultMetadata metadata = new DefaultMetadata(new Type[]{TypeFactory.createType(Type.RASTER)}, new String[]{"raster"});
-                GenericObjectDriver omd = new GenericObjectDriver(metadata);
+                MemoryDataSetDriver omd = new MemoryDataSetDriver(metadata);
                 omd.addValues(new Value[]{ValueFactory.createValue(gr)});
                 dsf.getSourceManager().register("raster", omd);
         }

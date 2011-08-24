@@ -59,7 +59,7 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.data.values.ValueWriter;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.io.WKTReader;
@@ -79,7 +79,7 @@ public class SQLTest extends SQLBaseTest {
                 DefaultMetadata metadata = new DefaultMetadata();
                 metadata.addField("f1", Type.INT);
                 dsf.getSourceManager().register("source",
-                        new GenericObjectDriver(metadata));
+                        new MemoryDataSetDriver(metadata));
                 dsf.executeSQL("insert into source (f1) values (StringToInt('2'));");
         }
 
@@ -659,7 +659,7 @@ public class SQLTest extends SQLBaseTest {
         @Test
         public void testDistinctOnGeometricField() throws Exception {
                 final WKTReader wktr = new WKTReader();
-                final GenericObjectDriver driver = new GenericObjectDriver(
+                final MemoryDataSetDriver driver = new MemoryDataSetDriver(
                         new String[]{"the_geom"}, new Type[]{TypeFactory.createType(Type.GEOMETRY,
                                 ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.POINT))});
 
@@ -1043,7 +1043,7 @@ public class SQLTest extends SQLBaseTest {
                 // very well thought
                 // TODO: needs to be rewritten - 12/09/2010
                 final StringBuffer tics = new StringBuffer("");
-                GenericObjectDriver omd = new GenericObjectDriver(
+                MemoryDataSetDriver omd = new MemoryDataSetDriver(
                         new String[]{"the_geom"}, new Type[]{TypeFactory.createType(Type.GEOMETRY)}) {
 
                         @Override
@@ -1076,7 +1076,7 @@ public class SQLTest extends SQLBaseTest {
 
         @Test
         public void testAggregatedExecution() throws Exception {
-                GenericObjectDriver omd = new GenericObjectDriver(new String[]{
+                MemoryDataSetDriver omd = new MemoryDataSetDriver(new String[]{
                                 "the_geom", "alpha"}, new Type[]{
                                 TypeFactory.createType(Type.GEOMETRY),
                                 TypeFactory.createType(Type.STRING)});
@@ -1184,14 +1184,14 @@ public class SQLTest extends SQLBaseTest {
                 Type intType = TypeFactory.createType(Type.INT);
                 Type stringType = TypeFactory.createType(Type.STRING);
 
-                GenericObjectDriver town = new GenericObjectDriver(new String[]{
+                MemoryDataSetDriver town = new MemoryDataSetDriver(new String[]{
                                 "town", "sales"}, new Type[]{stringType, intType});
                 town.addValues(ValueFactory.createValue("plourivo"), ValueFactory.createValue(1500));
                 town.addValues(ValueFactory.createValue("paimpol"), ValueFactory.createValue(250));
                 town.addValues(ValueFactory.createValue("nantes"), ValueFactory.createValue(300));
                 town.addValues(ValueFactory.createValue("nozay"), ValueFactory.createValue(700));
 
-                GenericObjectDriver geography = new GenericObjectDriver(new String[]{
+                MemoryDataSetDriver geography = new MemoryDataSetDriver(new String[]{
                                 "region_name", "town"}, new Type[]{stringType, intType});
                 geography.addValues(ValueFactory.createValue("bretagne"), ValueFactory.createValue("plourivo"));
                 geography.addValues(ValueFactory.createValue("bretagne"), ValueFactory.createValue("paimpol"));
@@ -1219,11 +1219,11 @@ public class SQLTest extends SQLBaseTest {
         public void testSelectWhereInSubquery() throws Exception {
                 Type intType = TypeFactory.createType(Type.INT);
                 Type stringType = TypeFactory.createType(Type.STRING);
-                GenericObjectDriver dict = new GenericObjectDriver(new String[]{
+                MemoryDataSetDriver dict = new MemoryDataSetDriver(new String[]{
                                 "code", "data"}, new Type[]{intType, stringType});
                 dict.addValues(ValueFactory.createValue(0), ValueFactory.createValue("good"));
                 dict.addValues(ValueFactory.createValue(1), ValueFactory.createValue("bad"));
-                GenericObjectDriver thetable = new GenericObjectDriver(
+                MemoryDataSetDriver thetable = new MemoryDataSetDriver(
                         new String[]{"dict_code"}, new Type[]{intType});
                 thetable.addValues(ValueFactory.createValue(0));
                 thetable.addValues(ValueFactory.createValue(1));
@@ -1337,7 +1337,7 @@ public class SQLTest extends SQLBaseTest {
         }
 
         private void createSource(String name, String fieldName, int... values) {
-                GenericObjectDriver omd = new GenericObjectDriver(
+                MemoryDataSetDriver omd = new MemoryDataSetDriver(
                         new String[]{fieldName}, new Type[]{TypeFactory.createType(Type.INT)});
                 for (int value : values) {
                         omd.addValues(new Value[]{ValueFactory.createValue(value)});

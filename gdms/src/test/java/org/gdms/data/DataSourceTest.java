@@ -48,7 +48,7 @@ import org.gdms.data.schema.Schema;
 import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ObjectDriver;
+import org.gdms.driver.MemoryDriver;
 import org.gdms.driver.DataSet;
 import org.orbisgis.utils.FileUtils;
 
@@ -197,7 +197,7 @@ public class DataSourceTest extends TestBase {
 
         @Test
         public void testCommitNonEditableDataSource() throws Exception {
-                DataSource ds = dsf.getDataSource(new ObjectDriver() {
+                DataSource ds = dsf.getDataSource(new MemoryDriver() {
 
                         public String getDriverId() {
                                 return null;

@@ -53,10 +53,10 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.AbstractDataSet;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ObjectDriver;
+import org.gdms.driver.MemoryDriver;
 import org.gdms.driver.DataSet;
 
-public class SQLAllTypesObjectDriver implements ObjectDriver {
+public class SQLAllTypesObjectDriver implements MemoryDriver {
 
         private Value[][] values = new Value[2][12];
         private static String[] names = new String[]{"binary", "boolean", "byte",
@@ -122,7 +122,7 @@ public class SQLAllTypesObjectDriver implements ObjectDriver {
         }
 
         /**
-         * @see org.gdms.driver.ObjectDriver#write(org.gdms.data.edition.DataWare)
+         * @see org.gdms.driver.MemoryDriver#write(org.gdms.data.edition.DataWare)
          */
         public void write(DataSource dataSource) throws DriverException {
                 final int fc = dataSource.getMetadata().getFieldCount();

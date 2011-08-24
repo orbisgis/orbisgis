@@ -49,7 +49,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.sql.function.table.TableDefinition;
 import org.gdms.sql.function.ScalarArgument;
 import org.orbisgis.progress.ProgressMonitor;
@@ -101,7 +101,7 @@ public final class ST_Extrude extends AbstractTableFunction {
                         final int idFieldIndex = sds.getMetadata().getFieldIndex(idFieldName);
                         final int heightFieldIndex = sds.getMetadata().getFieldIndex(heightFieldName);
 
-                        final GenericObjectDriver driver = new GenericObjectDriver(
+                        final MemoryDataSetDriver driver = new MemoryDataSetDriver(
                                 getMetadata(null));
                         
 
@@ -195,7 +195,7 @@ public final class ST_Extrude extends AbstractTableFunction {
         }
 
         private void extrudePolygon(final Value gid, final Polygon polygon,
-                final double high, final GenericObjectDriver driver)
+                final double high, final MemoryDataSetDriver driver)
                 throws DriverException {
                 Value wallType = ValueFactory.createValue("wall");
 

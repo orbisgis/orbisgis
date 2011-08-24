@@ -7,7 +7,7 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.DefaultDataManager;
 import org.orbisgis.core.Services;
@@ -43,7 +43,7 @@ public class MapContextDemo {
                                 TypeFactory.createType(Type.GEOMETRY)}, new String[]{
                                 "location", "the_geom"});
 
-                GenericObjectDriver driver = new GenericObjectDriver(metadata);
+                MemoryDataSetDriver driver = new MemoryDataSetDriver(metadata);
 
                 for (int i = 0; i < mc.getLayerModel().getLayerCount(); i++) {
                         layer = mc.getLayerModel().getLayer(i);

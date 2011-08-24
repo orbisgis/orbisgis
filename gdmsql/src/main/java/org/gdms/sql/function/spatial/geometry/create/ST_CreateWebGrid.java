@@ -47,7 +47,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.sql.function.table.TableDefinition;
 import org.gdms.sql.function.ScalarArgument;
 import org.orbisgis.progress.ProgressMonitor;
@@ -82,7 +82,7 @@ public final class ST_CreateWebGrid extends AbstractTableFunction {
                         final DataSet inSds = tables[0];
 
                         // built the driver for the resulting datasource and register it...
-                        final GenericObjectDriver driver = new GenericObjectDriver(
+                        final MemoryDataSetDriver driver = new MemoryDataSetDriver(
                                 getMetadata(null));
                         final Envelope envelope = DriverUtilities.getFullExtent(inSds);
                         createGrid(driver, envelope, deltaR, deltaT, pm);
@@ -112,7 +112,7 @@ public final class ST_CreateWebGrid extends AbstractTableFunction {
                 return "select " + getName() + "(4000,1000) from myTable;";
         }
 
-        private void createGrid(final GenericObjectDriver driver,
+        private void createGrid(final MemoryDataSetDriver driver,
                 final Envelope env, double deltaR, double deltaT,
                 final ProgressMonitor pm) throws DriverException {
                 final double r = 0.5 * Math.sqrt(env.getWidth() * env.getWidth()
@@ -146,7 +146,7 @@ public final class ST_CreateWebGrid extends AbstractTableFunction {
                 pm.endTask();
         }
 
-        private void createGridCell(final GenericObjectDriver driver,
+        private void createGridCell(final MemoryDataSetDriver driver,
                 final Coordinate centroid, final int r, final int t,
                 final int gridCellIndex, final double deltaR, final double deltaT) {
                 final Coordinate[] summits = new Coordinate[5];
@@ -166,7 +166,7 @@ public final class ST_CreateWebGrid extends AbstractTableFunction {
                         * Math.sin(tt));
         }
 
-        private void createGridCell(final GenericObjectDriver driver,
+        private void createGridCell(final MemoryDataSetDriver driver,
                 final Coordinate[] summits, final int gridCellIndex) {
                 final LinearRing g = GF.createLinearRing(summits);
                 final Geometry gg = GF.createPolygon(g, null);

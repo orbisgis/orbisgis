@@ -46,7 +46,7 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.indexes.DefaultSpatialIndexQuery;
 import org.gdms.data.indexes.IndexQuery;
-import org.gdms.data.object.ObjectSourceDefinition;
+import org.gdms.data.memory.MemorySourceDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -143,7 +143,7 @@ public class FailedEditionTest extends TestBase {
 
                 SourceManager sourceManager = dsf.getSourceManager();
                 sourceManager.setDriverManager(dm);
-                sourceManager.register("object", new ObjectSourceDefinition(
+                sourceManager.register("object", new MemorySourceDefinition(
                         new ReadAndWriteDriver(), "main"));
                 final ReadAndWriteDriver readAndWriteDriver1 = new ReadAndWriteDriver();
                 readAndWriteDriver1.setFile(null);

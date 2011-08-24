@@ -10,7 +10,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DiskBufferDriver;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ObjectDriver;
+import org.gdms.driver.MemoryDriver;
 import org.gdms.driver.DataSet;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionSignature;

@@ -12,7 +12,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.DataSet;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.table.TableDefinition;
@@ -48,7 +48,7 @@ public final class FunctionHelp extends AbstractTableFunction {
                 String[] functions = FunctionManager.getFunctionNames();
 
                 try {
-                        GenericObjectDriver genericObjectDriver = new GenericObjectDriver(
+                        MemoryDataSetDriver genericObjectDriver = new MemoryDataSetDriver(
                                 metadata);
                         for (String function : functions) {
 

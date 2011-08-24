@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateList;
@@ -955,7 +955,7 @@ public final class MifMidReader {
                 }
         }
 
-        public GenericObjectDriver read() throws IOException, DriverException {
+        public MemoryDataSetDriver read() throws IOException, DriverException {
 
                 setLogFile("MifMid.log", Level.FINEST);
                 readMMFileProperties();
@@ -964,7 +964,7 @@ public final class MifMidReader {
                 
                 populateMMFileFeatureSchema();
 
-                GenericObjectDriver driver = new GenericObjectDriver(
+                MemoryDataSetDriver driver = new MemoryDataSetDriver(
                         schema);
                 for (int i = 0; i < rowC; i++) {
                         driver.addValues(getValue(i));

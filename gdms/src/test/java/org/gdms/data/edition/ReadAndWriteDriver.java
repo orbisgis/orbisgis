@@ -38,8 +38,8 @@ package org.gdms.data.edition;
 
 import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.FileReadWriteDriver;
-import org.gdms.driver.ObjectReadWriteDriver;
+import org.gdms.driver.EditableMemoryDriver;
 
 public class ReadAndWriteDriver extends ReadDriver implements
-		FileReadWriteDriver, DBReadWriteDriver, ObjectReadWriteDriver {
+		FileReadWriteDriver, DBReadWriteDriver, EditableMemoryDriver {
 }

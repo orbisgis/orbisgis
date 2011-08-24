@@ -59,7 +59,7 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DBDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
-import org.gdms.driver.ObjectDriver;
+import org.gdms.driver.MemoryDriver;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.TableDescription;
 import org.gdms.driver.jdbc.ConversionRule;
@@ -72,7 +72,7 @@ import org.gdms.data.schema.DefaultSchema;
 import org.gdms.data.types.ConstraintFactory;
 import org.gdms.driver.AbstractDataSet;
 
-public class ReadDriver extends DefaultDBDriver implements ObjectDriver,
+public class ReadDriver extends DefaultDBDriver implements MemoryDriver,
         FileDriver, DBDriver {
 
         public static boolean failOnWrite = false;

@@ -44,7 +44,7 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -53,7 +53,7 @@ import com.vividsolutions.jts.geom.LinearRing;
 import java.util.List;
 import org.gdms.driver.DataSet;
 
-public class SeveralSpatialFieldsDriver extends GenericObjectDriver {
+public class SeveralSpatialFieldsDriver extends MemoryDataSetDriver {
 
 	private Envelope envelope;
 

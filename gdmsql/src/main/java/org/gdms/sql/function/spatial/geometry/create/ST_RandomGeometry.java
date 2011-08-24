@@ -45,7 +45,7 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.sql.function.table.TableDefinition;
 import org.gdms.sql.function.ScalarArgument;
 import org.orbisgis.progress.ProgressMonitor;
@@ -74,7 +74,7 @@ public final class ST_RandomGeometry extends AbstractTableFunction {
 				.getAsInt();
 
 		try {
-			final GenericObjectDriver driver = new GenericObjectDriver(
+			final MemoryDataSetDriver driver = new MemoryDataSetDriver(
 					getMetadata(null));
 
 			if (choice.equalsIgnoreCase("point")) {

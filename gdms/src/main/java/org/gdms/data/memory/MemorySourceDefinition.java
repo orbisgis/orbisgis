@@ -34,7 +34,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.gdms.data.object;
+package org.gdms.data.memory;
 
 import org.apache.log4j.Logger;
 import org.gdms.data.AbstractDataSourceDefinition;
@@ -42,8 +42,8 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceDefinition;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ObjectDriver;
-import org.gdms.driver.ObjectReadWriteDriver;
+import org.gdms.driver.MemoryDriver;
+import org.gdms.driver.EditableMemoryDriver;
 import org.gdms.driver.Driver;
 import org.gdms.driver.DataSet;
 import org.gdms.source.directory.DefinitionType;
@@ -51,17 +51,17 @@ import org.gdms.source.directory.ObjectDefinitionType;
 import org.orbisgis.progress.ProgressMonitor;
 
 /**
- * Definition for sources built on {@link ObjectDriver}.
+ * Definition for sources built on {@link MemoryDriver}.
  *
  * @author fergonco, Antoine Gourlay
  */
-public class ObjectSourceDefinition extends AbstractDataSourceDefinition {
+public class MemorySourceDefinition extends AbstractDataSourceDefinition {
 
-        private ObjectDriver driver;
+        private MemoryDriver driver;
         private String tableName;
-        private static final Logger LOG = Logger.getLogger(ObjectSourceDefinition.class);
+        private static final Logger LOG = Logger.getLogger(MemorySourceDefinition.class);
 
-        public ObjectSourceDefinition(ObjectDriver driver, String tableName) {
+        public MemorySourceDefinition(MemoryDriver driver, String tableName) {
                 LOG.trace("Constructor");
                 this.driver = driver;
                 this.tableName = tableName;
@@ -72,8 +72,8 @@ public class ObjectSourceDefinition extends AbstractDataSourceDefinition {
         public DataSource createDataSource(String sourceName, ProgressMonitor pm)
                 throws DataSourceCreationException {
                 LOG.trace("Creating datasource");
-                ObjectDataSourceAdapter ds;
-                ds = new ObjectDataSourceAdapter(getSource(sourceName), driver);
+                MemoryDataSourceAdapter ds;
+                ds = new MemoryDataSourceAdapter(getSource(sourceName), driver);
                 LOG.trace("Datasource created");
                 return ds;
         }
@@ -81,7 +81,7 @@ public class ObjectSourceDefinition extends AbstractDataSourceDefinition {
         @Override
         public void createDataSource(DataSet contents, ProgressMonitor pm) throws DriverException {
                 LOG.trace("Writing datasource to object");
-                ((ObjectReadWriteDriver) driver).write(contents, pm);
+                ((EditableMemoryDriver) driver).write(contents, pm);
         }
 
         @Override
@@ -96,9 +96,9 @@ public class ObjectSourceDefinition extends AbstractDataSourceDefinition {
                 throws InstantiationException, IllegalAccessException,
                 ClassNotFoundException {
                 String className = d.getClazz();
-                ObjectDriver od = (ObjectDriver) Class.forName(className).newInstance();
+                MemoryDriver od = (MemoryDriver) Class.forName(className).newInstance();
 
-                return new ObjectSourceDefinition(od, d.getTableName());
+                return new MemorySourceDefinition(od, d.getTableName());
         }
 
         @Override
@@ -106,14 +106,14 @@ public class ObjectSourceDefinition extends AbstractDataSourceDefinition {
                 return driver;
         }
 
-        public ObjectDriver getObject() {
+        public MemoryDriver getObject() {
                 return driver;
         }
 
         @Override
         public boolean equals(Object obj) {
-                if (obj instanceof ObjectSourceDefinition) {
-                        ObjectSourceDefinition dsd = (ObjectSourceDefinition) obj;
+                if (obj instanceof MemorySourceDefinition) {
+                        MemorySourceDefinition dsd = (MemorySourceDefinition) obj;
                         return (driver.equals(dsd.driver));
                 } else {
                         return false;

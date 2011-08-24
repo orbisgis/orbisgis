@@ -41,7 +41,7 @@ import org.junit.Test;
 import org.gdms.TestBase;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.object.ObjectSourceDefinition;
+import org.gdms.data.memory.MemorySourceDefinition;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.SourceManager;
 
@@ -93,9 +93,9 @@ public class IsEditableTests extends TestBase {
 		SourceManager sourceManager = dsf.getSourceManager();
 		sourceManager.setDriverManager(dm);
 
-		sourceManager.register("readObject", new ObjectSourceDefinition(
+		sourceManager.register("readObject", new MemorySourceDefinition(
 				new ReadDriver(),"main"));
-		sourceManager.register("readWriteObject", new ObjectSourceDefinition(
+		sourceManager.register("readWriteObject", new MemorySourceDefinition(
 				new ReadAndWriteDriver(),"main"));
 		sourceManager.register("readFile", new FakeFileSourceDefinition(
 				new ReadDriver()));

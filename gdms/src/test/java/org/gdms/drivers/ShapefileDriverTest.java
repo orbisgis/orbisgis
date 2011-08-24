@@ -51,7 +51,7 @@ import org.gdms.data.DataSourceCreation;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.schema.DefaultMetadata;
-import org.gdms.data.object.ObjectSourceDefinition;
+import org.gdms.data.memory.MemorySourceDefinition;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.types.Type;
@@ -59,7 +59,7 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.orbisgis.utils.FileUtils;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -114,12 +114,12 @@ public class ShapefileDriverTest {
 
         @Test
         public void testSaveEmptyGeometries() throws Exception {
-                GenericObjectDriver omd = new GenericObjectDriver(new String[]{
+                MemoryDataSetDriver omd = new MemoryDataSetDriver(new String[]{
                                 "the_geom", "id"}, new Type[]{
                                 TypeFactory.createType(Type.GEOMETRY,
                                 ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.POINT)),
                                 TypeFactory.createType(Type.STRING)});
-                dsf.getSourceManager().register("obj", new ObjectSourceDefinition(omd, "main"));
+                dsf.getSourceManager().register("obj", new MemorySourceDefinition(omd, "main"));
                 DataSource ds = dsf.getDataSource("obj");
                 GeometryFactory gf = new GeometryFactory();
                 ds.open();
@@ -145,10 +145,10 @@ public class ShapefileDriverTest {
 
         @Test
         public void testSaveHeterogeneousGeometries() throws Exception {
-                GenericObjectDriver omd = new GenericObjectDriver(new String[]{"id",
+                MemoryDataSetDriver omd = new MemoryDataSetDriver(new String[]{"id",
                                 "geom"}, new Type[]{TypeFactory.createType(Type.STRING),
                                 TypeFactory.createType(Type.GEOMETRY)});
-                dsf.getSourceManager().register("obj", new ObjectSourceDefinition(omd, "main"));
+                dsf.getSourceManager().register("obj", new MemorySourceDefinition(omd, "main"));
                 DataSourceCreation target = new FileSourceCreation(new File(
                         TestBase.backupDir,
                         "outputtestSaveHeterogeneousGeometries.shp"), null);
@@ -314,7 +314,7 @@ public class ShapefileDriverTest {
 
         @Test
         public void testNoConstraintWith3DGeom2SHP() throws Exception {
-                GenericObjectDriver omd = new GenericObjectDriver(
+                MemoryDataSetDriver omd = new MemoryDataSetDriver(
                         new String[]{"geom"}, new Type[]{TypeFactory.createType(Type.GEOMETRY)});
                 omd.addValues(new Value[]{ValueFactory.createValue(new GeometryFactory().createPoint(new Coordinate(
                                 2, 2, 2)))});

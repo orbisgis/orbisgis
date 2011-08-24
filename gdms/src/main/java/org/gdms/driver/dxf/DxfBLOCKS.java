@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 import org.gdms.driver.DriverException;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 
 /**
  * A DXF block contains a block of geometries. The dxf driver can read entities
@@ -62,7 +62,7 @@ public final class DxfBLOCKS {
 	 */
 
 	public static DxfBLOCKS readEntities(RandomAccessFile raf,
-			GenericObjectDriver driver) throws IOException, DriverException {
+			MemoryDataSetDriver driver) throws IOException, DriverException {
 		DxfBLOCKS dxfEntities = new DxfBLOCKS();
 			DxfGroup group = new DxfGroup(2, "BLOCKS");
 			while (!group.equals(DxfFile.ENDSEC)) {

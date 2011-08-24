@@ -42,10 +42,10 @@ import org.orbisgis.progress.ProgressMonitor;
  * Interface to be implement by the Object driver that as also RW capabilities
  * 
  */
-public interface ObjectReadWriteDriver extends ObjectDriver, Driver {
+public interface EditableMemoryDriver extends MemoryDriver, Driver {
 
         /**
-         * Writes the content in the DataSource to the specified file
+         * Writes the content in the DataSet to the specified file
          *
          * @param dataSource 
          *            DataSource with the contents

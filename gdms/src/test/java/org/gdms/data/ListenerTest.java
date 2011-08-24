@@ -45,7 +45,7 @@ import org.gdms.data.edition.FakeDBTableSourceDefinition;
 import org.gdms.data.edition.FakeFileSourceDefinition;
 import org.gdms.data.edition.ReadAndWriteDriver;
 import org.gdms.data.edition.ReadDriver;
-import org.gdms.data.object.ObjectSourceDefinition;
+import org.gdms.data.memory.MemorySourceDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverManager;
@@ -301,7 +301,7 @@ public class ListenerTest {
 
                 SourceManager sourceManager = dsf.getSourceManager();
                 sourceManager.setDriverManager(dm);
-                sourceManager.register("object", new ObjectSourceDefinition(
+                sourceManager.register("object", new MemorySourceDefinition(
                         new ReadAndWriteDriver(), "main"));
                 final ReadAndWriteDriver fileReadAndWriteDriver = new ReadAndWriteDriver();
                 fileReadAndWriteDriver.setFile(new File("."));

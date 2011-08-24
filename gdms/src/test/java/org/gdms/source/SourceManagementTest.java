@@ -56,14 +56,14 @@ import org.gdms.data.edition.FakeDBTableSourceDefinition;
 import org.gdms.data.edition.FakeFileSourceDefinition;
 import org.gdms.data.edition.ReadAndWriteDriver;
 import org.gdms.data.file.FileSourceCreation;
-import org.gdms.data.object.ObjectSourceDefinition;
+import org.gdms.data.memory.MemorySourceDefinition;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.wms.WMSSource;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.driverManager.DriverManager;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 
 import static org.junit.Assert.*;
 
@@ -76,7 +76,7 @@ public class SourceManagementTest {
         private File testFile;
         private DBSource testDB;
         private WMSSource testWMS;
-        private GenericObjectDriver obj;
+        private MemoryDataSetDriver obj;
 
         @Test
         public void testRegisterTwice() throws Exception {
@@ -325,14 +325,14 @@ public class SourceManagementTest {
 
         @Test
         public void testObjectDriverType() throws Exception {
-                GenericObjectDriver driver = new GenericObjectDriver(new String[]{"pk",
+                MemoryDataSetDriver driver = new MemoryDataSetDriver(new String[]{"pk",
                                 "geom"}, new Type[]{TypeFactory.createType(Type.INT),
                                 TypeFactory.createType(Type.GEOMETRY)});
                 sm.register("spatial", driver);
                 Source src = sm.getSource("spatial");
                 assertEquals((src.getType() & SourceManager.MEMORY), SourceManager.MEMORY);
                 assertEquals((src.getType() & SourceManager.VECTORIAL), SourceManager.VECTORIAL);
-                driver = new GenericObjectDriver(new String[]{"pk"},
+                driver = new MemoryDataSetDriver(new String[]{"pk"},
                         new Type[]{TypeFactory.createType(Type.INT)});
                 sm.register("alpha", driver);
                 src = sm.getSource("alpha");
@@ -442,7 +442,7 @@ public class SourceManagementTest {
                 sm.remove("db");
                 SourceManager sourceManager = dsf.getSourceManager();
                 sourceManager.setDriverManager(dm);
-                sourceManager.register("object", new ObjectSourceDefinition(
+                sourceManager.register("object", new MemorySourceDefinition(
                         new ReadAndWriteDriver(), "main"));
                 sourceManager.register("file", new FakeFileSourceDefinition(
                         new ReadAndWriteDriver()));
@@ -472,7 +472,7 @@ public class SourceManagementTest {
                         + "backup/testhsqldb", "sa", "", "gisapps", "jdbc:hsqldb:file");
                 testWMS = new WMSSource("127.0.0.1", "cantons", "EPSG:1234",
                         "format/pig");
-                obj = new GenericObjectDriver();
+                obj = new MemoryDataSetDriver();
                 sm.remove(SOURCE);
                 sm.register(SOURCE, testFile);
         }
