@@ -37,23 +37,24 @@
  */
 package org.gdms.data.schema;
 
-import junit.framework.TestCase;
 import org.gdms.data.types.Type;
-import org.gdms.driver.DriverException;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  *
  * @author ebocher
  */
-public class MetadataUtilitiesTest extends TestCase {
+public class MetadataUtilitiesTest {
 
         private DefaultMetadata basicMetadata;
         private DefaultMetadata geometryMetadata;
         private DefaultMetadata rasterMetadata;
 
-        @Override
+        @Before
         public void setUp() throws Exception {
-                super.setUp();
                 basicMetadata = new DefaultMetadata();
                 basicMetadata.addField("name", Type.STRING);
                 basicMetadata.addField("surname", Type.STRING);
@@ -70,6 +71,7 @@ public class MetadataUtilitiesTest extends TestCase {
                 rasterMetadata.addField("location", Type.STRING);
         }
 
+        @Test
         public void testGetSpatialFieldIndex() throws Exception {
                 assertTrue(MetadataUtilities.getSpatialFieldIndex(basicMetadata) == -1);
                 assertTrue(MetadataUtilities.getSpatialFieldIndex(geometryMetadata) == 0);
@@ -77,24 +79,28 @@ public class MetadataUtilitiesTest extends TestCase {
 
         }
 
+        @Test
         public void testGetGeometryFieldIndex() throws Exception {
                 assertTrue(MetadataUtilities.getGeometryFieldIndex(basicMetadata) == -1);
                 assertTrue(MetadataUtilities.getGeometryFieldIndex(geometryMetadata) == 0);
                 assertTrue(MetadataUtilities.getGeometryFieldIndex(rasterMetadata) == -1);
         }
 
+        @Test
         public void testGetRasterFieldIndex() throws Exception {
                 assertTrue(MetadataUtilities.getRasterFieldIndex(basicMetadata) == -1);
                 assertTrue(MetadataUtilities.getRasterFieldIndex(geometryMetadata) == -1);
                 assertTrue(MetadataUtilities.getRasterFieldIndex(rasterMetadata) == 0);
         }
 
+        @Test
         public void testisGeometry() throws Exception {
                 assertTrue(!MetadataUtilities.isGeometry(basicMetadata));
                 assertTrue(MetadataUtilities.isGeometry(geometryMetadata));
                 assertTrue(!MetadataUtilities.isGeometry(rasterMetadata));
         }
 
+        @Test
         public void testisRaster() throws Exception {
                 assertTrue(!MetadataUtilities.isRaster(basicMetadata));
                 assertTrue(!MetadataUtilities.isRaster(geometryMetadata));
