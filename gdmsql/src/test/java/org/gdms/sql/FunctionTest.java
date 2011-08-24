@@ -72,21 +72,22 @@ public abstract class FunctionTest {
         protected Geometry JTSLineString3D;
         protected Geometry JTSPolygonWith2Holes;
         public static SQLDataSourceFactory dsf = new SQLDataSourceFactory(SQLBaseTest.backupDir.getAbsolutePath());
+        protected WKTReader wktReader;
 
         @Before
         public void setUp() throws Exception {
-                WKTReader wktr = new WKTReader();
-                JTSMultiPolygon2D = wktr.read("MULTIPOLYGON (((0 0, 1 1, 0 1, 0 0)))");
-                JTSMultiLineString2D = wktr.read("MULTILINESTRING ((0 0, 1 1, 0 1, 0 0))");
-                JTSMultiPoint2D = wktr.read("MULTIPOINT (0 0, 1 1, 0 1, 0 0)");
-                JTSPolygon2D = wktr.read("POLYGON ((181 124, 87 162, 76 256, 166 315, 286 325, 373 255, 387 213, 377 159, 351 121, 298 101, 234 56, 181 124), (165 244, 227 219, 234 300, 168 288, 165 244), (244 130, 305 135, 324 186, 306 210, 272 206, 206 174, 244 130))");
+                wktReader = new WKTReader();
+                JTSMultiPolygon2D = wktReader.read("MULTIPOLYGON (((0 0, 1 1, 0 1, 0 0)))");
+                JTSMultiLineString2D = wktReader.read("MULTILINESTRING ((0 0, 1 1, 0 1, 0 0))");
+                JTSMultiPoint2D = wktReader.read("MULTIPOINT (0 0, 1 1, 0 1, 0 0)");
+                JTSPolygon2D = wktReader.read("POLYGON ((181 124, 87 162, 76 256, 166 315, 286 325, 373 255, 387 213, 377 159, 351 121, 298 101, 234 56, 181 124), (165 244, 227 219, 234 300, 168 288, 165 244), (244 130, 305 135, 324 186, 306 210, 272 206, 206 174, 244 130))");
 
-                JTSLineString2D = wktr.read("LINESTRING (1 1, 2 1, 2 2, 1 2, 1 1)");
-                JTSLineString3D = wktr.read("LINESTRING (1 1 1, 2 1 2, 2 2 3, 1 2 4, 1 1 5)");
-                JTSPoint3D = wktr.read("POINT(0 10 20)");
-                JTSPoint2D = wktr.read("POINT(0 10)");
+                JTSLineString2D = wktReader.read("LINESTRING (1 1, 2 1, 2 2, 1 2, 1 1)");
+                JTSLineString3D = wktReader.read("LINESTRING (1 1 1, 2 1 2, 2 2 3, 1 2 4, 1 1 5)");
+                JTSPoint3D = wktReader.read("POINT(0 10 20)");
+                JTSPoint2D = wktReader.read("POINT(0 10)");
 
-                JTSPolygonWith2Holes = wktr.read("POLYGON ((85 55, 85 306, 366 306, 366 55, 85 55), (153 205, 212 173, 241 190, 251 253, 235 278, 147 254, 153 205), (262 88, 321 97, 324 153, 303 177, 240 138, 262 88))");
+                JTSPolygonWith2Holes = wktReader.read("POLYGON ((85 55, 85 306, 366 306, 366 55, 85 55), (153 205, 212 173, 241 190, 251 253, 235 278, 147 254, 153 205), (262 88, 321 97, 324 153, 303 177, 240 138, 262 88))");
 
                 GeometryFactory gf = new GeometryFactory();
                 JTSGeometryCollection = gf.createGeometryCollection(new Geometry[]{

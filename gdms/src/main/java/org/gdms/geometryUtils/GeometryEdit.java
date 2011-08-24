@@ -79,6 +79,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateFilter;
 import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
+import com.vividsolutions.jts.geom.CoordinateSequences;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
@@ -119,7 +120,7 @@ public final class GeometryEdit {
          * @param endZ 
          * @return  
          */
-        public static Geometry forceDStartEnd(Geometry geom, final double startZ,
+        public static Geometry force3DStartEnd(Geometry geom, final double startZ,
                 final double endZ) {
 
                 final double bigD = geom.getLength();
@@ -173,6 +174,23 @@ public final class GeometryEdit {
 
         }
 
+        /**
+         * Reverses a multilinestring according to z value. The z first point must be
+         * greater than the z end point
+         *
+         * @param multiLineString
+         * @return
+         */
+        public static MultiLineString reverse3D(MultiLineString multiLineString) {
+                int num = multiLineString.getNumGeometries();
+                LineString[] lineStrings = new LineString[num];
+                for (int i = 0; i < multiLineString.getNumGeometries(); i++) {
+                        lineStrings[i] = reverse3D((LineString) multiLineString.getGeometryN(i));
+
+                }
+                return FACTORY.createMultiLineString(lineStrings);
+        }
+
         /**  
          * Reverses a LineString according to the z value. The z of the first point must be  
          * lower than the z of the end point.
@@ -180,15 +198,37 @@ public final class GeometryEdit {
          * @param lineString  
          * @return  
          */
-        public static LineString zReverse(LineString lineString) {
-
-                double startZ = lineString.getStartPoint().getCoordinate().z;
-                double endZ = lineString.getEndPoint().getCoordinate().z;
-                if (!Double.isNaN(startZ) && !Double.isNaN(endZ) && startZ < endZ) {
-                        return (LineString) lineString.reverse();
+        public static LineString reverse3D(LineString lineString) {
+                CoordinateSequence seq = lineString.getCoordinateSequence();
+                double startZ = seq.getCoordinate(0).z;
+                double endZ = seq.getCoordinate(seq.size() - 1).z;
+                if (Double.isNaN(startZ) || Double.isNaN(endZ)) {
+                } else {
+                        if (startZ < endZ) {
+                                CoordinateSequences.reverse(seq);
+                                lineString = FACTORY.createLineString(seq);
+                        }
                 }
 
                 return lineString;
+        }
+
+         /**
+         * Reverse a linestring or a multilinetring according to z value. The z first point must be
+         * greater than the z end point
+         *
+         * @param lineString
+         * @return
+         */
+        public static Geometry reverse3D(Geometry geometry) {
+
+                if (GeometryTypeUtil.isMultiLineString(geometry)) {
+                        return reverse3D((MultiLineString) geometry);
+                } else if (GeometryTypeUtil.isLineString(geometry)) {
+                        return reverse3D((LineString) geometry);
+                }
+
+                return geometry;
         }
 
         /**  

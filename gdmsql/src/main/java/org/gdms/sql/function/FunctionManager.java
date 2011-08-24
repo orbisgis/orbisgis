@@ -114,6 +114,7 @@ import org.gdms.sql.function.spatial.geometry.create.ST_RandomGeometry;
 import org.gdms.sql.function.spatial.geometry.create.ST_RemoveDuplicateCoordinate;
 import org.gdms.sql.function.spatial.geometry.crs.ST_Transform;
 import org.gdms.sql.function.spatial.geometry.distance.ST_NearestPoints;
+import org.gdms.sql.function.spatial.geometry.edit.ST_3DReverse;
 import org.gdms.sql.function.spatial.geometry.edit.ST_AddZ;
 import org.gdms.sql.function.spatial.geometry.edit.ST_AddZFromRaster;
 import org.gdms.sql.function.spatial.geometry.edit.ST_Normalize;
@@ -145,6 +146,7 @@ import org.gdms.sql.function.spatial.geometry.predicates.ST_Touches;
 import org.gdms.sql.function.spatial.geometry.properties.ST_Area;
 import org.gdms.sql.function.spatial.geometry.properties.ST_CircleCompacity;
 import org.gdms.sql.function.spatial.geometry.properties.ST_ConvexHull;
+import org.gdms.sql.function.spatial.geometry.properties.ST_CoordDim;
 import org.gdms.sql.function.spatial.geometry.properties.ST_Dimension;
 import org.gdms.sql.function.spatial.geometry.properties.ST_Distance;
 import org.gdms.sql.function.spatial.geometry.properties.ST_Extent;
@@ -289,6 +291,7 @@ public final class FunctionManager {
                 addFunction(ST_SimplifyPreserveTopology.class);
                 addFunction(ST_Polygonize.class);
                 addFunction(ST_Reverse.class);
+                addFunction(ST_3DReverse.class);
                 addFunction(ST_Normalize.class);
                 addFunction(ST_IsRectangle.class);
                 addFunction(ST_Snap.class);
@@ -353,6 +356,7 @@ public final class FunctionManager {
                 addFunction(ST_CreatePointsGrid.class);
                 addFunction(ST_Interpolate.class);
                 addFunction(ST_KMeans.class);
+                addFunction(ST_CoordDim.class);
         }
 
         /**

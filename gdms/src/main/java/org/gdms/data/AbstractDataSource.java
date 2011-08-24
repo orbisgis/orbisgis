@@ -46,14 +46,12 @@ import java.util.List;
 
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.MetadataUtilities;
-import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.data.types.IncompatibleTypesException;
-import org.gdms.data.types.SRIDConstraint;
 import org.gdms.driver.AbstractDataSet;
 import org.gdms.driver.DriverUtilities;
 import org.grap.model.GeoRaster;

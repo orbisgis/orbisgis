@@ -10,7 +10,7 @@
  *
  * User support leader : Gwendall Petit, geomatic engineer.
  *
- * Previous computer developer : Pierre-Yves FADET, computer engineer, Thomas LEDUC, 
+ * Previous computer developer : Pierre-Yves FADET, computer engineer, Thomas LEDUC,
  * scientific researcher, Fernando GONZALEZ CORTES, computer engineer.
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
@@ -36,40 +36,53 @@
  * or contact directly:
  * info@orbisgis.org
  */
-package org.gdms.sql.function.spatial.geometry.edit;
 
+package org.gdms.sql.function.spatial.geometry.properties;
+
+import com.vividsolutions.jts.geom.Geometry;
 import org.gdms.data.SQLDataSourceFactory;
+import org.gdms.data.types.InvalidTypeException;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
-
-import com.vividsolutions.jts.geom.Geometry;
 
 /**
- * Returns the geometry with vertex order reversed.
+ *
+ * @author ebocher
  */
-public final class ST_Reverse extends AbstractScalarSpatialFunction {
+public class ST_CoordDim extends AbstractSpatialPropertyFunction {
 
         @Override
-        public Value evaluate(SQLDataSourceFactory dsf, Value[] args) throws FunctionException {
-                Geometry g = args[0].getAsGeometry();
-                return ValueFactory.createValue(g.reverse());
+        public Value evaluateResult(SQLDataSourceFactory dsf, Value... args) throws FunctionException {
+                Geometry geom = args[0].getAsGeometry();
+                return ValueFactory.createValue(geom.getFactory().getCoordinateSequenceFactory().create(geom.getCoordinates()).getDimension());
 
         }
 
         @Override
         public String getName() {
-                return "ST_Reverse";
+                return "ST_CoordDim";
+        }
+
+        @Override
+        public boolean isAggregate() {
+                return false;
+        }
+
+        @Override
+        public Type getType(Type[] argsTypes) throws InvalidTypeException {
+                return TypeFactory.createType(Type.INT);
         }
 
         @Override
         public String getDescription() {
-                return "Returns the geometry with vertex order reversed. ";
+                return "Return the coordinate dimension of a geometry";
         }
 
         @Override
         public String getSqlOrder() {
-                return "select ST_Reverse(the_geom) from myTable;";
+                return "SELECT ST_CoordDim(geometry) from table;";
         }
 }

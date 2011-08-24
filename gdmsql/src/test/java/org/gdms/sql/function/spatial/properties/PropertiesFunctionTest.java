@@ -60,11 +60,21 @@ import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.spatial.geometry.properties.ST_CircleCompacity;
+import org.gdms.sql.function.spatial.geometry.properties.ST_CoordDim;
 import org.gdms.sql.function.spatial.geometry.properties.ST_InteriorRingN;
 
 import static org.junit.Assert.*;
 
 public class PropertiesFunctionTest extends FunctionTest {
+
+
+        @Test
+        public void testCoordDim() throws Exception {
+                int d= testSpatialFunction(new ST_CoordDim(), JTSMultiPolygon2D, 1).getAsInt();
+                assertTrue(d==2);
+                d= testSpatialFunction(new ST_CoordDim(), JTSLineString3D, 1).getAsInt();
+                assertTrue(d==3);
+        }
 
         @Test
         public void testArea() throws Exception {

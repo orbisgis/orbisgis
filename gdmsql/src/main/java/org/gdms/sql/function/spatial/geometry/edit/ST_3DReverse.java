@@ -10,7 +10,7 @@
  *
  * User support leader : Gwendall Petit, geomatic engineer.
  *
- * Previous computer developer : Pierre-Yves FADET, computer engineer, Thomas LEDUC, 
+ * Previous computer developer : Pierre-Yves FADET, computer engineer, Thomas LEDUC,
  * scientific researcher, Fernando GONZALEZ CORTES, computer engineer.
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
@@ -38,38 +38,53 @@
  */
 package org.gdms.sql.function.spatial.geometry.edit;
 
+import com.vividsolutions.jts.geom.Geometry;
 import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.geometryUtils.GeometryEdit;
+import org.gdms.sql.function.BasicFunctionSignature;
 import org.gdms.sql.function.FunctionException;
+import org.gdms.sql.function.FunctionSignature;
+import org.gdms.sql.function.ScalarArgument;
 import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
 
-import com.vividsolutions.jts.geom.Geometry;
-
 /**
- * Returns the geometry with vertex order reversed.
+ *
+ * @author ebocher
  */
-public final class ST_Reverse extends AbstractScalarSpatialFunction {
+public class ST_3DReverse extends AbstractScalarSpatialFunction {
 
         @Override
-        public Value evaluate(SQLDataSourceFactory dsf, Value[] args) throws FunctionException {
-                Geometry g = args[0].getAsGeometry();
-                return ValueFactory.createValue(g.reverse());
-
+        public Value evaluate(SQLDataSourceFactory dsf, Value... args) throws FunctionException {
+                Geometry geom = args[0].getAsGeometry();
+                return ValueFactory.createValue(GeometryEdit.reverse3D(geom));
         }
 
         @Override
         public String getName() {
-                return "ST_Reverse";
+                return "ST_3DReverse";
         }
 
         @Override
+        public boolean isAggregate() {
+                return false;
+        }       
+
+        @Override
         public String getDescription() {
-                return "Returns the geometry with vertex order reversed. ";
+                return "Reverse the coordinates order from a linestring or a multilinestring according its Z start and end values";
         }
 
         @Override
         public String getSqlOrder() {
-                return "select ST_Reverse(the_geom) from myTable;";
+                return "SELECT ST_3DReverse(linestring) from table";
         }
+         @Override
+        public FunctionSignature[] getFunctionSignatures() {
+                return new FunctionSignature[] {
+                  new BasicFunctionSignature(getType(null), ScalarArgument.GEOMETRY)
+                };
+        }
+        
 }
