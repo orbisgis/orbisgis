@@ -48,15 +48,17 @@ import org.gdms.data.types.Type;
 import org.grap.model.GeoRaster;
 
 import com.vividsolutions.jts.geom.Geometry;
-import ij.ImagePlus;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 import java.util.Locale;
 import org.apache.log4j.Logger;
-import org.gdms.data.InitializationException;
 import org.gdms.data.types.IncompatibleTypesException;
-import org.grap.model.RasterMetadata;
+import org.gdms.data.types.InvalidTypeException;
 
 /**
  * Factory to instantiate Value instances from basic types
@@ -67,7 +69,6 @@ public final class ValueFactory {
         private static final Logger LOG = Logger.getLogger(ValueFactory.class);
         public static final BooleanValue TRUE = new DefaultBooleanValue(true);
         public static final BooleanValue FALSE = new DefaultBooleanValue(false);
-        
         /**
          * Max size of the Value cache.
          */
@@ -270,6 +271,13 @@ public final class ValueFactory {
                                 break;
 
                         case Type.GEOMETRY:
+                        case Type.GEOMETRYCOLLECTION:
+                        case Type.POINT:
+                        case Type.LINESTRING:
+                        case Type.POLYGON:
+                        case Type.MULTILINESTRING:
+                        case Type.MULTIPOINT:
+                        case Type.MULTIPOLYGON:
                                 try {
                                         value = DefaultGeometryValue.parseString(text);
                                 } catch (com.vividsolutions.jts.io.ParseException e) {
@@ -571,7 +579,121 @@ public final class ValueFactory {
          */
         public static GeometryValue createValue(Geometry geom) {
                 if (geom != null) {
-                        return new DefaultGeometryValue(geom);
+                        if (geom instanceof Point) {
+                                return createValue((Point) geom);
+                        } else if (geom instanceof LineString) {
+                                return createValue((LineString) geom);
+                        } else if (geom instanceof Polygon) {
+                                return createValue((Polygon) geom);
+                        } else if (geom instanceof GeometryCollection) {
+                                return createValue((GeometryCollection) geom);
+                        } else if (geom instanceof MultiPoint) {
+                                return createValue((MultiPoint) geom);
+                        } else if (geom instanceof MultiLineString) {
+                                return createValue((MultiLineString) geom);
+                        } else if (geom instanceof MultiPolygon) {
+                                return createValue((MultiPolygon) geom);
+                        } else {
+                                throw new InvalidTypeException("Unknown geometry type: " + geom.getGeometryType());
+                        }
+                } else {
+                        return createNullValue();
+                }
+        }
+
+        /**
+         * Creates a Value instance that contains the specified Point value
+         *
+         * @param geom
+         * @return
+         */
+        public static PointValue createValue(Point geom) {
+                if (geom != null) {
+                        return new DefaultPointValue(geom);
+                } else {
+                        return createNullValue();
+                }
+        }
+
+        /**
+         * Creates a Value instance that contains the specified LineString value
+         *
+         * @param geom
+         * @return
+         */
+        public static LineStringValue createValue(LineString geom) {
+                if (geom != null) {
+                        return new DefaultLineStringValue(geom);
+                } else {
+                        return createNullValue();
+                }
+        }
+
+        /**
+         * Creates a Value instance that contains the specified LineString value
+         *
+         * @param geom
+         * @return
+         */
+        public static PolygonValue createValue(Polygon geom) {
+                if (geom != null) {
+                        return new DefaultPolygonValue(geom);
+                } else {
+                        return createNullValue();
+                }
+        }
+
+        /**
+         * Creates a Value instance that contains the specified LineString value
+         *
+         * @param geom
+         * @return
+         */
+        public static GeometryCollectionValue createValue(GeometryCollection geom) {
+                if (geom != null) {
+                        return new DefaultGeometryCollectionValue(geom);
+                } else {
+                        return createNullValue();
+                }
+        }
+
+        /**
+         * Creates a Value instance that contains the specified LineString value
+         *
+         * @param geom
+         * @return
+         */
+        public static MultiPointValue createValue(MultiPoint geom) {
+                if (geom != null) {
+                        return new DefaultMultiPointValue(geom);
+                } else {
+                        return createNullValue();
+                }
+        }
+
+        /**
+         * Creates a Value instance that contains the specified LineString value
+         *
+         * @param geom
+         * @return
+         */
+        public static MultiLineStringValue createValue(MultiLineString geom) {
+                if (geom != null) {
+                        return new DefaultMultiLineStringValue(geom);
+                } else {
+                        return createNullValue();
+                }
+        }
+
+        /**
+         * Creates a Value instance that contains the specified LineString value
+         *
+         * @param geom
+         * @return
+         */
+        public static MultiPolygonValue createValue(MultiPolygon geom) {
+                if (geom != null) {
+                        return new DefaultMultiPolygonValue(geom);
                 } else {
                         return createNullValue();
                 }
@@ -619,6 +741,13 @@ public final class ValueFactory {
                         case Type.FLOAT:
                                 return DefaultFloatValue.readBytes(buffer);
                         case Type.GEOMETRY:
+                        case Type.GEOMETRYCOLLECTION:
+                        case Type.POINT:
+                        case Type.LINESTRING:
+                        case Type.POLYGON:
+                        case Type.MULTILINESTRING:
+                        case Type.MULTIPOINT:
+                        case Type.MULTIPOLYGON:
                                 return DefaultGeometryValue.readBytes(buffer);
                         case Type.INT:
                                 return DefaultIntValue.readBytes(buffer);
@@ -664,7 +793,7 @@ public final class ValueFactory {
                         throw new IllegalArgumentException("Wrong type: " + valueType);
                 }
         }
-        
+
         public static int getRasterHeaderSize() {
                 return DefaultRasterValue.getHeaderSize();
         }

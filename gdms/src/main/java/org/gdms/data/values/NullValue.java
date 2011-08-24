@@ -39,6 +39,13 @@
 package org.gdms.data.values;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -54,7 +61,8 @@ import org.grap.model.GeoRaster;
  */
 final class NullValue extends AbstractValue implements BinaryValue, BooleanValue, ByteValue, DateValue, DoubleValue, FloatValue,
         GeometryValue, IntValue, LongValue, NumericValue, RasterValue, ShortValue, StringValue, TimeValue,
-        TimestampValue, ValueCollection {
+        TimestampValue, ValueCollection, PointValue, LineStringValue, PolygonValue, GeometryCollectionValue, MultiLineStringValue,
+        MultiPointValue, MultiPolygonValue {
 
         private static final String CANNOTSETNULL = "This value is a NullValue, it's content cannot be set. use .isNull() to check.";
         private static final String NOTBOOLEAN = "The specified value is not a boolean:";
@@ -323,6 +331,41 @@ final class NullValue extends AbstractValue implements BinaryValue, BooleanValue
                         // by default NULL FIRST
                         return 1;
                 }
+        }
+
+        @Override
+        public void setValue(Point value) {
+                throw new UnsupportedOperationException(CANNOTSETNULL);
+        }
+
+        @Override
+        public void setValue(LineString value) {
+                throw new UnsupportedOperationException(CANNOTSETNULL);
+        }
+
+        @Override
+        public void setValue(Polygon value) {
+                throw new UnsupportedOperationException(CANNOTSETNULL);
+        }
+
+        @Override
+        public void setValue(GeometryCollection value) {
+                throw new UnsupportedOperationException(CANNOTSETNULL);
+        }
+
+        @Override
+        public void setValue(MultiLineString value) {
+                throw new UnsupportedOperationException(CANNOTSETNULL);
+        }
+
+        @Override
+        public void setValue(MultiPoint value) {
+                throw new UnsupportedOperationException(CANNOTSETNULL);
+        }
+
+        @Override
+        public void setValue(MultiPolygon value) {
+                throw new UnsupportedOperationException(CANNOTSETNULL);
         }
         
         

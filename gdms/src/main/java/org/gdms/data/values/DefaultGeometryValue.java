@@ -47,7 +47,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.io.ParseException;
 
-class DefaultGeometryValue extends AbstractValue implements GeometryValue {
+abstract class DefaultGeometryValue extends AbstractValue implements GeometryValue {
 
         private Geometry geom;
 
@@ -173,7 +173,7 @@ class DefaultGeometryValue extends AbstractValue implements GeometryValue {
 
         public static Value readBytes(byte[] buffer) {
                 try {
-                        return new DefaultGeometryValue(WKBUtil.getWKBReaderInstance().read(buffer));
+                        return ValueFactory.createValue(WKBUtil.getWKBReaderInstance().read(buffer));
                 } catch (ParseException e) {
                         throw new IllegalStateException(e);
                 }
@@ -210,7 +210,7 @@ class DefaultGeometryValue extends AbstractValue implements GeometryValue {
         public static Value parseString(String text) throws ParseException {
                 Geometry readGeometry = WKBUtil.getWKTReaderInstance().read(text);
                 if (readGeometry != null) {
-                        return new DefaultGeometryValue(readGeometry);
+                        return ValueFactory.createValue(readGeometry);
                 } else {
                         throw new ParseException("Cannot parse geometry: " + text);
                 }
