@@ -202,7 +202,7 @@ public class IndexManager {
                 buildIndex(tableName, fieldName, null, pm);
         }
 
-       /**
+        /**
          * Builds the specified index on the specified field of the datasource.
          * Saves the index in a file
          *
@@ -261,7 +261,7 @@ public class IndexManager {
                         } catch (DriverLoadException e) {
                                 throw new IndexException("Cannot read source", e);
                         } catch (IncompatibleTypesException e) {
-                               throw new IndexException("Cannot create an "
+                                throw new IndexException("Cannot create an "
                                         + "index with that field type: " + fieldName, e);
                         } catch (IOException e) {
                                 throw new IndexException("Cannot associate index with source", e);
@@ -270,7 +270,7 @@ public class IndexManager {
                         }
                 }
         }
-        
+
         /**
          * Builds the specified index on the specified field of the DataSet.
          * The index type if determined based on the field type.
@@ -544,6 +544,35 @@ public class IndexManager {
                 }
         }
 
+        /**
+         * Queries the index of the specified source, with the specified query
+         *
+         * @param src  the source
+         * @param indexQuery a query to execute against the source
+         * @return The iterator or null if there is no index in the specified field
+         * @throws IndexException
+         * @throws NoSuchTableException
+         * @throws IndexQueryException 
+         */
+        public int[] queryIndex(DataSet src, IndexQuery indexQuery)
+                throws IndexException, NoSuchTableException, IndexQueryException {
+                DataSourceIndex dsi;
+                if (src instanceof DataSource) {
+                        DataSource ds = (DataSource) src;
+                        return queryIndex(ds.getName(), indexQuery);
+                }
+
+                dsi = getIndex("tempindex" + src.hashCode(), indexQuery.getFieldName());
+                if (dsi != null) {
+                        if (!dsi.isOpen()) {
+                                dsi.load();
+                        }
+                        return dsi.getIterator(indexQuery);
+                } else {
+                        return null;
+                }
+        }
+
         public String[] getIndexedFieldNames(String name) {
                 String[] indexProperties = getIndexProperties(name);
                 String[] ret = new String[indexProperties.length];
@@ -587,6 +616,27 @@ public class IndexManager {
                 } catch (IOException e) {
                         throw new IndexException("Cannot remove index property of "
                                 + dsName + " at field " + fieldName, e);
+                }
+        }
+        
+        /**
+         * Removes the index for the source. All the current DataSource instances
+         * are affected.
+         *
+         * @param src the source
+         * @param fieldName the name of the indexed field
+         * @throws NoSuchTableException 
+         * @throws IllegalArgumentException
+         *             If the index doesn't exist
+         * @throws IndexException
+         */
+        public void deleteIndex(DataSet src, String fieldName)
+                throws NoSuchTableException, IndexException {
+                if (src instanceof DataSource) {
+                        DataSource ds = (DataSource) src;
+                        deleteIndex(ds.getName(), fieldName);
+                } else {
+                        deleteIndex("tempindex" + src.hashCode(), fieldName);
                 }
         }
 
@@ -644,14 +694,15 @@ public class IndexManager {
          * @return true if there is an index on the data set.
          */
         public boolean isIndexed(DataSet src, String fieldName) {
-                if (src instanceof DataSource) {
-                        DataSource ds = (DataSource) src;
-                        try {
+                try {
+                        if (src instanceof DataSource) {
+                                DataSource ds = (DataSource) src;
                                 return isIndexed(ds.getName(), fieldName);
-                        } catch (NoSuchTableException ex) {
-                                return false;
+                        } else {
+                                return isIndexed("tempindex" + src.hashCode(), fieldName);
                         }
+                } catch (NoSuchTableException ex) {
+                        return false;
                 }
-                return false;
         }
 }
