@@ -53,6 +53,13 @@ public class ScalarArgument implements Argument {
         public static final ScalarArgument DOUBLE = new ScalarArgument(Type.DOUBLE);
         public static final ScalarArgument FLOAT = new ScalarArgument(Type.FLOAT);
         public static final ScalarArgument GEOMETRY = new ScalarArgument(Type.GEOMETRY);
+        public static final ScalarArgument POINT = new ScalarArgument(Type.POINT);
+        public static final ScalarArgument LINESTRING = new ScalarArgument(Type.LINESTRING);
+        public static final ScalarArgument POLYGON = new ScalarArgument(Type.POLYGON);
+        public static final ScalarArgument GEOMETRYCOLLECTION = new ScalarArgument(Type.GEOMETRYCOLLECTION);
+        public static final ScalarArgument MULTIPOINT = new ScalarArgument(Type.MULTIPOINT);
+        public static final ScalarArgument MULTILINESTRING = new ScalarArgument(Type.MULTILINESTRING);
+        public static final ScalarArgument MULTIPOLYGON = new ScalarArgument(Type.MULTIPOLYGON);
         public static final ScalarArgument INT = new ScalarArgument(Type.INT);
         public static final ScalarArgument LONG = new ScalarArgument(Type.LONG);
         public static final ScalarArgument RASTER = new ScalarArgument(Type.RASTER);
@@ -101,6 +108,20 @@ public class ScalarArgument implements Argument {
                         return "Timestamp parameter";
                 } else if (typeCode == Type.GEOMETRY) {
                         return "Geometry parameter";
+                } else if (typeCode == Type.POINT) {
+                        return "Point parameter";
+                } else if (typeCode == Type.LINESTRING) {
+                        return "Linestring parameter";
+                } else if (typeCode == Type.POLYGON) {
+                        return "Polygon parameter";
+                } else if (typeCode == Type.GEOMETRYCOLLECTION) {
+                        return "GeometryCollection parameter";
+                } else if (typeCode == Type.MULTIPOINT) {
+                        return "Multipoint parameter";
+                } else if (typeCode == Type.MULTILINESTRING) {
+                        return "Multilinestring parameter";
+                } else if (typeCode == Type.MULTIPOLYGON) {
+                        return "MultiPolygon parameter";
                 } else if (typeCode == Type.RASTER) {
                         return "Raster parameter";
                 } else if (typeCode == Type.BOOLEAN) {
