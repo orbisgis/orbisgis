@@ -45,7 +45,7 @@ import org.gdms.data.values.Value;
  */
 public class ReadOnlyConstraint extends AbstractBooleanConstraint {
 
-	ReadOnlyConstraint() {
+	public ReadOnlyConstraint() {
 	}
 
 	@Override

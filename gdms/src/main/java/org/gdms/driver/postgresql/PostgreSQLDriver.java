@@ -59,7 +59,6 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.DataSet;
 import org.gdms.driver.TableDescription;
 import org.gdms.driver.jdbc.AutonumericRule;
 import org.gdms.driver.jdbc.BooleanRule;
@@ -78,7 +77,6 @@ import com.vividsolutions.jts.io.WKTWriter;
 import java.util.Map;
 import java.util.Properties;
 import org.apache.log4j.Logger;
-import org.gdms.data.types.ConstraintFactory;
 import org.gdms.data.types.SRIDConstraint;
 
 /**
@@ -399,17 +397,17 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                 Constraint gc;
 
                 if ("POINT".equals(geometryType)) {
-                        gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.POINT);
+                        gc = new GeometryTypeConstraint(GeometryTypeConstraint.POINT);
                 } else if ("MULTIPOINT".equals(geometryType)) {
-                        gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.MULTI_POINT);
+                        gc = new GeometryTypeConstraint(GeometryTypeConstraint.MULTI_POINT);
                 } else if ("LINESTRING".equals(geometryType)) {
-                        gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.LINESTRING);
+                        gc = new GeometryTypeConstraint(GeometryTypeConstraint.LINESTRING);
                 } else if ("MULTILINESTRING".equals(geometryType)) {
-                        gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.MULTI_LINESTRING);
+                        gc = new GeometryTypeConstraint(GeometryTypeConstraint.MULTI_LINESTRING);
                 } else if ("POLYGON".equals(geometryType)) {
-                        gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.POLYGON);
+                        gc = new GeometryTypeConstraint(GeometryTypeConstraint.POLYGON);
                 } else if ("MULTIPOLYGON".equals(geometryType)) {
-                        gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.MULTI_POLYGON);
+                        gc = new GeometryTypeConstraint(GeometryTypeConstraint.MULTI_POLYGON);
                 } else if (GEOMETRYFIELDNAME.equals(geometryType)) {
                         gc = null;
                 } else {
@@ -420,9 +418,9 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
 
                 Constraint dc;
                 if (geometryDimension == 3) {
-                        dc = ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 3);
+                        dc = new Dimension3DConstraint(3);
                 } else {
-                        dc = ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 2);
+                        dc = new Dimension3DConstraint(2);
                 }
 
                 ArrayList<Constraint> cons = new ArrayList<Constraint>();

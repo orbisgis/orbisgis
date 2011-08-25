@@ -58,9 +58,16 @@ import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.schema.DefaultSchema;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.SchemaMetadata;
+import org.gdms.data.types.AutoIncrementConstraint;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.ConstraintFactory;
+import org.gdms.data.types.ForeignKeyConstraint;
 import org.gdms.data.types.InvalidTypeException;
+import org.gdms.data.types.LengthConstraint;
+import org.gdms.data.types.NotNullConstraint;
+import org.gdms.data.types.PrecisionConstraint;
+import org.gdms.data.types.PrimaryKeyConstraint;
+import org.gdms.data.types.ReadOnlyConstraint;
+import org.gdms.data.types.ScaleConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -167,7 +174,7 @@ public abstract class DefaultDBDriver extends DefaultSQL {
                         case Types.LONGVARCHAR:
                         case Types.CLOB:
                                 if (Integer.MAX_VALUE != length) {
-                                        constraints.add(ConstraintFactory.createConstraint(Constraint.LENGTH, length));
+                                        constraints.add(new LengthConstraint( length));
                                 }
                                 ret = Type.STRING;
                                 break;
@@ -184,10 +191,10 @@ public abstract class DefaultDBDriver extends DefaultSQL {
                         case Types.DECIMAL:
                         case Types.NUMERIC:
                                 if (precision != 0) {
-                                        constraints.add(ConstraintFactory.createConstraint(Constraint.PRECISION, precision));
+                                        constraints.add(new PrecisionConstraint(precision));
                                 }
                                 if (scale != 0) {
-                                        constraints.add(ConstraintFactory.createConstraint(Constraint.SCALE, scale));
+                                        constraints.add(new ScaleConstraint(scale));
                                 }
                                 ret = Type.DOUBLE;
                                 break;
@@ -235,20 +242,20 @@ public abstract class DefaultDBDriver extends DefaultSQL {
                 int jdbcFieldIndex) throws SQLException {
                 List<Constraint> constraints = new ArrayList<Constraint>();
                 if (pkFieldsList.contains(resultsetMetadata.getColumnName(jdbcFieldIndex))) {
-                        constraints.add(ConstraintFactory.createConstraint(Constraint.PK));
+                        constraints.add(new PrimaryKeyConstraint());
                 }
                 if (fkFieldsList.contains(resultsetMetadata.getColumnName(jdbcFieldIndex))) {
-                        constraints.add(ConstraintFactory.createConstraint(Constraint.FK));
+                        constraints.add(new ForeignKeyConstraint());
                 }
                 if (ResultSetMetaData.columnNoNulls == resultsetMetadata.isNullable(jdbcFieldIndex)) {
-                        constraints.add(ConstraintFactory.createConstraint(Constraint.NOT_NULL));
+                        constraints.add(new NotNullConstraint());
                 }
                 if (resultsetMetadata.isReadOnly(jdbcFieldIndex)) {
-                        constraints.add(ConstraintFactory.createConstraint(Constraint.READONLY));
+                        constraints.add(new ReadOnlyConstraint());
                 }
                 if (resultsetMetadata.isAutoIncrement(jdbcFieldIndex)) {
-                        constraints.add(ConstraintFactory.createConstraint(Constraint.AUTO_INCREMENT));
-                        constraints.add(ConstraintFactory.createConstraint(Constraint.READONLY));
+                        constraints.add(new AutoIncrementConstraint());
+                        constraints.add(new ReadOnlyConstraint());
                 }
 
                 return constraints;

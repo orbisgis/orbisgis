@@ -54,7 +54,7 @@ public class GeometryDimensionConstraint extends AbstractIntConstraint {
          *
          * @param constraintValue
          */
-        GeometryDimensionConstraint(final int constraintValue) {
+        public GeometryDimensionConstraint(final int constraintValue) {
                 super(constraintValue);
                 if ((constraintValue < 0) || (constraintValue > 2)) {
                         throw new IllegalArgumentException("Only 0, 1 and 2 are allowed");

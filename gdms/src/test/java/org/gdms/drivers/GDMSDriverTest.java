@@ -36,6 +36,14 @@
  */
 package org.gdms.drivers;
 
+import org.gdms.data.types.Dimension3DConstraint;
+import org.gdms.data.types.LengthConstraint;
+import org.gdms.data.types.PrecisionConstraint;
+import org.gdms.data.types.ReadOnlyConstraint;
+import org.gdms.data.types.UniqueConstraint;
+import org.gdms.data.types.AutoIncrementConstraint;
+import org.gdms.data.types.NotNullConstraint;
+import org.gdms.data.types.PrimaryKeyConstraint;
 import org.junit.Test;
 import org.junit.Before;
 import ij.ImagePlus;
@@ -72,7 +80,11 @@ import org.grap.model.RasterMetadata;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import org.gdms.data.types.ConstraintFactory;
+import org.gdms.data.types.MaxConstraint;
+import org.gdms.data.types.MinConstraint;
+import org.gdms.data.types.PatternConstraint;
+import org.gdms.data.types.RasterTypeConstraint;
+import org.gdms.data.types.ScaleConstraint;
 import org.gdms.driver.gdms.GdmsReader;
 
 import static org.junit.Assert.*;
@@ -175,22 +187,22 @@ public class GDMSDriverTest {
         public void testAllConstraints() throws Exception {
                 DefaultMetadata metadata = new DefaultMetadata();
                 Type[] types = new Type[]{
-                        TypeFactory.createType(Type.BINARY, ConstraintFactory.createConstraint(Constraint.PK)),
-                        TypeFactory.createType(Type.BOOLEAN, ConstraintFactory.createConstraint(Constraint.UNIQUE)),
-                        TypeFactory.createType(Type.BYTE, ConstraintFactory.createConstraint(Constraint.MIN, 0)),
-                        TypeFactory.createType(Type.COLLECTION, ConstraintFactory.createConstraint(Constraint.NOT_NULL)),
-                        TypeFactory.createType(Type.DATE, ConstraintFactory.createConstraint(Constraint.READONLY)),
-                        TypeFactory.createType(Type.DOUBLE, ConstraintFactory.createConstraint(Constraint.AUTO_INCREMENT)),
+                        TypeFactory.createType(Type.BINARY, new PrimaryKeyConstraint()),
+                        TypeFactory.createType(Type.BOOLEAN, new UniqueConstraint()),
+                        TypeFactory.createType(Type.BYTE, new MinConstraint(0)),
+                        TypeFactory.createType(Type.COLLECTION, new NotNullConstraint()),
+                        TypeFactory.createType(Type.DATE, new ReadOnlyConstraint()),
+                        TypeFactory.createType(Type.DOUBLE, new AutoIncrementConstraint()),
                         TypeFactory.createType(Type.FLOAT),
-                        TypeFactory.createType(Type.GEOMETRY, ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 3), ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.LINESTRING)),
+                        TypeFactory.createType(Type.GEOMETRY, new Dimension3DConstraint(3), new GeometryTypeConstraint(GeometryTypeConstraint.LINESTRING)),
                         TypeFactory.createType(Type.INT),
                         TypeFactory.createType(Type.LONG),
-                        TypeFactory.createType(Type.RASTER, ConstraintFactory.createConstraint(Constraint.RASTER_TYPE, ImagePlus.COLOR_256)),
-                        TypeFactory.createType(Type.SHORT, ConstraintFactory.createConstraint(Constraint.MAX, 4),
-                        ConstraintFactory.createConstraint(Constraint.PRECISION, 0),
-                        ConstraintFactory.createConstraint(Constraint.SCALE, 2)),
-                        TypeFactory.createType(Type.STRING, ConstraintFactory.createConstraint(Constraint.LENGTH, 4),
-                        ConstraintFactory.createConstraint(Constraint.PATTERN, "%")),
+                        TypeFactory.createType(Type.RASTER, new RasterTypeConstraint(ImagePlus.COLOR_256)),
+                        TypeFactory.createType(Type.SHORT, new MaxConstraint(4),
+                        new PrecisionConstraint(0),
+                        new ScaleConstraint(2)),
+                        TypeFactory.createType(Type.STRING, new LengthConstraint(4),
+                        new PatternConstraint("%L")),
                         TypeFactory.createType(Type.TIME),
                         TypeFactory.createType(Type.TIMESTAMP)};
                 for (int i = 0; i < types.length; i++) {

@@ -46,7 +46,7 @@ import org.gdms.data.values.Value;
  */
 public class MinConstraint extends AbstractIntConstraint {
 
-	MinConstraint(final int constraintValue) {
+	public MinConstraint(final int constraintValue) {
 		super(constraintValue);
 	}
 

@@ -62,8 +62,7 @@ import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.DefaultSchema;
 import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.data.schema.Schema;
-import org.gdms.data.types.Constraint;
-import org.gdms.data.types.ConstraintFactory;
+import org.gdms.data.types.RasterTypeConstraint;
 import org.gdms.driver.AbstractDataSet;
 import org.gdms.driver.DataSet;
 import org.orbisgis.wkt.parser.PRJUtils;
@@ -108,11 +107,11 @@ public abstract class AbstractRasterDriver extends AbstractDataSet implements Fi
                         gdmsMetadata.clear();
                         if (srid == -1) {
                                 gdmsMetadata.addField("raster", TypeFactory.createType(Type.RASTER,
-                                        ConstraintFactory.createConstraint(Constraint.RASTER_TYPE, geoRaster.getType())));
+                                        new RasterTypeConstraint(geoRaster.getType())));
                         } else {
                                 gdmsMetadata.addField("raster", TypeFactory.createType(Type.RASTER,
-                                        ConstraintFactory.createConstraint(Constraint.RASTER_TYPE, geoRaster.getType()),
-                                        ConstraintFactory.createConstraint(Constraint.SRID, srid)));
+                                        new RasterTypeConstraint(geoRaster.getType()),
+                                        new RasterTypeConstraint(srid)));
                         }
 
                 } catch (IOException e) {

@@ -36,7 +36,6 @@
  */
 package org.gdms.driver.solene;
 
-import com.vividsolutions.jts.awt.PointShapeFactory.X;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -78,7 +77,8 @@ import org.apache.log4j.Logger;
 import org.gdms.data.schema.DefaultSchema;
 import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.data.schema.SchemaMetadata;
-import org.gdms.data.types.ConstraintFactory;
+import org.gdms.data.types.NotNullConstraint;
+import org.gdms.data.types.UniqueConstraint;
 import org.gdms.driver.AbstractDataSet;
 
 public final class CirDriver extends AbstractDataSet implements FileReadWriteDriver {
@@ -441,11 +441,11 @@ public final class CirDriver extends AbstractDataSet implements FileReadWriteDri
                 // building schema and metadata
                 final SchemaMetadata metadata = new SchemaMetadata(schema);
                 metadata.addField("id", Type.STRING, new Constraint[]{
-                                ConstraintFactory.createConstraint(Constraint.UNIQUE),
-                                ConstraintFactory.createConstraint(Constraint.NOT_NULL)});
+                                new UniqueConstraint(),
+                                new NotNullConstraint()});
                 metadata.addField("the_geom", Type.GEOMETRY, new Constraint[]{
-                                ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.POLYGON),
-                                ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 3)});
+                                new GeometryTypeConstraint(GeometryTypeConstraint.POLYGON),
+                                new Dimension3DConstraint(3)});
                 schema.addTable("main", metadata);
                 // finished building schema
         }

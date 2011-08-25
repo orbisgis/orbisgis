@@ -46,7 +46,7 @@ import org.gdms.data.values.Value;
  */
 public class LengthConstraint extends AbstractIntConstraint {
 
-	LengthConstraint(final int constraintValue) {
+	public LengthConstraint(final int constraintValue) {
 		super(constraintValue);
 	}
 

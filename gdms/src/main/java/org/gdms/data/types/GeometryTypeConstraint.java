@@ -83,7 +83,7 @@ public class GeometryTypeConstraint extends AbstractIntConstraint {
 
 	public static final int GEOMETRY_COLLECTION = 22;
 
-	GeometryTypeConstraint(final int constraintValue) {
+	public GeometryTypeConstraint(final int constraintValue) {
 		super(constraintValue);
 	}
 

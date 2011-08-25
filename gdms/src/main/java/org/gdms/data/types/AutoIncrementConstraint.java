@@ -47,7 +47,7 @@ import org.gdms.data.values.Value;
  */
 public class AutoIncrementConstraint extends AbstractBooleanConstraint {
 
-	AutoIncrementConstraint() {
+	public AutoIncrementConstraint() {
 	}
 
 	@Override

@@ -41,8 +41,8 @@ import org.gdms.data.DataSource;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.ConstraintFactory;
 import org.gdms.data.types.InvalidTypeException;
+import org.gdms.data.types.PrimaryKeyConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -72,7 +72,7 @@ class PKDataSourceAdapter extends AbstractDataSourceDecorator {
 			try {
 				met.addField(0, getPKName(), TypeFactory.createType(Type.INT)
 						.getTypeCode(),
-						new Constraint[] { ConstraintFactory.createConstraint(Constraint.PK) });
+						new Constraint[] { new PrimaryKeyConstraint() });
 			} catch (InvalidTypeException e) {
 				throw new DriverException(e);
 			}

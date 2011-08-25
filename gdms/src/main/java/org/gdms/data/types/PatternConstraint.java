@@ -51,7 +51,7 @@ public class PatternConstraint extends AbstractConstraint {
 	private String constraintValue;
 	private Pattern pattern;
 
-	PatternConstraint(final String constraintValue) {
+	public PatternConstraint(final String constraintValue) {
 		this.constraintValue = constraintValue;
 		pattern = Pattern.compile(constraintValue);
 	}

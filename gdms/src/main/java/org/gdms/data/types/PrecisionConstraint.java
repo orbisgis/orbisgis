@@ -46,7 +46,7 @@ import org.gdms.data.values.Value;
  */
 public class PrecisionConstraint extends AbstractIntConstraint {
 
-        PrecisionConstraint(final int constraintValue) {
+        public PrecisionConstraint(final int constraintValue) {
                 super(constraintValue);
         }
 

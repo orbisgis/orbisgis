@@ -36,6 +36,7 @@
  */
 package org.gdms.data;
 
+import org.gdms.data.types.PrimaryKeyConstraint;
 import java.io.File;
 
 import org.gdms.TestBase;
@@ -56,8 +57,6 @@ import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBSourceCreation;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.MetadataUtilities;
-import org.gdms.data.types.Constraint;
-import org.gdms.data.types.ConstraintFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.driverManager.DriverManager;
@@ -291,7 +290,7 @@ public class DataSourceFactoryTests extends TestBase {
         public void testCreationTableAlreadyExists() throws Exception {
                 DefaultMetadata metadata = new DefaultMetadata();
                 metadata.addField("mystr", TypeFactory.createType(Type.STRING,
-                        ConstraintFactory.createConstraint(Constraint.PK)));
+                        new PrimaryKeyConstraint()));
                 String file = TestBase.backupDir + File.separator
                         + "tableAlreadyExists";
                 File[] files = TestBase.backupDir.listFiles(new FileFilter() {

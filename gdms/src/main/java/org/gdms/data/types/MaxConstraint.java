@@ -46,7 +46,7 @@ import org.gdms.data.values.Value;
  */
 public class MaxConstraint extends AbstractIntConstraint {
 
-	MaxConstraint(final int constraintValue) {
+	public MaxConstraint(final int constraintValue) {
 		super(constraintValue);
 	}
 

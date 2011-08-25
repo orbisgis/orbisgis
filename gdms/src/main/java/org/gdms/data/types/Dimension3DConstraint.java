@@ -55,7 +55,7 @@ public class Dimension3DConstraint extends AbstractIntConstraint {
 	 * 
 	 * @param constraintValue
 	 */
-	Dimension3DConstraint(final int constraintValue) {
+	public Dimension3DConstraint(final int constraintValue) {
 		super(constraintValue);
 		if ((constraintValue < 2) || (constraintValue > 3)) {
 			throw new IllegalArgumentException("Only 2 and 3 are allowed");

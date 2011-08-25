@@ -36,6 +36,7 @@
  */
 package org.gdms.drivers;
 
+import org.gdms.data.types.Dimension3DConstraint;
 import org.junit.Test;
 import org.junit.Before;
 import java.io.File;
@@ -52,7 +53,6 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.memory.MemorySourceDefinition;
-import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -69,7 +69,6 @@ import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.WKTReader;
-import org.gdms.data.types.ConstraintFactory;
 
 import static org.junit.Assert.*;
 
@@ -117,7 +116,7 @@ public class ShapefileDriverTest {
                 MemoryDataSetDriver omd = new MemoryDataSetDriver(new String[]{
                                 "the_geom", "id"}, new Type[]{
                                 TypeFactory.createType(Type.GEOMETRY,
-                                ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.POINT)),
+                                new GeometryTypeConstraint(GeometryTypeConstraint.POINT)),
                                 TypeFactory.createType(Type.STRING)});
                 dsf.getSourceManager().register("obj", new MemorySourceDefinition(omd, "main"));
                 DataSource ds = dsf.getDataSource("obj");
@@ -186,7 +185,7 @@ public class ShapefileDriverTest {
                 DefaultMetadata m = new DefaultMetadata();
                 m.addField("thelongernameintheworld", Type.STRING);
                 m.addField("", Type.GEOMETRY,
-                        ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.POLYGON));
+                        new GeometryTypeConstraint(GeometryTypeConstraint.POLYGON));
                 File shpFile = new File(TestBase.backupDir,
                         "outputtestFieldNameTooLong.shp");
                 if (shpFile.exists()) {
@@ -205,7 +204,7 @@ public class ShapefileDriverTest {
                 m.addField("string", Type.STRING);
                 m.addField("int", Type.INT);
                 m.addField("", Type.GEOMETRY,
-                        ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.POLYGON));
+                        new GeometryTypeConstraint(GeometryTypeConstraint.POLYGON));
                 File shpFile = new File(TestBase.backupDir,
                         "outputtestNullStringValue.shp");
                 if (shpFile.exists()) {
@@ -237,8 +236,8 @@ public class ShapefileDriverTest {
                 DefaultMetadata m = new DefaultMetadata();
                 m.addField("thelongernameintheworld", Type.STRING);
                 m.addField("", Type.GEOMETRY,
-                        ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, geometryType),
-                        ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 2));
+                        new GeometryTypeConstraint(geometryType),
+                        new Dimension3DConstraint(2));
                 File shpFile = new File(TestBase.backupDir,
                         "outputtest2DReadWrite.shp");
                 if (shpFile.exists()) {
@@ -291,8 +290,8 @@ public class ShapefileDriverTest {
                 DefaultMetadata m = new DefaultMetadata();
                 m.addField("thelongernameintheworld", Type.STRING);
                 m.addField("", Type.GEOMETRY,
-                        ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, geometryType),
-                        ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 3));
+                        new GeometryTypeConstraint(geometryType),
+                        new Dimension3DConstraint(3));
                 File shpFile = new File(TestBase.backupDir,
                         "outputtest3DReadWrite.shp");
                 if (shpFile.exists()) {
@@ -335,8 +334,8 @@ public class ShapefileDriverTest {
         public void testWrongTypeForDBF() throws Exception {
                 DefaultMetadata m = new DefaultMetadata();
                 m.addField("id", Type.TIMESTAMP);
-                m.addField("", Type.GEOMETRY, ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.POINT),
-                        ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 3));
+                m.addField("", Type.GEOMETRY, new GeometryTypeConstraint(GeometryTypeConstraint.POINT),
+                        new Dimension3DConstraint(3));
                 File shpFile = new File(TestBase.backupDir,
                         "outputtestWrongTypeForDBF.shp");
                 if (shpFile.exists()) {
@@ -355,8 +354,8 @@ public class ShapefileDriverTest {
                 dsf.setWarninglistener(listener);
 
                 DefaultMetadata m = new DefaultMetadata();
-                m.addField("the_geom", Type.GEOMETRY, ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.POINT),
-                        ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 3));
+                m.addField("the_geom", Type.GEOMETRY, new GeometryTypeConstraint(GeometryTypeConstraint.POINT),
+                        new Dimension3DConstraint(3));
                 m.addField("f1", Type.BOOLEAN);
                 m.addField("f2", Type.BYTE);
                 m.addField("f3", Type.DATE);
@@ -472,7 +471,7 @@ public class ShapefileDriverTest {
         public void testNullDates() throws Exception {
                 DefaultMetadata m = new DefaultMetadata();
                 m.addField("geom", TypeFactory.createType(Type.GEOMETRY,
-                        ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.LINESTRING)));
+                        new GeometryTypeConstraint(GeometryTypeConstraint.LINESTRING)));
                 m.addField("date", Type.DATE);
                 DataSourceCreation dsc = new FileSourceCreation(new File(dsf.getTempFile()
                         + ".shp"), m);

@@ -36,6 +36,9 @@
  */
 package org.gdms.drivers;
 
+import org.gdms.data.types.LengthConstraint;
+import org.gdms.data.types.PrecisionConstraint;
+import org.gdms.data.types.PrimaryKeyConstraint;
 import org.gdms.TestBase;
 import org.junit.Test;
 import org.gdms.data.DataSource;
@@ -45,7 +48,6 @@ import org.gdms.data.db.DBSourceCreation;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.ConstraintFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 
@@ -196,9 +198,9 @@ public class DBMetadataTest extends AbstractDBTest {
                 // Create a metadata with String and a length constraint
                 DefaultMetadata metadata = new DefaultMetadata();
                 metadata.addField("id", Type.INT,
-                        new Constraint[]{ConstraintFactory.createConstraint(Constraint.PK)});
+                        new Constraint[]{new PrimaryKeyConstraint()});
                 metadata.addField("myLimitedString", Type.STRING,
-                        new Constraint[]{ConstraintFactory.createConstraint(Constraint.LENGTH, lengthConstraint)});
+                        new Constraint[]{new LengthConstraint( lengthConstraint)});
                 metadata.addField("myUnlimitedString", Type.STRING);
                 // Create the db source
                 deleteTable(source);
@@ -227,19 +229,19 @@ public class DBMetadataTest extends AbstractDBTest {
                 DBSource pgSource = getPostgreSQLSource(tableName);
                 testTypeIO(TypeFactory.createType(Type.BYTE), TypeFactory.createType(Type.SHORT), pgSource);
                 testTypeIO(TypeFactory.createType(Type.BYTE,
-                        new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 4)}), TypeFactory.createType(Type.SHORT), pgSource);
+                        new Constraint[]{new PrecisionConstraint(4)}), TypeFactory.createType(Type.SHORT), pgSource);
                 testTypeIO(TypeFactory.createType(Type.SHORT), TypeFactory.createType(Type.SHORT), pgSource);
                 testTypeIO(TypeFactory.createType(Type.INT), TypeFactory.createType(Type.INT), pgSource);
                 testTypeIO(TypeFactory.createType(Type.LONG), TypeFactory.createType(Type.LONG), pgSource);
                 testTypeIO(TypeFactory.createType(Type.LONG), TypeFactory.createType(Type.LONG), pgSource);
                 testTypeIO(TypeFactory.createType(Type.SHORT,
-                        new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 5)}), TypeFactory.createType(Type.INT), pgSource);
+                        new Constraint[]{new PrecisionConstraint(5)}), TypeFactory.createType(Type.INT), pgSource);
                 testTypeIO(TypeFactory.createType(Type.INT,
-                        new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 14)}), TypeFactory.createType(Type.LONG), pgSource);
+                        new Constraint[]{new PrecisionConstraint(14)}), TypeFactory.createType(Type.LONG), pgSource);
                 testTypeIO(TypeFactory.createType(Type.INT,
-                        new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 34)}), TypeFactory.createType(Type.DOUBLE), pgSource);
-                testTypeIO(TypeFactory.createType(Type.INT, ConstraintFactory.createConstraint(Constraint.PRECISION, 6),
-                        ConstraintFactory.createConstraint(Constraint.LENGTH, 8)),
+                        new Constraint[]{new PrecisionConstraint(34)}), TypeFactory.createType(Type.DOUBLE), pgSource);
+                testTypeIO(TypeFactory.createType(Type.INT, new PrecisionConstraint(6),
+                        new LengthConstraint(8)),
                         TypeFactory.createType(Type.INT), pgSource);
 
         }
@@ -252,7 +254,7 @@ public class DBMetadataTest extends AbstractDBTest {
 
                 testTypeIO(TypeFactory.createType(Type.BYTE), TypeFactory.createType(Type.BYTE), h2Source);
                 testTypeIO(TypeFactory.createType(Type.BYTE,
-                        new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 4)}), TypeFactory.createType(Type.SHORT), h2Source);
+                        new Constraint[]{new PrecisionConstraint(4)}), TypeFactory.createType(Type.SHORT), h2Source);
                 testTypeIO(TypeFactory.createType(Type.SHORT), TypeFactory.createType(Type.SHORT), h2Source);
 
                 testTypeIO(TypeFactory.createType(Type.INT), TypeFactory.createType(Type.INT), h2Source);
@@ -260,14 +262,14 @@ public class DBMetadataTest extends AbstractDBTest {
                 testTypeIO(TypeFactory.createType(Type.LONG), TypeFactory.createType(Type.LONG), h2Source);
 
                 testTypeIO(TypeFactory.createType(Type.SHORT,
-                        new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 5)}), TypeFactory.createType(Type.INT), h2Source);
+                        new Constraint[]{new PrecisionConstraint(5)}), TypeFactory.createType(Type.INT), h2Source);
                 testTypeIO(TypeFactory.createType(Type.INT,
-                        new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 14)}), TypeFactory.createType(Type.LONG), h2Source);
+                        new Constraint[]{new PrecisionConstraint(14)}), TypeFactory.createType(Type.LONG), h2Source);
                 testTypeIO(TypeFactory.createType(Type.INT,
-                        new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 34)}), TypeFactory.createType(Type.DOUBLE), h2Source);
+                        new Constraint[]{new PrecisionConstraint(34)}), TypeFactory.createType(Type.DOUBLE), h2Source);
 
-                testTypeIO(TypeFactory.createType(Type.INT, ConstraintFactory.createConstraint(Constraint.PRECISION, 6),
-                        ConstraintFactory.createConstraint(Constraint.LENGTH, 8)),
+                testTypeIO(TypeFactory.createType(Type.INT, new PrecisionConstraint(6),
+                        new LengthConstraint(8)),
                         TypeFactory.createType(Type.INT), h2Source);
         }
 
@@ -280,7 +282,7 @@ public class DBMetadataTest extends AbstractDBTest {
                 testTypeIO(TypeFactory.createType(Type.BYTE), TypeFactory.createType(Type.BYTE), hsqldbSource);
 
                 testTypeIO(TypeFactory.createType(Type.BYTE,
-                        new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 4)}), TypeFactory.createType(Type.SHORT), hsqldbSource);
+                        new Constraint[]{new PrecisionConstraint(4)}), TypeFactory.createType(Type.SHORT), hsqldbSource);
 
                 testTypeIO(TypeFactory.createType(Type.SHORT), TypeFactory.createType(Type.SHORT), hsqldbSource);
 
@@ -289,16 +291,16 @@ public class DBMetadataTest extends AbstractDBTest {
 
 
                 testTypeIO(TypeFactory.createType(Type.SHORT,
-                        new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 5)}), TypeFactory.createType(Type.INT), hsqldbSource);
+                        new Constraint[]{new PrecisionConstraint(5)}), TypeFactory.createType(Type.INT), hsqldbSource);
 
                 testTypeIO(TypeFactory.createType(Type.INT,
-                        new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 14)}), TypeFactory.createType(Type.LONG), hsqldbSource);
+                        new Constraint[]{new PrecisionConstraint(14)}), TypeFactory.createType(Type.LONG), hsqldbSource);
 
                 testTypeIO(TypeFactory.createType(Type.INT,
-                        new Constraint[]{ConstraintFactory.createConstraint(Constraint.PRECISION, 34)}), TypeFactory.createType(Type.DOUBLE), hsqldbSource);
+                        new Constraint[]{new PrecisionConstraint(34)}), TypeFactory.createType(Type.DOUBLE), hsqldbSource);
 
-                testTypeIO(TypeFactory.createType(Type.INT, ConstraintFactory.createConstraint(Constraint.PRECISION, 6),
-                        ConstraintFactory.createConstraint(Constraint.LENGTH, 8)),
+                testTypeIO(TypeFactory.createType(Type.INT, new PrecisionConstraint(6),
+                        new LengthConstraint(8)),
                         TypeFactory.createType(Type.INT), hsqldbSource);
         }
 
@@ -306,7 +308,7 @@ public class DBMetadataTest extends AbstractDBTest {
                 throws Exception {
                 // Create a metadata with String and a length constraint
                 DefaultMetadata metadata = new DefaultMetadata();
-                metadata.addField("id", Type.INT, ConstraintFactory.createConstraint(Constraint.PK));
+                metadata.addField("id", Type.INT, new PrimaryKeyConstraint());
                 metadata.addField("field", inType);
                 // Create the db source
                 deleteTable(source);

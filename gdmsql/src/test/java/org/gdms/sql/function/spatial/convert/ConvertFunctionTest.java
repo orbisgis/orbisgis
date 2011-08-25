@@ -36,6 +36,7 @@
  */
 package org.gdms.sql.function.spatial.convert;
 
+import org.gdms.data.types.Dimension3DConstraint;
 import org.junit.Test;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryTypeConstraint;
@@ -56,7 +57,6 @@ import org.gdms.data.types.IncompatibleTypesException;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
-import org.gdms.data.types.ConstraintFactory;
 import org.gdms.sql.function.spatial.geometry.convert.ST_EndPoint;
 import org.gdms.sql.function.spatial.geometry.convert.ST_Holes;
 import org.gdms.sql.function.spatial.geometry.convert.ST_StartPoint;
@@ -95,7 +95,7 @@ public class ConvertFunctionTest extends FunctionTest {
 
                 // Test return type
                 Type type = TypeFactory.createType(Type.GEOMETRY,
-                        ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.LINESTRING));
+                        new GeometryTypeConstraint(GeometryTypeConstraint.LINESTRING));
                 type = evaluate(function, type);
                 assertEquals(type.getTypeCode(), Type.GEOMETRY);
                 assertEquals(type.getIntConstraint(Constraint.DIMENSION_3D_GEOMETRY), 2);
@@ -145,7 +145,7 @@ public class ConvertFunctionTest extends FunctionTest {
 
                 // Test return type
                 Type type = TypeFactory.createType(Type.GEOMETRY,
-                        ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.LINESTRING));
+                        new GeometryTypeConstraint(GeometryTypeConstraint.LINESTRING));
                 type = evaluate(function, type);
                 assertEquals(type.getTypeCode(), Type.GEOMETRY);
                 assertEquals(type.getIntConstraint(Constraint.DIMENSION_3D_GEOMETRY), 3);
@@ -194,8 +194,8 @@ public class ConvertFunctionTest extends FunctionTest {
 
                 // Test return type
                 Type type = TypeFactory.createType(Type.GEOMETRY,
-                        ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.LINESTRING),
-                        ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 3));
+                        new GeometryTypeConstraint(GeometryTypeConstraint.LINESTRING),
+                        new Dimension3DConstraint(3));
                 type = evaluate(function, type);
                 assertEquals(type.getTypeCode(), Type.GEOMETRY);
         }

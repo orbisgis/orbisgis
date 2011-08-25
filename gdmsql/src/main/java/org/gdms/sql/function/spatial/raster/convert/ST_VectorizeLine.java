@@ -73,8 +73,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import org.apache.log4j.Logger;
 import org.gdms.data.schema.MetadataUtilities;
-import org.gdms.data.types.Constraint;
-import org.gdms.data.types.ConstraintFactory;
+import org.gdms.data.types.Dimension3DConstraint;
 import org.gdms.driver.DataSet;
 import org.gdms.sql.function.table.AbstractTableFunction;
 import org.gdms.sql.function.table.TableArgument;
@@ -241,9 +240,8 @@ public final class ST_VectorizeLine extends AbstractTableFunction {
         public Metadata getMetadata(Metadata[] tables) throws DriverException {
                 return new DefaultMetadata(new Type[]{
                                 TypeFactory.createType(Type.DOUBLE),
-                                TypeFactory.createType(Type.GEOMETRY, ConstraintFactory.createConstraint(
-                                Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.MULTI_LINESTRING),
-                                ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 2))},
+                                TypeFactory.createType(Type.GEOMETRY, new GeometryTypeConstraint(GeometryTypeConstraint.MULTI_LINESTRING),
+                                new Dimension3DConstraint(2))},
                         new String[]{"gid", "the_geom"});
         }
 

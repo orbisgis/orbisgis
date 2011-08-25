@@ -44,7 +44,7 @@ public class DefaultStringConstraint extends AbstractConstraint {
 
 	private String defaultValue;
 
-	DefaultStringConstraint(String defaultValue) {
+	public DefaultStringConstraint(String defaultValue) {
 		this.defaultValue = defaultValue;
 	}
 

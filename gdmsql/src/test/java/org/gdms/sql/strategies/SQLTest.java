@@ -52,7 +52,6 @@ import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.DigestUtilities;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.Metadata;
-import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -63,7 +62,6 @@ import org.gdms.driver.memory.MemoryDataSetDriver;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.io.WKTReader;
-import org.gdms.data.types.ConstraintFactory;
 import org.gdms.sql.engine.SemanticException;
 
 import static org.junit.Assert.*;
@@ -661,7 +659,7 @@ public class SQLTest extends SQLBaseTest {
                 final WKTReader wktr = new WKTReader();
                 final MemoryDataSetDriver driver = new MemoryDataSetDriver(
                         new String[]{"the_geom"}, new Type[]{TypeFactory.createType(Type.GEOMETRY,
-                                ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.POINT))});
+                                new GeometryTypeConstraint(GeometryTypeConstraint.POINT))});
 
                 final String g1 = "POINT (0 0)";
                 driver.addValues(new Value[]{ValueFactory.createValue(wktr.read(g1))});

@@ -49,9 +49,10 @@ import org.gdms.data.schema.DefaultSchema;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.Schema;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.ConstraintFactory;
 import org.gdms.data.types.DefaultTypeDefinition;
 import org.gdms.data.types.InvalidTypeException;
+import org.gdms.data.types.LengthConstraint;
+import org.gdms.data.types.PrecisionConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.types.TypeFactory;
@@ -280,25 +281,25 @@ public final class DBFDriver extends AbstractDataSet implements FileReadWriteDri
                                 switch (type) {
                                         case Type.STRING:
                                                 fieldType = TypeFactory.createType(Type.STRING,
-                                                        STRING, ConstraintFactory.createConstraint(Constraint.LENGTH,
+                                                        STRING, new LengthConstraint(
                                                         header.getFieldLength(i)));
                                                 break;
                                         case Type.INT:
                                                 fieldType = TypeFactory.createType(Type.INT, INTEGER,
-                                                        ConstraintFactory.createConstraint(Constraint.LENGTH,
+                                                        new LengthConstraint(
                                                         header.getFieldLength(i)));
                                                 break;
                                         case Type.LONG:
                                                 fieldType = TypeFactory.createType(Type.LONG, LONG,
-                                                        ConstraintFactory.createConstraint(Constraint.LENGTH,
+                                                        new LengthConstraint(
                                                         header.getFieldLength(i)));
                                                 break;
                                         case Type.DOUBLE:
                                                 fieldType = TypeFactory.createType(Type.DOUBLE,
                                                         DOUBLE, new Constraint[]{
-                                                                ConstraintFactory.createConstraint(Constraint.LENGTH,
+                                                                new LengthConstraint(
                                                                 header.getFieldLength(i)),
-                                                                ConstraintFactory.createConstraint(Constraint.PRECISION,
+                                                               new PrecisionConstraint(
                                                                 header.getFieldDecimalCount(i))});
                                                 break;
                                         case Type.BOOLEAN:

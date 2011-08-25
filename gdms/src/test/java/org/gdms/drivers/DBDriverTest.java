@@ -36,6 +36,10 @@
  */
 package org.gdms.drivers;
 
+import org.gdms.data.types.LengthConstraint;
+import org.gdms.data.types.AutoIncrementConstraint;
+import org.gdms.data.types.NotNullConstraint;
+import org.gdms.data.types.PrimaryKeyConstraint;
 import org.junit.Test;
 import java.io.File;
 import java.sql.Connection;
@@ -72,7 +76,6 @@ import org.gdms.driver.DriverException;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import org.gdms.data.types.ConstraintFactory;
 
 import static org.junit.Assert.*;
 import static org.junit.Assume.*;
@@ -83,12 +86,12 @@ public class DBDriverTest extends TestBase {
         private static SimpleDateFormat stf = new SimpleDateFormat("HH:mm:ss");
         private static HashMap<Integer, Value> sampleValues = new HashMap<Integer, Value>();
         private static Constraint[] geometryConstraints = new Constraint[]{
-                ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.POINT),
-                ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.LINESTRING),
-                ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.POLYGON),
-                ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.MULTI_POINT),
-                ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.MULTI_LINESTRING),
-                ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.MULTI_POLYGON), null};
+                new GeometryTypeConstraint(GeometryTypeConstraint.POINT),
+                new GeometryTypeConstraint(GeometryTypeConstraint.LINESTRING),
+                new GeometryTypeConstraint(GeometryTypeConstraint.POLYGON),
+                new GeometryTypeConstraint(GeometryTypeConstraint.MULTI_POINT),
+                new GeometryTypeConstraint(GeometryTypeConstraint.MULTI_LINESTRING),
+                new GeometryTypeConstraint(GeometryTypeConstraint.MULTI_POLYGON), null};
 
         static {
                 try {
@@ -222,11 +225,11 @@ public class DBDriverTest extends TestBase {
                 metadata.addField("f4", Type.DATE);
                 metadata.addField("f5", Type.DOUBLE);
                 metadata.addField("f6", Type.FLOAT);
-                metadata.addField("f7", Type.INT, ConstraintFactory.createConstraint(Constraint.NOT_NULL),
-                        ConstraintFactory.createConstraint(Constraint.AUTO_INCREMENT));
+                metadata.addField("f7", Type.INT, new NotNullConstraint(),
+                        new AutoIncrementConstraint());
                 metadata.addField("f8", Type.LONG);
-                metadata.addField("f9", Type.SHORT, ConstraintFactory.createConstraint(Constraint.NOT_NULL));
-                metadata.addField("f10", Type.STRING, ConstraintFactory.createConstraint(Constraint.LENGTH, 50));
+                metadata.addField("f9", Type.SHORT, new NotNullConstraint());
+                metadata.addField("f10", Type.STRING, new LengthConstraint(50));
                 metadata.addField("f11", Type.TIME);
                 metadata.addField("f12", Type.TIMESTAMP);
 
@@ -297,14 +300,13 @@ public class DBDriverTest extends TestBase {
                 DefaultMetadata metadata = new DefaultMetadata();
                 Constraint[] constraints;
                 if (geometryConstraint == null) {
-                        constraints = new Constraint[]{ConstraintFactory.createConstraint(
-                                Constraint.DIMENSION_3D_GEOMETRY, dimension)};
+                        constraints = new Constraint[]{new Dimension3DConstraint(dimension)};
                 } else {
                         constraints = new Constraint[]{geometryConstraint,
-                                ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, dimension)};
+                                new Dimension3DConstraint(dimension)};
                 }
                 metadata.addField("f1", Type.GEOMETRY, constraints);
-                metadata.addField("f2", Type.INT, ConstraintFactory.createConstraint(Constraint.PK));
+                metadata.addField("f2", Type.INT, new PrimaryKeyConstraint());
                 DBSourceCreation dsc = new DBSourceCreation(dbSource, metadata);
                 dsf.createDataSource(dsc);
 
@@ -352,7 +354,7 @@ public class DBDriverTest extends TestBase {
                 ds.close();
                 ds.open();
                 ds.addField("the_geom", TypeFactory.createType(Type.GEOMETRY,
-                        ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.POINT)));
+                        new GeometryTypeConstraint(GeometryTypeConstraint.POINT)));
                 ds.commit();
                 ds.close();
         }
@@ -368,8 +370,8 @@ public class DBDriverTest extends TestBase {
 
                 DefaultMetadata metadata = new DefaultMetadata();
                 metadata.addField("f1", Type.GEOMETRY);
-                metadata.addField("f2", Type.INT, ConstraintFactory.createConstraint(Constraint.PK),
-                        ConstraintFactory.createConstraint(Constraint.AUTO_INCREMENT));
+                metadata.addField("f2", Type.INT, new PrimaryKeyConstraint(),
+                        new AutoIncrementConstraint());
                 DBSourceCreation dsc = new DBSourceCreation(postgreSQLDBSource,
                         metadata);
                 dsf.createDataSource(dsc);
@@ -404,7 +406,7 @@ public class DBDriverTest extends TestBase {
                         "src/test/resources/backup/testHSQLDBCommit", "sa", "",
                         "mytable", "jdbc:hsqldb:file");
                 DefaultMetadata metadata = new DefaultMetadata(new Type[]{
-                                TypeFactory.createType(Type.STRING, ConstraintFactory.createConstraint(Constraint.PK))},
+                                TypeFactory.createType(Type.STRING, new PrimaryKeyConstraint())},
                         new String[]{"field1"});
                 testCommitTwice(dbSource, metadata);
         }
@@ -416,7 +418,7 @@ public class DBDriverTest extends TestBase {
                         "src/test/resources/backup/testH2Commit", "sa", "", "mytable",
                         "jdbc:h2");
                 DefaultMetadata metadata = new DefaultMetadata(new Type[]{
-                                TypeFactory.createType(Type.STRING, ConstraintFactory.createConstraint(Constraint.PK))},
+                                TypeFactory.createType(Type.STRING, new PrimaryKeyConstraint())},
                         new String[]{"field1"});
                 testCommitTwice(dbSource, metadata);
         }
@@ -427,9 +429,9 @@ public class DBDriverTest extends TestBase {
                 DefaultMetadata metadata = new DefaultMetadata(
                         new Type[]{
                                 TypeFactory.createType(Type.STRING,
-                                ConstraintFactory.createConstraint(Constraint.PK)),
+                                new PrimaryKeyConstraint()),
                                 TypeFactory.createType(Type.STRING,
-                                ConstraintFactory.createConstraint(Constraint.PK))}, new String[]{
+                                new PrimaryKeyConstraint())}, new String[]{
                                 "field1", "field2"});
                 DBSource dbSource = new DBSource(null, -1,
                         "src/test/resources/backup/testH2Commit", "sa", "", "mytable",

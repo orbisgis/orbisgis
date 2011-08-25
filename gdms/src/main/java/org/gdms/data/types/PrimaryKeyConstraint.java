@@ -44,7 +44,7 @@ package org.gdms.data.types;
  */
 public class PrimaryKeyConstraint extends AbstractBooleanConstraint {
 
-	PrimaryKeyConstraint() {
+	public PrimaryKeyConstraint() {
 	}
 
 	@Override

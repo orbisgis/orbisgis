@@ -46,7 +46,7 @@ import org.gdms.data.values.Value;
  */
 public class NotNullConstraint extends AbstractBooleanConstraint {
 
-	NotNullConstraint() {
+	public NotNullConstraint() {
 	}
 
 	@Override

@@ -82,7 +82,6 @@ import fr.cts.crs.CoordinateReferenceSystem;
 import org.apache.log4j.Logger;
 import org.gdms.data.schema.DefaultSchema;
 import org.gdms.data.schema.MetadataUtilities;
-import org.gdms.data.types.ConstraintFactory;
 import org.gdms.driver.AbstractDataSet;
 import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.driverManager.DriverManager;
@@ -159,29 +158,29 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                         Constraint gc;
                         // In case of a geometric type, the GeometryConstraint is mandatory
                         if (type.id == ShapeType.POINT.id) {
-                                gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.POINT);
-                                dc = ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 2);
+                                gc = new GeometryTypeConstraint(GeometryTypeConstraint.POINT);
+                                dc = new Dimension3DConstraint(2);
                         } else if (type.id == ShapeType.ARC.id) {
-                                gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.MULTI_LINESTRING);
-                                dc = ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 2);
+                                gc = new GeometryTypeConstraint(GeometryTypeConstraint.MULTI_LINESTRING);
+                                dc = new Dimension3DConstraint(2);
                         } else if (type.id == ShapeType.POLYGON.id) {
-                                gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.MULTI_POLYGON);
-                                dc = ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 2);
+                                gc = new GeometryTypeConstraint(GeometryTypeConstraint.MULTI_POLYGON);
+                                dc = new Dimension3DConstraint(2);
                         } else if (type.id == ShapeType.MULTIPOINT.id) {
-                                gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.MULTI_POINT);
-                                dc = ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 2);
+                                gc = new GeometryTypeConstraint(GeometryTypeConstraint.MULTI_POINT);
+                                dc = new Dimension3DConstraint(2);
                         } else if (type.id == ShapeType.POINTZ.id) {
-                                gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.POINT);
-                                dc = ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 3);
+                                gc = new GeometryTypeConstraint(GeometryTypeConstraint.POINT);
+                                dc = new Dimension3DConstraint(3);
                         } else if (type.id == ShapeType.ARCZ.id) {
-                                gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.MULTI_LINESTRING);
-                                dc = ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 3);
+                                gc = new GeometryTypeConstraint(GeometryTypeConstraint.MULTI_LINESTRING);
+                                dc = new Dimension3DConstraint(3);
                         } else if (type.id == ShapeType.POLYGONZ.id) {
-                                gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.MULTI_POLYGON);
-                                dc = ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 3);
+                                gc = new GeometryTypeConstraint(GeometryTypeConstraint.MULTI_POLYGON);
+                                dc = new Dimension3DConstraint(3);
                         } else if (type.id == ShapeType.MULTIPOINTZ.id) {
-                                gc = ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.MULTI_POINT);
-                                dc = ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 3);
+                                gc = new GeometryTypeConstraint(GeometryTypeConstraint.MULTI_POINT);
+                                dc = new Dimension3DConstraint(3);
                         } else {
                                 throw new DriverException("Unknown geometric type !");
                         }

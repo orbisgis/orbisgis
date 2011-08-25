@@ -69,7 +69,7 @@ import org.orbisgis.progress.ProgressMonitor;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import org.gdms.data.schema.DefaultSchema;
-import org.gdms.data.types.ConstraintFactory;
+import org.gdms.data.types.PrimaryKeyConstraint;
 import org.gdms.driver.AbstractDataSet;
 
 public class ReadDriver extends DefaultDBDriver implements MemoryDriver,
@@ -361,7 +361,7 @@ public class ReadDriver extends DefaultDBDriver implements MemoryDriver,
                 this.schema = new DefaultSchema("test");
                 Constraint[] constraints = new Constraint[0];
                 if (pk) {
-                        constraints = new Constraint[]{ConstraintFactory.createConstraint(Constraint.PK)};
+                        constraints = new Constraint[]{new PrimaryKeyConstraint()};
                 }
                 final Type[] fieldsTypes = new Type[]{
                         TypeFactory.createType(Type.GEOMETRY),

@@ -40,7 +40,7 @@ package org.gdms.sql.function.spatial.geometry.convert;
 
 import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.ConstraintFactory;
+import org.gdms.data.types.Dimension3DConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -93,7 +93,7 @@ public final class ST_Force_3D extends AbstractScalarSpatialFunction {
                                 & ~Constraint.DIMENSION_3D_GEOMETRY);
                         Constraint[] result = new Constraint[constrs.length + 1];
                         System.arraycopy(constrs, 0, result, 0, constrs.length);
-                        result[result.length - 1] = ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 3);
+                        result[result.length - 1] = new Dimension3DConstraint(3);
                         return TypeFactory.createType(Type.GEOMETRY, result);
                 } else {
                         return TypeFactory.createType(Type.GEOMETRY);

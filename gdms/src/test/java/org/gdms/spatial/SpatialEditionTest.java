@@ -36,6 +36,7 @@
  */
 package org.gdms.spatial;
 
+import org.gdms.data.types.LengthConstraint;
 import org.junit.Test;
 import java.io.File;
 import java.util.Iterator;
@@ -67,7 +68,6 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
-import org.gdms.data.types.ConstraintFactory;
 
 import static org.junit.Assert.*;
 
@@ -278,8 +278,8 @@ public class SpatialEditionTest extends TestBase {
                 shpFile.delete();
                 new File("src/test/resources/backup/big.shx").delete();
                 DefaultMetadata dsdm = new DefaultMetadata();
-                dsdm.addField("geom", Type.GEOMETRY, ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.LINESTRING));
-                dsdm.addField("text", Type.STRING, ConstraintFactory.createConstraint(Constraint.LENGTH, 10));
+                dsdm.addField("geom", Type.GEOMETRY, new GeometryTypeConstraint(GeometryTypeConstraint.LINESTRING));
+                dsdm.addField("text", Type.STRING, new LengthConstraint(10));
 
                 dsf.createDataSource(new FileSourceCreation(shpFile, dsdm));
 

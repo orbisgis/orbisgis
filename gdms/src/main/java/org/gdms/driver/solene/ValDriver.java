@@ -50,11 +50,12 @@ import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.Schema;
 import org.gdms.data.schema.SchemaMetadata;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.ConstraintFactory;
 import org.gdms.data.types.DefaultTypeDefinition;
 import org.gdms.data.types.InvalidTypeException;
+import org.gdms.data.types.NotNullConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
+import org.gdms.data.types.UniqueConstraint;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.AbstractDataSet;
@@ -216,10 +217,10 @@ public final class ValDriver extends AbstractDataSet implements FileDriver {
                 schema = new DefaultSchema("Val" + file.getAbsolutePath().hashCode());
                 final SchemaMetadata metadata = new SchemaMetadata(schema);
                 metadata.addField("id", Type.STRING, new Constraint[]{
-                                ConstraintFactory.createConstraint(Constraint.UNIQUE),
-                                ConstraintFactory.createConstraint(Constraint.NOT_NULL)});
+                                new UniqueConstraint(),
+                                new NotNullConstraint()});
                 metadata.addField("noName", Type.DOUBLE,
-                        ConstraintFactory.createConstraint(Constraint.NOT_NULL));
+                        new NotNullConstraint());
                 schema.addTable("main", metadata);
                 // finished building schema
         }

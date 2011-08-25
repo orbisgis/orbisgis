@@ -36,8 +36,8 @@
  */
 package org.gdms.sql;
 
+import org.gdms.data.types.PrimaryKeyConstraint;
 import org.gdms.data.SQLDataSourceFactory;
-import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -51,7 +51,6 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.WKTReader;
 import org.gdms.SQLBaseTest;
-import org.gdms.data.types.ConstraintFactory;
 import org.gdms.sql.function.AggregateFunction;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionValidator;
@@ -97,7 +96,7 @@ public abstract class FunctionTest {
                         new String[]{"pk", "geom"},
                         new Type[]{
                                 TypeFactory.createType(Type.INT,
-                                ConstraintFactory.createConstraint(Constraint.PK)),
+                                new PrimaryKeyConstraint()),
                                 TypeFactory.createType(Type.GEOMETRY)});
 
                 // insert all filled rows...
@@ -119,7 +118,7 @@ public abstract class FunctionTest {
                 final MemoryDataSetDriver driver2 = new MemoryDataSetDriver(
                         new String[]{"pk", "geom"},
                         new Type[]{TypeFactory.createType(Type.INT,
-                                ConstraintFactory.createConstraint(Constraint.PK)),
+                                new PrimaryKeyConstraint()),
                                 TypeFactory.createType(Type.GEOMETRY)});
 
                 driver1.addValues(new Value[]{ValueFactory.createValue(1),

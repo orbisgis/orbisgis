@@ -44,7 +44,7 @@ package org.gdms.data.types;
  */
 public class ForeignKeyConstraint extends AbstractBooleanConstraint {
 
-    ForeignKeyConstraint() {
+    public ForeignKeyConstraint() {
     }
 
     @Override

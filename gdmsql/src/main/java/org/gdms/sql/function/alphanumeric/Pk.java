@@ -47,8 +47,8 @@ import org.apache.log4j.Logger;
 
 import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.ConstraintFactory;
 import org.gdms.data.types.InvalidTypeException;
+import org.gdms.data.types.PrimaryKeyConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -96,7 +96,7 @@ public class Pk extends AbstractScalarFunction {
                 final int typeCode = types[0].getTypeCode();
                 final Constraint[] constraints = types[0].getConstraints();
                 final List<Constraint> lc = new LinkedList<Constraint>(Arrays.asList(constraints));
-                lc.add(ConstraintFactory.createConstraint(Constraint.PK));
+                lc.add(new PrimaryKeyConstraint());
 
                 try {
                         return TypeFactory.createType(typeCode, lc.toArray(new Constraint[lc.size()]));

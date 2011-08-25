@@ -64,7 +64,7 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 import org.apache.log4j.Logger;
 import org.gdms.data.schema.MetadataUtilities;
-import org.gdms.data.types.ConstraintFactory;
+import org.gdms.data.types.Dimension3DConstraint;
 import org.gdms.driver.DataSet;
 import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.table.AbstractTableFunction;
@@ -298,8 +298,8 @@ public final class ST_Extrude extends AbstractTableFunction {
                                         TypeFactory.createType(Type.STRING),
                                         TypeFactory.createType(Type.SHORT),
                                         TypeFactory.createType(Type.GEOMETRY, new Constraint[]{
-                                                ConstraintFactory.createConstraint(Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.POLYGON),
-                                                ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 3)})}, new String[]{
+                                                new GeometryTypeConstraint(GeometryTypeConstraint.POLYGON),
+                                                new Dimension3DConstraint(3)})}, new String[]{
                                         "gid", "shellHoleId", "type", "index", "the_geom"});
                 } catch (InvalidTypeException e) {
                         throw new DriverException(

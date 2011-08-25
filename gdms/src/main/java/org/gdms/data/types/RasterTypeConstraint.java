@@ -49,7 +49,7 @@ public class RasterTypeConstraint extends AbstractIntConstraint {
 	 *            Type of the raster. Any of the possible return values of
 	 *            {@link GeoRaster.getType()}
 	 */
-	RasterTypeConstraint(int type) {
+	public RasterTypeConstraint(int type) {
 		super(type);
 	}
 

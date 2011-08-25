@@ -49,7 +49,7 @@ public class ScaleConstraint extends AbstractIntConstraint {
 		super(constraintBytes);
 	}
 
-	ScaleConstraint(int constraintValue) {
+	public ScaleConstraint(int constraintValue) {
 		super(constraintValue);
 	}
 

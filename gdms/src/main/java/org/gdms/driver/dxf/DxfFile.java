@@ -30,8 +30,6 @@ import java.io.RandomAccessFile;
 
 
 import org.gdms.data.schema.DefaultMetadata;
-import org.gdms.data.types.Constraint;
-import org.gdms.data.types.ConstraintFactory;
 import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
@@ -84,8 +82,7 @@ public class DxfFile {
 		if (DXF_SCHEMA.getFieldCount() != 0) {
                         return;
                 }
-		DXF_SCHEMA.addField("GEOMETRY", Type.GEOMETRY, ConstraintFactory.createConstraint(
-                        Constraint.GEOMETRY_TYPE, GeometryTypeConstraint.GEOMETRY_COLLECTION));
+		DXF_SCHEMA.addField("GEOMETRY", Type.GEOMETRY, new GeometryTypeConstraint(GeometryTypeConstraint.GEOMETRY_COLLECTION));
 		DXF_SCHEMA.addField("LAYER", Type.STRING);
 		DXF_SCHEMA.addField("LTYPE", Type.STRING);
 		DXF_SCHEMA.addField("ELEVATION", Type.DOUBLE);
