@@ -94,7 +94,7 @@ public class ZoomToSelectedFeaturesPlugIn extends AbstractPlugIn {
 							int[] selectedRow = lyr.getSelection();
 
 							DataSource sds = lyr
-									.getSpatialDataSource();
+									.getDataSource();
 
 							Geometry geometry = null;
 							Envelope geometryEnvelope = null;

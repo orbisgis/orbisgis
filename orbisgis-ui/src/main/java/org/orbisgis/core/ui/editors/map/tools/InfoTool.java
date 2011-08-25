@@ -92,7 +92,7 @@ public class InfoTool extends AbstractRectangleTool {
 			boolean smallerThanTolerance, MapContext vc, ToolManager tm)
 			throws TransitionException {
 		ILayer layer = vc.getSelectedLayers()[0];
-		DataSource sds = layer.getSpatialDataSource();
+		DataSource sds = layer.getDataSource();
 		String sql = null;
 		try {
 			GeometryFactory gf = ToolManager.toolsGeometryFactory;

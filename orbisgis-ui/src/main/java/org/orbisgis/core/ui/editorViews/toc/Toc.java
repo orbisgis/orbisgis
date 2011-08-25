@@ -465,7 +465,7 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 	private void addLayerListenerRecursively(ILayer rootLayer,
 			MyLayerListener refreshLayerListener) {
 		rootLayer.addLayerListener(refreshLayerListener);
-		DataSource dataSource = rootLayer.getSpatialDataSource();
+		DataSource dataSource = rootLayer.getDataSource();
 		if (dataSource != null) {
 			dataSource.addEditionListener(refreshLayerListener);
 			dataSource.addDataSourceListener(refreshLayerListener);
@@ -479,7 +479,7 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 	private void removeLayerListenerRecursively(ILayer rootLayer,
 			MyLayerListener refreshLayerListener) {
 		rootLayer.removeLayerListener(refreshLayerListener);
-		DataSource dataSource = rootLayer.getSpatialDataSource();
+		DataSource dataSource = rootLayer.getDataSource();
 		if (dataSource != null) {
 			dataSource.removeEditionListener(refreshLayerListener);
 			dataSource.removeDataSourceListener(refreshLayerListener);

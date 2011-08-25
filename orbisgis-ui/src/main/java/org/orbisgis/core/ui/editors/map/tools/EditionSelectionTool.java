@@ -64,7 +64,7 @@ public class EditionSelectionTool extends AbstractSelectionTool {
         @Override
         public void transitionTo_MakeMove(MapContext mc, ToolManager tm)
                 throws TransitionException, FinishedAutomatonException {
-                DataSource ds = getLayer(mc).getSpatialDataSource();
+                DataSource ds = getLayer(mc).getDataSource();
                 for (int i = 0; i < selected.size(); i++) {
                         Handler handler = selected.get(i);
                         Geometry g;

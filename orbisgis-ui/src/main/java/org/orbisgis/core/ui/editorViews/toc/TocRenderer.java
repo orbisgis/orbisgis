@@ -163,7 +163,7 @@ public class TocRenderer extends TocAbstractRenderer implements
 				iconAndLabel.setIcon(icon);
 			}
 			String name = node.getName();
-			DataSource dataSource = node.getSpatialDataSource();
+			DataSource dataSource = node.getDataSource();
 			if ((dataSource != null) && (dataSource.isModified())) {
 				name += "*"; //$NON-NLS-1$
 			}

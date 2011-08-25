@@ -95,7 +95,7 @@ public class CreateSourceFromMapSelectionPlugIn extends AbstractPlugIn {
 			MapContext mc = (MapContext) editor.getElement().getObject();
 			ILayer[] layers = mc.getSelectedLayers();// getLayersRecursively();
 			for (ILayer layer : layers) {
-				createSourceFromSelection(layer.getSpatialDataSource(), layer
+				createSourceFromSelection(layer.getDataSource(), layer
 						.getSelection());
 			}
 		}

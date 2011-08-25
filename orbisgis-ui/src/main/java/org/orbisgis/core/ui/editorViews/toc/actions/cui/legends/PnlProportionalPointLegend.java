@@ -238,7 +238,7 @@ public class PnlProportionalPointLegend extends JPanel implements ILegendPanel {
 
 			public void actionPerformed(ActionEvent e) {
 				try {
-					legend.preprocess(legendContext.getLayer().getSpatialDataSource());
+					legend.preprocess(legendContext.getLayer().getDataSource());
 
 					// Transform max to pixels
 					int maxSize = Integer.parseInt(txtMaxSize.getText());
@@ -373,7 +373,7 @@ public class PnlProportionalPointLegend extends JPanel implements ILegendPanel {
 
 	private void syncWithLegend() {
 		try {
-			DataSource sds = legendContext.getLayer().getSpatialDataSource();
+			DataSource sds = legendContext.getLayer().getDataSource();
 			Metadata m = sds.getMetadata();
 			ArrayList<String> fieldNames = new ArrayList<String>();
 

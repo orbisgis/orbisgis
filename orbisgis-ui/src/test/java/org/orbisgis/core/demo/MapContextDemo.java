@@ -49,7 +49,7 @@ public class MapContextDemo {
                         layer = mc.getLayerModel().getLayer(i);
                         String layerName = layer.getName();
 
-                        Envelope enveloppe = layer.getSpatialDataSource().getFullExtent();
+                        Envelope enveloppe = layer.getDataSource().getFullExtent();
 
                         driver.addValues(new Value[]{ValueFactory.createValue(layerName + ".tiff"),
                                         ValueFactory.createValue(GeometryConvert.toGeometry(enveloppe))});

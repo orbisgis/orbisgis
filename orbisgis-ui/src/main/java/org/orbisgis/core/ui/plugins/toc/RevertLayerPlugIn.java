@@ -56,7 +56,7 @@ public class RevertLayerPlugIn extends AbstractPlugIn {
                 MapContext mapContext = getPlugInContext().getMapContext();
                 ILayer[] selectedResources = mapContext.getSelectedLayers();
                 try {
-                        selectedResources[0].getSpatialDataSource().syncWithSource();
+                        selectedResources[0].getDataSource().syncWithSource();
                 } catch (DriverException e) {
                         ErrorMessages.error(ErrorMessages.CannotRevertSource, e);
                 }

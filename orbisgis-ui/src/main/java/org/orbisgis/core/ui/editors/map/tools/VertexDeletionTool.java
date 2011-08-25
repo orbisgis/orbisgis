@@ -89,7 +89,7 @@ public class VertexDeletionTool extends VertexDeletion {
                 Point2D p = tm.getLastRealMousePosition();
                 ArrayList<Handler> handlers = tm.getCurrentHandlers();
                 ILayer activeLayer = mc.getActiveLayer();
-                DataSource sds = activeLayer.getSpatialDataSource();
+                DataSource sds = activeLayer.getDataSource();
 
                 for (Handler handler : handlers) {
                         if (p.distance(handler.getPoint()) < tm.getTolerance()) {

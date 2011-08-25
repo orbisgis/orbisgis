@@ -219,7 +219,7 @@ public class MapControl extends JComponent implements ComponentListener,
 	private void addLayerListenerRecursively(ILayer rootLayer,
 			RefreshLayerListener refreshLayerListener) {
 		rootLayer.addLayerListener(refreshLayerListener);
-		DataSource dataSource = rootLayer.getSpatialDataSource();
+		DataSource dataSource = rootLayer.getDataSource();
 		if (dataSource != null) {
 			dataSource.addEditionListener(refreshLayerListener);
 			dataSource.addDataSourceListener(refreshLayerListener);
@@ -233,7 +233,7 @@ public class MapControl extends JComponent implements ComponentListener,
 	private void removeLayerListenerRecursively(ILayer rootLayer,
 			RefreshLayerListener refreshLayerListener) {
 		rootLayer.removeLayerListener(refreshLayerListener);
-		DataSource dataSource = rootLayer.getSpatialDataSource();
+		DataSource dataSource = rootLayer.getDataSource();
 		if (dataSource != null) {
 			dataSource.removeEditionListener(refreshLayerListener);
 			dataSource.removeDataSourceListener(refreshLayerListener);

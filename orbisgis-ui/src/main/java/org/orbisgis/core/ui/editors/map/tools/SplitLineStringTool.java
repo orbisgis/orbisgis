@@ -90,7 +90,7 @@ public class SplitLineStringTool extends AbstractPointTool {
         protected void pointDone(Point point, MapContext mc, ToolManager tm)
                 throws TransitionException {
                 Handler handler = tm.getCurrentHandlers().get(0);
-                DataSource sds = mc.getActiveLayer().getSpatialDataSource();
+                DataSource sds = mc.getActiveLayer().getDataSource();
                 int uiTolerance = tm.getUITolerance();
                 try {
                         Geometry geom = sds.getGeometry(handler.getGeometryIndex());

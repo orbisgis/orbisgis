@@ -176,8 +176,8 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
                                 activeLayer = layer;
                                 if (activeLayer != null) {
                                         activeLayer.addLayerListener(layerListener);
-                                        activeLayer.getSpatialDataSource().addEditionListener(layerListener);
-                                        activeLayer.getSpatialDataSource().addDataSourceListener(layerListener);
+                                        activeLayer.getDataSource().addEditionListener(layerListener);
+                                        activeLayer.getDataSource().addDataSourceListener(layerListener);
                                 }
                                 try {
                                         setTool(ToolManager.this.defaultTool);
@@ -211,8 +211,8 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
         public void freeResources() {
                 if (activeLayer != null) {
                         activeLayer.removeLayerListener(layerListener);
-                        activeLayer.getSpatialDataSource().removeEditionListener(layerListener);
-                        activeLayer.getSpatialDataSource().removeDataSourceListener(layerListener);
+                        activeLayer.getDataSource().removeEditionListener(layerListener);
+                        activeLayer.getDataSource().removeDataSourceListener(layerListener);
                         try {
                                 setTool(ToolManager.this.defaultTool);
                         } catch (TransitionException e2) {
@@ -702,7 +702,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
                         return;
                 }
 
-                DataSource sds = activeLayer.getSpatialDataSource();
+                DataSource sds = activeLayer.getDataSource();
                 int[] selection = activeLayer.getSelection();
                 try {
                         for (int selectedRow : selection) {

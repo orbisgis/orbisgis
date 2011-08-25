@@ -41,7 +41,6 @@ import java.util.ArrayList;
 import org.orbisgis.progress.DefaultProgressMonitor;
 
 import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.progress.ProgressMonitor;
 
 public class Job implements BackgroundJob, ProgressMonitor {
 

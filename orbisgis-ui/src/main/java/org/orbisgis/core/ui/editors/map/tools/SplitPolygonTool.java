@@ -98,7 +98,7 @@ public class SplitPolygonTool extends AbstractLineTool {
         @Override
         protected void lineDone(LineString ls, MapContext vc, ToolManager tm) throws TransitionException {
                 Handler handler = tm.getCurrentHandlers().get(0);
-                DataSource sds = vc.getActiveLayer().getSpatialDataSource();
+                DataSource sds = vc.getActiveLayer().getDataSource();
                 try {
                         Geometry geom = sds.getGeometry(handler.getGeometryIndex());
                         if (ToolUtilities.geometryTypeIs(vc, GeometryTypeConstraint.MULTI_POLYGON)) {

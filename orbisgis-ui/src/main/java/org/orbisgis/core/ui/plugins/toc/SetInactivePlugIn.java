@@ -74,7 +74,7 @@ public class SetInactivePlugIn extends AbstractPlugIn {
 
         public void execute(MapContext mapContext, ILayer layer) {
                 // we close directly if nothing is modified
-                if (!mapContext.getActiveLayer().getSpatialDataSource().isModified()) {
+                if (!mapContext.getActiveLayer().getDataSource().isModified()) {
                         mapContext.setActiveLayer(null);
                         return;
                 }
@@ -82,7 +82,7 @@ public class SetInactivePlugIn extends AbstractPlugIn {
                         JOptionPane.YES_NO_CANCEL_OPTION);
                 if (option == JOptionPane.YES_OPTION) {
                         try {
-                                mapContext.getActiveLayer().getSpatialDataSource().commit();
+                                mapContext.getActiveLayer().getDataSource().commit();
                                 mapContext.setActiveLayer(null);
                         } catch (DriverException e) {
                                 ErrorMessages.error(ErrorMessages.CannotSavelayer, e);
@@ -91,7 +91,7 @@ public class SetInactivePlugIn extends AbstractPlugIn {
                         }
                 } else if (option == JOptionPane.NO_OPTION) {
                         try {
-                                layer.getSpatialDataSource().syncWithSource();
+                                layer.getDataSource().syncWithSource();
                                 mapContext.setActiveLayer(null);
                         } catch (DriverException e) {
                                 ErrorMessages.error(ErrorMessages.CannotRevertlayer, e);

@@ -87,6 +87,7 @@ import org.orbisgis.core.ui.plugins.editors.mapEditor.ExportMapAsImagePlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.ExportMapAsPDFPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.FullExtentPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.RedoMapPlugIn;
+import org.orbisgis.core.ui.plugins.editors.mapEditor.Reverse2DMapSelectionPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.ShowXYPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.UndoMapPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.ZoomToSelectedFeaturesPlugIn;
@@ -118,6 +119,7 @@ import org.orbisgis.core.ui.plugins.orbisgisFrame.status.FreeDefaultWorkspacePlu
 import org.orbisgis.core.ui.plugins.orbisgisFrame.status.WorkspaceNamePlugin;
 import org.orbisgis.core.ui.plugins.orbisgisFrame.workspace.ChangeWorkspacePlugIn;
 import org.orbisgis.core.ui.plugins.orbisgisFrame.workspace.SaveWorkspacePlugIn;
+import org.orbisgis.core.ui.plugins.sql.SQLFunctionsPlugIn;
 import org.orbisgis.core.ui.plugins.toc.CreateGroupPlugIn;
 import org.orbisgis.core.ui.plugins.toc.EditLegendPlugIn;
 import org.orbisgis.core.ui.plugins.toc.GroupLayersPlugIn;
@@ -254,7 +256,8 @@ public class OrbisConfiguration implements Setup {
 	private UndoMapPlugIn undoMapPlugIn = new UndoMapPlugIn();
 	private RedoMapPlugIn redoMapPlugIn = new RedoMapPlugIn();
 	private DeleteMapSelectionPlugIn deleteMapSelectionPlugIn = new DeleteMapSelectionPlugIn();
-	private CreateSourceFromMapSelectionPlugIn createSourceFromMapSelectionPlugIn = new CreateSourceFromMapSelectionPlugIn();
+	private Reverse2DMapSelectionPlugIn reverse2DMapSelectionPlugIn = new Reverse2DMapSelectionPlugIn();
+        private CreateSourceFromMapSelectionPlugIn createSourceFromMapSelectionPlugIn = new CreateSourceFromMapSelectionPlugIn();
 	private RasterAlgebraPlugIn rasterAlgebraPlugIn = new RasterAlgebraPlugIn();
 	// Tool bar on map
 	private ShowXYPlugIn showXYPlugIn = new ShowXYPlugIn();
@@ -267,7 +270,8 @@ public class OrbisConfiguration implements Setup {
 	private ExportMapAsImagePlugIn exportMasAsImagePlugIn = new ExportMapAsImagePlugIn();
 	private ExportMapAsPDFPlugIn exportMapAsPDFPlugIn = new ExportMapAsPDFPlugIn();
 
-	// private TestPlugIn testPlugIn = new TestPlugIn();
+	// Others
+        SQLFunctionsPlugIn sQLFunctionsPlugIn = new SQLFunctionsPlugIn();
 
 	public void setup(WorkbenchContext workbenchContext) throws Exception {
 		// load Main Menu
@@ -316,6 +320,8 @@ public class OrbisConfiguration implements Setup {
 						.getFileExtensions()));
 			}
 		}
+                //Add some usefull SQL functions to interact between gdms sql and OrbisGIS.
+                sQLFunctionsPlugIn.initialize(plugInContext);
 	}
 
 	private void configurePopup(PlugInContext context) {
@@ -416,6 +422,7 @@ public class OrbisConfiguration implements Setup {
 		undoMapPlugIn.initialize(plugInContext);
 		redoMapPlugIn.initialize(plugInContext);
 		deleteMapSelectionPlugIn.initialize(plugInContext);
+                reverse2DMapSelectionPlugIn.initialize(plugInContext);
 		createSourceFromMapSelectionPlugIn.initialize(plugInContext);
 		add(new ZoomOutTool(), OrbisGISIcon.ZOOMOUT, frame
 				.getNavigationToolBar());

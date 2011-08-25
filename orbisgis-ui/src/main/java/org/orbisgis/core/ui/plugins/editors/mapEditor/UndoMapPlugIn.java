@@ -67,7 +67,7 @@ public class UndoMapPlugIn extends AbstractPlugIn {
 		MapContext mc = (MapContext) mapEditor.getElement().getObject();
 		ILayer activeLayer = mc.getActiveLayer();
 		try {
-			activeLayer.getSpatialDataSource().undo();
+			activeLayer.getDataSource().undo();
 		} catch (DriverException e) {
 			ErrorMessages.error(ErrorMessages.CannotUndo, e);
 		}
@@ -87,7 +87,7 @@ public class UndoMapPlugIn extends AbstractPlugIn {
 			MapContext mc = (MapContext) mapEditor.getElement().getObject();
 			ILayer activeLayer = mc.getActiveLayer();
 			isEnabled = (activeLayer != null)
-					&& activeLayer.getSpatialDataSource().canUndo();
+					&& activeLayer.getDataSource().canUndo();
 		}
 		btn.setEnabled(isEnabled);
 		return isEnabled;

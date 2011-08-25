@@ -146,9 +146,9 @@ public abstract class AbstractSelectionTool extends Selection {
                 Geometry selectionRect = p.getEnvelope(ToolManager.toolsGeometryFactory);
 
                 ILayer activeLayer = getLayer(mc);
-                DataSource ds = activeLayer.getSpatialDataSource();
+                DataSource ds = activeLayer.getDataSource();
                 try {
-                        Iterator<Integer> l = queryLayer(activeLayer.getSpatialDataSource(), p);
+                        Iterator<Integer> l = queryLayer(activeLayer.getDataSource(), p);
                         while (l.hasNext()) {
                                 int rowIndex = l.next();
                                 Geometry g = (Geometry) ds.getGeometry(rowIndex);
@@ -220,7 +220,7 @@ public abstract class AbstractSelectionTool extends Selection {
 
                 Geometry selectionRect = rect.getEnvelope(ToolManager.toolsGeometryFactory);
 
-                DataSource ds = activeLayer.getSpatialDataSource();
+                DataSource ds = activeLayer.getDataSource();
                 try {
                         ArrayList<Integer> newSelection = new ArrayList<Integer>();
                         Iterator<Integer> l = queryLayer(ds, rect);

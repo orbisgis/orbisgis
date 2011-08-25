@@ -62,12 +62,12 @@ public class SetActivePlugIn extends AbstractPlugIn {
                 ILayer activeLayer = mapContext.getActiveLayer();
                 //Test if one layer is already in edition
                 if ((activeLayer != null) && (activeLayer != layerToBeActivated)) {
-                        if (activeLayer.getSpatialDataSource().isModified()) {
+                        if (activeLayer.getDataSource().isModified()) {
                                 int option = JOptionPane.showConfirmDialog(null, I18N.getString("orbisgis.org.orbisgis.edit.saveChange"), I18N.getString("orbisgis.org.orbisgis.edit.stopEdition"),
                                         JOptionPane.YES_NO_CANCEL_OPTION);
                                 if (option == JOptionPane.YES_OPTION) {
                                         try {
-                                                activeLayer.getSpatialDataSource().commit();
+                                                activeLayer.getDataSource().commit();
                                                 mapContext.setActiveLayer(null);
                                         } catch (DriverException e) {
                                                 ErrorMessages.error(ErrorMessages.CannotSavelayer, e);
@@ -76,7 +76,7 @@ public class SetActivePlugIn extends AbstractPlugIn {
                                         }
                                 } else if (option == JOptionPane.NO_OPTION) {
                                         try {
-                                                activeLayer.getSpatialDataSource().syncWithSource();
+                                                activeLayer.getDataSource().syncWithSource();
                                                 mapContext.setActiveLayer(null);
                                         } catch (DriverException e) {
                                                 ErrorMessages.error(ErrorMessages.CannotRevertlayer, e);

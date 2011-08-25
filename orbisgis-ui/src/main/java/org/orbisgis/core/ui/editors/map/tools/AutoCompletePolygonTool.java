@@ -84,7 +84,7 @@ public class AutoCompletePolygonTool extends AbstractPolygonTool {
         @Override
         protected void polygonDone(Polygon pol,
                 MapContext mc, ToolManager tm) throws TransitionException {
-                DataSource sds = mc.getActiveLayer().getSpatialDataSource();
+                DataSource sds = mc.getActiveLayer().getDataSource();
                 try {
                         ArrayList<Handler> handlers = tm.getCurrentHandlers();
                         Geometry geom = pol;

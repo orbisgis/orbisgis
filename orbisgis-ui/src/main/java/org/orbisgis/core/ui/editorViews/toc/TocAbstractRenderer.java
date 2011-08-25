@@ -62,7 +62,7 @@ public abstract class TocAbstractRenderer {
 			if (layer.isWMS()) {
 				return OrbisGISIcon.SERVER_CONNECT;
 			} else {
-				DataSource dataSource = layer.getSpatialDataSource();
+				DataSource dataSource = layer.getDataSource();
 				if (!dataSource.isOpen()) {
 					return null;
 				}

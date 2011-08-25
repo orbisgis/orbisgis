@@ -59,7 +59,7 @@ public class EditableLayer extends AbstractTableEditableElement implements
 
 	@Override
 	public DataSource getDataSource() {
-		return layer.getSpatialDataSource();
+		return layer.getDataSource();
 	}
 
 	@Override

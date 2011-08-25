@@ -71,7 +71,7 @@ public class DeleteMapSelectionPlugIn extends AbstractPlugIn {
 		ILayer activeLayer = map.getActiveLayer();
 		int[] sel = activeLayer.getSelection().clone();
 		Arrays.sort(sel);
-		DataSource dataSource = activeLayer.getSpatialDataSource();
+		DataSource dataSource = activeLayer.getDataSource();
 		try {
 			dataSource.setDispatchingMode(DataSource.STORE);
 			for (int i = sel.length - 1; i >= 0; i--) {

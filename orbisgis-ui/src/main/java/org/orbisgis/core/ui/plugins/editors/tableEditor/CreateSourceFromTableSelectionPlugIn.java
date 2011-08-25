@@ -95,7 +95,7 @@ public class CreateSourceFromTableSelectionPlugIn extends AbstractPlugIn {
 			MapContext mc = (MapContext) editor.getElement().getObject();
 			ILayer[] layers = mc.getSelectedLayers();
 			for (ILayer layer : layers) {
-				createSourceFromSelection(layer.getSpatialDataSource(), layer
+				createSourceFromSelection(layer.getDataSource(), layer
 						.getSelection());
 			}
 		}

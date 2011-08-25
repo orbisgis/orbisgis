@@ -92,8 +92,8 @@ public class EditLegendPlugIn extends AbstractPlugIn {
 
 	public void execute(MapContext mapContext, ILayer layer) {
 		try {
-			Type typ = layer.getSpatialDataSource().getMetadata().getFieldType(
-					layer.getSpatialDataSource().getSpatialFieldIndex());
+			Type typ = layer.getDataSource().getMetadata().getFieldType(
+					layer.getDataSource().getSpatialFieldIndex());
 			GeometryTypeConstraint cons = (GeometryTypeConstraint) typ
 					.getConstraint(Constraint.GEOMETRY_TYPE);
 

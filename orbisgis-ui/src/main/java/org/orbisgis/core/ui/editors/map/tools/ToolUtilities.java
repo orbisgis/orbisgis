@@ -58,7 +58,7 @@ public class ToolUtilities {
 
 	public static double getActiveLayerInitialZ(MapContext mapContext) {
 		DataSource sds = mapContext.getActiveLayer()
-				.getSpatialDataSource();
+				.getDataSource();
 		try {
 			Type type = sds.getFieldType(sds.getSpatialFieldIndex());
 			if (type.getIntConstraint(Constraint.DIMENSION_3D_GEOMETRY) == 3) {
@@ -124,7 +124,7 @@ public class ToolUtilities {
 		if (activeLayer == null) {
 			return false;
 		} else {
-			return activeLayer.getSpatialDataSource().isEditable();
+			return activeLayer.getDataSource().isEditable();
 		}
 	}
 
@@ -182,7 +182,7 @@ public class ToolUtilities {
 			return false;
 		} else {
 			try {
-				DataSource sds = activeLayer.getSpatialDataSource();
+				DataSource sds = activeLayer.getDataSource();
 				Type type = sds.getFieldType(sds.getSpatialFieldIndex());
 				int geometryType = type
 						.getIntConstraint(Constraint.GEOMETRY_TYPE);
