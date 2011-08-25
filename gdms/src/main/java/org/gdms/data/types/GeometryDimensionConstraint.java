@@ -43,14 +43,16 @@ import org.gdms.data.values.Value;
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
- * Constraint indicating the dimension of the geometry: 2D or 3D
+ * Constraint indicating the dimension of the geometry
  * 
  */
 public class GeometryDimensionConstraint extends AbstractIntConstraint {
 
         /**
-         * The dimension of the coordinates in the geometries. 2 if the geometries
-         * will not contain a Z value and 3 otherwise.
+         * The dimension of the  geometries. 
+         * 0 = point (point, multipoint)
+         * 1 = line (linestring, multilinestring)
+         * 2 = polygon (polygon, multipolygon)
          *
          * @param constraintValue
          */
