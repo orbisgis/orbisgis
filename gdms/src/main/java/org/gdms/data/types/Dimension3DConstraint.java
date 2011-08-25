@@ -44,10 +44,22 @@ import com.vividsolutions.jts.geom.Geometry;
 import org.gdms.geometryUtils.GeometryTypeUtil;
 
 /**
- * Constraint indicating the dimension of the geometry: 2D or 3D
+ * Constraint indicating the dimension of the geometry: 2D or 3D. A Dimension3DConstraint
+ * created with the {@code DIMENSION_2D} value will describe geometries that have 
+ * x and y coordinates. Dimension3DConstraint created with the {@code DIMENSION_3D} 
+ * value will describe geometries that have x, y and z coordinates. 
  * 
  */
 public class Dimension3DConstraint extends AbstractIntConstraint {
+        
+        /**
+         * Constant to use to build constraint for objects that have only x and y coordinates.
+         */
+        public static int DIMENSION_2D = 2;
+        /**
+         * Constant to use to build constraint for objects that have x, y and z coordinates.
+         */
+        public static int DIMENSION_3D = 3;
 
 	/**
 	 * The dimension of the coordinates in the geometries. 2 if the geometries
