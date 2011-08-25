@@ -38,8 +38,11 @@
 
 package org.gdms.sql.engine.commands
 
+import org.gdms.data.DataSource
 import org.gdms.data.types.TypeFactory
+import org.gdms.driver.DataSet
 import org.gdms.sql.evaluator.Expression
+import org.gdms.sql.evaluator.FieldEvaluator
 import org.gdms.sql.function.FunctionException
 import org.gdms.sql.function.FunctionManager
 import org.gdms.sql.function.FunctionValidator
@@ -53,7 +56,10 @@ import scalaz.concurrent.Promise
  * @since 0.1
  */
 class ExecutorCommand(name: String, params: List[Expression]) extends Command with OutputCommand with ExpressionCommand {
-  val exp = params
+  val (tableParams, scalarParams) = params.partition(_.evaluator.isInstanceOf[FieldEvaluator])
+  val exp = scalarParams
+  
+  var tables: List[DataSource] = null
 
   private var function: ExecutorFunction = null
 
@@ -66,17 +72,29 @@ class ExecutorCommand(name: String, params: List[Expression]) extends Command wi
       throw new FunctionException("This function cannot be called with CALL or EXECUTE.")
     }
     function = f.asInstanceOf[ExecutorFunction]
-
+    
     // validates params
     FunctionValidator.failIfTypesDoNotMatchSignature(
-      params.map { e => TypeFactory.createType(e.evaluator.sqlType) } toArray,
+      scalarParams.map { e => TypeFactory.createType(e.evaluator.sqlType) } toArray,
       function.getFunctionSignatures)
+    
+    // get sources and open then
+    tables = tableParams map (ex => dsf.getDataSource(ex.evaluator.asInstanceOf[FieldEvaluator].name))
+    tables map (_.open)
   }
 
   protected final def doWork(r: Iterable[Iterable[Promise[Iterable[Row]]]]) = {
-    function.evaluate(dsf, Array.empty, params map (_.evaluate(null)) toArray, new NullProgressMonitor)
+    
+    val dss = tables map (_.asInstanceOf[DataSet])
+    
+    function.evaluate(dsf, dss toArray, params map (_.evaluate(null)) toArray, new NullProgressMonitor)
 
     null
+  }
+  
+  override def doCleanUp {
+    // close sources
+    tables map (_.close)
   }
 
   val getResult = null
