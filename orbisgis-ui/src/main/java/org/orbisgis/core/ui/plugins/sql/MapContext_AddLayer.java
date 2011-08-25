@@ -40,6 +40,7 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionSignature;
+import org.gdms.sql.function.ScalarArgument;
 import org.gdms.sql.function.executor.AbstractExecutorFunction;
 import org.gdms.sql.function.executor.ExecutorFunctionSignature;
 import org.gdms.sql.function.table.TableArgument;
@@ -84,11 +85,11 @@ public class MapContext_AddLayer extends AbstractExecutorFunction {
 
         @Override
         public String getSqlOrder() {
-                return "EXECUTE MC_AddLayer(tableName)";
+                return "EXECUTE MC_AddLayer('tableName')";
         }
 
         @Override
         public FunctionSignature[] getFunctionSignatures() {
-                return new FunctionSignature[]{new ExecutorFunctionSignature(new TableArgument(TableDefinition.ANY))};
+                return new FunctionSignature[]{new ExecutorFunctionSignature(ScalarArgument.STRING)};
         }
 }
