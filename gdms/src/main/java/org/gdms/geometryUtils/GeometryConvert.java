@@ -102,7 +102,7 @@ public final class GeometryConvert {
         }
 
         /**  
-         * Converts from Envelope to polygon geometry.
+         * Converts from Envelope to a polygon geometry.
          * @param envelope  
          * @return  
          */
@@ -118,12 +118,12 @@ public final class GeometryConvert {
                                         new Coordinate(envelope.getMaxX(), envelope.getMaxY())});
                 }
 
-                return FACTORY.createLinearRing(new Coordinate[]{
+                return FACTORY.createPolygon(FACTORY.createLinearRing(new Coordinate[]{
                                 new Coordinate(envelope.getMinX(), envelope.getMinY()),
                                 new Coordinate(envelope.getMinX(), envelope.getMaxY()),
                                 new Coordinate(envelope.getMaxX(), envelope.getMaxY()),
                                 new Coordinate(envelope.getMaxX(), envelope.getMinY()),
-                                new Coordinate(envelope.getMinX(), envelope.getMinY())});
+                                new Coordinate(envelope.getMinX(), envelope.getMinY())}), null);
         }
 
         /**
