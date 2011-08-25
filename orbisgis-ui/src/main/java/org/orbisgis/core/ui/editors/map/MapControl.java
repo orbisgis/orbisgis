@@ -201,7 +201,7 @@ public class MapControl extends JComponent implements ComponentListener,
 					MapTransform mapTransform) {
 				invalidateImage();
 				// Record new BoundingBox value for map context
-				mapContext.setBoundingBox(mapTransform.getExtent());
+				mapContext.setBoundingBox(mapTransform.getAdjustedExtent());
 			}
 
 		});
@@ -403,10 +403,10 @@ public class MapControl extends JComponent implements ComponentListener,
 			} catch (Error e) {
 				throw e;
 			} finally {
-				mapContext.setBoundingBox(mapTransform.getExtent());
+				mapContext.setBoundingBox(mapTransform.getAdjustedExtent());
 				timer.stop();
 				MapControl.this.repaint();
-				mapContext.setBoundingBox(mapTransform.getExtent());
+				mapContext.setBoundingBox(mapTransform.getAdjustedExtent());
 				WorkbenchContext wbContext = Services
 						.getService(WorkbenchContext.class);
 				wbContext.setLastAction("Update toolbar"); //$NON-NLS-1$
