@@ -55,14 +55,6 @@ class DefaultStringValue extends AbstractValue implements Serializable, StringVa
 
         private static final String NOTNUMBER = " is not a number";
         private String value;
-        public static final ValueTwoQueueBuffer<String, StringValue> BUF =
-                new ValueTwoQueueBuffer<String, StringValue>(ValueFactory.VALUECACHEMAXSIZE) {
-
-                        @Override
-                        protected StringValue reclaim(String id) {
-                                return new DefaultStringValue(id);
-                        }
-                };
 
         /**
          * Builds a DefaultStringValue from the given String <tt>text</tt>
@@ -319,7 +311,7 @@ class DefaultStringValue extends AbstractValue implements Serializable, StringVa
         }
 
         public static Value readBytes(byte[] buffer) {
-                return BUF.get(new String(buffer));
+                return new DefaultStringValue(new String(buffer));
         }
 
         @Override

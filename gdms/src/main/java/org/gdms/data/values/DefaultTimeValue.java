@@ -61,14 +61,6 @@ class DefaultTimeValue extends AbstractValue implements Serializable, TimeValue 
         private static final String NOTTIME = "The specified value is not a time:";
         private static final String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
         private Time value;
-        public static final ValueTwoQueueBuffer<Time, TimeValue> BUF =
-                new ValueTwoQueueBuffer<Time, TimeValue>(ValueFactory.VALUECACHEMAXSIZE) {
-
-                        @Override
-                        protected TimeValue reclaim(Time id) {
-                                return new DefaultTimeValue(id);
-                        }
-                };
 
         /**
          * Creates a new TimeValue object.
@@ -82,7 +74,7 @@ class DefaultTimeValue extends AbstractValue implements Serializable, TimeValue 
 
         public static TimeValue parseString(String text) throws ParseException {
                 SimpleDateFormat sdf = new SimpleDateFormat(TIME_FORMAT, Locale.getDefault());
-                return BUF.get(new Time(sdf.parse(text).getTime()));
+                return new DefaultTimeValue(new Time(sdf.parse(text).getTime()));
         }
 
         private SimpleDateFormat getDateFormat() {
@@ -228,7 +220,7 @@ class DefaultTimeValue extends AbstractValue implements Serializable, TimeValue 
         }
 
         public static Value readBytes(byte[] buffer) {
-                return BUF.get(new Time(ByteUtils.bytesToLong(buffer)));
+                return new DefaultTimeValue(new Time(ByteUtils.bytesToLong(buffer)));
         }
 
         @Override

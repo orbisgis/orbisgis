@@ -48,14 +48,7 @@ import org.gdms.data.types.Type;
 class DefaultShortValue extends DefaultNumericValue implements ShortValue {
 
         private short value;
-        public static final ValueTwoQueueBuffer<Short, ShortValue> BUF =
-                new ValueTwoQueueBuffer<Short, ShortValue>(ValueFactory.VALUECACHEMAXSIZE) {
-
-                        @Override
-                        protected ShortValue reclaim(Short id) {
-                                return new DefaultShortValue(id);
-                        }
-                };
+        
 
         /**
          * Creates a new ShortValue
@@ -132,7 +125,7 @@ class DefaultShortValue extends DefaultNumericValue implements ShortValue {
         }
 
         public static Value readBytes(byte[] buffer) {
-                return BUF.get((short) (((0xff & buffer[0]) << 8) + ((0xff & buffer[1]))));
+                return new DefaultShortValue((short) (((0xff & buffer[0]) << 8) + ((0xff & buffer[1]))));
         }
 
         /**

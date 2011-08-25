@@ -61,14 +61,6 @@ class DefaultDateValue extends AbstractValue implements Serializable, DateValue 
         private static final String DATE_FORMAT = "yyyy-MM-dd";
         private Date value;
         private SimpleDateFormat simpleDateFormat;
-        public static final ValueTwoQueueBuffer<Date, DateValue> BUF =
-                new ValueTwoQueueBuffer<Date, DateValue>(ValueFactory.VALUECACHEMAXSIZE) {
-
-                        @Override
-                        protected DateValue reclaim(Date id) {
-                                return new DefaultDateValue(id);
-                        }
-                };
 
         /**
          * Creates a new DateValue object.
@@ -89,7 +81,7 @@ class DefaultDateValue extends AbstractValue implements Serializable, DateValue 
         public static DateValue parseString(String text) throws ParseException {
                 SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
                 sdf.setLenient(false);
-                return BUF.get(new Date(sdf.parse(text).getTime()));
+                return new DefaultDateValue(new Date(sdf.parse(text).getTime()));
         }
 
         /**
@@ -229,7 +221,7 @@ class DefaultDateValue extends AbstractValue implements Serializable, DateValue 
          *      a new DateValue
          */
         public static Value readBytes(byte[] buffer) {
-                return BUF.get(new Date(ByteUtils.bytesToLong(buffer)));
+                return new DefaultDateValue(new Date(ByteUtils.bytesToLong(buffer)));
         }
 
         /**

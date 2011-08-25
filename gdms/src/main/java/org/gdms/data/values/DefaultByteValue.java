@@ -48,14 +48,6 @@ import org.gdms.data.types.Type;
 class DefaultByteValue extends DefaultNumericValue implements ByteValue {
 
         private byte value;
-        public static final ValueTwoQueueBuffer<Byte, ByteValue> BUF =
-                new ValueTwoQueueBuffer<Byte, ByteValue>(ValueFactory.VALUECACHEMAXSIZE) {
-
-                        @Override
-                        protected ByteValue reclaim(Byte id) {
-                                return new DefaultByteValue(id);
-                        }
-                };
 
         /**
          * Create a new ByteValue
@@ -140,7 +132,7 @@ class DefaultByteValue extends DefaultNumericValue implements ByteValue {
          *              A new ByteValue as a Value, containing the first element of the array.
          */
         public static Value readBytes(byte[] buffer) {
-                return BUF.get(buffer[0]);
+                return new DefaultByteValue(buffer[0]);
         }
 
         @Override

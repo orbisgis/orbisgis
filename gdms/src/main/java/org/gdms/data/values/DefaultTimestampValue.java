@@ -56,14 +56,6 @@ import org.orbisgis.utils.ByteUtils;
 class DefaultTimestampValue extends AbstractValue implements Serializable, TimestampValue {
 
         private Timestamp value;
-        public static final ValueTwoQueueBuffer<Timestamp, TimestampValue> BUF =
-                new ValueTwoQueueBuffer<Timestamp, TimestampValue>(ValueFactory.VALUECACHEMAXSIZE) {
-
-                        @Override
-                        protected TimestampValue reclaim(Timestamp id) {
-                                return new DefaultTimestampValue(id);
-                        }
-                };
 
         /**
          * Creates a new DateValue object.
@@ -208,7 +200,7 @@ class DefaultTimestampValue extends AbstractValue implements Serializable, Times
         }
 
         public static Value readBytes(byte[] buffer) {
-                return BUF.get(new Timestamp(ByteUtils.bytesToLong(buffer)));
+                return new DefaultTimestampValue(new Timestamp(ByteUtils.bytesToLong(buffer)));
         }
 
         @Override

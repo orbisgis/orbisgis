@@ -51,14 +51,6 @@ import org.orbisgis.utils.ByteUtils;
 class DefaultIntValue extends DefaultNumericValue implements IntValue {
 
         private int value;
-        public static final ValueTwoQueueBuffer<Integer, IntValue> BUF =
-                new ValueTwoQueueBuffer<Integer, IntValue>(ValueFactory.VALUECACHEMAXSIZE) {
-
-                        @Override
-                        protected IntValue reclaim(Integer id) {
-                                return new DefaultIntValue(id);
-                        }
-                };
 
         /**
          * Creates a new IntValue object.
@@ -146,7 +138,7 @@ class DefaultIntValue extends DefaultNumericValue implements IntValue {
         }
 
         public static Value readBytes(byte[] buffer) {
-                return BUF.get(ByteUtils.bytesToInt(buffer));
+                return new DefaultIntValue(ByteUtils.bytesToInt(buffer));
         }
 
         @Override

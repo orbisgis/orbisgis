@@ -82,7 +82,7 @@ public final class ValueFactory {
          *
          */
         public static IntValue createValue(int n) {
-                return DefaultIntValue.BUF.get(n);
+                return new DefaultIntValue(n);
         }
 
         /**
@@ -92,7 +92,7 @@ public final class ValueFactory {
          * @return
          */
         public static LongValue createValue(long l) {
-                return DefaultLongValue.BUF.get(l);
+                return new DefaultLongValue(l);
         }
 
         /**
@@ -102,7 +102,7 @@ public final class ValueFactory {
          * @return
          */
         public static ByteValue createValue(byte b) {
-                return DefaultByteValue.BUF.get(b);
+                return new DefaultByteValue(b);
         }
 
         /**
@@ -112,7 +112,7 @@ public final class ValueFactory {
          * @return
          */
         public static ShortValue createValue(short l) {
-                return DefaultShortValue.BUF.get(l);
+                return new DefaultShortValue(l);
         }
 
         /**
@@ -123,7 +123,7 @@ public final class ValueFactory {
          */
         public static StringValue createValue(String s) {
                 if (s != null) {
-                        return DefaultStringValue.BUF.get(s);
+                        return new DefaultStringValue(s);
                 } else {
                         return createNullValue();
                 }
@@ -136,7 +136,7 @@ public final class ValueFactory {
          * @return
          */
         public static FloatValue createValue(float f) {
-                return DefaultFloatValue.BUF.get(f);
+                return new DefaultFloatValue(f);
         }
 
         /**
@@ -146,7 +146,7 @@ public final class ValueFactory {
          * @return
          */
         public static DoubleValue createValue(double d) {
-                return DefaultDoubleValue.BUF.get(d);
+                return new DefaultDoubleValue(d);
         }
 
         /**
@@ -157,7 +157,7 @@ public final class ValueFactory {
          */
         public static DateValue createValue(Date d) {
                 if (d != null) {
-                        return DefaultDateValue.BUF.get(new java.sql.Date(d.getTime()));
+                        return new DefaultDateValue(new java.sql.Date(d.getTime()));
                 } else {
                         return createNullValue();
                 }
@@ -171,7 +171,7 @@ public final class ValueFactory {
          */
         public static TimeValue createValue(Time t) {
                 if (t != null) {
-                        return DefaultTimeValue.BUF.get(t);
+                        return new DefaultTimeValue(t);
                 } else {
                         return createNullValue();
                 }
@@ -185,7 +185,7 @@ public final class ValueFactory {
          */
         public static TimestampValue createValue(Timestamp t) {
                 if (t != null) {
-                        return DefaultTimestampValue.BUF.get(t);
+                        return new DefaultTimestampValue(t);
                 } else {
                         return createNullValue();
                 }

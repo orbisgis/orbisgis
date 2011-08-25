@@ -47,14 +47,7 @@ import org.orbisgis.utils.ByteUtils;
 class DefaultLongValue extends DefaultNumericValue implements LongValue {
 
         private long value;
-        public static final ValueTwoQueueBuffer<Long, LongValue> BUF =
-                new ValueTwoQueueBuffer<Long, LongValue>(ValueFactory.VALUECACHEMAXSIZE) {
-
-                        @Override
-                        protected LongValue reclaim(Long id) {
-                                return new DefaultLongValue(id);
-                        }
-                };
+        
 
         /**
          * Creates a new LongValue object.
@@ -142,7 +135,7 @@ class DefaultLongValue extends DefaultNumericValue implements LongValue {
         }
 
         public static Value readBytes(byte[] readBuffer) {
-                return BUF.get(ByteUtils.bytesToLong(readBuffer));
+                return new DefaultLongValue(ByteUtils.bytesToLong(readBuffer));
         }
 
         @Override

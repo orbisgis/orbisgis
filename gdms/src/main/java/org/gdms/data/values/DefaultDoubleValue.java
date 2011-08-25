@@ -51,14 +51,7 @@ import org.orbisgis.utils.ByteUtils;
 class DefaultDoubleValue extends DefaultNumericValue implements DoubleValue {
 
         private double value;
-        public static final ValueTwoQueueBuffer<Double, DoubleValue> BUF =
-                new ValueTwoQueueBuffer<Double, DoubleValue>(ValueFactory.VALUECACHEMAXSIZE) {
-
-                        @Override
-                        protected DoubleValue reclaim(Double id) {
-                                return new DefaultDoubleValue(id);
-                        }
-                };
+        
 
         /**
          * Creates a new DoubleValue object.
@@ -150,7 +143,7 @@ class DefaultDoubleValue extends DefaultNumericValue implements DoubleValue {
         }
 
         public static Value readBytes(byte[] buffer) {
-                return BUF.get(ByteUtils.byteToDouble(buffer));
+                return new DefaultDoubleValue(ByteUtils.byteToDouble(buffer));
         }
 
         @Override

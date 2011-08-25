@@ -52,14 +52,6 @@ import org.orbisgis.utils.FormatUtils;
 class DefaultFloatValue extends DefaultNumericValue implements FloatValue {
 
         private float value;
-        public static final ValueTwoQueueBuffer<Float, FloatValue> BUF =
-                new ValueTwoQueueBuffer<Float, FloatValue>(ValueFactory.VALUECACHEMAXSIZE) {
-
-                        @Override
-                        protected FloatValue reclaim(Float id) {
-                                return new DefaultFloatValue(id);
-                        }
-                };
 
         DefaultFloatValue() {
         }
@@ -142,7 +134,7 @@ class DefaultFloatValue extends DefaultNumericValue implements FloatValue {
         }
 
         public static Value readBytes(byte[] buffer) {
-                return BUF.get(ByteUtils.bytesToFloat(buffer));
+                return new DefaultFloatValue(ByteUtils.bytesToFloat(buffer));
         }
 
         @Override
