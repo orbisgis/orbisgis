@@ -164,7 +164,7 @@ public class Renderer {
 								.getWMSConnection().getClient(), status);
 						drawWMS(g2, width, height, extent, conn);
 					} else {
-						DataSource sds = layer.getSpatialDataSource();
+						DataSource sds = layer.getDataSource();
 						if (sds != null) {
 							try {
 								if (sds.isVectorial()) {
@@ -265,8 +265,8 @@ public class Renderer {
 			}
 			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
 					legend.getOpacity()));
-			for (int i = 0; i < layer.getSpatialDataSource().getRowCount(); i++) {
-				GeoRaster geoRaster = layer.getSpatialDataSource().getRaster(i);
+			for (int i = 0; i < layer.getDataSource().getRowCount(); i++) {
+				GeoRaster geoRaster = layer.getDataSource().getRaster(i);
 				Envelope layerEnvelope = geoRaster.getMetadata().getEnvelope();
                                 BufferedImage layerImage;
                                 if (isHeadLess) {
@@ -307,7 +307,7 @@ public class Renderer {
 			throws DriverException {
 
 		Legend[] legends = layer.getRenderingLegend();
-		DataSource sds = layer.getSpatialDataSource();
+		DataSource sds = layer.getDataSource();
 
 		try {
 

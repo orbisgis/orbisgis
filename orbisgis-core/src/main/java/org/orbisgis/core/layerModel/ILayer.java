@@ -224,7 +224,7 @@ public interface ILayer {
 	 *         up by a SpatialDataSourceDecorator (Layer collections and WMS
 	 *         layers, for example)
 	 */
-	DataSource getSpatialDataSource();
+	DataSource getDataSource();
 
 	/**
 	 * Gets the legend used to draw the default spatial field in this layer if

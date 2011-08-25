@@ -85,8 +85,8 @@ public class LegendTest extends AbstractTest {
                         new File("src/test/resources/data/bv_sap.shp"));
                 layer.open();
                 UniqueValueLegend legend = LegendFactory.createUniqueValueLegend();
-                legend.setClassificationField(layer.getSpatialDataSource().getFieldName(1),
-                        layer.getSpatialDataSource());
+                legend.setClassificationField(layer.getDataSource().getFieldName(1),
+                        layer.getDataSource());
                 legend.setDefaultSymbol(null);
                 layer.setLegend(legend);
 

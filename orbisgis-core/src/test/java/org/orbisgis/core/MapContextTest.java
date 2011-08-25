@@ -127,17 +127,17 @@ public class MapContextTest extends AbstractTest {
                         new File("src/test/resources/data/bv_sap.shp"));
                 mc.getLayerModel().addLayer(layer1);
                 mc.getLayerModel().addLayer(layer2);
-                Symbol sym1 = layer1.getVectorLegend()[0].getSymbol(layer1.getSpatialDataSource(), 0);
-                Symbol sym2 = layer2.getVectorLegend()[0].getSymbol(layer2.getSpatialDataSource(), 0);
+                Symbol sym1 = layer1.getVectorLegend()[0].getSymbol(layer1.getDataSource(), 0);
+                Symbol sym2 = layer2.getVectorLegend()[0].getSymbol(layer2.getDataSource(), 0);
                 Object persistence = mc.getJAXBObject();
                 DefaultMapContext mc2 = new DefaultMapContext();
                 mc2.setJAXBObject(persistence);
                 mc2.open(null);
                 assertEquals(mc2.getLayers().length, 2);
                 Legend legend1 = mc2.getLayerModel().getLayer(0).getVectorLegend()[0];
-                assertEquals(legend1.getSymbol(layer1.getSpatialDataSource(), 0).getPersistentProperties(), sym1.getPersistentProperties());
+                assertEquals(legend1.getSymbol(layer1.getDataSource(), 0).getPersistentProperties(), sym1.getPersistentProperties());
                 Legend legend2 = mc2.getLayerModel().getLayer(1).getVectorLegend()[0];
-                assertEquals(legend2.getSymbol(layer2.getSpatialDataSource(), 0).getPersistentProperties(), sym2.getPersistentProperties());
+                assertEquals(legend2.getSymbol(layer2.getDataSource(), 0).getPersistentProperties(), sym2.getPersistentProperties());
                 mc.close(null);
                 mc2.close(null);
         }
@@ -421,7 +421,7 @@ public class MapContextTest extends AbstractTest {
                 mc.getLayerModel().addLayer(layer);
                 LabelLegend labelLegend = LegendFactory.createLabelLegend();
                 int legendFieldIndex = 1;
-                labelLegend.setClassificationField(layer.getSpatialDataSource().getFieldName(
+                labelLegend.setClassificationField(layer.getDataSource().getFieldName(
                         legendFieldIndex));
                 layer.setLegend(labelLegend);
                 mc.close(null);
