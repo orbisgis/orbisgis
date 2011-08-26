@@ -61,6 +61,7 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.wms.WMSSource;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.FileDriverRegister;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.memory.MemoryDataSetDriver;
@@ -93,6 +94,16 @@ public class SourceManagementTest {
                         ds.open();
                         ds.close();
                 }
+        }
+        
+        @Test
+        public void testRegisterAndRemove() throws Exception {
+                sm.remove(SOURCE);
+                File file = new File("b.shp");
+                sm.register(SOURCE, file);
+                sm.remove(SOURCE);
+                FileDriverRegister fdr = sm.getDriverManager().getFileDriverRegister();
+                assertFalse(fdr.contains(file));
         }
 
         @Test

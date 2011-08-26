@@ -346,6 +346,11 @@ public final class DefaultSourceManager implements SourceManager {
                 if (purge) {
                         toRemove.getDataSourceDefinition().delete();
                 }
+                //We have a <File,Driver> association in the DriverManager, we must get rid of it.
+                File assoc = toRemove.getFile();
+                if(assoc != null){
+                        dm.removeFile(assoc);
+                }
 
                 return true;
         }
