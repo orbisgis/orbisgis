@@ -44,10 +44,10 @@ import org.apache.log4j.Logger;
 import org.gdms.driver.Driver;
 
 /**
- * This class is responsible for storing all the available drivers.
-
+ * This class is responsible for storing all the available drivers.</p><p>
+ * 
  * It does not have any driver registered by default, it is up to the calling code to
- * registered drivers.
+ * registere the drivers.
  */
 public final class DriverManager {
 
@@ -57,7 +57,8 @@ public final class DriverManager {
         public static final String DEFAULT_SINGLE_TABLE_NAME = "main";
 
         /**
-         * Get the driver by name
+         * Get a new instance of a driver class registered with the name {@code name}
+         * with the method {@link DriverManager#registerDriver(java.lang.Class) registerDriver}
          *
          * @param name
          *            name of the desired driver
@@ -84,7 +85,7 @@ public final class DriverManager {
                         throw new DriverLoadException(e);
                 }
         }
-
+        
         /**
          * Registers a driver class into this DriverManager
          * @param driverClass a class extending Driver
