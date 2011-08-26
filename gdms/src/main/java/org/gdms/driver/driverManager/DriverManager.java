@@ -36,18 +36,26 @@
  */
 package org.gdms.driver.driverManager;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import org.apache.log4j.Logger;
 import org.gdms.driver.Driver;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.FileDriver;
+import org.gdms.driver.FileDriverRegister;
 
 /**
  * This class is responsible for storing all the available drivers.</p><p>
  * 
  * It does not have any driver registered by default, it is up to the calling code to
- * registere the drivers.
+ * register the drivers.</p>
+ * <p>As this class is the entry point to retrieve drivers of any kind, it is the best place
+ * to manage drivers associated to files. Consequently, it is up to instances of this 
+ * class to ensure that a file has only one driver associated to it. To do that,
+ * It relies on an inner {@code FileDriverRegister}.
  */
 public final class DriverManager {
 
@@ -55,6 +63,63 @@ public final class DriverManager {
         private static final Logger logger = Logger.getLogger(DriverManager.class);
 
         public static final String DEFAULT_SINGLE_TABLE_NAME = "main";
+        private FileDriverRegister fdr = new FileDriverRegister();
+        
+        /**
+         * Get a driver suitable for the {@code File} file. If the {@code File} has already
+         * been treated by this manager, and if it has not been removed, the same 
+         * {@code Driver} instance is returned. If it's the first time we meet 
+         * {@code file}, or if it has been removed since the last time we've seen
+         * it, a brand new instance, associated to the {@code File} instance, is 
+         * returned.
+         * 
+         * @param file
+         * @return 
+         * @throw DriverLoadException if we can't find a Driver able to manage our file.
+         */
+        public FileDriver getDriver(File file){
+                if(fdr.contains(file)){
+                        return fdr.getDriver(file);
+                } else {
+                        //we must try to retrieve a ew suitable driver.
+                        String[] names = getDriverNames();
+                        for (int i = 0; i < names.length; i++) {
+                                Driver driver = getDriver(names[i]);
+                                if (driver instanceof FileDriver) {
+                                        FileDriver fileDriver = (FileDriver) driver;
+                                        String[] extensions = fileDriver.getFileExtensions();
+                                        for (String extension : extensions) {
+                                                if (file.getAbsolutePath().toLowerCase().endsWith(
+                                                        extension.toLowerCase())) {
+                                                        try {
+                                                                fileDriver.setFile(file);
+                                                        } catch (DriverException ex) {
+                                                                throw new DriverLoadException(ex);
+                                                        }
+                                                        fdr.addFile(file, fileDriver);
+                                                        return fileDriver;
+                                                }
+                                        }
+                                }
+                        }
+                        throw new DriverLoadException("No suitable driver for "+ file.getAbsolutePath());
+                }
+        }
+        
+        /**
+         * Remove the entry associating {@code file} with {@code driver}.
+         */
+        public void removeFile(File file){
+                fdr.removeFile(file);
+        }
+        
+        /**
+         * Give access to the underlying {@code FileDriverRegister} instance.
+         * @return 
+         */
+        public FileDriverRegister getFileDriverRegister(){
+                return fdr;
+        }
 
         /**
          * Get a new instance of a driver class registered with the name {@code name}

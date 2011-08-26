@@ -77,30 +77,11 @@ public final class DriverUtilities {
          * @param dm
          * @param file
          * @return
+         * @throw DriverLoadException If we can't find a driver able to manage
+         * the given {@code File}.
          */
         public static FileDriver getDriver(DriverManager dm, File file) {
-                String[] names = dm.getDriverNames();
-                for (int i = 0; i < names.length; i++) {
-                        Driver driver = dm.getDriver(names[i]);
-                        if (driver instanceof FileDriver) {
-                                FileDriver fileDriver = (FileDriver) driver;
-                                String[] extensions = fileDriver.getFileExtensions();
-                                for (String extension : extensions) {
-                                        if (file.getAbsolutePath().toLowerCase().endsWith(
-                                                extension.toLowerCase())) {
-                                                try {
-                                                        fileDriver.setFile(file);
-                                                } catch (DriverException ex) {
-                                                        throw new DriverLoadException(ex);
-                                                }
-                                                return fileDriver;
-                                        }
-                                }
-                        }
-                }
-
-                throw new DriverLoadException("No suitable driver for "
-                        + file.getAbsolutePath());
+                return dm.getDriver(file);
         }
 
         /**
