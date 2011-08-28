@@ -58,6 +58,19 @@ public class GeometryEditTest {
 
         public WKTReader wKTReader = new WKTReader();
 
+        @Test
+        public void testLinearInterpolation() throws Exception {
+                LineString line = (LineString) wKTReader.read("LINESTRING(0 8, 1 8 , 3 8)");
+                LineString result = GeometryEdit.linearZInterpolation(line);
+                assertTrue(Double.isNaN(result.getStartPoint().getCoordinate().z));
+                assertTrue(Double.isNaN(result.getEndPoint().getCoordinate().z));
+                line = (LineString) wKTReader.read("LINESTRING(0 0 0, 5 0 , 10 0 10)");
+                result = GeometryEdit.linearZInterpolation(line);
+                assertTrue(result.getStartPoint().getCoordinate().z==0);
+                assertTrue(result.getEndPoint().getCoordinate().z==10);
+                assertTrue(result.getCoordinates()[1].z==5);
+        }
+
         /**
          * Test to split a linestring according a point
          * @throws Exception

@@ -10,7 +10,7 @@ import com.vividsolutions.jts.geom.CoordinateFilter;
  * Source : http://docs.codehaus.org/display/GEOTDOC/04+Using+CoordinateFilter+to+implement+operations
  * Usage :
  * 
- * 	Rectangle2DFilter bf = new Rectangle2DFilter();
+ *  Rectangle2DFilter bf = new Rectangle2DFilter();
  *  myGeometry.apply(bf);
  *  Rectangle2D bounds = bf.getBounds();
  * 

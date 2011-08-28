@@ -111,6 +111,95 @@ public final class GeometryEdit {
 
         private static final GeometryFactory FACTORY = new GeometryFactory();
 
+        /**
+         * Interpolate a linestring according start and end coordinates z value.
+         * If the z is NaN return the input linestring
+         * @param lineString
+         * @param startz
+         * @param endz
+         * @return linestring
+         */
+        public static LineString linearZInterpolation(LineString lineString, double startz, double endz) {
+                if (Double.isNaN(startz) || Double.isNaN(endz)) {
+                        return lineString;
+                } else {
+                        double length = lineString.getLength();
+                        lineString.apply(new LinearZInterpolationFilter(startz, endz, length));
+                        return lineString;
+                }
+        }
+
+        /**
+         * Interpolate a linestring according start and end coordinates z value.
+         * If the z is NaN return the input linestring
+         * @param lineString
+         * @return
+         */
+        public static LineString linearZInterpolation(LineString lineString) {
+                double startz = lineString.getStartPoint().getCoordinate().z;
+                double endz = lineString.getEndPoint().getCoordinate().z;
+                return linearZInterpolation(lineString, startz, endz);
+        }
+
+        public static MultiLineString linearZInterpolation(MultiLineString multiLineString) {
+                int nbGeom = multiLineString.getNumGeometries();
+                LineString[] lines = new LineString[nbGeom];
+                for (int i = 0; i < nbGeom; i++) {
+                        LineString subGeom = (LineString) multiLineString.getGeometryN(i);
+                        double startz = subGeom.getStartPoint().getCoordinates()[0].z;
+                        double endz = subGeom.getEndPoint().getCoordinates()[0].z;
+                        double length = subGeom.getLength();
+                        subGeom.apply(new LinearZInterpolationFilter(startz, endz, length));
+                        lines[i] = subGeom;
+
+                }
+                return FACTORY.createMultiLineString(lines);
+        }
+
+        private static class LinearZInterpolationFilter implements CoordinateSequenceFilter {
+
+                private boolean done = false;
+                private double startZ = 0;
+                private double endZ = 0;
+                private double dZ = 0;
+                private final double length;
+                private int seqSize = 0;
+                private double sumLenght = 0;
+
+                public LinearZInterpolationFilter(double startZ, double endZ, double length) {
+                        this.startZ = startZ;
+                        this.endZ = endZ;
+                        this.length = length;
+
+                }
+
+                @Override
+                public void filter(CoordinateSequence seq, int i) {
+                        if (i == 0) {
+                                seqSize = seq.size();
+                                dZ = endZ - startZ;
+                        } else if (i == seqSize) {
+                                done = true;
+                        } else {
+                                Coordinate coord = seq.getCoordinate(i);
+                                Coordinate previousCoord = seq.getCoordinate(i - 1);
+                                sumLenght += coord.distance(previousCoord);
+                                seq.setOrdinate(i, 2, startZ + dZ * sumLenght / length);
+                        }
+
+                }
+
+                @Override
+                public boolean isGeometryChanged() {
+                        return true;
+                }
+
+                @Override
+                public boolean isDone() {
+                        return done;
+                }
+        }
+
         /**  
          * Updates all z values by a new value using the specified first and the last  
          * coordinates.  
@@ -213,7 +302,7 @@ public final class GeometryEdit {
                 return lineString;
         }
 
-         /**
+        /**
          * Reverse a linestring or a multilinetring according to z value. The z first point must be
          * greater than the z end point
          *
@@ -221,7 +310,6 @@ public final class GeometryEdit {
          * @return
          */
         public static Geometry reverse3D(Geometry geometry) {
-
                 if (GeometryTypeUtil.isMultiLineString(geometry)) {
                         return reverse3D((MultiLineString) geometry);
                 } else if (GeometryTypeUtil.isLineString(geometry)) {

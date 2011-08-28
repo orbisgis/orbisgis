@@ -49,6 +49,21 @@ import com.vividsolutions.jts.geom.Geometry;
 public class GeometryDimensionConstraint extends AbstractIntConstraint {
 
         /**
+         * Constant to use to build constraint for point or multipoint.
+         */
+        public static int DIMENSION_POINT = 0;
+        /**
+         * Constant to use to build constraint for line or multilinestring.
+         */
+        public static int DIMENSION_LINE = 1;
+
+        /**
+         * Constant to use to build constraint for polygon or multipolygon.
+         */
+        public static int DIMENSION_POLYGON = 2;
+
+
+        /**
          * The dimension of the  geometries. 
          * 0 = point (point, multipoint)
          * 1 = line (linestring, multilinestring)
@@ -58,7 +73,7 @@ public class GeometryDimensionConstraint extends AbstractIntConstraint {
          */
         public GeometryDimensionConstraint(final int constraintValue) {
                 super(constraintValue);
-                if ((constraintValue < 0) || (constraintValue > 2)) {
+                if ((constraintValue < DIMENSION_POINT) || (constraintValue > DIMENSION_POLYGON)) {
                         throw new IllegalArgumentException("Only 0, 1 and 2 are allowed");
                 }
         }
@@ -85,9 +100,9 @@ public class GeometryDimensionConstraint extends AbstractIntConstraint {
         }
 
         private String getDimensionDescription() {
-                if (constraintValue == 0) {
+                if (constraintValue == DIMENSION_POINT) {
                         return "POINT";
-                } else if (constraintValue == 1) {
+                } else if (constraintValue == DIMENSION_LINE) {
                         return "LINE";
                 } else {
                         return "POLYGON";
