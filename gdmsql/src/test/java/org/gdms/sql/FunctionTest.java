@@ -36,6 +36,7 @@
  */
 package org.gdms.sql;
 
+import com.vividsolutions.jts.geom.GeometryCollection;
 import org.gdms.data.types.PrimaryKeyConstraint;
 import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.types.Type;
@@ -70,6 +71,7 @@ public abstract class FunctionTest {
         protected Geometry JTSLineString2D;
         protected Geometry JTSLineString3D;
         protected Geometry JTSPolygonWith2Holes;
+        protected GeometryCollection JTS3DCollection;
         public static SQLDataSourceFactory dsf = new SQLDataSourceFactory(SQLBaseTest.backupDir.getAbsolutePath());
         protected WKTReader wktReader;
 
@@ -91,6 +93,8 @@ public abstract class FunctionTest {
                 GeometryFactory gf = new GeometryFactory();
                 JTSGeometryCollection = gf.createGeometryCollection(new Geometry[]{
                                 JTSMultiPolygon2D, JTSMultiLineString2D, JTSPolygon2D});
+                JTS3DCollection = gf.createGeometryCollection(new Geometry[]{JTSMultiPolygon2D, JTSLineString3D});
+
                 // first datasource
                 final MemoryDataSetDriver driver1 = new MemoryDataSetDriver(
                         new String[]{"pk", "geom"},

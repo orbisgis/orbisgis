@@ -40,6 +40,7 @@ package org.gdms.sql.function.spatial.geometry.edit;
 
 import com.vividsolutions.jts.geom.Geometry;
 import org.gdms.data.SQLDataSourceFactory;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.geometryUtils.GeometryEdit;
@@ -75,11 +76,11 @@ public class ST_3DReverse extends AbstractScalarSpatialFunction {
         public String getSqlOrder() {
                 return "SELECT ST_3DReverse(linestring) from table";
         }
-         @Override
+
+        @Override
         public FunctionSignature[] getFunctionSignatures() {
-                return new FunctionSignature[] {
-                  new BasicFunctionSignature(getType(null), ScalarArgument.GEOMETRY)
-                };
+                return new FunctionSignature[]{
+                                new BasicFunctionSignature(Type.GEOMETRY, ScalarArgument.LINESTRING), new BasicFunctionSignature(Type.GEOMETRY, ScalarArgument.MULTILINESTRING)
+                        };
         }
-        
 }
