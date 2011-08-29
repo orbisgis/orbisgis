@@ -257,4 +257,9 @@ public class SQLAllTypesObjectDriver extends AbstractDataSet implements MemoryDr
                 }
                 return this;
         }
+
+        @Override
+        public int getSupportedType() {
+                return 0;
+        }
 }
