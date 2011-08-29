@@ -12,7 +12,7 @@ public class FileDriverFilter implements DriverFilter {
 	@Override
 	public boolean acceptDriver(Driver driver) {
 		Driver rod = driver;
-		return (rod.getType() & SourceManager.FILE) == SourceManager.FILE;
+		return (rod.getSupportedType() & SourceManager.FILE) == SourceManager.FILE;
 	}
 
 }
