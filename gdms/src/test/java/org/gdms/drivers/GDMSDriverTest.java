@@ -36,6 +36,7 @@
  */
 package org.gdms.drivers;
 
+import org.gdms.driver.Driver;
 import org.gdms.data.types.Dimension3DConstraint;
 import org.gdms.data.types.LengthConstraint;
 import org.gdms.data.types.PrecisionConstraint;
@@ -86,6 +87,7 @@ import org.gdms.data.types.PatternConstraint;
 import org.gdms.data.types.RasterTypeConstraint;
 import org.gdms.data.types.ScaleConstraint;
 import org.gdms.driver.gdms.GdmsReader;
+import org.gdms.source.SourceManager;
 
 import static org.junit.Assert.*;
 
@@ -398,5 +400,15 @@ public class GDMSDriverTest {
                 } finally {
                         reader.close();
                 }
+        }
+        
+        @Test
+        public void testGetType() throws Exception{
+                DataSource ds = dsf.getDataSource(new File(TestBase.internalData,"version2.gdms"));
+                ds.open();
+                Driver d = ds.getDriver();
+                assertEquals(d.getSupportedType(), SourceManager.FILE | SourceManager.RASTER | SourceManager.VECTORIAL);
+                assertEquals(d.getType(), SourceManager.FILE | SourceManager.VECTORIAL);
+                ds.close();
         }
 }
