@@ -45,7 +45,6 @@ tokens {
     T_CHECK = 'CHECK';
     T_COLUMN = 'COLUMN';
     T_CREATE = 'CREATE';
-    T_DATE = 'DATE';
     T_DEFAULT = 'DEFAULT';
     T_DELETE = 'DELETE';
     T_DESC = 'DESC';
@@ -102,7 +101,6 @@ tokens {
     T_SET = 'SET';
     T_SHARE = 'SHARE';
     T_SIZE = 'SIZE';
-    T_SMALLINT = 'SMALLINT';
     T_START = 'START';
     T_SUCCESSFUL = 'SUCCESSFUL';
     T_SYSDATE = 'SYSDATE';
@@ -262,7 +260,6 @@ tokens {
     T_BFILE = 'BFILE';
     T_BLOB = 'BLOB';
     T_BY = 'BY';
-    T_BYTE = 'BYTE';
     T_CAST = 'CAST';
     T_CLOB = 'CLOB';
     T_COLUMN_VALUE = 'COLUMN_VALUE';
