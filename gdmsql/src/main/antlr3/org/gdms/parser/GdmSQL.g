@@ -669,7 +669,7 @@ column_def
 alter_table_statement
         : T_ALTER T_TABLE table=table_id 
         ( alter_action (COMMA alter_action)* -> ^(T_ALTER $table alter_action*)
-        | T_RENAME T_TO newname=LONG_ID -> ^(T_RENAME $table $newname)
+        | T_RENAME T_TO newname=table_id -> ^(T_RENAME $table $newname)
         )
         ;
 
@@ -708,14 +708,14 @@ drop_view_statement
 // CREATE INDEX
 
 create_index_statement
-        : T_CREATE T_INDEX T_ON table_id LPAREN a=LONG_ID RPAREN
+        : T_CREATE T_INDEX T_ON table_id LPAREN a=table_id RPAREN
         -> ^(T_INDEX T_CREATE table_id $a )
         ;
 
 // DROP INDEX
 
 drop_index_statement
-        : T_DROP T_INDEX T_ON table_id LPAREN a=LONG_ID RPAREN
+        : T_DROP T_INDEX T_ON table_id LPAREN a=table_id RPAREN
         -> ^(T_INDEX T_DROP table_id $a )
         ;
 
@@ -883,7 +883,7 @@ concat_operator
 // Identifier
 
 table_id
-        : LONG_ID (DOT LONG_ID)*
+        : LONG_ID (DOT LONG_ID)* -> ^(T_TABLE_NAME LONG_ID+)
         ;
 
 LONG_ID

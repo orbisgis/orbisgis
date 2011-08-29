@@ -106,7 +106,7 @@ object LogicPlanBuilder {
                     // there is only one table --> we insert a scan after 'last'
                     case (head :: Nil, T_TABLE_ITEM) => {
                         val alias = if (head.getChildCount == 1) None else Some(head.getChild(1).getText)
-                        last = insertAfter(last, Scan(head.getChild(0).getText, alias))
+                        last = insertAfter(last, Scan(getFullTableName(head.getChild(0)), alias))
                       }
 
                       // there is only one custom_query --> we insert a custom_query after 'last'
@@ -132,7 +132,7 @@ object LogicPlanBuilder {
                         c foreach { ch => ch.getType match {
                             case T_TABLE_ITEM => {
                                 val alias = if (ch.getChildCount == 1) None else Some(ch.getChild(1).getText)
-                                last.addChild(Scan(ch.getChild(0).getText, alias))
+                                last.addChild(Scan(getFullTableName(ch.getChild(0)), alias))
                               }
                             case T_TABLE_FUNCTION => {
                                 val alias = if (ch.getChildCount == 1) None else Some(ch.getChild(1).getText)
@@ -216,7 +216,7 @@ object LogicPlanBuilder {
       case T_UPDATE => {
           val c = getChilds(node)
           // add a scan for the selected table
-          var last: Operation = new Scan(c.head.getText, None, true)
+          var last: Operation = new Scan(getFullTableName(c.head), None, true)
 
           // gets all the expressions to update
           var e: Seq[(String, Expression)] = Nil
@@ -260,13 +260,13 @@ object LogicPlanBuilder {
                     } toArray) :: e
                 }
                 
-                end = StaticInsert(c(0).getText, e, fields)
+                end = StaticInsert(getFullTableName(c(0)), e, fields)
               }
           }
         }
       case T_DELETE => {
           end = Delete()
-          val s = Scan(node.getChild(0).getText, None, true)
+          val s = Scan(getFullTableName(node.getChild(0)), None, true)
           if (node.getChildCount() == 2) {
             val filter = Filter(parseExpression(node.getChild(1).getChild(0)))
             filter.children = s :: Nil
@@ -281,27 +281,27 @@ object LogicPlanBuilder {
           // building the select statement, resulting in an Output o
           if (node.getChild(1).getType == T_SELECT) {
             val o = buildOperationTree(node.getChild(1).asInstanceOf[CommonTree])
-            val cr = CreateTableAs(node.getChild(0).getText)
+            val cr = CreateTableAs(getFullTableName(node.getChild(0)))
             cr.children = o :: Nil
             end = cr 
           } else {
             val ch = getChilds(node.getChild(1))
             val cols = ch map (c => (c.getChild(0).getText, c.getChild(1).getText))
-            val cr = CreateTable(node.getChild(0).getText, cols)
+            val cr = CreateTable(getFullTableName(node.getChild(0)), cols)
             end = cr 
           }
         }
       case T_CREATE_VIEW => {
           // building the select statement, resulting in an Output o
             val o = buildOperationTree(node.getChild(1).asInstanceOf[CommonTree])
-            val cr = CreateView(node.getChild(0).getText, node.getChildCount == 3)
+            val cr = CreateView(getFullTableName(node.getChild(0)), node.getChildCount == 3)
             cr.children = o :: Nil
             end = cr 
         }
       case T_ALTER => {
           // alter table statement
           val children = getChilds(node)
-          val name = children.head.getText          
+          val name = getFullTableName(children.head)        
           // get all alter actions
           val elems = children.tail map { c => c.getType match {
               case T_ADD => AddColumn(c.getChild(0).getChild(0).getText.replace("\"", ""), c.getChild(0).getChild(1).getText)
@@ -318,11 +318,11 @@ object LogicPlanBuilder {
         }
       case T_RENAME => {
           // alter table toto rename to titi
-          end = RenameTable(node.getChild(0).getText, node.getChild(1).getText)
+          end = RenameTable(getFullTableName(node.getChild(0)), getFullTableName(node.getChild(1)))
       }
       case T_DROP => {
           // drop table statement
-          val names = getChilds(node.getChild(0)) map (_.getText)
+          val names = getChilds(node.getChild(0)) map (getFullTableName)
           var ifE = false
           var drop = false
           getChilds(node).tail foreach { _.getType match {
@@ -337,12 +337,12 @@ object LogicPlanBuilder {
       case T_INDEX => {
           node.getChild(0).getType match {
             case T_CREATE => {
-                val table = node.getChild(1).getText
+                val table = getFullTableName(node.getChild(1))
                 val col = node.getChild(2).getText.replace("\"", "")
                 end = CreateIndex(table, col)
               }
             case T_DROP => {
-                val table = node.getChild(1).getText
+                val table = getFullTableName(node.getChild(1))
                 val col = node.getChild(2).getText.replace("\"", "")
                 end = DropIndex(table, col)
               }
@@ -362,7 +362,7 @@ object LogicPlanBuilder {
   private def doCrossJoin(c: List[Tree], last: Operation): Unit = {
     val chh = c.head
     chh.getType match {
-      case T_TABLE_ITEM => last.addChild(Scan(chh.getChild(0).getText))
+      case T_TABLE_ITEM => last.addChild(Scan(getFullTableName(chh.getChild(0))))
       case T_TABLE_FUNCTION => {
           val res = doCustomQuery(chh)
           val alias = if (chh.getChildCount == 1) None else Some(chh.getChild(1).getText)
@@ -393,7 +393,7 @@ object LogicPlanBuilder {
     var exp: List[Expression] = Nil
     val d = c flatMap {i => i.getType match {
         case T_TABLE_ITEM => { // argument is a table name (-> String)
-            Left(i.getChild(0).getText) :: Nil
+            Left(getFullTableName(i.getChild(0))) :: Nil
           }
         case T_TABLE_FUNCTION => { // argument is the result of an other custom query
             val res = doCustomQuery(i)
@@ -518,6 +518,9 @@ object LogicPlanBuilder {
     base.addChild(toInsert)
   }
 
+  private def getFullTableName(node: Tree) = {
+    getChilds(node) map(_.getText) reduceLeft (_ + "." +  _)
+  }
   
 
   /**
