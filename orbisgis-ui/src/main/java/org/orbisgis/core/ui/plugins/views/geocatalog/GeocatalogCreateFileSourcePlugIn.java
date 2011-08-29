@@ -74,6 +74,7 @@ import org.orbisgis.utils.I18N;
 
 public class GeocatalogCreateFileSourcePlugIn extends AbstractPlugIn {
 
+        @Override
 	public boolean execute(PlugInContext context) throws Exception {
 		DataManager dm = Services.getService(DataManager.class);
 		String[] res = getPlugInContext().getSelectedSources();
@@ -87,6 +88,7 @@ public class GeocatalogCreateFileSourcePlugIn extends AbstractPlugIn {
 		return true;
 	}
 
+        @Override
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
 		WorkbenchFrame frame = wbContext.getWorkbench().getFrame()
@@ -106,9 +108,13 @@ public class GeocatalogCreateFileSourcePlugIn extends AbstractPlugIn {
 		DataManager dm = (DataManager) Services.getService(DataManager.class);
 		DriverManager driverManager = sourceManager.getDriverManager();
 
-		Driver[] filtered = driverManager.getDrivers(new AndDriverFilter(
-				new FileDriverFilter(), new NotDriverFilter(
-						new RasterDriverFilter()), new WritableDriverFilter()));
+		Driver[] filtered = driverManager.getDrivers(
+                                new AndDriverFilter(
+                                        new FileDriverFilter(), 
+                                        new NotDriverFilter(new RasterDriverFilter()),
+                                        new WritableDriverFilter()
+                                )
+                        );
 
 		createSource(dm, driverManager, filtered);
 	}
@@ -125,17 +131,16 @@ public class GeocatalogCreateFileSourcePlugIn extends AbstractPlugIn {
 		}
 
 		ChoosePanel cp = new ChoosePanel(
-				I18N
-						.getString("orbisgis.org.orbisgis.core.geocatalog.selectTypeSource"),
+				I18N.getString("orbisgis.org.orbisgis.core.geocatalog.selectTypeSource"),
 				typeNames, driverNames);	
 		if (UIFactory.showDialog(cp)) {
 			// Create wizard
 			UIPanel[] wizardPanels = new UIPanel[2];
 			Driver driver = driverManager.getDriver((String) cp.getSelected());
 			boolean file;
-			if ((driver.getType() & SourceManager.FILE) == SourceManager.FILE) {
+			if ((driver.getSupportedType() & SourceManager.FILE) == SourceManager.FILE) {
 				file = true;
-			} else if ((driver.getType() & SourceManager.DB) == SourceManager.DB) {
+			} else if ((driver.getSupportedType() & SourceManager.DB) == SourceManager.DB) {
 				file = false;
 			} else {
 				ErrorMessages.error(ErrorMessages.UnsupportedSourceType + " "
@@ -204,6 +209,7 @@ public class GeocatalogCreateFileSourcePlugIn extends AbstractPlugIn {
 		}
 	}
 
+        @Override
 	public boolean isEnabled() {
 		return true;
 	}
