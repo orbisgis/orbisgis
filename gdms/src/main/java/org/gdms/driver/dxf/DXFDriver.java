@@ -45,6 +45,11 @@ public final class DXFDriver extends AbstractDataSet implements FileDriver {
                         throw new DriverException(e);
                 }
         }
+        
+       @Override
+        public int getSupportedType() {
+                return SourceManager.FILE | SourceManager.VECTORIAL;
+        }
 
         @Override
         public int getType() {

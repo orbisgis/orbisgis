@@ -197,6 +197,11 @@ public abstract class AbstractRasterDriver extends AbstractDataSet implements Fi
                 }
                 return null;
         }
+        
+       @Override
+        public int getSupportedType() {
+                return SourceManager.FILE | SourceManager.RASTER;
+        }
 
         @Override
         public int getType() {

@@ -402,6 +402,11 @@ public final class DBFDriver extends AbstractDataSet implements FileReadWriteDri
         public boolean isCommitable() {
                 return true;
         }
+        
+       @Override
+        public int getSupportedType() {
+                return SourceManager.FILE;
+        }
 
         @Override
         public int getType() {
