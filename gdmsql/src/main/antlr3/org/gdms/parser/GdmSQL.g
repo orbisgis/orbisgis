@@ -603,10 +603,8 @@ insert_statement_field_list
         ;
 
 multiple_insert_value_list
-        : LPAREN
-        ( insert_value_list
-//        | LPAREN insert_value_list RPAREN (COMMA LPAREN insert_value_list RPAREN)*
-        ) RPAREN -> ^(T_VALUES insert_value_list)
+        : LPAREN insert_value_list RPAREN (COMMA LPAREN insert_value_list RPAREN)*
+          -> ^(T_VALUES insert_value_list+)
         ;
 
 insert_value_list

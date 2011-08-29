@@ -259,6 +259,7 @@ object LogicPlanBuilder {
                       }
                     } toArray) :: e
                 }
+                e = e reverse
                 
                 end = StaticInsert(getFullTableName(c(0)), e, fields)
               }
