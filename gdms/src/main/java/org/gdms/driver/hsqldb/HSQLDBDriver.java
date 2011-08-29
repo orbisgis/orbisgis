@@ -160,6 +160,11 @@ public final class HSQLDBDriver extends DefaultDBDriver {
 		return "ALTER TABLE \"" + tableName + "\" ALTER COLUMN \"" + oldName
 				+ "\" RENAME TO \"" + newName + "\"";
 	}
+        
+       @Override
+        public int getSupportedType() {
+                return SourceManager.DB;
+        }
 
         @Override
 	public int getType() {

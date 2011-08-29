@@ -126,6 +126,10 @@ public class ReadDriver extends DefaultDBDriver implements MemoryDriver,
         public String getDriverId() {
                 return "failing driver";
         }
+        
+        public int getSupportedType() {
+                return 0;
+        }
 
         public int getType(String driverType) {
                 return Type.STRING;

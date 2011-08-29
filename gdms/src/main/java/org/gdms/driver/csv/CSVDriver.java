@@ -300,6 +300,11 @@ public final class CSVDriver extends AbstractDataSet implements FileReadWriteDri
                 return new TypeDefinition[]{new DefaultTypeDefinition("STRING",
                                 Type.STRING)};
         }
+        
+       @Override
+        public int getSupportedType() {
+                return SourceManager.FILE;
+        }
 
         @Override
         public int getType() {

@@ -201,6 +201,10 @@ public class AllTypesObjectDriver extends AbstractDataSet implements MemoryDrive
                 return result;
         }
 
+        public int getSupportedType() {
+                return 0;
+        }
+
         public int getType() {
                 return 0;
         }

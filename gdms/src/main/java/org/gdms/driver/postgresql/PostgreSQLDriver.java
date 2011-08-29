@@ -638,6 +638,11 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                         }
                 }
         }
+        
+       @Override
+        public int getSupportedType() {
+                return SourceManager.DB | SourceManager.VECTORIAL;
+        }
 
         @Override
         public int getType() {

@@ -256,6 +256,11 @@ public final class VrmlDriver extends AbstractDataSet implements FileReadWriteDr
         }
 
         @Override
+        public int getSupportedType() {
+                return SourceManager.FILE | SourceManager.VECTORIAL;
+        }
+
+        @Override
         public int getType() {
                 return SourceManager.FILE | SourceManager.VECTORIAL;
         }

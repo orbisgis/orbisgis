@@ -197,19 +197,29 @@ public class DataSourceTest extends TestBase {
 
         private class NonEditableDriver extends AbstractDataSet implements MemoryDriver {
 
+                @Override
                 public String getDriverId() {
                         return null;
                 }
 
+                @Override
                 public void setDataSourceFactory(DataSourceFactory dsf) {
                 }
 
+                @Override
                 public void stop() throws DriverException {
                 }
 
+                @Override
                 public void start() throws DriverException {
                 }
 
+                @Override
+                public int getSupportedType() {
+                        return 0;
+                }
+
+                @Override
                 public int getType() {
                         return 0;
                 }

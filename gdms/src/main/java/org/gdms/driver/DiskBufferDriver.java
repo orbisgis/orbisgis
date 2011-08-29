@@ -50,6 +50,7 @@ import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.gdms.GdmsDriver;
 import org.gdms.driver.gdms.GdmsReader;
 import org.gdms.driver.gdms.GdmsWriter;
+import org.gdms.source.SourceManager;
 
 /**
  * This driver writes all the content added with the {@link #addValues(Value[])}
@@ -138,6 +139,11 @@ public class DiskBufferDriver extends AbstractDataSet implements MemoryDriver {
                 } catch (IOException e) {
                         throw new DriverException("Cannot close gdms reader", e);
                 }
+        }
+        
+       @Override
+        public int getSupportedType() {
+                return SourceManager.FILE | SourceManager.VECTORIAL | SourceManager.RASTER;
         }
 
         @Override

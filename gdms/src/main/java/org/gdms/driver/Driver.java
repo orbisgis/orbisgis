@@ -44,7 +44,7 @@ import org.gdms.data.types.TypeDefinition;
 
 /**
  * Provides access to data for GDMS.
- * @author Antoine Gourlay
+ * @author Antoine Gourlay, alexis
  */
 public interface Driver {
 
@@ -72,11 +72,27 @@ public interface Driver {
          * @param dsf
          */
         void setDataSourceFactory(DataSourceFactory dsf);
+        
+        /**
+         * Gets the type of the sources this driver can read. It can be one of the
+         * constants in {@link SourceManager} or a new value that will be meaningful
+         * for the client of this method.</p>
+         * <p>This method is different from {@code getType()}, because it is meaningful
+         * even if the driver is not associated to any source (to a File for a {@code FileDriver},
+         * for instance). 
+         * 
+         * @return 
+         */
+        int getSupportedType();
 
         /**
          * Gets the type of the sources this driver can read. It can be one of the
          * constants in {@link SourceManager} or a new value that will be meaningful
-         * for the client of this method.
+         * for the client of this method.</p>
+         * <p>Note that if the driver is not associated to any source, the correct behaviour
+         * of this method can't be guaranteed. If you need to know the general capabilities
+         * of a driver (to give a list of drivers that have a particular capability, for instance),
+         * you should prefer the use of {@code getSupportedType}.
          *
          * @return
          */

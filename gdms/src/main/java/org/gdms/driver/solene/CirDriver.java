@@ -363,6 +363,11 @@ public final class CirDriver extends AbstractDataSet implements FileReadWriteDri
         public boolean isCommitable() {
                 return true;
         }
+        
+       @Override
+        public int getSupportedType() {
+                return SourceManager.FILE | SourceManager.VECTORIAL;
+        }
 
         @Override
         public int getType() {

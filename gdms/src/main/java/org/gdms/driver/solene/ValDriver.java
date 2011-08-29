@@ -140,6 +140,11 @@ public final class ValDriver extends AbstractDataSet implements FileDriver {
         public String getDriverId() {
                 return DRIVER_NAME;
         }
+        
+       @Override
+        public int getSupportedType() {
+                return SourceManager.FILE;
+        }
 
         @Override
         public int getType() {

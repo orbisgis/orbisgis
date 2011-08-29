@@ -212,6 +212,11 @@ public class MemoryDataSetDriver extends GDMSModelDriver implements
                 row.addAll(Arrays.asList(values));
                 contents.add(row);
         }
+        
+       @Override
+        public int getSupportedType() {
+                return SourceManager.MEMORY| SourceManager.VECTORIAL | SourceManager.RASTER;
+        }
 
         @Override
         public int getType() {

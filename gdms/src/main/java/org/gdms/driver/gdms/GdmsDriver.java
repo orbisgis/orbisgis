@@ -135,29 +135,32 @@ public final class GdmsDriver extends GDMSModelDriver implements FileReadWriteDr
                         }
                 }
         }
+        
+       @Override
+        public int getSupportedType() {
+                return SourceManager.FILE | SourceManager.VECTORIAL | SourceManager.RASTER;
+        }
 
         @Override
         public int getType() {
                 int type = SourceManager.FILE;
-                if (schema != null) {
-                        try {
-                                Metadata m = schema.getTableByName(DriverManager.DEFAULT_SINGLE_TABLE_NAME);
-                                if (m != null) {
-                                        for (int i = 0; i < m.getFieldCount(); i++) {
-                                                switch (m.getFieldType(i).getTypeCode()) {
-                                                        case Type.GEOMETRY:
-                                                                type |= SourceManager.VECTORIAL;
-                                                                break;
-                                                        case Type.RASTER:
-                                                                type |= SourceManager.RASTER;
-                                                                break;
-                                                        default:
-                                                }
+                try {
+                        Metadata m = schema.getTableByName(DriverManager.DEFAULT_SINGLE_TABLE_NAME);
+                        if (m != null) {
+                                for (int i = 0; i < m.getFieldCount(); i++) {
+                                        switch (m.getFieldType(i).getTypeCode()) {
+                                                case Type.GEOMETRY:
+                                                        type |= SourceManager.VECTORIAL;
+                                                        break;
+                                                case Type.RASTER:
+                                                        type |= SourceManager.RASTER;
+                                                        break;
+                                                default:
                                         }
                                 }
-                        } catch (DriverException ex) {
-                                LOG.warn("There was an error while accessing the file.", ex);
                         }
+                } catch (DriverException ex) {
+                        LOG.warn("There was an error while accessing the file.", ex);
                 }
                 return type;
         }

@@ -203,6 +203,11 @@ public final class H2spatialDriver extends DefaultDBDriver {
                 return "ALTER TABLE \"" + getTableAndSchemaName() + "\" ALTER COLUMN \"" + oldName
                         + "\" RENAME TO \"" + newName + "\"";
         }
+        
+       @Override
+        public int getSupportedType() {
+                return SourceManager.DB | SourceManager.VECTORIAL;
+        }
 
         @Override
         public int getType() {
