@@ -51,6 +51,9 @@ import org.gdms.driver.DriverException;
  */
 public final class MetadataUtilities {
 
+        public static final int ANYGEOMETRY = Type.POINT | Type.MULTIPOINT | Type.LINESTRING | Type.MULTILINESTRING
+                | Type.POLYGON | Type.MULTIPOLYGON | Type.GEOMETRYCOLLECTION | Type.GEOMETRY;
+
         /**
          * Gets the field names in the metadata instance that have the primary key
          * constraint
@@ -308,7 +311,7 @@ public final class MetadataUtilities {
                 int spatialFieldIndex = -1;
                 for (int i = 0; i < metadata.getFieldCount(); i++) {
                         int typeCode = metadata.getFieldType(i).getTypeCode();
-                        if ((typeCode == Type.GEOMETRY)) {
+                        if (((typeCode & ANYGEOMETRY) != 0)) {
                                 spatialFieldIndex = i;
                                 break;
                         }

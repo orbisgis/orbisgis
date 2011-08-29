@@ -53,6 +53,7 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
+import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.MemoryDriver;
@@ -230,7 +231,7 @@ public class IndexManager {
                         try {
                                 if (indexId == null) {
                                         int code = src.getMetadata().getFieldType(src.getMetadata().getFieldIndex(fieldName)).getTypeCode();
-                                        if (code == Type.GEOMETRY) {
+                                        if (((code & MetadataUtilities.ANYGEOMETRY) != 0)) {
                                                 indexId = RTREE_SPATIAL_INDEX;
                                         } else {
                                                 indexId = BTREE_ALPHANUMERIC_INDEX;

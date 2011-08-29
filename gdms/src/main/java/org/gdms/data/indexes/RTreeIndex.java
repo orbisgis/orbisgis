@@ -50,6 +50,7 @@ import org.orbisgis.progress.ProgressMonitor;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.driver.DataSet;
 
 public class RTreeIndex implements DataSourceIndex {
@@ -71,7 +72,7 @@ public class RTreeIndex implements DataSourceIndex {
                         if (fieldId == -1) {
                                 throw new IndexException("Cannot find the field " + fieldName + " to index");
                         }
-                        if (dataSource.getMetadata().getFieldType(fieldId).getTypeCode() != Type.GEOMETRY) {
+                        if ((dataSource.getMetadata().getFieldType(fieldId).getTypeCode() & MetadataUtilities.ANYGEOMETRY) == 0) {
                                 throw new IndexException(fieldName + " is not spatial");
                         }
                         long rowCount = dataSource.getRowCount();
