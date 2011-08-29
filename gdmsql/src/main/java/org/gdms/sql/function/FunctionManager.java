@@ -120,6 +120,7 @@ import org.gdms.sql.function.spatial.geometry.edit.ST_AddZFromRaster;
 import org.gdms.sql.function.spatial.geometry.edit.ST_Normalize;
 import org.gdms.sql.function.spatial.geometry.edit.ST_Reverse;
 import org.gdms.sql.function.spatial.geometry.edit.ST_Snap;
+import org.gdms.sql.function.spatial.geometry.edit.ST_SplitLine;
 import org.gdms.sql.function.spatial.geometry.io.ST_AsWKT;
 import org.gdms.sql.function.spatial.geometry.io.ST_GeomFromText;
 import org.gdms.sql.function.spatial.geometry.operators.ST_Buffer;
@@ -357,6 +358,7 @@ public final class FunctionManager {
                 addFunction(ST_Interpolate.class);
                 addFunction(ST_KMeans.class);
                 addFunction(ST_CoordDim.class);
+                addFunction(ST_SplitLine.class);
         }
 
         /**

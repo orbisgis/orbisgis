@@ -4,16 +4,25 @@
  */
 package org.gdms.sql.function.spatial.edit;
 
+import org.orbisgis.progress.NullProgressMonitor;
+import org.gdms.driver.DataSet;
+import com.vividsolutions.jts.io.ParseException;
+import org.gdms.data.types.TypeFactory;
+import org.gdms.data.types.Type;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.sql.function.spatial.geometry.edit.ST_SetZToExtremities;
 import com.vividsolutions.jts.geom.Coordinate;
 import org.gdms.sql.function.spatial.geometry.edit.ST_3DReverse;
 import org.gdms.sql.function.spatial.geometry.edit.ST_Reverse;
 import com.vividsolutions.jts.geom.Geometry;
+import org.gdms.data.types.Constraint;
+import org.gdms.data.types.GeometryDimensionConstraint;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.FunctionTest;
 import org.gdms.sql.function.spatial.geometry.edit.ST_AddZ;
 import org.gdms.sql.function.spatial.geometry.edit.ST_LinearInterpolation;
+import org.gdms.sql.function.spatial.geometry.edit.ST_SplitLine;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -22,6 +31,31 @@ import static org.junit.Assert.*;
  * @author ebocher
  */
 public class EditFunctionTest extends FunctionTest {
+
+        @Test
+        public void testST_SplitLineString() throws Exception {
+                // first datasource
+                final MemoryDataSetDriver driver1 = new MemoryDataSetDriver(
+                        new String[]{"the_geom"},
+                        new Type[]{TypeFactory.createType(Type.GEOMETRY, new Constraint[]{new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_LINE)})});
+
+                // insert all filled rows...
+                driver1.addValues(new Value[]{ValueFactory.createValue(wktReader.read("LINESTRING ( 1 1, 6 1 )"))
+                        });
+                driver1.addValues(new Value[]{ValueFactory.createValue(wktReader.read("LINESTRING ( 2 0, 2 2, 4 4, 4 0 )"))
+                        });
+                driver1.addValues(new Value[]{ValueFactory.createValue(wktReader.read("LINESTRING ( 5 0, 5 5)"))
+                        });
+
+                ST_SplitLine sT_SplitLine = new ST_SplitLine();
+                DataSet[] tables = new DataSet[]{driver1};
+                DataSet evaluate = sT_SplitLine.evaluate(dsf, tables, null, new NullProgressMonitor());
+                assertTrue(evaluate.getRowCount() == 3);
+                assertTrue(evaluate.getGeometry(0, 0).equals(wktReader.read("MULTILINESTRING ((1 1, 2 1), (2 1, 4 1), (4 1, 5 1), (5 1, 6 1))")));
+                assertTrue(evaluate.getGeometry(1, 0).equals(wktReader.read("MULTILINESTRING ((2 0, 2 1), (2 1, 2 2, 4 4, 4 1), (4 1, 4 0))")));
+                assertTrue(evaluate.getGeometry(2, 0).equals(wktReader.read("MULTILINESTRING ((5 0, 5 1), (5 1, 5 5))")));
+
+        }
 
         /**
          * A test to valid the ST_SetZToExtremities function
