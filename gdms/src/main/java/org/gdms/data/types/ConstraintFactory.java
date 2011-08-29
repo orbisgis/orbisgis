@@ -124,6 +124,9 @@ public final class ConstraintFactory {
                         case Constraint.DEFAULT_STRING_VALUE:
                                 c = new DefaultStringConstraint(constraintBytes);
                                 break;
+                        case Constraint.DIMENSION_2D_GEOMETRY:
+                                c = new GeometryDimensionConstraint(constraintBytes);
+                                break;
                         default:
                                 throw new IllegalArgumentException("Unknown constraint type:"
                                         + type);
@@ -254,6 +257,8 @@ public final class ConstraintFactory {
                 switch (code) {
                         case Constraint.DIMENSION_3D_GEOMETRY:
                                 return new Dimension3DConstraint(i);
+                        case Constraint.DIMENSION_2D_GEOMETRY:
+                                return new GeometryDimensionConstraint(i);
                         case Constraint.GEOMETRY_TYPE:
                                 return new GeometryTypeConstraint(i);
                         case Constraint.LENGTH:

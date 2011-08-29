@@ -254,29 +254,21 @@ public final class MetadataUtilities {
         public static int getGeometryDimension(Metadata metadata, int spatialField) throws DriverException {
 
                 Type fieldType = metadata.getFieldType(spatialField);
-                if (fieldType.getTypeCode() == Type.GEOMETRY) {
-                        GeometryTypeConstraint geomTypeConstraint = (GeometryTypeConstraint) fieldType.getConstraint(Constraint.GEOMETRY_TYPE);
-                        if (geomTypeConstraint == null) {
-                                return -1;
-                        } else {
-                                int geomType = geomTypeConstraint.getGeometryType();
-
-                                if ((geomType == GeometryTypeConstraint.POLYGON)
-                                        || (geomType == GeometryTypeConstraint.MULTI_POLYGON)) {
-                                        return 2;
-                                } else if ((geomType == GeometryTypeConstraint.LINESTRING)
-                                        || (geomType == GeometryTypeConstraint.MULTI_LINESTRING)) {
-                                        return 1;
-                                } else if ((geomType == GeometryTypeConstraint.POINT)
-                                        || (geomType == GeometryTypeConstraint.MULTI_POINT)) {
-                                        return 0;
-                                } else {
-                                        throw new UnsupportedOperationException("Unknown geometry type: " + geomType);
-                                }
-                        }
+                int geomFieldType = fieldType.getTypeCode();
+                if (geomFieldType == Type.GEOMETRY) {
+                        return -1;
+                } else if ((geomFieldType == Type.POLYGON)
+                        || (geomFieldType == Type.MULTIPOLYGON)) {
+                        return 2;
+                } else if ((geomFieldType == Type.LINESTRING)
+                        || (geomFieldType == Type.MULTILINESTRING)) {
+                        return 1;
+                } else if ((geomFieldType == Type.POINT)
+                        || (geomFieldType == Type.MULTIPOINT)) {
+                        return 0;
+                } else {
+                        throw new UnsupportedOperationException("Unknown geometry type: " + geomFieldType);
                 }
-                return -1;
-
         }
 
         /**
@@ -289,14 +281,25 @@ public final class MetadataUtilities {
         public static int getSpatialFieldIndex(Metadata metadata)
                 throws DriverException {
                 int spatialFieldIndex = -1;
-                for (int i = 0; i < metadata.getFieldCount(); i++) {
+
+
+                for (int i = 0; i
+                        < metadata.getFieldCount(); i++) {
                         int typeCode = metadata.getFieldType(i).getTypeCode();
+
+
                         if ((typeCode == Type.GEOMETRY) || (typeCode == Type.RASTER)) {
                                 spatialFieldIndex = i;
+
+
                                 break;
+
+
                         }
                 }
                 return spatialFieldIndex;
+
+
         }
 
         /**
@@ -309,14 +312,25 @@ public final class MetadataUtilities {
         public static int getGeometryFieldIndex(Metadata metadata)
                 throws DriverException {
                 int spatialFieldIndex = -1;
-                for (int i = 0; i < metadata.getFieldCount(); i++) {
+
+
+                for (int i = 0; i
+                        < metadata.getFieldCount(); i++) {
                         int typeCode = metadata.getFieldType(i).getTypeCode();
+
+
                         if (((typeCode & ANYGEOMETRY) != 0)) {
                                 spatialFieldIndex = i;
+
+
                                 break;
+
+
                         }
                 }
                 return spatialFieldIndex;
+
+
         }
 
         /**
@@ -329,14 +343,25 @@ public final class MetadataUtilities {
         public static int getRasterFieldIndex(Metadata metadata)
                 throws DriverException {
                 int spatialFieldIndex = -1;
-                for (int i = 0; i < metadata.getFieldCount(); i++) {
+
+
+                for (int i = 0; i
+                        < metadata.getFieldCount(); i++) {
                         int typeCode = metadata.getFieldType(i).getTypeCode();
+
+
                         if ((typeCode == Type.RASTER)) {
                                 spatialFieldIndex = i;
+
+
                                 break;
+
+
                         }
                 }
                 return spatialFieldIndex;
+
+
         }
 
         /**
@@ -347,6 +372,8 @@ public final class MetadataUtilities {
          */
         public static boolean isSpatial(Metadata metadata) throws DriverException {
                 return getSpatialFieldIndex(metadata) != -1;
+
+
         }
 
         /**
@@ -363,16 +390,25 @@ public final class MetadataUtilities {
                 throws DriverException {
                 if (metadata.getFieldIndex(fieldName) == -1) {
                         return fieldName;
+
+
                 }
                 return getUniqueFieldName(metadata, fieldName + "_", 1);
+
+
         }
 
         private static String getUniqueFieldName(Metadata metadata, String fieldName, int suffix) throws DriverException {
                 final String name = fieldName + suffix;
+
+
                 if (metadata.getFieldIndex(name) == -1) {
                         return name;
+
+
                 }
                 return getUniqueFieldName(metadata, fieldName, suffix + 1);
+
         }
 
         private MetadataUtilities() {
