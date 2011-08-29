@@ -411,7 +411,7 @@ object LogicPlanBuilder {
             Nil
           }
       }}
-    (exp, d)
+    (exp reverse, d)
   }
 
   /**
