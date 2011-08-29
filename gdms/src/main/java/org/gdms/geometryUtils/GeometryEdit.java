@@ -449,7 +449,7 @@ public final class GeometryEdit {
 
                         }
                         LineString lineString1 = line.getFactory().createLineString(firstLine.toArray(new Coordinate[firstLine.size()]));
-                        LineString lineString2 = line.getFactory().createLineString(secondLine.toArray(new Coordinate[firstLine.size()]));
+                        LineString lineString2 = line.getFactory().createLineString(secondLine.toArray(new Coordinate[secondLine.size()]));
                         return new LineString[]{lineString1, lineString2};
                 }
                 return null;
