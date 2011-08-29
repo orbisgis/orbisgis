@@ -91,7 +91,7 @@ public final class ST_Buffer extends AbstractScalarSpatialFunction {
                                 new BasicFunctionSignature(getType(null),
                                 ScalarArgument.GEOMETRY,
                                 ScalarArgument.DOUBLE,
-                                ScalarArgument.DOUBLE)
+                                ScalarArgument.STRING)
                         };
         }
 
