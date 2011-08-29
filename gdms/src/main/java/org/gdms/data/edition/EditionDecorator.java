@@ -712,7 +712,11 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
                 @Override
                 public String[] getFieldNames() throws DriverException {
                         final List<Field> fields1 = getFields();
-                        return fields1.toArray(new String[fields1.size()]);
+                        ArrayList<String> fieldNames = new ArrayList<String>();
+                        for (Field field : fields1) {
+                                fieldNames.add(field.getName());
+                        }
+                        return fieldNames.toArray(new String[fieldNames.size()]);
                 }
         }
 
