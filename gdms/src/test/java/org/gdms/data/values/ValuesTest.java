@@ -64,6 +64,7 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
 import java.text.DateFormat;
+import java.util.Locale;
 
 import static org.junit.Assert.*;
 
@@ -219,13 +220,13 @@ public class ValuesTest {
                         Type.DATE).equals(ValueFactory.createValue(d))).getAsBoolean());
 
                 assertTrue((ValueFactory.createValueByType(
-                        NumberFormat.getNumberInstance().format(1.1), Type.DOUBLE).equals(ValueFactory.createValue(1.1d))).getAsBoolean());
+                        NumberFormat.getNumberInstance(Locale.ROOT).format(1.1), Type.DOUBLE).equals(ValueFactory.createValue(1.1d))).getAsBoolean());
 
                 assertTrue((ValueFactory.createValueByType("1", Type.INT).equals(
                         ValueFactory.createValue(1))).getAsBoolean());
 
                 assertTrue((ValueFactory.createValueByType(
-                        NumberFormat.getNumberInstance().format(1.1), Type.FLOAT).equals(ValueFactory.createValue(1.1f))).getAsBoolean());
+                        NumberFormat.getNumberInstance(Locale.ROOT).format(1.1), Type.FLOAT).equals(ValueFactory.createValue(1.1f))).getAsBoolean());
 
                 assertTrue((ValueFactory.createValueByType("1",
                         Type.SHORT).equals(ValueFactory.createValue(1))).getAsBoolean());
