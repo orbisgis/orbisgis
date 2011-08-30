@@ -428,7 +428,7 @@ public final class GeometryEdit {
                 Coordinate firstCoord = coords[0];
                 Coordinate lastCoord = coords[coords.length - 1];
                 Coordinate coordToSplit = pointToSplit.getCoordinate();
-                if (coordToSplit.equals2D(firstCoord) || coordToSplit.equals2D(lastCoord)) {
+                if ((coordToSplit.distance(firstCoord)<=PRECISION) || (coordToSplit.distance(lastCoord)<=PRECISION)) {
                         return new LineString[]{line};
                 } else {
                         ArrayList<Coordinate> firstLine = new ArrayList<Coordinate>();
@@ -453,10 +453,9 @@ public final class GeometryEdit {
                                         } else {
                                                 secondLine.add(coords[i]);
                                         }
-
                                 }
-                                LineString lineString1 = line.getFactory().createLineString(firstLine.toArray(new Coordinate[firstLine.size()]));
-                                LineString lineString2 = line.getFactory().createLineString(secondLine.toArray(new Coordinate[secondLine.size()]));
+                                LineString lineString1 = FACTORY.createLineString(firstLine.toArray(new Coordinate[firstLine.size()]));
+                                LineString lineString2 = FACTORY.createLineString(secondLine.toArray(new Coordinate[secondLine.size()]));
                                 return new LineString[]{lineString1, lineString2};
                         }
                 }

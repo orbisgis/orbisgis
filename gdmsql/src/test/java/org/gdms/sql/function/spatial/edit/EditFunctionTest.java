@@ -153,6 +153,32 @@ public class EditFunctionTest extends FunctionTest {
         }
 
         /**
+         * SplitLine with identic lines.
+         * @throws Exception
+         */
+        @Test
+        public void testST_SplitLine5() throws Exception {
+                // first datasource
+                final MemoryDataSetDriver driver1 = new MemoryDataSetDriver(
+                        new String[]{"the_geom"},
+                        new Type[]{TypeFactory.createType(Type.GEOMETRY, new Constraint[]{new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_LINE)})});
+
+                driver1.addValues(new Value[]{ValueFactory.createValue(wktReader.read("LINESTRING ( 1 1 , 10 1)"))});
+                driver1.addValues(new Value[]{ValueFactory.createValue(wktReader.read("LINESTRING (6 0, 6 6 )"))
+                        });
+                driver1.addValues(new Value[]{ValueFactory.createValue(wktReader.read("LINESTRING (6 0, 6 6 )"))
+                        });
+
+                ST_SplitLine sT_SplitLine = new ST_SplitLine();
+                DataSet[] tables = new DataSet[]{driver1};
+                DataSet evaluate = sT_SplitLine.evaluate(dsf, tables, null, new NullProgressMonitor());
+                assertTrue(evaluate.getRowCount() == 3);
+                assertTrue(evaluate.getGeometry(0, 0).equals(wktReader.read("LINESTRING ( 1 1, 6 1 , 10 1)")));
+                assertTrue(evaluate.getGeometry(1, 0).equals(wktReader.read("MULTILINESTRING ((6 0, 6 1), (6 1, 6 6))")));
+                assertTrue(evaluate.getGeometry(2, 0).equals(wktReader.read("MULTILINESTRING ((6 0, 6 1), (6 1, 6 6))")));
+        }
+
+        /**
          * A test to valid the ST_SetZToExtremities function
          * @throws Exception
          */

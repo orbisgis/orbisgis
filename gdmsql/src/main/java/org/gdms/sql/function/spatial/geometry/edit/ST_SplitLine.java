@@ -96,8 +96,7 @@ public class ST_SplitLine extends AbstractTableFunction {
                                                         }
                                                 }
                                                 Value[] vals = dataSet.getRow(i);
-                                                Geometry geom = vals[geomFieldindex].getAsGeometry();
-                                                // query index
+                                                Geometry geom = vals[geomFieldindex].getAsGeometry();                                          // query index
                                                 DefaultSpatialIndexQuery query = new DefaultSpatialIndexQuery(geom.getEnvelopeInternal(), geomField);
                                                 Iterator<Integer> iterator = dataSet.queryIndex(dsf, query);
                                                 while (iterator.hasNext()) {
