@@ -915,7 +915,7 @@ NESTED_ML_COMMENT
         ;
 
 SL_COMMENT
-        : '--' ( ~('\r'|'\n')* ) '\r'? '\n' { skip(); }
+        : '--' ( ~('\r'|'\n')* ) '\r'? ('\n' | EOF) { skip(); }
         ;
 
 DOT
