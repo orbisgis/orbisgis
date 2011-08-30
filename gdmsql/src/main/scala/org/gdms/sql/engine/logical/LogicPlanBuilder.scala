@@ -157,8 +157,8 @@ object LogicPlanBuilder {
                                 // AST:
                                 // ^(T_TABLE_FUNCTION ^(T_FUNCTION_CALL name ...) alias?)
                                 val alias = if (ch.getChildCount == 1) None else Some(ch.getChild(1).getText)
-                                val res = doCustomQuery(c.head)
-                                val cus = CustomQueryScan(ch.getChild(0).getText, res._1, res._2, alias)
+                                val res = doCustomQuery(ch.getChild(0))
+                                val cus = CustomQueryScan(ch.getChild(0).getChild(0).getText, res._1, res._2, alias)
                                 last.addChild(cus)
                               }
                             case T_TABLE_QUERY => {
@@ -438,9 +438,9 @@ object LogicPlanBuilder {
     chh.getType match {
       case T_TABLE_ITEM => last.addChild(Scan(getFullTableName(chh.getChild(0))))
       case T_TABLE_FUNCTION => {
-          val res = doCustomQuery(chh)
+          val res = doCustomQuery(chh.getChild(0))
           val alias = if (chh.getChildCount == 1) None else Some(chh.getChild(1).getText)
-          val cus = CustomQueryScan(chh.getChild(0).getText, res._1, res._2, alias)
+          val cus = CustomQueryScan(chh.getChild(0).getChild(0).getText, res._1, res._2, alias)
           last.addChild(cus)
         }
       case T_TABLE_QUERY => {
@@ -470,9 +470,9 @@ object LogicPlanBuilder {
             Left(getFullTableName(i.getChild(0))) :: Nil
           }
         case T_TABLE_FUNCTION => { // argument is the result of an other custom query
-            val res = doCustomQuery(i)
+            val res = doCustomQuery(i.getChild(0))
             val alias = if (i.getChildCount == 1) None else Some(i.getChild(1).getText)
-            val o = CustomQueryScan(i.getChild(0).getText, res._1, res._2, alias)
+            val o = CustomQueryScan(i.getChild(0).getChild(0).getText, res._1, res._2, alias)
             Right(o) :: Nil
           }
         case T_TABLE_QUERY => {
