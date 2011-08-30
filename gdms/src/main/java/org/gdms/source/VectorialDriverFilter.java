@@ -8,7 +8,7 @@ public class VectorialDriverFilter implements DriverFilter {
 	@Override
 	public boolean acceptDriver(Driver driver) {
 		Driver rod = driver;
-		return ((rod.getType() & SourceManager.VECTORIAL) == SourceManager.VECTORIAL);
+		return ((rod.getSupportedType() & SourceManager.VECTORIAL) == SourceManager.VECTORIAL);
 	}
 
 }

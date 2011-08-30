@@ -10,7 +10,7 @@ public class CSVFileDriverFilter implements DriverFilter {
 	public boolean acceptDriver(Driver driver) {
 		if (driver instanceof CSVDriver) {
 			Driver rod = driver;
-			return ((rod.getType() & SourceManager.FILE) == SourceManager.FILE);
+			return ((rod.getSupportedType() & SourceManager.FILE) == SourceManager.FILE);
 		}
 		return false;
 	}

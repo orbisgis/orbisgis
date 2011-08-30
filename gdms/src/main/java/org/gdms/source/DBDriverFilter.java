@@ -8,7 +8,7 @@ public class DBDriverFilter implements DriverFilter {
 	@Override
 	public boolean acceptDriver(Driver driver) {
 		Driver rod = driver;
-		return ((rod.getType() & SourceManager.DB) == SourceManager.DB);
+		return ((rod.getSupportedType() & SourceManager.DB) == SourceManager.DB);
 	}
 
 }

@@ -8,7 +8,7 @@ public class RasterDriverFilter implements DriverFilter {
 	@Override
 	public boolean acceptDriver(Driver driver) {
 		Driver rod = driver;
-		return ((rod.getType() & SourceManager.RASTER) == SourceManager.RASTER);
+		return ((rod.getSupportedType() & SourceManager.RASTER) == SourceManager.RASTER);
 	}
 
 }
