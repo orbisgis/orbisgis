@@ -43,8 +43,6 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.Point;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.indexes.DefaultSpatialIndexQuery;
@@ -78,17 +76,25 @@ public class ST_SplitLine extends AbstractTableFunction {
                 try {
                         DataSet dataSet = tables[0];
                         Metadata metadata1 = dataSet.getMetadata();
+                        diskBufferDriver = new DiskBufferDriver(dsf, metadata1);
                         int geomFieldindex = MetadataUtilities.getGeometryFieldIndex(metadata1);
                         if (geomFieldindex != -1) {
                                 int dim = MetadataUtilities.getGeometryDimension(metadata1, geomFieldindex);
                                 if (dim == -1) {
-                                        diskBufferDriver = new DiskBufferDriver(dsf, metadata1);
                                         String geomField = metadata1.getFieldName(geomFieldindex);
                                         if (!dsf.getIndexManager().isIndexed(dataSet, geomField)) {
                                                 dsf.getIndexManager().buildIndex(dataSet, geomField, pm);
                                         }
                                         long rowCount = dataSet.getRowCount();
+                                        pm.startTask("Start spliting geometries", 100);
                                         for (int i = 0; i < rowCount; i++) {
+                                                if (i >= 100 && i % 100 == 0) {
+                                                        if (pm.isCancelled()) {
+                                                                break;
+                                                        } else {
+                                                                pm.progressTo(i);
+                                                        }
+                                                }
                                                 Value[] vals = dataSet.getRow(i);
                                                 Geometry geom = vals[geomFieldindex].getAsGeometry();
                                                 // query index
@@ -96,8 +102,8 @@ public class ST_SplitLine extends AbstractTableFunction {
                                                 Iterator<Integer> iterator = dataSet.queryIndex(dsf, query);
                                                 while (iterator.hasNext()) {
                                                         Integer integer = iterator.next();
-                                                        Geometry queryGeom = dataSet.getGeometry(integer, geomFieldindex);
                                                         if (i != integer) {
+                                                                Geometry queryGeom = dataSet.getGeometry(integer, geomFieldindex);
                                                                 if (queryGeom.intersects(geom)) {
                                                                         Geometry result = geom.intersection(queryGeom);
                                                                         int numGeom = result.getNumGeometries();
@@ -105,7 +111,7 @@ public class ST_SplitLine extends AbstractTableFunction {
                                                                                 Geometry subGeom = result.getGeometryN(j);
                                                                                 if (subGeom.getDimension() == 0) {
                                                                                         if (geom instanceof MultiLineString) {
-                                                                                                geom = GeometryEdit.splitMultiLineString((MultiLineString) geom, (Point) subGeom, 0);
+                                                                                                geom = GeometryEdit.splitMultiLineString((MultiLineString) geom, (Point) subGeom);
                                                                                         } else {
                                                                                                 LineString[] temp = GeometryEdit.splitLineString((LineString) geom, (Point) subGeom);
                                                                                                 geom = geom.getFactory().createMultiLineString(temp);
@@ -119,14 +125,14 @@ public class ST_SplitLine extends AbstractTableFunction {
                                                 vals[geomFieldindex] = ValueFactory.createValue(geom);
                                                 diskBufferDriver.addValues(vals);
                                         }
-                                        diskBufferDriver.writingFinished();
-                                        diskBufferDriver.start();
-                                        return diskBufferDriver;
+                                        pm.endTask();
                                 } else {
                                         throw new FunctionException("This function runs only with multilinetring or linestring");
                                 }
                         }
-                        return null;
+                        diskBufferDriver.writingFinished();
+                        diskBufferDriver.start();
+                        return diskBufferDriver;
                 } catch (DriverException ex) {
                         throw new FunctionException("Cannot index the dataset", ex);
                 } catch (NoSuchTableException ex) {
@@ -155,17 +161,16 @@ public class ST_SplitLine extends AbstractTableFunction {
         public FunctionSignature[] getFunctionSignatures() {
                 return new FunctionSignature[]{
                                 new TableFunctionSignature(TableDefinition.GEOMETRY,
-                                new TableArgument(TableDefinition.GEOMETRY))
-                        };
+                                new TableArgument(TableDefinition.GEOMETRY))};
         }
 
         @Override
         public String getName() {
-                return "ST_SplitLineString";
+                return "ST_SplitLine";
         }
 
         @Override
         public String getSqlOrder() {
-                return "SELECT * FROM ST_SplitLineString()";
+                return "SELECT * FROM ST_SplitLine()";
         }
 }
