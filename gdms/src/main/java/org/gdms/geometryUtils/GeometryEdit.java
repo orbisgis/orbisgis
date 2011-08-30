@@ -511,7 +511,7 @@ public final class GeometryEdit {
         public static GeometryLocation getVertexToSnap(Geometry g, Point p, double tolerance) {
                 DistanceOp distanceOp = new DistanceOp(g, p);
                 GeometryLocation snapedPoint = distanceOp.nearestLocations()[0];
-                if (tolerance == 0 || snapedPoint.getCoordinate().distance(p.getCoordinate()) <= tolerance) {
+                if (tolerance == PRECISION || snapedPoint.getCoordinate().distance(p.getCoordinate()) <= tolerance) {
                         return snapedPoint;
                 }
                 return null;
@@ -525,7 +525,7 @@ public final class GeometryEdit {
          * @return  
          */
         public static GeometryLocation getVertexToSnap(Geometry g, Point p) {
-                return getVertexToSnap(g, p, -1);
+                return getVertexToSnap(g, p, PRECISION);
         }
 
         /**  
