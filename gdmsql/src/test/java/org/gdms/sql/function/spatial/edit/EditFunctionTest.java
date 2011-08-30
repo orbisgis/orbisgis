@@ -6,7 +6,6 @@ package org.gdms.sql.function.spatial.edit;
 
 import org.orbisgis.progress.NullProgressMonitor;
 import org.gdms.driver.DataSet;
-import com.vividsolutions.jts.io.ParseException;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.types.Type;
 import org.gdms.driver.memory.MemoryDataSetDriver;
@@ -113,8 +112,8 @@ public class EditFunctionTest extends FunctionTest {
                 DataSet[] tables = new DataSet[]{driver1};
                 DataSet evaluate = sT_SplitLine.evaluate(dsf, tables, null, new NullProgressMonitor());
                 assertTrue(evaluate.getRowCount() == 4);
-                assertTrue(evaluate.getGeometry(0, 0).equals(wktReader.read("LINESTRING ( 1 1, 6 1 , 10 1)")));
-                assertTrue(evaluate.getGeometry(1, 0).equals(wktReader.read("LINESTRING ( 1 1, 0 5 )")));
+                assertTrue(evaluate.getGeometry(0, 0).equals(wktReader.read("MULTILINESTRING ((1 1, 6 1), (6 1, 10 1))")));
+                assertTrue(evaluate.getGeometry(1, 0).equals(wktReader.read("MULTILINESTRING ((1 1, 0 5))")));
                 assertTrue(evaluate.getGeometry(2, 0).equals(wktReader.read("MULTILINESTRING ((6 0, 6 1), (6 1, 6 6))")));
                 assertTrue(evaluate.getGeometry(3, 0).equals(wktReader.read("MULTILINESTRING ((0 1, 1 1), (1 1, 6 1))")));
         }
@@ -173,7 +172,7 @@ public class EditFunctionTest extends FunctionTest {
                 DataSet[] tables = new DataSet[]{driver1};
                 DataSet evaluate = sT_SplitLine.evaluate(dsf, tables, null, new NullProgressMonitor());
                 assertTrue(evaluate.getRowCount() == 3);
-                assertTrue(evaluate.getGeometry(0, 0).equals(wktReader.read("LINESTRING ( 1 1, 6 1 , 10 1)")));
+                assertTrue(evaluate.getGeometry(0, 0).equals(wktReader.read("MULTILINESTRING ((1 1, 6 1), (6 1, 10 1))")));
                 assertTrue(evaluate.getGeometry(1, 0).equals(wktReader.read("MULTILINESTRING ((6 0, 6 1), (6 1, 6 6))")));
                 assertTrue(evaluate.getGeometry(2, 0).equals(wktReader.read("MULTILINESTRING ((6 0, 6 1), (6 1, 6 6))")));
         }
