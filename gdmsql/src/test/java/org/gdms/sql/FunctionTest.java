@@ -72,7 +72,7 @@ public abstract class FunctionTest {
         protected Geometry JTSLineString3D;
         protected Geometry JTSPolygonWith2Holes;
         protected GeometryCollection JTS3DCollection;
-        public static SQLDataSourceFactory dsf = new SQLDataSourceFactory(SQLBaseTest.backupDir.getAbsolutePath());
+        public static SQLDataSourceFactory dsf = new SQLDataSourceFactory(SQLBaseTest.backupDir.getAbsolutePath(), SQLBaseTest.backupDir.getAbsolutePath());
         protected WKTReader wktReader;
 
         @Before
@@ -132,6 +132,7 @@ public abstract class FunctionTest {
                         dsf.getSourceManager().register("ds2", driver2);
                 }
         }
+        
 
         protected Value evaluate(Function function, ColumnValue... args)
                 throws FunctionException {
