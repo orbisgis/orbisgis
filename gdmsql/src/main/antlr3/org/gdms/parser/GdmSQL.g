@@ -706,14 +706,14 @@ drop_view_statement
 // CREATE INDEX
 
 create_index_statement
-        : T_CREATE T_INDEX T_ON table_id LPAREN a=table_id RPAREN
+        : T_CREATE T_INDEX T_ON table_id LPAREN a=LONG_ID RPAREN
         -> ^(T_INDEX T_CREATE table_id $a )
         ;
 
 // DROP INDEX
 
 drop_index_statement
-        : T_DROP T_INDEX T_ON table_id LPAREN a=table_id RPAREN
+        : T_DROP T_INDEX T_ON table_id LPAREN a=LONG_ID RPAREN
         -> ^(T_INDEX T_DROP table_id $a )
         ;
 
