@@ -85,6 +85,9 @@ object LogicPlanBuilder {
           getChilds(node).foreach { t => t.getType match {
               // everything between SELECT and FROM
               case T_COLUMN_LIST => {
+                  // AST:
+                  // ^(T_COLUMN_LIST ^(T_COLUMN_ITEM ...) ^(T_COLUMN_ITEM ...) ...)
+                  
                   // we remove the STAR column (*) from the children (no need to project anything
                   // in this case).
                   // and we parse what's left into a list of expressions
@@ -101,16 +104,26 @@ object LogicPlanBuilder {
                 }
                 // everything inside the FROM clause, including joins
               case T_FROM => {
+                  // AST:
+                  // ^(T_FROM 
+                  //      ^(T_TABLE_ITEM table_id alias?)
+                  //    | ^(T_TABLE_QUERY select_statement alias)
+                  //    | ^(T_TABLE_FUNCTION custom_query_call alias?)
+                  //    )
                   val c = getChilds(t)
                   (c, c.head.getType) match {
                     // there is only one table --> we insert a scan after 'last'
                     case (head :: Nil, T_TABLE_ITEM) => {
+                        // AST:
+                        // ^(T_TABLE_ITEM table_id alias?)
                         val alias = if (head.getChildCount == 1) None else Some(head.getChild(1).getText)
                         last = insertAfter(last, Scan(getFullTableName(head.getChild(0)), alias))
                       }
 
                       // there is only one custom_query --> we insert a custom_query after 'last'
                     case (head :: Nil, T_TABLE_FUNCTION) => {
+                        // AST:
+                        // ^(T_TABLE_FUNCTION ^(T_FUNCTION_CALL name ...) alias?)
                         val res = doCustomQuery(head.getChild(0))
                         val alias = if (head.getChildCount == 1) None else Some(head.getChild(1).getText)
                         val cus = CustomQueryScan(head.getChild(0).getChild(0).getText, res._1, res._2, alias)
@@ -118,6 +131,8 @@ object LogicPlanBuilder {
                       }
 
                     case (head :: Nil, T_TABLE_QUERY) => {
+                        // AST:
+                        // ^( T_TABLE_QUERY select_statement )
                         val s = SubQuery(head.getChild(1).getText)
                         s.children = buildOperationTree(head.getChild(0)) :: Nil
 
@@ -125,22 +140,30 @@ object LogicPlanBuilder {
                       }
                       // there is several tables (implicit join)
                     case _ => {
+                        // AST:
+                        // // ^(T_JOIN table_reference join_clause_content)
                         // we insert a Cross join between all tables
                         val j = Join(Cross())
                         last.addChild(j)
                         last = j
                         c foreach { ch => ch.getType match {
                             case T_TABLE_ITEM => {
+                                // AST:
+                                // ^(T_TABLE_ITEM table_id alias?)
                                 val alias = if (ch.getChildCount == 1) None else Some(ch.getChild(1).getText)
                                 last.addChild(Scan(getFullTableName(ch.getChild(0)), alias))
                               }
                             case T_TABLE_FUNCTION => {
+                                // AST:
+                                // ^(T_TABLE_FUNCTION ^(T_FUNCTION_CALL name ...) alias?)
                                 val alias = if (ch.getChildCount == 1) None else Some(ch.getChild(1).getText)
                                 val res = doCustomQuery(c.head)
                                 val cus = CustomQueryScan(ch.getChild(0).getText, res._1, res._2, alias)
                                 last.addChild(cus)
                               }
                             case T_TABLE_QUERY => {
+                                // AST:
+                                // ^( T_TABLE_QUERY select_statement )
                                 val s = SubQuery(ch.getChild(1).getText)
                                 s.children = buildOperationTree(ch.getChild(0)) :: Nil
                                 last.addChild(s)
@@ -153,6 +176,8 @@ object LogicPlanBuilder {
                 }
                 // everything inside the WHERE clause
               case T_WHERE => {
+                  // AST:
+                  // ^(T_WHERE expression_cond)
                   val f = Filter(parseExpression(t.getChild(0)))
 
                   // we get the parent of 'f': either a Projection, or Output
@@ -163,6 +188,8 @@ object LogicPlanBuilder {
                   last = f
                 }
               case T_SELECT_PARAMS => { // limit & offset parameters
+                  // AST:
+                  // ^(T_SELECT_PARAMS ^(T_SELECT_LIMIT ..) ^(T_SELECT OFFSET ..))
                   val c = getChilds(t)
                   c foreach { t => t.getType match {
                       case T_SELECT_LIMIT => {
@@ -176,6 +203,8 @@ object LogicPlanBuilder {
                     }}
                 }
               case T_ORDER => { // order by clause
+                  // AST:
+                  // ^(T_ORDER ^(T_COLUMN_ITEM (T_ASC | T_DESC)? (T_FIRST | T_LAST)?)+)
                   val c = getChilds(t)
                   val express = c map (item => 
                     (parseExpression(item.getChild(0)),
@@ -197,6 +226,8 @@ object LogicPlanBuilder {
                   last = s
                 }
               case T_GROUP => { // group by clause
+		  // AST:
+		  // ^(T_GROUP expression_main+ )
                   val ex = getChilds(t) map (c => (parseExpression(c), None))
                   val g = new Grouping(ex)
                   val parent = (o.allChildren filter (_.isInstanceOf[Projection]) headOption) getOrElse(last)
@@ -214,6 +245,8 @@ object LogicPlanBuilder {
           end = o
         }
       case T_UPDATE => {
+	  // AST:
+	  // ^(T_UPDATE table_id update_set+ ^(T_WHERE expression_cond)?)
           val c = getChilds(node)
           // add a scan for the selected table
           var last: Operation = new Scan(getFullTableName(c.head), None, true)
@@ -222,6 +255,9 @@ object LogicPlanBuilder {
           var e: Seq[(String, Expression)] = Nil
           c.tail.foreach { t => t.getType match {
               case T_UPDATE_SET => {
+		  // AST:
+		  // ^(T_UPDATE_SET ^(T_UPDATE_COLUMNS update_field+) ^(T_UPDATE_EXPRS (expression_main | T_DEFAULT)+) )
+
                   // tuples like (column_name, value)
                   val col = getChilds(t.getChild(0)) map (_.getChild(0).getText)
                   val expr = getChilds(t.getChild(1)) map (parseExpression)
@@ -250,9 +286,13 @@ object LogicPlanBuilder {
           c(1).getType match {
             // static insert with INSERT INTO ... VALUES ( .. )
             case T_VALUES => {
+		// AST:
+		// ^(T_INSERT table_id 
+		//   ^(T_VALUES ^(T_VALUES (expression_main | T_DEFAULT)+ )+) <-- rows
+		//   ^(T_COLUMN_LIST LONG_ID+)? <-- field names
+		//  )
                 var e: List[Array[Expression]] = Nil
                 val ch = getChilds(c(1))
-                // rows are in (T_VALUES (T_VALUES row) (T_VALUE row) ... )
                 ch foreach { g => e = (getChilds(g) map { t => t.getType match {
                         case T_DEFAULT => null
                         case _ => parseExpression(t)
@@ -266,6 +306,8 @@ object LogicPlanBuilder {
           }
         }
       case T_DELETE => {
+	  // AST:
+	  // ^(T_DELETE table_id ^(T_WHERE expression_cond)?)
           end = Delete()
           val s = Scan(getFullTableName(node.getChild(0)), None, true)
           if (node.getChildCount() == 2) {
@@ -281,11 +323,15 @@ object LogicPlanBuilder {
       case T_CREATE_TABLE => {
           // building the select statement, resulting in an Output o
           if (node.getChild(1).getType == T_SELECT) {
+	    // AST:
+	    // ^(T_CREATE_TABLE table_id select_statement)
             val o = buildOperationTree(node.getChild(1).asInstanceOf[CommonTree])
             val cr = CreateTableAs(getFullTableName(node.getChild(0)))
             cr.children = o :: Nil
             end = cr 
           } else {
+	    // AST:
+	    // ^(T_CREATE_TABLE table_id ^(T_CREATE_TABLE ^(T_TABLE_ITEM name type)*))
             val ch = getChilds(node.getChild(1))
             val cols = ch map (c => (c.getChild(0).getText, c.getChild(1).getText))
             val cr = CreateTable(getFullTableName(node.getChild(0)), cols)
@@ -293,36 +339,57 @@ object LogicPlanBuilder {
           }
         }
       case T_CREATE_VIEW => {
+	  // AST:
+	  // ^(T_CREATE_VIEW table_id select_statement T_OR?)
+
           // building the select statement, resulting in an Output o
-            val o = buildOperationTree(node.getChild(1).asInstanceOf[CommonTree])
-            val cr = CreateView(getFullTableName(node.getChild(0)), node.getChildCount == 3)
-            cr.children = o :: Nil
-            end = cr 
+          val o = buildOperationTree(node.getChild(1).asInstanceOf[CommonTree])
+          val cr = CreateView(getFullTableName(node.getChild(0)), node.getChildCount == 3)
+          cr.children = o :: Nil
+          end = cr 
         }
       case T_ALTER => {
           // alter table statement
+	  // AST:
+	  // ^(T_ALTER table_id alter_action*)
+
           val children = getChilds(node)
           val name = getFullTableName(children.head)        
           // get all alter actions
           val elems = children.tail map { c => c.getType match {
+	      // AST:
+	      // ^(T_ADD ^(T_TABLE_ITEM name type))
               case T_ADD => AddColumn(c.getChild(0).getChild(0).getText.replace("\"", ""), c.getChild(0).getChild(1).getText)
+
+	      // AST:
+	      // ^(T_ALTER name newType expression_main?)
               case T_ALTER => {
                   val exp = if (c.getChildCount != 2) Some(parseExpression(c.getChild(2))) else None
                   AlterTypeOfColumn(c.getChild(0).getText.replace("\"", ""), c.getChild(1).getText, exp)
                 }
+
+	      // AST:
+	      // ^(T_DROP name T_IF?)
               case T_DROP => {
                   DropColumn(c.getChild(0).getText.replace("\"", ""), c.getChildCount != 1)
                 }
+
+	      // AST:
+	      // ^(T_RENAME name newname)
               case T_RENAME => RenameColumn(c.getChild(0).getText.replace("\"", ""), c.getChild(1).getText.replace("\"", ""))
             }}
           end = AlterTable(name, elems)
         }
       case T_RENAME => {
           // alter table toto rename to titi
+	  // AST:
+	  // ^(T_RENAME old=table_id new=table_id)
           end = RenameTable(getFullTableName(node.getChild(0)), getFullTableName(node.getChild(1)))
-      }
+        }
       case T_DROP => {
           // drop table statement
+	  // AST:
+	  // ^(T_DROP ^(T_TABLE table_id+) T_IF? T_PURGE?)
           val names = getChilds(node.getChild(0)) map (getFullTableName)
           var ifE = false
           var drop = false
@@ -338,11 +405,15 @@ object LogicPlanBuilder {
       case T_INDEX => {
           node.getChild(0).getType match {
             case T_CREATE => {
+	        // AST:
+	        // ^(T_INDEX T_CREATE table_id field)
                 val table = getFullTableName(node.getChild(1))
                 val col = node.getChild(2).getText.replace("\"", "")
                 end = CreateIndex(table, col)
               }
             case T_DROP => {
+	        // AST:
+	        // ^(T_INDEX T_CREATE table_id field )
                 val table = getFullTableName(node.getChild(1))
                 val col = node.getChild(2).getText.replace("\"", "")
                 end = DropIndex(table, col)
@@ -350,6 +421,8 @@ object LogicPlanBuilder {
           }
         }
       case T_EXECUTOR => {
+	  // AST:
+	  // ^( T_EXECUTOR function_call)
           val l = getChilds(node.getChild(0))
           val name = l(0).getText
           val li = if (l.tail.isEmpty) (Nil) else (getChilds(l(1)).map (parseExpression))
@@ -480,6 +553,8 @@ object LogicPlanBuilder {
         // sql like operator. NOT FEATURE COMPLETE: limited by GDMS like operator.
       case T_LIKE => left like right
       case T_SELECT_COLUMN => {
+	  // AST:
+	  // ^(T_SELECT_COLUMN LONG_ID+ )
           val rev = l.reverse
           val name = rev.head.getText.replace("\"", "")
           if (rev.tail.isEmpty) {
@@ -494,10 +569,15 @@ object LogicPlanBuilder {
           right.getType match {
             // TODO: converting IN with subquery into special joins
             case T_SELECT => throw new UnsupportedOperationException("Not yet implemented.")
+
+	    // AST:
+	    // ^(T_IN expression_cond ^(T_EXPR_LIST expression_main+ ))
             case T_EXPR_LIST => left in getChilds(right).map (parseExpression)
           }
         }
       case T_FUNCTION_CALL => {
+	  // AST:
+	  // ^( T_FUNCTION_CALL name ^(T_EXPR_LIST expression_main+ )? )
           // evaluate parameters iif there is parameters (cf. grammar)
           val li = if (l.tail.isEmpty) (Nil) else (getChilds(right).map (parseExpression))
           Expression(left.getText, li)
