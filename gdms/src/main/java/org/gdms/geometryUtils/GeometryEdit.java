@@ -110,6 +110,7 @@ import org.orbisgis.utils.I18N;
 public final class GeometryEdit {
 
         private static final GeometryFactory FACTORY = new GeometryFactory();
+        static double PRECISION = 10E-6;
 
         /**
          * Interpolate a linestring according start and end coordinates z value.
@@ -412,7 +413,7 @@ public final class GeometryEdit {
          * @return  
          */
         public static LineString[] splitLineString(LineString line, Point pointToSplit) {
-                return splitLineString(line, pointToSplit, -1);
+                return splitLineString(line, pointToSplit, PRECISION);
         }
 
         /**  
@@ -424,35 +425,52 @@ public final class GeometryEdit {
          */
         public static LineString[] splitLineString(LineString line, Point pointToSplit, double tolerance) {
                 Coordinate[] coords = line.getCoordinates();
-                ArrayList<Coordinate> firstLine = new ArrayList<Coordinate>();
-                firstLine.add(coords[0]);
-                ArrayList<Coordinate> secondLine = new ArrayList<Coordinate>();
-                GeometryLocation geometryLocation = getVertexToSnap(line, pointToSplit, tolerance);
-                if (geometryLocation != null) {
-                        int segmentIndex = geometryLocation.getSegmentIndex();
-                        Coordinate coord = geometryLocation.getCoordinate();
-                        int index = -1;
-                        for (int i = 1; i < coords.length; i++) {
-                                index = i - 1;
-                                if (index < segmentIndex) {
-                                        firstLine.add(coords[i]);
-                                } else if (index == segmentIndex) {
-                                        coord.z = CoordinatesUtils.interpolate(coords[i - 1], coords[i], coord);
-                                        firstLine.add(coord);
-                                        secondLine.add(coord);
-                                        if (!coord.equals2D(coords[i])) {
+                Coordinate firstCoord = coords[0];
+                Coordinate lastCoord = coords[coords.length - 1];
+                Coordinate coordToSplit = pointToSplit.getCoordinate();
+                if (coordToSplit.equals2D(firstCoord) || coordToSplit.equals2D(lastCoord)) {
+                        return new LineString[]{line};
+                } else {
+                        ArrayList<Coordinate> firstLine = new ArrayList<Coordinate>();
+                        firstLine.add(coords[0]);
+                        ArrayList<Coordinate> secondLine = new ArrayList<Coordinate>();
+                        GeometryLocation geometryLocation = getVertexToSnap(line, pointToSplit, tolerance);
+                        if (geometryLocation != null) {
+                                int segmentIndex = geometryLocation.getSegmentIndex();
+                                Coordinate coord = geometryLocation.getCoordinate();
+                                int index = -1;
+                                for (int i = 1; i < coords.length; i++) {
+                                        index = i - 1;
+                                        if (index < segmentIndex) {
+                                                firstLine.add(coords[i]);
+                                        } else if (index == segmentIndex) {
+                                                coord.z = CoordinatesUtils.interpolate(coords[i - 1], coords[i], coord);
+                                                firstLine.add(coord);
+                                                secondLine.add(coord);
+                                                if (!coord.equals2D(coords[i])) {
+                                                        secondLine.add(coords[i]);
+                                                }
+                                        } else {
                                                 secondLine.add(coords[i]);
                                         }
-                                } else {
-                                        secondLine.add(coords[i]);
-                                }
 
+                                }
+                                LineString lineString1 = line.getFactory().createLineString(firstLine.toArray(new Coordinate[firstLine.size()]));
+                                LineString lineString2 = line.getFactory().createLineString(secondLine.toArray(new Coordinate[secondLine.size()]));
+                                return new LineString[]{lineString1, lineString2};
                         }
-                        LineString lineString1 = line.getFactory().createLineString(firstLine.toArray(new Coordinate[firstLine.size()]));
-                        LineString lineString2 = line.getFactory().createLineString(secondLine.toArray(new Coordinate[secondLine.size()]));
-                        return new LineString[]{lineString1, lineString2};
                 }
                 return null;
+        }
+
+        /**
+         * Splits a MultilineString using a point.
+         * @param multiLineString
+         * @param pointToSplit
+         * @return
+         */
+        public static MultiLineString splitMultiLineString(MultiLineString multiLineString, Point pointToSplit) {
+                return splitMultiLineString(multiLineString, pointToSplit, PRECISION);
         }
 
         /**  
@@ -494,10 +512,9 @@ public final class GeometryEdit {
         public static GeometryLocation getVertexToSnap(Geometry g, Point p, double tolerance) {
                 DistanceOp distanceOp = new DistanceOp(g, p);
                 GeometryLocation snapedPoint = distanceOp.nearestLocations()[0];
-                if (tolerance == -1 || snapedPoint.getCoordinate().distance(p.getCoordinate()) <= tolerance) {
+                if (tolerance == 0 || snapedPoint.getCoordinate().distance(p.getCoordinate()) <= tolerance) {
                         return snapedPoint;
                 }
-
                 return null;
 
         }

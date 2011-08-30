@@ -108,6 +108,16 @@ public class GeometryEditTest {
                 assertNull(geomLocation);
         }
 
+        @Test
+        public void testSnapedPoint2() throws Exception {
+                LineString line = (LineString) wKTReader.read("LINESTRING (102.91254820528033 205.68116285968554, 345 204)");
+                Point point = (Point) wKTReader.read("POINT ( 243.56500711237553 204.70440967283074 )");
+                //Test a point in a segment
+                GeometryLocation geomLocation = GeometryEdit.getVertexToSnap(line, point);
+                assertEquals(geomLocation.getSegmentIndex(), 0);
+                assertTrue(geomLocation.getCoordinate().equals2D(new Coordinate(243.56500711237555, 204.7044096728307)));
+        }
+
         /**
          * Insert a vertex into a lineString
          * @throws Exception
