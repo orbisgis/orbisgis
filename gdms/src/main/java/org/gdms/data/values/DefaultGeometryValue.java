@@ -246,7 +246,7 @@ abstract class DefaultGeometryValue extends AbstractValue implements GeometryVal
                                 
                         // special cases for GEOMETRYCOLLECTION to its subtypes
                         case Type.MULTILINESTRING:
-                                if (myType == Type.GEOMETRYCOLLECTION) {
+                                if (myType == Type.GEOMETRYCOLLECTION || myType == Type.LINESTRING) {
                                         LineString[] geoms = new LineString[geom.getNumGeometries()];
                                         for (int i = 0; i < geoms.length; i++) {
                                                 final Geometry geometryN = geom.getGeometryN(i);
@@ -260,7 +260,7 @@ abstract class DefaultGeometryValue extends AbstractValue implements GeometryVal
                                         return ValueFactory.createValue(geom.getFactory().createMultiLineString(geoms));
                                 }
                         case Type.MULTIPOINT:
-                                if (myType == Type.GEOMETRYCOLLECTION) {
+                                if (myType == Type.GEOMETRYCOLLECTION || myType == Type.POINT) {
                                         Point[] geoms = new Point[geom.getNumGeometries()];
                                         for (int i = 0; i < geoms.length; i++) {
                                                 final Geometry geometryN = geom.getGeometryN(i);
@@ -274,7 +274,7 @@ abstract class DefaultGeometryValue extends AbstractValue implements GeometryVal
                                         return ValueFactory.createValue(geom.getFactory().createMultiPoint(geoms));
                                 }
                         case Type.MULTIPOLYGON:
-                                if (myType == Type.GEOMETRYCOLLECTION) {
+                                if (myType == Type.GEOMETRYCOLLECTION || myType == Type.POLYGON) {
                                         Polygon[] geoms = new Polygon[geom.getNumGeometries()];
                                         for (int i = 0; i < geoms.length; i++) {
                                                 final Geometry geometryN = geom.getGeometryN(i);
