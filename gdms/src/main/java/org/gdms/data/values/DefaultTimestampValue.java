@@ -217,11 +217,8 @@ class DefaultTimestampValue extends AbstractValue implements Serializable, Times
                                 return ValueFactory.createValue(new Time(value.getTime()));
                         case Type.TIMESTAMP:
                                 return this;
-                        case Type.STRING:
-                                return ValueFactory.createValue(toString());
                         default:
-                                throw new IncompatibleTypesException("Cannot cast to type: "
-                                        + TypeFactory.getTypeName(typeCode));
+                                return super.toType(typeCode);
                 }
         }
 

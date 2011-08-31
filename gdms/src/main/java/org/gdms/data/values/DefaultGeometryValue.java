@@ -45,6 +45,9 @@ import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.ParseException;
 
 abstract class DefaultGeometryValue extends AbstractValue implements GeometryValue {
@@ -219,5 +222,73 @@ abstract class DefaultGeometryValue extends AbstractValue implements GeometryVal
         @Override
         public void setValue(Geometry value) {
                 this.geom = value;
+        }
+
+        @Override
+        public Value toType(int typeCode) {
+                final int myType = getType();
+                // Everything can be cast to geometry,
+                // and takes care of POINT, LINESTRING, POLYGON that can only be cast to themselves
+                if (typeCode == Type.GEOMETRY || typeCode == myType) {
+                        return this;
+                }
+
+                switch (typeCode) {
+                        case Type.GEOMETRYCOLLECTION:
+                                switch (myType) {
+                                        case Type.MULTILINESTRING:
+                                        case Type.MULTIPOINT:
+                                        case Type.MULTIPOLYGON:
+                                                return ValueFactory.createValue((GeometryCollection) geom);
+                                        default:
+                                                super.toType(typeCode);
+                                }
+                                
+                        // special cases for GEOMETRYCOLLECTION to its subtypes
+                        case Type.MULTILINESTRING:
+                                if (myType == Type.GEOMETRYCOLLECTION) {
+                                        LineString[] geoms = new LineString[geom.getNumGeometries()];
+                                        for (int i = 0; i < geoms.length; i++) {
+                                                final Geometry geometryN = geom.getGeometryN(i);
+                                                if ((geometryN instanceof LineString)) {
+                                                        geoms[i] = (LineString) geometryN;
+                                                } else {
+                                                        // error message is handled above.
+                                                        return super.toType(typeCode);
+                                                }
+                                        }
+                                        return ValueFactory.createValue(geom.getFactory().createMultiLineString(geoms));
+                                }
+                        case Type.MULTIPOINT:
+                                if (myType == Type.GEOMETRYCOLLECTION) {
+                                        Point[] geoms = new Point[geom.getNumGeometries()];
+                                        for (int i = 0; i < geoms.length; i++) {
+                                                final Geometry geometryN = geom.getGeometryN(i);
+                                                if ((geometryN instanceof Point)) {
+                                                        geoms[i] = (Point) geometryN;
+                                                } else {
+                                                        // error message is handled above.
+                                                        return super.toType(typeCode);
+                                                }
+                                        }
+                                        return ValueFactory.createValue(geom.getFactory().createMultiPoint(geoms));
+                                }
+                        case Type.MULTIPOLYGON:
+                                if (myType == Type.GEOMETRYCOLLECTION) {
+                                        Polygon[] geoms = new Polygon[geom.getNumGeometries()];
+                                        for (int i = 0; i < geoms.length; i++) {
+                                                final Geometry geometryN = geom.getGeometryN(i);
+                                                if ((geometryN instanceof Polygon)) {
+                                                        geoms[i] = (Polygon) geometryN;
+                                                } else {
+                                                        // error message is handled above.
+                                                        return super.toType(typeCode);
+                                                }
+                                        }
+                                        return ValueFactory.createValue(geom.getFactory().createMultiPolygon(geoms));
+                                }
+                        default:
+                                return super.toType(typeCode);
+                }
         }
 }

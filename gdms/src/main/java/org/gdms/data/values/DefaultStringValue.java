@@ -323,7 +323,7 @@ class DefaultStringValue extends AbstractValue implements Serializable, StringVa
         public Value toType(int typeCode) {
                 try {
                         Value ret = ValueFactory.createValueByType(value, typeCode);
-                        if (ret.getType() == typeCode) {
+                        if ((ret.getType() & typeCode) != 0) {
                                 return ret;
                         } else {
                                 throw new IncompatibleTypesException(

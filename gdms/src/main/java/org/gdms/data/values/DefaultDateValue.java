@@ -252,10 +252,8 @@ class DefaultDateValue extends AbstractValue implements Serializable, DateValue 
                                 return ValueFactory.createValue(new Time(value.getTime()));
                         case Type.TIMESTAMP:
                                 return ValueFactory.createValue(new Timestamp(value.getTime()));
-                        case Type.STRING:
-                                return ValueFactory.createValue(toString());
                         default:
-                                throw new IncompatibleTypesException("Cannot cast to type: " + typeCode);
+                                return super.toType(typeCode);
                 }
         }
 

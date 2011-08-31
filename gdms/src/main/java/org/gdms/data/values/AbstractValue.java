@@ -582,17 +582,17 @@ public abstract class AbstractValue implements Value {
         }
 
         /**
-         * Try to cast this Value to the type identified by typeCode. Must be
-         * overriden by children.
+         * Try to cast this Value to the type identified by typeCode. Can be
+         * overriden by children to add destination casts.
          *
          * @param typeCode
          * @return The casted Value
          * @throws IncompatibleTypesException
-         *             If the opoeration is not possible
+         *             If the operation is not possible
          */
         @Override
         public Value toType(int typeCode) {
-                if (typeCode == getType()) {
+                if ((getType() & typeCode) != 0) {
                         return this;
                 } else if (typeCode == Type.STRING) {
                         return ValueFactory.createValue(toString());

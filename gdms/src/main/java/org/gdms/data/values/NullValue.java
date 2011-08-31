@@ -152,17 +152,11 @@ final class NullValue extends AbstractValue implements BinaryValue, BooleanValue
                 }
         }
 
-        /**
-         * @see org.gdms.data.values.Value#getStringValue(org.gdms.data.values.ValueWriter)
-         */
         @Override
         public String getStringValue(ValueWriter writer) {
                 return writer.getNullStatementString();
         }
 
-        /**
-         * @see org.gdms.data.values.Value#getType()
-         */
         @Override
         public int getType() {
                 return Type.NULL;
@@ -366,6 +360,11 @@ final class NullValue extends AbstractValue implements BinaryValue, BooleanValue
         @Override
         public void setValue(MultiPolygon value) {
                 throw new UnsupportedOperationException(CANNOTSETNULL);
+        }
+
+        @Override
+        public Value toType(int typeCode) {
+                return this;
         }
         
         

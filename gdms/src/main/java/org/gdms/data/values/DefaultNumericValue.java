@@ -286,29 +286,24 @@ abstract class DefaultNumericValue extends AbstractValue implements Serializable
         @Override
         public Value toType(int typeCode) {
                 switch (typeCode) {
-                        case Type.NULL:
                         case Type.BYTE:
+                                return ValueFactory.createValue(this.byteValue());
                         case Type.SHORT:
+                                return ValueFactory.createValue(this.shortValue());
                         case Type.INT:
+                                return ValueFactory.createValue(this.intValue());
                         case Type.LONG:
+                                return ValueFactory.createValue(this.longValue());
                         case Type.FLOAT:
+                                return ValueFactory.createValue(this.floatValue());
                         case Type.DOUBLE:
-                                if (!isDecimal(typeCode) && isDecimal(getType())) {
-                                        throw new IncompatibleTypesException(
-                                                "Cannot cast decimal to whole :"
-                                                + typeCode
-                                                + ": "
-                                                + getStringValue(ValueWriter.internalValueWriter));
-                                }
-                                return this;
+                                return ValueFactory.createValue(this.doubleValue());
                         case Type.DATE:
                                 if (!isDecimal(getType())) {
                                         return ValueFactory.createValue(new Date(longValue()));
                                 } else {
                                         break;
                                 }
-                        case Type.STRING:
-                                return ValueFactory.createValue(toString());
                         case Type.TIME:
                                 if (!isDecimal(getType())) {
                                         return ValueFactory.createValue(new Time(longValue()));
@@ -322,8 +317,7 @@ abstract class DefaultNumericValue extends AbstractValue implements Serializable
                                         break;
                                 }
                         default:
-                                throw new IncompatibleTypesException("Cannot cast to type:" + typeCode
-                                        + ": " + getStringValue(ValueWriter.internalValueWriter));
+                                return super.toType(typeCode);
                 }
                 throw new IncompatibleTypesException("Cannot cast to type:" + typeCode
                         + ": " + getStringValue(ValueWriter.internalValueWriter));
