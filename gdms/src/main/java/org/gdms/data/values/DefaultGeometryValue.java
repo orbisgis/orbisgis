@@ -41,14 +41,13 @@ package org.gdms.data.values;
 import org.gdms.data.types.Type;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateSequence;
-import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.ParseException;
+import org.gdms.geometryUtils.filter.CoordinateSequenceDimensionFilter;
 
 abstract class DefaultGeometryValue extends AbstractValue implements GeometryValue {
 
@@ -165,9 +164,10 @@ abstract class DefaultGeometryValue extends AbstractValue implements GeometryVal
 
         @Override
         public byte[] getBytes() {
-                GetDimensionSequenceFilter sf = new GetDimensionSequenceFilter();
+                CoordinateSequenceDimensionFilter sf = new CoordinateSequenceDimensionFilter();
+                sf.setMAXDim(CoordinateSequenceDimensionFilter.XYZ);
                 geom.apply(sf);
-                if (sf.dimension == 3) {
+                if (sf.getDimension() == 3) {
                         return WKBUtil.getWKBWriter3DInstance().write(geom);
                 } else {
                         return WKBUtil.getWKBWriter2DInstance().write(geom);
@@ -186,29 +186,7 @@ abstract class DefaultGeometryValue extends AbstractValue implements GeometryVal
         public Geometry getAsGeometry() {
                 return geom;
         }
-
-        private static class GetDimensionSequenceFilter implements
-                CoordinateSequenceFilter {
-
-                private boolean isDone = false;
-                private int dimension = 0;
-
-                @Override
-                public boolean isGeometryChanged() {
-                        return false;
-                }
-
-                @Override
-                public boolean isDone() {
-                        return isDone;
-                }
-
-                @Override
-                public void filter(CoordinateSequence arg0, int arg1) {
-                        dimension = arg0.getDimension();
-                        isDone = true;
-                }
-        }
+       
 
         public static Value parseString(String text) throws ParseException {
                 Geometry readGeometry = WKBUtil.getWKTReaderInstance().read(text);

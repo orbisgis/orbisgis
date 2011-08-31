@@ -143,21 +143,6 @@ public final class JTSUtilities {
                 return type;
         }
 
-        /** Does what it says, reverses the order of the Coordinates in the ring.
-         * @param lr The ring to reverse.
-         * @return A new ring with the reversed Coordinates.
-         */
-        public static LinearRing reverseRing(LinearRing lr) {
-                int numPoints = lr.getNumPoints() - 1;
-                Coordinate[] newCoords = new Coordinate[numPoints + 1];
-
-                for (int t = numPoints; t >= 0; t--) {
-                        newCoords[t] = lr.getCoordinateN(numPoints - t);
-                }
-
-                return factory.createLinearRing(newCoords);
-        }
-
         /** Create a nice Polygon from the given Polygon. Will ensure that shells are
          * clockwise and holes are counter-clockwise. Capiche?
          * @param p The Polygon to make "nice".
@@ -171,7 +156,7 @@ public final class JTSUtilities {
                 coords = p.getExteriorRing().getCoordinates();
 
                 if (CGAlgorithms.isCCW(coords)) {
-                        outer = reverseRing((LinearRing) p.getExteriorRing());
+                        outer = (LinearRing) p.getExteriorRing().reverse();
                 } else {
                         outer = (LinearRing) p.getExteriorRing();
                 }
@@ -180,7 +165,7 @@ public final class JTSUtilities {
                         coords = p.getInteriorRingN(t).getCoordinates();
 
                         if (!(CGAlgorithms.isCCW(coords))) {
-                                holes[t] = reverseRing((LinearRing) p.getInteriorRingN(t));
+                                holes[t] = (LinearRing) p.getInteriorRingN(t).reverse();
                         } else {
                                 holes[t] = (LinearRing) p.getInteriorRingN(t);
                         }

@@ -97,11 +97,12 @@ public final class ReadBufferManager {
                 } else {
                         int bufferCapacity = Math.max(bufferSize, length);
                         long size = channel.size();
-                        if (size > Integer.MAX_VALUE) {
+                        
+                        bufferCapacity = (int) Math.min(bufferCapacity, size
+                                - bytePos);
+                        if (bufferCapacity > Integer.MAX_VALUE) {
                                 throw new IOException("Woaw ! You want to have a REALLY LARGE buffer !");
                         }
-                        bufferCapacity = Math.min(bufferCapacity, (int) (channel.size()
-                                - bytePos));
                         windowStart = bytePos;
 
                         channel.position(windowStart);

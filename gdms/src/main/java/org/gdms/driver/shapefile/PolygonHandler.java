@@ -247,7 +247,7 @@ public class PolygonHandler implements ShapeHandler {
                 } // if for some reason, there is only one hole, we just reverse it and
                 // carry on.
                 else if (holes.size() == 1 && shells.isEmpty()) {
-                        return createMulti(JTSUtilities.reverseRing(holes.get(0)));
+                        return createMulti((LinearRing) holes.get(0).reverse());
                 } else {
 
                         // build an association between shells and holes
@@ -411,7 +411,7 @@ public class PolygonHandler implements ShapeHandler {
                 if (shells.isEmpty()) {
                         for (int i = 0, ii = holes.size(); i < ii; i++) {
                                 LinearRing hole = holes.get(i);
-                                polygons[i] = geometryFactory.createPolygon(JTSUtilities.reverseRing(hole), new LinearRing[0]);
+                                polygons[i] = geometryFactory.createPolygon((LinearRing) hole.reverse(), new LinearRing[0]);
                         }
                 }
 
@@ -472,7 +472,7 @@ public class PolygonHandler implements ShapeHandler {
                                 // Logger.getLogger("org.geotools.data.shapefile").warning(
                                 // "polygon found with a hole thats not inside a shell");
                                 // now reverse this bad "hole" and turn it into a shell
-                                shells.add(JTSUtilities.reverseRing(testRing));
+                                shells.add((LinearRing) testRing.reverse());
                                 holesForShells.add(new ArrayList<LinearRing>());
                         } else {
                                 (holesForShells.get(shells.indexOf(minShell))).add(testRing);

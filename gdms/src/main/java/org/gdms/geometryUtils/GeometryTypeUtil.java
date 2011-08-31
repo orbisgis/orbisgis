@@ -38,11 +38,15 @@
 package org.gdms.geometryUtils;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.CoordinateSequence;
+import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+import org.gdms.geometryUtils.filter.CoordinateSequenceDimensionFilter;
 
 /**
  * This utility class provides methods to test the actual type of a JTS {@link Geometry} object.
@@ -158,14 +162,24 @@ public final class GeometryTypeUtil {
          * @param geometry
          * @return
          */
-        public static boolean is25Geometry(Geometry geometry) {
-                Coordinate[] coords = geometry.getCoordinates();
-                for (Coordinate coordinate : coords) {
-                        if (!Double.isNaN(coordinate.z)) {
-                                return true;
-                        }
-                }
-                return false;
+        public static boolean is25Geometry(Geometry geometry) {                
+                return getCoordinateDimension(geometry)==CoordinateSequenceDimensionFilter.XYZ;
+        }
+
+        /**
+         * Returns the coordinate dimension
+         * 2 for XY
+         * 3 for XYZ
+         * 4 for XYZM
+         *
+         * XYM is not allowed.
+         * @param geom
+         * @return
+         */
+        public static int getCoordinateDimension(Geometry geom) {
+                CoordinateSequenceDimensionFilter cf = new CoordinateSequenceDimensionFilter();
+                geom.apply(cf);
+                return cf.getDimension();
         }
 
         /**

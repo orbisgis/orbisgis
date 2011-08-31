@@ -36,6 +36,8 @@
  */
 package org.gdms.sql.function.spatial.properties;
 
+import com.vividsolutions.jts.geom.CoordinateSequence;
+import com.vividsolutions.jts.geom.Point;
 import org.junit.Test;
 import org.gdms.data.values.Value;
 import org.gdms.sql.FunctionTest;
@@ -59,6 +61,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.geometryUtils.GeometryTypeUtil;
 import org.gdms.sql.function.spatial.geometry.properties.ST_CircleCompacity;
 import org.gdms.sql.function.spatial.geometry.properties.ST_CoordDim;
 import org.gdms.sql.function.spatial.geometry.properties.ST_InteriorRingN;
@@ -67,13 +70,14 @@ import static org.junit.Assert.*;
 
 public class PropertiesFunctionTest extends FunctionTest {
 
-
         @Test
         public void testCoordDim() throws Exception {
-                int d= testSpatialFunction(new ST_CoordDim(), JTSMultiPolygon2D, 1).getAsInt();
-                assertTrue(d==2);
-                d= testSpatialFunction(new ST_CoordDim(), JTSLineString3D, 1).getAsInt();
-                assertTrue(d==3);
+                int d = testSpatialFunction(new ST_CoordDim(), JTSMultiPolygon2D, 1).getAsInt();
+                assertTrue(d == 2);
+                d = testSpatialFunction(new ST_CoordDim(), JTSLineString3D, 1).getAsInt();
+                assertTrue(d == 3);
+                d = testSpatialFunction(new ST_CoordDim(), wktReader.read("LINESTRING(0 0, 1 1 2)"), 1).getAsInt();
+                assertTrue(d == 3);
         }
 
         @Test

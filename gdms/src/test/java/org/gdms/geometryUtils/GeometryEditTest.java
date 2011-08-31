@@ -71,6 +71,7 @@ public class GeometryEditTest {
                 assertTrue(result.getCoordinates()[1].z==5);
         }
 
+
         /**
          * Test to split a linestring according a point
          * @throws Exception
