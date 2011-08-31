@@ -125,7 +125,7 @@ public final class ST_RasterToPoints extends AbstractTableFunction {
                                 pm.progressTo(height);
                                 pm.endTask();
                         }
-                        return driver.getTable("main");
+                        return driver;
                 } catch (DriverException e) {
                         throw new FunctionException(e);
                 } catch (FileNotFoundException e) {

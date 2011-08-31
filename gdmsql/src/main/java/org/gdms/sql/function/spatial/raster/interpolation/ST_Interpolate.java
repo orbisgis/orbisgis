@@ -121,7 +121,7 @@ public final class ST_Interpolate extends AbstractTableFunction {
                         driver.addValues(new Value[]{ValueFactory.createValue(georaster)});
 
                         pm.endTask();
-                        return driver.getTable("main");
+                        return driver;
                 } catch (DriverException e) {
                         throw new FunctionException(e);
                 }

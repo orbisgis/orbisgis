@@ -167,7 +167,7 @@ public final class ST_VectorizeLine extends AbstractTableFunction {
                                                 ValueFactory.createValue(pixelValue),
                                                 ValueFactory.createValue(GF.createMultiLineString(arrayOfLineString))});
                         }
-                        return driver.getTable("main");
+                        return driver;
                 } catch (DriverException e) {
                         throw new FunctionException(e);
                 } catch (IOException e) {

@@ -133,7 +133,7 @@ public final class ST_RasterizeLine extends AbstractTableFunction {
                                         driver.addValues(new Value[]{ValueFactory.createValue(grResult)});
                                 }
                         }
-                        return driver.getTable("main");
+                        return driver;
                 } catch (DriverException e) {
                         throw new FunctionException(
                                 "Problem trying to access input datasources", e);

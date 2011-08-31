@@ -119,7 +119,7 @@ public final class ST_RasterToXYZ extends AbstractTableFunction {
                                 pm.progressTo(nrows);
                                 pm.endTask();
                         }
-                        return driver.getTable("main");
+                        return driver;
                 } catch (DriverException e) {
                         throw new FunctionException(e);
                 } catch (FileNotFoundException e) {
