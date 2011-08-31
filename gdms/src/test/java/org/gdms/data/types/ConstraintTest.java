@@ -281,53 +281,45 @@ public class ConstraintTest {
         @Test
         public void testAddWrongTypeByte() throws Exception {
                 setType(TypeFactory.createType(Type.BYTE));
-                checkWholeNumber();
+                checkNumber();
         }
 
-        private void checkWholeNumber() throws Exception {
-                setValidValues(byteValue, intValue, longValue, shortValue);
-                setInvalidValues(binaryValue, booleanValue, dateValue, doubleValue,
-                        floatValue, geomValue, stringValue, timeValue, timestampValue,
+        private void checkNumber() throws Exception {
+                setValidValues(byteValue, intValue, longValue, shortValue, doubleValue, floatValue);
+                setInvalidValues(binaryValue, booleanValue, dateValue, 
+                        geomValue, stringValue, timeValue, timestampValue,
                         collectionValue);
-                doEdition();
-        }
-
-        private void checkDecimalNumber() throws Exception {
-                setValidValues(doubleValue, floatValue, byteValue, intValue, longValue,
-                        shortValue);
-                setInvalidValues(binaryValue, booleanValue, dateValue, geomValue,
-                        stringValue, timeValue, timestampValue, collectionValue);
                 doEdition();
         }
 
         @Test
         public void testAddWrongTypeShort() throws Exception {
                 setType(TypeFactory.createType(Type.SHORT));
-                checkWholeNumber();
+                checkNumber();
         }
 
         @Test
         public void testAddWrongTypeInt() throws Exception {
                 setType(TypeFactory.createType(Type.INT));
-                checkWholeNumber();
+                checkNumber();
         }
 
         @Test
         public void testAddWrongTypeLong() throws Exception {
                 setType(TypeFactory.createType(Type.LONG));
-                checkWholeNumber();
+                checkNumber();
         }
 
         @Test
         public void testAddWrongTypeFloat() throws Exception {
                 setType(TypeFactory.createType(Type.FLOAT));
-                checkDecimalNumber();
+                checkNumber();
         }
 
         @Test
         public void testAddWrongTypeDouble() throws Exception {
                 setType(TypeFactory.createType(Type.DOUBLE));
-                checkDecimalNumber();
+                checkNumber();
         }
 
         @Test
