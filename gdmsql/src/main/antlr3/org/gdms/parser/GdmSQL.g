@@ -768,12 +768,15 @@ expression_is_null
         ;
 
 expression_final
-        : function_call
-        | select_column
-        | LPAREN! expression_concat RPAREN!
-        | NUMBER
-        | QUOTED_STRING
-        | bool_const
+        : 
+        ( function_call -> function_call
+        | select_column -> select_column
+        | LPAREN expression_concat RPAREN -> expression_concat
+        | NUMBER -> NUMBER
+        | QUOTED_STRING -> QUOTED_STRING
+        | bool_const -> bool_const
+        | expression_cast -> expression_cast
+        ) (CASTCOLON type=LONG_ID -> ^(T_CAST $expression_final $type) )?
         ;
 
 expression_in
@@ -785,6 +788,11 @@ expression_in
 function_call
         : name=LONG_ID LPAREN (expression_list? | ASTERISK ) RPAREN
         -> ^( T_FUNCTION_CALL $name expression_list? )
+        ;
+
+expression_cast
+        : T_CAST LPAREN expression_concat T_AS type=LONG_ID RPAREN
+        -> ^(T_CAST expression_concat $type)
         ;
 
 expression_list
@@ -976,6 +984,10 @@ FACTORIAL
 
 FACTORIAL_PREFIX
         :       '!!'
+        ;
+
+CASTCOLON
+        :       '::'
         ;
 
 TILDE

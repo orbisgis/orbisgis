@@ -175,6 +175,12 @@ sealed class Expression(var evaluator: Evaluator) extends Iterable[Expression] {
   def in(e: Seq[Expression]) = {
     new Expression(InListEvaluator(this,e))
   }
+  
+  def toType(t: Int) = {
+    new Expression(CastEvaluator(this, t))
+  }
+  
+  def ->(t: Int) = toType(t)
 
   def iterator = evaluator.childExpressions.iterator
 

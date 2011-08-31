@@ -42,6 +42,7 @@ import org.gdms.data.SQLDataSourceFactory
 import org.gdms.data.types.TypeFactory
 import org.gdms.data.values.Value
 import org.gdms.data.values.ValueFactory
+import org.gdms.data.values.SQLValueFactory
 import org.gdms.sql.engine.UnknownFieldException
 import org.gdms.sql.function.AggregateFunction
 import org.gdms.sql.function.FunctionException
@@ -188,5 +189,11 @@ case class FieldEvaluator(name: String, table: Option[String] = None) extends Ev
     f.sqlType = sqlType
     f.index = index
   }
+  def doCopy = copy()
+}
+
+case class CastEvaluator(e: Expression, sqlType: Int) extends Evaluator {
+  override val childExpressions = e :: Nil
+  def eval = s => e.evaluate(s).toType(sqlType)
   def doCopy = copy()
 }

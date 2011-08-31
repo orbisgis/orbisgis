@@ -549,6 +549,8 @@ object LogicPlanBuilder {
 
         // boolean unknown is stored as NULL for simplicity, just like PostgreSQL does.
       case T_UNKNOWN => Expression(ValueFactory.createNullValue[Value])
+        
+      case T_CAST => left -> SQLValueFactory.getTypeCodeFromSqlIdentifier(l(1).getText)
 
         // sql like operator. NOT FEATURE COMPLETE: limited by GDMS like operator.
       case T_LIKE => left like right
