@@ -30,10 +30,10 @@ public class CoordinateSequenceDimensionFilter implements CoordinateSequenceFilt
                 } else {
                         dimension = XY;
                 }
-                if (dimension > lastDimen) {
+                if (dimension > lastDimen){
                         lastDimen = dimension;
                 }
-                if (i == seq.size() || lastDimen == MAXDim) {
+                if (i == seq.size() || lastDimen >= MAXDim) {
                         isDone = true;
                 }
         }

@@ -38,13 +38,10 @@
 package org.gdms.geometryUtils;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateSequence;
-import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import org.gdms.geometryUtils.filter.CoordinateSequenceDimensionFilter;
 
@@ -162,9 +159,15 @@ public final class GeometryTypeUtil {
          * @param geometry
          * @return
          */
-        public static boolean is25Geometry(Geometry geometry) {                
-                return getCoordinateDimension(geometry)==CoordinateSequenceDimensionFilter.XYZ;
+        public static boolean is25Geometry(Geometry geom) {
+                CoordinateSequenceDimensionFilter cf = new CoordinateSequenceDimensionFilter();
+                cf.setMAXDim(CoordinateSequenceDimensionFilter.XYZ);
+                geom.apply(cf);
+                return cf.getDimension()>=CoordinateSequenceDimensionFilter.XYZ;
         }
+
+
+
 
         /**
          * Returns the coordinate dimension

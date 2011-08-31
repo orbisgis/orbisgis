@@ -40,7 +40,6 @@ package org.gdms.geometryUtils;
 import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 import junit.framework.TestCase;
 import org.gdms.geometryUtils.filter.CoordinateSequenceDimensionFilter;
@@ -66,29 +65,7 @@ public class GeometryTypeUtilTest extends TestCase {
                 assertTrue(cd.getDimension() == 3);
         }
 
-        private static class GetDimensionSequenceFilter implements
-                CoordinateSequenceFilter {
-
-                private boolean isDone = false;
-                private int dimension = 0;
-
-                @Override
-                public boolean isGeometryChanged() {
-                        return false;
-                }
-
-                @Override
-                public boolean isDone() {
-                        return isDone;
-                }
-
-                @Override
-                public void filter(CoordinateSequence arg0, int arg1) {
-                        dimension = arg0.getDimension();
-                        isDone = true;
-                }
-        }
-
+       
         /**
          * Test several geometries
          * @throws Exception

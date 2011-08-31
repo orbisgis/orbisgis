@@ -47,7 +47,7 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.ParseException;
-import org.gdms.geometryUtils.filter.CoordinateSequenceDimensionFilter;
+import org.gdms.geometryUtils.GeometryTypeUtil;
 
 abstract class DefaultGeometryValue extends AbstractValue implements GeometryValue {
 
@@ -164,10 +164,7 @@ abstract class DefaultGeometryValue extends AbstractValue implements GeometryVal
 
         @Override
         public byte[] getBytes() {
-                CoordinateSequenceDimensionFilter sf = new CoordinateSequenceDimensionFilter();
-                sf.setMAXDim(CoordinateSequenceDimensionFilter.XYZ);
-                geom.apply(sf);
-                if (sf.getDimension() == 3) {
+                if (GeometryTypeUtil.is25Geometry(geom)) {
                         return WKBUtil.getWKBWriter3DInstance().write(geom);
                 } else {
                         return WKBUtil.getWKBWriter2DInstance().write(geom);
@@ -186,7 +183,6 @@ abstract class DefaultGeometryValue extends AbstractValue implements GeometryVal
         public Geometry getAsGeometry() {
                 return geom;
         }
-       
 
         public static Value parseString(String text) throws ParseException {
                 Geometry readGeometry = WKBUtil.getWKTReaderInstance().read(text);
@@ -221,7 +217,7 @@ abstract class DefaultGeometryValue extends AbstractValue implements GeometryVal
                                         default:
                                                 super.toType(typeCode);
                                 }
-                                
+
                         // special cases for GEOMETRYCOLLECTION to its subtypes
                         case Type.MULTILINESTRING:
                                 if (myType == Type.GEOMETRYCOLLECTION || myType == Type.LINESTRING) {
