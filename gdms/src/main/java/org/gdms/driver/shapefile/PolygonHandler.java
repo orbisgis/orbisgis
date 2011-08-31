@@ -69,6 +69,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
+import org.gdms.geometryUtils.CoordinatesUtils;
 
 /**
  * Wrapper for a Shapefile polygon.
@@ -97,30 +98,6 @@ public class PolygonHandler implements ShapeHandler {
                 }
 
                 shapeType = type;
-        }
-
-        // returns true if testPoint is a point in the pointList list.
-        boolean pointInList(Coordinate testPoint, Coordinate[] pointList) {
-                Coordinate p;
-
-                for (int t = pointList.length - 1; t >= 0; t--) {
-                        p = pointList[t];
-
-                        if ((testPoint.x == p.x)
-                                && (testPoint.y == p.y)
-                                && ((testPoint.z == p.z) || (!(testPoint.z == testPoint.z))) // nan
-                                // test;
-                                // x!=x
-                                // iff
-                                // x
-                                // is
-                                // nan
-                                ) {
-                                return true;
-                        }
-                }
-
-                return false;
         }
 
         @Override
@@ -456,8 +433,8 @@ public class PolygonHandler implements ShapeHandler {
                                 Coordinate[] coordList = tryRing.getCoordinates();
 
                                 if (tryEnv.contains(testEnv)
-                                        && (CGAlgorithms.isPointInRing(testPt, coordList) || (pointInList(
-                                        testPt, coordList)))) {
+                                        && (CGAlgorithms.isPointInRing(testPt, coordList) || (CoordinatesUtils.contains(
+                                        coordList, testPt)))) {
                                         isContained = true;
                                 }
 
@@ -554,7 +531,7 @@ public class PolygonHandler implements ShapeHandler {
 
                 if (shapeType == ShapeType.POLYGONZ) {
                         // z
-                        double[] zExtreame = JTSUtilities.zMinMax(multi.getCoordinates());
+                        double[] zExtreame = CoordinatesUtils.zMinMax(multi.getCoordinates());
 
                         if (Double.isNaN(zExtreame[0])) {
                                 buffer.putDouble(0.0);

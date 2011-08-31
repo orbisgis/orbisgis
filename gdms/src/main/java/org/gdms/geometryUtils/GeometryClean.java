@@ -37,6 +37,7 @@
  */
 package org.gdms.geometryUtils;
 
+import com.vividsolutions.jts.algorithm.CGAlgorithms;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateArrays;
 import com.vividsolutions.jts.geom.Geometry;
@@ -58,6 +59,56 @@ public final class GeometryClean {
 
         private static final GeometryFactory FACTORY = new GeometryFactory();
 
+
+         /** Create a nice Polygon from the given Polygon. Will ensure that shells are
+         * clockwise and holes are counter-clockwise.
+         * @param p The Polygon to make "nice".
+         * @return The "nice" Polygon.
+         */
+        public static Polygon makeGoodShapePolygon(Polygon p) {
+                LinearRing outer;
+                LinearRing[] holes = new LinearRing[p.getNumInteriorRing()];
+                Coordinate[] coords;
+
+                coords = p.getExteriorRing().getCoordinates();
+
+                if (CGAlgorithms.isCCW(coords)) {
+                        outer = (LinearRing) p.getExteriorRing().reverse();
+                } else {
+                        outer = (LinearRing) p.getExteriorRing();
+                }
+
+                for (int t = 0, tt = p.getNumInteriorRing(); t < tt; t++) {
+                        coords = p.getInteriorRingN(t).getCoordinates();
+
+                        if (!(CGAlgorithms.isCCW(coords))) {
+                                holes[t] = (LinearRing) p.getInteriorRingN(t).reverse();
+                        } else {
+                                holes[t] = (LinearRing) p.getInteriorRingN(t);
+                        }
+                }
+
+                return FACTORY.createPolygon(outer, holes);
+        }
+
+        /** Like makeGoodShapePolygon, but applied towards a multipolygon.
+         * @param mp The MultiPolygon to "niceify".
+         * @return The "nicified" MultiPolygon.
+         */
+        public static MultiPolygon makeGoodShapeMultiPolygon(MultiPolygon mp) {
+                MultiPolygon result;
+                Polygon[] ps = new Polygon[mp.getNumGeometries()];
+
+                //check each sub-polygon
+                for (int t = 0; t < mp.getNumGeometries(); t++) {
+                        ps[t] = makeGoodShapePolygon((Polygon) mp.getGeometryN(t));
+                }
+
+                result = FACTORY.createMultiPolygon(ps);
+
+                return result;
+        }
+        
         /**
          * Removes duplicated points within a geometry.
          * @param geom

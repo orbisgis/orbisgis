@@ -69,6 +69,17 @@ public final class CoordinatesUtils {
                         / (firstCoordinate.distance(toBeInterpolated) + toBeInterpolated.distance(lastCoordinate));
         }
 
+        public static boolean contains(Coordinate[] coords, Coordinate coord) {
+                for (Coordinate coordinate : coords) {
+                        if (Double.isNaN(coord.z)) {
+                                return coordinate.equals(coordinate);
+                        } else {
+                                 return coordinate.equals3D(coordinate);
+                        }
+                }
+                return false;
+        }
+
         /** 
          * Checks if a coordinate array contains a specific coordinate. 
          * 
@@ -103,6 +114,48 @@ public final class CoordinatesUtils {
                         }
                 }
                 return false;
+        }
+
+        /** Determine the min and max "z" values in an array of Coordinates.
+         * @param cs The array to search.
+         * @return An array of size 2, index 0 is min, index 1 is max.
+         */
+        public static double[] zMinMax(final Coordinate[] cs) {
+                double zmin;
+                double zmax;
+                boolean validZFound = false;
+                double[] result = new double[2];
+
+                zmin = Double.NaN;
+                zmax = Double.NaN;
+
+                double z;
+
+                for (int t = cs.length - 1; t >= 0; t--) {
+                        z = cs[t].z;
+
+                        if (!(Double.isNaN(z))) {
+                                if (validZFound) {
+                                        if (z < zmin) {
+                                                zmin = z;
+                                        }
+
+                                        if (z > zmax) {
+                                                zmax = z;
+                                        }
+                                } else {
+                                        validZFound = true;
+                                        zmin = z;
+                                        zmax = z;
+                                }
+                        }
+                }
+
+                result[0] = (zmin);
+                result[1] = (zmax);
+
+
+                return result;
         }
 
         /**

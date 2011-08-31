@@ -64,6 +64,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.impl.PackedCoordinateSequence;
+import org.gdms.geometryUtils.CoordinatesUtils;
 
 /*
  * $Id: MultiLineHandler.java 20881 2006-08-07 13:24:35Z jgarnett $ @author
@@ -275,7 +276,7 @@ public class MultiLineHandler implements ShapeHandler {
 		}
 
 		if (shapeType == ShapeType.ARCZ) {
-			double[] zExtreame = JTSUtilities.zMinMax(coords);
+			double[] zExtreame = CoordinatesUtils.zMinMax(coords);
 
 			if (Double.isNaN(zExtreame[0])) {
 				buffer.putDouble(0.0);

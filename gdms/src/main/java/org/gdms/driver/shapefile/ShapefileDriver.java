@@ -85,6 +85,7 @@ import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.driver.AbstractDataSet;
 import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.driverManager.DriverManager;
+import org.gdms.geometryUtils.GeometryClean;
 import org.orbisgis.wkt.parser.PRJUtils;
 import org.orbisgis.wkt.parser.ParseException;
 
@@ -289,10 +290,10 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                         } else if ((type == ShapeType.POLYGON)
                                 || (type == ShapeType.POLYGONZ)) {
                                 if (geom instanceof Polygon) {
-                                        Polygon p = JTSUtilities.makeGoodShapePolygon((Polygon) geom);
+                                        Polygon p = GeometryClean.makeGoodShapePolygon((Polygon) geom);
                                         retVal = GF.createMultiPolygon(new Polygon[]{p});
                                 } else if (geom instanceof MultiPolygon) {
-                                        retVal = JTSUtilities.makeGoodShapeMultiPolygon((MultiPolygon) geom);
+                                        retVal = GeometryClean.makeGoodShapeMultiPolygon((MultiPolygon) geom);
                                 }
                         } else if ((type == ShapeType.ARC) || (type == ShapeType.ARCZ)) {
                                 if ((geom instanceof LineString)) {

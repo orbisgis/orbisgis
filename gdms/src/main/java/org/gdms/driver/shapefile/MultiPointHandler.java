@@ -62,8 +62,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.MultiPoint;
-
-
+import org.gdms.geometryUtils.CoordinatesUtils;
 
 /**
  *
@@ -73,142 +72,140 @@ import com.vividsolutions.jts.geom.MultiPoint;
  *
  */
 public class MultiPointHandler implements ShapeHandler {
-  final ShapeType shapeType;
-  GeometryFactory geometryFactory = new GeometryFactory();
 
-  /** Creates new MultiPointHandler */
-  public MultiPointHandler() {
-    shapeType = ShapeType.POINT;
-  }
+        final ShapeType shapeType;
+        GeometryFactory geometryFactory = new GeometryFactory();
 
-  public MultiPointHandler(ShapeType type) throws ShapefileException {
-    if ((type != ShapeType.MULTIPOINT) && (type != ShapeType.MULTIPOINTM) && (type != ShapeType.MULTIPOINTZ)) {
-      throw new ShapefileException(
-      "Multipointhandler constructor - expected type to be 8, 18, or 28");
-    }
-
-    shapeType = type;
-  }
-
-
-
-  /**
-   * Returns the shapefile shape type value for a point
-   * @return int Shapefile.POINT
-   */
-  public ShapeType getShapeType() {
-    return shapeType;
-  }
-
-  /**
-   * Calcuates the record length of this object.
-   * @return int The length of the record that this shapepoint will take up in a shapefile
-   **/
-  public int getLength(Object geometry) {
-    MultiPoint mp = (MultiPoint) geometry;
-
-    int length;
-
-    if (shapeType == ShapeType.MULTIPOINT) {
-      // two doubles per coord (16 * numgeoms) + 40 for header
-      length = (mp.getNumGeometries() * 16) + 40;
-    } else if (shapeType == ShapeType.MULTIPOINTM) {
-      // add the additional MMin, MMax for 16, then 8 per measure
-      length = (mp.getNumGeometries() * 16) + 40 + 16 + (8 * mp.getNumGeometries());
-    } else if (shapeType == ShapeType.MULTIPOINTZ) {
-      // add the additional ZMin,ZMax, plus 8 per Z
-      length = (mp.getNumGeometries() * 16) + 40 + 16 + (8 * mp.getNumGeometries()) + 16 +
-      (8 * mp.getNumGeometries());
-    } else {
-      throw new IllegalStateException("Expected ShapeType of Arc, got " + shapeType);
-    }
-
-    return length;
-  }
-
-  public Geometry read(ReadBufferManager buffer, ShapeType type) throws IOException {
-    if (type == ShapeType.NULL) {
-      return null;
-    }
-
-    //read bounding box (not needed)
-    buffer.skip(4 * 8);
-
-    int numpoints = buffer.getInt();
-    Coordinate[] coords = new Coordinate[numpoints];
-
-    for (int t = 0; t < numpoints; t++) {
-      double x = buffer.getDouble();
-      double y = buffer.getDouble();
-      coords[t] = new Coordinate(x, y);
-    }
-
-    if (shapeType == ShapeType.MULTIPOINTZ) {
-      buffer.skip(2 * 8);
-
-      for (int t = 0; t < numpoints; t++) {
-        coords[t].z = buffer.getDouble(); //z
-      }
-    }
-
-    return geometryFactory.createMultiPoint(coords);
-  }
-
-  public void write(WriteBufferManager buffer, Object geometry) throws IOException {
-    MultiPoint mp = (MultiPoint) geometry;
-
-    Envelope box = mp.getEnvelopeInternal();
-    buffer.putDouble(box.getMinX());
-    buffer.putDouble(box.getMinY());
-    buffer.putDouble(box.getMaxX());
-    buffer.putDouble(box.getMaxY());
-
-
-    buffer.putInt(mp.getNumGeometries());
-
-
-    for (int t = 0, tt = mp.getNumGeometries(); t < tt; t++) {
-      Coordinate c = (mp.getGeometryN(t)).getCoordinate();
-      buffer.putDouble(c.x);
-      buffer.putDouble(c.y);
-    }
-
-
-    if (shapeType == ShapeType.MULTIPOINTZ) {
-      double[] zExtreame = JTSUtilities.zMinMax(mp.getCoordinates());
-
-      if (Double.isNaN(zExtreame[0])) {
-        buffer.putDouble(0.0);
-        buffer.putDouble(0.0);
-      } else {
-        buffer.putDouble(zExtreame[0]);
-        buffer.putDouble(zExtreame[1]);
-      }
-
-
-      for (int t = 0; t < mp.getNumGeometries(); t++) {
-        Coordinate c = (mp.getGeometryN(t)).getCoordinate();
-        double z = c.z;
-
-        if (Double.isNaN(z)) {
-          buffer.putDouble(0.0);
-        } else {
-          buffer.putDouble(z);
+        /** Creates new MultiPointHandler */
+        public MultiPointHandler() {
+                shapeType = ShapeType.POINT;
         }
-      }
-    }
+
+        public MultiPointHandler(ShapeType type) throws ShapefileException {
+                if ((type != ShapeType.MULTIPOINT) && (type != ShapeType.MULTIPOINTM) && (type != ShapeType.MULTIPOINTZ)) {
+                        throw new ShapefileException(
+                                "Multipointhandler constructor - expected type to be 8, 18, or 28");
+                }
+
+                shapeType = type;
+        }
+
+        /**
+         * Returns the shapefile shape type value for a point
+         * @return int Shapefile.POINT
+         */
+        public ShapeType getShapeType() {
+                return shapeType;
+        }
+
+        /**
+         * Calcuates the record length of this object.
+         * @return int The length of the record that this shapepoint will take up in a shapefile
+         **/
+        public int getLength(Object geometry) {
+                MultiPoint mp = (MultiPoint) geometry;
+
+                int length;
+
+                if (shapeType == ShapeType.MULTIPOINT) {
+                        // two doubles per coord (16 * numgeoms) + 40 for header
+                        length = (mp.getNumGeometries() * 16) + 40;
+                } else if (shapeType == ShapeType.MULTIPOINTM) {
+                        // add the additional MMin, MMax for 16, then 8 per measure
+                        length = (mp.getNumGeometries() * 16) + 40 + 16 + (8 * mp.getNumGeometries());
+                } else if (shapeType == ShapeType.MULTIPOINTZ) {
+                        // add the additional ZMin,ZMax, plus 8 per Z
+                        length = (mp.getNumGeometries() * 16) + 40 + 16 + (8 * mp.getNumGeometries()) + 16
+                                + (8 * mp.getNumGeometries());
+                } else {
+                        throw new IllegalStateException("Expected ShapeType of Arc, got " + shapeType);
+                }
+
+                return length;
+        }
+
+        public Geometry read(ReadBufferManager buffer, ShapeType type) throws IOException {
+                if (type == ShapeType.NULL) {
+                        return null;
+                }
+
+                //read bounding box (not needed)
+                buffer.skip(4 * 8);
+
+                int numpoints = buffer.getInt();
+                Coordinate[] coords = new Coordinate[numpoints];
+
+                for (int t = 0; t < numpoints; t++) {
+                        double x = buffer.getDouble();
+                        double y = buffer.getDouble();
+                        coords[t] = new Coordinate(x, y);
+                }
+
+                if (shapeType == ShapeType.MULTIPOINTZ) {
+                        buffer.skip(2 * 8);
+
+                        for (int t = 0; t < numpoints; t++) {
+                                coords[t].z = buffer.getDouble(); //z
+                        }
+                }
+
+                return geometryFactory.createMultiPoint(coords);
+        }
+
+        public void write(WriteBufferManager buffer, Object geometry) throws IOException {
+                MultiPoint mp = (MultiPoint) geometry;
+
+                Envelope box = mp.getEnvelopeInternal();
+                buffer.putDouble(box.getMinX());
+                buffer.putDouble(box.getMinY());
+                buffer.putDouble(box.getMaxX());
+                buffer.putDouble(box.getMaxY());
+
+
+                buffer.putInt(mp.getNumGeometries());
+
+
+                for (int t = 0, tt = mp.getNumGeometries(); t < tt; t++) {
+                        Coordinate c = (mp.getGeometryN(t)).getCoordinate();
+                        buffer.putDouble(c.x);
+                        buffer.putDouble(c.y);
+                }
+
+
+                if (shapeType == ShapeType.MULTIPOINTZ) {
+                        double[] zExtreame = CoordinatesUtils.zMinMax(mp.getCoordinates());
+
+                        if (Double.isNaN(zExtreame[0])) {
+                                buffer.putDouble(0.0);
+                                buffer.putDouble(0.0);
+                        } else {
+                                buffer.putDouble(zExtreame[0]);
+                                buffer.putDouble(zExtreame[1]);
+                        }
+
+
+                        for (int t = 0; t < mp.getNumGeometries(); t++) {
+                                Coordinate c = (mp.getGeometryN(t)).getCoordinate();
+                                double z = c.z;
+
+                                if (Double.isNaN(z)) {
+                                        buffer.putDouble(0.0);
+                                } else {
+                                        buffer.putDouble(z);
+                                }
+                        }
+                }
 
 
 
-    if (shapeType == ShapeType.MULTIPOINTM || shapeType == ShapeType.MULTIPOINTZ) {
-      buffer.putDouble(-10E40);
-      buffer.putDouble(-10E40);
+                if (shapeType == ShapeType.MULTIPOINTM || shapeType == ShapeType.MULTIPOINTZ) {
+                        buffer.putDouble(-10E40);
+                        buffer.putDouble(-10E40);
 
 
-      for (int t = 0; t < mp.getNumGeometries(); t++) {
-        buffer.putDouble(-10E40);
-      }
-    }
-  }
-
+                        for (int t = 0; t < mp.getNumGeometries(); t++) {
+                                buffer.putDouble(-10E40);
+                        }
+                }
+        }
 }

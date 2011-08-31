@@ -76,7 +76,7 @@ import org.gdms.driver.ReadBufferManager;
  */
 public class IndexFile {
 	private static final Logger LOGGER = Logger
-			.getLogger("org.geotools.data.shapefile");
+			.getLogger("org.gdms.driver.shapefile");
 
 	private FileChannel channel;
 
