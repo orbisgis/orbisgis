@@ -36,7 +36,6 @@
  */
 package org.gdms.data;
 
-import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -55,13 +54,7 @@ public class RightValueDecorator extends AbstractDataSourceDecorator {
                 if (null == value) {
                         return ValueFactory.createNullValue();
                 } else {
-                        if ((value.getType() & Type.GEOMETRY) != 0
-                                && !value.isNull()
-                                && value.getAsGeometry().isEmpty()) {
-                                return ValueFactory.createNullValue();
-                        } else {
-                                return value;
-                        }
+                        return value;
                 }
         }
 }
