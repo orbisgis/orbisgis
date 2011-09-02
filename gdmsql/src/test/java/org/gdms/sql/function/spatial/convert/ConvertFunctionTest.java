@@ -75,7 +75,7 @@ public class ConvertFunctionTest extends FunctionTest {
                 // Test normal input value and type
                 Value vg1 = ValueFactory.createValue(JTSPoint3D);
                 res = evaluate(function, vg1);
-                assertEquals(res.getType(), Type.GEOMETRY);
+                assertEquals(res.getType(), Type.POINT);
                 assertTrue(res.equals(vg1).getAsBoolean());
 
                 // Test too many parameters
@@ -124,7 +124,7 @@ public class ConvertFunctionTest extends FunctionTest {
                 // Test normal input value and type
                 Value vg1 = ValueFactory.createValue(JTSMultiPolygon2D);
                 res = evaluate(function, vg1);
-                assertEquals(res.getType(), Type.GEOMETRY);
+                assertTrue((res.getType() & Type.GEOMETRY)!=0);
                 assertTrue(res.equals(vg1).getAsBoolean());
 
                 // Test too many parameters
@@ -172,7 +172,7 @@ public class ConvertFunctionTest extends FunctionTest {
 
                 // Test normal input value and type
                 res = evaluate(function, ValueFactory.createValue(JTSMultiPolygon2D));
-                assertEquals(res.getType(), Type.GEOMETRY);
+                assertEquals(res.getType(), Type.MULTILINESTRING);
                 assertTrue(res.getAsGeometry().equalsExact(JTSMultiPolygon2D.getBoundary()));
 
                 // Test too many parameters
