@@ -36,7 +36,6 @@
  */
 package org.orbisgis.core.renderer.symbol;
 
-import org.gdms.data.types.GeometryTypeConstraint;
 import org.junit.Test;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -57,6 +56,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Polygon;
+import org.gdms.data.types.Type;
 import static org.junit.Assert.*;
 
 public class SymbolTest extends AbstractTest {
@@ -85,7 +85,7 @@ public class SymbolTest extends AbstractTest {
                 }
 
                 @Override
-                public boolean acceptGeometryType(GeometryTypeConstraint geometryConstraint) {
+                public boolean acceptGeometryType(Type geometryType) {
                         return false;
                 }
 

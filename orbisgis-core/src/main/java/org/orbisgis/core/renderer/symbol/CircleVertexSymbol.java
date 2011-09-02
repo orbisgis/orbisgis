@@ -41,7 +41,6 @@ import java.awt.Graphics2D;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 
-import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
@@ -49,6 +48,7 @@ import org.orbisgis.core.renderer.RenderContext;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import org.gdms.data.types.Type;
 
 public class CircleVertexSymbol extends AbstractCirclePointSymbol {
 
@@ -63,19 +63,22 @@ public class CircleVertexSymbol extends AbstractCirclePointSymbol {
 	}
 
 	@Override
-	public boolean acceptGeometryType(GeometryTypeConstraint GeometryTypeConstraint) {
+	public boolean acceptGeometryType(Type geomType) {
 		return true;
 	}
 
+        @Override
 	public String getClassName() {
 		return "Circle in vertex";
 	}
 
+        @Override
 	public StandardSymbol cloneSymbol() {
 		return new CircleVertexSymbol(outline, lineWidth, fillColor, size,
 				mapUnits);
 	}
 
+        @Override
 	public String getId() {
 		return "org.orbisgis.symbol.vertex.Circle";
 	}

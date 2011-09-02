@@ -16,7 +16,6 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
-import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
@@ -25,6 +24,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
+import org.gdms.data.types.Type;
 
 public class ImageSymbol extends AbstractSymbol implements Symbol {
 
@@ -36,25 +36,28 @@ public class ImageSymbol extends AbstractSymbol implements Symbol {
 		setErrorImage();
 	}
 
+        @Override
 	public boolean acceptGeometry(Geometry geom) {
 		return (geom instanceof Point) || (geom instanceof MultiPoint);
 	}
 
-	public boolean acceptGeometryType(GeometryTypeConstraint geometryTypeConstraint) {
-		if (geometryTypeConstraint == null) {
+        @Override
+	public boolean acceptGeometryType(Type geometryTypeConstraint) {
+		if (geometryTypeConstraint == null || geometryTypeConstraint.getTypeCode() == Type.NULL) {
 			return true;
 		} else {
-			int gt = geometryTypeConstraint.getGeometryType();
+			int gt = geometryTypeConstraint.getTypeCode();
 			switch (gt) {
-			case GeometryTypeConstraint.POINT:
-			case GeometryTypeConstraint.MULTI_POINT:
-				return true;
-			default:
-				return false;
+                                case Type.POINT:
+                                case Type.MULTIPOINT:
+                                        return true;
+                                default:
+                                        return false;
 			}
 		}
 	}
 
+        @Override
 	public Symbol cloneSymbol() {
 		ImageSymbol ret = new ImageSymbol();
 		ret.img = this.img;
@@ -62,6 +65,7 @@ public class ImageSymbol extends AbstractSymbol implements Symbol {
 		return ret;
 	}
 
+        @Override
 	public Envelope draw(Graphics2D g, Geometry geom, MapTransform mt,
 			RenderContext permission) throws DriverException {
 		// LiteShape ls = new LiteShape(geom, at, false);
@@ -78,14 +82,17 @@ public class ImageSymbol extends AbstractSymbol implements Symbol {
 		return null;
 	}
 
+        @Override
 	public String getClassName() {
 		return "Image on point";
 	}
 
+        @Override
 	public String getId() {
 		return "org.orbisgis.symbols.point.Image";
 	}
 
+        @Override
 	public Map<String, String> getPersistentProperties() {
 		HashMap<String, String> ret = new HashMap<String, String>();
 		ret.putAll(super.getPersistentProperties());
@@ -94,6 +101,7 @@ public class ImageSymbol extends AbstractSymbol implements Symbol {
 		return ret;
 	}
 
+        @Override
 	public void setPersistentProperties(Map<String, String> props) {
 		super.setPersistentProperties(props);
 		try {

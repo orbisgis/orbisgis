@@ -72,7 +72,6 @@ import org.orbisgis.core.renderer.symbol.SymbolFactory;
 import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Envelope;
-import org.gdms.data.types.GeometryTypeConstraint;
 
 public class Layer extends GdmsLayer {
 
@@ -88,8 +87,6 @@ public class Layer extends GdmsLayer {
 	}
 
 	private UniqueSymbolLegend getDefaultVectorialLegend(Type fieldType) {
-		GeometryTypeConstraint gc = (GeometryTypeConstraint) fieldType
-				.getConstraint(Constraint.GEOMETRY_TYPE);
 
 		final Random r = new Random();
 		final Color cFill = new Color(r.nextInt(256), r.nextInt(256), r
@@ -103,26 +100,24 @@ public class Layer extends GdmsLayer {
 		Symbol lineSym = SymbolFactory.createLineSymbol(cOutline, 1);
 		Symbol composite = SymbolFactory.createSymbolComposite(polSym,
 				pointSym, lineSym);
-		if (gc == null) {
-			legend.setSymbol(composite);
-		} else {
-			switch (gc.getGeometryType()) {
-			case GeometryTypeConstraint.POINT:
-			case GeometryTypeConstraint.MULTI_POINT:
-				legend.setSymbol(pointSym);
-				break;
-			case GeometryTypeConstraint.LINESTRING:
-			case GeometryTypeConstraint.MULTI_LINESTRING:
-				legend.setSymbol(lineSym);
-				break;
-			case GeometryTypeConstraint.POLYGON:
-			case GeometryTypeConstraint.MULTI_POLYGON:
-				legend.setSymbol(polSym);
-				break;
-			case GeometryTypeConstraint.GEOMETRY_COLLECTION:
-				legend.setSymbol(composite);
-				break;
-			}
+		
+                switch (fieldType.getTypeCode()) {
+                        case Type.POINT:
+                        case Type.MULTIPOINT:
+                                legend.setSymbol(pointSym);
+                                break;
+                        case Type.LINESTRING:
+                        case Type.MULTILINESTRING:
+                                legend.setSymbol(lineSym);
+                                break;
+                        case Type.POLYGON:
+                        case Type.MULTIPOLYGON:
+                                legend.setSymbol(polSym);
+                                break;
+                        case Type.GEOMETRYCOLLECTION:
+                        case Type.GEOMETRY:
+                                legend.setSymbol(composite);
+                                break;
 		}
 
 		return legend;
@@ -168,7 +163,7 @@ public class Layer extends GdmsLayer {
 			for (int i = 0; i < metadata.getFieldCount(); i++) {
 				Type fieldType = metadata.getFieldType(i);
 				int fieldTypeCode = fieldType.getTypeCode();
-				if (fieldTypeCode == Type.GEOMETRY) {
+				if ((fieldTypeCode & Type.GEOMETRY) != 0) {
 					UniqueSymbolLegend legend = getDefaultVectorialLegend(fieldType);
 
 					try {
@@ -221,6 +216,7 @@ public class Layer extends GdmsLayer {
 		return ret.toArray(new Legend[ret.size()]);
 	}
 
+        @Override
 	public Legend[] getVectorLegend() throws DriverException {
 		int sfi = dataSource.getSpatialFieldIndex();
 		Metadata metadata = dataSource.getMetadata();
@@ -232,6 +228,7 @@ public class Layer extends GdmsLayer {
 		return getVectorLegend(defaultFieldName);
 	}
 
+        @Override
 	public RasterLegend[] getRasterLegend() throws DriverException {
 		int sfi = dataSource.getSpatialFieldIndex();
 		Metadata metadata = dataSource.getMetadata();
@@ -243,6 +240,7 @@ public class Layer extends GdmsLayer {
 		return getRasterLegend(defaultFieldName);
 	}
 
+        @Override
 	public Legend[] getVectorLegend(String fieldName) throws DriverException {
 		int sfi = getFieldIndexForLegend(fieldName);
 		validateType(sfi, Type.GEOMETRY, I18N.getString("org.orbisgis.layerModel.layer.vector")); //$NON-NLS-1$

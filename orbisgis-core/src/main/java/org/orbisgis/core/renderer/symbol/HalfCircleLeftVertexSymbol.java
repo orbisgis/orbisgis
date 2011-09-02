@@ -38,9 +38,9 @@ package org.orbisgis.core.renderer.symbol;
 
 import java.awt.Color;
 
-import org.gdms.data.types.GeometryTypeConstraint;
 
 import com.vividsolutions.jts.geom.Geometry;
+import org.gdms.data.types.Type;
 
 public class HalfCircleLeftVertexSymbol extends HalfCircleLeftPointSymbol {
 
@@ -55,19 +55,22 @@ public class HalfCircleLeftVertexSymbol extends HalfCircleLeftPointSymbol {
 	}
 
 	@Override
-	public boolean acceptGeometryType(GeometryTypeConstraint GeometryTypeConstraint) {
+	public boolean acceptGeometryType(Type geomType) {
 		return true;
 	}
 
+        @Override
 	public String getClassName() {
 		return "Circle in vertex";
 	}
 
+        @Override
 	public StandardSymbol cloneSymbol() {
 		return new HalfCircleLeftVertexSymbol(outline, lineWidth, fillColor,
 				size, mapUnits);
 	}
 
+        @Override
 	public String getId() {
 		return "org.orbisgis.symbol.vertex.HalfCircleLeft";
 	}

@@ -40,11 +40,13 @@ import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.gdms.data.types.GeometryTypeConstraint;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
+import org.gdms.data.types.Constraint;
+import org.gdms.data.types.GeometryDimensionConstraint;
+import org.gdms.data.types.Type;
 
 public abstract class AbstractPolygonSymbol extends AbstractLineSymbol
 		implements StandardPolygonSymbol {
@@ -56,28 +58,40 @@ public abstract class AbstractPolygonSymbol extends AbstractLineSymbol
 		this.fillColor = fillColor;
 	}
 
+        @Override
 	public boolean willDrawSimpleGeometry(Geometry geom) {
 		return geom instanceof Polygon || geom instanceof MultiPolygon;
 	}
 
-	public boolean acceptGeometryType(GeometryTypeConstraint GeometryTypeConstraint) {
-		if (GeometryTypeConstraint == null) {
+        @Override
+	public boolean acceptGeometryType(Type geomType) {
+		if (geomType == null || geomType.getTypeCode() == Type.NULL) {
 			return true;
 		} else {
-			int geometryType = GeometryTypeConstraint.getGeometryType();
-			return (geometryType == GeometryTypeConstraint.POLYGON)
-					|| (geometryType == GeometryTypeConstraint.MULTI_POLYGON);
+			int geometryType = geomType.getTypeCode();
+			boolean valid = geometryType == Type.POLYGON
+					|| geometryType == Type.MULTIPOLYGON;
+                        if(!valid && (geometryType == Type.GEOMETRY || geometryType == Type.GEOMETRYCOLLECTION)){
+                                //We can still check the generic geometries
+                                GeometryDimensionConstraint gdc = 
+                                        (GeometryDimensionConstraint) geomType.getConstraint(Constraint.DIMENSION_2D_GEOMETRY);
+                                valid = gdc.getDimension() == GeometryDimensionConstraint.DIMENSION_POLYGON;
+                        }
+                        return valid;
 		}
 	}
 
+        @Override
 	public Color getFillColor() {
 		return fillColor;
 	}
 
+        @Override
 	public void setFillColor(Color fillColor) {
 		this.fillColor = fillColor;
 	}
 
+        @Override
 	public Map<String, String> getPersistentProperties() {
 		HashMap<String, String> ret = new HashMap<String, String>();
 		ret.putAll(super.getPersistentProperties());

@@ -42,11 +42,11 @@ import java.awt.geom.NoninvertibleTransformException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.gdms.data.types.GeometryTypeConstraint;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
+import org.gdms.data.types.Type;
 
 public abstract class AbstractLineSymbol extends AbstractGeometrySymbol
 		implements StandardLineSymbol {
@@ -61,36 +61,43 @@ public abstract class AbstractLineSymbol extends AbstractGeometrySymbol
 		this.mapUnits = mapUnits;
 	}
 
+        @Override
 	public boolean willDrawSimpleGeometry(Geometry geom) {
 		return geom instanceof LineString || geom instanceof MultiLineString;
 	}
 
-	public boolean acceptGeometryType(GeometryTypeConstraint GeometryTypeConstraint) {
-		if (GeometryTypeConstraint == null) {
+        @Override
+	public boolean acceptGeometryType(Type geomType) {
+		if (geomType == null || geomType.getTypeCode() == Type.NULL) {
 			return true;
 		} else {
-			int geometryType = GeometryTypeConstraint.getGeometryType();
-			return (geometryType == GeometryTypeConstraint.LINESTRING)
-					|| (geometryType == GeometryTypeConstraint.MULTI_LINESTRING);
+			int geometryType = geomType.getTypeCode();
+			return (geometryType == Type.LINESTRING)
+					|| (geometryType == Type.MULTILINESTRING);
 		}
 	}
 
+        @Override
 	public int getLineWidth() {
 		return lineWidth;
 	}
 
+        @Override
 	public Color getOutlineColor() {
 		return outline;
 	}
 
+        @Override
 	public void setLineWidth(int value) {
 		lineWidth = value;
 	}
 
+        @Override
 	public void setOutlineColor(Color color) {
 		outline = color;
 	}
 
+        @Override
 	public Map<String, String> getPersistentProperties() {
 		HashMap<String, String> ret = new HashMap<String, String>();
 		ret.putAll(super.getPersistentProperties());
@@ -109,6 +116,7 @@ public abstract class AbstractLineSymbol extends AbstractGeometrySymbol
 		return ret;
 	}
 
+        @Override
 	public void setPersistentProperties(Map<String, String> props) {
 		super.setPersistentProperties(props);
 		String outlineColor = props.get("outline-color");
@@ -126,10 +134,12 @@ public abstract class AbstractLineSymbol extends AbstractGeometrySymbol
 		}
 	}
 
+        @Override
 	public boolean isMapUnits() {
 		return mapUnits;
 	}
 
+        @Override
 	public void setMapUnits(boolean mapUnits) {
 		this.mapUnits = mapUnits;
 	}

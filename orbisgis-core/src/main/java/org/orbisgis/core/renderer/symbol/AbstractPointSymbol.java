@@ -42,11 +42,11 @@ import java.awt.geom.NoninvertibleTransformException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.gdms.data.types.GeometryTypeConstraint;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
+import org.gdms.data.types.Type;
 
 public abstract class AbstractPointSymbol extends AbstractPolygonSymbol
 		implements StandardPointSymbol {
@@ -81,13 +81,13 @@ public abstract class AbstractPointSymbol extends AbstractPolygonSymbol
 		this.fillColor = fillColor;
 	}
 
-	public boolean acceptGeometryType(GeometryTypeConstraint GeometryTypeConstraint) {
-		if (GeometryTypeConstraint == null) {
-			return true;
+	public boolean acceptGeometryType(Type geometrytype) {
+		if (geometrytype== null || geometrytype.getTypeCode() == Type.NULL) {
+			return false;
 		} else {
-			int geometryType = GeometryTypeConstraint.getGeometryType();
-			return (geometryType == GeometryTypeConstraint.POINT)
-					|| (geometryType == GeometryTypeConstraint.MULTI_POINT);
+			int geometryType = geometrytype.getTypeCode();
+			return (geometryType == Type.POINT)
+					|| (geometryType == geometrytype.MULTIPOINT);
 		}
 	}
 

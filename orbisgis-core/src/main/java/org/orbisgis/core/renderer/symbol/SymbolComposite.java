@@ -40,13 +40,13 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 
-import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import org.gdms.data.types.Type;
 
 class SymbolComposite extends AbstractSymbol implements Symbol {
 
@@ -57,6 +57,7 @@ class SymbolComposite extends AbstractSymbol implements Symbol {
 		setName("Symbol composite");
 	}
 
+        @Override
 	public Envelope draw(Graphics2D g, Geometry geom, MapTransform mt,
 			RenderContext permission) throws DriverException {
 		Envelope ret = null;
@@ -72,6 +73,7 @@ class SymbolComposite extends AbstractSymbol implements Symbol {
 		return ret;
 	}
 
+        @Override
 	public boolean acceptGeometry(Geometry geom) {
 		for (Symbol symbol : symbols) {
 			if (symbol.acceptGeometry(geom)) {
@@ -81,19 +83,22 @@ class SymbolComposite extends AbstractSymbol implements Symbol {
 		return false;
 	}
 
-	public boolean acceptGeometryType(GeometryTypeConstraint GeometryTypeConstraint) {
+        @Override
+	public boolean acceptGeometryType(Type geomType) {
 		for (Symbol symbol : symbols) {
-			if (symbol.acceptGeometryType(GeometryTypeConstraint)) {
+			if (symbol.acceptGeometryType(geomType)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
+        @Override
 	public int getSymbolCount() {
 		return symbols.length;
 	}
 
+        @Override
 	public Symbol getSymbol(int i) {
 		return symbols[i];
 	}
@@ -103,10 +108,12 @@ class SymbolComposite extends AbstractSymbol implements Symbol {
 		return true;
 	}
 
+        @Override
 	public String getId() {
 		return "org.orbisgis.symbol.Composite";
 	}
 
+        @Override
 	public Symbol cloneSymbol() {
 		Symbol[] children = new Symbol[symbols.length];
 		for (int i = 0; i < children.length; i++) {
@@ -115,6 +122,7 @@ class SymbolComposite extends AbstractSymbol implements Symbol {
 		return new SymbolComposite(children);
 	}
 
+        @Override
 	public String getClassName() {
 		return "Composite";
 	}

@@ -38,9 +38,9 @@ package org.orbisgis.core.renderer.symbol;
 
 import java.awt.Color;
 
-import org.gdms.data.types.GeometryTypeConstraint;
 
 import com.vividsolutions.jts.geom.Geometry;
+import org.gdms.data.types.Type;
 
 public class HalfCircleRightVertexSymbol extends HalfCircleRightPointSymbol {
 
@@ -55,7 +55,7 @@ public class HalfCircleRightVertexSymbol extends HalfCircleRightPointSymbol {
 	}
 
 	@Override
-	public boolean acceptGeometryType(GeometryTypeConstraint GeometryTypeConstraint) {
+	public boolean acceptGeometryType(Type geomType) {
 		return true;
 	}
 

@@ -47,7 +47,6 @@ import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
@@ -56,6 +55,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
+import org.gdms.data.types.Type;
 
 public class LabelSymbol extends AbstractSymbol implements Symbol {
 
@@ -167,7 +167,7 @@ public class LabelSymbol extends AbstractSymbol implements Symbol {
 		return "Label";
 	}
 
-	public boolean acceptGeometryType(GeometryTypeConstraint GeometryTypeConstraint) {
+	public boolean acceptGeometryType(Type geometryType) {
 		return true;
 	}
 

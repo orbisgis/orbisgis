@@ -7,13 +7,13 @@ import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.PathIterator;
 
-import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import org.gdms.data.types.Type;
 
 public class SelectionSymbol extends AbstractGeometrySymbol {
 
@@ -40,7 +40,7 @@ public class SelectionSymbol extends AbstractGeometrySymbol {
 	}
 
 	@Override
-	public boolean acceptGeometryType(GeometryTypeConstraint GeometryTypeConstraint) {
+	public boolean acceptGeometryType(Type geomType) {
 		return true;
 	}
 

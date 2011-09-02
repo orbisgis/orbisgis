@@ -45,7 +45,6 @@ import java.awt.Shape;
 import java.awt.geom.PathIterator;
 import java.util.Map;
 
-import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
@@ -55,6 +54,9 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.MultiPoint;
+import org.gdms.data.types.Constraint;
+import org.gdms.data.types.GeometryDimensionConstraint;
+import org.gdms.data.types.Type;
 
 public class ArrowSymbol extends AbstractPointSymbol implements
 		StandardPointSymbol {
@@ -74,14 +76,32 @@ public class ArrowSymbol extends AbstractPointSymbol implements
 	}
 
 	@Override
-	public boolean acceptGeometryType(GeometryTypeConstraint GeometryTypeConstraint) {
-		if (GeometryTypeConstraint == null) {
+	public boolean acceptGeometryType(Type geomType) {
+		if (geomType == null) {
 			return true;
 		} else {
-			int geometryType = GeometryTypeConstraint.getGeometryType();
-			return (geometryType == GeometryTypeConstraint.MULTI_POINT)
-					|| (geometryType == GeometryTypeConstraint.LINESTRING)
-					|| (geometryType == GeometryTypeConstraint.MULTI_LINESTRING);
+			int geometryType = geomType.getTypeCode();
+			boolean valid = geometryType == Type.MULTIPOINT
+					|| geometryType == Type.LINESTRING
+					|| geometryType == Type.MULTILINESTRING;
+                        if(!valid && (geometryType == Type.GEOMETRY || geometryType==Type.GEOMETRYCOLLECTION )){
+                                //There is still a manageable case : a Geometry or GeometryCollection
+                                //with a GeometryDimensionConstraint placed on it. There are two valid 
+                                //configuration : a generic geometry that is a line, or a generic geometry collection
+                                //that contains only points or only lines, because these two configurations will allow
+                                //only Line, MultiLine and MultiPoint types.
+                                GeometryDimensionConstraint gdc = 
+                                               (GeometryDimensionConstraint) geomType.getConstraint(Constraint.DIMENSION_2D_GEOMETRY);
+                                if(gdc != null){
+                                        boolean line = geometryType == Type.GEOMETRY 
+                                                        && gdc.getDimension() == GeometryDimensionConstraint.DIMENSION_LINE;
+                                        boolean lineOrPt = geometryType==Type.GEOMETRYCOLLECTION
+                                                        && gdc.getDimension() == GeometryDimensionConstraint.DIMENSION_LINE
+                                                        && gdc.getDimension() == GeometryDimensionConstraint.DIMENSION_POINT;
+                                        valid = line || lineOrPt;
+                                }
+                        }
+                        return valid;
 		}
 	}
 

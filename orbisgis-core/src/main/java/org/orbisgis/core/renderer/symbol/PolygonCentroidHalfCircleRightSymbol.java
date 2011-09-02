@@ -41,7 +41,6 @@ import java.awt.Graphics2D;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 
-import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
@@ -51,6 +50,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+import org.gdms.data.types.Type;
 
 public class PolygonCentroidHalfCircleRightSymbol extends
 		AbstractHalfCirclePointSymbol {
@@ -85,13 +85,13 @@ public class PolygonCentroidHalfCircleRightSymbol extends
 	}
 
 	@Override
-	public boolean acceptGeometryType(GeometryTypeConstraint GeometryTypeConstraint) {
-		if (GeometryTypeConstraint == null) {
+	public boolean acceptGeometryType(Type geomType) {
+		if (geomType == null || geomType.getTypeCode() == Type.GEOMETRY|| geomType.getTypeCode() == Type.GEOMETRYCOLLECTION) {
 			return true;
 		} else {
-			int geometryType = GeometryTypeConstraint.getGeometryType();
-			return (geometryType == GeometryTypeConstraint.POLYGON)
-					|| (geometryType == GeometryTypeConstraint.MULTI_POLYGON);
+			int geometryType = geomType.getTypeCode();
+			return geometryType == Type.POLYGON
+					|| geometryType == Type.MULTIPOLYGON;
 		}
 	}
 
