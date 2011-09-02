@@ -49,6 +49,7 @@ public interface Constraint {
 
         int AUTO_INCREMENT = 1;
         int SRID = 2;
+        int GEOMETRY_TYPE = 4;
         int DIMENSION_3D_GEOMETRY = 8;
         int LENGTH = 16;
         int MAX = 32;

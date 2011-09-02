@@ -77,6 +77,9 @@ public final class ConstraintFactory {
                         case Constraint.SRID:
                                 c = new SRIDConstraint(constraintBytes);
                                 break;
+                        case Constraint.GEOMETRY_TYPE:
+                                c = new GeometryTypeConstraint(constraintBytes);
+                                break;
                         case Constraint.DIMENSION_3D_GEOMETRY:
                                 c = new Dimension3DConstraint(constraintBytes);
                                 break;
