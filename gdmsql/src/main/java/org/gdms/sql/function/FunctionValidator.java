@@ -258,13 +258,13 @@ public final class FunctionValidator {
                                                 }
                                                 ScalarArgument arg = (ScalarArgument) arguments[j];
                                                 //We must make a special check for geometry types.
-                                                boolean geomCompatibles = true;
+                                                boolean notGeomCompatibles = true;
                                                 int argType = arg.getTypeCode();
                                                 int typeC = types[typeId].getTypeCode();
                                                 if(TypeFactory.isVectorial(typeC)){
-                                                        geomCompatibles = (typeC & argType) != 0;
+                                                        notGeomCompatibles = (typeC & argType) == 0;
                                                 }
-                                                if (!TypeFactory.canBeCastTo(typeC, argType) && !geomCompatibles) {
+                                                if (!TypeFactory.canBeCastTo(typeC, argType) && notGeomCompatibles) {
                                                         ok = false;
                                                         break;
                                                 }
