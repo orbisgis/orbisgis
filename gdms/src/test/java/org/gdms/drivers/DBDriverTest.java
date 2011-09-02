@@ -85,12 +85,12 @@ public class DBDriverTest extends TestBase {
         private static final SimpleDateFormat stf = new SimpleDateFormat("HH:mm:ss");
         private static final HashMap<Integer, Value> sampleValues = new HashMap<Integer, Value>();
         private static Type[] geometryConstraints = new Type[]{
-                TypeFactory.createType(Type.POINT|Type.GEOMETRY),
-                TypeFactory.createType(Type.LINESTRING|Type.GEOMETRY),
-                TypeFactory.createType(Type.POLYGON|Type.GEOMETRY),
-                TypeFactory.createType(Type.MULTIPOINT|Type.GEOMETRY),
-                TypeFactory.createType(Type.MULTILINESTRING|Type.GEOMETRY),
-                TypeFactory.createType(Type.MULTIPOLYGON|Type.GEOMETRY), null};
+                TypeFactory.createType(Type.POINT),
+                TypeFactory.createType(Type.LINESTRING),
+                TypeFactory.createType(Type.POLYGON),
+                TypeFactory.createType(Type.MULTIPOINT),
+                TypeFactory.createType(Type.MULTILINESTRING),
+                TypeFactory.createType(Type.MULTIPOLYGON), null};
 
         static {
                 try {
@@ -346,7 +346,7 @@ public class DBDriverTest extends TestBase {
                 ds.commit();
                 ds.close();
                 ds.open();
-                ds.addField("the_geom", TypeFactory.createType(Type.GEOMETRY|Type.POINT));
+                ds.addField("the_geom", TypeFactory.createType(Type.POINT));
                 ds.commit();
                 ds.close();
         }

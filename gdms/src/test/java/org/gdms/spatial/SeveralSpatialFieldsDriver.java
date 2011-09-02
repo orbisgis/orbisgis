@@ -115,7 +115,7 @@ public class SeveralSpatialFieldsDriver extends MemoryDataSetDriver {
 	private void calculateEnvelopes() {
 		for (List<Value> row : contents) {
 			for (Value value : row) {
-				if (value.getType() == Type.GEOMETRY) {
+				if ((value.getType() & Type.GEOMETRY) != 0) {
 					if (envelope != null) {
 						envelope.expandToInclude(value.getAsGeometry()
 								.getEnvelopeInternal());

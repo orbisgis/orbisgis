@@ -195,7 +195,7 @@ public class GDMSDriverTest {
                         TypeFactory.createType(Type.DATE, new ReadOnlyConstraint()),
                         TypeFactory.createType(Type.DOUBLE, new AutoIncrementConstraint()),
                         TypeFactory.createType(Type.FLOAT),
-                        TypeFactory.createType(Type.GEOMETRY|Type.LINESTRING, new Dimension3DConstraint(3)),
+                        TypeFactory.createType(Type.LINESTRING, new Dimension3DConstraint(3)),
                         TypeFactory.createType(Type.INT),
                         TypeFactory.createType(Type.LONG),
                         TypeFactory.createType(Type.RASTER, new RasterTypeConstraint(ImagePlus.COLOR_256)),

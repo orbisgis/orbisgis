@@ -185,7 +185,7 @@ public class ShapefileDriverTest {
 
                 DefaultMetadata m = new DefaultMetadata();
                 m.addField("thelongernameintheworld", Type.STRING);
-                m.addField("", Type.GEOMETRY | Type.POLYGON);
+                m.addField("", Type.POLYGON);
                 File shpFile = new File(TestBase.backupDir,
                         "outputtestFieldNameTooLong.shp");
                 if (shpFile.exists()) {
@@ -203,7 +203,7 @@ public class ShapefileDriverTest {
                 DefaultMetadata m = new DefaultMetadata();
                 m.addField("string", Type.STRING);
                 m.addField("int", Type.INT);
-                m.addField("", Type.GEOMETRY | Type.POLYGON);
+                m.addField("", Type.POLYGON);
                 File shpFile = new File(TestBase.backupDir,
                         "outputtestNullStringValue.shp");
                 if (shpFile.exists()) {
@@ -226,7 +226,7 @@ public class ShapefileDriverTest {
         @Test
         public void test2DReadWriteMultipolygon() throws Exception {
                 Geometry geom = wktReader.read("MULTIPOLYGON ((( 107 113, 107 293, 368 293, 368 113, 107 113 )), (( 178 246, 178 270, 196 270, 196 246, 178 246 )))");
-                test2DReadWrite(Type.MULTIPOLYGON | Type.GEOMETRY, geom);
+                test2DReadWrite(Type.MULTIPOLYGON, geom);
         }
 
         public void test2DReadWrite(int geometryType, Geometry geom)
@@ -258,12 +258,12 @@ public class ShapefileDriverTest {
 
         @Test
         public void test3DReadWritePoint() throws Exception {
-                test3DReadWrite(Type.POINT| Type.GEOMETRY, Geometries.getPoint3D());
+                test3DReadWrite(Type.POINT, Geometries.getPoint3D());
         }
 
         @Test
         public void test3DReadWriteLineString() throws Exception {
-                test3DReadWrite(Type.MULTILINESTRING| Type.GEOMETRY, Geometries.getMultilineString3D());
+                test3DReadWrite(Type.MULTILINESTRING, Geometries.getMultilineString3D());
         }
 
         @Test
@@ -275,12 +275,12 @@ public class ShapefileDriverTest {
                                 new Coordinate(0, 0, 20)});
                 Polygon pol = gf.createPolygon(lr, null);
                 MultiPolygon multiPol = gf.createMultiPolygon(new Polygon[]{pol});
-                test3DReadWrite(Type.MULTIPOLYGON| Type.GEOMETRY, multiPol);
+                test3DReadWrite(Type.MULTIPOLYGON, multiPol);
         }
 
         @Test
         public void test3DReadWriteMultipoint() throws Exception {
-                test3DReadWrite(Type.MULTIPOINT|Type.GEOMETRY, Geometries.getMultiPoint3D());
+                test3DReadWrite(Type.MULTIPOINT, Geometries.getMultiPoint3D());
         }
 
         public void test3DReadWrite(int geometryType, Geometry geom)
@@ -331,7 +331,7 @@ public class ShapefileDriverTest {
         public void testWrongTypeForDBF() throws Exception {
                 DefaultMetadata m = new DefaultMetadata();
                 m.addField("id", Type.TIMESTAMP);
-                m.addField("", Type.GEOMETRY|Type.POINT,
+                m.addField("", Type.POINT,
                         new Dimension3DConstraint(3));
                 File shpFile = new File(TestBase.backupDir,
                         "outputtestWrongTypeForDBF.shp");
@@ -467,7 +467,7 @@ public class ShapefileDriverTest {
         @Test
         public void testNullDates() throws Exception {
                 DefaultMetadata m = new DefaultMetadata();
-                m.addField("geom", TypeFactory.createType(Type.GEOMETRY|Type.LINESTRING));
+                m.addField("geom", TypeFactory.createType(Type.LINESTRING));
                 m.addField("date", Type.DATE);
                 DataSourceCreation dsc = new FileSourceCreation(new File(dsf.getTempFile()
                         + ".shp"), m);

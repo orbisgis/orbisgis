@@ -277,7 +277,7 @@ public class SpatialEditionTest extends TestBase {
                 shpFile.delete();
                 new File("src/test/resources/backup/big.shx").delete();
                 DefaultMetadata dsdm = new DefaultMetadata();
-                dsdm.addField("geom", Type.GEOMETRY | Type.LINESTRING);
+                dsdm.addField("geom", Type.LINESTRING);
                 dsdm.addField("text", Type.STRING, new LengthConstraint(10));
 
                 dsf.createDataSource(new FileSourceCreation(shpFile, dsdm));

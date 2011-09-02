@@ -325,7 +325,7 @@ public abstract class TestBase extends SourceTest<Value, Geometry> {
                                                         pkType = fieldType.getTypeCode();
                                                         newPK = getPKFor(testData, testData.getFieldIndexByName(fieldName));
                                                 }
-                                        } else if (fieldType.getTypeCode() != Type.GEOMETRY) {
+                                        } else if ((fieldType.getTypeCode() & Type.GEOMETRY) == 0) {
                                                 noPKField = fieldName;
                                         }
 
@@ -341,12 +341,12 @@ public abstract class TestBase extends SourceTest<Value, Geometry> {
                                                 case Type.SHORT:
                                                         numericField = fieldName;
                                                         break;
-                                                case Type.GEOMETRY | Type.POINT:
-                                                case Type.GEOMETRY | Type.MULTIPOINT:
-                                                case Type.GEOMETRY | Type.POLYGON:
-                                                case Type.GEOMETRY | Type.MULTIPOLYGON:
-                                                case Type.GEOMETRY | Type.LINESTRING:
-                                                case Type.GEOMETRY | Type.MULTILINESTRING:
+                                                case Type.POINT:
+                                                case Type.MULTIPOINT:
+                                                case Type.POLYGON:
+                                                case Type.MULTIPOLYGON:
+                                                case Type.LINESTRING:
+                                                case Type.MULTILINESTRING:
                                                         spatialField = fieldName;
                                                         geometryType = typeCode;
                                                         Dimension3DConstraint dc = (Dimension3DConstraint) fieldType.getConstraint(Constraint.DIMENSION_3D_GEOMETRY);
@@ -360,11 +360,11 @@ public abstract class TestBase extends SourceTest<Value, Geometry> {
                                                                 (GeometryDimensionConstraint) fieldType.getConstraint(Constraint.DIMENSION_2D_GEOMETRY);
                                                         if(gdc1 != null){
                                                                 if (gdc1.getConstraintIntValue()==GeometryDimensionConstraint.DIMENSION_POINT){
-                                                                        geometryType = Type.GEOMETRY | Type.POINT;
+                                                                        geometryType = Type.POINT;
                                                                 } else if (gdc1.getConstraintIntValue()==GeometryDimensionConstraint.DIMENSION_LINE){
-                                                                        geometryType = Type.GEOMETRY | Type.LINESTRING;
+                                                                        geometryType = Type.LINESTRING;
                                                                 } else if (gdc1.getConstraintIntValue()==GeometryDimensionConstraint.DIMENSION_POLYGON){
-                                                                        geometryType = Type.GEOMETRY | Type.POLYGON;
+                                                                        geometryType = Type.POLYGON;
                                                                 }
                                                         }
                                                         Dimension3DConstraint dcr = 
@@ -373,16 +373,16 @@ public abstract class TestBase extends SourceTest<Value, Geometry> {
                                                                 dimension = dcr.getDimension();
                                                         }
                                                         break;
-                                                case Type.GEOMETRY | Type.GEOMETRYCOLLECTION:
+                                                case Type.GEOMETRYCOLLECTION:
                                                         GeometryDimensionConstraint gdc2 = 
                                                                 (GeometryDimensionConstraint) fieldType.getConstraint(Constraint.DIMENSION_2D_GEOMETRY);
                                                         if(gdc2 != null){
                                                                 if (gdc2.getConstraintIntValue()==GeometryDimensionConstraint.DIMENSION_POINT){
-                                                                        geometryType = Type.GEOMETRY | Type.MULTIPOINT;
+                                                                        geometryType = Type.MULTIPOINT;
                                                                 } else if (gdc2.getConstraintIntValue()==GeometryDimensionConstraint.DIMENSION_LINE){
-                                                                        geometryType = Type.GEOMETRY | Type.MULTILINESTRING;
+                                                                        geometryType = Type.MULTILINESTRING;
                                                                 } else if (gdc2.getConstraintIntValue()==GeometryDimensionConstraint.DIMENSION_POLYGON){
-                                                                        geometryType = Type.GEOMETRY | Type.MULTIPOLYGON;
+                                                                        geometryType = Type.MULTIPOLYGON;
                                                                 }
                                                         }
                                                         

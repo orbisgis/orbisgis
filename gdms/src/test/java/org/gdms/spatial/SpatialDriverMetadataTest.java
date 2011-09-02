@@ -70,7 +70,7 @@ public class SpatialDriverMetadataTest extends TestBase {
                 Metadata sdm = sds.getMetadata();
                 boolean has = false;
                 for (int i = 0; i < sdm.getFieldCount(); i++) {
-                        if (sdm.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
+                        if ((sdm.getFieldType(i).getTypeCode() & Type.GEOMETRY) != 0) {
                                 has = true;
                                 break;
                         }
