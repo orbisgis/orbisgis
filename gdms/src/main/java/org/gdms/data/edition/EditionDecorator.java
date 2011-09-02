@@ -928,19 +928,18 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
                         }
                 }
 
-                // Cast value
-                Value returned = castValue(type, value);
-
                 //Test geometry types.
                 if(TypeFactory.isVectorial(type.getTypeCode())){
-                        int valueType = returned.getType();
+                        int valueType = value.getType();
                         int fieldType = type.getTypeCode();
                         if(!checkGeometry(valueType, fieldType)){
                                 return "Can't put a "+TypeFactory.getTypeName(valueType)+" in a "
                                         +TypeFactory.getTypeName(fieldType) +" column.";
                         }
-                        
                 }
+                // Cast value
+                Value returned = castValue(type, value);
+
                 // Check constraints
                 String fieldName = getMetadata().getFieldName(fieldId);
                 String error = type.check(value);
