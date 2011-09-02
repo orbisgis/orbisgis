@@ -175,9 +175,9 @@ public final class GeometryTypeUtil {
          * throw a InvalidArgumentException
          * @param type
          * @return 
-         * <ul><li>0 : if we have a point or a collection of points</li>
-         * <li>1 : if we have a line or a collection of lines</li>
-         * <li>2 : if we have a polygon or collection of polygons</li>
+         * <ul><li>{@code GeometryDimensionConstraint.DIMENSION_POINT} : if we have a point or a collection of points</li>
+         * <li>{@code GeometryDimensionConstraint.DIMENSION_LINE} : if we have a line or a collection of lines</li>
+         * <li>{@code GeometryDimensionConstraint.DIMENSION_POLYGON} : if we have a polygon or collection of polygons</li>
          * <li>-1 otherwise (if the type is too generic)</li></ul>
          */
         public static int getTypeDimension(Type type){
@@ -187,13 +187,13 @@ public final class GeometryTypeUtil {
                         switch(type.getTypeCode()){
                                 case Type.POINT:
                                 case Type.MULTIPOINT:
-                                        return 0;
+                                        return GeometryDimensionConstraint.DIMENSION_POINT;
                                 case Type.LINESTRING:
                                 case Type.MULTILINESTRING:
-                                        return 1;
+                                        return GeometryDimensionConstraint.DIMENSION_LINE;
                                 case Type.POLYGON:
                                 case Type.MULTIPOLYGON:
-                                        return 2;
+                                        return GeometryDimensionConstraint.DIMENSION_POLYGON;
                                 case Type.GEOMETRY:
                                 case Type.GEOMETRYCOLLECTION:
                                         GeometryDimensionConstraint gdc = 
@@ -201,16 +201,7 @@ public final class GeometryTypeUtil {
                                         if(gdc == null){
                                                 return -1;
                                         } else {
-                                                switch(gdc.getDimension()){
-                                                        case GeometryDimensionConstraint.DIMENSION_POINT:
-                                                                return 0;
-                                                        case GeometryDimensionConstraint.DIMENSION_LINE:
-                                                                return 1;
-                                                        case GeometryDimensionConstraint.DIMENSION_POLYGON:
-                                                                return 2;
-                                                        default:
-                                                                return -1;
-                                                }
+                                                return gdc.getDimension();
                                         }
                                 default:
                                         return -1;
