@@ -252,6 +252,8 @@ public final class ConstraintFactory {
                 switch (code) {
                         case Constraint.DIMENSION_3D_GEOMETRY:
                                 return new Dimension3DConstraint(i);
+                        case Constraint.DIMENSION_2D_GEOMETRY:
+                                return new GeometryDimensionConstraint(i);
                         case Constraint.LENGTH:
                                 return new LengthConstraint(i);
                         case Constraint.MAX:
