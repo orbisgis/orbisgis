@@ -51,7 +51,6 @@ import org.gdms.data.edition.EditionEvent;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MultipleEditionEvent;
 import org.gdms.data.schema.Metadata;
-import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
@@ -123,10 +122,12 @@ public class Layer extends GdmsLayer {
 		return legend;
 	}
 
+        @Override
 	public DataSource getDataSource() {
 		return dataSource;
 	}
 
+        @Override
 	public Envelope getEnvelope() {
 		Envelope result = new Envelope();
 
@@ -142,6 +143,7 @@ public class Layer extends GdmsLayer {
 		return result;
 	}
 
+        @Override
 	public void close() throws LayerException {
 		super.close();
 		try {
@@ -154,6 +156,7 @@ public class Layer extends GdmsLayer {
 		}
 	}
 
+        @Override
 	public void open() throws LayerException {
 		super.open();
 		try {
@@ -197,12 +200,14 @@ public class Layer extends GdmsLayer {
 	 * @throws DriverException
 	 *             If there is some problem accessing the contents of the layer
 	 */
+        @Override
 	public void setLegend(Legend... legends) throws DriverException {
 		String defaultFieldName = dataSource.getMetadata().getFieldName(
 				dataSource.getSpatialFieldIndex());
 		setLegend(defaultFieldName, legends);
 	}
 
+        @Override
 	public Legend[] getRenderingLegend() throws DriverException {
 		int sfi = dataSource.getSpatialFieldIndex();
 		String defaultFieldName = dataSource.getMetadata().getFieldName(sfi);
@@ -243,7 +248,7 @@ public class Layer extends GdmsLayer {
         @Override
 	public Legend[] getVectorLegend(String fieldName) throws DriverException {
 		int sfi = getFieldIndexForLegend(fieldName);
-		validateType(sfi, Type.GEOMETRY, I18N.getString("org.orbisgis.layerModel.layer.vector")); //$NON-NLS-1$
+		validateVectorType(sfi, Type.GEOMETRY, I18N.getString("org.orbisgis.layerModel.layer.vector")); //$NON-NLS-1$
 		LegendDecorator[] legends = fieldLegend.get(fieldName);
 		Legend[] ret = new Legend[legends.length];
 		for (int i = 0; i < ret.length; i++) {
@@ -253,11 +258,28 @@ public class Layer extends GdmsLayer {
 		return ret;
 	}
 
+        /**
+         * Validate fieldType against the type referenced in the metadata of the associated
+         * datasource, at field index sfi (which is supposed to be the spatial field index).
+         * @param sfi The index of the spatial field in the metadata
+         * @param fieldType The fieldType we want to validate.
+         * @param type Used for the (eventual) thrown exception
+         */
+        private void validateVectorType(int sfi, int fieldType, String type) throws DriverException{
+		Metadata metadata = dataSource.getMetadata();
+                if(fieldType == Type.NULL || (fieldType & metadata.getFieldType(sfi).getTypeCode()) == 0){
+			throw new IllegalArgumentException(I18N.getString("org.orbisgis.layerModel.layer.the") + 
+                                I18N.getString("org.orbisgis.layerModel.layer.fieldIsNot") + type); //$NON-NLS-1$ //$NON-NLS-2$
+                }
+                
+        }
+        
 	private void validateType(int sfi, int fieldType, String type)
 			throws DriverException {
 		Metadata metadata = dataSource.getMetadata();
 		if (metadata.getFieldType(sfi).getTypeCode() != fieldType) {
-			throw new IllegalArgumentException(I18N.getString("org.orbisgis.layerModel.layer.the") + I18N.getString("org.orbisgis.layerModel.layer.fieldIsNot") + type); //$NON-NLS-1$ //$NON-NLS-2$
+			throw new IllegalArgumentException(I18N.getString("org.orbisgis.layerModel.layer.the") + 
+                                I18N.getString("org.orbisgis.layerModel.layer.fieldIsNot") + type); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -269,6 +291,7 @@ public class Layer extends GdmsLayer {
 		return sfi;
 	}
 
+        @Override
 	public RasterLegend[] getRasterLegend(String fieldName)
 			throws DriverException {
 		int sfi = getFieldIndexForLegend(fieldName);
@@ -282,6 +305,7 @@ public class Layer extends GdmsLayer {
 		return ret;
 	}
 
+        @Override
 	public void setLegend(String fieldName, Legend... legends)
 			throws DriverException {
 		if (dataSource.getFieldIndexByName(fieldName) == -1) {
@@ -319,14 +343,17 @@ public class Layer extends GdmsLayer {
 		return decorated;
 	}
 
+        @Override
 	public boolean isRaster() throws DriverException {
 		return dataSource.isRaster();
 	}
 
+        @Override
 	public boolean isVectorial() throws DriverException {
 		return dataSource.isVectorial();
 	}
 
+        @Override
 	public GeoRaster getRaster() throws DriverException {
 		if (!isRaster()) {
 			throw new UnsupportedOperationException(
@@ -337,6 +364,7 @@ public class Layer extends GdmsLayer {
 
 	private class RefreshSelectionEditionListener implements EditionListener {
 
+                @Override
 		public void multipleModification(MultipleEditionEvent e) {
 			EditionEvent[] events = e.getEvents();
 			int[] selection = getSelection();
@@ -348,6 +376,7 @@ public class Layer extends GdmsLayer {
 			setSelection(selection);
 		}
 
+                @Override
 		public void singleModification(EditionEvent e) {
 			if (e.getType() == EditionEvent.DELETE) {
 				int[] selection = getSelection();
@@ -378,6 +407,7 @@ public class Layer extends GdmsLayer {
 		}
 	}
 
+        @Override
 	public LayerType saveLayer() {
 		LayerType ret = new LayerType();
 		ret.setName(getName());
@@ -406,6 +436,7 @@ public class Layer extends GdmsLayer {
 		return ret;
 	}
 
+        @Override
 	public void restoreLayer(LayerType lyr) throws LayerException {
 		LayerType layer = (LayerType) lyr;
 		this.setName(layer.getName());
