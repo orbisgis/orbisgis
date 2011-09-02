@@ -662,7 +662,8 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                 for (int i = 0; i < m.getFieldCount(); i++) {
                         Type fieldType = m.getFieldType(i);
                         int typeCode = fieldType.getTypeCode();
-                        if (typeCode == Type.GEOMETRY) {
+                        if (TypeFactory.isVectorial(typeCode) && typeCode != Type.NULL){
+                                //At this point, we're sure we have a geometry type that is not Type.NULL
                                 if (spatialIndex != -1) {
                                         return "Cannot store sources with several geometries on a shapefile: "
                                                 + m.getFieldName(spatialIndex)
@@ -670,12 +671,9 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                                                 + m.getFieldName(i) + " found";
                                 } else {
                                         
-                                        GeometryTypeConstraint gc = (GeometryTypeConstraint) fieldType.getConstraint(Constraint.GEOMETRY_TYPE);
-                                        if (gc == null) {
-                                                return "A geometry type have to be specified";
-                                        } else if (gc.getGeometryType() == GeometryTypeConstraint.LINESTRING) {
+                                        if ((typeCode & Type.LINESTRING) != 0) {
                                                 return "Linestrings are not allowed. Use Multilinestrings instead";
-                                        } else if (gc.getGeometryType() == GeometryTypeConstraint.POLYGON) {
+                                        } else if ((typeCode & Type.POLYGON) != 0) {
                                                 return "Polygons are not allowed. Use Multipolygons instead";
                                         }
                                         Dimension3DConstraint dc = (Dimension3DConstraint) fieldType.getConstraint(Constraint.DIMENSION_3D_GEOMETRY);
