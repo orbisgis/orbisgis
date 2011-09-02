@@ -53,7 +53,6 @@ import org.gdms.data.WarningListener;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Dimension3DConstraint;
-import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -77,6 +76,7 @@ import com.vividsolutions.jts.io.WKTWriter;
 import java.util.Map;
 import java.util.Properties;
 import org.apache.log4j.Logger;
+import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.data.types.SRIDConstraint;
 
 /**
@@ -313,26 +313,26 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                                                 String geomType = res.getString("type");
                                                 if (geomType.equals("MULTIPOLYGON")
                                                         || geomType.equals("MULTIPOLYGONM")) {
-                                                        tableDescriptions[i].setGeometryType(GeometryTypeConstraint.MULTI_POLYGON);
+                                                        tableDescriptions[i].setGeometryType(Type.MULTIPOLYGON);
                                                 } else if (geomType.equals("POLYGON")
                                                         || geomType.equals("POLYGONM")) {
-                                                        tableDescriptions[i].setGeometryType(GeometryTypeConstraint.POLYGON);
+                                                        tableDescriptions[i].setGeometryType(Type.POLYGON);
                                                 } else if (geomType.equals("POINT")
                                                         || geomType.equals("POINTM")) {
-                                                        tableDescriptions[i].setGeometryType(GeometryTypeConstraint.POINT);
+                                                        tableDescriptions[i].setGeometryType(Type.POINT);
                                                 } else if (geomType.equals("LINESTRING")
                                                         || geomType.equals("LINESTRINGM")) {
-                                                        tableDescriptions[i].setGeometryType(GeometryTypeConstraint.LINESTRING);
+                                                        tableDescriptions[i].setGeometryType(Type.LINESTRING);
                                                 } else if (geomType.equals("MULTILINESTRING")
                                                         || geomType.equals("MULTILINESTRINGM")) {
-                                                        tableDescriptions[i].setGeometryType(GeometryTypeConstraint.MULTI_LINESTRING);
+                                                        tableDescriptions[i].setGeometryType(Type.MULTILINESTRING);
                                                 } else if (geomType.equals("MULTIPOINT")
                                                         || geomType.equals("MULTIPOINTM")) {
-                                                        tableDescriptions[i].setGeometryType(GeometryTypeConstraint.MULTI_POINT);
+                                                        tableDescriptions[i].setGeometryType(Type.MULTIPOINT);
                                                 } else // if the type is GEOMETRY or in any other case, set
                                                 // the geometry type to ALL
                                                 {
-                                                        tableDescriptions[i].setGeometryType(GeometryTypeConstraint.ALL);
+                                                        tableDescriptions[i].setGeometryType(MetadataUtilities.ANYGEOMETRY);
                                                 }
                                                 break;
                                         }
@@ -358,7 +358,7 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                                                         res.next();
                                                         Object object = res.getObject(column);
                                                         if (object instanceof org.postgis.PGgeometry) {
-                                                                tableDescriptions[i].setGeometryType(GeometryTypeConstraint.ALL);
+                                                                tableDescriptions[i].setGeometryType(MetadataUtilities.ANYGEOMETRY);
                                                         }
 
                                                         break;
@@ -384,56 +384,49 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                         String geometryType = geometryTypes.get(fieldName);
                         int geometryDimension = geometryDimensions.get(fieldName);
 
-                        return TypeFactory.createType(Type.GEOMETRY, getConstraints(
-                                geometryType, geometryDimension, getWL()));
+                        return buildType(geometryType, geometryDimension, getWL());
                 } else {
                         return super.getGDMSType(resultsetMetadata, pkFieldsList, fkFieldsList,
                                 jdbcFieldIndex);
                 }
         }
 
-        private Constraint[] getConstraints(String geometryType,
+        private Type buildType(String geometryType,
                 int geometryDimension, WarningListener wl) throws DriverException {
-                Constraint gc;
-
+                int desiredCode;
                 if ("POINT".equals(geometryType)) {
-                        gc = new GeometryTypeConstraint(GeometryTypeConstraint.POINT);
+                        desiredCode=Type.POINT;
                 } else if ("MULTIPOINT".equals(geometryType)) {
-                        gc = new GeometryTypeConstraint(GeometryTypeConstraint.MULTI_POINT);
+                        desiredCode=Type.MULTIPOINT;
                 } else if ("LINESTRING".equals(geometryType)) {
-                        gc = new GeometryTypeConstraint(GeometryTypeConstraint.LINESTRING);
+                        desiredCode=Type.LINESTRING;
                 } else if ("MULTILINESTRING".equals(geometryType)) {
-                        gc = new GeometryTypeConstraint(GeometryTypeConstraint.MULTI_LINESTRING);
+                        desiredCode=Type.MULTILINESTRING;
                 } else if ("POLYGON".equals(geometryType)) {
-                        gc = new GeometryTypeConstraint(GeometryTypeConstraint.POLYGON);
+                        desiredCode=Type.POLYGON;
                 } else if ("MULTIPOLYGON".equals(geometryType)) {
-                        gc = new GeometryTypeConstraint(GeometryTypeConstraint.MULTI_POLYGON);
+                        desiredCode=Type.MULTIPOLYGON;
                 } else if (GEOMETRYFIELDNAME.equals(geometryType)) {
-                        gc = null;
+                        desiredCode=Type.GEOMETRY;
                 } else {
                         wl.throwWarning("Unrecognized geometry type: " + geometryType
                                 + ". Using 'MIXED'");
-                        gc = null;
+                        desiredCode = Type.NULL;
                 }
-
+                //We check the dimension and create the appropriate constraint.
                 Constraint dc;
                 if (geometryDimension == 3) {
                         dc = new Dimension3DConstraint(3);
                 } else {
                         dc = new Dimension3DConstraint(2);
                 }
-
+                //We check the SRID and create the appropriate constraint.
                 ArrayList<Constraint> cons = new ArrayList<Constraint>();
                 if (srid != -1) {
                         cons.add(new SRIDConstraint(srid));
                 }
-
-
-                if (gc != null) {
-                        cons.add(gc);
-                }
                 cons.add(dc);
-                return cons.toArray(new Constraint[cons.size()]);
+                return TypeFactory.createType(desiredCode,cons.toArray(new Constraint[cons.size()]));
         }
 
         @Override
@@ -495,11 +488,10 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
 
         private String getAddGeometryColumn(String fieldName, Type fieldType)
                 throws DriverException {
-                Constraint geometryConstraint = fieldType.getConstraint(Constraint.GEOMETRY_TYPE);
                 Dimension3DConstraint dimensionConstraint = (Dimension3DConstraint) fieldType.getConstraint(Constraint.DIMENSION_3D_GEOMETRY);
                 return "select AddGeometryColumn('" + schemaName + "', '" + tableName
                         + "', '" + fieldName + "', -1, '"
-                        + getGeometryTypeName(geometryConstraint) + "', '"
+                        + getGeometryTypeName(fieldType) + "', '"
                         + getGeometryDimension(dimensionConstraint) + "');";
         }
 
@@ -520,29 +512,38 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                 }
         }
 
-        private String getGeometryTypeName(Constraint constraint) {
-                if (constraint == null) {
+        private String getGeometryTypeName(Type type) {
+                if (type == null || type.getTypeCode() == Type.NULL) {
                         return GEOMETRYFIELDNAME;
                 } else {
-                        GeometryTypeConstraint gc = (GeometryTypeConstraint) constraint;
-
-                        switch (gc.getGeometryType()) {
-                                case GeometryTypeConstraint.POINT:
+                        int foundType = type.getTypeCode();
+                        switch (foundType) {
+                                case Type.POINT:
+                                case Type.POINT|Type.GEOMETRY:
                                         return "POINT";
-                                case GeometryTypeConstraint.LINESTRING:
+                                case Type.LINESTRING:
+                                case Type.LINESTRING|Type.GEOMETRY:
                                         return "LINESTRING";
-                                case GeometryTypeConstraint.POLYGON:
+                                case Type.POLYGON:
+                                case Type.POLYGON|Type.GEOMETRY:
                                         return "POLYGON";
-                                case GeometryTypeConstraint.MULTI_POINT:
+                                case Type.MULTIPOINT:
+                                case Type.MULTIPOINT|Type.GEOMETRY:
                                         return "MULTIPOINT";
-                                case GeometryTypeConstraint.MULTI_LINESTRING:
+                                case Type.MULTILINESTRING:
+                                case Type.MULTILINESTRING|Type.GEOMETRY:
                                         return "MULTILINESTRING";
-                                case GeometryTypeConstraint.MULTI_POLYGON:
+                                case Type.MULTIPOLYGON:
+                                case Type.MULTIPOLYGON|Type.GEOMETRY:
                                         return "MULTIPOLYGON";
+                                case Type.GEOMETRYCOLLECTION:
+                                case Type.GEOMETRYCOLLECTION|Type.GEOMETRY:
+                                case Type.GEOMETRY:
+                                        return GEOMETRYFIELDNAME;
                                 default:
                                         getWL().throwWarning(
                                                 "Bug in postgreSQL driver: "
-                                                + gc.getGeometryType());
+                                                + TypeFactory.getTypeName(foundType));
                                         return GEOMETRYFIELDNAME;
                         }
                 }
