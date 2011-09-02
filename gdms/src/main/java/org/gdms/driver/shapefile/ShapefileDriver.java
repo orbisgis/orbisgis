@@ -64,7 +64,6 @@ import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.dbf.DBFDriver;
 import org.gdms.source.SourceManager;
-import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -86,6 +85,7 @@ import org.gdms.driver.AbstractDataSet;
 import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.geometryUtils.GeometryClean;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.wkt.parser.PRJUtils;
 import org.orbisgis.wkt.parser.ParseException;
 
@@ -334,13 +334,14 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
 
                         ShapefileWriter writer = new ShapefileWriter(shpFis.getChannel(),
                                 shxFis.getChannel());
-                        int geomType gc = getGeometryType(metadata);
+                        Type geomType = getGeometryType(metadata);
                         int dimension = getGeometryDimension(null, metadata);
-                        if (gc == null) {
+                        int typeCode = geomType.getTypeCode();
+                        if (typeCode == Type.NULL || (typeCode & Type.GEOMETRY) == 0) {
                                 throw new DriverException("Shapefiles need a "
                                         + "specific geometry type");
                         }
-                        ShapeType shapeType = getShapeType(gc.getGeometryType(), dimension);
+                        ShapeType shapeType = getShapeType(geomType, dimension);
                         writer.writeHeaders(new Envelope(0, 0, 0, 0), shapeType, 0, 100);
                         writer.close();
 
@@ -358,11 +359,11 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
          * @return
          * @throws DriverException 
          */
-        private int getGeometryType(Metadata metadata)
+        private Type getGeometryType(Metadata metadata)
                 throws DriverException {
                 for (int i = 0; i < metadata.getFieldCount(); i++) {
                         if (TypeFactory.isVectorial(metadata.getFieldType(i).getTypeCode())) {
-                                return (GeometryTypeConstraint) metadata.getFieldType(i).getConstraint(Constraint.GEOMETRY_TYPE);
+                                return metadata.getFieldType(i);
                         }
                 }
 
@@ -402,16 +403,25 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                         + "source doesn't contain any spatial field");
         }
 
-        private ShapeType getShapeType(int geometryType, int dimension)
-                throws DriverException {
-                switch (geometryType) {
+        /**
+         * 
+         * @param geometryType
+         * @param dimension
+         * @return
+         * @throws DriverException 
+         */
+        private ShapeType getShapeType(Type geometryType, int dimension)throws DriverException {
+                int typeCode = geometryType.getTypeCode();
+                switch (typeCode) {
                         case Type.POINT:
+                        case Type.POINT|Type.GEOMETRY:
                                 if (dimension == 2) {
                                         return ShapeType.POINT;
                                 } else {
                                         return ShapeType.POINTZ;
                                 }
                         case Type.MULTIPOINT:
+                        case Type.MULTIPOINT|Type.GEOMETRY:
                                 if (dimension == 2) {
                                         return ShapeType.MULTIPOINT;
                                 } else {
@@ -419,6 +429,8 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                                 }
                         case Type.LINESTRING:
                         case Type.MULTILINESTRING:
+                        case Type.LINESTRING|Type.GEOMETRY:
+                        case Type.MULTILINESTRING|Type.GEOMETRY:
                                 if (dimension == 2) {
                                         return ShapeType.ARC;
                                 } else {
@@ -426,13 +438,46 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                                 }
                         case Type.POLYGON:
                         case Type.MULTIPOLYGON:
+                        case Type.POLYGON|Type.GEOMETRY:
+                        case Type.MULTIPOLYGON|Type.GEOMETRY:
                                 if (dimension == 2) {
                                         return ShapeType.POLYGON;
                                 } else {
                                         return ShapeType.POLYGONZ;
                                 }
+                        case Type.GEOMETRY:
+                        case Type.GEOMETRYCOLLECTION:
+                                Constraint cons = 
+                                        geometryType.getConstraint(Constraint.DIMENSION_2D_GEOMETRY);
+                                if(cons == null){
+                                        throw new DriverException("Shapefiles need a specific geometry type");
+                                } else {
+                                        switch(Integer.valueOf(cons.getConstraintValue())){
+                                                case 0:
+                                                        if (dimension == 2) {
+                                                                return ShapeType.MULTIPOINT;
+                                                        } else {
+                                                                return ShapeType.MULTIPOINTZ;
+                                                        }
+                                                case 1:
+                                                        if (dimension == 2) {
+                                                                return ShapeType.ARC;
+                                                        } else {
+                                                                return ShapeType.ARCZ;
+                                                        }
+                                                case 2:
+                                                        if (dimension == 2) {
+                                                                return ShapeType.POLYGON;
+                                                        } else {
+                                                                return ShapeType.POLYGONZ;
+                                                        }
+                                                default :
+                                                        throw new DriverException("Not a valid geometry constraint code.");
+                                        }
+                                }
+                                
                 }
-
+                //Geometry and GeometryCollection are not valid shape types.
                 return null;
 
         }
