@@ -282,8 +282,7 @@ public final class ValueFactory {
                                         value = DefaultGeometryValue.parseString(text);
                                 } catch (com.vividsolutions.jts.io.ParseException e) {
                                         LOG.error("Error parsing geometry", e);
-                                        throw new ParseException("Cannot parse geometry:"
-                                                + e.getMessage(), -1);
+                                        throw new ParseException("Cannot parse geometry:" + e.getMessage(), -1);
                                 }
 
                                 break;
@@ -724,8 +723,12 @@ public final class ValueFactory {
          *
          * @return
          */
-        public static Value createValue(int valueType, byte[] buffer) {
-                switch (valueType) {
+        public static Value createValue(final int valueType, byte[] buffer) {
+                //In many cases, Type.GEOMETRY will be set with a concrete geometry type.
+                //If this is so, we just keep Type.GEOMETRY, as the needed result
+                //will be returned by createValue(Geometry).
+                int toEval = (valueType & Type.GEOMETRY) != 0 ? Type.GEOMETRY : valueType;
+                switch (toEval) {
                         case Type.BINARY:
                                 return DefaultBinaryValue.readBytes(buffer);
                         case Type.BOOLEAN:
@@ -769,7 +772,7 @@ public final class ValueFactory {
                                 throw new IllegalArgumentException("Wrong type: " + valueType);
                 }
         }
-
+        
         /**
          * <p>
          * Creates a value of the specified type in two steps. The first one builds
