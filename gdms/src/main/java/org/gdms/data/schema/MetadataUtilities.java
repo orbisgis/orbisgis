@@ -43,6 +43,7 @@ import org.gdms.data.DataSource;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryDimensionConstraint;
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 
@@ -294,9 +295,8 @@ public final class MetadataUtilities {
                 for (int i = 0; i
                         < metadata.getFieldCount(); i++) {
                         int typeCode = metadata.getFieldType(i).getTypeCode();
-
-
-                        if ((typeCode == Type.GEOMETRY) || (typeCode == Type.RASTER)) {
+                        if ((TypeFactory.isVectorial(typeCode) && typeCode != Type.NULL)
+                                || (typeCode == Type.RASTER)) {
                                 spatialFieldIndex = i;
 
 

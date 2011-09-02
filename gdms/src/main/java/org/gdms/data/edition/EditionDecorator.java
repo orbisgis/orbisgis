@@ -150,7 +150,7 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
                                 for (int j = 0; j < m.getFieldCount(); j++) {
                                         int typeCode = m.getFieldType(j).getTypeCode();
                                         Envelope r = null;
-                                        if (typeCode == Type.GEOMETRY) {
+                                        if ((typeCode & Type.GEOMETRY) != 0) {
                                                 Value v = getFieldValue(i, j);
                                                 if ((v != null) && (!v.isNull())) {
                                                         r = v.getAsGeometry().getEnvelopeInternal();

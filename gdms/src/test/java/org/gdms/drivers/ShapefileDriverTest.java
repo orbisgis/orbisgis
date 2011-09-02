@@ -113,18 +113,20 @@ public class ShapefileDriverTest {
 
         @Test
         public void testSaveEmptyGeometries() throws Exception {
-                MemoryDataSetDriver omd = new MemoryDataSetDriver(new String[]{
-                                "the_geom", "id"}, new Type[]{
-                                TypeFactory.createType(Type.GEOMETRY,
-                                new GeometryTypeConstraint(GeometryTypeConstraint.POINT)),
-                                TypeFactory.createType(Type.STRING)});
+                MemoryDataSetDriver omd = new MemoryDataSetDriver(
+                        new String[]{"the_geom", "id"}, 
+                        new Type[]{
+                                TypeFactory.createType(Type.GEOMETRYCOLLECTION),
+                                TypeFactory.createType(Type.STRING)
+                        });
                 dsf.getSourceManager().register("obj", new MemorySourceDefinition(omd, "main"));
                 DataSource ds = dsf.getDataSource("obj");
                 GeometryFactory gf = new GeometryFactory();
                 ds.open();
-                ds.insertFilledRow(new Value[]{
+                Value[] vals = new Value[]{
                                 ValueFactory.createValue(gf.createGeometryCollection(new Geometry[0])),
-                                ValueFactory.createValue("0")});
+                                ValueFactory.createValue("0")};
+                ds.insertFilledRow(vals);
                 ds.insertFilledRow(new Value[]{null, ValueFactory.createValue("1")});
                 DataSourceCreation target = new FileSourceCreation(new File(
                         TestBase.backupDir, "outputtestSaveEmptyGeometries.shp"), null);

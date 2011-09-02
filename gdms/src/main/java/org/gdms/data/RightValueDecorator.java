@@ -55,7 +55,8 @@ public class RightValueDecorator extends AbstractDataSourceDecorator {
                 if (null == value) {
                         return ValueFactory.createNullValue();
                 } else {
-                        if ((value.getType() == Type.GEOMETRY)
+                        if ((value.getType() & Type.GEOMETRY) != 0
+                                && !value.isNull()
                                 && value.getAsGeometry().isEmpty()) {
                                 return ValueFactory.createNullValue();
                         } else {

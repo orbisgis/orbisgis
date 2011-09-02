@@ -116,7 +116,7 @@ public class CacheDecorator extends AbstractDataSourceDecorator implements
 				for (int i = 0; i < getRowCount(); i++) {
 					Metadata m = getMetadata();
 					for (int j = 0; j < m.getFieldCount(); j++) {
-						if (m.getFieldType(j).getTypeCode() == Type.GEOMETRY) {
+						if ((m.getFieldType(j).getTypeCode() & Type.GEOMETRY)!=0) {
 
 							Value v = getFieldValue(i, j);
 							if ((v != null) && (!v.isNull())) {

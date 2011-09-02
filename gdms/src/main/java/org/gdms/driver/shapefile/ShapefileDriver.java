@@ -81,6 +81,7 @@ import fr.cts.crs.CoordinateReferenceSystem;
 import org.apache.log4j.Logger;
 import org.gdms.data.schema.DefaultSchema;
 import org.gdms.data.schema.MetadataUtilities;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.AbstractDataSet;
 import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.driverManager.DriverManager;
@@ -360,7 +361,7 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
         private int getGeometryType(Metadata metadata)
                 throws DriverException {
                 for (int i = 0; i < metadata.getFieldCount(); i++) {
-                        if (metadata.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
+                        if (TypeFactory.isVectorial(metadata.getFieldType(i).getTypeCode())) {
                                 return (GeometryTypeConstraint) metadata.getFieldType(i).getConstraint(Constraint.GEOMETRY_TYPE);
                         }
                 }
@@ -372,14 +373,14 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
         private int getGeometryDimension(DataSet dataSource, Metadata metadata)
                 throws DriverException {
                 for (int i = 0; i < metadata.getFieldCount(); i++) {
-                        if (metadata.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
+                        if (TypeFactory.isVectorial(metadata.getFieldType(i).getTypeCode())) {
                                 Dimension3DConstraint c = (Dimension3DConstraint) metadata.getFieldType(i).getConstraint(
                                         Constraint.DIMENSION_3D_GEOMETRY);
                                 if (c == null) {
                                         if (dataSource != null) {
                                                 for (int j = 0; j < dataSource.getRowCount(); j++) {
                                                         Geometry g = dataSource.getFieldValue(j, i).getAsGeometry();
-                                                        if (g != null) {
+                                                        if (g != null && g.getCoordinate()!= null) {
                                                                 if (Double.isNaN(g.getCoordinate().z)) {
                                                                         return 2;
                                                                 } else {
@@ -513,11 +514,10 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                 return new File(prefix + suffix);
         }
 
-        private ShapeType getFirstShapeType(DataSet sds,
-                int dimension) throws DriverException {
-                final int spatialFieldIndex = MetadataUtilities.getSpatialFieldIndex(sds.getMetadata());
-                for (int i = 0; i < sds.getRowCount(); i++) {
-                        Value v = sds.getFieldValue(i, spatialFieldIndex);
+        private ShapeType getFirstShapeType(DataSet ds,int dimension) throws DriverException {
+                final int spatialFieldIndex = MetadataUtilities.getSpatialFieldIndex(ds.getMetadata());
+                for (int i = 0; i < ds.getRowCount(); i++) {
+                        Value v = ds.getFieldValue(i, spatialFieldIndex);
                         if (!v.isNull()) {
                                 return getShapeType(v.getAsGeometry(), dimension);
                         }

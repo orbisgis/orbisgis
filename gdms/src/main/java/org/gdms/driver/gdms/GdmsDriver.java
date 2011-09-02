@@ -148,14 +148,10 @@ public final class GdmsDriver extends GDMSModelDriver implements FileReadWriteDr
                         Metadata m = schema.getTableByName(DriverManager.DEFAULT_SINGLE_TABLE_NAME);
                         if (m != null) {
                                 for (int i = 0; i < m.getFieldCount(); i++) {
-                                        switch (m.getFieldType(i).getTypeCode()) {
-                                                case Type.GEOMETRY:
-                                                        type |= SourceManager.VECTORIAL;
-                                                        break;
-                                                case Type.RASTER:
-                                                        type |= SourceManager.RASTER;
-                                                        break;
-                                                default:
+                                        if((m.getFieldType(i).getTypeCode() & Type.GEOMETRY) != 0){
+                                                type |= SourceManager.VECTORIAL;
+                                        } else if((m.getFieldType(i).getTypeCode() & Type.RASTER) != 0){
+                                                type |= SourceManager.RASTER;
                                         }
                                 }
                         }

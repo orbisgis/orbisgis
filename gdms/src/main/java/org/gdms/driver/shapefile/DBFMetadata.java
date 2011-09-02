@@ -45,6 +45,7 @@ import java.util.List;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.Schema;
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
 
 class DBFMetadata implements Metadata {
@@ -57,7 +58,7 @@ class DBFMetadata implements Metadata {
 
                 mapping = new ArrayList<Integer>();
                 for (int i = 0; i < metadata.getFieldCount(); i++) {
-                        if (metadata.getFieldType(i).getTypeCode() != Type.GEOMETRY) {
+                        if (!TypeFactory.isVectorial(metadata.getFieldType(i).getTypeCode())) {
                                 mapping.add(i);
                         }
                 }
