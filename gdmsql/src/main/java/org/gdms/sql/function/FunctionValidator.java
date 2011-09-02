@@ -252,11 +252,19 @@ public final class FunctionValidator {
                                 for (int j = 0; j < arguments.length; j++) {
                                         if (arguments[j].isScalar()) {
                                                 if (typeId == types.length) {
+                                                        //We have too many parameters.
                                                         ok = false;
                                                         break;
                                                 }
                                                 ScalarArgument arg = (ScalarArgument) arguments[j];
-                                                if (!TypeFactory.canBeCastTo(types[typeId].getTypeCode(), arg.getTypeCode())) {
+                                                //We must make a special check for geometry types.
+                                                boolean geomCompatibles = true;
+                                                int argType = arg.getTypeCode();
+                                                int typeC = types[typeId].getTypeCode();
+                                                if(TypeFactory.isVectorial(typeC)){
+                                                        geomCompatibles = (typeC & argType) != 0;
+                                                }
+                                                if (!TypeFactory.canBeCastTo(typeC, argType) && !geomCompatibles) {
                                                         ok = false;
                                                         break;
                                                 }
