@@ -43,6 +43,7 @@ package org.gdms.data.values;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
+import org.gdms.data.types.Type;
 
 /**
  *
@@ -67,6 +68,11 @@ public class DefaultGeometryCollectionValue extends DefaultGeometryValue impleme
                         throw new IllegalArgumentException("Cannot set this GeometryCollectionValue to a Geometry of type: "
                                 + value.getGeometryType());
                 }
+        }
+
+        @Override
+        public int getType() {
+                return Type.GEOMETRYCOLLECTION | Type.GEOMETRY;
         }
         
 }

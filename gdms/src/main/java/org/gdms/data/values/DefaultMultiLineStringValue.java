@@ -44,6 +44,7 @@ package org.gdms.data.values;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.MultiLineString;
+import org.gdms.data.types.Type;
 
 /**
  *
@@ -73,6 +74,11 @@ public class DefaultMultiLineStringValue extends DefaultGeometryCollectionValue 
                         throw new IllegalArgumentException("Cannot set this MultiLineStringValue to a Geometry of type: "
                                 + value.getGeometryType());
                 }
+        }
+
+        @Override
+        public int getType() {
+                return Type.MULTILINESTRING | Type.GEOMETRY;
         }
         
 }

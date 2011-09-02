@@ -43,6 +43,7 @@ package org.gdms.data.values;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
+import org.gdms.data.types.Type;
 
 /**
  *
@@ -66,5 +67,10 @@ public class DefaultPolygonValue extends DefaultGeometryValue implements Polygon
                 } else {
                         throw new IllegalArgumentException("Cannot set this PolygonValue to a Geometry of type: " + value.getGeometryType());
                 }
+        }
+
+        @Override
+        public int getType() {
+                return Type.POLYGON | Type.GEOMETRY;
         }
 }

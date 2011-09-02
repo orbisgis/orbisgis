@@ -44,6 +44,7 @@ package org.gdms.data.values;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.MultiPolygon;
+import org.gdms.data.types.Type;
 
 /**
  *
@@ -73,6 +74,11 @@ public class DefaultMultiPolygonValue extends DefaultGeometryCollectionValue imp
                         throw new IllegalArgumentException("Cannot set this MultiPoliygonValue to a Geometry of type: "
                                 + value.getGeometryType());
                 }
+        }
+
+        @Override
+        public int getType() {
+                return Type.MULTIPOLYGON | Type.GEOMETRY;
         }
         
 }

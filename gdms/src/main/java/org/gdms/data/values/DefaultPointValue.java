@@ -43,6 +43,7 @@ package org.gdms.data.values;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
+import org.gdms.data.types.Type;
 
 /**
  *
@@ -67,5 +68,10 @@ public class DefaultPointValue extends DefaultGeometryValue implements PointValu
                         throw new IllegalArgumentException("Cannot set this PointValue to a Geometry of type: " + value.getGeometryType());
                 }
         }
-        
+
+        @Override
+        public int getType() {
+                return Type.POINT | Type.GEOMETRY;
+        }
+
 }

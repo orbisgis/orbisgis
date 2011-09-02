@@ -43,6 +43,7 @@ package org.gdms.data.values;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
+import org.gdms.data.types.Type;
 
 /**
  *
@@ -66,5 +67,10 @@ public class DefaultLineStringValue extends DefaultGeometryValue implements Line
                 } else {
                         throw new IllegalArgumentException("Cannot set this LineStringValue to a Geometry of type: " + value.getGeometryType());
                 }
+        }
+
+        @Override
+        public int getType() {
+                return Type.LINESTRING | Type.GEOMETRY;
         }
 }
