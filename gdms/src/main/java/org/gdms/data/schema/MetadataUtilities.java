@@ -276,7 +276,7 @@ public final class MetadataUtilities {
                         case Type.MULTIPOLYGON :
                                 return 2;
                         default : 
-                                return -1;
+                                throw new UnsupportedOperationException("Can't get the dimension of this type : "+TypeFactory.getTypeName(tc));
                 }
         }
 
