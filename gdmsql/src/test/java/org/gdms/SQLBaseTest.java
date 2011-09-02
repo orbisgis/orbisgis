@@ -24,7 +24,6 @@ import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Dimension3DConstraint;
-import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.data.types.IncompatibleTypesException;
@@ -311,11 +310,15 @@ public abstract class SQLBaseTest extends SourceTest<Value, Geometry> {
                                                         numericField = fieldName;
                                                         break;
                                                 case Type.GEOMETRY:
+                                                case Type.GEOMETRYCOLLECTION:
+                                                case Type.POINT:
+                                                case Type.LINESTRING:
+                                                case Type.POLYGON:
+                                                case Type.MULTIPOINT:
+                                                case Type.MULTILINESTRING:
+                                                case Type.MULTIPOLYGON:
+                                                        geometryType = typeCode;
                                                         spatialField = fieldName;
-                                                        GeometryTypeConstraint c = (GeometryTypeConstraint) fieldType.getConstraint(Constraint.GEOMETRY_TYPE);
-                                                        if (c != null) {
-                                                                geometryType = c.getGeometryType();
-                                                        }
                                                         Dimension3DConstraint dc = (Dimension3DConstraint) fieldType.getConstraint(Constraint.DIMENSION_3D_GEOMETRY);
                                                         if (dc != null) {
                                                                 dimension = dc.getDimension();
@@ -334,7 +337,7 @@ public abstract class SQLBaseTest extends SourceTest<Value, Geometry> {
                                 if (geometryType == -1) {
                                         ds.setString(row, fnewGeometry, writer.write(Geometries.getPoint()));
                                 } else {
-                                        ds.setString(row, fnewGeometry, writer.write(Geometries.getGeometry(geometryType, dimension)));
+                                        ds.setString(row, fnewGeometry, writer.write(Geometries.getSampleGeometry(geometryType, dimension)));
                                 }
 
                                 if ((driverName instanceof DBFDriver)

@@ -39,7 +39,6 @@ package org.gdms.sql.function.spatial.convert;
 import org.gdms.data.types.Dimension3DConstraint;
 import org.junit.Test;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -94,8 +93,7 @@ public class ConvertFunctionTest extends FunctionTest {
                 }
 
                 // Test return type
-                Type type = TypeFactory.createType(Type.GEOMETRY,
-                        new GeometryTypeConstraint(GeometryTypeConstraint.LINESTRING));
+                Type type = TypeFactory.createType(Type.LINESTRING);
                 type = evaluate(function, type);
                 assertEquals(type.getTypeCode(), Type.GEOMETRY);
                 assertEquals(type.getIntConstraint(Constraint.DIMENSION_3D_GEOMETRY), 2);
@@ -144,8 +142,7 @@ public class ConvertFunctionTest extends FunctionTest {
                 }
 
                 // Test return type
-                Type type = TypeFactory.createType(Type.GEOMETRY,
-                        new GeometryTypeConstraint(GeometryTypeConstraint.LINESTRING));
+                Type type = TypeFactory.createType(Type.LINESTRING);
                 type = evaluate(function, type);
                 assertEquals(type.getTypeCode(), Type.GEOMETRY);
                 assertEquals(type.getIntConstraint(Constraint.DIMENSION_3D_GEOMETRY), 3);
@@ -193,9 +190,7 @@ public class ConvertFunctionTest extends FunctionTest {
                 }
 
                 // Test return type
-                Type type = TypeFactory.createType(Type.GEOMETRY,
-                        new GeometryTypeConstraint(GeometryTypeConstraint.LINESTRING),
-                        new Dimension3DConstraint(3));
+                Type type = TypeFactory.createType(Type.LINESTRING,new Dimension3DConstraint(3));
                 type = evaluate(function, type);
                 assertEquals(type.getTypeCode(), Type.GEOMETRY);
         }

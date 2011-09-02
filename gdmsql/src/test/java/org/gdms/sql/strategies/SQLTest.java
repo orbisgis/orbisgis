@@ -52,7 +52,6 @@ import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.DigestUtilities;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.Metadata;
-import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -658,8 +657,7 @@ public class SQLTest extends SQLBaseTest {
         public void testDistinctOnGeometricField() throws Exception {
                 final WKTReader wktr = new WKTReader();
                 final MemoryDataSetDriver driver = new MemoryDataSetDriver(
-                        new String[]{"the_geom"}, new Type[]{TypeFactory.createType(Type.GEOMETRY,
-                                new GeometryTypeConstraint(GeometryTypeConstraint.POINT))});
+                        new String[]{"the_geom"}, new Type[]{TypeFactory.createType(Type.POINT)});
 
                 final String g1 = "POINT (0 0)";
                 driver.addValues(new Value[]{ValueFactory.createValue(wktr.read(g1))});
