@@ -43,6 +43,9 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
+import org.gdms.data.types.Constraint;
+import org.gdms.data.types.GeometryDimensionConstraint;
+import org.gdms.data.types.Type;
 import org.gdms.geometryUtils.filter.CoordinateSequenceDimensionFilter;
 
 /**
@@ -166,7 +169,54 @@ public final class GeometryTypeUtil {
                 return cf.getDimension()>=CoordinateSequenceDimensionFilter.XYZ;
         }
 
-
+        /**
+         * Gets the (planar) dimension of the geometry type given in argument. Note
+         * that if you give an invalid (not vectorial) type as an input, this method will 
+         * throw a InvalidArgumentException
+         * @param type
+         * @return 
+         * <ul><li>0 : if we have a point or a collection of points</li>
+         * <li>1 : if we have a line or a collection of lines</li>
+         * <li>2 : if we have a polygon or collection of polygons</li>
+         * <li>-1 otherwise (if the type is too generic)</li></ul>
+         */
+        public static int getTypeDimension(Type type){
+                if(type == null || (type.getTypeCode() & Type.GEOMETRY) == 0 || type.getTypeCode() == Type.NULL ){
+                        throw new IllegalArgumentException("We can only treat geometry types here.");
+                } else {
+                        switch(type.getTypeCode()){
+                                case Type.POINT:
+                                case Type.MULTIPOINT:
+                                        return 0;
+                                case Type.LINESTRING:
+                                case Type.MULTILINESTRING:
+                                        return 1;
+                                case Type.POLYGON:
+                                case Type.MULTIPOLYGON:
+                                        return 2;
+                                case Type.GEOMETRY:
+                                case Type.GEOMETRYCOLLECTION:
+                                        GeometryDimensionConstraint gdc = 
+                                                (GeometryDimensionConstraint) type.getConstraint(Constraint.DIMENSION_2D_GEOMETRY);
+                                        if(gdc == null){
+                                                return -1;
+                                        } else {
+                                                switch(gdc.getDimension()){
+                                                        case GeometryDimensionConstraint.DIMENSION_POINT:
+                                                                return 0;
+                                                        case GeometryDimensionConstraint.DIMENSION_LINE:
+                                                                return 1;
+                                                        case GeometryDimensionConstraint.DIMENSION_POLYGON:
+                                                                return 2;
+                                                        default:
+                                                                return -1;
+                                                }
+                                        }
+                                default:
+                                        return -1;
+                        }
+                }
+        }
 
 
         /**
