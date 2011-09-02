@@ -123,7 +123,8 @@ public final class TypeFactory {
         }
 
         public static String getTypeName(int typeCode) {
-                switch (typeCode) {
+                int toEval = (typeCode & Type.GEOMETRY) != 0 && typeCode != Type.GEOMETRY ? typeCode ^ Type.GEOMETRY : typeCode;
+                switch (toEval) {
                         case Type.BINARY:
                                 return "binary";
                         case Type.BOOLEAN:
@@ -156,6 +157,20 @@ public final class TypeFactory {
                                 return "time";
                         case Type.TIMESTAMP:
                                 return "timestamp";
+                        case Type.GEOMETRYCOLLECTION :
+                                return "geometrycollection";
+                        case Type.POINT: 
+                                return "point";
+                        case Type.MULTIPOINT:
+                                return "multipoint";
+                        case Type.LINESTRING:
+                                return "linestring";
+                        case Type.MULTILINESTRING:
+                                return "multilinestring";
+                        case Type.POLYGON:
+                                return "polygon";
+                        case Type.MULTIPOLYGON:
+                                return "multipolygon";
                         default:
                                 throw new IllegalArgumentException("Unknown data type: " + typeCode);
                 }
