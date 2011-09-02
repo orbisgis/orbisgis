@@ -584,14 +584,14 @@ public final class ValueFactory {
                                 return createValue((LineString) geom);
                         } else if (geom instanceof Polygon) {
                                 return createValue((Polygon) geom);
-                        } else if (geom instanceof GeometryCollection) {
-                                return createValue((GeometryCollection) geom);
                         } else if (geom instanceof MultiPoint) {
                                 return createValue((MultiPoint) geom);
                         } else if (geom instanceof MultiLineString) {
                                 return createValue((MultiLineString) geom);
                         } else if (geom instanceof MultiPolygon) {
                                 return createValue((MultiPolygon) geom);
+                        } else if (geom instanceof GeometryCollection) {
+                                return createValue((GeometryCollection) geom);
                         } else {
                                 throw new InvalidTypeException("Unknown geometry type: " + geom.getGeometryType());
                         }
