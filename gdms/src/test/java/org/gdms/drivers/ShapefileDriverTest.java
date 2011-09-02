@@ -351,7 +351,7 @@ public class ShapefileDriverTest {
                 dsf.setWarninglistener(listener);
 
                 DefaultMetadata m = new DefaultMetadata();
-                m.addField("the_geom", Type.GEOMETRY |Type.POINT,
+                m.addField("the_geom", Type.POINT,
                         new Dimension3DConstraint(3));
                 m.addField("f1", Type.BOOLEAN);
                 m.addField("f2", Type.BYTE);
@@ -370,7 +370,7 @@ public class ShapefileDriverTest {
                 dsf.createDataSource(new FileSourceCreation(shpFile, m));
                 DataSource ds = dsf.getDataSource(shpFile);
                 ds.open();
-                assertEquals(m.getFieldType(0).getTypeCode(), Type.GEOMETRY);
+                assertEquals(m.getFieldType(0).getTypeCode(), Type.POINT);
                 assertEquals(m.getFieldType(1).getTypeCode(), Type.BOOLEAN);
                 assertEquals(m.getFieldType(2).getTypeCode(), Type.BYTE);
                 assertEquals(m.getFieldType(3).getTypeCode(), Type.DATE);
