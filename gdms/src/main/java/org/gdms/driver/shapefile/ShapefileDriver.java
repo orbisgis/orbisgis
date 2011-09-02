@@ -54,7 +54,6 @@ import org.gdms.data.schema.Schema;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.DefaultTypeDefinition;
 import org.gdms.data.types.Dimension3DConstraint;
-import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
@@ -157,30 +156,33 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
 
                         Constraint dc;
                         Constraint gc;
+                        //We can force the type of the data in the GDMS table according to the type
+                        //given in the ShapeFile. This variable is here for this task.
+                        int gtype;
                         // In case of a geometric type, the GeometryConstraint is mandatory
                         if (type.id == ShapeType.POINT.id) {
-                                gc = new GeometryTypeConstraint(GeometryTypeConstraint.POINT);
+                                gtype = Type.POINT;
                                 dc = new Dimension3DConstraint(2);
                         } else if (type.id == ShapeType.ARC.id) {
-                                gc = new GeometryTypeConstraint(GeometryTypeConstraint.MULTI_LINESTRING);
+                                gtype = Type.MULTILINESTRING;
                                 dc = new Dimension3DConstraint(2);
                         } else if (type.id == ShapeType.POLYGON.id) {
-                                gc = new GeometryTypeConstraint(GeometryTypeConstraint.MULTI_POLYGON);
+                                gtype = Type.MULTIPOLYGON;
                                 dc = new Dimension3DConstraint(2);
                         } else if (type.id == ShapeType.MULTIPOINT.id) {
-                                gc = new GeometryTypeConstraint(GeometryTypeConstraint.MULTI_POINT);
+                                gtype = Type.MULTIPOINT;
                                 dc = new Dimension3DConstraint(2);
                         } else if (type.id == ShapeType.POINTZ.id) {
-                                gc = new GeometryTypeConstraint(GeometryTypeConstraint.POINT);
+                                gtype = Type.POINT;
                                 dc = new Dimension3DConstraint(3);
                         } else if (type.id == ShapeType.ARCZ.id) {
-                                gc = new GeometryTypeConstraint(GeometryTypeConstraint.MULTI_LINESTRING);
+                                gtype = Type.MULTILINESTRING;
                                 dc = new Dimension3DConstraint(3);
                         } else if (type.id == ShapeType.POLYGONZ.id) {
-                                gc = new GeometryTypeConstraint(GeometryTypeConstraint.MULTI_POLYGON);
+                                gtype = Type.MULTIPOLYGON;
                                 dc = new Dimension3DConstraint(3);
                         } else if (type.id == ShapeType.MULTIPOINTZ.id) {
-                                gc = new GeometryTypeConstraint(GeometryTypeConstraint.MULTI_POINT);
+                                gtype = Type.MULTIPOINT;
                                 dc = new Dimension3DConstraint(3);
                         } else {
                                 throw new DriverException("Unknown geometric type !");
@@ -203,9 +205,9 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                         }
 
                         // Constraint crsConstraint = new CRSConstraint(crs);
-                        Constraint[] constraints = new Constraint[]{gc, dc};
+                        Constraint[] constraints = new Constraint[]{ dc};
                         metadata.clear();
-                        metadata.addField(0, "the_geom", Type.GEOMETRY, constraints);
+                        metadata.addField(0, "the_geom", gtype, constraints);
                         metadata.addAll(driver.getMetadata());
 
                         reader.setSrid(srid);
@@ -233,8 +235,7 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
         public TypeDefinition[] getTypesDefinitions() {
                 List<TypeDefinition> result = new LinkedList<TypeDefinition>(Arrays.asList(new DBFDriver().getTypesDefinitions()));
                 result.add(new DefaultTypeDefinition("Geometry", Type.GEOMETRY,
-                        new int[]{Constraint.GEOMETRY_TYPE,
-                                Constraint.DIMENSION_3D_GEOMETRY}));
+                        new int[]{Constraint.DIMENSION_3D_GEOMETRY}));
                 return result.toArray(new TypeDefinition[result.size()]);
         }
 
@@ -332,7 +333,7 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
 
                         ShapefileWriter writer = new ShapefileWriter(shpFis.getChannel(),
                                 shxFis.getChannel());
-                        GeometryTypeConstraint gc = getGeometryType(metadata);
+                        int geomType gc = getGeometryType(metadata);
                         int dimension = getGeometryDimension(null, metadata);
                         if (gc == null) {
                                 throw new DriverException("Shapefiles need a "
@@ -349,14 +350,14 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                         throw new DriverException(e);
                 }
         }
-
-//        private void writeprj(File path, Metadata metadata) throws
-//                DriverException {
-//
-//
-//
-//        }
-        private GeometryTypeConstraint getGeometryType(Metadata metadata)
+        
+        /**
+         * We try to retrieve the type of the geometry recorded in metadata.
+         * @param metadata
+         * @return
+         * @throws DriverException 
+         */
+        private int getGeometryType(Metadata metadata)
                 throws DriverException {
                 for (int i = 0; i < metadata.getFieldCount(); i++) {
                         if (metadata.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
@@ -403,27 +404,27 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
         private ShapeType getShapeType(int geometryType, int dimension)
                 throws DriverException {
                 switch (geometryType) {
-                        case GeometryTypeConstraint.POINT:
+                        case Type.POINT:
                                 if (dimension == 2) {
                                         return ShapeType.POINT;
                                 } else {
                                         return ShapeType.POINTZ;
                                 }
-                        case GeometryTypeConstraint.MULTI_POINT:
+                        case Type.MULTIPOINT:
                                 if (dimension == 2) {
                                         return ShapeType.MULTIPOINT;
                                 } else {
                                         return ShapeType.MULTIPOINTZ;
                                 }
-                        case GeometryTypeConstraint.LINESTRING:
-                        case GeometryTypeConstraint.MULTI_LINESTRING:
+                        case Type.LINESTRING:
+                        case Type.MULTILINESTRING:
                                 if (dimension == 2) {
                                         return ShapeType.ARC;
                                 } else {
                                         return ShapeType.ARCZ;
                                 }
-                        case GeometryTypeConstraint.POLYGON:
-                        case GeometryTypeConstraint.MULTI_POLYGON:
+                        case Type.POLYGON:
+                        case Type.MULTIPOLYGON:
                                 if (dimension == 2) {
                                         return ShapeType.POLYGON;
                                 } else {
