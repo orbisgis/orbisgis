@@ -52,6 +52,7 @@ import com.vividsolutions.jts.io.WKTWriter;
 
 /**
  * Constraint indicating the type of the geometry: point, multilinestring, ...
+ * @deprecated You must use directly the specialized geometry types, now.
  * 
  */
 @Deprecated
