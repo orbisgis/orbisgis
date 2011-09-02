@@ -36,6 +36,8 @@
  */
 package org.gdms.drivers;
 
+import org.gdms.data.values.GeometryCollectionValue;
+import com.vividsolutions.jts.geom.LineString;
 import org.gdms.data.types.Dimension3DConstraint;
 import org.junit.Test;
 import org.junit.Before;
@@ -123,7 +125,7 @@ public class ShapefileDriverTest {
                 GeometryFactory gf = new GeometryFactory();
                 ds.open();
                 Value[] vals = new Value[]{
-                                ValueFactory.createValue(gf.createGeometryCollection(new Geometry[0])),
+                                ValueFactory.createValue(gf.createMultiLineString(new LineString[0])),
                                 ValueFactory.createValue("0")};
                 ds.insertFilledRow(vals);
                 ds.insertFilledRow(new Value[]{null, ValueFactory.createValue("1")});
@@ -137,7 +139,7 @@ public class ShapefileDriverTest {
                 DataSource otherDs = dsf.getDataSource("buffer");
                 otherDs.open();
                 assertEquals(2, otherDs.getRowCount());
-                assertTrue(otherDs.isNull(0, 0));
+                assertTrue(((GeometryCollectionValue)otherDs.getFieldValue(0, 0)).getAsGeometry().isEmpty());
                 assertTrue(otherDs.isNull(1, 0));
                 assertEquals(otherDs.getAsString(), contents);
                 otherDs.close();
