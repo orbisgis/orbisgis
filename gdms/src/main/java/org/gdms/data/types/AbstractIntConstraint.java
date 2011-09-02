@@ -66,4 +66,13 @@ abstract class AbstractIntConstraint extends AbstractConstraint {
 	public int getType() {
 		return CONSTRAINT_TYPE_INTEGER_LITERAL;
 	}
+        
+        /**
+         * We're dealing with an Int value, we can retrieve it directly, and not as a String.
+         * @return 
+         *      the int embedded in this constraint.
+         */
+        public int getConstraintIntValue(){
+                return constraintValue;
+        }
 }
