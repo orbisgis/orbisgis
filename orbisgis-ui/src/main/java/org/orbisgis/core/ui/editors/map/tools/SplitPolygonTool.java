@@ -93,8 +93,7 @@ public class SplitPolygonTool extends AbstractLineTool {
                                 TypeFactory.createType(Type.POLYGON), 
                                 TypeFactory.createType(Type.MULTIPOLYGON), 
                                 TypeFactory.createType(Type.GEOMETRY, 
-                                        ConstraintFactory.createConstraint(Constraint.DIMENSION_2D_GEOMETRY,
-                                                GeometryDimensionConstraint.DIMENSION_POLYGON)), 
+                                        new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_POLYGON)), 
                                 TypeFactory.createType(Type.GEOMETRYCOLLECTION, 
                                         ConstraintFactory.createConstraint(Constraint.DIMENSION_2D_GEOMETRY,
                                                 GeometryDimensionConstraint.DIMENSION_POLYGON))))

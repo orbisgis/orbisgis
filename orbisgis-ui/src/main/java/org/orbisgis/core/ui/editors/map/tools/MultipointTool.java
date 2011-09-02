@@ -95,8 +95,7 @@ public class MultipointTool extends AbstractMultipointTool {
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
 		return ToolUtilities.geometryTypeIs(vc, TypeFactory.createType(Type.MULTIPOINT),
                                 TypeFactory.createType(Type.GEOMETRYCOLLECTION, 
-                                        ConstraintFactory.createConstraint(Constraint.DIMENSION_2D_GEOMETRY, 
-                                                GeometryDimensionConstraint.DIMENSION_POINT)))
+                                        new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_POINT)))
                         && ToolUtilities.isActiveLayerEditable(vc);
 	}
 
