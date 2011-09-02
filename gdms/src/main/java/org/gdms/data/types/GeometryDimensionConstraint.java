@@ -51,16 +51,16 @@ public class GeometryDimensionConstraint extends AbstractIntConstraint {
         /**
          * Constant to use to build constraint for point or multipoint.
          */
-        public static int DIMENSION_POINT = 0;
+        public static final int DIMENSION_POINT = 0;
         /**
          * Constant to use to build constraint for line or multilinestring.
          */
-        public static int DIMENSION_LINE = 1;
+        public static final int DIMENSION_LINE = 1;
 
         /**
          * Constant to use to build constraint for polygon or multipolygon.
          */
-        public static int DIMENSION_POLYGON = 2;
+        public static final int DIMENSION_POLYGON = 2;
 
 
         /**
