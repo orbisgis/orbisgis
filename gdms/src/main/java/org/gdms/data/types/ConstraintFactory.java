@@ -50,8 +50,6 @@ public final class ConstraintFactory {
         static {
                 samples.put(Constraint.AUTO_INCREMENT, new AutoIncrementConstraint());
                 samples.put(Constraint.DIMENSION_3D_GEOMETRY, new Dimension3DConstraint(2));
-                samples.put(Constraint.GEOMETRY_TYPE, new GeometryTypeConstraint(
-                        GeometryTypeConstraint.LINESTRING));
                 samples.put(Constraint.LENGTH, new LengthConstraint(3));
                 samples.put(Constraint.MAX, new MaxConstraint(3));
                 samples.put(Constraint.MIN, new MinConstraint(3));
@@ -81,9 +79,6 @@ public final class ConstraintFactory {
                                 break;
                         case Constraint.DIMENSION_3D_GEOMETRY:
                                 c = new Dimension3DConstraint(constraintBytes);
-                                break;
-                        case Constraint.GEOMETRY_TYPE:
-                                c = new GeometryTypeConstraint(constraintBytes);
                                 break;
                         case Constraint.LENGTH:
                                 c = new LengthConstraint(constraintBytes);
@@ -152,9 +147,6 @@ public final class ConstraintFactory {
                                 break;
                         case Constraint.DIMENSION_3D_GEOMETRY:
                                 c = "Dimension";
-                                break;
-                        case Constraint.GEOMETRY_TYPE:
-                                c = "Geometry";
                                 break;
                         case Constraint.LENGTH:
                                 c = "Length";
@@ -257,10 +249,6 @@ public final class ConstraintFactory {
                 switch (code) {
                         case Constraint.DIMENSION_3D_GEOMETRY:
                                 return new Dimension3DConstraint(i);
-                        case Constraint.DIMENSION_2D_GEOMETRY:
-                                return new GeometryDimensionConstraint(i);
-                        case Constraint.GEOMETRY_TYPE:
-                                return new GeometryTypeConstraint(i);
                         case Constraint.LENGTH:
                                 return new LengthConstraint(i);
                         case Constraint.MAX:

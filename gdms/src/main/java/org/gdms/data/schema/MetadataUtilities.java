@@ -41,7 +41,7 @@ import java.util.List;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.GeometryTypeConstraint;
+import org.gdms.data.types.GeometryDimensionConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
@@ -254,20 +254,28 @@ public final class MetadataUtilities {
         public static int getGeometryDimension(Metadata metadata, int spatialField) throws DriverException {
 
                 Type fieldType = metadata.getFieldType(spatialField);
-                int geomFieldType = fieldType.getTypeCode();
-                if (geomFieldType == Type.GEOMETRY) {
-                        return -1;
-                } else if ((geomFieldType == Type.POLYGON)
-                        || (geomFieldType == Type.MULTIPOLYGON)) {
-                        return 2;
-                } else if ((geomFieldType == Type.LINESTRING)
-                        || (geomFieldType == Type.MULTILINESTRING)) {
-                        return 1;
-                } else if ((geomFieldType == Type.POINT)
-                        || (geomFieldType == Type.MULTIPOINT)) {
-                        return 0;
-                } else {
-                        throw new UnsupportedOperationException("Unknown geometry type: " + geomFieldType);
+                int tc = fieldType.getTypeCode();
+                switch(tc){
+                        case Type.GEOMETRY :
+                        case Type.GEOMETRYCOLLECTION :
+                                GeometryDimensionConstraint gdc =  
+                                                (GeometryDimensionConstraint) fieldType.getConstraint(Constraint.DIMENSION_2D_GEOMETRY);
+                                if (gdc == null) {
+                                        return -1;
+                                } else {
+                                        return gdc.getDimension();
+                                }
+                        case Type.POINT :
+                        case Type.MULTIPOINT :
+                                return 0;
+                        case Type.LINESTRING:
+                        case Type.MULTILINESTRING:
+                                return 1;
+                        case Type.POLYGON :
+                        case Type.MULTIPOLYGON :
+                                return 2;
+                        default : 
+                                return -1;
                 }
         }
 

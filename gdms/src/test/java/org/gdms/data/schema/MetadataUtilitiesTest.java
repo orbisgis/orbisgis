@@ -106,4 +106,28 @@ public class MetadataUtilitiesTest {
                 assertTrue(!MetadataUtilities.isRaster(geometryMetadata));
                 assertTrue(MetadataUtilities.isRaster(rasterMetadata));
         }
+        
+        @Test
+        public void testGeometryDimension() throws Exception{
+                DefaultMetadata dm = new DefaultMetadata();
+                dm.addField("name", Type.STRING);
+                dm.addField("point", Type.POINT);
+                dm.addField("MultiPoint", Type.MULTIPOINT);
+                dm.addField("LineString", Type.LINESTRING);
+                dm.addField("MultiLineString", Type.MULTILINESTRING);
+                dm.addField("Polygon", Type.POLYGON);
+                dm.addField("MultiPolygon", Type.MULTIPOLYGON);
+                dm.addField("Geometry", Type.GEOMETRY);
+                dm.addField("GeometryCollection", Type.GEOMETRYCOLLECTION);
+                assertEquals(MetadataUtilities.getGeometryDimension(dm, 0),-1);
+                assertEquals(MetadataUtilities.getGeometryDimension(dm, 1),0);
+                assertEquals(MetadataUtilities.getGeometryDimension(dm, 2),0);
+                assertEquals(MetadataUtilities.getGeometryDimension(dm, 3),1);
+                assertEquals(MetadataUtilities.getGeometryDimension(dm, 4),1);
+                assertEquals(MetadataUtilities.getGeometryDimension(dm, 5),2);
+                assertEquals(MetadataUtilities.getGeometryDimension(dm, 6),2);
+                assertEquals(MetadataUtilities.getGeometryDimension(dm, 7),-1);
+                assertEquals(MetadataUtilities.getGeometryDimension(dm, 8),-1);
+                
+        }
 }
