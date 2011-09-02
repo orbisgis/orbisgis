@@ -132,9 +132,9 @@ public class ConstraintTest {
         public void testGeometryType() throws Exception {
                 setType(TypeFactory.createType(Type.POINT));
                 setValidValues(ValueFactory.createValue(Geometries.getPoint()),
-                        ValueFactory.createValue(new GeometryFactory().createGeometryCollection(new Geometry[0])),
                         ValueFactory.createNullValue());
-                setInvalidValues(ValueFactory.createValue(Geometries.getMultiPoint3D()));
+                setInvalidValues(ValueFactory.createValue(new GeometryFactory().createGeometryCollection(new Geometry[0])),
+                        ValueFactory.createValue(Geometries.getMultiPoint3D()));
                 doEdition();
         }
 
@@ -240,8 +240,8 @@ public class ConstraintTest {
         @Test
         public void testAddWrongTypeGeometry() throws Exception {
                 setType(TypeFactory.createType(Type.GEOMETRY));
-                setValidValues(geomValue, ValueFactory.createValue("POINT (0 0)"));
-                setInvalidValues(binaryValue, booleanValue, byteValue, dateValue,
+                setValidValues(geomValue);
+                setInvalidValues(binaryValue, ValueFactory.createValue("POINT (0 0)"), booleanValue, byteValue, dateValue,
                         doubleValue, floatValue, intValue, longValue, shortValue,
                         stringValue, timeValue, timestampValue, collectionValue);
                 doEdition();
@@ -364,6 +364,11 @@ public class ConstraintTest {
                 this.type = type;
         }
 
+        /**
+         * Given the set of valid and invalid values, this method checks that 
+         * they can (or can not) be inserted in the datasource.
+         * @throws Exception 
+         */
         private void doEdition() throws Exception {
                 DataSource dataSource = getDataSource();
                 dataSource.open();

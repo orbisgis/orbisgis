@@ -71,6 +71,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import org.gdms.data.indexes.FullIterator;
 import org.gdms.data.indexes.IndexQueryException;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.source.SourceManager;
 
 public final class EditionDecorator extends AbstractDataSourceDecorator implements
@@ -896,6 +897,23 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
                                 + "Another edition already in process");
                 }
         }
+        
+        private boolean checkGeometry(int valueType, int fieldType){
+                switch(fieldType){
+                        case Type.POINT :
+                        case Type.LINESTRING :
+                        case Type.POLYGON :
+                        case Type.MULTIPOINT :
+                        case Type.MULTILINESTRING :
+                        case Type.MULTIPOLYGON :
+                                return valueType == fieldType || valueType == Type.NULL;
+                        case Type.GEOMETRYCOLLECTION :
+                        case Type.GEOMETRY :
+                                return (valueType & fieldType) != 0;
+                        default :
+                                return false;
+                }
+        }
 
         @Override
         public String check(int fieldId, Value value) throws DriverException {
@@ -911,8 +929,18 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
                 }
 
                 // Cast value
-                castValue(type, value);
+                Value returned = castValue(type, value);
 
+                //Test geometry types.
+                if(TypeFactory.isVectorial(type.getTypeCode())){
+                        int valueType = returned.getType();
+                        int fieldType = type.getTypeCode();
+                        if(!checkGeometry(valueType, fieldType)){
+                                return "Can't put a "+TypeFactory.getTypeName(valueType)+" in a "
+                                        +TypeFactory.getTypeName(fieldType) +" column.";
+                        }
+                        
+                }
                 // Check constraints
                 String fieldName = getMetadata().getFieldName(fieldId);
                 String error = type.check(value);
