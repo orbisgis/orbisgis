@@ -49,7 +49,6 @@ public interface Constraint {
 
         int AUTO_INCREMENT = 1;
         int SRID = 2;
-        int GEOMETRY_TYPE = 4;
         int DIMENSION_3D_GEOMETRY = 8;
         int LENGTH = 16;
         int MAX = 32;
@@ -67,7 +66,7 @@ public interface Constraint {
         int DIMENSION_2D_GEOMETRY = 131072;
 
         int ALL = AUTO_INCREMENT | SRID | DIMENSION_3D_GEOMETRY
-                | GEOMETRY_TYPE | LENGTH | MAX | MIN | NOT_NULL | PATTERN | PK
+                | LENGTH | MAX | MIN | NOT_NULL | PATTERN | PK
                 | PRECISION | READONLY | SCALE | UNIQUE | RASTER_TYPE| DIMENSION_2D_GEOMETRY;
         int CONSTRAINT_TYPE_FIELD = 0;
         int CONSTRAINT_TYPE_CHOICE = 1;
