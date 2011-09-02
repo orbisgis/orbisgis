@@ -120,7 +120,7 @@ public class IndexManager {
                         ds.open();
                         if (indexId == null) {
                                 int code = ds.getFieldType(ds.getFieldIndexByName(fieldName)).getTypeCode();
-                                if (code == Type.GEOMETRY) {
+                                if ((code & Type.GEOMETRY) != 0) {
                                         indexId = RTREE_SPATIAL_INDEX;
                                 } else {
                                         indexId = BTREE_ALPHANUMERIC_INDEX;

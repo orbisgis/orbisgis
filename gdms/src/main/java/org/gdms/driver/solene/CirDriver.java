@@ -306,11 +306,12 @@ public final class CirDriver extends AbstractDataSet implements FileReadWriteDri
                 final int geometryType = fieldType.getTypeCode();
                 boolean nullT = geometryType == Type.NULL;
                 //notPolyT set to true if we don't have a polygonal type.
-                boolean notPolyT = (geometryType & Type.POLYGON) == 0 && (geometryType & Type.MULTIPOLYGON) == 0;
-                //notConstGeom set to true if we have a generic geometry of planar dimension 2.
-                boolean constGeom = ((geometryType & Type.GEOMETRY) == 0 
-                        || (geometryType & Type.GEOMETRYCOLLECTION) == 0)
-                        && gdc != null && gdc.getDimension() == GeometryDimensionConstraint.DIMENSION_POLYGON;
+                boolean notPolyT = geometryType != Type.POLYGON && geometryType != Type.MULTIPOLYGON;
+                //!constGeom set to true if we have a generic geometry of planar dimension 2.
+                boolean constGeom = 
+                        (geometryType == Type.GEOMETRY  || geometryType == Type.GEOMETRYCOLLECTION)
+                        && gdc != null 
+                        && gdc.getDimension() == GeometryDimensionConstraint.DIMENSION_POLYGON;
                 if (    //We must deal with a polygonal type.
                         nullT || (notPolyT && !constGeom)) {
                         throw new DriverException(

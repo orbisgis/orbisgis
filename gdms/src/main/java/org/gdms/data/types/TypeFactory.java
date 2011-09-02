@@ -123,8 +123,7 @@ public final class TypeFactory {
         }
 
         public static String getTypeName(int typeCode) {
-                int toEval = (typeCode & Type.GEOMETRY) != 0 && typeCode != Type.GEOMETRY ? typeCode ^ Type.GEOMETRY : typeCode;
-                switch (toEval) {
+                switch (typeCode) {
                         case Type.BINARY:
                                 return "binary";
                         case Type.BOOLEAN:
@@ -185,11 +184,13 @@ public final class TypeFactory {
         public static int[] getTypes() {
                 return new int[]{Type.BINARY, Type.BOOLEAN, Type.BYTE, Type.DATE,
                                 Type.DOUBLE, Type.FLOAT, Type.GEOMETRY, Type.INT, Type.LONG,
-                                Type.RASTER, Type.SHORT, Type.STRING, Type.TIME, Type.TIMESTAMP};
+                                Type.RASTER, Type.SHORT, Type.STRING, Type.TIME, Type.TIMESTAMP,
+                                Type.POINT, Type.MULTIPOINT, Type.LINESTRING, Type.MULTILINESTRING,
+                                Type.POLYGON, Type.MULTIPOLYGON, Type.GEOMETRYCOLLECTION};
         }
 
         public static boolean isSpatial(int typeCode) {
-                return (typeCode == Type.GEOMETRY) || (typeCode == Type.RASTER);
+                return (typeCode & Type.GEOMETRY) != 0 || (typeCode == Type.RASTER);
         }
         
         /**

@@ -207,7 +207,7 @@ public final class MetadataUtilities {
          */
         public static boolean isGeometry(Metadata metadata) throws DriverException {
                 for (int i = 0; i < metadata.getFieldCount(); i++) {
-                        if (metadata.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
+                        if ((metadata.getFieldType(i).getTypeCode() & Type.GEOMETRY) !=0) {
                                 return true;
                         }
                 }

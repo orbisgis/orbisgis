@@ -225,7 +225,7 @@ public class MemoryDataSetDriver extends GDMSModelDriver implements
                         Metadata m = schema.getTableByName("main");
                         for (int i = 0; i < m.getFieldCount(); i++) {
                                 Type fieldType = m.getFieldType(i);
-                                if (fieldType.getTypeCode() == Type.GEOMETRY) {
+                                if ((fieldType.getTypeCode() & Type.GEOMETRY) !=0) {
                                         type |= SourceManager.VECTORIAL;
                                 } else if (fieldType.getTypeCode() == Type.RASTER) {
                                         type |= SourceManager.RASTER;

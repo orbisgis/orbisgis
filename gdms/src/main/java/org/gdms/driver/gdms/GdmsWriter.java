@@ -126,7 +126,7 @@ public class GdmsWriter {
 			bm.put(bytes);
 			int typeCode = metadata.getFieldType(j).getTypeCode();
 			Envelope fieldEnvelope = null;
-			if (!value.isNull() && (typeCode == Type.GEOMETRY)) {
+			if (!value.isNull() && (typeCode & Type.GEOMETRY) != 0) {
 				fieldEnvelope = new Envelope(value.getAsGeometry()
 						.getEnvelopeInternal());
 			} else if (!value.isNull() && (typeCode == Type.RASTER)) {

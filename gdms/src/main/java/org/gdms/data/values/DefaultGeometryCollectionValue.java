@@ -72,7 +72,7 @@ public class DefaultGeometryCollectionValue extends DefaultGeometryValue impleme
 
         @Override
         public int getType() {
-                return Type.GEOMETRYCOLLECTION | Type.GEOMETRY;
+                return Type.GEOMETRYCOLLECTION;
         }
         
 }

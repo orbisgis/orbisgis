@@ -65,7 +65,7 @@ public class SRIDConstraint extends AbstractIntConstraint {
 
         @Override
         public String check(Value value) {
-                if (value.getType() == Type.GEOMETRY || value.getType() == Type.RASTER) {
+                if ((value.getType() & Type.GEOMETRY) != 0 || value.getType() == Type.RASTER) {
                         Geometry g = value.getAsGeometry();
                         if (g.getSRID() != constraintValue) {
                                 return "Expected SRID " + constraintValue + ", found " + g.getSRID();

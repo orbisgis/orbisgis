@@ -63,6 +63,6 @@ public class GeometryRule extends AbstractConversionRule {
 
         @Override
         public boolean canApply(Type type) {
-                return type.getTypeCode() == Type.GEOMETRY;
+                return (type.getTypeCode() & Type.GEOMETRY) != 0;
         }
 }

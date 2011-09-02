@@ -41,7 +41,9 @@ package org.gdms.data.types;
 import org.gdms.data.values.Value;
 
 /**
- * Interface that represent the type of a field
+ * Interface that represent the type of a field. The values stored here are 
+ * used to make efficient computation between the types. They are designed so that 
+ * geometry types are compatible, when possible.
  * 
  */
 public interface Type {
@@ -64,13 +66,13 @@ public interface Type {
 	int NULL = -1;
 	int COLLECTION = 16384;
         
-        int POINT = 32768;
-        int LINESTRING = 65536;
-        int POLYGON = 131072;
-        int MULTIPOLYGON = 262144;
-        int MULTILINESTRING = 524288;
-        int MULTIPOINT = 1048576;
-        int GEOMETRYCOLLECTION = 2097152;
+        int POINT = 32768 | Type.GEOMETRY;
+        int LINESTRING = 65536| Type.GEOMETRY;
+        int POLYGON = 131072 | Type.GEOMETRY;
+        int MULTIPOLYGON = 262144 | Type.GEOMETRY;
+        int MULTILINESTRING = 524288 | Type.GEOMETRYCOLLECTION;
+        int MULTIPOINT = 1048576 | Type.GEOMETRYCOLLECTION;
+        int GEOMETRYCOLLECTION = 2097152 | Type.GEOMETRY;
 
 	/**
 	 * Returns the array of the constraints this type has

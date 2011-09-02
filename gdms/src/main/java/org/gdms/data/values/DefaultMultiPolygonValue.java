@@ -78,7 +78,7 @@ public class DefaultMultiPolygonValue extends DefaultGeometryCollectionValue imp
 
         @Override
         public int getType() {
-                return Type.MULTIPOLYGON | Type.GEOMETRY;
+                return Type.MULTIPOLYGON;
         }
         
 }

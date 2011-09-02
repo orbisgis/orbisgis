@@ -71,6 +71,6 @@ public class DefaultLineStringValue extends DefaultGeometryValue implements Line
 
         @Override
         public int getType() {
-                return Type.LINESTRING | Type.GEOMETRY;
+                return Type.LINESTRING;
         }
 }

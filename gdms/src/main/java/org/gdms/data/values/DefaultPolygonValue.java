@@ -71,6 +71,6 @@ public class DefaultPolygonValue extends DefaultGeometryValue implements Polygon
 
         @Override
         public int getType() {
-                return Type.POLYGON | Type.GEOMETRY;
+                return Type.POLYGON;
         }
 }

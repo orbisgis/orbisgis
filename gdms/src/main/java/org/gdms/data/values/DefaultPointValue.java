@@ -71,7 +71,7 @@ public class DefaultPointValue extends DefaultGeometryValue implements PointValu
 
         @Override
         public int getType() {
-                return Type.POINT | Type.GEOMETRY;
+                return Type.POINT;
         }
 
 }

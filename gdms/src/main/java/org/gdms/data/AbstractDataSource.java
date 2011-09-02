@@ -375,7 +375,7 @@ public abstract class AbstractDataSource extends AbstractDataSet implements Data
                         throw new DriverException(fieldName + " is not a field !");
                 } else {
                         int fieldType = getMetadata().getFieldType(tmpSpatialFieldIndex).getTypeCode();
-                        if ((fieldType == Type.GEOMETRY) || (fieldType == Type.RASTER)) {
+                        if ((fieldType & Type.GEOMETRY) != 0 || (fieldType == Type.RASTER)) {
                                 spatialFieldIndex = tmpSpatialFieldIndex;
                         } else {
                                 throw new DriverException(fieldName
@@ -393,7 +393,7 @@ public abstract class AbstractDataSource extends AbstractDataSet implements Data
         @Override
         public boolean isVectorial() throws DriverException {
                 Type fieldType = getMetadata().getFieldType(getSpatialFieldIndex());
-                return fieldType.getTypeCode() == Type.GEOMETRY;
+                return (fieldType.getTypeCode() & Type.GEOMETRY) != 0;
         }
 
         @Override

@@ -465,7 +465,7 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
         @Override
         public String getAddFieldSQL(String fieldName, Type fieldType)
                 throws DriverException {
-                if (fieldType.getTypeCode() == Type.GEOMETRY) {
+                if ((fieldType.getTypeCode() & Type.GEOMETRY) != 0) {
                         return getAddGeometryColumn(fieldName, fieldType);
                 } else {
                         return super.getAddFieldSQL(fieldName, fieldType);
@@ -478,7 +478,7 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                 StringBuilder ret = new StringBuilder();
                 for (int i = 0; i < metadata.getFieldCount(); i++) {
                         Type fieldType = metadata.getFieldType(i);
-                        if (fieldType.getTypeCode() == Type.GEOMETRY) {
+                        if ((fieldType.getTypeCode() & Type.GEOMETRY) != 0) {
                                 ret.append(getAddGeometryColumn(metadata.getFieldName(i), metadata.getFieldType(i)));
                         }
                 }
@@ -519,25 +519,18 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                         int foundType = type.getTypeCode();
                         switch (foundType) {
                                 case Type.POINT:
-                                case Type.POINT|Type.GEOMETRY:
                                         return "POINT";
                                 case Type.LINESTRING:
-                                case Type.LINESTRING|Type.GEOMETRY:
                                         return "LINESTRING";
                                 case Type.POLYGON:
-                                case Type.POLYGON|Type.GEOMETRY:
                                         return "POLYGON";
                                 case Type.MULTIPOINT:
-                                case Type.MULTIPOINT|Type.GEOMETRY:
                                         return "MULTIPOINT";
                                 case Type.MULTILINESTRING:
-                                case Type.MULTILINESTRING|Type.GEOMETRY:
                                         return "MULTILINESTRING";
                                 case Type.MULTIPOLYGON:
-                                case Type.MULTIPOLYGON|Type.GEOMETRY:
                                         return "MULTIPOLYGON";
                                 case Type.GEOMETRYCOLLECTION:
-                                case Type.GEOMETRYCOLLECTION|Type.GEOMETRY:
                                 case Type.GEOMETRY:
                                         return GEOMETRYFIELDNAME;
                                 default:
@@ -569,7 +562,7 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                                 sql.append(separator).append(getAutoIncrementDefaultValue());
                         } else {
                                 String fieldValue;
-                                if ((fieldTypes[i].getTypeCode() == Type.GEOMETRY)
+                                if ((fieldTypes[i].getTypeCode() & Type.GEOMETRY) != 0
                                         && (row[i].getType() != Type.NULL)) {
                                         Geometry g = row[i].getAsGeometry();
                                         Dimension3DConstraint gc = (Dimension3DConstraint) fieldTypes[i].getConstraint(Constraint.DIMENSION_3D_GEOMETRY);
@@ -598,7 +591,7 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                                 continue;
                         } else {
                                 String fieldValue;
-                                if ((fieldTypes[i].getTypeCode() == Type.GEOMETRY)
+                                if ((fieldTypes[i].getTypeCode() & Type.GEOMETRY) != 0
                                         && (row[i].getType() != Type.NULL)) {
                                         Geometry g = row[i].getAsGeometry();
                                         Dimension3DConstraint gc = (Dimension3DConstraint) fieldTypes[i].getConstraint(Constraint.DIMENSION_3D_GEOMETRY);

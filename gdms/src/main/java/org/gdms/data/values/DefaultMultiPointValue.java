@@ -78,7 +78,7 @@ public class DefaultMultiPointValue extends DefaultGeometryCollectionValue imple
 
         @Override
         public int getType() {
-                return Type.MULTIPOINT | Type.GEOMETRY;
+                return Type.MULTIPOINT;
         }
         
 }

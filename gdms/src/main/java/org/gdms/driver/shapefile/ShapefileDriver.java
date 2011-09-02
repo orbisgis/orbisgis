@@ -421,14 +421,12 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                 int typeCode = geometryType.getTypeCode();
                 switch (typeCode) {
                         case Type.POINT:
-                        case Type.POINT|Type.GEOMETRY:
                                 if (dimension == 2) {
                                         return ShapeType.POINT;
                                 } else {
                                         return ShapeType.POINTZ;
                                 }
                         case Type.MULTIPOINT:
-                        case Type.MULTIPOINT|Type.GEOMETRY:
                                 if (dimension == 2) {
                                         return ShapeType.MULTIPOINT;
                                 } else {
@@ -436,8 +434,6 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                                 }
                         case Type.LINESTRING:
                         case Type.MULTILINESTRING:
-                        case Type.LINESTRING|Type.GEOMETRY:
-                        case Type.MULTILINESTRING|Type.GEOMETRY:
                                 if (dimension == 2) {
                                         return ShapeType.ARC;
                                 } else {
@@ -445,8 +441,6 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                                 }
                         case Type.POLYGON:
                         case Type.MULTIPOLYGON:
-                        case Type.POLYGON|Type.GEOMETRY:
-                        case Type.MULTIPOLYGON|Type.GEOMETRY:
                                 if (dimension == 2) {
                                         return ShapeType.POLYGON;
                                 } else {
@@ -520,7 +514,7 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                         //We shall analyse the type code.
                         int typeCode = geomType.getTypeCode();
                         //Are we dealing with a general vectorial type ?
-                        boolean isGeneral = typeCode == Type.GEOMETRY || (typeCode & Type.GEOMETRYCOLLECTION) != 0;
+                        boolean isGeneral = typeCode == Type.GEOMETRY || typeCode == Type.GEOMETRYCOLLECTION;
                         //Do we have a constraint upon dimension ?
                         boolean noDimCons =geomType.getConstraint(Constraint.DIMENSION_3D_GEOMETRY) == null;
                         if (isGeneral && typeCode != Type.NULL && noDimCons) {

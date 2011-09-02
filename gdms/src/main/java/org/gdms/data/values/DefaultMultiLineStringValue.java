@@ -78,7 +78,7 @@ public class DefaultMultiLineStringValue extends DefaultGeometryCollectionValue 
 
         @Override
         public int getType() {
-                return Type.MULTILINESTRING | Type.GEOMETRY;
+                return Type.MULTILINESTRING;
         }
         
 }
