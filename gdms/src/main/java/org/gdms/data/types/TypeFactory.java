@@ -123,8 +123,7 @@ public final class TypeFactory {
         }
 
         public static String getTypeName(int typeCode) {
-                int toEval = (typeCode & Type.GEOMETRY) != 0 && typeCode != Type.GEOMETRY ? typeCode ^ Type.GEOMETRY : typeCode;
-                switch (toEval) {
+                switch (typeCode) {
                         case Type.BINARY:
                                 return "binary";
                         case Type.BOOLEAN:
