@@ -217,31 +217,6 @@ public final class TypeFactory {
                 }
                 return false;             
         }
-        
-        /**
-         * Get an itn array containing all the vectorial types' typecode.
-         * @return 
-         */
-        public static int[] getVectorialTypes(){
-                return new int[]{Type.GEOMETRY, Type.POINT, Type.MULTIPOINT, Type.LINESTRING,
-                        Type.MULTILINESTRING, Type.POLYGON, Type.MULTIPOLYGON, Type.GEOMETRYCOLLECTION};
-        }
-        
-        /**
-         * Check whether typeCode represents a valid vectorial code, ie if it is a 
-         * geometry or geometry collection of any authorized kind.
-         * @param typeCode
-         * @return 
-         */
-        public static boolean isVectorial(int typeCode) {
-                int[] types = getVectorialTypes();
-                for(int i : types){
-                        if ((typeCode & i) != 0 ){
-                                return true;
-                        }
-                }
-                return false;             
-        }
 
         /**
          *
