@@ -43,8 +43,7 @@ public class GeometryRule extends AbstractConversionRule {
 
         @Override
         public int[] getValidConstraints() {
-                return addGlobalConstraints(Constraint.GEOMETRY_TYPE,
-                        Constraint.DIMENSION_3D_GEOMETRY, Constraint.SRID);
+                return addGlobalConstraints(Constraint.DIMENSION_3D_GEOMETRY, Constraint.SRID);
         }
 
         @Override
