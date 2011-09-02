@@ -727,7 +727,7 @@ public final class ValueFactory {
                 //In many cases, Type.GEOMETRY will be set with a concrete geometry type.
                 //If this is so, we just keep Type.GEOMETRY, as the needed result
                 //will be returned by createValue(Geometry).
-                int toEval = (valueType & Type.GEOMETRY) != 0 ? Type.GEOMETRY : valueType;
+                int toEval = ((valueType & Type.GEOMETRY) != 0 && !(valueType == Type.NULL))? Type.GEOMETRY : valueType;
                 switch (toEval) {
                         case Type.BINARY:
                                 return DefaultBinaryValue.readBytes(buffer);
