@@ -232,7 +232,7 @@ public class Layer extends GdmsLayer {
 	public RasterLegend[] getRasterLegend() throws DriverException {
 		int sfi = dataSource.getSpatialFieldIndex();
 		Metadata metadata = dataSource.getMetadata();
-		if (metadata.getFieldType(sfi).getTypeCode() == Type.GEOMETRY) {
+		if ((metadata.getFieldType(sfi).getTypeCode() & Type.GEOMETRY) != 0) {
 			throw new UnsupportedOperationException(I18N.getString("org.orbisgis.layerModel.layer.the") //$NON-NLS-1$
 					+ I18N.getString("org.orbisgis.layerModel.layer.fieldIsVector")); //$NON-NLS-1$
 		}
