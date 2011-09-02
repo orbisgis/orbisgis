@@ -53,7 +53,6 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.memory.MemorySourceDefinition;
-import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -186,8 +185,7 @@ public class ShapefileDriverTest {
 
                 DefaultMetadata m = new DefaultMetadata();
                 m.addField("thelongernameintheworld", Type.STRING);
-                m.addField("", Type.GEOMETRY,
-                        new GeometryTypeConstraint(GeometryTypeConstraint.POLYGON));
+                m.addField("", Type.GEOMETRY | Type.POLYGON);
                 File shpFile = new File(TestBase.backupDir,
                         "outputtestFieldNameTooLong.shp");
                 if (shpFile.exists()) {
@@ -205,8 +203,7 @@ public class ShapefileDriverTest {
                 DefaultMetadata m = new DefaultMetadata();
                 m.addField("string", Type.STRING);
                 m.addField("int", Type.INT);
-                m.addField("", Type.GEOMETRY,
-                        new GeometryTypeConstraint(GeometryTypeConstraint.POLYGON));
+                m.addField("", Type.GEOMETRY | Type.POLYGON);
                 File shpFile = new File(TestBase.backupDir,
                         "outputtestNullStringValue.shp");
                 if (shpFile.exists()) {
@@ -229,7 +226,7 @@ public class ShapefileDriverTest {
         @Test
         public void test2DReadWriteMultipolygon() throws Exception {
                 Geometry geom = wktReader.read("MULTIPOLYGON ((( 107 113, 107 293, 368 293, 368 113, 107 113 )), (( 178 246, 178 270, 196 270, 196 246, 178 246 )))");
-                test2DReadWrite(GeometryTypeConstraint.MULTI_POLYGON, geom);
+                test2DReadWrite(Type.MULTIPOLYGON | Type.GEOMETRY, geom);
         }
 
         public void test2DReadWrite(int geometryType, Geometry geom)
@@ -237,8 +234,7 @@ public class ShapefileDriverTest {
                 int nbCoords = geom.getCoordinates().length;
                 DefaultMetadata m = new DefaultMetadata();
                 m.addField("thelongernameintheworld", Type.STRING);
-                m.addField("", Type.GEOMETRY,
-                        new GeometryTypeConstraint(geometryType),
+                m.addField("", geometryType,
                         new Dimension3DConstraint(2));
                 File shpFile = new File(TestBase.backupDir,
                         "outputtest2DReadWrite.shp");
@@ -262,12 +258,12 @@ public class ShapefileDriverTest {
 
         @Test
         public void test3DReadWritePoint() throws Exception {
-                test3DReadWrite(GeometryTypeConstraint.POINT, Geometries.getPoint3D());
+                test3DReadWrite(Type.POINT| Type.GEOMETRY, Geometries.getPoint3D());
         }
 
         @Test
         public void test3DReadWriteLineString() throws Exception {
-                test3DReadWrite(GeometryTypeConstraint.MULTI_LINESTRING, Geometries.getMultilineString3D());
+                test3DReadWrite(Type.MULTILINESTRING| Type.GEOMETRY, Geometries.getMultilineString3D());
         }
 
         @Test
@@ -279,20 +275,19 @@ public class ShapefileDriverTest {
                                 new Coordinate(0, 0, 20)});
                 Polygon pol = gf.createPolygon(lr, null);
                 MultiPolygon multiPol = gf.createMultiPolygon(new Polygon[]{pol});
-                test3DReadWrite(GeometryTypeConstraint.MULTI_POLYGON, multiPol);
+                test3DReadWrite(Type.MULTIPOLYGON| Type.GEOMETRY, multiPol);
         }
 
         @Test
         public void test3DReadWriteMultipoint() throws Exception {
-                test3DReadWrite(GeometryTypeConstraint.MULTI_POINT, Geometries.getMultiPoint3D());
+                test3DReadWrite(Type.MULTIPOINT|Type.GEOMETRY, Geometries.getMultiPoint3D());
         }
 
         public void test3DReadWrite(int geometryType, Geometry geom)
                 throws Exception {
                 DefaultMetadata m = new DefaultMetadata();
                 m.addField("thelongernameintheworld", Type.STRING);
-                m.addField("", Type.GEOMETRY,
-                        new GeometryTypeConstraint(geometryType),
+                m.addField("", geometryType,
                         new Dimension3DConstraint(3));
                 File shpFile = new File(TestBase.backupDir,
                         "outputtest3DReadWrite.shp");
@@ -336,7 +331,7 @@ public class ShapefileDriverTest {
         public void testWrongTypeForDBF() throws Exception {
                 DefaultMetadata m = new DefaultMetadata();
                 m.addField("id", Type.TIMESTAMP);
-                m.addField("", Type.GEOMETRY, new GeometryTypeConstraint(GeometryTypeConstraint.POINT),
+                m.addField("", Type.GEOMETRY|Type.POINT,
                         new Dimension3DConstraint(3));
                 File shpFile = new File(TestBase.backupDir,
                         "outputtestWrongTypeForDBF.shp");
@@ -356,7 +351,7 @@ public class ShapefileDriverTest {
                 dsf.setWarninglistener(listener);
 
                 DefaultMetadata m = new DefaultMetadata();
-                m.addField("the_geom", Type.GEOMETRY, new GeometryTypeConstraint(GeometryTypeConstraint.POINT),
+                m.addField("the_geom", Type.GEOMETRY |Type.POINT,
                         new Dimension3DConstraint(3));
                 m.addField("f1", Type.BOOLEAN);
                 m.addField("f2", Type.BYTE);
@@ -472,8 +467,7 @@ public class ShapefileDriverTest {
         @Test
         public void testNullDates() throws Exception {
                 DefaultMetadata m = new DefaultMetadata();
-                m.addField("geom", TypeFactory.createType(Type.GEOMETRY,
-                        new GeometryTypeConstraint(GeometryTypeConstraint.LINESTRING)));
+                m.addField("geom", TypeFactory.createType(Type.GEOMETRY|Type.LINESTRING));
                 m.addField("date", Type.DATE);
                 DataSourceCreation dsc = new FileSourceCreation(new File(dsf.getTempFile()
                         + ".shp"), m);

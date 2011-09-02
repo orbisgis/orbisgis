@@ -51,7 +51,6 @@ import org.gdms.data.indexes.IndexManager;
 import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -278,7 +277,7 @@ public class SpatialEditionTest extends TestBase {
                 shpFile.delete();
                 new File("src/test/resources/backup/big.shx").delete();
                 DefaultMetadata dsdm = new DefaultMetadata();
-                dsdm.addField("geom", Type.GEOMETRY, new GeometryTypeConstraint(GeometryTypeConstraint.LINESTRING));
+                dsdm.addField("geom", Type.GEOMETRY | Type.LINESTRING);
                 dsdm.addField("text", Type.STRING, new LengthConstraint(10));
 
                 dsf.createDataSource(new FileSourceCreation(shpFile, dsdm));
@@ -406,7 +405,7 @@ public class SpatialEditionTest extends TestBase {
                 Value[] row = d.getRow(0);
                 double x = originalExtent.getMinX();
                 double y = originalExtent.getMinY();
-                GeometryTypeConstraint gc = (GeometryTypeConstraint) d.getFieldType(sfi).getConstraint(Constraint.GEOMETRY_TYPE);
+                Type gc = d.getFieldType(sfi);
                 row[sfi] = getOutsideGeom(gc, x, y, -10);
                 d.insertFilledRow(nullifyAutoIncrement(d, row));
                 assertTrue(fullExtentContainsAll(d));
@@ -429,7 +428,7 @@ public class SpatialEditionTest extends TestBase {
 
         }
 
-        private Value getOutsideGeom(GeometryTypeConstraint gc, double x, double y,
+        private Value getOutsideGeom(Type gc, double x, double y,
                 double offset) {
                 Geometry g = null;
                 Point point = gf.createPoint(new Coordinate(x + offset, y + offset));
@@ -439,17 +438,17 @@ public class SpatialEditionTest extends TestBase {
                                 new Coordinate(x, y), new Coordinate(x + offset, y + offset),
                                 new Coordinate(x + offset, y), new Coordinate(x, y)});
                 Polygon polygon = gf.createPolygon(linearRing, null);
-                if ((gc == null) || (gc.getGeometryType() == GeometryTypeConstraint.POINT)) {
+                if ((gc == null) || (gc.getTypeCode() & Type.POINT) != 0) {
                         g = point;
-                } else if (gc.getGeometryType() == GeometryTypeConstraint.MULTI_POINT) {
+                } else if ((gc.getTypeCode() & Type.MULTIPOINT) != 0) {
                         g = gf.createMultiPoint(new Point[]{point});
-                } else if (gc.getGeometryType() == GeometryTypeConstraint.LINESTRING) {
+                } else if ((gc.getTypeCode() & Type.LINESTRING) != 0) {
                         g = lineString;
-                } else if (gc.getGeometryType() == GeometryTypeConstraint.MULTI_LINESTRING) {
+                } else if ((gc.getTypeCode() & Type.MULTILINESTRING) != 0) {
                         g = gf.createMultiLineString(new LineString[]{lineString});
-                } else if (gc.getGeometryType() == GeometryTypeConstraint.POLYGON) {
+                } else if ((gc.getTypeCode() & Type.POLYGON) != 0) {
                         g = polygon;
-                } else if (gc.getGeometryType() == GeometryTypeConstraint.MULTI_POLYGON) {
+                } else if ((gc.getTypeCode() & Type.MULTIPOLYGON) != 0) {
                         g = gf.createMultiPolygon(new Polygon[]{polygon});
                 } else {
                         throw new RuntimeException();

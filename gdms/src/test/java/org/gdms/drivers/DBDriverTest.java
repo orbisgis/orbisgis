@@ -66,7 +66,6 @@ import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Dimension3DConstraint;
-import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -82,16 +81,16 @@ import static org.junit.Assume.*;
 
 public class DBDriverTest extends TestBase {
 
-        private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        private static SimpleDateFormat stf = new SimpleDateFormat("HH:mm:ss");
-        private static HashMap<Integer, Value> sampleValues = new HashMap<Integer, Value>();
-        private static Constraint[] geometryConstraints = new Constraint[]{
-                new GeometryTypeConstraint(GeometryTypeConstraint.POINT),
-                new GeometryTypeConstraint(GeometryTypeConstraint.LINESTRING),
-                new GeometryTypeConstraint(GeometryTypeConstraint.POLYGON),
-                new GeometryTypeConstraint(GeometryTypeConstraint.MULTI_POINT),
-                new GeometryTypeConstraint(GeometryTypeConstraint.MULTI_LINESTRING),
-                new GeometryTypeConstraint(GeometryTypeConstraint.MULTI_POLYGON), null};
+        private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        private static final SimpleDateFormat stf = new SimpleDateFormat("HH:mm:ss");
+        private static final HashMap<Integer, Value> sampleValues = new HashMap<Integer, Value>();
+        private static Type[] geometryConstraints = new Type[]{
+                TypeFactory.createType(Type.POINT|Type.GEOMETRY),
+                TypeFactory.createType(Type.LINESTRING|Type.GEOMETRY),
+                TypeFactory.createType(Type.POLYGON|Type.GEOMETRY),
+                TypeFactory.createType(Type.MULTIPOINT|Type.GEOMETRY),
+                TypeFactory.createType(Type.MULTILINESTRING|Type.GEOMETRY),
+                TypeFactory.createType(Type.MULTIPOLYGON|Type.GEOMETRY), null};
 
         static {
                 try {
@@ -295,16 +294,11 @@ public class DBDriverTest extends TestBase {
         }
 
         private void testSQLGeometryConstraint(DBSource dbSource,
-                GeometryTypeConstraint geometryConstraint, int dimension)
+                Type geometryConstraint, int dimension)
                 throws Exception {
                 DefaultMetadata metadata = new DefaultMetadata();
                 Constraint[] constraints;
-                if (geometryConstraint == null) {
-                        constraints = new Constraint[]{new Dimension3DConstraint(dimension)};
-                } else {
-                        constraints = new Constraint[]{geometryConstraint,
-                                new Dimension3DConstraint(dimension)};
-                }
+                constraints = new Constraint[]{new Dimension3DConstraint(dimension)};
                 metadata.addField("f1", Type.GEOMETRY, constraints);
                 metadata.addField("f2", Type.INT, new PrimaryKeyConstraint());
                 DBSourceCreation dsc = new DBSourceCreation(dbSource, metadata);
@@ -315,9 +309,8 @@ public class DBDriverTest extends TestBase {
                 int spatialIndex = ds.getFieldIndexByName("f1");
                 Metadata met = ds.getMetadata();
                 Type spatialType = met.getFieldType(spatialIndex);
-                GeometryTypeConstraint gc = (GeometryTypeConstraint) spatialType.getConstraint(Constraint.GEOMETRY_TYPE);
                 Dimension3DConstraint dc = (Dimension3DConstraint) spatialType.getConstraint(Constraint.DIMENSION_3D_GEOMETRY);
-                assertTrue((gc == null) || (gc.getGeometryType() == geometryConstraint.getGeometryType()));
+                assertTrue((spatialType== null) || (spatialType.getTypeCode() == geometryConstraint.getTypeCode()));
                 assertTrue((dc == null) || dc.getDimension() == dimension);
                 ds.close();
         }
@@ -332,7 +325,7 @@ public class DBDriverTest extends TestBase {
                         for (int dim = 2; dim <= 3; dim++) {
                                 TestBase.dsf.getSourceManager().removeAll();
                                 src.backup();
-                                testSQLGeometryConstraint(postgreSQLDBSource, (GeometryTypeConstraint) geometryConstraints[i], dim);
+                                testSQLGeometryConstraint(postgreSQLDBSource, geometryConstraints[i], dim);
                         }
                 }
         }
@@ -353,8 +346,7 @@ public class DBDriverTest extends TestBase {
                 ds.commit();
                 ds.close();
                 ds.open();
-                ds.addField("the_geom", TypeFactory.createType(Type.GEOMETRY,
-                        new GeometryTypeConstraint(GeometryTypeConstraint.POINT)));
+                ds.addField("the_geom", TypeFactory.createType(Type.GEOMETRY|Type.POINT));
                 ds.commit();
                 ds.close();
         }

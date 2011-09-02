@@ -36,7 +36,6 @@
  */
 package org.gdms;
 
-import org.gdms.data.types.GeometryTypeConstraint;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -46,6 +45,7 @@ import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+import org.gdms.data.types.Type;
 
 public class Geometries {
 
@@ -79,21 +79,21 @@ public class Geometries {
 		return gf.createPoint(new Coordinate(10, 10, 50));
 	}
 
-	public static Geometry getGeometry(int geometryType, int dimension) {
+	public static Geometry getSampleGeometry(int geometryType, int dimension) {
 		switch (geometryType) {
-		case GeometryTypeConstraint.LINESTRING:
+		case Type.LINESTRING:
 			return getLinestring();
-		case GeometryTypeConstraint.MULTI_LINESTRING:
+		case Type.MULTILINESTRING:
 			return getMultilineString();
-		case GeometryTypeConstraint.POINT:
+		case Type.POINT:
 			if (dimension == 2) {
 				return getPoint();
 			} else {
 				return getPoint3D();
 			}
-		case GeometryTypeConstraint.POLYGON:
+		case Type.POLYGON:
 			return getPolygon();
-		case GeometryTypeConstraint.MULTI_POLYGON:
+		case Type.MULTIPOLYGON:
 			return getMultiPolygon2D();
 		default:
 			return getPoint();

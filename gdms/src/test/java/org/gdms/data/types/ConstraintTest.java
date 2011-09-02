@@ -130,8 +130,7 @@ public class ConstraintTest {
 
         @Test
         public void testGeometryType() throws Exception {
-                setType(TypeFactory.createType(Type.GEOMETRY, new GeometryTypeConstraint(
-                        GeometryTypeConstraint.POINT)));
+                setType(TypeFactory.createType(Type.GEOMETRY | Type.POINT));
                 setValidValues(ValueFactory.createValue(Geometries.getPoint()),
                         ValueFactory.createValue(new GeometryFactory().createGeometryCollection(new Geometry[0])),
                         ValueFactory.createNullValue());

@@ -59,7 +59,7 @@ import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Dimension3DConstraint;
-import org.gdms.data.types.GeometryTypeConstraint;
+import org.gdms.data.types.GeometryDimensionConstraint;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.data.types.IncompatibleTypesException;
@@ -341,17 +341,57 @@ public abstract class TestBase extends SourceTest<Value, Geometry> {
                                                 case Type.SHORT:
                                                         numericField = fieldName;
                                                         break;
-                                                case Type.GEOMETRY:
+                                                case Type.GEOMETRY | Type.POINT:
+                                                case Type.GEOMETRY | Type.MULTIPOINT:
+                                                case Type.GEOMETRY | Type.POLYGON:
+                                                case Type.GEOMETRY | Type.MULTIPOLYGON:
+                                                case Type.GEOMETRY | Type.LINESTRING:
+                                                case Type.GEOMETRY | Type.MULTILINESTRING:
                                                         spatialField = fieldName;
-                                                        GeometryTypeConstraint c = (GeometryTypeConstraint) fieldType.getConstraint(Constraint.GEOMETRY_TYPE);
-                                                        if (c != null) {
-                                                                geometryType = c.getGeometryType();
-                                                        }
+                                                        geometryType = typeCode;
                                                         Dimension3DConstraint dc = (Dimension3DConstraint) fieldType.getConstraint(Constraint.DIMENSION_3D_GEOMETRY);
                                                         if (dc != null) {
                                                                 dimension = dc.getDimension();
                                                         }
                                                         break;
+                                                //We treat the two generic cases separately.
+                                                case Type.GEOMETRY:
+                                                        GeometryDimensionConstraint gdc1 = 
+                                                                (GeometryDimensionConstraint) fieldType.getConstraint(Constraint.DIMENSION_2D_GEOMETRY);
+                                                        if(gdc1 != null){
+                                                                if (gdc1.getConstraintIntValue()==GeometryDimensionConstraint.DIMENSION_POINT){
+                                                                        geometryType = Type.GEOMETRY | Type.POINT;
+                                                                } else if (gdc1.getConstraintIntValue()==GeometryDimensionConstraint.DIMENSION_LINE){
+                                                                        geometryType = Type.GEOMETRY | Type.LINESTRING;
+                                                                } else if (gdc1.getConstraintIntValue()==GeometryDimensionConstraint.DIMENSION_POLYGON){
+                                                                        geometryType = Type.GEOMETRY | Type.POLYGON;
+                                                                }
+                                                        }
+                                                        Dimension3DConstraint dcr = 
+                                                                (Dimension3DConstraint) fieldType.getConstraint(Constraint.DIMENSION_3D_GEOMETRY);
+                                                        if (dcr != null) {
+                                                                dimension = dcr.getDimension();
+                                                        }
+                                                        break;
+                                                case Type.GEOMETRY | Type.GEOMETRYCOLLECTION:
+                                                        GeometryDimensionConstraint gdc2 = 
+                                                                (GeometryDimensionConstraint) fieldType.getConstraint(Constraint.DIMENSION_2D_GEOMETRY);
+                                                        if(gdc2 != null){
+                                                                if (gdc2.getConstraintIntValue()==GeometryDimensionConstraint.DIMENSION_POINT){
+                                                                        geometryType = Type.GEOMETRY | Type.MULTIPOINT;
+                                                                } else if (gdc2.getConstraintIntValue()==GeometryDimensionConstraint.DIMENSION_LINE){
+                                                                        geometryType = Type.GEOMETRY | Type.MULTILINESTRING;
+                                                                } else if (gdc2.getConstraintIntValue()==GeometryDimensionConstraint.DIMENSION_POLYGON){
+                                                                        geometryType = Type.GEOMETRY | Type.MULTIPOLYGON;
+                                                                }
+                                                        }
+                                                        
+                                                        Dimension3DConstraint d3c = (Dimension3DConstraint) fieldType.getConstraint(Constraint.DIMENSION_3D_GEOMETRY);
+                                                        if (d3c != null) {
+                                                                dimension = d3c.getDimension();
+                                                        }
+                                                        break;
+                                                        
                                         }
                                 }
                                 ds.setString(row, fnoPKField, noPKField);
@@ -365,7 +405,7 @@ public abstract class TestBase extends SourceTest<Value, Geometry> {
                                 if (geometryType == -1) {
                                         ds.setString(row, fnewGeometry, writer.write(Geometries.getPoint()));
                                 } else {
-                                        ds.setString(row, fnewGeometry, writer.write(Geometries.getGeometry(geometryType, dimension)));
+                                        ds.setString(row, fnewGeometry, writer.write(Geometries.getSampleGeometry(geometryType, dimension)));
                                 }
 
                                 if ((driverName instanceof DBFDriver)
