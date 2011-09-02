@@ -62,8 +62,7 @@ package org.orbisgis.core.ui.editors.map.tools;
 import java.util.Observable;
 
 import javax.swing.AbstractButton;
-
-import org.gdms.data.types.GeometryTypeConstraint;
+ 
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -76,6 +75,11 @@ import org.orbisgis.utils.I18N;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import org.gdms.data.DataSource;
+import org.gdms.data.types.Constraint;
+import org.gdms.data.types.ConstraintFactory;
+import org.gdms.data.types.GeometryDimensionConstraint;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 
 public class LineTool extends AbstractLineTool {
 
@@ -86,6 +90,7 @@ public class LineTool extends AbstractLineTool {
                 return button;
         }
 
+        @Override
         public void setButton(AbstractButton button) {
                 this.button = button;
         }
@@ -95,11 +100,13 @@ public class LineTool extends AbstractLineTool {
                 PlugInContext.checkTool(this);
         }
 
+        @Override
         public boolean isEnabled(MapContext vc, ToolManager tm) {
-                return ToolUtilities.geometryTypeIs(vc, GeometryTypeConstraint.LINESTRING)
+                return ToolUtilities.geometryTypeIs(vc, TypeFactory.createType(Type.LINESTRING))
                         && ToolUtilities.isActiveLayerEditable(vc);
         }
 
+        @Override
         public boolean isVisible(MapContext vc, ToolManager tm) {
                 return isEnabled(vc, tm);
         }
@@ -109,7 +116,12 @@ public class LineTool extends AbstractLineTool {
                 throws TransitionException {
                 Geometry g = ls;
                 if (ToolUtilities.geometryTypeIs(mc,
-                        GeometryTypeConstraint.MULTI_LINESTRING)) {
+                        TypeFactory.createType(Type.MULTILINESTRING),
+                        TypeFactory.createType(Type.GEOMETRYCOLLECTION, 
+                                ConstraintFactory.createConstraint(Constraint.DIMENSION_2D_GEOMETRY, 
+                                        GeometryDimensionConstraint.DIMENSION_LINE))
+                        )
+                ) {
                         g = ToolManager.toolsGeometryFactory.createMultiLineString(new LineString[]{ls});
                 }
 
@@ -125,10 +137,12 @@ public class LineTool extends AbstractLineTool {
                 }
         }
 
+        @Override
         public double getInitialZ(MapContext mapContext) {
                 return ToolUtilities.getActiveLayerInitialZ(mapContext);
         }
 
+        @Override
         public String getName() {
                 return I18N.getString("orbisgis.core.ui.editors.map.tool.line_tooltip");
         }

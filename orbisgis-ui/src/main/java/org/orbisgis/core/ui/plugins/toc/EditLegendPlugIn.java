@@ -39,8 +39,6 @@ package org.orbisgis.core.ui.plugins.toc;
 
 import javax.swing.JOptionPane;
 
-import org.gdms.data.types.Constraint;
-import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
@@ -69,6 +67,7 @@ import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 public class EditLegendPlugIn extends AbstractPlugIn {
 
+        @Override
 	public boolean execute(PlugInContext context) {
 		MapContext mapContext = getPlugInContext().getMapContext();
 		ILayer[] selectedResources = mapContext.getSelectedLayers();
@@ -81,6 +80,7 @@ public class EditLegendPlugIn extends AbstractPlugIn {
 		return true;
 	}
 
+        @Override
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
 		WorkbenchFrame frame = wbContext.getWorkbench().getFrame().getToc();
@@ -94,8 +94,6 @@ public class EditLegendPlugIn extends AbstractPlugIn {
 		try {
 			Type typ = layer.getDataSource().getMetadata().getFieldType(
 					layer.getDataSource().getSpatialFieldIndex());
-			GeometryTypeConstraint cons = (GeometryTypeConstraint) typ
-					.getConstraint(Constraint.GEOMETRY_TYPE);
 
 			LegendsPanel pan = new LegendsPanel();
 			// Obtain MapTransform
@@ -121,7 +119,7 @@ public class EditLegendPlugIn extends AbstractPlugIn {
 			}
 			ILegendPanel[] legends = EPLegendHelper.getLegendPanels(pan);
 			ISymbolEditor[] symbolEditors = EPLegendHelper.getSymbolPanels();
-			pan.init(mt, cons, copies, legends, symbolEditors, layer);
+			pan.init(mt, typ, copies, legends, symbolEditors, layer);
 			if (UIFactory.showDialog(pan)) {
 				try {
 					layer.setLegend(pan.getLegends());

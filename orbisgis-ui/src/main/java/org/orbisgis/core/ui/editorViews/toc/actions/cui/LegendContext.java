@@ -35,8 +35,8 @@
  *    thomas.leduc _at_ cerma.archi.fr
  */
 package org.orbisgis.core.ui.editorViews.toc.actions.cui;
-
-import org.gdms.data.types.GeometryTypeConstraint;
+ 
+import org.gdms.data.types.Type;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
@@ -78,7 +78,7 @@ public interface LegendContext {
 	 * 
 	 * @return
 	 */
-	GeometryTypeConstraint getGeometryTypeConstraint();
+	Type getGeometryTypeConstraint();
 
 	/**
 	 * Gets the layer which legend is being edited

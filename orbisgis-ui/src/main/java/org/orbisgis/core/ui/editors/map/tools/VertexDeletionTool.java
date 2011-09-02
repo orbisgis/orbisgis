@@ -56,8 +56,9 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Geometry;
-import org.gdms.data.DataSource;
-import org.gdms.data.types.GeometryTypeConstraint;
+import org.gdms.data.DataSource; 
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.geometryUtils.GeometryException;
 
 public class VertexDeletionTool extends VertexDeletion {
@@ -69,6 +70,7 @@ public class VertexDeletionTool extends VertexDeletion {
                 return button;
         }
 
+	@Override
         public void setButton(AbstractButton button) {
                 this.button = button;
         }
@@ -145,16 +147,19 @@ public class VertexDeletionTool extends VertexDeletion {
                 throws DrawingException {
         }
 
+	@Override
         public boolean isEnabled(MapContext vc, ToolManager tm) {
                 return ToolUtilities.activeSelectionGreaterThan(vc, 0)
                         && ToolUtilities.isActiveLayerEditable(vc) && ToolUtilities.isSelectionGreaterOrEqualsThan(vc, 1)
-                        && !ToolUtilities.geometryTypeIs(vc, GeometryTypeConstraint.POINT);
+                        && !ToolUtilities.geometryTypeIs(vc, TypeFactory.createType(Type.POINT));
         }
 
+	@Override
         public boolean isVisible(MapContext vc, ToolManager tm) {
                 return isEnabled(vc, tm);
         }
 
+	@Override
         public String getName() {
                 return I18N.getString("orbisgis.core.ui.editors.map.tool.vertexDeletion_tooltip");
         }

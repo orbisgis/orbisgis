@@ -65,7 +65,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import org.gdms.data.schema.Metadata;
-import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
@@ -92,6 +91,9 @@ import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
 
 import com.vividsolutions.jts.geom.Envelope;
 import org.gdms.data.DataSource;
+import org.gdms.data.types.GeometryDimensionConstraint;
+import org.gdms.data.types.TypeFactory;
+import org.gdms.driver.solene.Geometry3DUtilities;
 
 public class PnlProportionalPointLegend extends JPanel implements ILegendPanel {
 
@@ -333,10 +335,18 @@ public class PnlProportionalPointLegend extends JPanel implements ILegendPanel {
 
 	private SymbolFilter getSymbolFilter() {
 		return new CompositeSymbolFilter(new ConstraintSymbolFilter(
-                        (GeometryTypeConstraint)new GeometryTypeConstraint(GeometryTypeConstraint.POINT),
-                        (GeometryTypeConstraint)new GeometryTypeConstraint(GeometryTypeConstraint.MULTI_POINT),
-                        (GeometryTypeConstraint)new GeometryTypeConstraint(GeometryTypeConstraint.POLYGON),
-                        (GeometryTypeConstraint)new GeometryTypeConstraint(GeometryTypeConstraint.MULTI_POLYGON)),
+                        TypeFactory.createType(Type.POINT),
+                        TypeFactory.createType(Type.MULTIPOINT),
+                        TypeFactory.createType(Type.POLYGON),
+                        TypeFactory.createType(Type.MULTIPOLYGON),
+                        TypeFactory.createType(Type.GEOMETRYCOLLECTION,
+                                new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_POINT)),
+                        TypeFactory.createType(Type.GEOMETRYCOLLECTION,
+                                new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_POLYGON)),
+                        TypeFactory.createType(Type.GEOMETRY,
+                                new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_POINT)),
+                        TypeFactory.createType(Type.GEOMETRY,
+                                new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_POLYGON))),
 				new SymbolFilter() {
 
 					@Override
@@ -346,24 +356,29 @@ public class PnlProportionalPointLegend extends JPanel implements ILegendPanel {
 				});
 	}
 
+        @Override
 	public boolean acceptsGeometryType(int geometryType) {
 		return (geometryType == GeometryProperties.POLYGON)
 				|| (geometryType == GeometryProperties.POINT)
 				|| (geometryType == GeometryProperties.ALL);
 	}
 
+        @Override
 	public Component getComponent() {
 		return this;
 	}
 
+        @Override
 	public Legend getLegend() {
 		return legend;
 	}
 
+        @Override
 	public ILegendPanel newInstance() {
 		return new PnlProportionalPointLegend();
 	}
 
+        @Override
 	public void setLegend(Legend legend) {
 		this.legend = (ProportionalLegend) legend;
 		syncWithLegend();
@@ -431,6 +446,7 @@ public class PnlProportionalPointLegend extends JPanel implements ILegendPanel {
 
 	}
 
+        @Override
 	public void initialize(LegendContext lc) {
 		this.legendContext = lc;
 		legend = LegendFactory.createProportionalPointLegend();
@@ -438,6 +454,7 @@ public class PnlProportionalPointLegend extends JPanel implements ILegendPanel {
 		init();
 	}
 
+        @Override
 	public String validateInput() {
 
 		if (legend.getClassificationField() == null) {

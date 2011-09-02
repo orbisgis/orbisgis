@@ -44,8 +44,8 @@ import javax.swing.Icon;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.schema.Metadata;
-import org.gdms.data.types.Constraint;
-import org.gdms.data.types.GeometryTypeConstraint;
+import org.gdms.data.types.Constraint; 
+import org.gdms.data.types.GeometryDimensionConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
@@ -70,29 +70,40 @@ public abstract class TocAbstractRenderer {
 				// Create a legend for each spatial field
 				Metadata metadata = dataSource.getMetadata();
 				Type fieldType = metadata.getFieldType(spatialField);
-				if (fieldType.getTypeCode() == Type.GEOMETRY) {
-					GeometryTypeConstraint geomTypeConstraint = (GeometryTypeConstraint) fieldType
-							.getConstraint(Constraint.GEOMETRY_TYPE);
-					if (geomTypeConstraint == null) {
-						return OrbisGISIcon.LAYER_MIXE;
-					} else {
-						int geomType = geomTypeConstraint.getGeometryType();
-
-						if ((geomType == GeometryTypeConstraint.POLYGON)
-								|| (geomType == GeometryTypeConstraint.MULTI_POLYGON)) {
-							return OrbisGISIcon.LAYER_POLYGON;
-						} else if ((geomType == GeometryTypeConstraint.LINESTRING)
-								|| (geomType == GeometryTypeConstraint.MULTI_LINESTRING)) {
-							return OrbisGISIcon.LAYER_LINE;
-						} else if ((geomType == GeometryTypeConstraint.POINT)
-								|| (geomType == GeometryTypeConstraint.MULTI_POINT)) {
-							return OrbisGISIcon.LAYER_POINT;
-						} else if ((geomType == GeometryTypeConstraint.GEOMETRY_COLLECTION)) {
+                                int typeCode = fieldType.getTypeCode();
+				if ((typeCode & Type.GEOMETRY) != 0) {
+                                        switch(typeCode){
+                                                case Type.NULL:
 							return OrbisGISIcon.LAYER_MIXE;
-						} else {
-							throw new RuntimeException(I18N.getString("orbisgis.org.orbisgis.toc.tocAbstractRenderer.bug")); //$NON-NLS-1$
-						}
-					}
+                                                case Type.GEOMETRY:
+                                                case Type.GEOMETRYCOLLECTION:
+                                                        GeometryDimensionConstraint gdc = 
+                                                                (GeometryDimensionConstraint) fieldType.getConstraint(Constraint.DIMENSION_2D_GEOMETRY);
+                                                        if(gdc == null){
+                                                                return OrbisGISIcon.LAYER_MIXE;
+                                                        } else {
+                                                                switch(gdc.getDimension()){
+                                                                        case GeometryDimensionConstraint.DIMENSION_POINT:
+                                                                                return OrbisGISIcon.LAYER_POINT;
+                                                                        case GeometryDimensionConstraint.DIMENSION_LINE:
+                                                                                return OrbisGISIcon.LAYER_LINE;
+                                                                        case GeometryDimensionConstraint.DIMENSION_POLYGON:
+                                                                                return OrbisGISIcon.LAYER_POLYGON;
+                                                                        default :
+                                                                                return OrbisGISIcon.LAYER_POLYGON;                                                                }
+                                                        }
+                                                case Type.POINT:
+                                                case Type.MULTIPOINT:
+							return OrbisGISIcon.LAYER_POINT;
+                                                case Type.LINESTRING:
+                                                case Type.MULTILINESTRING:
+							return OrbisGISIcon.LAYER_LINE;
+                                                case Type.POLYGON:
+                                                case Type.MULTIPOLYGON:
+							return OrbisGISIcon.LAYER_POLYGON;
+                                                default:
+                                                        throw new RuntimeException(I18N.getString("orbisgis.org.orbisgis.toc.tocAbstractRenderer.bug")); //$NON-NLS-1$
+                                        }
 
 				} else {
 					if (layer.getRaster().getType() == ImagePlus.COLOR_RGB) {

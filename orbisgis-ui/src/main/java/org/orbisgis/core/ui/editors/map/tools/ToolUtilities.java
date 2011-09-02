@@ -53,6 +53,7 @@ import org.orbisgis.core.ui.editors.map.tool.TransitionException;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import org.gdms.data.DataSource;
+import org.gdms.data.types.GeometryDimensionConstraint;
 
 public class ToolUtilities {
 
@@ -176,7 +177,15 @@ public class ToolUtilities {
 		}
 	}
 
-	public static boolean geometryTypeIs(MapContext vc, int... geometryTypes) {
+        /**
+         * Check that the geometry of the active layer of vc is valid against the list
+         * of geometry types.
+         * @param vc
+         * @param geometryTypes
+         *      The geometry type codes we are testing. They are listed in {@link Type}.
+         * @return 
+         */
+	public static boolean geometryTypeIs(MapContext vc, Type... geometryTypes) {
 		ILayer activeLayer = vc.getActiveLayer();
 		if (activeLayer == null) {
 			return false;
@@ -184,14 +193,24 @@ public class ToolUtilities {
 			try {
 				DataSource sds = activeLayer.getDataSource();
 				Type type = sds.getFieldType(sds.getSpatialFieldIndex());
-				int geometryType = type
-						.getIntConstraint(Constraint.GEOMETRY_TYPE);
+				int geometryType = type.getTypeCode();
 				if (geometryType == -1) {
 					return true;
 				} else {
-					for (int geomType : geometryTypes) {
-						if (geomType == geometryType) {
-							return true;
+					for (Type geomType : geometryTypes) {
+						if (geomType.getTypeCode() == geometryType) {
+                                                        GeometryDimensionConstraint gdc =
+                                                                (GeometryDimensionConstraint) 
+                                                                geomType.getConstraint(Constraint.DIMENSION_2D_GEOMETRY);
+                                                        if(gdc == null){
+                                                                return true;
+                                                        } else {
+                                                                GeometryDimensionConstraint gdc2 =
+                                                                        (GeometryDimensionConstraint) 
+                                                                        type.getConstraint(Constraint.DIMENSION_2D_GEOMETRY);
+                                                                
+                                                                return gdc2 != null && gdc.getDimension() == gdc2.getDimension();
+                                                        }
 						}
 					}
 				}

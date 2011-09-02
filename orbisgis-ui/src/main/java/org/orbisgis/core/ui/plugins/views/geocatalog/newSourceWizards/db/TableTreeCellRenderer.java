@@ -45,8 +45,8 @@ import javax.swing.JLabel;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
-
 import org.gdms.data.types.GeometryTypeConstraint;
+
 import org.gdms.driver.TableDescription;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 

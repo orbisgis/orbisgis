@@ -53,8 +53,8 @@ import java.util.Random;
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import org.gdms.data.types.GeometryTypeConstraint;
+import org.gdms.data.types.Type;
+ 
 import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.renderer.legend.carto.ClassifiedLegend;
 import org.orbisgis.core.renderer.symbol.Symbol;
@@ -137,6 +137,7 @@ public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 		table.getSelectionModel().addListSelectionListener(
 				new ListSelectionListener() {
 
+                        @Override
 					public void valueChanged(ListSelectionEvent e) {
 						refreshButtons();
 					}
@@ -165,28 +166,27 @@ public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 		Symbol pointSymbol = SymbolFactory.createPointCircleSymbol(outline,
 				fill, 10);
 		Symbol polygonSymbol = SymbolFactory.createPolygonSymbol(outline, fill);
-		GeometryTypeConstraint geometryTypeConstraint = legendContext
-				.getGeometryTypeConstraint();
+		Type geometryTypeConstraint = legendContext.getGeometryTypeConstraint();
 		Symbol s;
 		if (geometryTypeConstraint == null) {
 			s = SymbolFactory.createSymbolComposite(polygonSymbol, lineSymbol,
 					pointSymbol);
 		} else {
-			switch (geometryTypeConstraint.getGeometryType()) {
-			case GeometryTypeConstraint.LINESTRING:
-			case GeometryTypeConstraint.MULTI_LINESTRING:
+			switch (geometryTypeConstraint.getTypeCode()) {
+			case Type.LINESTRING:
+			case Type.MULTILINESTRING:
 				s = lineSymbol;
 				break;
-			case GeometryTypeConstraint.POINT:
-			case GeometryTypeConstraint.MULTI_POINT:
+			case Type.POINT:
+			case Type.MULTIPOINT:
 				s = pointSymbol;
 				break;
-			case GeometryTypeConstraint.POLYGON:
-			case GeometryTypeConstraint.MULTI_POLYGON:
+			case Type.POLYGON:
+			case Type.MULTIPOLYGON:
 				s = polygonSymbol;
 				break;
 			default:
-				throw new RuntimeException("bug");
+				throw new RuntimeException("Can't find a symbol for : "+geometryTypeConstraint.getTypeCode());
 			}
 		}
 
@@ -213,6 +213,7 @@ public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 		jCheckBoxRestOfValues.setText("rest of values");
 		jCheckBoxRestOfValues.addActionListener(new ActionListener() {
 
+                        @Override
 			public void actionPerformed(ActionEvent e) {
 				jCheckBoxRestOfValuesActionPerformed();
 			}
@@ -222,6 +223,7 @@ public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 
 		jCheckBoxOrder.setText("order");
 		jCheckBoxOrder.addActionListener(new ActionListener() {
+                        @Override
 			public void actionPerformed(ActionEvent evt) {
 				jCheckBoxOrderActionPerformed(evt);
 			}
@@ -244,6 +246,7 @@ public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 
 		jButtonAddAll.setText("Add all");
 		jButtonAddAll.addActionListener(new java.awt.event.ActionListener() {
+                        @Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				addAllAction();
 			}
@@ -252,6 +255,7 @@ public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 
 		jButtonAddOne.setText("Add");
 		jButtonAddOne.addActionListener(new java.awt.event.ActionListener() {
+                        @Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				addOneAction();
 			}
@@ -260,6 +264,7 @@ public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 
 		jButtonDel.setText("Delete");
 		jButtonDel.addActionListener(new java.awt.event.ActionListener() {
+                        @Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				jButtonDelActionPerformed(evt);
 			}
@@ -314,10 +319,12 @@ public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 	private javax.swing.JScrollPane jScrollPane1;
 	private javax.swing.JTable table;
 
+        @Override
 	public Component getComponent() {
 		return this;
 	}
 
+        @Override
 	public Legend getLegend() {
 		if (table.isEditing()) {
 			table.getCellEditor().stopCellEditing();
@@ -325,10 +332,12 @@ public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 		return legend;
 	}
 
+        @Override
 	public boolean acceptsGeometryType(int geometryType) {
 		return true;
 	}
 
+        @Override
 	public void setLegend(Legend legend) {
 		this.legend = (ClassifiedLegend) legend;
 		this.tableModel.setLegend(this.legend);
@@ -340,12 +349,14 @@ public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 		refreshButtons();
 	}
 
+        @Override
 	public void initialize(LegendContext lc) {
 		this.legendContext = lc;
 		initComponents();
 		initList();
 	}
 
+        @Override
 	public String validateInput() {
 		if (legend.getClassificationCount() == 0) {
 			return "At least a value classification should be added";

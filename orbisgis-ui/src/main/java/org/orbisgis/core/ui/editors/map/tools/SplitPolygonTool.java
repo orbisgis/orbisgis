@@ -49,14 +49,18 @@ import java.util.Observable;
 import javax.swing.AbstractButton;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.types.Constraint;
+import org.gdms.data.types.ConstraintFactory;
+import org.gdms.data.types.GeometryDimensionConstraint;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.utils.I18N;
-
-import org.gdms.data.types.GeometryTypeConstraint;
+ 
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -73,6 +77,7 @@ public class SplitPolygonTool extends AbstractLineTool {
                 return button;
         }
 
+        @Override
         public void setButton(AbstractButton button) {
                 this.button = button;
         }
@@ -82,15 +87,26 @@ public class SplitPolygonTool extends AbstractLineTool {
                 PlugInContext.checkTool(this);
         }
 
+        @Override
         public boolean isEnabled(MapContext vc, ToolManager tm) {
-                return (ToolUtilities.geometryTypeIs(vc, GeometryTypeConstraint.POLYGON) || ToolUtilities.geometryTypeIs(vc, GeometryTypeConstraint.MULTI_POLYGON))
+                return (ToolUtilities.geometryTypeIs(vc, 
+                                TypeFactory.createType(Type.POLYGON), 
+                                TypeFactory.createType(Type.MULTIPOLYGON), 
+                                TypeFactory.createType(Type.GEOMETRY, 
+                                        ConstraintFactory.createConstraint(Constraint.DIMENSION_2D_GEOMETRY,
+                                                GeometryDimensionConstraint.DIMENSION_POLYGON)), 
+                                TypeFactory.createType(Type.GEOMETRYCOLLECTION, 
+                                        ConstraintFactory.createConstraint(Constraint.DIMENSION_2D_GEOMETRY,
+                                                GeometryDimensionConstraint.DIMENSION_POLYGON))))
                         && ToolUtilities.isActiveLayerEditable(vc) && ToolUtilities.isSelectionEqualsTo(vc, 1);
         }
 
+        @Override
         public boolean isVisible(MapContext vc, ToolManager tm) {
                 return isEnabled(vc, tm);
         }
 
+        @Override
         public String getName() {
                 return I18N.getString("orbisgis.core.ui.editors.map.tool.polygon.splitPolygon");
         }
@@ -101,7 +117,11 @@ public class SplitPolygonTool extends AbstractLineTool {
                 DataSource sds = vc.getActiveLayer().getDataSource();
                 try {
                         Geometry geom = sds.getGeometry(handler.getGeometryIndex());
-                        if (ToolUtilities.geometryTypeIs(vc, GeometryTypeConstraint.MULTI_POLYGON)) {
+                        if (ToolUtilities.geometryTypeIs(vc, 
+                                        TypeFactory.createType(Type.MULTIPOLYGON), 
+                                        TypeFactory.createType(Type.GEOMETRYCOLLECTION, 
+                                                ConstraintFactory.createConstraint(Constraint.DIMENSION_2D_GEOMETRY,
+                                                        GeometryDimensionConstraint.DIMENSION_POLYGON)))) {
                                 List<Polygon> pols = new ArrayList<Polygon>();
                                 for (int i = 0; i < geom.getNumGeometries(); i++) {
                                         pols.addAll(GeometryEdit.splitPolygon((Polygon) geom.getGeometryN(i), ls));
@@ -110,7 +130,11 @@ public class SplitPolygonTool extends AbstractLineTool {
                                 if (result != null) {
                                         sds.setGeometry(handler.getGeometryIndex(), result);
                                 }
-                        } else if (ToolUtilities.geometryTypeIs(vc, GeometryTypeConstraint.POLYGON)) {
+                        } else if (ToolUtilities.geometryTypeIs(vc, 
+                                        TypeFactory.createType(Type.POLYGON), 
+                                        TypeFactory.createType(Type.GEOMETRY, 
+                                                ConstraintFactory.createConstraint(Constraint.DIMENSION_2D_GEOMETRY,
+                                                        GeometryDimensionConstraint.DIMENSION_POLYGON)))) {
                                 List<Polygon> polygons = GeometryEdit.splitPolygon((Polygon) geom, ls);
                                 if (polygons != null) {
                                         sds.deleteRow(handler.getGeometryIndex());

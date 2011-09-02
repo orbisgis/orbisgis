@@ -45,8 +45,12 @@ import java.util.Observable;
 
 import javax.swing.AbstractButton;
 
-import org.gdms.data.DataSource;
-import org.gdms.data.types.GeometryTypeConstraint;
+import org.gdms.data.DataSource; 
+import org.gdms.data.types.Constraint;
+import org.gdms.data.types.ConstraintFactory;
+import org.gdms.data.types.GeometryDimensionConstraint;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -72,6 +76,7 @@ public class AutoCompletePolygonTool extends AbstractPolygonTool {
                 return button;
         }
 
+        @Override
         public void setButton(AbstractButton button) {
                 this.button = button;
         }
@@ -92,14 +97,23 @@ public class AutoCompletePolygonTool extends AbstractPolygonTool {
                                 geom = execute(handler, geom, sds);
                         }
                         Value[] row = new Value[sds.getMetadata().getFieldCount()];
-                        if (ToolUtilities.geometryTypeIs(mc, GeometryTypeConstraint.POLYGON)) {
+                        if (ToolUtilities.geometryTypeIs(mc, TypeFactory.createType(Type.POLYGON))) {
                                 for (int i = 0; i < geom.getNumGeometries(); i++) {
                                         geom.getGeometryN(i).setSRID(sds.getSRID());
                                         row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(geom.getGeometryN(i));
                                         row = ToolUtilities.populateNotNullFields(sds, row);
                                         sds.insertFilledRow(row);
                                 }
-                        } else if (ToolUtilities.geometryTypeIs(mc, GeometryTypeConstraint.MULTI_POLYGON)) {
+                        } else if (ToolUtilities.geometryTypeIs(
+                                                mc, 
+                                                TypeFactory.createType(Type.MULTIPOLYGON),
+                                                TypeFactory.createType(Type.GEOMETRY,
+                                                        ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 
+                                                                GeometryDimensionConstraint.DIMENSION_POLYGON)),
+                                                TypeFactory.createType(Type.GEOMETRYCOLLECTION,
+                                                        ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 
+                                                        GeometryDimensionConstraint.DIMENSION_POLYGON))
+                                )) {
                                 if (geom instanceof Polygon) {
                                         Polygon polygon = (Polygon) geom;
                                         geom = geom.getFactory().createMultiPolygon(new Polygon[]{polygon});
@@ -169,24 +183,39 @@ public class AutoCompletePolygonTool extends AbstractPolygonTool {
 
         }
 
+        @Override
         public boolean isEnabled(MapContext vc, ToolManager tm) {
-                return (ToolUtilities.geometryTypeIs(vc, GeometryTypeConstraint.POLYGON) || ToolUtilities.geometryTypeIs(vc, GeometryTypeConstraint.MULTI_POLYGON)) && ToolUtilities.isActiveLayerEditable(vc) && ToolUtilities.isSelectionGreaterOrEqualsThan(vc, 1);
+                return ToolUtilities.geometryTypeIs(
+                                vc, 
+                                TypeFactory.createType(Type.POLYGON),  
+                                TypeFactory.createType(Type.MULTIPOLYGON),
+                                TypeFactory.createType(Type.GEOMETRY,
+                                        ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 
+                                                GeometryDimensionConstraint.DIMENSION_POLYGON)),
+                                TypeFactory.createType(Type.GEOMETRYCOLLECTION,
+                                        ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 
+                                                GeometryDimensionConstraint.DIMENSION_POLYGON)))
+                        && ToolUtilities.isActiveLayerEditable(vc) 
+                        && ToolUtilities.isSelectionGreaterOrEqualsThan(vc, 1);
 
 
         }
 
+        @Override
         public boolean isVisible(MapContext vc, ToolManager tm) {
                 return isEnabled(vc, tm);
 
 
         }
 
+        @Override
         public double getInitialZ(MapContext mapContext) {
                 return ToolUtilities.getActiveLayerInitialZ(mapContext);
 
 
         }
 
+        @Override
         public String getName() {
                 return I18N.getString("orbisgis.core.ui.editors.map.tool.polygon.autocomplete");
 

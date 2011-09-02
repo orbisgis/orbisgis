@@ -62,8 +62,7 @@ package org.orbisgis.core.ui.editors.map.tools;
 import java.util.Observable;
 
 import javax.swing.AbstractButton;
-
-import org.gdms.data.types.GeometryTypeConstraint;
+ 
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -76,6 +75,8 @@ import org.orbisgis.utils.I18N;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 import org.gdms.data.DataSource;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 
 public class PointTool extends AbstractPointTool {
 
@@ -86,6 +87,7 @@ public class PointTool extends AbstractPointTool {
 		return button;
 	}
 
+        @Override
 	public void setButton(AbstractButton button) {
 		this.button = button;
 	}
@@ -95,11 +97,14 @@ public class PointTool extends AbstractPointTool {
 		PlugInContext.checkTool(this);
 	}
 
+        @Override
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
-		return ToolUtilities.geometryTypeIs(vc, GeometryTypeConstraint.POINT)
+		return ToolUtilities.geometryTypeIs(vc, TypeFactory.createType(Type.POINT),
+                                TypeFactory.createType(Type.MULTIPOINT))
 				&& ToolUtilities.isActiveLayerEditable(vc);
 	}
 
+        @Override
 	public boolean isVisible(MapContext vc, ToolManager tm) {
 		return isEnabled(vc, tm);
 	}
@@ -108,7 +113,7 @@ public class PointTool extends AbstractPointTool {
 	protected void pointDone(Point point, MapContext mc, ToolManager tm)
 			throws TransitionException {
 		Geometry g = point;
-		if (ToolUtilities.geometryTypeIs(mc, GeometryTypeConstraint.MULTI_POINT)) {
+		if (ToolUtilities.geometryTypeIs(mc, TypeFactory.createType(Type.MULTIPOINT))) {
 			g = ToolManager.toolsGeometryFactory
 					.createMultiPoint(new Point[] { point });
 		}
@@ -130,6 +135,7 @@ public class PointTool extends AbstractPointTool {
 		return ToolUtilities.getActiveLayerInitialZ(mapContext);
 	}
 
+        @Override
 	public String getName() {
 		return I18N.getString("orbisgis.core.ui.editors.map.tool.point_tooltip");
 	}
