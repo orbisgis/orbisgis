@@ -66,7 +66,7 @@ public class OperatorsTest extends FunctionTest {
 
                 // Test normal input value and type
                 res = evaluate(function, ValueFactory.createValue(JTSMultiPolygon2D), ValueFactory.createValue(4));
-                assertEquals(res.getType(), Type.GEOMETRY);
+                assertTrue(res.getType() == Type.MULTIPOLYGON || res.getType() == Type.POLYGON);
                 assertEquals(res.getAsGeometry(), JTSMultiPolygon2D.buffer(4));
 
                 // Test too many parameters
@@ -100,7 +100,7 @@ public class OperatorsTest extends FunctionTest {
 
                 // Test normal input value and type
                 res = evaluate(function, ValueFactory.createValue(JTSMultiLineString2D), ValueFactory.createValue(JTSMultiPolygon2D));
-                assertEquals(res.getType(), Type.GEOMETRY);
+                assertTrue((res.getType() & Type.GEOMETRY) != 0);
                 assertTrue(res.getAsGeometry().equalsExact(JTSMultiLineString2D.difference(JTSMultiPolygon2D)));
 
                 // Test too many parameters
@@ -165,7 +165,7 @@ public class OperatorsTest extends FunctionTest {
 
                 // Test normal input value and type
                 res = evaluate(function, ValueFactory.createValue(JTSMultiPoint2D), ValueFactory.createValue(JTSMultiLineString2D));
-                assertEquals(res.getType(), Type.GEOMETRY);
+                assertTrue((res.getType() &Type.GEOMETRY) != 0);
                 assertTrue(res.getAsGeometry().equalsExact(JTSMultiPoint2D.intersection(JTSMultiLineString2D)));
 
                 // Test too many parameters
@@ -194,7 +194,7 @@ public class OperatorsTest extends FunctionTest {
 
                 // Test normal input value and type
                 res = evaluate(function, ValueFactory.createValue(JTSMultiLineString2D), ValueFactory.createValue(JTSMultiLineString2D));
-                assertEquals(res.getType(), Type.GEOMETRY);
+                assertTrue((res.getType() & Type.GEOMETRYCOLLECTION) != 0);
                 assertTrue(res.getAsGeometry().equalsExact(JTSMultiLineString2D.symDifference(JTSMultiLineString2D)));
 
                 // Test too many parameters
@@ -223,7 +223,7 @@ public class OperatorsTest extends FunctionTest {
 
                 // Test normal input value and type
                 res = evaluate(function, ValueFactory.createValue(JTSMultiPolygon2D));
-                assertEquals(res.getType(), Type.GEOMETRY);
+                assertEquals(res.getType(), Type.POLYGON);
                 assertTrue(res.getAsGeometry().contains(JTSMultiPolygon2D));
                 assertTrue(JTSMultiPolygon2D.contains(res.getAsGeometry()));
 //		System.out.println(res.getAsGeometry());
