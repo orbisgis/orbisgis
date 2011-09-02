@@ -119,7 +119,12 @@ public class MetadataUtilitiesTest {
                 dm.addField("MultiPolygon", Type.MULTIPOLYGON);
                 dm.addField("Geometry", Type.GEOMETRY);
                 dm.addField("GeometryCollection", Type.GEOMETRYCOLLECTION);
-                assertEquals(MetadataUtilities.getGeometryDimension(dm, 0),-1);
+                try{
+                        int ret = MetadataUtilities.getGeometryDimension(dm, 0);
+                        fail();
+                } catch(UnsupportedOperationException e){
+                        assertTrue(true);
+                }
                 assertEquals(MetadataUtilities.getGeometryDimension(dm, 1),0);
                 assertEquals(MetadataUtilities.getGeometryDimension(dm, 2),0);
                 assertEquals(MetadataUtilities.getGeometryDimension(dm, 3),1);
