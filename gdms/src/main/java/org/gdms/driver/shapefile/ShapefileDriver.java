@@ -374,10 +374,15 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
         private int getGeometryDimension(DataSet dataSource, Metadata metadata)
                 throws DriverException {
                 for (int i = 0; i < metadata.getFieldCount(); i++) {
+                        //We search for the vectorial type.
                         if (TypeFactory.isVectorial(metadata.getFieldType(i).getTypeCode())) {
+                                //Found it ! Let's check if there is a Dimension3DConstraint somewhere...
                                 Dimension3DConstraint c = (Dimension3DConstraint) metadata.getFieldType(i).getConstraint(
                                         Constraint.DIMENSION_3D_GEOMETRY);
                                 if (c == null) {
+                                        //There is not. We search for the first not null geometry,
+                                        //and consider its dimension to be the same as for all the 
+                                        //other ones...
                                         if (dataSource != null) {
                                                 for (int j = 0; j < dataSource.getRowCount(); j++) {
                                                         Geometry g = dataSource.getFieldValue(j, i).getAsGeometry();
@@ -391,9 +396,11 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                                                 }
                                         }
 
-                                        // 2d by default
+                                        // ...and if there isn't any geometry in the DataSet,
+                                        //we are in 2D.
                                         return 2;
                                 } else {
+                                        //There is a Dimension3DConstraint. Let's use it !
                                         return c.getDimension();
                                 }
                         }
@@ -505,10 +512,20 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                                 shxFis.getChannel());
                         Envelope fullExtent = DriverUtilities.getFullExtent(dataSource);
                         Metadata outMetadata = dataSource.getMetadata();
-                        GeometryTypeConstraint gc = getGeometryType(outMetadata);
+                        //What geometries are we about to process ?
+                        Type geomType = getGeometryType(outMetadata);
+                        //We have a look at the dimension. Are we in 3D ?
                         int dimension = getGeometryDimension(dataSource, outMetadata);
                         ShapeType shapeType;
-                        if (gc == null) {
+                        //We shall analyse the type code.
+                        int typeCode = geomType.getTypeCode();
+                        //Are we dealing with a general vectorial type ?
+                        boolean isGeneral = typeCode == Type.GEOMETRY || (typeCode & Type.GEOMETRYCOLLECTION) != 0;
+                        //Do we have a constraint upon dimension ?
+                        boolean noDimCons =geomType.getConstraint(Constraint.DIMENSION_3D_GEOMETRY) == null;
+                        if (isGeneral && typeCode != Type.NULL && noDimCons) {
+                                //We're in a case that is too general for a shape... let's
+                                //try to improve this as far as we can.
                                 warningListener.throwWarning("No geometry type in the "
                                         + "metadata. Will take the type of the first geometry");
                                 shapeType = getFirstShapeType(dataSource, dimension);
@@ -517,7 +534,7 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                                                 + "geometry type have to be specified");
                                 }
                         } else {
-                                shapeType = getShapeType(gc.getGeometryType(), dimension);
+                                shapeType = getShapeType(geomType, dimension);
                         }
                         int fileLength = computeSize(dataSource, shapeType);
                         writer.writeHeaders(fullExtent, shapeType, (int) rowCount,
@@ -652,6 +669,7 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                                                 + " and "
                                                 + m.getFieldName(i) + " found";
                                 } else {
+                                        
                                         GeometryTypeConstraint gc = (GeometryTypeConstraint) fieldType.getConstraint(Constraint.GEOMETRY_TYPE);
                                         if (gc == null) {
                                                 return "A geometry type have to be specified";
@@ -662,7 +680,7 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                                         }
                                         Dimension3DConstraint dc = (Dimension3DConstraint) fieldType.getConstraint(Constraint.DIMENSION_3D_GEOMETRY);
                                         if (dc == null) {
-                                                return "A geometry dimension have to be specified";
+                                                return "A geometry dimension has to be specified";
                                         }
                                         spatialIndex = i;
                                 }
@@ -675,12 +693,7 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                         return "Missing spatial field";
                 }
 
-                String dbfError = new DBFDriver().validateMetadata(dbfMeta);
-                if (dbfError != null) {
-                        return dbfError;
-                } else {
-                        return null;
-                }
+                return new DBFDriver().validateMetadata(dbfMeta);
         }
 
         @Override
