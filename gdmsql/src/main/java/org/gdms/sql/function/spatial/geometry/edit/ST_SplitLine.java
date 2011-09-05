@@ -80,7 +80,7 @@ public class ST_SplitLine extends AbstractTableFunction {
                         int geomFieldindex = MetadataUtilities.getGeometryFieldIndex(metadata1);
                         if (geomFieldindex != -1) {
                                 int dim = MetadataUtilities.getGeometryDimension(metadata1, geomFieldindex);
-                                if (dim == -1) {
+                                if (dim == 1) {
                                         String geomField = metadata1.getFieldName(geomFieldindex);
                                         if (!dsf.getIndexManager().isIndexed(dataSet, geomField)) {
                                                 dsf.getIndexManager().buildIndex(dataSet, geomField, pm);
