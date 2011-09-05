@@ -438,17 +438,17 @@ public class SpatialEditionTest extends TestBase {
                                 new Coordinate(x, y), new Coordinate(x + offset, y + offset),
                                 new Coordinate(x + offset, y), new Coordinate(x, y)});
                 Polygon polygon = gf.createPolygon(linearRing, null);
-                if ((gc == null) || (gc.getTypeCode() & Type.POINT) != 0) {
+                if ((gc == null) || (gc.getTypeCode() == Type.POINT)) {
                         g = point;
-                } else if ((gc.getTypeCode() & Type.MULTIPOINT) != 0) {
+                } else if (gc.getTypeCode() == Type.MULTIPOINT) {
                         g = gf.createMultiPoint(new Point[]{point});
-                } else if ((gc.getTypeCode() & Type.LINESTRING) != 0) {
+                } else if (gc.getTypeCode() == Type.LINESTRING) {
                         g = lineString;
-                } else if ((gc.getTypeCode() & Type.MULTILINESTRING) != 0) {
+                } else if (gc.getTypeCode() == Type.MULTILINESTRING) {
                         g = gf.createMultiLineString(new LineString[]{lineString});
-                } else if ((gc.getTypeCode() & Type.POLYGON) != 0) {
+                } else if (gc.getTypeCode() == Type.POLYGON) {
                         g = polygon;
-                } else if ((gc.getTypeCode() & Type.MULTIPOLYGON) != 0) {
+                } else if (gc.getTypeCode() == Type.MULTIPOLYGON) {
                         g = gf.createMultiPolygon(new Polygon[]{polygon});
                 } else {
                         throw new RuntimeException();
