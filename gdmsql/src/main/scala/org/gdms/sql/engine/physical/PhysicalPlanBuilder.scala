@@ -51,6 +51,7 @@ package org.gdms.sql.engine.physical
  */
 import org.gdms.sql.engine.commands._
 import org.gdms.sql.engine.commands.ddl._
+import org.gdms.sql.engine.commands.join._
 import org.gdms.sql.engine.operations._
 import org.gdms.sql.function.table.TableFunction
 
@@ -88,10 +89,11 @@ object PhysicalPlanBuilder {
           case Cross() => {
               // we convert a multiple table Join Operation into a 2 table
               // LoopJoinCommand
-              val l = buildJoinCommandTree(op.children)
-              op.children = Nil
-              l
+              new LoopJoinCommand
             }
+          case Inner(ex) => {
+              new ExpressionBasedLoopJoinCommand(ex)
+          }
         }
       case Projection(exp) => new ProjectionCommand(exp toArray)
       case a @ Aggregate(exp) => {

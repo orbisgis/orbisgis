@@ -39,6 +39,7 @@
 package org.gdms.sql.engine
 
 import org.gdms.sql.engine.logical.LogicPlanBuilder
+import org.gdms.sql.engine.logical.LogicPlanOptimizer
 import org.gdms.sql.engine.operations._
 import org.gdms.sql.engine.parsing.GdmSQLParser._
 import org.antlr.runtime.tree.CommonTree
@@ -70,7 +71,9 @@ object ExecutionGraphBuilder {
   }
 
   private def parseStatement(tree: CommonTree): Array[Operation] = {
-    (0 until tree.getChildCount) map (tree.getChild) map (LogicPlanBuilder.buildLogicPlan) toArray
+    val a = (0 until tree.getChildCount) map (tree.getChild) map (LogicPlanBuilder.buildLogicPlan) toArray;
+    a foreach(LogicPlanOptimizer.optimiseJoins)
+    a
   }
   
 }

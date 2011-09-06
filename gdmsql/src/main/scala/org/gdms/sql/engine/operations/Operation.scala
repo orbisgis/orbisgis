@@ -261,11 +261,11 @@ case class Grouping(exp: List[(Expression, Option[String])]) extends Operation {
 /**
  * Represents a join operation.
  * 
- * @param j the type of the join on the child operations.
+ * @param joinType the type of the join on the child operations.
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class Join(j: JoinType) extends Operation
+case class Join(var joinType: JoinType) extends Operation
 
 
 /**

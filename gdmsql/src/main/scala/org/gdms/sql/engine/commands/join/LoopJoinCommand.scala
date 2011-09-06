@@ -36,10 +36,13 @@
  * info@orbisgis.org
  */
 
-package org.gdms.sql.engine.commands
+package org.gdms.sql.engine.commands.join
 
 import org.gdms.data.schema.DefaultMetadata
 import org.gdms.sql.engine.GdmSQLPredef._
+import org.gdms.sql.engine.commands.Command
+import org.gdms.sql.engine.commands.Row
+import org.gdms.sql.engine.commands.SQLMetadata
 
 /**
  * This command performs a basic block-nested loop cross join for 2 tables.
