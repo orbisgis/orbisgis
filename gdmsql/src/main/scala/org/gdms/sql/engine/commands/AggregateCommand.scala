@@ -66,7 +66,7 @@ class AggregateCommand(expression: Seq[(Expression, Option[String])], grouping: 
   
   private def group(i: RowStream): Iterator[(Seq[Value], RowStream)] = {
     i foreach (add)
-    groups.toStream map(p => (p._1,p._2.toIterator)) toIterator
+    groups.toStream.map(p => (p._1,p._2.toIterator)).par toIterator
   }
   
   private def add(r: Row) {

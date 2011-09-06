@@ -74,7 +74,7 @@ class ScanCommand(table: String, alias: Option[String] = None, edition: Boolean 
     // 1. iterate until ds.getRowCount
     // 2. iterate lazily
     // 4. return the (lazy) iterator for this collection
-    for (i <- (0l until ds.getRowCount).view.toIterator) yield {
+    for (i <- (0l until ds.getRowCount).par.view.toIterator) yield {
       Row(i, ds.getRow(i))
     }
   }

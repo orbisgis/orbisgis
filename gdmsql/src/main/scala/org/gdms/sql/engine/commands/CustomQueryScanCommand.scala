@@ -106,7 +106,7 @@ class CustomQueryScanCommand(e: Seq[Expression], tables: Seq[Either[String, Outp
                     e map { _ evaluate(null)} toArray, new NullProgressMonitor)
 
     // gives the result
-    for (i <- (0l until ds.getRowCount).view.toIterator) yield {
+    for (i <- (0l until ds.getRowCount).par.view.toIterator) yield {
       Row(i, ds.getRow(i))
     }
   }
