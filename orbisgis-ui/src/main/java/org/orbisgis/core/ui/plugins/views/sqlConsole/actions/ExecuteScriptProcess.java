@@ -171,7 +171,9 @@ public class ExecuteScriptProcess implements BackgroundJob {
                                                 "Cannot create the DataSource:"
                                                 + st.getSQL(), e);
                                         break;
-                                } 
+                                } finally {
+                                        st.cleanUp();
+                                }
 
                                 pm.progressTo(100 * i / statements.length);
                         }

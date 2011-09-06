@@ -53,7 +53,7 @@ class CreateTableCommand(name: String) extends Command with OutputCommand {
   
   private var resultFile: File = null
 
-  override def doPrepare = {
+  override def preDoPrepare = {
     // register the new source
     // this will throw an exception if a source with that name already exists
     resultFile = dsf.getResultFile

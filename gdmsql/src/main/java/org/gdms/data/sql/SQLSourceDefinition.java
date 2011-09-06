@@ -133,7 +133,6 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
                         }
                 }
 
-//                statement.operationFinished();
                 metadata.clear();
                 metadata.addAll(source.getMetadata());
                 return def;

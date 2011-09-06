@@ -93,16 +93,24 @@ abstract class Command() {
    */
   final def prepare(dsf: SQLDataSourceFactory): Unit = {
     this.dsf = dsf
+    preDoPrepare
     children foreach( _.prepare(dsf) )
     doPrepare
   }
 
   /**
-   * Override this method to do something specific right before the query starts.
+   * Override this method to do something specific right before the query starts, after all children
    *
    * This DataSourceFactory is set at this point and can be used to validate table names, etc.
    */
   protected def doPrepare : Unit = {}
+  
+  /**
+   * Override this method to do something specific right before the query starts, before all children
+   *
+   * This DataSourceFactory is set at this point and can be used to validate table names, etc.
+   */
+  protected def preDoPrepare : Unit = {}
 
   protected def validate : Unit = {}
 

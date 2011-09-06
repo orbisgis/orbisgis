@@ -94,7 +94,6 @@ public class SqlStatement {
          */
         public DataSet execute() {
                 DataSet rd = graph.execute();
-                doCleanUp();
                 return rd;
         }
 

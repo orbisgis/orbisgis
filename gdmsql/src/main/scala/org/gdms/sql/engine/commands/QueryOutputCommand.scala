@@ -53,12 +53,13 @@ class QueryOutputCommand extends Command with OutputCommand {
   var resultFile: File = null
 
   protected override def doPrepare = {
-    resultFile = new File(dsf.getTempFile("gdms"))
+    if (resultFile == null) {
+      resultFile = new File(dsf.getTempFile("gdms"))
+    }
+    driver = new DiskBufferDriver(resultFile, getMetadata)
   }
 
-  protected def doWork(r: Iterator[RowStream]) = {
-    driver = new DiskBufferDriver(resultFile, getMetadata)
-    
+  protected def doWork(r: Iterator[RowStream]) = {    
     for (s <- r; a <- s) {
       driver.addValues(a.array:_*)
     }
