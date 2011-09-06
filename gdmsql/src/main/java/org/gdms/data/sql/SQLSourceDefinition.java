@@ -57,7 +57,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.Driver;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.driverManager.DriverManager;
-import org.gdms.driver.memory.MemoryDataSetDriver;
+import org.gdms.driver.sql.SqlStatementDriver;
 import org.gdms.source.SourceManager;
 import org.gdms.source.directory.DefinitionType;
 import org.gdms.source.sqldirectory.SqlDefinitionType;
@@ -116,25 +116,22 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
 
         private DataSource execute(String tableName, ProgressMonitor pm) throws DriverException,
                 DataSourceCreationException {
-                LOG.trace("Executing SQLSource");
+                LOG.trace("Preparing SQLSource");
                 getDataSourceFactory().fireInstructionExecuted(statement.getSQL());
                 statement.prepare(getDataSourceFactory());
-                DataSet source = statement.execute();
+                metadata.clear();
                 DataSource def = null;
                 if (!pm.isCancelled()) {
-                        if (source == null) {
+                        if (statement.getResultMetadata() == null) {
                                 throw new IllegalArgumentException(
                                         "The query produces no result: " + statement.getSQL());
                         } else {
-                                MemoryDataSetDriver d = new MemoryDataSetDriver(source, true);
-                                d.setCommitable(false);
+                                SqlStatementDriver d = new SqlStatementDriver(statement, getDataSourceFactory());
                                 def = new MemoryDataSourceAdapter(getSource(tableName), d);
-                                LOG.trace("Built temp ObjectDataSourceAdapter with SQL Query results");
+                                metadata.addAll(statement.getResultMetadata());
+                                LOG.trace("Built temp MemoryDataSourceAdapter with SQL Query results");
                         }
                 }
-
-                metadata.clear();
-                metadata.addAll(source.getMetadata());
                 return def;
         }
 
