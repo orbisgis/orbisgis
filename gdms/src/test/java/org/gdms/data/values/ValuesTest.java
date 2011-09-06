@@ -965,15 +965,15 @@ public class ValuesTest {
                 //We test the point
                 Value val = ValueFactory.createValue(gf.createPoint(new Coordinate(2, 1)));
                 assertTrue((val.getType() & Type.GEOMETRY) != 0);
-                assertTrue((val.getType() & Type.POINT) != 0);
+                assertTrue(val.getType() == Type.POINT);
                 //We test the multipoint
                  val = ValueFactory.createValue(gf.createMultiPoint(new Coordinate[]{new Coordinate(2, 1)}));
                 assertTrue((val.getType() & Type.GEOMETRY) != 0);
-                assertTrue((val.getType() & Type.MULTIPOINT) != 0);
+                assertTrue(val.getType() == Type.MULTIPOINT);
                 //We test the LineString
                  val = ValueFactory.createValue(gf.createLineString(new Coordinate[]{new Coordinate(2, 1),new Coordinate(2, 2)}));
                 assertTrue((val.getType() & Type.GEOMETRY) != 0);
-                assertTrue((val.getType() & Type.LINESTRING) != 0);
+                assertTrue(val.getType() == Type.LINESTRING);
                 //We test the MultiLineString
                  val = ValueFactory.createValue(gf.createMultiLineString(
                          new LineString[]{
@@ -981,7 +981,7 @@ public class ValuesTest {
                          }
                          ));
                 assertTrue((val.getType() & Type.GEOMETRY) != 0);
-                assertTrue((val.getType() & Type.MULTILINESTRING) != 0);
+                assertTrue(val.getType() == Type.MULTILINESTRING);
                 //We test the Polygon
                  val = ValueFactory.createValue(gf.createPolygon(
                                 gf.createLinearRing(new Coordinate[]{
@@ -991,7 +991,7 @@ public class ValuesTest {
                                         new Coordinate(2, 1)}),
                                 null));
                 assertTrue((val.getType() & Type.GEOMETRY) != 0);
-                assertTrue((val.getType() & Type.POLYGON) != 0);
+                assertTrue(val.getType() == Type.POLYGON);
                 //We test the MultiPolygon
                  val = ValueFactory.createValue(gf.createMultiPolygon(
                          new Polygon[]{
@@ -1013,7 +1013,7 @@ public class ValuesTest {
                                         null)
                          }));
                 assertTrue((val.getType() & Type.GEOMETRY) != 0);
-                assertTrue((val.getType() & Type.MULTIPOLYGON) != 0);
+                assertTrue(val.getType() == Type.MULTIPOLYGON);
                 //We test the GeometryCollection
                  val = ValueFactory.createValue(gf.createGeometryCollection(
                          new Geometry[]{
@@ -1029,5 +1029,122 @@ public class ValuesTest {
                          }));
                 assertTrue((val.getType() & Type.GEOMETRY) != 0);
                 assertTrue((val.getType() & Type.GEOMETRYCOLLECTION) != 0);
+        }
+        
+        @Test
+        public void testGeometryConversions() throws Exception{
+                //Let's test with a PointValue
+                Value pt = ValueFactory.createValue(gf.createPoint(new Coordinate(0, 0, 0)));
+                assertTrue(pt instanceof DefaultPointValue);
+                Value mpt = pt.toType(Type.MULTIPOINT);
+                assertTrue(mpt instanceof DefaultMultiPointValue);
+                Value gpt = pt.toType(Type.GEOMETRY);
+                assertTrue(gpt instanceof DefaultPointValue);
+                Value gcpt = pt.toType(Type.GEOMETRYCOLLECTION);
+                assertTrue(gcpt instanceof DefaultGeometryCollectionValue);
+                assertFalse(gcpt instanceof DefaultMultiPointValue);
+                //We shall not be able to cast to a Line or a Polygon.
+                try{
+                        gcpt = pt.toType(Type.POLYGON);
+                        fail();
+                } catch(IncompatibleTypesException i){
+                }
+                try{
+                        gcpt = pt.toType(Type.LINESTRING);
+                        fail();
+                } catch(IncompatibleTypesException i){
+                }
+                //LineString time!!!
+                pt = ValueFactory.createValue(gf.createLineString(new Coordinate[]{new Coordinate(0, 0, 0), new Coordinate(0, 1, 0)}));
+                assertTrue(pt instanceof DefaultLineStringValue);
+                mpt = pt.toType(Type.MULTILINESTRING);
+                assertTrue(mpt instanceof DefaultMultiLineStringValue);
+                gpt = pt.toType(Type.GEOMETRY);
+                assertTrue(gpt instanceof DefaultLineStringValue);
+                gcpt = pt.toType(Type.GEOMETRYCOLLECTION);
+                assertTrue(gcpt instanceof DefaultGeometryCollectionValue);
+                assertFalse(gcpt instanceof DefaultMultiPointValue);
+                //We shall not be able to cast to a Line or a Polygon.
+                try{
+                        gcpt = pt.toType(Type.POLYGON);
+                        fail();
+                } catch(IncompatibleTypesException i){
+                }
+                try{
+                        gcpt = pt.toType(Type.POINT);
+                        fail();
+                } catch(IncompatibleTypesException i){
+                }
+                //Let's test with a PolygonValue
+                pt = ValueFactory.createValue(gf.createPolygon(
+                        gf.createLinearRing(new Coordinate[]{
+                                        new Coordinate(0, 0, 0),
+                                        new Coordinate(0, 1, 0), 
+                                        new Coordinate(1, 1, 0),
+                                        new Coordinate(0, 0, 0)})
+                        , null));
+                assertTrue(pt instanceof DefaultPolygonValue);
+                mpt = pt.toType(Type.MULTIPOLYGON);
+                assertTrue(mpt instanceof DefaultMultiPolygonValue);
+                gpt = pt.toType(Type.GEOMETRY);
+                assertTrue(gpt instanceof DefaultPolygonValue);
+                gcpt = pt.toType(Type.GEOMETRYCOLLECTION);
+                assertTrue(gcpt instanceof DefaultGeometryCollectionValue);
+                assertFalse(gcpt instanceof DefaultMultiPolygonValue);
+                //We shall not be able to cast to a Line or a Polygon.
+                try{
+                        gcpt = pt.toType(Type.POINT);
+                        fail();
+                } catch(IncompatibleTypesException i){
+                }
+                try{
+                        gcpt = pt.toType(Type.LINESTRING);
+                        fail();
+                } catch(IncompatibleTypesException i){
+                }
+                
+        }
+        
+        /**
+         * We must be able to transform specialized collections to GeometryCollectionValues
+         */
+        @Test
+        public void testGeometryCollectionConversions() throws Exception{
+                Value val = ValueFactory.createValue(gf.createMultiPoint(new Coordinate[]{new Coordinate(0,0,0), new Coordinate(1,2,3)}));
+                assertTrue(val instanceof DefaultMultiPointValue);
+                Value val2 = val.toType(Type.GEOMETRYCOLLECTION);
+                assertTrue(val2 instanceof DefaultGeometryCollectionValue);
+                //Let's be sure it's not a GeometryCollection just thanks to the inheritance
+                assertFalse(val2 instanceof DefaultMultiPointValue);
+                val = ValueFactory.createValue(gf.createMultiLineString(
+                        new LineString[]{
+                                gf.createLineString(new Coordinate[]{new Coordinate(0,0,0), new Coordinate(4,2,3)}),
+                                gf.createLineString(new Coordinate[]{new Coordinate(5,6,9), new Coordinate(5,7,1)})
+                        }));
+                assertTrue(val instanceof DefaultMultiLineStringValue);
+                val2 = val.toType(Type.GEOMETRYCOLLECTION);
+                assertTrue(val2 instanceof DefaultGeometryCollectionValue);
+                //Let's be sure it's not a GeometryCollection just thanks to the inheritance
+                assertFalse(val2 instanceof DefaultMultiPointValue);
+                val = ValueFactory.createValue(gf.createMultiPolygon(
+                        new Polygon[]{
+                                gf.createPolygon(gf.createLinearRing(
+                                        new Coordinate[]{
+                                                new Coordinate(0,3,0),
+                                                new Coordinate(9,0,0),
+                                                new Coordinate(8,7,0),
+                                                new Coordinate(0,3,0)}), null),
+                                gf.createPolygon(gf.createLinearRing(
+                                        new Coordinate[]{
+                                                new Coordinate(10,3,0),
+                                                new Coordinate(9,0,0),
+                                                new Coordinate(8,7,0),
+                                                new Coordinate(10,3,0)}), null)
+                        }));
+                assertTrue(val instanceof DefaultMultiPolygonValue);
+                val2 = val.toType(Type.GEOMETRYCOLLECTION);
+                assertTrue(val2 instanceof DefaultGeometryCollectionValue);
+                //Let's be sure it's not a GeometryCollection just thanks to the inheritance
+                assertFalse(val2 instanceof DefaultMultiPointValue);
         }
 }
