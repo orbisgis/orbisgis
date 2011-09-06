@@ -38,8 +38,6 @@
 
 package org.gdms.sql.engine.commands
 
-import scalaz.Scalaz._
-import scalaz.concurrent.Promise
 import org.gdms.sql.engine.GdmSQLPredef._
 
 /**
@@ -49,34 +47,8 @@ import org.gdms.sql.engine.GdmSQLPredef._
  * @since 0.1
  */
 class LimitOffsetCommand(lim: Int, off: Int) extends Command {
-
-  protected def doWork(r: Iterable[Iterable[Promise[Iterable[Row]]]]) = {
-    val res = if (off > 0) doOffset(r.head) else r.head
-    if (lim > 0) doLimit(res) else res
-  }
-
-  private def doOffset(r: Iterable[Promise[Iterable[Row]]]): Iterable[Promise[Iterable[Row]]] = {
-    var i = off
-    
-    val res = for(p <- r) yield {
-      if (i > 0) {
-        val ret = p.get flatMap {r =>
-          i=i-1
-          if (i >= 0) Nil else r :: Nil
-        }
-        promise(ret)
-      }
-      else p
-    }
-
-    res
-  }
-
-  private def doLimit(r: Iterable[Promise[Iterable[Row]]]): Iterable[Promise[Iterable[Row]]] = {
-    var i = lim
-    for(p <- r.view.takeWhile(_=>i > 0)) yield {
-      val ret = p.get.view.takeWhile(_=>i > 0) map { r => i=i-1; r }
-      promise(ret.force)
-    }
+  
+  protected def doWork(r: Iterator[RowStream]) = {
+    r.next drop(off) take(lim)
   }
 }

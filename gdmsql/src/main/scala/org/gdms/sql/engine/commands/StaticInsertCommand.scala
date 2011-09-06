@@ -44,7 +44,7 @@ import org.gdms.data.types.TypeFactory
 import org.gdms.data.types.IncompatibleTypesException
 import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.evaluator.Expression
-import scalaz.concurrent.Promise
+import org.gdms.sql.engine.GdmSQLPredef._
 
 /**
  * Main command for static multi-row insert of expressions.
@@ -106,7 +106,7 @@ extends Command with OutputCommand with ExpressionCommand {
     }
   }
 
-  protected final def doWork(r: Iterable[Iterable[Promise[Iterable[Row]]]]) = {
+  protected final def doWork(r: Iterator[RowStream]) = {
     // we eval each Array (= row) and give it to insertFilledRow
     exps foreach { e => ds.insertFilledRow((order(e) map ( _.evaluate(Array.empty) ))) }
     null

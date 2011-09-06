@@ -42,7 +42,6 @@ import org.gdms.sql.evaluator.Expression
 import org.gdms.sql.evaluator.AggregateEvaluator
 import org.gdms.data.values.Value
 import org.gdms.sql.engine.GdmSQLPredef._
-import scalaz.concurrent.Promise
 import scala.collection.mutable.HashMap
 import scalaz.Scalaz._
 
@@ -56,18 +55,18 @@ import scalaz.Scalaz._
  * @since 0.1
  */
 class AggregateCommand(expression: Seq[(Expression, Option[String])], grouping: Seq[(Expression, Option[String])]) extends Command with ExpressionCommand {
-  protected def doWork(r: Iterable[Iterable[Promise[Iterable[Row]]]]) = {
-    if (grouping.isEmpty) doEvaluation(Nil, r.head) :: Nil
+  protected def doWork(r: Iterator[RowStream]) = {
+    if (grouping.isEmpty) doEvaluation(Nil, r.next)
     else {
-      group(r.head) map(p => doEvaluation(p._1, p._2 :: Nil))
+      group(r.next) flatMap(p => doEvaluation(p._1, p._2))
     }
   }
   
   private var groups = new HashMap[Seq[Value], List[Row]]
   
-  private def group(i: Iterable[Promise[Iterable[Row]]]): Iterable[(Seq[Value], Promise[Iterable[Row]])] = {
-    i foreach (_.get foreach (add))
-    groups.toIterable map(p => (p._1, promise(p._2: Iterable[Row])))
+  private def group(i: RowStream): Iterator[(Seq[Value], RowStream)] = {
+    i foreach (add)
+    groups.toStream map(p => (p._1,p._2.toIterator)) toIterator
   }
   
   private def add(r: Row) {
@@ -75,7 +74,7 @@ class AggregateCommand(expression: Seq[(Expression, Option[String])], grouping: 
     groups.put(h, r :: groups.get(h).getOrElse(Nil))
   }
   
-  private def doEvaluation(g: Seq[Value], i: Iterable[Promise[Iterable[Row]]]) = {
+  private def doEvaluation(g: Seq[Value], i: RowStream) = {
     def findAggregateFunctions(e: Expression): Seq[Expression] = {
       e.evaluator match {
         case a: AggregateEvaluator => Expression(a.duplicate) :: Nil
@@ -84,10 +83,10 @@ class AggregateCommand(expression: Seq[(Expression, Option[String])], grouping: 
     }
     val expCopy = expression map (_._1) flatMap(findAggregateFunctions)
     // evaluates all and forget the results
-    i foreach { _.get foreach(scalarExecute(_, expCopy)) }
+    i foreach { scalarExecute(_, expCopy) }
 
       
-    promise { List(row(g, expCopy)): Iterable[Row] }
+    List(row(g, expCopy)).toIterator
   }
   
   // evaluation method

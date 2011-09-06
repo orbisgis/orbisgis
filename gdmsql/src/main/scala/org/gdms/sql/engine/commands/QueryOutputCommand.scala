@@ -38,7 +38,6 @@
 package org.gdms.sql.engine.commands
 
 import org.gdms.driver.DiskBufferDriver
-import scalaz.concurrent.Promise
 import org.gdms.sql.engine.GdmSQLPredef._
 
 /**
@@ -55,19 +54,19 @@ class QueryOutputCommand extends Command with OutputCommand {
     driver = new DiskBufferDriver(dsf, getMetadata)
   }
 
-  protected def doWork(r: Iterable[Iterable[Promise[Iterable[Row]]]]) = {
-    // this is were all the promises are claimed and then written to disk.
-    r foreach { _ foreach { p => write(p.get) } }
+  protected def doWork(r: Iterator[RowStream]) = {
+    for (s <- r; a <- s) {
+      driver.addValues(a.array:_*)
+    }
     driver.writingFinished
     driver.start
     null
   }
-
-  def getResult = {
-    driver.getTable("main") }
-
-  protected def write(r: Iterable[Row]): Unit = {
-    // _* converts a Seq into multiple parameters with ...
-    r foreach { a => driver.addValues(a: _*) }
+  
+  protected override def doCleanUp = {
+    driver.stop
+    driver = null
   }
+
+  def getResult = driver
 }

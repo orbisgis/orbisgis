@@ -42,27 +42,16 @@
 
 package org.gdms.sql.engine.commands
 
-import scalaz.concurrent.Promise
 import org.gdms.data.types.IncompatibleTypesException
 import org.gdms.data.types.Type
 import org.gdms.data.types.TypeFactory
 import org.gdms.sql.engine.GdmSQLPredef._
 import collection.JavaConversions._
 import org.gdms.sql.evaluator.Expression
-import scalaz.Scalaz._
 
 /**
- * Command that implements a parallel merge sort.
+ * Command that implements a simple non-parallel merge sort.
  * 
- * The algorithm works in three steps:
- * <ul>
- * <li>First, all incoming sets of rows are sorted, using the usual Java modified mergesort algorithm. Sets are sorted
- * concurrently, each sort is in guarranteed O(n*long(n)).</li>
- * <li>Then (actually, probably while the sorts are running), the list of sets is arranged into a signe resulting set.
- * One set out of two is ask to merge (see below) with the other once it has finished running its inner sort. This is
- * done until there is only one set left.</li>
- * <li>Finally, the actual merge between two sorted lists is done with the usual merge algorithm. This is roughly O(n).</li>
- * </ul>
  * @author Antoine Gourlay
  * @param names a sequence of (String, Boolean). The String is the name of a field to use for the sort, and the Boolean
  *    is True if the sort is descending, False if it is ascending.
@@ -83,12 +72,9 @@ class MergeSortCommand(names: Seq[(Expression, Boolean)]) extends Command with E
     }
   }
 
-  protected final def doWork(r: Iterable[Iterable[Promise[Iterable[Row]]]]) = {
-    // sorting of the groups
-    val sorted = r.head map (_ map (sort))
-    
-    divideAndConquer(sorted) :: Nil
-  }
+  // dumps into an array and sorts the array using the usual java modified mergesort
+  // guaranteed O(n*log(n))
+  protected final def doWork(r: Iterator[RowStream]) = r.next.toList.sorted.toIterator
   
   private implicit val order: Ordering[Row] = new Ordering[Row] {
     def compare(x: Row, y: Row): Int = {
@@ -100,53 +86,4 @@ class MergeSortCommand(names: Seq[(Expression, Boolean)]) extends Command with E
       }
     }
   }
-  
-  private def divideAndConquer(i: Iterable[Promise[Iterable[Row]]]): Promise[Iterable[Row]] = {
-    // simple binary division of merge tasks
-    
-    val a = i.head
-    val j = i.tail
-    j.headOption match {
-      case None => a
-      case Some(b) => {
-          // merge a & b into abis
-          val abis = a map (it => merge(it, b.get))
-          if (j.tail.nonEmpty) {
-            // if there is more, we merge abis and the result of the merge of the rest
-            divideAndConquer(j.tail) map (it => merge(it, abis.get))
-          } else ( abis )
-        }
-    }
-  }
-  
-  private def merge(l: Iterable[Row], r: Iterable[Row]): Iterable[Row] = {
-    // simple merge ; supposed to be roughly in O(n)
-        
-    def next(d: Iterable[Row], e: Iterable[Row]): Stream[Row] = {
-      // if any list is empty, we return the other, it is already sorted
-      if (d.isEmpty) { e toStream }
-      else if (e.isEmpty) { d toStream }
-      else {
-        // else we compare and keep the lowest one of the two (ASC by default)
-        val x = d.head
-        val y = e.head
-        val c = order.compare(x, y)
-        if (c < 0) {
-          x #:: next(d.tail, e)
-        } else if (c > 0) {
-          y #:: next(d, e.tail)
-        } else {
-          // they are equal, we directly keep them both, it saves a call to next
-          x #:: y #:: next(d.tail, e.tail)
-        }
-      }
-    }
-    
-    // force actually computes the whole stream
-    next(l, r) force
-  }
-  
-  // dumps into an array and sorts the array using the usual java modified mergesort
-  // guaranteed O(n*log(n))
-  private def sort(it: Iterable[Row]): Iterable[Row] =  it.toList.sorted
 }

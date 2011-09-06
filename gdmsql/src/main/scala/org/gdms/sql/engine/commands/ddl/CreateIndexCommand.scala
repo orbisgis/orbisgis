@@ -44,7 +44,7 @@ package org.gdms.sql.engine.commands.ddl
 
 import org.gdms.data.NoSuchTableException
 import org.gdms.sql.engine.commands._
-import scalaz.concurrent.Promise
+import org.gdms.sql.engine.GdmSQLPredef._
 
 /**
  * Command for building an index on a specific column of a table.
@@ -60,7 +60,7 @@ class CreateIndexCommand(table: String, column: String) extends Command with Out
     }
   }
 
-  protected final def doWork(r: Iterable[Iterable[Promise[Iterable[Row]]]]) = {
+  protected final def doWork(r: Iterator[RowStream]) = {
     dsf.getIndexManager.buildIndex(table, column, null)
 
     null

@@ -39,7 +39,6 @@
 package org.gdms.sql.engine.commands
 
 import org.gdms.sql.engine.GdmSQLPredef._
-import scalaz.concurrent.Promise
 
 /**
  * This command only forwards its first child's content but with a different table name. This is use when
@@ -50,7 +49,7 @@ import scalaz.concurrent.Promise
  */
 class RenamingCommand(val name: String) extends Command {
 
-  protected final def doWork(r: Iterable[Iterable[Promise[Iterable[Row]]]]) = r.head
+  protected final def doWork(r: Iterator[RowStream]) = r.next
 
   override def getMetadata = SQLMetadata(name, children.head.getMetadata)
 }

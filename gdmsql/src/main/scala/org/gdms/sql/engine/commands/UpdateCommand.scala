@@ -38,7 +38,6 @@
 package org.gdms.sql.engine.commands
 
 import org.gdms.sql.evaluator.Expression
-import scalaz.concurrent.Promise
 import org.gdms.data.DataSource
 import org.gdms.data.schema.DefaultMetadata
 import org.gdms.data.types.Type
@@ -46,7 +45,6 @@ import org.gdms.data.types.TypeFactory
 import org.gdms.data.values.ValueFactory
 import org.gdms.driver.memory.MemoryDataSetDriver
 import org.gdms.sql.engine.GdmSQLPredef._
-import scalaz.Scalaz._
 
 /**
  * Update command.
@@ -70,13 +68,13 @@ class UpdateCommand(e: Seq[(String, Expression)]) extends Command with Expressio
   // for ExpressionCommand to properly init the expressions
   override val exp = e map( _._2 )
 
-  protected def doWork(r: Iterable[Iterable[Promise[Iterable[Row]]]]) = {
+  protected def doWork(r: Iterator[RowStream]) = {
     val m = children.head.getMetadata
     // function that will update a row
     val set = setRow(ds, e map { t => (m.getFieldIndex(t._1),t._2) }) _
 
     // gets the promises and apply "set" on them
-    r.head foreach { _.get foreach (set(_)) }
+    r.next foreach(set)
     null
   }
 

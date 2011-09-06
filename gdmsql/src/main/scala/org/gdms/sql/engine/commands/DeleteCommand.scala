@@ -48,8 +48,8 @@ import org.gdms.data.schema.DefaultMetadata
 import org.gdms.data.types.Type
 import org.gdms.data.types.TypeFactory
 import org.gdms.data.values.ValueFactory
-import scalaz.concurrent.Promise
 import org.gdms.driver.memory.MemoryDataSetDriver
+import org.gdms.sql.engine.GdmSQLPredef._
 import scalaz.Scalaz._
 
 /**
@@ -72,12 +72,10 @@ class DeleteCommand extends Command with OutputCommand {
   
   var res: MemoryDataSetDriver = null
 
-  protected def doWork(r: Iterable[Iterable[Promise[Iterable[Row]]]]) = {
+  protected def doWork(r: Iterator[RowStream]) = {
     val m = children.head.getMetadata
-    // gets the promises and apply "markRow" on them
-    r.head foreach { _.get foreach (markRow(_)) }
     
-    indexes foreach (deleteRow(_))
+    r.next foreach (deleteRow)
     
     null
   }
@@ -111,12 +109,8 @@ class DeleteCommand extends Command with OutputCommand {
   // no output
   override def getMetadata = SQLMetadata("",getResult.getMetadata)
   
-  private def markRow(r: Row) {
-    indexes.add(r.rowId.get)
-  }
-  
-  private def deleteRow(l: Long) {
-    ds.deleteRow(l - ro)
+  private def deleteRow(r: Row) {
+    ds.deleteRow(r.rowId.get - ro)
     ro = ro + 1
   }
 }

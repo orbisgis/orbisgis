@@ -48,7 +48,7 @@ import org.gdms.sql.function.FunctionManager
 import org.gdms.sql.function.FunctionValidator
 import org.gdms.sql.function.executor.ExecutorFunction
 import org.orbisgis.progress.NullProgressMonitor
-import scalaz.concurrent.Promise
+import org.gdms.sql.engine.GdmSQLPredef._
 
 /**
  * Command dedicated to running {@link ExecutorFunction} functions
@@ -83,7 +83,7 @@ class ExecutorCommand(name: String, params: List[Expression]) extends Command wi
     tables map (_.open)
   }
 
-  protected final def doWork(r: Iterable[Iterable[Promise[Iterable[Row]]]]) = {
+  protected final def doWork(r: Iterator[RowStream]) = {
     
     val dss = tables map (_.asInstanceOf[DataSet])
     

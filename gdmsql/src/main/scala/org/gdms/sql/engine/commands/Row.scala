@@ -39,6 +39,7 @@
 package org.gdms.sql.engine.commands
 
 import org.gdms.data.values.Value
+import scalaz.Scalaz._
 
 /**
  * Wrapper for a row.
@@ -48,9 +49,14 @@ import org.gdms.data.values.Value
  * @author Antoine Gourlay
  * @since 0.1
  */
-final class Row(val array: Array[Value], val rowId: Option[Long])
+final class Row(val rowId: Option[Long], var array: Array[Value]) {
+  
+  def map(f: Array[Value] => Array[Value]): Row = {
+    new Row(rowId, f(array))
+  }
+}
 
 object Row {
-  def apply(a: Seq[Value], i: Long) = new Row(a toArray, Some(i))
-  def apply(a: Seq[Value]) = new Row(a toArray, None)
+  def apply(i: Long, a: Seq[Value]) = new Row(Some(i),a toArray)
+  def apply(a: Seq[Value]) = new Row(None, a toArray)
 }

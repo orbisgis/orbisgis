@@ -38,8 +38,8 @@
 
 package org.gdms.sql.engine.commands
 
-import scalaz.concurrent.Promise
 import Row._
+import org.gdms.sql.engine.GdmSQLPredef._
 
 /**
  * This command creates a table with the name <tt>name</tt> from the result
@@ -57,7 +57,7 @@ class CreateTableCommand(name: String) extends Command with OutputCommand {
 
   }
 
-  protected final def doWork(r: Iterable[Iterable[Promise[Iterable[Row]]]]) = {
+  protected final def doWork(r: Iterator[RowStream]) = {
     val o = children.head.asInstanceOf[OutputCommand]
     val ds = o.getResult
 

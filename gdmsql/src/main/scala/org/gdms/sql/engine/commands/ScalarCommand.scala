@@ -38,8 +38,8 @@
 
 package org.gdms.sql.engine.commands
 
-import scalaz.concurrent.Promise
-import scalaz.Scalaz._
+import org.gdms.data.values.Value
+import org.gdms.sql.engine.GdmSQLPredef._
 
 /**
  * Base class for all commands that need to process one row at a time.
@@ -48,13 +48,14 @@ import scalaz.Scalaz._
  * @since 0.1
  */
 abstract class ScalarCommand  extends Command {
-  protected final def doWork(r: Iterable[Iterable[Promise[Iterable[Row]]]]) = {
+  protected final def doWork(r: Iterator[RowStream]) = {
     // flatMap: apply the filter to all input table and produce 1 output table
     // map: apply the filter to the whole dataset
     // map: add the next map to the list of future processing to be done by the Promise
     // map: add the scalar process to every single row
-    r flatMap { _ map { _ map { _ map(scalarExecute) } } }
+    
+    r.next map(_ map (scalarExecute))
   }
 
-  protected def scalarExecute: (Row) => Row
+  protected def scalarExecute: (Array[Value]) => Array[Value]
 }

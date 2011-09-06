@@ -49,7 +49,7 @@ import org.gdms.data.values.SQLValueFactory
 import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.engine.commands._
 import org.gdms.sql.engine.operations._
-import scalaz.concurrent.Promise
+import org.gdms.sql.engine.GdmSQLPredef._
 
 /**
  * Command for altering the actual schema of a table (columns and types).
@@ -69,7 +69,7 @@ class AlterTableCommand(name: String, elems: Seq[AlterElement]) extends Command 
     TypeFactory.createType(SQLValueFactory.getTypeCodeFromSqlIdentifier(str))
   }
 
-  protected final def doWork(r: Iterable[Iterable[Promise[Iterable[Row]]]]) = {
+  protected final def doWork(r: Iterator[RowStream]) = {
     val ds = dsf.getDataSource(name, DataSourceFactory.EDITABLE)
     
     ds.open

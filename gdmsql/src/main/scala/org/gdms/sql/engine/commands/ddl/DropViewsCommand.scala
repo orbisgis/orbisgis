@@ -46,7 +46,7 @@ import org.gdms.data.NoSuchTableException
 import org.gdms.source.SourceManager
 import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.engine.commands._
-import scalaz.concurrent.Promise
+import org.gdms.sql.engine.GdmSQLPredef._
 
 /**
  * Command for dropping one or several tables. If <code>purge</code> is specified, the actual resource behind
@@ -71,8 +71,8 @@ class DropViewsCommand(var names: Seq[String], ifExists: Boolean) extends Comman
     }
   }
   
-  protected final def doWork(r: Iterable[Iterable[Promise[Iterable[Row]]]]) = {
-    names foreach (dsf.getSourceManager.delete(_))
+  protected final def doWork(r: Iterator[RowStream]) = {
+    names foreach (dsf.getSourceManager.delete)
     
     null
   }

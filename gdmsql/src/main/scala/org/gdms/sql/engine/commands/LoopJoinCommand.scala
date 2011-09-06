@@ -40,8 +40,6 @@ package org.gdms.sql.engine.commands
 
 import org.gdms.data.schema.DefaultMetadata
 import org.gdms.sql.engine.GdmSQLPredef._
-import scalaz.concurrent.Promise
-import scalaz.Scalaz._
 
 /**
  * This command performs a basic block-nested loop cross join for 2 tables.
@@ -50,26 +48,17 @@ import scalaz.Scalaz._
  * @since 0.1
  */
 class LoopJoinCommand extends Command {
-  protected final def doWork(r: Iterable[Iterable[Promise[Iterable[Row]]]]) = {
-    //This method just concats two 'rows' into one, inside the Iterable objects
-    val doReduce = (i: Iterable[Row], j: Iterable[Row]) => (i <**> j) ((a, b) => Row(a ++ b))
+  protected final def doWork(r: Iterator[RowStream]) = {
+    //This method just concats two 'rows' into one
+    val doReduce = (a: Row, b: Row) => Row(a ++ b)
 
-    val left = r.head
-    val right = r.tail.head
+    val left = r.next
+    val right = r.next
     // for every batch in left, we take avery batch in right and apply
     // the doReduce function within the Promise objects
-    left flatMap (p => right map { q => (p <**> q)(doReduce) } )
+     for (p <- left ; q <- right) yield { doReduce(p, q) }
   }
 
-  protected override final def doPrepare = {
-    // we are going to join, so we want table rows in small batches
-    children foreach { _ match {
-      case c: ScanCommand => c.groupSize = 10
-      case _ =>
-    } }
-  }
-
-  
   override def getMetadata = {
     val d = new DefaultMetadata()
     children foreach { c => addAndRename(d, c.getMetadata) }

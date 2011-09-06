@@ -44,7 +44,7 @@ package org.gdms.sql.engine.commands.ddl
 
 import org.gdms.data.NoSuchTableException
 import org.gdms.sql.engine.commands._
-import scalaz.concurrent.Promise
+import org.gdms.sql.engine.GdmSQLPredef._
 
 /**
  * Command for dropping one or several tables. If <code>purge</code> is specified, the actual resource behind
@@ -65,7 +65,7 @@ class DropTablesCommand(names: Seq[String], ifExists: Boolean, purge: Boolean) e
     }
   }
   
-  protected final def doWork(r: Iterable[Iterable[Promise[Iterable[Row]]]]) = {
+  protected final def doWork(r: Iterator[RowStream]) = {
     if (purge) {
       names foreach (dsf.getSourceManager.delete(_))}
     else {

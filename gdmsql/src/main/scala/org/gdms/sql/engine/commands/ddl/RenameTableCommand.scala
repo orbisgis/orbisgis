@@ -46,8 +46,7 @@ import org.gdms.data.NoSuchTableException
 import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.engine.commands.Command
 import org.gdms.sql.engine.commands.OutputCommand
-import org.gdms.sql.engine.commands.Row
-import scalaz.concurrent.Promise
+import org.gdms.sql.engine.GdmSQLPredef._
 
 class RenameTableCommand(name: String, newname: String) extends Command with OutputCommand {
 
@@ -60,7 +59,7 @@ class RenameTableCommand(name: String, newname: String) extends Command with Out
     }
   }
   
-  protected final def doWork(r: Iterable[Iterable[Promise[Iterable[Row]]]]) = {
+  protected final def doWork(r: Iterator[RowStream]) = {
     
     dsf.getSourceManager.rename(name, newname)
     

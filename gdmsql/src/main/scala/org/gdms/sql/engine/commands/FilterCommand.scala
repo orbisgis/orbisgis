@@ -38,10 +38,8 @@
 
 package org.gdms.sql.engine.commands
 
-import scalaz.concurrent.Promise
 import org.gdms.sql.evaluator.Expression
 import org.gdms.sql.engine.GdmSQLPredef._
-import scalaz.Scalaz._
 
 /**
  * Base class for row-level filtering of a row stream.
@@ -50,14 +48,8 @@ import scalaz.Scalaz._
  * @since 0.1
  */
 abstract class FilterCommand extends Command {
-  protected final def doWork(r: Iterable[Iterable[Promise[Iterable[Row]]]]) = {
-    // flatMap: apply the filter to all input table and produce 1 output table
-    // map: apply the filter to the whole dataset
-    // map: add the filtering to the list of future processing to be done by the Promise
-    // filter: performs the filter on a 'small' batch of rows
-    r flatMap { _ map { _ map {
-          _ filter(filterExecute)
-        } } }
+  protected final def doWork(r: Iterator[RowStream]) = {
+    r.next filter (filterExecute)
   }
 
   /**
@@ -74,6 +66,6 @@ class ExpressionFilterCommand(e: Expression) extends FilterCommand with Expressi
 
   protected val exp: Seq[Expression] = List(e)
 
-  protected def filterExecute: Row => Boolean = { e.evaluate(_).getAsBoolean.booleanValue }
+  protected def filterExecute: Row => Boolean = { r => e.evaluate(r).getAsBoolean.booleanValue }
 
 }

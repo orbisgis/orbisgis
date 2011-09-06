@@ -48,9 +48,8 @@ import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.engine.SqlStatement
 import org.gdms.sql.engine.commands.Command
 import org.gdms.sql.engine.commands.OutputCommand
-import org.gdms.sql.engine.commands.Row
 import org.gdms.sql.engine.operations.Operation
-import scalaz.concurrent.Promise
+import org.gdms.sql.engine.GdmSQLPredef._
 
 class CreateViewCommand(table: String, op: Operation, orReplace: Boolean) extends Command with OutputCommand {
   
@@ -60,7 +59,7 @@ class CreateViewCommand(table: String, op: Operation, orReplace: Boolean) extend
     }
   }
 
-  protected final def doWork(r: Iterable[Iterable[Promise[Iterable[Row]]]]) = {
+  protected final def doWork(r: Iterator[RowStream]) = {
     val s = new SqlStatement(null, new ExecutionGraph(op))
     
     if (orReplace) {

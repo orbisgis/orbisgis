@@ -38,7 +38,7 @@
 package org.gdms.sql.engine.commands
 
 import org.gdms.data.SQLDataSourceFactory
-import scalaz.concurrent.Promise
+import org.gdms.sql.engine.GdmSQLPredef._
 import scalaz.Scalaz._
 
 /**
@@ -56,25 +56,16 @@ abstract class Command() {
 
   protected var dsf: SQLDataSourceFactory = null
 
-  // Row represents a row
-  // Iterable[Row] represents a batch of rows (possibly empty, or reduced to one row)
-  // Promise[Iterable[Row]] represents the promise of a future batch of row.
-  // Its computation is currently running or already done
-  // Iterable[Promise[Iterable[Row]]] represents a whole dataset.
-
-  final def execute(): Iterable[Promise[Iterable[Row]]] = {
-
-    // start sub-commands first
-    val list = children map ( _.execute )
-
+  final def execute(): RowStream = {
+    
     // start this one and return the promise of its result
-    doWork(list)
+    doWork ((for (c <- children.view) yield { c.execute }).toIterator)
   }
 
   /**
    * Main method that commands need to implement
    */
-  protected def doWork(r: Iterable[Iterable[Promise[Iterable[Row]]]]) : Iterable[Promise[Iterable[Row]]]
+  protected def doWork(r: Iterator[RowStream]) : RowStream
 
   /**
    * Override this method to do something specific when the query has finished executing, after all children

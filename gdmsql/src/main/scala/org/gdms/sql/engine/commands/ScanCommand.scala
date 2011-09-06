@@ -41,9 +41,8 @@ package org.gdms.sql.engine.commands
 import org.gdms.data.DataSource
 import org.gdms.data.DataSourceFactory
 import org.gdms.data.schema.Metadata
-import scalaz.concurrent.Promise
-import scalaz.Scalaz._
 import org.gdms.sql.engine.GdmSQLPredef._
+import Stream._
 
 /**
  * Default table scan command.
@@ -55,8 +54,9 @@ class ScanCommand(table: String, alias: Option[String] = None, edition: Boolean 
   var ds: DataSource = null
 
   var metadata: Metadata = null
-  var groupSize : Int = 500
-
+  
+  private var end: Long = -1
+  
   override protected def doCleanUp = {
     // close the DataSource
     if (ds != null) ds.close
@@ -67,17 +67,16 @@ class ScanCommand(table: String, alias: Option[String] = None, edition: Boolean 
     else dsf.getDataSource(table, DataSourceFactory.NORMAL)
     ds.open
     metadata = ds.getMetadata
+    end = ds.getRowCount
   }
 
-  protected def doWork(r: Iterable[Iterable[Promise[Iterable[Row]]]]) = {
+  protected def doWork(r: Iterator[RowStream]) = {
     // 1. iterate until ds.getRowCount
     // 2. iterate lazily
-    // 3. group them by groupSize
-    // 3. return a promise of a group of rows
     // 4. return the (lazy) iterator for this collection
-    (0l until ds.getRowCount).view grouped(groupSize) map { s => 
-      promise {  s.map { i => Row(ds.getRow(i), i) } toIterable }
-    } toIterable
+    for (i <- (0l until ds.getRowCount).view.toIterator) yield {
+      Row(i, ds.getRow(i))
+    }
   }
 
   def commit = ds.commit

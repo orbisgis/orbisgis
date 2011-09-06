@@ -45,8 +45,8 @@ import org.gdms.driver.DataSet
 import org.gdms.sql.evaluator.Expression
 import org.gdms.sql.function.table.TableFunction
 import org.orbisgis.progress.NullProgressMonitor
-import scalaz.concurrent.Promise
 import scalaz.Scalaz._
+import Stream._
 import org.gdms.sql.engine.GdmSQLPredef._
 
 /**
@@ -99,17 +99,16 @@ class CustomQueryScanCommand(e: Seq[Expression], tables: Seq[Either[String, Outp
     openedTables = openedTables reverse
   }
 
-  protected final def doWork(r: Iterable[Iterable[Promise[Iterable[Row]]]]) = {
+  protected final def doWork(r: Iterator[RowStream]) = {
     // evaluates the function
     ds = f.evaluate(dsf,
                     openedTables map (_ fold(identity, _.getResult)) toArray,
                     e map { _ evaluate(null)} toArray, new NullProgressMonitor)
 
     // gives the result
-    val getR = getRow(ds, ds.getMetadata.getFieldCount) _
-    (0l until ds.getRowCount).view grouped(groupSize) map { s =>
-      promise {  s.map { i => Row(getR(i), i) } toIterable }(st)
-    } toIterable
+    for (i <- (0l until ds.getRowCount).view.toIterator) yield {
+      Row(i, ds.getRow(i))
+    }
   }
 
   private def getRow(ds: DataSet, count: Int)(i: Long) : Array[Value] = {
@@ -118,6 +117,7 @@ class CustomQueryScanCommand(e: Seq[Expression], tables: Seq[Either[String, Outp
 
   override def doCleanUp = {
     // closes any DataSource object (the other are closed by the OutputCommand)
+    f.workFinished
     openedTables flatMap (_.left toSeq) foreach (_.close)
   }
 

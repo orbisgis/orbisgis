@@ -46,7 +46,7 @@ import org.gdms.data.file.FileSourceCreation
 import org.gdms.data.schema.DefaultMetadata
 import org.gdms.data.values.SQLValueFactory
 import org.gdms.sql.engine.commands._
-import scalaz.concurrent.Promise
+import org.gdms.sql.engine.GdmSQLPredef._
 
 /**
  * Command for creating an empty table by specifying its column names and types.
@@ -56,7 +56,7 @@ import scalaz.concurrent.Promise
  */
 class TableCreationCommand(name: String, cols: Seq[(String, String)]) extends Command with OutputCommand {
 
-  protected final def doWork(r: Iterable[Iterable[Promise[Iterable[Row]]]]) = {
+  protected final def doWork(r: Iterator[RowStream]) = {
     val m = new DefaultMetadata
     
     cols foreach {c =>
