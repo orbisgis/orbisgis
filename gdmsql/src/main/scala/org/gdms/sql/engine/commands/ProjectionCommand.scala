@@ -71,9 +71,17 @@ class ProjectionCommand(var expression: Array[(Expression, Option[String])]) ext
             val name = optName.get
             val m = metadata.find(_.table == name)
             if (!m.isDefined) {
-              throw new NoSuchTableException(name)
+              // check forwarded fields
+              val beg = '$' + name
+              var newexp = metadata flatMap (me => me.getFieldNames filter(_.endsWith(beg)) map
+                                             (n => (Field(n.takeWhile(_ != '$'), name), Some(n))))
+              if (newexp.isEmpty) {
+                throw new NoSuchTableException(name)
+              }
+              insertFields(s._1, newexp)
+            } else {
+              addAllFields(m.get, s._1)
             }
-            addAllFields(m.get, s._1)
           }
       }
     }
@@ -86,6 +94,10 @@ class ProjectionCommand(var expression: Array[(Expression, Option[String])]) ext
     // new fields
     var newexp = m.getFieldNames map (n => (Field(n, m.table), None))
       
+    insertFields(s, newexp)
+  }
+  
+  private def insertFields(s: Expression, newexp: Seq[(Expression, Option[String])]) {
     // split expression list
     var before = expression takeWhile(_._1.evaluator != s.evaluator)
     var after = expression drop(before.length +1)
