@@ -214,6 +214,11 @@ abstract class DefaultGeometryValue extends AbstractValue implements GeometryVal
                                         case Type.MULTIPOINT:
                                         case Type.MULTIPOLYGON:
                                                 return ValueFactory.createValue((GeometryCollection) geom);
+                                        case Type.POINT:
+                                        case Type.LINESTRING:
+                                        case Type.POLYGON:
+                                                return ValueFactory.createValue(
+                                                        geom.getFactory().createGeometryCollection(new Geometry[]{geom}));
                                         default:
                                                 super.toType(typeCode);
                                 }

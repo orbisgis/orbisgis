@@ -592,7 +592,7 @@ public abstract class AbstractValue implements Value {
          */
         @Override
         public Value toType(int typeCode) {
-                if ((getType() & typeCode) != 0) {
+                if (getType() == typeCode) {
                         return this;
                 } else if (typeCode == Type.STRING) {
                         return ValueFactory.createValue(toString());
