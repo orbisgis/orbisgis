@@ -259,7 +259,7 @@ object LogicPlanBuilder {
 		  // ^(T_UPDATE_SET ^(T_UPDATE_COLUMNS update_field+) ^(T_UPDATE_EXPRS (expression_main | T_DEFAULT)+) )
 
                   // tuples like (column_name, value)
-                  val col = getChilds(t.getChild(0)) map (_.getChild(0).getText)
+                  val col = getChilds(t.getChild(0)) map (_.getChild(0).getText.replace("\"", ""))
                   val expr = getChilds(t.getChild(1)) map (parseExpression)
 
                   e = col zip expr
@@ -279,7 +279,7 @@ object LogicPlanBuilder {
       case T_INSERT => {
           val c = getChilds(node)
           val fields = if (node.getChildCount == 3) {
-            Some(getChilds(node.getChild(2)) map (n => n.getText))
+            Some(getChilds(node.getChild(2)) map (n => n.getText.replace("\"", "")))
           } else {
             None
           }
@@ -333,7 +333,7 @@ object LogicPlanBuilder {
 	    // AST:
 	    // ^(T_CREATE_TABLE table_id ^(T_CREATE_TABLE ^(T_TABLE_ITEM name type)*))
             val ch = getChilds(node.getChild(1))
-            val cols = ch map (c => (c.getChild(0).getText, c.getChild(1).getText))
+            val cols = ch map (c => (c.getChild(0).getText.replace("\"", ""), c.getChild(1).getText))
             val cr = CreateTable(getFullTableName(node.getChild(0)), cols)
             end = cr 
           }
@@ -602,7 +602,7 @@ object LogicPlanBuilder {
   }
 
   private def getFullTableName(node: Tree) = {
-    getChilds(node) map(_.getText) reduceLeft (_ + "." +  _)
+    getChilds(node) map(_.getText) reduceLeft (_ + "." +  _) replace("\"", "")
   }
   
 
