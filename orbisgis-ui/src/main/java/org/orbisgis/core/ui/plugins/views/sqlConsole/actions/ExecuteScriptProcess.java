@@ -43,7 +43,7 @@ import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.schema.Metadata;
-import org.gdms.data.types.Type;
+import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.engine.SQLEngine;
 import org.gdms.sql.engine.SqlStatement;
@@ -108,18 +108,9 @@ public class ExecuteScriptProcess implements BackgroundJob {
                                 try {
                                         Metadata metadata = st.getResultMetadata();
                                         if (metadata != null) {
-                                                boolean spatial = false;
-                                                for (int k = 0; k < metadata.getFieldCount(); k++) {
-                                                        int typeCode = metadata.getFieldType(k).getTypeCode();
-                                                        if ((typeCode == Type.GEOMETRY)
-                                                                || (typeCode == Type.RASTER)) {
-                                                                spatial = true;
-                                                        }
-                                                }
-
+                                                boolean spatial = MetadataUtilities.isSpatial(metadata);
                                                 DataSource ds = dsf.getDataSource(st,
                                                         DataSourceFactory.DEFAULT, pm);
-
                                                 if (pm.isCancelled()) {
                                                         break;
                                                 }
