@@ -40,10 +40,12 @@ package org.gdms.driver;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.log4j.Logger;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.schema.DefaultSchema;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.Schema;
+import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.driver.driverManager.DriverManager;
@@ -66,6 +68,8 @@ public class DiskBufferDriver extends AbstractDataSet implements MemoryDriver {
         private File file;
         private boolean firstRow = true;
         private GdmsReader reader;
+        
+        private static final Logger LOG = Logger.getLogger(DiskBufferDriver.class);
 
         /**
          * Creates a new DiskBufferManager.
@@ -148,7 +152,22 @@ public class DiskBufferDriver extends AbstractDataSet implements MemoryDriver {
 
         @Override
         public int getType() {
-                return new GdmsDriver().getType();
+                int type = SourceManager.FILE;
+                try {
+                        Metadata m = schema.getTableByName(DriverManager.DEFAULT_SINGLE_TABLE_NAME);
+                        if (m != null) {
+                                for (int i = 0; i < m.getFieldCount(); i++) {
+                                        if((m.getFieldType(i).getTypeCode() & Type.GEOMETRY) != 0){
+                                                type |= SourceManager.VECTORIAL;
+                                        } else if((m.getFieldType(i).getTypeCode() & Type.RASTER) != 0){
+                                                type |= SourceManager.RASTER;
+                                        }
+                                }
+                        }
+                } catch (DriverException ex) {
+                        LOG.warn("There was an error while accessing the file.", ex);
+                }
+                return type;
         }
 
         @Override
@@ -182,7 +201,7 @@ public class DiskBufferDriver extends AbstractDataSet implements MemoryDriver {
         private void writeMetadataOnce() throws DriverException {
                 if (firstRow) {
                         try {
-                                writer.writeMetadata(0, getSchema().getTableByName("main"));
+                                writer.writeMetadata(0, schema.getTableByName("main"));
                                 firstRow = false;
                         } catch (IOException e) {
                                 throw new DriverException("Cannot write metadata", e);

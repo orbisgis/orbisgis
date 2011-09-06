@@ -57,7 +57,6 @@ class CreateTableCommand(name: String) extends Command with OutputCommand {
     // register the new source
     // this will throw an exception if a source with that name already exists
     resultFile = dsf.getResultFile
-    dsf.getSourceManager.register(name, resultFile)
     
     val o = children.head.asInstanceOf[OutputCommand]
     o match {
@@ -70,8 +69,9 @@ class CreateTableCommand(name: String) extends Command with OutputCommand {
         }
     }
   }
-
+  
   protected final def doWork(r: Iterator[RowStream]) = {
+    dsf.getSourceManager.register(name, resultFile)
     val o = children.head.asInstanceOf[OutputCommand]
     o match {
       case q: QueryOutputCommand => {

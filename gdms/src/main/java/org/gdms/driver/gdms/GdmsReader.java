@@ -251,7 +251,7 @@ public class GdmsReader {
          */
         public Metadata getMetadata() throws DriverException {
                 try {
-                        if (metadata == null && rbm.getLength() > 0) {
+                        if (rbm != null && metadata.getFieldCount() == 0 && rbm.getLength() > 0) {
                                 readMetadata();
                         }
                 } catch (IOException ex) {
