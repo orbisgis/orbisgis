@@ -10,7 +10,7 @@
         <modelVersion>4.0.0</modelVersion>
         <groupId>org.orbisgis</groupId>
         <artifactId>orbisgis-ui</artifactId>
-        <version>3.1-SNAPSHOT</version>
+        <version>4.0-SNAPSHOT</version>
         <name>orbisgis-ui</name>
         <url>http://orbisgis.org</url>
         <repositories>
@@ -70,7 +70,7 @@
                 <dependency>
                         <groupId>org.orbisgis</groupId>
                         <artifactId>orbisgis-core</artifactId>
-                        <version>3.1-SNAPSHOT</version>
+                        <version>4.0-SNAPSHOT</version>
                 </dependency>
         </dependencies>
         <build>
