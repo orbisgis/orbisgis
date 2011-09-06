@@ -142,7 +142,7 @@ public class IndexesTest {
         public void testCancelIndexCreation() throws Exception {
                 int numFiles1 = sm.getSourceInfoDirectory().listFiles().length;
                 im.buildIndex("source", "the_geom",
-                        IndexManager.BTREE_ALPHANUMERIC_INDEX,
+                        IndexManager.RTREE_SPATIAL_INDEX,
                         new NullProgressMonitor() {
 
                                 @Override
