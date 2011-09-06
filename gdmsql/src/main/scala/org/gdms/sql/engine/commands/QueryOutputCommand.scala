@@ -37,6 +37,7 @@
  */
 package org.gdms.sql.engine.commands
 
+import java.io.File
 import org.gdms.driver.DiskBufferDriver
 import org.gdms.sql.engine.GdmSQLPredef._
 
@@ -49,12 +50,15 @@ import org.gdms.sql.engine.GdmSQLPredef._
 class QueryOutputCommand extends Command with OutputCommand {
 
   private var driver: DiskBufferDriver = null
+  var resultFile: File = null
 
   protected override def doPrepare = {
-    driver = new DiskBufferDriver(dsf, getMetadata)
+    resultFile = new File(dsf.getTempFile("gdms"))
   }
 
   protected def doWork(r: Iterator[RowStream]) = {
+    driver = new DiskBufferDriver(resultFile, getMetadata)
+    
     for (s <- r; a <- s) {
       driver.addValues(a.array:_*)
     }

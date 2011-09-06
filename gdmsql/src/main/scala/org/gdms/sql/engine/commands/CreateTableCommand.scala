@@ -39,6 +39,7 @@
 package org.gdms.sql.engine.commands
 
 import Row._
+import java.io.File
 import org.gdms.sql.engine.GdmSQLPredef._
 
 /**
@@ -49,24 +50,42 @@ import org.gdms.sql.engine.GdmSQLPredef._
  * @since 0.1
  */
 class CreateTableCommand(name: String) extends Command with OutputCommand {
+  
+  private var resultFile: File = null
 
   override def doPrepare = {
     // register the new source
     // this will throw an exception if a source with that name already exists
-    dsf.getSourceManager.register(name, dsf.getResultFile)
-
+    resultFile = dsf.getResultFile
+    dsf.getSourceManager.register(name, resultFile)
+    
+    val o = children.head.asInstanceOf[OutputCommand]
+    o match {
+      case q: QueryOutputCommand => {
+          // the output will write for us
+          q.resultFile = resultFile
+        }
+      case _ => {
+          // gdms will write for us
+        }
+    }
   }
 
   protected final def doWork(r: Iterator[RowStream]) = {
     val o = children.head.asInstanceOf[OutputCommand]
-    val ds = o.getResult
-
-    // gdms is writing for us
-    dsf.saveContents(name, ds)
-
+    o match {
+      case q: QueryOutputCommand => {
+          // the output has written for us already          
+        }
+      case _ => {
+          // gdms is writing for us
+          dsf.saveContents(name, o.getResult)
+        }
+    }
+    
     null
   }
-
+  
   val getResult = null
 
   // no result
