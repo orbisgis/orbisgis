@@ -292,27 +292,28 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
         ModifyCommand.ModifyInfo doSetFieldValue(long row, int fieldId, Value value)
                 throws DriverException {
                 // convert value
-                if (value == null) {
-                        value = ValueFactory.createNullValue();
+                Value val = value;
+                if (val == null) {
+                        val = ValueFactory.createNullValue();
                 }
                 Type fieldType = getMetadata().getFieldType(fieldId);
-                if (!value.isNull() && (fieldType.getTypeCode() != value.getType())) {
-                        value = value.toType(fieldType.getTypeCode());
+                if (!val.isNull() && (fieldType.getTypeCode() != val.getType())) {
+                        val = val.toType(fieldType.getTypeCode());
                 }
 
                 // write check
-                checkConstraints(value, fieldId);
+                checkConstraints(val, fieldId);
 
                 // Do modification
                 ModifyCommand.ModifyInfo ret;
                 PhysicalRowAddress dir = rowsDirections.get((int) row);
                 dirty = true;
                 setFieldValueInIndex((int) row, fieldId, getFieldValue(row, fieldId),
-                        value);
+                        val);
                 if (dir instanceof OriginalRowAddress) {
                         Value[] original = getOriginalRow(dir);
                         Value previousValue = original[fieldId];
-                        original[fieldId] = value;
+                        original[fieldId] = val;
                         PhysicalRowAddress newDirection = internalBuffer.insertRow(dir.getPK(), original);
                         rowsDirections.set((int) row, newDirection);
                         UpdateEditionInfo info = new UpdateEditionInfo(dir.getPK(),
@@ -323,7 +324,7 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
                                 fieldId);
                 } else {
                         Value previousValue = dir.getFieldValue(fieldId);
-                        ((InternalBufferDirection) dir).setFieldValue(fieldId, value);
+                        ((InternalBufferDirection) dir).setFieldValue(fieldId, val);
                         /*
                          * We don't modify the EditionInfo because is an insertion that
                          * already points to the internal buffer
