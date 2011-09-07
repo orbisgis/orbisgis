@@ -189,6 +189,10 @@ public class DiskBufferDriver extends AbstractDataSet implements MemoryDriver {
                 writeMetadataOnce();
                 writer.addValues(row);
         }
+        
+        public boolean isOpen() {
+                return reader != null && reader.isOpen();
+        }
 
         /**
          * Returns the temp file associated with this driver.

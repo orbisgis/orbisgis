@@ -93,6 +93,14 @@ public class GdmsReader {
                 rbm = new ReadBufferManager(fis.getChannel());
                 rbm.position(0);
         }
+        
+        /**
+         * Gets the state of this reader.
+         * @return true if the driver is open.
+         */
+        public boolean isOpen() {
+                return fis != null;
+        }
 
         /**
          * Close the reader. It will close the inpu stream associated with the reader.
