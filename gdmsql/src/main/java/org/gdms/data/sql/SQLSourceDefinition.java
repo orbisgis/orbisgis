@@ -118,19 +118,15 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
                 DataSourceCreationException {
                 LOG.trace("Preparing SQLSource");
                 getDataSourceFactory().fireInstructionExecuted(statement.getSQL());
-                statement.prepare(getDataSourceFactory());
                 metadata.clear();
                 DataSource def = null;
                 if (!pm.isCancelled()) {
-                        if (statement.getResultMetadata() == null) {
-                                throw new IllegalArgumentException(
-                                        "The query produces no result: " + statement.getSQL());
-                        } else {
-                                SqlStatementDriver d = new SqlStatementDriver(statement, getDataSourceFactory());
-                                def = new MemoryDataSourceAdapter(getSource(tableName), d);
-                                metadata.addAll(statement.getResultMetadata());
-                                LOG.trace("Built temp MemoryDataSourceAdapter with SQL Query results");
-                        }
+                        SqlStatementDriver d = new SqlStatementDriver(statement, getDataSourceFactory());
+                        def = new MemoryDataSourceAdapter(getSource(tableName), d);
+                        statement.prepare(getDataSourceFactory());
+                        metadata.addAll(statement.getResultMetadata());
+                        statement.cleanUp();
+                        LOG.trace("Built temp MemoryDataSourceAdapter with SQL Query results");
                 }
                 return def;
         }
@@ -285,7 +281,4 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
         public String calculateChecksum(DataSource openDS) throws DriverException {
                 return null;
         }
-        
-        
-        
 }

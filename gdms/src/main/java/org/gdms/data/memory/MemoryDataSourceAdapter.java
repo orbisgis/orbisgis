@@ -59,10 +59,9 @@ import org.orbisgis.progress.NullProgressMonitor;
  * @author Antoine Gourlay
  */
 public class MemoryDataSourceAdapter extends DriverDataSource implements
-		Commiter, CommitListener {
+        Commiter, CommitListener {
 
-	private MemoryDriver driver;
-
+        private MemoryDriver driver;
         private static final Logger LOG = Logger.getLogger(MemoryDataSourceAdapter.class);
 
         /**
@@ -70,80 +69,80 @@ public class MemoryDataSourceAdapter extends DriverDataSource implements
          * @param source a source object
          * @param driver an MemoryDriver
          */
-	public MemoryDataSourceAdapter(Source source, MemoryDriver driver) {
-		super(source);
-		this.driver = driver;
+        public MemoryDataSourceAdapter(Source source, MemoryDriver driver) {
+                super(source);
+                this.driver = driver;
                 LOG.trace("Constructor");
-	}
+        }
 
         @Override
-	public void open() throws DriverException {
-            LOG.trace("Opening");
-		driver.start();
-		fireOpen(this);
+        public void open() throws DriverException {
+                LOG.trace("Opening");
+                driver.start();
+                fireOpen(this);
 
-		SourceManager sm = getDataSourceFactory().getSourceManager();
-		sm.addCommitListener(this);
-	}
-
-        @Override
-	public void close() throws DriverException {
-            LOG.trace("Closing");
-		driver.stop();
-		fireCancel(this);
-
-		SourceManager sm = getDataSourceFactory().getSourceManager();
-		sm.removeCommitListener(this);
-	}
+                SourceManager sm = getDataSourceFactory().getSourceManager();
+                sm.addCommitListener(this);
+        }
 
         @Override
-	public void saveData(DataSource ds) throws DriverException {
-            LOG.trace("Saving data");
-		ds.open();
-		((EditableMemoryDriver) driver).write(ds, new NullProgressMonitor());
-		ds.close();
-	}
+        public void close() throws DriverException {
+                LOG.trace("Closing");
+                driver.stop();
+                fireCancel(this);
+
+                SourceManager sm = getDataSourceFactory().getSourceManager();
+                sm.removeCommitListener(this);
+        }
 
         @Override
-	public MemoryDriver getDriver() {
-		return driver;
-	}
-
-	public long[] getWhereFilter() throws IOException {
-		return null;
-	}
-
-	@Override
-	public boolean commit(List<PhysicalRowAddress> rowsDirections,
-			String[] fieldName, List<EditionInfo> schemaActions,
-			List<EditionInfo> editionActions,
-			List<DeleteEditionInfo> deletedPKs, DataSource modifiedSource)
-			throws DriverException {
-            LOG.trace("Commiting");
-		boolean rowChanged = ((EditableMemoryDriver) driver).write(modifiedSource,
-				new NullProgressMonitor());
-		driver.stop();
-		fireCommit(this);
-		
-		return rowChanged;
-	}
+        public void saveData(DataSource ds) throws DriverException {
+                LOG.trace("Saving data");
+                ds.open();
+                ((EditableMemoryDriver) driver).write(ds, new NullProgressMonitor());
+                ds.close();
+        }
 
         @Override
-	public void commitDone(String name) throws DriverException {
-		sync();
-	}
+        public MemoryDriver getDriver() {
+                return driver;
+        }
+
+        public long[] getWhereFilter() throws IOException {
+                return null;
+        }
 
         @Override
-	public void syncWithSource() throws DriverException {
-		sync();
-	}
+        public boolean commit(List<PhysicalRowAddress> rowsDirections,
+                String[] fieldName, List<EditionInfo> schemaActions,
+                List<EditionInfo> editionActions,
+                List<DeleteEditionInfo> deletedPKs, DataSource modifiedSource)
+                throws DriverException {
+                LOG.trace("Commiting");
+                boolean rowChanged = ((EditableMemoryDriver) driver).write(modifiedSource,
+                        new NullProgressMonitor());
+                driver.stop();
+                fireCommit(this);
 
-	private void sync() throws DriverException {
-		driver.start();
-		driver.stop();
-	}
+                return rowChanged;
+        }
 
         @Override
-	public void isCommiting(String name, Object source) {
-	}
+        public void commitDone(String name) throws DriverException {
+                sync();
+        }
+
+        @Override
+        public void syncWithSource() throws DriverException {
+                sync();
+        }
+
+        private void sync() throws DriverException {
+                driver.start();
+                driver.stop();
+        }
+
+        @Override
+        public void isCommiting(String name, Object source) {
+        }
 }

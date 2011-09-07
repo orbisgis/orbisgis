@@ -73,7 +73,9 @@ public class ShapefileDriverTest {
                 DataSourceCreation target = new FileSourceCreation(new File(
                         SQLBaseTest.backupDir, "outputtestSaveSQL.shp"), null);
                 dsf.getSourceManager().register("buffer", target);
+                sql.open();
                 dsf.saveContents("buffer", sql);
+                sql.close();
 
                 DataSource ds = dsf.getDataSource("buffer");
                 ds.open();

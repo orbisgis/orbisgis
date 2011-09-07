@@ -43,6 +43,7 @@ package org.gdms.driver.sql;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SQLDataSourceFactory;
+import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.DefaultSchema;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.Schema;
@@ -66,17 +67,21 @@ public class SqlStatementDriver extends AbstractDataSet implements MemoryDriver 
         SQLDataSourceFactory dsf;
         DefaultSchema schema;
         DataSet set;
+        DefaultMetadata metadata = new DefaultMetadata();
 
         public SqlStatementDriver(SqlStatement sql, SQLDataSourceFactory dsf) throws DriverException {
                 this.sql = sql;
                 this.dsf = dsf;
                 schema = new DefaultSchema("sql");
-                schema.addTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME, sql.getResultMetadata());
+                schema.addTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME, metadata);
         }
         
         @Override
         public void start() throws DriverException {
+                sql.prepare(dsf);
                 set = sql.execute();
+                metadata.clear();
+                metadata.addAll(sql.getResultMetadata());
         }
 
         @Override
