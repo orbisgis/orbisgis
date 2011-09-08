@@ -255,7 +255,7 @@ object LogicPlanBuilder {
                   o.children = un :: Nil
                   last = un
                   
-              }
+                }
               case a: Any => throw new SemanticException(a.toString + "  node: " + node.getText)
             }
           }
@@ -383,21 +383,21 @@ object LogicPlanBuilder {
 	      // ^(T_ADD ^(T_TABLE_ITEM name type))
               case T_ADD => AddColumn(c.getChild(0).getChild(0).getText.replace("\"", ""), c.getChild(0).getChild(1).getText)
 
-	      // AST:
-	      // ^(T_ALTER name newType expression_main?)
+                // AST:
+                // ^(T_ALTER name newType expression_main?)
               case T_ALTER => {
                   val exp = if (c.getChildCount != 2) Some(parseExpression(c.getChild(2))) else None
                   AlterTypeOfColumn(c.getChild(0).getText.replace("\"", ""), c.getChild(1).getText, exp)
                 }
 
-	      // AST:
-	      // ^(T_DROP name T_IF?)
+                // AST:
+                // ^(T_DROP name T_IF?)
               case T_DROP => {
                   DropColumn(c.getChild(0).getText.replace("\"", ""), c.getChildCount != 1)
                 }
 
-	      // AST:
-	      // ^(T_RENAME name newname)
+                // AST:
+                // ^(T_RENAME name newname)
               case T_RENAME => RenameColumn(c.getChild(0).getText.replace("\"", ""), c.getChild(1).getText.replace("\"", ""))
             }}
           end = AlterTable(name, elems)
@@ -594,8 +594,8 @@ object LogicPlanBuilder {
             // TODO: converting IN with subquery into special joins
             case T_SELECT => throw new UnsupportedOperationException("Not yet implemented.")
 
-	    // AST:
-	    // ^(T_IN expression_cond ^(T_EXPR_LIST expression_main+ ))
+              // AST:
+              // ^(T_IN expression_cond ^(T_EXPR_LIST expression_main+ ))
             case T_EXPR_LIST => left in getChilds(right).map (parseExpression)
           }
         }
@@ -680,7 +680,7 @@ object LogicPlanBuilder {
           
           // directly aliases/fields in GROUP BY
           val aliases = groupFields map (_.name)
-          
+                    
           // directly selected fields
           val selFields = p.exp flatMap (_._1.evaluator match {
               case a: FieldEvaluator => a :: Nil
@@ -726,7 +726,8 @@ object LogicPlanBuilder {
           // an Aggregate is inserted afterwards, and the functions are
           // replaces with fields in the Projection
           // there is some AggregateEvaluator expressions
-          val c = new Aggregate(aggF)
+          // 
+          val c = new Aggregate(aggF ++ selFields)
           c.children = parent.get.children
           parent.get.children = c :: Nil
         }
