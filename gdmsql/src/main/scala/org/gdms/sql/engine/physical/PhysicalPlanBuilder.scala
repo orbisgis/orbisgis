@@ -108,6 +108,7 @@ object PhysicalPlanBuilder {
       case Grouping(e) =>  new AggregateCommand(Nil, e)
       case Filter(exp) => new ExpressionFilterCommand(exp)
       case Sort(exprs) => new MergeSortCommand(exprs)
+      case Union() => new UnionCommand()
       case Update(e) => new UpdateCommand(e)
       case StaticInsert(t, e, f) => new StaticInsertCommand(t, e, f)
       case Delete() => new DeleteCommand()

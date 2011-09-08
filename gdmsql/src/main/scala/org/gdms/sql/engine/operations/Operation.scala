@@ -269,6 +269,14 @@ case class Join(var joinType: JoinType) extends Operation
 
 
 /**
+ * Represents an Union of two Select instructions.
+ * 
+ * @author Antoine Gourlay
+ * @since 0.3
+ */
+case class Union() extends Operation
+
+/**
  * Represents an Update instruction.
  * 
  * For every input row, the parameter expressions are evaluated and the results are attributed to the given column names.

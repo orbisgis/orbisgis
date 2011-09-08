@@ -234,6 +234,16 @@ object LogicPlanBuilder {
                   g.children = parent.children
                   parent.children = g :: Nil
                 }
+              case T_UNION => {
+                  // AST:
+                  // ^(T_UNION select_command)
+                  val oo = buildOperationTree(t.getChild(0))
+                  val un = new Union()
+                  un.children = last :: oo.children.head :: Nil
+                  o.children = un :: Nil
+                  last = un
+                  
+              }
               case a: Any => throw new SemanticException(a.toString + "  node: " + node.getText)
             }
           }
