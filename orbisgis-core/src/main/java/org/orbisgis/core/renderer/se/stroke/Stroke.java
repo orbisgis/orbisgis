@@ -28,12 +28,15 @@ import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 /**
  * Style description for linear features (Area or Line)
  *
- * @author maxence
+ * @author maxence, alexis.
  */
 public abstract class Stroke implements SymbolizerNode {
 
     protected static OutputManager logger = Services.getOutputManager();
 
+    /**
+     * The parent of this node.
+     */
     protected SymbolizerNode parent;
 
     private boolean linearRapport;
@@ -76,9 +79,8 @@ public abstract class Stroke implements SymbolizerNode {
         }else if (s.getDeclaredType() == TextStrokeType.class){
 			return new TextStroke((JAXBElement<TextStrokeType>)s);
 		}
-
-        // TODO Shoudl never occurs !
-        return null;
+        //As s.getDeclaredType() os a StrokeType, we are supposed to never throw this Exception...
+        throw new InvalidStyle("Trying to create a Stroke from an invalid input");
     }
 
     @Override
@@ -175,5 +177,9 @@ public abstract class Stroke implements SymbolizerNode {
      */
     public abstract Double getNaturalLength(SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) throws ParameterException, IOException;
 
+    /**
+     * Retrieve the list of features this {@code Stroke} depends on, as a {@code String}
+     * @return 
+     */
     public abstract String dependsOnFeature();
 }
