@@ -41,6 +41,7 @@ package org.gdms.sql.engine
 import org.gdms.data.SQLDataSourceFactory
 import org.gdms.driver.DataSet
 import org.gdms.data.schema.Metadata
+import org.gdms.driver.DriverException
 import org.gdms.sql.engine.commands.OutputCommand
 import org.gdms.sql.engine.operations.Operation
 import org.gdms.sql.engine.operations.Scan
@@ -87,6 +88,7 @@ class ExecutionGraph(op: Operation) {
       start = PhysicalPlanBuilder.buildPhysicalPlan(op).asInstanceOf[OutputCommand]
     }
 
+    this.dsf = dsf;
     start.prepare(dsf)
     r = start.getResult
   }
@@ -95,8 +97,13 @@ class ExecutionGraph(op: Operation) {
    * Runs the query and returns the result.
    * @return the result of the query
    */
+  @throws(classOf[DriverException])
   def execute(): DataSet = {
-    start.execute
+    try {
+      start.execute
+    } catch {
+      case e: Exception => throw new DriverException(e)
+    }
     r
   }
 

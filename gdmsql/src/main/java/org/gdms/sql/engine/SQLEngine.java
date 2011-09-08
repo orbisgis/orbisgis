@@ -49,6 +49,7 @@ import org.antlr.runtime.tree.CommonTree;
 import org.apache.log4j.Logger;
 import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.driver.DataSet;
+import org.gdms.driver.DriverException;
 import org.gdms.sql.engine.parsing.GdmSQLLexer;
 import org.gdms.sql.engine.parsing.GdmSQLParser;
 import org.gdms.sql.engine.parsing.GdmSQLParser.start_rule_return;
@@ -75,7 +76,7 @@ public final class SQLEngine {
          * @param sql a script
          * @throws ParseException if there is a problem while parsing
          */
-        public void execute(String sql) throws ParseException {
+        public void execute(String sql) throws ParseException, DriverException {
                 SqlStatement[] sts = parse(sql);
                 for (int i = 0; i < sts.length; i++) {
                         execute(sts[i]);
@@ -86,7 +87,7 @@ public final class SQLEngine {
          * Executes an SQL statement.
          * @param statement a SQL statement
          */
-        public void execute(SqlStatement statement) {
+        public void execute(SqlStatement statement) throws DriverException {
                 statement.prepare(dsf);
                 statement.execute();
         }
@@ -97,7 +98,7 @@ public final class SQLEngine {
          * @return a dataset
          * @throws ParseException 
          */
-        public DataSet query(String sql) throws ParseException {
+        public DataSet query(String sql) throws ParseException, DriverException {
                 SqlStatement[] sts = parse(sql);
                 return query(sts[0]);
         }
@@ -107,7 +108,7 @@ public final class SQLEngine {
          * @param sql
          * @return 
          */
-        public DataSet query(SqlStatement sql) {
+        public DataSet query(SqlStatement sql) throws DriverException {
                 sql.prepare(dsf);
                 return sql.execute();
         }

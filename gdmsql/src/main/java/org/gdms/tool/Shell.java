@@ -42,6 +42,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import org.gdms.data.SQLDataSourceFactory;
+import org.gdms.driver.DriverException;
 import org.gdms.sql.engine.SQLEngine;
 import org.gdms.sql.engine.ParseException;
 
@@ -60,7 +61,7 @@ public final class Shell {
         }
 
         private static void execute(String scriptFileName) throws
-                IOException, ParseException {
+                IOException, ParseException, DriverException {
                 SQLEngine engine = new SQLEngine(dsf);
                 engine.execute(readScriptFile(scriptFileName));
         }
@@ -92,7 +93,7 @@ public final class Shell {
          * @throws IOException
          * @throws ParseException
          */
-        public static void main(String[] args) throws IOException, ParseException {
+        public static void main(String[] args) throws IOException, ParseException, DriverException {
 
                 if (args != null && args.length > 0) {
                         String script = args[0];

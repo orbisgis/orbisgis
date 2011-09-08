@@ -91,8 +91,9 @@ public class SqlStatement {
          *
          * Note: the result of the statement is written to disk before returning.
          * @return the result of the statement, or null if there is none.
+         * @throws DriverException  
          */
-        public DataSet execute() {
+        public DataSet execute() throws DriverException {
                 DataSet rd = graph.execute();
                 return rd;
         }
