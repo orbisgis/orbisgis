@@ -50,7 +50,6 @@ import org.gdms.data.types.TypeFactory
 import org.gdms.data.values.ValueFactory
 import org.gdms.driver.memory.MemoryDataSetDriver
 import org.gdms.sql.engine.GdmSQLPredef._
-import scalaz.Scalaz._
 
 /**
  * Delete command.

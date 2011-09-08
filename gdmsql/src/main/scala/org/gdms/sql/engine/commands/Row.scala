@@ -39,7 +39,6 @@
 package org.gdms.sql.engine.commands
 
 import org.gdms.data.values.Value
-import scalaz.Scalaz._
 
 /**
  * Wrapper for a row.

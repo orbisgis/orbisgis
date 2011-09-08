@@ -45,7 +45,6 @@ import org.gdms.driver.DataSet
 import org.gdms.sql.evaluator.Expression
 import org.gdms.sql.function.table.TableFunction
 import org.orbisgis.progress.NullProgressMonitor
-import scalaz.Scalaz._
 import Stream._
 import org.gdms.sql.engine.GdmSQLPredef._
 

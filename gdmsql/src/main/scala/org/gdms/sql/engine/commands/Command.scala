@@ -39,7 +39,6 @@ package org.gdms.sql.engine.commands
 
 import org.gdms.data.SQLDataSourceFactory
 import org.gdms.sql.engine.GdmSQLPredef._
-import scalaz.Scalaz._
 
 /**
  * Base class for all commands

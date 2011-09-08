@@ -43,7 +43,6 @@ import org.gdms.sql.evaluator.AggregateEvaluator
 import org.gdms.data.values.Value
 import org.gdms.sql.engine.GdmSQLPredef._
 import scala.collection.mutable.HashMap
-import scalaz.Scalaz._
 
 /**
  * Command for evaluating a list of aggregated expressions over sub-commands.

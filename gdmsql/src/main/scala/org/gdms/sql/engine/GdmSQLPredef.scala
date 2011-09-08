@@ -38,10 +38,8 @@
 
 package org.gdms.sql.engine
 
-import org.gdms.data.SQLDataSourceFactory
 import org.gdms.data.schema.Metadata
 import scala.collection.mutable.ArrayOps
-import scalaz.concurrent.Strategy
 import org.gdms.data.values.Value
 import org.gdms.sql.engine.commands.Row
 import org.gdms.sql.engine.commands.SQLMetadata
@@ -56,14 +54,8 @@ object GdmSQLPredef extends GdmSQLPredefLow {
   
   type RowStream = Iterator[Row]
 
-  // Strategy
-  implicit val st: Strategy = Strategy.Executor(SQLDataSourceFactory.getThreadExecutor)
-
   // Rows
-//  implicit def rowStreamToStreamOfRow(f: RowStream): Stream[Row] = f()
   implicit def rowToInnerArray(row: Row): Array[Value] = row.array
-  //implicit def arraytoRow(a: Array[Value])(implicit r: Row) = new Row(a, r.rowId)
-  //implicit def listtoRow(a: List[Value])(implicit r: Row) = new Row(a toArray, r.rowId)
 
   // SQLMetadata
   implicit def meToSQLMe(m: Metadata)(implicit s: SQLMetadata) = SQLMetadata(s.table, m)
@@ -76,14 +68,9 @@ object GdmSQLPredef extends GdmSQLPredefLow {
  * @author Antoine Gourlay
  * @since 0.1
  */
-sealed class GdmSQLPredefLow extends GdmsSQLPredefVeryLow {
+sealed class GdmSQLPredefLow {
 
   // Rows
   //implicit def rowToSeq(row: Row): Seq[Value] = row.array
   implicit def rowToInnerArrayOps(row: Row): ArrayOps[Value] = refArrayOps(row.array)
-}
-
-sealed class GdmsSQLPredefVeryLow {
-  // Rows
-  //implicit def rowToSeq(row: Row): Seq[Value] = row.array
 }
