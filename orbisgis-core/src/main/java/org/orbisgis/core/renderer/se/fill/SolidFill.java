@@ -73,24 +73,24 @@ public final class SolidFill extends Fill {
 	private RealParameter opacity;
 
         /**
-         * Default value for opacity : 0.65
+         * Default value for opacity : {@value DEFAULT_OPACITY}
          */
         public static final double DEFAULT_OPACITY = 0.65;
         /**
-        * Default colour value.
+        * Default colour value : {@value GRAY50}
         */
         public static final float GRAY50 = 128.0f;
 
 
 	/**
-	 * fill with random color 65% opaque
+	 * Fill with random color and default opacity.
 	 */
 	public SolidFill() {
 		this(new ColorLiteral(), new RealLiteral(DEFAULT_OPACITY));
 	}
 
 	/**
-	 * fill with specified color 60% opaque
+	 * Fill with specified color and default opacity
 	 * @param c
 	 */
 	public SolidFill(Color c) {
@@ -98,7 +98,7 @@ public final class SolidFill extends Fill {
 	}
 
 	/**
-	 * fill with specified color and opacity
+	 * Fill with specified color and opacity
 	 * @param c
 	 * @param opacity
 	 */
@@ -107,7 +107,7 @@ public final class SolidFill extends Fill {
 	}
 
 	/**
-	 * fill with specified color and opacity
+	 * Fill with specified color and opacity
 	 * @param c
 	 * @param opacity
 	 */
@@ -116,6 +116,11 @@ public final class SolidFill extends Fill {
 		this.setOpacity(opacity);
 	}
 
+        /**
+         * Build a {@code SolidFill} using {@code sf}.
+         * @param sf
+         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         */
 	public SolidFill(JAXBElement<SolidFillType> sf) throws InvalidStyle {
 		if (sf.getValue().getColor() != null) {
 			setColor(SeParameterFactory.createColorParameter(sf.getValue().getColor()));
@@ -161,15 +166,15 @@ public final class SolidFill extends Fill {
 		return opacity;
 	}
 
-    /**
-     * Return a Java Color according to this SE Solid Fill
-     * @param fid
-     * @param sds
-     * @param selected
-     * @param mt
-     * @return A java.awt.Color
-     * @throws ParameterException
-     */
+        /**
+        * Return a Java Color according to this SE Solid Fill
+        * @param fid
+        * @param sds
+        * @param selected
+        * @param mt
+        * @return A java.awt.Color
+        * @throws ParameterException
+        */
 	@Override
 	public Paint getPaint(long fid, SpatialDataSourceDecorator sds, boolean selected, MapTransform mt) throws ParameterException {
 

@@ -63,6 +63,16 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 
+/**
+ * A {@code Fill} implementation where the content of a shape is painted according 
+ * to a given density and to a given mark or hatch type.</p>
+ * <p>If the hatches are used, ie if {@code isHatched()) is {@code true}, the inner
+ * {@code PenStroke} and orientation are used. Otherwise, the shape is filled with 
+ * repeated mark, registered as a {@code GraphicCollection} instance.</p>
+ * <p>In every cases, the needed coverage percentage must be specified. If not set,
+ * It will be defaulted to {@code DEFAULT_PERCENTAGE}.
+ * @author alexis, maxence
+ */
 public final class DensityFill extends Fill implements GraphicNode {
 
     private boolean isHatched;
@@ -70,13 +80,19 @@ public final class DensityFill extends Fill implements GraphicNode {
     private RealParameter orientation;
     private GraphicCollection mark;
     private RealParameter percentageCovered;
+    //Some constants we don't want to be considered as mafic numbers.
+    private static final double ONE_HUNDRED = 100;
+    private static final double FIFTY = 50;
+    private static final double ONE_HALF= 0.5;
 
-    static final double DEFAULT_PERCENTAGE = 0.2;
-    static final double ONE_HUNDRED = 100;
-    static final double FIFTY = 50;
-    static final double ONE_HALF= 0.5;
+    /**
+     * The default covered percentage.
+     */
+    public static final double DEFAULT_PERCENTAGE = 0.2;
 
-
+    /**
+     * Build a default {@code DensityFill}
+     */
     public DensityFill() {
         this.setHatches(new PenStroke());
         this.setHatchesOrientation(new RealLiteral(HatchedFill.DEFAULT_ALPHA));
