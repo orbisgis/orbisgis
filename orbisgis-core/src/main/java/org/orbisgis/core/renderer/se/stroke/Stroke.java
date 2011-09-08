@@ -28,7 +28,6 @@ import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 /**
  * Style description for linear features (Area or Line)
  *
- * @todo create subclasses : TextStroke, CompoundStroke and StrokeReference
  * @author maxence
  */
 public abstract class Stroke implements SymbolizerNode {
