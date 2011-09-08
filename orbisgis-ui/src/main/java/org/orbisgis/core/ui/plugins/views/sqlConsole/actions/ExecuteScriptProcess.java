@@ -104,10 +104,11 @@ public class ExecuteScriptProcess implements BackgroundJob {
 
                                 SqlStatement st = statements[i];
                                 logger.debug("Preparing instruction: " + st.getSQL());
-                                st.prepare(dsf);
                                 boolean spatial = false;
                                 try {
+                                        st.prepare(dsf);
                                         Metadata metadata = st.getResultMetadata();
+                                        st.cleanUp();
                                         if (metadata != null) {
                                                 spatial = MetadataUtilities.isSpatial(metadata);
  
@@ -161,6 +162,7 @@ public class ExecuteScriptProcess implements BackgroundJob {
                                                         om.println(aux.toString());
                                                 }
                                         } else {
+                                                st.prepare(dsf);
                                                 st.execute();
 
                                                 if (pm.isCancelled()) {
