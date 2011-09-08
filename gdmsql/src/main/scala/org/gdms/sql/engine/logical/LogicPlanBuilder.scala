@@ -79,6 +79,7 @@ object LogicPlanBuilder {
     node.getType match {
       case T_SELECT => {
           val o = new Output()
+          var groupParent: Operation = null
           var last: Operation = o
           var lim: Int = -1
           var off: Int = 0
@@ -233,6 +234,17 @@ object LogicPlanBuilder {
                   val parent = (o.allChildren filter (_.isInstanceOf[Projection]) headOption) getOrElse(last)
                   g.children = parent.children
                   parent.children = g :: Nil
+                  groupParent = parent
+                }
+              case T_HAVING => {
+                  // AST:
+                  // ^(T_HAVING expression_cond )
+                  val filter = new Filter(parseExpression(t.getChild(0)))
+                  if (groupParent != null) {
+                    filter.children = o.children
+                    o.children = filter :: Nil
+                    last = filter
+                  }
                 }
               case T_UNION => {
                   // AST:
@@ -633,12 +645,12 @@ object LogicPlanBuilder {
 
   private def processOperationTree(op: Operation): Operation = {
     op.allChildren foreach { case p: Projection =>
-        def findAggregateFunctions(e: Expression): Seq[(Expression, Option[String])] = {
-          e.evaluator match {
+        def findAggregateFunctions(e: (Expression, Option[String])): Seq[(Expression, Option[String])] = {
+          e._1.evaluator match {
             case a: AggregateEvaluator => {
-                e.evaluator = FieldEvaluator(a.f.getName)
-                (Expression(a), Some(a.f.getName)) :: Nil}
-            case e => e.childExpressions flatMap (findAggregateFunctions)
+                e._1.evaluator = FieldEvaluator(e._2.getOrElse(a.f.getName))
+                (Expression(a), if (e._2.isDefined) e._2 else Some(a.f.getName)) :: Nil}
+            case e => e.childExpressions flatMap (ex => findAggregateFunctions((ex, None)))
           }
         }
         
@@ -698,7 +710,16 @@ object LogicPlanBuilder {
             }
           }
         }
-        val aggF = p.exp flatMap (e => findAggregateFunctions(e._1))
+        
+        // we get all projected fields. If they stayed this far, it means they are indeed referenced in the GROUP BY
+        // and they may need to be kept by the aggregate.
+        val selFields = p.exp flatMap { e => e._1.evaluator match {
+              case f: FieldEvaluator => e :: Nil
+              case _ => Nil
+            }
+          }
+        
+        val aggF = p.exp flatMap (findAggregateFunctions)
         
         if (!aggF.isEmpty) {
           // special case of a Projection with Aggregated functions

@@ -417,8 +417,8 @@ statement
 
 select_statement
         : T_SELECT ( T_DISTINCT | T_UNIQUE | T_ALL )? select_list table_reference_list
-        where_block? group_by_clause? order_by_clause? limit_offset_block? union_clause?
-        -> ^(T_SELECT T_UNIQUE? T_DISTINCT? select_list table_reference_list where_block? group_by_clause?
+        where_block? group_by_clause? having_clause? order_by_clause? limit_offset_block? union_clause?
+        -> ^(T_SELECT T_UNIQUE? T_DISTINCT? select_list table_reference_list where_block? group_by_clause? having_clause?
            order_by_clause? limit_offset_block? union_clause?)
         ;
 
@@ -544,6 +544,10 @@ order_by_item
 group_by_clause
         : T_GROUP T_BY expression_main ( COMMA expression_main )*
         -> ^(T_GROUP expression_main+ )
+        ;
+
+having_clause
+        : T_HAVING^ expression_cond
         ;
 
 union_clause
