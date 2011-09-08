@@ -111,7 +111,7 @@ public abstract class Stroke implements SymbolizerNode {
     /**
      * When delineating a line with a perpendicular offset, indicate whether or not
      * stroke element shall following the initial line (rapport=true) or should only
-     * be bases on the offseted line (rapport=false);
+     * be based on the offseted line (rapport=false);
      *
      * @return true if offseted element shall follow initial line
      */
@@ -142,10 +142,6 @@ public abstract class Stroke implements SymbolizerNode {
     public abstract JAXBElement<? extends StrokeType> getJAXBElement();
 
     protected final void setJAXBProperties(StrokeType s) {
-
-        /*if (getOwnUom() != null) {
-            s.setUnitOfMeasure(uom.toURN());
-        }*/
 
         ObjectFactory of = new ObjectFactory();
         ExtensionType exts = of.createExtensionType();

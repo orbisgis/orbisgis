@@ -47,8 +47,10 @@ import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 
 /**
- *
- * @author maxence
+ * {@code CompoundStrokeElement} is an abstract class. Thanks to it, it becomes 
+ * possible to use {@code StrokeElement} and {@code AlternativeStrokeElements} 
+ * instances equally in some places.
+ * @author maxence, alexis
  */
 public abstract class CompoundStrokeElement implements SymbolizerNode {
 
@@ -64,6 +66,10 @@ public abstract class CompoundStrokeElement implements SymbolizerNode {
 		return null;
 	}
 
+        /**
+         * Get the JAXB representation of this object.
+         * @return 
+         */
 	public abstract Object getJaxbType();
 
 	@Override

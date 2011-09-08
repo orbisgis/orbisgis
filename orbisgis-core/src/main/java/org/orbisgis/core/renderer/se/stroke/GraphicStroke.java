@@ -30,6 +30,10 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
+/**
+ * 
+ * @author maxence, alexis
+ */
 public final class GraphicStroke extends Stroke implements GraphicNode, UomNode {
 
     public final static double MIN_LENGTH = 1; // In pixel !

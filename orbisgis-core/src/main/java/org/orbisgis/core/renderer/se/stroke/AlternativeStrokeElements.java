@@ -44,7 +44,10 @@ import net.opengis.se._2_0.core.StrokeElementType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
 /**
- *
+ * {@code AlternativeStrokeElements} provides the option for the rendering system to 
+ * choose from different {@code StrokeElement} definitions.</p>
+ * <p>Instances of this class contains a list of {@code StrokElement} that is used
+ * to provide the said options.
  * @author maxence
  */
 public class AlternativeStrokeElements extends CompoundStrokeElement {

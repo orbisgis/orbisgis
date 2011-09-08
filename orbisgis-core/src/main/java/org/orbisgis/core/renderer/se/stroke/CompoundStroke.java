@@ -64,8 +64,14 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 /**
- *
- * @author maxence
+ * A {@code CompoundStroke} allows to combine multiple strokes. This way, it becomes possible 
+ * to render lines using complex strokes. It relies on the following parameters :
+ * <ul><li>preGap is a {@link RealParameter} that defines how far to advance along the line before 
+ * starting to plot content.</li>
+ * <li>postGap is a {@link RealParameter} that defines how far from the end of the line to stop plotting</li>
+ * <li>A list of {@link CompoundStrokeElement}s. They are used to compute the style of the line.</li>
+ * <li>A list of {@link StrokeAnnotationGraphic} used to decorate the line</li></ul>
+ * @author maxence, alexis
  */
 public final class CompoundStroke extends Stroke implements UomNode {
 
@@ -75,6 +81,10 @@ public final class CompoundStroke extends Stroke implements UomNode {
     private List<StrokeAnnotationGraphic> annotations;
     private Uom uom;
 
+    /**
+     * Build a new {@code CompoundStroke}, with empty parameters. If used, it won't draw 
+     * any line of any kind.
+     */
     public CompoundStroke() {
         super();
         elements = new ArrayList<CompoundStrokeElement>();
@@ -82,6 +92,11 @@ public final class CompoundStroke extends Stroke implements UomNode {
         annotations = new ArrayList<StrokeAnnotationGraphic>();
     }
 
+    /**
+     * Build a {@code CompoundStroke} using the JAXB type given in argument.
+     * @param s
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     */
     public CompoundStroke(CompoundStrokeType s) throws InvalidStyle {
         super(s);
 
@@ -115,10 +130,22 @@ public final class CompoundStroke extends Stroke implements UomNode {
         }
     }
 
+    /**
+     * Build a {@code CompoundStroke} using the JAXBElement given in argument.
+     * @param s
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     */
     public CompoundStroke(JAXBElement<CompoundStrokeType> s) throws InvalidStyle {
         this(s.getValue());
     }
 
+    /**
+     * Set the PreGap used in this {@code CompoundStroke}, as a {@code RealParameter} instance.
+     * The PreGap is used to determine how far to advance along the line before starting to plot content.</p>
+     * <p>Note that PreGap is considered to be a positive real number. If a negative value is given, 
+     * it will be set to O.
+     * @param preGap 
+     */
     public void setPreGap(RealParameter preGap) {
         this.preGap = preGap;
 
@@ -127,6 +154,13 @@ public final class CompoundStroke extends Stroke implements UomNode {
         }
     }
 
+    /**
+     * Set the PostGap used in this {@code CompoundStroke}, as a {@code RealParameter} instance.
+     * The PostGap is used to determine how far from the end of the line the plotting must be stopped.</p>
+     * <p>Note that PostGap is considered to be a positive real number. If a negative value is given, 
+     * it will be set to O.
+     * @param preGap 
+     */
     public void setPostGap(RealParameter postGap) {
         this.postGap = postGap;
 
@@ -135,18 +169,40 @@ public final class CompoundStroke extends Stroke implements UomNode {
         }
     }
 
+    /**
+     * Get the PreGap used in this {@code CompoundStroke}, as a {@code RealParameter} instance.
+     * The PreGap is used to determine how far to advance along the line before starting to plot content.</p>
+     * <p>The {@code PreGap} is set in a non-negative real context. That means that
+     * the returned value shall be greater than or equal to 0.
+     * @return 
+     */
     public RealParameter getPreGap() {
         return preGap;
     }
 
+    /**
+     * Get the PostGap used in this {@code CompoundStroke}, as a {@code RealParameter} instance.
+     * The PostGap is used to determine how far from the end of the line the plotting must be stopped.</p>
+     * <p>The {@code PostGap} is set in a non-negative real context. That means that
+     * the returned value shall be greater than or equal to 0.
+     * @return 
+     */
     public RealParameter getPostGap() {
         return postGap;
     }
 
+    /**
+     * Get the annotations embedded in this {@code CompoundStroke}
+     * @return 
+     */
     public List<StrokeAnnotationGraphic> getAnnotations() {
         return annotations;
     }
 
+    /**
+     * Gets the stroke elements embedded in this {@code CompoundStroke}.
+     * @return 
+     */
     public List<CompoundStrokeElement> getElements() {
         return elements;
     }
@@ -457,6 +513,10 @@ public final class CompoundStroke extends Stroke implements UomNode {
         return of.createCompoundStroke(this.getJAXBType());
     }
 
+    /**
+     * Get a JAXB representation of this {@code CompoundStroke}.
+     * @return 
+     */
     public CompoundStrokeType getJAXBType() {
         CompoundStrokeType s = new CompoundStrokeType();
 
@@ -508,6 +568,10 @@ public final class CompoundStroke extends Stroke implements UomNode {
         return uom;
     }
 
+    /**
+     * Add an annotation to the set associated to this {@code CompoundStroke}.
+     * @param annotation 
+     */
     public void addAnnotation(StrokeAnnotationGraphic annotation) {
         if (annotation != null) {
             annotations.add(annotation);
@@ -515,6 +579,13 @@ public final class CompoundStroke extends Stroke implements UomNode {
         }
     }
 
+    /**
+     * Move the ith annotation up in the list of annotations.
+     * @param i
+     * @return 
+     * {@code true} if the ith annotation existed and has been moved. {@code false}
+     * if  i was negative, equal to 0 or greater than the list's size.
+     */
     public boolean moveAnnotationUp(int i) {
         if (i > 0 && i < this.annotations.size()) {
             StrokeAnnotationGraphic anno = annotations.remove(i);
@@ -524,6 +595,14 @@ public final class CompoundStroke extends Stroke implements UomNode {
         return false;
     }
 
+    /**
+     * Move the ith annotation down in the list of annotations.
+     * 
+     * @param i
+     * @return 
+     * {@code true} if the ith annotation existed and has been moved. {@code false}
+     * if  i was less than 1 or greater than the list's size -1.
+     */
     public boolean moveAnnotationDown(int i) {
         if (i >= 0 && i < this.annotations.size() - 1) {
             StrokeAnnotationGraphic anno = annotations.remove(i);
@@ -533,6 +612,13 @@ public final class CompoundStroke extends Stroke implements UomNode {
         return false;
     }
 
+    /**
+     * Remove the ith annotation, if it exists
+     * @param i
+     * @return 
+     * {@code true} if i was a valid range of the annotations list, and consequently
+     * if something has been removed, false otherwise.
+     */
     public boolean removeAnnotation(int i) {
         try {
             annotations.remove(i);
@@ -542,6 +628,10 @@ public final class CompoundStroke extends Stroke implements UomNode {
         }
     }
 
+    /**
+     * Add a stroke in the embedded list of stroke elements.
+     * @param element 
+     */
     public void addElement(CompoundStrokeElement element) {
         if (element != null) {
             elements.add(element);
@@ -549,6 +639,13 @@ public final class CompoundStroke extends Stroke implements UomNode {
         }
     }
 
+    /**
+     * Move the ith stroke up in the list of annotations.
+     * @param i
+     * @return 
+     * {@code true} if the ith stroke existed and has been moved. {@code false}
+     * if  i was negative, equal to 0 or greater than the list's size.
+     */
     public boolean moveElementUp(int i) {
         if (i > 0 && i < this.elements.size()) {
             CompoundStrokeElement elem = elements.remove(i);
@@ -558,6 +655,14 @@ public final class CompoundStroke extends Stroke implements UomNode {
         return false;
     }
 
+    /**
+     * Move the ith stroke down in the list of annotations.
+     * 
+     * @param i
+     * @return 
+     * {@code true} if the ith annotation existed and has been moved. {@code false}
+     * if  i was less than 1 or greater than the list's size -1.
+     */
     public boolean moveElementDown(int i) {
         if (i >= 0 && i < this.elements.size() - 1) {
             CompoundStrokeElement elem = elements.remove(i);
@@ -567,6 +672,13 @@ public final class CompoundStroke extends Stroke implements UomNode {
         return false;
     }
 
+    /**
+     * Remove the ith stroke, if it exists
+     * @param i
+     * @return 
+     * {@code true} if i was a valid range of the elements list, and consequently
+     * if something has been removed, false otherwise.
+     */
     public boolean removeElement(int i) {
         try {
             elements.remove(i);

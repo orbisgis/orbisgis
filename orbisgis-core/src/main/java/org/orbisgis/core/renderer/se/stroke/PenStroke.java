@@ -69,8 +69,19 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 
 /**
- * Basic stroke for linear features
- * @author maxence
+ * Basic stroke for linear features. It is designed according to :
+ * <ul><li>A {@link Fill} value</li>
+ * <li>A width</li>
+ * <li>A way to draw the extremities of the lines</li>
+ * <li>A way to draw the joins between the segments of the lines</li>
+ * <li>An array of dashes, that is used to draw the lines. The array is stored as a StringParamater,
+ * that contains space separated double values. This double values are used to determine
+ * the length of each opaque part (even elements of the array) and the length of 
+ * each transparent part (odd elements of the array). If an odd number of values is given,
+ * the pattern is expanded by repeating it twice to give an even number of values.</li>
+ * <li>An offset used to know where to draw the line.</li>
+ * </ul>
+ * @author maxence, alexis
  */
 public final class PenStroke extends Stroke implements FillNode, UomNode {
 
@@ -112,7 +123,9 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
         }
     }
 
-    //private BasicStroke bStroke;
+    /**
+     * There are three ways to draw the end of a line : butt, round and square.
+     */
     public enum LineCap {
 
         BUTT, ROUND, SQUARE;
@@ -122,6 +135,9 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
         }
     }
 
+    /**
+     * There are three ways to join the segments of a LineString : mitre, round, bevel.
+     */
     public enum LineJoin {
 
         MITRE, ROUND, BEVEL;
@@ -152,6 +168,7 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
     }
 
     /**
+     * Build a PenStroke from the Jaxb type given in argument.
      * @param t
      */
     public PenStroke(PenStrokeType t) throws InvalidStyle {
@@ -198,6 +215,11 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
         }
     }
 
+    /**
+     * Build a {@code PenStroke} from the JAXBElement given in argument.
+     * @param s
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     */
     public PenStroke(JAXBElement<PenStrokeType> s) throws InvalidStyle {
         this(s.getValue());
     }
@@ -235,11 +257,19 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
         this.fill = fill;
     }
 
+    /**
+     * Sets the way to draw the extremities of a line.
+     * @param cap 
+     */
     public void setLineCap(LineCap cap) {
         lineCap = cap;
         //updateBasicStroke();
     }
 
+    /**
+     * Gets the way used to draw the extremities of a line.
+     * @return 
+     */
     public LineCap getLineCap() {
         if (lineCap != null) {
             return lineCap;
@@ -248,11 +278,19 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
         }
     }
 
+    /**
+     * Sets the ways used to draw the join between line segments.
+     * @param join 
+     */
     public void setLineJoin(LineJoin join) {
         lineJoin = join;
         //updateBasicStroke();
     }
 
+    /**
+     * Gets the ways used to draw the join between line segments.
+     * @return 
+     */
     public LineJoin getLineJoin() {
         if (lineJoin != null) {
             return lineJoin;
@@ -262,18 +300,10 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
 
     }
 
-    /*public void setOpacity(RealParameter opacity) {
-    this.opacity = opacity;
-
-    if (opacity != null) {
-    this.opacity.setContext(RealParameterContext.PERCENTAGE_CONTEXT);
-    }
-    //updateBasicStroke();
-    }
-
-    public RealParameter getOpacity() {
-    return this.opacity;
-    }*/
+    /**
+     * Set the width used to draw the lines with this {@code PenStroke}.
+     * @param width 
+     */
     public void setWidth(RealParameter width) {
         this.width = width;
 
@@ -283,10 +313,18 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
         //updateBasicStroke();
     }
 
+    /**
+     * Gets the width used to draw the lines with this PenStroke.
+     * @return 
+     */
     public RealParameter getWidth() {
         return this.width;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public RealParameter getDashOffset() {
         return dashOffset;
     }
@@ -299,23 +337,28 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
         //updateBasicStroke();
     }
 
+    /**
+     * Gets the array of double values that will be used to draw a dashed line. This "array" 
+     * is in fact stored as a string parameter, filled with space separated double values.</p>
+     * <p>These values represent the length (in the inner UOM) of the opaque (even elements of the array)
+     * and transparent (odd elements of the array) parts of the lines to draw.
+     * @return 
+     */
     public StringParameter getDashArray() {
         return dashArray;
     }
 
+    /**
+     * Sets the array of double values that will be used to draw a dashed line. This "array" 
+     * is in fact stored as a string parameter, filled with space separated double values.</p>
+     * <p>These values represent the length (in the inner UOM) of the opaque (even elements of the array)
+     * and transparent (odd elements of the array) parts of the lines to draw.
+     * @param dashArray 
+     */
     public void setDashArray(StringParameter dashArray) {
         this.dashArray = dashArray;
     }
 
-    /*
-    private void updateBasicStroke() {
-    try {
-    bStroke = createBasicStroke(null, null);
-    } catch (Exception e) {
-    // thrown if the stroke depends on the feature
-    this.bStroke = null;
-    }
-    }*/
     private BasicStroke createBasicStroke(SpatialDataSourceDecorator sds, long fid,
             Shape shp, MapTransform mt, Double v100p, boolean useDash) throws ParameterException {
 
@@ -399,12 +442,7 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
     }
 
     public BasicStroke getBasicStroke(SpatialDataSourceDecorator sds, long fid, MapTransform mt, Double v100p) throws ParameterException {
-        //if (bStroke != null) {
-        //    return bStroke;
-        //} else {
         return this.createBasicStroke(sds, fid, null, mt, v100p, true);
-        //}
-
     }
 
     private void scaleDashArrayLength(double[] dashes, Shape shp) {
@@ -434,7 +472,7 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
     }
 
     /**
-     * Draw a pen stroke
+     * Draw a pen stroke, using the given Graphics2D.
      *
      * @todo DashOffset
      */
@@ -446,7 +484,7 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
         if (this.fill != null) {
 
             List<Shape> shapes;
-            // if not using offset rapport, compute perpendiculat offset first
+            // if not using offset rapport, compute perpendicular offset first
             if (!this.isOffsetRapport() && Math.abs(offset) > 0.0) {
                 shapes = ShapeHelper.perpendicularOffset(shape, offset);
                 // Setting offset to 0.0 let be sure the offset will never been applied twice!
@@ -556,6 +594,14 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
         }
     }
 
+    /**
+     * Gets the width, in pixels, of the lines that will be drawn using this {@code PenStroke}.
+     * @param sds
+     * @param fid
+     * @param mt
+     * @return
+     * @throws ParameterException 
+     */
     public double getWidthInPixel(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException {
         if (this.width != null) {
             return Uom.toPixel(width.getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
@@ -564,7 +610,14 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
         }
     }
 
-    //@Override
+    /**
+     * 
+     * @param sds
+     * @param fid
+     * @param mt
+     * @return
+     * @throws ParameterException 
+     */
     public double getMinLength(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException {
         double length = 0;
         if (dashArray != null) {
@@ -589,6 +642,10 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
         return of.createPenStroke(this.getJAXBType());
     }
 
+    /**
+     * Get a representation of this {@code PenStroke} as a jaxb type.
+     * @return 
+     */
     public PenStrokeType getJAXBType() {
         PenStrokeType s = new PenStrokeType();
 

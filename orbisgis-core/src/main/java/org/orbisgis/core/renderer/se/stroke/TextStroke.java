@@ -52,78 +52,85 @@ import org.orbisgis.core.renderer.se.label.LineLabel;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 /**
- *
- * @author maxence
+ * {@code TexteStroke} is used to render text labels along a line. It is useful 
+ * to add informations to the {@code CompoundStroke} elements.
+ * It is dependant on a {@link LineLabel}, to store the text to render, and the styling
+ * details used for the rendering.
+ * @author maxence, alexis
  */
 public final class TextStroke extends Stroke {
 
-	private LineLabel lineLabel;
+        private LineLabel lineLabel;
 
-    public TextStroke(){
-        setLineLabel(new LineLabel());
-    }
-
-	TextStroke(TextStrokeType tst) throws InvalidStyle {
-        super(tst);
-		if (tst.getLineLabel() != null) {
-			setLineLabel(new LineLabel(tst.getLineLabel()));
-		}
-	}
-
-	TextStroke(JAXBElement<TextStrokeType> s) throws InvalidStyle {
-		this(s.getValue());
-	}
-
-	public LineLabel getLineLabel() {
-		return lineLabel;
-	}
-
-	public void setLineLabel(LineLabel lineLabel) {
-		this.lineLabel = lineLabel;
-
-		if (lineLabel != null) {
-			lineLabel.setParent(this);
-		}
-	}
-
-	@Override
-	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt, double offset) throws ParameterException, IOException {
-        if (this.lineLabel != null){
-            lineLabel.draw(g2, sds, fid, shp, selected, mt, null);
+        /**
+         * Builds a new {@code TexteStroke} with an inner default {@link LineLabel}.
+         */
+        public TextStroke() {
+                setLineLabel(new LineLabel());
         }
-	}
 
-	@Override
-	public JAXBElement<TextStrokeType> getJAXBElement() {
-		ObjectFactory of = new ObjectFactory();
-		return of.createTextStroke(this.getJAXBType());
-	}
+        
+        TextStroke(TextStrokeType tst) throws InvalidStyle {
+                super(tst);
+                if (tst.getLineLabel() != null) {
+                        setLineLabel(new LineLabel(tst.getLineLabel()));
+                }
+        }
 
-	public TextStrokeType getJAXBType() {
-		TextStrokeType s = new TextStrokeType();
+        TextStroke(JAXBElement<TextStrokeType> s) throws InvalidStyle {
+                this(s.getValue());
+        }
 
-		this.setJAXBProperties(s);
+        public LineLabel getLineLabel() {
+                return lineLabel;
+        }
 
-		if (lineLabel != null) {
-			s.setLineLabel(lineLabel.getJAXBType());
-		}
+        public void setLineLabel(LineLabel lineLabel) {
+                this.lineLabel = lineLabel;
 
-		return s;
-	}
+                if (lineLabel != null) {
+                        lineLabel.setParent(this);
+                }
+        }
 
-	@Override
-	public String dependsOnFeature() {
-		return lineLabel.dependsOnFeature();
-	}
+        @Override
+        public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt, double offset) throws ParameterException, IOException {
+                if (this.lineLabel != null) {
+                        lineLabel.draw(g2, sds, fid, shp, selected, mt, null);
+                }
+        }
 
-    @Override
-    public Double getNaturalLength(SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) throws ParameterException, IOException {
-        Rectangle2D bounds = lineLabel.getLabel().getBounds(null, sds, fid, mt);
-        return bounds.getWidth();
-    }
+        @Override
+        public JAXBElement<TextStrokeType> getJAXBElement() {
+                ObjectFactory of = new ObjectFactory();
+                return of.createTextStroke(this.getJAXBType());
+        }
 
-    @Override
-    public Uom getUom() {
-        return parent.getUom();
-    }
+        public TextStrokeType getJAXBType() {
+                TextStrokeType s = new TextStrokeType();
+
+                this.setJAXBProperties(s);
+
+                if (lineLabel != null) {
+                        s.setLineLabel(lineLabel.getJAXBType());
+                }
+
+                return s;
+        }
+
+        @Override
+        public String dependsOnFeature() {
+                return lineLabel.dependsOnFeature();
+        }
+
+        @Override
+        public Double getNaturalLength(SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) throws ParameterException, IOException {
+                Rectangle2D bounds = lineLabel.getLabel().getBounds(null, sds, fid, mt);
+                return bounds.getWidth();
+        }
+
+        @Override
+        public Uom getUom() {
+                return parent.getUom();
+        }
 }
