@@ -52,11 +52,6 @@
                         <version>2.0</version>
                 </dependency>
                 <dependency>
-                        <groupId>org.orbisgis</groupId>
-                        <artifactId>commons</artifactId>
-                        <version>1.3-SNAPSHOT</version>
-                </dependency>
-                <dependency>
                         <groupId>fr.cts</groupId>
                         <artifactId>cts</artifactId>
                         <version>0.0.3</version>
