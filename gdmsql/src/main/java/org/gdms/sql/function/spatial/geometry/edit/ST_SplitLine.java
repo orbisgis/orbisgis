@@ -143,7 +143,9 @@ public class ST_SplitLine extends AbstractTableFunction {
 
         @Override
         public void workFinished() throws DriverException {
-                diskBufferDriver.stop();
+                if (diskBufferDriver != null) {
+                        diskBufferDriver.stop();
+                }
         }
 
         @Override

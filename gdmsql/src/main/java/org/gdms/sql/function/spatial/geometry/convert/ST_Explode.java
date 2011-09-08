@@ -189,7 +189,6 @@ public final class ST_Explode extends AbstractTableFunction {
         public void workFinished() throws DriverException {
                 if (driver != null) {
                         driver.stop();
-                        driver = null;
                 }
         }
 
