@@ -46,7 +46,7 @@ public class FormatTest extends AbstractTest {
 	private SourceManager sourceManager;
 
 	@Override
-	protected void setUp() throws Exception {
+	public void setUp() throws Exception {
 		super.setUp();
 		super.registerDataManager();
 		sourceManager = ((DataManager) Services.getService(DataManager.class))

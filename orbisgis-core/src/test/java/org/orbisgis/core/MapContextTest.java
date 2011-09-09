@@ -64,7 +64,7 @@ import com.vividsolutions.jts.geom.Envelope;
 public class MapContextTest extends AbstractTest {
 
 	@Override
-	protected void setUp() throws Exception {
+	public void setUp() throws Exception {
 		super.setUp();
 		super.registerDataManager();
 	}

@@ -52,7 +52,7 @@ import org.gdms.sql.customQuery.QueryManagerListener;
 import org.gdms.sql.function.FunctionManager;
 import org.gdms.sql.function.FunctionManagerListener;
 import org.orbisgis.core.DataManager;
-import org.orbisgis.core.OrbisgisCoreServices;
+import org.orbisgis.core.OrbisgisUIServices;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.configuration.BasicConfiguration;
 import org.orbisgis.core.sif.UIFactory;
@@ -96,7 +96,7 @@ public class OrbisGISWorkspace implements WorkspaceListener {
 		Workspace workspace = Services.getService(Workspace.class);
 
 		// Change DataSourceFactory and SourceManager folders
-		OrbisgisCoreServices.installWorkspaceServices();
+		OrbisgisUIServices.installWorkspaceServices();
 
 		// Link with SIF factory
 		File sifDir = workspace.getFile("sif");

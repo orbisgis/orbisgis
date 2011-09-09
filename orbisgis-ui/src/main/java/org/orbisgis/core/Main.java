@@ -142,7 +142,7 @@ public class Main {
 			}
 			// Install OrbisGIS core services
 			new OrbisGISWorkspace();
-			OrbisgisCoreServices.installConfigurationService();
+			OrbisgisUIServices.installConfigurationService();
 			// Initialize configuration
 			EPConfigHelper.loadAndApplyConfigurations();
 
@@ -191,6 +191,7 @@ public class Main {
 						+ "name, version, etc.", applicationInfo);
 		// Install OrbisGIS core services
 		OrbisgisCoreServices.installServices();
+                OrbisgisUIServices.installServices();
 
 	}
 

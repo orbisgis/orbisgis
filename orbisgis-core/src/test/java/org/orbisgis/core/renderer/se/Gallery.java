@@ -39,7 +39,7 @@ public class Gallery extends AbstractTest {
     private final static int HEIGHT = 1000;
 
     @Override
-	protected void setUp() throws Exception {
+	public void setUp() throws Exception {
         super.setUp();
     }
 

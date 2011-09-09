@@ -60,7 +60,7 @@ public class LayerModelTest extends AbstractTest {
 	private DataSource dummy3;
 
 	@Override
-	protected void setUp() throws Exception {
+	public void setUp() throws Exception {
 		GenericObjectDriver omd = new GenericObjectDriver(
 				new String[] { "the_geom" }, new Type[] { TypeFactory
 						.createType(Type.GEOMETRY) });

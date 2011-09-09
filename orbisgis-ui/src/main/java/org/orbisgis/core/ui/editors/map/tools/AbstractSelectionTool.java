@@ -145,7 +145,7 @@ public abstract class AbstractSelectionTool extends Selection {
 				- tm.getTolerance() / 2, tm.getValues()[1] - tm.getTolerance()
 				/ 2, tm.getTolerance(), tm.getTolerance());
 
-		Geometry selectionRect = p.getEnvelope();
+		Geometry selectionRect = p.getEnvelope(ToolManager.toolsGeometryFactory);
 
 		ILayer activeLayer = getLayer(mc);
 		SpatialDataSourceDecorator ds = activeLayer.getSpatialDataSource();
@@ -220,7 +220,7 @@ public abstract class AbstractSelectionTool extends Selection {
 		}
 		rect.add(tm.getValues()[0], tm.getValues()[1]);
 
-		Geometry selectionRect = rect.getEnvelope();
+		Geometry selectionRect = rect.getEnvelope(ToolManager.toolsGeometryFactory);
 
 		SpatialDataSourceDecorator ds = activeLayer.getSpatialDataSource();
 		try {

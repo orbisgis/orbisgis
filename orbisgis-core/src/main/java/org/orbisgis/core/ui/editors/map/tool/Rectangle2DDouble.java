@@ -76,8 +76,7 @@ public class Rectangle2DDouble extends Rectangle2D.Double {
 		super(x, y, w, h);
 	}
 
-	public Geometry getEnvelope() {
-		GeometryFactory gf = ToolManager.toolsGeometryFactory;
+	public Geometry getEnvelope(GeometryFactory gf) {
 		LinearRing ret = gf.createLinearRing(new Coordinate[] {
 				new Coordinate(getMinX(), getMinY()),
 				new Coordinate(getMaxX(), getMinY()),

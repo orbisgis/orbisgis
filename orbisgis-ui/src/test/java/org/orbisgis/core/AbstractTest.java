@@ -37,22 +37,32 @@
  */
 package org.orbisgis.core;
 
+
 import junit.framework.TestCase;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.errorManager.ErrorListener;
 import org.orbisgis.core.errorManager.ErrorManager;
+import org.orbisgis.core.ui.TestWorkspace;
+import org.orbisgis.core.workspace.Workspace;
 
-public abstract class AbstractTest extends TestCase {
+public abstract class AbstractTest extends TestCase{
 
         protected FailErrorManager failErrorManager;
 
-        @Override
         public void setUp() throws Exception {
                 failErrorManager = new FailErrorManager();
                 Services.registerService(ErrorManager.class, "", failErrorManager);
+                TestWorkspace workspace = new TestWorkspace();
+                workspace.setWorkspaceFolder("target");
+                Services.registerService(Workspace.class, "", workspace);
+                ApplicationInfo applicationInfo = new OrbisGISApplicationInfo();
+                Services.registerService(ApplicationInfo.class,
+                        "Gets information about the application: "
+                        + "name, version, etc.", applicationInfo);
 
-                OrbisgisCoreServices.installServices();
+                OrbisgisUIServices.installServices();
+
         }
 
         public static void registerDataManager(DataSourceFactory dsf) {

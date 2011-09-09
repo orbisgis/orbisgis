@@ -99,7 +99,7 @@ public class ChartsTest extends TestCase {
         super.tearDown();
     }
 
-    public void testGraphic() throws IOException, ParameterException, InvalidStyle {
+    public void drawGraphic() throws IOException, ParameterException, InvalidStyle {
         JFrame frame = new JFrame();
         frame.setTitle("Test GraphicCollection");
 

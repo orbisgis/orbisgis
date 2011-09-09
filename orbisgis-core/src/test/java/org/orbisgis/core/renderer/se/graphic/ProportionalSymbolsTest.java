@@ -94,7 +94,7 @@ public class ProportionalSymbolsTest extends TestCase {
         super.tearDown();
     }
 
-    public void testProportionalSymbols() throws IOException, ParameterException, InvalidStyle {
+    public void drawProportionalSymbols() throws IOException, ParameterException, InvalidStyle {
         JFrame frame = new JFrame();
         frame.setTitle("Test GraphicCollection");
 
