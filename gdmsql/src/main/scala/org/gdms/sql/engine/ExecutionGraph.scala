@@ -73,6 +73,7 @@ class ExecutionGraph(op: Operation) {
   private var r: DataSet = null
   private var dsf: SQLDataSourceFactory = null
   private var start: OutputCommand = null
+  private var opened: Boolean = false
   
   private val refs: Array[String] = { op match {
       case q: QueryOutputCommand =>op.allChildren flatMap {c => c match {
@@ -89,13 +90,16 @@ class ExecutionGraph(op: Operation) {
    *       will be executed.
    */
   def prepare(dsf: SQLDataSourceFactory): Unit = {
-    if (start == null || dsf != this.dsf) {
-      start = PhysicalPlanBuilder.buildPhysicalPlan(op).asInstanceOf[OutputCommand]
-    }
+    if (!opened || dsf != this.dsf) {
+      if (start == null || dsf != this.dsf) {
+        start = PhysicalPlanBuilder.buildPhysicalPlan(op).asInstanceOf[OutputCommand]
+      }
 
-    this.dsf = dsf;
-    start.prepare(dsf)
-    r = start.getResult
+      this.dsf = dsf;
+      opened = true
+      start.prepare(dsf)
+      r = start.getResult
+    }
   }
 
   /**
@@ -104,6 +108,9 @@ class ExecutionGraph(op: Operation) {
    */
   @throws(classOf[DriverException])
   def execute(): DataSet = {
+    if (!opened) {
+      throw new DriverException("ExecutionGraph is closed. Cannot execute a closed graph.")
+    }
     try {
       start.execute
     } catch {
@@ -116,8 +123,11 @@ class ExecutionGraph(op: Operation) {
    * Cleans up the query and any associatd resource.
    */
   def cleanUp() = {
-    start.cleanUp
-    r = null
+    if (opened) {
+      start.cleanUp
+      r = null
+      opened = false
+    }
   }
 
   /**

@@ -108,7 +108,6 @@ public class ExecuteScriptProcess implements BackgroundJob {
                                 try {
                                         st.prepare(dsf);
                                         Metadata metadata = st.getResultMetadata();
-                                        st.cleanUp();
                                         if (metadata != null) {
                                                 spatial = MetadataUtilities.isSpatial(metadata);
 
@@ -162,12 +161,7 @@ public class ExecuteScriptProcess implements BackgroundJob {
                                                         om.println(aux.toString());
                                                 }
                                         } else {
-                                                try {
-                                                        st.prepare(dsf);
-                                                        st.execute();
-                                                } finally {
-                                                        st.cleanUp();
-                                                }
+                                                st.execute();
                                                 if (pm.isCancelled()) {
                                                         break;
                                                 }
@@ -178,6 +172,8 @@ public class ExecuteScriptProcess implements BackgroundJob {
                                                 "Cannot create the DataSource:"
                                                 + st.getSQL(), e);
                                         break;
+                                } finally {
+                                        st.cleanUp();
                                 }
 
                                 pm.progressTo(100 * i / statements.length);
