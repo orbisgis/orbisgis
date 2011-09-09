@@ -40,10 +40,14 @@ package org.gdms.sql.engine.commands
 
 import org.gdms.data.DataSource
 import org.gdms.data.DataSourceFactory
+import org.gdms.data.types.Type
 import org.gdms.data.types.TypeFactory
+import org.gdms.data.schema.DefaultMetadata
 import org.gdms.data.types.IncompatibleTypesException
 import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.evaluator.Expression
+import org.gdms.data.values.ValueFactory
+import org.gdms.driver.memory.MemoryDataSetDriver
 import org.gdms.sql.engine.GdmSQLPredef._
 
 /**
@@ -61,6 +65,10 @@ extends Command with OutputCommand with ExpressionCommand {
   private var rightOrder: Array[(Int, Int)] = null
   
   var ds: DataSource = null
+  
+  var res: MemoryDataSetDriver = null
+  // number of inserted rows
+  var ro: Long = 0
 
   override def doPrepare = {
     ds = dsf.getDataSource(table, DataSourceFactory.EDITABLE)
@@ -76,13 +84,13 @@ extends Command with OutputCommand with ExpressionCommand {
             }}
           
           rightOrder = r.map(_._2).zipWithIndex toArray
-      }
+        }
       case None => {
           val r = m.getFieldCount
           exps foreach (a => if (a.length != r) {
               throw new SemanticException("There are " + a.length + " fields specified. Expected " + r + "fields to insert.")
             })
-      }
+        }
     }
     
     val types = (0 until m.getFieldCount) map (m.getFieldType(_).getTypeCode)
@@ -91,11 +99,13 @@ extends Command with OutputCommand with ExpressionCommand {
         case (a, b) if !TypeFactory.canBeCastTo(b, a) =>{
             ds.close
             throw new IncompatibleTypesException("type " + TypeFactory.getTypeName(b) + " cannot be cast to "
-                                           + TypeFactory.getTypeName(a))
+                                                 + TypeFactory.getTypeName(a))
           }
         case _ =>
       }
     }
+    
+    res = new MemoryDataSetDriver(new DefaultMetadata(Array(TypeFactory.createType(Type.LONG)), Array("Inserted")))
   }
   
   private def order(a: Array[Expression]): Array[Expression] = {
@@ -108,7 +118,11 @@ extends Command with OutputCommand with ExpressionCommand {
 
   protected final def doWork(r: Iterator[RowStream]) = {
     // we eval each Array (= row) and give it to insertFilledRow
-    exps foreach { e => ds.insertFilledRow((order(e) map ( _.evaluate(Array.empty) ))) }
+    exps foreach { e => ro = ro + 1
+                  ds.insertFilledRow((order(e) map ( _.evaluate(Array.empty) ))) }
+
+    res.addValues(ValueFactory.createValue(ro))
+    ro = 0
     null
   }
 
@@ -117,8 +131,7 @@ extends Command with OutputCommand with ExpressionCommand {
     ds.close
   }
 
-  val getResult = null
+  def getResult = res
 
-  // no result
-  override val getMetadata = null
+  override lazy val getMetadata = SQLMetadata("",getResult.getMetadata)
 }

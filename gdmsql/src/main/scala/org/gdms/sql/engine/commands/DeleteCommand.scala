@@ -50,6 +50,7 @@ import org.gdms.data.types.TypeFactory
 import org.gdms.data.values.ValueFactory
 import org.gdms.driver.memory.MemoryDataSetDriver
 import org.gdms.sql.engine.GdmSQLPredef._
+import scala.collection.JavaConversions._
 
 /**
  * Delete command.
@@ -74,8 +75,13 @@ class DeleteCommand extends Command with OutputCommand {
   protected def doWork(r: Iterator[RowStream]) = {
     val m = children.head.getMetadata
     
-    r.next foreach (deleteRow)
+    r.next foreach (markRow)
     
+    indexes.descendingIterator foreach (deleteRow)
+    indexes.clear
+    
+    res.addValues(ValueFactory.createValue(ro))
+    ro = 0
     null
   }
 
@@ -99,17 +105,19 @@ class DeleteCommand extends Command with OutputCommand {
   // commit before the close() from ScanCommand
   override def preDoCleanUp = {
     ds.commit
-
-    res.addValues(ValueFactory.createValue(ro))
   }
 
-  def getResult = res.getTable("main")
+  def getResult = res
 
   // no output
-  override def getMetadata = SQLMetadata("",getResult.getMetadata)
+  override lazy val getMetadata = SQLMetadata("",getResult.getMetadata)
   
-  private def deleteRow(r: Row) {
-    ds.deleteRow(r.rowId.get - ro)
+  private def markRow(r: Row) {
+    indexes.add(r.rowId.get)
+  }
+  
+  private def deleteRow(l: Long) {
+    ds.deleteRow(l)
     ro = ro + 1
   }
 }

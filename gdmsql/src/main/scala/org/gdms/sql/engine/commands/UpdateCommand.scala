@@ -75,6 +75,9 @@ class UpdateCommand(e: Seq[(String, Expression)]) extends Command with Expressio
 
     // gets the promises and apply "set" on them
     r.next foreach(set)
+    
+    res.addValues(ValueFactory.createValue(ro))
+    ro = 0
     null
   }
 
@@ -103,12 +106,10 @@ class UpdateCommand(e: Seq[(String, Expression)]) extends Command with Expressio
   // commit before the close() from ScanCommand
   override def preDoCleanUp = {
     ds.commit
-
-    res.addValues(ValueFactory.createValue(ro))
   }
 
-  def getResult = res.getTable("main")
+  def getResult = res
 
   // no output
-  override def getMetadata = SQLMetadata("",getResult.getMetadata)
+  override lazy val getMetadata = SQLMetadata("",getResult.getMetadata)
 }
