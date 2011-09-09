@@ -21,6 +21,8 @@ import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.orbisgis.core.AbstractTest;
+import org.orbisgis.core.ConsoleOutputManager;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.Layer;
 import org.orbisgis.core.map.MapTransform;
@@ -28,6 +30,7 @@ import org.orbisgis.core.renderer.ImageRenderer;
 import org.orbisgis.core.renderer.Renderer;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 
 /**
  *
@@ -95,7 +98,7 @@ public class HatchIntesiveTest extends AbstractTest {
             }
     }
 
-    public void testMaps()
+    public void drawMaps()
             throws ParameterException, IOException, InvalidStyle, DriverException, DriverLoadException, DataSourceCreationException {
 
         this.template("src/test/resources/org/orbisgis/core/renderer/se/HatchedFill/hatches_dataset.shp", "Hatches 0°",
