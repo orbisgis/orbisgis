@@ -43,6 +43,7 @@ import org.gdms.driver.DataSet
 import org.gdms.data.schema.Metadata
 import org.gdms.driver.DriverException
 import org.gdms.sql.engine.commands.OutputCommand
+import org.gdms.sql.engine.commands.QueryOutputCommand
 import org.gdms.sql.engine.operations.Operation
 import org.gdms.sql.engine.operations.Scan
 import org.gdms.sql.engine.physical.PhysicalPlanBuilder
@@ -73,10 +74,14 @@ class ExecutionGraph(op: Operation) {
   private var dsf: SQLDataSourceFactory = null
   private var start: OutputCommand = null
   
-  private val refs: Array[String] = op.allChildren flatMap {c => c match {
-      case s: Scan => s.table :: Nil
-      case _ => Nil
-    } } toArray
+  private val refs: Array[String] = { op match {
+      case q: QueryOutputCommand =>op.allChildren flatMap {c => c match {
+            case s: Scan => s.table :: Nil
+            case _ => Nil
+          } } toArray   
+      case _ => Array.empty
+    }
+  }
 
   /**
    * Prepares the query for execution.
