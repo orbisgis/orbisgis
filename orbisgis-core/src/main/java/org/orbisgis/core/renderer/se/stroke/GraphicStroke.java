@@ -190,7 +190,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
                     nbSegments = 1;
                 }
 
-                System.out.println("  No linear rapport: NbSegement: " + nbSegments);
+//                System.out.println("  No linear rapport: NbSegement: " + nbSegments);
                 //segLength = lineLength / nbSegments;
                 //System.out.println("    BUGGY ? (new) SegLength (?): " + (lineLength / nbSegments));
                 // Effective number of graphic to draw (skip the last one if not space left...)
