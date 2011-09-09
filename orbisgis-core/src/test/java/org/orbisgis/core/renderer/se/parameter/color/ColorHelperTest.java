@@ -39,13 +39,17 @@ public class ColorHelperTest extends TestCase {
      */
     public void testGetColorWithAlpha() {
         System.out.println("getColorWithAlpha");
-        Color c = null;
-        double alpha = 0.0;
-        Color expResult = null;
+        Color c = new Color(40, 40, 40);
+        double alpha = 0.5;
+        Color expResult = new Color(40, 40, 40, 127);
         Color result = ColorHelper.getColorWithAlpha(c, alpha);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        alpha = -1.0;
+        result = ColorHelper.getColorWithAlpha(c, alpha);
+        expResult = new Color(40, 40, 40, 0);
+        alpha = 2.0;
+        result = ColorHelper.getColorWithAlpha(c, alpha);
+        expResult = new Color(40, 40, 40, 255);
     }
 
     /**
@@ -53,23 +57,26 @@ public class ColorHelperTest extends TestCase {
      */
     public void testInvert() {
         System.out.println("invert");
-        Color c = null;
-        Color expResult = null;
+        Color c = new Color(40, 40, 40);
+        Color expResult = new Color(215, 215, 215);
         Color result = ColorHelper.invert(c);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
+        //When the inverted color is too dark or too light, we are supposed to obtain some default yellow.
+        c = new Color(5,5,5);
+        expResult = new Color(ColorHelper.MAX_RGB_VALUE, ColorHelper.MAX_RGB_VALUE, 40);
+        result = ColorHelper.invert(c);
+        assertEquals(expResult, result);
+        c = new Color(250,250,250);
+        expResult = new Color(ColorHelper.MAX_RGB_VALUE, ColorHelper.MAX_RGB_VALUE, 40);
+        result = ColorHelper.invert(c);
+        assertEquals(expResult, result);
+        
     }
 
-    public void testColorSpace(){
+    public void testColorSpace() throws IOException{
         BufferedImage colorSpace = ColorHelper.getColorSpaceImage();
-
-        try {
             File file = new File("/tmp/colorSpace.png");
             ImageIO.write(colorSpace, "png", file);
-        } catch (IOException ex) {
-            System.out.println ("Error !");
-            assertTrue(false);
-        }
     }
 
 }
