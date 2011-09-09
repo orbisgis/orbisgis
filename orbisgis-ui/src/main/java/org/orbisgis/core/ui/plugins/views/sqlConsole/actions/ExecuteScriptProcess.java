@@ -68,7 +68,7 @@ public class ExecuteScriptProcess implements BackgroundJob {
         public ExecuteScriptProcess(String script) {
                 this.script = script;
         }
-        
+
         public ExecuteScriptProcess(String script, SQLConsolePanel panel) {
                 this.script = script;
                 this.panel = panel;
@@ -111,7 +111,7 @@ public class ExecuteScriptProcess implements BackgroundJob {
                                         st.cleanUp();
                                         if (metadata != null) {
                                                 spatial = MetadataUtilities.isSpatial(metadata);
- 
+
                                                 DataSource ds = dsf.getDataSource(st,
                                                         DataSourceFactory.DEFAULT, pm);
                                                 if (pm.isCancelled()) {
@@ -162,9 +162,12 @@ public class ExecuteScriptProcess implements BackgroundJob {
                                                         om.println(aux.toString());
                                                 }
                                         } else {
-                                                st.prepare(dsf);
-                                                st.execute();
-
+                                                try {
+                                                        st.prepare(dsf);
+                                                        st.execute();
+                                                } finally {
+                                                        st.cleanUp();
+                                                }
                                                 if (pm.isCancelled()) {
                                                         break;
                                                 }
@@ -175,10 +178,6 @@ public class ExecuteScriptProcess implements BackgroundJob {
                                                 "Cannot create the DataSource:"
                                                 + st.getSQL(), e);
                                         break;
-                                } finally {
-                                        if (!spatial) {
-                                                st.cleanUp();
-                                        }
                                 }
 
                                 pm.progressTo(100 * i / statements.length);
@@ -195,6 +194,4 @@ public class ExecuteScriptProcess implements BackgroundJob {
                         panel.setStatusMessage("Execution time: " + lastExecTime);
                 }
         }
-        
-        
 }
