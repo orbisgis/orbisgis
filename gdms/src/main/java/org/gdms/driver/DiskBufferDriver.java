@@ -138,10 +138,12 @@ public class DiskBufferDriver extends AbstractDataSet implements MemoryDriver {
 
         @Override
         public void stop() throws DriverException {
-                try {
-                        reader.close();
-                } catch (IOException e) {
-                        throw new DriverException("Cannot close gdms reader", e);
+                if (isOpen()) {
+                        try {
+                                reader.close();
+                        } catch (IOException e) {
+                                throw new DriverException("Cannot close gdms reader", e);
+                        }
                 }
         }
         
