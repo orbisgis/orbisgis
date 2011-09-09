@@ -42,6 +42,7 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.errorManager.ErrorListener;
 import org.orbisgis.core.errorManager.ErrorManager;
+import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 
 public abstract class AbstractTest extends TestCase {
 
@@ -51,6 +52,7 @@ public abstract class AbstractTest extends TestCase {
         public void setUp() throws Exception {
                 failErrorManager = new FailErrorManager();
                 Services.registerService(ErrorManager.class, "", failErrorManager);
+                Services.registerService( OutputManager.class, "output", new ConsoleOutputManager());
 
                 OrbisgisCoreServices.installServices();
         }
