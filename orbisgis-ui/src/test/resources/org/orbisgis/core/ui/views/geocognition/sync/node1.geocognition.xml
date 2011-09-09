@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<geocognition-node xmlns:ns2="org.orbisgis.legend" xmlns:ns3="org.orbisgis.symbol"
+	xmlns:ns4="org.orbisgis.mapContext" id="" version="1">
+	<geocognition-node id="root">
+		<geocognition-node id="root.d">
+			<geocognition-node id="root.d.1">
+				<node-content
+					content-type-id="org.orbisgis.geocognition.MapContext">
+					<ns4:map-context>
+						<ns4:layer-collection visible="true" name="de"/>
+					</ns4:map-context>
+				</node-content>
+			</geocognition-node>
+			<geocognition-node id="root.d.2">
+				<node-content
+					content-type-id="org.orbisgis.geocognition.MapContext">
+					<ns4:map-context>
+						<ns4:layer-collection visible="false" name="root"/>
+					</ns4:map-context>
+				</node-content>
+			</geocognition-node>
+			<geocognition-node id="root.d.4">
+				<geocognition-node id="root.d.4.1">
+					<node-content
+						content-type-id="org.orbisgis.geocognition.MapContext">
+						<ns4:map-context>
+							<ns4:layer-collection visible="false" name="root"/>
+						</ns4:map-context>
+					</node-content>
+				</geocognition-node>
+			</geocognition-node>
+		</geocognition-node>
+		<geocognition-node id="root.e">
+			<geocognition-node id="root.a">
+				<node-content
+					content-type-id="org.orbisgis.geocognition.MapContext">
+					<ns4:map-context>
+						<ns4:layer-collection visible="false" name="root"/>
+					</ns4:map-context>
+				</node-content>
+			</geocognition-node>
+			<geocognition-node id="root.e.1">
+				<geocognition-node id="root.e.1.1">
+					<node-content
+						content-type-id="org.orbisgis.geocognition.MapContext">
+						<ns4:map-context>
+							<ns4:layer-collection visible="false" name="root"/>
+						</ns4:map-context>
+					</node-content>
+				</geocognition-node>
+			</geocognition-node>
+		</geocognition-node>
+		<geocognition-node id="root.f">
+			<node-content
+				content-type-id="org.orbisgis.legend.RasterColorModel"/>
+		</geocognition-node>
+		<geocognition-node id="root.b">
+			<node-content content-type-id="org.orbisgis.geocognition.MapContext">
+				<ns4:map-context>
+					<ns4:layer-collection visible="true" name="be"/>
+				</ns4:map-context>
+			</node-content>
+		</geocognition-node>
+		<geocognition-node id="root.a">
+			<geocognition-node id="root.a.1">
+				<geocognition-node id="root.a.1.1">
+					<geocognition-node id="root.a.1.1.1">
+						<node-content
+							content-type-id="org.orbisgis.geocognition.MapContext">
+							<ns4:map-context>
+								<ns4:layer-collection visible="false" name="root"/>
+							</ns4:map-context>
+						</node-content>
+					</geocognition-node>
+					<geocognition-node id="root.a.1.1.2">
+						<node-content
+							content-type-id="org.orbisgis.geocognition.JavaFunction">
+							<property-set>
+								<property
+									value="package org.orbisgis;&#xA;&#xA;import org.gdms.data.types.InvalidTypeException;&#xA;import org.gdms.data.types.Type;&#xA;import org.gdms.data.types.TypeFactory;&#xA;import org.gdms.data.values.Value;&#xA;import org.gdms.data.values.ValueFactory;&#xA;import org.gdms.sql.function.Argument;&#xA;import org.gdms.sql.function.Arguments;&#xA;import org.gdms.sql.function.Function;&#xA;import org.gdms.sql.function.FunctionException;&#xA;&#xA;public class CLASSNAME implements Function {&#xA;&#xA;&#x9;public String getDescription() {&#xA;&#x9;&#x9;// Return a description of the operation this function does&#xA;&#x9;&#x9;return &quot;This is a sample function &quot;&#xA;&#x9;&#x9;&#x9;&#x9;+ &quot;that transforms numbers into strings&quot;;&#xA;&#x9;}&#xA;&#xA;&#x9;public String getName() {&#xA;&#x9;&#x9;return &quot;CLASSNAME&quot;;&#xA;&#x9;}&#xA;&#xA;&#x9;public String getSqlOrder() {&#xA;&#x9;&#x9;// Return a sample order&#xA;&#x9;&#x9;return &quot;select &quot; + getName() + &quot;(5) from mytable;&quot;;&#xA;&#x9;}&#xA;&#xA;&#x9;public Arguments[] getFunctionArguments() {&#xA;&#x9;&#x9;// Return all the possible arguments this function can take. In this&#xA;&#x9;&#x9;// sample implementation one numeric argument is mandatory&#xA;&#x9;&#x9;Arguments[] ret = new Arguments[1];&#xA;&#x9;&#x9;// Int argument version&#xA;&#x9;&#x9;ret[0] = new Arguments(new Argument(Argument.TYPE_WHOLE_NUMBER));&#xA;&#xA;&#x9;&#x9;return ret;&#xA;&#x9;}&#xA;&#xA;&#x9;public Value evaluate(Value[] args) throws FunctionException {&#xA;&#x9;&#x9;// Do the operation. In this example just transform to string if it is&#xA;&#x9;&#x9;// not null.&#xA;&#x9;&#x9;if (args[0].isNull()) {&#xA;&#x9;&#x9;&#x9;return ValueFactory.createNullValue();&#xA;&#x9;&#x9;} else {&#xA;&#x9;&#x9;&#x9;String ret = Integer.toString(args[0].getAsInt());&#xA;&#x9;&#x9;&#x9;return ValueFactory.createValue(ret);&#xA;&#x9;&#x9;}&#xA;&#x9;}&#xA;&#xA;&#x9;public Type getType(Type[] argsTypes) throws InvalidTypeException {&#xA;&#x9;&#x9;// Return the type of the values returned by this function. In this&#xA;&#x9;&#x9;// sample implementation a string is returned&#xA;&#x9;&#x9;return TypeFactory.createType(Type.STRING);&#xA;&#x9;}&#xA;&#xA;&#x9;public boolean isAggregate() {&#xA;&#x9;&#x9;// This is a normal, non aggregate function&#xA;&#x9;&#x9;return false;&#xA;&#x9;}&#xA;&#xA;}"
+									name="function-code"/>
+							</property-set>
+						</node-content>
+					</geocognition-node>
+					<geocognition-node id="root.a.1.1.3">
+						<node-content
+							content-type-id="org.orbisgis.geocognition.MapContext">
+							<ns4:map-context>
+								<ns4:layer-collection visible="false" name="root"/>
+							</ns4:map-context>
+						</node-content>
+					</geocognition-node>
+				</geocognition-node>
+			</geocognition-node>
+		</geocognition-node>
+	</geocognition-node>
+</geocognition-node>

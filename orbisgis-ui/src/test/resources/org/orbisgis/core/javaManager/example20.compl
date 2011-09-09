@@ -1,0 +1,10 @@
+402;method-getAsByte()
+import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
+import org.orbisgis.Services;
+import org.orbisgis.editors.map.MapContextManager;
+import org.orbisgis.layerModel.MapContext;
+MapContextManager mcm = Services.getService(MapContextManager.class);
+MapContext context = mcm.getActiveView();
+DataSource ds = context.getActiveLayer().getDataSource();
+Value v = ds.getFieldValue(0, 3).getAsBy

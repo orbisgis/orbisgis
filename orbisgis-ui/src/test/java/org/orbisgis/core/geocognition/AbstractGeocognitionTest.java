@@ -47,7 +47,7 @@ import org.orbisgis.core.geocognition.sql.GeocognitionFunctionFactory;
 import org.orbisgis.core.geocognition.symbology.GeocognitionLegendFactory;
 import org.orbisgis.core.geocognition.symbology.GeocognitionSymbolFactory;
 
-public class AbstractGeocognitionTest extends AbstractTest {
+public abstract class AbstractGeocognitionTest extends AbstractTest {
 	protected Geocognition gc;
 
 	@Override

@@ -1,0 +1,4 @@
+63;method-JOptionPane();method-JOptionPane(Object arg0);method-JOptionPane(Object arg0, int arg1);method-JOptionPane(Object arg0, int arg1, int arg2);method-JOptionPane(Object arg0, int arg1, int arg2, Icon arg3);method-JOptionPane(Object arg0, int arg1, int arg2, Icon arg3, Object[] arg4);method-JOptionPane(Object arg0, int arg1, int arg2, Icon arg3, Object[] arg4, Object arg5)
+import javax.swing.JOptionPane;
+
+JOptionPane pane = new JOption

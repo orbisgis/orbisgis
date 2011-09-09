@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<FeatureTypeStyle xmlns="http://www.opengis.net/se/2.0/core" xmlns:tse="http://www.opengis.net/se/2.0/thematic" xmlns:ns2="http://www.opengis.net/ows/2.0" xmlns:ns3="http://www.opengis.net/fes/2.0" xmlns:ns4="http://www.w3.org/1999/xlink" version="2.0.0">
+  <Rule>
+    <CompositeSymbolizer>
+      <AreaSymbolizer uom="urn:ogc:def:uom:se::mm" version="2.0.0">
+        <SolidFill>
+          <Color>#DDDDDD</Color>
+        </SolidFill>
+        <PenStroke>
+          <SolidFill>
+            <Color>#888888</Color>
+          </SolidFill>
+          <Width>0.15</Width>
+        </PenStroke>
+      </AreaSymbolizer>
+      <PointSymbolizer uom="urn:ogc:def:uom:se::mm" version="2.0.0">
+        <Name>Point symbolizer</Name>
+        <Extension>
+          <ExtensionParameter name="level">2</ExtensionParameter>
+        </Extension>
+        <CompositeGraphic>
+          <tse:PieChart>
+            <Radius>2</Radius>
+            <!--<tse:HoleRadius>3</tse:HoleRadius>-->
+            <PenStroke>
+              <Width>0.2</Width>
+            </PenStroke>
+            <tse:Slice>
+              <Name>non onu 86</Name>
+              <Value>
+                <ns3:ValueReference>NON_ONU_86</ns3:ValueReference>
+              </Value>
+              <SolidFill>
+                <Color>#E06161</Color>
+                <Opacity>60.0</Opacity>
+              </SolidFill>
+            </tse:Slice>
+            <tse:Slice>
+              <Name>onu 2002</Name>
+              <Value>
+                <ns3:ValueReference>ONU_2002</ns3:ValueReference>
+              </Value>
+              <SolidFill>
+                <Color>#86B51E</Color>
+                <Opacity>60.0</Opacity>
+              </SolidFill>
+            </tse:Slice>
+            <tse:Slice>
+              <Name>2000</Name>
+              <Value>
+                <ns3:ValueReference>2000</ns3:ValueReference>
+              </Value>
+              <SolidFill>
+                <Color>#1E69B5</Color>
+                <Opacity>60.0</Opacity>
+              </SolidFill>
+            </tse:Slice>
+          </tse:PieChart>
+        </CompositeGraphic>
+      </PointSymbolizer>
+    </CompositeSymbolizer>
+  </Rule>
+</FeatureTypeStyle>

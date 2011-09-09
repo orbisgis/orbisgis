@@ -56,7 +56,7 @@ import org.orbisgis.core.ui.editors.map.tools.SelectionTool;
 
 import com.vividsolutions.jts.geom.Envelope;
 
-public class AbstractToolTest extends TestCase {
+public abstract class AbstractToolTest extends TestCase {
 
 	protected DefaultMapContext mapContext;
 	protected MapTransform mapTransform;

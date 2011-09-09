@@ -43,15 +43,6 @@ import junit.framework.TestSuite;
 
 import org.orbisgis.core.ui.views.geocognition.GeocognitionTest;
 
-public class OrbisGISTests extends TestCase {
-
-	public static Test suite() {
-
-		TestSuite suite = new TestSuite("Test for orbisgis");
-		// $JUnit-BEGIN$
-		suite.addTestSuite(GeocognitionTest.class);
-		// $JUnit-END$
-		return suite;
-	}
+public class OrbisGISTests  {
 
 }

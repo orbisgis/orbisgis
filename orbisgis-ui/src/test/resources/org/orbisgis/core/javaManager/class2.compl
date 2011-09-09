@@ -1,0 +1,11 @@
+115;field-myAttribute;method-myMethod1();method-myMethod2()
+public class A {
+  private String myAttribute;
+
+  public void myMethod1() {
+  }
+
+  public void myMethod2() {
+    my
+  }
+}

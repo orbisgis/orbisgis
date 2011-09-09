@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<geocognition-node xmlns:ns2="org.orbisgis.legend" xmlns:ns3="org.orbisgis.symbol"
+	xmlns:ns4="org.orbisgis.mapContext" id="boo" version="1">
+	<geocognition-node id="root">
+		<geocognition-node id="root.d">
+			<geocognition-node id="root.d.1">
+				<node-content
+					content-type-id="org.orbisgis.geocognition.MapContext">
+					<ns4:map-context>
+						<ns4:layer-collection visible="false" name="root"/>
+					</ns4:map-context>
+				</node-content>
+			</geocognition-node>
+			<geocognition-node id="root.d.3">
+				<node-content
+					content-type-id="org.orbisgis.geocognition.MapContext">
+					<ns4:map-context>
+						<ns4:layer-collection visible="false" name="root"/>
+					</ns4:map-context>
+				</node-content>
+			</geocognition-node>
+			<geocognition-node id="root.d.4">
+				<node-content
+					content-type-id="org.orbisgis.geocognition.MapContext">
+					<ns4:map-context>
+						<ns4:layer-collection visible="false" name="root"/>
+					</ns4:map-context>
+				</node-content>
+			</geocognition-node>
+		</geocognition-node>
+		<geocognition-node id="root.e">
+			<geocognition-node id="root.e.1">
+				<node-content
+					content-type-id="org.orbisgis.geocognition.MapContext">
+					<ns4:map-context>
+						<ns4:layer-collection visible="false" name="root"/>
+					</ns4:map-context>
+				</node-content>
+			</geocognition-node>
+		</geocognition-node>
+		<geocognition-node id="root.f">
+			<node-content
+				content-type-id="org.orbisgis.legend.RasterColorModel"/>
+		</geocognition-node>
+		<geocognition-node id="root.b">
+			<node-content content-type-id="org.orbisgis.geocognition.MapContext">
+				<ns4:map-context>
+					<ns4:layer-collection visible="false" name="root"/>
+				</ns4:map-context>
+			</node-content>
+		</geocognition-node>
+		<geocognition-node id="root.c">
+			<geocognition-node id="root.c.1">
+				<node-content
+					content-type-id="org.orbisgis.geocognition.MapContext">
+					<ns4:map-context>
+						<ns4:layer-collection visible="false" name="root"/>
+					</ns4:map-context>
+				</node-content>
+			</geocognition-node>
+		</geocognition-node>
+	</geocognition-node>
+</geocognition-node>

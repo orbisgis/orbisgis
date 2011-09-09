@@ -50,7 +50,7 @@ import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 import org.orbisgis.progress.IProgressMonitor;
 
-public class AbstractTest extends TestCase {
+public abstract class AbstractTest extends TestCase {
 
     @Override
     protected void setUp() throws Exception {

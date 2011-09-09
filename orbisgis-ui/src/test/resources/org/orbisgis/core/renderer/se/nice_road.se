@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<FeatureTypeStyle xmlns="http://www.opengis.net/se" xmlns:ns2="http://www.opengis.net/ows/1.1" xmlns:ns3="http://www.opengis.net/ogc" xmlns:ns4="http://www.w3.org/1999/xlink">
+    <Rule>
+        <CompositeSymbolizer>
+            <LineSymbolizer>
+                <Version>1.9</Version>
+                <Name>Line Symbolizer</Name>
+                <Extension>
+                    <ExtensionParameter name="level">2</ExtensionParameter>
+                </Extension>
+                <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
+                <PenStroke>
+                    <Extension>
+                        <ExtensionParameter name="linearRapport">on</ExtensionParameter>
+                        <ExtensionParameter name="offsetRapport">on</ExtensionParameter>
+                    </Extension>
+                    <SolidFill>
+                        <Color>#000000</Color>
+                        <Opacity>100.0</Opacity>
+                    </SolidFill>
+                    <Width>0.1</Width>
+                    <DashArray>2</DashArray>
+                </PenStroke>
+            </LineSymbolizer>
+            <LineSymbolizer>
+                <Version>1.9</Version>
+                <Name>Line Symbolizer</Name>
+                <Extension>
+                    <ExtensionParameter name="level">1</ExtensionParameter>
+                </Extension>
+                <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
+                <PenStroke>
+                    <Extension>
+                        <ExtensionParameter name="linearRapport">on</ExtensionParameter>
+                        <ExtensionParameter name="offsetRapport">on</ExtensionParameter>
+                    </Extension>
+                    <SolidFill>
+                        <Color>#CCCCCC</Color>
+                        <Opacity>100.0</Opacity>
+                    </SolidFill>
+                    <Width>4.0</Width>
+                </PenStroke>
+            </LineSymbolizer>
+            <LineSymbolizer>
+                <Version>1.9</Version>
+                <Name>Line Symbolizer</Name>
+                <Extension>
+                    <ExtensionParameter name="level">0</ExtensionParameter>
+                </Extension>
+                <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
+                <PenStroke>
+                    <Extension>
+                        <ExtensionParameter name="linearRapport">on</ExtensionParameter>
+                        <ExtensionParameter name="offsetRapport">on</ExtensionParameter>
+                    </Extension>
+                    <SolidFill>
+                        <Color>#000000</Color>
+                        <Opacity>100.0</Opacity>
+                    </SolidFill>
+                    <Width>5.0</Width>
+                </PenStroke>
+            </LineSymbolizer>
+        </CompositeSymbolizer>
+    </Rule>
+</FeatureTypeStyle>

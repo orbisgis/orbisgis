@@ -1,0 +1,6 @@
+78;variable-length
+help();
+public void mymethod(String[] arg) {
+    String[] myvar;
+    myvar.len
+}
