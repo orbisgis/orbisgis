@@ -275,7 +275,9 @@ public class ShapeHelper {
         List<Shape> shapes = new ArrayList<Shape>();
         double totalLength = ShapeHelper.getLineLength(line);
 
+        if (_DEBUG_) {
         System.out.println("Line To SplitLength: " + totalLength);
+        }
 
         if (segLength <= 0.0 || segLength >= totalLength) {
             shapes.add(line);
@@ -337,7 +339,9 @@ public class ShapeHelper {
                 // On termine le segment, l'ajoute à la liste de shapes
                 segment.lineTo(x1, y1);
                 p = 0;
+        if (_DEBUG_) {
                 System.out.println("   SegLength: " + ShapeHelper.getLineLength(segment));
+        }
                 shapes.add(segment);
 
                 // Et commence le nouveau segment à
@@ -355,7 +359,9 @@ public class ShapeHelper {
         //last segment end with last point
         //segment.lineTo(x1, y1);
 
+        if (_DEBUG_) {
         System.out.println("   SegLength: " + ShapeHelper.getLineLength(segment));
+        }
         shapes.add(segment);
 
         return shapes;
