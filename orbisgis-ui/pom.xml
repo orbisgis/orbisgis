@@ -13,41 +13,6 @@
                 <version>3.1</version>
         </parent>
 
-    <scm>
-        <connection>
-			scm:svn:http://svn.orbisgis.org/orbisgis/branches/orbisgis_se/orbisgis-core/
-        </connection>
-        <developerConnection>
-			scm:svn:http://svn.orbisgis.org/orbisgis/branches/orbisgis_se/orbisgis-core/
-        </developerConnection>
-        <tag>HEAD</tag>
-        <url>http://geosysin.iict.ch/irstv-svn/platform</url>
-    </scm>
-    <repositories>
-
-        <repository>
-            <id>IRSTV</id>
-            <name>IRSTV repository</name>
-            <url>http://repo.orbisgis.org</url>
-        </repository>
-        <repository>
-            <id>repo2.maven.org</id>
-            <name>Maven2 repository 2</name>
-            <url>http://repo2.maven.org/maven2</url>
-        </repository>
-    </repositories>
-    <pluginRepositories>
-
-        <pluginRepository>
-            <id>IRSTV</id>
-            <name>IRSTV repository</name>
-            <url>http://repo.orbisgis.org</url>
-        </pluginRepository>
-
-    </pluginRepositories>
-
-
-
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -63,22 +28,6 @@
         </dependency>
         <dependency>
             <groupId>batik</groupId>
-            <artifactId>batik-svggen</artifactId>
-            <version>1.6</version>
-        </dependency>
-        <dependency>
-            <groupId>com.lowagie</groupId>
-            <artifactId>iText</artifactId>
-            <version>5.0.2</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>batik</groupId>
-            <artifactId>batik-awt-util</artifactId>
-            <version>1.6</version>
-        </dependency>
-        <dependency>
-            <groupId>batik</groupId>
             <artifactId>batik-util</artifactId>
             <version>1.6</version>
         </dependency>
@@ -86,21 +35,6 @@
             <groupId>batik</groupId>
             <artifactId>batik-xml</artifactId>
             <version>1.6</version>
-        </dependency>
-        <dependency>
-            <groupId>batik</groupId>
-            <artifactId>batik-dom</artifactId>
-            <version>1.6</version>
-        </dependency>
-        <dependency>
-            <groupId>com.iver.cit.gvsig</groupId>
-            <artifactId>remote-clients</artifactId>
-            <version>1.1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>kxml2</groupId>
-            <artifactId>kxml2</artifactId>
-            <version>2.2.2</version>
         </dependency>
         <dependency>
             <groupId>bsh</groupId>
@@ -113,55 +47,14 @@
             <version>1.6.1</version>
         </dependency>
         <dependency>
-            <groupId>commons-net</groupId>
-            <artifactId>commons-net</artifactId>
-            <version>1.4.1</version>
-        </dependency>
-        <dependency>
             <groupId>org.eclipse.jdt.core.compiler</groupId>
             <artifactId>ecj</artifactId>
             <version>3.5.1</version>
         </dependency>
         <dependency>
             <groupId>com.fifesoft</groupId>
-            <artifactId>rsyntaxtextarea</artifactId>
-            <version>1.4.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fifesoft</groupId>
             <artifactId>autocomplete</artifactId>
             <version>1.4.1</version>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.13</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>org.gdms</groupId>
-            <artifactId>gdms</artifactId>
-            <version>1.6-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.media</groupId>
-            <artifactId>jai_core</artifactId>
-            <version>1.1.3</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.media</groupId>
-            <artifactId>jai_codec</artifactId>
-            <version>1.1.3</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.media</groupId>
-            <artifactId>jai_imageio</artifactId>
-            <version>1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.kitfox.svg</groupId>
-            <artifactId>svg-salamander</artifactId>
-            <version>1.0</version>
         </dependency>
     </dependencies>
     <build>
@@ -273,16 +166,6 @@
                             <mainClass>org.orbisgis.core.Main</mainClass>
                         </manifest>
                     </archive>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.0.2</version>
-                <configuration>
-                    <showDeprecation>true</showDeprecation>
-                    <source>1.6</source>
-                    <target>1.6</target>
                 </configuration>
             </plugin>
         </plugins>
