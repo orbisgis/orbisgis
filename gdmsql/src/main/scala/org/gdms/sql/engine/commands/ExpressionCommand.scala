@@ -144,8 +144,8 @@ trait ExpressionCommand extends Command {
               
             // a table is referenced, but indirectly, we look for an internal field name for it
             case Some(t) => m.getFieldIndex(f.name + "$" + t) match {
-                // there is none. Failure (unknown field).
-                case -1 => throw new SemanticException("There is no field '" + t + "." + f.name + "'.")
+                // there is none. Do nothing, it will be referenced later or will fail with validation.
+                case -1 => 
                 case i =>
                   // there is one, we keep it. Success.
                   f.index = i

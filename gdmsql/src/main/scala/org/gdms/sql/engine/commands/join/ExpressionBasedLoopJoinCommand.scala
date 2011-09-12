@@ -45,16 +45,17 @@ package org.gdms.sql.engine.commands.join
 import org.gdms.data.schema.DefaultMetadata
 import org.gdms.sql.engine.GdmSQLPredef._
 import org.gdms.sql.engine.commands.Command
+import org.gdms.sql.engine.commands.ExpressionCommand
 import org.gdms.sql.engine.commands.Row
 import org.gdms.sql.engine.commands.SQLMetadata
 import org.gdms.sql.evaluator.Expression
 
-class ExpressionBasedLoopJoinCommand(exp: Expression) extends Command {
+class ExpressionBasedLoopJoinCommand(expr: Expression) extends Command with ExpressionCommand {
   protected final def doWork(r: Iterator[RowStream]): RowStream = {
     //This method just concats two 'rows' into one, inside the Iterable objects
     val doReduce = (i: Row, j: Row) => {
       val a = i ++ j
-      val e = exp.evaluate(a).getAsBoolean
+      val e = expr.evaluate(a).getAsBoolean
       if (e != null && e.booleanValue) {
         Row(a) :: Nil
       } else {
@@ -68,6 +69,8 @@ class ExpressionBasedLoopJoinCommand(exp: Expression) extends Command {
     // the doReduce function
     for (p <- left ; q <- right; r <- doReduce(p, q)) yield ( r )
   }
+  
+  val exp = expr :: Nil
   
   override def getMetadata = {
     val d = new DefaultMetadata()
