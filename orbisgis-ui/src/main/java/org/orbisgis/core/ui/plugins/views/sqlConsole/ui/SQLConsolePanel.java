@@ -78,7 +78,7 @@ import org.orbisgis.core.ui.plugins.views.sqlConsole.actions.ConsoleListener;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.actions.SQLConsoleKeyListener;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.codereformat.CodeReformator;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.codereformat.CommentSpec;
-import org.orbisgis.core.ui.plugins.views.sqlConsole.syntax.SQLCompletionProvider;
+import org.orbisgis.core.ui.plugins.views.sqlConsole.language.SQLLanguageSupport;
 import org.orbisgis.utils.I18N;
 
 public class SQLConsolePanel extends JPanel implements DropTargetListener {
@@ -98,7 +98,7 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
         private Timer timer;
         private int lastSQLStatementToReformatStart;
         private int lastSQLStatementToReformatEnd;
-        private SQLCompletionProvider cpl;
+        private SQLLanguageSupport lang;
         // An instance of the private subclass of the default highlight painter
         Highlighter.HighlightPainter myHighlightPainter = (HighlightPainter) new WordHighlightPainter(
                 new Color(205, 235, 255));
@@ -160,8 +160,10 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
                         scriptPanel.getDocument().addDocumentListener(actionAndKeyListener);
                         scriptPanel.setDropTarget(new DropTarget(centerPanel, this));
                         scriptPanel.setLineWrap(true);
-                        cpl = new SQLCompletionProvider(scriptPanel);
-                        cpl.install();
+                        scriptPanel.setClearWhitespaceLinesEnabled(true);
+                        scriptPanel.setMarkOccurrences(true);
+                        lang = new SQLLanguageSupport();
+                        lang.install(scriptPanel);
 
                         CodeReformator codeReformator = new CodeReformator(";",
                                 COMMENT_SPECS);
@@ -523,8 +525,8 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
         }
 
         public void freeResources() {
-                if (cpl != null) {
-                        cpl.freeExternalResources();
+                if (lang != null) {
+                        lang.uninstall(scriptPanel);
                 }
         }
 }

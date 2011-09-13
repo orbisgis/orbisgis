@@ -36,7 +36,7 @@
  * or contact directly:
  * info@orbisgis.org
  **/
-package org.orbisgis.core.ui.plugins.views.sqlConsole.syntax;
+package org.orbisgis.core.ui.plugins.views.sqlConsole.language;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

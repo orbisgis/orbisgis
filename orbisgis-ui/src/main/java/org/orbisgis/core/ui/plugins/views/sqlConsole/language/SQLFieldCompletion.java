@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package org.orbisgis.core.ui.plugins.views.sqlConsole.syntax;
+package org.orbisgis.core.ui.plugins.views.sqlConsole.language;
 
 import org.fife.ui.autocomplete.CompletionProvider;
 import org.fife.ui.autocomplete.VariableCompletion;
