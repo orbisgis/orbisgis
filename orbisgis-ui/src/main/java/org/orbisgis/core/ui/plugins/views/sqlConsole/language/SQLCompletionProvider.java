@@ -70,7 +70,6 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
         // other useful classes
         private SQLMetadataManager metManager;
         private DataManager dataManager;
-        
         // text field
         private JTextComponent textC;
         // auto completion
@@ -81,10 +80,9 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
         private static final String[] keywords = GdmSQLParser.tokenNames;
         // caching
         private final Map<String, Completion> cachedCompletions = Collections.synchronizedMap(new TreeMap<String, Completion>());
-        
         // common tokens
         private static final SQLToken FROM = SQLToken.fromType(GdmSQLParser.T_FROM, keywords);
-        
+
         /**
          * Default constructor
          * @param textC the JTextComponent that needs auto-completion.
@@ -116,7 +114,7 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
         public AutoCompletion install() {
                 // listen to the MetadataManager
                 metManager.registerMetadataListener(this);
-                
+
                 // listen to the caret
                 textC.addCaretListener(this);
 
@@ -126,7 +124,7 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                 auto.setAutoCompleteSingleChoices(true);
                 auto.setShowDescWindow(true);
                 auto.install(textC);
-                
+
                 dataManager = Services.getService(DataManager.class);
 
                 return auto;
@@ -135,13 +133,18 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
         @Override
         public void caretUpdate(CaretEvent e) {
                 String content = getTextContent();
+
+                // take care of rootText
+                if (rootText != null) {
+                        content = rootText + content;
+                }
                 
                 SQLString str = new SQLString(content, keywords);
                 if (str.match(FROM)) {
                         addCompletions(getSourceNamesCompletion(false));
                 }
         }
-        
+
         private ArrayList getSourceNamesCompletion(boolean addfields) {
                 ArrayList<Completion> a = new ArrayList<Completion>();
                 HashMap<String, SQLFieldCompletion> nn = new HashMap<String, SQLFieldCompletion>();
@@ -237,7 +240,7 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                 a.addAll(nn.values());
                 return a;
         }
-        
+
         /**
          * Adds to the CompletionProvider the field list of the current data source
          * @param sql SQL Statement up to where the field is needed
@@ -296,7 +299,7 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
         @Override
         public void metadataRemoved(String name, Metadata m) {
         }
-        
+
         /**
          * Frees all external resources linking to this Provider
          *
@@ -316,12 +319,12 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                 } catch (BadLocationException ex) {
                         return "";
                 }
-                
+
                 // some cleaning up
                 content = removeMultilineComments(content);
                 content = removeSinglelineComments(content);
                 content = getLastSQLStatement(content);
-                
+
                 return content;
         }
 
@@ -401,5 +404,9 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
 
                 }
                 return content;
+        }
+
+        public void setRootText(String rootText) {
+                this.rootText = rootText;
         }
 }
