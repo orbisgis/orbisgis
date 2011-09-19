@@ -140,6 +140,10 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                 }
                 
                 SQLString str = new SQLString(content, keywords);
+                // remove existing completions
+                clear();
+                
+                // matching
                 if (str.match(FROM)) {
                         addCompletions(getSourceNamesCompletion(false));
                 }
