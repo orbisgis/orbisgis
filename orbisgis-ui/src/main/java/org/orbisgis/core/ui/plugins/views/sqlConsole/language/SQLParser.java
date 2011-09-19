@@ -40,11 +40,14 @@ package org.orbisgis.core.ui.plugins.views.sqlConsole.language;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.text.BadLocationException;
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.Token;
+import org.antlr.runtime.tree.CommonTree;
 import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.parser.AbstractParser;
@@ -60,10 +63,11 @@ import org.gdms.sql.engine.parsing.GdmSQLParser;
  * A parser for Gdms SQL syntax that provides error locations.
  * @author Antoine Gourlay
  */
-class SQLParser extends AbstractParser {
+public class SQLParser extends AbstractParser {
 
         private RSyntaxTextArea textArea;
         private SQLMetadataManager metManager;
+        private List<CommonTree> trees = new ArrayList<CommonTree>();
 
         SQLParser(RSyntaxTextArea textArea, SQLMetadataManager metManager) {
                 this.textArea = textArea;
