@@ -47,7 +47,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSourceFactory;
 import org.gdms.data.InitializationException;
 import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.WarningListener;
@@ -58,6 +57,7 @@ import org.orbisgis.core.geocognition.DefaultGeocognition;
 import org.orbisgis.core.geocognition.Geocognition;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.javaManager.DefaultJavaManager;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.javaManager.JavaManager;
+import org.orbisgis.core.ui.plugins.views.sqlConsole.language.SQLMetadataManager;
 import org.orbisgis.core.workspace.DefaultOGWorkspace;
 import org.orbisgis.core.workspace.IOGWorkspace;
 import org.orbisgis.core.workspace.Workspace;
@@ -143,6 +143,12 @@ public class OrbisgisUIServices {
 						DataManager.class,
 						"Access to the sources, to its properties (indexes, etc.) and its contents, either raster or vectorial",
 						new DefaultDataManager(dsf));
+                
+                // Install SQL Console metadata caching
+                final SQLMetadataManager sqlMetadataManager = new SQLMetadataManager();
+                sqlMetadataManager.start();
+                Services.registerService(SQLMetadataManager.class, "Gets cached metadata for the SQL Console", sqlMetadataManager);
+
 	}
 
 	public static void installGeocognitionService() {

@@ -57,19 +57,22 @@ import org.gdms.sql.engine.parsing.GdmSQLLexer;
 import org.gdms.sql.engine.parsing.GdmSQLParser;
 
 /**
- *
+ * A parser for Gdms SQL syntax that provides error locations.
  * @author Antoine Gourlay
  */
-public class SQLParser extends AbstractParser {
+class SQLParser extends AbstractParser {
 
         private RSyntaxTextArea textArea;
+        private SQLMetadataManager metManager;
 
-        public SQLParser(RSyntaxTextArea textArea) {
+        SQLParser(RSyntaxTextArea textArea, SQLMetadataManager metManager) {
                 this.textArea = textArea;
+                this.metManager = metManager;
         }
 
         @Override
         public ParseResult parse(RSyntaxDocument doc, String style) {
+                metManager.checkSourcesToLoad();
                 String content = "";
                 try {
                         content = doc.getText(0, doc.getLength()).trim();
@@ -107,8 +110,6 @@ public class SQLParser extends AbstractParser {
                 if (content.isEmpty()) {
                         return null;
                 }
-
-                long start = System.currentTimeMillis();
 
                 // getting the engine and parsing the sql statement
                 ANTLRInputStream input = null;
@@ -158,10 +159,6 @@ public class SQLParser extends AbstractParser {
                         loc[2] = textArea.getLineStartOffset(loc[0]) + loc[1];
                         if (ex.token != null && ex.token.getType() != -1) {
                                 loc[3] = ex.token.getText().length();
-//                                if (ex.getUnexpectedType() == -1) {
-//                                        loc[1] -= loc[3] - 1;
-//                                        loc[2] -= loc[3] - 1;
-//                                }
                         } else {
                                 loc[3] = textArea.getLineEndOffset(loc[0]) - textArea.getLineStartOffset(loc[0]) - loc[1];
                         }
@@ -175,10 +172,6 @@ public class SQLParser extends AbstractParser {
                         loc[2] = textArea.getLineStartOffset(loc[0]) + loc[1];
                         if (ex.token != null && ex.token.getType() != -1) {
                                 loc[3] = ex.token.getText().length();
-//                                if (ex.getUnexpectedType() == -1) {
-//                                        loc[1] -= loc[3] - 1;
-//                                        loc[2] -= loc[3] - 1;
-//                                }
                         } else {
                                 loc[3] = textArea.getLineEndOffset(loc[0]) - textArea.getLineStartOffset(loc[0]) - loc[1];
                         }

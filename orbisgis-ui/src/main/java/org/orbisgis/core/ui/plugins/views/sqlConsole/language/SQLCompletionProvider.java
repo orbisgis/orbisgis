@@ -48,9 +48,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.LinkedBlockingDeque;
-import javax.swing.SwingUtilities;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.text.BadLocationException;
@@ -63,22 +60,12 @@ import org.fife.ui.autocomplete.Completion;
 import org.fife.ui.autocomplete.DefaultCompletionProvider;
 import org.fife.ui.autocomplete.ParameterizedCompletion;
 import org.fife.ui.autocomplete.VariableCompletion;
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
-import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.DefaultType;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
-import org.gdms.driver.Driver;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.FileDriver;
-import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.source.SourceEvent;
-import org.gdms.source.SourceListener;
-import org.gdms.source.SourceRemovalEvent;
 import org.gdms.sql.engine.parsing.GdmSQLLexer;
 import org.gdms.sql.engine.parsing.GdmSQLParser;
 import org.gdms.sql.function.Argument;
@@ -89,19 +76,16 @@ import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.ScalarArgument;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.background.BackgroundJob;
-import org.orbisgis.core.background.BackgroundManager;
-import org.orbisgis.core.background.UniqueJobID;
-import org.orbisgis.progress.ProgressMonitor;
 
 /**
  * This class provides auto-completion for a JTextComponent.
  *
  * @author Antoine Gourlay
  */
-public class SQLCompletionProvider extends DefaultCompletionProvider implements CaretListener, SourceListener {
+public class SQLCompletionProvider extends DefaultCompletionProvider implements CaretListener, SQLMetadataListener {
 
         private JTextComponent textC;
+        private SQLMetadataManager metManager;
         private AutoCompletion auto;
         private static final String[] imgBool = {"TRUE", "FALSE"};
         private String[] tokenNames;
@@ -109,22 +93,17 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
         private boolean idAdded;
         private String rootText;
         // caching
-        private final Map<String, Metadata> cachedMetadatas = Collections.synchronizedMap(new TreeMap<String, Metadata>());
         private final Map<String, Completion> cachedCompletions = Collections.synchronizedMap(new TreeMap<String, Completion>());
-        private final BlockingDeque<String> sourcesToLoad = new LinkedBlockingDeque<String>();
-//        private int[] tableWithFieldsCase;
-        // source loading & thread synchronisation
-        private final Object lock = new Object();
-        private volatile boolean isLoadingSources = false;
-        private UniqueJobID jobID;
         // dsf
-        DataManager dataManager;
+        private DataManager dataManager;
 
         /**
          * Default constructor
          * @param textC the JTextComponent that needs auto-completion.
+         * @param metManager  
          */
-        public SQLCompletionProvider(JTextComponent textC) {
+        public SQLCompletionProvider(JTextComponent textC, SQLMetadataManager metManager) {
+                this.metManager = metManager;
                 this.textC = textC;
         }
 
@@ -134,9 +113,11 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
          * JTextComponent. The content of the JTextComponent is added to rootText
          * and then processed by the completion parser.
          * @param textC the JTextComponent that needs auto-completion.
+         * @param metManager 
          * @param rootText a fixed string to be append before the completion starts
          */
-        public SQLCompletionProvider(JTextComponent textC, String rootText) {
+        public SQLCompletionProvider(JTextComponent textC, SQLMetadataManager metManager, String rootText) {
+                this.metManager = metManager;
                 this.textC = textC;
                 this.rootText = rootText;
         }
@@ -144,7 +125,7 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
         /**
          * Installs and enables auto-completion.
          */
-        public void install() {
+        public AutoCompletion install() {
                 // listen to the caret
                 textC.addCaretListener(this);
 
@@ -176,12 +157,8 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
 
                 // listen to SourceManager
                 dataManager = Services.getService(DataManager.class);
-                dataManager.getSourceManager().addSourceListener(this);
-
-                // queue all currently available sources
-                Collections.addAll(sourcesToLoad, dataManager.getSourceManager().getSourceNames());
-
-                jobID = new UniqueJobID();
+                
+                return auto;
         }
 
         /**
@@ -192,85 +169,7 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
          * If it is not called the provider will never be garbage-collected.
          */
         public void freeExternalResources() {
-                // unlisten to SourceManager
-                dataManager.getSourceManager().removeSourceListener(this);
-
-                cachedMetadatas.clear();
                 cachedCompletions.clear();
-        }
-
-        private boolean checkSourcesToLoad() {
-                // maybe we are already loading -> exit
-                synchronized (lock) {
-                        if (isLoadingSources) {
-                                return true;
-                        }
-                }
-
-                // maybe there is no need to load
-                if (sourcesToLoad.isEmpty()) {
-                        return false;
-                }
-
-                // loading
-                synchronized (lock) {
-                        isLoadingSources = true;
-                }
-
-                // to prevent the user from triggering a completion refresh
-                // while the sources are loading
-                textC.removeCaretListener(this);
-                auto.uninstall();
-
-                BackgroundManager bm = Services.getService(BackgroundManager.class);
-
-                bm.nonBlockingBackgroundOperation(jobID, new BackgroundJob() {
-
-                        @Override
-                        public void run(ProgressMonitor pm) {
-                                String source;
-                                while (true) {
-                                        source = sourcesToLoad.poll();
-
-                                        if (source != null) {
-                                                if (pm.isCancelled()) {
-                                                        return;
-                                                }
-                                                // caching the source
-                                                getMetadataForDataSource(source);
-                                        } else {
-                                                // there is no sources anymore -> exit
-                                                break;
-                                        }
-                                }
-
-                                // to resume the refreshing of the completions
-                                textC.addCaretListener(SQLCompletionProvider.this);
-                                auto.install(textC);
-
-                                // finished loading
-                                synchronized (lock) {
-                                        isLoadingSources = false;
-                                }
-
-                                // trigger an update to compensate the call to this method
-                                // from caretUpdate
-                                SwingUtilities.invokeLater(new Runnable() {
-
-                                        @Override
-                                        public void run() {
-                                                caretUpdate(null);
-                                        }
-                                });
-                        }
-
-                        @Override
-                        public String getTaskName() {
-                                return "Caching SQL Completions";
-                        }
-                });
-
-                return true;
         }
 
         /**
@@ -292,11 +191,6 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                 if (content.endsWith(";") || content.endsWith("*") || content.endsWith("  ")
                         || content.endsWith(")")) {
                         auto.hideChildWindows();
-                }
-
-                // loading & caching sources Metadata if necessary
-                if (checkSourcesToLoad()) {
-                        return;
                 }
 
                 doCompletion(content);
@@ -441,7 +335,7 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                 String table = sql.substring(start + 1, sql.length() - 1);
 
                 // get the return metadata without executing anything
-                Metadata m = getMetadataForDataSource(table);
+                Metadata m = metManager.getMetadata(table);
                 if (m == null) {
                         // wrong source name, no completion
                         return a;
@@ -591,13 +485,8 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                 ArrayList<Completion> a = new ArrayList<Completion>();
                 HashMap<String, SQLFieldCompletion> nn = new HashMap<String, SQLFieldCompletion>();
 
-                // no need to load any sources anymore, this method will load
-                // them all necessarily
-                // Note that it should already be empty anyway, but still...
-                sourcesToLoad.clear();
-
                 // adds the source names
-                String[] s = dataManager.getSourceManager().getSourceNames();
+                String[] s = metManager.getSourceNames();
                 for (int i = 0; i < s.length; i++) {
                         ArrayList<String> ss = new ArrayList<String>();
                         final String name = s[i];
@@ -648,9 +537,9 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                                                 }
                                         }
 
-                                        Metadata m = cachedMetadatas.get(name);
+                                        Metadata m = metManager.getMetadataFromCache(name);
                                         if (m == null) {
-                                                m = getMetadataForDataSource(name);
+                                                m = metManager.getMetadata(name);
                                                 if (m == null) {
                                                         // cannot mount the datasource
                                                         continue;
@@ -751,47 +640,6 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                         str = str.substring(pt + 1);
                 }
                 return str.replace('\n', ' ');
-        }
-
-        /**
-         * retrieve <code>Metadata</code> for a specific data source.
-         * @param sourceName the name of the source
-         * @return the <code>Metadata</code> object containing the field names and types
-         */
-        private Metadata getMetadataForDataSource(String sourceName) {
-
-                // checking the cache
-                Metadata m = cachedMetadatas.get(sourceName);
-                if (m != null) {
-                        return m;
-                }
-                // else we have to retrieve it from a DataSource
-                // this is an expensive operation that should only be done once
-                try {
-                        DataSource ds = dataManager.getDataSourceFactory().
-                                getDataSource(sourceName, DataSourceFactory.NORMAL);
-                        final Driver driver = ds.getDriver();
-                        synchronized (driver) {
-                                if (driver instanceof FileDriver && ((FileDriver) driver).isOpen()) {
-                                        m = new DefaultMetadata(ds.getMetadata());
-                                } else {
-                                        ds.open();
-                                        m = new DefaultMetadata(ds.getMetadata());
-                                        ds.close();
-                                }
-                        }
-                        // then we cache it
-                        cachedMetadatas.put(sourceName, m);
-                        return m;
-                } catch (DriverLoadException ex) {
-                        return null;
-                } catch (NoSuchTableException ex) {
-                        return null;
-                } catch (DataSourceCreationException ex) {
-                        return null;
-                } catch (DriverException ex) {
-                        return null;
-                }
         }
 
         /**
@@ -926,18 +774,12 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
         }
 
         @Override
-        public void sourceAdded(final SourceEvent e) {
-                if (!e.isWellKnownName()) {
-                        return;
-                }
-                sourcesToLoad.add(e.getName());
+        public void metadataAdded(String name, Metadata m) {
         }
 
         @Override
-        public void sourceRemoved(SourceRemovalEvent e) {
-
-                Metadata m = cachedMetadatas.remove(e.getName());
-                cachedCompletions.remove(e.getName());
+        public void metadataRemoved(String name, Metadata m) {
+                cachedCompletions.remove(name);
 
                 // we also remove the completion items of all the fields
                 // the will be rebuild without this source referenced
@@ -950,22 +792,6 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                                 // too bad...
                                 // we already used it that way, so it won't fail
                         }
-                } else {
-                        // maybe it was scheduled for loading
-                        sourcesToLoad.remove(e.getName());
-                }
-        }
-
-        @Override
-        public void sourceNameChanged(SourceEvent e) {
-                Metadata m = cachedMetadatas.remove(e.getName());
-                if (m != null) {
-                        cachedMetadatas.put(e.getNewName(), m);
-                } else {
-                        // this source wasn't cached
-                        // maybe scheduled for loading
-                        sourcesToLoad.remove(e.getName());
-                        sourcesToLoad.add(e.getNewName());
                 }
         }
 }

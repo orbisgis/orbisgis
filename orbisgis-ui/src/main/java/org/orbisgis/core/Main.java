@@ -192,7 +192,7 @@ public class Main {
 						+ "name, version, etc.", applicationInfo);
 		// Install OrbisGIS core services
 		OrbisgisUIServices.installServices();
-
+                
 	}
 
 	private static void initProperties() {
