@@ -38,9 +38,7 @@
  **/
 package org.orbisgis.core.ui.plugins.views.sqlConsole.language;
 
-import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
@@ -50,11 +48,9 @@ import java.util.NoSuchElementException;
 public final class SQLString implements CharSequence {
 
         private final String s;
-        private final String[] tokens;
 
-        public SQLString(String s, String[] tokens) {
+        public SQLString(String s) {
                 this.s = s;
-                this.tokens = tokens;
         }
 
         @Override
@@ -105,28 +101,21 @@ public final class SQLString implements CharSequence {
                         int end = currentIndex + 1;
 
                         // we go back again until we get to an invalid character
-                        int start = 0;
-                        if (currentIndex != 0) {
-                                do {
-                                        currentIndex--;
-                                        currChar = s.charAt(currentIndex);
-                                } while (isCorrectChar(currChar) && currentIndex != 0);
-                                start = currentIndex + 1;
+                        while (isCorrectChar(currChar) && currentIndex != 0) {
+                                currentIndex--;
+                                currChar = s.charAt(currentIndex);
                         }
-
+                        int start = currentIndex == 0 ? 0 : currentIndex + 1;
+                        
                         String str = s.substring(start, end).toUpperCase();
-                        int type = Arrays.binarySearch(tokens, "T_" + str);
-                        if (type < 0) {
-                                type = -1;
-                        }
-                        return new SQLToken(str, type);
+                        return new SQLToken(str);
 
                 }
 
                 private boolean isCorrectChar(char currChar) {
-                       return !Character.isWhitespace(currChar) &&
-                               (Character.isLetterOrDigit(currChar) ||
-                               currChar == '_' || currChar == '.' );
+                        return !Character.isWhitespace(currChar)
+                                && (Character.isLetterOrDigit(currChar)
+                                || currChar == '_' || currChar == '.');
                 }
 
                 @Override
@@ -134,11 +123,11 @@ public final class SQLString implements CharSequence {
                         throw new UnsupportedOperationException();
                 }
         }
-        
+
         public boolean match(SQLToken[] tokens) {
                 int i = 0;
                 Iterator<SQLToken> refIterator = getTokenIterator();
-                
+
                 while (i != tokens.length) {
                         if (refIterator.hasNext()) {
                                 SQLToken next = refIterator.next();
@@ -151,11 +140,11 @@ public final class SQLString implements CharSequence {
                         }
                         i++;
                 }
-                
+
                 return true;
         }
-        
+
         public boolean match(SQLToken token) {
-                return match(new SQLToken[] { token });
+                return match(new SQLToken[]{token});
         }
 }

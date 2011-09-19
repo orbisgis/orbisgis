@@ -38,6 +38,8 @@
  **/
 package org.orbisgis.core.ui.plugins.views.sqlConsole.language;
 
+import org.gdms.sql.engine.parsing.GdmSQLParser;
+
 /**
  *
  * @author antoine
@@ -45,11 +47,9 @@ package org.orbisgis.core.ui.plugins.views.sqlConsole.language;
 public final class SQLToken {
 
         public final String text;
-        public final int type;
 
-        public SQLToken(String text, int type) {
+        public SQLToken(String text) {
                 this.text = text;
-                this.type = type;
         }
 
         @Override
@@ -64,9 +64,6 @@ public final class SQLToken {
                 if ((this.text == null) ? (other.text != null) : !this.text.equals(other.text)) {
                         return false;
                 }
-                if (this.type != other.type) {
-                        return false;
-                }
                 return true;
         }
 
@@ -74,17 +71,16 @@ public final class SQLToken {
         public int hashCode() {
                 int hash = 7;
                 hash = 89 * hash + (this.text != null ? this.text.hashCode() : 0);
-                hash = 89 * hash + this.type;
                 return hash;
         }
         
-        public static SQLToken fromType(int type, String[] tokens) {
-                String s = tokens[type];
-                return new SQLToken(s.replace("T_", ""), type);
+        public static SQLToken fromType(int type) {
+                String s = GdmSQLParser.tokenNames[type];
+                return new SQLToken(s.replace("T_", ""));
         }
 
         @Override
         public String toString() {
-                return "SQLToken{" + "text=" + text + ", type=" + type + '}';
+                return "SQLToken{" + "text=" + text + '}';
         }
 }
