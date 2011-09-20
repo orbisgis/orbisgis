@@ -69,9 +69,34 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 
+/**
+ * A {@code MarkGraphic} is created by stroking and filling a geometry line or shape.
+ * It is built using the following parameters :
+ * <ul><li>A definition of the contained graphic, that can be exclusively of one of these types :
+ *      <ul><li> WellKnownText : as defined in {@link WellKnownName}.</li>
+ *      <li>An online resource, defined with an URI (to a TrueType font, for instance,
+ *              particularly if associated with a markindex value</li>
+ *      <li>An inlineContent, ie a nested mark description</li>
+ *      </ul></li>
+ * <li>A Format, describing the MIME-type.</li>
+ * <li>A Markindex, used to retrieve the desired mark in a remote collection (a glyph
+ *      within a font, for instance</li>
+ * <li>A unit of measure</li>
+ * <li>A viewbox, as described in {@link ViewBox}</li>
+ * <li>A {@link Transform}, that describes an affine transformation that must be applied on the mark.</li>
+ * <li>A {@link Halo}</li>
+ * <li>A {@link Fill}</li>
+ * <li>A {@link Stroke}</li>
+ * <li>A perpendicular offset</li>
+ * </ul>
+ * @author maxence, alexis
+ */
 public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, ViewBoxNode, UomNode, TransformNode {
 
-    public static final double defaultSize = 3;
+        /**
+         * The defautl size used to buld {@code MarkGraphic} instances.
+         */
+    public static final double DEFAULT_SIZE = 3;
     //private MarkGraphicSource source;
     private Uom uom;
     private Transform transform;
@@ -87,20 +112,34 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
     private Shape shape;
     private String mimeType;
 
+    /**
+     * Build a default {@code MarkGraphic}. It is built using the {@link WellKnownName#CIRCLE}
+     * value. The mark will be rendered using default solid fill and pen stroke. The 
+     * associated unit of measure is {@link Uom#MM}, and it has the {@link #DEFAULT_SIZE}.
+     */
     public MarkGraphic() {
         this.setTo3mmCircle();
     }
 
+    /**
+     * Transform this {@code MarkGraphic} in default one, as described in the default constructor.
+     */
     public void setTo3mmCircle() {
         this.setUom(Uom.MM);
         this.setWkn(new StringLiteral("circle"));
 
-        this.setViewBox(new ViewBox(new RealLiteral(defaultSize)));
+        this.setViewBox(new ViewBox(new RealLiteral(DEFAULT_SIZE)));
         this.setFill(new SolidFill());
         ((RealLiteral) ((SolidFill) this.getFill()).getOpacity()).setValue(100.0);
         this.setStroke(new PenStroke());
     }
 
+    /**
+     * Build a new {@code MarkGraphic} from the given {@code JAXBElement}.
+     * @param markG
+     * @throws IOException
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     */
     MarkGraphic(JAXBElement<MarkGraphicType> markG) throws IOException, InvalidStyle {
         MarkGraphicType t = markG.getValue();
 
@@ -136,7 +175,6 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
         // Source
         if (t.getWellKnownName() != null) {
             this.setWkn(SeParameterFactory.createStringParameter(t.getWellKnownName()));
-            //this.setSource(); // TODO WellKnownName !!!
         } else {
             if (t.getOnlineResource() != null) {
                 //this.setSource((MarkGraphicSource) new OnlineResource(t.getOnlineResource()));
@@ -198,10 +236,18 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
         }
     }
 
+    /**
+     * Get the {@link Halo} defined around this {@code MarkGraphic}.
+     * @return 
+     */
     public Halo getHalo() {
         return halo;
     }
 
+    /**
+     * Set the {@link Halo} defined around this {@code MarkGraphic}.
+     * @param halo 
+     */
     public void setHalo(Halo halo) {
         this.halo = halo;
         if (halo != null) {
@@ -244,10 +290,18 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
     public MarkGraphicSource getSource() {
     return source;
     }*/
-    public RealParameter getpOffset() {
+    /**
+     * Get the perpendicular offset applied to this {@code MarkGraphic} before rendering.
+     * @return 
+     */
+    public RealParameter getPerpendicularOffset() {
         return pOffset;
     }
 
+    /**
+     * Set the perpendicular offset applied to this {@code MarkGraphic} before rendering.
+     * @param pOffset 
+     */
     public void setPerpendicularOffset(RealParameter pOffset) {
         this.pOffset = pOffset;
         if (this.pOffset != null) {
@@ -255,6 +309,11 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
         }
     }
 
+    /**
+     * Gets the index where to retrieve the mark in the collection associated to
+     * this {@code MarkGraphic}.
+     * @param mIndex 
+     */
     private void setMarkIndex(RealParameter mIndex) {
         this.markIndex = mIndex;
         this.markIndex.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
@@ -275,6 +334,14 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
         shape = null;
     }
 
+    /**
+     * Tries to retrieve the source that defines this {@code MarkGraphic} in the 
+     * SpatialDataSourceDecorator, at the diven index.
+     * @param sds
+     * @param fid
+     * @return
+     * @throws ParameterException 
+     */
     private MarkGraphicSource getSource(SpatialDataSourceDecorator sds, long fid) throws ParameterException {
         if (wkn != null) {
             return WellKnownName.fromString(wkn.getValue(sds, fid));
@@ -475,7 +542,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
     double delta = 0.0;
 
     if (viewBox != null && viewBox.usable()) {
-    Point2D dim = viewBox.getDimensionInPixel(sds, fid, defaultSize, defaultSize, mt.getScaleDenominator(), mt.getDpi());
+    Point2D dim = viewBox.getDimensionInPixel(sds, fid, DEFAULT_SIZE, DEFAULT_SIZE, mt.getScaleDenominator(), mt.getDpi());
     delta = Math.max(dim.getX(), dim.getY());
     } else {
     MarkGraphicSource source = getSource(sds, fid);
@@ -490,10 +557,18 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 
     return delta;
     }*/
+    /**
+     * Get the online resource that defines this {@code MarkGraphic}.
+     * @return 
+     */
     public OnlineResource getOnlineResource() {
         return onlineResource;
     }
 
+    /**
+     * Set the online resource that defines this {@code MarkGraphic}.
+     * @param onlineResource 
+     */
     public void setOnlineResource(OnlineResource onlineResource) {
         this.onlineResource = onlineResource;
         if (onlineResource != null) {
@@ -501,10 +576,18 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
         }
     }
 
+    /**
+     * Gets the WellKnownName defining this {@code MarkGraphic}.
+     * @return 
+     */
     public StringParameter getWkn() {
         return wkn;
     }
 
+    /**
+     * Sets the WellKnownName defining this {@code MarkGraphic}.
+     * @param wkn 
+     */
     public void setWkn(StringParameter wkn) {
         this.wkn = wkn;
         if (this.wkn != null) {

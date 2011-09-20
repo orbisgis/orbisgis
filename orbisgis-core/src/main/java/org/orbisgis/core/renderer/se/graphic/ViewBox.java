@@ -35,8 +35,6 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-
-
 package org.orbisgis.core.renderer.se.graphic;
 
 import java.awt.geom.Point2D;
@@ -50,153 +48,199 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
+/**
+ * {@code ViewBox} supplies a simplen and convenient method to change the view box of a graphic,
+ * in a {@link MarkGraphic} for instance.
+ * {@code ViewBox} is bult using the following parameters :
+ * <ul><li>X : the width of the box.</li>
+ * <li>Y : the height of the box.</li></ul>
+ * If only one of these two is given, they are considered to be equal.</p>
+ * <p>The main difference between this class and {@link Scale} is that a {@code Scale}
+ * will use a reference graphic, that already has a size, and process an affine transformation
+ * on it, while here the size of the graphic will be defined directly using its height
+ * and width.
+ * @author alexis, maxence
+ */
 public final class ViewBox implements SymbolizerNode {
+        
+        private SymbolizerNode parent;
+        private RealParameter x;
+        private RealParameter y;
 
-	public ViewBox(){
-		setWidth(null);
-		setHeight(null);
-	}
-
-    public ViewBox(RealParameter width) {
-		setWidth(width);
-    }
-
-    public ViewBox(ViewBoxType viewBox) throws InvalidStyle {
-        if (viewBox.getHeight() != null){
-            this.setHeight(SeParameterFactory.createRealParameter(viewBox.getHeight()));
+        /**
+         * Build a new {@code ViewBox}, with empty parameters.
+         */
+        public ViewBox() {
+                setWidth(null);
+                setHeight(null);
         }
 
-        if (viewBox.getWidth() != null){
-            this.setWidth(SeParameterFactory.createRealParameter(viewBox.getWidth()));
-        }
-    }
-
-	public boolean usable() {
-		return this.x != null || this.y != null;
-	}
-
-
-    public void setWidth(RealParameter width) {
-        x = width;
-		if (x!= null){
-			x.setContext(RealParameterContext.REAL_CONTEXT);
-		}
-    }
-
-    public RealParameter getWidth() {
-        return x;
-    }
-
-    public void setHeight(RealParameter height) {
-        y = height;
-		if (y!= null){
-			y.setContext(RealParameterContext.REAL_CONTEXT);
-		}
-    }
-
-    public RealParameter getHeight() {
-        return y;
-    }
-
-    @Override
-    public Uom getUom() {
-        return parent.getUom();
-    }
-
-    @Override
-    public SymbolizerNode getParent() {
-        return parent;
-    }
-
-    @Override
-    public void setParent(SymbolizerNode node) {
-        parent = node;
-    }
-
-    public String dependsOnFeature() {
-        String sx = "";
-        String sy = "";
-
-        if (x != null){
-            sx = x.dependsOnFeature();
-        }
-        if (y != null){
-            sy = y.dependsOnFeature();
+        /**
+         * Build a new {@code ViewBox}, using the given width.
+         */
+        public ViewBox(RealParameter width) {
+                setWidth(width);
         }
 
-        return (sx + " " + sy).trim();
-    }
+        /**
+         * Build a new {@code ViewBox} using the given JAXB type.
+         * @param viewBox
+         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         */
+        public ViewBox(ViewBoxType viewBox) throws InvalidStyle {
+                if (viewBox.getHeight() != null) {
+                        this.setHeight(SeParameterFactory.createRealParameter(viewBox.getHeight()));
+                }
 
-    /**
-     * Return the final dimension described by this view box, in [px].
-     * @param ds DataSource, i.e. the layer
-     * @param fid feature id
-     * @param ratio required final ratio (if either width or height isn't defined)
-     * @return
-     * @throws ParameterException
-     */
-    public Point2D getDimensionInPixel(SpatialDataSourceDecorator sds, long fid, double height, double width, Double scale, Double dpi) throws ParameterException {
-        double dx, dy;
-
-		double ratio = height / width;
-
-        if (x != null && y != null) {
-            dx = x.getValue(sds, fid);
-            dy = y.getValue(sds, fid);
-        } else if (x != null) {
-            dx = x.getValue(sds, fid);
-            dy = dx * ratio;
-        } else if (y != null) {
-            dy = y.getValue(sds, fid);
-            dx = dy / ratio;
-        } else { // nothing is defined
-            dx = width;
-            dy = height;
-			//return null; 
+                if (viewBox.getWidth() != null) {
+                        this.setWidth(SeParameterFactory.createRealParameter(viewBox.getWidth()));
+                }
         }
 
-
-        dx = Uom.toPixel(dx, this.getUom(), dpi, scale, width);
-        dy = Uom.toPixel(dy, this.getUom(), dpi, scale, height);
-
-		if (dx <= 0.00021 || dy <= 0.00021){
-			throw new ParameterException("View-box is too small: (" + dx + ";" + dy + ")");
-		}
-
-        return new Point2D.Double(dx, dy);
-    }
-
-    public ViewBoxType getJAXBType() {
-        ViewBoxType v = new ViewBoxType();
-
-        if (x != null) {
-            v.setWidth(x.getJAXBParameterValueType());
+        /**
+         * A {@code ViewBox} can be used if and only if one, at least, of its two parameters
+         * has been set.
+         * @return 
+         */
+        public boolean usable() {
+                return this.x != null || this.y != null;
         }
 
-        if (y != null) {
-            v.setHeight(y.getJAXBParameterValueType());
+        /**
+         * Set the wifth of this {@code ViewBox}.
+         * @param width 
+         */
+        public void setWidth(RealParameter width) {
+                x = width;
+                if (x != null) {
+                        x.setContext(RealParameterContext.REAL_CONTEXT);
+                }
+        }
+        /**
+         * Get the wifth of this {@code ViewBox}.
+         * @return 
+         */
+        public RealParameter getWidth() {
+                return x;
         }
 
-        return v;
-    }
-
-	@Override
-    public String toString(){
-        String result = "ViewBox:";
-
-        if (this.x != null){
-            result += "  Width: " + x.toString();
+        /**
+         * Set the height of this {@code ViewBox}.
+         * @param height 
+         */
+        public void setHeight(RealParameter height) {
+                y = height;
+                if (y != null) {
+                        y.setContext(RealParameterContext.REAL_CONTEXT);
+                }
         }
 
-        if (this.y != null){
-            result += "  Height: " + y.toString();
+        /**
+         * Get the height of this {@code ViewBox}.
+         * @return 
+         */
+        public RealParameter getHeight() {
+                return y;
         }
 
-        return result;
-    }
+        @Override
+        public Uom getUom() {
+                return parent.getUom();
+        }
+
+        @Override
+        public SymbolizerNode getParent() {
+                return parent;
+        }
+
+        @Override
+        public void setParent(SymbolizerNode node) {
+                parent = node;
+        }
+
+        public String dependsOnFeature() {
+                String sx = "";
+                String sy = "";
+
+                if (x != null) {
+                        sx = x.dependsOnFeature();
+                }
+                if (y != null) {
+                        sy = y.dependsOnFeature();
+                }
+
+                return (sx + " " + sy).trim();
+        }
+
+        /**
+         * Return the final dimension described by this view box, in [px].
+         * @param ds DataSource, i.e. the layer
+         * @param fid feature id
+         * @param ratio required final ratio (if either width or height isn't defined)
+         * @return
+         * @throws ParameterException
+         */
+        public Point2D getDimensionInPixel(SpatialDataSourceDecorator sds, long fid, double height, double width, Double scale, Double dpi) throws ParameterException {
+                double dx, dy;
+
+                double ratio = height / width;
+
+                if (x != null && y != null) {
+                        dx = x.getValue(sds, fid);
+                        dy = y.getValue(sds, fid);
+                } else if (x != null) {
+                        dx = x.getValue(sds, fid);
+                        dy = dx * ratio;
+                } else if (y != null) {
+                        dy = y.getValue(sds, fid);
+                        dx = dy / ratio;
+                } else { // nothing is defined
+                        dx = width;
+                        dy = height;
+                        //return null; 
+                }
 
 
-    private SymbolizerNode parent;
-    private RealParameter x;
-    private RealParameter y;
+                dx = Uom.toPixel(dx, this.getUom(), dpi, scale, width);
+                dy = Uom.toPixel(dy, this.getUom(), dpi, scale, height);
+
+                if (dx <= 0.00021 || dy <= 0.00021) {
+                        throw new ParameterException("View-box is too small: (" + dx + ";" + dy + ")");
+                }
+
+                return new Point2D.Double(dx, dy);
+        }
+
+        /**
+         * Retrieve this {@code ViewBox} as a JAXB type.
+         * @return 
+         */
+        public ViewBoxType getJAXBType() {
+                ViewBoxType v = new ViewBoxType();
+
+                if (x != null) {
+                        v.setWidth(x.getJAXBParameterValueType());
+                }
+
+                if (y != null) {
+                        v.setHeight(y.getJAXBParameterValueType());
+                }
+
+                return v;
+        }
+
+        @Override
+        public String toString() {
+                String result = "ViewBox:";
+
+                if (this.x != null) {
+                        result += "  Width: " + x.toString();
+                }
+
+                if (this.y != null) {
+                        result += "  Height: " + y.toString();
+                }
+
+                return result;
+        }
 }

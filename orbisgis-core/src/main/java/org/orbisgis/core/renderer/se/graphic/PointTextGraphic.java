@@ -20,209 +20,201 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
+/**
+ * A {@code PointTextGraphic} is used to paint a text label using a given translation. It is consequently
+ * dependant on :
+ * <ul><li>A x-coordinate</li>
+ * <li>A y-coordinate</li>
+ * <li>A {@code PointLabel}</li></ul>
+ * @author alexis
+ */
 public final class PointTextGraphic extends Graphic implements UomNode {
 
-    private Uom uom;
-    private PointLabel pointLabel;
-    private RealParameter x;
-    private RealParameter y;
+        private Uom uom;
+        private PointLabel pointLabel;
+        private RealParameter x;
+        private RealParameter y;
 
-    public PointTextGraphic() {
-        setPointLabel(new PointLabel());
-    }
-
-    PointTextGraphic(JAXBElement<PointTextGraphicType> tge) throws InvalidStyle {
-        PointTextGraphicType tgt = tge.getValue();
-
-        if (tgt.getUom() != null) {
-            this.setUom(Uom.fromOgcURN(tgt.getUom()));
+        /**
+         * Build a new {@code PointTextGraphic}, at the position of its container. 
+         */
+        public PointTextGraphic() {
+                setPointLabel(new PointLabel());
         }
 
-        if (tgt.getPointLabel() != null) {
-            this.setPointLabel(new PointLabel(tgt.getPointLabel()));
+        PointTextGraphic(JAXBElement<PointTextGraphicType> tge) throws InvalidStyle {
+                PointTextGraphicType tgt = tge.getValue();
+
+                if (tgt.getUom() != null) {
+                        this.setUom(Uom.fromOgcURN(tgt.getUom()));
+                }
+
+                if (tgt.getPointLabel() != null) {
+                        this.setPointLabel(new PointLabel(tgt.getPointLabel()));
+                }
+
+                if (tgt.getPointPosition() != null) {
+                        PointPositionType pp = tgt.getPointPosition();
+                        if (pp.getX() != null) {
+                                setX(SeParameterFactory.createRealParameter(pp.getX()));
+                        }
+
+                        if (pp.getY() != null) {
+                                setY(SeParameterFactory.createRealParameter(pp.getY()));
+                        }
+                }
         }
 
-        if (tgt.getPointPosition() != null) {
-            PointPositionType pp = tgt.getPointPosition();
-            if (pp.getX() != null) {
-                setX(SeParameterFactory.createRealParameter(pp.getX()));
-            }
-
-            if (pp.getY() != null) {
-                setY(SeParameterFactory.createRealParameter(pp.getY()));
-            }
-        }
-    }
-
-
-    @Override
-    public Uom getUom() {
-        if (uom != null) {
-            return this.uom;
-        } else {
-            return parent.getUom();
-        }
-    }
-
-	@Override
-	public Uom getOwnUom(){
-		return uom;
-	}
-
-	@Override
-    public void setUom(Uom uom) {
-        this.uom = uom;
-    }
-
-
-
-    public PointLabel getPointLabel() {
-        return pointLabel;
-    }
-
-    public void setPointLabel(PointLabel pointLabel) {
-        this.pointLabel = pointLabel;
-        if (pointLabel != null) {
-            pointLabel.setParent(this);
-        }
-    }
-
-    /**
-     * @param ds
-     * @param fid
-     * @todo implements !
-     */
-    /*@Override
-    public RenderableGraphics getRenderableGraphics(SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException {
-        double px = 0;
-        double py = 0;
-
-        if (this.x != null) {
-            px = Uom.toPixel(x.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-        }
-        if (this.y != null) {
-            py = Uom.toPixel(y.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+        @Override
+        public Uom getUom() {
+                if (uom != null) {
+                        return this.uom;
+                } else {
+                        return parent.getUom();
+                }
         }
 
-        RenderableGraphics image = pointLabel.getLabel().getImage(sds, fid, selected, mt);
+        @Override
+        public Uom getOwnUom() {
+                return uom;
+        }
 
-        double height = 0.0;
-        height = Math.abs(py);
-        height += image.getHeight();
+        @Override
+        public void setUom(Uom uom) {
+                this.uom = uom;
+        }
 
-        //height += pointLabel.getLabel().getStroke().getMaxWidth(sds, fid, mt);
+        /**
+         * Get the inner label, contained in this {@code PointTextGraphic}.
+         * @return 
+         */
+        public PointLabel getPointLabel() {
+                return pointLabel;
+        }
 
-        double width = 0.0;
-        width = Math.abs(px);
-        width += image.getWidth();
-        //width += pointLabel.getLabel().getStroke().getMaxWidth(sds, fid, mt);
+        /**
+         * Set the inner label, contained in this {@code PointTextGraphic}.
+         * @param pointLabel 
+         */
+        public void setPointLabel(PointLabel pointLabel) {
+                this.pointLabel = pointLabel;
+                if (pointLabel != null) {
+                        pointLabel.setParent(this);
+                }
+        }
 
-        Rectangle2D.Double bounds = new Rectangle2D.Double(-width, -height, 2 * width, 2 * height);
-        RenderableGraphics g2 = Graphic.getNewRenderableGraphics(bounds, 10, mt);
+        @Override
+        public Rectangle2D getBounds(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
 
-        pointLabel.draw(g2, sds, fid, bounds, selected, mt, null);
-        return g2;
-    }*/
+        @Override
+        public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
+                boolean selected, MapTransform mt, AffineTransform fat) throws ParameterException, IOException {
+
+                AffineTransform at = new AffineTransform(fat);
+                double px = 0;
+                double py = 0;
+
+                if (getX() != null) {
+                        px = Uom.toPixel(getX().getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                }
+                if (getY() != null) {
+                        py = Uom.toPixel(getY().getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                }
+
+                Rectangle2D.Double bounds = new Rectangle2D.Double(px - 5, py - 5, 10, 10);
+                Shape atShp = at.createTransformedShape(bounds);
+
+                pointLabel.draw(g2, sds, fid, atShp, selected, mt, null);
+        }
 
 
-    @Override
-    public Rectangle2D getBounds(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
+        /*@Override
+        public double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
-    }
+        }*/
+        @Override
+        public JAXBElement<PointTextGraphicType> getJAXBElement() {
+                PointTextGraphicType t = new PointTextGraphicType();
 
+                if (pointLabel != null) {
+                        t.setPointLabel(pointLabel.getJAXBType());
+                }
 
-    @Override
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, 
-            boolean selected, MapTransform mt, AffineTransform fat) throws ParameterException, IOException {
+                if (x != null || y != null) {
+                        PointPositionType ppt = new PointPositionType();
+                        if (x != null) {
+                                ppt.setX(x.getJAXBParameterValueType());
+                        }
+                        if (y != null) {
+                                ppt.setY(y.getJAXBParameterValueType());
+                        }
 
-        AffineTransform at = new AffineTransform(fat);
-        double px = 0;
-        double py = 0;
-
-        if (getX() != null) {
-            px = Uom.toPixel(getX().getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-        }
-        if (getY() != null) {
-            py = Uom.toPixel(getY().getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-        }
-
-        Rectangle2D.Double bounds = new Rectangle2D.Double(px-5, py-5, 10, 10);
-        Shape atShp = at.createTransformedShape(bounds);
-
-        pointLabel.draw(g2, sds, fid, atShp, selected, mt, null);
-    }
-
-
-    /*@Override
-    public double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }*/
-
-    @Override
-    public JAXBElement<PointTextGraphicType> getJAXBElement() {
-        PointTextGraphicType t = new PointTextGraphicType();
-
-        if (pointLabel != null) {
-            t.setPointLabel(pointLabel.getJAXBType());
+                        t.setPointPosition(ppt);
+                }
+                if (getOwnUom() != null) {
+                        t.setUom(getOwnUom().toURN());
+                }
+                ObjectFactory of = new ObjectFactory();
+                return of.createPointTextGraphic(t);
         }
 
-        if (x != null || y != null) {
-            PointPositionType ppt = new PointPositionType();
-            if (x != null) {
-                ppt.setX(x.getJAXBParameterValueType());
-            }
-            if (y != null) {
-                ppt.setY(y.getJAXBParameterValueType());
-            }
+        @Override
+        public String dependsOnFeature() {
+                String result = "";
+                if (pointLabel != null) {
+                        result += pointLabel.dependsOnFeature();
+                }
+                if (x != null) {
+                        result += " " + x.dependsOnFeature();
+                }
+                if (y != null) {
+                        result += " " + y.dependsOnFeature();
+                }
 
-            t.setPointPosition(ppt);
-        }
-        if (getOwnUom() != null) {
-            t.setUom(getOwnUom().toURN());
-        }
-        ObjectFactory of = new ObjectFactory();
-        return of.createPointTextGraphic(t);
-    }
-
-    @Override
-    public String dependsOnFeature() {
-        String result = "";
-        if (pointLabel != null){
-            result += pointLabel.dependsOnFeature();
-        }
-        if (x != null){
-            result += " " + x.dependsOnFeature();
-        }
-        if (y != null){
-            result += " " + y.dependsOnFeature();
+                return result.trim();
         }
 
-        return result.trim();
-    }
-
-    public RealParameter getX() {
-        return x;
-    }
-
-    public void setX(RealParameter x) {
-        this.x = x;
-        if (this.x != null){
-            this.x.setContext(RealParameterContext.REAL_CONTEXT);
+        /**
+         * Get the x-displacement in the associated translation.
+         * @return 
+         */
+        public RealParameter getX() {
+                return x;
         }
-    }
 
-    public RealParameter getY() {
-        return y;
-    }
-
-    public void setY(RealParameter y) {
-        this.y = y;
-        if (this.y != null){
-            this.y.setContext(RealParameterContext.REAL_CONTEXT);
+        /**
+         * Set the x-displacement in the associated translation.
+         * @param x 
+         */
+        public void setX(RealParameter x) {
+                this.x = x;
+                if (this.x != null) {
+                        this.x.setContext(RealParameterContext.REAL_CONTEXT);
+                }
         }
-    }
 
-    @Override
-    public void updateGraphic() {
-    }
+        /**
+         * Get the y-displacement in the associated translation.
+         * @return 
+         */
+        public RealParameter getY() {
+                return y;
+        }
+
+        /**
+         * Set the y-displacement in the associated translation.
+         * @param y 
+         */
+        public void setY(RealParameter y) {
+                this.y = y;
+                if (this.y != null) {
+                        this.y.setContext(RealParameterContext.REAL_CONTEXT);
+                }
+        }
+
+        @Override
+        public void updateGraphic() {
+        }
 }

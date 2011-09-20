@@ -51,15 +51,29 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 /**
- * Represent Marks 
+ * {@code WellKnownName} instances are used to build simple vectorial {@link MarkGraphic}.
+ * There are six types of {@code WellKnownName} :
+ * <ul><li>SQUARE</li>
+ * <li>CIRCLE</li>
+ * <li>HALFCIRCLE</li>
+ * <li>TRIANGLE</li>
+ * <li>STAR</li>
+ * <li>CROSS</li>
+ * <li>X</li>
+ * </ul>
  *
- * @author maxence
+ * @author alexis, maxence
  */
 public enum WellKnownName implements MarkGraphicSource {
     SQUARE, CIRCLE, HALFCIRCLE, TRIANGLE, STAR, CROSS, X;
 
     public static double DEFAULT_SIZE = 10.0;
 
+    /**
+     * Get all the {@code String} values that can be used to build a {@code WellKnownName}.
+     * @return 
+     * An array of lega {@code String} values
+     */
     public static String[] getValues(){
         String[] list = new String[WellKnownName.values().length];
         int i = 0;
@@ -70,7 +84,12 @@ public enum WellKnownName implements MarkGraphicSource {
         return list;
     }
 
-
+    /**
+     * Build a new {@code WellKnownName} from a {@code String token}.
+     * @param token
+     * @return 
+     * A {@code WellKnownName} value.
+     */
     public static WellKnownName fromString(String token){
         if (token.equalsIgnoreCase("SQUARE")){
             return SQUARE;
@@ -106,7 +125,7 @@ public enum WellKnownName implements MarkGraphicSource {
         double x=DEFAULT_SIZE, y=DEFAULT_SIZE; // The size of the shape, [final unit] => [px]
 
         if (viewBox != null && viewBox.usable()) {
-            Point2D box = viewBox.getDimensionInPixel(sds, fid, MarkGraphic.defaultSize, MarkGraphic.defaultSize, scale, dpi);
+            Point2D box = viewBox.getDimensionInPixel(sds, fid, MarkGraphic.DEFAULT_SIZE, MarkGraphic.DEFAULT_SIZE, scale, dpi);
             x = box.getX();
             y = box.getY();
         }

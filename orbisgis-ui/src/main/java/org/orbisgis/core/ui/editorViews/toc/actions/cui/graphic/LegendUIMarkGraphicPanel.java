@@ -86,7 +86,7 @@ public class LegendUIMarkGraphicPanel extends LegendUIComponent implements Legen
 
         this.transform = new LegendUITransformPanel(controller, this, m);
 
-		this.pOffset = new LegendUIMetaRealPanel("POffset", controller, this, mark.getpOffset(), true) {
+		this.pOffset = new LegendUIMetaRealPanel("POffset", controller, this, mark.getPerpendicularOffset(), true) {
 
 			@Override
 			public void realChanged(RealParameter newReal) {

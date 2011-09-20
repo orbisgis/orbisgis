@@ -35,17 +35,25 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-
 package org.orbisgis.core.renderer.se.graphic;
 
 import org.orbisgis.core.renderer.se.transform.Transform;
 
-
 /**
- *
- * @author maxence
+ * TransformNode are graphics for which we can use {@link Transform}.
+ * @author alexis, maxence
  */
 public interface TransformNode {
-    void setTransform(Transform t);
-    Transform getTransform();
+
+        /**
+         * Set the inner {@link Transform} associated to this node to {@code t}.
+         * @param t 
+         */
+        void setTransform(Transform t);
+
+        /**
+         * Get the {@link Transform} associated to this node.
+         * @return 
+         */
+        Transform getTransform();
 }
