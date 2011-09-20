@@ -25,11 +25,11 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 
 /**
- * Labems are used to provide text-label contents. A textSymbolizer must contain
+ * Labels are used to provide text-label contents. A textSymbolizer must contain
  * a label - If not it won't be displayed.</p>
  * <p>A Label instance contains a text value (as a StyledText) and informations 
  * about its alignment, vertical or horizontal.
- * @author maxence
+ * @author maxence, alexis
  */
 public abstract class Label implements SymbolizerNode, UomNode {
 

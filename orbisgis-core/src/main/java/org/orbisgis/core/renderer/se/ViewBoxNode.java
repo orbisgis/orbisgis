@@ -42,8 +42,8 @@ package org.orbisgis.core.renderer.se;
 import org.orbisgis.core.renderer.se.graphic.ViewBox;
 
 /**
- *
- * @author maxence
+ * Used for every node that can be used in a viewbox.
+ * @author maxence, alexis
  */
 public interface ViewBoxNode {
 	ViewBox getViewBox();

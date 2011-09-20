@@ -26,7 +26,7 @@ import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
  * Entry point for all kind of symbolizer
  * This abstract class contains only the name, the geom and a description of the symbolizer
  * @todo Add a general draw method that fit well for vectors and raster; implement fetch default geometry
- * @author maxence
+ * @author maxence, alexis
  */
 public abstract class Symbolizer implements SymbolizerNode, Comparable {
 
@@ -151,14 +151,32 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
         this.level = level;
     }
 
+    /**
+     * Get the field where to retrieve the geometry in the associated data.
+     * @return 
+     * A {@link GeometryAttribute} that can be used to retrieve the geometry 
+     * values in the data.
+     */
     public GeometryAttribute getGeometry() {
         return the_geom;
     }
 
+    /**
+     * Set the field where to retrieve the geometry in the associated data.
+     * @param theGeom 
+     */
     public void setGeometry(GeometryAttribute theGeom) {
         this.the_geom = theGeom;
     }
 
+    /**
+     * Get the geometry registered at index fid.
+     * @param sds
+     * @param fid
+     * @return
+     * @throws DriverException
+     * @throws ParameterException 
+     */
     public Geometry getTheGeom(SpatialDataSourceDecorator sds, long fid) throws DriverException, ParameterException {
         if (the_geom != null) {
             return the_geom.getTheGeom(sds, fid);
@@ -194,20 +212,14 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
 
         s.setExtension(exts);
     }
-
-    /*public void setPropertiesFromJAXB(SymbolizerType st) {
-    if (st.getName() != null) {
-    this.name = st.getName();
-    }
     
-    if (st.getDescription() != null) {
-    // TODO Load description from XML
-    }
-    
-    if (st.getVersion() != null){
-    // TODO IMplement
-    }
-    }*/
+    /**
+     * Using the given JAXBElement, this method tries to build the correct 
+     * spacialization of {@code Symbolizer}.
+     * @param st
+     * @return
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     */
     public static Symbolizer createSymbolizerFromJAXBElement(JAXBElement<? extends SymbolizerType> st) throws InvalidStyle {
         if (st.getDeclaredType() == AreaSymbolizerType.class) {
             return new AreaSymbolizer((JAXBElement<AreaSymbolizerType>) st);
@@ -263,6 +275,19 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
         return (Rule) pIt;
     }
 
+    /**
+     * Draw the symbols in g2, using infos that are found in sds at index fid.
+     * @param g2
+     * @param sds
+     * @param fid
+     * @param selected
+     * @param mt
+     * @param theGeom
+     * @param perm
+     * @throws ParameterException
+     * @throws IOException
+     * @throws DriverException 
+     */
     public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
             boolean selected, MapTransform mt, Geometry theGeom, RenderContext perm)
             throws ParameterException, IOException, DriverException;

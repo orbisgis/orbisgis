@@ -24,7 +24,16 @@ public interface SeParameter{
      */
     String dependsOnFeature();
 
+    /**
+     * Get the JAXB type that would represent this {@code SeParameter}
+     * @return 
+     */
     ParameterValueType getJAXBParameterValueType();
    
+    
+    /**
+     * Get the JAXBElementthat would represent this {@code SeParameter}
+     * @return 
+     */
     JAXBElement<? extends ExpressionType> getJAXBExpressionType();
 }

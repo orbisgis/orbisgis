@@ -64,12 +64,26 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.transform.Transform;
 
+/**
+ * {@code TextSymbolizer} instances are used to style text labels. In addition to
+ * the {@link VectorSymbolizer} parameters, it is computed given these arguments :
+ * <ul><li>Perpendicular Offset : Transformation according a line parallel to the
+ * original geometry</li>
+ * <li>A {@link Label} that gathers all the informations needed to print the 
+ * text. This element is compulsory.</li></ul>
+ * @author alexis, maxence
+ */
 public final class TextSymbolizer extends VectorSymbolizer {
 
 	private RealParameter perpendicularOffset;
 	private Label label;
 
-
+        /**
+         * Build a new {@code TextSymbolizer} using the informations contained 
+         * in the {@code JAXBElement} given in argument.
+         * @param st
+         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         */
 	public TextSymbolizer(JAXBElement<TextSymbolizerType> st) throws InvalidStyle {
 		super(st);
 		TextSymbolizerType tst = st.getValue();
@@ -98,7 +112,11 @@ public final class TextSymbolizer extends VectorSymbolizer {
 	}
 
 
-
+        /**
+         * Build a new {@code TextSymbolizer}, named {@code Label}. It is defined
+         * using a default {@link PointLabel#PointLabel() PointLabel}, and is
+         * measured in {@link Uom#MM}.
+         */
 	public TextSymbolizer() {
 		super();
 		this.name = "Label";
@@ -106,19 +124,40 @@ public final class TextSymbolizer extends VectorSymbolizer {
 		uom = Uom.MM;
 	}
 
+        /**
+         * Set the label contained in this {@code TextSymbolizer}.
+         * @param label 
+         * The new {@code Label} contained in this {@code TextSymbolizer}. Must 
+         * be non-{@code null}.
+         */
 	public void setLabel(Label label) {
 		label.setParent(this);
 		this.label = label;
 	}
 
+        /**
+         * Get the label contained in this {@code TextSymbolizer}.
+         * @return 
+         * The label currently contained in this {@code TextSymbolizer}.
+         */
 	public Label getLabel() {
 		return label;
 	}
 
+        /**
+         * Get the offset currently associated to this {@code TextSymbolizer}.
+         * @return 
+         * The current perpendicular offset as a {@code RealParameter}. If null, 
+         * the offset is considered to be equal to {@code 0}.
+         */
 	public RealParameter getPerpendicularOffset() {
 		return perpendicularOffset;
 	}
 
+        /**
+         * Set the perpendicular offset associated to this {@code TextSymbolizer}.
+         * @param perpendicularOffset 
+         */
 	public void setPerpendicularOffset(RealParameter perpendicularOffset) {
 		this.perpendicularOffset = perpendicularOffset;
 		if (this.perpendicularOffset != null){

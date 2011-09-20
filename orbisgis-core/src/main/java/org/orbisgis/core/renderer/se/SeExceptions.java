@@ -46,6 +46,10 @@ package org.orbisgis.core.renderer.se;
  */
 public class SeExceptions {
 
+        /**
+         * This Exception is thrown when a style that can't be processed, because
+         * of a problem in the structure of the document, for instance.
+         */
 	public static class InvalidStyle extends Exception {
 
 		public InvalidStyle(String arg0){

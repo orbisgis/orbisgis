@@ -2,6 +2,11 @@ package org.orbisgis.core.renderer.se.common;
 
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
+/**
+ * This enumeration contains all the units of measure that are allowed in 
+ * Symbology Encoding.
+ * @author alexis, maxence
+ */
 public enum Uom {
 
 	PX, IN, MM, PT, PERCENT, GM, GFT;
