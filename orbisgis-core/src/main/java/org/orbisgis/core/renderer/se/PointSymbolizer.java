@@ -62,15 +62,42 @@ import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.transform.Transform;
 
+/**
+ * {@code PointSymbolizer} are used to draw a graphic at a point. As a symbolizer, 
+ * it depends on :
+ * <ul><li>A version</li>
+ * <li>A name<li>
+ * <li>A Description</li>
+ * <li>A LegendGraphic</li></ul>
+ * 
+ * It has additional requirements :
+ * <ul><li>A geometry, ie a value reference containing the geometry to style. It 
+ * is optional, but shall appear if several geometries are defined in the data
+ * type.</li>
+ * <li>A unit of measure. If not set, the UOM of the parent will be used.</li>
+ * <li>Graphic : the graphic to draw at the point. Compulsory.</li></ul>
+ * 
+ * An additional parameter can be given. It is used to determine if the symbol 
+ * must be drawn on the vertex of a geometry, rather than at its center.
+ * 
+ * @author alexis, maxence
+ */
 public final class PointSymbolizer extends VectorSymbolizer implements GraphicNode {
 
     private static final String MODE_VERTEX = "vertex";
+    private GraphicCollection graphic;
+    private boolean onVertex;
     /*
      * Create a default pointSymbolizer: Square 10mm
      *
      *
      */
 
+    /**
+     * Build a new default {@code PointSymbolizer}. It contains a 
+     * {@link graphicCollection} that contains a single default {@code MarkGraphic}.
+     * Its UOM is {@link Uom#MM}.
+     */
     public PointSymbolizer() {
         super();
         this.name = "Point symbolizer";
@@ -83,6 +110,12 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
         onVertex = false;
     }
 
+    /**
+     * Build a {@code PointSymbolizer} using the elements registered in the 
+     * givenJAXBElement.
+     * @param st
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     */
     public PointSymbolizer(JAXBElement<PointSymbolizerType> st) throws InvalidStyle {
         super(st);
         PointSymbolizerType pst = st.getValue();
@@ -199,6 +232,5 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
     public void setOnVertex(boolean onVertex) {
         this.onVertex = onVertex;
     }
-    private GraphicCollection graphic;
-    private boolean onVertex;
+    
 }

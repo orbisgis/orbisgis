@@ -63,18 +63,29 @@ import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.renderer.se.transform.Transform;
 
 /**
- * Define a style for line features
- * Only contains a stroke
+ * A {@code LineSymbolizer} is used to style a {@code Stroke} along a linear 
+ * geometry type (a LineString, for instance). It is dependant upon the same
+ * parameters as {@link VectorSymbolizer}, and upon two others :
+ * <ul><li>PerpendicularOffset : Used to draw lines in parallel to the original
+ * geometry</li>
+ * <li>Stroke : defines the way to render the line, as described in {@link Stroke}
+ * and its children</li>
+ * </ul>
  *
  * @todo add perpendicular offset
  *
- * @author maxence
+ * @author alexis, maxence
  */
 public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode {
 
     private RealParameter perpendicularOffset;
     private Stroke stroke;
 
+    /**
+     * Instanciate a new default {@code LineSymbolizer}. It's named {@code 
+     * Line Symbolizer"}, is defined in {@link Uom#MM}, and is drawn using a 
+     * default {@link PenStroke}
+     */
     public LineSymbolizer() {
         super();
         this.name = "Line Symbolizer";
@@ -82,6 +93,12 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
         setStroke(new PenStroke());
     }
 
+    /**
+     * Build a new {@code LineSymbolizer} using the {@code JAXBElement} given in
+     * argument
+     * @param st
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     */
     public LineSymbolizer(JAXBElement<LineSymbolizerType> st) throws InvalidStyle {
         super(st);
         LineSymbolizerType ast = st.getValue();
@@ -119,10 +136,19 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
         stroke.setParent(this);
     }
 
+    /**
+     * Get the current perpendicular offset. If null, considered to be set to 0.
+     * @return 
+     */
     public RealParameter getPerpendicularOffset() {
         return perpendicularOffset;
     }
 
+    /**
+     * Set the perpendicular offset. If a {@code null} value is given, the offset
+     * will be considered as equal to 0.
+     * @param perpendicularOffset 
+     */
     public void setPerpendicularOffset(RealParameter perpendicularOffset) {
         this.perpendicularOffset = perpendicularOffset;
         if (this.perpendicularOffset != null) {

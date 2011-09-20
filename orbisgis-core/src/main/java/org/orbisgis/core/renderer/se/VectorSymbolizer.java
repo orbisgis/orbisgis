@@ -70,7 +70,7 @@ import org.orbisgis.core.renderer.se.transform.Transform;
  *  <li> - an affine transformation def (transform)</li>
  * </ul>
  *
- * @author maxence
+ * @author maxence, alexis
  */
 public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 
