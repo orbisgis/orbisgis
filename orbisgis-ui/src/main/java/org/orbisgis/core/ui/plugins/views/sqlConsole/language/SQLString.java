@@ -38,7 +38,9 @@
  **/
 package org.orbisgis.core.ui.plugins.views.sqlConsole.language;
 
+import java.util.Deque;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
 /**
@@ -48,9 +50,12 @@ import java.util.NoSuchElementException;
 public final class SQLString implements CharSequence {
 
         private final String s;
+        private final Deque<SQLToken> tokenQueue = new LinkedList<SQLToken>();
+        private int currentIndex;
 
         public SQLString(String s) {
                 this.s = s;
+                currentIndex = s.length() - 1;
         }
 
         @Override
@@ -73,19 +78,24 @@ public final class SQLString implements CharSequence {
         }
 
         public class SQLStringTokenIterator implements Iterator<SQLToken> {
-
+                
+                private Iterator<SQLToken> tokenIterator;
+                
                 private SQLStringTokenIterator() {
-                        currentIndex = s.length() - 1;
+                        tokenIterator = tokenQueue.iterator();
                 }
-                private int currentIndex;
 
                 @Override
                 public boolean hasNext() {
-                        return currentIndex >= 0;
+                        return tokenIterator.hasNext() || currentIndex >= 0;
                 }
 
                 @Override
                 public SQLToken next() {
+                        if (tokenIterator.hasNext()) {
+                                return tokenIterator.next();
+                        }
+                        
                         if (currentIndex < 0) {
                                 throw new NoSuchElementException();
                         }
@@ -108,7 +118,9 @@ public final class SQLString implements CharSequence {
                         int start = currentIndex == 0 ? 0 : currentIndex + 1;
                         
                         String str = s.substring(start, end).toUpperCase();
-                        return new SQLToken(str);
+                        final SQLToken token = new SQLToken(str);
+                        tokenQueue.addLast(token);
+                        return token;
 
                 }
 
