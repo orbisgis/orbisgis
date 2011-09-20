@@ -31,7 +31,13 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 /**
- * 
+ * A {@code GraphicStroke} is used essentially to repeat a a graphic along a line. It is dependant 
+ * upon :
+ * <ul><li>A {@link GraphicCollection} that contains the graphic to render</li>
+ * <li>The length (as a {@link RealParameter}) to reserve along the line to plot 
+ * a single {@code Graphic} instance. Must be positive, and is defaulted to the 
+ * {@code Graphic} natural length.</li>
+ * <li>A relative orientation, as defined in {@link RelativeOrientation}.</li></ul>
  * @author maxence, alexis
  */
 public final class GraphicStroke extends Stroke implements GraphicNode, UomNode {
@@ -42,10 +48,20 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
     private RelativeOrientation orientation;
     private Uom uom;
 
+    /**
+     * Build a new {@code GraphicStroke} using the {@code JAXBElement} given in argument.
+     * @param elem
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     */
     GraphicStroke(JAXBElement<GraphicStrokeType> elem) throws InvalidStyle {
         this(elem.getValue());
     }
 
+    /**
+     * Build a new {@code GraphicStroke} using the JAXB type given in argument.
+     * @param gst
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     */
     GraphicStroke(GraphicStrokeType gst) throws InvalidStyle {
         super(gst);
 
@@ -65,6 +81,10 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
 
     }
 
+    /**
+     * Build a new, default, {@code GraphicStroke}. It is defined with a default
+     * {@link MarkGraphic}, as defined in {@link MarkGraphic#MarkGraphic() the default constructor}.
+     */
     public GraphicStroke() {
         super();
         this.graphic = new GraphicCollection();
@@ -83,6 +103,11 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
         return graphic;
     }
 
+    /**
+     * Set the length used to plot the embedded graphic. If set to null, then this length
+     * is defaulted to the natural length of the graphic.
+     * @param length 
+     */
     public void setLength(RealParameter length) {
         this.length = length;
         if (this.length != null) {
@@ -90,14 +115,27 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
         }
     }
 
+    /**
+     * Get the length used to plot the embedded graphic. If {@code null}, then the length
+     * of the embedded {@code Graphic} is used.
+     * @return 
+     */
     public RealParameter getLength() {
         return length;
     }
 
+    /**
+     * Set the orientation of the graphic.
+     * @param orientation 
+     */
     public void setRelativeOrientation(RelativeOrientation orientation) {
         this.orientation = orientation;
     }
 
+    /**
+     * Get the orientation of the graphic.
+     * @return 
+     */
     public RelativeOrientation getRelativeOrientation() {
         if (orientation != null) {
             return orientation;
