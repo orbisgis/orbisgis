@@ -47,6 +47,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
+import javax.swing.JToolBar;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
@@ -70,18 +71,16 @@ public class OutputPanel extends JPanel implements OutputManager {
 		this.setLayout(new BorderLayout());
 		jTextArea = new JTextPane();
 		this.viewId = viewId;
-
-		this.add(getButtonPanel(), BorderLayout.NORTH);
+		this.add(getButtonToolBar(), BorderLayout.NORTH);
 		this.add(new JScrollPane(jTextArea), BorderLayout.CENTER);
 
 	}
 
-	public JPanel getButtonPanel() {
-
-		JPanel buttonsPanel = new JPanel();
-		final FlowLayout flowLayout = new FlowLayout();
-		flowLayout.setAlignment(FlowLayout.LEFT);
-		buttonsPanel.setLayout(flowLayout);
+	public JToolBar getButtonToolBar() {
+		JToolBar buttonsToolBar = new JToolBar();
+                buttonsToolBar.setBorderPainted(false);
+                buttonsToolBar.setFloatable(false);
+                buttonsToolBar.setOpaque(false);
 		JButton deleteBt = new JButton();
 		deleteBt.setIcon(OrbisGISIcon.EDIT_CLEAR);
 		deleteBt.setToolTipText(I18N.getString("orbisgis.org.orbisgis.Clear"));
@@ -91,8 +90,8 @@ public class OutputPanel extends JPanel implements OutputManager {
 				jTextArea.setText(null);
 			}
 		});
-		buttonsPanel.add(deleteBt);
-		return buttonsPanel;
+		buttonsToolBar.add(deleteBt);
+		return buttonsToolBar;
 
 	}
 
