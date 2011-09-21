@@ -80,7 +80,7 @@ public final class DensityFill extends Fill implements GraphicNode {
     private RealParameter orientation;
     private GraphicCollection mark;
     private RealParameter percentageCovered;
-    //Some constants we don't want to be considered as mafic numbers.
+    //Some constants we don't want to be considered as magic numbers.
     private static final double ONE_HUNDRED = 100;
     private static final double FIFTY = 50;
     private static final double ONE_HALF= 0.5;
@@ -99,6 +99,12 @@ public final class DensityFill extends Fill implements GraphicNode {
         this.setPercentageCovered(new RealLiteral(DEFAULT_PERCENTAGE));
     }
 
+    /**
+     * Build a new {@code DensityFill}, using the {@code JAXBElement} given in
+     * argument.
+     * @param f
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     */
     DensityFill(JAXBElement<DensityFillType> f) throws InvalidStyle {
 
         DensityFillType t = f.getValue();
@@ -118,6 +124,11 @@ public final class DensityFill extends Fill implements GraphicNode {
         }
     }
 
+    /**
+     * Set the {@link PenStroke} used to draw the hatches in this {@code 
+     * DensityFill}.
+     * @param hatches 
+     */
     public void setHatches(PenStroke hatches) {
         this.hatches = hatches;
         if (hatches != null) {
@@ -127,12 +138,17 @@ public final class DensityFill extends Fill implements GraphicNode {
         }
     }
 
+    /**
+     * Get the {@link PenStroke} used to draw the hatches in this {@code 
+     * DensityFill}.
+     * @return 
+     */
     public PenStroke getHatches() {
         return hatches;
     }
 
     /**
-     *
+     * Set the orientation of the hatches associated to this {@code DensityFill}.
      * @param orientation angle in degree
      */
     public void setHatchesOrientation(RealParameter orientation) {
@@ -142,6 +158,10 @@ public final class DensityFill extends Fill implements GraphicNode {
         }
     }
 
+    /**
+     * Get the orientation of the hatches associated to this {@code DensityFill}.
+     * @return 
+     */
     public RealParameter getHatchesOrientation() {
         return orientation;
     }
@@ -161,10 +181,19 @@ public final class DensityFill extends Fill implements GraphicNode {
         return mark;
     }
 
+    /**
+     * After using this method, marks will be preferred on hatches to render this
+     * {@code DensityFill}
+     */
     public void useMarks() {
         isHatched = false;
     }
 
+    /**
+     * 
+     * @return {@code true} if hatches are used to render this {@code 
+     * DensityFill}, false otherwise.
+     */
     public boolean useHatches() {
         return isHatched;
     }
@@ -180,6 +209,12 @@ public final class DensityFill extends Fill implements GraphicNode {
         }
     }
 
+    /**
+     * Get the percentage covered by the marks/hatches.
+     * @return 
+     * A {@code RealParameter} that is in a {@link RealParameterContext#PERCENTAGE_CONTEXT}
+     * if not null.
+     */
     public RealParameter getPercentageCovered() {
         return percentageCovered;
     }

@@ -52,53 +52,69 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
  */
 public class AlternativeStrokeElements extends CompoundStrokeElement {
 
-	private List<StrokeElement> elements;
+        private List<StrokeElement> elements;
 
-
-    public AlternativeStrokeElements(){
-		elements = new ArrayList<StrokeElement>();
-    }
-
-
-	public AlternativeStrokeElements(AlternativeStrokeElementsType aset) throws InvalidStyle {
-        this();
-		for (StrokeElementType se : aset.getStrokeElement()) {
-            StrokeElement strokeElement = new StrokeElement(se);
-            strokeElement.setParent(this);
-			elements.add(strokeElement);
-		}
-        if (elements.isEmpty()){
-            throw new InvalidStyle("Alternative Stroke Element must, at least, contains one stroke element");
+        /**
+         * Buld a new, empty, {@code AlternativeStrokeElement}
+         */
+        public AlternativeStrokeElements() {
+                elements = new ArrayList<StrokeElement>();
         }
-	}
 
-	@Override
-	public Object getJaxbType() {
-		AlternativeStrokeElementsType aset = new AlternativeStrokeElementsType();
+        /**
+         * Buld a new {@code AlternativeStrokeElement}, using the informations 
+         * stored in the JAXB {@code AlternativeStrokeElementType}.
+         * @param aset
+         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         */
+        public AlternativeStrokeElements(AlternativeStrokeElementsType aset) throws InvalidStyle {
+                this();
+                for (StrokeElementType se : aset.getStrokeElement()) {
+                        StrokeElement strokeElement = new StrokeElement(se);
+                        strokeElement.setParent(this);
+                        elements.add(strokeElement);
+                }
+                if (elements.isEmpty()) {
+                        throw new InvalidStyle("Alternative Stroke Element must, at least, contains one stroke element");
+                }
+        }
 
-		List<StrokeElementType> strokeElement = aset.getStrokeElement();
+        @Override
+        public Object getJaxbType() {
+                AlternativeStrokeElementsType aset = new AlternativeStrokeElementsType();
 
-		for (StrokeElement elem : this.elements) {
-			strokeElement.add((StrokeElementType) elem.getJaxbType());
-		}
+                List<StrokeElementType> strokeElement = aset.getStrokeElement();
 
-		return aset;
-	}
+                for (StrokeElement elem : this.elements) {
+                        strokeElement.add((StrokeElementType) elem.getJaxbType());
+                }
 
-	@Override
-	public String dependsOnFeature() {
-        String result = " ";
-		for (StrokeElement elem : elements) {
-            result += elem.dependsOnFeature();
-		}
-		return result.trim();
-	}
+                return aset;
+        }
 
-    public List<StrokeElement> getElements() {
-        return elements;
-    }
+        @Override
+        public String dependsOnFeature() {
+                String result = " ";
+                for (StrokeElement elem : elements) {
+                        result += elem.dependsOnFeature();
+                }
+                return result.trim();
+        }
 
-    public void setElements(ArrayList<StrokeElement> elements) {
-        this.elements = elements;
-    }
+        /**
+         * Get the elements registered in this {@code AlternativeStrokeElement}.
+         * @return 
+         * A list of {@link StrokeElement}.
+         */
+        public List<StrokeElement> getElements() {
+                return elements;
+        }
+
+        /**
+         * Set the elements registered in this {@code AlternativeStrokeElement}.
+         * @param elements 
+         */
+        public void setElements(ArrayList<StrokeElement> elements) {
+                this.elements = elements;
+        }
 }

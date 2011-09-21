@@ -69,7 +69,11 @@ public final class TextStroke extends Stroke {
                 setLineLabel(new LineLabel());
         }
 
-        
+        /**
+         * Build a new {@code TexteStroke} using the given JAXB {@code TextStrokeType}.
+         * @param tst
+         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         */
         TextStroke(TextStrokeType tst) throws InvalidStyle {
                 super(tst);
                 if (tst.getLineLabel() != null) {
@@ -77,6 +81,11 @@ public final class TextStroke extends Stroke {
                 }
         }
 
+        /**
+         * Build a new {@code TexteStroke} using the given {@code JABElement}.
+         * @param s
+         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         */
         TextStroke(JAXBElement<TextStrokeType> s) throws InvalidStyle {
                 this(s.getValue());
         }

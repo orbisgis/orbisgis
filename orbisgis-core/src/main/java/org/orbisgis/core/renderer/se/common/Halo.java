@@ -150,6 +150,18 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
         return Uom.toPixel(radius.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null); // TODO 100%
     }
 
+    /**
+     * Draw this {@code Halo} in {@code g2}.
+     * @param g2
+     * @param sds
+     * @param fid
+     * @param selected
+     * @param shp
+     * @param mt
+     * @param substract
+     * @throws ParameterException
+     * @throws IOException
+     */
     public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, Shape shp, MapTransform mt, boolean substract) throws ParameterException, IOException {
         if (radius != null && fill != null) {
             double r = this.getHaloRadius(sds, fid, mt);
@@ -176,8 +188,13 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
         }
     }
 
+    /**
+     * Get a String representation of the list of features this {@code Halo}
+     * depends on.
+     * @return
+     * The features this {@code Halo} depends on, in a {@code String}.
+     */
     public String dependsOnFeature() {
-
         return (radius.dependsOnFeature() + " " + fill.dependsOnFeature()).trim();
     }
 

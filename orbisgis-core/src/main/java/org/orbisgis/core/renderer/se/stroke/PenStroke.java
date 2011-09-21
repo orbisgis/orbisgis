@@ -441,6 +441,16 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
         }
     }
 
+    /**
+     * Get an AWT {@code BasicStroke} that is representative of this {@code 
+     * PenStroke}
+     * @param sds
+     * @param fid
+     * @param mt
+     * @param v100p
+     * @return
+     * @throws ParameterException 
+     */
     public BasicStroke getBasicStroke(SpatialDataSourceDecorator sds, long fid, MapTransform mt, Double v100p) throws ParameterException {
         return this.createBasicStroke(sds, fid, null, mt, v100p, true);
     }

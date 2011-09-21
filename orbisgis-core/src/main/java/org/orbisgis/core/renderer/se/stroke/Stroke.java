@@ -42,12 +42,20 @@ public abstract class Stroke implements SymbolizerNode {
     private boolean linearRapport;
     private boolean offsetRapport;
 
-
+    /**
+     * Instanciate a new default {@code Stroke}, with linear and offset rapports
+     * set to false.
+     */
     protected Stroke(){
         linearRapport = false;
         offsetRapport = false;
     }
 
+    /**
+     * Instanciate a new {@code Stroke}, using the JAXB {@code StrokeType} given
+     * in argument.
+     * @param s
+     */
     protected Stroke (StrokeType s){
         this();
 
@@ -104,6 +112,10 @@ public abstract class Stroke implements SymbolizerNode {
         return linearRapport;
     }
 
+    /**
+     * Determines if we want to use an length rapport or not.
+     * @param lengthRapport
+     */
     public void setLengthRapport(boolean lengthRapport) {
         this.linearRapport = lengthRapport;
     }
@@ -119,6 +131,10 @@ public abstract class Stroke implements SymbolizerNode {
         return offsetRapport;
     }
 
+    /**
+     * Determines if we want to use an offset rapport or not.
+     * @param offsetRapport
+     */
     public void setOffsetRapport(boolean offsetRapport) {
         this.offsetRapport = offsetRapport;
     }
@@ -139,8 +155,18 @@ public abstract class Stroke implements SymbolizerNode {
      */
     public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt, double offset) throws ParameterException, IOException;
 
+    /**
+     * Get a JAXB representation of this {@code Label}
+     * @return
+     * A {@code JAXBElement} that contains a {@code LabelType} specialization.
+     */
     public abstract JAXBElement<? extends StrokeType> getJAXBElement();
 
+    /**
+     * Fill the {@code LabelType} given in argument with this {@code Label}'s
+     * properties.
+     * @param lt
+     */
     protected final void setJAXBProperties(StrokeType s) {
 
         ObjectFactory of = new ObjectFactory();
@@ -174,8 +200,10 @@ public abstract class Stroke implements SymbolizerNode {
     public abstract Double getNaturalLength(SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) throws ParameterException, IOException;
 
     /**
-     * Retrieve the list of features this {@code Stroke} depends on, as a {@code String}
-     * @return 
+     * Get a String representation of the list of features this {@code Stroke}
+     * depends on.
+     * @return
+     * The features this {@code Stroke} depends on, in a {@code String}.
      */
     public abstract String dependsOnFeature();
 }

@@ -368,12 +368,33 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
         return new Font(family, st, (int) size);
     }
 
+    /**
+     * Get the minimal {@code Rectangle2D} that contains this {@code StyledText}.
+     * @param g2
+     * @param sds
+     * @param fid
+     * @param mt
+     * @return
+     * @throws ParameterException
+     * @throws IOException
+     */
     public Rectangle2D getBounds(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
             MapTransform mt) throws ParameterException, IOException {
         String txt = this.text.getValue(sds, fid);
         return getBounds(g2, txt, sds, fid, mt);
     }
 
+    /**
+     * Get the minimal {@code Rectangle2D} that contains this {@code StyledText}.
+     * @param g2
+     * @param text
+     * @param sds
+     * @param fid
+     * @param mt
+     * @return
+     * @throws ParameterException
+     * @throws IOException
+     */
     public Rectangle2D getBounds(Graphics2D g2, String text, SpatialDataSourceDecorator sds, long fid,
             MapTransform mt) throws ParameterException, IOException {
 
@@ -384,6 +405,18 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
         return bounds;
     }
 
+    /**
+     * Draw this {@code StyledText} in the {@code Graphics2D g2}.
+     * @param g2
+     * @param sds
+     * @param fid
+     * @param selected
+     * @param mt
+     * @param at
+     * @param perm
+     * @throws ParameterException
+     * @throws IOException
+     */
     public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
             boolean selected, MapTransform mt, AffineTransform at, RenderContext perm) throws ParameterException, IOException {
         String txt = this.text.getValue(sds, fid);
@@ -446,6 +479,19 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
         }
     }
 
+    /**
+     * Draw this {@code StyledText} in the {@code Graphics2D g2}.
+     * @param g2
+     * @param text
+     * @param sds
+     * @param fid
+     * @param selected
+     * @param mt
+     * @param at
+     * @param perm
+     * @throws ParameterException
+     * @throws IOException
+     */
     public void draw(Graphics2D g2, String text, SpatialDataSourceDecorator sds, long fid,
             boolean selected, MapTransform mt, AffineTransform at, RenderContext perm) throws ParameterException, IOException {
 
@@ -470,6 +516,11 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
         return size / 2.0;
     }
 
+    /**
+     * Get a new JAXB representation of this {@code StyledText}.
+     * @return
+     * A {@code StyledTextType} representing this {@code StyledText}.
+     */
     public StyledTextType getJAXBType() {
         StyledTextType l = new StyledTextType();
 
@@ -515,6 +566,12 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
         return l;
     }
 
+    /**
+     * Get a String representation of the list of features this {@code StyledText}
+     * depends on.
+     * @return
+     * The features this {@code StyledText} depends on, in a {@code String}.
+     */
     public String dependsOnFeature() {
 
         String result = "";

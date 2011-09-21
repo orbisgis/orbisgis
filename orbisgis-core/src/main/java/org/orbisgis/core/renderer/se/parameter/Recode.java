@@ -218,6 +218,13 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
 		}
 	}
 
+        /**
+         * Get the value associated to the key sored in {@code sds} at index
+         * {@code fid}.
+         * @param sds
+         * @param fid
+         * @return 
+         */
     public ToType getParameter(SpatialDataSourceDecorator sds, long fid) {
         String key = "";
         try {

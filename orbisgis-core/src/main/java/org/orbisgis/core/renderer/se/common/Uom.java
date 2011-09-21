@@ -74,6 +74,12 @@ public enum Uom {
 		}
 	}
 
+        /**
+         * Build an {@code Uom} from a OGC code that represents a unit of 
+         * measure.
+         * @param unitOfMeasure
+         * @return 
+         */
 	public static Uom fromOgcURN(String unitOfMeasure) {
 		if (unitOfMeasure.equals("urn:ogc:def:uom:se::in")) {
 			return Uom.IN;
@@ -97,6 +103,11 @@ public enum Uom {
 		}
 	}
 
+        /**
+         * Build an OGC code that represents a unit of measure from this
+         * {@code Uom}.
+         * @return 
+         */
 	public String toURN() {
 		return "urn:ogc:def:uom:se::" + this.name().toLowerCase();
 	}

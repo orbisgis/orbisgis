@@ -286,6 +286,11 @@ public abstract class Label implements SymbolizerNode, UomNode {
         }
     }
 
+    /**
+     * Fill the {@code LabelType} given in argument with this {@code Label}'s
+     * properties.
+     * @param lt
+     */
     protected void setJAXBProperties(LabelType lt) {
         if (uom != null) {
             lt.setUom(uom.toString());
@@ -308,11 +313,34 @@ public abstract class Label implements SymbolizerNode, UomNode {
         }
     }
 
+    /**
+     * Draw this {@code Label} in {@code g2}.
+     * @param g2
+     * @param sds
+     * @param fid
+     * @param shp
+     * @param selected
+     * @param mt
+     * @param perm
+     * @throws ParameterException
+     * @throws IOException
+     */
     public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
             Shape shp, boolean selected, MapTransform mt, RenderContext perm)
             throws ParameterException, IOException;
 
+    /**
+     * Get a JAXB representation of this {@code Label}
+     * @return
+     * A {@code JAXBElement} that contains a {@code LabelType} specialization.
+     */
     public abstract JAXBElement<? extends LabelType> getJAXBElement();
 
+    /**
+     * Get a String representation of the list of features this {@code Label}
+     * depends on.
+     * @return
+     * The features this {@code Label} depends on, in a {@code String}.
+     */
     public abstract String dependsOnFeature();
 }

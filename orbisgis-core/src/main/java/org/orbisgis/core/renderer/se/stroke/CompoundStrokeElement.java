@@ -56,6 +56,13 @@ public abstract class CompoundStrokeElement implements SymbolizerNode {
 
     protected SymbolizerNode parent;
 
+        /**
+        * Get a concrete instance of {@code CompoundStrokeElement} using the object
+        * given in argument.
+        * @param o
+        * @return
+        * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle
+        */
 	public static CompoundStrokeElement createCompoundStrokeElement(Object o) throws InvalidStyle{
 		if (o instanceof StrokeElementType){
 			return new StrokeElement((StrokeElementType)o);
@@ -87,6 +94,13 @@ public abstract class CompoundStrokeElement implements SymbolizerNode {
 		this.parent = node;
 	}
 
+    /**
+     * Get a String representation of the list of features this {@code CompoundStrokeElement}
+     * depends on.
+     * @return
+     * The features this {@code CompoundStrokeElement} depends on, in a
+     * {@code String}.
+     */
 	public abstract String dependsOnFeature();
 
 }

@@ -22,7 +22,14 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 /**
  * Affine Transformation based on RealParameters
  * Warning: conversion to pixel unit will give strange behavior !
- * @author maxence
+ * <p> The matrix as the following form :</p>
+ * <p>{@code [A C E]}<br/>
+ * {@code|B D F|}<br/>
+ * {@code[0 0 1]}<br/></p>
+ * <p>Note that the matrix is filled with {@code RealParameter} instances, not 
+ * with {@code double} values.
+ * 
+ * @author maxence, alexis
  */
 public final class Matrix implements Transformation {
 
@@ -130,10 +137,25 @@ public final class Matrix implements Transformation {
                 }
         }
 
+        /**
+         * Get the A parameter of this {@code Matrix}, as defined in the 
+         * description of the class.
+         * @return 
+         * A {@code RealParameter} that is placed in a 
+         * {@link RealParameterContext#REAL_CONTEXT}
+         */
         public RealParameter getA() {
                 return a;
         }
 
+        /**
+         * Set the A parameter of this {@code Matrix}, as defined in the 
+         * description of the class.
+         * @param a 
+         * A {@code RealParameter} that is placed (by this method) in a 
+         * {@link RealParameterContext#REAL_CONTEXT}. If null, the value of A is
+         * set to 0.
+         */
         public void setA(RealParameter a) {
                 if (a == null) {
                         this.a = new RealLiteral(0.0);
@@ -143,10 +165,25 @@ public final class Matrix implements Transformation {
                 this.a.setContext(RealParameterContext.REAL_CONTEXT);
         }
 
+        /**
+         * Get the B parameter of this {@code Matrix}, as defined in the 
+         * description of the class.
+         * @return 
+         * A {@code RealParameter} that is placed in a 
+         * {@link RealParameterContext#REAL_CONTEXT}
+         */
         public RealParameter getB() {
                 return b;
         }
 
+        /**
+         * Set the B parameter of this {@code Matrix}, as defined in the 
+         * description of the class.
+         * @param b 
+         * A {@code RealParameter} that is placed (by this method) in a 
+         * {@link RealParameterContext#REAL_CONTEXT}. If null, the value of B is
+         * set to 0.
+         */
         public void setB(RealParameter b) {
                 if (b == null) {
                         this.b = new RealLiteral(0.0);
@@ -156,10 +193,25 @@ public final class Matrix implements Transformation {
                 this.b.setContext(RealParameterContext.REAL_CONTEXT);
         }
 
+        /**
+         * Get the C parameter of this {@code Matrix}, as defined in the 
+         * description of the class.
+         * @return 
+         * A {@code RealParameter} that is placed in a 
+         * {@link RealParameterContext#REAL_CONTEXT}
+         */
         public RealParameter getC() {
                 return c;
         }
 
+        /**
+         * Set the C parameter of this {@code Matrix}, as defined in the 
+         * description of the class.
+         * @param c
+         * A {@code RealParameter} that is placed (by this method) in a 
+         * {@link RealParameterContext#REAL_CONTEXT}. If null, the value of C is
+         * set to 0.
+         */
         public void setC(RealParameter c) {
                 if (c == null) {
                         this.c = new RealLiteral(0.0);
@@ -169,10 +221,25 @@ public final class Matrix implements Transformation {
                 this.c.setContext(RealParameterContext.REAL_CONTEXT);
         }
 
+        /**
+         * Get the D parameter of this {@code Matrix}, as defined in the 
+         * description of the class.
+         * @return 
+         * A {@code RealParameter} that is placed in a 
+         * {@link RealParameterContext#REAL_CONTEXT}
+         */
         public RealParameter getD() {
                 return d;
         }
 
+        /**
+         * Set the D parameter of this {@code Matrix}, as defined in the 
+         * description of the class.
+         * @param d
+         * A {@code RealParameter} that is placed (by this method) in a 
+         * {@link RealParameterContext#REAL_CONTEXT}. If null, the value of D is
+         * set to 0.
+         */
         public void setD(RealParameter d) {
                 if (d == null) {
                         this.d = new RealLiteral(0.0);
@@ -182,10 +249,25 @@ public final class Matrix implements Transformation {
                 this.d.setContext(RealParameterContext.REAL_CONTEXT);
         }
 
+        /**
+         * Get the E parameter of this {@code Matrix}, as defined in the 
+         * description of the class.
+         * @return 
+         * A {@code RealParameter} that is placed in a 
+         * {@link RealParameterContext#REAL_CONTEXT}
+         */
         public RealParameter getE() {
                 return e;
         }
 
+        /**
+         * Set the E parameter of this {@code Matrix}, as defined in the 
+         * description of the class.
+         * @param e 
+         * A {@code RealParameter} that is placed (by this method) in a 
+         * {@link RealParameterContext#REAL_CONTEXT}. If null, the value of E is
+         * set to 0.
+         */
         public void setE(RealParameter e) {
                 if (e == null) {
                         this.e = new RealLiteral(0.0);
@@ -195,10 +277,25 @@ public final class Matrix implements Transformation {
                 this.e.setContext(RealParameterContext.REAL_CONTEXT);
         }
 
+        /**
+         * Get the F parameter of this {@code Matrix}, as defined in the 
+         * description of the class.
+         * @return 
+         * A {@code RealParameter} that is placed in a 
+         * {@link RealParameterContext#REAL_CONTEXT}
+         */
         public RealParameter getF() {
                 return f;
         }
 
+        /**
+         * Set the F parameter of this {@code Matrix}, as defined in the 
+         * description of the class.
+         * @param f 
+         * A {@code RealParameter} that is placed (by this method) in a 
+         * {@link RealParameterContext#REAL_CONTEXT}. If null, the value of F is
+         * set to 0.
+         */
         public void setF(RealParameter f) {
                 if (f == null) {
                         this.f = new RealLiteral(0.0);

@@ -92,16 +92,32 @@ public class RealParameterContext {
                 return " [" + min + ";" + max + "]";
         }
 
+        /**
+         * A {@code MarkIndexContext} is a {@code RealParameterContext} that is 
+         * directly associated to a font. Built with the {@code Font}, it forces
+         * the context to be between 0 and the size of the font minus one.
+         */
         public class MarkIndexContext extends RealParameterContext {
 
                 private Font font;
 
+                /**
+                 * Build a new {@code MarkIndexContext}, using {@code font} to 
+                 * compute the boundaries of the context. That means the minimum
+                 * authorized value is 0, and the maximum one is {@code 
+                 * font.getNumGlyphs() - 1}.
+                 * @param font 
+                 */
                 public MarkIndexContext(Font font) {
                         super(0.0, 0.0);
                         this.font = font;
                         this.max = (double) (font.getNumGlyphs() - 1);
                 }
 
+                /**
+                 * Get the font associated to this context.
+                 * @return 
+                 */
                 public Font getFont() {
                         return font;
                 }

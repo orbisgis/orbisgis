@@ -415,6 +415,18 @@ public final class Rule implements SymbolizerNode {
                 this.visible = visible;
         }
 
+        /**
+         * This method checks that this rule is valid for the given 
+         * {@link MapTransform}. That means that, if {@code scale} is the scale
+         * denominator associated to the {@code MapTransform mt}, this method 
+         * returns true if {@code minScaleDenom <= scale <= maxScalDenom}
+         * @param mt
+         * @return 
+         * <ul><li>{@code true} if {@code minScaleDenom <= scale <= maxScalDenom}
+         * . Note that {@code null} values for the inner scale denominator values
+         * are considered to be equivalent to 0 and positive infinity.</li>
+         * <li>false otherwise.</li></ul>
+         */
         public boolean isDomainAllowed(MapTransform mt) {
                 double scale = mt.getScaleDenominator();
 

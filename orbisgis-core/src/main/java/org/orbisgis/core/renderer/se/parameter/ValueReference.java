@@ -39,6 +39,12 @@ public abstract class ValueReference implements SeParameter {
 		this.fieldName = fieldName;
 	}
 
+        /**
+         * Build a new {@code ValueReference} using the given 
+         * {@code ValueReferenceType}.
+         * @param pName
+         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         */
 	public ValueReference(ValueReferenceType pName) throws InvalidStyle {
 		if (pName.getContent().size() == 1) {
 			this.fieldName = (String) pName.getContent().get(0);
@@ -48,6 +54,13 @@ public abstract class ValueReference implements SeParameter {
 		}
 	}
 
+        /**
+         * Build a new {@code ValueReference} using the given {@code JAXBElement
+         * } that contains a {@code ValueReferenceType}.
+         * 
+         * @param expr
+         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         */
 	public ValueReference(JAXBElement<ValueReferenceType> expr) throws InvalidStyle {
 		this(expr.getValue());
 	}

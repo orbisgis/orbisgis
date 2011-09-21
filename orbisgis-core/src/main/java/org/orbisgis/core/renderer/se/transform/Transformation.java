@@ -21,13 +21,42 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  * @author maxence
  */
 public interface Transformation {
-    public boolean allowedForGeometries();
+    boolean allowedForGeometries();
 
-    public abstract AffineTransform getAffineTransform(SpatialDataSourceDecorator sds, long fid, Uom uom, MapTransform mt, Double width, Double height) throws ParameterException, IOException;
+    /**
+     * get the AWT {@code AffineTransform} that is represented by this {@code
+     * Transformation}.
+     * @param sds
+     * @param fid
+     * @param uom
+     * @param mt
+     * @param width
+     * @param height
+     * @return
+     * @throws ParameterException
+     * @throws IOException
+     */
+    abstract AffineTransform getAffineTransform(SpatialDataSourceDecorator sds, long fid, Uom uom, MapTransform mt, Double width, Double height) throws ParameterException, IOException;
 
-    public abstract JAXBElement<?> getJAXBElement();
+    /**
+     * Get a JAXB representation of this {@code Label}
+     * @return
+     * A {@code JAXBElement} that contains a {@code LabelType} specialization.
+     */
+    abstract JAXBElement<?> getJAXBElement();
 
-    public abstract Object getJAXBType();
+    /**
+     * Get a JAXB representation of this {@code Label}
+     * @return
+     * A {@code JAXBType} that represents a {@code LabelType} specialization.
+     */
+    abstract Object getJAXBType();
 
-    public String dependsOnFeature();
+    /**
+     * Get a String representation of the list of features this {@code Transformation}
+     * depends on.
+     * @return
+     * The features this {@code Transformation} depends on, in a {@code String}.
+     */
+    String dependsOnFeature();
 }

@@ -196,6 +196,11 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
         this.parent = node;
     }
 
+    /**
+     * Fill the {@code SymbolizerType s} with the properties contained in this
+     * {@code Symbolizer}.
+     * @param s 
+     */
     public void setJAXBProperty(SymbolizerType s) {
         ObjectFactory of = new ObjectFactory();
 

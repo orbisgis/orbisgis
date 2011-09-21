@@ -43,12 +43,13 @@ import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 
+/**
+ * A {@code RealParameter} is a SE node that contains a numeric value, or that 
+ * provides a direct mechanism to retrieve one in an external source.
+ * @author maxence, alexis
+ */
 public interface RealParameter extends SeParameter, Comparable {
 
-	//void setMinValue(Double min);
-	//void setMaxValue(Double max);
-
-	//void setBounds(Double min, Double max);
 
         /**
          * Associates a new RealParameterContext to this RealParameter. Realizations of
