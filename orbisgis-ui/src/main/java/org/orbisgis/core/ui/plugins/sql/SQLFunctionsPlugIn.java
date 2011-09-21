@@ -48,7 +48,7 @@ public class SQLFunctionsPlugIn extends AbstractPlugIn {
         public void initialize(PlugInContext context) throws Exception {
                 context.getFeatureInstaller().addRegisterFunction(MapContext_BBox.class);
                 context.getFeatureInstaller().addRegisterFunction(MapContext_AddLayer.class);
-                context.getFeatureInstaller().addRegisterFunction(MapContext_ZoomTo.class);
+               // context.getFeatureInstaller().addRegisterFunction(MapContext_ZoomTo.class);
         }
 
         @Override
