@@ -52,14 +52,15 @@ import org.fife.ui.autocomplete.AutoCompletion;
 import org.fife.ui.autocomplete.Completion;
 import org.fife.ui.autocomplete.DefaultCompletionProvider;
 import org.fife.ui.autocomplete.VariableCompletion;
+import org.fife.ui.rsyntaxtextarea.modes.SQLTokenMaker;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.DefaultType;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.sql.engine.parsing.GdmSQLParser;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.ui.plugins.views.sqlConsole.language.matcher.SQLMatcher;
 
 /**
  *
@@ -80,13 +81,7 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
     // caching
     private final Map<String, Completion> cachedCompletions = Collections.synchronizedMap(new TreeMap<String, Completion>());
     // common tokens
-    private static final SQLToken FROM = SQLToken.fromType(GdmSQLParser.T_FROM);
-    private static final SQLToken[] ALTERTABLE = new SQLToken[]{
-        SQLToken.fromType(GdmSQLParser.T_TABLE),
-        SQLToken.fromType(GdmSQLParser.T_ALTER)};
-    private static final SQLToken[] DROPTABLE = new SQLToken[]{
-        SQLToken.fromType(GdmSQLParser.T_TABLE),
-        SQLToken.fromType(GdmSQLParser.T_DROP)};
+    private SQLMatcher matcher;
 
     /**
      * Default constructor
@@ -131,6 +126,8 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
         auto.install(textC);
 
         dataManager = Services.getService(DataManager.class);
+        
+        matcher = new SQLMatcher(this);
 
         return auto;
     }
@@ -144,17 +141,11 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
             content = rootText + content;
         }
 
-        SQLString str = new SQLString(content);
-        // remove existing completions
         clear();
-
-        // matching
-        if (str.match(FROM) || str.match(ALTERTABLE) || str.match(DROPTABLE)) {
-            addCompletions(getSourceNamesCompletion(false));
-        }
+        matcher.match(content);
     }
 
-    private ArrayList getSourceNamesCompletion(boolean addfields) {
+    public void addSourceNamesCompletion(boolean addfields) {
         ArrayList<Completion> a = new ArrayList<Completion>();
         HashMap<String, SQLFieldCompletion> nn = new HashMap<String, SQLFieldCompletion>();
 
@@ -247,7 +238,7 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
 
         // adding fields if needed
         a.addAll(nn.values());
-        return a;
+        addCompletions(a);
     }
 
     /**

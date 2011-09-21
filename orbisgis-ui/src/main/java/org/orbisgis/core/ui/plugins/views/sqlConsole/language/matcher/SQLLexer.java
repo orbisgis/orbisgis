@@ -36,66 +36,38 @@
  * or contact directly:
  * info@orbisgis.org
  **/
-package org.orbisgis.core.ui.plugins.views.sqlConsole.language;
+package org.orbisgis.core.ui.plugins.views.sqlConsole.language.matcher;
 
-import java.util.Deque;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
 /**
  * Specialized class for dealing with SQL words within a (partial) SQL query.
  * @author antoine
  */
-public final class SQLString implements CharSequence {
+public final class SQLLexer {
 
         private final String s;
-        private final Deque<SQLToken> tokenQueue = new LinkedList<SQLToken>();
         private int currentIndex;
 
-        public SQLString(String s) {
+        public SQLLexer(String s) {
                 this.s = s;
                 currentIndex = s.length() - 1;
         }
 
-        @Override
-        public int length() {
-                return s.length();
-        }
-
-        @Override
-        public char charAt(int index) {
-                return s.charAt(index);
-        }
-
-        @Override
-        public CharSequence subSequence(int start, int end) {
-                return s.subSequence(start, end);
-        }
-
-        public Iterator<SQLToken> getTokenIterator() {
+        public Iterator<String> getTokenIterator() {
                 return new SQLStringTokenIterator();
         }
 
-        public class SQLStringTokenIterator implements Iterator<SQLToken> {
-                
-                private Iterator<SQLToken> tokenIterator;
-                
-                private SQLStringTokenIterator() {
-                        tokenIterator = tokenQueue.iterator();
-                }
+        public class SQLStringTokenIterator implements Iterator<String> {
 
                 @Override
                 public boolean hasNext() {
-                        return tokenIterator.hasNext() || currentIndex >= 0;
+                        return currentIndex >= 0;
                 }
 
                 @Override
-                public SQLToken next() {
-                        if (tokenIterator.hasNext()) {
-                                return tokenIterator.next();
-                        }
-                        
+                public String next() {
                         if (currentIndex < 0) {
                                 throw new NoSuchElementException();
                         }
@@ -116,11 +88,8 @@ public final class SQLString implements CharSequence {
                                 currChar = s.charAt(currentIndex);
                         }
                         int start = currentIndex == 0 ? 0 : currentIndex + 1;
-                        
-                        String str = s.substring(start, end).toUpperCase();
-                        final SQLToken token = new SQLToken(str);
-                        tokenQueue.addLast(token);
-                        return token;
+
+                        return s.substring(start, end).toUpperCase();
 
                 }
 
@@ -134,29 +103,5 @@ public final class SQLString implements CharSequence {
                 public void remove() {
                         throw new UnsupportedOperationException();
                 }
-        }
-
-        public boolean match(SQLToken[] tokens) {
-                int i = 0;
-                Iterator<SQLToken> refIterator = getTokenIterator();
-
-                while (i != tokens.length) {
-                        if (refIterator.hasNext()) {
-                                SQLToken next = refIterator.next();
-                                SQLToken next1 = tokens[i];
-                                if (!next.equals(next1)) {
-                                        return false;
-                                }
-                        } else {
-                                return false;
-                        }
-                        i++;
-                }
-
-                return true;
-        }
-
-        public boolean match(SQLToken token) {
-                return match(new SQLToken[]{token});
         }
 }
