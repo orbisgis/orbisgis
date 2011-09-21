@@ -44,7 +44,7 @@ package org.gdms.data.values;
 import java.util.HashMap;
 import java.util.Map;
 import org.gdms.data.types.Type;
-import org.gdms.sql.engine.parsing.GdmSQLParser;
+import org.gdms.sql.parser.GdmSQLParser;
 
 /**
  * This utility class provides methods to build Gdms {@link Value} objects from the SQL parser.

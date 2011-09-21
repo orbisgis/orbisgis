@@ -5,8 +5,8 @@ import java.io.IOException;
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
-import org.gdms.sql.engine.parsing.GdmSQLLexer;
-import org.gdms.sql.engine.parsing.GdmSQLParser;
+import org.gdms.sql.parser.GdmSQLLexer;
+import org.gdms.sql.parser.GdmSQLParser;
 import org.junit.Ignore;
 import org.junit.Test;
 

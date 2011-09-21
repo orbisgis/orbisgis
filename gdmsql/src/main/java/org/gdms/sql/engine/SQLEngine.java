@@ -50,9 +50,9 @@ import org.apache.log4j.Logger;
 import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
-import org.gdms.sql.engine.parsing.GdmSQLLexer;
-import org.gdms.sql.engine.parsing.GdmSQLParser;
-import org.gdms.sql.engine.parsing.GdmSQLParser.start_rule_return;
+import org.gdms.sql.parser.GdmSQLLexer;
+import org.gdms.sql.parser.GdmSQLParser;
+import org.gdms.sql.parser.GdmSQLParser.start_rule_return;
 
 /**
  * Main entry class for parsing & processing SQL

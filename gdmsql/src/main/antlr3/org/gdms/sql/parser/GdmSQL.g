@@ -355,10 +355,10 @@ tokens {
 }
 
 @lexer::header {
-package org.gdms.sql.engine.parsing;
+package org.gdms.sql.parser;
 }
 @parser::header {
-package org.gdms.sql.engine.parsing;
+package org.gdms.sql.parser;
 }
 
 @lexer::members {

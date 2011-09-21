@@ -46,7 +46,7 @@ package org.gdms.sql.engine.logical
  */
 import org.antlr.runtime.tree.CommonTree
 import org.antlr.runtime.tree.Tree
-import org.gdms.sql.engine.parsing.GdmSQLParser._
+import org.gdms.sql.parser.GdmSQLParser._
 import org.gdms.data.values.SQLValueFactory
 import org.gdms.data.values.Value
 import org.gdms.data.values.ValueFactory

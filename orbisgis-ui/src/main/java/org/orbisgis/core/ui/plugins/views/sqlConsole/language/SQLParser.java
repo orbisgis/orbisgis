@@ -56,8 +56,8 @@ import org.fife.ui.rsyntaxtextarea.parser.DefaultParserNotice;
 import org.fife.ui.rsyntaxtextarea.parser.ParseResult;
 import org.fife.ui.rsyntaxtextarea.parser.ParserNotice;
 import org.gdms.sql.engine.ANTLRCaseInsensitiveInputStream;
-import org.gdms.sql.engine.parsing.GdmSQLLexer;
-import org.gdms.sql.engine.parsing.GdmSQLParser;
+import org.gdms.sql.parser.GdmSQLLexer;
+import org.gdms.sql.parser.GdmSQLParser;
 
 /**
  * A parser for Gdms SQL syntax that provides error locations.

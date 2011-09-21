@@ -41,7 +41,7 @@ package org.gdms.sql.engine
 import org.gdms.sql.engine.logical.LogicPlanBuilder
 import org.gdms.sql.engine.logical.LogicPlanOptimizer
 import org.gdms.sql.engine.operations._
-import org.gdms.sql.engine.parsing.GdmSQLParser._
+import org.gdms.sql.parser.GdmSQLParser._
 import org.antlr.runtime.tree.CommonTree
 import org.gdms.sql.engine.commands._
 
