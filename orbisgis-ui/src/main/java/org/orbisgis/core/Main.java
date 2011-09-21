@@ -35,7 +35,6 @@
  * or contact directly:
  * info _at_ orbisgis.org
  */
-
 package org.orbisgis.core;
 
 import java.io.IOException;
@@ -69,161 +68,155 @@ import org.orbisgis.utils.I18N;
 
 public class Main {
 
-	private static Logger logger = Logger.getLogger(Main.class);
-	private static CacheMessages cacheMessages = null;
-	private static CommandLine commandLine;
-	public final static String I18N_FILE = "i18n";
-	public final static String CLEAN = "clean";
-	public final static String WORKSPACE = "w";
-	public static String I18N_SETLOCALE = "";
-
-	public static String MIN_JAVA_VERSION = "1.6.";
-        
+        private static Logger logger = Logger.getLogger(Main.class);
+        private static CacheMessages cacheMessages = null;
+        private static CommandLine commandLine;
+        public final static String I18N_FILE = "i18n";
+        public final static String CLEAN = "clean";
+        public final static String WORKSPACE = "w";
+        public static String I18N_SETLOCALE = "";
+        public static int MIN_JAVA_VERSION = 6;
         public static String PLUGIN_DIRECTORY = "lib/ext";
 
-	public static void main(String[] args) throws Exception {
-		Splash splash = new Splash();
+        public static void main(String[] args) throws Exception {
+                Splash splash = new Splash();
 
-		if (!IsVersion(MIN_JAVA_VERSION)) {
-			JOptionPane.showMessageDialog(null, I18N
-					.getString("orbisgis.main.version"));
-			splash.setVisible(false);
-			splash.dispose();
-		} else {
-			initApplication(splash, args);
+                if (!IsVersion()) {
+                        JOptionPane.showMessageDialog(null, I18N.getString("OrbisGIS needs at least Java 1.6."));
+                        splash.setVisible(false);
+                        splash.dispose();
+                } else {
+                        initApplication(splash, args);
 
-		}
+                }
 
-	}
+        }
 
-	private static void initApplication(Splash splash, String[] args)
-			throws Exception {
-		splash.setVisible(true);
-		Splash.updateText("OrbisGIS services initialization.");
-		initServices();
-		Splash.updateText("OrbisGIS services initialization ready.");
-		parseCommandLine(args);
-		initI18n(splash);
-		init(splash, args);
-		splash.setVisible(false);
-		splash.dispose();
-	}
+        private static void initApplication(Splash splash, String[] args)
+                throws Exception {
+                splash.setVisible(true);
+                Splash.updateText("OrbisGIS services initialization.");
+                initServices();
+                Splash.updateText("OrbisGIS services initialization ready.");
+                parseCommandLine(args);
+                initI18n(splash);
+                init(splash, args);
+                splash.setVisible(false);
+                splash.dispose();
+        }
 
-	private static void initI18n(Splash splash) {
-		if (commandLine.hasOption(I18N_FILE))
-			I18N_SETLOCALE = commandLine.getOption(I18N_FILE).getArg(0);
-		// Init I18n
-		I18N.addI18n(I18N_SETLOCALE, "orbisgis", OrbisGISI18N.class);
+        private static void initI18n(Splash splash) {
+                if (commandLine.hasOption(I18N_FILE)) {
+                        I18N_SETLOCALE = commandLine.getOption(I18N_FILE).getArg(0);
+                }
+                // Init I18n
+                I18N.addI18n(I18N_SETLOCALE, "orbisgis", OrbisGISI18N.class);
                 I18N.addI18n(I18N_SETLOCALE, "orbisgis-core", OrbisGISCoreI18N.class);
 
-	}
+        }
 
-	private static boolean IsVersion(String minJavaVersion) {
-		String version = System.getProperty("java.version");
-		if (version.indexOf(minJavaVersion) != -1)
-			return true;
-		return false;
-	}
+        private static boolean IsVersion() {
+                String version = System.getProperty("java.version");
+                String[] v = version.split("\\.");
 
-	private static void init(Splash splash, String[] args) throws Exception {
-		try {
-			initProperties();
-			splash.updateVersion();
-			Splash.updateText(I18N.getString("orbisgis.main.loading"));
-			Workspace wrsk = Services.getService(Workspace.class);
+                return  (v.length > 1 && "1".equals(v[0]) && Integer.parseInt(v[1]) >= MIN_JAVA_VERSION);
+        }
 
-			if (commandLine.hasOption(WORKSPACE)) {
-				wrsk.setWorkspaceFolder(commandLine.getOption(WORKSPACE)
-						.getArg(0));
-			}
+        private static void init(Splash splash, String[] args) throws Exception {
+                try {
+                        initProperties();
+                        splash.updateVersion();
+                        Splash.updateText(I18N.getString("orbisgis.main.loading"));
+                        Workspace wrsk = Services.getService(Workspace.class);
+
+                        if (commandLine.hasOption(WORKSPACE)) {
+                                wrsk.setWorkspaceFolder(commandLine.getOption(WORKSPACE).getArg(0));
+                        }
                         if (commandLine.hasOption("pluginDir")) {
                                 PLUGIN_DIRECTORY = commandLine.getOption("pluginDir").getArg(0);
                         }
-			wrsk.init(commandLine.hasOption(CLEAN));
+                        wrsk.init(commandLine.hasOption(CLEAN));
 
-			// Install OrbisGIS core services
-			new OrbisGISWorkspace();
-			OrbisgisUIServices.installConfigurationService();
-			// Initialize configuration
-			EPConfigHelper.loadAndApplyConfigurations();
+                        // Install OrbisGIS core services
+                        new OrbisGISWorkspace();
+                        OrbisgisUIServices.installConfigurationService();
+                        // Initialize configuration
+                        EPConfigHelper.loadAndApplyConfigurations();
 
-			BasicConfiguration bc = Services
-					.getService(BasicConfiguration.class);
-                        String sTimer = bc.getProperty(WorkspaceConfiguration
-					.getTimerProperty());
-			int iTimer = WorkspaceConfiguration.convert(sTimer);
-			if (iTimer > 0)
-				WorkspaceConfiguration.startPeriodicSaving(iTimer);
+                        BasicConfiguration bc = Services.getService(BasicConfiguration.class);
+                        String sTimer = bc.getProperty(WorkspaceConfiguration.getTimerProperty());
+                        int iTimer = WorkspaceConfiguration.convert(sTimer);
+                        if (iTimer > 0) {
+                                WorkspaceConfiguration.startPeriodicSaving(iTimer);
+                        }
 
-			initLogger();
-			logger.info("main.logger.start");
-			cacheMessages = new CacheMessages();
-			new FilteringErrorListener();
-			cacheMessages.printCacheMessages();
-		} catch (Exception e) {
-			splash.setVisible(false);
-			splash.dispose();
-			Services.getErrorManager().error("Cannot init the application", e);
-		}
-	}
+                        initLogger();
+                        logger.info("main.logger.start");
+                        cacheMessages = new CacheMessages();
+                        new FilteringErrorListener();
+                        cacheMessages.printCacheMessages();
+                } catch (Exception e) {
+                        splash.setVisible(false);
+                        splash.dispose();
+                        Services.getErrorManager().error("Cannot init the application", e);
+                }
+        }
 
-	/**
-	 * Install OrbisGIS core services
-	 */
-	private static void initServices() {
-		Services
-				.registerService(
-						BackgroundManager.class,
-						"Execute tasks in background processes, "
-								+ "showing progress bars. Gives access to the job queue",
-						new JobQueue());
+        /**
+         * Install OrbisGIS core services
+         */
+        private static void initServices() {
+                Services.registerService(
+                        BackgroundManager.class,
+                        "Execute tasks in background processes, "
+                        + "showing progress bars. Gives access to the job queue",
+                        new JobQueue());
 
-		Services.registerService(ErrorManager.class,
-				"Notification of errors to the system",
-				new DefaultErrorManager());
-		// Choose a workspace to start OrbisGIS
-		DefaultWorkspace defaultWorkspace = new DefaultSwingWorkspace();
-		Services.registerService(Workspace.class,
-				"Change workspace, save files in the workspace, etc.",
-				defaultWorkspace);
-		ApplicationInfo applicationInfo = new OrbisGISApplicationInfo();
-		Services.registerService(ApplicationInfo.class,
-				"Gets information about the application: "
-						+ "name, version, etc.", applicationInfo);
-		// Install OrbisGIS core services
-		OrbisgisUIServices.installServices();
-                
-	}
+                Services.registerService(ErrorManager.class,
+                        "Notification of errors to the system",
+                        new DefaultErrorManager());
+                // Choose a workspace to start OrbisGIS
+                DefaultWorkspace defaultWorkspace = new DefaultSwingWorkspace();
+                Services.registerService(Workspace.class,
+                        "Change workspace, save files in the workspace, etc.",
+                        defaultWorkspace);
+                ApplicationInfo applicationInfo = new OrbisGISApplicationInfo();
+                Services.registerService(ApplicationInfo.class,
+                        "Gets information about the application: "
+                        + "name, version, etc.", applicationInfo);
+                // Install OrbisGIS core services
+                OrbisgisUIServices.installServices();
 
-	private static void initProperties() {
-		PropertyConfigurator.configure(Main.class
-				.getResource("log4j.properties"));
-	}
+        }
 
-	private static void initLogger() {
-		PatternLayout l = new PatternLayout("%5p [%t] (%F:%L) - %m%n");
-		RollingFileAppender fa;
-		try {
-			fa = new RollingFileAppender(l, Services.getService(
-					ApplicationInfo.class).getLogFile());
-			fa.setMaxFileSize("256KB");
-			Logger.getRootLogger().addAppender(fa);
-		} catch (IOException e) {
-			Services.getErrorManager().error("Init logger failed!", e);
-		}
-	}
+        private static void initProperties() {
+                PropertyConfigurator.configure(Main.class.getResource("log4j.properties"));
+        }
 
-	private static void parseCommandLine(String[] args) throws ParseException {
-		commandLine = new CommandLine('-');
-		commandLine.addOptionSpec(new OptionSpec(I18N_FILE, 1));
-		commandLine.addOptionSpec(new OptionSpec(WORKSPACE, 1));
-		commandLine.addOptionSpec(new OptionSpec(CLEAN, 0));
+        private static void initLogger() {
+                PatternLayout l = new PatternLayout("%5p [%t] (%F:%L) - %m%n");
+                RollingFileAppender fa;
+                try {
+                        fa = new RollingFileAppender(l, Services.getService(
+                                ApplicationInfo.class).getLogFile());
+                        fa.setMaxFileSize("256KB");
+                        Logger.getRootLogger().addAppender(fa);
+                } catch (IOException e) {
+                        Services.getErrorManager().error("Init logger failed!", e);
+                }
+        }
+
+        private static void parseCommandLine(String[] args) throws ParseException {
+                commandLine = new CommandLine('-');
+                commandLine.addOptionSpec(new OptionSpec(I18N_FILE, 1));
+                commandLine.addOptionSpec(new OptionSpec(WORKSPACE, 1));
+                commandLine.addOptionSpec(new OptionSpec(CLEAN, 0));
                 commandLine.addOptionSpec(new OptionSpec("pluginDir", 1));
-		try {
-			commandLine.parse(args);
-		} catch (ParseException e) {
-			ErrorMessages.error(ErrorMessages.CommandLineError, e);
-			throw e;
-		}
-	}
+                try {
+                        commandLine.parse(args);
+                } catch (ParseException e) {
+                        ErrorMessages.error(ErrorMessages.CommandLineError, e);
+                        throw e;
+                }
+        }
 }
