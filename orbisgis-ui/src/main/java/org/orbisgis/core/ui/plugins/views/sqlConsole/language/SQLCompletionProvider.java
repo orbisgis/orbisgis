@@ -41,6 +41,7 @@ package org.orbisgis.core.ui.plugins.views.sqlConsole.language;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -51,13 +52,20 @@ import javax.swing.text.JTextComponent;
 import org.fife.ui.autocomplete.AutoCompletion;
 import org.fife.ui.autocomplete.Completion;
 import org.fife.ui.autocomplete.DefaultCompletionProvider;
+import org.fife.ui.autocomplete.ParameterizedCompletion;
 import org.fife.ui.autocomplete.VariableCompletion;
-import org.fife.ui.rsyntaxtextarea.modes.SQLTokenMaker;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.DefaultType;
+import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.BasicFunctionSignature;
+import org.gdms.sql.function.Function;
+import org.gdms.sql.function.FunctionManager;
+import org.gdms.sql.function.FunctionSignature;
+import org.gdms.sql.function.ScalarArgument;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.language.matcher.SQLMatcher;
@@ -68,345 +76,421 @@ import org.orbisgis.core.ui.plugins.views.sqlConsole.language.matcher.SQLMatcher
  */
 public class SQLCompletionProvider extends DefaultCompletionProvider implements CaretListener, SQLMetadataListener {
 
-    // other useful classes
-    private SQLMetadataManager metManager;
-    private DataManager dataManager;
-    // text field
-    private JTextComponent textC;
-    // auto completion
-    private AutoCompletion auto;
-    // init text
-    private String rootText;
-    // keyword
-    // caching
-    private final Map<String, Completion> cachedCompletions = Collections.synchronizedMap(new TreeMap<String, Completion>());
-    // common tokens
-    private SQLMatcher matcher;
+        // other useful classes
+        private SQLMetadataManager metManager;
+        private DataManager dataManager;
+        // text field
+        private JTextComponent textC;
+        // auto completion
+        private AutoCompletion auto;
+        // init text
+        private String rootText;
+        // keyword
+        // caching
+        private final Map<String, Completion> cachedCompletions = Collections.synchronizedMap(new TreeMap<String, Completion>());
+        // common tokens
+        private SQLMatcher matcher;
 
-    /**
-     * Default constructor
-     * @param textC the JTextComponent that needs auto-completion.
-     * @param metManager
-     */
-    public SQLCompletionProvider(JTextComponent textC, SQLMetadataManager metManager) {
-        this(textC, metManager, null);
-    }
-
-    /**
-     * This constructor allows the use of a fixed string like
-     * "SELECT * FROM toto WHERE" to filter the completion inside the
-     * JTextComponent. The content of the JTextComponent is added to rootText
-     * and then processed by the completion parser.
-     * @param textC the JTextComponent that needs auto-completion.
-     * @param metManager 
-     * @param rootText a fixed string to be append before the completion starts
-     */
-    public SQLCompletionProvider(JTextComponent textC, SQLMetadataManager metManager, String rootText) {
-        this.metManager = metManager;
-        this.textC = textC;
-        this.rootText = rootText;
-    }
-
-    /**
-     * Installs and enables auto-completion.
-     * @return the AutoCompletion object linked to the JTextComponent.
-     */
-    public AutoCompletion install() {
-        // listen to the MetadataManager
-        metManager.registerMetadataListener(this);
-
-        // listen to the caret
-        textC.addCaretListener(this);
-
-        // for autocomplete to work
-        this.setParameterizedCompletionParams('(', ", ", ')');
-        auto = new AutoCompletion(this);
-        auto.setAutoCompleteSingleChoices(true);
-        auto.setShowDescWindow(true);
-        auto.install(textC);
-
-        dataManager = Services.getService(DataManager.class);
-        
-        matcher = new SQLMatcher(this);
-
-        return auto;
-    }
-
-    @Override
-    public void caretUpdate(CaretEvent e) {
-        String content = getTextContent();
-
-        // take care of rootText
-        if (rootText != null) {
-            content = rootText + content;
+        /**
+         * Default constructor
+         * @param textC the JTextComponent that needs auto-completion.
+         * @param metManager
+         */
+        public SQLCompletionProvider(JTextComponent textC, SQLMetadataManager metManager) {
+                this(textC, metManager, null);
         }
 
-        clear();
-        matcher.match(content);
-    }
+        /**
+         * This constructor allows the use of a fixed string like
+         * "SELECT * FROM toto WHERE" to filter the completion inside the
+         * JTextComponent. The content of the JTextComponent is added to rootText
+         * and then processed by the completion parser.
+         * @param textC the JTextComponent that needs auto-completion.
+         * @param metManager 
+         * @param rootText a fixed string to be append before the completion starts
+         */
+        public SQLCompletionProvider(JTextComponent textC, SQLMetadataManager metManager, String rootText) {
+                this.metManager = metManager;
+                this.textC = textC;
+                this.rootText = rootText;
+        }
 
-    public void addSourceNamesCompletion(boolean addfields) {
-        ArrayList<Completion> a = new ArrayList<Completion>();
-        HashMap<String, SQLFieldCompletion> nn = new HashMap<String, SQLFieldCompletion>();
+        /**
+         * Installs and enables auto-completion.
+         * @return the AutoCompletion object linked to the JTextComponent.
+         */
+        public AutoCompletion install() {
+                // listen to the MetadataManager
+                metManager.registerMetadataListener(this);
 
-        // adds the source names
-        String[] s = metManager.getSourceNames();
-        for (int i = 0; i < s.length; i++) {
-            ArrayList<String> ss = new ArrayList<String>();
-            final String name = s[i];
-            ss.add(name);
-            try {
-                Collections.addAll(ss, dataManager.getSourceManager().getAllNames(name));
-            } catch (NoSuchTableException ex) {
-            }
-            for (int k = 0; k < ss.size(); k++) {
-                final String alias = ss.get(k);
-                if (!alias.startsWith("gdms")) {
-                    // check for an existing completion
-                    Completion compl = cachedCompletions.get(alias);
-                    if (compl != null) {
-                        a.add(compl);
-                        if (addfields) {
-                            List<Completion> cp = getFieldsCompletion(name + '.');
-                            for (int j = 0; j < cp.size(); j++) {
-                                final SQLFieldCompletion localCompl = (SQLFieldCompletion) cp.get(j);
-                                final String currCompl = localCompl.getName();
-                                if (nn.containsKey(currCompl)) {
-                                    String def = nn.get(currCompl).getDefinedIn();
-                                    def = def.replace("</b>", ", " + alias + "</b>");
-                                    nn.get(currCompl).setDefinedIn(def);
-                                } else {
-                                    nn.put(currCompl, localCompl);
+                // listen to the caret
+                textC.addCaretListener(this);
+
+                // for autocomplete to work
+                this.setParameterizedCompletionParams('(', ", ", ')');
+                auto = new AutoCompletion(this);
+                auto.setAutoCompleteSingleChoices(true);
+                auto.setShowDescWindow(true);
+                auto.install(textC);
+
+                dataManager = Services.getService(DataManager.class);
+
+                matcher = new SQLMatcher(this);
+
+                return auto;
+        }
+
+        @Override
+        public void caretUpdate(CaretEvent e) {
+                String content = getTextContent();
+
+                // take care of rootText
+                if (rootText != null) {
+                        content = rootText + content;
+                }
+
+                clear();
+                matcher.match(content);
+        }
+
+        /**
+         * Finds all function completions
+         * @return the corresponding collection of Completion items
+         */
+        public void addFunctionCompletions(boolean tables, boolean scalar, boolean executor) {
+                HashSet a = new HashSet();
+
+                // retrieve all registered functions
+                String[] functions = FunctionManager.getFunctionNames();
+
+                for (int i = 0; i < functions.length; i++) {
+                        Function function = FunctionManager.getFunction(functions[i]);
+
+                        if (((function.isScalar() || function.isAggregate()) && scalar)
+                                || (function.isTable() && tables) || (function.isExecutor() && executor)) {
+                                FunctionSignature[] args = function.getFunctionSignatures();
+                                for (int j = 0; j < args.length; j++) {
+                                        ArrayList params = new ArrayList();
+                                        String typeDesc = null;
+
+                                        // trying to get it from the cache
+                                        Completion compl = cachedCompletions.get(function.getName() + '_' + j);
+                                        if (compl != null) {
+                                                a.add(compl);
+                                                continue;
+                                        }
+
+                                        if (args[j].isScalarReturn()) {
+
+                                                BasicFunctionSignature sign = (BasicFunctionSignature) args[j];
+
+                                                // its description
+                                                typeDesc = DefaultType.typesDescription.get(sign.getReturnType().getTypeCode()).replace("TYPE_", "").replace("ALL", "ANY");
+
+                                        } else if (args[j].isTableReturn()) {
+                                                typeDesc = "TABLE";
+                                        } else {
+                                                // executor function
+                                                typeDesc = "VOID";
+                                        }
+
+                                        for (int l = 0; l < args[j].getArguments().length; l++) {
+                                                Argument argum = args[j].getArguments()[l];
+                                                if (argum.isScalar()) {
+                                                        ScalarArgument arg = (ScalarArgument) argum;
+
+                                                        int typeCode = arg.getTypeCode();
+                                                        // no need to auto-complete a NULL argument
+                                                        if (typeCode != Type.NULL) {
+                                                                // adds a parameter with no name but a type
+                                                                params.add(new ParameterizedCompletion.Parameter(DefaultType.typesDescription.get(typeCode).replace("TYPE_", "").replace("ALL", "ANY"), null));
+                                                        }
+                                                } else if (tables) {
+                                                        // table argument
+                                                        params.add(new ParameterizedCompletion.Parameter("TABLE", null));
+                                                }
+
+
+                                        }
+
+
+
+                                        SQLFunctionCompletion c = new SQLFunctionCompletion(this, function.getName(), typeDesc);
+                                        c.setShortDescription(function.getDescription() + "<br>Ex :<br><br>" + function.getSqlOrder());
+                                        c.setSummary(function.getDescription());
+                                        c.setParams(params);
+                                        // and we cache it for reuse
+                                        cachedCompletions.put(function.getName() + '_' + j, c);
+                                        a.add(c);
                                 }
-                            }
                         }
-                        continue;
-                    }
-
-                    // no existing completion, let's built it
-
-                    // adding fields
-                    if (addfields) {
-                        List<Completion> cp = getFieldsCompletion(name + '.');
-                        for (int j = 0; j < cp.size(); j++) {
-                            final SQLFieldCompletion localCompl = (SQLFieldCompletion) cp.get(j);
-                            final String currCompl = localCompl.getName();
-                            if (nn.containsKey(currCompl)) {
-                                String def = nn.get(currCompl).getDefinedIn();
-                                def = def.replace("</b>", ", " + alias + "</b>");
-                                nn.get(currCompl).setDefinedIn(def);
-                            } else {
-                                nn.put(currCompl, localCompl);
-                            }
-                        }
-                    }
-
-                    Metadata m = metManager.getMetadataFromCache(name);
-                    if (m == null) {
-                        m = metManager.getMetadata(name);
-                        if (m == null) {
-                            // cannot mount the datasource
-                            continue;
-                        }
-                    }
-
-                    VariableCompletion c = new VariableCompletion(this, alias, "TABLE");
-                    StringBuilder str = new StringBuilder();
-                    if (!name.equals(alias) && !name.startsWith("gdms")) {
-                        str.append("<b>alias</b> for <i>");
-                        str.append(name);
-                        str.append("</i>.<br><br>");
-                    }
-                    str.append("Fields :<br>");
-                    try {
-                        for (int j = 0; j < m.getFieldCount(); j++) {
-                            str.append(m.getFieldName(j));
-                            str.append(" : ");
-                            str.append(TypeFactory.getTypeName(m.getFieldType(j).getTypeCode()).toUpperCase());
-                            str.append("<br>");
-                        }
-                    } catch (DriverException e) {
-                    }
-                    c.setShortDescription(str.toString());
-                    // caching for reuse
-                    cachedCompletions.put(alias, c);
-                    a.add(c);
-
                 }
-            }
+
+                addCompletions(new ArrayList(a));
         }
 
-        // adding fields if needed
-        a.addAll(nn.values());
-        addCompletions(a);
-    }
+        public void addSourceNamesCompletion(boolean addfields) {
+                ArrayList<Completion> a = new ArrayList<Completion>();
+                HashMap<String, SQLFieldCompletion> nn = new HashMap<String, SQLFieldCompletion>();
 
-    /**
-     * Adds to the CompletionProvider the field list of the current data source
-     * @param sql SQL Statement up to where the field is needed
-     */
-    private List<Completion> getFieldsCompletion(String sql) {
-        List<Completion> a = new ArrayList<Completion>();
-        if (sql.length() < 2) {
-            return a;
-        }
+                // adds the source names
+                String[] s = metManager.getSourceNames();
+                for (int i = 0; i < s.length; i++) {
+                        ArrayList<String> ss = new ArrayList<String>();
+                        final String name = s[i];
+                        ss.add(name);
+                        try {
+                                Collections.addAll(ss, dataManager.getSourceManager().getAllNames(name));
+                        } catch (NoSuchTableException ex) {
+                        }
+                        for (int k = 0; k < ss.size(); k++) {
+                                final String alias = ss.get(k);
+                                if (!alias.startsWith("gdms")) {
+                                        // check for an existing completion
+                                        Completion compl = cachedCompletions.get(alias);
+                                        if (compl != null) {
+                                                a.add(compl);
+                                                if (addfields) {
+                                                        List<Completion> cp = getFieldsCompletion(name + '.');
+                                                        for (int j = 0; j < cp.size(); j++) {
+                                                                final SQLFieldCompletion localCompl = (SQLFieldCompletion) cp.get(j);
+                                                                final String currCompl = localCompl.getName();
+                                                                if (nn.containsKey(currCompl)) {
+                                                                        String def = nn.get(currCompl).getDefinedIn();
+                                                                        def = def.replace("</b>", ", " + alias + "</b>");
+                                                                        nn.get(currCompl).setDefinedIn(def);
+                                                                } else {
+                                                                        nn.put(currCompl, localCompl);
+                                                                }
+                                                        }
+                                                }
+                                                continue;
+                                        }
 
-        // retrieve the source name
-        int start = sql.length() - 2;
-        while (start >= 0) {
-            char ch = sql.charAt(start);
-            start--;
-            if (ch == ' ' || ch == '.' || ch == ',' || ch == '(' || ch == ')') {
-                start++;
-                break;
-            }
-        }
-        String table = sql.substring(start + 1, sql.length() - 1);
+                                        // no existing completion, let's built it
 
-        // get the return metadata without executing anything
-        Metadata m = metManager.getMetadata(table);
-        if (m == null) {
-            // wrong source name, no completion
-            return a;
-        }
-        try {
-            for (int i = 0; i < m.getFieldCount(); i++) {
-                final String fieldName = m.getFieldName(i);
-                // trying in the cache
-                Completion c = cachedCompletions.get(fieldName);
-                if (c != null) {
-                    a.add(c);
-                    continue;
+                                        // adding fields
+                                        if (addfields) {
+                                                List<Completion> cp = getFieldsCompletion(name + '.');
+                                                for (int j = 0; j < cp.size(); j++) {
+                                                        final SQLFieldCompletion localCompl = (SQLFieldCompletion) cp.get(j);
+                                                        final String currCompl = localCompl.getName();
+                                                        if (nn.containsKey(currCompl)) {
+                                                                String def = nn.get(currCompl).getDefinedIn();
+                                                                def = def.replace("</b>", ", " + alias + "</b>");
+                                                                nn.get(currCompl).setDefinedIn(def);
+                                                        } else {
+                                                                nn.put(currCompl, localCompl);
+                                                        }
+                                                }
+                                        }
+
+                                        Metadata m = metManager.getMetadataFromCache(name);
+                                        if (m == null) {
+                                                m = metManager.getMetadata(name);
+                                                if (m == null) {
+                                                        // cannot mount the datasource
+                                                        continue;
+                                                }
+                                        }
+
+                                        VariableCompletion c = new VariableCompletion(this, alias, "TABLE");
+                                        StringBuilder str = new StringBuilder();
+                                        if (!name.equals(alias) && !name.startsWith("gdms")) {
+                                                str.append("<b>alias</b> for <i>");
+                                                str.append(name);
+                                                str.append("</i>.<br><br>");
+                                        }
+                                        str.append("Fields :<br>");
+                                        try {
+                                                for (int j = 0; j < m.getFieldCount(); j++) {
+                                                        str.append(m.getFieldName(j));
+                                                        str.append(" : ");
+                                                        str.append(TypeFactory.getTypeName(m.getFieldType(j).getTypeCode()).toUpperCase());
+                                                        str.append("<br>");
+                                                }
+                                        } catch (DriverException e) {
+                                        }
+                                        c.setShortDescription(str.toString());
+                                        // caching for reuse
+                                        cachedCompletions.put(alias, c);
+                                        a.add(c);
+
+                                }
+                        }
                 }
-                // else we build it
 
-                SQLFieldCompletion complet = new SQLFieldCompletion(this, fieldName, DefaultType.typesDescription.get(m.getFieldType(i).getTypeCode()));
-                complet.setDefinedIn("<b>" + table + "</b>");
-                // and add it to the cache
-                cachedCompletions.put(fieldName, c);
-                a.add(complet);
-            }
-        } catch (DriverException ex) {
-            // needed for m.getField*
-        }
-        return a;
-    }
-
-    @Override
-    public void metadataAdded(String name, Metadata m) {
-    }
-
-    @Override
-    public void metadataRemoved(String name, Metadata m) {
-    }
-
-    /**
-     * Frees all external resources linking to this Provider
-     *
-     * This method MUST be called when unloading the JComponent associated with
-     * the provider.
-     * If it is not called the provider will never be garbage-collected.
-     */
-    public void freeExternalResources() {
-        cachedCompletions.clear();
-    }
-
-    private String getTextContent() {
-        String content;
-        try {
-            content = textC.getDocument().getText(0, textC.getCaretPosition());
-
-        } catch (BadLocationException ex) {
-            return "";
+                // adding fields if needed
+                a.addAll(nn.values());
+                addCompletions(a);
         }
 
-        // some cleaning up
-        content = removeMultilineComments(content);
-        content = removeSinglelineComments(content);
-        content = getLastSQLStatement(content);
+        /**
+         * Adds to the CompletionProvider the field list of the current data source
+         * @param sql SQL Statement up to where the field is needed
+         */
+        private List<Completion> getFieldsCompletion(String sql) {
+                List<Completion> a = new ArrayList<Completion>();
+                if (sql.length() < 2) {
+                        return a;
+                }
 
-        return content;
-    }
+                // retrieve the source name
+                int start = sql.length() - 2;
+                while (start >= 0) {
+                        char ch = sql.charAt(start);
+                        start--;
+                        if (ch == ' ' || ch == '.' || ch == ',' || ch == '(' || ch == ')') {
+                                start++;
+                                break;
+                        }
+                }
+                String table = sql.substring(start + 1, sql.length() - 1);
 
-    /**
-     * Trims a string to get the last SQL Statement inside it.
-     * @param str the string to trim
-     * @return the actual SQL statement
-     */
-    private String getLastSQLStatement(String str) {
-        // statement just finished
-        if (str.endsWith(";")) {
-            return "";
+                // get the return metadata without executing anything
+                Metadata m = metManager.getMetadata(table);
+                if (m == null) {
+                        // wrong source name, no completion
+                        return a;
+                }
+                try {
+                        for (int i = 0; i < m.getFieldCount(); i++) {
+                                final String fieldName = m.getFieldName(i);
+                                // trying in the cache
+                                Completion c = cachedCompletions.get(fieldName);
+                                if (c != null) {
+                                        a.add(c);
+                                        continue;
+                                }
+                                // else we build it
+
+                                SQLFieldCompletion complet = new SQLFieldCompletion(this, fieldName, DefaultType.typesDescription.get(m.getFieldType(i).getTypeCode()));
+                                complet.setDefinedIn("<b>" + table + "</b>");
+                                // and add it to the cache
+                                cachedCompletions.put(fieldName, c);
+                                a.add(complet);
+                        }
+                } catch (DriverException ex) {
+                        // needed for m.getField*
+                }
+                return a;
         }
 
-        // maybe there is several statements
-        int pt = str.lastIndexOf(';');
+        @Override
+        public void metadataAdded(String name, Metadata m) {
+        }
 
-        if (pt != -1) {
-            // keep only the last one
-            str = str.substring(pt + 1);
+        @Override
+        public void metadataRemoved(String name, Metadata m) {
         }
-        return str.replace('\n', ' ');
-    }
 
-    private String removeSinglelineComments(String content) {
-        int comm = content.indexOf("--");
-        int ret = content.indexOf('\n');
-        while (comm != -1) {
-            if (ret != - 1) {
-                content = content.substring(0, comm)
-                        + content.substring(ret);
+        /**
+         * Frees all external resources linking to this Provider
+         *
+         * This method MUST be called when unloading the JComponent associated with
+         * the provider.
+         * If it is not called the provider will never be garbage-collected.
+         */
+        public void freeExternalResources() {
+                cachedCompletions.clear();
+        }
 
-            } else {
-                content = content.substring(0, comm);
-            }
-            comm = content.indexOf("--");
-            ret = content.indexOf('\n', comm + 2);
-        }
-        while (content.contains("\n\n")) {
-            content = content.replace("\n\n", "\n");
-        }
-        if (content.endsWith("\n")) {
-            content = content.substring(0, content.length() - 1);
-        }
-        if (rootText != null) {
-            content = rootText.trim() + ' ' + content;
-        }
-        return content;
-    }
+        private String getTextContent() {
+                String content;
+                try {
+                        content = textC.getDocument().getText(0, textC.getCaretPosition());
 
-    private String removeMultilineComments(String content) {
-        int sComm = content.indexOf("/*");
-        int eComm = content.indexOf("*/");
-        if (eComm < sComm) {
-            content = content.substring(sComm);
-            sComm = content.indexOf("/*");
-            eComm = content.indexOf("*/");
+                } catch (BadLocationException ex) {
+                        return "";
+                }
 
+                // some cleaning up
+                content = removeMultilineComments(content);
+                content = removeSinglelineComments(content);
+                content = getLastSQLStatement(content);
+
+                return content;
         }
-        while (sComm != -1) {
-            if (eComm != - 1) {
+
+        /**
+         * Trims a string to get the last SQL Statement inside it.
+         * @param str the string to trim
+         * @return the actual SQL statement
+         */
+        private String getLastSQLStatement(String str) {
+                // statement just finished
+                if (str.endsWith(";")) {
+                        return "";
+                }
+
+                // maybe there is several statements
+                int pt = str.lastIndexOf(';');
+
+                if (pt != -1) {
+                        // keep only the last one
+                        str = str.substring(pt + 1);
+                }
+                return str.replace('\n', ' ');
+        }
+
+        private String removeSinglelineComments(String content) {
+                int comm = content.indexOf("--");
+                int ret = content.indexOf('\n');
+                while (comm != -1) {
+                        if (ret != - 1) {
+                                content = content.substring(0, comm)
+                                        + content.substring(ret);
+
+                        } else {
+                                content = content.substring(0, comm);
+                        }
+                        comm = content.indexOf("--");
+                        ret = content.indexOf('\n', comm + 2);
+                }
+                while (content.contains("\n\n")) {
+                        content = content.replace("\n\n", "\n");
+                }
+                if (content.endsWith("\n")) {
+                        content = content.substring(0, content.length() - 1);
+                }
+                if (rootText != null) {
+                        content = rootText.trim() + ' ' + content;
+                }
+                return content;
+        }
+
+        private String removeMultilineComments(String content) {
+                int sComm = content.indexOf("/*");
+                int eComm = content.indexOf("*/");
                 if (eComm < sComm) {
-                    content = content.substring(sComm);
-                    sComm = content.indexOf("/*");
-                    eComm = content.indexOf("*/");
+                        content = content.substring(sComm);
+                        sComm = content.indexOf("/*");
+                        eComm = content.indexOf("*/");
 
                 }
-                content = content.substring(0, sComm)
-                        + content.substring(eComm + 2);
+                while (sComm != -1) {
+                        if (eComm != - 1) {
+                                if (eComm < sComm) {
+                                        content = content.substring(sComm);
+                                        sComm = content.indexOf("/*");
+                                        eComm = content.indexOf("*/");
 
-            } else {
-                content = content.substring(0, sComm);
+                                }
+                                content = content.substring(0, sComm)
+                                        + content.substring(eComm + 2);
 
-            }
-            sComm = content.indexOf("/*");
-            eComm = content.indexOf("*/");
+                        } else {
+                                content = content.substring(0, sComm);
 
+                        }
+                        sComm = content.indexOf("/*");
+                        eComm = content.indexOf("*/");
+
+                }
+                return content;
         }
-        return content;
-    }
 
-    public void setRootText(String rootText) {
-        this.rootText = rootText;
-    }
+        public void setRootText(String rootText) {
+                this.rootText = rootText;
+        }
 }

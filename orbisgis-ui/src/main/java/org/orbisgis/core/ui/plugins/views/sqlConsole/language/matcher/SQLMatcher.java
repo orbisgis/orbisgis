@@ -39,6 +39,7 @@
 package org.orbisgis.core.ui.plugins.views.sqlConsole.language.matcher;
 
 import java.util.Iterator;
+import org.fife.ui.autocomplete.ShorthandCompletion;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.language.SQLCompletionProvider;
 
 /**
@@ -58,35 +59,79 @@ public class SQLMatcher {
         public void match(String str) {
                 lexer = new SQLLexer(str);
                 it = lexer.getTokenIterator();
-                
+
                 matchInit();
 
         }
 
         private void matchInit() {
                 if (!it.hasNext()) {
+                        // no text
+                        addKeyWords("CREATE", "DROP", "SELECT", "INSERT", "UPDATE", "DELETE", "EXECUTE");
                         return;
                 }
                 String a = it.next();
-                
+
                 if ("FROM".equals(a)) {
                         // FROM tablename
-                        pr.addSourceNamesCompletion(false);
+                        addTables(false);
+                        addTableFunctions();
                 } else if ("TABLE".equals(a)) {
                         // DROP TABLE and others ending in TABLE
                         matchSourceNames1();
+                } else if ("SELECT".equals(a)) {
+                        // SELECT table.field
+                        addScalarFunctions();
+                        addTables(true);
+                } else if ("CREATE".equals(a) || "DROP".equals(a)) {
+                        // CREATE/DROP tata
+                        addKeyWords("TABLE", "VIEW", "INDEX");
+                } else if ("INDEX".equals(a)) {
+                        // CREATE INDEX ON tutu(field)
+                        addKeyWord("ON");
+                } else if ("EXECUTE".equals(a) || "CALL".equals(a)) {
+                        // table function call
+                        addExecutorFunctions();
+                } else if (";".equals(a)) {
+                        addKeyWords("CREATE", "DROP", "SELECT", "INSERT", "UPDATE", "DELETE", "EXECUTE");
                 }
         }
-        
+
         private void matchSourceNames1() {
                 if (!it.hasNext()) {
                         return;
                 }
                 String a = it.next();
-                
+
                 if ("DROP".equals(a) || "ALTER".equals(a)) {
                         // DROP TABLE ; ALTER TABLE
-                        pr.addSourceNamesCompletion(false);
+                        addTables(false);
                 }
+        }
+
+        private void addScalarFunctions() {
+                pr.addFunctionCompletions(false, true, false);
+        }
+
+        private void addTableFunctions() {
+                pr.addFunctionCompletions(true, false, false);
+        }
+        
+        private void addExecutorFunctions() {
+                pr.addFunctionCompletions(false, false, true);
+        }
+
+        private void addTables(boolean withFields) {
+                pr.addSourceNamesCompletion(withFields);
+        }
+
+        private void addKeyWords(String... k) {
+                for (int i = 0; i < k.length; i++) {
+                        addKeyWord(k[i]);
+                }
+        }
+
+        private void addKeyWord(String k) {
+                pr.addCompletion(new ShorthandCompletion(pr, k, k + ' '));
         }
 }
