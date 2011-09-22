@@ -62,10 +62,14 @@ public final class SQLLexer {
         public class SQLStringTokenIterator implements Iterator<String> {
 
                 public SQLStringTokenIterator() {
-                        // drop one if does not end in a whitespace
+                        // drop one if does not end in a whitespace or a dot
                         if (currentIndex != -1) {
                                 char currChar = s.charAt(currentIndex);
-                                while (isCorrectChar(currChar) && currentIndex != 0) {
+                                while (isCorrectChar(currChar) && currChar != '.') {
+                                        if (currentIndex == 0) {
+                                                currentIndex = -1;
+                                                break;
+                                        }
                                         currentIndex--;
                                         currChar = s.charAt(currentIndex);
                                 }
