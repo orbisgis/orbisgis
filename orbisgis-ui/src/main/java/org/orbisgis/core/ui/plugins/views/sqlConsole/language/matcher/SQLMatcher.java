@@ -72,28 +72,51 @@ public class SQLMatcher {
                 }
                 String a = it.next();
 
-                if ("FROM".equals(a)) {
+                if (a.endsWith(".")) {
+                        addFieldsForTable(a);
+                        return;
+                } else if (a.endsWith(";")) {
+                        addKeyWords("CREATE", "DROP", "SELECT", "INSERT", "UPDATE", "DELETE", "EXECUTE");
+                        return;
+                }
+
+                if ("AS".equalsIgnoreCase(a)) {
+                        matchAs1();
+                } else if ("FROM".equalsIgnoreCase(a)) {
                         // FROM tablename
                         addTables(false);
                         addTableFunctions();
-                } else if ("TABLE".equals(a)) {
+                } else if ("TABLE".equalsIgnoreCase(a)) {
                         // DROP TABLE and others ending in TABLE
                         matchSourceNames1();
-                } else if ("SELECT".equals(a)) {
+                } else if ("SELECT".equalsIgnoreCase(a)) {
                         // SELECT table.field
                         addScalarFunctions();
                         addTables(true);
-                } else if ("CREATE".equals(a) || "DROP".equals(a)) {
+                } else if ("CREATE".equalsIgnoreCase(a) || "DROP".equalsIgnoreCase(a)) {
                         // CREATE/DROP tata
                         addKeyWords("TABLE", "VIEW", "INDEX");
-                } else if ("INDEX".equals(a)) {
+                } else if ("INDEX".equalsIgnoreCase(a)) {
                         // CREATE INDEX ON tutu(field)
                         addKeyWord("ON");
-                } else if ("EXECUTE".equals(a) || "CALL".equals(a)) {
+                } else if ("EXECUTE".equalsIgnoreCase(a) || "CALL".equalsIgnoreCase(a)) {
                         // table function call
                         addExecutorFunctions();
-                } else if (";".equals(a)) {
-                        addKeyWords("CREATE", "DROP", "SELECT", "INSERT", "UPDATE", "DELETE", "EXECUTE");
+                }
+        }
+        
+        private void matchAs1() {
+                if (!it.hasNext()) {
+                        return;
+                }
+                it.next();
+                if (!it.hasNext()) {
+                        return;
+                }
+                String a = it.next();
+                
+                if ("TABLE".equalsIgnoreCase(a)) {
+                        addKeyWord("SELECT");
                 }
         }
 
@@ -103,10 +126,14 @@ public class SQLMatcher {
                 }
                 String a = it.next();
 
-                if ("DROP".equals(a) || "ALTER".equals(a)) {
+                if ("DROP".equalsIgnoreCase(a) || "ALTER".equalsIgnoreCase(a)) {
                         // DROP TABLE ; ALTER TABLE
                         addTables(false);
                 }
+        }
+
+        private void addFieldsForTable(String tableDot) {
+                pr.addFieldsCompletion(tableDot.substring(0, tableDot.length() - 1));
         }
 
         private void addScalarFunctions() {
@@ -116,7 +143,7 @@ public class SQLMatcher {
         private void addTableFunctions() {
                 pr.addFunctionCompletions(true, false, false);
         }
-        
+
         private void addExecutorFunctions() {
                 pr.addFunctionCompletions(false, false, true);
         }

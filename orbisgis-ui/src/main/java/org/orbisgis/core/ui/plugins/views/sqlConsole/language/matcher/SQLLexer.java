@@ -104,7 +104,7 @@ public final class SQLLexer {
                         }
                         int start = currentIndex == 0 ? 0 : currentIndex + 1;
 
-                        return s.substring(start, end).toUpperCase();
+                        return s.substring(start, end);
 
                 }
 

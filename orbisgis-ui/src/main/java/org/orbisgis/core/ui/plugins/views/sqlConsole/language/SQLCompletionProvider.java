@@ -251,7 +251,7 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                                         if (compl != null) {
                                                 a.add(compl);
                                                 if (addfields) {
-                                                        List<Completion> cp = getFieldsCompletion(name + '.');
+                                                        List<Completion> cp = getFieldsCompletion(name);
                                                         for (int j = 0; j < cp.size(); j++) {
                                                                 final SQLFieldCompletion localCompl = (SQLFieldCompletion) cp.get(j);
                                                                 final String currCompl = localCompl.getName();
@@ -271,7 +271,7 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
 
                                         // adding fields
                                         if (addfields) {
-                                                List<Completion> cp = getFieldsCompletion(name + '.');
+                                                List<Completion> cp = getFieldsCompletion(name);
                                                 for (int j = 0; j < cp.size(); j++) {
                                                         final SQLFieldCompletion localCompl = (SQLFieldCompletion) cp.get(j);
                                                         final String currCompl = localCompl.getName();
@@ -325,33 +325,25 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                 addCompletions(a);
         }
 
+        public void addFieldsCompletion(String table) {
+                addCompletions(getFieldsCompletion(table));
+        }
+
         /**
          * Adds to the CompletionProvider the field list of the current data source
          * @param sql SQL Statement up to where the field is needed
          */
-        private List<Completion> getFieldsCompletion(String sql) {
+        private List<Completion> getFieldsCompletion(String table) {
                 List<Completion> a = new ArrayList<Completion>();
-                if (sql.length() < 2) {
-                        return a;
-                }
-
-                // retrieve the source name
-                int start = sql.length() - 2;
-                while (start >= 0) {
-                        char ch = sql.charAt(start);
-                        start--;
-                        if (ch == ' ' || ch == '.' || ch == ',' || ch == '(' || ch == ')') {
-                                start++;
-                                break;
-                        }
-                }
-                String table = sql.substring(start + 1, sql.length() - 1);
 
                 // get the return metadata without executing anything
-                Metadata m = metManager.getMetadata(table);
+                Metadata m = metManager.getMetadataFromCache(table);
                 if (m == null) {
-                        // wrong source name, no completion
-                        return a;
+                        m = metManager.getMetadata(table);
+                        if (m == null) {
+                                // wrong source name, no completion
+                                return a;
+                        }
                 }
                 try {
                         for (int i = 0; i < m.getFieldCount(); i++) {
