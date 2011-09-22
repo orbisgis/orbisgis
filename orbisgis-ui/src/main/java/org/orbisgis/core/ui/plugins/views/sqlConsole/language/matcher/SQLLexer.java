@@ -61,6 +61,17 @@ public final class SQLLexer {
 
         public class SQLStringTokenIterator implements Iterator<String> {
 
+                public SQLStringTokenIterator() {
+                        // drop one if does not end in a whitespace
+                        if (currentIndex != -1) {
+                                char currChar = s.charAt(currentIndex);
+                                while (isCorrectChar(currChar) && currentIndex != 0) {
+                                        currentIndex--;
+                                        currChar = s.charAt(currentIndex);
+                                }
+                        }
+                }
+
                 @Override
                 public boolean hasNext() {
                         return currentIndex >= 0;
@@ -94,9 +105,7 @@ public final class SQLLexer {
                 }
 
                 private boolean isCorrectChar(char currChar) {
-                        return !Character.isWhitespace(currChar)
-                                && (Character.isLetterOrDigit(currChar)
-                                || currChar == '_' || currChar == '.');
+                        return !Character.isWhitespace(currChar);
                 }
 
                 @Override
