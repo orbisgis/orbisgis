@@ -78,6 +78,9 @@ public class SQLMatcher {
                 } else if (a.endsWith(";")) {
                         addKeyWords("CREATE", "DROP", "SELECT", "INSERT", "UPDATE", "DELETE", "EXECUTE");
                         return;
+                } else if (a.endsWith(",")) {
+                        matchList();
+                        return;
                 }
 
                 if ("AS".equalsIgnoreCase(a)) {
@@ -102,9 +105,55 @@ public class SQLMatcher {
                 } else if ("EXECUTE".equalsIgnoreCase(a) || "CALL".equalsIgnoreCase(a)) {
                         // table function call
                         addExecutorFunctions();
+                } else {
+                        // identifier
+                        matchAfterPossibleId();
                 }
         }
-        
+
+        private void matchAfterPossibleId() {
+                if (!it.hasNext()) {
+                        return;
+                }
+                String a = it.next();
+                if (a.endsWith(",")) {
+                        addKeyWord("AS");
+                } else if ("SELECT".equalsIgnoreCase(a)) {
+                        addKeyWords("AS", "FROM");
+                        return;
+                } else if (a.endsWith(";")) {
+                        return;
+                }
+
+                while (it.hasNext()) {
+                        String b = it.next();
+                        if ("SELECT".equalsIgnoreCase(b)) {
+                                addKeyWord("FROM");
+                                return;
+                        } else if (a.endsWith(";")) {
+                                return;
+                        }
+                }
+
+        }
+
+        private void matchList() {
+                while (it.hasNext()) {
+                        String a = it.next();
+                        if ("FROM".equalsIgnoreCase(a)) {
+                                addTables(false);
+                                addTableFunctions();
+                                return;
+                        } else if ("SELECT".equalsIgnoreCase(a)) {
+                                addScalarFunctions();
+                                addTables(true);
+                                return;
+                        } else if (a.endsWith(";")) {
+                                return;
+                        }
+                }
+        }
+
         private void matchAs1() {
                 if (!it.hasNext()) {
                         return;
@@ -114,7 +163,7 @@ public class SQLMatcher {
                         return;
                 }
                 String a = it.next();
-                
+
                 if ("TABLE".equalsIgnoreCase(a)) {
                         addKeyWord("SELECT");
                 }

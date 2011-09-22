@@ -66,45 +66,60 @@ public final class SQLLexer {
                         if (currentIndex != -1) {
                                 char currChar = s.charAt(currentIndex);
                                 while (isCorrectChar(currChar) && currChar != '.') {
-                                        if (currentIndex == 0) {
-                                                currentIndex = -1;
+                                        currentIndex--;
+                                        if (currentIndex == -1) {
                                                 break;
                                         }
-                                        currentIndex--;
                                         currChar = s.charAt(currentIndex);
                                 }
+                        }
+                        trimIncorrectChars();
+                }
+
+                private void trimIncorrectChars() {
+                        // trim incorrect chars
+                        if (currentIndex == -1) {
+                                return;
+                        }
+
+                        char currChar = s.charAt(currentIndex);
+                        while (!isCorrectChar(currChar)) {
+                                currentIndex--;
+                                if (currentIndex == -1) {
+                                        break;
+                                }
+                                currChar = s.charAt(currentIndex);
                         }
                 }
 
                 @Override
                 public boolean hasNext() {
-                        return currentIndex >= 0;
+                        return currentIndex != -1;
                 }
 
                 @Override
                 public String next() {
-                        if (currentIndex < 0) {
+                        if (currentIndex == -1) {
                                 throw new NoSuchElementException();
                         }
 
-                        // trim incorrect chars
+                        trimIncorrectChars();
+
                         char currChar = s.charAt(currentIndex);
-                        while (!isCorrectChar(currChar) && currentIndex != 0) {
-                                currentIndex--;
-                                currChar = s.charAt(currentIndex);
-                        }
 
                         // this is the end
                         int end = currentIndex + 1;
 
                         // we go back again until we get to an invalid character
-                        while (isCorrectChar(currChar) && currentIndex != 0) {
+                        while (isCorrectChar(currChar)) {
                                 currentIndex--;
+                                if (currentIndex == -1) {
+                                        break;
+                                }
                                 currChar = s.charAt(currentIndex);
                         }
-                        int start = currentIndex == 0 ? 0 : currentIndex + 1;
 
-                        return s.substring(start, end);
+                        return s.substring(currentIndex + 1, end);
 
                 }
 
