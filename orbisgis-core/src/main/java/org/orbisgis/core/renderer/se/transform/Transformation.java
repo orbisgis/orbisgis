@@ -21,10 +21,18 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  * @author maxence
  */
 public interface Transformation {
+
+    /**
+         * This method whall return {@code true} if the transformation can be
+         * applied to geometry objects.
+         * @return
+         * {@code true} if this method can be applied on geometries, false
+         * otherwise.
+         */
     boolean allowedForGeometries();
 
     /**
-     * get the AWT {@code AffineTransform} that is represented by this {@code
+     * Get the AWT {@code AffineTransform} that is represented by this {@code
      * Transformation}.
      * @param sds
      * @param fid

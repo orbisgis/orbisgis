@@ -54,7 +54,6 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventLocator;
 import javax.xml.bind.util.ValidationEventCollector;
-import javax.xml.validation.Schema;
 import net.opengis.se._2_0.core.FeatureTypeStyleType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.RuleType;
@@ -67,10 +66,17 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 
 /**
- *
- * @author maxence
+ * {@code FeatureTypeStyle} is the entry point taht will define all the
+ * symbology definitions that must be used to render a given layer. It embeds
+ * a set of {@link Rule} instances, that must be applied to a given
+ * {@link ILayer layer}.
+ * @author maxence, alexis
  */
 public final class FeatureTypeStyle implements SymbolizerNode {
+        
+    private String name;
+    private ArrayList<Rule> rules;
+    private ILayer layer;
 
     public FeatureTypeStyle(ILayer layer, boolean addDefaultRule) {
         rules = new ArrayList<Rule>();
@@ -80,6 +86,14 @@ public final class FeatureTypeStyle implements SymbolizerNode {
         }
     }
 
+    /**
+     * Build a new {@code FeatureTypeStyle} instance. Rules are retrieved in
+     * the SE file given in argument, and are applied to the given {@link
+     * ILayer}.
+     * @param layer
+     * @param seFile
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle
+     */
     public FeatureTypeStyle(ILayer layer, String seFile) throws InvalidStyle {
         rules = new ArrayList<Rule>();
         this.layer = layer;
@@ -127,12 +141,28 @@ public final class FeatureTypeStyle implements SymbolizerNode {
 
     }
 
+    /**
+     * Build a new {@code FeatureTypeStyle}, using the {@code JAXBElement} in
+     * argument, and applying it to {@code layer}. {@code ftst} must embed
+     * a {@code {@code FeatureTypeStyleType}.
+     * @param ftst
+     * @param layer
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle
+     */
     public FeatureTypeStyle(JAXBElement<FeatureTypeStyleType> ftst, ILayer layer) throws InvalidStyle {
         rules = new ArrayList<Rule>();
         this.layer = layer;
         this.setFromJAXB(ftst);
     }
 
+    /**
+     * Build a new {@code FeatureTypeStyle}, using the {@code
+     * FeatureTypeStyleType} given in argument, and applying it to {@code
+     * layer}.
+     * @param fts
+     * @param layer
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle
+     */
     public FeatureTypeStyle(FeatureTypeStyleType fts, ILayer layer) throws InvalidStyle {
         rules = new ArrayList<Rule>();
         this.layer = layer;
@@ -195,6 +225,11 @@ public final class FeatureTypeStyle implements SymbolizerNode {
         this.rules.clear();
     }
 
+    /**
+     * Export this {@code FeatureTypeStyle} in seFile. The resulting file is
+     * compatible with the Symbology Encoding specification.
+     * @param seFile
+     */
     public void export(String seFile) {
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(FeatureTypeStyleType.class);
@@ -208,6 +243,10 @@ public final class FeatureTypeStyle implements SymbolizerNode {
         }
     }
 
+    /**
+     * Get a JAXB representation of this {@code FeatureTypeStyle}.
+     * @return
+     */
     public JAXBElement<FeatureTypeStyleType> getJAXBElement() {
         FeatureTypeStyleType ftst = new FeatureTypeStyleType();
 
@@ -282,10 +321,19 @@ public final class FeatureTypeStyle implements SymbolizerNode {
         }
     }
 
+    /**
+     * Get the associated layer.
+     * @return
+     * The layer as an {@link ILayer}.
+     */
     public ILayer getLayer() {
         return layer;
     }
 
+    /**
+     * Set the associated {@link ILayer} to {@code layer}.
+     * @param layer
+     */
     public void setLayer(ILayer layer) {
         this.layer = layer;
     }
@@ -305,18 +353,39 @@ public final class FeatureTypeStyle implements SymbolizerNode {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    /**
+     * Get the name of this {@code FeatureTypeStyle}.
+     * @return
+     * The name as a {@code String}.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Set the name of this {@code FeatureTypeStyle}.
+     * @param name
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * Get the {@link Rule}s contained in this {@code FeatureTypeStyle}.
+     * @return
+     * The {@code Rule}s, in a {@link List}.
+     */
     public List<Rule> getRules() {
         return rules;
     }
 
+    /**
+     * Move the ith {@code Rule} up, ie swap it with the Rule at index (i-1).
+     * @param i
+     * @return
+     * {@code true} if the move was possible, ie if and ony if
+     * {@code i>0 && i < getRules().size() }
+     */
     public boolean moveRuleUp(int i) {
         try {
             if (i > 0) {
@@ -329,6 +398,13 @@ public final class FeatureTypeStyle implements SymbolizerNode {
         return false;
     }
 
+    /**
+     * Move the ith {@code Rule} down, ie swap it with the Rule at index (i+1).
+     * @param i
+     * @return
+     * {@code true} if the move was possible, ie if and ony if
+     * {@code i>=0 && i < getRules().size() -1}
+     */
     public boolean moveRuleDown(int i) {
         try {
             if (i < rules.size() - 1) {
@@ -342,6 +418,10 @@ public final class FeatureTypeStyle implements SymbolizerNode {
         return false;
     }
 
+    /**
+     * Add a {@link Rule} to this {@code FeatureTypeStyle}.
+     * @param r
+     */
     public void addRule(Rule r) {
         if (r != null) {
             r.setParent(this);
@@ -349,6 +429,13 @@ public final class FeatureTypeStyle implements SymbolizerNode {
         }
     }
 
+    /**
+     * Delete the ith {@link Rule} of this {@code FeatureTypeStyle}.
+     * @param i
+     * @return
+     * {@code true} if i was a valid index in the inner {@code link} before the
+     * deletion, so that a {@code Rule} as indeed been removed, false otherwise.
+     */
     public boolean deleteRule(int i) {
         try {
             rules.remove(i);
@@ -357,7 +444,4 @@ public final class FeatureTypeStyle implements SymbolizerNode {
             return false;
         }
     }
-    private String name;
-    private ArrayList<Rule> rules;
-    private ILayer layer;
 }

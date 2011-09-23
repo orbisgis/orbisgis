@@ -27,6 +27,14 @@ public abstract class Graphic implements SymbolizerNode {
 
     protected SymbolizerNode parent;
 
+    /**
+     * This static method is a convenience to create a new {@code Graphic}
+     * specialized type from a {@code JAXBElement} instance, that embeds a
+     * {@code GraphicType}.
+     * @param gr
+     * @return
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle
+     */
     public static Graphic createFromJAXBElement(JAXBElement<? extends GraphicType> gr) throws InvalidStyle {
         try {
             if (gr.getDeclaredType() == ExternalGraphicType.class) {
@@ -88,10 +96,39 @@ public abstract class Graphic implements SymbolizerNode {
     public abstract Rectangle2D getBounds(SpatialDataSourceDecorator sds,
             long fid, MapTransform mt) throws ParameterException, IOException;
 
+    /**
+     * Draw this graphic using {@code g2}.
+     * @param g2
+     * @param sds
+     * @param fid
+     * @param selected
+     * @param mt
+     * @param at
+     * @throws ParameterException
+     * @throws IOException
+     */
     public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, 
             boolean selected, MapTransform mt, AffineTransform at) throws ParameterException, IOException;
 
+
+    /**
+     * Get a String representation of the list of features this {@code Graphic}
+     * depends on.
+     * @return
+     * The features this {@code Graphic} depends on, in a {@code String}.
+     */
     public abstract String dependsOnFeature();
+
+
+    /**
+     * Get a JAXB representation of this {@code Graphic}
+     * @return
+     * A {@code JAXBElement} that contains a {@code GraphicType} specialization.
+     */
     public abstract JAXBElement<? extends GraphicType> getJAXBElement();
+
+    /**
+     * Update the inner graphic.
+     */
     public abstract void updateGraphic();
 }

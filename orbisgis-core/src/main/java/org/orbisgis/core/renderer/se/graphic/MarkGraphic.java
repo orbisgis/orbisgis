@@ -94,7 +94,7 @@ import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, ViewBoxNode, UomNode, TransformNode {
 
         /**
-         * The defautl size used to buld {@code MarkGraphic} instances.
+         * The defautl size used to build {@code MarkGraphic} instances.
          */
     public static final double DEFAULT_SIZE = 3;
     //private MarkGraphicSource source;
@@ -401,65 +401,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
             return shp.getBounds2D();
         }
     }
-
-    /**
-     * @param ds
-     * @param fid
-     * @throws ParameterException
-     * @throws IOException
-     */
-    /*@Override
-    public RenderableGraphics getRenderableGraphics(SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException {
-    Shape shp = null;
-
-    // If the shape doesn't depends on feature (i.e. not null), we used the cached one
-    if (shape == null) {
-    shp = getShape(sds, fid, mt);
-    } else {
-    shp = shape;
-    }
-
-    if (shp == null){
-    shp = WellKnownName.CIRCLE.getShape(viewBox, sds, fid, mt.getScaleDenominator(), mt.getDpi(), markIndex, mimeType);
-    }
-
-    // Apply AT
-    Shape atShp = shp;
-
-    if (transform != null) {
-    atShp = this.transform.getGraphicalAffineTransform(false, sds, fid, mt, shp.getBounds().getWidth(),
-    shp.getBounds().getHeight()).createTransformedShape(shp);
-    }
-
-    if (this.getFill() == null && this.getStroke() == null) {
-    this.setFill(new SolidFill());
-    this.setStroke(new PenStroke());
-    }
-
-    Rectangle2D bounds = atShp.getBounds2D();
-
-    double margin = this.getMargin(sds, fid, mt);
-
-    RenderableGraphics rg = Graphic.getNewRenderableGraphics(bounds, margin, mt);
-
-    if (halo != null) {
-    halo.draw(rg, sds, fid, selected, atShp, mt, true);
-    }
-
-    if (fill != null) {
-    fill.draw(rg, sds, fid, atShp, selected, mt);
-    }
-
-    if (stroke != null) {
-    double offset = 0.0;
-    if (pOffset != null) {
-    offset = Uom.toPixel(pOffset.getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-    }
-    stroke.draw(rg, sds, fid, atShp, selected, mt, offset);
-    }
-
-    return rg;
-    }*/
+    
     @Override
     public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
             boolean selected, MapTransform mt, AffineTransform fat) throws ParameterException, IOException {
@@ -485,6 +427,8 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 
         Shape atShp = at.createTransformedShape(shp);
 
+        //If both of the fill and stroke are null, we must apply a default
+        //behaviour (as we can't draw a mark graphic without both of them...).
         if (this.getFill() == null && this.getStroke() == null) {
             this.setFill(new SolidFill());
             this.setStroke(new PenStroke());

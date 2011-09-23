@@ -90,10 +90,20 @@ public final class TextStroke extends Stroke {
                 this(s.getValue());
         }
 
+        /**
+         * Get the {@link LineLabel} associated to this {@code TextStroke}.
+         * @return
+         * A {@link LineLabel} that contains all the informations needed to
+         * render the text.
+         */
         public LineLabel getLineLabel() {
                 return lineLabel;
         }
 
+        /**
+         * Set the {@link LineLabel} associated to this {@code TextStroke}.
+         * @param lineLabel
+         */
         public void setLineLabel(LineLabel lineLabel) {
                 this.lineLabel = lineLabel;
 
@@ -103,7 +113,8 @@ public final class TextStroke extends Stroke {
         }
 
         @Override
-        public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt, double offset) throws ParameterException, IOException {
+        public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp,
+                        boolean selected, MapTransform mt, double offset) throws ParameterException, IOException {
                 if (this.lineLabel != null) {
                         lineLabel.draw(g2, sds, fid, shp, selected, mt, null);
                 }
@@ -115,6 +126,10 @@ public final class TextStroke extends Stroke {
                 return of.createTextStroke(this.getJAXBType());
         }
 
+        /**
+         * Build a new {@link TextStrokeType} representing this {@code TextStroke}.
+         * @return
+         */
         public TextStrokeType getJAXBType() {
                 TextStrokeType s = new TextStrokeType();
 
@@ -133,7 +148,8 @@ public final class TextStroke extends Stroke {
         }
 
         @Override
-        public Double getNaturalLength(SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) throws ParameterException, IOException {
+        public Double getNaturalLength(SpatialDataSourceDecorator sds, long fid,
+                        Shape shp, MapTransform mt) throws ParameterException, IOException {
                 Rectangle2D bounds = lineLabel.getLabel().getBounds(null, sds, fid, mt);
                 return bounds.getWidth();
         }

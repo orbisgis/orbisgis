@@ -46,6 +46,16 @@ import org.orbisgis.core.renderer.se.graphic.ViewBox;
  * @author maxence, alexis
  */
 public interface ViewBoxNode {
+
+        /**
+         * Get the {@link ViewBox} this node must be rendered in.
+         * @return
+         */
 	ViewBox getViewBox();
+
+        /**
+         * Set the {@link ViewBox} this node must be rendered in.
+         * @param vBox
+         */
 	void setViewBox(ViewBox vBox);
 }

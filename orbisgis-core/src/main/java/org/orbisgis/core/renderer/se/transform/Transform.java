@@ -34,6 +34,13 @@ public class Transform implements SymbolizerNode, UomNode {
         private AffineTransform consolidated;
         private ArrayList<Transformation> transformations;
 
+        /**
+         * Gets a {@code String} representation of this {@code Transform}, by
+         * printing the {@code String} representation of each inner
+         * {@code Transformation}.
+         * @return
+         * A {@code String} representation of this {@code Transform}
+         */
         @Override
         public String toString() {
                 String r = "";

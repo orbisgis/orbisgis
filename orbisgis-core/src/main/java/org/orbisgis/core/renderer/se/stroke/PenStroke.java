@@ -621,7 +621,8 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
     }
 
     /**
-     * 
+     * Get the minimal length needed to display a complete dash pattern, including
+     * the dash offset.
      * @param sds
      * @param fid
      * @param mt

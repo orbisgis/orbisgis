@@ -158,6 +158,12 @@ public final class ViewBox implements SymbolizerNode {
                 parent = node;
         }
 
+    /**
+     * Get a String representation of the list of features this {@code ViewBox}
+     * depends on.
+     * @return
+     * The features this {@code Label} depends on, in a {@code String}.
+     */
         public String dependsOnFeature() {
                 String sx = "";
                 String sy = "";
@@ -229,6 +235,11 @@ public final class ViewBox implements SymbolizerNode {
                 return v;
         }
 
+        /**
+         * Gets a String representation of this {@code ViewBox}.
+         * @return
+         * A String containing the wifth and height of the {@code ViewBox}..
+         */
         @Override
         public String toString() {
                 String result = "ViewBox:";
