@@ -40,7 +40,7 @@ package org.orbisgis.core.renderer.se.graphic;
 
 
 /**
- *
+ * Used to listen to modifications about {@code Slices} in {@code Charts}.
  * @author maxence
  */
 public interface SliceListener {
@@ -56,6 +56,9 @@ public interface SliceListener {
      */
     public void sliceMoveDown(int i);
 
-
+    /**
+     * ith {@code Slice} of the {@code PieChart} has been removed.
+     * @param i
+     */
     public void sliceRemoved(int i);
 }

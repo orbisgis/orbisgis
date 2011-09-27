@@ -35,6 +35,29 @@ import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
+/**
+ * A PieChart is a way to render statistical informations directly in the map.
+ * It is a circular chart, that is diveided into sectors. The arc length of
+ * each sector is directly proportional to the value it represents - supposing
+ * the diameter length is the sum of all the represented values. It is built
+ * using the following attributes :
+ * <ul>
+ * <li>A unit of measure (as a {@code UomNode}).</li>
+ * <li>A {@code PieChartSubType}. We can represent a pie chart in a whole circle
+ * or in a half-circle (defautl being the whole circle).</li>
+ * <li>A radius - default is 30 pixels</li>
+ * <li>A hole radius - default is 0. By adding a hole radius, it becomes possible
+ * to render a ring rather than a disc. It should be greater than the radius.
+ * </li>
+ * <li>A Stroke to render its boundary</li>
+ * <li>A transform that can be applied on the graphic.</li>
+ * <li>A list of slices, as described in {@link Slice}</li>
+ * </ul>
+ * </p>
+ * <p>{@code Slices} can be organize in this {@code PieChart}, in order to
+ * change their display order
+ * @author alexis, maxence
+ */
 public final class PieChart extends Graphic implements StrokeNode, UomNode, TransformNode {
 
     private ArrayList<SliceListener> listeners;
@@ -48,11 +71,18 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode, Tran
     private Transform transform;
     private ArrayList<Slice> slices;
 
+    /**
+     * A {@code PieChart} can be drawn in a whole circle, or in a half circle.
+     */
     public enum PieChartSubType {
 
         WHOLE, HALF;
     }
 
+    /**
+     * Build a new {@code PieChart}. It does not have any slice, is drawn in a
+     * whole circle, and has a radius of 10.
+     */
     public PieChart() {
         slices = new ArrayList<Slice>();
         type = PieChartSubType.WHOLE;
@@ -60,6 +90,11 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode, Tran
         this.listeners = new ArrayList<SliceListener>();
     }
 
+    /**
+     * Build a new {@code PieChart} from the give {@code JAXBElement}.
+     * @param pieE
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle
+     */
     PieChart(JAXBElement<PieChartType> pieE) throws InvalidStyle {
         this();
 
@@ -113,6 +148,10 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode, Tran
 
     }
 
+    /**
+     * Add a listener to this {@code PieChart}.
+     * @param lstner
+     */
     public void registerListerner(SliceListener lstner) {
         listeners.add(lstner);
     }
@@ -154,10 +193,20 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode, Tran
         this.uom = uom;
     }
 
+    /**
+     * Retrieve the number of slices registered in this {@code PieChart}.
+     * @return
+     */
     public int getNumSlices() {
         return slices.size();
     }
 
+    /**
+     * Get the ith {@code Slice} registered in this {@code PieChart}.
+     * @param i
+     * @return
+     * The ith {@code Slice}, or null if {@code i<0 || i>=getNumSlices())}.
+     */
     public Slice getSlice(int i) {
         if (i >= 0 && i < getNumSlices()) {
             return slices.get(i);
@@ -166,6 +215,10 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode, Tran
         }
     }
 
+    /**
+     * Remove the ith element in the inner list of {@code Slice}s.
+     * @param i
+     */
     public void removeSlice(int i) {
         if (i >= 0 && i < slices.size()) {
             slices.remove(i);
@@ -173,6 +226,11 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode, Tran
         }
     }
 
+    /**
+     * Add an element in the inner list {@code Slice}s.
+     * @param slice
+     * If null, is not added.
+     */
     public void addSlice(Slice slice) {
         if (slice != null) {
             slices.add(slice);
@@ -180,6 +238,10 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode, Tran
         }
     }
 
+    /**
+     * Move the ith {@code Slice} up, ie swap the ith and (i+1)th elements.
+     * @param i
+     */
     public void moveSliceUp(int i) {
         // déplace i vers i-1
         if (slices.size() > 1) {
@@ -194,6 +256,10 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode, Tran
         }
     }
 
+    /**
+     * Move the ith {@code Slice} down, ie swap the ith and (i-1)th elements.
+     * @param i
+     */
     public void moveSliceDown(int i) {
         // déplace i vers i+1
         if (slices.size() > 1) {
@@ -216,6 +282,12 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode, Tran
         this.displayValue = displayValue;
     }
 
+    /**
+     * Get the hole of the radius, if set. Can be null
+     * @return
+     * A {@link RealParameter} placed in a
+     * {@link RealParameterContext#NON_NEGATIVE_CONTEXT}.
+     */
     public RealParameter getHoleRadius() {
         return holeRadius;
     }
@@ -234,10 +306,22 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode, Tran
         }
     }
 
+    /**
+     * Get the radius of the {@code PieChart}.
+     * @return
+     * The radius of the {@code PieChart}, as a {@link RealParameter} placed in
+     * a {@link RealParameterContext#NON_NEGATIVE_CONTEXT}.
+     */
     public RealParameter getRadius() {
         return radius;
     }
 
+    /**
+     * Set the radius of the {@code PieChart}.
+     * @param radius
+     * A {@link RealParameter}, that is placed by this method in a
+     * {@link RealParameterContext#NON_NEGATIVE_CONTEXT}.
+     */
     public void setRadius(RealParameter radius) {
         this.radius = radius;
         if (radius != null) {
@@ -258,10 +342,18 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode, Tran
         }
     }
 
+    /**
+     * Get the type of this {@code PieChart}.
+     * @return
+     */
     public PieChartSubType getType() {
         return type;
     }
 
+    /**
+     * Set the type of this {@code PieChart}.
+     * @param type
+     */
     public void setType(PieChartSubType type) {
         this.type = type;
     }
@@ -440,188 +532,6 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode, Tran
         }
     }
 
-    /**
-     *
-     * @param ds
-     * @param fid
-     */
-    /*
-    @Override
-    public RenderableGraphics getRenderableGraphics(SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException {
-
-    int nSlices = slices.size();
-
-    double total = 0.0;
-    double[] values = new double[nSlices];
-    double[] stackedValues = new double[nSlices];
-    double[] gaps = new double[nSlices];
-
-    double r = 30; // 30px by default
-
-    if (radius != null) {
-    r = Uom.toPixel(this.getRadius().getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null); // TODO 100%
-    }
-
-    double holeR = 0.0;
-
-    Area hole = null;
-    if (this.holeRadius != null) {
-    holeR = Uom.toPixel(this.getHoleRadius().getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), r);
-    hole = new Area(new Arc2D.Double(-holeR, -holeR, 2 * holeR, 2 * holeR, 0, 360, Arc2D.CHORD));
-    }
-
-    double maxGap = 0.0;
-
-    for (int i = 0; i < nSlices; i++) {
-    Slice slc = slices.get(i);
-    values[i] = slc.getValue().getValue(sds, fid);
-    total += values[i];
-    stackedValues[i] = total;
-    RealParameter gap = slc.getGap();
-    if (gap != null) {
-    gaps[i] = Uom.toPixel(slc.getGap().getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), r);
-    } else {
-    gaps[i] = 0.0;
-    }
-
-    maxGap = Math.max(gaps[i], maxGap);
-    }
-
-    double pieMaxR = r + maxGap;
-
-    if (stroke != null) {
-    pieMaxR += stroke.getMaxWidth(sds, fid, mt);
-    }
-
-
-    Rectangle2D bounds = new Rectangle2D.Double(-pieMaxR, -pieMaxR, 2 * pieMaxR, 2 * pieMaxR);
-
-    RenderableGraphics rg;
-
-    AffineTransform at = null;
-    if (this.getTransform() != null) {
-    at = this.getTransform().getGraphicalAffineTransform(false, sds, fid, mt, r, r);
-
-    // Apply the AT to the bbox
-    Shape newBounds = at.createTransformedShape(bounds);
-
-    bounds = newBounds.getBounds2D();
-    } else {
-    at = new AffineTransform();
-    }
-    // Graphic is too small => return null
-    if (bounds.isEmpty()){
-    return null;
-    }
-    rg = Graphic.getNewRenderableGraphics(bounds, 0, mt);
-
-    // Now, the total is defines, we can compute percentages and slices begin/end angles
-    double[] percentages = new double[nSlices];
-
-    for (int i = 0; i < nSlices; i++) {
-    if (i == 0) {
-    percentages[i] = 0.0;
-    } else {
-    percentages[i] = stackedValues[(i - 1 + nSlices) % nSlices] / total;
-    }
-    }
-
-    // Create BufferedImage imageWidth x imageWidth
-
-    Shape[] shapes = new Shape[nSlices];
-
-    double maxDeg = 360.0;
-
-    if (this.getType() == PieChartSubType.HALF) {
-    maxDeg = 180.0;
-    }
-
-    // Create slices
-    for (int i = 0; i < nSlices; i++) {
-    double aStart = percentages[i] * maxDeg;
-
-    double aExtend;
-
-    if (i < nSlices - 1) {
-    aExtend = (percentages[(i + 1) % nSlices] - percentages[i]) * maxDeg;
-    } else {
-    aExtend = maxDeg - (percentages[i]) * maxDeg;
-    }
-
-
-    Area gSlc = new Area(new Arc2D.Double(-r, -r, 2 * r, 2 * r, aStart, aExtend, Arc2D.PIE));
-
-    if (hole != null) {
-    gSlc.subtract(hole);
-    }
-
-
-    double alphaMiddle = (aStart + aExtend / 2.0) * Math.PI / 180.0;
-
-    // create AT = GraphicTransform + T(gap)
-    AffineTransform gapAt = AffineTransform.getTranslateInstance(Math.cos(alphaMiddle) * gaps[i],
-    -Math.sin(alphaMiddle) * gaps[i]);
-
-    gapAt.preConcatenate(at);
-
-    Shape atShp = gapAt.createTransformedShape(gSlc);
-
-    shapes[i] = atShp;
-
-    Fill fill = getSlice(i).getFill();
-
-
-    if (fill != null) {
-    fill.draw(rg, sds, fid, atShp, selected, mt);
-    }
-
-
-    if (displayValue) {
-    double p;
-    if (i == nSlices - 1) {
-    p = 1.0 - percentages[i];
-    } else {
-    p = percentages[i + 1] - percentages[i];
-    }
-    p *= 100;
-
-    StyledText label = new StyledText(Integer.toString((int) Math.round(p)));
-    AffineTransform labelAt = (AffineTransform) gapAt.clone();
-
-
-    double labelPosRatio;
-    if (this.holeRadius != null) {
-    labelPosRatio = (r - holeR) / 2.0 + holeR;
-    } else {
-    labelPosRatio = r * 0.66;
-    }
-
-    labelAt.concatenate(AffineTransform.getTranslateInstance(Math.cos(alphaMiddle) * labelPosRatio,
-    -Math.sin(alphaMiddle) * labelPosRatio));
-
-    Rectangle2D anchor = labelAt.createTransformedShape(new Rectangle2D.Double(0, 0, 1, 1)).getBounds2D();
-
-
-    rg.drawRenderedImage(label.getImage(sds, fid, selected, mt).createRendering(mt.getCurrentRenderContext()), AffineTransform.getTranslateInstance(anchor.getCenterX(), anchor.getCenterY()));
-    }
-
-    }
-
-    // Stokes must be drawn after fills
-    if (stroke != null) {
-    for (int i = 0; i < nSlices; i++) {
-    stroke.draw(rg, sds, fid, shapes[i], selected, mt, 0.0);
-    }
-    }
-
-    return rg;
-    }
-     */
-
-    /*@Override
-    public double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
-    throw new UnsupportedOperationException("Not supported yet.");
-    }*/
     @Override
     public void updateGraphic() {
     }
