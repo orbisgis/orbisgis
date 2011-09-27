@@ -42,6 +42,9 @@ import java.util.Map;
 
 /**
  * Special FIFO Linked Queue for use by {@link TwoQueueBuffer}.
+ * 
+ * @param <I> the key
+ * @param <B> the value
  * @author Antoine Gourlay
  */
 final class TwoQueueA1out<I, B> {
@@ -55,24 +58,24 @@ final class TwoQueueA1out<I, B> {
                 map = new HashMap<I, SingleQueueValue<I>>(maxSize);
         }
 
-        public int size() {
+        int size() {
                 return map.size();
         }
 
-        public boolean isEmpty() {
+        boolean isEmpty() {
                 return map.isEmpty();
         }
 
-        public boolean containsKey(I key) {
+        boolean containsKey(I key) {
                 return map.containsKey(key);
         }
 
-        public boolean retrieve(I key) {
+        boolean retrieve(I key) {
                 final SingleQueueValue<I> get = map.remove(key);
                 return remove(get);
         }
 
-        public void put(I key) {
+        void put(I key) {
                 final SingleQueueValue<I> q = new SingleQueueValue<I>(key);
                 map.put(q.key, q);
                 insert(q);
@@ -117,7 +120,7 @@ final class TwoQueueA1out<I, B> {
                 }
         }
 
-        public void clear() {
+        void clear() {
                 map.clear();
                 newest = null;
         }
@@ -125,14 +128,14 @@ final class TwoQueueA1out<I, B> {
         /**
          * @return the maxSize
          */
-        public int getMaxSize() {
+        int getMaxSize() {
                 return maxSize;
         }
 
         /**
          * @param maxSize the maximum size to set
          */
-        public void setMaxSize(int maxSize) {
+        void setMaxSize(int maxSize) {
                 this.maxSize = maxSize;
         }
 

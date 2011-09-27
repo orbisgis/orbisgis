@@ -36,12 +36,20 @@
  */
 package org.orbisgis.progress;
 
+/**
+ * Represents a way to report progress of a task.
+ */
 public interface ProgressMonitor {
 
+        /**
+         * Initialize a new task with the given end.
+         * @param taskName the name of the task
+         * @param end the end of the progress of the task
+         */
         void init(String taskName, long end);
 
         /**
-         * Adds a new child task to the last added
+         * Adds a new child task to the last added.
          *
          * @param taskName
          *            Task name
@@ -49,44 +57,51 @@ public interface ProgressMonitor {
          */
         void startTask(String taskName, long end);
 
+        /**
+         * Ends the currently running task.
+         */
         void endTask();
 
         /**
          * Gets the current name of the task. The name at init or the name at the
-         * last call to startTask if any
+         * last call to startTask if any.
          *
          * @return
          */
         String getCurrentTaskName();
 
         /**
-         * Indicates the progress of the last added task
+         * Indicates the progress of the last added task.
          *
          * @param progress
          */
         void progressTo(long progress);
 
         /**
-         * Gets the progress of the overall process
+         * Gets the progress of the overall process.
          *
          * @return
          */
         int getOverallProgress();
 
         /**
-         * Gets the progress of the current process
+         * Gets the progress of the current process.
          *
          * @return
          */
         int getCurrentProgress();
 
         /**
-         * Returns true if the process is cancelled and should end as quickly as
-         * possible
+         * Returns true if the process is canceled and should end as quickly as
+         * possible.
          *
          * @return
          */
         boolean isCancelled();
 
+        /**
+         * Sets the cancel state of the process.
+         * @param cancelled
+         */
         void setCancelled(boolean cancelled);
 }

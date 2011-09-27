@@ -43,6 +43,8 @@ import java.util.Map;
 /**
  * Special LRU Linked Queue for use by the {@link TwoQueueBuffer}.
  * 
+ * @param <I> the key
+ * @param <B> the value
  * @since 2.0
  * @author Antoine Gourlay
  */
@@ -56,19 +58,19 @@ final class TwoQueueAm<I, B> {
                 this.maxSize = maxSize;
         }
 
-        public int size() {
+        int size() {
                 return map.size();
         }
 
-        public boolean isEmpty() {
+        boolean isEmpty() {
                 return map.isEmpty();
         }
 
-        public boolean containsKey(I key) {
+        boolean containsKey(I key) {
                 return map.containsKey(key);
         }
 
-        public B get(I key) {
+        B get(I key) {
                 final DoubleQueueValue<I, B> get = map.get(key);
                 if (get != null) {
                         moveUpFront(get);
@@ -78,7 +80,7 @@ final class TwoQueueAm<I, B> {
                 }
         }
 
-        public DoubleQueueValue<I, B> put(I key, B b) {
+        DoubleQueueValue<I, B> put(I key, B b) {
                 final DoubleQueueValue<I, B> q = new DoubleQueueValue(key, b);
                 map.put(q.key, q);
                 return insertAndTrim(q);
@@ -130,7 +132,7 @@ final class TwoQueueAm<I, B> {
                 return null;
         }
 
-        public void clear() {
+        void clear() {
                 map.clear();
                 newest = null;
         }
@@ -138,14 +140,14 @@ final class TwoQueueAm<I, B> {
         /**
          * @return the maxSize
          */
-        public int getMaxSize() {
+        int getMaxSize() {
                 return maxSize;
         }
 
         /**
          * @param maxSize the maximum size to set
          */
-        public void setMaxSize(int maxSize) {
+        void setMaxSize(int maxSize) {
                 this.maxSize = maxSize;
         }
 }

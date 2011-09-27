@@ -76,6 +76,9 @@ import javax.xml.validation.Validator;
 
 import org.xml.sax.SAXException;
 
+/**
+ * Utility class for validating some XML.
+ */
 public final class XMLUtils {
 
         /**

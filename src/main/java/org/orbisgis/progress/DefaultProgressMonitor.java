@@ -37,8 +37,7 @@
 package org.orbisgis.progress;
 
 /**
- * Default implementation of an IProgressMonitor.
- *
+ * Default implementation of an ProgressMonitor.
  */
 public final class DefaultProgressMonitor implements ProgressMonitor {
 
@@ -47,6 +46,11 @@ public final class DefaultProgressMonitor implements ProgressMonitor {
         private Task currentTask;
         private boolean cancelled;
 
+        /**
+         * Creates a new DefaultProgressMonitor.
+         * @param taskName the name of the task
+         * @param end the end of the progress of the task
+         */
         public DefaultProgressMonitor(String taskName, int end) {
                 init(taskName, end);
         }
@@ -110,6 +114,7 @@ public final class DefaultProgressMonitor implements ProgressMonitor {
                 return cancelled;
         }
 
+        @Override
         public synchronized void setCancelled(boolean cancelled) {
                 this.cancelled = cancelled;
         }

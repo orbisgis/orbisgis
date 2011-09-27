@@ -57,6 +57,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+/**
+ * Contains some utility functions for dealing with files.
+ */
 public final class FileUtils {
 
         private static int BUF_SIZE = 1024 * 64;
