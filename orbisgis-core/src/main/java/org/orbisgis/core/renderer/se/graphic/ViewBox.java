@@ -58,7 +58,9 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * <p>The main difference between this class and {@link Scale} is that a {@code Scale}
  * will use a reference graphic, that already has a size, and process an affine transformation
  * on it, while here the size of the graphic will be defined directly using its height
- * and width.
+ * and width.</p>
+ * <p>The values given for the height and the width can be negative. If that
+ * happens, the coordinate of the rendered graphic will be flipped.
  * @author alexis, maxence
  */
 public final class ViewBox implements SymbolizerNode {
