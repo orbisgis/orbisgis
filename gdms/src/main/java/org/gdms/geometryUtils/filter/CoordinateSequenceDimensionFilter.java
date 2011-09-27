@@ -10,12 +10,12 @@ import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
 public class CoordinateSequenceDimensionFilter implements CoordinateSequenceFilter {
 
         private boolean isDone = false;
-        int dimension = 0;
-        int lastDimen = 0;
-        public static int XY = 2;
-        public static int XYZ = 3;
-        public static int XYZM = 4;
-        public int MAXDim = XYZM;
+        private int dimension = 0;
+        private int lastDimen = 0;
+        public static final int XY = 2;
+        public static final int XYZ = 3;
+        public static final int XYZM = 4;
+        private int maxDim = XYZM;
 
         @Override
         public void filter(CoordinateSequence seq, int i) {
@@ -33,7 +33,7 @@ public class CoordinateSequenceDimensionFilter implements CoordinateSequenceFilt
                 if (dimension > lastDimen){
                         lastDimen = dimension;
                 }
-                if (i == seq.size() || lastDimen >= MAXDim) {
+                if (i == seq.size() || lastDimen >= maxDim) {
                         isDone = true;
                 }
         }
@@ -42,8 +42,8 @@ public class CoordinateSequenceDimensionFilter implements CoordinateSequenceFilt
                 return lastDimen;
         }
 
-        public void setMAXDim(int MAXDim) {
-                this.MAXDim = MAXDim;
+        public void setMAXDim(int maxDim) {
+                this.maxDim = maxDim;
         }
 
         @Override

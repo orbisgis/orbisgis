@@ -72,9 +72,9 @@ public final class CoordinatesUtils {
         public static boolean contains(Coordinate[] coords, Coordinate coord) {
                 for (Coordinate coordinate : coords) {
                         if (Double.isNaN(coord.z)) {
-                                return coordinate.equals(coordinate);
+                                return coordinate.equals(coord);
                         } else {
-                                 return coordinate.equals3D(coordinate);
+                                 return coordinate.equals3D(coord);
                         }
                 }
                 return false;

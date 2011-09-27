@@ -220,7 +220,7 @@ abstract class DefaultGeometryValue extends AbstractValue implements GeometryVal
                                                 return ValueFactory.createValue(
                                                         geom.getFactory().createGeometryCollection(new Geometry[]{geom}));
                                         default:
-                                                super.toType(typeCode);
+                                                return super.toType(typeCode);
                                 }
 
                         // special cases for GEOMETRYCOLLECTION to its subtypes

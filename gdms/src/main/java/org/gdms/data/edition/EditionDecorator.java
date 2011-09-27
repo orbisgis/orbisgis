@@ -939,7 +939,7 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
                         }
                 }
                 // Cast value
-                Value returned = castValue(type, value);
+                castValue(type, value);
 
                 // Check constraints
                 String fieldName = getMetadata().getFieldName(fieldId);

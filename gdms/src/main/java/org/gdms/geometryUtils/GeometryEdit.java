@@ -110,7 +110,7 @@ import org.orbisgis.utils.I18N;
 public final class GeometryEdit {
 
         private static final GeometryFactory FACTORY = new GeometryFactory();
-        static double PRECISION = 10E-6;
+        public static final double PRECISION = 10E-6;
 
         /**
          * Interpolate a linestring according start and end coordinates z value.
@@ -292,11 +292,10 @@ public final class GeometryEdit {
                 CoordinateSequence seq = lineString.getCoordinateSequence();
                 double startZ = seq.getCoordinate(0).z;
                 double endZ = seq.getCoordinate(seq.size() - 1).z;
-                if (Double.isNaN(startZ) || Double.isNaN(endZ)) {
-                } else {
+                if (!Double.isNaN(startZ) && !Double.isNaN(endZ)) {
                         if (startZ < endZ) {
                                 CoordinateSequences.reverse(seq);
-                                lineString = FACTORY.createLineString(seq);
+                                return FACTORY.createLineString(seq);
                         }
                 }
 

@@ -70,6 +70,7 @@ import org.orbisgis.utils.FileUtils;
  * @author Antoine Gourlay
  */
 public class IndexManager {
+        private static final String TEMPINDEXPREFIX = "tempindex";
 
         private static final Logger logger = Logger.getLogger(IndexManager.class);
         public static final String INDEX_PROPERTY_PREFIX = "org.gdms.index";
@@ -225,7 +226,7 @@ public class IndexManager {
                         if (pm == null) {
                                 pm = new NullProgressMonitor();
                         }
-                        String tempName = "tempindex" + src.hashCode();
+                        String tempName = TEMPINDEXPREFIX + src.hashCode();
 
                         // Get index id if null
                         try {
@@ -376,7 +377,7 @@ public class IndexManager {
                         DataSource ds = (DataSource) src;
                         return getIndex(ds.getName(), fieldName);
                 } else {
-                        String code = "tempindex" + String.valueOf(src.hashCode());
+                        String code = TEMPINDEXPREFIX + String.valueOf(src.hashCode());
                         IndexDefinition def = new IndexDefinition(code, fieldName);
                         return indexCache.get(def);
                 }
@@ -593,7 +594,7 @@ public class IndexManager {
                 }
                 
                 try {
-                        int[] ret = queryIndex("tempindex" + src.hashCode(), indexQuery);
+                        int[] ret = queryIndex(TEMPINDEXPREFIX + src.hashCode(), indexQuery);
 
                         if (ret != null) {
                                 return new ResultIterator(ret);
@@ -627,7 +628,7 @@ public class IndexManager {
                         return queryIndex(ds.getName(), indexQuery);
                 }
 
-                dsi = getIndex("tempindex" + src.hashCode(), indexQuery.getFieldName());
+                dsi = getIndex(TEMPINDEXPREFIX + src.hashCode(), indexQuery.getFieldName());
                 if (dsi != null) {
                         if (!dsi.isOpen()) {
                                 dsi.load();
@@ -701,7 +702,7 @@ public class IndexManager {
                         DataSource ds = (DataSource) src;
                         deleteIndex(ds.getName(), fieldName);
                 } else {
-                        deleteIndex("tempindex" + src.hashCode(), fieldName);
+                        deleteIndex(TEMPINDEXPREFIX + src.hashCode(), fieldName);
                 }
         }
 
@@ -764,7 +765,7 @@ public class IndexManager {
                                 DataSource ds = (DataSource) src;
                                 return isIndexed(ds.getName(), fieldName);
                         } else {
-                                return isIndexed("tempindex" + src.hashCode(), fieldName);
+                                return isIndexed(TEMPINDEXPREFIX + src.hashCode(), fieldName);
                         }
                 } catch (NoSuchTableException ex) {
                         return false;

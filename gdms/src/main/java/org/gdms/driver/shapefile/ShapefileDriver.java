@@ -156,7 +156,6 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                         driver = dbfDriver.getTable("main");
 
                         Constraint dc;
-                        Constraint gc;
                         //We can force the type of the data in the GDMS table according to the type
                         //given in the ShapeFile. This variable is here for this task.
                         int gtype;

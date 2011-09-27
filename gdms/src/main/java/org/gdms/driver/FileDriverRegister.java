@@ -39,6 +39,7 @@ package org.gdms.driver;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Map;
 import org.gdms.driver.driverManager.DriverLoadException;
 
 /**
@@ -53,7 +54,7 @@ import org.gdms.driver.driverManager.DriverLoadException;
 
 public class FileDriverRegister {
 
-        private static HashMap<File, FileDriver> fileDriverMap;
+        private Map<File, FileDriver> fileDriverMap;
         
         /**
          * Creates a new {@code FileDriverRegister}, without any reference to any File in it.

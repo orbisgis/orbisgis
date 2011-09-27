@@ -44,7 +44,6 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.data.types.IncompatibleTypesException;
 import org.orbisgis.utils.ByteUtils;
 
