@@ -369,9 +369,6 @@ public void reportError(RecognitionException e) {
 }
 
 @members {
-protected void mismatch(IntStream input, int ttype, BitSet follow) throws RecognitionException {
-        throw new MismatchedTokenException(ttype, input);
-}
 public Object recoverFromMismatchedSet(IntStream input, RecognitionException e, BitSet follow)
         throws RecognitionException {
         throw e;
