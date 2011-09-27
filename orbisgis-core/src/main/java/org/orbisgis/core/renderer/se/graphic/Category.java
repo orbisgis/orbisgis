@@ -13,139 +13,179 @@ import org.orbisgis.core.renderer.se.StrokeNode;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 
 /**
- *
+ * A {@code Category} is a part of an {@link AxisChart}. It embeds a value, and
+ * hints that must be used to render it. It depends on the following parameters :
+ * <ul>
+ * <li>A measure, ie the value to represent with this {@code Category}.</li>
+ * <li>A {@link Fill} to fill its representation.</li>
+ * <li>A {@link Stroke} that will be used to draw its boundaries.</li>
+ * <li>A {@link GraphicCollection} to represent it.</li>
+ * <li>A name (as a String).</li>
+ * </ul>
  * @author maxence
  * @todo add support for stacked bar (means category fill / stroke are mandatory) and others are forbiden
  */
 public final class Category implements SymbolizerNode, FillNode, StrokeNode, GraphicNode {
 
-    private RealParameter measure;
+        private RealParameter measure;
 
-    /* in order to draw bars, optionnal */
-    private Fill fill;
-    private Stroke stroke;
+        /* in order to draw bars, optionnal */
+        private Fill fill;
+        private Stroke stroke;
 
-    /* In order to draw points, optionnal */
-    private GraphicCollection graphic;
-    private SymbolizerNode parent;
+        /* In order to draw points, optionnal */
+        private GraphicCollection graphic;
+        private SymbolizerNode parent;
+        private String name;
 
-    private String name;
-
-    public Category() {
-        graphic = new GraphicCollection();
-        graphic.setParent(this);
-        name = "";
-    }
-
-    public Category(CategoryType c) throws InvalidStyle {
-        if (c.getFill() != null){
-            setFill(Fill.createFromJAXBElement(c.getFill()));
+        /**
+         * Build a new, empty, {@code Category}.
+         */
+        public Category() {
+                graphic = new GraphicCollection();
+                graphic.setParent(this);
+                name = "";
         }
 
-        if (c.getGraphic() != null){
-            setGraphicCollection(new GraphicCollection(c.getGraphic(), this));
+        /**
+         * Build a new {@code Category} from the given {@code CategoryType}.
+         * @param c
+         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle
+         */
+        public Category(CategoryType c) throws InvalidStyle {
+                if (c.getFill() != null) {
+                        setFill(Fill.createFromJAXBElement(c.getFill()));
+                }
+
+                if (c.getGraphic() != null) {
+                        setGraphicCollection(new GraphicCollection(c.getGraphic(), this));
+                }
+
+                if (c.getStroke() != null) {
+                        setStroke(Stroke.createFromJAXBElement(c.getStroke()));
+                }
+
+                if (c.getValue() != null) {
+                        setMeasure(SeParameterFactory.createRealParameter(c.getValue()));
+                }
+
+                if (c.getName() != null) {
+                        setName(c.getName());
+                }
         }
 
-        if (c.getStroke() != null){
-            setStroke(Stroke.createFromJAXBElement(c.getStroke()));
+        @Override
+        public Fill getFill() {
+                return fill;
         }
 
-        if (c.getValue() != null){
-            setMeasure(SeParameterFactory.createRealParameter(c.getValue()));
+        @Override
+        public void setFill(Fill fill) {
+                this.fill = fill;
+                fill.setParent(this);
         }
 
-        if (c.getName() != null){
-            setName(c.getName());
-        }
-    }
-
-	@Override
-    public Fill getFill() {
-        return fill;
-    }
-
-	@Override
-    public void setFill(Fill fill) {
-        this.fill = fill;
-        fill.setParent(this);
-    }
-
-	@Override
-    public Stroke getStroke() {
-        return stroke;
-    }
-
-	@Override
-    public void setStroke(Stroke stroke) {
-        this.stroke = stroke;
-        stroke.setParent(this);
-    }
-
-
-    @Override
-    public Uom getUom() {
-        return parent.getUom();
-    }
-
-    @Override
-    public SymbolizerNode getParent() {
-        return parent;
-    }
-
-    @Override
-    public void setParent(SymbolizerNode node) {
-        parent = node;
-    }
-
-	@Override
-	public GraphicCollection getGraphicCollection() {
-		return graphic;
-	}
-
-	@Override
-	public void setGraphicCollection(GraphicCollection graphic) {
-		this.graphic = graphic;
-	}
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getName(){
-        return name;
-    }
-
-    public RealParameter getMeasure() {
-        return measure;
-    }
-
-    public void setMeasure(RealParameter measure) {
-        this.measure = measure;
-    }
-
-    CategoryType getJaxbType() {
-        CategoryType ct = new CategoryType();
-
-        if (this.getFill() != null){
-            ct.setFill(this.getFill().getJAXBElement());
+        @Override
+        public Stroke getStroke() {
+                return stroke;
         }
 
-        if (this.getStroke() != null){
-            ct.setStroke(getStroke().getJAXBElement());
+        @Override
+        public void setStroke(Stroke stroke) {
+                this.stroke = stroke;
+                stroke.setParent(this);
         }
 
-        if (this.getGraphicCollection() != null){
-            ct.setGraphic(getGraphicCollection().getJAXBElement());
+        @Override
+        public Uom getUom() {
+                return parent.getUom();
         }
 
-        if (this.getMeasure() != null){
-            ct.setValue(getMeasure().getJAXBParameterValueType());
+        @Override
+        public SymbolizerNode getParent() {
+                return parent;
         }
 
-        if (this.getName() != null){
-            ct.setName(getName());
+        @Override
+        public void setParent(SymbolizerNode node) {
+                parent = node;
         }
 
-        return ct;
-    }
+        @Override
+        public GraphicCollection getGraphicCollection() {
+                return graphic;
+        }
+
+        @Override
+        public void setGraphicCollection(GraphicCollection graphic) {
+                this.graphic = graphic;
+        }
+
+        /**
+         * Set the name of this {@code Category}.
+         * @param name
+         */
+        public void setName(String name) {
+                this.name = name;
+        }
+
+        /**
+         * Get the name of this {@code Category}.
+         * @return
+         * The name of this {@code Category}, as a String instance.
+         */
+        public String getName() {
+                return name;
+        }
+
+        /**
+         * The measure associated to this {@code Category}.
+         * @return
+         * A {@link RealParameter}. That means this {@code Category} can
+         * be linked to a value in a table, for instance.
+         */
+        public RealParameter getMeasure() {
+                return measure;
+        }
+
+        /**
+         * Set the {@link RealParameter} used to retrieve the value associated
+         * to this {@code Category}.
+         * @param measure
+         */
+        public void setMeasure(RealParameter measure) {
+                this.measure = measure;
+        }
+
+        /**
+         * Get a JAXB representation of this {@code Category}.
+         * @return
+         * A {@code CategoryType}, that has been built using the values embedded
+         * in this {@code Category} instance.
+         */
+        CategoryType getJAXBType() {
+                CategoryType ct = new CategoryType();
+
+                if (this.getFill() != null) {
+                        ct.setFill(this.getFill().getJAXBElement());
+                }
+
+                if (this.getStroke() != null) {
+                        ct.setStroke(getStroke().getJAXBElement());
+                }
+
+                if (this.getGraphicCollection() != null) {
+                        ct.setGraphic(getGraphicCollection().getJAXBElement());
+                }
+
+                if (this.getMeasure() != null) {
+                        ct.setValue(getMeasure().getJAXBParameterValueType());
+                }
+
+                if (this.getName() != null) {
+                        ct.setName(getName());
+                }
+
+                return ct;
+        }
 }

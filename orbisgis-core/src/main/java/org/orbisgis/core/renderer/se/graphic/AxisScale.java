@@ -9,11 +9,13 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 public final class AxisScale {
 
-    public static final double DEFAULT_LENGHT = 40;
+    public static final double DEFAULT_LENGTH = 40;
     public static final double DEFAULT_MEASURE = 40;
+    private RealParameter axisLength;
+    private RealParameter measure;
 
     public AxisScale(){
-        this.setAxisLength(new RealLiteral(DEFAULT_LENGHT));
+        this.setAxisLength(new RealLiteral(DEFAULT_LENGTH));
         this.setMeasure(new RealLiteral(DEFAULT_MEASURE));
     }
 
@@ -72,6 +74,4 @@ public final class AxisScale {
 
         return scale;
     }
-    private RealParameter axisLength;
-    private RealParameter measure;
 }
