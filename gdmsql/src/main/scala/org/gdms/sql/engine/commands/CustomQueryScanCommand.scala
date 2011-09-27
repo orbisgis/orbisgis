@@ -40,7 +40,6 @@ package org.gdms.sql.engine.commands
 
 import org.gdms.data.DataSource
 import org.gdms.data.schema.Metadata
-import org.gdms.data.values.Value
 import org.gdms.driver.DataSet
 import org.gdms.sql.evaluator.Expression
 import org.gdms.sql.function.table.TableFunction
@@ -70,8 +69,6 @@ class CustomQueryScanCommand(e: Seq[Expression], tables: Seq[Either[String, Outp
   children = tables flatMap (_.right toSeq) toList
 
   protected def exp = e
-
-  var groupSize : Int = 500
 
   private var metadata: Metadata = null
 
@@ -108,10 +105,6 @@ class CustomQueryScanCommand(e: Seq[Expression], tables: Seq[Either[String, Outp
     for (i <- (0l until ds.getRowCount).par.view.toIterator) yield {
       Row(i, ds.getRow(i))
     }
-  }
-
-  private def getRow(ds: DataSet, count: Int)(i: Long) : Array[Value] = {
-    (0 until count) map ( ds.getFieldValue(i, _)) toArray
   }
 
   override def doCleanUp = {
