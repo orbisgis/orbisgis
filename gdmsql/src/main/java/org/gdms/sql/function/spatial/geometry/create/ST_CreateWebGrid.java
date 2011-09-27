@@ -68,7 +68,7 @@ import org.gdms.sql.function.table.TableFunctionSignature;
 public final class ST_CreateWebGrid extends AbstractTableFunction {
 
         private static final double DPI = 2 * Math.PI;
-        private final GeometryFactory GF = new GeometryFactory();
+        private final GeometryFactory gf = new GeometryFactory();
         private static final Logger LOG = Logger.getLogger(ST_CreateWebGrid.class);
 
         @Override
@@ -168,8 +168,8 @@ public final class ST_CreateWebGrid extends AbstractTableFunction {
 
         private void createGridCell(final MemoryDataSetDriver driver,
                 final Coordinate[] summits, final int gridCellIndex) {
-                final LinearRing g = GF.createLinearRing(summits);
-                final Geometry gg = GF.createPolygon(g, null);
+                final LinearRing g = gf.createLinearRing(summits);
+                final Geometry gg = gf.createPolygon(g, null);
                 driver.addValues(new Value[]{ValueFactory.createValue(gg),
                                 ValueFactory.createValue(gridCellIndex)});
         }

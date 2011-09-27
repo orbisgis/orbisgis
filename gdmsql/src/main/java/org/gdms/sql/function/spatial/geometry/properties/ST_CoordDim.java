@@ -68,7 +68,7 @@ public class ST_CoordDim extends AbstractSpatialPropertyFunction {
         }
 
         @Override
-        public Type getType(Type[] argsTypes) throws InvalidTypeException {
+        public Type getType(Type[] argsTypes) {
                 return TypeFactory.createType(Type.INT);
         }
 

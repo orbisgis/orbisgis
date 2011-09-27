@@ -94,8 +94,7 @@ public class SqlStatement {
          * @throws DriverException  
          */
         public DataSet execute() throws DriverException {
-                DataSet rd = graph.execute();
-                return rd;
+                return graph.execute();
         }
 
         /**

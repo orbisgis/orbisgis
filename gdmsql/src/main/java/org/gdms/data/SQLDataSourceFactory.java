@@ -39,10 +39,6 @@ package org.gdms.data;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 import org.gdms.data.sql.SQLEvent;
 import org.gdms.data.sql.SQLSourceDefinition;
@@ -61,15 +57,6 @@ public class SQLDataSourceFactory extends DataSourceFactory {
 
         private List<DataSourceFactoryListener> listeners = new ArrayList<DataSourceFactoryListener>();
         private static final Logger LOG = Logger.getLogger(SQLDataSourceFactory.class);
-
-        private static ThreadPoolExecutor executor;
-
-        {
-                int nbProc = Runtime.getRuntime().availableProcessors();
-                LOG.info("Number of available processors: " + nbProc);
-                final int nbThreads = nbProc * 5;
-                executor = new ThreadPoolExecutor(nbThreads, nbThreads, 10, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
-        }
 
         /**
          * Creates a new {@code SQLDataSourceFactory} with a <tt>sourceInfoDir</tt>
@@ -320,9 +307,5 @@ public class SQLDataSourceFactory extends DataSourceFactory {
                 SQLEngine engine = new SQLEngine(this);
                 SqlStatement[] instruction = engine.parse(sql);
                 return getSourceManager().nameAndRegister(new SQLSourceDefinition(instruction[0]));
-        }
-
-        public static ExecutorService getThreadExecutor() {
-                return executor;
         }
 }

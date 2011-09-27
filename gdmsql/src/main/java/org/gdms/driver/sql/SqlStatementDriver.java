@@ -63,11 +63,11 @@ import org.gdms.sql.engine.SqlStatement;
  */
 public class SqlStatementDriver extends AbstractDataSet implements MemoryDriver {
 
-        SqlStatement sql;
-        SQLDataSourceFactory dsf;
-        DefaultSchema schema;
-        DataSet set;
-        DefaultMetadata metadata = new DefaultMetadata();
+        private SqlStatement sql;
+        private SQLDataSourceFactory dsf;
+        private DefaultSchema schema;
+        private DataSet set;
+        private DefaultMetadata metadata = new DefaultMetadata();
 
         public SqlStatementDriver(SqlStatement sql, SQLDataSourceFactory dsf) throws DriverException {
                 this.sql = sql;

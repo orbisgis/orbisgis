@@ -161,8 +161,7 @@ public final class FunctionValidator {
          * @throws SemanticException
          */
         public static void failIfBadNumberOfTables(final TableFunction customQuery,
-                final Metadata[] metadatas, final int numberOfTables)
-                throws SemanticException {
+                final Metadata[] metadatas, final int numberOfTables) {
                 if (numberOfTables != metadatas.length) {
                         throw new SemanticException(customQuery.getName()
                                 + " has a wrong number of arguments: " + numberOfTables

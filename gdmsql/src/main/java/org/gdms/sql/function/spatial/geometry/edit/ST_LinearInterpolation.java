@@ -38,7 +38,6 @@
 package org.gdms.sql.function.spatial.geometry.edit;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
 import org.gdms.data.SQLDataSourceFactory;
@@ -58,8 +57,6 @@ import org.gdms.sql.function.ScalarArgument;
  * @author ebocher
  */
 public class ST_LinearInterpolation extends AbstractScalarFunction {
-
-        private GeometryFactory gf = new GeometryFactory();
 
         @Override
         public final Value evaluate(SQLDataSourceFactory dsf, Value... values) throws FunctionException {
