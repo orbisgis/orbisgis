@@ -79,7 +79,7 @@ object PhysicalPlanBuilder {
             new RenamingCommand(s)
           } else {
             // unnamed call, in a customQuery for example
-            val l = buildCommandTree(op.children.head)
+            val l = buildCommandTree(op.children.head.children.head)
             op.children = Nil
             l
           }
