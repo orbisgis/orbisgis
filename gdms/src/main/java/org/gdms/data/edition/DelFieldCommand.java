@@ -55,7 +55,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.WriteBufferManager;
 
 /**
- * Command to delete a {@link org.gdms.data.edition.Field} in a datasource
+ * Command to delete a {@link org.gdms.data.edition.Field} in a datasource.
  * 
  */
 public class DelFieldCommand implements Command {

@@ -56,10 +56,12 @@ public class AddFieldCommand implements Command {
 		this.type = type;
 	}
 
+        @Override
 	public void redo() throws DriverException {
 		dataSource.doAddField(name, type);
 	}
 
+        @Override
 	public void undo() throws DriverException {
 		dataSource.undoAddField();
 	}

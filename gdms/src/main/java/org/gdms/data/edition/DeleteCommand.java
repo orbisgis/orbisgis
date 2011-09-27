@@ -40,47 +40,47 @@
 package org.gdms.data.edition;
 
 import org.gdms.driver.DriverException;
+
 /**
- * Delete a  row in the datasource
+ * Delete a  row in the datasource.
  * 
  */
 public class DeleteCommand extends AbstractCommand implements Command {
 
-	private DeleteCommandInfo info;
+        private DeleteCommandInfo info;
 
-	public DeleteCommand(int index, EditionDecorator dataSource) {
-		super(index, dataSource);
-	}
+        public DeleteCommand(int index, EditionDecorator dataSource) {
+                super(index, dataSource);
+        }
 
-	public void redo() throws DriverException {
-		info = dataSource.doDeleteRow(index);
-	}
+        @Override
+        public void redo() throws DriverException {
+                info = dataSource.doDeleteRow(index);
+        }
 
-	public void undo() throws DriverException {
-		dataSource.undoDeleteRow(info.dir, info.rowId, info.dei, info.ei);
-	}
+        @Override
+        public void undo() throws DriverException {
+                dataSource.undoDeleteRow(info.dir, info.rowId, info.dei, info.ei);
+        }
 
         @Override
         public void clear() {
         }
 
-	public static class DeleteCommandInfo {
-		public PhysicalRowAddress dir;
+        public static class DeleteCommandInfo {
 
-		public long rowId;
+                public PhysicalRowAddress dir;
+                public long rowId;
+                public DeleteEditionInfo dei;
+                public EditionInfo ei;
 
-		public DeleteEditionInfo dei;
-
-		public EditionInfo ei;
-
-		public DeleteCommandInfo(PhysicalRowAddress dir, long rowId,
-				DeleteEditionInfo dei, EditionInfo ei) {
-			super();
-			this.dir = dir;
-			this.rowId = rowId;
-			this.dei = dei;
-			this.ei = ei;
-		}
-
-	}
+                public DeleteCommandInfo(PhysicalRowAddress dir, long rowId,
+                        DeleteEditionInfo dei, EditionInfo ei) {
+                        super();
+                        this.dir = dir;
+                        this.rowId = rowId;
+                        this.dei = dei;
+                        this.ei = ei;
+                }
+        }
 }

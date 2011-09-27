@@ -82,6 +82,9 @@ public class SQLMetadataManager implements SourceListener {
         private UniqueJobID jobID;
         private Set<SQLMetadataListener> listeners = new HashSet<SQLMetadataListener>();
 
+        /**
+         * Starts the MetadataManager.
+         */
         public void start() {
                 dataManager = Services.getService(DataManager.class);
                 bm = Services.getService(BackgroundManager.class);
@@ -197,10 +200,19 @@ public class SQLMetadataManager implements SourceListener {
                 }
         }
 
+        /**
+         * Gets all cached source names.
+         * @return a (possibly empty) array of source names.
+         */
         public String[] getSourceNames() {
                 return cachedMetadatas.keySet().toArray(new String[cachedMetadatas.size()]);
         }
         
+        /**
+         * Gets some metadata from the cache.
+         * @param name the name of the source
+         * @return the Metadata or null if there is no cached metadata for this source
+         */
         public Metadata getMetadataFromCache(String name) {
                 return cachedMetadatas.get(name);
         }
@@ -247,10 +259,18 @@ public class SQLMetadataManager implements SourceListener {
                 }
         }
         
+        /**
+         * Registers a MetadataListener.
+         * @param l a listener
+         */
         public void registerMetadataListener(SQLMetadataListener l) {
                 listeners.add(l);
         }
         
+        /**
+         * Unregisters a MetadataListener.
+         * @param l a (registered) listener
+         */
         public void unregisterMetadataListener(SQLMetadataListener l) {
                 listeners.remove(l);
         }

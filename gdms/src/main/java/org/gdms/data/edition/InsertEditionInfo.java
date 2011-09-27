@@ -44,26 +44,26 @@ import org.gdms.driver.DriverException;
 
 public class InsertEditionInfo implements EditionInfo {
 
-	private PhysicalRowAddress dir;
+        private PhysicalRowAddress dir;
 
-	public InsertEditionInfo(PhysicalRowAddress dir) {
-		this.dir = dir;
-	}
+        public InsertEditionInfo(PhysicalRowAddress dir) {
+                this.dir = dir;
+        }
 
-	public String getSQL(String[] pkNames,
-			String[] fieldNames, DBReadWriteDriver driver)
-			throws DriverException {
-		Metadata metadata = dir.getMetadata();
-		Type[] fieldTypes = new Type[metadata.getFieldCount()];
-		for (int i = 0; i < metadata.getFieldCount(); i++) {
-			fieldTypes[i] = metadata.getFieldType(i);
-		}
-		Value[] row = new Value[fieldNames.length];
-		for (int i = 0; i < row.length; i++) {
-			row[i] = dir.getFieldValue(i);
-		}
+        @Override
+        public String getSQL(String[] pkNames,
+                String[] fieldNames, DBReadWriteDriver driver)
+                throws DriverException {
+                Metadata metadata = dir.getMetadata();
+                Type[] fieldTypes = new Type[metadata.getFieldCount()];
+                for (int i = 0; i < metadata.getFieldCount(); i++) {
+                        fieldTypes[i] = metadata.getFieldType(i);
+                }
+                Value[] row = new Value[fieldNames.length];
+                for (int i = 0; i < row.length; i++) {
+                        row[i] = dir.getFieldValue(i);
+                }
 
-		return driver.getInsertSQL(fieldNames, fieldTypes, row);
-	}
-
+                return driver.getInsertSQL(fieldNames, fieldTypes, row);
+        }
 }

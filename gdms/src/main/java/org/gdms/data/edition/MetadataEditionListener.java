@@ -36,11 +36,27 @@
  */
 package org.gdms.data.edition;
 
+/**
+ * Listener on Metadata edition events.
+ * @author Fernando Gonzalez Cortes
+ */
 public interface MetadataEditionListener {
 
-	void fieldAdded(FieldEditionEvent event);
+        /**
+         * Fired when a field is added.
+         * @param event
+         */
+        void fieldAdded(FieldEditionEvent event);
 
-	void fieldRemoved(FieldEditionEvent event);
+        /**
+         * Fired when a field is removed.
+         * @param event
+         */
+        void fieldRemoved(FieldEditionEvent event);
 
-	void fieldModified(FieldEditionEvent event);
+        /**
+         * Fired when a field is modified.
+         * @param event
+         */
+        void fieldModified(FieldEditionEvent event);
 }

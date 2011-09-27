@@ -43,25 +43,33 @@ import java.util.NoSuchElementException;
 
 /**
  * Specialized class for dealing with SQL words within a (partial) SQL query.
- * @author antoine
+ * 
+ * This class lexes tokens (in this case, words) from the end of the string to the beginning.
+ * 
+ * @author Antoine Gourlay
+ * @since 4.0
  */
-public final class SQLLexer {
+final class SQLLexer {
 
         private final String s;
         private int currentIndex;
 
-        public SQLLexer(String s) {
+        /**
+         * Creates a new SQLLexer for the given String.
+         * @param s
+         */
+        SQLLexer(String s) {
                 this.s = s;
                 currentIndex = s.length() - 1;
         }
 
-        public Iterator<String> getTokenIterator() {
+        Iterator<String> getTokenIterator() {
                 return new SQLStringTokenIterator();
         }
 
-        public class SQLStringTokenIterator implements Iterator<String> {
+        class SQLStringTokenIterator implements Iterator<String> {
 
-                public SQLStringTokenIterator() {
+                private SQLStringTokenIterator() {
                         // drop one if does not end in a whitespace or a dot
                         if (currentIndex != -1) {
                                 char currChar = s.charAt(currentIndex);

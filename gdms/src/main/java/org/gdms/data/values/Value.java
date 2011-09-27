@@ -48,9 +48,13 @@ import org.grap.model.GeoRaster;
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
- * Datatypes must implement this interface in order to the drivers to return
- * that datatype. The implementation can inherit from AbstractValue or must
- * implement equals and hashCode in the way explained at doEquals method javadoc
+ * Base interface for values manipulated by Gdms.
+ * 
+ * Datatype providers must implement this interface in order to enable the drivers to return
+ * that datatype. 
+ * 
+ * The implementation can inherit from AbstractValue or must implement equals and hashCode so that:
+ * 
  */
 public interface Value extends Comparable<Value> {
 
@@ -114,15 +118,72 @@ public interface Value extends Comparable<Value> {
          */
 	BooleanValue notEquals(Value value);
 
+	/**
+         * Gets a boolean value representing, using three-valued logic (3VL):
+         *  - true if this value and <code>value</code> are defined, and the former is strictly greater than the latter,
+         *  - false if this value and <code>value</code> are defined, and the former is not strictly greater than the latter,
+         *  - NULL in any other case.
+         * 
+         * <code>value1.greater(value2)</code> is always strictly equivalent to calling <code>value2.lessEqual(value1)</code>.
+         * 
+         * @param value a value
+         * @return a value containing either TRUE, FALSE or NULL (=UNKNOWN)
+         */
 	BooleanValue greater(Value value);
 
+	/**
+         * Gets a boolean value representing, using three-valued logic (3VL):
+         *  - true if this value and <code>value</code> are defined, and the former is strictly less than the latter,
+         *  - false if this value and <code>value</code> are defined, and the former is not strictly less than the latter,
+         *  - NULL in any other case.
+         * 
+         * <code>value1.less(value2)</code> is always strictly equivalent to calling <code>value2.greaterEqual(value1)</code>.
+         * 
+         * @param value a value
+         * @return a value containing either TRUE, FALSE or NULL (=UNKNOWN)
+         */
 	BooleanValue less(Value value);
 
+	/**
+         * Gets a boolean value representing, using three-valued logic (3VL):
+         *  - true if this value and <code>value</code> are defined, and the former is greater or
+         * equals the latter,
+         *  - false if this value and <code>value</code> are defined, and the former is not greater
+         * or equals the latter,
+         *  - NULL in any other case.
+         * 
+         * <code>value1.greaterEqual(value2)</code> is always strictly equivalent to calling
+         * <code>value2.less(value1)</code>.
+         * 
+         * @param value a value
+         * @return a value containing either TRUE, FALSE or NULL (=UNKNOWN)
+         */
 	BooleanValue greaterEqual(Value value);
 
+	/**
+         * Gets a boolean value representing, using three-valued logic (3VL):
+         *  - true if this value and <code>value</code> are defined, and the former is less or
+         * equals the latter,
+         *  - false if this value and <code>value</code> are defined, and the former is not less
+         * or equals the latter,
+         *  - NULL in any other case.
+         * 
+         * <code>value1.lessEqual(value2)</code> is always strictly equivalent to calling
+         * <code>value2.greater(value1)</code>.
+         * 
+         * @param value a value
+         * @return a value containing either TRUE, FALSE or NULL (=UNKNOWN)
+         */
 	BooleanValue lessEqual(Value value);
 
-	BooleanValue like(Value value);
+        /**
+         * Gets a boolean value representing, using three-valued logic (3VL):
+         *  - true if this String-based value is like the given pattern.
+         *  - NULL in any other case.
+         * @param value a value
+         * @return a value containing either TRUE, FALSE or NULL (=UNKNOWN)
+         */
+        BooleanValue like(Value value);
 
 	/**
 	 * Gets the string representation of the value as it is defined in the
@@ -309,8 +370,22 @@ public interface Value extends Comparable<Value> {
          */
         BooleanValue not();
 
+        /**
+         * Gets the opposite of this numeric value, or throws an IncompatibleTypesException if the value
+         * has a type that does not support getting the opposite.
+         * @return a numeric value
+         */
         NumericValue opposite();
 
+        /**
+         * Concatenates this value with the given <code>value</value>.
+         * 
+         * One of the two values (this one or the parameter) has to be a StringValue, otherwise
+         * an IncompatibleTypesException is thrown.
+         * 
+         * @param value a value
+         * @return a StringValue representing the concatenation of both values.
+         */
         StringValue concatWith(Value value);
 
         /**

@@ -47,6 +47,7 @@ public class RemoveFieldInfo implements EditionInfo {
 		this.fieldName = fieldName;
 	}
 
+        @Override
 	public String getSQL(String[] pkNames,
 			String[] fieldNames, DBReadWriteDriver driver)
 			throws DriverException {

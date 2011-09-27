@@ -40,7 +40,7 @@ import org.gdms.data.values.ValueCollection;
 import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
 
-public class NoEditionInfo extends OriginalEditionInfo {
+public class NoEditionInfo implements OriginalEditionInfo {
 
         private ValueCollection pk;
         private int index;

@@ -47,7 +47,7 @@ public interface AlphaQuery extends IndexQuery {
         /**
          * Gets the minimum allowed value.
          * @return a value, can be {@code NullValue}.
-         * @throws EvaluationException
+         * @throws IndexQueryException 
          */
         Value getMin() throws IndexQueryException;
 
@@ -68,7 +68,7 @@ public interface AlphaQuery extends IndexQuery {
         /**
          * Gets the maximum allowed value.
          * @return a value, can be {@code NullValue}.
-         * @throws EvaluationException
+         * @throws IndexQueryException  
          */
         Value getMax() throws IndexQueryException;
 }

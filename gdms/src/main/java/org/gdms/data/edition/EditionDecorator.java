@@ -74,6 +74,12 @@ import org.gdms.data.indexes.IndexQueryException;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.source.SourceManager;
 
+/**
+ * Adds edition capabilities to a DataSource.
+ * 
+ * @author Fernando Gonzalez Cortes
+ * @author Antoine Gourlay
+ */
 public final class EditionDecorator extends AbstractDataSourceDecorator implements
         CommitListener {
 
@@ -95,6 +101,10 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
         private CommandStack cs;
         private boolean initialized;
 
+        /**
+         * Creates a new instance of the decorator on the given DataSource.
+         * @param internalDataSource a DataSource
+         */
         public EditionDecorator(DataSource internalDataSource) {
                 super(internalDataSource);
                 this.editionListenerSupport = new EditionListenerSupport(this);
@@ -256,8 +266,8 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
         /**
          * Gets the values of the original row
          *
-         * @param rowIndex
-         *            index of the row to be retrieved
+         * @param dir 
+         *            address of the row to be retrieved
          *
          * @return Row values
          *
@@ -320,17 +330,17 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
                                 rowsDirections.get((int) row));
                         EditionInfo ei = editionActions.set((int) row, info);
                         ret = new ModifyCommand.ModifyInfo((OriginalRowAddress) dir, ei,
-                                (InternalBufferDirection) newDirection, previousValue, row,
+                                (InternalBufferRowAddress) newDirection, previousValue, row,
                                 fieldId);
                 } else {
                         Value previousValue = dir.getFieldValue(fieldId);
-                        ((InternalBufferDirection) dir).setFieldValue(fieldId, val);
+                        ((InternalBufferRowAddress) dir).setFieldValue(fieldId, val);
                         /*
                          * We don't modify the EditionInfo because is an insertion that
                          * already points to the internal buffer
                          */
                         ret = new ModifyCommand.ModifyInfo(null, null,
-                                (InternalBufferDirection) dir, previousValue, row, fieldId);
+                                (InternalBufferRowAddress) dir, previousValue, row, fieldId);
                 }
                 cachedScope = null;
 
@@ -340,7 +350,7 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
         }
 
         void undoSetFieldValue(OriginalRowAddress previousDir,
-                EditionInfo previousInfo, InternalBufferDirection dir,
+                EditionInfo previousInfo, InternalBufferRowAddress dir,
                 Value previousValue, int fieldId, long row) throws DriverException {
                 if (previousDir != null) {
                         setFieldValueInIndex((int) row, fieldId,
@@ -559,9 +569,6 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
                 }
         }
 
-        /**
-         * @see org.gdms.data.edition.DataSource#getRowCount()
-         */
         @Override
         public long getRowCount() throws DriverException {
                 if (initialized) {
@@ -676,6 +683,9 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
                 return fields;
         }
 
+        /**
+         * Special Metadata class that supports Edition of its own schema through the {@link EditionDecorator}.
+         */
         public class ModifiedMetadata implements Metadata {
 
                 @Override

@@ -43,22 +43,23 @@ import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
 
 /**
- * Base interface, to be implemented by EditionInfo classes
+ * Base interface, to be implemented by EditionInfo classes.
  */
 public interface EditionInfo {
-	/**
-	 * Gets the SQL to modify the data source or null if the data source does
-	 * not have to be modified
-	 * @param pkNames
+
+        /**
+         * Gets the SQL to modify the data source or null if the data source does
+         * not have to be modified
+         * @param pkNames
          * @param fieldNames
          * @param driver
          *
-	 * @return SQL statement or null
-	 *
-	 * @throws DriverException
-	 *             if cannot get the SQL statement
-	 */
-	String getSQL(String[] pkNames,
-			String[] fieldNames, DBReadWriteDriver driver)
-			throws DriverException;
+         * @return SQL statement or null
+         *
+         * @throws DriverException
+         *             if cannot get the SQL statement
+         */
+        String getSQL(String[] pkNames,
+                String[] fieldNames, DBReadWriteDriver driver)
+                throws DriverException;
 }

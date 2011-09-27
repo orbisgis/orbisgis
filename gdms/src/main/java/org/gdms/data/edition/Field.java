@@ -40,68 +40,74 @@
 package org.gdms.data.edition;
 
 import org.gdms.data.types.Type;
+
 /**
  * A field contains a name and {@link Type}, and is used to define a column in a table.
  * It is located in the table by an index.
- *
  */
 public class Field {
-	private int originalIndex;
 
-	private String name;
+        private int originalIndex;
+        private String name;
+        private Type type;
 
-	private Type type;
         /**
          * public constructor
          * @param originalIndex
          * @param name
          * @param type
          */
-	public Field(int originalIndex, String name, Type type) {
-		this.originalIndex = originalIndex;
-		this.name = name;
-		this.type = type;
-	}
+        public Field(int originalIndex, String name, Type type) {
+                this.originalIndex = originalIndex;
+                this.name = name;
+                this.type = type;
+        }
+
         /**
          *
          * @return the name of the field
          */
-	public String getName() {
-		return name;
-	}
+        public String getName() {
+                return name;
+        }
+
         /**
          * Set the name of the field
          * @param name : the new namme
          */
-	public void setName(String name) {
-		this.name = name;
-	}
+        public void setName(String name) {
+                this.name = name;
+        }
+
         /**
          *
          * @return the index
          */
-	public int getOriginalIndex() {
-		return originalIndex;
-	}
+        public int getOriginalIndex() {
+                return originalIndex;
+        }
+
         /**
          *
          * @param originalIndex the new index
          */
-	public void setOriginalIndex(int originalIndex) {
-		this.originalIndex = originalIndex;
-	}
+        public void setOriginalIndex(int originalIndex) {
+                this.originalIndex = originalIndex;
+        }
+
         /**
          *
          * @return the {@link org.gdms.data.types.Type} of the field.
          */
-	public Type getType() {
-		return type;
-	}
+        public Type getType() {
+                return type;
+        }
+
         /**
          *
          * @param type the new {@link org.gdms.data.types.Type} of the field
          */
-	public void setType(Type type) {
-		this.type = type;
-	}
+        public void setType(Type type) {
+                this.type = type;
+        }
 }

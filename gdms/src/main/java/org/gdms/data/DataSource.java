@@ -37,7 +37,6 @@
  */
 package org.gdms.data;
 
-import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -685,12 +684,29 @@ public interface DataSource extends DataSet {
          */
         boolean isEditable();
 
-        // FROM EditableDataSource
+        
+        /**
+         * Gets the number of fields of this DataSource
+         * @return a integer >= 0
+         * @throws DriverException
+         */
         int getFieldCount() throws DriverException;
 
+        /**
+         * Gets the name of the field with id <code>fieldId</code>.
+         * @param fieldId a field identifier
+         * @return the name of the associated field
+         * @throws DriverException
+         */
         String getFieldName(int fieldId) throws DriverException;
 
-        Type getFieldType(int i) throws DriverException;
+        /**
+         * Gets the type of the field with id <code>fieldId</code>.
+         * @param fieldId a field identifier
+         * @return the type of the associated field
+         * @throws DriverException
+         */
+        Type getFieldType(int fieldId) throws DriverException;
 
         /**
          * Queries the index with the specified query. The use of the query depends
@@ -724,6 +740,9 @@ public interface DataSource extends DataSet {
          */
         Commiter getCommiter();
 
+        /**
+         * Prints this DataSource to the standard output stream.
+         */
         void printStack();
 
         /**
@@ -760,8 +779,19 @@ public interface DataSource extends DataSet {
          */
         Geometry getGeometry(long rowIndex) throws DriverException;
 
+        /**
+         * Gets the raster at the given <code>rowIndex</code> row index.
+         * @param rowIndex a row index
+         * @return a raster object
+         * @throws DriverException
+         */
         GeoRaster getRaster(long rowIndex) throws DriverException;
 
+        /**
+         * Gets the declared SRID of this DataSource, or -1 if unknown.
+         * @return a valid SRID or -1 if unknown
+         * @throws DriverException
+         */
         int getSRID() throws DriverException;
 
         /**

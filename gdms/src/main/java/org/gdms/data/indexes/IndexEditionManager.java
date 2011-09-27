@@ -49,6 +49,12 @@ import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 
+/**
+ * Manages the edition of the indexes of a DataSource.
+ * 
+ * @author Antoine Gourlay
+ * @author Fernando Gonzalez Cortes
+ */
 public class IndexEditionManager {
 
         private DataSource ds;
@@ -56,15 +62,33 @@ public class IndexEditionManager {
         private List<DataSourceIndex> modifiedIndexes = null;
         private IndexManagerListener indexManagerListener;
 
+        /**
+         * Creates an IndexEditionManager linked to the specified DataSourceFactory and on
+         * the given DataSource.
+         * @param dsf a DataSourceFactory
+         * @param ds a DataSource
+         */
         public IndexEditionManager(DataSourceFactory dsf, DataSource ds) {
                 this.im = dsf.getIndexManager();
                 this.ds = ds;
         }
 
+        /**
+         * Opens the IndexEditionManager.
+         */
         public void open() {
                 modifiedIndexes = null;
         }
 
+        /**
+         * Triggers a commit on the indexes (usually during/after a commit on the DataSource).
+         * 
+         * If <code>rebuildIndexes</code> is set to true, the indexes are deleted and rebuild. If not,
+         * the IndexManager is notified of the change on the modified indexes and handles what to do.
+         * 
+         * @param rebuildIndexes true if indexes have to be rebuilt.
+         * @throws DriverException
+         */
         public void commit(boolean rebuildIndexes) throws DriverException {
                 if (modifiedIndexes != null) {
                         if (rebuildIndexes) {
@@ -94,6 +118,9 @@ public class IndexEditionManager {
                 cancel();
         }
 
+        /**
+         * Cancels all changes on the indexes.
+         */
         public void cancel() {
                 if (modifiedIndexes != null) {
                         for (int i = 0; i < modifiedIndexes.size(); i++) {
@@ -107,6 +134,11 @@ public class IndexEditionManager {
                 }
         }
 
+        /**
+         * Gets the indexes (either modified or original) on the DataSource.
+         * @return a (possibly empty) array of indexes.
+         * @throws IndexException
+         */
         public DataSourceIndex[] getDataSourceIndexes() throws IndexException {
                 if (ds.isModified()) {
                         return getModifiedIndexes();
@@ -198,9 +230,14 @@ public class IndexEditionManager {
                 modifiedIndexes.add(index);
         }
 
-        public int[] query(IndexQuery indexQuery) throws DriverException,
-                IndexException,
-                IndexQueryException {
+        /**
+         * Query the modified (and/or original) indexes on the dataSource.
+         * @param indexQuery an IndexQuery
+         * @return a (possibly empty) array of row indexes, or null if there is no index to query.
+         * @throws IndexException
+         * @throws IndexQueryException
+         */
+        public int[] query(IndexQuery indexQuery) throws IndexException, IndexQueryException {
                 DataSourceIndex[] indexes = getDataSourceIndexes();
                 for (DataSourceIndex dataSourceIndex : indexes) {
                         if (dataSourceIndex.getFieldName().equals(indexQuery.getFieldName())) {

@@ -49,50 +49,50 @@ import org.gdms.driver.DriverException;
 
 public class OriginalRowAddress implements PhysicalRowAddress, Serializable {
 
-	private transient DataSource source;
-	private int row;
+        private transient DataSource source;
+        private int row;
 
-	public OriginalRowAddress(DataSource source, int row) {
-		this.source = source;
-		this.row = row;
-	}
-
-        @Override
-	public Value getFieldValue(int fieldId) throws DriverException {
-		return source.getFieldValue(row, fieldId);
-	}
+        public OriginalRowAddress(DataSource source, int row) {
+                this.source = source;
+                this.row = row;
+        }
 
         @Override
-	public ValueCollection getPK() throws DriverException {
-		return source.getPK(row);
-	}
+        public Value getFieldValue(int fieldId) throws DriverException {
+                return source.getFieldValue(row, fieldId);
+        }
 
-	public int getRowIndex() {
-		return row;
-	}
+        @Override
+        public ValueCollection getPK() throws DriverException {
+                return source.getPK(row);
+        }
 
-	public void setSource(DataSource source) {
-		this.source = source;
-	}
+        public int getRowIndex() {
+                return row;
+        }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof OriginalRowAddress) {
-			OriginalRowAddress od = (OriginalRowAddress) obj;
-			return (od.source.getName().equals(source.getName()))
-					&& (od.row == row);
-		}
+        public void setSource(DataSource source) {
+                this.source = source;
+        }
 
-		return false;
-	}
+        @Override
+        public boolean equals(Object obj) {
+                if (obj instanceof OriginalRowAddress) {
+                        OriginalRowAddress od = (OriginalRowAddress) obj;
+                        return (od.source.getName().equals(source.getName()))
+                                && (od.row == row);
+                }
 
-	@Override
-	public int hashCode() {
-		return source.hashCode() + row;
-	}
+                return false;
+        }
 
-	public Metadata getMetadata() throws DriverException {
-		return source.getMetadata();
-	}
+        @Override
+        public int hashCode() {
+                return source.hashCode() + row;
+        }
 
+        @Override
+        public Metadata getMetadata() throws DriverException {
+                return source.getMetadata();
+        }
 }

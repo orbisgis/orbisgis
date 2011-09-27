@@ -48,42 +48,44 @@ import org.gdms.data.DataSource;
  * @author Fernando Gonzalez Cortes
  */
 public class EditionEvent extends FieldEditionEvent {
-	private long rowIndex;
 
-	public static final int MODIFY = 0;
+        private long rowIndex;
+        public static final int MODIFY = 0;
+        public static final int DELETE = 1;
+        public static final int INSERT = 2;
+        /**
+         * Indicates the DataSource has refreshed it's contents with the ones in the
+         * source. This means that all data can have changed
+         */
+        public static final int RESYNC = 3;
+        private int type;
+        private boolean undoRedo;
 
-	public static final int DELETE = 1;
+        /**
+         * Creates a new EditionEvent.
+         * @param rowIndex the row index changed
+         * @param fieldIndex the field index changed
+         * @param type the type of the edit event
+         * @param ds the data source changed
+         * @param undoRedo if undo/redo is supported.
+         */
+        public EditionEvent(long rowIndex, int fieldIndex, int type, DataSource ds,
+                boolean undoRedo) {
+                super(fieldIndex, ds);
+                this.rowIndex = rowIndex;
+                this.type = type;
+                this.undoRedo = undoRedo;
+        }
 
-	public static final int INSERT = 2;
+        public long getRowIndex() {
+                return rowIndex;
+        }
 
-	/**
-	 * Indicates the DataSource has refreshed it's contents with the ones in the
-	 * source. This means that all data can have changed
-	 */
-	public static final int RESYNC = 3;
+        public int getType() {
+                return type;
+        }
 
-	private int type;
-
-	private boolean undoRedo;
-
-	public EditionEvent(long rowIndex, int fieldIndex, int type, DataSource ds,
-			boolean undoRedo) {
-		super(fieldIndex, ds);
-		this.rowIndex = rowIndex;
-		this.type = type;
-		this.undoRedo = undoRedo;
-	}
-
-	public long getRowIndex() {
-		return rowIndex;
-	}
-
-	public int getType() {
-		return type;
-	}
-
-	public boolean isUndoRedo() {
-		return undoRedo;
-	}
-
+        public boolean isUndoRedo() {
+                return undoRedo;
+        }
 }

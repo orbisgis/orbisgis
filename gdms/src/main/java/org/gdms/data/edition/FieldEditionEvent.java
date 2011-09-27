@@ -41,15 +41,14 @@ import org.gdms.data.GDMSEvent;
 
 public class FieldEditionEvent extends GDMSEvent {
 
-	private int fieldIndex;
+        private int fieldIndex;
 
-	public FieldEditionEvent(int fieldIndex, DataSource ds) {
-		super(ds);
-		this.fieldIndex = fieldIndex;
-	}
+        public FieldEditionEvent(int fieldIndex, DataSource ds) {
+                super(ds);
+                this.fieldIndex = fieldIndex;
+        }
 
-	public int getFieldIndex() {
-		return fieldIndex;
-	}
-
+        public int getFieldIndex() {
+                return fieldIndex;
+        }
 }

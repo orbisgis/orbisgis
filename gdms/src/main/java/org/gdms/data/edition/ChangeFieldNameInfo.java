@@ -46,27 +46,24 @@ import org.gdms.driver.DriverException;
  * Info used to change a field name in a datasource.
  * 
  */
-
 public class ChangeFieldNameInfo implements EditionInfo {
 
-	private String oldName;
+        private String oldName;
+        private String newName;
 
-	private String newName;
         /**
          * Public constructor
          * @param oldName the old name of the field
          * @param newName the new name of the field
          */
-	public ChangeFieldNameInfo(String oldName, String newName) {
-		this.oldName = oldName;
-		this.newName = newName;
-	}
-        /**
-         * @see EditionInfo
-         */
-	public String getSQL(String[] pkNames, String[] fieldNames,
-			DBReadWriteDriver driver) throws DriverException {
-		return driver.getChangeFieldNameSQL(oldName, newName);
-	}
+        public ChangeFieldNameInfo(String oldName, String newName) {
+                this.oldName = oldName;
+                this.newName = newName;
+        }
 
+        @Override
+        public String getSQL(String[] pkNames, String[] fieldNames,
+                DBReadWriteDriver driver) throws DriverException {
+                return driver.getChangeFieldNameSQL(oldName, newName);
+        }
 }

@@ -71,8 +71,12 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.language.matcher.SQLMatcher;
 
 /**
- *
+ * A SQL CompletionProvider based on a simple Lexer and a simple top-down parser.
+ * 
+ * 
+ * 
  * @author antoine
+ * @since 4.0
  */
 public class SQLCompletionProvider extends DefaultCompletionProvider implements CaretListener, SQLMetadataListener {
 
@@ -154,8 +158,10 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
         }
 
         /**
-         * Finds all function completions
-         * @return the corresponding collection of Completion items
+         * Adds all function completions
+         * @param tables true if table functions have to be added
+         * @param scalar true if scalar functions have to be added
+         * @param executor true if executor functions have to be added
          */
         public void addFunctionCompletions(boolean tables, boolean scalar, boolean executor) {
                 HashSet a = new HashSet();
@@ -229,6 +235,10 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                 addCompletions(new ArrayList(a));
         }
 
+        /**
+         * Add completions for table names.
+         * @param addfields true if their fields must be added as well.
+         */
         public void addSourceNamesCompletion(boolean addfields) {
                 ArrayList<Completion> a = new ArrayList<Completion>();
                 HashMap<String, SQLFieldCompletion> nn = new HashMap<String, SQLFieldCompletion>();
@@ -325,13 +335,18 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                 addCompletions(a);
         }
 
+        /**
+         * Adds to the CompletionProvider the field list of the current data source.
+         * @param table the data source name
+         */
         public void addFieldsCompletion(String table) {
                 addCompletions(getFieldsCompletion(table));
         }
 
         /**
-         * Adds to the CompletionProvider the field list of the current data source
-         * @param sql SQL Statement up to where the field is needed
+         * Gets the field completion list of the current data source.
+         * @param table the data source name
+         * @return the completion list
          */
         private List<Completion> getFieldsCompletion(String table) {
                 List<Completion> a = new ArrayList<Completion>();
@@ -482,6 +497,11 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                 return content;
         }
 
+        
+        /**
+         * Sets the rootText for the completion.
+         * @param rootText the text
+         */
         public void setRootText(String rootText) {
                 this.rootText = rootText;
         }

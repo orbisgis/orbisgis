@@ -45,7 +45,11 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
 import org.gdms.driver.DriverException;
 
-public class InternalBufferDirection implements PhysicalRowAddress {
+/**
+ * A row address within the internal buffer for edition.
+ * @author Fernando Gonzalez Cortes
+ */
+class InternalBufferRowAddress implements PhysicalRowAddress {
 
 	private InternalBuffer buffer;
 
@@ -55,7 +59,7 @@ public class InternalBufferDirection implements PhysicalRowAddress {
 
 	private DataSource dataSource;
 
-	public InternalBufferDirection(ValueCollection pk, InternalBuffer buffer,
+	InternalBufferRowAddress(ValueCollection pk, InternalBuffer buffer,
 			int row, DataSource dataSource) {
 		this.row = row;
 		this.buffer = buffer;
@@ -63,22 +67,24 @@ public class InternalBufferDirection implements PhysicalRowAddress {
 		this.dataSource = dataSource;
 	}
 
+        @Override
 	public Value getFieldValue(int fieldId) throws DriverException {
 		return buffer.getFieldValue(row, fieldId);
 	}
 
-	public void setFieldValue(int fieldId, Value value) {
+	void setFieldValue(int fieldId, Value value) {
 		buffer.setFieldValue(row, fieldId, value);
 	}
 
+        @Override
 	public ValueCollection getPK() throws DriverException {
 		return pk;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof InternalBufferDirection) {
-			InternalBufferDirection od = (InternalBufferDirection) obj;
+		if (obj instanceof InternalBufferRowAddress) {
+			InternalBufferRowAddress od = (InternalBufferRowAddress) obj;
 			return (od.buffer == buffer) && (od.row == row) && (od.pk == pk);
 		}
 
@@ -90,6 +96,7 @@ public class InternalBufferDirection implements PhysicalRowAddress {
 		return buffer.hashCode() + row + pk.hashCode();
 	}
 
+        @Override
 	public Metadata getMetadata() throws DriverException {
 		return dataSource.getMetadata();
 	}

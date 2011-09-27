@@ -41,7 +41,7 @@ package org.gdms.data.types;
 import java.util.HashMap;
 
 /**
- * factory to create data type instances
+ * Factory to create data type instances.
  * 
  * @author Fernando Gonzalez Cortes
  */
@@ -122,6 +122,12 @@ public final class TypeFactory {
                 }
         }
 
+        /**
+         * Gets the name of given type.
+         * @param typeCode a valid type code.
+         * @return a name
+         * @throws IllegalArgumentException if the type code is not valid
+         */
         public static String getTypeName(int typeCode) {
                 switch (typeCode) {
                         case Type.BINARY:
@@ -175,12 +181,21 @@ public final class TypeFactory {
                 }
         }
 
+        /**
+         * Checks if the type code is that of a numeric type.
+         * @param typeCode a valid type code.
+         * @return true if it is a numeric type
+         */
         public static boolean isNumerical(int typeCode) {
                 return (typeCode == Type.BYTE) || (typeCode == Type.DOUBLE)
                         || (typeCode == Type.FLOAT) || (typeCode == Type.INT)
                         || (typeCode == Type.LONG) || (typeCode == Type.SHORT);
         }
 
+        /**
+         * Gets all type codes.
+         * @return a array of all type codes
+         */
         public static int[] getTypes() {
                 return new int[]{Type.BINARY, Type.BOOLEAN, Type.BYTE, Type.DATE,
                                 Type.DOUBLE, Type.FLOAT, Type.GEOMETRY, Type.INT, Type.LONG,
@@ -189,13 +204,18 @@ public final class TypeFactory {
                                 Type.POLYGON, Type.MULTIPOLYGON, Type.GEOMETRYCOLLECTION};
         }
 
+        /**
+         * Checks if the type code if that of a spatial type.
+         * @param typeCode a valid type code
+         * @return true if it is a spatial type
+         */
         public static boolean isSpatial(int typeCode) {
                 return (typeCode & Type.GEOMETRY) != 0 || (typeCode == Type.RASTER);
         }
         
         /**
-         * Get an itn array containing all the vectorial types' typecode.
-         * @return 
+         * Get an integer array containing all the vectorial type codes.
+         * @return a array of type codes.
          */
         public static int[] getVectorialTypes(){
                 return new int[]{Type.GEOMETRY, Type.POINT, Type.MULTIPOINT, Type.LINESTRING,
@@ -219,15 +239,12 @@ public final class TypeFactory {
         }
 
         /**
-         *
          * Return the type being able to accept all the values the other type
          * accepts. Returns -1 if the types are not compatible.
          *
          * @param type1
          * @param type2
-         * @return
-         *
-         * @author gearscape
+         * @return the broader type code of the two parameter type codes.
          */
         public static int getBroaderType(int type1, int type2) {
                 if (isNumerical(type1) && isNumerical(type2)) {
@@ -274,17 +291,21 @@ public final class TypeFactory {
         }
 
         /**
-         *
+         * Checks if the type code is that of a date/time-related type code.
          * @param typeCode
-         * @return
-         *
-         * @author gearscape
+         * @return true if it is a date/time-related type code
          */
         public static boolean isTime(int typeCode) {
                 return (typeCode == Type.DATE) || (typeCode == Type.TIME)
                         || (typeCode == Type.TIMESTAMP);
         }
 
+        /**
+         * Checks if the first type can be casted to the second.
+         * @param fromTypeCode a type code
+         * @param toTypeCode another type code
+         * @return true if the cast if possible
+         */
         public static boolean canBeCastTo(int fromTypeCode, int toTypeCode) {
                 if (fromTypeCode == toTypeCode) {
                         return true;

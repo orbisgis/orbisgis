@@ -459,18 +459,50 @@ public interface SourceManager {
          */
         void loadSystemTables();
 
+        /**
+         * Adds a CommitListener to this SourceManager.
+         * @param listener a listener
+         */
         void addCommitListener(CommitListener listener);
 
+        /**
+         * Removes a CommitListener to this SourceManager.
+         * @param listener a listener
+         */
         void removeCommitListener(CommitListener listener);
 
+        /**
+         * Fires to listeners that a commit has been done on a table.
+         * @param name a table name
+         */
         void fireCommitDone(String name);
 
+        /**
+         * Fires to listeners that a commit has started on a table.
+         * @param name a table name
+         * @param source the source of the commit
+         * @throws DriverException if something goes wrong in the listeners
+         */
         void fireIsCommiting(String name, Object source) throws DriverException;
 
+        /**
+         * Adds a path for source loading using JAXB.
+         * @param path a valid class path
+         */
         void addSourceContextPath(String path);
 
+        /**
+         * Gets if a given path for source loading is already registered.
+         * @param path a valid class path
+         * @return true if it is already registered
+         */
         boolean containsSourceContextPath(String path);
 
+        /**
+         * Removes a path for source loading using JAXB.
+         * @param path a valid class path
+         * @return true if an element was really removed
+         */
         boolean removeSourceContextPath(String path);
 
         /**

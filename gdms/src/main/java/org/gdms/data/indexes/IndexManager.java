@@ -81,14 +81,27 @@ public class IndexManager {
         private Map<IndexDefinition, DataSourceIndex> indexCache = new HashMap<IndexDefinition, DataSourceIndex>();
         private List<IndexManagerListener> listeners = new ArrayList<IndexManagerListener>();
 
+        /**
+         * Creates a new IndexManager linked to a given DataSourceFactory.
+         * @param dsf a DataSourceFactory.
+         */
         public IndexManager(DataSourceFactory dsf) {
                 this.dsf = dsf;
         }
 
+        /**
+         * Adds an IndexManagerListener to this manager.
+         * @param listener a listener
+         */
         public void addIndexManagerListener(IndexManagerListener listener) {
                 listeners.add(listener);
         }
 
+        /**
+         * Removes an IndexManagerListener from this manager.
+         * @param listener a listener
+         * @return true if the manager was really removed
+         */
         public boolean removeIndexManagerListener(IndexManagerListener listener) {
                 return listeners.remove(listener);
         }
@@ -305,7 +318,7 @@ public class IndexManager {
         }
 
         /**
-         * Registers an index into the collection of indexes
+         * Registers an index into the collection of indexes.
          *
          * @param id
          * @param index
@@ -410,6 +423,12 @@ public class IndexManager {
                 }
         }
 
+        /**
+         * Triggers a rebuilding of the given indexes on the given table.
+         * @param dsName a table name
+         * @param modifiedIndexes some indexes that were modified
+         * @throws IOException if the index files could not be modified
+         */
         public void indexesChanged(String dsName, DataSourceIndex[] modifiedIndexes)
                 throws IOException {
                 try {
@@ -639,6 +658,11 @@ public class IndexManager {
                 }
         }
 
+        /**
+         * Gets the field names of the given table that have an index on them.
+         * @param name a table name
+         * @return a (possibly empty) array of field names
+         */
         public String[] getIndexedFieldNames(String name) {
                 String[] indexProperties = getIndexProperties(name);
                 String[] ret = new String[indexProperties.length];
@@ -706,9 +730,18 @@ public class IndexManager {
                 }
         }
 
+        /**
+         * Gets an ad-hoc index on a field of a table of a MemoryDriver.
+         * @param rightSource a MemoryDriver
+         * @param tableName the name of the table of the driver
+         * @param fieldName the name of the field to index
+         * @param indexId the id (type) of the index 
+         * @param pm an optional ProgressMonitor
+         * @return the index
+         * @throws IndexException if there is an error building the index
+         */
         public AdHocIndex getAdHocIndex(MemoryDriver rightSource, String tableName, String fieldName,
-                String indexId, ProgressMonitor pm) throws IndexException,
-                NoSuchTableException {
+                String indexId, ProgressMonitor pm) throws IndexException {
                 if (pm == null) {
                         pm = new NullProgressMonitor();
                 }

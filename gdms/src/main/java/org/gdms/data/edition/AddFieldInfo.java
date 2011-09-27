@@ -51,6 +51,7 @@ public class AddFieldInfo implements EditionInfo {
 		this.fieldType = fieldType;
 	}
 
+        @Override
 	public String getSQL(String[] pkNames,
 			String[] fieldNames, DBReadWriteDriver driver)
 			throws DriverException {

@@ -45,6 +45,7 @@ import org.orbisgis.core.ui.plugins.views.sqlConsole.language.SQLCompletionProvi
 /**
  * This is a hand written SQL pattern matcher that triggers the correct completion actions.
  * @author Antoine Gourlay
+ * @since 4.0
  */
 public class SQLMatcher {
 
@@ -52,10 +53,19 @@ public class SQLMatcher {
         private SQLLexer lexer;
         private Iterator<String> it;
 
+        /**
+         * Creates a new SQLMatcher that will register its completions to the 
+         * given SQLCompletionProvider.
+         * @param pr
+         */
         public SQLMatcher(SQLCompletionProvider pr) {
                 this.pr = pr;
         }
 
+        /**
+         * Main entry point for matching a SQL String.
+         * @param str a string
+         */
         public void match(String str) {
                 lexer = new SQLLexer(str);
                 it = lexer.getTokenIterator();

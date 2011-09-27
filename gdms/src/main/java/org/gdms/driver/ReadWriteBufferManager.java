@@ -102,7 +102,9 @@ public final class ReadWriteBufferManager {
          * Moves the window if necessary to contain the desired byte and returns the
          * position of the byte in the window
          *
-         * @param bytePos
+         * @param bytePos the position
+         * @param length the size of the block to access
+         * @return the correct offset inside the buffer
          * @throws IOException
          */
         private int getWindowOffset(long bytePos, int length) throws IOException {
@@ -326,6 +328,12 @@ public final class ReadWriteBufferManager {
                 return positionInFile;
         }
 
+        /**
+         * Puts an integer value at the specified position.
+         *
+         * @param value
+         * @throws IOException
+         */
         public void putInt(int value) throws IOException {
                 int windowOffset = getWindowOffset(getPosition(), 4);
                 buffer.putInt(windowOffset, value);
@@ -333,6 +341,12 @@ public final class ReadWriteBufferManager {
                 modificationDone();
         }
 
+        /**
+         * Puts a double value at the specified position.
+         *
+         * @param value
+         * @throws IOException
+         */
         public void putDouble(double value) throws IOException {
                 int windowOffset = getWindowOffset(getPosition(), 8);
                 buffer.putDouble(windowOffset, value);
@@ -340,6 +354,12 @@ public final class ReadWriteBufferManager {
                 modificationDone();
         }
 
+        /**
+         * Puts an long value at the specified position.
+         *
+         * @param value
+         * @throws IOException
+         */
         public void putLong(long value) throws IOException {
                 int windowOffset = getWindowOffset(getPosition(), 8);
                 buffer.putLong(windowOffset, value);
@@ -347,6 +367,12 @@ public final class ReadWriteBufferManager {
                 modificationDone();
         }
 
+        /**
+         * Puts a byte value at the specified position.
+         *
+         * @param value
+         * @throws IOException
+         */
         public void put(byte value) throws IOException {
                 int windowOffset = getWindowOffset(getPosition(), 1);
                 buffer.put(windowOffset, value);
@@ -354,6 +380,12 @@ public final class ReadWriteBufferManager {
                 modificationDone();
         }
 
+        /**
+         * Puts a byte array at the specified position.
+         *
+         * @param bytes
+         * @throws IOException
+         */
         public void put(byte[] bytes) throws IOException {
                 int windowOffset = getWindowOffset(getPosition(), bytes.length);
                 buffer.position(windowOffset);
@@ -375,6 +407,10 @@ public final class ReadWriteBufferManager {
                 }
         }
 
+        /**
+         * Flushes this buffer to the underlying channel.
+         * @throws IOException
+         */
         public void flush() throws IOException {
                 buffer.position(0);
                 buffer.limit(highestModification);
@@ -383,11 +419,20 @@ public final class ReadWriteBufferManager {
                 buffer.clear();
         }
         
+        /**
+         * Flushes and closes this buffer and the underlying channel.
+         * @throws IOException
+         */
         public void close() throws IOException {
                 flush();
                 channel.force(false);
         }
 
+        /**
+         * Gets the position of the end-of-file (EOF) marker.
+         * @return the position of EOF in the channel
+         * @throws IOException
+         */
         public long getEOFPosition() throws IOException {
                 long fileSize = channel.size();
                 long highestModificationInFile = windowStart + highestModification;

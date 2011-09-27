@@ -67,7 +67,7 @@ public class MemoryInternalBuffer implements InternalBuffer {
         @Override
         public PhysicalRowAddress insertRow(ValueCollection pk, Value[] newRow) {
                 rows.add(getRow(newRow));
-                return new InternalBufferDirection(pk, this, rows.size() - 1,
+                return new InternalBufferRowAddress(pk, this, rows.size() - 1,
                         dataSource);
         }
 

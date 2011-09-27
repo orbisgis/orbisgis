@@ -18,7 +18,7 @@ import java.util.List;
 import org.gdms.driver.DataSet;
 
 /**
- * Class to write gdms files
+ * Class to write gdms files.
  *
  * @author Fernando Gonzalez Cortes
  */
@@ -32,17 +32,33 @@ public class GdmsWriter {
 	private int currentRow = 0;
 	private long rowIndexesDirPos;
 
-	public GdmsWriter(File file) throws IOException {
+        /**
+         * Creates a new writer on the given file.
+         * @param file a writable file
+         * @throws IOException if there is an error accessing the file
+         */
+        public GdmsWriter(File file) throws IOException {
 		raf = new RandomAccessFile(file, "rw");
 		bm = new ReadWriteBufferManager(raf.getChannel());
 	}
 
-	public void close() throws IOException {
+        /**
+         * Closes (and flushes) the writer.
+         * @throws IOException
+         */
+        public void close() throws IOException {
 		bm.close();
 		raf.close();
 	}
 
-	public void write(DataSet dataSource, ProgressMonitor pm)
+        /**
+         * Writes all the content of the given DataSet to the file.
+         * @param dataSource a DataSet
+         * @param pm a ProgressMonitor
+         * @throws IOException if there is an error accessing the file
+         * @throws DriverException if there is an error accessing the data set
+         */
+        public void write(DataSet dataSource, ProgressMonitor pm)
 			throws IOException, DriverException {
 		writeMetadata(dataSource.getRowCount(), dataSource.getMetadata());
 		// Write the file building the row indexes in memory
@@ -91,7 +107,12 @@ public class GdmsWriter {
 		bm.putLong(rowIndexesDir);
 	}
 
-	public void addValues(Value[] row) throws DriverException {
+        /**
+         * Adds a row to the Gdms file.
+         * @param row an array of values representing a row
+         * @throws DriverException
+         */
+        public void addValues(Value[] row) throws DriverException {
 		try {
 			addRow(row);
 		} catch (IOException e) {
@@ -153,7 +174,11 @@ public class GdmsWriter {
 		currentRow++;
 	}
 
-	public void writeExtent() throws IOException {
+        /**
+         * Writes the overall extend of the content of the file in the metadata.
+         * @throws IOException
+         */
+        public void writeExtent() throws IOException {
 		if (env != null) {
 			bm.position(0);
 			// version
@@ -170,7 +195,14 @@ public class GdmsWriter {
 		}
 	}
 
-	public void writeMetadata(long rowCount, Metadata metadata)
+        /**
+         * Writes the metadata of the file
+         * @param rowCount the rowCount to write
+         * @param metadata the metadata object to write
+         * @throws IOException
+         * @throws DriverException
+         */
+        public void writeMetadata(long rowCount, Metadata metadata)
 			throws IOException, DriverException {
 		this.metadata = metadata;
 
@@ -217,7 +249,11 @@ public class GdmsWriter {
 		bm.putLong(-1);
 	}
 
-	public void writeWritenRowCount() throws IOException {
+        /**
+         * Writes the number of rows that were written.
+         * @throws IOException
+         */
+        public void writeWritenRowCount() throws IOException {
 		bm.position(0);
 		// version
 		bm.skip(1);

@@ -42,87 +42,85 @@ import java.util.List;
 import org.gdms.data.DataSource;
 
 public class EditionListenerSupport {
-	private List<EditionListener> listeners = new ArrayList<EditionListener>();
 
-	private int dispatchingMode = DataSource.DISPATCH;
+        private List<EditionListener> listeners = new ArrayList<EditionListener>();
+        private int dispatchingMode = DataSource.DISPATCH;
+        private MultipleEditionEvent multipleEditionEvent;
+        private DataSource dataSource;
 
-	private MultipleEditionEvent multipleEditionEvent;
+        public EditionListenerSupport(DataSource ds) {
+                this.dataSource = ds;
+        }
 
-	private DataSource dataSource;
+        public void addEditionListener(EditionListener listener) {
+                listeners.add(listener);
+        }
 
-	public EditionListenerSupport(DataSource ds) {
-		this.dataSource = ds;
-	}
+        public void removeEditionListener(EditionListener listener) {
+                listeners.remove(listener);
+        }
 
-	public void addEditionListener(EditionListener listener) {
-		listeners.add(listener);
-	}
+        public void callSetFieldValue(long rowIndex, int fieldIndex,
+                boolean undoRedo) {
+                EditionEvent event = new EditionEvent(rowIndex, fieldIndex,
+                        EditionEvent.MODIFY, dataSource, undoRedo);
+                manageEvent(event);
+        }
 
-	public void removeEditionListener(EditionListener listener) {
-		listeners.remove(listener);
-	}
+        public void callDeleteRow(long rowIndex, boolean undoRedo) {
+                EditionEvent event = new EditionEvent(rowIndex, -1,
+                        EditionEvent.DELETE, dataSource, undoRedo);
+                manageEvent(event);
+        }
 
-	public void callSetFieldValue(long rowIndex, int fieldIndex,
-			boolean undoRedo) {
-		EditionEvent event = new EditionEvent(rowIndex, fieldIndex,
-				EditionEvent.MODIFY, dataSource, undoRedo);
-		manageEvent(event);
-	}
+        public void callInsert(long rowIndex, boolean undoRedo) {
+                EditionEvent event = new EditionEvent(rowIndex, -1,
+                        EditionEvent.INSERT, dataSource, undoRedo);
+                manageEvent(event);
+        }
 
-	public void callDeleteRow(long rowIndex, boolean undoRedo) {
-		EditionEvent event = new EditionEvent(rowIndex, -1,
-				EditionEvent.DELETE, dataSource, undoRedo);
-		manageEvent(event);
-	}
+        public void callSync() {
+                EditionEvent event = new EditionEvent(-1, -1, EditionEvent.RESYNC,
+                        dataSource, false);
+                for (EditionListener listener : listeners) {
+                        listener.singleModification(event);
+                }
+        }
 
-	public void callInsert(long rowIndex, boolean undoRedo) {
-		EditionEvent event = new EditionEvent(rowIndex, -1,
-				EditionEvent.INSERT, dataSource, undoRedo);
-		manageEvent(event);
-	}
+        private void manageEvent(EditionEvent event) {
+                if (dispatchingMode == DataSource.DISPATCH) {
+                        callModification(event);
+                } else if (dispatchingMode == DataSource.STORE) {
+                        multipleEditionEvent.addEvent(event);
+                }
+        }
 
-	public void callSync() {
-		EditionEvent event = new EditionEvent(-1, -1, EditionEvent.RESYNC,
-				dataSource, false);
-		for (EditionListener listener : listeners) {
-			listener.singleModification(event);
-		}
-	}
+        public void setDispatchingMode(int dispatchingMode) {
+                int previousMode = this.dispatchingMode;
+                this.dispatchingMode = dispatchingMode;
+                if (previousMode == DataSource.STORE) {
+                        callMultipleModification(multipleEditionEvent);
+                        multipleEditionEvent = null;
+                }
 
-	private void manageEvent(EditionEvent event) {
-		if (dispatchingMode == DataSource.DISPATCH) {
-			callModification(event);
-		} else if (dispatchingMode == DataSource.STORE) {
-			multipleEditionEvent.addEvent(event);
-		}
-	}
+                if (dispatchingMode == DataSource.STORE) {
+                        multipleEditionEvent = new MultipleEditionEvent();
+                }
+        }
 
-	public void setDispatchingMode(int dispatchingMode) {
-		int previousMode = this.dispatchingMode;
-		this.dispatchingMode = dispatchingMode;
-		if (previousMode == DataSource.STORE) {
-			callMultipleModification(multipleEditionEvent);
-			multipleEditionEvent = null;
-		}
+        private void callModification(EditionEvent e) {
+                for (EditionListener listener : listeners) {
+                        listener.singleModification(e);
+                }
+        }
 
-		if (dispatchingMode == DataSource.STORE) {
-			multipleEditionEvent = new MultipleEditionEvent();
-		}
-	}
+        private void callMultipleModification(MultipleEditionEvent e) {
+                for (EditionListener listener : listeners) {
+                        listener.multipleModification(e);
+                }
+        }
 
-	private void callModification(EditionEvent e) {
-		for (EditionListener listener : listeners) {
-			listener.singleModification(e);
-		}
-	}
-
-	private void callMultipleModification(MultipleEditionEvent e) {
-		for (EditionListener listener : listeners) {
-			listener.multipleModification(e);
-		}
-	}
-
-	public int getDispatchingMode() {
-		return dispatchingMode;
-	}
+        public int getDispatchingMode() {
+                return dispatchingMode;
+        }
 }

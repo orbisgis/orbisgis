@@ -45,6 +45,17 @@ import org.orbisgis.core.Services;
 
 /**
  * Provides the support for Gdms SQL syntax in the console.
+ * 
+ * This class needs a registered SQLMetadataManager in order to work, i.e.
+ * the code below should return a valid instance of SQLMetadataManager
+ * <code>
+ * SQLMetadataManager metManager = Services.getService(SQLMetadataManager.class);
+ * </code>
+ * 
+ * This class installs the following on the text area
+ *  - a Parser implementation that highlight error in the SQL
+ *  - a CompletionProvider that autocompletes SQL queries
+ * 
  * @author Antoine Gourlay
  */
 public class SQLLanguageSupport extends AbstractLanguageSupport {

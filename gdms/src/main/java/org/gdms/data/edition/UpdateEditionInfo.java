@@ -44,51 +44,51 @@ import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
 
 /**
- * Location info of a PK
+ * Location info of a PK.
  *
  * @author Fernando Gonzalez Cortes
  */
-public class UpdateEditionInfo extends OriginalEditionInfo {
+public class UpdateEditionInfo implements OriginalEditionInfo {
 
-	private ValueCollection originalPK;
+        private ValueCollection originalPK;
+        private PhysicalRowAddress dir;
 
-	private PhysicalRowAddress dir;
+        /**
+         * Creates a new FlagIndexPair.
+         *
+         * @param dir
+         *           address on the data source where the pk is
+         * @param originalPK
+         *            Value of the PK fields when the edition started
+         */
+        public UpdateEditionInfo(ValueCollection originalPK, PhysicalRowAddress dir) {
+                this.originalPK = originalPK;
+                this.dir = dir;
+        }
 
-	/**
-	 * Creates a new FlagIndexPair.
-	 *
-	 * @param index
-	 *            Index on the data source where the pk is
-	 * @param originalPK
-	 *            Value of the PK fields when the edition started
-	 */
-	public UpdateEditionInfo(ValueCollection originalPK, PhysicalRowAddress dir) {
-		this.originalPK = originalPK;
-		this.dir = dir;
-	}
+        public ValueCollection getOriginalPK() {
+                return originalPK;
+        }
 
-	public ValueCollection getOriginalPK() {
-		return originalPK;
-	}
+        @Override
+        public String getSQL(String[] pkNames,
+                String[] fieldNames, DBReadWriteDriver driver)
+                throws DriverException {
+                Metadata metadata = dir.getMetadata();
+                Type[] fieldTypes = new Type[metadata.getFieldCount()];
+                for (int i = 0; i < metadata.getFieldCount(); i++) {
+                        fieldTypes[i] = metadata.getFieldType(i);
+                }
+                Value[] row = new Value[fieldNames.length];
+                for (int i = 0; i < row.length; i++) {
+                        row[i] = dir.getFieldValue(i);
+                }
+                return driver.getUpdateSQL(pkNames, originalPK.getValues(),
+                        fieldNames, fieldTypes, row);
+        }
 
-	public String getSQL(String[] pkNames,
-			String[] fieldNames, DBReadWriteDriver driver)
-			throws DriverException {
-		Metadata metadata = dir.getMetadata();
-		Type[] fieldTypes = new Type[metadata.getFieldCount()];
-		for (int i = 0; i < metadata.getFieldCount(); i++) {
-			fieldTypes[i] = metadata.getFieldType(i);
-		}
-		Value[] row = new Value[fieldNames.length];
-		for (int i = 0; i < row.length; i++) {
-			row[i] = dir.getFieldValue(i);
-		}
-		return driver.getUpdateSQL(pkNames, originalPK.getValues(),
-				fieldNames, fieldTypes, row);
-	}
-
-	@Override
-	public ValueCollection getPK() {
-		return originalPK;
-	}
+        @Override
+        public ValueCollection getPK() {
+                return originalPK;
+        }
 }

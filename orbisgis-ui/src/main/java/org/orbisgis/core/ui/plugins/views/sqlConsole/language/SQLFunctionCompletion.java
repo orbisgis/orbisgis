@@ -13,17 +13,11 @@ import org.fife.ui.autocomplete.FunctionCompletion;
  */
 public class SQLFunctionCompletion extends FunctionCompletion {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getReplacementText() {
         return super.getReplacementText() + '(';
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getName() {
         return super.getName().replace("(", "").toUpperCase();
@@ -35,7 +29,7 @@ public class SQLFunctionCompletion extends FunctionCompletion {
      */
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         String type;
 
         // Add the item being described's name.
@@ -72,25 +66,6 @@ public class SQLFunctionCompletion extends FunctionCompletion {
 
         return sb.toString();
     }
-
-    /**
-     * {@inheritDoc}
-     * @return true if the underlying functions have the same name
-     */
-//    @Override
-//    public boolean equals(Object obj) {
-//        if (obj == null) {
-//            return false;
-//        }
-//        if (getClass() != obj.getClass()) {
-//            return false;
-//        }
-//        final SQLFunctionCompletion other = (SQLFunctionCompletion) obj;
-//        if (this.getName().equalsIgnoreCase(other.getName())) {
-//            return true;
-//        }
-//        return false;
-//    }
 
     public SQLFunctionCompletion(CompletionProvider provider, String name, String returnType) {
         super(provider, name.toUpperCase(), returnType);

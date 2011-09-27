@@ -44,6 +44,12 @@ import java.util.List;
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 
+/**
+ * Interface to be implemented by classes that can commit to a data source.
+ * 
+ * @author Erwan Bocher
+ * @author Fernando Gonzalez Cortes
+ */
 public interface Commiter {
 
 	/**

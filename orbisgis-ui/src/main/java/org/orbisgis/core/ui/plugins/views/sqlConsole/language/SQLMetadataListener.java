@@ -46,7 +46,17 @@ import org.gdms.data.schema.Metadata;
  */
 public interface SQLMetadataListener {
         
+        /**
+         * Raised when some metadata is added.
+         * @param name the name of the added source
+         * @param m the corresponding metadata
+         */
         void metadataAdded(String name, Metadata m);
         
+        /**
+         * Raised when some metadata is removed.
+         * @param name the name of the added source
+         * @param m the corresponding metadata
+         */
         void metadataRemoved(String name, Metadata m);
 }

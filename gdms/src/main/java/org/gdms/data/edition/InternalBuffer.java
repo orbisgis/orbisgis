@@ -48,7 +48,7 @@ public interface InternalBuffer {
 	 * Inserts a row in the buffer and obtains a PhysicalDirection to access it
 	 * in the future
 	 *
-	 * @param index
+	 * @param pk
 	 * @param newRow
 	 * @return
 	 */
@@ -57,7 +57,7 @@ public interface InternalBuffer {
 	/**
 	 * Sets the specified field in the specified direction to the new value
 	 *
-	 * @param dir
+	 * @param row
 	 * @param fieldId
 	 * @param value
 	 */
@@ -81,7 +81,8 @@ public interface InternalBuffer {
 	/**
 	 * Notifies the internal buffer that the specified field has been removed
 	 *
-	 * @param index
+         * @param index
+         * @return  
 	 */
 	Value[] removeField(int index);
 
