@@ -89,7 +89,7 @@ public class SQLMatcher {
                         addKeyWords("CREATE", "DROP", "SELECT", "INSERT", "UPDATE", "DELETE", "EXECUTE");
                         return;
                 } else if (a.endsWith(",")) {
-                        matchList();
+                        matchAfterComma();
                         return;
                 }
 
@@ -147,7 +147,7 @@ public class SQLMatcher {
 
         }
 
-        private void matchList() {
+        private void matchAfterComma() {
                 while (it.hasNext()) {
                         String a = it.next();
                         if ("FROM".equalsIgnoreCase(a)) {
@@ -192,7 +192,9 @@ public class SQLMatcher {
         }
 
         private void addFieldsForTable(String tableDot) {
-                pr.addFieldsCompletion(tableDot.substring(0, tableDot.length() - 1));
+                int par = tableDot.lastIndexOf("(");
+                par = par == -1 ? 0 : par + 1;
+                pr.addFieldsCompletion(tableDot.substring(par, tableDot.length() - 1));
         }
 
         private void addScalarFunctions() {
