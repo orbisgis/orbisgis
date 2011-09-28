@@ -70,11 +70,14 @@ public class SQLMatcher {
                 lexer = new SQLLexer(str);
                 it = lexer.getTokenIterator();
 
+                // main matching entry point
                 matchInit();
 
         }
 
         private void matchInit() {
+
+                // no text
                 if (!it.hasNext()) {
                         // no text
                         addKeyWords("CREATE", "DROP", "SELECT", "INSERT", "UPDATE", "DELETE", "EXECUTE");
@@ -83,17 +86,21 @@ public class SQLMatcher {
                 String a = it.next();
 
                 if (a.endsWith(".")) {
+                        // field name like 'toto.tata'
                         addFieldsForTable(a);
                         return;
                 } else if (a.endsWith(";")) {
+                        // end of query: start a new one
                         addKeyWords("CREATE", "DROP", "SELECT", "INSERT", "UPDATE", "DELETE", "EXECUTE");
                         return;
                 } else if (a.endsWith(",")) {
+                        // comma; we have to look deeper to understand what to do.
                         matchAfterComma();
                         return;
                 }
 
                 if ("AS".equalsIgnoreCase(a)) {
+                        // as: we have to look deeper to understand what to do.
                         matchAs1();
                 } else if ("FROM".equalsIgnoreCase(a)) {
                         // FROM tablename
@@ -116,49 +123,55 @@ public class SQLMatcher {
                         // table function call
                         addExecutorFunctions();
                 } else {
-                        // identifier
+                        // anything else
                         matchAfterPossibleId();
                 }
         }
 
+        /**
+         * Decides what to do after a (probable) id has been matched.
+         */
         private void matchAfterPossibleId() {
-                if (!it.hasNext()) {
-                        return;
-                }
-                String a = it.next();
-                if (a.endsWith(",")) {
-                        addKeyWord("AS");
-                } else if ("SELECT".equalsIgnoreCase(a)) {
-                        addKeyWords("AS", "FROM");
-                        return;
-                } else if (a.endsWith(";")) {
-                        return;
-                }
-
+                boolean inside = false;
                 while (it.hasNext()) {
                         String b = it.next();
+                        if (b.contains("(")) {
+                                inside = true;
+                        }
                         if ("SELECT".equalsIgnoreCase(b)) {
+                                if (inside) {
+                                        return;
+                                }
                                 addKeyWord("FROM");
                                 return;
-                        } else if (a.endsWith(";")) {
+                        }
+
+                        if (b.contains(";")) {
                                 return;
                         }
                 }
 
         }
 
+        /**
+         * Decides what to do after a comma (or id+comma) has been match.
+         */
         private void matchAfterComma() {
                 while (it.hasNext()) {
                         String a = it.next();
                         if ("FROM".equalsIgnoreCase(a)) {
+                                // after from, tables and table functions
                                 addTables(false);
                                 addTableFunctions();
                                 return;
-                        } else if ("SELECT".equalsIgnoreCase(a)) {
+                        } else if ("SELECT".equalsIgnoreCase(a) || "WHERE".equalsIgnoreCase(a)
+                                || "SET".equalsIgnoreCase(a)) {
+                                // after SELECT, WHERE or the sert part of an update
                                 addScalarFunctions();
                                 addTables(true);
                                 return;
-                        } else if (a.endsWith(";")) {
+                        } else if ("VALUES".equalsIgnoreCase(a)) {
+                                // inside an insert, no completion
                                 return;
                         }
                 }
