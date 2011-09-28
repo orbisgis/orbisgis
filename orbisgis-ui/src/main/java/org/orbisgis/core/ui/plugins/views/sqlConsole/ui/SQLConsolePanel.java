@@ -161,7 +161,7 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
                         scriptPanel.setDropTarget(new DropTarget(centerPanel, this));
                         scriptPanel.setLineWrap(true);
                         scriptPanel.setClearWhitespaceLinesEnabled(true);
-                        scriptPanel.setMarkOccurrences(true);
+                        scriptPanel.setMarkOccurrences(false);
                         lang = new SQLLanguageSupport();
                         lang.install(scriptPanel);
 
