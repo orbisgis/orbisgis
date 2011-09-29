@@ -37,95 +37,102 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 
 import org.orbisgis.core.Services;
+import org.orbisgis.core.ui.components.findReplace.FindReplaceDialog;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.ui.BshConsolePanel;
 import org.orbisgis.utils.I18N;
 
 public class BshActionsListener implements ActionListener, DocumentListener {
 
-	private BshConsolePanel consolePanel;
+        private BshConsolePanel consolePanel;
+        private BshConsoleListener listener;
 
-	private BshConsoleListener listener;
+        public BshActionsListener(BshConsoleListener listener, BshConsolePanel consolePanel) {
+                this.consolePanel = consolePanel;
+                this.listener = listener;
+        }
 
-	public BshActionsListener(BshConsoleListener listener, BshConsolePanel consolePanel) {
-		this.consolePanel = consolePanel;
-		this.listener = listener;
-	}
-
-	public void actionPerformed(ActionEvent e) {
-		switch (new Integer(e.getActionCommand())) {
-		case BshConsoleAction.EXECUTE:
-			listener.execute(consolePanel.getText());
-			break;
-		case BshConsoleAction.CLEAR:
-			if (consolePanel.getText().trim().length() > 0) {
-				int answer = JOptionPane.showConfirmDialog(null,
-						I18N.getString("orbisgis.org.orbisgis.ui.bshActionsListener.clearTheConsole"), //$NON-NLS-1$
-						I18N.getString("orbisgis.org.orbisgis.ui.bshActionsListener.clearScript"), JOptionPane.YES_NO_OPTION); //$NON-NLS-1$
-				if (answer == JOptionPane.YES_OPTION) {
-					consolePanel.setText(""); //$NON-NLS-1$
-				}
-			}
-			break;
-		case BshConsoleAction.OPEN:
-			try {
-				String script = listener.open();
-				if (script != null) {
-					int answer = JOptionPane.NO_OPTION;
-					if (consolePanel.getText().trim().length() > 0) {
-						answer = JOptionPane
-								.showConfirmDialog(
-										null,
-										I18N.getString("orbisgis.org.orbisgis.ui.bshActionsListener.clearAllBeforeOpenFile"), //$NON-NLS-1$
-										I18N.getString("orbisgis.org.orbisgis.ui.bshActionsListener.openFile"), //$NON-NLS-1$
-										JOptionPane.YES_NO_CANCEL_OPTION);
-					}
-
-					if (answer == JOptionPane.YES_OPTION) {
-						consolePanel.setText(""); //$NON-NLS-1$
-					}
-
-					if (answer != JOptionPane.CANCEL_OPTION) {
-						consolePanel.insertString(script);
-					}
-				}
-			} catch (BadLocationException e1) {
-				Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.ui.bshActionsListener.cannotAddScript"), e1); //$NON-NLS-1$
-			} catch (IOException e1) {
-				Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.ui.bshActionsListener.ioError"), e1); //$NON-NLS-1$
-			}
-			break;
-		case BshConsoleAction.SAVE:
-			try {
-				boolean saved = listener.save(consolePanel.getText());
-                                if (saved) {
-                                        consolePanel.setStatusMessage(I18N.getString("orbisgis.org.orbisgis.ui.bshActionsListener.fileSaved"));
-                                } else {
-                                        consolePanel.setStatusMessage("");
+        public void actionPerformed(ActionEvent e) {
+                switch (new Integer(e.getActionCommand())) {
+                        case BshConsoleAction.EXECUTE:
+                                listener.execute(consolePanel.getText());
+                                break;
+                        case BshConsoleAction.CLEAR:
+                                if (consolePanel.getText().trim().length() > 0) {
+                                        int answer = JOptionPane.showConfirmDialog(null,
+                                                I18N.getString("orbisgis.org.orbisgis.ui.bshActionsListener.clearTheConsole"), //$NON-NLS-1$
+                                                I18N.getString("orbisgis.org.orbisgis.ui.bshActionsListener.clearScript"), JOptionPane.YES_NO_OPTION); //$NON-NLS-1$
+                                        if (answer == JOptionPane.YES_OPTION) {
+                                                consolePanel.setText(""); //$NON-NLS-1$
+                                        }
                                 }
-			} catch (IOException e1) {
-				Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.ui.bshActionsListener.ioError"), e1); //$NON-NLS-1$
-			}
+                                break;
+                        case BshConsoleAction.OPEN:
+                                try {
+                                        String script = listener.open();
+                                        if (script != null) {
+                                                int answer = JOptionPane.NO_OPTION;
+                                                if (consolePanel.getText().trim().length() > 0) {
+                                                        answer = JOptionPane.showConfirmDialog(
+                                                                null,
+                                                                I18N.getString("orbisgis.org.orbisgis.ui.bshActionsListener.clearAllBeforeOpenFile"), //$NON-NLS-1$
+                                                                I18N.getString("orbisgis.org.orbisgis.ui.bshActionsListener.openFile"), //$NON-NLS-1$
+                                                                JOptionPane.YES_NO_CANCEL_OPTION);
+                                                }
 
-			break;
-		}
-		setButtonsStatus();
-	}
+                                                if (answer == JOptionPane.YES_OPTION) {
+                                                        consolePanel.setText(""); //$NON-NLS-1$
+                                                }
 
-	public void setButtonsStatus() {
-		consolePanel.setButtonsStatus();
-	}
+                                                if (answer != JOptionPane.CANCEL_OPTION) {
+                                                        consolePanel.insertString(script);
+                                                }
+                                        }
+                                } catch (BadLocationException e1) {
+                                        Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.ui.bshActionsListener.cannotAddScript"), e1); //$NON-NLS-1$
+                                } catch (IOException e1) {
+                                        Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.ui.bshActionsListener.ioError"), e1); //$NON-NLS-1$
+                                }
+                                break;
+                        case BshConsoleAction.SAVE:
+                                try {
+                                        boolean saved = listener.save(consolePanel.getText());
+                                        if (saved) {
+                                                consolePanel.setStatusMessage(I18N.getString("orbisgis.org.orbisgis.ui.bshActionsListener.fileSaved"));
+                                        } else {
+                                                consolePanel.setStatusMessage("");
+                                        }
+                                } catch (IOException e1) {
+                                        Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.ui.bshActionsListener.ioError"), e1); //$NON-NLS-1$
+                                }
 
-	public void changedUpdate(DocumentEvent e) {
-		insertUpdate(e);
-	}
+                                break;
 
-	public void insertUpdate(DocumentEvent e) {
-		setButtonsStatus();
-		listener.change();
-	}
+                        case BshConsoleAction.FIND_REPLACE:
+                                if (consolePanel.getText().trim().length() > 0) {
+                                        FindReplaceDialog findReplaceDialog = new FindReplaceDialog(consolePanel.getTextComponent());
+                                        findReplaceDialog.setAlwaysOnTop(true);
+                                        findReplaceDialog.setVisible(true);
+                                }
+                                break;
+                }
 
-	public void removeUpdate(DocumentEvent e) {
-		insertUpdate(e);
-	}
+                setButtonsStatus();
+        }
 
+        public void setButtonsStatus() {
+                consolePanel.setButtonsStatus();
+        }
+
+        public void changedUpdate(DocumentEvent e) {
+                insertUpdate(e);
+        }
+
+        public void insertUpdate(DocumentEvent e) {
+                setButtonsStatus();
+                listener.change();
+        }
+
+        public void removeUpdate(DocumentEvent e) {
+                insertUpdate(e);
+        }
 }

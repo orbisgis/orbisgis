@@ -39,13 +39,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import javax.swing.JFrame;
-import javax.swing.text.JTextComponent;
 
 import org.apache.log4j.Logger;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.sif.SaveFilePanel;
 import org.orbisgis.core.sif.UIFactory;
+import org.orbisgis.core.ui.components.findReplace.FindReplaceDialog;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.javaManager.autocompletion.Completion;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.javaManager.autocompletion.Option;
@@ -56,17 +57,17 @@ public class BshCompletionKeyListener extends KeyAdapter {
 
         private final static Logger logger = Logger.getLogger(BshCompletionKeyListener.class);
         private final boolean script;
-        private JTextComponent txt;
+        private RSyntaxTextArea txt;
         private CompletionPopUp pop;
         private Completion completion;
         private final Interpreter interpreter;
         private final ByteArrayOutputStream scriptOutput;
 
-        public BshCompletionKeyListener(Interpreter interpreter, ByteArrayOutputStream scriptOutput, boolean script, JTextComponent txt) {
+        public BshCompletionKeyListener(Interpreter interpreter, ByteArrayOutputStream scriptOutput, boolean script, RSyntaxTextArea txt) {
                 this.txt = txt;
                 this.script = script;
-                this.interpreter =interpreter;
-                this.scriptOutput=scriptOutput;
+                this.interpreter = interpreter;
+                this.scriptOutput = scriptOutput;
                 try {
                         completion = new Completion();
                 } catch (LinkageError e) {
@@ -118,6 +119,12 @@ public class BshCompletionKeyListener extends KeyAdapter {
                         }
                 } else if ((e.getKeyCode() == KeyEvent.VK_ENTER) && e.isControlDown()) {
                         BeanShellExecutor.execute(interpreter, scriptOutput, originalText);
+                } else if ((e.getKeyCode() == KeyEvent.VK_F) && e.isControlDown()) {
+                        if (originalText.trim().length() > 0) {
+                                FindReplaceDialog findReplaceDialog = new FindReplaceDialog(txt);
+                                findReplaceDialog.setAlwaysOnTop(true);
+                                findReplaceDialog.setVisible(true);
+                        }
                 }
         }
 

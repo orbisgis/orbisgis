@@ -58,6 +58,7 @@ import org.orbisgis.utils.I18N;
 
 import bsh.EvalError;
 import bsh.Interpreter;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.actions.BeanShellExecutor;
 
 public class BeanShellConsoleViewPlugIn extends ViewPlugIn {
@@ -160,7 +161,7 @@ public class BeanShellConsoleViewPlugIn extends ViewPlugIn {
                         }
                 });
                 panel.setText("print(\"" + "Hello world !\"" + ");");
-                JTextComponent txt = panel.getTextComponent();
+                RSyntaxTextArea txt = panel.getTextComponent();
                 txt.addKeyListener(new BshCompletionKeyListener(interpreter, scriptOutput, true, txt));
 
                 menuItem = context.getFeatureInstaller().addMainMenuItem(this,

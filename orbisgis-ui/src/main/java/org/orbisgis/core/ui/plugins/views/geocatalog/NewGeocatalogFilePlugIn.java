@@ -5,15 +5,6 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
- *  Team leader Erwan BOCHER, scientific researcher. * 
- * 
- *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO,Adelin PIAU
- * 
- * Copyright (C) 2011 Erwan BOCHER, Alexis GUEGANNO, Antoine GOURLAY
  *
  * This file is part of OrbisGIS.
  *
@@ -32,9 +23,8 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- * info_at_orbisgis.org
+ * info _at_ orbisgis.org
  */
-
 package org.orbisgis.core.ui.plugins.views.geocatalog;
 
 import java.io.File;

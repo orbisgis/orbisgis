@@ -3,17 +3,8 @@
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information. OrbisGIS is
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- *
- *  Team leader Erwan BOCHER, scientific researcher 
- *
- *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
- * Copyright (C) 2010 Erwan BOCHER,  Alexis GUEGANNO, Antoine GOURLAY, Adelin PIAU, Gwendall PETIT
- *
- * Copyright (C) 2010 Erwan BOCHER,  Alexis GUEGANNO, Antoine GOURLAY, Gwendall PETIT
  *
  * This file is part of OrbisGIS.
  *
@@ -37,7 +28,6 @@
 package org.orbisgis.core.ui.plugins.views.sqlConsole.ui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -56,19 +46,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.Timer;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-import javax.swing.text.Highlighter;
-import javax.swing.text.Highlighter.HighlightPainter;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rtextarea.RTextScrollPane;
-import org.orbisgis.core.sif.CRFlowLayout;
-import org.orbisgis.core.ui.components.jtextComponent.SearchWord;
-import org.orbisgis.core.ui.components.jtextComponent.WordHighlightPainter;
-import org.orbisgis.core.ui.components.text.JButtonTextField;
 import org.orbisgis.core.ui.editorViews.toc.TransferableLayer;
 import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.plugins.views.geocatalog.TransferableSource;
@@ -87,24 +68,20 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
         private JButton btClear = null;
         private JButton btOpen = null;
         private JButton btSave = null;
+        private JButton btFindReplace=null;
         private ActionsListener actionAndKeyListener;
         private ConsoleListener listener;
         private RTextScrollPane centerPanel;
         private RSyntaxTextArea scriptPanel;
-        private JButtonTextField searchTextField;
         private JToolBar toolBar;
         private JLabel statusMessage;
-        private SearchWord searchWord;
         private Timer timer;
         private int lastSQLStatementToReformatStart;
         private int lastSQLStatementToReformatEnd;
         private SQLLanguageSupport lang;
-        // An instance of the private subclass of the default highlight painter
-        Highlighter.HighlightPainter myHighlightPainter = (HighlightPainter) new WordHighlightPainter(
-                new Color(205, 235, 255));
-        private JPanel pnlTextFilter;
         static CommentSpec[] COMMENT_SPECS = new CommentSpec[]{
                 new CommentSpec("/*", "*/"), new CommentSpec("--", "\n")};
+
 
         /**
          * Creates a console for sql.
@@ -112,22 +89,20 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
         public SQLConsolePanel(ConsoleListener listener) {
                 this.listener = listener;
                 actionAndKeyListener = new ActionsListener(listener, this);
-                setLayout(new BorderLayout());
-                add(getCenterPanel(listener), BorderLayout.CENTER);
-                if (listener.showControlButtons()) {
-                        add(getButtonToolBar(), BorderLayout.NORTH);
-                }
-                setButtonsStatus();
-                add(getStatusToolBar(), BorderLayout.SOUTH);
-                add(getStatusToolBar(), BorderLayout.SOUTH);
-                //add(new SQLFunctionsPanel(this), BorderLayout.EAST);
-
+                setLayout(new BorderLayout());              
                 JPanel split = new JPanel();
                 split.setLayout(new BorderLayout());
                 split.add(new SQLFunctionsPanel(this), BorderLayout.EAST);
                 split.add(getCenterPanel(listener), BorderLayout.CENTER);
                 add(split, BorderLayout.CENTER);
-                searchWord = new SearchWord(scriptPanel);
+                
+                if (listener.showControlButtons()) {
+                        add(getButtonToolBar(), BorderLayout.NORTH);
+                }
+                setButtonsStatus();
+                add(getStatusToolBar(), BorderLayout.SOUTH);
+
+                
 
         }
 
@@ -140,16 +115,14 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
                 northPanel.add(getBtClear());
                 northPanel.add(getBtOpen());
                 northPanel.add(getBtSave());
-                northPanel.add(new JLabel("  "
-                        + I18N.getString("orbisgis.org.orbisgis.FindText") + " "));
-                northPanel.add(getJTextFieldPanel());
+                northPanel.add(getBtFindReplace());
                 setBtExecute();
                 setBtClear();
                 setBtSave();
+                setBtFindReplace();
                 northPanel.setFloatable(false);
                 northPanel.setBorderPainted(false);
                 northPanel.setOpaque(false);
-
                 return northPanel;
         }
 
@@ -207,78 +180,19 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
                 }
         }
 
-        private JPanel getJTextFieldPanel() {
-                if (null == pnlTextFilter) {
-                        pnlTextFilter = new JPanel();
-                        CRFlowLayout layout = new CRFlowLayout();
-                        layout.setAlignment(CRFlowLayout.LEFT);
-                        pnlTextFilter.setLayout(layout);
-                        searchTextField = new JButtonTextField();
-                        searchTextField.getDocument().addDocumentListener(
-                                new DocumentListener() {
 
-                                        public void removeUpdate(DocumentEvent e) {
-                                                search();
-                                        }
-
-                                        public void insertUpdate(DocumentEvent e) {
-                                                search();
-                                        }
-
-                                        public void changedUpdate(DocumentEvent e) {
-                                                search();
-                                        }
-                                });
-                        pnlTextFilter.add(searchTextField);
+        private JButton getBtFindReplace() {
+                if (null == btFindReplace) {
+                        btFindReplace = new ConsoleButton(ConsoleAction.FIND_REPLACE,
+                                actionAndKeyListener);
                 }
-                return pnlTextFilter;
+                return btFindReplace;
         }
-
-        public void search() {
-                searchWord.removeHighlights();
-                String pattern = searchTextField.getText();
-                if (pattern.length() <= 0) {
-                        setStatusMessage("");
-                        return;
-                }
-
-                try {
-                        Highlighter hilite = scriptPanel.getHighlighter();
-                        Document doc = scriptPanel.getDocument();
-                        String text = doc.getText(0, doc.getLength());
-                        int pos = 0;
-
-                        int patternFound = 0;
-
-                        // Search for pattern
-                        while ((pos = text.indexOf(pattern, pos)) >= 0) {
-                                // Create highlighter using private painter and apply around
-                                // pattern
-                                hilite.addHighlight(pos, pos + pattern.length(),
-                                        myHighlightPainter);
-                                pos += pattern.length();
-                                patternFound += 1;
-                        }
-
-                        if (patternFound > 0) {
-                                setStatusMessage(pattern + " "
-                                        + I18N.getString("orbisgis.org.orbisgis.found") + " "
-                                        + patternFound + " "
-                                        + I18N.getString("orbisgis.org.orbisgis.Times"));
-                        } else {
-                                setStatusMessage(pattern + " "
-                                        + I18N.getString("orbisgis.org.orbisgis.notFound"));
-                        }
-                } catch (BadLocationException e) {
-                }
-
-        }
-
+        
         private JButton getBtExecute() {
                 if (null == btExecute) {
                         btExecute = new ConsoleButton(ConsoleAction.EXECUTE,
                                 actionAndKeyListener);
-                        btExecute.setToolTipText(I18N.getString("orbisgis.org.orbisgis.Execute"));
                 }
                 return btExecute;
         }
@@ -287,7 +201,6 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
                 if (null == btClear) {
                         btClear = new ConsoleButton(ConsoleAction.CLEAR,
                                 actionAndKeyListener);
-                        btClear.setToolTipText(I18N.getString("orbisgis.org.orbisgis.Clear"));
                 }
                 return btClear;
         }
@@ -295,7 +208,6 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
         private JButton getBtOpen() {
                 if (null == btOpen) {
                         btOpen = new ConsoleButton(ConsoleAction.OPEN, actionAndKeyListener);
-                        btOpen.setToolTipText(I18N.getString("orbisgis.org.orbisgis.Open"));
                 }
                 return btOpen;
         }
@@ -303,7 +215,6 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
         private JButton getBtSave() {
                 if (null == btSave) {
                         btSave = new ConsoleButton(ConsoleAction.SAVE, actionAndKeyListener);
-                        btSave.setToolTipText(I18N.getString("orbisgis.org.orbisgis.Save"));
                 }
                 return btSave;
         }
@@ -312,7 +223,14 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
                 return scriptPanel.getText();
         }
 
-        // setters
+        private void setBtFindReplace() {
+                if (0 == getText().length()) {
+                        getBtFindReplace().setEnabled(false);
+                } else {
+                        getBtFindReplace().setEnabled(true);
+                }
+        }
+        
         private void setBtExecute() {
                 if (0 == getText().length()) {
                         getBtExecute().setEnabled(false);
@@ -345,6 +263,7 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
                 setBtClear();
                 setBtOpen();
                 setBtSave();
+                setBtFindReplace();
         }
 
         public RSyntaxTextArea getScriptPanel() {

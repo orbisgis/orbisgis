@@ -25,7 +25,6 @@
  * or contact directly:
  * info _at_ orbisgis.org
  */
-
 package org.orbisgis.core.ui.plugins.views.sqlConsole.actions;
 
 import java.awt.event.ActionEvent;
@@ -35,52 +34,57 @@ import java.awt.event.KeyEvent;
 
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundManager;
+import org.orbisgis.core.ui.components.findReplace.FindReplaceDialog;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.blockComment.QuoteSQL;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.codereformat.CodeReformator;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.ui.SQLConsolePanel;
 
 public class SQLConsoleKeyListener extends KeyAdapter {
 
-	private SQLConsolePanel panel;
-	private CodeReformator codeReformator;
+        private SQLConsolePanel panel;
+        private CodeReformator codeReformator;
         private ActionsListener actionsListener;
 
-	public SQLConsoleKeyListener(SQLConsolePanel panel,
-			CodeReformator codeReformator, ActionsListener listener) {
-		this.panel = panel;
-		this.codeReformator = codeReformator;
+        public SQLConsoleKeyListener(SQLConsolePanel panel,
+                CodeReformator codeReformator, ActionsListener listener) {
+                this.panel = panel;
+                this.codeReformator = codeReformator;
                 this.actionsListener = listener;
-	}
+        }
 
-	public void keyPressed(KeyEvent e) {
-		String originalText = panel.getText();
-		if ((e.getKeyCode() == KeyEvent.VK_ENTER) && e.isControlDown()) {
-			BackgroundManager bm = Services.getService(BackgroundManager.class);
-			bm.backgroundOperation(new ExecuteScriptProcess(originalText, panel));
+        public void keyPressed(KeyEvent e) {
+                String originalText = panel.getText();
+                if ((e.getKeyCode() == KeyEvent.VK_ENTER) && e.isControlDown()) {
+                        BackgroundManager bm = Services.getService(BackgroundManager.class);
+                        bm.backgroundOperation(new ExecuteScriptProcess(originalText, panel));
 
-		} else if ((e.getKeyCode() == KeyEvent.VK_S) && e.isControlDown()) {
-                    ActionEvent ev = new ActionEvent(this, ConsoleAction.SAVE, String.valueOf(ConsoleAction.SAVE));
-                    actionsListener.actionPerformed(ev);
-		}
-		// Format SQL code
-		else if ((e.getKeyCode() == KeyEvent.VK_F) && e.isControlDown()) {
-			panel.replaceCurrentSQLStatement(
-					codeReformator.reformat(panel.getCurrentSQLStatement()));
+                } else if ((e.getKeyCode() == KeyEvent.VK_S) && e.isControlDown()) {
+                        ActionEvent ev = new ActionEvent(this, ConsoleAction.SAVE, String.valueOf(ConsoleAction.SAVE));
+                        actionsListener.actionPerformed(ev);
+                } // Format SQL code
+                else if ((e.getKeyCode() == KeyEvent.VK_F) && e.isShiftDown()&& e.isControlDown()) {
+                        panel.replaceCurrentSQLStatement(
+                                codeReformator.reformat(panel.getCurrentSQLStatement()));
 
-		}
-		// Quote SQL
-		else if ((e.getKeyCode() == KeyEvent.VK_SLASH) && e.isControlDown()) {
-			QuoteSQL.quoteSQL(panel, false);
+                } // Quote SQL
+                else if ((e.getKeyCode() == KeyEvent.VK_SLASH) && e.isShiftDown()) {
+                        QuoteSQL.quoteSQL(panel, false);
 
-		}
-		// Unquote SQL
-		else if ((e.getKeyCode() == KeyEvent.VK_BACK_SLASH)
-				&& e.isControlDown()) {
-			QuoteSQL.unquoteSQL(panel);
+                } // Unquote SQL
+                else if ((e.getKeyCode() == KeyEvent.VK_BACK_SLASH)
+                        && e.isShiftDown()) {
+                        QuoteSQL.unquoteSQL(panel);
 
-		} else if ((e.getKeyCode() == KeyEvent.VK_O) && e.isControlDown()) {
-			ActionEvent ev = new ActionEvent(this, ConsoleAction.OPEN, String.valueOf(ConsoleAction.OPEN));
-                    actionsListener.actionPerformed(ev);
-		}
-	}
+                } else if ((e.getKeyCode() == KeyEvent.VK_O) && e.isControlDown()) {
+                        ActionEvent ev = new ActionEvent(this, ConsoleAction.OPEN, String.valueOf(ConsoleAction.OPEN));
+                        actionsListener.actionPerformed(ev);
+
+                } else if ((e.getKeyCode() == KeyEvent.VK_F) && e.isControlDown()) {
+                        if (originalText.trim().length() > 0) {
+                                FindReplaceDialog findReplaceDialog = new FindReplaceDialog(panel.getScriptPanel());
+                                findReplaceDialog.setAlwaysOnTop(true);
+                                findReplaceDialog.setVisible(true);
+                        }
+                }
+        }
 }

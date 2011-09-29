@@ -97,6 +97,7 @@ public class TableEditorPlugIn extends ViewPlugIn implements IEditor {
 	public void setElement(EditableElement element) {
 		this.element = (TableEditableElement) element;
 		table.setElement(this.element);
+                table.setShowRowHeader(true);
 	}
 
 	@Override
@@ -118,6 +119,11 @@ public class TableEditorPlugIn extends ViewPlugIn implements IEditor {
 		table.moveSelectionUp();
 	}
 
+        public void revertSelection() {
+		table.revertSelection();
+	}
+
+        @Override
 	public boolean execute(PlugInContext context) throws Exception {
 		return false;
 	}

@@ -27,59 +27,60 @@
  */
 package org.orbisgis.core.ui.plugins.sql;
 
+import com.vividsolutions.jts.geom.Envelope;
 import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
+import org.gdms.driver.DriverException;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionSignature;
-import org.gdms.sql.function.ScalarArgument;
 import org.gdms.sql.function.executor.AbstractExecutorFunction;
 import org.gdms.sql.function.executor.ExecutorFunctionSignature;
-import org.orbisgis.core.DataManager;
+import org.gdms.sql.function.table.TableArgument;
+import org.gdms.sql.function.table.TableDefinition;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.layerModel.LayerException;
-import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.core.ui.editors.map.MapContextManager;
+import org.orbisgis.core.ui.editor.IEditor;
+import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
+import org.orbisgis.core.ui.plugins.views.mapEditor.MapEditorPlugIn;
 import org.orbisgis.progress.ProgressMonitor;
 
 /**
  *
  * @author ebocher
  */
-public class MapContext_AddLayer extends AbstractExecutorFunction {
+public class MapContext_ZoomTo extends AbstractExecutorFunction {
 
         @Override
         public void evaluate(SQLDataSourceFactory dsf, DataSet[] tables, Value[] values, ProgressMonitor pm) throws FunctionException {
-                MapContext mc = ((MapContextManager) Services.getService(MapContextManager.class)).getActiveMapContext();
-                if (mc != null) {
-                        try {
-                                DataManager dataManager = (DataManager) Services.getService(DataManager.class);
-                                ILayer layer = dataManager.createLayer(values[0].getAsString());
-                                mc.getLayerModel().addLayer(layer);
-                        } catch (LayerException ex) {
-                                throw new FunctionException("Cannot add the layer to the mapcontext", ex);
+                try {
+                        IEditor editor = Services.getService(EditorManager.class).getActiveEditor();
+                        if (editor != null && editor instanceof MapEditorPlugIn) {
+                                MapEditorPlugIn mapEditorPlugIn = (MapEditorPlugIn) editor;
+                                Envelope extend = tables[0].getFullExtent();
+                                mapEditorPlugIn.getMapTransform().setExtent(extend);
                         }
+                } catch (DriverException ex) {
+                        throw new FunctionException("Cannot compute the full extent", ex);
                 }
         }
 
         @Override
         public String getName() {
-                return "AddLayer";
+                return "ZoomTo";
         }
 
         @Override
         public String getDescription() {
-                return "A function to add a layer based on a table name";
+                return "Zoom to according a dataset";
         }
 
         @Override
         public String getSqlOrder() {
-                return "EXECUTE AddLayer('tableName')";
+                return "EXECUTE ZoomTo(dataset)";
         }
 
         @Override
         public FunctionSignature[] getFunctionSignatures() {
-                return new FunctionSignature[]{new ExecutorFunctionSignature(ScalarArgument.STRING)};
+                return new FunctionSignature[]{new ExecutorFunctionSignature(new TableArgument(TableDefinition.GEOMETRY))};
         }
 }

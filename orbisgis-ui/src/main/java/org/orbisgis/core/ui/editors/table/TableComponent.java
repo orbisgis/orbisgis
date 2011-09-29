@@ -52,6 +52,7 @@ import java.awt.event.MouseEvent;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -108,7 +109,6 @@ import org.orbisgis.core.ui.components.text.JButtonTextField;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.language.SQLCompletionProvider;
-import org.orbisgis.core.ui.plugins.views.sqlConsole.language.SQLLanguageSupport;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.language.SQLMetadataManager;
 import org.orbisgis.core.ui.plugins.views.tableEditor.TableEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
@@ -479,7 +479,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
                         ;
 
-			@Override
+                        @Override
                         public void focusLost(FocusEvent e) {
                                 if (txtFilter.getText().equals("")) { //$NON-NLS-1$
                                         txtFilter.setText(I18N.getString("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_sqlwhere")); //$NON-NLS-1$
@@ -709,7 +709,8 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
                         ListSelectionModel model = table.getSelectionModel();
                         model.setValueIsAdjusting(true);
                         model.clearSelection();
-                        for (int i : selection.getSelectedRows()) {
+                        int[] select = selection.getSelectedRows();
+                        for (int i : select) {
                                 if (indexes != null) {
                                         Integer sortedIndex = indexes.indexOf(i);
                                         model.addSelectionInterval(sortedIndex, sortedIndex);
@@ -717,7 +718,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
                                         model.addSelectionInterval(i, i);
                                 }
                         }
-                        selectedRowsCount = selection.getSelectedRows().length;
+                        selectedRowsCount = select.length;
                         model.setValueIsAdjusting(false);
                         managingSelection = false;
                         updateRowsMessage();
@@ -762,6 +763,24 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
                         }
                 }
                 fireTableDataChanged();
+        }
+
+        /**
+         * Display the row header
+         * @param show
+         */
+        public void setShowRowHeader(boolean show) {
+                if (show) {
+                        jScrollPane.setRowHeaderView(new TableRowHeader(this));
+                }
+        }
+
+        /**
+         * Reverse the selection
+         */
+        public void revertSelection() {
+                BackgroundManager bm = Services.getService(BackgroundManager.class);
+                bm.backgroundOperation(new ReverseJob());
         }
 
         private class SyncSelectionListener implements SelectionListener {
@@ -1135,6 +1154,49 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
                 }
         }
 
+        /**
+         * A background job to revert a selection
+         */
+        private final class ReverseJob implements BackgroundJob {
+
+                @Override
+                public void run(ProgressMonitor pm) {
+                        int[] select = selection.getSelectedRows();
+                        Arrays.sort(select);
+                        int count = tableModel.getRowCount();
+                        ArrayList<Integer> newSel = new ArrayList<Integer>();
+                        for (int i = 0; i < count; i++) {
+                                if (i / 100 == i / 100.0) {
+                                        if (pm.isCancelled()) {
+                                                break;
+                                        } else {
+                                                pm.progressTo(100 * i / count);
+                                        }
+                                }
+                                int result = Arrays.binarySearch(select, i);
+                                if (result < 0) {
+                                        newSel.add(i);
+
+                                }
+                        }
+                        int size = newSel.size();
+                        int[] sel = new int[size];
+                        for (int i = 0; i < sel.length; i++) {
+                                sel[i] = newSel.get(i);
+                        }
+                        selectedRowsCount = size;
+                        checkSelectionRefresh(sel);
+                        selection.setSelectedRows(sel);
+                        updateRowsMessage();
+
+                }
+
+                @Override
+                public String getTaskName() {
+                        return "Reverse";
+                }
+        }
+
         private final class SortJob implements BackgroundJob {
 
                 private boolean ascending;
@@ -1216,7 +1278,35 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
                 }
         }
 
+        /**
+         * Return the index of the selected column
+         * @return
+         */
         public int getSelectedColumn() {
                 return selectedColumn;
+        }
+
+        /**
+         * Return the row height
+         * @return
+         */
+        public int getRowHeight() {
+                return table.getRowHeight();
+        }
+
+        /**
+         * Return the number of rows
+         * @return
+         */
+        public long getRowCount() {
+                return table.getRowCount();
+        }
+
+        /**
+         * Return the table grid color
+         * @return
+         */
+        public Color getGridColor() {
+                return table.getGridColor();
         }
 }

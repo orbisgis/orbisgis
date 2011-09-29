@@ -41,8 +41,17 @@ import org.orbisgis.progress.ProgressMonitor;
 
 public interface BackgroundJob {
 
+        /**
+         * The task is executed during the run background thread.
+         * The progressMonitor allows to cancel the process.
+         * @param pm
+         */
 	void run(ProgressMonitor pm);
 
+        /**
+         * Return the name of the current task
+         * @return
+         */
 	String getTaskName();
 
 }

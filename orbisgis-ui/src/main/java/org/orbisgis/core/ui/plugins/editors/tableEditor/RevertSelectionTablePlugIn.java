@@ -6,6 +6,15 @@
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
  *
+ *  Team leader Erwan BOCHER, scientific researcher,
+ *
+ *  User support leader : Gwendall Petit, geomatic engineer.
+ *
+ *
+ * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ *
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ *
  * This file is part of OrbisGIS.
  *
  * OrbisGIS is free software: you can redistribute it and/or modify it under the
@@ -23,54 +32,59 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- * info _at_ orbisgis.org
+ * erwan.bocher _at_ ec-nantes.fr
+ * gwendall.petit _at_ ec-nantes.fr
  */
-package org.orbisgis.core.ui.plugins.editors.mapEditor;
+
+package org.orbisgis.core.ui.plugins.editors.tableEditor;
 
 import javax.swing.JButton;
 
-import org.orbisgis.core.Services;
-import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editor.IEditor;
+import org.orbisgis.core.ui.editors.table.TableEditableElement;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
-import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
-import org.orbisgis.core.ui.plugins.views.mapEditor.MapEditorPlugIn;
+import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
+import org.orbisgis.core.ui.plugins.views.tableEditor.TableEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
-public class FullExtentPlugIn extends AbstractPlugIn {
+public class RevertSelectionTablePlugIn extends AbstractPlugIn {
 
 	private JButton btn;
 
-	public FullExtentPlugIn() {
-		btn = new JButton(OrbisGISIcon.FULL_EXTENT);
-		btn.setToolTipText(Names.FULL_EXTENT_TOOTIP);
-	}
-
-	public void initialize(PlugInContext context) throws Exception {
-		WorkbenchContext wbcontext = context.getWorkbenchContext();
-		wbcontext.getWorkbench().getFrame().getNavigationToolBar().addPlugIn(
-				this, btn, context);
+	public RevertSelectionTablePlugIn() {
+		btn = new JButton(OrbisGISIcon.REVERT);
+		btn.setToolTipText("Revert the selection");
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {
-		IEditor editor = Services.getService(EditorManager.class)
-				.getActiveEditor();
-		MapContext mc = (MapContext) editor.getElement().getObject();
-		((MapEditorPlugIn) editor).getMapTransform().setExtent(
-				mc.getLayerModel().getEnvelope());
+		IEditor editor = context.getActiveEditor();
+		TableEditorPlugIn te = (TableEditorPlugIn) editor;
+		te.revertSelection();
 		return true;
+	}
+
+	public void initialize(PlugInContext context) throws Exception {
+		WorkbenchContext wbContext = context.getWorkbenchContext();
+		WorkbenchFrame frame = wbContext.getWorkbench()
+				.getFrame().getTableEditor();
+		wbContext.getWorkbench().getFrame().getEditionTableToolBar().addPlugIn(
+				this, btn, context);
+		context.getFeatureInstaller().addPopupMenuItem(frame, this,
+				new String[] { Names.POPUP_TABLE_UP_PATH1 },
+				Names.POPUP_TABLE_UP_GROUP, false,
+				OrbisGISIcon.REVERT, wbContext);
 	}
 
 	public boolean isEnabled() {
 		boolean isEnabled = false;
-		IEditor editor = Services.getService(EditorManager.class).getActiveEditor();
-		if (editor != null && editor instanceof MapEditorPlugIn) {
-			MapContext mc = (MapContext) editor.getElement().getObject();
-			isEnabled = mc.getLayerModel().getLayerCount() > 0;
-			btn.setEnabled(isEnabled);
+		IEditor editor = null;
+		if ((editor = getPlugInContext().getTableEditor()) != null
+				&& getSelectedColumn() == -1) {
+			isEnabled = ((TableEditableElement) editor.getElement())
+					.getSelection().getSelectedRows().length > 0;
 		}
 		btn.setEnabled(isEnabled);
 		return isEnabled;
