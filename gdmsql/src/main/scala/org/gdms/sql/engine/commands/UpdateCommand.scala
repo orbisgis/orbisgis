@@ -37,6 +37,7 @@
  */
 package org.gdms.sql.engine.commands
 
+import org.gdms.sql.engine.commands.scan.ScanCommand
 import org.gdms.sql.evaluator.Expression
 import org.gdms.data.DataSource
 import org.gdms.data.schema.DefaultMetadata

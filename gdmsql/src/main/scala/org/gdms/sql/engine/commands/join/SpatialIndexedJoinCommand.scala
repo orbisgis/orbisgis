@@ -49,7 +49,7 @@ import org.gdms.sql.engine.GdmSQLPredef._
 import org.gdms.sql.engine.commands.Row
 import org.gdms.sql.engine.commands.Command
 import org.gdms.sql.engine.commands.ExpressionCommand
-import org.gdms.sql.engine.commands.IndexQueryScanCommand
+import org.gdms.sql.engine.commands.scan.IndexQueryScanCommand
 import org.gdms.sql.engine.commands.SQLMetadata
 import org.gdms.sql.evaluator.Expression
 

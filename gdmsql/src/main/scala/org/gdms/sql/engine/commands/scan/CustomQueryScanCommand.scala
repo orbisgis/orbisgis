@@ -36,15 +36,15 @@
  * info@orbisgis.org
  */
 
-package org.gdms.sql.engine.commands
+package org.gdms.sql.engine.commands.scan
 
 import org.gdms.data.DataSource
 import org.gdms.data.schema.Metadata
 import org.gdms.driver.DataSet
+import org.gdms.sql.engine.commands._
 import org.gdms.sql.evaluator.Expression
 import org.gdms.sql.function.table.TableFunction
 import org.orbisgis.progress.NullProgressMonitor
-import Stream._
 import org.gdms.sql.engine.GdmSQLPredef._
 
 /**

@@ -53,6 +53,7 @@ import java.util.Properties
 import org.apache.log4j.Logger
 import org.gdms.data.SQLDataSourceFactory
 import org.gdms.sql.engine.commands._
+import org.gdms.sql.engine.commands.scan._
 import org.gdms.sql.engine.commands.ddl._
 import org.gdms.sql.engine.commands.join._
 import org.gdms.sql.engine.logical.LogicPlanOptimizer

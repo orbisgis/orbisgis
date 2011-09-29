@@ -42,6 +42,8 @@ import org.gdms.sql.evaluator.Expression
 import org.gdms.sql.evaluator.FieldEvaluator
 import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.engine.UnknownFieldException
+import org.gdms.sql.engine.commands.scan.CustomQueryScanCommand
+import org.gdms.sql.engine.commands.scan.ScanCommand
 import org.gdms.sql.evaluator.DsfEvaluator
 import org.gdms.sql.engine.GdmSQLPredef._
 
