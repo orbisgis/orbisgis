@@ -56,6 +56,14 @@ object LogicPlanOptimizer {
     e foreach (matchExpression(_, c, f))
   }
   
+  def matchExpressionAndAny(e: Expression, c: Evaluator => Boolean, f: Expression => Unit): Unit = {
+    if (c(e.evaluator)) {
+      f(e)
+    } else if (e.evaluator.isInstanceOf[AndEvaluator]) {
+      e foreach (matchExpressionAndAny(_, c, f))
+    }
+  }
+  
   def replaceEvaluator(e: Expression, c: Evaluator => Boolean, f: Evaluator => Evaluator): Unit = {
     matchExpression(e, c, i => i.evaluator = f(i.evaluator))
   }
@@ -121,7 +129,7 @@ object LogicPlanOptimizer {
         join.joinType match {
           case a @ Inner(ex, false) => {
               var spatialIdx = false
-              matchExpression(ex, {e =>
+              matchExpressionAndAny(ex, {e =>
                   e.isInstanceOf[FunctionEvaluator] && e.asInstanceOf[FunctionEvaluator].f.isInstanceOf[SpatialIndexedFunction]
                 }, {e=>
                   // we have a spatial indexed join
