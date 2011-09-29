@@ -61,7 +61,9 @@ abstract class AlterElement(val column: String)
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class AddColumn(override val column: String, sqlType: String) extends AlterElement(column)
+case class AddColumn(override val column: String, sqlType: String) extends AlterElement(column) {
+  override def toString = "Add col(" + column + ", " + sqlType + ")"
+}
 
 /**
  * Represents the removal of an existing column.
@@ -71,7 +73,9 @@ case class AddColumn(override val column: String, sqlType: String) extends Alter
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class DropColumn(override val column: String, ifExists: Boolean) extends AlterElement(column)
+case class DropColumn(override val column: String, ifExists: Boolean) extends AlterElement(column) {
+  override def toString = "Drop col(" + column + ") ifExists=" + ifExists
+}
 
 /**
  * Represents the change of the type of an existing column.
@@ -82,7 +86,9 @@ case class DropColumn(override val column: String, ifExists: Boolean) extends Al
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class AlterTypeOfColumn(override val column: String, newSqlType: String, init: Option[Expression]) extends AlterElement(column)
+case class AlterTypeOfColumn(override val column: String, newSqlType: String, init: Option[Expression]) extends AlterElement(column) {
+  override def toString = "Alter col(" + column + ") newtype=" + newSqlType + " with(" + init + ")"
+}
 
 /**
  * Represents the change of the name of an existing column.
@@ -92,4 +98,6 @@ case class AlterTypeOfColumn(override val column: String, newSqlType: String, in
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class RenameColumn(override val column: String, newname: String) extends AlterElement(column)
+case class RenameColumn(override val column: String, newname: String) extends AlterElement(column) {
+  override def toString = "Rename col(" + column + ") to(" + newname + ")"
+}

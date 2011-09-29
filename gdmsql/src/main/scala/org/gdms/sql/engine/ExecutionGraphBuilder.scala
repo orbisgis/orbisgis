@@ -42,7 +42,9 @@ import org.gdms.sql.engine.logical.LogicPlanBuilder
 import org.gdms.sql.engine.logical.LogicPlanOptimizer
 import org.gdms.sql.engine.operations._
 import org.gdms.sql.parser.GdmSQLParser._
+import java.util.Properties
 import org.antlr.runtime.tree.CommonTree
+import org.apache.log4j.Logger
 import org.gdms.sql.engine.commands._
 
 /**
@@ -52,6 +54,11 @@ import org.gdms.sql.engine.commands._
  * @since 0.1
  */
 object ExecutionGraphBuilder {
+  
+  private val LOG: Logger = Logger.getLogger(ExecutionGraphBuilder.getClass)
+  
+  private val OPTIMIZEJOINS = "optimizer.optimiseJoins"
+  private val EXPLAIN = "output.explain"
 
   /**
    * Buids an ExecutionGraph from an AST
@@ -59,9 +66,19 @@ object ExecutionGraphBuilder {
    * @param tree an AST
    * @return an abstract execution graph
    */
-  def build(tree: CommonTree): Array[ExecutionGraph] = {
+  def build(tree: CommonTree, p: Properties): Array[ExecutionGraph] = {
+    if (isPropertyTurnedOn(p, EXPLAIN)) {
+      LOG.info("Parsed tree: ")
+      LOG.info(tree.toStringTree)
+    }
+    
+    
     // parsing
-    val cs = parseStatement(tree)
+    val cs = parseStatement(tree, p)
+    
+    if (isPropertyTurnedOn(p, EXPLAIN)) {
+      LOG.info("Finised parsing logical execution tree.")
+    }
     
     // validating types & stuff that do not need a dsf
     cs foreach (_.validate)
@@ -70,10 +87,39 @@ object ExecutionGraphBuilder {
     cs map (new ExecutionGraph(_))
   }
 
-  private def parseStatement(tree: CommonTree): Array[Operation] = {
+  private def parseStatement(tree: CommonTree, p: Properties): Array[Operation] = {
     val a = (0 until tree.getChildCount) map (tree.getChild) map (LogicPlanBuilder.buildLogicPlan) toArray;
-    a foreach(LogicPlanOptimizer.optimiseJoins)
+    if (isPropertyTurnedOn(p, EXPLAIN)) {
+      LOG.info("Parsed logical execution tree.")
+      a foreach (LOG.debug(_))
+    }
+    if (!isPropertyTurnedOff(p, OPTIMIZEJOINS)) {
+      if (isPropertyTurnedOn(p, EXPLAIN)) {
+      LOG.info("Optimizing joins.")
+    }
+      a foreach(LogicPlanOptimizer.optimiseJoins)
+    }
+    
+    if (isPropertyTurnedOn(p, EXPLAIN)) {
+      LOG.info("Optimized logical execution tree.")
+      a foreach (LOG.debug(_))
+    }
+    
     a
   }
   
+  private def isPropertyValue(p: Properties, name: String, value: String) = {
+    p.getProperty(name) match {
+      case a if a == value => true
+      case _ => false
+    }
+  }
+  
+  private def isPropertyTurnedOn(p: Properties, name: String) = {
+    isPropertyValue(p, name, "true")
+  }
+  
+  private def isPropertyTurnedOff(p: Properties, name: String) = {
+    isPropertyValue(p, name, "false")
+  }
 }

@@ -55,7 +55,9 @@ abstract class JoinType
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class OuterLeft(cond: Expression) extends JoinType
+case class OuterLeft(cond: Expression) extends JoinType {
+  override def toString = "OuterLeft on(" + cond + ")"
+}
 
 /**
  * Represents an outer right join on some expression.
@@ -64,7 +66,9 @@ case class OuterLeft(cond: Expression) extends JoinType
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class OuterRight(cond: Expression) extends JoinType
+case class OuterRight(cond: Expression) extends JoinType {
+  override def toString = "OuterRight on(" + cond + ")"
+}
 
 /**
  * Represents an outer full join on some expression.
@@ -73,7 +77,9 @@ case class OuterRight(cond: Expression) extends JoinType
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class OuterFull(cond: Expression) extends JoinType
+case class OuterFull(cond: Expression) extends JoinType {
+  override def toString = "OuterFull on(" + cond + ")"
+}
 
 /**
  * Represents an inner join on some expression.
@@ -82,7 +88,9 @@ case class OuterFull(cond: Expression) extends JoinType
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class Inner(cond: Expression, var spatial: Boolean = false) extends JoinType
+case class Inner(cond: Expression, var spatial: Boolean = false) extends JoinType {
+  override def toString = "Inner on(" + cond + ") spatial=" + spatial
+}
 
 /**
  * Represents an cross join.
@@ -90,4 +98,6 @@ case class Inner(cond: Expression, var spatial: Boolean = false) extends JoinTyp
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class Cross() extends JoinType
+case class Cross() extends JoinType {
+  override def toString = "Cross"
+}

@@ -39,6 +39,7 @@ package org.gdms.sql.engine;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Properties;
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.MismatchedTokenException;
@@ -46,7 +47,6 @@ import org.antlr.runtime.NoViableAltException;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.CommonTree;
-import org.apache.log4j.Logger;
 import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
@@ -61,7 +61,7 @@ import org.gdms.sql.parser.GdmSQLParser.start_rule_return;
 public final class SQLEngine {
 
         private SQLDataSourceFactory dsf;
-        private static final Logger LOG = Logger.getLogger(SQLEngine.class);
+        private Properties properties;
 
         /**
          * Creates a new SQLEngine with the given <code>SQLDataSourceFactory</code>
@@ -69,6 +69,16 @@ public final class SQLEngine {
          */
         public SQLEngine(SQLDataSourceFactory dsf) {
                 this.dsf = dsf;
+        }
+
+        /**
+         * Creates a new SQLEngine with the given <code>SQLDataSourceFactory</code>
+         * @param dsf a SQLDataSourceFactory
+         * @param properties some configuration properties for the engine 
+         */
+        public SQLEngine(SQLDataSourceFactory dsf, Properties properties) {
+                this.dsf = dsf;
+                this.properties = properties;
         }
 
         /**
@@ -152,8 +162,7 @@ public final class SQLEngine {
                                 throw ex;
                         }
                 }
-                LOG.info("Parsing: " + tree.toStringTree());
-                final ExecutionGraph[] graphs = ExecutionGraphBuilder.build(tree);
+                final ExecutionGraph[] graphs = ExecutionGraphBuilder.build(tree, properties);
                 final SqlStatement[] sts = new SqlStatement[graphs.length];
 
                 for (int i = 0; i < graphs.length; i++) {

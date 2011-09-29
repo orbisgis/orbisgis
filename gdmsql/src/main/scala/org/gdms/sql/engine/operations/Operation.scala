@@ -93,7 +93,7 @@ class Operation {
  * @since 0.1
  */
 case class Scan(table: String, alias: Option[String] = None, var edition: Boolean = false) extends Operation {
-  override def toString = super.toString + " Of(" + table + ")" 
+  override def toString = "Scan of(" + table + ") " + alias + (if (edition) " in edition" else "")
 }
 
 /**
@@ -109,7 +109,7 @@ case class Scan(table: String, alias: Option[String] = None, var edition: Boolea
 case class CustomQueryScan(customQuery: String, exp: Seq[Expression],
                            tables: Seq[Either[String, Operation]],
                            alias: Option[String] = None) extends Operation {
-  override def toString = super.toString + " Of(" + customQuery + ")" 
+  override def toString = "TableFunction  called(" + customQuery + ") params(" + exp + tables + ")" + alias
   val function = FunctionManager.getFunction(customQuery)
   override def doValidate = {
     if (function == null) throw new FunctionException("The function " + customQuery + " does not exist.")
@@ -119,7 +119,9 @@ case class CustomQueryScan(customQuery: String, exp: Seq[Expression],
 }
 
 case class IndexQueryScan(table: String, alias: Option[String] = None, query: IndexQuery = null) extends Operation {
-  
+  override def toString = "IndexQueryScan of(" + table + ") " + alias + {if (query != null) {
+      " on " + query.getFieldName + (if (query.isStrict) " strict" else "")
+    } else ""}
 }
   
 
@@ -146,20 +148,22 @@ case class Output() extends Operation {
     }
   }
 
-    def hasDuplicates(seq: Seq[String]): Boolean = {
-      val h = collection.mutable.HashSet[String]()
-      var ret = false
-      breakable {
-        for (x <- seq) {
-          if (h(x)) {
-            ret = true; break
-          } else {
-            h+=x
-          }
+  def hasDuplicates(seq: Seq[String]): Boolean = {
+    val h = collection.mutable.HashSet[String]()
+    var ret = false
+    breakable {
+      for (x <- seq) {
+        if (h(x)) {
+          ret = true; break
+        } else {
+          h+=x
         }
       }
-      ret
     }
+    ret
+  }
+  
+  override def toString = "Output(" + children +")"
 }
 
 /**
@@ -170,7 +174,9 @@ case class Output() extends Operation {
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class LimitOffset(limit: Int = -1, offset:Int = 0) extends Operation
+case class LimitOffset(limit: Int = -1, offset:Int = 0) extends Operation {
+  override def toString = "LimitOffset lim=" + limit + " offset=" + offset + "of(" + children + ")"
+}
 
 /**
  * Reprensents a subquery. Its only child has to be an Output operation.
@@ -179,7 +185,9 @@ case class LimitOffset(limit: Int = -1, offset:Int = 0) extends Operation
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class SubQuery(alias: String) extends Operation
+case class SubQuery(alias: String) extends Operation {
+  "SubQuery called(" + alias + ") of(" + children + ")"
+}
 
 /**
  * Represents a projection with expression evaluation.
@@ -192,7 +200,7 @@ case class SubQuery(alias: String) extends Operation
  */
 case class Projection(exp: List[(Expression, Option[String])]) extends Operation {
   override def doValidate = exp foreach (_._1 preValidate)
-  override def toString = super.toString + "Of(" + exp + ")"
+  override def toString = "Projection of(" + exp + ") on(" + children + ")"
 }
 
 /**
@@ -207,7 +215,7 @@ case class Projection(exp: List[(Expression, Option[String])]) extends Operation
  */
 case class Aggregate(exp: List[(Expression, Option[String])]) extends Operation {
   override def doValidate = exp foreach (_._1 preValidate)
-  override def toString = super.toString + "Of(" + exp + ")"
+  override def toString = "Aggregate exp(" + exp + ") on(" + children + ")"
 }
 
 /**
@@ -227,7 +235,7 @@ case class Filter(e: Expression) extends Operation {
                                            + TypeFactory.getTypeName(e.evaluator.sqlType))
     }
   }
-  override def toString = super.toString + "Of(" + e + ")"
+  override def toString = "Filter of(" + e + ") on(" + children + ")"
 }
 
 /**
@@ -244,7 +252,7 @@ case class Filter(e: Expression) extends Operation {
  */
 case class Sort(names: Seq[(Expression, Boolean)]) extends Operation {
   override def doValidate = names foreach (_._1 preValidate)
-  override def toString = super.toString + "On(" + names + ")"
+  override def toString = "Sort fields(" + names + ") on(" + children + ")"
 }
 
 /**
@@ -260,7 +268,7 @@ case class Sort(names: Seq[(Expression, Boolean)]) extends Operation {
  */
 case class Grouping(exp: List[(Expression, Option[String])]) extends Operation {
   override def doValidate = exp foreach (_._1 preValidate)
-  override def toString = super.toString + "Over(" + exp + ")"
+  override def toString = "Group over(" + exp + ") on(" + children + ")"
 }
 
 /**
@@ -270,7 +278,9 @@ case class Grouping(exp: List[(Expression, Option[String])]) extends Operation {
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class Join(var joinType: JoinType) extends Operation
+case class Join(var joinType: JoinType) extends Operation {
+  override def toString = "Join type(" + joinType + ") on(" + children + ")"
+}
 
 
 /**
@@ -279,7 +289,9 @@ case class Join(var joinType: JoinType) extends Operation
  * @author Antoine Gourlay
  * @since 0.3
  */
-case class Union() extends Operation
+case class Union() extends Operation {
+  override def toString = "Union of (" + children + ")"
+}
 
 /**
  * Represents an Update instruction.
@@ -292,7 +304,7 @@ case class Union() extends Operation
  */
 case class Update(exp: Seq[(String, Expression)]) extends Operation {
   override def doValidate = exp foreach (_._2 preValidate)
-  override def toString = super.toString + " Of(" + exp + ")"
+  override def toString = "Update exp(" + exp + ") on (" + children + ")"
 }
 
 /**
@@ -327,7 +339,7 @@ case class StaticInsert(table: String, exps: Seq[Array[Expression]], fields: Opt
     e.foreach ( noFields(_) )
   }
   
-  override def toString = super.toString + "In (" + table + ") Of(" + exps + ")"
+  override def toString = "Insert into(" + table + ") of(" + exps + ")"
 }
 
 /**
@@ -336,7 +348,9 @@ case class StaticInsert(table: String, exps: Seq[Array[Expression]], fields: Opt
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class Delete() extends Operation
+case class Delete() extends Operation {
+  override def toString = "Deletes on(" + children + ")"
+}
 
 
 /**
@@ -346,7 +360,9 @@ case class Delete() extends Operation
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class CreateTableAs(name: String) extends Operation
+case class CreateTableAs(name: String) extends Operation {
+  override def toString = "CreateTableAs name(" + name + ") as(" + children + ")"
+}
 
 /**
  * Represents the creation of a view from a query.
@@ -355,7 +371,10 @@ case class CreateTableAs(name: String) extends Operation
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class CreateView(name: String, orReplace: Boolean) extends Operation
+case class CreateView(name: String, orReplace: Boolean) extends Operation {
+  override def toString = "CreateViewAs name(" + name + ") as(" + children + ")" +
+  (if (orReplace) " replace" else "")
+}
 
 
 /**
@@ -366,7 +385,9 @@ case class CreateView(name: String, orReplace: Boolean) extends Operation
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class CreateTable(name: String, cols: Seq[(String, String)]) extends Operation
+case class CreateTable(name: String, cols: Seq[(String, String)]) extends Operation {
+  override def toString = "CreateTableAs name(" + name + ") as(" + cols + ")"
+}
 
 /**
  * Represents an alter instruction.
@@ -376,7 +397,9 @@ case class CreateTable(name: String, cols: Seq[(String, String)]) extends Operat
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class AlterTable(name: String, actions: Seq[AlterElement]) extends Operation
+case class AlterTable(name: String, actions: Seq[AlterElement]) extends Operation {
+  override def toString = "AlterTable name(" + name + ") do(" + actions + ")"
+}
 
 
 /**
@@ -387,7 +410,9 @@ case class AlterTable(name: String, actions: Seq[AlterElement]) extends Operatio
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class RenameTable(name: String, newname: String) extends Operation
+case class RenameTable(name: String, newname: String) extends Operation {
+  override def toString = "RenameTable name(" + name + ") newname(" + newname + ")"
+}
 
 /**
  * Represents a drop instruction, i.e. unregisters tables
@@ -398,7 +423,9 @@ case class RenameTable(name: String, newname: String) extends Operation
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class DropTables(names: Seq[String], ifExists: Boolean, purge: Boolean) extends Operation
+case class DropTables(names: Seq[String], ifExists: Boolean, purge: Boolean) extends Operation {
+  override def toString = "DropTables names(" + names + ") ifExists=" + ifExists + " purge=" + purge
+}
 
 /**
  * Represents a drop view instruction, i.e. unregisters views
@@ -408,7 +435,9 @@ case class DropTables(names: Seq[String], ifExists: Boolean, purge: Boolean) ext
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class DropViews(names: Seq[String], ifExists: Boolean) extends Operation
+case class DropViews(names: Seq[String], ifExists: Boolean) extends Operation {
+  override def toString = "DropViews names(" + names + ") ifExists=" + ifExists
+}
 
 /**
  * Represents an index-creation instruction.
@@ -418,7 +447,9 @@ case class DropViews(names: Seq[String], ifExists: Boolean) extends Operation
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class CreateIndex(table: String, column: String) extends Operation
+case class CreateIndex(table: String, column: String) extends Operation {
+  override def toString = "CreateIndex on(" + table + ", " + column + ")"
+}
 
 /**
  * Represents an index-deletion instruction.
@@ -428,7 +459,9 @@ case class CreateIndex(table: String, column: String) extends Operation
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class DropIndex(table: String, column: String) extends Operation
+case class DropIndex(table: String, column: String) extends Operation {
+  override def toString = "DropIndex on(" + table + ", " + column + ")"
+}
 
 /**
  * Represents a call to a non procedure or ExecutorFunction, i.e. a function that does not return anything.
@@ -443,5 +476,5 @@ case class DropIndex(table: String, column: String) extends Operation
  */
 case class ExecutorCall(name: String, params: List[Expression]) extends Operation {
   override def doValidate = params foreach (_ preValidate)
-  override def toString = super.toString + "Of(" + name + ") " + "With(" + params + ")"
+  override def toString = "ExecutorFunction name(" + name + ") " + " params(" + params + ")"
 }
