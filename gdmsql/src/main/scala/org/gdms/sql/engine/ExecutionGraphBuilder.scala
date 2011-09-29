@@ -64,6 +64,7 @@ object ExecutionGraphBuilder {
    * Buids an ExecutionGraph from an AST
    *
    * @param tree an AST
+   * @param p a set of properties (can be null)
    * @return an abstract execution graph
    */
   def build(tree: CommonTree, p: Properties): Array[ExecutionGraph] = {
@@ -88,11 +89,14 @@ object ExecutionGraphBuilder {
   }
 
   private def parseStatement(tree: CommonTree, p: Properties): Array[Operation] = {
+    // building logic plan
     val a = (0 until tree.getChildCount) map (tree.getChild) map (LogicPlanBuilder.buildLogicPlan) toArray;
     if (isPropertyTurnedOn(p, EXPLAIN)) {
       LOG.info("Parsed logical execution tree.")
       a foreach (LOG.debug(_))
     }
+    
+    // optimize joins
     if (!isPropertyTurnedOff(p, OPTIMIZEJOINS)) {
       if (isPropertyTurnedOn(p, EXPLAIN)) {
         LOG.info("Optimizing joins.")

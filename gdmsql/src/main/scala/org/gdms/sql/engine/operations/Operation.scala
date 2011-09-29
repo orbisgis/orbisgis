@@ -118,6 +118,16 @@ case class CustomQueryScan(customQuery: String, exp: Seq[Expression],
   }
 }
 
+
+/**
+ * Represents a index query scan.
+ * 
+ * @param table the name of a registered table
+ * @param alias an optional alias for this table
+ * @param query the query to use
+ * @author Antoine Gourlay
+ * @since 0.3
+ */
 case class IndexQueryScan(table: String, alias: Option[String] = None, query: IndexQuery = null) extends Operation {
   override def toString = "IndexQueryScan of(" + table + ") " + alias + {if (query != null) {
       " on " + query.getFieldName + (if (query.isStrict) " strict" else "")

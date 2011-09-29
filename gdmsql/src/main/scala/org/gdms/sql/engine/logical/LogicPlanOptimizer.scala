@@ -101,6 +101,9 @@ object LogicPlanOptimizer {
       })
   }
   
+  /**
+   * Translates a ^(Filter CrossJoin) into an InnerJoin on the filtering expression.
+   */
   def optimizeCrossJoins(o: Operation): Unit = {
     replaceOperationFromBottom(o, {ch =>
         // gets Filter -> Join
@@ -118,6 +121,9 @@ object LogicPlanOptimizer {
       })
   }
   
+  /**
+   * Tags an InnerJoin with a SpatialIndexedFunction in its expression as spatial.
+   */
   def optimizeSpatialIndexedJoins(o: Operation) {
     matchOperationFromBottom(o, {ch =>
         // gets Join(Inner(_))

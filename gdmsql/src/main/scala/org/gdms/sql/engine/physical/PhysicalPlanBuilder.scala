@@ -65,10 +65,19 @@ object PhysicalPlanBuilder {
   private val OPTIMIZEJOINS = "optimizer.optimiseJoins"
   private val EXPLAIN = "output.explain"
 
+  /**
+   * Builds the physical plan associated with the given operation.
+   * 
+   * @param dsf the datasourcefactory that will be used for this query
+   * @param op the operation to build
+   * @param p a set of properties (can be null)
+   */
   def buildPhysicalPlan(dsf: SQLDataSourceFactory ,op: Operation, p: Properties): Command = {
     if (isPropertyTurnedOn(p, EXPLAIN)) {
       LOG.info("Building physical plan")
     }
+    
+    // optimize joins
     if (!isPropertyTurnedOff(p, OPTIMIZEJOINS)) {
       optimizeSpatialJoins(dsf, op)
       if (isPropertyTurnedOn(p, EXPLAIN)) {
@@ -76,6 +85,8 @@ object PhysicalPlanBuilder {
         LOG.info(op)
       }
     }
+    
+    // build the command tree
     buildCommandTree(op)
   }
   
@@ -88,12 +99,16 @@ object PhysicalPlanBuilder {
             case _ => false
           })
       }, {ch =>
+        // will hold table names
         var tables: List[String] = Nil
+        
+        // gets the table names from the scans
         LogicPlanOptimizer.matchOperationFromBottom(ch, {c =>
             c.isInstanceOf[Scan]
           }, {c => tables = c.asInstanceOf[Scan].table :: tables
           })
         
+        // gets the sizes of the tables
         val sizes = tables map { t =>
           val d = dsf.getDataSource(t)
           d.open
@@ -101,10 +116,14 @@ object PhysicalPlanBuilder {
           d.close
           (count, t)
         }
+        
+        // gets the best candidate for index scan
+        // in this case the table with the most rows
         val best = sizes.reduceLeft {(a, b) => 
           if (a._1 >= b._1) a else b
         }
         
+        // replaces the Scan by an IndexQueryScan
         LogicPlanOptimizer.replaceOperationFromBottom(ch,{c =>
             c.isInstanceOf[Scan] && c.asInstanceOf[Scan].table == best._2
           }, {c => 

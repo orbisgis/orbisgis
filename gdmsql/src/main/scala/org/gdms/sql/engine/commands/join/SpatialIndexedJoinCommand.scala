@@ -53,15 +53,23 @@ import org.gdms.sql.engine.commands.IndexQueryScanCommand
 import org.gdms.sql.engine.commands.SQLMetadata
 import org.gdms.sql.evaluator.Expression
 
+/**
+ * Performs a spatial indexed join between two spatial tables.
+ *
+ * @author Antoine Gourlay
+ * @since 0.3
+ */
 class SpatialIndexedJoinCommand(expr: Expression) extends Command with ExpressionCommand {
   
+  // command that will be looped upon
   var small: Command = null
   var smallSpatialField: Int = -1
+  
+  // command whose index will be queried
   var big: IndexQueryScanCommand = null
   var bigSpatialFieldName: String = null
   
   protected final def doWork(r: Iterator[RowStream]): RowStream = {
-    
     for (r <- small.execute ; s <- queryIndex(r)) yield Row(r ++ s)
   }
   
@@ -88,6 +96,9 @@ class SpatialIndexedJoinCommand(expr: Expression) extends Command with Expressio
   }
   
   override def doPrepare = {
+    // identifiated the small and big
+    // small: IndexQueryScanCommand
+    // big: the other one
     children.head match {
       case a: IndexQueryScanCommand => {
           big = a
