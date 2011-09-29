@@ -101,7 +101,7 @@ object LogicPlanOptimizer {
       })
   }
   
-  def optimiseJoins(o: Operation): Unit = {
+  def optimizeCrossJoins(o: Operation): Unit = {
     replaceOperationFromBottom(o, {ch =>
         // gets Filter -> Join
         ch.isInstanceOf[Filter] && ch.children.find(_.isInstanceOf[Join]).isDefined
@@ -116,8 +116,10 @@ object LogicPlanOptimizer {
         }
         join
       })
-    
-    replaceOperationFromBottom(o, {ch =>
+  }
+  
+  def optimizeSpatialIndexedJoins(o: Operation) {
+    matchOperationFromBottom(o, {ch =>
         // gets Join(Inner(_))
         ch.isInstanceOf[Join] && (ch.asInstanceOf[Join].joinType match {
             case Inner(_, _) => true
@@ -128,22 +130,15 @@ object LogicPlanOptimizer {
         val join = ch.asInstanceOf[Join]
         join.joinType match {
           case a @ Inner(ex, false) => {
-              var spatialIdx = false
               matchExpressionAndAny(ex, {e =>
                   e.isInstanceOf[FunctionEvaluator] && e.asInstanceOf[FunctionEvaluator].f.isInstanceOf[SpatialIndexedFunction]
                 }, {e=>
                   // we have a spatial indexed join
-                  spatialIdx = true
+                  a.spatial = true
                 })
-              if (spatialIdx) {
-                a.spatial = true
-                val s = join.children.head.asInstanceOf[Scan]
-                join.children = IndexQueryScan(s.table, s.alias, null) :: join.children.tail
-              }
             }
           case _ => 
         }
-        ch
       })
   }
     

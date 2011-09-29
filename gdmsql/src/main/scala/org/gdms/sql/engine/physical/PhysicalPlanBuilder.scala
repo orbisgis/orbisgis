@@ -49,16 +49,69 @@ package org.gdms.sql.engine.physical
  * @author Antoine Gourlay
  * @since 0.1
  */
+import java.util.Properties
+import org.apache.log4j.Logger
+import org.gdms.data.SQLDataSourceFactory
 import org.gdms.sql.engine.commands._
 import org.gdms.sql.engine.commands.ddl._
 import org.gdms.sql.engine.commands.join._
+import org.gdms.sql.engine.logical.LogicPlanOptimizer
 import org.gdms.sql.engine.operations._
 import org.gdms.sql.function.table.TableFunction
 
 object PhysicalPlanBuilder {
+  
+  private val LOG: Logger = Logger.getLogger(PhysicalPlanBuilder.getClass)
+  private val OPTIMIZEJOINS = "optimizer.optimiseJoins"
+  private val EXPLAIN = "output.explain"
 
-  def buildPhysicalPlan(op: Operation): Command = {
+  def buildPhysicalPlan(dsf: SQLDataSourceFactory ,op: Operation, p: Properties): Command = {
+    if (isPropertyTurnedOn(p, EXPLAIN)) {
+      LOG.info("Building physical plan")
+    }
+    if (!isPropertyTurnedOff(p, OPTIMIZEJOINS)) {
+      optimizeSpatialJoins(dsf, op)
+      if (isPropertyTurnedOn(p, EXPLAIN)) {
+        LOG.info("Optimized joins")
+        LOG.info(op)
+      }
+    }
     buildCommandTree(op)
+  }
+  
+  private def optimizeSpatialJoins(dsf: SQLDataSourceFactory ,op: Operation) {
+    LogicPlanOptimizer.matchOperationFromBottom(op, {ch =>
+        // gets Join(Inner(_))
+        ch.isInstanceOf[Join] && (ch.asInstanceOf[Join].joinType match {
+            // find spatial joins
+            case Inner(_, true) => true
+            case _ => false
+          })
+      }, {ch =>
+        var tables: List[String] = Nil
+        LogicPlanOptimizer.matchOperationFromBottom(ch, {c =>
+            c.isInstanceOf[Scan]
+          }, {c => tables = c.asInstanceOf[Scan].table :: tables
+          })
+        
+        val sizes = tables map { t =>
+          val d = dsf.getDataSource(t)
+          d.open
+          val count = d.getRowCount
+          d.close
+          (count, t)
+        }
+        val best = sizes.reduceLeft {(a, b) => 
+          if (a._1 >= b._1) a else b
+        }
+        
+        LogicPlanOptimizer.replaceOperationFromBottom(ch,{c =>
+            c.isInstanceOf[Scan] && c.asInstanceOf[Scan].table == best._2
+          }, {c => 
+            val s = c.asInstanceOf[Scan]
+            IndexQueryScan(s.table, s.alias, null)
+          })
+      })
   }
 
   /**
@@ -94,10 +147,10 @@ object PhysicalPlanBuilder {
             }
           case Inner(ex, false) => {
               new ExpressionBasedLoopJoinCommand(ex)
-          }
+            }
           case Inner(ex, true) => {
               new SpatialIndexedJoinCommand(ex)
-          }
+            }
         }
       case Projection(exp) => new ProjectionCommand(exp toArray)
       case a @ Aggregate(exp) => {
@@ -159,5 +212,20 @@ object PhysicalPlanBuilder {
         ltop.children = List(l, buildJoinCommandTree(rest))
         ltop
     }
+  }
+  
+  private def isPropertyValue(p: Properties, name: String, value: String) = {
+    p.getProperty(name) match {
+      case a if a == value => true
+      case _ => false
+    }
+  }
+  
+  private def isPropertyTurnedOn(p: Properties, name: String) = {
+    isPropertyValue(p, name, "true")
+  }
+  
+  private def isPropertyTurnedOff(p: Properties, name: String) = {
+    isPropertyValue(p, name, "false")
   }
 }

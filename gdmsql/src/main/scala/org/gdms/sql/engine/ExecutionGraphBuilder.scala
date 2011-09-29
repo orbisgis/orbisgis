@@ -84,7 +84,7 @@ object ExecutionGraphBuilder {
     cs foreach (_.validate)
     
     // building ExecutionGraph objects
-    cs map (new ExecutionGraph(_))
+    cs map (new ExecutionGraph(_, p))
   }
 
   private def parseStatement(tree: CommonTree, p: Properties): Array[Operation] = {
@@ -95,9 +95,10 @@ object ExecutionGraphBuilder {
     }
     if (!isPropertyTurnedOff(p, OPTIMIZEJOINS)) {
       if (isPropertyTurnedOn(p, EXPLAIN)) {
-      LOG.info("Optimizing joins.")
-    }
-      a foreach(LogicPlanOptimizer.optimiseJoins)
+        LOG.info("Optimizing joins.")
+      }
+      a foreach(LogicPlanOptimizer.optimizeCrossJoins)
+      a foreach(LogicPlanOptimizer.optimizeSpatialIndexedJoins)
     }
     
     if (isPropertyTurnedOn(p, EXPLAIN)) {
@@ -109,10 +110,10 @@ object ExecutionGraphBuilder {
   }
   
   private def isPropertyValue(p: Properties, name: String, value: String) = {
-    p.getProperty(name) match {
-      case a if a == value => true
-      case _ => false
-    }
+    p != null && {p.getProperty(name) match {
+        case a if a == value => true
+        case _ => false
+      }}
   }
   
   private def isPropertyTurnedOn(p: Properties, name: String) = {

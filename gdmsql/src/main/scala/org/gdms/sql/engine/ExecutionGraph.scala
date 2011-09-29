@@ -38,6 +38,7 @@
 
 package org.gdms.sql.engine
 
+import java.util.Properties
 import org.gdms.data.SQLDataSourceFactory
 import org.gdms.driver.DataSet
 import org.gdms.data.schema.Metadata
@@ -68,7 +69,7 @@ import org.gdms.sql.engine.physical.PhysicalPlanBuilder
  * @author Antoine Gourlay
  * @since 0.1
  */
-class ExecutionGraph(op: Operation) {
+class ExecutionGraph(op: Operation, p: Properties = null) {
 
   private var r: DataSet = null
   private var dsf: SQLDataSourceFactory = null
@@ -92,7 +93,7 @@ class ExecutionGraph(op: Operation) {
   def prepare(dsf: SQLDataSourceFactory): Unit = {
     if (!opened || dsf != this.dsf) {
       if (start == null || dsf != this.dsf) {
-        start = PhysicalPlanBuilder.buildPhysicalPlan(op).asInstanceOf[OutputCommand]
+        start = PhysicalPlanBuilder.buildPhysicalPlan(dsf, op, p).asInstanceOf[OutputCommand]
       }
 
       this.dsf = dsf;
