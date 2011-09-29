@@ -62,7 +62,7 @@ class SpatialIndexedJoinCommand(expr: Expression) extends Command with Expressio
   
   protected final def doWork(r: Iterator[RowStream]): RowStream = {
     
-    for (r <- small.execute ; s <- queryIndex(r)) yield s
+    for (r <- small.execute ; s <- queryIndex(r)) yield Row(r ++ s)
   }
   
   private def queryIndex(r: Row) = {
