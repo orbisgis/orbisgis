@@ -82,7 +82,7 @@ case class OuterFull(cond: Expression) extends JoinType
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class Inner(cond: Expression) extends JoinType
+case class Inner(cond: Expression, var spatial: Boolean = false) extends JoinType
 
 /**
  * Represents an cross join.

@@ -39,6 +39,7 @@
 package org.gdms.sql.engine.operations
 
 import util.control.Breaks._
+import org.gdms.data.indexes.IndexQuery
 import org.gdms.data.types.IncompatibleTypesException
 import org.gdms.data.types.Type
 import org.gdms.data.types.TypeFactory
@@ -115,6 +116,10 @@ case class CustomQueryScan(customQuery: String, exp: Seq[Expression],
     if (!function.isTable) throw new FunctionException("The function " + customQuery + " does not return a table.")
     exp foreach (_ preValidate)
   }
+}
+
+case class IndexQueryScan(table: String, alias: Option[String] = None, query: IndexQuery = null) extends Operation {
+  
 }
   
 

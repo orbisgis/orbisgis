@@ -45,7 +45,9 @@ package org.gdms.sql.engine.logical
 import org.gdms.sql.engine.operations._
 import org.gdms.sql.evaluator.AndEvaluator
 import org.gdms.sql.evaluator.Evaluator
+import org.gdms.sql.evaluator.FunctionEvaluator
 import org.gdms.sql.evaluator.Expression
+import org.gdms.sql.function.SpatialIndexedFunction
 
 object LogicPlanOptimizer {
 
@@ -84,7 +86,7 @@ object LogicPlanOptimizer {
         val filter = op.asInstanceOf[Filter]
         var nexexps = Nil
         replaceEvaluator(filter.e, _.isInstanceOf[AndEvaluator], {ev =>
-          ev
+            ev
           })
         // not finished
         op
@@ -93,6 +95,7 @@ object LogicPlanOptimizer {
   
   def optimiseJoins(o: Operation): Unit = {
     replaceOperationFromBottom(o, {ch =>
+        // gets Filter -> Join
         ch.isInstanceOf[Filter] && ch.children.find(_.isInstanceOf[Join]).isDefined
       }, {ch =>
         // replace Cross Join with a Filter above to a Inner Join on the filtering expression
@@ -101,9 +104,38 @@ object LogicPlanOptimizer {
         val filter = ch.asInstanceOf[Filter]
         join.joinType = join.joinType match {
           case Cross() => Inner(filter.e)
-          case Inner(ex) => Inner(ex & filter.e)
+          case Inner(ex, s) => Inner(ex & filter.e, s)
         }
         join
+      })
+    
+    replaceOperationFromBottom(o, {ch =>
+        // gets Join(Inner(_))
+        ch.isInstanceOf[Join] && (ch.asInstanceOf[Join].joinType match {
+            case Inner(_, _) => true
+            case _ => false
+          })
+      }, {ch =>
+        // finds if there is a SpatialIndexedFunction in the Expression
+        val join = ch.asInstanceOf[Join]
+        join.joinType match {
+          case a @ Inner(ex, false) => {
+              var spatialIdx = false
+              matchExpression(ex, {e =>
+                  e.isInstanceOf[FunctionEvaluator] && e.asInstanceOf[FunctionEvaluator].f.isInstanceOf[SpatialIndexedFunction]
+                }, {e=>
+                  // we have a spatial indexed join
+                  spatialIdx = true
+                })
+              if (spatialIdx) {
+                a.spatial = true
+                val s = join.children.head.asInstanceOf[Scan]
+                join.children = IndexQueryScan(s.table, s.alias, null) :: join.children.tail
+              }
+            }
+          case _ => 
+        }
+        ch
       })
   }
     

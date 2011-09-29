@@ -85,14 +85,18 @@ object PhysicalPlanBuilder {
           }
         }
       case Scan(table, alias, edit) => new ScanCommand(table, alias, edit)
+      case IndexQueryScan(table, alias, query) => new IndexQueryScanCommand(table, alias, query)
       case Join(jType) => jType match {
           case Cross() => {
               // we convert a multiple table Join Operation into a 2 table
               // LoopJoinCommand
               new LoopJoinCommand
             }
-          case Inner(ex) => {
+          case Inner(ex, false) => {
               new ExpressionBasedLoopJoinCommand(ex)
+          }
+          case Inner(ex, true) => {
+              new SpatialIndexedJoinCommand(ex)
           }
         }
       case Projection(exp) => new ProjectionCommand(exp toArray)
