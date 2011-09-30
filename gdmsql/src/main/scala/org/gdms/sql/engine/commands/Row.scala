@@ -38,6 +38,7 @@
 
 package org.gdms.sql.engine.commands
 
+import java.util.Arrays
 import org.gdms.data.values.Value
 
 /**
@@ -52,6 +53,19 @@ final class Row(val rowId: Option[Long], var array: Array[Value]) {
   
   def map(f: Array[Value] => Array[Value]): Row = {
     new Row(rowId, f(array))
+  }
+  
+  override def hashCode = {
+    12 + Arrays.deepHashCode(array.asInstanceOf[Array[Object]])
+  }
+  
+  override def equals(o: Any) = {
+    if (o.isInstanceOf[Array[Value]]) {
+      val a = o.asInstanceOf[Array[Object]]
+      Arrays.deepEquals(a, array.asInstanceOf[Array[Object]])
+    } else {
+      false
+    }
   }
 }
 

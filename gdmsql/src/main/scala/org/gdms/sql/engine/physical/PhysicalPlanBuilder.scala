@@ -182,6 +182,8 @@ object PhysicalPlanBuilder {
           }
           new AggregateCommand(exp, grouping)
         }
+      
+      case Distinct() => new MemoryDistinctCommand()
       case Grouping(e) =>  new AggregateCommand(Nil, e)
       case Filter(exp) => new ExpressionFilterCommand(exp)
       case Sort(exprs) => new MergeSortCommand(exprs)

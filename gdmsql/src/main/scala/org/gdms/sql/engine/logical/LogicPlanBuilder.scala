@@ -83,6 +83,7 @@ object LogicPlanBuilder {
           var last: Operation = o
           var lim: Int = -1
           var off: Int = 0
+          var distinct = false
           getChilds(node).foreach { t => t.getType match {
               // everything between SELECT and FROM
               case T_COLUMN_LIST => {
@@ -256,9 +257,22 @@ object LogicPlanBuilder {
                   last = un
                   
                 }
+              case T_DISTINCT => {
+                  // AST : T_DISTINCT alone
+                  distinct = true
+              }
               case a: Any => throw new SemanticException(a.toString + "  node: " + node.getText)
             }
           }
+          
+          // add distinct
+          if (distinct)  {
+            val l = Distinct()
+            l.children = o.children
+            o.children = l :: Nil
+          }
+          
+          // add limit/offset
           if (lim != -1 || off != 0) {
             val l = LimitOffset(lim, off)
             l.children = o.children

@@ -177,6 +177,16 @@ case class Output() extends Operation {
 }
 
 /**
+ * Represents the filtering of input row to remove duplicates.
+ *
+ * @author Antoine Gourlay
+ * @since 0.3
+ */
+case class Distinct() extends Operation {
+  override def toString = "Distinct on(" + children + ')'
+}
+
+/**
  * Reprensents the limiting of some input row to a specific limit and/or offset.
  *
  * @param limit an optional number of rows to limit the input
