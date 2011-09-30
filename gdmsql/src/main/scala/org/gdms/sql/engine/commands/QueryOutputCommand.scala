@@ -38,6 +38,7 @@
 package org.gdms.sql.engine.commands
 
 import java.io.File
+import org.gdms.data.schema.DefaultMetadata
 import org.gdms.driver.DiskBufferDriver
 import org.gdms.sql.engine.GdmSQLPredef._
 
@@ -66,6 +67,18 @@ class QueryOutputCommand extends Command with OutputCommand {
     driver.writingFinished
     driver.start
     null
+  }
+  
+  override def getMetadata = {
+    val m = super.getMetadata
+    
+    val d = new DefaultMetadata()
+    
+    (0 until m.getFieldCount) map {i =>
+      d.addField(m.getFieldName(i).takeWhile(_ != '$'), m.getFieldType(i).getTypeCode)
+    }
+    
+    SQLMetadata("", d)
   }
   
   protected override def doCleanUp = {
