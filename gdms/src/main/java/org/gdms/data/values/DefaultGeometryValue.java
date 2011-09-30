@@ -47,6 +47,7 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.ParseException;
+import java.util.Arrays;
 import org.gdms.geometryUtils.GeometryTypeUtil;
 
 abstract class DefaultGeometryValue extends AbstractValue implements GeometryValue {
@@ -73,8 +74,7 @@ abstract class DefaultGeometryValue extends AbstractValue implements GeometryVal
 
         @Override
         public int hashCode() {
-                Coordinate coord = geom.getCoordinate();
-                return (int) (coord.x + coord.y);
+                return 3 * geom.getGeometryType().hashCode() + Arrays.deepHashCode(geom.getCoordinates());
         }
 
         @Override
