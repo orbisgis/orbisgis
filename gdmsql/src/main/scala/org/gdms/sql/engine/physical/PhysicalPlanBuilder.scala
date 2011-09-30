@@ -235,10 +235,10 @@ object PhysicalPlanBuilder {
   }
   
   private def isPropertyValue(p: Properties, name: String, value: String) = {
-    p.getProperty(name) match {
+    p != null && (p.getProperty(name) match {
       case a if a == value => true
       case _ => false
-    }
+    })
   }
   
   private def isPropertyTurnedOn(p: Properties, name: String) = {
