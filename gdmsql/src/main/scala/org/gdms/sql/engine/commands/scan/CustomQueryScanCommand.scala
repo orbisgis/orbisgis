@@ -40,9 +40,11 @@ package org.gdms.sql.engine.commands.scan
 
 import org.gdms.data.DataSource
 import org.gdms.data.schema.Metadata
+import org.gdms.data.types.TypeFactory
 import org.gdms.driver.DataSet
 import org.gdms.sql.engine.commands._
 import org.gdms.sql.evaluator.Expression
+import org.gdms.sql.function.FunctionValidator
 import org.gdms.sql.function.table.TableFunction
 import org.orbisgis.progress.NullProgressMonitor
 import org.gdms.sql.engine.GdmSQLPredef._
@@ -91,8 +93,14 @@ class CustomQueryScanCommand(e: Seq[Expression], tables: Seq[Either[String, Outp
     }
 
     val dss = tables map (_ fold(forDs, forOut))
-    metadata = f.getMetadata(dss toArray)
+    
     openedTables = openedTables reverse
+    
+    FunctionValidator.failIfTablesDoNotMatchSignature(dss toArray, f.getFunctionSignatures)
+    val types = e map (ev => TypeFactory.createType(ev.evaluator.sqlType))
+    FunctionValidator.failIfTypesDoNotMatchSignature(types toArray, f.getFunctionSignatures)
+    
+    metadata = f.getMetadata(dss toArray)
   }
 
   protected final def doWork(r: Iterator[RowStream]) = {
@@ -111,6 +119,7 @@ class CustomQueryScanCommand(e: Seq[Expression], tables: Seq[Either[String, Outp
     // closes any DataSource object (the other are closed by the OutputCommand)
     f.workFinished
     openedTables flatMap (_.left toSeq) foreach (_.close)
+    openedTables = Nil
   }
 
   override def getMetadata = SQLMetadata("", metadata)
