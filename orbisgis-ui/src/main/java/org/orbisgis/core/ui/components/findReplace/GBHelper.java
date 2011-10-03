@@ -5,7 +5,7 @@ All methods return GBHelper object for call chaining.
 Author : Fred Swartz - January 30, 2007 - Placed in public domain.
  *
  */
-package findreplace;
+package org.orbisgis.core.ui.components.findReplace;
 
 import java.awt.*;
 

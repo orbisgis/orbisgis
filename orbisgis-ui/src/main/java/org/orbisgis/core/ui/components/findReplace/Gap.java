@@ -3,7 +3,7 @@ Purpose: Gaps for use in GridBagLayout (or any other).
 Library alternatives are available in the Box class.
 Author : Fred Swartz - January 30, 2007 - Placed in public domain.
  */
-package findreplace;
+package org.orbisgis.core.ui.components.findReplace;
 
 import java.awt.*;
 import javax.swing.*;
