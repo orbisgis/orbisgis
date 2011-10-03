@@ -31,5 +31,8 @@ public interface CategorizeListener {
          */
         void classMoved(int i, int j);
 
+        /**
+         * The order of the thresholds has changed.
+         */
         void thresholdResorted();
 }

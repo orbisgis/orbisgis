@@ -136,14 +136,22 @@ public class Transform implements SymbolizerNode, UomNode {
                 return consolidated;
         }
 
-
-        /*
+        /**
+         * Ensure that this {@code Transform} instance contains actually the
+         * representation of the combination of its inner {@code Transformation}
+         * instances.
          * This method must be called after each modification of one of its transformations !
-         *
+         * @param sds
+         * @param fid
+         * @param forGeometries
+         * @param mt
+         * @param width
+         * @param height
+         * @throws ParameterException
+         * @throws IOException
          */
         public void consolidateTransformations(SpatialDataSourceDecorator sds, long fid, boolean forGeometries,
                 MapTransform mt, Double width, Double height) throws ParameterException, IOException {
-                int i;
 
                 // Result is Identity
                 consolidated = new AffineTransform();

@@ -292,6 +292,12 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode, Tran
         return holeRadius;
     }
 
+    /**
+     * Set the radius of the hole that must be kept in this {@code PieChart}. If
+     * greater than 0 and smaller than the {@code PieChart}'s radius, this
+     * {@code PieChart} will be drawn as a crown rather than as a disc.
+     * @param holeRadius
+     */
     public void setHoleRadius(RealParameter holeRadius) {
         this.holeRadius = holeRadius;
         if (holeRadius != null) {

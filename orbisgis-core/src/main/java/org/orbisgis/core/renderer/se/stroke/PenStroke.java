@@ -130,6 +130,10 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
 
         BUTT, ROUND, SQUARE;
 
+        /**
+         * Build a {@link ParameterValueType} from this {@code LineCap}.
+         * @return
+         */
         public ParameterValueType getParameterValueType() {
             return SeParameterFactory.createParameterValueType(this.name().toLowerCase());
         }
@@ -142,6 +146,10 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
 
         MITRE, ROUND, BEVEL;
 
+        /**
+         * Build a {@link ParameterValueType} from this {@code LineJoin}.
+         * @return
+         */
         public ParameterValueType getParameterValueType() {
             return SeParameterFactory.createParameterValueType(this.name().toLowerCase());
         }

@@ -51,6 +51,9 @@ import java.awt.image.BufferedImage;
  */
 public final class ColorHelper {
 
+        /**
+         * The greatest possible value foa a RGB component.
+         */
         public static final int MAX_RGB_VALUE = 255;
         
         private static final float INTERVAL_SIZE = 60.0f;
@@ -167,6 +170,12 @@ public final class ColorHelper {
         return new Color(rm, gm, bm);
     }
 
+    /**
+     * This method can be used  to retrieve a rectangular image filled with a
+     * continuous colour variation. Can be used to pick a colour, for instance.
+     * @return
+     *
+     */
     public static BufferedImage getColorSpaceImage(){
         BufferedImage colorSpace = new BufferedImage(150,250, BufferedImage.TYPE_INT_RGB);
         Graphics g2 = colorSpace.getGraphics();
@@ -216,6 +225,13 @@ public final class ColorHelper {
         }
     }
 
+    /**
+     * Get the lightness associated to the given {@code Color}.
+     *
+     * @param color
+     * @return
+     * The lightness, as a float between 0 and 1.
+     */
     public static float getLightness(Color color){
         int r = color.getRed();
         int g = color.getGreen();
