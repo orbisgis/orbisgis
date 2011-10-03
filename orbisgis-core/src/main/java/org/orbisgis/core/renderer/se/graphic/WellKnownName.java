@@ -67,6 +67,9 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 public enum WellKnownName implements MarkGraphicSource {
     SQUARE, CIRCLE, HALFCIRCLE, TRIANGLE, STAR, CROSS, X;
 
+    /**
+     * Default size to be used to render graphics based on well-known names.
+     */
     public static double DEFAULT_SIZE = 10.0;
 
     /**

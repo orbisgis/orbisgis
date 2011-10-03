@@ -325,6 +325,12 @@ public final class GraphicCollection implements SymbolizerNode {
         return result.toString().trim();
     }
 
+    /**
+     * Get a JAXB representation of this {@code GraphicCollection}, that will be
+     * useable for XML serialization.
+     * @return
+     * A {@code JAXBElement} that contains a {@code GraphicType} instance.
+     */
     public JAXBElement<? extends GraphicType> getJAXBElement() {
         if (graphics.size() > 0) {
             if (graphics.size() == 1) {
