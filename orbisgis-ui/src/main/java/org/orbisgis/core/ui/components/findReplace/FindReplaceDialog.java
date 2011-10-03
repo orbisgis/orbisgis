@@ -27,8 +27,8 @@
  */
 package org.orbisgis.core.ui.components.findReplace;
 
-import findreplace.GBHelper;
-import findreplace.Gap;
+import org.orbisgis.core.ui.components.findReplace.GBHelper;
+import org.orbisgis.core.ui.components.findReplace.Gap;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
