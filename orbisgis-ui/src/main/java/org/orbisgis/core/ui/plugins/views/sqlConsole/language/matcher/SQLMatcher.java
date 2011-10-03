@@ -80,7 +80,7 @@ public class SQLMatcher {
                 // no text
                 if (!it.hasNext()) {
                         // no text
-                        addKeyWords("CREATE", "DROP", "SELECT", "INSERT", "UPDATE", "DELETE", "EXECUTE");
+                        addKeyWords("CREATE", "DROP", "SELECT", "INSERT", "UPDATE", "DELETE", "EXECUTE", "ALTER");
                         return;
                 }
                 String a = it.next();
@@ -91,7 +91,7 @@ public class SQLMatcher {
                         return;
                 } else if (a.endsWith(";")) {
                         // end of query: start a new one
-                        addKeyWords("CREATE", "DROP", "SELECT", "INSERT", "UPDATE", "DELETE", "EXECUTE");
+                        addKeyWords("CREATE", "DROP", "SELECT", "INSERT", "UPDATE", "DELETE", "EXECUTE", "ALTER");
                         return;
                 } else if (a.endsWith(",")) {
                         // comma; we have to look deeper to understand what to do.
@@ -109,12 +109,15 @@ public class SQLMatcher {
                 } else if ("TABLE".equalsIgnoreCase(a)) {
                         // DROP TABLE and others ending in TABLE
                         matchSourceNames1();
-                } else if ("SELECT".equalsIgnoreCase(a)) {
+                } else if ("SELECT".equalsIgnoreCase(a) || "WHERE".equalsIgnoreCase(a)) {
                         // SELECT table.field
                         addScalarFunctions();
                         addTables(true);
-                } else if ("CREATE".equalsIgnoreCase(a) || "DROP".equalsIgnoreCase(a)) {
-                        // CREATE/DROP tata
+                } else if ("CREATE".equalsIgnoreCase(a)) {
+                        // CREATE tata
+                        addKeyWords("TABLE", "VIEW", "INDEX", "OR REPLACE VIEW");
+                } else if ("DROP".equalsIgnoreCase(a)) {
+                        // DROP tata
                         addKeyWords("TABLE", "VIEW", "INDEX");
                 } else if ("INDEX".equalsIgnoreCase(a)) {
                         // CREATE INDEX ON tutu(field)
@@ -122,9 +125,48 @@ public class SQLMatcher {
                 } else if ("EXECUTE".equalsIgnoreCase(a) || "CALL".equalsIgnoreCase(a)) {
                         // table function call
                         addExecutorFunctions();
+                } else if ("ALTER".equalsIgnoreCase(a)) {
+                        // ALTER TABLE toto
+                        addKeyWord("TABLE");
+                } else if ("IF".equalsIgnoreCase(a)) {
+                        // IF EXISTS
+                        addKeyWord("EXISTS");
+                } else if ("OR".equalsIgnoreCase(a)) {
+                        // OR REPLACE
+                        addKeyWord("REPLACE");
+                } else if ("REPLACE".equalsIgnoreCase(a)) {
+                        // OR REPLACE
+                        addKeyWord("VIEW");
+                } else if ("RENAME".equalsIgnoreCase(a)) {
+                        // RENAME toto/TO
+                        addKeyWord("TO");
+                } else if ("UNION".equalsIgnoreCase(a)) {
+                        // UNION SELECT ...
+                        addKeyWord("SELECT");
+                } else if ("ORDER".equalsIgnoreCase(a)) {
+                        // ORDER BY
+                        addKeyWord("BY");
+                } else if ("TO".equalsIgnoreCase(a) || "BY".equalsIgnoreCase(a)) {
+                        // RENAME TO
+                        return;
                 } else {
                         // anything else
                         matchAfterPossibleId();
+                }
+        }
+        
+        /**
+         * Decides what to do after "By identifier"
+         */
+        private void matchIdAfterBy() {
+                if (!it.hasNext()) {
+                        return;
+                }
+                String a = it.next();
+                
+                if ("ORDER".equalsIgnoreCase(a)) {
+                        // ORDER BY
+                        addKeyWords("ASC", "DESC");
                 }
         }
 
@@ -144,8 +186,29 @@ public class SQLMatcher {
                                 }
                                 addKeyWord("FROM");
                                 return;
+                        } else if ("ALTER".equalsIgnoreCase(b)) {
+                                if (inside) {
+                                        return;
+                                }
+                                addKeyWords("DROP", "ADD", "RENAME");
+                                return;
+                        } else if ("CREATE".equalsIgnoreCase(b)) {
+                                if (inside) {
+                                        return;
+                                }
+                                addKeyWord("AS");
+                                return;
+                        } else if ("FROM".equalsIgnoreCase(b)) {
+                                addKeyWords("WHERE", "UNION", "ORDER BY", "GROUP BY", "LIMIT", "OFFSET", "FETCH", "HAVING");
+                                return;
+                        } else if ("WHERE".equalsIgnoreCase(b)) {
+                                addKeyWords("UNION", "ORDER BY", "GROUP BY", "LIMIT", "OFFSET", "FETCH", "HAVING");
+                                return;
+                        } else if ("BY".equalsIgnoreCase(b)) {
+                                matchIdAfterBy();
+                                return;
                         }
-
+                        
                         if (b.contains(";")) {
                                 return;
                         }
@@ -173,6 +236,9 @@ public class SQLMatcher {
                         } else if ("VALUES".equalsIgnoreCase(a)) {
                                 // inside an insert, no completion
                                 return;
+                        } else if ("BY".equalsIgnoreCase(a)) {
+                                // GROUP/ORDER BY, no completion
+                                return;
                         }
                 }
         }
@@ -187,7 +253,7 @@ public class SQLMatcher {
                 }
                 String a = it.next();
 
-                if ("TABLE".equalsIgnoreCase(a)) {
+                if ("TABLE".equalsIgnoreCase(a) || "VIEW".equalsIgnoreCase(a)) {
                         addKeyWord("SELECT");
                 }
         }
@@ -198,8 +264,12 @@ public class SQLMatcher {
                 }
                 String a = it.next();
 
-                if ("DROP".equalsIgnoreCase(a) || "ALTER".equalsIgnoreCase(a)) {
-                        // DROP TABLE ; ALTER TABLE
+                if ("ALTER".equalsIgnoreCase(a)) {
+                        // ALTER TABLE
+                        addTables(false);
+                } else if ("DROP".equalsIgnoreCase(a)) {
+                        // DROP TABLE
+                        addKeyWord("IF EXISTS");
                         addTables(false);
                 }
         }
