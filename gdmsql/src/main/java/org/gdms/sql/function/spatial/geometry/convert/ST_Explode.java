@@ -73,7 +73,7 @@ public final class ST_Explode extends AbstractTableFunction {
 
         @Override
         public String getSqlOrder() {
-                return "select ST_Explode( [geomFieldName] ) from myTable;";
+                return "select *  from ST_Explode(table [,the_geom]);";
         }
 
         @Override
