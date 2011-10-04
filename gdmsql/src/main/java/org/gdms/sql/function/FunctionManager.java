@@ -119,6 +119,7 @@ import org.gdms.sql.function.spatial.geometry.edit.ST_AddZ;
 import org.gdms.sql.function.spatial.geometry.edit.ST_AddZFromRaster;
 import org.gdms.sql.function.spatial.geometry.edit.ST_Normalize;
 import org.gdms.sql.function.spatial.geometry.edit.ST_Reverse;
+import org.gdms.sql.function.spatial.geometry.edit.ST_SetZToExtremities;
 import org.gdms.sql.function.spatial.geometry.edit.ST_Snap;
 import org.gdms.sql.function.spatial.geometry.edit.ST_SplitLine;
 import org.gdms.sql.function.spatial.geometry.io.ST_AsWKT;
@@ -359,6 +360,7 @@ public final class FunctionManager {
                 addFunction(ST_KMeans.class);
                 addFunction(ST_CoordDim.class);
                 addFunction(ST_SplitLine.class);
+                addFunction(ST_SetZToExtremities.class);
         }
 
         /**

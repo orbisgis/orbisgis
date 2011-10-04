@@ -143,7 +143,7 @@ public class ST_SplitLine extends AbstractTableFunction {
 
         @Override
         public void workFinished() throws DriverException {
-                if (diskBufferDriver != null) {
+                if (diskBufferDriver != null ) {
                         diskBufferDriver.stop();
                 }
         }
@@ -172,6 +172,6 @@ public class ST_SplitLine extends AbstractTableFunction {
 
         @Override
         public String getSqlOrder() {
-                return "SELECT * FROM ST_SplitLine()";
+                return "SELECT * FROM ST_SplitLine(table)";
         }
 }

@@ -124,7 +124,7 @@ public final class ST_CreateGrid extends AbstractTableFunction {
 
         @Override
 	public String getSqlOrder() {
-		return "select " + getName() + "(4000,1000[,15]) from myTable;";
+		return "select * from " + getName() + "(table, 4000,1000[,15]);";
 	}
 
 	private void createGrid(final MemoryDataSetDriver driver,

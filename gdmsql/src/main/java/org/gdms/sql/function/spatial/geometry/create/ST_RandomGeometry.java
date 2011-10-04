@@ -141,7 +141,7 @@ public final class ST_RandomGeometry extends AbstractTableFunction {
 
         @Override
 	public String getSqlOrder() {
-		return "select ST_RandomGeometry('misc|point|linestring|linearring|polygon'[, number]);";
+		return "select * from ST_RandomGeometry('misc|point|linestring|linearring|polygon'[, number]);";
 	}
 
 	@Override

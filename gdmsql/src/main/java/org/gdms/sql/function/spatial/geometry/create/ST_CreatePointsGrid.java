@@ -107,7 +107,7 @@ public final class ST_CreatePointsGrid extends AbstractTableFunction {
 
         @Override
         public String getSqlOrder() {
-                return "select " + getName() + "(4000,1000) from myTable;";
+                return "select * from " + getName() + "(table, 4000,1000);";
         }
 
         private void createGrid(final DiskBufferDriver driver, final Envelope env,

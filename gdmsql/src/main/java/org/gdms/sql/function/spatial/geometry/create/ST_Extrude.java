@@ -280,7 +280,7 @@ public final class ST_Extrude extends AbstractTableFunction {
 
         @Override
         public String getSqlOrder() {
-                return "select ST_Extrude(id, height[, the_geom]) from myTable;";
+                return "select * from ST_Extrude(table, id, height[, the_geom]);";
         }
 
         @Override

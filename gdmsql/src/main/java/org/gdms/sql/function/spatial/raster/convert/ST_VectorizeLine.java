@@ -251,7 +251,7 @@ public final class ST_VectorizeLine extends AbstractTableFunction {
 
         @Override
         public String getSqlOrder() {
-                return "select ST_VectorizeLine() from mydata;";
+                return "select * from ST_VectorizeLine(rasterTable);";
         }
 
         @Override

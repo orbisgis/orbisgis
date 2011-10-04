@@ -37,7 +37,6 @@
  */
 package org.gdms.sql;
 
-import org.gdms.SQLBaseTest;
 import org.junit.Test;
 
 import org.gdms.data.SQLDataSourceFactory;

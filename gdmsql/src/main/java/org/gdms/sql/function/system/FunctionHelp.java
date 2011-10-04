@@ -66,7 +66,7 @@ public final class FunctionHelp extends AbstractTableFunction {
                                 genericObjectDriver.addValues(ValueFactory.createValue(fct.getName()), ValueFactory.createValue(fct.getSqlOrder()), ValueFactory.createValue(fct.getDescription()), ValueFactory.createValue(type));
                         }
 
-                        return genericObjectDriver.getTable("main");
+                        return genericObjectDriver;
                 } catch (DriverException e) {
                         throw new FunctionException(e);
                 }
@@ -90,7 +90,7 @@ public final class FunctionHelp extends AbstractTableFunction {
 
         @Override
         public String getSqlOrder() {
-                return "SELECT FunctionHelp()";
+                return "SELECT * from FunctionHelp()";
         }
 
         @Override

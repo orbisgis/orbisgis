@@ -200,7 +200,7 @@ public final class ST_RasterToPolygons extends AbstractTableFunction {
 
         @Override
         public String getSqlOrder() {
-                return "select ST_RasterToPolygons([raster]) from mytif;";
+                return "select * from ST_RasterToPolygons(rasterTable);";
         }
 
         @Override

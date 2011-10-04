@@ -19,6 +19,7 @@ import org.orbisgis.progress.ProgressMonitor;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 import org.apache.log4j.Logger;
+import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.driver.DataSet;
 import org.gdms.sql.function.table.AbstractTableFunction;
 import org.gdms.sql.function.table.TableArgument;
@@ -46,17 +47,17 @@ public final class ST_Interpolate extends AbstractTableFunction {
                 boolean isBaseOnfield = false;
                 double pixelSize;
 
-                if (values.length == 3) {
+                if (values.length == 2) {
                         zField = values[1].getAsString();
                         isBaseOnfield = true;
-                        pixelSize = values[2].getAsDouble();
+                        pixelSize = values[0].getAsDouble();
                 } else {
-                        pixelSize = values[1].getAsDouble();
+                        pixelSize = values[0].getAsDouble();
                 }
                 try {
                         final long rowCount = sds.getRowCount();
                         pm.startTask("Interpolating", rowCount);
-                        final int spatialFieldIndex = sds.getMetadata().getFieldIndex(values[0].toString());
+                        final int spatialFieldIndex = MetadataUtilities.getSpatialFieldIndex(sds.getMetadata());
                         int zFieldIndex = -1;
                         if (zField != null) {
                                 zFieldIndex = sds.getMetadata().getFieldIndex(zField);
@@ -148,19 +149,17 @@ public final class ST_Interpolate extends AbstractTableFunction {
 
         @Override
         public String getSqlOrder() {
-                return "select ST_Interpolate(the_geom [,zField] , pixelsize) from mydata;";
+                return "select * from ST_Interpolate(table,  pixelsize [,zField]) ;";
         }
 
         @Override
         public FunctionSignature[] getFunctionSignatures() {
                 return new FunctionSignature[]{
                                 new TableFunctionSignature(TableDefinition.RASTER,
-                                new TableArgument(TableDefinition.GEOMETRY),
-                                ScalarArgument.GEOMETRY, ScalarArgument.DOUBLE,
+                                new TableArgument(TableDefinition.GEOMETRY), ScalarArgument.DOUBLE,
                                 ScalarArgument.DOUBLE),
                                 new TableFunctionSignature(TableDefinition.RASTER,
-                                new TableArgument(TableDefinition.GEOMETRY),
-                                ScalarArgument.GEOMETRY, ScalarArgument.DOUBLE)
+                                new TableArgument(TableDefinition.GEOMETRY), ScalarArgument.DOUBLE)
                         };
         }
 }

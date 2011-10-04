@@ -64,7 +64,7 @@ public final class ST_InternalGapFinder extends AbstractTableFunction {
 
         @Override
 	public String getSqlOrder() {
-		return "select ST_InternalGaps(the_geom) from myTable;";
+		return "select * from ST_InternalGaps(table, the_geom);";
 	}
 
         @Override

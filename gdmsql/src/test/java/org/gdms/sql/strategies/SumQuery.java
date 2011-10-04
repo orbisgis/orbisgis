@@ -101,7 +101,7 @@ public class SumQuery extends AbstractTableFunction {
         }
 
         public String getSqlOrder() {
-                return "select SumQuery(myNumericField) from myTable;";
+                return "select * from SumQuery(table);";
         }
 
         public String getDescription() {

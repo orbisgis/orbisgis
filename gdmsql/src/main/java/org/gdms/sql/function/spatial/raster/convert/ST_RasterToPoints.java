@@ -147,7 +147,7 @@ public final class ST_RasterToPoints extends AbstractTableFunction {
 
         @Override
         public String getSqlOrder() {
-                return "select ST_RasterToPoints([raster]) from mytif;";
+                return "select * from ST_RasterToPoints(rasterTable);";
         }
 
         @Override

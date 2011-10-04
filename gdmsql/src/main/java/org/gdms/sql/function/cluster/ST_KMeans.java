@@ -85,7 +85,7 @@ public class ST_KMeans extends AbstractTableFunction {
 
         @Override
         public String getSqlOrder() {
-                return "select ST_KMeans(cellIndex, 7) from myTable;";
+                return "select * from ST_KMeans(table, cellIndex, 7);";
         }
 
         @Override

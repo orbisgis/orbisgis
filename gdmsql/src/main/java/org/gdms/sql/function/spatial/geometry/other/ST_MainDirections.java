@@ -210,7 +210,7 @@ public final class ST_MainDirections extends AbstractTableFunction {
 
         @Override
 	public String getSqlOrder() {
-		return "select ST_MainDirections(<nbOfDirections>) from myTable;";
+		return "select * from ST_MainDirections(table, <nbOfDirections>);";
 	}
 
 	private Coordinate polar2cartesian(final Coordinate origin, final double r,

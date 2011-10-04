@@ -72,6 +72,7 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import org.apache.log4j.Logger;
+import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.driver.DataSet;
 import org.gdms.sql.function.table.AbstractTableFunction;
 import org.gdms.sql.function.table.TableArgument;
@@ -93,7 +94,7 @@ public final class ST_RasterizeLine extends AbstractTableFunction {
 
         @Override
         public String getSqlOrder() {
-                return "select ST_RasterizeLine(the_geom, raster, value) as raster from myTable, mydem;";
+                return "select * from ST_RasterizeLine(table, rasterTable, value);";
         }
 
         @Override
@@ -106,15 +107,15 @@ public final class ST_RasterizeLine extends AbstractTableFunction {
                 final int rasterFieldIndex;
 
                 try {
-                        int value = values[2].getAsInt();
+                        int value = values[0].getAsInt();
 
                         final MemoryDataSetDriver driver = new MemoryDataSetDriver(
                                 getMetadata(null));
                         long dsGeomRowCount = sds.getRowCount();
                         long dsRasterRowCount = dsRaster.getRowCount();
 
-                        spatialFieldIndex = sds.getMetadata().getFieldIndex(values[0].getAsString());
-                        rasterFieldIndex = dsRaster.getMetadata().getFieldIndex(values[1].getAsString());
+                        spatialFieldIndex = MetadataUtilities.getSpatialFieldIndex(sds.getMetadata());
+                        rasterFieldIndex = MetadataUtilities.getSpatialFieldIndex(dsRaster.getMetadata());
 
                         for (int rasterIdx = 0; rasterIdx < dsRasterRowCount; rasterIdx++) {
                                 final GeoRaster raster = dsRaster.getFieldValue(rasterIdx, rasterFieldIndex).getAsRaster();
@@ -195,15 +196,10 @@ public final class ST_RasterizeLine extends AbstractTableFunction {
 
         @Override
         public FunctionSignature[] getFunctionSignatures() {
-                return new FunctionSignature[]{
-                                //                                new TableFunctionSignature(TableDefinition.RASTER,
-                                //                                new TableArgument(TableDefinition.GEOMETRY),
-                                //                                new TableArgument(TableDefinition.RASTER),
-                                //                                        ScalarArgument.DOUBLE),
+                return new FunctionSignature[]{                               
                                 new TableFunctionSignature(TableDefinition.RASTER,
                                 new TableArgument(TableDefinition.GEOMETRY),
                                 new TableArgument(TableDefinition.RASTER),
-                                ScalarArgument.GEOMETRY, ScalarArgument.RASTER,
                                 ScalarArgument.DOUBLE)
                         };
         }
