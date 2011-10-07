@@ -51,33 +51,22 @@ abstract class JoinType
 /**
  * Represents an outer left join on some expression.
  * 
- * @param cond the join condition
+ * @param cond the join condition, or None for a Natural join
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class OuterLeft(cond: Expression) extends JoinType {
+case class OuterLeft(cond: Option[Expression]) extends JoinType {
   override def toString = "OuterLeft on(" + cond + ")"
-}
-
-/**
- * Represents an outer right join on some expression.
- * 
- * @param cond the join condition
- * @author Antoine Gourlay
- * @since 0.1
- */
-case class OuterRight(cond: Expression) extends JoinType {
-  override def toString = "OuterRight on(" + cond + ")"
 }
 
 /**
  * Represents an outer full join on some expression.
  * 
- * @param cond the join condition
+ * @param cond the join condition, or None for a Natural join
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class OuterFull(cond: Expression) extends JoinType {
+case class OuterFull(cond: Option[Expression]) extends JoinType {
   override def toString = "OuterFull on(" + cond + ")"
 }
 
@@ -93,11 +82,21 @@ case class Inner(cond: Expression, var spatial: Boolean = false) extends JoinTyp
 }
 
 /**
- * Represents an cross join.
+ * Represents a cross join.
  * 
  * @author Antoine Gourlay
  * @since 0.1
  */
 case class Cross() extends JoinType {
   override def toString = "Cross"
+}
+
+/**
+ * Represents an inner natural join.
+ * 
+ * @author Antoine Gourlay
+ * @since 0.1
+ */
+case class Natural() extends JoinType {
+  override def toString = "Natural"
 }

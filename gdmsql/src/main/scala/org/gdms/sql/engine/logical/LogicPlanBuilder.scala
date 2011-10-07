@@ -111,70 +111,37 @@ object LogicPlanBuilder {
                   //      ^(T_TABLE_ITEM table_id alias?)
                   //    | ^(T_TABLE_QUERY select_statement alias)
                   //    | ^(T_TABLE_FUNCTION custom_query_call alias?)
+                  //    | ^(T_JOIN table_ref ^(INNER_JOIN/OUTER_JOIN ... )+)
                   //    )
                   val c = getChilds(t)
-                  (c, c.head.getType) match {
-                    // there is only one table --> we insert a scan after 'last'
-                    case (head :: Nil, T_TABLE_ITEM) => {
-                        // AST:
-                        // ^(T_TABLE_ITEM table_id alias?)
-                        val alias = if (head.getChildCount == 1) None else Some(head.getChild(1).getText)
-                        last = insertAfter(last, Scan(getFullTableName(head.getChild(0)), alias))
-                      }
-
-                      // there is only one custom_query --> we insert a custom_query after 'last'
-                    case (head :: Nil, T_TABLE_FUNCTION) => {
-                        // AST:
-                        // ^(T_TABLE_FUNCTION ^(T_FUNCTION_CALL name ...) alias?)
-                        val res = doCustomQuery(head.getChild(0))
-                        val alias = if (head.getChildCount == 1) None else Some(head.getChild(1).getText)
-                        val cus = CustomQueryScan(head.getChild(0).getChild(0).getText, res._1, res._2, alias)
-                        last = insertAfter(last, cus)
-                      }
-
-                    case (head :: Nil, T_TABLE_QUERY) => {
-                        // AST:
-                        // ^( T_TABLE_QUERY select_statement )
-                        val s = SubQuery(head.getChild(1).getText)
-                        s.children = buildOperationTree(head.getChild(0)) :: Nil
-
-                        last = insertAfter(last, s)
-                      }
-                      // there is several tables (implicit join)
-                    case _ => {
-                        // AST:
-                        // // ^(T_JOIN table_reference join_clause_content)
-                        // we insert a Cross join between all tables
-                        val j = Join(Cross())
-                        last.addChild(j)
-                        last = j
-                        c foreach { ch => ch.getType match {
-                            case T_TABLE_ITEM => {
-                                // AST:
-                                // ^(T_TABLE_ITEM table_id alias?)
-                                val alias = if (ch.getChildCount == 1) None else Some(ch.getChild(1).getText)
-                                last.addChild(Scan(getFullTableName(ch.getChild(0)), alias))
-                              }
-                            case T_TABLE_FUNCTION => {
-                                // AST:
-                                // ^(T_TABLE_FUNCTION ^(T_FUNCTION_CALL name ...) alias?)
-                                val alias = if (ch.getChildCount == 1) None else Some(ch.getChild(1).getText)
-                                val res = doCustomQuery(ch.getChild(0))
-                                val cus = CustomQueryScan(ch.getChild(0).getChild(0).getText, res._1, res._2, alias)
-                                last.addChild(cus)
-                              }
-                            case T_TABLE_QUERY => {
-                                // AST:
-                                // ^( T_TABLE_QUERY select_statement )
-                                val s = SubQuery(ch.getChild(1).getText)
-                                s.children = buildOperationTree(ch.getChild(0)) :: Nil
-                                last.addChild(s)
-                              }
-                            case T_JOIN => doCrossJoin(getChilds(ch), last)
-                          }
-                        }
-                      }
+                  
+                  val (joins, normal) = c.partition(_.getType == T_JOIN)
+                  
+                  if (c.size > 1) {
+                    val j = Join(Cross())
+                    last.addChild(j)
+                    last = j
                   }
+                  
+                  normal foreach (addTableRef(_, last))
+                  
+                  var ends: List[Operation] = Nil
+                  joins foreach {join =>
+                    val childs = getChilds(join)
+                    val table = addTableRef(childs.head, Output())
+                    val types = childs.tail
+                    var lastJoin = doCrossJoin(table, types.head)
+                      
+                    for (x <- types.tail) {
+                      lastJoin = doCrossJoin(lastJoin , x)
+                    }
+                      
+                    ends = lastJoin :: ends
+                  }
+                    
+                  ends foreach (last.addChild(_))
+                      
+                  
                 }
                 // everything inside the WHERE clause
               case T_WHERE => {
@@ -260,7 +227,7 @@ object LogicPlanBuilder {
               case T_DISTINCT => {
                   // AST : T_DISTINCT alone
                   distinct = true
-              }
+                }
               case a: Any => throw new SemanticException(a.toString + "  node: " + node.getText)
             }
           }
@@ -469,29 +436,81 @@ object LogicPlanBuilder {
     end
   }
 
-  private def doCrossJoin(c: List[Tree], last: Operation): Unit = {
-    val chh = c.head
-    chh.getType match {
-      case T_TABLE_ITEM => last.addChild(Scan(getFullTableName(chh.getChild(0))))
-      case T_TABLE_FUNCTION => {
-          val res = doCustomQuery(chh.getChild(0))
-          val alias = if (chh.getChildCount == 1) None else Some(chh.getChild(1).getText)
-          val cus = CustomQueryScan(chh.getChild(0).getChild(0).getText, res._1, res._2, alias)
-          last.addChild(cus)
+  private def doCrossJoin(left: Operation, content: Tree): Join = {
+    val join = content.getType match {
+      case T_CROSS => Join(Cross())
+      case T_INNER_JOIN => {
+          val inner = content.getChild(1).getType match {
+            case T_CROSS => Cross()
+            case T_NATURAL => Natural()
+            case T_ON => Inner(parseExpression(content.getChild(1).getChild(0)), false)
+          }
+          val j = Join(inner)
+          j.addChild(left)
+          addTableRef(content.getChild(0), j)
+          j
         }
-      case T_TABLE_QUERY => {
-          val s = SubQuery(chh.getChild(1).getText)
-          s.children = buildOperationTree(chh.getChild(0)) :: Nil
+      case T_OUTER_JOIN => {
+          var reverse = false
+          val exp = content.getChild(2).getType match {
+            case T_NATURAL => None
+            case T_ON => Some(parseExpression(content.getChild(1).getChild(0)))
+          }
+          val outer = content.getChild(1).getType match {
+            case T_LEFT => OuterLeft(exp)
+            case T_RIGHT => {
+                reverse = true;
+                OuterLeft(exp)
+              }
+            case T_FULL => OuterFull(exp)
+          }
+          
+          val j = Join(outer)
+          if (reverse) {
+            addTableRef(content.getChild(0), j)
+            j.addChild(left)
+          } else {
+            j.addChild(left)
+            addTableRef(content.getChild(0), j)
+          }
+          j
+        }
+    }
+    
+    join
+  }
+  
+  private def addTableRef(head: Tree, last: Operation): Operation = {
+    head.getType match {
+      // there is only one table --> we insert a scan after 'last'
+      case T_TABLE_ITEM => {
+          // AST:
+          // ^(T_TABLE_ITEM table_id alias?)
+          val alias = if (head.getChildCount == 1) None else Some(head.getChild(1).getText)
+          val s = Scan(getFullTableName(head.getChild(0)), alias)
           last.addChild(s)
+          s
         }
-    }
 
-    c.tail foreach { ch =>
-      ch.getType match {
-        case T_CROSS =>
-        case T_INNER_JOIN => doCrossJoin(getChilds(ch), last)
-      }
-    }
+        // there is only one custom_query --> we insert a custom_query after 'last'
+      case T_TABLE_FUNCTION => {
+          // AST:
+          // ^(T_TABLE_FUNCTION ^(T_FUNCTION_CALL name ...) alias?)
+          val res = doCustomQuery(head.getChild(0))
+          val alias = if (head.getChildCount == 1) None else Some(head.getChild(1).getText)
+          val cus = CustomQueryScan(head.getChild(0).getChild(0).getText, res._1, res._2, alias)
+          last.addChild(cus)
+          cus
+        }
+
+      case T_TABLE_QUERY => {
+          // AST:
+          // ^( T_TABLE_QUERY select_statement )
+          val s = SubQuery(head.getChild(1).getText)
+          s.children = buildOperationTree(head.getChild(0)) :: Nil
+          last.addChild(s)
+          s
+        }}
   }
 
   private def doCustomQuery(ch: Tree) : (Seq[Expression],Seq[Either[String,Operation]]) = {
@@ -728,10 +747,10 @@ object LogicPlanBuilder {
         // we get all projected fields. If they stayed this far, it means they are indeed referenced in the GROUP BY
         // and they may need to be kept by the aggregate.
         val selFields = p.exp flatMap { e => e._1.evaluator match {
-              case f: FieldEvaluator => e :: Nil
-              case _ => Nil
-            }
+            case f: FieldEvaluator => e :: Nil
+            case _ => Nil
           }
+        }
         
         val aggF = p.exp flatMap (findAggregateFunctions)
         

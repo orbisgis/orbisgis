@@ -219,23 +219,6 @@ object PhysicalPlanBuilder {
     c
   }
 
-  private def buildJoinCommandTree(ops: Seq[Operation]): Command = {
-    ops match {
-      case c0 :: Nil => buildCommandTree(c0)
-      case a @ c0 :: c1 :: Nil =>
-        val l = new LoopJoinCommand
-        l.children = List(buildCommandTree(c0), buildCommandTree(c1))
-        l
-      case c0 :: c1 :: rest =>
-        val l = new LoopJoinCommand
-        l.children = List(c0, c1) map (buildCommandTree(_))
-
-        val ltop = new LoopJoinCommand
-        ltop.children = List(l, buildJoinCommandTree(rest))
-        ltop
-    }
-  }
-  
   private def isPropertyValue(p: Properties, name: String, value: String) = {
     p != null && (p.getProperty(name) match {
       case a if a == value => true
