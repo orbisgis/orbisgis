@@ -64,6 +64,7 @@ public final class ConstraintFactory {
                 samples.put(Constraint.READONLY, new ReadOnlyConstraint());
                 samples.put(Constraint.SCALE, new ScaleConstraint(2));
                 samples.put(Constraint.UNIQUE, new UniqueConstraint());
+                samples.put(Constraint.DIMENSION_2D_GEOMETRY, new GeometryDimensionConstraint(1));
                 samples.put(Constraint.DEFAULT_STRING_VALUE,
                         new DefaultStringConstraint(""));
         }
@@ -149,7 +150,13 @@ public final class ConstraintFactory {
                                 c = "SRID";
                                 break;
                         case Constraint.DIMENSION_3D_GEOMETRY:
-                                c = "Dimension";
+                                c = "3D Dimension";
+                                break;
+                        case Constraint.DIMENSION_2D_GEOMETRY:
+                                c = "2D Dimension";
+                                break;
+                        case Constraint.GEOMETRY_TYPE:
+                                c = "Geometry type";
                                 break;
                         case Constraint.LENGTH:
                                 c = "Length";

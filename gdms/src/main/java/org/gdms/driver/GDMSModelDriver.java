@@ -46,46 +46,47 @@ import org.gdms.data.types.TypeFactory;
 
 public abstract class GDMSModelDriver extends AbstractDataSet {
 
-	public TypeDefinition[] getTypesDefinitions() {
-		try {
-			int[] typeCodes = TypeFactory.getTypes();
-			String[] types = new String[typeCodes.length];
-			for (int i = 0; i < types.length; i++) {
-				types[i] = TypeFactory.getTypeName(typeCodes[i]);
-			}
-			TypeDefinition[] ret = new TypeDefinition[types.length];
-			int[] constraints = getConstraints();
-			for (int i = 0; i < ret.length; i++) {
-				Field f;
-				f = Type.class.getField(types[i].toUpperCase());
-				int typeCode = f.getInt(null);
-				ret[i] = new DefaultTypeDefinition(types[i], typeCode,
-						constraints);
-			}
+        public TypeDefinition[] getTypesDefinitions() {
+                try {
+                        int[] typeCodes = TypeFactory.getTypes();
+                        String[] types = new String[typeCodes.length];
+                        for (int i = 0; i < types.length; i++) {
+                                types[i] = TypeFactory.getTypeName(typeCodes[i]);
+                        }
+                        TypeDefinition[] ret = new TypeDefinition[types.length];
+                        int[] constraints = getConstraints();
+                        for (int i = 0; i < ret.length; i++) {
+                                Field f;
+                                f = Type.class.getField(types[i].toUpperCase());
+                                int typeCode = f.getInt(null);
+                                ret[i] = new DefaultTypeDefinition(types[i], typeCode,
+                                        constraints);
+                        }
 
-			return ret;
-		} catch (NoSuchFieldException e) {
-			throw new IllegalStateException("Cannot read GDMS types", e);
-		} catch (IllegalAccessException e) {
-			throw new IllegalStateException("Cannot read GDMS types", e);
-		}
-	}
+                        return ret;
+                } catch (NoSuchFieldException e) {
+                        throw new IllegalStateException("Cannot read GDMS types", e);
+                } catch (IllegalAccessException e) {
+                        throw new IllegalStateException("Cannot read GDMS types", e);
+                }
+        }
 
-	private int[] getConstraints() throws IllegalAccessException {
-		Class<Constraint> constClass = Constraint.class;
-		Field[] constCodes = constClass.getFields();
-		int[] codes = new int[constCodes.length];
-		int codesIndex = 0;
-		for (int i = 0; i < constCodes.length; i++) {
-			if ((!constCodes[i].getName().startsWith("CONSTRAINT_TYPE"))
-					&& (!constCodes[i].getName().equals("ALL"))) {
-				codes[codesIndex] = constCodes[i].getInt(null);
-				codesIndex++;
-			}
-		}
-		int[] ret = new int[codesIndex];
-		System.arraycopy(codes, 0, ret, 0, codesIndex);
+        private int[] getConstraints() throws IllegalAccessException {
+                Class<Constraint> constClass = Constraint.class;
+                Field[] constCodes = constClass.getFields();
+                int[] codes = new int[constCodes.length];
+                int codesIndex = 0;
+                for (int i = 0; i < constCodes.length; i++) {
+                        String constCodeName = constCodes[i].getName();
+                        if ((!constCodeName.startsWith("CONSTRAINT_TYPE"))
+                                && (!constCodeName.equals("ALL") && (!constCodeName.equals("GEOMETRY_TYPE")))) {
+                                codes[codesIndex] = constCodes[i].getInt(null);
+                                codesIndex++;
+                        }
+                }
+                int[] ret = new int[codesIndex];
+                System.arraycopy(codes, 0, ret, 0, codesIndex);
 
-		return ret;
-	}
+                return ret;
+        }
 }
