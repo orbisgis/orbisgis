@@ -166,11 +166,14 @@ object PhysicalPlanBuilder {
               new LoopJoinCommand
             }
           case Inner(ex, false) => {
-              new ExpressionBasedLoopJoinCommand(ex)
+              new ExpressionBasedLoopJoinCommand(Some(ex))
             }
           case Inner(ex, true) => {
               new SpatialIndexedJoinCommand(ex)
             }
+          case Natural() => {
+              new ExpressionBasedLoopJoinCommand(None)
+          }
         }
       case Projection(exp) => new ProjectionCommand(exp toArray)
       case a @ Aggregate(exp) => {
@@ -221,9 +224,9 @@ object PhysicalPlanBuilder {
 
   private def isPropertyValue(p: Properties, name: String, value: String) = {
     p != null && (p.getProperty(name) match {
-      case a if a == value => true
-      case _ => false
-    })
+        case a if a == value => true
+        case _ => false
+      })
   }
   
   private def isPropertyTurnedOn(p: Properties, name: String) = {

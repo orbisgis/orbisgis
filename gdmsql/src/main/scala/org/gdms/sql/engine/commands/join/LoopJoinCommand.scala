@@ -56,10 +56,11 @@ class LoopJoinCommand extends Command {
     val doReduce = (a: Row, b: Row) => Row(a ++ b)
 
     val left = r.next
-    val right = r.next
+    val right = r.next.toSeq
     // for every batch in left, we take avery batch in right and apply
     // the doReduce function within the Promise objects
-     for (p <- left ; q <- right) yield { doReduce(p, q) }
+    
+    left flatMap (p => right map (doReduce(p, _)))
   }
 
   override def getMetadata = {

@@ -43,19 +43,77 @@
 package org.gdms.sql.engine.commands.join
 
 import org.gdms.data.schema.DefaultMetadata
+import org.gdms.data.values.ValueFactory
 import org.gdms.sql.engine.GdmSQLPredef._
 import org.gdms.sql.engine.commands.Command
 import org.gdms.sql.engine.commands.ExpressionCommand
 import org.gdms.sql.engine.commands.Row
 import org.gdms.sql.engine.commands.SQLMetadata
 import org.gdms.sql.evaluator.Expression
+import org.gdms.sql.evaluator.Field
 
-class ExpressionBasedLoopJoinCommand(expr: Expression) extends Command with ExpressionCommand {
+class ExpressionBasedLoopJoinCommand(private var expr: Option[Expression]) extends Command with ExpressionCommand {
+  
+  override def doPrepare() {
+    
+    // support for NATURAL joins
+    if (!expr.isDefined) {
+      val m1 = children.head.getMetadata
+      val m2 = children(1).getMetadata
+      
+      // finds fields in common
+      val idxs = (0 until m1.getFieldCount).toSeq flatMap {j =>
+        val n = m1.getFieldName(j)
+        m2.getFieldIndex(n) match {
+          case -1 => Nil
+          case i => {
+              if (m1.getFieldType(j).getTypeCode == m2.getFieldType(i).getTypeCode) {
+                n :: Nil
+              } else {
+                Nil
+              }
+            }
+        }
+      }
+      
+      if (!idxs.isEmpty) {
+        // creates the filter expression
+        val f = Field(idxs.head, m1.table) sqlEquals Field(idxs.head, m2.table)
+        if (!idxs.tail.isEmpty) {
+          expr = Some(f & buildExpression(idxs.tail, m1, m2))
+        } else {
+          expr = Some(f)
+        }
+      } else {
+        expr = Some(Expression(ValueFactory.TRUE))
+      }
+    }
+    
+    // initialize expressions
+    super.doPrepare
+  }
+  
+  /**
+   * Builds an expression like Field(tata.toto) == Field(tutu.toto) for use as filtering.
+   * 
+   * Note: this could be refactored as a tail-recursive function, but we will never have billions of 
+   * fields anyway...
+   */
+  private def buildExpression(elems: Seq[String], m1: SQLMetadata, m2: SQLMetadata): Expression = {
+    val f = Field(elems.head, m1.table) sqlEquals Field(elems.head, m2.table)
+    if (!elems.tail.isEmpty) {
+      f & buildExpression(elems.tail, m1, m2)
+    } else {
+      f
+    }
+  }
+  
   protected final def doWork(r: Iterator[RowStream]): RowStream = {
     //This method just concats two 'rows' into one, inside the Iterable objects
-    val doReduce = (i: Row, j: Row) => {
+    val ee = expr.get
+    def doReduce(i: Row, j: Row) = {
       val a = i ++ j
-      val e = expr.evaluate(a).getAsBoolean
+      val e = ee.evaluate(a).getAsBoolean
       if (e != null && e.booleanValue) {
         Row(a) :: Nil
       } else {
@@ -64,13 +122,14 @@ class ExpressionBasedLoopJoinCommand(expr: Expression) extends Command with Expr
     }
 
     val left = r.next
-    val right = r.next
+    val right = r.next.toSeq
     // for every batch in left, we take avery batch in right and apply
     // the doReduce function
-    for (p <- left ; q <- right; r <- doReduce(p, q)) yield ( r )
+    
+    left flatMap (p => right flatMap (doReduce(p, _)))
   }
   
-  val exp = expr :: Nil
+  def exp = expr.toSeq
   
   override def getMetadata = {
     val d = new DefaultMetadata()
