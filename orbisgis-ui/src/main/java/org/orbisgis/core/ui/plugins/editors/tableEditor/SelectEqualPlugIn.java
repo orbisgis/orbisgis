@@ -87,12 +87,9 @@ public class SelectEqualPlugIn extends AbstractPlugIn {
                                                 columnIndex);
                                         for (int i = 0; i < dataSource.getRowCount(); i++) {
                                                 Value value = dataSource.getFieldValue(i, columnIndex);
-                                                if (!ref.isNull()) {
-                                                        if (value.equals(ref).getAsBoolean()) {
-                                                                newSel.add(i);
-                                                        }
-                                                } else {
-                                                        if (value.isNull()) {
+                                                Value comp = value.equals(ref);
+                                                if (!comp.isNull()) {
+                                                        if (comp.getAsBoolean()) {
                                                                 newSel.add(i);
                                                         }
                                                 }
