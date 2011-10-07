@@ -37,7 +37,6 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 
 import org.orbisgis.core.Services;
-import org.orbisgis.core.ui.components.findReplace.FindReplaceDialog;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.ui.BshConsolePanel;
 import org.orbisgis.utils.I18N;
 
@@ -109,9 +108,7 @@ public class BshActionsListener implements ActionListener, DocumentListener {
 
                         case BshConsoleAction.FIND_REPLACE:
                                 if (consolePanel.getText().trim().length() > 0) {
-                                        FindReplaceDialog findReplaceDialog = new FindReplaceDialog(consolePanel.getTextComponent());
-                                        findReplaceDialog.setAlwaysOnTop(true);
-                                        findReplaceDialog.setVisible(true);
+                                        consolePanel.openFindReplaceDialog();
                                 }
                                 break;
                 }

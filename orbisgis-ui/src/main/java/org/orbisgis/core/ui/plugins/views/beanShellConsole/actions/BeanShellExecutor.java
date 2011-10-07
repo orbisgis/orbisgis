@@ -35,6 +35,7 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editors.map.MapContextManager;
 import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
+import org.orbisgis.core.ui.plugins.views.beanShellConsole.ui.BshConsolePanel;
 import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 import org.orbisgis.utils.I18N;
 
@@ -44,8 +45,9 @@ import org.orbisgis.utils.I18N;
  */
 public class BeanShellExecutor {
 
-        private  BeanShellExecutor(){
+        private BeanShellExecutor() {
         }
+
         /**
          * Execute the beanshell script and return some results in the output console.
          * @param interpreter
@@ -53,20 +55,17 @@ public class BeanShellExecutor {
          * @param text
          * @throws EvalError
          */
-        public static void execute(Interpreter interpreter, ByteArrayOutputStream outputStream, String text) {
+        public static void execute(BshConsolePanel panel, String text) {
                 OutputManager outputManager = (OutputManager) Services.getService(OutputManager.class);
                 try {
                         MapContext mc = ((MapContextManager) Services.getService(MapContextManager.class)).getActiveMapContext();
 
-                        interpreter.getNameSpace().importCommands(
-                                "org.orbisgis.core.ui.plugins.views.beanShellConsole.commands");
-
+                        Interpreter interpreter = panel.getInterpreter();
                         if (mc != null) {
                                 interpreter.set("mc", mc);
                         }
-
                         interpreter.eval(text);
-                        String out = getOutput(outputStream);
+                        String out = getOutput(panel.getScriptOutput());
                         if (out.length() > 0) {
                                 outputManager.println(I18N.getString("orbisgis.org.orbisgis.beanshell.result"),
                                         Color.GREEN);
@@ -88,7 +87,7 @@ public class BeanShellExecutor {
                 }
         }
 
-        private static  String getOutput(ByteArrayOutputStream outputStream) {
+        private static String getOutput(ByteArrayOutputStream outputStream) {
                 String ret = new String(outputStream.toByteArray());
                 outputStream.reset();
                 return ret;

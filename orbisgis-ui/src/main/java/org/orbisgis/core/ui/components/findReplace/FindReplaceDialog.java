@@ -27,8 +27,6 @@
  */
 package org.orbisgis.core.ui.components.findReplace;
 
-import org.orbisgis.core.ui.components.findReplace.GBHelper;
-import org.orbisgis.core.ui.components.findReplace.Gap;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -90,8 +88,6 @@ public final class FindReplaceDialog extends JDialog implements ActionListener {
          * @return
          */
         private JPanel createContentPane() {
-
-
                 //... Create an independent GridLayout panel of buttons.
                 JPanel buttonPanel = new JPanel();
                 buttonPanel.setLayout(new GridLayout(5, 1, GAP, GAP));
@@ -127,13 +123,29 @@ public final class FindReplaceDialog extends JDialog implements ActionListener {
                 JPanel checkBoxPanel = new JPanel();
                 checkBoxPanel.setLayout(new GridLayout(3, 2));
                 matchCaseCB = new JCheckBox(I18N.getString("orbisgis.org.orbisgis.ui.findReplace.matchCase"));
-                matchCaseCB.setMnemonic('m');
+                matchCaseCB.setMnemonic('m');                
 
                 wholeWrdsCB = new JCheckBox(I18N.getString("orbisgis.org.orbisgis.ui.findReplace.wholeWords"));
                 wholeWrdsCB.setMnemonic('w');
+                
 
                 regexCB = new JCheckBox(I18N.getString("orbisgis.org.orbisgis.ui.findReplace.regularExpressions"));
                 regexCB.setMnemonic('x');
+                regexCB.addActionListener(new ActionListener() {
+
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                                if (regexCB.isSelected()) {
+                                        wholeWrdsCB.setSelected(false);
+                                        matchCaseCB.setSelected(false);
+                                        wholeWrdsCB.setEnabled(false);
+                                        matchCaseCB.setEnabled(false);
+                                } else {
+                                        wholeWrdsCB.setEnabled(true);
+                                        matchCaseCB.setEnabled(true);
+                                }
+                        }
+                });
 
                 markAllCB = new JCheckBox(I18N.getString("orbisgis.org.orbisgis.ui.findReplace.markAll"));
                 markAllCB.setMnemonic('a');

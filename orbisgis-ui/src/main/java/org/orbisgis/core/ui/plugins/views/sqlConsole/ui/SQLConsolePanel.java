@@ -50,6 +50,7 @@ import javax.swing.text.BadLocationException;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rtextarea.RTextScrollPane;
+import org.orbisgis.core.ui.components.findReplace.FindReplaceDialog;
 import org.orbisgis.core.ui.editorViews.toc.TransferableLayer;
 import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.plugins.views.geocatalog.TransferableSource;
@@ -68,7 +69,7 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
         private JButton btClear = null;
         private JButton btOpen = null;
         private JButton btSave = null;
-        private JButton btFindReplace=null;
+        private JButton btFindReplace = null;
         private ActionsListener actionAndKeyListener;
         private ConsoleListener listener;
         private RTextScrollPane centerPanel;
@@ -81,7 +82,7 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
         private SQLLanguageSupport lang;
         static CommentSpec[] COMMENT_SPECS = new CommentSpec[]{
                 new CommentSpec("/*", "*/"), new CommentSpec("--", "\n")};
-
+        private FindReplaceDialog findReplaceDialog;
 
         /**
          * Creates a console for sql.
@@ -89,24 +90,22 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
         public SQLConsolePanel(ConsoleListener listener) {
                 this.listener = listener;
                 actionAndKeyListener = new ActionsListener(listener, this);
-                setLayout(new BorderLayout());              
+                setLayout(new BorderLayout());
                 JPanel split = new JPanel();
                 split.setLayout(new BorderLayout());
                 split.add(new SQLFunctionsPanel(this), BorderLayout.EAST);
                 split.add(getCenterPanel(listener), BorderLayout.CENTER);
                 add(split, BorderLayout.CENTER);
-                
+
                 if (listener.showControlButtons()) {
                         add(getButtonToolBar(), BorderLayout.NORTH);
                 }
                 setButtonsStatus();
                 add(getStatusToolBar(), BorderLayout.SOUTH);
 
-                
+
 
         }
-
-
 
         // getters
         private JToolBar getButtonToolBar() {
@@ -180,7 +179,6 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
                 }
         }
 
-
         private JButton getBtFindReplace() {
                 if (null == btFindReplace) {
                         btFindReplace = new ConsoleButton(ConsoleAction.FIND_REPLACE,
@@ -188,7 +186,7 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
                 }
                 return btFindReplace;
         }
-        
+
         private JButton getBtExecute() {
                 if (null == btExecute) {
                         btExecute = new ConsoleButton(ConsoleAction.EXECUTE,
@@ -230,7 +228,7 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
                         getBtFindReplace().setEnabled(true);
                 }
         }
-        
+
         private void setBtExecute() {
                 if (0 == getText().length()) {
                         getBtExecute().setEnabled(false);
@@ -447,5 +445,16 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
                 if (lang != null) {
                         lang.uninstall(scriptPanel);
                 }
+        }
+
+        /**
+         * Open one instanceof the find replace dialog
+         */
+        public void openFindReplaceDialog() {
+                if (findReplaceDialog == null) {
+                        findReplaceDialog = new FindReplaceDialog(getScriptPanel());
+                }
+                findReplaceDialog.setAlwaysOnTop(true);
+                findReplaceDialog.setVisible(true);
         }
 }

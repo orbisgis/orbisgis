@@ -34,7 +34,6 @@ import java.awt.event.KeyEvent;
 
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundManager;
-import org.orbisgis.core.ui.components.findReplace.FindReplaceDialog;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.blockComment.QuoteSQL;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.codereformat.CodeReformator;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.ui.SQLConsolePanel;
@@ -52,6 +51,7 @@ public class SQLConsoleKeyListener extends KeyAdapter {
                 this.actionsListener = listener;
         }
 
+        @Override
         public void keyPressed(KeyEvent e) {
                 String originalText = panel.getText();
                 if ((e.getKeyCode() == KeyEvent.VK_ENTER) && e.isControlDown()) {
@@ -62,7 +62,7 @@ public class SQLConsoleKeyListener extends KeyAdapter {
                         ActionEvent ev = new ActionEvent(this, ConsoleAction.SAVE, String.valueOf(ConsoleAction.SAVE));
                         actionsListener.actionPerformed(ev);
                 } // Format SQL code
-                else if ((e.getKeyCode() == KeyEvent.VK_F) && e.isShiftDown()&& e.isControlDown()) {
+                else if ((e.getKeyCode() == KeyEvent.VK_F) && e.isShiftDown() && e.isControlDown()) {
                         panel.replaceCurrentSQLStatement(
                                 codeReformator.reformat(panel.getCurrentSQLStatement()));
 
@@ -81,9 +81,12 @@ public class SQLConsoleKeyListener extends KeyAdapter {
 
                 } else if ((e.getKeyCode() == KeyEvent.VK_F) && e.isControlDown()) {
                         if (originalText.trim().length() > 0) {
-                                FindReplaceDialog findReplaceDialog = new FindReplaceDialog(panel.getScriptPanel());
-                                findReplaceDialog.setAlwaysOnTop(true);
-                                findReplaceDialog.setVisible(true);
+                                panel.openFindReplaceDialog();
+                        }
+                }
+                else if ((e.getKeyCode() == KeyEvent.VK_H) && e.isControlDown()) {
+                        if (originalText.trim().length() > 0) {
+                                panel.openFindReplaceDialog();
                         }
                 }
         }

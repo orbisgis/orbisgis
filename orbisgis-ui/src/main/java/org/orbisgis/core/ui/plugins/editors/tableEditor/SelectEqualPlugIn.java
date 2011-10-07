@@ -35,7 +35,6 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-
 package org.orbisgis.core.ui.plugins.editors.tableEditor;
 
 import java.util.ArrayList;
@@ -62,81 +61,83 @@ import org.orbisgis.utils.I18N;
 
 public class SelectEqualPlugIn extends AbstractPlugIn {
 
-	@Override
-	public boolean execute(PlugInContext context) throws Exception {
-		IEditor editor = context.getActiveEditor();
-		final TableEditableElement element = (TableEditableElement) editor
-				.getElement();
-		// We must retrieve the indices of the element we have selected.
-		// We must be careful, as the rowIndex we retrieve is no the one
-		// we want to use to retrieve the data in the data source.
-		TableComponent currentTable = (TableComponent) editor.getView()
-				.getComponent();
-		final int rowIndex = currentTable.getTable().rowAtPoint(
-				getEvent().getPoint());
-		final int dbRowIndex = currentTable.getRowIndex(rowIndex);
-		final int columnIndex = currentTable.getTable().columnAtPoint(
-				getEvent().getPoint());
-		BackgroundManager bm = Services.getService(BackgroundManager.class);
-		bm.backgroundOperation(new BackgroundJob() {
+        @Override
+        public boolean execute(PlugInContext context) throws Exception {
+                IEditor editor = context.getActiveEditor();
+                final TableEditableElement element = (TableEditableElement) editor.getElement();
+                // We must retrieve the indices of the element we have selected.
+                // We must be careful, as the rowIndex we retrieve is no the one
+                // we want to use to retrieve the data in the data source.
+                TableComponent currentTable = (TableComponent) editor.getView().getComponent();
+                final int rowIndex = currentTable.getTable().rowAtPoint(
+                        getEvent().getPoint());
+                final int dbRowIndex = currentTable.getRowIndex(rowIndex);
+                final int columnIndex = currentTable.getTable().columnAtPoint(
+                        getEvent().getPoint());
+                BackgroundManager bm = Services.getService(BackgroundManager.class);
+                bm.backgroundOperation(new BackgroundJob() {
 
-			@Override
-			public void run(ProgressMonitor pm) {
-				try {
-					DataSource dataSource = element.getDataSource();
-					ArrayList<Integer> newSel = new ArrayList<Integer>();
-					Value ref = dataSource.getFieldValue(dbRowIndex,
-							columnIndex);
-					for (int i = 0; i < dataSource.getRowCount(); i++) {
-						if (dataSource.getFieldValue(i, columnIndex)
-								.equals(ref).getAsBoolean()) {
-							newSel.add(i);
-						}
-					}
-					int[] sel = new int[newSel.size()];
-					for (int i = 0; i < sel.length; i++) {
-						sel[i] = newSel.get(i);
-					}
+                        @Override
+                        public void run(ProgressMonitor pm) {
 
-					element.getSelection().setSelectedRows(sel);
-				} catch (DriverException e) {
-					ErrorMessages.error(ErrorMessages.CannotReadSource, e);
-				}
-			}
+                                try {
+                                        DataSource dataSource = element.getDataSource();
+                                        ArrayList<Integer> newSel = new ArrayList<Integer>();
+                                        Value ref = dataSource.getFieldValue(dbRowIndex,
+                                                columnIndex);
+                                        for (int i = 0; i < dataSource.getRowCount(); i++) {
+                                                Value value = dataSource.getFieldValue(i, columnIndex);
+                                                if (!ref.isNull()) {
+                                                        if (value.equals(ref).getAsBoolean()) {
+                                                                newSel.add(i);
+                                                        }
+                                                } else {
+                                                        if (value.isNull()) {
+                                                                newSel.add(i);
+                                                        }
+                                                }
+                                        }
+                                        int[] sel = new int[newSel.size()];
+                                        for (int i = 0; i < sel.length; i++) {
+                                                sel[i] = newSel.get(i);
+                                        }
 
-			@Override
-			public String getTaskName() {
-				return I18N
-						.getString("orbisgis.org.orbisgis.core.ui.plugins.editors.tableEditor.findMatch");
-			}
-		});
-		return true;
-	}
+                                        element.getSelection().setSelectedRows(sel);
+                                } catch (DriverException e) {
+                                        ErrorMessages.error(ErrorMessages.CannotReadSource, e);
+                                }
+                        }
 
-	@Override
-	public void initialize(PlugInContext context) throws Exception {
-		WorkbenchContext wbContext = context.getWorkbenchContext();
-		WorkbenchFrame frame = wbContext.getWorkbench()
-				.getFrame().getTableEditor();
-		context.getFeatureInstaller().addPopupMenuItem(frame, this,
-				new String[] { Names.POPUP_TABLE_EQUALS_PATH1 },
-				Names.POPUP_TABLE_EQUALS_GROUP, false,
-				OrbisGISIcon.TABLE_SELECT_SAME_VALUE, wbContext);
-	}
+                        @Override
+                        public String getTaskName() {
+                                return I18N.getString("orbisgis.org.orbisgis.core.ui.plugins.editors.tableEditor.findMatch");
+                        }
+                });
+                return true;
+        }
 
-	@Override
-	public boolean isEnabled() {
+        @Override
+        public void initialize(PlugInContext context) throws Exception {
+                WorkbenchContext wbContext = context.getWorkbenchContext();
+                WorkbenchFrame frame = wbContext.getWorkbench().getFrame().getTableEditor();
+                context.getFeatureInstaller().addPopupMenuItem(frame, this,
+                        new String[]{Names.POPUP_TABLE_EQUALS_PATH1},
+                        Names.POPUP_TABLE_EQUALS_GROUP, false,
+                        OrbisGISIcon.TABLE_SELECT_SAME_VALUE, wbContext);
+        }
 
-		TableEditorPlugIn table = getPlugInContext().getTableEditor();
-		if (table != null && getSelectedColumn() == -1 && getEvent() != null) {
-			int rowCountSelected = ((TableComponent) table.getView()
-					.getComponent()).getTable().getSelectedRowCount();
-			if (rowCountSelected == 1) {
-				return true;
-			}
+        @Override
+        public boolean isEnabled() {
 
-			return false;
-		}
-		return false;
-	}
+                TableEditorPlugIn table = getPlugInContext().getTableEditor();
+                if (table != null && getSelectedColumn() == -1 && getEvent() != null) {
+                        int rowCountSelected = ((TableComponent) table.getView().getComponent()).getTable().getSelectedRowCount();
+                        if (rowCountSelected == 1) {
+                                return true;
+                        }
+
+                        return false;
+                }
+                return false;
+        }
 }

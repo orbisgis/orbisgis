@@ -27,9 +27,13 @@
  */
 package org.orbisgis.core.ui.plugins.views.beanShellConsole.ui;
 
+import bsh.EvalError;
+import bsh.Interpreter;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -39,8 +43,13 @@ import javax.swing.Timer;
 import javax.swing.text.BadLocationException;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rtextarea.RTextScrollPane;
+import org.orbisgis.core.DataManager;
+import org.orbisgis.core.Services;
+import org.orbisgis.core.ui.components.findReplace.FindReplaceDialog;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.actions.BshActionsListener;
+import org.orbisgis.core.ui.plugins.views.beanShellConsole.actions.BshCompletionKeyListener;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.actions.BshConsoleAction;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.actions.BshConsoleListener;
 import org.orbisgis.utils.I18N;
@@ -58,11 +67,37 @@ public class BshConsolePanel extends JPanel {
         private JToolBar toolBar;
         private JLabel statusMessage;
         private Timer timer;
+        private FindReplaceDialog findReplaceDialog;
+        private Interpreter interpreter = new Interpreter();
+        private ByteArrayOutputStream scriptOutput;
 
         /**
          * Creates a console for sql.
          */
         public BshConsolePanel(BshConsoleListener listener) {
+
+                try {
+                        interpreter.set("bshEditor", this);
+
+                        scriptOutput = new ByteArrayOutputStream();
+
+                        PrintStream outStream = new PrintStream(scriptOutput);
+                        interpreter.setOut(outStream);
+
+                        DataManager dm = Services.getService(DataManager.class);
+
+                        interpreter.setClassLoader(dm.getDataSourceFactory().getClass().getClassLoader());
+                        interpreter.set("dsf", dm.getDataSourceFactory());
+                        interpreter.eval("setAccessibility(true)");
+                        interpreter.getNameSpace().importCommands(
+                                "org.orbisgis.core.ui.plugins.views.beanShellConsole.commands");
+
+                } catch (EvalError e) {
+                        ErrorMessages.error(
+                                I18N.getString("orbisgis.org.orbisgis.beanshell.CannotInitializeBeanshell"),
+                                e);
+                }
+
                 actionAndKeyListener = new BshActionsListener(listener, this);
 
                 setLayout(new BorderLayout());
@@ -82,7 +117,7 @@ public class BshConsolePanel extends JPanel {
                 northPanel.add(getBtClear());
                 northPanel.add(getBtOpen());
                 northPanel.add(getBtSave());
-                northPanel.add(getBtFindReplace());               
+                northPanel.add(getBtFindReplace());
                 setBtExecute();
                 setBtClear();
                 setBtSave();
@@ -99,6 +134,7 @@ public class BshConsolePanel extends JPanel {
                         scriptPanel.setSyntaxEditingStyle(RSyntaxTextArea.SYNTAX_STYLE_JAVA);
                         scriptPanel.getDocument().addDocumentListener(actionAndKeyListener);
                         scriptPanel.setLineWrap(true);
+                        scriptPanel.addKeyListener(new BshCompletionKeyListener(this));
                         centerPanel = new RTextScrollPane(scriptPanel);
                 }
                 return centerPanel;
@@ -235,5 +271,33 @@ public class BshConsolePanel extends JPanel {
 
         public RSyntaxTextArea getTextComponent() {
                 return scriptPanel;
+        }
+
+        /**
+         * Returns the beanshell interpreter
+         * @return
+         */
+        public Interpreter getInterpreter() {
+                return interpreter;
+        }
+
+        /**
+         * Retruns the ouptputstream
+         * @return
+         */
+        public ByteArrayOutputStream getScriptOutput() {
+                return scriptOutput;
+        }
+
+
+        /**
+         * Open one instanceof the find replace dialog
+         */
+        public void openFindReplaceDialog() {
+                if (findReplaceDialog == null) {
+                        findReplaceDialog = new FindReplaceDialog(getTextComponent());
+                }
+                findReplaceDialog.setAlwaysOnTop(true);
+                findReplaceDialog.setVisible(true);
         }
 }

@@ -29,43 +29,30 @@ package org.orbisgis.core.ui.plugins.views.beanShellConsole;
 
 import java.awt.datatransfer.Transferable;
 import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintStream;
 
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
-import javax.swing.text.JTextComponent;
 
-import org.orbisgis.core.DataManager;
-import org.orbisgis.core.Services;
 import org.orbisgis.core.sif.OpenFilePanel;
 import org.orbisgis.core.sif.SaveFilePanel;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
-import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
-import org.orbisgis.core.ui.plugins.views.beanShellConsole.actions.BshCompletionKeyListener;
+import org.orbisgis.core.ui.plugins.views.beanShellConsole.actions.BeanShellExecutor;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.actions.BshConsoleListener;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.ui.BshConsolePanel;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.utils.I18N;
 
-import bsh.EvalError;
-import bsh.Interpreter;
-import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-import org.orbisgis.core.ui.plugins.views.beanShellConsole.actions.BeanShellExecutor;
-
 public class BeanShellConsoleViewPlugIn extends ViewPlugIn {
 
         private BshConsolePanel panel;
-        private Interpreter interpreter = new Interpreter();
-        private ByteArrayOutputStream scriptOutput;
         private JMenuItem menuItem;
         private JButton btn;
 
@@ -74,31 +61,12 @@ public class BeanShellConsoleViewPlugIn extends ViewPlugIn {
                 btn.setToolTipText(Names.BEANSHELL);
         }
 
+        @Override
         public void initialize(PlugInContext context) throws Exception {
-
-                try {
-                        interpreter.set("bshEditor", this);
-
-                        scriptOutput = new ByteArrayOutputStream();
-
-                        PrintStream outStream = new PrintStream(scriptOutput);
-                        interpreter.setOut(outStream);
-
-                        DataManager dm = Services.getService(DataManager.class);
-
-                        interpreter.setClassLoader(dm.getDataSourceFactory().getClass().getClassLoader());
-                        interpreter.set("dsf", dm.getDataSourceFactory());
-
-                        interpreter.eval("setAccessibility(true)");
-
-                } catch (EvalError e) {
-                        ErrorMessages.error(
-                                I18N.getString("orbisgis.org.orbisgis.beanshell.CannotInitializeBeanshell"),
-                                e);
-                }
 
                 panel = new BshConsolePanel(new BshConsoleListener() {
 
+                        @Override
                         public boolean save(String text) throws IOException {
                                 final SaveFilePanel outfilePanel = new SaveFilePanel(
                                         "org.orbisgis.cores.BeanShellConsoleOutFile", I18N.getString("orbisgis.org.orbisgis.saveScript"));
@@ -114,6 +82,7 @@ public class BeanShellConsoleViewPlugIn extends ViewPlugIn {
                                 return false;
                         }
 
+                        @Override
                         public String open() throws IOException {
                                 final OpenFilePanel inFilePanel = new OpenFilePanel(
                                         "org.orbisgis.plugins.views.BeanShellConsoleInFile",
@@ -139,9 +108,10 @@ public class BeanShellConsoleViewPlugIn extends ViewPlugIn {
                                 }
                         }
 
+                        @Override
                         public void execute(String text) {
                                 if (text.trim().length() > 0) {
-                                        BeanShellExecutor.execute(interpreter, scriptOutput, text);
+                                        BeanShellExecutor.execute(panel, text);
                                 } else {
                                 }
                         }
@@ -161,8 +131,7 @@ public class BeanShellConsoleViewPlugIn extends ViewPlugIn {
                         }
                 });
                 panel.setText("print(\"" + "Hello world !\"" + ");");
-                RSyntaxTextArea txt = panel.getTextComponent();
-                txt.addKeyListener(new BshCompletionKeyListener(interpreter, scriptOutput, true, txt));
+
 
                 menuItem = context.getFeatureInstaller().addMainMenuItem(this,
                         new String[]{Names.VIEW}, Names.BEANSHELL, true,

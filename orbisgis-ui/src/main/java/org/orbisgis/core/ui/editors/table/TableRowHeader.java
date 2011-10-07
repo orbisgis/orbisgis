@@ -27,10 +27,9 @@
  */
 package org.orbisgis.core.ui.editors.table;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
@@ -41,7 +40,6 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import org.gdms.driver.DriverException;
 
 /**
  *
@@ -65,6 +63,7 @@ public class TableRowHeader extends JList implements TableModelListener {
                 setBorder(new RowHeaderBorder());
                 setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
                 syncRowCount(); // Initialize to initial size of table.
+                setBackground(table.getBackground());
                 table.getTable().getModel().addTableModelListener(this);
 
         }

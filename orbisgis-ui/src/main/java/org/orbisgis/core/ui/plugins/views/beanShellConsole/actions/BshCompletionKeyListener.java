@@ -27,12 +27,10 @@
  */
 package org.orbisgis.core.ui.plugins.views.beanShellConsole.actions;
 
-import bsh.Interpreter;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -46,28 +44,22 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.sif.SaveFilePanel;
 import org.orbisgis.core.sif.UIFactory;
-import org.orbisgis.core.ui.components.findReplace.FindReplaceDialog;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.javaManager.autocompletion.Completion;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.javaManager.autocompletion.Option;
+import org.orbisgis.core.ui.plugins.views.beanShellConsole.ui.BshConsolePanel;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.ui.CompletionPopUp;
 import org.orbisgis.utils.I18N;
 
 public class BshCompletionKeyListener extends KeyAdapter {
 
-        private final static Logger logger = Logger.getLogger(BshCompletionKeyListener.class);
-        private final boolean script;
-        private RSyntaxTextArea txt;
+        private final static Logger logger = Logger.getLogger(BshCompletionKeyListener.class);        
         private CompletionPopUp pop;
         private Completion completion;
-        private final Interpreter interpreter;
-        private final ByteArrayOutputStream scriptOutput;
+        private final BshConsolePanel panel;
 
-        public BshCompletionKeyListener(Interpreter interpreter, ByteArrayOutputStream scriptOutput, boolean script, RSyntaxTextArea txt) {
-                this.txt = txt;
-                this.script = script;
-                this.interpreter = interpreter;
-                this.scriptOutput = scriptOutput;
+        public BshCompletionKeyListener(BshConsolePanel panel) {
+                this.panel = panel;
                 try {
                         completion = new Completion();
                 } catch (LinkageError e) {
@@ -80,13 +72,14 @@ public class BshCompletionKeyListener extends KeyAdapter {
         public void keyPressed(KeyEvent e) {
                 if (completion == null) {
                 }
+                RSyntaxTextArea textComponent = panel.getTextComponent();
 
-                String originalText = txt.getText();
+                String originalText = textComponent.getText();
                 if ((e.getKeyCode() == KeyEvent.VK_SPACE) && e.isControlDown()) {
-                        Point p = txt.getCaret().getMagicCaretPosition();
+                        Point p = textComponent.getCaret().getMagicCaretPosition();
                         try {
-                                Option[] list = completion.getOptions(originalText, txt.getCaretPosition(), script);
-                                showList(list, p);
+                                Option[] list = completion.getOptions(originalText, textComponent.getCaretPosition(), true);
+                                showList(textComponent, list, p);
                         } catch (Exception e1) {
                                 logger.debug(
                                         I18N.getString("orbisgis.org.orbisgis.ui.bshCompletionKeyListener.bugAutocompleting"), e1); //$NON-NLS-1$
@@ -100,11 +93,11 @@ public class BshCompletionKeyListener extends KeyAdapter {
                                 sfp.setCurrentDirectory(new File(".")); //$NON-NLS-1$ //$NON-NLS-2$
                                 sfp.addFilter("compl", "completion file"); //$NON-NLS-1$ //$NON-NLS-2$
                                 if (UIFactory.showDialog(sfp)) {
-                                        Option[] list = completion.getOptions(originalText, txt.getCaretPosition(), script);
+                                        Option[] list = completion.getOptions(originalText, textComponent.getCaretPosition(), true);
                                         DataOutputStream dos = new DataOutputStream(
                                                 new FileOutputStream(sfp.getSelectedFile()));
                                         StringBuffer sb = new StringBuffer();
-                                        sb.append(txt.getCaretPosition());
+                                        sb.append(textComponent.getCaretPosition());
                                         for (Option option : list) {
                                                 sb.append(";").append(option.getAsString()); //$NON-NLS-1$
                                         }
@@ -118,26 +111,28 @@ public class BshCompletionKeyListener extends KeyAdapter {
                                         I18N.getString("orbisgis.org.orbisgis.ui.bshCompletionKeyListener.cannotSaveCompletion"), e1); //$NON-NLS-1$
                         }
                 } else if ((e.getKeyCode() == KeyEvent.VK_ENTER) && e.isControlDown()) {
-                        BeanShellExecutor.execute(interpreter, scriptOutput, originalText);
+                        BeanShellExecutor.execute(panel, originalText);
                 } else if ((e.getKeyCode() == KeyEvent.VK_F) && e.isControlDown()) {
                         if (originalText.trim().length() > 0) {
-                                FindReplaceDialog findReplaceDialog = new FindReplaceDialog(txt);
-                                findReplaceDialog.setAlwaysOnTop(true);
-                                findReplaceDialog.setVisible(true);
+                                panel.openFindReplaceDialog();
+                        }
+                } else if ((e.getKeyCode() == KeyEvent.VK_H) && e.isControlDown()) {
+                        if (originalText.trim().length() > 0) {
+                                panel.openFindReplaceDialog();
                         }
                 }
         }
 
-        private void showList(final Option[] list, Point p) {
+        private void showList(RSyntaxTextArea textComponent, final Option[] list, Point p) {
                 if (list.length > 0) {
                         WorkbenchContext wbContext = Services.getService(WorkbenchContext.class);
                         JFrame mainFrame = wbContext.getWorkbench().getFrame();
-                        pop = new CompletionPopUp(txt, list);
+                        pop = new CompletionPopUp(textComponent, list);
                         pop.pack();
 
                         // Place the pop up inside the frame so that it's a lightweight
                         // component
-                        Point txtPoint = txt.getLocationOnScreen();
+                        Point txtPoint = textComponent.getLocationOnScreen();
                         Point frmPoint = mainFrame.getLocationOnScreen();
                         int x1 = (txtPoint.x - frmPoint.x) + p.x;
                         int y1 = (txtPoint.y - frmPoint.y) + p.y + 15;
