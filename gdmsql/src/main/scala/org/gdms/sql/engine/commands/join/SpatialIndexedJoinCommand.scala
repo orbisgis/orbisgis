@@ -45,6 +45,7 @@ package org.gdms.sql.engine.commands.join
 import org.gdms.data.indexes.DefaultSpatialIndexQuery
 import org.gdms.data.schema.DefaultMetadata
 import org.gdms.data.schema.MetadataUtilities
+import org.gdms.data.values.Value
 import org.gdms.sql.engine.GdmSQLPredef._
 import org.gdms.sql.engine.commands.Row
 import org.gdms.sql.engine.commands.Command
@@ -70,13 +71,22 @@ class SpatialIndexedJoinCommand(expr: Expression) extends Command with Expressio
   var bigSpatialFieldName: String = null
   
   protected final def doWork(r: Iterator[RowStream]): RowStream = {
-    for (r <- small.execute ; s <- queryIndex(r)) yield Row(r ++ s)
+    for (r <- small.execute ; s <- queryIndex(r); t <- filter(r ++ s)) yield Row(t)
   }
   
   private def queryIndex(r: Row) = {
     val env = r(smallSpatialField).getAsGeometry.getEnvelopeInternal
     big.query = new DefaultSpatialIndexQuery(env, bigSpatialFieldName)
     big.execute
+  }
+  
+  private def filter(r: Array[Value]) = {
+    val e = expr.evaluate(r).getAsBoolean
+    if (e != null && e == true) {
+      r :: Nil
+    } else {
+      Nil
+    }
   }
   
   val exp = expr :: Nil
@@ -110,9 +120,12 @@ class SpatialIndexedJoinCommand(expr: Expression) extends Command with Expressio
         }
     }
     
-    children = Nil
     smallSpatialField = MetadataUtilities.getGeometryFieldIndex(small.getMetadata)
     bigSpatialFieldName  = big.getMetadata.getFieldName(MetadataUtilities.getGeometryFieldIndex(big.getMetadata))
+    
+    super.doPrepare
+    
+    children = Nil
   }
   
   override def preDoCleanUp = {

@@ -43,6 +43,7 @@ import org.gdms.sql.evaluator.FieldEvaluator
 import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.engine.UnknownFieldException
 import org.gdms.sql.engine.commands.scan.CustomQueryScanCommand
+import org.gdms.sql.engine.commands.scan.IndexQueryScanCommand
 import org.gdms.sql.engine.commands.scan.ScanCommand
 import org.gdms.sql.evaluator.DsfEvaluator
 import org.gdms.sql.engine.GdmSQLPredef._
@@ -62,6 +63,7 @@ trait ExpressionCommand extends Command {
   
   private def getFieldMetadata(c: Command): Seq[SQLMetadata] = { c match {
       case s: ScanCommand => s.getMetadata :: (s.children flatMap getFieldMetadata)
+      case s: IndexQueryScanCommand => s.getMetadata :: (s.children flatMap getFieldMetadata)
       case s: CustomQueryScanCommand => s.getMetadata :: (s.children flatMap getFieldMetadata)
       case a: AggregateCommand => a.getMetadata :: Nil
       case _ => c.children flatMap getFieldMetadata
@@ -71,20 +73,29 @@ trait ExpressionCommand extends Command {
   protected override def doPrepare = {
     // prevent ambiguous field names
     
-    
     val allM = children flatMap getFieldMetadata
     
     // set the index of every field in the expressions
     exp.foreach { e =>
       testNoDuplicateFields(e, allM)
       setDsf(e)
-      children map (_.getMetadata) foreach (setFields(e, _))
+      
+      // indexes are offseted so as to be the index in the row resulting of the concatenation
+      // in order of the rows of the child metadata objects.
+      var offset = 0
+      for (m <- children map (_.getMetadata)) {
+        setFields(e, m, offset)
+        offset = offset + m.getFieldCount
+      }
     }
 
     // validation
     exp foreach (_ validate)
   }
   
+  /**
+   * Checks that there is no duplicated/ambiguous fields in the expression.
+   */
   private def testNoDuplicateFields(e: Expression, m: Seq[SQLMetadata]): Unit = {
     e.evaluator match {
       case FieldEvaluator(name, None) => {
@@ -103,7 +114,7 @@ trait ExpressionCommand extends Command {
   /**
    * Resolves fields against metadata objects of child commands
    */
-  private def setFields(e: Expression, m: SQLMetadata): Unit = {
+  private def setFields(e: Expression, m: SQLMetadata, offset: Int): Unit = {
     e.evaluator match {
       case f: FieldEvaluator => {
           f.table match {
@@ -113,12 +124,12 @@ trait ExpressionCommand extends Command {
                   case -1 => {
                       // the field is not directly referenced (maybe through a join?)
                       
-                      val pot = m.getFieldNames.filter(n => n.startsWith(f.name))
+                      val pot = m.getFieldNames filter(_.startsWith(f.name))
                       pot.size match {
                         case 1 => {
                             // there is a single field in the join with that name. Success.
                             val i = m.getFieldIndex(pot.head)
-                            f.index = i
+                            f.index = i + offset
                             f.sqlType = m.getFieldType(i).getTypeCode
                           }
                         case 0 => // there is no field with that name, maybe it will be resolved later.
@@ -129,7 +140,7 @@ trait ExpressionCommand extends Command {
                     }
                   case i =>
                     // the field is directly referenced, no problem. Success.
-                    f.index = i
+                    f.index = i + offset
                     f.sqlType = m.getFieldType(i).getTypeCode
                 }
               }
@@ -140,7 +151,7 @@ trait ExpressionCommand extends Command {
                 case -1 => throw new SemanticException("There is no field '" + f.name + "' in table " + t + ".")
                 case i =>
                   // ... and there is a field with that name. Success.
-                  f.index = i
+                  f.index = i + offset
                   f.sqlType = m.getFieldType(i).getTypeCode
               }
               
@@ -150,7 +161,7 @@ trait ExpressionCommand extends Command {
                 case -1 => 
                 case i =>
                   // there is one, we keep it. Success.
-                  f.index = i
+                  f.index = i + offset
                   f.sqlType = m.getFieldType(i).getTypeCode
               }
             case _ =>
@@ -158,7 +169,7 @@ trait ExpressionCommand extends Command {
         }
       case _ => // not a field, do nothing
     }
-    e.foreach { setFields(_, m) }
+    e.foreach { setFields(_, m, offset) }
   }
 
   /**
@@ -169,6 +180,6 @@ trait ExpressionCommand extends Command {
       case f: DsfEvaluator => f.dsf = dsf
       case _ => // not a function, do nothing
     }
-    e.foreach ( setDsf(_) )
+    e.foreach (setDsf)
   }
 }
