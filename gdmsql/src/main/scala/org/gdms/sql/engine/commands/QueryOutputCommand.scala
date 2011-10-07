@@ -74,8 +74,11 @@ class QueryOutputCommand extends Command with OutputCommand {
     
     val d = new DefaultMetadata()
     
-    (0 until m.getFieldCount) map {i =>
-      d.addField(m.getFieldName(i).takeWhile(_ != '$'), m.getFieldType(i).getTypeCode)
+    (0 until m.getFieldCount) foreach {i =>
+      val f = m.getFieldName(i).takeWhile(_ != '$')
+      if (d.getFieldIndex(f) == -1) {
+        d.addField(f, m.getFieldType(i).getTypeCode)
+      }
     }
     
     SQLMetadata("", d)
