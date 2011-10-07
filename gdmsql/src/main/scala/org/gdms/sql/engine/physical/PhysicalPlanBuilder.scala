@@ -161,9 +161,7 @@ object PhysicalPlanBuilder {
       case IndexQueryScan(table, alias, query) => new IndexQueryScanCommand(table, alias, query)
       case Join(jType) => jType match {
           case Cross() => {
-              // we convert a multiple table Join Operation into a 2 table
-              // LoopJoinCommand
-              new LoopJoinCommand
+              new ExpressionBasedLoopJoinCommand(None)
             }
           case Inner(ex, false) => {
               new ExpressionBasedLoopJoinCommand(Some(ex))
@@ -172,7 +170,7 @@ object PhysicalPlanBuilder {
               new SpatialIndexedJoinCommand(ex)
             }
           case Natural() => {
-              new ExpressionBasedLoopJoinCommand(None)
+              new ExpressionBasedLoopJoinCommand(None, true)
           }
         }
       case Projection(exp) => new ProjectionCommand(exp toArray)

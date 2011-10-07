@@ -52,12 +52,13 @@ import org.gdms.sql.engine.commands.SQLMetadata
 import org.gdms.sql.evaluator.Expression
 import org.gdms.sql.evaluator.Field
 
-class ExpressionBasedLoopJoinCommand(private var expr: Option[Expression]) extends Command with ExpressionCommand {
+class ExpressionBasedLoopJoinCommand(private var expr: Option[Expression], natural: Boolean = false)
+  extends Command with ExpressionCommand with JoinCommand {
   
   override def doPrepare() {
     
     // support for NATURAL joins
-    if (!expr.isDefined) {
+    if (natural) {
       val m1 = children.head.getMetadata
       val m2 = children(1).getMetadata
       
@@ -84,13 +85,13 @@ class ExpressionBasedLoopJoinCommand(private var expr: Option[Expression]) exten
         } else {
           expr = Some(f)
         }
-      } else {
-        expr = Some(Expression(ValueFactory.TRUE))
       }
     }
     
     // initialize expressions
-    super.doPrepare
+    if (expr.isDefined) {
+      super.doPrepare
+    }
   }
   
   /**
@@ -109,24 +110,11 @@ class ExpressionBasedLoopJoinCommand(private var expr: Option[Expression]) exten
   }
   
   protected final def doWork(r: Iterator[RowStream]): RowStream = {
-    //This method just concats two 'rows' into one, inside the Iterable objects
-    val ee = expr.get
-    def doReduce(i: Row, j: Row) = {
-      val a = i ++ j
-      val e = ee.evaluate(a).getAsBoolean
-      if (e != null && e.booleanValue) {
-        Row(a) :: Nil
-      } else {
-        Nil
-      }
+    if (expr.isDefined) {
+      doInnerJoin(r.next, r.next, expr.get)
+    } else {
+      doCrossJoin(r.next, r.next)
     }
-
-    val left = r.next
-    val right = r.next.toSeq
-    // for every batch in left, we take avery batch in right and apply
-    // the doReduce function
-    
-    left flatMap (p => right flatMap (doReduce(p, _)))
   }
   
   def exp = expr.toSeq
