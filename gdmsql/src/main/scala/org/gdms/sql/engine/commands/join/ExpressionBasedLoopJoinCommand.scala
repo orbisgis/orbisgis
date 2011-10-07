@@ -52,7 +52,7 @@ import org.gdms.sql.engine.commands.SQLMetadata
 import org.gdms.sql.evaluator.Expression
 import org.gdms.sql.evaluator.Field
 
-class ExpressionBasedLoopJoinCommand(private var expr: Option[Expression], natural: Boolean = false)
+class ExpressionBasedLoopJoinCommand(private var expr: Option[Expression], natural: Boolean = false, outerLeft: Boolean = false)
   extends Command with ExpressionCommand with JoinCommand {
   
   override def doPrepare() {
@@ -111,8 +111,15 @@ class ExpressionBasedLoopJoinCommand(private var expr: Option[Expression], natur
   
   protected final def doWork(r: Iterator[RowStream]): RowStream = {
     if (expr.isDefined) {
-      doInnerJoin(r.next, r.next, expr.get)
+      if (outerLeft) {
+        // (LEFT) OUTER JOIN
+        doLeftOuterJoin(r.next, r.next, expr.get)
+      } else {
+        // INNER JOIN
+        doInnerJoin(r.next, r.next, expr.get)
+      }
     } else {
+      // CROSS JOIN
       doCrossJoin(r.next, r.next)
     }
   }

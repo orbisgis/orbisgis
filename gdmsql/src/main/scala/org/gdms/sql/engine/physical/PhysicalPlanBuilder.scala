@@ -172,6 +172,9 @@ object PhysicalPlanBuilder {
           case Natural() => {
               new ExpressionBasedLoopJoinCommand(None, true)
           }
+          case OuterLeft(ex) => {
+              new ExpressionBasedLoopJoinCommand(ex, false, true)
+          }
         }
       case Projection(exp) => new ProjectionCommand(exp toArray)
       case a @ Aggregate(exp) => {

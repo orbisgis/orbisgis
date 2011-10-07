@@ -454,7 +454,7 @@ object LogicPlanBuilder {
           var reverse = false
           val exp = content.getChild(2).getType match {
             case T_NATURAL => None
-            case T_ON => Some(parseExpression(content.getChild(1).getChild(0)))
+            case T_ON => Some(parseExpression(content.getChild(2).getChild(0)))
           }
           val outer = content.getChild(1).getType match {
             case T_LEFT => OuterLeft(exp)

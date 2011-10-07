@@ -49,6 +49,9 @@ import org.gdms.data.values.Value
 import org.gdms.data.values.ValueFactory
 import org.gdms.sql.engine.GdmSQLPredef._
 
+/**
+ * Base Join command trait that contains all Loop-based join algorithms.
+ */
 trait JoinCommand extends Command {
   
   def doCrossJoin(left: RowStream, right: RowStream): RowStream = {
@@ -88,6 +91,6 @@ trait JoinCommand extends Command {
   }
   
   private def nullArray(size: Int): Array[Value] = {
-    Array.fill(size)(ValueFactory.createNullValue)
+    Array.fill[Value](size)(ValueFactory.createNullValue[Value])
   }
 }
