@@ -76,7 +76,6 @@ public class SQLParser extends AbstractParser {
 
         @Override
         public ParseResult parse(RSyntaxDocument doc, String style) {
-                metManager.checkSourcesToLoad();
                 String content = "";
                 try {
                         content = doc.getText(0, doc.getLength()).trim();

@@ -152,7 +152,8 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                 if (rootText != null) {
                         content = rootText + content;
                 }
-
+                
+                metManager.checkSourcesToLoad();
                 clear();
                 matcher.match(content);
         }
