@@ -38,6 +38,7 @@
  **/
 package org.orbisgis.core.ui.plugins.views.sqlConsole.language.matcher;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import org.fife.ui.autocomplete.ShorthandCompletion;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.language.SQLCompletionProvider;
@@ -52,6 +53,11 @@ public class SQLMatcher {
         private SQLCompletionProvider pr;
         private SQLLexer lexer;
         private Iterator<String> it;
+        private static final char[] operators = new char[]{'=', '<', '>', '+', '-', '/', '^', '%'};
+
+        static {
+                Arrays.sort(operators);
+        }
 
         /**
          * Creates a new SQLMatcher that will register its completions to the 
@@ -102,14 +108,15 @@ public class SQLMatcher {
                 if ("AS".equalsIgnoreCase(a)) {
                         // as: we have to look deeper to understand what to do.
                         matchAs1();
-                } else if ("FROM".equalsIgnoreCase(a)) {
+                } else if ("FROM".equalsIgnoreCase(a) || "JOIN".equalsIgnoreCase(a)) {
                         // FROM tablename
                         addTables(false);
                         addTableFunctions();
                 } else if ("TABLE".equalsIgnoreCase(a)) {
                         // DROP TABLE and others ending in TABLE
                         matchSourceNames1();
-                } else if ("SELECT".equalsIgnoreCase(a) || "WHERE".equalsIgnoreCase(a)) {
+                } else if ("SELECT".equalsIgnoreCase(a) || "WHERE".equalsIgnoreCase(a) || "ON".equalsIgnoreCase(a)
+                        || "AND".equalsIgnoreCase(a) || "OR".equalsIgnoreCase(a)) {
                         // SELECT table.field
                         addScalarFunctions();
                         addTables(true);
@@ -146,27 +153,49 @@ public class SQLMatcher {
                 } else if ("ORDER".equalsIgnoreCase(a)) {
                         // ORDER BY
                         addKeyWord("BY");
-                } else if ("TO".equalsIgnoreCase(a) || "BY".equalsIgnoreCase(a)) {
+                } else if ("TO".equalsIgnoreCase(a)) {
                         // RENAME TO
                         return;
+                } else if ("BY".equalsIgnoreCase(a)) {
+                        // ORDER/GROUP BY
+                        addTables(true);
+                        return;
+                } else if ("LEFT".equalsIgnoreCase(a) || "RIGHT".equalsIgnoreCase(a)) {
+                        // ORDER BY
+                        addKeyWords("OUTER", "JOIN");
+                } else if ("INNER".equalsIgnoreCase(a) || "NATURAL".equalsIgnoreCase(a) ||
+                        "CROSS".equalsIgnoreCase(a) || "OUTER".equalsIgnoreCase(a)) {
+                        // ORDER BY
+                        addKeyWord("JOIN");
+                } else if ("ORDER".equalsIgnoreCase(a)) {
+                        // ORDER BY
+                        addKeyWord("BY");
+                } else if (isOperator(a)) {
+                        // Operator = + - / ...
+                        addScalarFunctions();
+                        addTables(true);
                 } else {
                         // anything else
                         matchAfterPossibleId();
                 }
         }
-        
+
         /**
          * Decides what to do after "By identifier"
+         * @param start true if we are directly after BY or after a comma
          */
         private void matchIdAfterBy() {
                 if (!it.hasNext()) {
                         return;
                 }
                 String a = it.next();
-                
+
                 if ("ORDER".equalsIgnoreCase(a)) {
                         // ORDER BY
-                        addKeyWords("ASC", "DESC");
+                        addKeyWords("ASC", "DESC", "LIMIT", "OFFSET", "FETCH", "UNION");
+                } else if ("GROUP".equalsIgnoreCase(a)) {
+                        // GROUP BY
+                        addKeyWords("HAVING", "ORDER BY", "LIMIT", "OFFSET", "FETCH", "UNION");
                 }
         }
 
@@ -185,6 +214,7 @@ public class SQLMatcher {
                                         return;
                                 }
                                 addKeyWord("FROM");
+                                addOperators();
                                 return;
                         } else if ("ALTER".equalsIgnoreCase(b)) {
                                 if (inside) {
@@ -199,16 +229,33 @@ public class SQLMatcher {
                                 addKeyWord("AS");
                                 return;
                         } else if ("FROM".equalsIgnoreCase(b)) {
-                                addKeyWords("WHERE", "UNION", "ORDER BY", "GROUP BY", "LIMIT", "OFFSET", "FETCH", "HAVING");
+                                addKeyWords("WHERE", "UNION", "ORDER BY", "GROUP BY", "LIMIT", "OFFSET",
+                                        "FETCH", "HAVING", "JOIN", "INNER JOIN", "LEFT JOIN",
+                                        "RIGHT JOIN", "CROSS JOIN", "NATURAL JOIN");
                                 return;
                         } else if ("WHERE".equalsIgnoreCase(b)) {
                                 addKeyWords("UNION", "ORDER BY", "GROUP BY", "LIMIT", "OFFSET", "FETCH", "HAVING");
+                                addOperators();
+                                return;
+                        } else if ("HAVING".equalsIgnoreCase(b)) {
+                                        addKeyWords("UNION", "ORDER BY", "LIMIT", "OFFSET", "FETCH");
                                 return;
                         } else if ("BY".equalsIgnoreCase(b)) {
                                 matchIdAfterBy();
                                 return;
-                        }
-                        
+                        } else if ("JOIN".equalsIgnoreCase(b)) {
+                                addKeyWords("ON", "WHERE", "UNION", "ORDER BY", "GROUP BY", "LIMIT", "OFFSET",
+                                        "FETCH", "HAVING", "JOIN", "INNER JOIN", "LEFT JOIN",
+                                        "RIGHT JOIN", "CROSS JOIN", "NATURAL JOIN");
+                                return;
+                        } else if ("ON".equalsIgnoreCase(b)) {
+                                addKeyWords("WHERE", "UNION", "ORDER BY", "GROUP BY", "LIMIT", "OFFSET",
+                                        "FETCH", "HAVING", "JOIN", "INNER JOIN", "LEFT JOIN",
+                                        "RIGHT JOIN", "CROSS JOIN", "NATURAL JOIN");
+                                addOperators();
+                                return;
+                        } 
+
                         if (b.contains(";")) {
                                 return;
                         }
@@ -228,7 +275,7 @@ public class SQLMatcher {
                                 addTableFunctions();
                                 return;
                         } else if ("SELECT".equalsIgnoreCase(a) || "WHERE".equalsIgnoreCase(a)
-                                || "SET".equalsIgnoreCase(a)) {
+                                || "SET".equalsIgnoreCase(a) || "ON".equalsIgnoreCase(a)) {
                                 // after SELECT, WHERE or the sert part of an update
                                 addScalarFunctions();
                                 addTables(true);
@@ -237,7 +284,8 @@ public class SQLMatcher {
                                 // inside an insert, no completion
                                 return;
                         } else if ("BY".equalsIgnoreCase(a)) {
-                                // GROUP/ORDER BY, no completion
+                                // GROUP/ORDER BY
+                                addTables(true);
                                 return;
                         }
                 }
@@ -304,5 +352,13 @@ public class SQLMatcher {
 
         private void addKeyWord(String k) {
                 pr.addCompletion(new ShorthandCompletion(pr, k, k + ' '));
+        }
+
+        private boolean isOperator(String s) {
+                return Arrays.binarySearch(operators, s.charAt(s.length() - 1)) >= 0;
+        }
+        
+        private void addOperators() {
+                addKeyWords("IS NULL", "IS NOT NULL", "IS TRUE", "IS FALSE", "LIKE", "AND", "OR");
         }
 }
