@@ -93,7 +93,6 @@ import com.vividsolutions.jts.geom.Envelope;
 import org.gdms.data.DataSource;
 import org.gdms.data.types.GeometryDimensionConstraint;
 import org.gdms.data.types.TypeFactory;
-import org.gdms.driver.solene.Geometry3DUtilities;
 
 public class PnlProportionalPointLegend extends JPanel implements ILegendPanel {
 
