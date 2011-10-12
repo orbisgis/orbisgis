@@ -17,7 +17,6 @@
                 <module>gdmstest</module>
                 <module>gdmsql</module>
                 <module>grap</module>
-                <module>h2spatial</module>
                 <module>orbisgis-core</module>
                 <module>orbisgis-ui</module>
         </modules>
