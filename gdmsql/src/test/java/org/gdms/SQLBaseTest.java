@@ -35,7 +35,6 @@ import org.gdms.driver.dbf.DBFDriver;
 import org.gdms.driver.hsqldb.HSQLDBDriver;
 import org.gdms.driver.postgresql.PostgreSQLDriver;
 import org.gdms.driver.shapefile.ShapefileDriver;
-import org.gdms.driver.solene.CirDriver;
 import org.gdms.source.SourceManager;
 import org.gdms.spatial.SeveralSpatialFieldsDriver;
 import org.junit.BeforeClass;
@@ -344,8 +343,7 @@ public abstract class SQLBaseTest extends SourceTest<Value, Geometry> {
                                         || (driverName instanceof HSQLDBDriver)
                                       //  || (driverName instanceof H2spatialDriver)
                                         || (driverName instanceof PostgreSQLDriver)
-                                        || (driverName instanceof CSVDriver)
-                                        || (driverName instanceof CirDriver)) {
+                                        || (driverName instanceof CSVDriver)) {
                                         ds.setString(row, fwrite, "true");
                                 } else {
                                         ds.setString(row, fwrite, "false");

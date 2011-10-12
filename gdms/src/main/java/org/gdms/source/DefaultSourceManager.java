@@ -93,8 +93,6 @@ import org.gdms.driver.mifmid.MifMidDriver;
 import org.gdms.driver.png.PngDriver;
 import org.gdms.driver.postgresql.PostgreSQLDriver;
 import org.gdms.driver.shapefile.ShapefileDriver;
-import org.gdms.driver.solene.CirDriver;
-import org.gdms.driver.solene.ValDriver;
 import org.gdms.driver.vrml.VrmlDriver;
 import org.gdms.source.directory.Source;
 import org.gdms.source.directory.Sources;
@@ -123,8 +121,6 @@ public final class DefaultSourceManager implements SourceManager {
                 dm.registerDriver(CSVDriver.class);
                 dm.registerDriver(DBFDriver.class);
                 dm.registerDriver(ShapefileDriver.class);
-                dm.registerDriver(CirDriver.class);
-                dm.registerDriver(ValDriver.class);
                 dm.registerDriver(VrmlDriver.class);
                 dm.registerDriver(PostgreSQLDriver.class);
                 dm.registerDriver(HSQLDBDriver.class);
