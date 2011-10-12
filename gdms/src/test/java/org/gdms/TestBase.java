@@ -68,7 +68,6 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.Driver;
 import org.gdms.driver.csv.CSVDriver;
 import org.gdms.driver.dbf.DBFDriver;
-import org.gdms.driver.h2.H2spatialDriver;
 import org.gdms.driver.hsqldb.HSQLDBDriver;
 import org.gdms.driver.postgresql.PostgreSQLDriver;
 import org.gdms.driver.shapefile.ShapefileDriver;
@@ -294,8 +293,8 @@ public abstract class TestBase extends SourceTest<Value, Geometry> {
                                 ds.setString(row, frowCount, Long.toString(testData.getRowCount()));
 
                                 Driver driverName = testData.getDriver();
-                                if ((driverName instanceof H2spatialDriver)
-                                        || (driverName instanceof PostgreSQLDriver)
+                                if ( //(driverName instanceof H2spatialDriver)
+                                        (driverName instanceof PostgreSQLDriver)
                                         || (driverName instanceof HSQLDBDriver)) {
                                         ds.setString(row, fisDB, "true");
                                 } else {
@@ -411,7 +410,7 @@ public abstract class TestBase extends SourceTest<Value, Geometry> {
                                 if ((driverName instanceof DBFDriver)
                                         || (driverName instanceof ShapefileDriver)
                                         || (driverName instanceof HSQLDBDriver)
-                                        || (driverName instanceof H2spatialDriver)
+                                      //  || (driverName instanceof H2spatialDriver)
                                         || (driverName instanceof PostgreSQLDriver)
                                         || (driverName instanceof CSVDriver)
                                         || (driverName instanceof CirDriver)) {

@@ -51,7 +51,7 @@ import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.h2.TinyIntRule;
+import org.gdms.driver.hsqldb.TinyIntRule;
 import org.gdms.driver.jdbc.BinaryRule;
 import org.gdms.driver.jdbc.BooleanRule;
 import org.gdms.driver.jdbc.ConversionRule;

@@ -34,7 +34,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.gdms.driver.h2;
+package org.gdms.driver.hsqldb;
 
 import org.gdms.data.types.Type;
 import org.gdms.driver.postgresql.AbstractIntRule;
