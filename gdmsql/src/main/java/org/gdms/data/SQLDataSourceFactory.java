@@ -82,6 +82,16 @@ public class SQLDataSourceFactory extends DataSourceFactory {
         public SQLDataSourceFactory(String sourceInfoDir, String tempDir) {
                 super(sourceInfoDir, tempDir, new String[] {"org.gdms.source.sqldirectory"});
         }
+        
+        /**
+         * Creates a new {@code SQLDataSourceFactory}.
+         * @param sourceInfoDir the directory where the sources are stored
+         * @param tempDir the directory where temporary sources are stored
+         * @param plugInDir  the directory where plugIn jar files are stored 
+         */
+        public SQLDataSourceFactory(String sourceInfoDir, String tempDir, String plugInDir) {
+                super(sourceInfoDir, tempDir, new String[] {"org.gdms.source.sqldirectory"}, plugInDir);
+        }
 
         /**
          * Gets a DataSource instance to access the result of a query

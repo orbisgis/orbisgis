@@ -40,8 +40,6 @@ package org.gdms.data;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
 import org.apache.log4j.Logger;
 
 import org.gdms.data.db.DBSource;
@@ -60,7 +58,9 @@ import org.gdms.data.wms.WMSSourceDefinition;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.MemoryDriver;
 import org.gdms.driver.DataSet;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.driverManager.DriverManager;
+import org.gdms.plugins.PlugInManager;
 import org.gdms.source.DefaultSourceManager;
 import org.gdms.source.SourceManager;
 import org.orbisgis.progress.ProgressMonitor;
@@ -102,6 +102,7 @@ public class DataSourceFactory {
         private DefaultSourceManager sourceManager;
         private IndexManager indexManager;
         private File resultDir;
+        private PlugInManager plugInManager;
         private static final Logger LOG = Logger.getLogger(DataSourceFactory.class);
 
         /**
@@ -112,7 +113,7 @@ public class DataSourceFactory {
                 initialize(System.getProperty("user.home") + File.separator + ".gdms",
                         ".", null);
         }
-        
+
         /**
          * Creates a new {@code DataSourceFactory} with a <tt>sourceInfoDir</tt>
          * set to a sub-folder '.gdms' in the user's home.
@@ -130,7 +131,7 @@ public class DataSourceFactory {
         public DataSourceFactory(String sourceInfoDir) {
                 initialize(sourceInfoDir, ".", null);
         }
-        
+
         /**
          * Creates a new {@code DataSourceFactory}.
          * @param sourceInfoDir the directory where the sources are stored
@@ -148,9 +149,19 @@ public class DataSourceFactory {
         public DataSourceFactory(String sourceInfoDir, String tempDir) {
                 initialize(sourceInfoDir, tempDir, null);
         }
-        
-        
-/**
+
+        /**
+         * Creates a new {@code DataSourceFactory}.
+         * @param sourceInfoDir the directory where the sources are stored
+         * @param tempDir the directory where temporary sources are stored
+         * @param plugInDir the directory where plugIn jar files are stored 
+         */
+        public DataSourceFactory(String sourceInfoDir, String tempDir, String plugInDir) {
+                initialize(sourceInfoDir, tempDir, null);
+                plugInManager = new PlugInManager(new File(plugInDir), this);
+        }
+
+        /**
          * Creates a new {@code DataSourceFactory}.
          * @param sourceInfoDir the directory where the sources are stored
          * @param tempDir the directory where temporary sources are stored
@@ -159,6 +170,19 @@ public class DataSourceFactory {
         public DataSourceFactory(String sourceInfoDir, String tempDir, String[] sourceContextPaths) {
                 initialize(sourceInfoDir, tempDir, sourceContextPaths);
         }
+
+        /**
+         * Creates a new {@code DataSourceFactory}.
+         * @param sourceInfoDir the directory where the sources are stored
+         * @param tempDir the directory where temporary sources are stored
+         * @param sourceContextPaths an array of source contexts for additional source types.
+         * @param plugInDir the directory where plugIn jar files are stored 
+         */
+        public DataSourceFactory(String sourceInfoDir, String tempDir, String[] sourceContextPaths, String plugInDir) {
+                initialize(sourceInfoDir, tempDir, sourceContextPaths);
+                plugInManager = new PlugInManager(new File(plugInDir), this);
+        }
+
         /**
          * Creates a data source defined by the DataSourceCreation object
          *
@@ -172,7 +196,7 @@ public class DataSourceFactory {
                 throws DriverException {
                 return sourceManager.createDataSource(dsc, DriverManager.DEFAULT_SINGLE_TABLE_NAME);
         }
-        
+
         /**
          * Saves the specified contents into the source specified by the tableName
          * parameter. A source must be registered with that name before
@@ -217,10 +241,7 @@ public class DataSourceFactory {
          *            DataSource
          * @param mode
          *            opening mode
-         * @param indexes
-         *
          * @return DataSource
-         * @throws DataSourceCreationException
          */
         private DataSource getModedDataSource(DataSource ds, int mode) {
                 DataSource ret = ds;
@@ -327,12 +348,12 @@ public class DataSourceFactory {
                 return getDataSource(new FileSourceDefinition(file, DriverManager.DEFAULT_SINGLE_TABLE_NAME), mode,
                         new NullProgressMonitor());
         }
-        
+
         public DataSource getDataSource(File file, String tableName) throws DataSourceCreationException, DriverException {
                 return getDataSource(new FileSourceDefinition(file, tableName), DEFAULT,
                         new NullProgressMonitor());
         }
-        
+
         public DataSource getDataSource(File file, String tableName, int mode) throws DataSourceCreationException, DriverException {
                 return getDataSource(new FileSourceDefinition(file, tableName), mode,
                         new NullProgressMonitor());
@@ -534,6 +555,10 @@ public class DataSourceFactory {
          */
         public void freeResources() throws DataSourceFinalizationException {
 
+                if (plugInManager != null) {
+                        plugInManager.unload();
+                }
+
                 sourceManager.shutdown();
 
                 File[] tempFiles = tempDir.listFiles(new GdmsFileFilter());
@@ -564,12 +589,23 @@ public class DataSourceFactory {
         }
 
         /**
+         * Sets the directory of the plug-in directory.
+         * 
+         * This must be called *before* loadPlugIns().
+         * 
+         * @param plugInDir a valid path to the plug-in directory
+         */
+        public void setPlugInDirectory(String plugInDir) {
+                plugInManager = new PlugInManager(new File(plugInDir), this);
+        }
+
+        /**
          * Initializes the system
          *
+         * @param sourceInfoDir 
          * @param tempDir
          *            temporary directory to write data
-         * @param tempDir
-         *
+         * @param sourceContextPaths 
          * @throws InitializationException
          *             If the initialization fails
          */
@@ -600,6 +636,15 @@ public class DataSourceFactory {
                         throw new InitializationException(e);
                 } catch (IOException e) {
                         throw new InitializationException(e);
+                }
+        }
+
+        /**
+         * Loads all plug-ins (if a plug-in directory has been specified).
+         */
+        public void loadPlugins() {
+                if (plugInManager != null) {
+                        plugInManager.load();
                 }
         }
 
@@ -646,7 +691,7 @@ public class DataSourceFactory {
 
                 return path;
         }
-        
+
         /**
          * Gets the WarningListener associated wit this DataSourceFactory
          * @return
@@ -748,7 +793,7 @@ public class DataSourceFactory {
          * @param def the definition of the source
          * @throws SourceAlreadyExistsException if a source already exists with this name
          */
-        public void registerDataSource(String sourceName, DataSourceDefinition def){
+        public void registerDataSource(String sourceName, DataSourceDefinition def) {
                 sourceManager.register(sourceName, def);
         }
 
@@ -778,5 +823,9 @@ public class DataSourceFactory {
          */
         public Schema getSchema() {
                 return sourceManager.getSchema();
+        }
+
+        public PlugInManager getPlugInManager() {
+                return plugInManager;
         }
 }

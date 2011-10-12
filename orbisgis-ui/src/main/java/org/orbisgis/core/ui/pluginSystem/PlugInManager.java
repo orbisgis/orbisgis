@@ -71,7 +71,6 @@ public class PlugInManager {
 	private WorkbenchContext context;
 	private Collection configurations = new ArrayList();
 	private ClassLoader classLoader;
-	private File plugInDirectory;
 
 	/**
 	 * @param plugInDirectory
@@ -95,8 +94,6 @@ public class PlugInManager {
 						: new ArrayList());		
 /*		 configurations.addAll(findConfigurations(context.getWorkbench()
 				 .getProperties().getConfigurationClasses()));*/
-		 
-		this.plugInDirectory = plugInDirectory;
 	}
 
 	public void load() throws Exception {		
