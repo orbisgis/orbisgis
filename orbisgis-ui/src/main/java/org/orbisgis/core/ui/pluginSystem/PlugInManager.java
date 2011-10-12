@@ -57,6 +57,7 @@ import org.orbisgis.core.ui.pluginSystem.utils.StringUtil;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 
 import com.vividsolutions.jts.util.Assert;
+import java.util.Collections;
 
 
 /**
@@ -95,6 +96,14 @@ public class PlugInManager {
 /*		 configurations.addAll(findConfigurations(context.getWorkbench()
 				 .getProperties().getConfigurationClasses()));*/
 	}
+        
+        /**
+         * Gets all configurations
+         * @return a read-only view of the configurations.
+         */
+        public Collection getConfigurations() {
+                return Collections.unmodifiableCollection(configurations);
+        }
 
 	public void load() throws Exception {		
 		/*loadPlugInClasses(context.getWorkbench().getProperties()
