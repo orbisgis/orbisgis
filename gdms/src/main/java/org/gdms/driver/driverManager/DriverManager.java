@@ -152,7 +152,7 @@ public final class DriverManager {
         }
         
         /**
-         * Registers a driver class into this DriverManager
+         * Registers a driver class into this DriverManager.
          * @param driverClass a class extending Driver
          */
         public void registerDriver(Class<? extends Driver> driverClass) {
@@ -168,6 +168,14 @@ public final class DriverManager {
                                 throw new IllegalArgumentException(
                                         "The driver cannot be instantiated", e);
                         }
+        }
+        
+        /**
+         * Unregisters a driver class from this DriverManager.
+         * @param driverId the driver id (result of myDriver.getDriverId()) of the driver to remove
+         */
+        public void unregisterDriver(String driverId) {
+                driverClasses.remove(driverId);
         }
 
         /**
