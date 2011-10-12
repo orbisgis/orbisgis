@@ -87,7 +87,6 @@ import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.dxf.DXFDriver;
 import org.gdms.driver.gdms.GdmsDriver;
 import org.gdms.driver.geotif.TifDriver;
-import org.gdms.driver.h2.H2spatialDriver;
 import org.gdms.driver.hsqldb.HSQLDBDriver;
 import org.gdms.driver.jpg.JPGDriver;
 import org.gdms.driver.mifmid.MifMidDriver;
@@ -129,7 +128,6 @@ public final class DefaultSourceManager implements SourceManager {
                 dm.registerDriver(VrmlDriver.class);
                 dm.registerDriver(PostgreSQLDriver.class);
                 dm.registerDriver(HSQLDBDriver.class);
-                dm.registerDriver(H2spatialDriver.class);
                 dm.registerDriver(GdmsDriver.class);
                 dm.registerDriver(TifDriver.class);
                 dm.registerDriver(AscDriver.class);
