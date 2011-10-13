@@ -145,7 +145,7 @@ public class ProportionalSymbolsTest extends TestCase {
         System.out.print("");
 
         try {
-            Thread.sleep(20000);
+            Thread.sleep(5000);
         } catch (InterruptedException ex) {
         }
 

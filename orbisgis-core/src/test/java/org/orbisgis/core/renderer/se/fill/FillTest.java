@@ -149,10 +149,9 @@ public class FillTest extends TestCase {
         frame.setSize((int) width, (int) height + 24); // adjust the frame size.
         frame.setVisible(true); // show the frame.
 
-        System.out.print("");
 
         try {
-            Thread.sleep(20000);
+            Thread.sleep(5000);
         } catch (InterruptedException ex) {
             Logger.getLogger(FillTest.class.getName()).log(Level.SEVERE, null, ex);
         }

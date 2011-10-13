@@ -147,10 +147,8 @@ public class ChartsTest extends TestCase {
         frame.setSize((int)rg.getWidth(), (int)rg.getHeight()+24); // adjust the frame size.
         frame.setVisible(true); // show the frame.
 
-        System.out.print("");
-        
         try {
-            Thread.sleep(20000);
+            Thread.sleep(5000);
         } catch (InterruptedException ex) {
             Logger.getLogger(ChartsTest.class.getName()).log(Level.SEVERE, null, ex);
         }
