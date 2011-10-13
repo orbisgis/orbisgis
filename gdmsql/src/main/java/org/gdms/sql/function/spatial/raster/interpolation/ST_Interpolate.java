@@ -156,10 +156,10 @@ public final class ST_Interpolate extends AbstractTableFunction {
         public FunctionSignature[] getFunctionSignatures() {
                 return new FunctionSignature[]{
                                 new TableFunctionSignature(TableDefinition.RASTER,
-                                new TableArgument(TableDefinition.GEOMETRY), ScalarArgument.DOUBLE,
-                                ScalarArgument.DOUBLE),
+                                new TableArgument(TableDefinition.GEOMETRY), ScalarArgument.DOUBLE),
                                 new TableFunctionSignature(TableDefinition.RASTER,
-                                new TableArgument(TableDefinition.GEOMETRY), ScalarArgument.DOUBLE)
+                                new TableArgument(TableDefinition.GEOMETRY), ScalarArgument.DOUBLE,
+                                ScalarArgument.STRING),
                         };
         }
 }
