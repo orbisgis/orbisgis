@@ -199,7 +199,16 @@ object PhysicalPlanBuilder {
           var tables: Seq[Either[String, OutputCommand]] = Nil
           tables = t map { _ match {
               case Left(s) => Left(s)
-              case Right(o) => Right(buildCommandTree(o).asInstanceOf[OutputCommand])
+              case Right(o) => { 
+                  val ot = buildCommandTree(o)
+                  if (ot.isInstanceOf[OutputCommand]) {
+                    Right(ot.asInstanceOf[OutputCommand])
+                  } else {
+                    val out = new QueryOutputCommand()
+                    out.children = ot :: Nil
+                    Right(out)
+                  }
+                }
             }}
           op.children = Nil
           tables = tables.reverse
