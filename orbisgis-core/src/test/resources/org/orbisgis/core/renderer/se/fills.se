@@ -69,7 +69,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>SF Default</LabelText>
+           <Text>SF Default</Text>
          </StyledText></PointLabel>
 	 <PointPosition>
 	   <X>-130</X>
@@ -95,7 +95,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>SF red</LabelText>
+           <Text>SF red</Text>
          </StyledText></PointLabel>
          <PointPosition>
 	   <X>-110</X>
@@ -122,7 +122,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>SF red75%</LabelText>
+           <Text>SF red75%</Text>
          </StyledText></PointLabel>
          <PointPosition>
 	   <X>-90</X>
@@ -149,7 +149,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>SF red25%</LabelText>
+           <Text>SF red25%</Text>
          </StyledText></PointLabel>
          <PointPosition>
 	   <X>-70</X>
@@ -181,7 +181,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>GF Default</LabelText>
+           <Text>GF Default</Text>
          </StyledText></PointLabel>
          <PointPosition>
 	   <X>-130</X>
@@ -211,7 +211,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>SG Tilenone</LabelText>
+           <Text>SG Tilenone</Text>
          </StyledText></PointLabel>
          <PointPosition>
 	   <X>-110</X>
@@ -244,7 +244,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>SG: TileX:3</LabelText>
+           <Text>SG: TileX:3</Text>
          </StyledText></PointLabel>
          <PointPosition>
 	   <X>-90</X>
@@ -279,7 +279,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>SG Tile2x2</LabelText>
+           <Text>SG Tile2x2</Text>
          </StyledText></PointLabel>
          <PointPosition>
 	   <X>-70</X>
@@ -319,7 +319,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>HF Pen45°1/1</LabelText>
+           <Text>HF Pen45°1/1</Text>
          </StyledText></PointLabel>
          <PointPosition>
 	   <X>-130</X>
@@ -349,7 +349,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>SG Tilenone</LabelText>
+           <Text>SG Tilenone</Text>
          </StyledText></PointLabel>
          <PointPosition>
 	   <X>-110</X>
@@ -382,7 +382,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>SG: TileX:3</LabelText>
+           <Text>SG: TileX:3</Text>
          </StyledText></PointLabel>
          <PointPosition>
 	   <X>-90</X>
@@ -418,7 +418,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>SG Tile2x2</LabelText>
+           <Text>SG Tile2x2</Text>
          </StyledText></PointLabel>
          <PointPosition>
 	   <X>-70</X>
@@ -1679,7 +1679,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>0%</LabelText>
+           <Text>0%</Text>
 	   <Font uom="urn:ogc:def:uom:se::pt">
 	     <FontSize>20</FontSize>
 	     <FontWeight>bold</FontWeight>
@@ -1693,7 +1693,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>30%</LabelText>
+           <Text>30%</Text>
 	   <Font uom="urn:ogc:def:uom:se::pt">
 	     <FontSize>20</FontSize>
 	     <FontWeight>bold</FontWeight>
@@ -1709,7 +1709,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>50%</LabelText>
+           <Text>50%</Text>
 	   <Font uom="urn:ogc:def:uom:se::pt">
 	     <FontSize>20</FontSize>
 	     <FontWeight>bold</FontWeight>
@@ -1729,7 +1729,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>60%</LabelText>
+           <Text>60%</Text>
 	   <Font uom="urn:ogc:def:uom:se::pt">
 	     <FontSize>20</FontSize>
 	     <FontWeight>bold</FontWeight>
@@ -1748,7 +1748,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>80%</LabelText>
+           <Text>80%</Text>
 	   <Font uom="urn:ogc:def:uom:se::pt">
 	     <FontSize>20</FontSize>
 	     <FontWeight>bold</FontWeight>
@@ -1768,7 +1768,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>100%</LabelText>
+           <Text>100%</Text>
 	   <Font uom="urn:ogc:def:uom:se::pt">
 	     <FontSize>20</FontSize>
 	     <FontWeight>bold</FontWeight>

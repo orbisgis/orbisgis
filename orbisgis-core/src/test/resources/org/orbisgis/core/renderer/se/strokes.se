@@ -69,7 +69,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>Default</LabelText>
+           <Text>Default</Text>
          </StyledText></PointLabel>
 	 <PointPosition>
             <X>-125</X>
@@ -99,7 +99,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>SolidPink</LabelText>
+           <Text>SolidPink</Text>
          </StyledText></PointLabel>
 	 <PointPosition>
             <X>-90</X>
@@ -130,7 +130,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>3mm alpha=50</LabelText>
+           <Text>3mm alpha=50</Text>
          </StyledText></PointLabel>
 	 <PointPosition>
             <X>-60</X>
@@ -158,7 +158,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>5mm LineJoin:Mitre</LabelText>
+           <Text>5mm LineJoin:Mitre</Text>
          </StyledText></PointLabel>
 	 <PointPosition>
             <X>-30</X>
@@ -186,7 +186,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>5mm LineJoin:Round</LabelText>
+           <Text>5mm LineJoin:Round</Text>
          </StyledText></PointLabel>
 	 <PointPosition>
             <Y>-50</Y>
@@ -212,7 +212,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>5mm LineJoin:Bevel</LabelText>
+           <Text>5mm LineJoin:Bevel</Text>
          </StyledText></PointLabel>
 	 <PointPosition>
             <X>30</X>
@@ -240,7 +240,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>Dash 2</LabelText>
+           <Text>Dash 2</Text>
          </StyledText></PointLabel>
 	 <PointPosition>
             <X>60</X>
@@ -269,7 +269,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>Dash 2 + 2</LabelText>
+           <Text>Dash 2 + 2</Text>
          </StyledText></PointLabel>
 	 <PointPosition>
             <X>90</X>
@@ -299,7 +299,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>Dash 2 2</LabelText>
+           <Text>Dash 2 2</Text>
          </StyledText></PointLabel>
 	 <PointPosition>
             <X>120</X>
@@ -330,7 +330,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>LineCap : def</LabelText>
+           <Text>LineCap : def</Text>
          </StyledText></PointLabel>
 	 <PointPosition>
             <X>-120</X>
@@ -358,7 +358,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>LineCap : butt</LabelText>
+           <Text>LineCap : butt</Text>
          </StyledText></PointLabel>
 	 <PointPosition>
             <X>-90</X>
@@ -386,7 +386,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>LineCap : round</LabelText>
+           <Text>LineCap : round</Text>
          </StyledText></PointLabel>
 	 <PointPosition>
             <X>-60</X>
@@ -414,7 +414,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>LineCap : square</LabelText>
+           <Text>LineCap : square</Text>
          </StyledText></PointLabel>
 	 <PointPosition>
             <X>-30</X>
@@ -446,7 +446,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>Stipple</LabelText>
+           <Text>Stipple</Text>
          </StyledText></PointLabel>
 	 <PointPosition>
             <Y>-20</Y>
@@ -477,7 +477,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>GS: default</LabelText>
+           <Text>GS: default</Text>
          </StyledText></PointLabel>
 	 <PointPosition>
             <X>-120</X>
@@ -508,7 +508,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>GS: l=0</LabelText>
+           <Text>GS: l=0</Text>
          </StyledText></PointLabel>
 	 <PointPosition>
             <X>-90</X>
@@ -538,7 +538,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>GS: l=10</LabelText>
+           <Text>GS: l=10</Text>
          </StyledText></PointLabel>
 	 <PointPosition>
             <X>-60</X>
@@ -590,7 +590,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>GS: MarkTran</LabelText>
+           <Text>GS: MarkTran</Text>
          </StyledText></PointLabel>
 	 <PointPosition>
             <X>-30</X>
@@ -629,7 +629,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>GS: MarkTran</LabelText>
+           <Text>GS: MarkTran</Text>
          </StyledText></PointLabel>
 	 <PointPosition>
 	    <Y>10</Y>
@@ -669,7 +669,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>GS: normal</LabelText>
+           <Text>GS: normal</Text>
          </StyledText></PointLabel>
 	 <PointPosition>
             <X>-120</X>
@@ -709,7 +709,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>GS: normalUP</LabelText>
+           <Text>GS: normalUP</Text>
          </StyledText></PointLabel>
 	 <PointPosition>
             <X>-90</X>
@@ -748,7 +748,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>GS: portrayal</LabelText>
+           <Text>GS: portrayal</Text>
          </StyledText></PointLabel>
          <PointPosition>
             <X>-60</X>
@@ -788,7 +788,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>GS: line</LabelText>
+           <Text>GS: line</Text>
          </StyledText></PointLabel>
          <PointPosition>
             <X>-30</X>
@@ -829,7 +829,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>GS: line+pOff</LabelText>
+           <Text>GS: line+pOff</Text>
          </StyledText></PointLabel>
          <PointPosition>
 	    <Y>40</Y>
@@ -990,7 +990,7 @@
 	  <TextStroke>
 	    <LineLabel>
 	      <StyledText>
-	        <LabelText>Blah Blah Blah Blah Blah Blah Blah Blah Blah Blah Blah Blah</LabelText>
+	        <Text>Blah Blah Blah Blah Blah Blah Blah Blah Blah Blah Blah Blah</Text>
 	      </StyledText>
 	    </LineLabel>
 	  </TextStroke>
@@ -1005,7 +1005,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>TS: def </LabelText>
+           <Text>TS: def </Text>
          </StyledText></PointLabel>
          <PointPosition>
             <X>-120</X>
@@ -1105,7 +1105,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>CS: Check distance /square/</LabelText>
+           <Text>CS: Check distance /square/</Text>
          </StyledText></PointLabel>
          <PointPosition>
 	    <X>-60</X>
@@ -1219,7 +1219,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>CS: Test Distance Ellipse</LabelText>
+           <Text>CS: Test Distance Ellipse</Text>
          </StyledText></PointLabel>
          <PointPosition>
 	    <Y>70</Y>
@@ -1311,7 +1311,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>CS: Test Distance Ellipse</LabelText>
+           <Text>CS: Test Distance Ellipse</Text>
          </StyledText></PointLabel>
          <PointPosition>
 	    <Y>70</Y>
@@ -1386,7 +1386,7 @@
 
         <PointTextGraphic>
          <PointLabel><StyledText>
-           <LabelText>Dash: Offset + linear rapport</LabelText>
+           <Text>Dash: Offset + linear rapport</Text>
          </StyledText></PointLabel>
          <PointPosition>
 	    <Y>70</Y>

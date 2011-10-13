@@ -67,7 +67,7 @@
               <Y>-75.0</Y>
 	    </PointPosition>
           <PointLabel><StyledText>
-            <LabelText>Linear/Offset</LabelText>
+            <Text>Linear/Offset</Text>
             <Font/>
           </StyledText></PointLabel>
         </PointTextGraphic>
@@ -78,7 +78,7 @@
               <Y>-75.0</Y>
 	    </PointPosition>
           <PointLabel><StyledText>
-            <LabelText>off/off</LabelText>
+            <Text>off/off</Text>
             <Font/>
           </StyledText></PointLabel>
         </PointTextGraphic>
@@ -89,7 +89,7 @@
               <Y>-75.0</Y>
 	    </PointPosition>
           <PointLabel><StyledText>
-            <LabelText>off/on</LabelText>
+            <Text>off/on</Text>
             <Font/>
           </StyledText></PointLabel>
         </PointTextGraphic>
@@ -100,7 +100,7 @@
               <Y>-75.0</Y>
 	    </PointPosition>
           <PointLabel><StyledText>
-            <LabelText>on/off</LabelText>
+            <Text>on/off</Text>
             <Font/>
           </StyledText></PointLabel>
         </PointTextGraphic>
@@ -111,7 +111,7 @@
               <Y>-75.0</Y>
 	    </PointPosition>
           <PointLabel><StyledText>
-            <LabelText>on/on</LabelText>
+            <Text>on/on</Text>
             <Font/>
           </StyledText></PointLabel>
         </PointTextGraphic>
@@ -125,7 +125,7 @@
               <Y>-65.0</Y>
 	    </PointPosition>
           <PointLabel><StyledText>
-            <LabelText>Dash 3mm</LabelText>
+            <Text>Dash 3mm</Text>
             <Font/>
           </StyledText></PointLabel>
         </PointTextGraphic>
@@ -356,7 +356,7 @@
               <Y>-45.0</Y>
 	    </PointPosition>
           <PointLabel><StyledText>
-            <LabelText>Dash 3mm</LabelText>
+            <Text>Dash 3mm</Text>
             <Font/>
           </StyledText></PointLabel>
         </PointTextGraphic>
@@ -576,7 +576,7 @@
               <Y>-25.0</Y>
 	    </PointPosition>
           <PointLabel><StyledText>
-            <LabelText>GraphicStroke</LabelText>
+            <Text>GraphicStroke</Text>
             <Font/>
           </StyledText></PointLabel>
         </PointTextGraphic>
@@ -786,7 +786,7 @@
               <Y>-10.0</Y>
 	    </PointPosition>
           <PointLabel><StyledText>
-            <LabelText>Avenue</LabelText>
+            <Text>Avenue</Text>
             <Font/>
           </StyledText></PointLabel>
         </PointTextGraphic>
@@ -1282,7 +1282,7 @@
               <Y>10.0</Y>
 	    </PointPosition>
           <PointLabel><StyledText>
-            <LabelText>Compound</LabelText>
+            <Text>Compound</Text>
             <Font/>
           </StyledText></PointLabel>
         </PointTextGraphic>
@@ -1942,7 +1942,7 @@
               <Y>25.0</Y>
 	    </PointPosition>
           <PointLabel><StyledText>
-            <LabelText>GraphicStroke</LabelText>
+            <Text>GraphicStroke</Text>
             <Font/>
           </StyledText></PointLabel>
         </PointTextGraphic>
