@@ -5,6 +5,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 
+import java.net.URISyntaxException;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
 import net.opengis.se._2_0.core.GraphicType;
@@ -61,7 +62,10 @@ public abstract class Graphic implements SymbolizerNode {
             System.out.println ("Ex: " + ex);
             ex.printStackTrace(System.err);
             return null;
+        } catch(URISyntaxException e){
+                throw new  InvalidStyle("There's a malformed URI in your style", e);
         }
+
         return null;
     }
 

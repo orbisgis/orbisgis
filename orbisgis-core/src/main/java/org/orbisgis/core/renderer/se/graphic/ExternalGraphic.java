@@ -6,6 +6,7 @@ import java.awt.geom.Rectangle2D;
 
 import java.io.IOException;
 
+import java.net.URISyntaxException;
 import javax.media.jai.PlanarImage;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
@@ -95,9 +96,12 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
         if (t.getViewBox() != null) {
             this.setViewBox(new ViewBox(t.getViewBox()));
         }
-
+        try{
         if (t.getOnlineResource() != null) {
             this.setSource(new OnlineResource(t.getOnlineResource()));
+        }
+        }catch (URISyntaxException e){
+                throw new InvalidStyle("There's a malformed URI in your style", e);
         }
 
         this.mimeType = t.getFormat();

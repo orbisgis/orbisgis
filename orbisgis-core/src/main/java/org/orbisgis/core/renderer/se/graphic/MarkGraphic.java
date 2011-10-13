@@ -42,6 +42,7 @@ import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
 import net.opengis.se._2_0.core.MarkGraphicType;
@@ -143,7 +144,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
      * @throws IOException
      * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
      */
-    MarkGraphic(JAXBElement<MarkGraphicType> markG) throws IOException, InvalidStyle {
+    MarkGraphic(JAXBElement<MarkGraphicType> markG) throws IOException, InvalidStyle, URISyntaxException {
         MarkGraphicType t = markG.getValue();
 
         if (t.getUom() != null) {

@@ -43,10 +43,13 @@ import java.awt.geom.Rectangle2D;
 
 import java.io.IOException;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.Services;
@@ -98,7 +101,7 @@ public final class GraphicCollection implements SymbolizerNode {
                         this.addGraphic(newG);
                     }
                 } else {
-                    this.addGraphic(Graphic.createFromJAXBElement(gte));
+                                                this.addGraphic(Graphic.createFromJAXBElement(gte));
                 }
             }
         } else {

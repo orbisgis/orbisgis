@@ -41,6 +41,7 @@
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.graphic;
 
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import javax.swing.Icon;
 import org.orbisgis.core.renderer.se.common.OnlineResource;
 import org.orbisgis.core.renderer.se.graphic.ExternalGraphicSource;
@@ -68,8 +69,8 @@ public class LegendUIOnlineResourcePanel extends LegendUIComponent implements Le
         }
 
         String initUrl = "";
-        if (onlineResource.getUrl() != null){
-            initUrl = onlineResource.getUrl().toString();
+        if (onlineResource.getUri() != null){
+            initUrl = onlineResource.getUri().toString();
         }
 
         urlInput = new TextInput("URL", initUrl, 50, false) {
@@ -77,8 +78,8 @@ public class LegendUIOnlineResourcePanel extends LegendUIComponent implements Le
             @Override
             protected void valueChanged(String s) {
                 try {
-                    onlineResource.setUrl(s);
-                } catch (MalformedURLException ex) {
+                    onlineResource.setUri(s);
+                } catch (URISyntaxException ex) {
                     //urlInput.setValue("");
                 }
             }
