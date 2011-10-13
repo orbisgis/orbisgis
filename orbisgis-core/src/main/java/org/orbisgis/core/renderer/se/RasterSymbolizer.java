@@ -71,6 +71,27 @@ import org.orbisgis.core.renderer.se.raster.ContrastEnhancement;
  */
 public class RasterSymbolizer extends Symbolizer {
 
+
+    private RealParameter opacity;
+    private Channel redChannel;
+    private Channel greenChannel;
+    private Channel blueChannel;
+    private Channel grayChannel;
+    private boolean isColored; // true => use red, green and blue channels; false => use gray
+    private OverlapBehavior overlapBehavior;
+    private Interpolate2Color interpolatedColorMap;
+    private Categorize2Color categorizedColorMap;
+    private boolean useInterpolationForColorMap; // true => interpolatedColorMap, False => CategorizedColorMap
+    private ContrastEnhancement contrastEnhancement;
+    private double gamma;
+    private boolean shadedReliefOnlyBrightness;
+    private double shadedReliefFactor;
+
+    /*
+     * SE request either a LineSymbolizer or an AreaSymbolizer
+     * Since a line symbolizer is an area one witout the fill element, we only provide the latter
+     */
+    private AreaSymbolizer outline;
     @Override
     public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, 
             boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
@@ -223,25 +244,4 @@ public class RasterSymbolizer extends Symbolizer {
         System.out.println("  Geom: " + lst.getGeometry());
     }
 
-    
-    private RealParameter opacity;
-    private Channel redChannel;
-    private Channel greenChannel;
-    private Channel blueChannel;
-    private Channel grayChannel;
-    private boolean isColored; // true => use red, green and blue channels; false => use gray
-    private OverlapBehavior overlapBehavior;
-    private Interpolate2Color interpolatedColorMap;
-    private Categorize2Color categorizedColorMap;
-    private boolean useInterpolationForColorMap; // true => interpolatedColorMap, False => CategorizedColorMap
-    private ContrastEnhancement contrastEnhancement;
-    private double gamma;
-    private boolean shadedReliefOnlyBrightness;
-    private double shadedReliefFactor;
-
-    /*
-     * SE request either a LineSymbolizer or an AreaSymbolizer
-     * Since a line symbolizer is an area one witout the fill element, we only provide the latter
-     */
-    private AreaSymbolizer outline;
 }

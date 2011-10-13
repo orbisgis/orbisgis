@@ -24,7 +24,8 @@ import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
 
 /**
  * Entry point for all kind of symbolizer
- * This abstract class contains only the name, the geom and a description of the symbolizer
+ * This abstract class contains only the name, the way to retrieve the geometry
+ * and a description of the symbolizer.
  * @todo Add a general draw method that fit well for vectors and raster; implement fetch default geometry
  * @author maxence, alexis
  */

@@ -17,6 +17,7 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.UomNode;
 
+import org.orbisgis.core.renderer.se.ViewBoxNode;
 import org.orbisgis.core.renderer.se.common.Halo;
 import org.orbisgis.core.renderer.se.common.OnlineResource;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -28,16 +29,30 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.transform.Transform;
 
 /**
- * an external graphic is an image such as JPG, PNG, SVG.
+ * An external graphic is an image such as JPG, PNG, SVG.
  * Available action on such a graphic are affine transformations.
- * There is no way to re-style the graphic but setting opacity
+ * There is no way to re-style the graphic but setting opacity. It is dependant
+ * upon the following values : <p>
+ * <ul><li>OnlineResource : An URI where to retrieve the remote graphic.
+ * Exclusive with InlineContent.</li>
+ * <li>InlineContent : The content of a graphic is included inline. Exclusive
+ * with OnlineResource.</li>
+ * <li>Format : the MIME type of this graphic.</li>
+ * <li>uom : A unit of measure</li>
+ * <li>ViewBox : A box where the graphic will be rendered.</li>
+ * <li>Transform : The affine transformation to apply on the graphic.</li>
+ * <li>Opacity : Alpha filter to apply on the graphic. It must be a double value,
+ * in the [0;1] range.</li>
+ * <li>Halo : The halo to draw around the graphic.</li>
+ * </ul>
  *
  * @todo Opacity not yet implemented !
  * 
- * @see MarkGraphic, Graphic
- * @author maxence
+ * @see MarkGraphic, Graphic, ViewBox
+ * @author maxence, alexis
  */
-public final class ExternalGraphic extends Graphic implements UomNode, TransformNode {
+public final class ExternalGraphic extends Graphic implements UomNode, TransformNode,
+        ViewBoxNode {
 
     private ExternalGraphicSource source;
     private ViewBox viewBox;
@@ -51,6 +66,13 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
     public ExternalGraphic() {
     }
 
+    /**
+     * Build a new {@code ExternalGraphic}, using the given JAXBElement. The
+     * value in this JAXBElement must be an {@code ExternalGraphicType}.
+     * @param extG
+     * @throws IOException
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle
+     */
     ExternalGraphic(JAXBElement<ExternalGraphicType> extG) throws IOException, InvalidStyle {
         ExternalGraphicType t = extG.getValue();
 
@@ -113,10 +135,21 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
         }
     }
 
+    /**
+     * Get the {@link Halo} that must be rendered around this {@code
+     * ExternalGraphic}.
+     * @return
+     * A {@link Halo} instance, or null if not set.
+     */
     public Halo getHalo() {
         return halo;
     }
 
+    /**
+     * Set the {@link Halo} that must be rendered around this {@code
+     * ExternalGraphic}.
+     * @param halo
+     */
     public void setHalo(Halo halo) {
         this.halo = halo;
         if (halo != null) {
@@ -124,10 +157,20 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
         }
     }
 
+    /**
+     * Get the opacity applied to this {@code ExternalGraphic} at rendering time.
+     * @return
+     * The opacity as a {@link RealParameter} instance, in a {@link
+     * RealParameterContext}.
+     */
     public RealParameter getOpacity() {
         return opacity;
     }
 
+    /**
+     * Set the opacity applied to this {@code ExternalGraphic} at rendering time.
+     * @param opacity
+     */
     public void setOpacity(RealParameter opacity) {
         this.opacity = opacity;
         if (this.opacity != null) {
@@ -135,10 +178,12 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
         }
     }
 
+        @Override
     public ViewBox getViewBox() {
         return viewBox;
     }
 
+        @Override
     public void setViewBox(ViewBox viewBox) {
         this.viewBox = viewBox;
         viewBox.setParent(this);

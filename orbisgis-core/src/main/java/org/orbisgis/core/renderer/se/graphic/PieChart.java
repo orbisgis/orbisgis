@@ -58,7 +58,8 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * change their display order
  * @author alexis, maxence
  */
-public final class PieChart extends Graphic implements StrokeNode, UomNode, TransformNode {
+public final class PieChart extends Graphic implements StrokeNode, UomNode,
+        TransformNode {
 
     private ArrayList<SliceListener> listeners;
     private static final double DEFAULT_RADIUS_PX = 30;

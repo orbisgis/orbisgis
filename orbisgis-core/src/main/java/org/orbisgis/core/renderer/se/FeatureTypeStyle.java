@@ -66,7 +66,7 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 
 /**
- * {@code FeatureTypeStyle} is the entry point taht will define all the
+ * {@code FeatureTypeStyle} is the entry point that will describe all the
  * symbology definitions that must be used to render a given layer. It embeds
  * a set of {@link Rule} instances, that must be applied to a given
  * {@link ILayer layer}.

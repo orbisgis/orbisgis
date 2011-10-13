@@ -75,12 +75,14 @@ import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
  * <ul><li>A definition of the contained graphic, that can be exclusively of one of these types :
  *      <ul><li> WellKnownText : as defined in {@link WellKnownName}.</li>
  *      <li>An online resource, defined with an URI (to a TrueType font, for instance,
- *              particularly if associated with a markindex value</li>
+ *          particularly if associated with a markindex value</li>
  *      <li>An inlineContent, ie a nested mark description</li>
  *      </ul></li>
- * <li>A Format, describing the MIME-type.</li>
- * <li>A Markindex, used to retrieve the desired mark in a remote collection (a glyph
- *      within a font, for instance</li>
+ * <li>A Format, describing the MIME-type. This parameter is compulsory when
+ * using an online or inline mark, as it is essential to handle efficiently
+ * the desired objects.</li>
+ * <li>A MarkIndex, used to retrieve the desired mark in a remote collection (a glyph
+ * within a font, for instance).</li>
  * <li>A unit of measure</li>
  * <li>A viewbox, as described in {@link ViewBox}</li>
  * <li>A {@link Transform}, that describes an affine transformation that must be applied on the mark.</li>
@@ -91,7 +93,8 @@ import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
  * </ul>
  * @author maxence, alexis
  */
-public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, ViewBoxNode, UomNode, TransformNode {
+public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
+        ViewBoxNode, UomNode, TransformNode {
 
         /**
          * The defautl size used to build {@code MarkGraphic} instances.
