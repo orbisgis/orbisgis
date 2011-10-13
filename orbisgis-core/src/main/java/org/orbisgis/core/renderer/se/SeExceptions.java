@@ -40,6 +40,8 @@
 
 package org.orbisgis.core.renderer.se;
 
+import java.net.URISyntaxException;
+
 /**
  *
  * @author maxence
@@ -61,5 +63,9 @@ public class SeExceptions {
 		public InvalidStyle(String arg0){
 			super(arg0);
 		}
+
+                public InvalidStyle(String string, Exception ex) {
+                        super(string, ex);
+                }
 	}
 }
