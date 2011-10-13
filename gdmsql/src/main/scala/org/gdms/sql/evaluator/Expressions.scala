@@ -45,6 +45,8 @@ import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.function.AggregateFunction
 import org.gdms.sql.function.FunctionManager
 import org.gdms.sql.function.ScalarFunction
+import org.gdms.sql.function.executor.ExecutorFunction
+import org.gdms.sql.function.table.TableFunction
 
 /**
  * This class reprensents any abstract SQL scalar expression.
@@ -215,6 +217,11 @@ object Expression {
     FunctionManager.getFunction(name) match {
       case s: ScalarFunction => new Expression(FunctionEvaluator(s, l))
       case a: AggregateFunction => new Expression(AggregateEvaluator(a, l))
+      case e: ExecutorFunction => throw new SemanticException("The function '" + name
+                                                              + "' cannot be used here. Syntax is: EXECUTE " +
+                                                              name + "(...);")
+      case t: TableFunction => throw new SemanticException("The function '" + name + "' cannot be used here." +
+                                                           "Syntax is: SELECT ... FROM " + name + "(...);")
       case _ => throw new SemanticException("Unknown function: '" + name + "'.")
     }
     

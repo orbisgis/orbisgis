@@ -128,6 +128,7 @@ public final class SQLEngine {
          * @param sql a SQL script
          * @return an array of statements
          * @throws ParseException if there is an error while parsing
+         * @throws SemanticException  if there is a semantic error
          */
         public SqlStatement[] parse(String sql) throws ParseException {
                 ANTLRInputStream input;
@@ -162,7 +163,12 @@ public final class SQLEngine {
                                 throw ex;
                         }
                 }
-                final ExecutionGraph[] graphs = ExecutionGraphBuilder.build(tree, properties);
+                final ExecutionGraph[] graphs;
+                try {
+                        graphs = ExecutionGraphBuilder.build(tree, properties);
+                } catch (SemanticException ex) {
+                        throw new ParseException("Semantic Error", ex);
+                }
                 final SqlStatement[] sts = new SqlStatement[graphs.length];
 
                 for (int i = 0; i < graphs.length; i++) {
