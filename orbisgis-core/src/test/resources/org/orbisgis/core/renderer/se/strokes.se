@@ -645,7 +645,7 @@
 	  <GraphicStroke>
                 <MarkGraphic>
                     <!--<OnlineResource ns4:href="http://bitbucket.org/ovnicraft/ogcserver/raw/649d8bf42a09/haiti/fonts/ERS_v2_Incidents_txt.ttf" />-->
-		    <OnlineResource ns4:href="file:///usr/share/fonts/TTF/luximb.ttf" />
+		    <OnlineResource ns4:href="file:./src/test/resources/FreeMonoOblique.ttf" />
                     <MarkIndex>97</MarkIndex>
                     <Format>application/x-font-ttf</Format>
                     <ViewBox>
@@ -686,7 +686,7 @@
 	  <GraphicStroke>
                 <MarkGraphic>
                     <!--<OnlineResource ns4:href="http://bitbucket.org/ovnicraft/ogcserver/raw/649d8bf42a09/haiti/fonts/ERS_v2_Incidents_txt.ttf" />-->
-		    <OnlineResource ns4:href="file:///usr/share/fonts/TTF/luximb.ttf" />
+		    <OnlineResource ns4:href="file:./src/test/resources/FreeMonoOblique.ttf" />
                     <MarkIndex>98</MarkIndex>
                     <Format>application/x-font-ttf</Format>
                     <ViewBox>
@@ -725,7 +725,7 @@
 	  <GraphicStroke>
                 <MarkGraphic>
                     <!--<OnlineResource ns4:href="http://bitbucket.org/ovnicraft/ogcserver/raw/649d8bf42a09/haiti/fonts/ERS_v2_Incidents_txt.ttf" />-->
-		    <OnlineResource ns4:href="file:///usr/share/fonts/TTF/luximb.ttf" />
+		    <OnlineResource ns4:href="file:./src/test/resources/FreeMonoOblique.ttf" />
                     <MarkIndex>99</MarkIndex>
                     <Format>application/x-font-ttf</Format>
                     <ViewBox>
@@ -765,7 +765,7 @@
 	  <GraphicStroke>
                 <MarkGraphic>
                     <!--<OnlineResource ns4:href="http://bitbucket.org/ovnicraft/ogcserver/raw/649d8bf42a09/haiti/fonts/ERS_v2_Incidents_txt.ttf" />-->
-		    <OnlineResource ns4:href="file:///usr/share/fonts/TTF/luximb.ttf" />
+		    <OnlineResource ns4:href="file:./src/test/resources/FreeMonoOblique.ttf" />
                     <MarkIndex>100</MarkIndex>
                     <Format>application/x-font-ttf</Format>
                     <ViewBox>
@@ -805,7 +805,7 @@
 	  <GraphicStroke>
                 <MarkGraphic>
                     <!--<OnlineResource ns4:href="http://bitbucket.org/ovnicraft/ogcserver/raw/649d8bf42a09/haiti/fonts/ERS_v2_Incidents_txt.ttf" />-->
-		    <OnlineResource ns4:href="file:///usr/share/fonts/TTF/luximb.ttf" />
+		    <OnlineResource ns4:href="file:./src/test/resources/FreeMonoOblique.ttf" />
                     <MarkIndex>101</MarkIndex>
                     <Format>application/x-font-ttf</Format>
                     <ViewBox>
