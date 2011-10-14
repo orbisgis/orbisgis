@@ -84,7 +84,7 @@ public class SearchToolBars extends JPanel implements ActionListener {
                 casseCB = new JCheckBox(I18N.getString("orbisgis.org.orbisgis.ui.findReplace.matchCase"));
                 wholeWordCB = new JCheckBox(I18N.getString("orbisgis.org.orbisgis.ui.findReplace.wholeWords"));
                 final JCheckBox sqlCB = new JCheckBox(I18N.getString("orbisgis.org.orbigis.core.tableComponent.searchPanel.enableSQL"));
-                sqlCB.setEnabled(false);
+                sqlCB.setEnabled(true);
                 sqlCB.addActionListener(new ActionListener() {
 
                         @Override
@@ -389,9 +389,10 @@ public class SearchToolBars extends JPanel implements ActionListener {
                         long dsRowCount = filterDataSourceDecorator.getRowCount();
 
                         List<Integer> map = filterDataSourceDecorator.getIndexMap();
+                        
                         int[] sel = new int[map.size()];
                         for (int i = 0; i < dsRowCount; i++) {
-                                sel[i] = (int) filterDataSourceDecorator.getOriginalIndex(i);
+                                sel[i] = map.get(i);
                         }
 
                         MapContext mapC = tc.getElement().getMapContext();
