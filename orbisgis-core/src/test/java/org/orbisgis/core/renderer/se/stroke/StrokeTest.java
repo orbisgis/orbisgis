@@ -38,7 +38,6 @@
 
 package org.orbisgis.core.renderer.se.stroke;
 
-
 import org.orbisgis.core.renderer.se.graphic.*;
 import com.sun.media.jai.widget.DisplayJAI;
 import java.awt.BasicStroke;
@@ -72,6 +71,7 @@ import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 
 /**
@@ -104,9 +104,27 @@ public class StrokeTest extends TestCase {
         super.tearDown();
     }
 
-    public void testGraphic() throws IOException, ParameterException, InvalidStyle {
+    public void testDashLengthOdd() {
+            String dashes = "1 1 2 1 3";
+            PenStroke str = new PenStroke();
+            str.setUom(Uom.PX);
+            str.setDashArray(new StringLiteral(dashes));
+            double res = str.getNaturalLength(null, 0, null, new MapTransform());
+            assertTrue(res == 16);
+    }
+
+    public void testDashLengthEven() {
+            String dashes = "1 1 2 1 3 1";
+            PenStroke str = new PenStroke();
+            str.setUom(Uom.PX);
+            str.setDashArray(new StringLiteral(dashes));
+            double res = str.getNaturalLength(null, 0, null, new MapTransform());
+            assertTrue(res == 9);
+    }
+
+    public void experimentGraphic() throws IOException, ParameterException, InvalidStyle {
         JFrame frame = new JFrame();
-        frame.setTitle("Test GraphicCollection");
+        frame.setTitle("StrokeTest");
 
         // Get the JFrame’s ContentPane.
         Container contentPane = frame.getContentPane();
@@ -171,8 +189,6 @@ public class StrokeTest extends TestCase {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize((int)width, (int)height+24); // adjust the frame size.
         frame.setVisible(true); // show the frame.
-
-        System.out.print("");
         
         try {
             Thread.sleep(5000);

@@ -65,6 +65,7 @@ import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 
 /**
@@ -97,7 +98,16 @@ public class FillTest extends TestCase {
         super.tearDown();
     }
 
-    public void testGraphic() throws IOException, ParameterException, InvalidStyle {
+    public void testFillPercentageContext() throws ParameterException {
+            DensityFill df = new DensityFill();
+            df.setPercentageCovered(new RealLiteral(-1));
+            assertTrue(df.getPercentageCovered().getValue(null, 1) == 0);
+            df.setPercentageCovered(new RealLiteral(101));
+            assertTrue(df.getPercentageCovered().getValue(null, 1) == 1);
+
+    }
+
+    public void drawGraphic() throws IOException, ParameterException, InvalidStyle {
         JFrame frame = new JFrame();
         frame.setTitle("Test GraphicCollection");
 

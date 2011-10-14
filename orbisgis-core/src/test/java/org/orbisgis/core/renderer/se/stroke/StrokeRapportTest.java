@@ -70,8 +70,10 @@ import net.opengis.se._2_0.core.FeatureTypeStyleType;
 import org.orbisgis.core.renderer.se.FeatureTypeStyle;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.common.OnlineResource;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 
 /**
@@ -104,7 +106,19 @@ public class StrokeRapportTest extends TestCase {
         super.tearDown();
     }
 
-    public void testGraphic() throws IOException, ParameterException, InvalidStyle {
+    /**
+     * We must not be able to have WKN and onlineResource set in a MarkGraphic.
+     */
+    public void testWKNOnlineExclusivity(){
+            MarkGraphic mg = new MarkGraphic();
+            mg.setWkn(new StringLiteral("CIRCLE"));
+            mg.setOnlineResource(new OnlineResource());
+            assertNull(mg.getWkn());
+            mg.setWkn(new StringLiteral("CIRCLE"));
+            assertNull(mg.getOnlineResource());
+    }
+
+    public void drawGraphic() throws IOException, ParameterException, InvalidStyle {
         JFrame frame = new JFrame();
         frame.setTitle("Test GraphicCollection");
 

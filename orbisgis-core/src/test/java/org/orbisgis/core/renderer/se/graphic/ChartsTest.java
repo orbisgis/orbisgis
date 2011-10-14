@@ -67,6 +67,7 @@ import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 
 /**
@@ -97,6 +98,13 @@ public class ChartsTest extends TestCase {
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
+    }
+
+    public void testCategoryWidthContext() throws ParameterException {
+            AxisChart as = new AxisChart();
+            as.setCategoryWidth(new RealLiteral(-1));
+            assertTrue(as.getCategoryWidth().getValue(null, 1) == 0);
+            
     }
 
     public void drawGraphic() throws IOException, ParameterException, InvalidStyle {

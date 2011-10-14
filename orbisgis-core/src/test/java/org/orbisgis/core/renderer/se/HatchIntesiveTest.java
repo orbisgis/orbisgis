@@ -21,16 +21,15 @@ import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.orbisgis.core.AbstractTest;
-import org.orbisgis.core.ConsoleOutputManager;
-import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.Layer;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.ImageRenderer;
 import org.orbisgis.core.renderer.Renderer;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.fill.HatchedFill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.ui.plugins.views.output.OutputManager;
+import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 
 /**
  *
@@ -46,6 +45,15 @@ public class HatchIntesiveTest extends AbstractTest {
         super.setUp();
     }
 
+    /**
+     * We don't want negative distances
+     */
+    public void testDistanceContext() throws ParameterException {
+            HatchedFill hf = new HatchedFill();
+            hf.setDistance(new RealLiteral(-1));
+            assertTrue(hf.getDistance().getValue(null, 1) == 0);
+    }
+
     public void template(String shapefile, String title, String stylePath, String source,
             String savePath, Envelope extent)
             throws IOException, InvalidStyle, DriverException, DriverLoadException, DataSourceCreationException {
@@ -59,8 +67,9 @@ public class HatchIntesiveTest extends AbstractTest {
             MapTransform mt = new MapTransform();
 
 
-            if (extent == null)
+            if (extent == null) {
                 extent = sds.getFullExtent();
+            }
 
             mt.resizeImage(WIDTH, HEIGHT);
             mt.setExtent(extent);

@@ -322,6 +322,8 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
          * @param categoryWidth
          * A {@link RealParameter}, that will be placed in a
          * {@link RealParameterContext#NON_NEGATIVE_CONTEXT non-negative context}.
+         * Consequently, if given a negative number here, the categories won't
+         * be displayed, as their width will be set to 0...
          */
         public void setCategoryWidth(RealParameter categoryWidth) {
                 this.categoryWidth = categoryWidth;
