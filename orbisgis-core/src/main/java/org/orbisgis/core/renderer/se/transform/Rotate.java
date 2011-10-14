@@ -173,7 +173,8 @@ public final class Rotate implements Transformation {
         }
 
         @Override
-        public AffineTransform getAffineTransform(SpatialDataSourceDecorator sds, long fid, Uom uom, MapTransform mt, Double width, Double height) throws ParameterException {
+        public AffineTransform getAffineTransform(SpatialDataSourceDecorator sds, long fid, Uom uom,
+                        MapTransform mt, Double width, Double height) throws ParameterException {
                 double ox = 0.0;
                 if (x != null) {
                         ox = Uom.toPixel(x.getValue(sds, fid), uom, mt.getDpi(), mt.getScaleDenominator(), width);
