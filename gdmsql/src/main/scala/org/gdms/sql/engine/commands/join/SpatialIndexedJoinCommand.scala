@@ -71,7 +71,7 @@ class SpatialIndexedJoinCommand(expr: Expression) extends Command with Expressio
   var bigSpatialFieldName: String = null
   
   protected final def doWork(r: Iterator[RowStream]): RowStream = {
-    for (r <- small.execute ; s <- queryIndex(r); t <- filter(r ++ s)) yield Row(t)
+    for (r <- small.execute ; s <- queryIndex(r); t <- filter(r ++ s)) yield t
   }
   
   private def queryIndex(r: Row) = {
@@ -80,7 +80,7 @@ class SpatialIndexedJoinCommand(expr: Expression) extends Command with Expressio
     big.execute
   }
   
-  private def filter(r: Array[Value]) = {
+  private def filter(r: Row) = {
     val e = expr.evaluate(r).getAsBoolean
     if (e != null && e == true) {
       r :: Nil

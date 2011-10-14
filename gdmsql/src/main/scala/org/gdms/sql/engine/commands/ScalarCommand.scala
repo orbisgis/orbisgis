@@ -38,7 +38,6 @@
 
 package org.gdms.sql.engine.commands
 
-import org.gdms.data.values.Value
 import org.gdms.sql.engine.GdmSQLPredef._
 
 /**
@@ -49,13 +48,8 @@ import org.gdms.sql.engine.GdmSQLPredef._
  */
 abstract class ScalarCommand  extends Command {
   protected final def doWork(r: Iterator[RowStream]) = {
-    // flatMap: apply the filter to all input table and produce 1 output table
-    // map: apply the filter to the whole dataset
-    // map: add the next map to the list of future processing to be done by the Promise
-    // map: add the scalar process to every single row
-    
-    r.next map(_ map (scalarExecute))
+    r.next map(scalarExecute)
   }
 
-  protected def scalarExecute: (Array[Value]) => Array[Value]
+  protected def scalarExecute: (Row) => Row
 }

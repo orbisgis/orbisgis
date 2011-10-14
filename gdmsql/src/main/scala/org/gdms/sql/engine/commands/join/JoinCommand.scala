@@ -56,7 +56,7 @@ trait JoinCommand extends Command {
   
   def doCrossJoin(left: RowStream, right: RowStream): RowStream = {
     val r = right.toSeq
-    for (p <- left; q <- r) yield Row(p ++ q)
+    for (p <- left; q <- r) yield p ++ q
   }
   
   def doInnerJoin(left: RowStream, right: RowStream, exp: Expression): RowStream = {
@@ -65,7 +65,7 @@ trait JoinCommand extends Command {
       val a = i ++ j
       val e = exp.evaluate(a).getAsBoolean
       if (e != null && e.booleanValue) {
-        Row(a) :: Nil
+        a :: Nil
       } else {
         Nil
       }
@@ -81,9 +81,9 @@ trait JoinCommand extends Command {
       val a = i ++ j
       val e = exp.evaluate(a).getAsBoolean
       if (e != null && e.booleanValue) {
-        Row(a)
+        a
       } else {
-        Row(i ++ empty)
+        i ++ empty
       }
     }
     

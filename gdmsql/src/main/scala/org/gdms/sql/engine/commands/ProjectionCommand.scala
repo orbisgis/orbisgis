@@ -107,7 +107,7 @@ class ProjectionCommand(var expression: Array[(Expression, Option[String])]) ext
   protected override def exp: Seq[Expression] = expression map ( _._1)
 
   protected def scalarExecute = a => {
-    expression map( _._1.evaluate(a))
+    Row(expression map( _._1.evaluate(a)))
   }
 
   private implicit def inM = children.head.getMetadata

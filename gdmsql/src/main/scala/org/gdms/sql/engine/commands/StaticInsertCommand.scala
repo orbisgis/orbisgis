@@ -119,7 +119,7 @@ extends Command with OutputCommand with ExpressionCommand {
   protected final def doWork(r: Iterator[RowStream]) = {
     // we eval each Array (= row) and give it to insertFilledRow
     exps foreach { e => ro = ro + 1
-                  ds.insertFilledRow((order(e) map ( _.evaluate(Array.empty) ))) }
+                  ds.insertFilledRow((order(e) map ( _.evaluate(Row.empty) ))) }
 
     res.addValues(ValueFactory.createValue(ro))
     ro = 0

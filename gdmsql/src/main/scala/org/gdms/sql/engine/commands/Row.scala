@@ -40,6 +40,7 @@ package org.gdms.sql.engine.commands
 
 import java.util.Arrays
 import org.gdms.data.values.Value
+import org.gdms.sql.engine.GdmSQLPredef._
 
 /**
  * Wrapper for a row.
@@ -67,9 +68,19 @@ final class Row(val rowId: Option[Long], var array: Array[Value]) {
       false
     }
   }
+  
+  def ++(r: Row) = {
+    new Row(None, array ++ r)
+  }
+  
+  def ++(a: Array[Value]) = {
+    new Row(None, array ++ a)
+  }
 }
 
 object Row {
   def apply(i: Long, a: Seq[Value]) = new Row(Some(i),a toArray)
   def apply(a: Seq[Value]) = new Row(None, a toArray)
+  
+  val empty: Row = new Row(None, Array.empty)
 }

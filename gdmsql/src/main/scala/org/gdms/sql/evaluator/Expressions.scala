@@ -47,6 +47,8 @@ import org.gdms.sql.function.FunctionManager
 import org.gdms.sql.function.ScalarFunction
 import org.gdms.sql.function.executor.ExecutorFunction
 import org.gdms.sql.function.table.TableFunction
+import org.gdms.sql.engine.commands.Row
+import org.gdms.sql.engine.GdmSQLPredef._
 
 /**
  * This class reprensents any abstract SQL scalar expression.
@@ -64,7 +66,7 @@ sealed class Expression(var evaluator: Evaluator) extends Iterable[Expression] {
    *
    * @param s the current input row in this scalar expression
    */
-  def evaluate(s: Array[Value]): Value = evaluator.eval(s)
+  def evaluate(s: Row): Value = evaluator.eval(s)
 
   def and(e: Expression) = {
     new Expression(AndEvaluator(this,e))
@@ -273,7 +275,11 @@ object Field {
    * @param a name of an accessible field in the fiven context
    */
   def apply(name: String) = {
-    new Expression(FieldEvaluator(name))
+    if (name == "oid") {
+      new Expression(OidEvaluator())
+    } else {
+      new Expression(FieldEvaluator(name))
+    }
   }
 
   def apply(name: String, table: String) = {

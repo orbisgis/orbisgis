@@ -39,16 +39,18 @@
 package org.gdms.sql.evaluator
 
 import org.gdms.data.SQLDataSourceFactory
+import org.gdms.data.types.Type
 import org.gdms.data.types.TypeFactory
 import org.gdms.data.values.Value
 import org.gdms.data.values.ValueFactory
-import org.gdms.data.values.SQLValueFactory
 import org.gdms.sql.engine.UnknownFieldException
 import org.gdms.sql.function.AggregateFunction
 import org.gdms.sql.function.FunctionException
 import org.gdms.sql.function.FunctionManager
 import org.gdms.sql.function.FunctionValidator
 import org.gdms.sql.function.ScalarFunction
+import org.gdms.sql.engine.commands.Row
+import org.gdms.sql.engine.GdmSQLPredef._
 
 /**
  * Base class for all expression evaluators.
@@ -60,7 +62,7 @@ abstract class Evaluator {
   /**
    * Function defining the evaluation
    */
-  def eval: (Array[Value]) => Value
+  def eval: (Row) => Value
 
   /**
    * Return type of the <tt>eval</tt> function
@@ -190,6 +192,18 @@ case class FieldEvaluator(name: String, table: Option[String] = None) extends Ev
     f.index = index
   }
   def doCopy = copy()
+}
+
+case class OidEvaluator() extends Evaluator {
+  def eval = r => {
+    if (r.rowId.isDefined) {
+      ValueFactory.createValue(r.rowId.get)
+    } else {
+      ValueFactory.createNullValue[Value]
+    }
+  }
+  val sqlType = Type.LONG
+  def doCopy = new OidEvaluator
 }
 
 case class CastEvaluator(e: Expression, sqlType: Int) extends Evaluator {
