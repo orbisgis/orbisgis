@@ -43,8 +43,11 @@
 package org.gdms.sql.engine.commands.join
 
 import org.gdms.data.schema.DefaultMetadata
+import org.gdms.data.types.Type
+import org.gdms.data.types.TypeFactory
 import org.gdms.data.values.ValueFactory
 import org.gdms.sql.engine.GdmSQLPredef._
+import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.engine.commands.Command
 import org.gdms.sql.engine.commands.ExpressionCommand
 import org.gdms.sql.engine.commands.Row
@@ -53,7 +56,7 @@ import org.gdms.sql.evaluator.Expression
 import org.gdms.sql.evaluator.Field
 
 class ExpressionBasedLoopJoinCommand(private var expr: Option[Expression], natural: Boolean = false, outerLeft: Boolean = false)
-  extends Command with ExpressionCommand with JoinCommand {
+extends Command with ExpressionCommand with JoinCommand {
   
   override def doPrepare() {
     
@@ -91,7 +94,14 @@ class ExpressionBasedLoopJoinCommand(private var expr: Option[Expression], natur
     // initialize expressions
     if (expr.isDefined) {
       super.doPrepare
+      
+      expr.get.evaluator.sqlType match {
+        case Type.BOOLEAN =>
+        case i =>throw new SemanticException("The join expression does not return a Boolean. Type: " +
+                                             TypeFactory.getTypeName(i))
+      }
     }
+    
   }
   
   /**

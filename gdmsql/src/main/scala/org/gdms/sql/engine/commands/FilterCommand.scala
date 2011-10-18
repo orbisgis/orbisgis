@@ -38,7 +38,10 @@
 
 package org.gdms.sql.engine.commands
 
+import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.evaluator.Expression
+import org.gdms.data.types.Type
+import org.gdms.data.types.TypeFactory
 import org.gdms.sql.engine.GdmSQLPredef._
 
 /**
@@ -67,5 +70,15 @@ class ExpressionFilterCommand(e: Expression) extends FilterCommand with Expressi
   protected val exp: Seq[Expression] = List(e)
 
   protected def filterExecute: Row => Boolean = { r => e.evaluate(r).getAsBoolean.booleanValue }
+  
+  override def doPrepare {
+    super.doPrepare
+    
+    e.evaluator.sqlType match {
+      case Type.BOOLEAN =>
+      case i =>throw new SemanticException("The filtering expression does not return a Boolean. Type: " +
+                                           TypeFactory.getTypeName(i))
+    }
+  }
 
 }

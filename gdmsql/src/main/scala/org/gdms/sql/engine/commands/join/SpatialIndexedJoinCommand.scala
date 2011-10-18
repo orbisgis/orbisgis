@@ -45,9 +45,12 @@ package org.gdms.sql.engine.commands.join
 import org.gdms.data.indexes.DefaultSpatialIndexQuery
 import org.gdms.data.schema.DefaultMetadata
 import org.gdms.data.schema.MetadataUtilities
+import org.gdms.data.types.Type
+import org.gdms.data.types.TypeFactory
 import org.gdms.data.values.Value
 import org.gdms.sql.engine.GdmSQLPredef._
 import org.gdms.sql.engine.commands.Row
+import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.engine.commands.Command
 import org.gdms.sql.engine.commands.ExpressionCommand
 import org.gdms.sql.engine.commands.scan.IndexQueryScanCommand
@@ -113,7 +116,7 @@ class SpatialIndexedJoinCommand(expr: Expression) extends Command with Expressio
       case a: IndexQueryScanCommand => {
           big = a
           small = children.tail.head
-      }
+        }
       case b => {
           small = b
           big = children.tail.head.asInstanceOf[IndexQueryScanCommand]
@@ -124,6 +127,12 @@ class SpatialIndexedJoinCommand(expr: Expression) extends Command with Expressio
     bigSpatialFieldName  = big.getMetadata.getFieldName(MetadataUtilities.getGeometryFieldIndex(big.getMetadata))
     
     super.doPrepare
+    
+    expr.evaluator.sqlType match {
+      case Type.BOOLEAN =>
+      case i =>throw new SemanticException("The join expression does not return a Boolean. Type: " +
+                                           TypeFactory.getTypeName(i))
+    }
     
     children = Nil
   }
