@@ -126,6 +126,9 @@ class SpatialIndexedJoinCommand(expr: Expression) extends Command with Expressio
     smallSpatialField = MetadataUtilities.getGeometryFieldIndex(small.getMetadata)
     bigSpatialFieldName  = big.getMetadata.getFieldName(MetadataUtilities.getGeometryFieldIndex(big.getMetadata))
     
+    // reorder children in the iteration order (small then big)
+    children = List(small, big)
+    
     super.doPrepare
     
     expr.evaluator.sqlType match {
