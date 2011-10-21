@@ -102,11 +102,12 @@ public abstract class Stroke implements SymbolizerNode {
     }
 
     /**
-     * when delineating closed shapes (i.e. a ring), indicate, whether or not,
+     * When delineating closed shapes (i.e. a ring), indicate, whether or not,
      * the length of stroke elements shall be scaled in order to make the pattern
-     * appear a integral # of time. This will make the junction more aesthetical
+     * appear a integral number of time. This will make the junction more aesthetical
      *
-     * @return whether or not stroke elems lenght shall be scaled
+     * @return <cdoe>true</code> if the stroke elements' length shall be scaled,
+     * <code>false</code> otherwise.
      */
     public boolean isLengthRapport() {
         return linearRapport;
@@ -140,7 +141,8 @@ public abstract class Stroke implements SymbolizerNode {
     }
 
     /**
-     *
+     * Apply the present Stroke to the geometry stored in sds, at index fid, in
+     * graphics g2.
      * @param g2 draw within this graphics2d
      * @param sds the spatial data source
      * @param fid feature id within sds
@@ -153,7 +155,8 @@ public abstract class Stroke implements SymbolizerNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt, double offset) throws ParameterException, IOException;
+    public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds,
+            long fid, Shape shp, boolean selected, MapTransform mt, double offset) throws ParameterException, IOException;
 
     /**
      * Get a JAXB representation of this {@code Label}
@@ -197,7 +200,8 @@ public abstract class Stroke implements SymbolizerNode {
     /**
      * Returns the stroke pattern natural length, in pixel unit
      */
-    public abstract Double getNaturalLength(SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) throws ParameterException, IOException;
+    public abstract Double getNaturalLength(SpatialDataSourceDecorator sds, long fid,
+            Shape shp, MapTransform mt) throws ParameterException, IOException;
 
     /**
      * Get a String representation of the list of features this {@code Stroke}

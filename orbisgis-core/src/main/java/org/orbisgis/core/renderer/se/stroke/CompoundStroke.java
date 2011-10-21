@@ -208,14 +208,15 @@ public final class CompoundStroke extends Stroke implements UomNode {
     }
 
     @Override
-    public Double getNaturalLength(SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) throws ParameterException, IOException {
-        return Double.POSITIVE_INFINITY; //throw new UnsupportedOperationException("Nesting a compound stroke within a compound stroke is forbidden !!!");
+    public Double getNaturalLength(SpatialDataSourceDecorator sds, long fid, Shape shp,
+                MapTransform mt) throws ParameterException, IOException {
+        return Double.POSITIVE_INFINITY; 
     }
 
     @Override
     public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shape,
-            boolean selected, MapTransform mt, double offset) throws ParameterException, IOException {
-
+            boolean selected, MapTransform mt, double off) throws ParameterException, IOException {
+        double offset = off;
         double initGap = 0.0;
         double endGap = 0.0;
 
@@ -237,7 +238,7 @@ public final class CompoundStroke extends Stroke implements UomNode {
             if (preGap != null) {
                 initGap = Uom.toPixel(preGap.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
                 if (initGap > 0.0) {
-                    //System.out.println ("Remove Global PreGap");
+                    
                     List<Shape> splitLine = ShapeHelper.splitLine(shp, initGap);
                     if (splitLine.size() == 2) {
                         shp = splitLine.get(1);
@@ -257,11 +258,11 @@ public final class CompoundStroke extends Stroke implements UomNode {
                     }
                 }
 
-                //System.out.println ("After removiung gaps:");
-                //ShapeHelper.printvertices(shp);
 
                 int nbElem = elements.size();
 
+                //we will store the strokes and some informations about them in
+                //the following arrays.
                 double lengths[] = new double[nbElem];
                 Stroke strokes[] = new Stroke[nbElem];
                 Double preGaps[] = new Double[nbElem];
@@ -282,21 +283,14 @@ public final class CompoundStroke extends Stroke implements UomNode {
                         AlternativeStrokeElements aElem = (AlternativeStrokeElements) elem;
                         sElem = aElem.getElements().get(0);
                     }
-
                     strokes[i] = sElem.getStroke();
 
                     if (sElem.getLength() != null) {
                         lengths[i] = Uom.toPixel(sElem.getLength().getValue(sds, fid),
                                 getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-                        //System.out.println("Has own length: " + lengths[i]);
                     } else {
                         lengths[i] = sElem.getStroke().getNaturalLength(sds, fid, shp, mt);
-                        //System.out.println("Natural length: " + lengths[i]);
                     }
-
-                    /*if (lengths[i] < 2){
-                        lengths[i] = 2;
-                    }*/
 
                     if (sElem.getPreGap() != null) {
                         preGaps[i] = Uom.toPixel(sElem.getPreGap().getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
@@ -335,7 +329,7 @@ public final class CompoundStroke extends Stroke implements UomNode {
                         // Scale pattern to lineLength intergral fraction
                         int nbPattern = (int) ((lineLength / patternLength) + 0.5);
                         if (nbPattern < 1) {
-                            // Male sure at least one pattern will be drawn
+                            // Make sure at least one pattern will be drawn
                             nbPattern = 1;
                         }
                         // Compute factor
