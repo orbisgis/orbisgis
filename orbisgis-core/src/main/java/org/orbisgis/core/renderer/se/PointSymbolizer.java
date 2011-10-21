@@ -87,11 +87,6 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
     private static final String MODE_VERTEX = "vertex";
     private GraphicCollection graphic;
     private boolean onVertex;
-    /*
-     * Create a default pointSymbolizer: Square 10mm
-     *
-     *
-     */
 
     /**
      * Build a new default {@code PointSymbolizer}. It contains a 
@@ -105,7 +100,6 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
         uom = Uom.MM;
 
         MarkGraphic mark = new MarkGraphic();
-        mark.setTo3mmCircle();
         graphic.addGraphic(mark);
         onVertex = false;
     }
