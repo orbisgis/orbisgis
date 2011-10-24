@@ -44,6 +44,7 @@ import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Shape;
 
+import java.awt.geom.Rectangle2D;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
 
@@ -207,6 +208,10 @@ public final class SolidFill extends Fill {
 
 	@Override
 	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException {
+
+        Rectangle2D fbox = shp.getBounds2D();
+        System.out.println ("SHAPE BOX: " + fbox);
+
 		g2.setPaint(getPaint(fid, sds, selected, mt));
 		g2.fill(shp);
 	}

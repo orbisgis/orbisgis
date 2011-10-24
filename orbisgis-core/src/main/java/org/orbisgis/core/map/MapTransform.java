@@ -50,8 +50,8 @@ import java.util.ArrayList;
 
 import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
 
-//import com.vividsolutions.jts.awt.PointTransformation;
-//import com.vividsolutions.jts.awt.ShapeWriter;
+import com.vividsolutions.jts.awt.PointTransformation;
+import com.vividsolutions.jts.awt.ShapeWriter;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -67,7 +67,7 @@ import javax.media.jai.JAI;
 import net.LiteShape.LiteShape;
 import org.orbisgis.core.Services;
 
-public class MapTransform /* implements PointTransformation */ {
+public class MapTransform implements PointTransformation  {
 
     private boolean adjustExtent;
     private BufferedImage image = null;
@@ -76,7 +76,7 @@ public class MapTransform /* implements PointTransformation */ {
     private AffineTransform transInv = new AffineTransform();
     private Envelope extent;
     private ArrayList<TransformListener> listeners = new ArrayList<TransformListener>();
-    //private ShapeWriter converter;
+    private ShapeWriter converter;
     private RenderContext currentRenderContext = screenContext;
     private static RenderContext draftContext;
     private static RenderContext screenContext;
@@ -429,7 +429,7 @@ public class MapTransform /* implements PointTransformation */ {
         listeners.remove(listener);
     }
 
-    /*@Override
+    @Override
     public void transform(Coordinate src, Point2D dest) {
         dest.setLocation(src.x, src.y);
         trans.transform(dest, dest);
@@ -440,7 +440,7 @@ public class MapTransform /* implements PointTransformation */ {
             converter = new ShapeWriter(this);
         }
         return converter;
-    }*/
+    }
 
     /**
      * @param geom
@@ -455,8 +455,8 @@ public class MapTransform /* implements PointTransformation */ {
             return rectangle2dDouble;
         }
 
-         return new LiteShape(geom, this.trans, true);
-        //return getShapeWriter().toShape(geom);
+        //return new LiteShape(geom, this.trans, true);
+        return getShapeWriter().toShape(geom);
     }
 
     public void redraw() {
