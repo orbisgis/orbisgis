@@ -83,450 +83,518 @@ import org.orbisgis.utils.I18N;
 
 public class SQLConsolePanel extends JPanel implements DropTargetListener {
 
-	private JButton btExecute = null;
-	private JButton btClear = null;
-	private JButton btOpen = null;
-	private JButton btSave = null;
-	private ActionsListener actionAndKeyListener;
-	private ConsoleListener listener;
-	private RTextScrollPane centerPanel;
-	private RSyntaxTextArea scriptPanel;
-	private JButtonTextField searchTextField;
-	private JToolBar toolBar;
-	private JLabel statusMessage;
-	private SearchWord searchWord;
-        private Timer timer;
-	private int lastSQLStatementToReformatStart;
-	private int lastSQLStatementToReformatEnd;
-	private SQLCompletionProvider cpl;
-	// An instance of the private subclass of the default highlight painter
-	Highlighter.HighlightPainter myHighlightPainter = (HighlightPainter) new WordHighlightPainter(
-			new Color(205, 235, 255));
-	private JPanel pnlTextFilter;
-	static CommentSpec[] COMMENT_SPECS = new CommentSpec[] {
-			new CommentSpec("/*", "*/"), new CommentSpec("--", "\n") };
+    private JButton btExecute = null;
 
-	/**
-	 * Creates a console for sql.
-	 */
-	public SQLConsolePanel(ConsoleListener listener) {
-		this.listener = listener;
-		actionAndKeyListener = new ActionsListener(listener, this);
-		setLayout(new BorderLayout());
-		add(getCenterPanel(listener), BorderLayout.CENTER);
-		if (listener.showControlButtons()) {
-			add(getButtonToolBar(), BorderLayout.NORTH);
-		}
-		setButtonsStatus();
-		add(getStatusToolBar(), BorderLayout.SOUTH);
 
-		searchWord = new SearchWord(scriptPanel);
+    private JButton btClear = null;
 
-	}
 
-	// getters
-	private JToolBar getButtonToolBar() {
-		final JToolBar northPanel = new JToolBar();
-		northPanel.add(getBtExecute());
-		northPanel.add(getBtClear());
-		northPanel.add(getBtOpen());
-		northPanel.add(getBtSave());
-		northPanel.add(new JLabel("  "
-				+ I18N.getString("orbisgis.org.orbisgis.FindText") + " "));
-		northPanel.add(getJTextFieldPanel());
-		setBtExecute();
-		setBtClear();
-		setBtSave();
-		northPanel.setFloatable(false);
-		northPanel.setBorderPainted(false);
-		northPanel.setOpaque(false);
+    private JButton btOpen = null;
 
-		return northPanel;
-	}
 
-	private RTextScrollPane getCenterPanel(ConsoleListener listener) {
-		if (centerPanel == null) {
-			scriptPanel = new RSyntaxTextArea();
-			scriptPanel.setSyntaxEditingStyle(RSyntaxTextArea.SYNTAX_STYLE_SQL);
-			scriptPanel.getDocument().addDocumentListener(actionAndKeyListener);
-			scriptPanel.setDropTarget(new DropTarget(centerPanel, this));
-			scriptPanel.setLineWrap(true);
-			cpl = new SQLCompletionProvider(scriptPanel);
-			cpl.install();
+    private JButton btSave = null;
 
-			CodeReformator codeReformator = new CodeReformator(";",
-					COMMENT_SPECS);
 
-			scriptPanel.addKeyListener(new SQLConsoleKeyListener(this,
-					codeReformator, actionAndKeyListener));
+    private ActionsListener actionAndKeyListener;
 
-			centerPanel = new RTextScrollPane(scriptPanel);
-		}
-		return centerPanel;
-	}
 
-	private JToolBar getStatusToolBar() {
+    private ConsoleListener listener;
 
-		if (toolBar == null) {
-			toolBar = new JToolBar();
-			statusMessage = new JLabel();
-			toolBar.add(statusMessage);
-			toolBar.setFloatable(false);
 
-                        timer = new Timer(4000, new ActionListener() {
+    private RTextScrollPane centerPanel;
 
-                                @Override
-                                public void actionPerformed(ActionEvent e) {
-                                        setStatusMessage("");
-                                }
-                        });
-                        timer.setRepeats(false);
-		}
 
-		return toolBar;
-	}
+    private RSyntaxTextArea scriptPanel;
 
-	public void setStatusMessage(String message) {
-                if (message.isEmpty()) {
-                        statusMessage.setText(message);
-                        return;
-                } else {
-                        timer.restart();
-                        statusMessage.setText(message);
+
+    private JButtonTextField searchTextField;
+
+
+    private JToolBar toolBar;
+
+
+    private JLabel statusMessage;
+
+
+    private SearchWord searchWord;
+
+
+    private Timer timer;
+
+
+    private int lastSQLStatementToReformatStart;
+
+
+    private int lastSQLStatementToReformatEnd;
+
+
+    private SQLCompletionProvider cpl;
+    // An instance of the private subclass of the default highlight painter
+
+
+    Highlighter.HighlightPainter myHighlightPainter = (HighlightPainter) new WordHighlightPainter(
+            new Color(205, 235, 255));
+
+
+    private JPanel pnlTextFilter;
+
+
+    static CommentSpec[] COMMENT_SPECS = new CommentSpec[]{
+        new CommentSpec("/*", "*/"), new CommentSpec("--", "\n")};
+
+
+    /**
+     * Creates a console for sql.
+     */
+    public SQLConsolePanel(ConsoleListener listener) {
+        this.listener = listener;
+        actionAndKeyListener = new ActionsListener(listener, this);
+        setLayout(new BorderLayout());
+        add(getCenterPanel(listener), BorderLayout.CENTER);
+        if (listener.showControlButtons()) {
+            add(getButtonToolBar(), BorderLayout.NORTH);
+        }
+        setButtonsStatus();
+        add(getStatusToolBar(), BorderLayout.SOUTH);
+
+        searchWord = new SearchWord(scriptPanel);
+
+    }
+
+    // getters
+
+    private JToolBar getButtonToolBar() {
+        final JToolBar northPanel = new JToolBar();
+        northPanel.add(getBtExecute());
+        northPanel.add(getBtClear());
+        northPanel.add(getBtOpen());
+        northPanel.add(getBtSave());
+        northPanel.add(new JLabel("  "
+                + I18N.getString("orbisgis.org.orbisgis.FindText") + " "));
+        northPanel.add(getJTextFieldPanel());
+        setBtExecute();
+        setBtClear();
+        setBtSave();
+        northPanel.setFloatable(false);
+        northPanel.setBorderPainted(false);
+        northPanel.setOpaque(false);
+
+        return northPanel;
+    }
+
+
+    private RTextScrollPane getCenterPanel(ConsoleListener listener) {
+        if (centerPanel == null) {
+            scriptPanel = new RSyntaxTextArea();
+            scriptPanel.setSyntaxEditingStyle(RSyntaxTextArea.SYNTAX_STYLE_SQL);
+            scriptPanel.getDocument().addDocumentListener(actionAndKeyListener);
+            scriptPanel.setDropTarget(new DropTarget(centerPanel, this));
+            scriptPanel.setLineWrap(true);
+            cpl = new SQLCompletionProvider(scriptPanel);
+            cpl.install();
+
+            CodeReformator codeReformator = new CodeReformator(";",
+                                                               COMMENT_SPECS);
+
+            scriptPanel.addKeyListener(new SQLConsoleKeyListener(this,
+                                                                 codeReformator, actionAndKeyListener));
+
+            centerPanel = new RTextScrollPane(scriptPanel);
+        }
+        return centerPanel;
+    }
+
+
+    private JToolBar getStatusToolBar() {
+
+        if (toolBar == null) {
+            toolBar = new JToolBar();
+            statusMessage = new JLabel();
+            toolBar.add(statusMessage);
+            toolBar.setFloatable(false);
+
+            timer = new Timer(4000, new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    setStatusMessage("");
                 }
-	}
 
-	private JPanel getJTextFieldPanel() {
-		if (null == pnlTextFilter) {
-			pnlTextFilter = new JPanel();
-			CRFlowLayout layout = new CRFlowLayout();
-			layout.setAlignment(CRFlowLayout.LEFT);
-			pnlTextFilter.setLayout(layout);
-			searchTextField = new JButtonTextField();
-			searchTextField.getDocument().addDocumentListener(
-					new DocumentListener() {
 
-						public void removeUpdate(DocumentEvent e) {
-							search();
-						}
+            });
+            timer.setRepeats(false);
+        }
 
-						public void insertUpdate(DocumentEvent e) {
-							search();
-						}
+        return toolBar;
+    }
 
-						public void changedUpdate(DocumentEvent e) {
-							search();
-						}
-					});
-			pnlTextFilter.add(searchTextField);
-		}
-		return pnlTextFilter;
-	}
 
-	public void search() {
-		searchWord.removeHighlights();
-		String pattern = searchTextField.getText();
-		if (pattern.length() <= 0) {
-			setStatusMessage("");
-			return;
-		}
+    public void setStatusMessage(String message) {
+        if (message.isEmpty()) {
+            statusMessage.setText(message);
+            return;
+        } else {
+            timer.restart();
+            statusMessage.setText(message);
+        }
+    }
 
-		try {
-			Highlighter hilite = scriptPanel.getHighlighter();
-			Document doc = scriptPanel.getDocument();
-			String text = doc.getText(0, doc.getLength());
-			int pos = 0;
 
-			int patternFound = 0;
+    private JPanel getJTextFieldPanel() {
+        if (null == pnlTextFilter) {
+            pnlTextFilter = new JPanel();
+            CRFlowLayout layout = new CRFlowLayout();
+            layout.setAlignment(CRFlowLayout.LEFT);
+            pnlTextFilter.setLayout(layout);
+            searchTextField = new JButtonTextField();
+            searchTextField.getDocument().addDocumentListener(
+                    new DocumentListener() {
 
-			// Search for pattern
-			while ((pos = text.indexOf(pattern, pos)) >= 0) {
-				// Create highlighter using private painter and apply around
-				// pattern
-				hilite.addHighlight(pos, pos + pattern.length(),
-						myHighlightPainter);
-				pos += pattern.length();
-				patternFound += 1;
-			}
+                        public void removeUpdate(DocumentEvent e) {
+                            search();
+                        }
 
-			if (patternFound > 0) {
-				setStatusMessage(pattern + " "
-						+ I18N.getString("orbisgis.org.orbisgis.found") + " "
-						+ patternFound + " "
-						+ I18N.getString("orbisgis.org.orbisgis.Times"));
-			} else {
-				setStatusMessage(pattern + " "
-						+ I18N.getString("orbisgis.org.orbisgis.notFound"));
-			}
-		} catch (BadLocationException e) {
-		}
 
-	}
+                        public void insertUpdate(DocumentEvent e) {
+                            search();
+                        }
 
-	private JButton getBtExecute() {
-		if (null == btExecute) {
-			btExecute = new ConsoleButton(ConsoleAction.EXECUTE,
-					actionAndKeyListener);
-			btExecute.setToolTipText(I18N
-					.getString("orbisgis.org.orbisgis.Execute"));
-		}
-		return btExecute;
-	}
 
-	private JButton getBtClear() {
-		if (null == btClear) {
-			btClear = new ConsoleButton(ConsoleAction.CLEAR,
-					actionAndKeyListener);
-			btClear.setToolTipText(I18N.getString("orbisgis.org.orbisgis.Clear"));
-		}
-		return btClear;
-	}
+                        public void changedUpdate(DocumentEvent e) {
+                            search();
+                        }
 
-	private JButton getBtOpen() {
-		if (null == btOpen) {
-			btOpen = new ConsoleButton(ConsoleAction.OPEN, actionAndKeyListener);
-			btOpen.setToolTipText(I18N.getString("orbisgis.org.orbisgis.Open"));
-		}
-		return btOpen;
-	}
 
-	private JButton getBtSave() {
-		if (null == btSave) {
-			btSave = new ConsoleButton(ConsoleAction.SAVE, actionAndKeyListener);
-			btSave.setToolTipText(I18N.getString("orbisgis.org.orbisgis.Save"));
-		}
-		return btSave;
-	}
+                    });
+            pnlTextFilter.add(searchTextField);
+        }
+        return pnlTextFilter;
+    }
 
-	public String getText() {
-		return scriptPanel.getText();
-	}
 
-	// setters
-	private void setBtExecute() {
-		if (0 == getText().length()) {
-			getBtExecute().setEnabled(false);
-		} else {
-			getBtExecute().setEnabled(true);
-		}
-	}
+    public void search() {
+        searchWord.removeHighlights();
+        String pattern = searchTextField.getText();
+        if (pattern.length() <= 0) {
+            setStatusMessage("");
+            return;
+        }
 
-	private void setBtClear() {
-		if (0 == getText().length()) {
-			getBtClear().setEnabled(false);
-		} else {
-			getBtClear().setEnabled(true);
-		}
-	}
+        try {
+            Highlighter hilite = scriptPanel.getHighlighter();
+            Document doc = scriptPanel.getDocument();
+            String text = doc.getText(0, doc.getLength());
+            int pos = 0;
 
-	private void setBtOpen() {
-	}
+            int patternFound = 0;
 
-	private void setBtSave() {
-		if (0 == getText().length()) {
-			getBtSave().setEnabled(false);
-		} else {
-			getBtSave().setEnabled(true);
-		}
-	}
+            // Search for pattern
+            while ((pos = text.indexOf(pattern, pos)) >= 0) {
+                // Create highlighter using private painter and apply around
+                // pattern
+                hilite.addHighlight(pos, pos + pattern.length(),
+                                    myHighlightPainter);
+                pos += pattern.length();
+                patternFound += 1;
+            }
 
-	public void setButtonsStatus() {
-		setBtExecute();
-		setBtClear();
-		setBtOpen();
-		setBtSave();
-	}
+            if (patternFound > 0) {
+                setStatusMessage(pattern + " "
+                        + I18N.getString("orbisgis.org.orbisgis.found") + " "
+                        + patternFound + " "
+                        + I18N.getString("orbisgis.org.orbisgis.Times"));
+            } else {
+                setStatusMessage(pattern + " "
+                        + I18N.getString("orbisgis.org.orbisgis.notFound"));
+            }
+        } catch (BadLocationException e) {
+        }
 
-	public RSyntaxTextArea getScriptPanel() {
-		return scriptPanel;
-	}
+    }
 
-	public void updateCodeError(CodeError codeError) {
-	}
 
-	public String getCurrentSQLStatement() {
-		String sql = scriptPanel.getSelectedText();
-		lastSQLStatementToReformatEnd = scriptPanel.getSelectionEnd();
-		lastSQLStatementToReformatStart = scriptPanel.getSelectionStart();
-		if (sql == null || sql.trim().length() == 0) {
-			sql = getText();
-			lastSQLStatementToReformatEnd = -2;
-			// int[] bounds = getBoundsOfCurrentSQLStatement();
-			//
-			// if (bounds[0] >= bounds[1]) {
-			// sql = "";
-			// } else {
-			// sql = sql.substring(bounds[0], bounds[1]).trim();
-			// }
-		}
-		return sql != null ? sql : "";
-	}
+    private JButton getBtExecute() {
+        if (null == btExecute) {
+            btExecute = new ConsoleButton(ConsoleAction.EXECUTE,
+                                          actionAndKeyListener);
+            btExecute.setToolTipText(I18N.getString("orbisgis.org.orbisgis.Execute"));
+        }
+        return btExecute;
+    }
 
-	public void replaceCurrentSQLStatement(String st) {
 
-		if (lastSQLStatementToReformatStart >= lastSQLStatementToReformatEnd) {
-			scriptPanel.replaceRange(st, 0, scriptPanel.getDocument()
-					.getLength());
-		} else {
-			scriptPanel.replaceRange(st, lastSQLStatementToReformatStart,
-					lastSQLStatementToReformatEnd);
-		}
-	}
+    private JButton getBtClear() {
+        if (null == btClear) {
+            btClear = new ConsoleButton(ConsoleAction.CLEAR,
+                                        actionAndKeyListener);
+            btClear.setToolTipText(I18N.getString("orbisgis.org.orbisgis.Clear"));
+        }
+        return btClear;
+    }
 
-	public int[] getBoundsOfCurrentSQLStatement() {
-		int[] bounds = new int[2];
-		bounds[0] = scriptPanel.getSelectionStart();
-		bounds[1] = scriptPanel.getSelectionEnd();
 
-		if (bounds[0] == bounds[1]) {
-			bounds = getSqlBoundsBySeparatorRule(scriptPanel.getCaretPosition());
-		}
+    private JButton getBtOpen() {
+        if (null == btOpen) {
+            btOpen = new ConsoleButton(ConsoleAction.OPEN, actionAndKeyListener);
+            btOpen.setToolTipText(I18N.getString("orbisgis.org.orbisgis.Open"));
+        }
+        return btOpen;
+    }
 
-		return bounds;
-	}
 
-	private int[] getSqlBoundsBySeparatorRule(int iCaretPos) {
-		int[] bounds = new int[2];
+    private JButton getBtSave() {
+        if (null == btSave) {
+            btSave = new ConsoleButton(ConsoleAction.SAVE, actionAndKeyListener);
+            btSave.setToolTipText(I18N.getString("orbisgis.org.orbisgis.Save"));
+        }
+        return btSave;
+    }
 
-		String sql = getText();
 
-		bounds[0] = lastIndexOfStateSep(sql, iCaretPos);
-		bounds[1] = indexOfStateSep(sql, iCaretPos);
+    public String getText() {
+        return scriptPanel.getText();
+    }
 
-		return bounds;
+    // setters
 
-	}
+    private void setBtExecute() {
+        if (0 == getText().length()) {
+            getBtExecute().setEnabled(false);
+        } else {
+            getBtExecute().setEnabled(true);
+        }
+    }
 
-	private static int indexOfStateSep(String sql, int pos) {
-		int ix = pos;
 
-		int newLinteCount = 0;
-		for (;;) {
-			if (sql.length() == ix) {
-				return sql.length();
-			}
+    private void setBtClear() {
+        if (0 == getText().length()) {
+            getBtClear().setEnabled(false);
+        } else {
+            getBtClear().setEnabled(true);
+        }
+    }
 
-			if (false == Character.isWhitespace(sql.charAt(ix))) {
-				newLinteCount = 0;
-			}
 
-			if ('\n' == sql.charAt(ix)) {
-				++newLinteCount;
-				if (2 == newLinteCount) {
-					return ix - 1;
-				}
-			}
+    private void setBtOpen() {
+    }
 
-			++ix;
-		}
-	}
 
-	private static int lastIndexOfStateSep(String sql, int pos) {
-		int ix = pos;
+    private void setBtSave() {
+        if (0 == getText().length()) {
+            getBtSave().setEnabled(false);
+        } else {
+            getBtSave().setEnabled(true);
+        }
+    }
 
-		int newLinteCount = 0;
-		for (;;) {
 
-			if (ix == sql.length()) {
-				if (ix == 0) {
-					return ix;
-				} else {
-					ix--;
-				}
-			}
+    public void setButtonsStatus() {
+        setBtExecute();
+        setBtClear();
+        setBtOpen();
+        setBtSave();
+    }
 
-			if (false == Character.isWhitespace(sql.charAt(ix))) {
-				newLinteCount = 0;
-			}
 
-			if ('\n' == sql.charAt(ix)) {
-				++newLinteCount;
-				if (2 == newLinteCount) {
-					return ix + newLinteCount;
-				}
-			}
+    public RSyntaxTextArea getScriptPanel() {
+        return scriptPanel;
+    }
 
-			if (0 == ix) {
-				return 0 + newLinteCount;
-			}
 
-			--ix;
-		}
-	}
+    public void updateCodeError(CodeError codeError) {
+    }
 
-	public void insertString(String string) throws BadLocationException {
-		scriptPanel.getDocument().insertString(
-				scriptPanel.getDocument().getLength(), string, null);
-	}
 
-	@Override
-	public void dragEnter(DropTargetDragEvent dtde) {
-	}
+    public String getCurrentSQLStatement() {
+        String sql = scriptPanel.getSelectedText();
+        lastSQLStatementToReformatEnd = scriptPanel.getSelectionEnd();
+        lastSQLStatementToReformatStart = scriptPanel.getSelectionStart();
+        if (sql == null || sql.trim().length() == 0) {
+            sql = getText();
+            lastSQLStatementToReformatEnd = -2;
+            // int[] bounds = getBoundsOfCurrentSQLStatement();
+            //
+            // if (bounds[0] >= bounds[1]) {
+            // sql = "";
+            // } else {
+            // sql = sql.substring(bounds[0], bounds[1]).trim();
+            // }
+        }
+        return sql != null ? sql : "";
+    }
 
-	@Override
-	public void dragOver(DropTargetDragEvent dtde) {
-	}
 
-	@Override
-	public void dropActionChanged(DropTargetDragEvent dtde) {
-	}
+    public void replaceCurrentSQLStatement(String st) {
 
-	@Override
-	public void dragExit(DropTargetEvent dte) {
-	}
+        if (lastSQLStatementToReformatStart >= lastSQLStatementToReformatEnd) {
+            scriptPanel.replaceRange(st, 0, scriptPanel.getDocument().getLength());
+        } else {
+            scriptPanel.replaceRange(st, lastSQLStatementToReformatStart,
+                                     lastSQLStatementToReformatEnd);
+        }
+    }
 
-	@Override
-	public void drop(DropTargetDropEvent dtde) {
-		final Transferable t = dtde.getTransferable();
 
-		String query = listener.doDrop(t);
-		if (query == null) {
-			try {
-				if ((t.isDataFlavorSupported(TransferableSource
-						.getResourceFlavor()))
-						|| (t.isDataFlavorSupported(TransferableLayer
-								.getLayerFlavor()))) {
-					dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
-					String s = (String) t
-							.getTransferData(DataFlavor.stringFlavor);
-					dtde.getDropTargetContext().dropComplete(true);
-					query = s;
-				} else if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-					dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
-					String s = (String) t
-							.getTransferData(DataFlavor.stringFlavor);
-					dtde.getDropTargetContext().dropComplete(true);
-					query = s;
-				}
-			} catch (IOException e) {
-				dtde.rejectDrop();
-			} catch (UnsupportedFlavorException e) {
-				dtde.rejectDrop();
-			}
-		}
+    public int[] getBoundsOfCurrentSQLStatement() {
+        int[] bounds = new int[2];
+        bounds[0] = scriptPanel.getSelectionStart();
+        bounds[1] = scriptPanel.getSelectionEnd();
 
-		if (query != null) {
-			// Cursor position
-			int position = scriptPanel.viewToModel(dtde.getLocation());
-			try {
-				scriptPanel.getDocument().insertString(position, query, null);
-			} catch (BadLocationException e) {
-				ErrorMessages
-						.error(
-								I18N
-										.getString("orbisgis.org.orbisgis.textArea.BadLocationException"),
-								e);
-			}
-		} else {
-			dtde.rejectDrop();
-		}
+        if (bounds[0] == bounds[1]) {
+            bounds = getSqlBoundsBySeparatorRule(scriptPanel.getCaretPosition());
+        }
 
-		setButtonsStatus();
-	}
+        return bounds;
+    }
 
-	public void freeResources() {
-		if (cpl != null) {
-			cpl.freeExternalResources();
-		}
-	}
+
+    private int[] getSqlBoundsBySeparatorRule(int iCaretPos) {
+        int[] bounds = new int[2];
+
+        String sql = getText();
+
+        bounds[0] = lastIndexOfStateSep(sql, iCaretPos);
+        bounds[1] = indexOfStateSep(sql, iCaretPos);
+
+        return bounds;
+
+    }
+
+
+    private static int indexOfStateSep(String sql, int pos) {
+        int ix = pos;
+
+        int newLinteCount = 0;
+        for (;;) {
+            if (sql.length() == ix) {
+                return sql.length();
+            }
+
+            if (false == Character.isWhitespace(sql.charAt(ix))) {
+                newLinteCount = 0;
+            }
+
+            if ('\n' == sql.charAt(ix)) {
+                ++newLinteCount;
+                if (2 == newLinteCount) {
+                    return ix - 1;
+                }
+            }
+
+            ++ix;
+        }
+    }
+
+
+    private static int lastIndexOfStateSep(String sql, int pos) {
+        int ix = pos;
+
+        int newLinteCount = 0;
+        for (;;) {
+
+            if (ix == sql.length()) {
+                if (ix == 0) {
+                    return ix;
+                } else {
+                    ix--;
+                }
+            }
+
+            if (false == Character.isWhitespace(sql.charAt(ix))) {
+                newLinteCount = 0;
+            }
+
+            if ('\n' == sql.charAt(ix)) {
+                ++newLinteCount;
+                if (2 == newLinteCount) {
+                    return ix + newLinteCount;
+                }
+            }
+
+            if (0 == ix) {
+                return 0 + newLinteCount;
+            }
+
+            --ix;
+        }
+    }
+
+
+    public void insertString(String string) throws BadLocationException {
+        scriptPanel.getDocument().insertString(
+                scriptPanel.getDocument().getLength(), string, null);
+    }
+
+
+    @Override
+    public void dragEnter(DropTargetDragEvent dtde) {
+    }
+
+
+    @Override
+    public void dragOver(DropTargetDragEvent dtde) {
+    }
+
+
+    @Override
+    public void dropActionChanged(DropTargetDragEvent dtde) {
+    }
+
+
+    @Override
+    public void dragExit(DropTargetEvent dte) {
+    }
+
+
+    @Override
+    public void drop(DropTargetDropEvent dtde) {
+        final Transferable t = dtde.getTransferable();
+
+        String query = listener.doDrop(t);
+        if (query == null) {
+            try {
+                if ((t.isDataFlavorSupported(TransferableSource.getResourceFlavor()))
+                        || (t.isDataFlavorSupported(TransferableLayer.getLayerFlavor()))) {
+                    dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+                    String s = (String) t.getTransferData(DataFlavor.stringFlavor);
+                    dtde.getDropTargetContext().dropComplete(true);
+                    query = s;
+                } else if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+                    dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+                    String s = (String) t.getTransferData(DataFlavor.stringFlavor);
+                    dtde.getDropTargetContext().dropComplete(true);
+                    query = s;
+                }
+            } catch (IOException e) {
+                dtde.rejectDrop();
+            } catch (UnsupportedFlavorException e) {
+                dtde.rejectDrop();
+            }
+        }
+
+        if (query != null) {
+            // Cursor position
+            int position = scriptPanel.viewToModel(dtde.getLocation());
+            try {
+                scriptPanel.getDocument().insertString(position, query, null);
+            } catch (BadLocationException e) {
+                ErrorMessages.error(
+                        I18N.getString("orbisgis.org.orbisgis.textArea.BadLocationException"),
+                        e);
+            }
+        } else {
+            dtde.rejectDrop();
+        }
+
+        setButtonsStatus();
+    }
+
+
+    public void freeResources() {
+        if (cpl != null) {
+            cpl.freeExternalResources();
+        }
+    }
+
+
 }

@@ -35,9 +35,6 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-
-
-
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.stroke;
 
 import java.awt.BorderLayout;
@@ -46,6 +43,7 @@ import org.orbisgis.core.renderer.se.common.RelativeOrientation;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.stroke.GraphicStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.ComboBoxInput;
@@ -59,62 +57,100 @@ import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
  */
 public abstract class LegendUIGraphicStrokePanel extends LegendUIComponent implements LegendUIStrokeComponent {
 
-	private GraphicStroke graphicStroke;
-
-	private LegendUICompositeGraphicPanel gCollection;
-
-	private LegendUIMetaRealPanel length;
-
-	private ComboBoxInput orientation;
-
-	public LegendUIGraphicStrokePanel(LegendUIController controller, LegendUIComponent parent, GraphicStroke gStroke, boolean isNullable) {
-		super("Graphic Stroke", controller, parent, 0, isNullable);
-
-		this.graphicStroke = gStroke;
+    private GraphicStroke graphicStroke;
 
 
-		gCollection = new LegendUICompositeGraphicPanel(controller, this, graphicStroke.getGraphicCollection());
+    private LegendUICompositeGraphicPanel gCollection;
 
 
-		length = new LegendUIMetaRealPanel("Length", controller, this, graphicStroke.getLength(), true) {
-
-			@Override
-			public void realChanged(RealParameter newReal) {
-				graphicStroke.setLength(newReal);
-			}
-		};
-		length.init();
-
-		orientation = new ComboBoxInput(RelativeOrientation.values(), graphicStroke.getRelativeOrientation().ordinal()) {
-
-			@Override
-			protected void valueChanged(int i) {
-				graphicStroke.setRelativeOrientation(RelativeOrientation.values()[i]);
-			}
-		};
-	}
+    private LegendUIMetaRealPanel length;
 
 
-	@Override
-	public Icon getIcon() {
-		return OrbisGISIcon.PALETTE;
-	}
+    private LegendUIMetaRealPanel relPos;
 
-	@Override
-	protected void mountComponent() {
-		editor.add(orientation, BorderLayout.NORTH);
-		editor.add(length, BorderLayout.CENTER);
-		editor.add(gCollection, BorderLayout.SOUTH);
-	}
 
-	@Override
-	public Class getEditedClass() {
-		return GraphicStroke.class;
-	}
+    private ComboBoxInput orientation;
 
-	@Override
-	public Stroke getStroke() {
-		return this.graphicStroke;
-	}
+
+    private LegendUIAbstractPanel content1;
+
+
+    public LegendUIGraphicStrokePanel(LegendUIController controller,
+                                      LegendUIComponent parent,
+                                      GraphicStroke gStroke, boolean isNullable) {
+        super("Graphic Stroke", controller, parent, 0, isNullable);
+
+        this.graphicStroke = gStroke;
+
+
+        gCollection = new LegendUICompositeGraphicPanel(controller, this, graphicStroke.getGraphicCollection());
+
+
+        length = new LegendUIMetaRealPanel("Length", controller, this, graphicStroke.getLength(), true) {
+
+            @Override
+            public void realChanged(RealParameter newReal) {
+                graphicStroke.setLength(newReal);
+            }
+
+
+        };
+        length.init();
+
+        relPos = new LegendUIMetaRealPanel("Position", controller, this, graphicStroke.getRelativePosition(), true) {
+
+            @Override
+            public void realChanged(RealParameter newReal) {
+                graphicStroke.setRelativePosition(newReal);
+            }
+
+
+        };
+        relPos.init();
+
+        orientation = new ComboBoxInput(RelativeOrientation.values(), graphicStroke.getRelativeOrientation().ordinal()) {
+
+            @Override
+            protected void valueChanged(int i) {
+                graphicStroke.setRelativeOrientation(RelativeOrientation.values()[i]);
+            }
+
+
+        };
+
+        this.content1 = new LegendUIAbstractPanel(controller);
+    }
+
+
+    @Override
+    public Icon getIcon() {
+        return OrbisGISIcon.PALETTE;
+    }
+
+
+    @Override
+    protected void mountComponent() {
+        editor.add(orientation, BorderLayout.NORTH);
+
+        content1.removeAll();
+        content1.add(length, BorderLayout.WEST);
+        content1.add(relPos, BorderLayout.EAST);
+
+        editor.add(content1, BorderLayout.CENTER);
+        editor.add(gCollection, BorderLayout.SOUTH);
+    }
+
+
+    @Override
+    public Class getEditedClass() {
+        return GraphicStroke.class;
+    }
+
+
+    @Override
+    public Stroke getStroke() {
+        return this.graphicStroke;
+    }
+
 
 }

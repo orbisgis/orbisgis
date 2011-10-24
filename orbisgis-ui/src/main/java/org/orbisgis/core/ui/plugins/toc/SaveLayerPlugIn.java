@@ -56,44 +56,48 @@ import org.orbisgis.utils.I18N;
 
 public class SaveLayerPlugIn extends AbstractPlugIn {
 
-	public boolean execute(PlugInContext context) throws Exception {
-		MapContext mapContext = getPlugInContext().getMapContext();
-		ILayer[] selectedResources = mapContext.getSelectedLayers();
+    public boolean execute(PlugInContext context) throws Exception {
+        MapContext mapContext = getPlugInContext().getMapContext();
+        ILayer[] selectedResources = mapContext.getSelectedLayers();
 
-		if (selectedResources.length >= 0) {
-			for (ILayer resource : selectedResources) {
-				execute(mapContext, resource);
-			}
-		}
-		return true;
-	}
+        if (selectedResources.length >= 0) {
+            for (ILayer resource : selectedResources) {
+                execute(mapContext, resource);
+            }
+        }
+        return true;
+    }
 
-	public void initialize(PlugInContext context) throws Exception {
-		WorkbenchContext wbContext = context.getWorkbenchContext();
-		WorkbenchFrame frame = wbContext.getWorkbench().getFrame().getToc();
-		context.getFeatureInstaller().addPopupMenuItem(frame, this,
-				new String[] { Names.POPUP_TOC_SAVE_PATH1 },
-				Names.POPUP_TOC_INACTIVE_GROUP, false, OrbisGISIcon.SAVE,
-				wbContext);
-	}
 
-	public void execute(MapContext mapContext, ILayer layer) {
-		try {
-			layer.getSpatialDataSource().commit();
-		} catch (DriverException e) {
-			ErrorMessages.error(ErrorMessages.CannotSavelayer, e);
-			return;
-		} catch (NonEditableDataSourceException e) {
-			ErrorMessages.error(ErrorMessages.CannotExportInSelectedFormat, e);
-			return;
-		}
-		JOptionPane.showMessageDialog(null, I18N
-				.getString("orbisgis.org.orbisgis.layerSaved"));
-	}
+    public void initialize(PlugInContext context) throws Exception {
+        WorkbenchContext wbContext = context.getWorkbenchContext();
+        WorkbenchFrame frame = wbContext.getWorkbench().getFrame().getToc();
+        context.getFeatureInstaller().addPopupMenuItem(frame, this,
+                                                       new String[]{Names.POPUP_TOC_SAVE_PATH1},
+                                                       Names.POPUP_TOC_INACTIVE_GROUP, false, OrbisGISIcon.SAVE,
+                                                       wbContext);
+    }
 
-	public boolean isEnabled() {
-		return getPlugInContext().checkLayerAvailability(
-				new SelectionAvailability[] { SelectionAvailability.EQUAL }, 1,
-				new LayerAvailability[] { LayerAvailability.IS_MODIFIED });
-	}
+
+    public void execute(MapContext mapContext, ILayer layer) {
+        try {
+            layer.getSpatialDataSource().commit();
+        } catch (DriverException e) {
+            ErrorMessages.error(ErrorMessages.CannotSavelayer, e);
+            return;
+        } catch (NonEditableDataSourceException e) {
+            ErrorMessages.error(ErrorMessages.CannotExportInSelectedFormat, e);
+            return;
+        }
+        JOptionPane.showMessageDialog(null, I18N.getString("orbisgis.org.orbisgis.layerSaved"));
+    }
+
+
+    public boolean isEnabled() {
+        return getPlugInContext().checkLayerAvailability(
+                new SelectionAvailability[]{SelectionAvailability.EQUAL}, 1,
+                new LayerAvailability[]{LayerAvailability.IS_MODIFIED});
+    }
+
+
 }

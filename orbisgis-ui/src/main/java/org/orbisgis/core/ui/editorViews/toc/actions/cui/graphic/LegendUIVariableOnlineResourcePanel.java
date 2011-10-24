@@ -35,76 +35,84 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
+
+
+
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.graphic;
 
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.Icon;
-import org.orbisgis.core.renderer.se.common.OnlineResource;
 import org.orbisgis.core.renderer.se.common.VariableOnlineResource;
-import org.orbisgis.core.renderer.se.graphic.ExternalGraphic;
 import org.orbisgis.core.renderer.se.graphic.ExternalGraphicSource;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractMetaPanel;
+import org.orbisgis.core.renderer.se.graphic.WellKnownName;
+import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.string.LegendUIMetaStringPanel;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 /**
  *
  * @author maxence
  */
-public class LegendUIMetaExternalGraphicSource extends LegendUIAbstractMetaPanel {
+public class LegendUIVariableOnlineResourcePanel extends LegendUIComponent implements LegendUIExternalSourceComponent {
 
-    private LegendUIComponent comp;
-    private ExternalGraphic extG;
-    private final Class[] classes = {VariableOnlineResource.class};
+    LegendUIMetaStringPanel urlInput;
+    VariableOnlineResource onlineResource;
 
-    public LegendUIMetaExternalGraphicSource(LegendUIController ctrl, LegendUIComponent parent, ExternalGraphic ext) {
-        super(null, ctrl, parent, 0, false);
-        this.extG = ext;
+	public LegendUIVariableOnlineResourcePanel(LegendUIController controller, LegendUIComponent parent, VariableOnlineResource url) {
+		super("URL", controller, parent, 0, false);
 
-        comp = null;
-        ExternalGraphicSource source = extG.getSource();
-        if (source instanceof OnlineResource){
-            comp = getCompForClass(OnlineResource.class);
+        this.onlineResource = url;
+        if (onlineResource == null){
+            onlineResource = new VariableOnlineResource();
         }
-    }
 
-    @Override
-    protected final LegendUIComponent getCompForClass(Class newClass) {
-        if (newClass == OnlineResource.class) {
-            return new LegendUIVariableOnlineResourcePanel(controller, this, (VariableOnlineResource) extG.getSource());
+        String initUrl = "";
+        if (onlineResource.getUrl() != null){
+            initUrl = onlineResource.getUrl().toString();
         }
-        return null;
-    }
+
+        urlInput = new LegendUIMetaStringPanel("url", controller, this, onlineResource.getUrl(), false) {
+
+
+            @Override
+            public void stringChanged(StringParameter newString) {
+                onlineResource.setUrl(newString);
+            }
+        };
+        urlInput.init();
+	}
+
+	@Override
+	public Icon getIcon() {
+		return OrbisGISIcon.PALETTE;
+	}
+
+	@Override
+	protected void mountComponent() {
+        editor.add(urlInput);
+	}
+
+	@Override
+	protected void turnOff() {
+        //updateOnlineResource(null);
+	}
+
+	@Override
+	protected void turnOn() {
+        //updateOnlineResource(this.onlineResource);
+	}
+
+	@Override
+	public Class getEditedClass() {
+		return WellKnownName.class;
+	}
 
     @Override
-    public Icon getIcon() {
-        return OrbisGISIcon.PALETTE;
+    public ExternalGraphicSource getSource() {
+        return onlineResource;
     }
 
-    @Override
-    public void init() {
-        init(classes, comp);
-    }
 
-    @Override
-    protected void switchTo(LegendUIComponent newActiveComp) {
-        LegendUIExternalSourceComponent src = (LegendUIExternalSourceComponent) newActiveComp;
-        try {
-            extG.setSource(src.getSource());
-        } catch (IOException ex) {
-            Logger.getLogger(LegendUIMetaExternalGraphicSource.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
 
-    @Override
-    public Class getEditedClass() {
-        if (extG.getSource() instanceof OnlineResource){
-            return VariableOnlineResource.class;
-        } else {
-            return null;
-        }
-    }
 }

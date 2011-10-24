@@ -34,7 +34,6 @@
  * or contact directly:
  * info_at_orbisgis.org
  */
-
 package org.orbisgis.core.ui.plugins.views.geocatalog;
 
 import java.io.File;
@@ -71,110 +70,112 @@ import org.orbisgis.utils.I18N;
  */
 public class NewGeocatalogFolderPlugIn extends AbstractPlugIn {
 
-	/**
-	 * The method responsible of the execution of this plugin. It retrieves the
-	 * folder selected by the user and analyze their content to add the eligible
-	 * files to the geocatalog.
-	 * 
-	 * @param context
-	 * @return
-	 * @throws Exception
-	 */
-	@Override
-	public boolean execute(PlugInContext context) throws Exception {
-		final OpenGdmsFolderPanel folderPanel = new OpenGdmsFolderPanel(I18N
-				.getString("orbisgis.org.core.folderAdd"));
-		if (UIFactory.showDialog(new UIPanel[] { folderPanel })) {
+    /**
+     * The method responsible of the execution of this plugin. It retrieves the
+     * folder selected by the user and analyze their content to add the eligible
+     * files to the geocatalog.
+     * 
+     * @param context
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public boolean execute(PlugInContext context) throws Exception {
+        final OpenGdmsFolderPanel folderPanel = new OpenGdmsFolderPanel(I18N.getString("orbisgis.org.core.folderAdd"));
+        if (UIFactory.showDialog(new UIPanel[]{folderPanel})) {
 
-			File[] files = folderPanel.getSelectedFiles();
-			for (final File file : files) {
-				// for each folder, we apply the method processFolder.
-				// We use the filter selected by the user in the panel
-				// to succeed in this operation.
-				BackgroundManager bm = Services
-						.getService(BackgroundManager.class);
-				bm.backgroundOperation(new BackgroundJob() {
+            File[] files = folderPanel.getSelectedFiles();
+            for (final File file : files) {
+                // for each folder, we apply the method processFolder.
+                // We use the filter selected by the user in the panel
+                // to succeed in this operation.
+                BackgroundManager bm = Services.getService(BackgroundManager.class);
+                bm.backgroundOperation(new BackgroundJob() {
 
-					@Override
-					public String getTaskName() {
-						return I18N.getString("orbisgis.org.core.addFromFolder");
-					}
+                    @Override
+                    public String getTaskName() {
+                        return I18N.getString("orbisgis.org.core.addFromFolder");
+                    }
 
-					@Override
-					public void run(IProgressMonitor pm) {
-						processFolder(file, folderPanel.getSelectedFilter(), pm);
-					}
 
-				});
+                    @Override
+                    public void run(IProgressMonitor pm) {
+                        processFolder(file, folderPanel.getSelectedFilter(), pm);
+                    }
 
-			}
-		}
-		return true;
-	}
 
-	/**
-	 * Plugin initialization.
-	 * 
-	 * @param context
-	 * @throws Exception
-	 */
-	@Override
-	public void initialize(PlugInContext context) throws Exception {
-		WorkbenchContext wbContext = context.getWorkbenchContext();
-		WorkbenchFrame frame = wbContext.getWorkbench().getFrame()
-				.getGeocatalog();
-		context.getFeatureInstaller().addPopupMenuItem(
-				frame,
-				this,
-				new String[] { Names.POPUP_GEOCATALOG_ADD,
-						Names.POPUP_GEOCATALOG_FOLDER },
-				Names.POPUP_GEOCATALOG_ADD, false,
-				OrbisGISIcon.GEOCATALOG_FILE, wbContext);
+                });
 
-	}
+            }
+        }
+        return true;
+    }
 
-	/**
-	 * Used directly in the geocatalog, always enabled.
-	 * 
-	 * @return
-	 */
-	@Override
-	public boolean isEnabled() {
-		return true;
-	}
 
-	/**
-	 * the method that actually process the content of a directory, or a file.
-	 * If the file is acceptable by the FileFilter, it is processed
-	 * 
-	 * @param file
-	 * @param pm
-	 */
-	private void processFolder(File file, FileFilter filter, IProgressMonitor pm) {
-		if (file.isDirectory()) {
-			pm.startTask(file.getName());
-			for (File content : file.listFiles()) {
-				if (pm.isCancelled()) {
-					break;
-				}
-				processFolder(content, filter, pm);
-			}
-			pm.endTask();
-		} else {
-			if (filter.accept(file) && OrbisConfiguration.isFileEligible(file)) {
-				DataManager dm = (DataManager) Services
-						.getService(DataManager.class);
-				SourceManager sourceManager = dm.getSourceManager();
-				try {
-					String name = sourceManager.getUniqueName(FileUtils
-							.getFileNameWithoutExtensionU(file));
-					sourceManager.register(name, file);
-				} catch (SourceAlreadyExistsException e) {
-					Services.getErrorManager().error(
-							"The source is already registered: "
-									+ e.getMessage());
-				}
-			}
-		}
-	}
+    /**
+     * Plugin initialization.
+     * 
+     * @param context
+     * @throws Exception
+     */
+    @Override
+    public void initialize(PlugInContext context) throws Exception {
+        WorkbenchContext wbContext = context.getWorkbenchContext();
+        WorkbenchFrame frame = wbContext.getWorkbench().getFrame().getGeocatalog();
+        context.getFeatureInstaller().addPopupMenuItem(
+                frame,
+                this,
+                new String[]{Names.POPUP_GEOCATALOG_ADD,
+                    Names.POPUP_GEOCATALOG_FOLDER},
+                Names.POPUP_GEOCATALOG_ADD, false,
+                OrbisGISIcon.GEOCATALOG_FILE, wbContext);
+
+    }
+
+
+    /**
+     * Used directly in the geocatalog, always enabled.
+     * 
+     * @return
+     */
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+
+    /**
+     * the method that actually process the content of a directory, or a file.
+     * If the file is acceptable by the FileFilter, it is processed
+     * 
+     * @param file
+     * @param pm
+     */
+    private void processFolder(File file, FileFilter filter, IProgressMonitor pm) {
+        if (file.isDirectory()) {
+            pm.startTask(file.getName());
+            for (File content : file.listFiles()) {
+                if (pm.isCancelled()) {
+                    break;
+                }
+                processFolder(content, filter, pm);
+            }
+            pm.endTask();
+        } else {
+            if (filter.accept(file) && OrbisConfiguration.isFileEligible(file)) {
+                DataManager dm = (DataManager) Services.getService(DataManager.class);
+                SourceManager sourceManager = dm.getSourceManager();
+                try {
+                    String name = sourceManager.getUniqueName(FileUtils.getFileNameWithoutExtensionU(file));
+                    sourceManager.register(name, file);
+                } catch (SourceAlreadyExistsException e) {
+                    Services.getErrorManager().error(
+                            "The source is already registered: "
+                            + e.getMessage());
+                }
+            }
+        }
+    }
+
+
 }

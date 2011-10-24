@@ -41,7 +41,6 @@
  * Pierre-Yves.Fadet _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  **/
-
 package org.orbisgis.core.ui.plugins.views.geomark;
 
 import java.awt.BorderLayout;
@@ -84,292 +83,325 @@ import com.vividsolutions.jts.geom.Envelope;
 
 public class GeomarkPanel extends JPanel implements ListSelectionListener {
 
-	// Cannot add more than 50 geomarks otherwise use a layer and the "zoom to"
-	// feature option.
-	int geomarkLimits = 50;
-	private JList list;
+    // Cannot add more than 50 geomarks otherwise use a layer and the "zoom to"
+    // feature option.
+    int geomarkLimits = 50;
 
-	GeomarkListModel listModel;
 
-	private static final String addString = "Add";
+    private JList list;
 
-	private static final String removeString = "Remove";
 
-	private JButton deleteButton;
+    GeomarkListModel listModel;
 
-	private JTextField geomarkName;
 
-	private MapEditorPlugIn editor;
+    private static final String addString = "Add";
 
-	// A folder in the workspace to store geomarks
-	public String GEOMARK_FOLDER = "geomarks";
 
-	private String geomarkFolderPath;
+    private static final String removeString = "Remove";
 
-	private long idTime = -1;
 
-	boolean isGeomarkListModified = false;
+    private JButton deleteButton;
 
-	public GeomarkPanel() {
-		super(new BorderLayout());
 
-		DefaultWorkspace workspace = (DefaultWorkspace) Services
-				.getService(Workspace.class);
+    private JTextField geomarkName;
 
-		geomarkFolderPath = workspace.getWorkspaceFolder() + File.separator
-				+ GEOMARK_FOLDER;
 
-		File folder = new File(geomarkFolderPath);
-		if (!folder.exists()) {
-			folder.mkdir();
-		}
+    private MapEditorPlugIn editor;
 
-		listModel = new GeomarkListModel();
-		// Create the list and put it in a scroll pane.
-		list = new JList();
-		list.setModel(listModel);
-		list.setSelectedIndex(0);
-		list.addListSelectionListener(this);
-		list.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (2 == e.getClickCount()) {
-					final String geomarkLabel = listModel.getElementAt(
-							list.locationToIndex(e.getPoint())).toString();
-					MapContext vc = ((MapContextManager) Services
-							.getService(MapContextManager.class))
-							.getActiveMapContext();
-					if (vc != null) {
-						editor.getMapTransform().setExtent(
-								listModel.getValue(geomarkLabel));
-					}
-				}
-			}
-		});
-		list.setVisibleRowCount(5);
-		JScrollPane listScrollPane = new JScrollPane(list);
+    // A folder in the workspace to store geomarks
 
-		JButton addButton = new JButton();
-		addButton.setIcon(OrbisGISIcon.WORLD_ADD);
-		addButton.setToolTipText(I18N
-				.getString("orbisgis.org.orbisgis.geomark.add"));
-		HireListener hireListener = new HireListener(addButton);
-		addButton.setActionCommand(addString);
-		addButton.addActionListener(hireListener);
-		addButton.setEnabled(false);
-		addButton.setBorderPainted(false);
+    public String GEOMARK_FOLDER = "geomarks";
 
-		deleteButton = new JButton();
-		deleteButton.setIcon(OrbisGISIcon.WORLD_DEL);
-		deleteButton.setToolTipText(I18N
-				.getString("orbisgis.org.orbisgis.geomark.remove"));
-		deleteButton.setBorderPainted(false);
-		deleteButton.setActionCommand(removeString);
-		deleteButton.addActionListener(new FireListener());
 
-		if (list.getModel().getSize() > 0) {
-			deleteButton.setEnabled(true);
-		} else {
-			deleteButton.setEnabled(false);
-		}
+    private String geomarkFolderPath;
 
-		geomarkName = new JTextField(10);
-		geomarkName.addActionListener(hireListener);
-		geomarkName.getDocument().addDocumentListener(hireListener);
 
-		// Create a panel that uses BoxLayout.
-		JPanel buttonPane = new JPanel();
-		buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.LINE_AXIS));
-		buttonPane.add(deleteButton);
-		buttonPane.add(Box.createHorizontalStrut(5));
-		buttonPane.add(new JSeparator(SwingConstants.VERTICAL));
-		buttonPane.add(Box.createHorizontalStrut(5));
-		buttonPane.add(geomarkName);
-		buttonPane.add(addButton);
-		buttonPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+    private long idTime = -1;
 
-		add(listScrollPane, BorderLayout.CENTER);
-		add(buttonPane, BorderLayout.PAGE_END);
-	}
 
-	class FireListener implements ActionListener {
-		public void actionPerformed(ActionEvent e) {
-			// This method can be called only if
-			// there's a valid selection
-			// so go ahead and remove whatever's selected.
-			Object[] selectedValues = list.getSelectedValues();
-			for (Object selectedValue : selectedValues) {
-				listModel.removeElement(selectedValue);
-				isGeomarkListModified = true;
-			}
-			repaint();
-			int size = listModel.getSize();
+    boolean isGeomarkListModified = false;
 
-			if (size == 0) { // Nobody's left, disable firing.
-				deleteButton.setEnabled(false);
-			}
-		}
-	}
 
-	// This listener is shared by the text field and the hire button.
-	class HireListener implements ActionListener, DocumentListener {
-		private boolean alreadyEnabled = false;
+    public GeomarkPanel() {
+        super(new BorderLayout());
 
-		private JButton button;
+        DefaultWorkspace workspace = (DefaultWorkspace) Services.getService(Workspace.class);
 
-		public HireListener(JButton button) {
-			this.button = button;
-		}
+        geomarkFolderPath = workspace.getWorkspaceFolder() + File.separator
+                + GEOMARK_FOLDER;
 
-		// Required by ActionListener.
-		public void actionPerformed(ActionEvent e) {
-			String name = geomarkName.getText();
+        File folder = new File(geomarkFolderPath);
+        if (!folder.exists()) {
+            folder.mkdir();
+        }
 
-			// User didn't type in a unique name...
-			if (name.equals("") || alreadyInList(name)) {
-				geomarkName.requestFocusInWindow();
-				geomarkName.selectAll();
-				return;
-			}
+        listModel = new GeomarkListModel();
+        // Create the list and put it in a scroll pane.
+        list = new JList();
+        list.setModel(listModel);
+        list.setSelectedIndex(0);
+        list.addListSelectionListener(this);
+        list.addMouseListener(new MouseAdapter() {
 
-			int index = list.getSelectedIndex(); // get selected index
-			if (index == -1) { // no selection, so insert at beginning
-				index = 0;
-			} else { // add after the selected item
-				index++;
-			}
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (2 == e.getClickCount()) {
+                    final String geomarkLabel = listModel.getElementAt(
+                            list.locationToIndex(e.getPoint())).toString();
+                    MapContext vc = ((MapContextManager) Services.getService(MapContextManager.class)).getActiveMapContext();
+                    if (vc != null) {
+                        editor.getMapTransform().setExtent(
+                                listModel.getValue(geomarkLabel));
+                    }
+                }
+            }
 
-			MapContext vc = ((MapContextManager) Services
-					.getService(MapContextManager.class)).getActiveMapContext();
-			if (vc != null) {
-				listModel.addElement(geomarkName.getText(), editor
-						.getMapTransform().getAdjustedExtent());
-				isGeomarkListModified = true;
-				// Reset the text field.
-				geomarkName.requestFocusInWindow();
-				geomarkName.setText("");
-			}
-			repaint();
 
-			// Select the new item and make it visible.
-			list.setSelectedIndex(index);
-			list.ensureIndexIsVisible(index);
-		}
+        });
+        list.setVisibleRowCount(5);
+        JScrollPane listScrollPane = new JScrollPane(list);
 
-		// This method tests for string equality. You could certainly
-		// get more sophisticated about the algorithm. For example,
-		// you might want to ignore white space and capitalization.
-		protected boolean alreadyInList(String name) {
-			return listModel.contains(name);
-		}
+        JButton addButton = new JButton();
+        addButton.setIcon(OrbisGISIcon.WORLD_ADD);
+        addButton.setToolTipText(I18N.getString("orbisgis.org.orbisgis.geomark.add"));
+        HireListener hireListener = new HireListener(addButton);
+        addButton.setActionCommand(addString);
+        addButton.addActionListener(hireListener);
+        addButton.setEnabled(false);
+        addButton.setBorderPainted(false);
 
-		// Required by DocumentListener.
-		public void insertUpdate(DocumentEvent e) {
-			enableButton();
-		}
+        deleteButton = new JButton();
+        deleteButton.setIcon(OrbisGISIcon.WORLD_DEL);
+        deleteButton.setToolTipText(I18N.getString("orbisgis.org.orbisgis.geomark.remove"));
+        deleteButton.setBorderPainted(false);
+        deleteButton.setActionCommand(removeString);
+        deleteButton.addActionListener(new FireListener());
 
-		// Required by DocumentListener.
-		public void removeUpdate(DocumentEvent e) {
-			handleEmptyTextField(e);
-		}
+        if (list.getModel().getSize() > 0) {
+            deleteButton.setEnabled(true);
+        } else {
+            deleteButton.setEnabled(false);
+        }
 
-		// Required by DocumentListener.
-		public void changedUpdate(DocumentEvent e) {
-			if (!handleEmptyTextField(e)) {
-				enableButton();
-			}
-		}
+        geomarkName = new JTextField(10);
+        geomarkName.addActionListener(hireListener);
+        geomarkName.getDocument().addDocumentListener(hireListener);
 
-		private void enableButton() {
-			if ((listModel.getSize() <= geomarkLimits) && (!alreadyEnabled)) {
-				button.setEnabled(true);
-			}
-		}
+        // Create a panel that uses BoxLayout.
+        JPanel buttonPane = new JPanel();
+        buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.LINE_AXIS));
+        buttonPane.add(deleteButton);
+        buttonPane.add(Box.createHorizontalStrut(5));
+        buttonPane.add(new JSeparator(SwingConstants.VERTICAL));
+        buttonPane.add(Box.createHorizontalStrut(5));
+        buttonPane.add(geomarkName);
+        buttonPane.add(addButton);
+        buttonPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-		private boolean handleEmptyTextField(DocumentEvent e) {
-			if (e.getDocument().getLength() <= 0) {
-				button.setEnabled(false);
-				alreadyEnabled = false;
-				return true;
-			}
-			return false;
-		}
-	}
+        add(listScrollPane, BorderLayout.CENTER);
+        add(buttonPane, BorderLayout.PAGE_END);
+    }
 
-	// This method is required by ListSelectionListener.
-	public void valueChanged(ListSelectionEvent e) {
-		if (e.getValueIsAdjusting() == false) {
 
-			if (list.getSelectedIndex() == -1) {
-				// No selection, disable fire button.
-				deleteButton.setEnabled(false);
+    class FireListener implements ActionListener {
 
-			} else {
-				// Selection, enable the fire button.
-				deleteButton.setEnabled(true);
-			}
-		}
-	}
+        public void actionPerformed(ActionEvent e) {
+            // This method can be called only if
+            // there's a valid selection
+            // so go ahead and remove whatever's selected.
+            Object[] selectedValues = list.getSelectedValues();
+            for (Object selectedValue : selectedValues) {
+                listModel.removeElement(selectedValue);
+                isGeomarkListModified = true;
+            }
+            repaint();
+            int size = listModel.getSize();
 
-	public void add(final String key, final Envelope envelope) {
-		listModel.addElement(key, envelope);
-	}
+            if (size == 0) { // Nobody's left, disable firing.
+                deleteButton.setEnabled(false);
+            }
+        }
 
-	public void setEditor(IEditor editor) {
-		if (isGeomarkListModified) {
-			saveGeoMarkFile();
-		}
-		isGeomarkListModified = false;
-		this.editor = (MapEditorPlugIn) editor;
-		updateGeoMarkFile();
-	}
 
-	public String getGeomarkFolderPath() {
-		return geomarkFolderPath;
-	}
+    }
 
-	public void updateGeoMarkFile() {
-		MapContext vc = ((MapContextManager) Services
-				.getService(MapContextManager.class)).getActiveMapContext();
-		if (vc != null) {
-			if (idTime == -1) {
-				idTime = vc.getIdTime();
-			} else if (idTime != vc.getIdTime()) {
-				idTime = vc.getIdTime();
-			}
-			readGeomarkFile();
-		}
-	}
+    // This listener is shared by the text field and the hire button.
+    class HireListener implements ActionListener, DocumentListener {
 
-	private void readGeomarkFile() {
-		File geoMarkFile = new File(getGeomarkFolderPath() + File.separator
-				+ idTime);
-		if (geoMarkFile != null) {
-			if (geoMarkFile.exists()) {
-				try {
-					FileInputStream fis = new FileInputStream(geoMarkFile);
-					ObjectInputStream ois = new ObjectInputStream(fis);
-					listModel.refresh((ArrayList<Geomark>) ois.readObject());
-					ois.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
-				}
+        private boolean alreadyEnabled = false;
 
-			} else {
-				listModel.refresh(new ArrayList<Geomark>());
-			}
-		}
 
-	}
+        private JButton button;
 
-	public boolean isGeomarkListModified() {
-		return isGeomarkListModified;
-	}
 
-	public void saveGeoMarkFile() {
-		listModel.save(getGeomarkFolderPath() + File.separator + idTime);
-	}
+        public HireListener(JButton button) {
+            this.button = button;
+        }
+
+        // Required by ActionListener.
+
+        public void actionPerformed(ActionEvent e) {
+            String name = geomarkName.getText();
+
+            // User didn't type in a unique name...
+            if (name.equals("") || alreadyInList(name)) {
+                geomarkName.requestFocusInWindow();
+                geomarkName.selectAll();
+                return;
+            }
+
+            int index = list.getSelectedIndex(); // get selected index
+            if (index == -1) { // no selection, so insert at beginning
+                index = 0;
+            } else { // add after the selected item
+                index++;
+            }
+
+            MapContext vc = ((MapContextManager) Services.getService(MapContextManager.class)).getActiveMapContext();
+            if (vc != null) {
+                listModel.addElement(geomarkName.getText(), editor.getMapTransform().getAdjustedExtent());
+                isGeomarkListModified = true;
+                // Reset the text field.
+                geomarkName.requestFocusInWindow();
+                geomarkName.setText("");
+            }
+            repaint();
+
+            // Select the new item and make it visible.
+            list.setSelectedIndex(index);
+            list.ensureIndexIsVisible(index);
+        }
+
+        // This method tests for string equality. You could certainly
+        // get more sophisticated about the algorithm. For example,
+        // you might want to ignore white space and capitalization.
+
+        protected boolean alreadyInList(String name) {
+            return listModel.contains(name);
+        }
+
+        // Required by DocumentListener.
+
+        public void insertUpdate(DocumentEvent e) {
+            enableButton();
+        }
+
+        // Required by DocumentListener.
+
+        public void removeUpdate(DocumentEvent e) {
+            handleEmptyTextField(e);
+        }
+
+        // Required by DocumentListener.
+
+        public void changedUpdate(DocumentEvent e) {
+            if (!handleEmptyTextField(e)) {
+                enableButton();
+            }
+        }
+
+
+        private void enableButton() {
+            if ((listModel.getSize() <= geomarkLimits) && (!alreadyEnabled)) {
+                button.setEnabled(true);
+            }
+        }
+
+
+        private boolean handleEmptyTextField(DocumentEvent e) {
+            if (e.getDocument().getLength() <= 0) {
+                button.setEnabled(false);
+                alreadyEnabled = false;
+                return true;
+            }
+            return false;
+        }
+
+
+    }
+
+    // This method is required by ListSelectionListener.
+
+    public void valueChanged(ListSelectionEvent e) {
+        if (e.getValueIsAdjusting() == false) {
+
+            if (list.getSelectedIndex() == -1) {
+                // No selection, disable fire button.
+                deleteButton.setEnabled(false);
+
+            } else {
+                // Selection, enable the fire button.
+                deleteButton.setEnabled(true);
+            }
+        }
+    }
+
+
+    public void add(final String key, final Envelope envelope) {
+        listModel.addElement(key, envelope);
+    }
+
+
+    public void setEditor(IEditor editor) {
+        if (isGeomarkListModified) {
+            saveGeoMarkFile();
+        }
+        isGeomarkListModified = false;
+        this.editor = (MapEditorPlugIn) editor;
+        updateGeoMarkFile();
+    }
+
+
+    public String getGeomarkFolderPath() {
+        return geomarkFolderPath;
+    }
+
+
+    public void updateGeoMarkFile() {
+        MapContext vc = ((MapContextManager) Services.getService(MapContextManager.class)).getActiveMapContext();
+        if (vc != null) {
+            if (idTime == -1) {
+                idTime = vc.getIdTime();
+            } else if (idTime != vc.getIdTime()) {
+                idTime = vc.getIdTime();
+            }
+            readGeomarkFile();
+        }
+    }
+
+
+    private void readGeomarkFile() {
+        File geoMarkFile = new File(getGeomarkFolderPath() + File.separator
+                + idTime);
+        if (geoMarkFile != null) {
+            if (geoMarkFile.exists()) {
+                try {
+                    FileInputStream fis = new FileInputStream(geoMarkFile);
+                    ObjectInputStream ois = new ObjectInputStream(fis);
+                    listModel.refresh((ArrayList<Geomark>) ois.readObject());
+                    ois.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+            } else {
+                listModel.refresh(new ArrayList<Geomark>());
+            }
+        }
+
+    }
+
+
+    public boolean isGeomarkListModified() {
+        return isGeomarkListModified;
+    }
+
+
+    public void saveGeoMarkFile() {
+        listModel.save(getGeomarkFolderPath() + File.separator + idTime);
+    }
+
 
 }

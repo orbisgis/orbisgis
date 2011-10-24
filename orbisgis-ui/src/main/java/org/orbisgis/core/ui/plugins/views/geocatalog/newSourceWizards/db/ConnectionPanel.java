@@ -59,113 +59,128 @@ import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.utils.I18N;
 
 public class ConnectionPanel extends MultiInputPanel {
-	private final static int LENGTH = 20;
-	public static final String DBTYPE = "dbtype";
-	public static final String HOST = "host";
-	public static final String PORT = "port";
-	public static final String DBNAME = "dbname";
-	public static final String USER = "user";
-	public static final String PASSWORD = "pass";
-        public static final String SSL = "ssl";
 
-	public ConnectionPanel() {
-		super("org.orbisgis.core.ui.geocatalog.resources.db.FirstUIPanel", I18N
-				.getString("orbisgis.org.core.db.connect"));
-		setInfoText(I18N
-				.getString("orbisgis.org.orbisgis.core.db.connectionParameters"));
-		addInput(DBTYPE, I18N.getString("orbisgis.org.orbisgis.core.db.dbType"),
-				getDriverInput());
-		addValidationExpression(DBTYPE + " is not null", I18N
-				.getString("orbisgis.org.orbisgis.core.db.dbTypeChooser"));
-		addInput(HOST, I18N.getString("orbisgis.org.orbisgis.core.hostName"),
-				"127.0.0.1", new StringType(LENGTH));
-		addValidationExpression(HOST + " is not null", I18N
-				.getString("orbisgis.org.orbisgis.core.db.hostNameChooser"));
-		addInput(PORT, I18N
-				.getString("orbisgis.org.orbisgis.core.db.portNumberDefault"),
-				"0", new IntType(LENGTH));
+    private final static int LENGTH = 20;
 
-		addValidationExpression("(" + PORT + " >= 0) and (" + PORT
-				+ " <= 32767)", I18N
-				.getString("orbisgis.org.orbisgis.core.db.portNumber"));
-		addInput(DBNAME, I18N.getString("orbisgis.org.orbisgis.core.db.dbName"),
-				"database_name", new StringType(LENGTH));
-		addValidationExpression(DBNAME + " is not null", I18N
-				.getString("orbisgis.org.orbisgis.core.db.dbNameMandatory"));
-		addInput(USER, I18N.getString("orbisgis.org.orbisgis.core.userName"),
-				"postgres", new StringType(LENGTH));
-		addInput(PASSWORD, I18N
-				.getString("orbisgis.org.orbisgis.core.password"), "",
-				new PasswordType(LENGTH));
 
-                addInput(SSL, I18N.getString("orbisgis.org.orbisgis.core.db.ssl"), new CheckBoxChoice(false));
-	}
+    public static final String DBTYPE = "dbtype";
 
-	private InputType getDriverInput() {
-		DataManager dm = Services.getService(DataManager.class);
-		SourceManager sourceManager = dm.getSourceManager();
-		DriverManager driverManager = sourceManager.getDriverManager();
 
-		Driver[] filtered = driverManager.getDrivers(new DBDriverFilter());
+    public static final String HOST = "host";
 
-		String[] ids = new String[filtered.length];
-		String[] texts = new String[filtered.length];
-		for (int i = 0; i < texts.length; i++) {
-			ReadOnlyDriver rod = (ReadOnlyDriver) filtered[i];
-			ids[i] = rod.getDriverId();
-			texts[i] = rod.getTypeDescription();
-		}
-		ComboBoxChoice combo = new ComboBoxChoice(ids, texts);
-		return combo;
-	}
 
-	public String postProcess() {
-		try {
-			Connection connection = getConnection();
-			connection.close();
-			return null;
-		} catch (SQLException e) {
-			return ErrorMessages.CannotConnect + ": " + e.getMessage();
-		}
-	}
+    public static final String PORT = "port";
 
-	public Connection getConnection() throws SQLException {
-		DBSource dbSource = getDBSource();
-		Connection connection = getDBDriver().getConnection(dbSource.getHost(),
-				dbSource.getPort(), dbSource.isSsl(), dbSource.getDbName(), dbSource.getUser(),
-				dbSource.getPassword());
-		return connection;
-	}
 
-	public DBDriver getDBDriver() {
-		DataManager dm = Services.getService(DataManager.class);
-		DriverManager driverManager = dm.getSourceManager().getDriverManager();
-		String dbType = getInput(DBTYPE);
-		DBDriver dbDriver = (DBDriver) driverManager.getDriver(dbType);
-		return dbDriver;
-	}
+    public static final String DBNAME = "dbname";
 
-	public String validateInput() {
-		return null;
-	}
 
-	public DBSource getDBSource() {
-		String host = getInput(HOST);
-		int port = Integer.parseInt(getInput(PORT));
-		String dbName = getInput(DBNAME);
-		String user = getInput(USER);
-		String password = getInput(PASSWORD);
-		DBDriver dbDriver = getDBDriver();
-		if ((port == 0) || (getInput(PORT).trim().length() == 0)) {
-			port = dbDriver.getDefaultPort();
-		}
+    public static final String USER = "user";
 
-                boolean ssl = false;
-                if (getInput(SSL).equals("true")){
-                        ssl =true;
-                }
 
-		return new DBSource(host, port, dbName, user, password, getDBDriver()
-				.getPrefixes()[0], ssl);
-	}
+    public static final String PASSWORD = "pass";
+
+
+    public static final String SSL = "ssl";
+
+
+    public ConnectionPanel() {
+        super("org.orbisgis.core.ui.geocatalog.resources.db.FirstUIPanel", I18N.getString("orbisgis.org.core.db.connect"));
+        setInfoText(I18N.getString("orbisgis.org.orbisgis.core.db.connectionParameters"));
+        addInput(DBTYPE, I18N.getString("orbisgis.org.orbisgis.core.db.dbType"),
+                 getDriverInput());
+        addValidationExpression(DBTYPE + " is not null", I18N.getString("orbisgis.org.orbisgis.core.db.dbTypeChooser"));
+        addInput(HOST, I18N.getString("orbisgis.org.orbisgis.core.hostName"),
+                 "127.0.0.1", new StringType(LENGTH));
+        addValidationExpression(HOST + " is not null", I18N.getString("orbisgis.org.orbisgis.core.db.hostNameChooser"));
+        addInput(PORT, I18N.getString("orbisgis.org.orbisgis.core.db.portNumberDefault"),
+                 "0", new IntType(LENGTH));
+
+        addValidationExpression("(" + PORT + " >= 0) and (" + PORT
+                + " <= 32767)", I18N.getString("orbisgis.org.orbisgis.core.db.portNumber"));
+        addInput(DBNAME, I18N.getString("orbisgis.org.orbisgis.core.db.dbName"),
+                 "database_name", new StringType(LENGTH));
+        addValidationExpression(DBNAME + " is not null", I18N.getString("orbisgis.org.orbisgis.core.db.dbNameMandatory"));
+        addInput(USER, I18N.getString("orbisgis.org.orbisgis.core.userName"),
+                 "postgres", new StringType(LENGTH));
+        addInput(PASSWORD, I18N.getString("orbisgis.org.orbisgis.core.password"), "",
+                 new PasswordType(LENGTH));
+
+        addInput(SSL, I18N.getString("orbisgis.org.orbisgis.core.db.ssl"), new CheckBoxChoice(false));
+    }
+
+
+    private InputType getDriverInput() {
+        DataManager dm = Services.getService(DataManager.class);
+        SourceManager sourceManager = dm.getSourceManager();
+        DriverManager driverManager = sourceManager.getDriverManager();
+
+        Driver[] filtered = driverManager.getDrivers(new DBDriverFilter());
+
+        String[] ids = new String[filtered.length];
+        String[] texts = new String[filtered.length];
+        for (int i = 0; i < texts.length; i++) {
+            ReadOnlyDriver rod = (ReadOnlyDriver) filtered[i];
+            ids[i] = rod.getDriverId();
+            texts[i] = rod.getTypeDescription();
+        }
+        ComboBoxChoice combo = new ComboBoxChoice(ids, texts);
+        return combo;
+    }
+
+
+    public String postProcess() {
+        try {
+            Connection connection = getConnection();
+            connection.close();
+            return null;
+        } catch (SQLException e) {
+            return ErrorMessages.CannotConnect + ": " + e.getMessage();
+        }
+    }
+
+
+    public Connection getConnection() throws SQLException {
+        DBSource dbSource = getDBSource();
+        Connection connection = getDBDriver().getConnection(dbSource.getHost(),
+                                                            dbSource.getPort(), dbSource.isSsl(), dbSource.getDbName(), dbSource.getUser(),
+                                                            dbSource.getPassword());
+        return connection;
+    }
+
+
+    public DBDriver getDBDriver() {
+        DataManager dm = Services.getService(DataManager.class);
+        DriverManager driverManager = dm.getSourceManager().getDriverManager();
+        String dbType = getInput(DBTYPE);
+        DBDriver dbDriver = (DBDriver) driverManager.getDriver(dbType);
+        return dbDriver;
+    }
+
+
+    public String validateInput() {
+        return null;
+    }
+
+
+    public DBSource getDBSource() {
+        String host = getInput(HOST);
+        int port = Integer.parseInt(getInput(PORT));
+        String dbName = getInput(DBNAME);
+        String user = getInput(USER);
+        String password = getInput(PASSWORD);
+        DBDriver dbDriver = getDBDriver();
+        if ((port == 0) || (getInput(PORT).trim().length() == 0)) {
+            port = dbDriver.getDefaultPort();
+        }
+
+        boolean ssl = false;
+        if (getInput(SSL).equals("true")) {
+            ssl = true;
+        }
+
+        return new DBSource(host, port, dbName, user, password, getDBDriver().getPrefixes()[0], ssl);
+    }
+
+
 }

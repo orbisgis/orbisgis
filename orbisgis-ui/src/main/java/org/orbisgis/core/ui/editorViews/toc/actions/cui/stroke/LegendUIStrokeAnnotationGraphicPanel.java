@@ -42,7 +42,7 @@ import java.awt.BorderLayout;
 import javax.swing.Icon;
 import org.orbisgis.core.renderer.se.common.RelativeOrientation;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
-import org.orbisgis.core.renderer.se.stroke.StrokeAnnotationGraphic;
+//import org.orbisgis.core.renderer.se.stroke.StrokeAnnotationGraphic;
 import org.orbisgis.core.renderer.se.stroke.StrokeElement;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
@@ -57,9 +57,10 @@ import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
  *
  * @author maxence
  */
+/*
 public class LegendUIStrokeAnnotationGraphicPanel extends LegendUIComponent {
 
-    private StrokeAnnotationGraphic anno;
+    //private StrokeAnnotationGraphic anno;
 
     private LegendUICompositeGraphicPanel graphic;
     private LegendUIMetaRealPanel relativePosition;
@@ -128,3 +129,4 @@ public class LegendUIStrokeAnnotationGraphicPanel extends LegendUIComponent {
 
 
 }
+*/

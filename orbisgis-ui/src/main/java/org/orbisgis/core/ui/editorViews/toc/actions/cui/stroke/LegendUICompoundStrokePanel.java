@@ -62,7 +62,7 @@ import org.orbisgis.core.renderer.se.stroke.AlternativeStrokeElements;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.renderer.se.stroke.CompoundStroke;
 import org.orbisgis.core.renderer.se.stroke.CompoundStrokeElement;
-import org.orbisgis.core.renderer.se.stroke.StrokeAnnotationGraphic;
+//import org.orbisgis.core.renderer.se.stroke.StrokeAnnotationGraphic;
 import org.orbisgis.core.renderer.se.stroke.StrokeElement;
 
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractPanel;
@@ -80,24 +80,62 @@ import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 public abstract class LegendUICompoundStrokePanel extends LegendUIComponent implements LegendUIStrokeComponent {
 
     private final CompoundStroke compoundStroke;
+
+
     private UomInput uom;
+
+
     private LegendUIMetaRealPanel preGap;
+
+
     private LegendUIMetaRealPanel postGap;
+
+
     private LegendUIAbstractPanel content1;
+
+
     private LegendUIAbstractPanel content2;
+
+
     private LegendUIAbstractPanel content3;
+
+
     private LegendUIAbstractPanel elemLeft;
+
+
     private LegendUIAbstractPanel elemTools;
+
+
     private LegendUIAbstractPanel elemEditor;
+
+
     private static String[] availableElement = {"Element", "Alternative List"};
+
+
     private JButton btnElemUp;
+
+
     private JButton btnElemDown;
+
+
     private JButton btnElemAdd;
+
+
     private JButton btnElemRm;
+
+
     private ArrayList<LegendUIComponent> elements;
+
+
     private JList elemList;
+
+
     private DefaultListModel elemModel;
+
+
     private int currentElem;
+
+    /*
     private LegendUIAbstractPanel annoLeft;
     private LegendUIAbstractPanel annoTools;
     private LegendUIAbstractPanel annoEditor;
@@ -108,11 +146,12 @@ public abstract class LegendUICompoundStrokePanel extends LegendUIComponent impl
     private ArrayList<LegendUIComponent> annotations;
     private JList annoList;
     private DefaultListModel annoModel;
-    private int currentAnno;
+    private int currentAnno;*/
 
-    private LegendUIComponent getCompForAnnotation(StrokeAnnotationGraphic anno) {
-        return new LegendUIStrokeAnnotationGraphicPanel(controller, this, anno);
-    }
+    //private LegendUIComponent getCompForAnnotation(StrokeAnnotationGraphic anno) {
+    //    return new LegendUIStrokeAnnotationGraphicPanel(controller, this, anno);
+    //}
+
 
     private LegendUIComponent getCompForElement(CompoundStrokeElement elem) {
         if (elem instanceof StrokeElement) {
@@ -123,7 +162,11 @@ public abstract class LegendUICompoundStrokePanel extends LegendUIComponent impl
         return null;
     }
 
-    public LegendUICompoundStrokePanel(LegendUIController controller, LegendUIComponent parent, CompoundStroke cStroke, boolean isNullable) {
+
+    public LegendUICompoundStrokePanel(LegendUIController controller,
+                                       LegendUIComponent parent,
+                                       CompoundStroke cStroke,
+                                       boolean isNullable) {
         super("compound stroke", controller, parent, 0, isNullable);
         //this.setLayout(new GridLayout(0,2));
         this.compoundStroke = cStroke;
@@ -134,9 +177,9 @@ public abstract class LegendUICompoundStrokePanel extends LegendUIComponent impl
         elemEditor = new LegendUIAbstractPanel(controller);
         elemTools = new LegendUIAbstractPanel(controller);
         elemLeft = new LegendUIAbstractPanel(controller);
-        annoEditor = new LegendUIAbstractPanel(controller);
-        annoTools = new LegendUIAbstractPanel(controller);
-        annoLeft = new LegendUIAbstractPanel(controller);
+        //annoEditor = new LegendUIAbstractPanel(controller);
+        //annoTools = new LegendUIAbstractPanel(controller);
+        //annoLeft = new LegendUIAbstractPanel(controller);
 
         uom = new UomInput(compoundStroke);
 
@@ -146,6 +189,8 @@ public abstract class LegendUICompoundStrokePanel extends LegendUIComponent impl
             public void realChanged(RealParameter newReal) {
                 compoundStroke.setPreGap(newReal);
             }
+
+
         };
         preGap.init();
 
@@ -155,6 +200,8 @@ public abstract class LegendUICompoundStrokePanel extends LegendUIComponent impl
             public void realChanged(RealParameter newReal) {
                 compoundStroke.setPostGap(newReal);
             }
+
+
         };
         postGap.init();
 
@@ -202,6 +249,8 @@ public abstract class LegendUICompoundStrokePanel extends LegendUIComponent impl
                     currentElem = i - 1;
                 }
             }
+
+
         });
 
         btnElemDown.addActionListener(new ActionListener() {
@@ -222,6 +271,8 @@ public abstract class LegendUICompoundStrokePanel extends LegendUIComponent impl
                     currentElem = i + 1;
                 }
             }
+
+
         });
 
         btnElemAdd.addActionListener(new ActionListener() {
@@ -231,9 +282,9 @@ public abstract class LegendUICompoundStrokePanel extends LegendUIComponent impl
                 CompoundStrokeElement elem = null;
 
                 String choice = (String) JOptionPane.showInputDialog(null,
-                        "Choose a new graphic type", "Choose a new graphic type",
-                        JOptionPane.PLAIN_MESSAGE, null,
-                        availableElement, availableElement[0]);
+                                                                     "Choose a new graphic type", "Choose a new graphic type",
+                                                                     JOptionPane.PLAIN_MESSAGE, null,
+                                                                     availableElement, availableElement[0]);
 
                 if (choice != null) {
                     if (choice.equals(availableElement[0])) {
@@ -255,6 +306,8 @@ public abstract class LegendUICompoundStrokePanel extends LegendUIComponent impl
                     displayElement(currentElem);
                 }
             }
+
+
         });
 
         btnElemRm.addActionListener(new ActionListener() {
@@ -262,7 +315,7 @@ public abstract class LegendUICompoundStrokePanel extends LegendUIComponent impl
             @Override
             public void actionPerformed(ActionEvent e) {
                 int showConfirmDialog = JOptionPane.showConfirmDialog(LegendUICompoundStrokePanel.this.controller.getMainPanel(),
-                        "Sur ?", "Sur ?", JOptionPane.YES_NO_OPTION);
+                                                                      "Sur ?", "Sur ?", JOptionPane.YES_NO_OPTION);
 
                 if (showConfirmDialog == 0) {
                     int i = elemList.getSelectedIndex();
@@ -278,6 +331,8 @@ public abstract class LegendUICompoundStrokePanel extends LegendUIComponent impl
                 }
 
             }
+
+
         });
 
         btnElemUp.setEnabled(false);
@@ -314,155 +369,164 @@ public abstract class LegendUICompoundStrokePanel extends LegendUIComponent impl
                     displayElement(index);
                 }
             }
+
+
         });
 
 
         /* STROKE ANNOTATION GRAPHIC */
 
-        annotations = new ArrayList<LegendUIComponent>();
-        annoModel = new DefaultListModel();
-        currentAnno = -1;
+        //annotations = new ArrayList<LegendUIComponent>();
+        //annoModel = new DefaultListModel();
+        //currentAnno = -1;
 
+        /*
         for (i = 0; i < compoundStroke.getAnnotations().size(); i++) {
-            StrokeAnnotationGraphic anno = compoundStroke.getAnnotations().get(i);
-            LegendUIComponent comp = getCompForAnnotation(anno);
-            annotations.add(comp);
-            annoModel.addElement(anno);
+        StrokeAnnotationGraphic anno = compoundStroke.getAnnotations().get(i);
+        LegendUIComponent comp = getCompForAnnotation(anno);
+        annotations.add(comp);
+        annoModel.addElement(anno);
         }
-
+        
         annoList = new JList(annoModel);
         annoList.setCellRenderer(new AnnoCellRenderer());
         annoList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
+        
         btnAnnoRm = new JButton(OrbisGISIcon.REMOVE);
         btnAnnoAdd = new JButton(OrbisGISIcon.ADD);
         btnAnnoDown = new JButton(OrbisGISIcon.GO_DOWN);
         btnAnnoUp = new JButton(OrbisGISIcon.GO_UP);
-
-
+        
+        
         btnAnnoRm.setMargin(new Insets(0, 0, 0, 0));
         btnAnnoAdd.setMargin(new Insets(0, 0, 0, 0));
         btnAnnoUp.setMargin(new Insets(0, 0, 0, 0));
         btnAnnoDown.setMargin(new Insets(0, 0, 0, 0));
-
+        
         btnAnnoUp.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int i = annoList.getSelectedIndex();
-                if (compoundStroke.moveAnnotationUp(i)) {
-                    DefaultListModel model = (DefaultListModel) annoList.getModel();
-                    Object anno = model.remove(i);
-                    model.add(i - 1, anno);
-                    annoList.setSelectedIndex(i - 1);
-
-                    LegendUIComponent remove = annotations.remove(i);
-                    annotations.add(i - 1, remove);
-                    currentAnno = i - 1;
-                }
-            }
+        
+        @Override
+        public void actionPerformed(ActionEvent e) {
+        int i = annoList.getSelectedIndex();
+        if (compoundStroke.moveAnnotationUp(i)) {
+        DefaultListModel model = (DefaultListModel) annoList.getModel();
+        Object anno = model.remove(i);
+        model.add(i - 1, anno);
+        annoList.setSelectedIndex(i - 1);
+        
+        LegendUIComponent remove = annotations.remove(i);
+        annotations.add(i - 1, remove);
+        currentAnno = i - 1;
+        }
+        }
         });
-
+        
         btnAnnoDown.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int i = annoList.getSelectedIndex();
-                if (compoundStroke.moveAnnotationDown(i)) {
-                    // reflect the new order in the UI
-                    DefaultListModel model = (DefaultListModel) annoList.getModel();
-                    Object g = model.remove(i);
-                    model.add(i + 1, g);
-                    annoList.setSelectedIndex(i + 1);
-
-                    LegendUIComponent remove = annotations.remove(i);
-                    annotations.add(i + 1, remove);
-
-                    currentAnno = i + 1;
-                }
-            }
+        
+        @Override
+        public void actionPerformed(ActionEvent e) {
+        int i = annoList.getSelectedIndex();
+        if (compoundStroke.moveAnnotationDown(i)) {
+        // reflect the new order in the UI
+        DefaultListModel model = (DefaultListModel) annoList.getModel();
+        Object g = model.remove(i);
+        model.add(i + 1, g);
+        annoList.setSelectedIndex(i + 1);
+        
+        LegendUIComponent remove = annotations.remove(i);
+        annotations.add(i + 1, remove);
+        
+        currentAnno = i + 1;
+        }
+        }
         });
-
+        
         btnAnnoAdd.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                StrokeAnnotationGraphic anno = new StrokeAnnotationGraphic();
-
-                compoundStroke.addAnnotation(anno);
-                DefaultListModel model = (DefaultListModel) annoList.getModel();
-                model.addElement(anno);
-                currentAnno = annoList.getModel().getSize() - 1;
-                annoList.setSelectedIndex(currentAnno);
-
-                LegendUIComponent comp = getCompForAnnotation(anno);
-                annotations.add(comp);
-
-                displayAnnotation(currentAnno);
-            }
+        
+        @Override
+        public void actionPerformed(ActionEvent e) {
+        StrokeAnnotationGraphic anno = new StrokeAnnotationGraphic();
+        
+        compoundStroke.addAnnotation(anno);
+        DefaultListModel model = (DefaultListModel) annoList.getModel();
+        model.addElement(anno);
+        currentAnno = annoList.getModel().getSize() - 1;
+        annoList.setSelectedIndex(currentAnno);
+        
+        LegendUIComponent comp = getCompForAnnotation(anno);
+        annotations.add(comp);
+        
+        displayAnnotation(currentAnno);
+        }
         });
-
+        
         btnAnnoRm.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int showConfirmDialog = JOptionPane.showConfirmDialog(LegendUICompoundStrokePanel.this.controller.getMainPanel(),
-                        "Sur ?", "Sur ?", JOptionPane.YES_NO_OPTION);
-
-                if (showConfirmDialog == 0) {
-                    int i = annoList.getSelectedIndex();
-
-                    if (compoundStroke.removeAnnotation(i)) {
-                        DefaultListModel model = (DefaultListModel) annoList.getModel();
-                        model.remove(i);
-                        annoList.setSelectedIndex(-1);
-                        annotations.remove(i);
-
-                        displayAnnotation(-1);
-                    }
-                }
-
-            }
+        
+        @Override
+        public void actionPerformed(ActionEvent e) {
+        int showConfirmDialog = JOptionPane.showConfirmDialog(LegendUICompoundStrokePanel.this.controller.getMainPanel(),
+        "Sur ?", "Sur ?", JOptionPane.YES_NO_OPTION);
+        
+        if (showConfirmDialog == 0) {
+        int i = annoList.getSelectedIndex();
+        
+        if (compoundStroke.removeAnnotation(i)) {
+        DefaultListModel model = (DefaultListModel) annoList.getModel();
+        model.remove(i);
+        annoList.setSelectedIndex(-1);
+        annotations.remove(i);
+        
+        displayAnnotation(-1);
+        }
+        }
+        
+        }
         });
-
+        
         btnAnnoUp.setEnabled(false);
         btnAnnoDown.setEnabled(false);
         btnAnnoRm.setEnabled(false);
-
+        
         annoTools.setLayout(new FlowLayout(FlowLayout.TRAILING));
-
+        
         annoList.addMouseListener(new MouseAdapter() {
-
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                int index = annoList.locationToIndex(e.getPoint());
-                annoList.setSelectedIndex(index);
-
-                btnAnnoUp.setEnabled(false);
-                btnAnnoDown.setEnabled(false);
-                btnAnnoRm.setEnabled(false);
-
-                if (index >= 0) {
-                    // First, update button status
-
-                    if (annoList.getModel().getSize() > 0) { //dont delete the last graphic
-                        btnAnnoRm.setEnabled(true);
-                    }
-
-                    if (index > 0) {
-                        // Turn the move down button on
-                        btnAnnoUp.setEnabled(true);
-                    }
-                    if (index < annoList.getModel().getSize() - 1) {
-                        btnAnnoDown.setEnabled(true);
-                    }
-
-                    displayAnnotation(index);
-                }
-            }
+        
+        @Override
+        public void mouseClicked(MouseEvent e) {
+        int index = annoList.locationToIndex(e.getPoint());
+        annoList.setSelectedIndex(index);
+        
+        btnAnnoUp.setEnabled(false);
+        btnAnnoDown.setEnabled(false);
+        btnAnnoRm.setEnabled(false);
+        
+        if (index >= 0) {
+        // First, update button status
+        
+        if (annoList.getModel().getSize() > 0) { //dont delete the last graphic
+        btnAnnoRm.setEnabled(true);
+        }
+        
+        if (index > 0) {
+        // Turn the move down button on
+        btnAnnoUp.setEnabled(true);
+        }
+        if (index < annoList.getModel().getSize() - 1) {
+        btnAnnoDown.setEnabled(true);
+        }
+        
+        displayAnnotation(index);
+        }
+        }
         });
+        }
+        
+         * 
+         */
     }
 
+
+    /*
     private void displayAnnotation(int index) {
         int i;
         this.currentAnno = index;
@@ -479,6 +543,7 @@ public abstract class LegendUICompoundStrokePanel extends LegendUIComponent impl
             controller.structureChanged(this);
         }
     }
+    */
 
     private void displayElement(int index) {
         int i;
@@ -497,10 +562,12 @@ public abstract class LegendUICompoundStrokePanel extends LegendUIComponent impl
         }
     }
 
+
     @Override
     public Icon getIcon() {
         return OrbisGISIcon.PENCIL;
     }
+
 
     @Override
     protected void mountComponent() {
@@ -534,60 +601,75 @@ public abstract class LegendUICompoundStrokePanel extends LegendUIComponent impl
 
         content2.setBorder(BorderFactory.createTitledBorder("Pattern"));
 
+        /*
         annoTools.removeAll();
         annoLeft.removeAll();
         annoEditor.removeAll();
-
+        
         annoTools.add(btnAnnoAdd);
         annoTools.add(btnAnnoUp);
         annoTools.add(btnAnnoDown);
         annoTools.add(btnAnnoRm);
-
+        
         annoLeft.add(annoList, BorderLayout.NORTH);
         annoLeft.add(annoTools, BorderLayout.SOUTH);
-
+        
         if (currentAnno >= 0) {
-            annoEditor.add(annotations.get(currentAnno));
+        annoEditor.add(annotations.get(currentAnno));
         } else {
-            annoEditor.add(new JLabel("Please select one!"));
+        annoEditor.add(new JLabel("Please select one!"));
         }
-
+        
         content3.add(annoLeft, BorderLayout.WEST);
         content3.add(annoEditor, BorderLayout.EAST);
         content3.setBorder(BorderFactory.createTitledBorder("Annotations"));
+         */
 
         editor.add(content1, BorderLayout.NORTH);
         editor.add(content2, BorderLayout.CENTER);
         editor.add(content3, BorderLayout.SOUTH);
     }
 
+
     @Override
     public Stroke getStroke() {
         return this.compoundStroke;
     }
+
 
     @Override
     public Class getEditedClass() {
         return CompoundStroke.class;
     }
 
+
     private class ElemCellRenderer extends DefaultListCellRenderer {
 
         @Override
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        public Component getListCellRendererComponent(JList list, Object value,
+                                                      int index,
+                                                      boolean isSelected,
+                                                      boolean cellHasFocus) {
             super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
             this.setIcon(OrbisGISIcon.LINE);
             return this;
         }
+
+
     }
 
     private class AnnoCellRenderer extends DefaultListCellRenderer {
 
         @Override
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        public Component getListCellRendererComponent(JList list, Object value,
+                                                      int index,
+                                                      boolean isSelected,
+                                                      boolean cellHasFocus) {
             super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
             this.setIcon(OrbisGISIcon.IMAGE);
             return this;
         }
+
+
     }
 }

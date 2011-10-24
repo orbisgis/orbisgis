@@ -58,121 +58,140 @@ import org.orbisgis.utils.I18N;
 
 public class SchemaSelectionPanel extends JPanel implements UIPanel {
 
-	private ConnectionPanel firstPanel;
-	private String layerName = "myLayer";
-	private JTextField layerText;
-	private JComboBox schemasCb;
-	private JPanel jPanelSchema;
-	private TableDescription[] tables;
+    private ConnectionPanel firstPanel;
 
-	public SchemaSelectionPanel(final ConnectionPanel firstPanel,
-			String layerName) {
-		this.firstPanel = firstPanel;
-		this.layerName = layerName;
-	}
 
-	@Override
-	public Component getComponent() {
-		return this;
-	}
+    private String layerName = "myLayer";
 
-	@Override
-	public URL getIconURL() {
-		return null;
-	}
 
-	@Override
-	public String getInfoText() {
-		return null;
-	}
+    private JTextField layerText;
 
-	@Override
-	public String getTitle() {
-		return I18N.getString("orbisgis.org.orbisgis.db.setTableAndSchema");
-	}
 
-	@Override
-	public String initialize() {
+    private JComboBox schemasCb;
 
-		jPanelSchema = getJPanelSchema();
 
-		this.add(jPanelSchema);
-		return null;
+    private JPanel jPanelSchema;
 
-	}
 
-	public JPanel getJPanelSchema() {
+    private TableDescription[] tables;
 
-		if (jPanelSchema == null) {
-			DBDriver dbDriver = firstPanel.getDBDriver();
-			Connection connection;
-			try {
-				connection = firstPanel.getConnection();
 
-				final String[] schemas = dbDriver.getSchemas(connection);
-				tables = dbDriver.getTables(connection);
+    public SchemaSelectionPanel(final ConnectionPanel firstPanel,
+                                String layerName) {
+        this.firstPanel = firstPanel;
+        this.layerName = layerName;
+    }
 
-				layerText = new JTextField(20);
-				layerText.setText(layerName);
 
-				schemasCb = new JComboBox(schemas);
+    @Override
+    public Component getComponent() {
+        return this;
+    }
 
-				jPanelSchema = new JPanel();
-				jPanelSchema.setLayout(new CRFlowLayout());
-				jPanelSchema.add(new JLabel(I18N
-						.getString("orbisgis.org.orbisgis.core.db.tableName")
-						+ " :"));
-				jPanelSchema.add(layerText);
-				jPanelSchema.add(new CarriageReturn());
-				jPanelSchema.add(new JLabel(I18N
-						.getString("orbisgis.org.orbisgis.core.db.schemaName")
-						+ " :"));
-				jPanelSchema.add(schemasCb);
 
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} catch (DriverException e) {
-				e.printStackTrace();
-			}
-		}
-		return jPanelSchema;
-	}
+    @Override
+    public URL getIconURL() {
+        return null;
+    }
 
-	public boolean ifTableExists(String table) {
-		boolean exists = false;
-		for (int i = 0; i < tables.length && !exists; i++) {
-			if (tables[i].getName().equals(table)) {
-				exists = true;
-			}
-		}
-		return exists;
-	}
 
-	@Override
-	public String postProcess() {
-		return null;
-	}
+    @Override
+    public String getInfoText() {
+        return null;
+    }
 
-	@Override
-	public String validateInput() {
-		String validateInput = null;
 
-		if (getSourceName().length() == 0) {
-			validateInput = I18N
-					.getString("orbisgis.org.orbisgis.core.db.selectTableName");
-		} else if (ifTableExists(getSourceName())) {
-			validateInput = I18N
-					.getString("orbisgis.org.orbisgis.core.db.tableAlreadyExistsInDb");
-		}
-		return validateInput;
-	}
+    @Override
+    public String getTitle() {
+        return I18N.getString("orbisgis.org.orbisgis.db.setTableAndSchema");
+    }
 
-	public String getSourceName() {
-		return layerText.getText();
-	}
 
-	public String getSelectedSchema() {
-		return (String) schemasCb.getSelectedItem();
-	}
+    @Override
+    public String initialize() {
+
+        jPanelSchema = getJPanelSchema();
+
+        this.add(jPanelSchema);
+        return null;
+
+    }
+
+
+    public JPanel getJPanelSchema() {
+
+        if (jPanelSchema == null) {
+            DBDriver dbDriver = firstPanel.getDBDriver();
+            Connection connection;
+            try {
+                connection = firstPanel.getConnection();
+
+                final String[] schemas = dbDriver.getSchemas(connection);
+                tables = dbDriver.getTables(connection);
+
+                layerText = new JTextField(20);
+                layerText.setText(layerName);
+
+                schemasCb = new JComboBox(schemas);
+
+                jPanelSchema = new JPanel();
+                jPanelSchema.setLayout(new CRFlowLayout());
+                jPanelSchema.add(new JLabel(I18N.getString("orbisgis.org.orbisgis.core.db.tableName")
+                        + " :"));
+                jPanelSchema.add(layerText);
+                jPanelSchema.add(new CarriageReturn());
+                jPanelSchema.add(new JLabel(I18N.getString("orbisgis.org.orbisgis.core.db.schemaName")
+                        + " :"));
+                jPanelSchema.add(schemasCb);
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } catch (DriverException e) {
+                e.printStackTrace();
+            }
+        }
+        return jPanelSchema;
+    }
+
+
+    public boolean ifTableExists(String table) {
+        boolean exists = false;
+        for (int i = 0; i < tables.length && !exists; i++) {
+            if (tables[i].getName().equals(table)) {
+                exists = true;
+            }
+        }
+        return exists;
+    }
+
+
+    @Override
+    public String postProcess() {
+        return null;
+    }
+
+
+    @Override
+    public String validateInput() {
+        String validateInput = null;
+
+        if (getSourceName().length() == 0) {
+            validateInput = I18N.getString("orbisgis.org.orbisgis.core.db.selectTableName");
+        } else if (ifTableExists(getSourceName())) {
+            validateInput = I18N.getString("orbisgis.org.orbisgis.core.db.tableAlreadyExistsInDb");
+        }
+        return validateInput;
+    }
+
+
+    public String getSourceName() {
+        return layerText.getText();
+    }
+
+
+    public String getSelectedSchema() {
+        return (String) schemasCb.getSelectedItem();
+    }
+
 
 }

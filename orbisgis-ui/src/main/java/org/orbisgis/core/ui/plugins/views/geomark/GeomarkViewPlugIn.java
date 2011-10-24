@@ -35,7 +35,6 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-
 package org.orbisgis.core.ui.plugins.views.geomark;
 
 import javax.swing.JMenuItem;
@@ -52,57 +51,69 @@ import org.orbisgis.utils.I18N;
 
 public class GeomarkViewPlugIn extends ViewPlugIn {
 
-	private GeomarkPanel panel;
-	private String editors[];
-	private JMenuItem menuItem;
+    private GeomarkPanel panel;
 
-	public void initialize(PlugInContext context) throws Exception {
-		panel = new GeomarkPanel();
-		editors = new String[1];
-		editors[0] = Names.EDITOR_MAP_ID;
-		menuItem = context.getFeatureInstaller().addMainMenuItem(this,
-				new String[] { Names.VIEW }, Names.GEOMARK, true,
-				OrbisGISIcon.GEOMARK_ICON, editors, panel, context);
-		context.getFeatureInstaller().addRegisterCustomQuery(OG_Geomark.class);
-	}
 
-	public boolean execute(PlugInContext context) throws Exception {
-		getPlugInContext().loadView(getId());
-		return true;
-	}
+    private String editors[];
 
-	public boolean setEditor(IEditor editor) {
-		panel.setEditor(editor);
-		return true;
-	}
 
-	public boolean isEnabled() {
-		boolean isEnabled = false;
-		MapEditorPlugIn mapEditor = null;
-		if ((mapEditor = getPlugInContext().getMapEditor()) != null) {
-			MapContext mc = (MapContext) mapEditor.getElement().getObject();
-			if (mc != null) {
-				isEnabled = true;
-			}
-		}
-		return isEnabled;
-	}
+    private JMenuItem menuItem;
 
-	public boolean isSelected() {
-		boolean isSelected = false;
-		isSelected = getPlugInContext().viewIsOpen(getId());
-		menuItem.setSelected(isSelected);
-		return isSelected;
-	}
 
-	public String getName() {
-		return I18N.getString("orbisgis.org.orbisgis.geomark.view");
-	}
+    public void initialize(PlugInContext context) throws Exception {
+        panel = new GeomarkPanel();
+        editors = new String[1];
+        editors[0] = Names.EDITOR_MAP_ID;
+        menuItem = context.getFeatureInstaller().addMainMenuItem(this,
+                                                                 new String[]{Names.VIEW}, Names.GEOMARK, true,
+                                                                 OrbisGISIcon.GEOMARK_ICON, editors, panel, context);
+        context.getFeatureInstaller().addRegisterCustomQuery(OG_Geomark.class);
+    }
 
-	@Override
-	public void saveStatus() throws PersistenceException {
-		super.saveStatus();
-		panel.saveGeoMarkFile();
-	}
+
+    public boolean execute(PlugInContext context) throws Exception {
+        getPlugInContext().loadView(getId());
+        return true;
+    }
+
+
+    public boolean setEditor(IEditor editor) {
+        panel.setEditor(editor);
+        return true;
+    }
+
+
+    public boolean isEnabled() {
+        boolean isEnabled = false;
+        MapEditorPlugIn mapEditor = null;
+        if ((mapEditor = getPlugInContext().getMapEditor()) != null) {
+            MapContext mc = (MapContext) mapEditor.getElement().getObject();
+            if (mc != null) {
+                isEnabled = true;
+            }
+        }
+        return isEnabled;
+    }
+
+
+    public boolean isSelected() {
+        boolean isSelected = false;
+        isSelected = getPlugInContext().viewIsOpen(getId());
+        menuItem.setSelected(isSelected);
+        return isSelected;
+    }
+
+
+    public String getName() {
+        return I18N.getString("orbisgis.org.orbisgis.geomark.view");
+    }
+
+
+    @Override
+    public void saveStatus() throws PersistenceException {
+        super.saveStatus();
+        panel.saveGeoMarkFile();
+    }
+
 
 }

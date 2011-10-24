@@ -65,7 +65,7 @@ public class ExportFeatureTypeStylePlugIn extends AbstractPlugIn {
 
 			if (UIFactory.showDialog(outputXMLPanel)) {
 				String seFile = outputXMLPanel.getSelectedFile().getAbsolutePath();
-				layer.getFeatureTypeStyle().export(seFile);
+				layer.getStyle().export(seFile);
 			}
 
 		} catch (DriverException e) {

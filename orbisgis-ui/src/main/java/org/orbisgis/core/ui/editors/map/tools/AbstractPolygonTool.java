@@ -54,127 +54,133 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
 
 public abstract class AbstractPolygonTool extends Polygon implements
-		InsertionTool {
+        InsertionTool {
 
-	private GeometryFactory gf = new GeometryFactory();
+    private GeometryFactory gf = new GeometryFactory();
 
-	private ArrayList<Coordinate> points = new ArrayList<Coordinate>();
 
-	@Override
-	public void transitionTo_Standby(MapContext vc, ToolManager tm)
-			throws FinishedAutomatonException, TransitionException {
-		points.clear();
-	}
+    private ArrayList<Coordinate> points = new ArrayList<Coordinate>();
 
-	@Override
-	public void transitionTo_Point(MapContext vc, ToolManager tm)
-			throws FinishedAutomatonException, TransitionException {
-		points.add(newCoordinate(tm.getValues()[0], tm.getValues()[1], vc));
-	}
 
-	@SuppressWarnings("unchecked")//$NON-NLS-1$
-	@Override
-	public void transitionTo_Done(MapContext vc, ToolManager tm)
-			throws FinishedAutomatonException, TransitionException {
-		points = ToolUtilities.removeDuplicated(points);
-		if (points.size() < 3) {
-			throw new TransitionException(
-					I18N
-							.getString("orbisgis.core.ui.editors.map.tool.multipolygonTool_0")); //$NON-NLS-1$
-		}
-		ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points
-				.clone();
-		double firstX = points.get(0).x;
-		double firstY = points.get(0).y;
-		tempPoints.add(newCoordinate(firstX, firstY, vc));
-		Coordinate[] polygonCoordinates = tempPoints.toArray(new Coordinate[0]);
-		com.vividsolutions.jts.geom.Polygon pol = gf.createPolygon(gf
-				.createLinearRing(polygonCoordinates), new LinearRing[0]);
+    @Override
+    public void transitionTo_Standby(MapContext vc, ToolManager tm)
+            throws FinishedAutomatonException, TransitionException {
+        points.clear();
+    }
 
-		if (!pol.isValid()) {
-			throw new TransitionException(
-					I18N
-							.getString("orbisgis.core.ui.editors.map.tool.polygonTool_1")); //$NON-NLS-1$
-		}
-		polygonDone(pol, vc, tm);
 
-		transition("init"); //$NON-NLS-1$
-	}
+    @Override
+    public void transitionTo_Point(MapContext vc, ToolManager tm)
+            throws FinishedAutomatonException, TransitionException {
+        points.add(newCoordinate(tm.getValues()[0], tm.getValues()[1], vc));
+    }
 
-	private Coordinate newCoordinate(double x, double y, MapContext mapContext) {
-		return new Coordinate(x, y, getInitialZ(mapContext));
-	}
 
-	@Override
-	public double getInitialZ(MapContext mapContext) {
-		return 0;
-	}
+    @SuppressWarnings("unchecked")//$NON-NLS-1$
+    @Override
+    public void transitionTo_Done(MapContext vc, ToolManager tm)
+            throws FinishedAutomatonException, TransitionException {
+        points = ToolUtilities.removeDuplicated(points);
+        if (points.size() < 3) {
+            throw new TransitionException(
+                    I18N.getString("orbisgis.core.ui.editors.map.tool.multipolygonTool_0")); //$NON-NLS-1$
+        }
+        ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points.clone();
+        double firstX = points.get(0).x;
+        double firstY = points.get(0).y;
+        tempPoints.add(newCoordinate(firstX, firstY, vc));
+        Coordinate[] polygonCoordinates = tempPoints.toArray(new Coordinate[0]);
+        com.vividsolutions.jts.geom.Polygon pol = gf.createPolygon(gf.createLinearRing(polygonCoordinates), new LinearRing[0]);
 
-	protected abstract void polygonDone(com.vividsolutions.jts.geom.Polygon g,
-			MapContext vc, ToolManager tm) throws TransitionException;
+        if (!pol.isValid()) {
+            throw new TransitionException(
+                    I18N.getString("orbisgis.core.ui.editors.map.tool.polygonTool_1")); //$NON-NLS-1$
+        }
+        polygonDone(pol, vc, tm);
 
-	@Override
-	public void transitionTo_Cancel(MapContext vc, ToolManager tm)
-			throws FinishedAutomatonException, TransitionException {
-	}
+        transition("init"); //$NON-NLS-1$
+    }
 
-	@Override
-	public void drawIn_Standby(Graphics g, MapContext vc, ToolManager tm)
-			throws DrawingException {
-	}
 
-	@Override
-	public void drawIn_Point(Graphics g, MapContext vc, ToolManager tm)
-			throws DrawingException {
-		Geometry geom = getCurrentPolygon(vc, tm);
+    private Coordinate newCoordinate(double x, double y, MapContext mapContext) {
+        return new Coordinate(x, y, getInitialZ(mapContext));
+    }
 
-		if (geom != null) {
-			tm.addGeomToDraw(geom);
 
-			if (!geom.isValid()) {
-				throw new DrawingException(
-						I18N
-								.getString("orbisgis.core.ui.editors.map.tool.polygonTool_1")); //$NON-NLS-1$
-			}
-		}
-	}
+    @Override
+    public double getInitialZ(MapContext mapContext) {
+        return 0;
+    }
 
-	@SuppressWarnings("unchecked")//$NON-NLS-1$
-	protected Geometry getCurrentPolygon(MapContext vc, ToolManager tm) {
-		Geometry geom;
-		if (points.size() >= 2) {
-			ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points
-					.clone();
-			Point2D current = tm.getLastRealMousePosition();
-			tempPoints.add(newCoordinate(current.getX(), current.getY(), vc));
-			tempPoints.add(newCoordinate(tempPoints.get(0).x,
-					tempPoints.get(0).y, vc));
-			geom = gf.createPolygon(gf.createLinearRing(tempPoints
-					.toArray(new Coordinate[0])), new LinearRing[0]);
 
-		} else if (points.size() >= 1) {
-			ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points
-					.clone();
-			Point2D current = tm.getLastRealMousePosition();
-			tempPoints.add(newCoordinate(current.getX(), current.getY(), vc));
-			tempPoints.add(newCoordinate(tempPoints.get(0).x,
-					tempPoints.get(0).y, vc));
-			geom = gf.createLineString(tempPoints.toArray(new Coordinate[0]));
+    protected abstract void polygonDone(com.vividsolutions.jts.geom.Polygon g,
+                                        MapContext vc, ToolManager tm) throws TransitionException;
 
-		} else {
-			geom = null;
-		}
-		return geom;
-	}
 
-	@Override
-	public void drawIn_Done(Graphics g, MapContext vc, ToolManager tm)
-			throws DrawingException {
-	}
+    @Override
+    public void transitionTo_Cancel(MapContext vc, ToolManager tm)
+            throws FinishedAutomatonException, TransitionException {
+    }
 
-	@Override
-	public void drawIn_Cancel(Graphics g, MapContext vc, ToolManager tm)
-			throws DrawingException {
-	}
+
+    @Override
+    public void drawIn_Standby(Graphics g, MapContext vc, ToolManager tm)
+            throws DrawingException {
+    }
+
+
+    @Override
+    public void drawIn_Point(Graphics g, MapContext vc, ToolManager tm)
+            throws DrawingException {
+        Geometry geom = getCurrentPolygon(vc, tm);
+
+        if (geom != null) {
+            tm.addGeomToDraw(geom);
+
+            if (!geom.isValid()) {
+                throw new DrawingException(
+                        I18N.getString("orbisgis.core.ui.editors.map.tool.polygonTool_1")); //$NON-NLS-1$
+            }
+        }
+    }
+
+
+    @SuppressWarnings("unchecked")//$NON-NLS-1$
+    protected Geometry getCurrentPolygon(MapContext vc, ToolManager tm) {
+        Geometry geom;
+        if (points.size() >= 2) {
+            ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points.clone();
+            Point2D current = tm.getLastRealMousePosition();
+            tempPoints.add(newCoordinate(current.getX(), current.getY(), vc));
+            tempPoints.add(newCoordinate(tempPoints.get(0).x,
+                                         tempPoints.get(0).y, vc));
+            geom = gf.createPolygon(gf.createLinearRing(tempPoints.toArray(new Coordinate[0])), new LinearRing[0]);
+
+        } else if (points.size() >= 1) {
+            ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points.clone();
+            Point2D current = tm.getLastRealMousePosition();
+            tempPoints.add(newCoordinate(current.getX(), current.getY(), vc));
+            tempPoints.add(newCoordinate(tempPoints.get(0).x,
+                                         tempPoints.get(0).y, vc));
+            geom = gf.createLineString(tempPoints.toArray(new Coordinate[0]));
+
+        } else {
+            geom = null;
+        }
+        return geom;
+    }
+
+
+    @Override
+    public void drawIn_Done(Graphics g, MapContext vc, ToolManager tm)
+            throws DrawingException {
+    }
+
+
+    @Override
+    public void drawIn_Cancel(Graphics g, MapContext vc, ToolManager tm)
+            throws DrawingException {
+    }
+
 
 }

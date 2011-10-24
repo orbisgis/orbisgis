@@ -41,7 +41,6 @@
  * Pierre-Yves.Fadet _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  **/
-
 package org.orbisgis.core.ui.plugins.views.beanShellConsole.ui;
 
 import java.awt.datatransfer.DataFlavor;
@@ -77,128 +76,139 @@ import org.orbisgis.utils.I18N;
 
 public class BshScriptPanel extends JScrollPane implements DropTargetListener {
 
-	JTextPane jTextPane;
+    JTextPane jTextPane;
 
-	private BshConsoleListener listener;
 
-	private BshActionsListener actionAndKeyListener;
+    private BshConsoleListener listener;
 
-	/** The document holding the text being edited. */
-	private StyledDocument document;
 
-	public BshScriptPanel(final BshActionsListener actionAndKeyListener,
-			BshConsoleListener listener) {
-		this.actionAndKeyListener = actionAndKeyListener;
-		this.listener = listener;
-		setViewportView(createJTextPane());
-		this.getVerticalScrollBar().setBlockIncrement(10);
-		this.getVerticalScrollBar().setUnitIncrement(5);
-	}
+    private BshActionsListener actionAndKeyListener;
 
-	public JTextPane createJTextPane() {
-		if (jTextPane == null) {
-			jTextPane = new JTextPane();
-			jTextPane.setCaretPosition(0);
-			document = new JavaDocument(jTextPane);
-			jTextPane.setDocument(document);
-			jTextPane.setDropTarget(new DropTarget(this, this));
-			UndoRedoInstaller.installUndoRedoSupport(jTextPane);
-			TextLineNumber tln = new TextLineNumber(jTextPane);
-			this.setRowHeaderView(tln);
-			BracketMatcher bracketMatcher = new BracketMatcher();
-			jTextPane.addCaretListener(bracketMatcher);
 
-		}
+    /** The document holding the text being edited. */
+    private StyledDocument document;
 
-		return jTextPane;
 
-	}
+    public BshScriptPanel(final BshActionsListener actionAndKeyListener,
+                          BshConsoleListener listener) {
+        this.actionAndKeyListener = actionAndKeyListener;
+        this.listener = listener;
+        setViewportView(createJTextPane());
+        this.getVerticalScrollBar().setBlockIncrement(10);
+        this.getVerticalScrollBar().setUnitIncrement(5);
+    }
 
-	public void dragEnter(DropTargetDragEvent dtde) {
-	}
 
-	public void dragExit(DropTargetEvent dte) {
-	}
+    public JTextPane createJTextPane() {
+        if (jTextPane == null) {
+            jTextPane = new JTextPane();
+            jTextPane.setCaretPosition(0);
+            document = new JavaDocument(jTextPane);
+            jTextPane.setDocument(document);
+            jTextPane.setDropTarget(new DropTarget(this, this));
+            UndoRedoInstaller.installUndoRedoSupport(jTextPane);
+            TextLineNumber tln = new TextLineNumber(jTextPane);
+            this.setRowHeaderView(tln);
+            BracketMatcher bracketMatcher = new BracketMatcher();
+            jTextPane.addCaretListener(bracketMatcher);
 
-	public void dragOver(DropTargetDragEvent dtde) {
-	}
+        }
 
-	public void drop(DropTargetDropEvent dtde) {
-		final Transferable t = dtde.getTransferable();
+        return jTextPane;
 
-		String query = listener.doDrop(t);
-		if (query == null) {
-			try {
-				if ((t.isDataFlavorSupported(TransferableSource
-						.getResourceFlavor()))
-						|| (t.isDataFlavorSupported(TransferableLayer
-								.getLayerFlavor()))) {
-					dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
-					String s = (String) t
-							.getTransferData(DataFlavor.stringFlavor);
-					dtde.getDropTargetContext().dropComplete(true);
-					query = s;
-				} else if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-					dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
-					String s = (String) t
-							.getTransferData(DataFlavor.stringFlavor);
-					dtde.getDropTargetContext().dropComplete(true);
-					query = s;
-				}
-			} catch (IOException e) {
-				dtde.rejectDrop();
-			} catch (UnsupportedFlavorException e) {
-				dtde.rejectDrop();
-			}
-		}
+    }
 
-		if (query != null) {
-			// Cursor position
-			int position = jTextPane.viewToModel(dtde.getLocation());
-			try {
-				jTextPane.getDocument().insertString(position, query, null);
-			} catch (BadLocationException e) {
-				ErrorMessages
-						.error(
-								I18N
-										.getString("orbisgis.org.orbisgis.textArea.BadLocationException"),
-								e);
-			}
-		} else {
-			dtde.rejectDrop();
-		}
 
-		actionAndKeyListener.setButtonsStatus();
-	}
+    public void dragEnter(DropTargetDragEvent dtde) {
+    }
 
-	public void dropActionChanged(DropTargetDragEvent dtde) {
-	}
 
-	public void insertString(String string) throws BadLocationException {
-		document.insertString(document.getLength(), string, null);
-	}
+    public void dragExit(DropTargetEvent dte) {
+    }
 
-	public JTextComponent getTextComponent() {
-		return jTextPane;
-	}
 
-	public void setText(String text) {
-		jTextPane.setText(text);
-	}
+    public void dragOver(DropTargetDragEvent dtde) {
+    }
 
-	public String getText() {
-		return jTextPane.getText();
-	}
 
-	public void updateCodeError(int startError, int endError) {
-		Highlighter highlighter = jTextPane.getHighlighter();
-		DefaultHighlighter.DefaultHighlightPainter painter = new RedZigZagPainter();
-		highlighter.removeAllHighlights();
+    public void drop(DropTargetDropEvent dtde) {
+        final Transferable t = dtde.getTransferable();
 
-		try {
-			highlighter.addHighlight(startError, endError, painter);
-		} catch (BadLocationException e) {
-		}
+        String query = listener.doDrop(t);
+        if (query == null) {
+            try {
+                if ((t.isDataFlavorSupported(TransferableSource.getResourceFlavor()))
+                        || (t.isDataFlavorSupported(TransferableLayer.getLayerFlavor()))) {
+                    dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+                    String s = (String) t.getTransferData(DataFlavor.stringFlavor);
+                    dtde.getDropTargetContext().dropComplete(true);
+                    query = s;
+                } else if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+                    dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+                    String s = (String) t.getTransferData(DataFlavor.stringFlavor);
+                    dtde.getDropTargetContext().dropComplete(true);
+                    query = s;
+                }
+            } catch (IOException e) {
+                dtde.rejectDrop();
+            } catch (UnsupportedFlavorException e) {
+                dtde.rejectDrop();
+            }
+        }
 
-	}
+        if (query != null) {
+            // Cursor position
+            int position = jTextPane.viewToModel(dtde.getLocation());
+            try {
+                jTextPane.getDocument().insertString(position, query, null);
+            } catch (BadLocationException e) {
+                ErrorMessages.error(
+                        I18N.getString("orbisgis.org.orbisgis.textArea.BadLocationException"),
+                        e);
+            }
+        } else {
+            dtde.rejectDrop();
+        }
+
+        actionAndKeyListener.setButtonsStatus();
+    }
+
+
+    public void dropActionChanged(DropTargetDragEvent dtde) {
+    }
+
+
+    public void insertString(String string) throws BadLocationException {
+        document.insertString(document.getLength(), string, null);
+    }
+
+
+    public JTextComponent getTextComponent() {
+        return jTextPane;
+    }
+
+
+    public void setText(String text) {
+        jTextPane.setText(text);
+    }
+
+
+    public String getText() {
+        return jTextPane.getText();
+    }
+
+
+    public void updateCodeError(int startError, int endError) {
+        Highlighter highlighter = jTextPane.getHighlighter();
+        DefaultHighlighter.DefaultHighlightPainter painter = new RedZigZagPainter();
+        highlighter.removeAllHighlights();
+
+        try {
+            highlighter.addHighlight(startError, endError, painter);
+        } catch (BadLocationException e) {
+        }
+
+    }
+
+
 }

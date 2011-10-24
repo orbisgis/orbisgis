@@ -56,71 +56,85 @@ import org.orbisgis.utils.I18N;
 
 public class DataSourceTableModel implements TableModel {
 
-	private ArrayList<TableModelListener> listeners = new ArrayList<TableModelListener>();
-	private DataSource ds;
+    private ArrayList<TableModelListener> listeners = new ArrayList<TableModelListener>();
 
-	public DataSourceTableModel(DataSource ds) {
-		this.ds = ds;
-	}
 
-	public void addTableModelListener(TableModelListener l) {
-		listeners.add(l);
-	}
+    private DataSource ds;
 
-	public Class<?> getColumnClass(int columnIndex) {
-		return String.class;
-	}
 
-	public int getColumnCount() {
-		try {
-			return ds.getFieldCount();
-		} catch (DriverException e) {
-			Services.getErrorManager().error("Cannot render table", e);
-			return 0;
-		}
-	}
+    public DataSourceTableModel(DataSource ds) {
+        this.ds = ds;
+    }
 
-	public String getColumnName(int columnIndex) {
-		try {
-			return ds.getFieldName(columnIndex);
-		} catch (DriverException e) {
-			ErrorMessages.error(ErrorMessages.CannotRenderTable, e);
-			return I18N.getString("orbisgis.org.orbisgis.name") + "!";
-		}
-	}
 
-	public int getRowCount() {
-		try {
-			return (int) ds.getRowCount();
-		} catch (DriverException e) {
-			ErrorMessages.error(ErrorMessages.CannotRenderTable, e);
-			return 0;
-		}
-	}
+    public void addTableModelListener(TableModelListener l) {
+        listeners.add(l);
+    }
 
-	public Object getValueAt(int rowIndex, int columnIndex) {
-		try {
-			return ds.getFieldValue(rowIndex, columnIndex);
-		} catch (DriverException e) {
-			ErrorMessages.error(ErrorMessages.CannotRenderTable, e);
-			return null;
-		}
-	}
 
-	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		return false;
-	}
+    public Class<?> getColumnClass(int columnIndex) {
+        return String.class;
+    }
 
-	public void removeTableModelListener(TableModelListener l) {
-		listeners.remove(l);
-	}
 
-	public void setValueAt(Object value, int rowIndex, int columnIndex) {
-		throw new UnsupportedOperationException(ErrorMessages.CannotEditTable);
-	}
+    public int getColumnCount() {
+        try {
+            return ds.getFieldCount();
+        } catch (DriverException e) {
+            Services.getErrorManager().error("Cannot render table", e);
+            return 0;
+        }
+    }
 
-	public DataSource getDataSource() {
-		return ds;
-	}
+
+    public String getColumnName(int columnIndex) {
+        try {
+            return ds.getFieldName(columnIndex);
+        } catch (DriverException e) {
+            ErrorMessages.error(ErrorMessages.CannotRenderTable, e);
+            return I18N.getString("orbisgis.org.orbisgis.name") + "!";
+        }
+    }
+
+
+    public int getRowCount() {
+        try {
+            return (int) ds.getRowCount();
+        } catch (DriverException e) {
+            ErrorMessages.error(ErrorMessages.CannotRenderTable, e);
+            return 0;
+        }
+    }
+
+
+    public Object getValueAt(int rowIndex, int columnIndex) {
+        try {
+            return ds.getFieldValue(rowIndex, columnIndex);
+        } catch (DriverException e) {
+            ErrorMessages.error(ErrorMessages.CannotRenderTable, e);
+            return null;
+        }
+    }
+
+
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
+        return false;
+    }
+
+
+    public void removeTableModelListener(TableModelListener l) {
+        listeners.remove(l);
+    }
+
+
+    public void setValueAt(Object value, int rowIndex, int columnIndex) {
+        throw new UnsupportedOperationException(ErrorMessages.CannotEditTable);
+    }
+
+
+    public DataSource getDataSource() {
+        return ds;
+    }
+
 
 }

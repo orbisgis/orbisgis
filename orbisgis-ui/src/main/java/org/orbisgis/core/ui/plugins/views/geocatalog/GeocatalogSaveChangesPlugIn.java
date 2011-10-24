@@ -51,59 +51,58 @@ import org.orbisgis.utils.I18N;
 
 public class GeocatalogSaveChangesPlugIn extends AbstractPlugIn {
 
-	@Override
-	public void initialize(PlugInContext context) throws Exception {
-		WorkbenchContext wbContext = context.getWorkbenchContext();
-		WorkbenchFrame frame = wbContext.getWorkbench().getFrame()
-				.getGeocatalog();
-		context.getFeatureInstaller().addPopupMenuItem(frame, this,
-				new String[] { Names.POPUP_TOC_SAVE_PATH1 },
-				Names.POPUP_TOC_INACTIVE_GROUP, false, OrbisGISIcon.SAVE,
-				wbContext);
-	}
+    @Override
+    public void initialize(PlugInContext context) throws Exception {
+        WorkbenchContext wbContext = context.getWorkbenchContext();
+        WorkbenchFrame frame = wbContext.getWorkbench().getFrame().getGeocatalog();
+        context.getFeatureInstaller().addPopupMenuItem(frame, this,
+                                                       new String[]{Names.POPUP_TOC_SAVE_PATH1},
+                                                       Names.POPUP_TOC_INACTIVE_GROUP, false, OrbisGISIcon.SAVE,
+                                                       wbContext);
+    }
 
-	@Override
-	public boolean execute(PlugInContext context) throws Exception {
-		String[] res = getPlugInContext().getSelectedSources();
-		final Catalog geocatalog = context.getWorkbenchContext().getWorkbench()
-				.getFrame().getGeocatalog();
-		for (int i = 0; i < res.length; i++) {
-			final String name = res[i];
-			final EditableSource s = geocatalog.getEditingSource(name);
-			if (s.isModified()) {
-				try {
-					s.getDataSource().commit();
-				} catch (DriverException e) {
-					ErrorMessages.error(ErrorMessages.CannotSaveSource, e);
-				} catch (NonEditableDataSourceException e) {
-					ErrorMessages.error(ErrorMessages.CannotSaveSource, e);
-				}
-			}
-			JOptionPane
-					.showMessageDialog(
-							geocatalog,
-							I18N
-									.getString("orbisgis.org.orbisgis.core.geocatalog.sourceSaved"));
 
-		}
-		// DO NOT REMOVE
-		// this call is needed to work around a strange Swing painting problem
-		// when using for the first time our custom SourceListRender
-		// to display a change in the font of a listed source
-		geocatalog.repaint();
+    @Override
+    public boolean execute(PlugInContext context) throws Exception {
+        String[] res = getPlugInContext().getSelectedSources();
+        final Catalog geocatalog = context.getWorkbenchContext().getWorkbench().getFrame().getGeocatalog();
+        for (int i = 0; i < res.length; i++) {
+            final String name = res[i];
+            final EditableSource s = geocatalog.getEditingSource(name);
+            if (s.isModified()) {
+                try {
+                    s.getDataSource().commit();
+                } catch (DriverException e) {
+                    ErrorMessages.error(ErrorMessages.CannotSaveSource, e);
+                } catch (NonEditableDataSourceException e) {
+                    ErrorMessages.error(ErrorMessages.CannotSaveSource, e);
+                }
+            }
+            JOptionPane.showMessageDialog(
+                    geocatalog,
+                    I18N.getString("orbisgis.org.orbisgis.core.geocatalog.sourceSaved"));
 
-		return true;
-	}
+        }
+        // DO NOT REMOVE
+        // this call is needed to work around a strange Swing painting problem
+        // when using for the first time our custom SourceListRender
+        // to display a change in the font of a listed source
+        geocatalog.repaint();
 
-	@Override
-	public boolean isEnabled() {
-		String[] res = getPlugInContext().getSelectedSources();
-		if (res.length != 1) {
-			return false;
-		}
-		EditableSource s = getPlugInContext().getWorkbenchContext()
-				.getWorkbench().getFrame().getGeocatalog().getEditingSource(
-						res[0]);
-		return s != null && s.getDataSource() != null && s.isModified();
-	}
+        return true;
+    }
+
+
+    @Override
+    public boolean isEnabled() {
+        String[] res = getPlugInContext().getSelectedSources();
+        if (res.length != 1) {
+            return false;
+        }
+        EditableSource s = getPlugInContext().getWorkbenchContext().getWorkbench().getFrame().getGeocatalog().getEditingSource(
+                res[0]);
+        return s != null && s.getDataSource() != null && s.isModified();
+    }
+
+
 }

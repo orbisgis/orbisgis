@@ -76,7 +76,7 @@ public class TocTreeModel extends AbstractTreeModel {
 			if (layer.acceptsChilds()) {
 				return layer.getChildren().length;
 			} else {
-				return layer.getFeatureTypeStyle().getRules().size();
+				return layer.getStyle().getRules().size();
 			}
 		} else {
 			return 0;

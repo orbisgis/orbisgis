@@ -61,78 +61,91 @@ import org.orbisgis.utils.I18N;
 
 public class OutputPanel extends JPanel implements OutputManager {
 
-	private static final int MAX_CHARACTERS = 2048;
+    private static final int MAX_CHARACTERS = 2048;
 
-	private JTextPane jTextArea;
-	private String viewId;
 
-	public OutputPanel(String viewId) {
-		this.setLayout(new BorderLayout());
-		jTextArea = new JTextPane();
-		this.viewId = viewId;
+    private JTextPane jTextArea;
 
-		this.add(getButtonPanel(), BorderLayout.NORTH);
-		this.add(new JScrollPane(jTextArea), BorderLayout.CENTER);
 
-	}
+    private String viewId;
 
-	public JPanel getButtonPanel() {
 
-		JPanel buttonsPanel = new JPanel();
-		final FlowLayout flowLayout = new FlowLayout();
-		flowLayout.setAlignment(FlowLayout.LEFT);
-		buttonsPanel.setLayout(flowLayout);
-		JButton deleteBt = new JButton();
-		deleteBt.setIcon(OrbisGISIcon.EDIT_CLEAR);
-		deleteBt.setToolTipText(I18N.getString("orbisgis.org.orbisgis.Clear"));
-		deleteBt.setBorderPainted(false);
-		deleteBt.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				jTextArea.setText(null);
-			}
-		});
-		buttonsPanel.add(deleteBt);
-		return buttonsPanel;
+    public OutputPanel(String viewId) {
+        this.setLayout(new BorderLayout());
+        jTextArea = new JTextPane();
+        this.viewId = viewId;
 
-	}
+        this.add(getButtonPanel(), BorderLayout.NORTH);
+        this.add(new JScrollPane(jTextArea), BorderLayout.CENTER);
 
-	@Override
-	public void println(String out) {
-		print(out + "\n");
-	}
+    }
 
-	@Override
-	public void println(String text, Color color) {
-		print(text + "\n", color);
-	}
 
-	@Override
-	public void print(String out) {
-		print(out, Color.black);
-	}
+    public JPanel getButtonPanel() {
 
-	@Override
-	public void print(String text, Color color) {
-		StyleContext sc = StyleContext.getDefaultStyleContext();
-		AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY,
-				StyleConstants.Foreground, color);
+        JPanel buttonsPanel = new JPanel();
+        final FlowLayout flowLayout = new FlowLayout();
+        flowLayout.setAlignment(FlowLayout.LEFT);
+        buttonsPanel.setLayout(flowLayout);
+        JButton deleteBt = new JButton();
+        deleteBt.setIcon(OrbisGISIcon.EDIT_CLEAR);
+        deleteBt.setToolTipText(I18N.getString("orbisgis.org.orbisgis.Clear"));
+        deleteBt.setBorderPainted(false);
+        deleteBt.addActionListener(new ActionListener() {
 
-		int len = jTextArea.getDocument().getLength();
-		try {
-			jTextArea.setCaretPosition(len);
-			jTextArea.setCharacterAttributes(aset, false);
-			jTextArea.getDocument().insertString(len, text, aset);
-			len = jTextArea.getDocument().getLength();
-			if (len > MAX_CHARACTERS) {
-				jTextArea.getDocument().remove(0, len - MAX_CHARACTERS);
-			}
-		} catch (BadLocationException e) {
-			ErrorMessages.error(ErrorMessages.CannotAddErrorMessage, e);
-		}
-		jTextArea.setCaretPosition(jTextArea.getDocument().getLength());
+            public void actionPerformed(ActionEvent ae) {
+                jTextArea.setText(null);
+            }
 
-		WorkbenchContext wbContext = Services
-				.getService(WorkbenchContext.class);
-		wbContext.getWorkbench().getFrame().showView(viewId);
-	}
+
+        });
+        buttonsPanel.add(deleteBt);
+        return buttonsPanel;
+
+    }
+
+
+    @Override
+    public void println(String out) {
+        print(out + "\n");
+    }
+
+
+    @Override
+    public void println(String text, Color color) {
+        print(text + "\n", color);
+    }
+
+
+    @Override
+    public void print(String out) {
+        print(out, Color.black);
+    }
+
+
+    @Override
+    public void print(String text, Color color) {
+        StyleContext sc = StyleContext.getDefaultStyleContext();
+        AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY,
+                                            StyleConstants.Foreground, color);
+
+        int len = jTextArea.getDocument().getLength();
+        try {
+            jTextArea.setCaretPosition(len);
+            jTextArea.setCharacterAttributes(aset, false);
+            jTextArea.getDocument().insertString(len, text, aset);
+            len = jTextArea.getDocument().getLength();
+            if (len > MAX_CHARACTERS) {
+                jTextArea.getDocument().remove(0, len - MAX_CHARACTERS);
+            }
+        } catch (BadLocationException e) {
+            ErrorMessages.error(ErrorMessages.CannotAddErrorMessage, e);
+        }
+        jTextArea.setCaretPosition(jTextArea.getDocument().getLength());
+
+        WorkbenchContext wbContext = Services.getService(WorkbenchContext.class);
+        wbContext.getWorkbench().getFrame().showView(viewId);
+    }
+
+
 }

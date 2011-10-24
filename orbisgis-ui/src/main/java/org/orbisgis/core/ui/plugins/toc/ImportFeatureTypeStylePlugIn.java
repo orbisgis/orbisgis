@@ -48,8 +48,8 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 
-import org.orbisgis.core.renderer.se.FeatureTypeStyle;
 import org.orbisgis.core.renderer.se.SeExceptions;
+import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.sif.OpenFilePanel;
 import org.orbisgis.core.sif.UIFactory;
 
@@ -107,7 +107,7 @@ public class ImportFeatureTypeStylePlugIn extends AbstractPlugIn {
 			if (UIFactory.showDialog(inputXMLPanel)) {
 				String seFile = inputXMLPanel.getSelectedFile().getAbsolutePath();
 				try {
-					layer.setFeatureTypeStyle(new FeatureTypeStyle(layer, seFile));
+					layer.Style(new Style(layer, seFile));
 				} catch (SeExceptions.InvalidStyle ex) {
 			        Services.getErrorManager().error(ex.getLocalizedMessage());
                     String msg = ex.getMessage().replace("<", "\n    - ").replace(',', ' ').replace(": ", "\n - ");

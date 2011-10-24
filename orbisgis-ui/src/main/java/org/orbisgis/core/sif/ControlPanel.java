@@ -65,189 +65,213 @@ import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
 import org.orbisgis.utils.I18N;
 
 public class ControlPanel extends JPanel {
-	private JList list;
-	private JButton btnSave;
-	private JLabel collapsed;
-	private JButton btnDelete;
-	private JTextField txtNew;
-	private PersistentPanelDecorator sqlPanel;
-	private JButton btnLoad;
-	private JToolBar east;
 
-	public ControlPanel(SQLUIPanel panel) throws DriverException,
-			DataSourceCreationException {
-		this.sqlPanel = new PersistentPanelDecorator(panel);
-		this.setLayout(new BorderLayout());
-		list = new JList(sqlPanel.getContents());
-		list.setVisible(false);
-		list.setBorder(BorderFactory.createLoweredBevelBorder());
-		list.addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent e) {
-				updateButtons();
-			}
+    private JList list;
 
-		});
-		list.addMouseListener(new MouseAdapter() {
 
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2) {
-					sqlPanel.loadEntry(list.getSelectedIndex());
-					sqlPanel.validateInput();
-				}
-			}
+    private JButton btnSave;
 
-		});
-		this.add(list, BorderLayout.CENTER);
-		txtNew = new JTextField(8);
-		txtNew.addKeyListener(new KeyAdapter() {
 
-			@Override
-			public void keyReleased(KeyEvent e) {
-				updateButtons();
-			}
+    private JLabel collapsed;
 
-		});
-		btnSave = new JButton();
-		btnSave.setMargin(new Insets(0, 0, 0, 0));
-		btnSave.setVisible(false);
-		btnSave.setIcon(OrbisGISIcon.SAVE_ICON);
-		btnSave.setToolTipText(I18N
-				.getString("orbisgis.sif.ControlPanel.SaveFavorite"));
 
-		btnSave.addActionListener(new ActionListener() {
+    private JButton btnDelete;
 
-			public void actionPerformed(ActionEvent e) {
-				sqlPanel.saveInput(txtNew.getText());
-				list.setListData(sqlPanel.getContents());
-			}
 
-		});
-		btnSave.setBorderPainted(false);
-		JPanel south = new JPanel();
-		south.add(btnSave);
-		south.add(txtNew);
-		this.add(south, BorderLayout.SOUTH);
-		btnDelete = new JButton();
-		btnDelete.setIcon(OrbisGISIcon.CANCEL);
-		btnDelete.setToolTipText(I18N
-				.getString("orbisgis.sif.ControlPanel.DeleteFavorite"));
-		btnDelete.addActionListener(new ActionListener() {
+    private JTextField txtNew;
 
-			public void actionPerformed(ActionEvent e) {
-				sqlPanel.removeInput(list.getSelectedIndex());
-				list.setListData(sqlPanel.getContents());
-			}
 
-		});
-		btnDelete.setBorderPainted(false);
+    private PersistentPanelDecorator sqlPanel;
 
-		btnLoad = new JButton();
-		btnLoad.setIcon(OrbisGISIcon.FOLDER_USER);
-		btnLoad.setToolTipText(I18N
-				.getString("orbisgis.sif.ControlPanel.LoadFavorite"));
-		btnLoad.addActionListener(new ActionListener() {
 
-			public void actionPerformed(ActionEvent e) {
-				sqlPanel.loadEntry(list.getSelectedIndex());
-				sqlPanel.validateInput();
-			}
+    private JButton btnLoad;
 
-		});
-		btnLoad.setBorderPainted(false);
 
-		JButton btnCollapse = new JButton();
-		btnCollapse.setIcon(IconLoader.getIcon("go-previous.png"));
-		btnCollapse.setToolTipText(I18N
-				.getString("orbisgis.sif.ControlPanel.CollapseFavorites"));
-		btnCollapse.addActionListener(new ActionListener() {
+    private JToolBar east;
 
-			public void actionPerformed(ActionEvent e) {
-				collapse();
-			}
 
-		});
-		btnCollapse.setBorderPainted(false);
-		east = new JToolBar();
-		east.setFloatable(false);
-		east.add(btnCollapse);
-		east.add(btnDelete);
-		east.add(btnLoad);		
-		east.setOpaque(false);
-		this.add(east, BorderLayout.NORTH);
-		this.setOpaque(false);
+    public ControlPanel(SQLUIPanel panel) throws DriverException,
+            DataSourceCreationException {
+        this.sqlPanel = new PersistentPanelDecorator(panel);
+        this.setLayout(new BorderLayout());
+        list = new JList(sqlPanel.getContents());
+        list.setVisible(false);
+        list.setBorder(BorderFactory.createLoweredBevelBorder());
+        list.addListSelectionListener(new ListSelectionListener() {
 
-		this.setBackground(Color.white);
-		this.setMinimumSize(new Dimension(100, 40));
+            public void valueChanged(ListSelectionEvent e) {
+                updateButtons();
+            }
 
-		collapsed = new JLabel(getVertical(I18N
-				.getString("orbisgis.sif.ControlPanel.Favorites")), IconLoader
-				.getIcon("go-next.png"), JLabel.CENTER);
-		collapsed.setIconTextGap(20);
-		collapsed.setVerticalTextPosition(JLabel.BOTTOM);
-		collapsed.setHorizontalTextPosition(JLabel.CENTER);
-		collapsed.setToolTipText(I18N
-				.getString("orbisgis.sif.ControlPanel.ExpandFavorites"));
 
-		this.add(collapsed, BorderLayout.WEST);
-		collapsed.addMouseListener(new MouseAdapter() {
+        });
+        list.addMouseListener(new MouseAdapter() {
 
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (!list.isVisible()) {
-					expand();
-				}
-			}
-		});
-		this.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    sqlPanel.loadEntry(list.getSelectedIndex());
+                    sqlPanel.validateInput();
+                }
+            }
 
-		collapse();
-		updateButtons();
-	}
 
-	private void updateButtons() {
-		boolean somethingSelected = list.getSelectedIndex() != -1;
-		btnDelete.setEnabled(somethingSelected);
-		btnLoad.setEnabled(somethingSelected);
+        });
+        this.add(list, BorderLayout.CENTER);
+        txtNew = new JTextField(8);
+        txtNew.addKeyListener(new KeyAdapter() {
 
-		if (txtNew.getText().length() > 0) {
-			btnSave.setEnabled(true);
-		} else {
-			btnSave.setEnabled(false);
-		}
-	}
+            @Override
+            public void keyReleased(KeyEvent e) {
+                updateButtons();
+            }
 
-	private String getVertical(String string) {
-		String ret = "<html>";
-		for (int i = 0; i < string.length(); i++) {
-			ret += string.charAt(i) + "<br/>";
-		}
 
-		return ret + "</html>";
-	}
+        });
+        btnSave = new JButton();
+        btnSave.setMargin(new Insets(0, 0, 0, 0));
+        btnSave.setVisible(false);
+        btnSave.setIcon(OrbisGISIcon.SAVE_ICON);
+        btnSave.setToolTipText(I18N.getString("orbisgis.sif.ControlPanel.SaveFavorite"));
 
-	private void collapse() {
-		ControlPanel.this.setPreferredSize(new Dimension(20, 0));
-		btnSave.setVisible(false);
-		list.setVisible(false);
-		btnDelete.setVisible(false);
-		btnLoad.setVisible(false);
-		east.setVisible(false);
-		txtNew.setVisible(false);
-		collapsed.setVisible(true);
-		this.setBackground(btnSave.getBackground());
-	}
+        btnSave.addActionListener(new ActionListener() {
 
-	private void expand() {
-		ControlPanel.this.setPreferredSize(null);
-		btnSave.setVisible(true);
-		list.setVisible(true);
-		btnDelete.setVisible(true);
-		btnLoad.setVisible(true);
-		east.setVisible(true);
-		txtNew.setVisible(true);
-		collapsed.setVisible(false);
-		this.setBackground(btnSave.getBackground());
-	}
+            public void actionPerformed(ActionEvent e) {
+                sqlPanel.saveInput(txtNew.getText());
+                list.setListData(sqlPanel.getContents());
+            }
+
+
+        });
+        btnSave.setBorderPainted(false);
+        JPanel south = new JPanel();
+        south.add(btnSave);
+        south.add(txtNew);
+        this.add(south, BorderLayout.SOUTH);
+        btnDelete = new JButton();
+        btnDelete.setIcon(OrbisGISIcon.CANCEL);
+        btnDelete.setToolTipText(I18N.getString("orbisgis.sif.ControlPanel.DeleteFavorite"));
+        btnDelete.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                sqlPanel.removeInput(list.getSelectedIndex());
+                list.setListData(sqlPanel.getContents());
+            }
+
+
+        });
+        btnDelete.setBorderPainted(false);
+
+        btnLoad = new JButton();
+        btnLoad.setIcon(OrbisGISIcon.FOLDER_USER);
+        btnLoad.setToolTipText(I18N.getString("orbisgis.sif.ControlPanel.LoadFavorite"));
+        btnLoad.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                sqlPanel.loadEntry(list.getSelectedIndex());
+                sqlPanel.validateInput();
+            }
+
+
+        });
+        btnLoad.setBorderPainted(false);
+
+        JButton btnCollapse = new JButton();
+        btnCollapse.setIcon(IconLoader.getIcon("go-previous.png"));
+        btnCollapse.setToolTipText(I18N.getString("orbisgis.sif.ControlPanel.CollapseFavorites"));
+        btnCollapse.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                collapse();
+            }
+
+
+        });
+        btnCollapse.setBorderPainted(false);
+        east = new JToolBar();
+        east.setFloatable(false);
+        east.add(btnCollapse);
+        east.add(btnDelete);
+        east.add(btnLoad);
+        east.setOpaque(false);
+        this.add(east, BorderLayout.NORTH);
+        this.setOpaque(false);
+
+        this.setBackground(Color.white);
+        this.setMinimumSize(new Dimension(100, 40));
+
+        collapsed = new JLabel(getVertical(I18N.getString("orbisgis.sif.ControlPanel.Favorites")), IconLoader.getIcon("go-next.png"), JLabel.CENTER);
+        collapsed.setIconTextGap(20);
+        collapsed.setVerticalTextPosition(JLabel.BOTTOM);
+        collapsed.setHorizontalTextPosition(JLabel.CENTER);
+        collapsed.setToolTipText(I18N.getString("orbisgis.sif.ControlPanel.ExpandFavorites"));
+
+        this.add(collapsed, BorderLayout.WEST);
+        collapsed.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (!list.isVisible()) {
+                    expand();
+                }
+            }
+
+
+        });
+        this.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+
+        collapse();
+        updateButtons();
+    }
+
+
+    private void updateButtons() {
+        boolean somethingSelected = list.getSelectedIndex() != -1;
+        btnDelete.setEnabled(somethingSelected);
+        btnLoad.setEnabled(somethingSelected);
+
+        if (txtNew.getText().length() > 0) {
+            btnSave.setEnabled(true);
+        } else {
+            btnSave.setEnabled(false);
+        }
+    }
+
+
+    private String getVertical(String string) {
+        String ret = "<html>";
+        for (int i = 0; i < string.length(); i++) {
+            ret += string.charAt(i) + "<br/>";
+        }
+
+        return ret + "</html>";
+    }
+
+
+    private void collapse() {
+        ControlPanel.this.setPreferredSize(new Dimension(20, 0));
+        btnSave.setVisible(false);
+        list.setVisible(false);
+        btnDelete.setVisible(false);
+        btnLoad.setVisible(false);
+        east.setVisible(false);
+        txtNew.setVisible(false);
+        collapsed.setVisible(true);
+        this.setBackground(btnSave.getBackground());
+    }
+
+
+    private void expand() {
+        ControlPanel.this.setPreferredSize(null);
+        btnSave.setVisible(true);
+        list.setVisible(true);
+        btnDelete.setVisible(true);
+        btnLoad.setVisible(true);
+        east.setVisible(true);
+        txtNew.setVisible(true);
+        collapsed.setVisible(false);
+        this.setBackground(btnSave.getBackground());
+    }
+
 
 }

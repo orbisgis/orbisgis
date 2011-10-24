@@ -68,202 +68,232 @@ import org.orbisgis.utils.I18N;
 
 public class WorkspaceFolderPanel extends JPanel implements UIPanel {
 
-	private static final String OUT_FILE_ID = "org.orbisgis.core.ui.workspace.WorkspaceFolderPanel";
-	private JPanel panel;
-	private SelectWorkspaceFilePanel outfilePanel;
-	private JButton btFolder;
-	private JComboBox combobox;
-	private ArrayList<String> comboList;
-	private JCheckBox jCheckBox;
-	private boolean selected = false;
+    private static final String OUT_FILE_ID = "org.orbisgis.core.ui.workspace.WorkspaceFolderPanel";
 
-	public WorkspaceFolderPanel(ArrayList<String> workspaces) {
-		setLayout(new BorderLayout());
-		this.comboList = workspaces;
-		panel = new JPanel(new BorderLayout());
-		JLabel label = new JLabel(I18N.getString("orbisgis.core.ui.workspace")
-				+ " : ");
-		combobox = new JComboBox(workspaces.toArray(new String[workspaces
-				.size()]));
-		combobox.addActionListener(new ActionListener() {
 
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				jCheckBox.setSelected(false);
-			}
-		});
-		btFolder = new JButton();
-		btFolder.setBorderPainted(false);
-		btFolder.setContentAreaFilled(false);
-		btFolder.setIcon(IconLoader.getIcon("open.png"));
-		btFolder.setToolTipText(I18N
-				.getString("orbisgis.core.file.choose_folder"));
-		btFolder.setPreferredSize(new Dimension(30, 20));
-		btFolder.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				outfilePanel = new SelectWorkspaceFilePanel(OUT_FILE_ID,
-						"Select or choose a workspace folder");
-				JFileChooser ret = outfilePanel.getFileChooser();
-				ret.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-				ret.setMultiSelectionEnabled(false);
-				ret.setSelectedFile(new File("/"));
-				outfilePanel.getFileChooser();
-				if (UIFactory.showDialog(outfilePanel)) {
-					String savedFile = outfilePanel.getSelectedFile()
-							.getAbsolutePath();
+    private JPanel panel;
 
-					if (!comboList.contains(savedFile)) {
-						combobox.insertItemAt(savedFile, 0);
-						combobox.setSelectedIndex(0);
-						comboList.add(savedFile);
-						jCheckBox.setSelected(false);
-						SwingUtilities.windowForComponent(panel).pack();
-					}
 
-				}
+    private SelectWorkspaceFilePanel outfilePanel;
 
-			}
-		});
 
-		jCheckBox = new JCheckBox(I18N
-				.getString("orbisgis.core.ui.workspace.default"));
-		jCheckBox.setEnabled(true);
-		final DefaultWorkspace workspace = (DefaultWorkspace) Services
-				.getService(Workspace.class);
-		selected = workspace.isDefaultWorkspace();
-		jCheckBox.setSelected(selected);
-		jCheckBox.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				setCheckBoxSelected(jCheckBox.isSelected());
-				workspace.setDefaultWorkspace(jCheckBox.isSelected());
-			}
-		});
-		panel.add(label);
-		panel.add(combobox);
-		panel.add(btFolder);
-		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-		panel.setOpaque(false);
+    private JButton btFolder;
 
-		add(panel, BorderLayout.NORTH);
-		add(jCheckBox, BorderLayout.CENTER);
-	}
 
-	@Override
-	public Component getComponent() {
-		return this;
-	}
+    private JComboBox combobox;
 
-	@Override
-	public URL getIconURL() {
-		return IconLoader.getIconUrl("mini_orbisgis.png");
-	}
 
-	@Override
-	public String getInfoText() {
-		return I18N
-				.getString("orbisgis.core.ui.workspace.selectWorkspaceFilePanel.infoText");
-	}
+    private ArrayList<String> comboList;
 
-	@Override
-	public String getTitle() {
-		return I18N
-				.getString("orbisgis.core.ui.workspace.selectWorkspaceFilePanel.title");
-	}
 
-	@Override
-	public String initialize() {
-		return null;
-	}
+    private JCheckBox jCheckBox;
 
-	@Override
-	public String postProcess() {
-		return checkWorkspace(getWorkspaceFile());
-	}
 
-	private void setCheckBoxSelected(boolean selected) {
-		this.selected = selected;		
-	}
+    private boolean selected = false;
 
-	public boolean isSelected() {
-		return selected;
-	}
 
-	public String getWorkspacePath() {
-		return (String) combobox.getSelectedItem();
+    public WorkspaceFolderPanel(ArrayList<String> workspaces) {
+        setLayout(new BorderLayout());
+        this.comboList = workspaces;
+        panel = new JPanel(new BorderLayout());
+        JLabel label = new JLabel(I18N.getString("orbisgis.core.ui.workspace")
+                + " : ");
+        combobox = new JComboBox(workspaces.toArray(new String[workspaces.size()]));
+        combobox.addActionListener(new ActionListener() {
 
-	}
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                jCheckBox.setSelected(false);
+            }
 
-	@Override
-	public String validateInput() {
-		File file = getWorkspaceFile();
-		if (file == null) {
-			return null;
-		} else if (file.exists() && !file.isDirectory()) {
-			setCheckBoxSelected(false);
-			return I18N.getString("orbisgis.core.file.must_be_a_directory ");
-		} else {
-			return checkWorkspace(file);
-		}
-	}
 
-	private File getWorkspaceFile() {
-		return new File(getWorkspacePath());
-	}
+        });
+        btFolder = new JButton();
+        btFolder.setBorderPainted(false);
+        btFolder.setContentAreaFilled(false);
+        btFolder.setIcon(IconLoader.getIcon("open.png"));
+        btFolder.setToolTipText(I18N.getString("orbisgis.core.file.choose_folder"));
+        btFolder.setPreferredSize(new Dimension(30, 20));
+        btFolder.addActionListener(new ActionListener() {
 
-	private String checkWorkspace(File file) {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                outfilePanel = new SelectWorkspaceFilePanel(OUT_FILE_ID,
+                                                            "Select or choose a workspace folder");
+                JFileChooser ret = outfilePanel.getFileChooser();
+                ret.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+                ret.setMultiSelectionEnabled(false);
+                ret.setSelectedFile(new File("/"));
+                outfilePanel.getFileChooser();
+                if (UIFactory.showDialog(outfilePanel)) {
+                    String savedFile = outfilePanel.getSelectedFile().getAbsolutePath();
 
-                if (file == null || !file.exists()) {
-                        return null;
-                } else if (file.isDirectory()) {
-                        File versionFile = new File(file, "org.orbisgis.version.txt");
-                        int version = DefaultWorkspace.WORKSPACE_VERSION;
-                        if (versionFile.exists()) {
-                                try {
-                                        BufferedReader fr = new BufferedReader(new FileReader(
-                                                versionFile));
-                                        String strVersion = fr.readLine();
-                                        if (strVersion == null) {
-                                                setCheckBoxSelected(false);
-                                                return I18N.getString("orbisgis.core.ui.workspace.cannot_read_version");
-                                        }
-                                        fr.close();
-                                        version = Integer.parseInt(strVersion.trim());
-                                } catch (IOException e1) {
-                                        setCheckBoxSelected(false);
-                                        return I18N.getString("orbisgis.core.ui.workspace.cannot_read_version");
-                                } catch (NumberFormatException e) {
-                                        setCheckBoxSelected(false);
-                                        return I18N.getString("orbisgis.core.ui.workspace.cannot_read_version");
-                                }
-                        } else {
-                                setCheckBoxSelected(false);
-                                return I18N.getString("orbisgis.core.ui.workspace.invalid");
-                        }
+                    if (!comboList.contains(savedFile)) {
+                        combobox.insertItemAt(savedFile, 0);
+                        combobox.setSelectedIndex(0);
+                        comboList.add(savedFile);
+                        jCheckBox.setSelected(false);
+                        SwingUtilities.windowForComponent(panel).pack();
+                    }
 
-                        DefaultSwingWorkspace dw = (DefaultSwingWorkspace) Services.getService(Workspace.class);
-                        if (dw.getWsVersion() != version) {
-                                setCheckBoxSelected(false);
-                                return I18N.getString("orbisgis.core.ui.workspace.bad_version");
-                        }
-                        DefaultWorkspace workspace = (DefaultWorkspace) Services.getService(Workspace.class);
-
-                        String currentWorkspacefolder = workspace.getWorkspaceFolder();
-                        if (currentWorkspacefolder != null) {
-
-                                if (file.getAbsolutePath().equals(currentWorkspacefolder)
-                                        && !isSelected()) {
-                                        return I18N.getString("orbisgis.core.ui.workspace.already_used");
-                                }
-                        }
                 }
 
-		return null;
+            }
 
-	}
 
-	public ArrayList<String> getWorkspacesList() {
-		return comboList;
-	}
+        });
+
+        jCheckBox = new JCheckBox(I18N.getString("orbisgis.core.ui.workspace.default"));
+        jCheckBox.setEnabled(true);
+        final DefaultWorkspace workspace = (DefaultWorkspace) Services.getService(Workspace.class);
+        selected = workspace.isDefaultWorkspace();
+        jCheckBox.setSelected(selected);
+        jCheckBox.addItemListener(new ItemListener() {
+
+            public void itemStateChanged(ItemEvent e) {
+                setCheckBoxSelected(jCheckBox.isSelected());
+                workspace.setDefaultWorkspace(jCheckBox.isSelected());
+            }
+
+
+        });
+        panel.add(label);
+        panel.add(combobox);
+        panel.add(btFolder);
+        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+        panel.setOpaque(false);
+
+        add(panel, BorderLayout.NORTH);
+        add(jCheckBox, BorderLayout.CENTER);
+    }
+
+
+    @Override
+    public Component getComponent() {
+        return this;
+    }
+
+
+    @Override
+    public URL getIconURL() {
+        return IconLoader.getIconUrl("mini_orbisgis.png");
+    }
+
+
+    @Override
+    public String getInfoText() {
+        return I18N.getString("orbisgis.core.ui.workspace.selectWorkspaceFilePanel.infoText");
+    }
+
+
+    @Override
+    public String getTitle() {
+        return I18N.getString("orbisgis.core.ui.workspace.selectWorkspaceFilePanel.title");
+    }
+
+
+    @Override
+    public String initialize() {
+        return null;
+    }
+
+
+    @Override
+    public String postProcess() {
+        return checkWorkspace(getWorkspaceFile());
+    }
+
+
+    private void setCheckBoxSelected(boolean selected) {
+        this.selected = selected;
+    }
+
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+
+    public String getWorkspacePath() {
+        return (String) combobox.getSelectedItem();
+
+    }
+
+
+    @Override
+    public String validateInput() {
+        File file = getWorkspaceFile();
+        if (file == null) {
+            return null;
+        } else if (file.exists() && !file.isDirectory()) {
+            setCheckBoxSelected(false);
+            return I18N.getString("orbisgis.core.file.must_be_a_directory ");
+        } else {
+            return checkWorkspace(file);
+        }
+    }
+
+
+    private File getWorkspaceFile() {
+        return new File(getWorkspacePath());
+    }
+
+
+    private String checkWorkspace(File file) {
+
+        if (file == null || !file.exists()) {
+            return null;
+        } else if (file.isDirectory()) {
+            File versionFile = new File(file, "org.orbisgis.version.txt");
+            int version = DefaultWorkspace.WORKSPACE_VERSION;
+            if (versionFile.exists()) {
+                try {
+                    BufferedReader fr = new BufferedReader(new FileReader(
+                            versionFile));
+                    String strVersion = fr.readLine();
+                    if (strVersion == null) {
+                        setCheckBoxSelected(false);
+                        return I18N.getString("orbisgis.core.ui.workspace.cannot_read_version");
+                    }
+                    fr.close();
+                    version = Integer.parseInt(strVersion.trim());
+                } catch (IOException e1) {
+                    setCheckBoxSelected(false);
+                    return I18N.getString("orbisgis.core.ui.workspace.cannot_read_version");
+                } catch (NumberFormatException e) {
+                    setCheckBoxSelected(false);
+                    return I18N.getString("orbisgis.core.ui.workspace.cannot_read_version");
+                }
+            } else {
+                setCheckBoxSelected(false);
+                return I18N.getString("orbisgis.core.ui.workspace.invalid");
+            }
+
+            DefaultSwingWorkspace dw = (DefaultSwingWorkspace) Services.getService(Workspace.class);
+            if (dw.getWsVersion() != version) {
+                setCheckBoxSelected(false);
+                return I18N.getString("orbisgis.core.ui.workspace.bad_version");
+            }
+            DefaultWorkspace workspace = (DefaultWorkspace) Services.getService(Workspace.class);
+
+            String currentWorkspacefolder = workspace.getWorkspaceFolder();
+            if (currentWorkspacefolder != null) {
+
+                if (file.getAbsolutePath().equals(currentWorkspacefolder)
+                        && !isSelected()) {
+                    return I18N.getString("orbisgis.core.ui.workspace.already_used");
+                }
+            }
+        }
+
+        return null;
+
+    }
+
+
+    public ArrayList<String> getWorkspacesList() {
+        return comboList;
+    }
+
 
 }

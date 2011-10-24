@@ -55,146 +55,158 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 
 public abstract class AbstractMultipolygonTool extends Multipolygon implements
-		InsertionTool {
+        InsertionTool {
 
-	private GeometryFactory gf = new GeometryFactory();
-	private ArrayList<Coordinate> points = new ArrayList<Coordinate>();
-	private ArrayList<Polygon> polygons = new ArrayList<Polygon>();
+    private GeometryFactory gf = new GeometryFactory();
 
-	@Override
-	public void transitionTo_Standby(MapContext vc, ToolManager tm)
-			throws FinishedAutomatonException, TransitionException {
-		points.clear();
-	}
 
-	@Override
-	public void transitionTo_Point(MapContext vc, ToolManager tm)
-			throws FinishedAutomatonException, TransitionException {
-		points.add(newCoordinate(tm.getValues()[0], tm.getValues()[1], vc));
-	}
+    private ArrayList<Coordinate> points = new ArrayList<Coordinate>();
 
-	@Override
-	public void transitionTo_Line(MapContext vc, ToolManager tm)
-			throws FinishedAutomatonException, TransitionException {
-		points = ToolUtilities.removeDuplicated(points);
-		if (points.size() < 3)
-			throw new TransitionException(
-					I18N
-							.getString("orbisgis.core.ui.editors.map.tool.multipolygonTool_0")); //$NON-NLS-1$
 
-		addPolygon(vc);
+    private ArrayList<Polygon> polygons = new ArrayList<Polygon>();
 
-		transition("init"); //$NON-NLS-1$
-	}
 
-	@SuppressWarnings("unchecked")//$NON-NLS-1$
-	private void addPolygon(MapContext mapContext) throws TransitionException {
-		ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points
-				.clone();
-		tempPoints.add(newCoordinate(points.get(0).x, points.get(0).y,
-				mapContext));
-		Coordinate[] coords = tempPoints.toArray(new Coordinate[0]);
-		Polygon p = gf.createPolygon(gf.createLinearRing(coords),
-				new LinearRing[0]);
-		if (!p.isValid()) {
-			throw new TransitionException(
-					I18N
-							.getString("orbisgis.core.ui.editors.map.tool.multipolygonTool_2")); //$NON-NLS-1$
-		}
-		polygons.add(p);
-	}
+    @Override
+    public void transitionTo_Standby(MapContext vc, ToolManager tm)
+            throws FinishedAutomatonException, TransitionException {
+        points.clear();
+    }
 
-	private Coordinate newCoordinate(double x, double y, MapContext mapContext) {
-		return new Coordinate(x, y, getInitialZ(mapContext));
-	}
 
-	@Override
-	public double getInitialZ(MapContext mapContext) {
-		return Double.NaN;
-	}
+    @Override
+    public void transitionTo_Point(MapContext vc, ToolManager tm)
+            throws FinishedAutomatonException, TransitionException {
+        points.add(newCoordinate(tm.getValues()[0], tm.getValues()[1], vc));
+    }
 
-	@Override
-	public void transitionTo_Done(MapContext vc, ToolManager tm)
-			throws FinishedAutomatonException, TransitionException {
-		points = ToolUtilities.removeDuplicated(points);
-		if (((points.size() < 3) && (points.size() > 0))
-				|| ((points.size() == 0) && (polygons.size() == 0)))
-			throw new TransitionException(
-					I18N
-							.getString("orbisgis.core.ui.editors.map.tool.multipolygonTool_0")); //$NON-NLS-1$
-		if (points.size() > 0) {
-			addPolygon(vc);
-		}
-		MultiPolygon mp = gf.createMultiPolygon(polygons
-				.toArray(new Polygon[0]));
-		if (!mp.isValid()) {
-			throw new TransitionException(
-					I18N
-							.getString("orbisgis.core.ui.editors.map.tool.multipolygonTool_2")); //$NON-NLS-1$
-		}
-		multipolygonDone(mp, vc, tm);
 
-		polygons.clear();
-		transition("init"); //$NON-NLS-1$
-	}
+    @Override
+    public void transitionTo_Line(MapContext vc, ToolManager tm)
+            throws FinishedAutomatonException, TransitionException {
+        points = ToolUtilities.removeDuplicated(points);
+        if (points.size() < 3) {
+            throw new TransitionException(
+                    I18N.getString("orbisgis.core.ui.editors.map.tool.multipolygonTool_0")); //$NON-NLS-1$
+        }
+        addPolygon(vc);
 
-	protected abstract void multipolygonDone(MultiPolygon mp, MapContext vc,
-			ToolManager tm) throws TransitionException;
+        transition("init"); //$NON-NLS-1$
+    }
 
-	@Override
-	public void transitionTo_Cancel(MapContext vc, ToolManager tm)
-			throws FinishedAutomatonException, TransitionException {
-	}
 
-	@Override
-	public void drawIn_Standby(Graphics g, MapContext vc, ToolManager tm)
-			throws DrawingException {
-		drawIn_Point(g, vc, tm);
-	}
+    @SuppressWarnings("unchecked")//$NON-NLS-1$
+    private void addPolygon(MapContext mapContext) throws TransitionException {
+        ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points.clone();
+        tempPoints.add(newCoordinate(points.get(0).x, points.get(0).y,
+                                     mapContext));
+        Coordinate[] coords = tempPoints.toArray(new Coordinate[0]);
+        Polygon p = gf.createPolygon(gf.createLinearRing(coords),
+                                     new LinearRing[0]);
+        if (!p.isValid()) {
+            throw new TransitionException(
+                    I18N.getString("orbisgis.core.ui.editors.map.tool.multipolygonTool_2")); //$NON-NLS-1$
+        }
+        polygons.add(p);
+    }
 
-	@SuppressWarnings("unchecked")//$NON-NLS-1$
-	@Override
-	public void drawIn_Point(Graphics g, MapContext vc, ToolManager tm)
-			throws DrawingException {
-		Point2D current = tm.getLastRealMousePosition();
-		ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points
-				.clone();
-		tempPoints.add(newCoordinate(current.getX(), current.getY(), vc));
-		tempPoints.add(newCoordinate(tempPoints.get(0).x, tempPoints.get(0).y,
-				vc));
-		ArrayList<Polygon> tempPolygons = (ArrayList<Polygon>) polygons.clone();
-		if (tempPoints.size() >= 4) {
-			tempPolygons.add(gf.createPolygon(gf.createLinearRing(tempPoints
-					.toArray(new Coordinate[0])), new LinearRing[0]));
-		}
 
-		if (tempPolygons.size() == 0)
-			return;
+    private Coordinate newCoordinate(double x, double y, MapContext mapContext) {
+        return new Coordinate(x, y, getInitialZ(mapContext));
+    }
 
-		MultiPolygon mp = gf.createMultiPolygon(tempPolygons
-				.toArray(new Polygon[0]));
 
-		tm.addGeomToDraw(mp);
+    @Override
+    public double getInitialZ(MapContext mapContext) {
+        return Double.NaN;
+    }
 
-		if (!mp.isValid()) {
-			throw new DrawingException(
-					I18N
-							.getString("orbisgis.core.ui.editors.map.tool.multipolygonTool_2")); //$NON-NLS-1$
-		}
-	}
 
-	@Override
-	public void drawIn_Line(Graphics g, MapContext vc, ToolManager tm)
-			throws DrawingException {
-	}
+    @Override
+    public void transitionTo_Done(MapContext vc, ToolManager tm)
+            throws FinishedAutomatonException, TransitionException {
+        points = ToolUtilities.removeDuplicated(points);
+        if (((points.size() < 3) && (points.size() > 0))
+                || ((points.size() == 0) && (polygons.size() == 0))) {
+            throw new TransitionException(
+                    I18N.getString("orbisgis.core.ui.editors.map.tool.multipolygonTool_0")); //$NON-NLS-1$
+        }
+        if (points.size() > 0) {
+            addPolygon(vc);
+        }
+        MultiPolygon mp = gf.createMultiPolygon(polygons.toArray(new Polygon[0]));
+        if (!mp.isValid()) {
+            throw new TransitionException(
+                    I18N.getString("orbisgis.core.ui.editors.map.tool.multipolygonTool_2")); //$NON-NLS-1$
+        }
+        multipolygonDone(mp, vc, tm);
 
-	@Override
-	public void drawIn_Done(Graphics g, MapContext vc, ToolManager tm)
-			throws DrawingException {
-	}
+        polygons.clear();
+        transition("init"); //$NON-NLS-1$
+    }
 
-	@Override
-	public void drawIn_Cancel(Graphics g, MapContext vc, ToolManager tm)
-			throws DrawingException {
-	}
+
+    protected abstract void multipolygonDone(MultiPolygon mp, MapContext vc,
+                                             ToolManager tm) throws TransitionException;
+
+
+    @Override
+    public void transitionTo_Cancel(MapContext vc, ToolManager tm)
+            throws FinishedAutomatonException, TransitionException {
+    }
+
+
+    @Override
+    public void drawIn_Standby(Graphics g, MapContext vc, ToolManager tm)
+            throws DrawingException {
+        drawIn_Point(g, vc, tm);
+    }
+
+
+    @SuppressWarnings("unchecked")//$NON-NLS-1$
+    @Override
+    public void drawIn_Point(Graphics g, MapContext vc, ToolManager tm)
+            throws DrawingException {
+        Point2D current = tm.getLastRealMousePosition();
+        ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points.clone();
+        tempPoints.add(newCoordinate(current.getX(), current.getY(), vc));
+        tempPoints.add(newCoordinate(tempPoints.get(0).x, tempPoints.get(0).y,
+                                     vc));
+        ArrayList<Polygon> tempPolygons = (ArrayList<Polygon>) polygons.clone();
+        if (tempPoints.size() >= 4) {
+            tempPolygons.add(gf.createPolygon(gf.createLinearRing(tempPoints.toArray(new Coordinate[0])), new LinearRing[0]));
+        }
+
+        if (tempPolygons.size() == 0) {
+            return;
+        }
+
+        MultiPolygon mp = gf.createMultiPolygon(tempPolygons.toArray(new Polygon[0]));
+
+        tm.addGeomToDraw(mp);
+
+        if (!mp.isValid()) {
+            throw new DrawingException(
+                    I18N.getString("orbisgis.core.ui.editors.map.tool.multipolygonTool_2")); //$NON-NLS-1$
+        }
+    }
+
+
+    @Override
+    public void drawIn_Line(Graphics g, MapContext vc, ToolManager tm)
+            throws DrawingException {
+    }
+
+
+    @Override
+    public void drawIn_Done(Graphics g, MapContext vc, ToolManager tm)
+            throws DrawingException {
+    }
+
+
+    @Override
+    public void drawIn_Cancel(Graphics g, MapContext vc, ToolManager tm)
+            throws DrawingException {
+    }
+
+
 }

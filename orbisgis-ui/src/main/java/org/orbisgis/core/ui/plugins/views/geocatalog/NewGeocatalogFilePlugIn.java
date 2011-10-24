@@ -34,7 +34,6 @@
  * or contact directly:
  * info_at_orbisgis.org
  */
-
 package org.orbisgis.core.ui.plugins.views.geocatalog;
 
 import java.io.File;
@@ -62,77 +61,75 @@ import org.orbisgis.utils.I18N;
  * It will open a panel dedicated to the selection of the wanted files. This
  * panel will then return the selected files to this PlugIn
  */
-
 public class NewGeocatalogFilePlugIn extends AbstractPlugIn {
 
-	/**
-	 * During execution, the plugin wil create a OpenGdmsFilePanel to let the
-	 * user select the files he wants. The only files imported in the geocatalog
-	 * are those for which we have a driver register in the DataManager.
-	 * 
-	 * @param context
-	 * @return
-	 * @throws Exception
-	 */
-	@Override
-	public boolean execute(PlugInContext context) throws Exception {
-		OpenGdmsFilePanel filePanel = new OpenGdmsFilePanel(I18N
-				.getString("orbisgis.org.core.selectFileAdd"));
-		if (UIFactory.showDialog(new UIPanel[] { filePanel })) {
-			// We can retrieve the files that have been selected by the user
-			File[] files = filePanel.getSelectedFiles();
-			for (File file : files) {
-				// For each file, we ensure that we have a driver
-				// that can be used to read it. If we don't, we don't
-				// open the file.
-				if (OrbisConfiguration.isFileEligible(file)) {
-					DataManager dm = (DataManager) Services
-							.getService(DataManager.class);
-					SourceManager sourceManager = dm.getSourceManager();
-					try {
-						String name = sourceManager.getUniqueName(FileUtils
-								.getFileNameWithoutExtensionU(file));
-						sourceManager.register(name, file);
-					} catch (SourceAlreadyExistsException e) {
-						ErrorMessages
-								.error(ErrorMessages.SourceAlreadyRegistered
-										+ ": ", e);
-					}
-				}
-			}
-		}
-		return true;
-	}
+    /**
+     * During execution, the plugin wil create a OpenGdmsFilePanel to let the
+     * user select the files he wants. The only files imported in the geocatalog
+     * are those for which we have a driver register in the DataManager.
+     * 
+     * @param context
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public boolean execute(PlugInContext context) throws Exception {
+        OpenGdmsFilePanel filePanel = new OpenGdmsFilePanel(I18N.getString("orbisgis.org.core.selectFileAdd"));
+        if (UIFactory.showDialog(new UIPanel[]{filePanel})) {
+            // We can retrieve the files that have been selected by the user
+            File[] files = filePanel.getSelectedFiles();
+            for (File file : files) {
+                // For each file, we ensure that we have a driver
+                // that can be used to read it. If we don't, we don't
+                // open the file.
+                if (OrbisConfiguration.isFileEligible(file)) {
+                    DataManager dm = (DataManager) Services.getService(DataManager.class);
+                    SourceManager sourceManager = dm.getSourceManager();
+                    try {
+                        String name = sourceManager.getUniqueName(FileUtils.getFileNameWithoutExtensionU(file));
+                        sourceManager.register(name, file);
+                    } catch (SourceAlreadyExistsException e) {
+                        ErrorMessages.error(ErrorMessages.SourceAlreadyRegistered
+                                + ": ", e);
+                    }
+                }
+            }
+        }
+        return true;
+    }
 
-	/**
-	 * The method used for plugin initialization.
-	 * 
-	 * @param context
-	 * @throws Exception
-	 */
-	@Override
-	public void initialize(PlugInContext context) throws Exception {
-		WorkbenchContext wbContext = context.getWorkbenchContext();
-		WorkbenchFrame frame = wbContext.getWorkbench().getFrame()
-				.getGeocatalog();
-		context.getFeatureInstaller().addPopupMenuItem(
-				frame,
-				this,
-				new String[] { Names.POPUP_GEOCATALOG_ADD,
-						Names.POPUP_GEOCATALOG_FILE },
-				Names.POPUP_GEOCATALOG_ADD, false,
-				OrbisGISIcon.GEOCATALOG_FILE, wbContext);
 
-	}
+    /**
+     * The method used for plugin initialization.
+     * 
+     * @param context
+     * @throws Exception
+     */
+    @Override
+    public void initialize(PlugInContext context) throws Exception {
+        WorkbenchContext wbContext = context.getWorkbenchContext();
+        WorkbenchFrame frame = wbContext.getWorkbench().getFrame().getGeocatalog();
+        context.getFeatureInstaller().addPopupMenuItem(
+                frame,
+                this,
+                new String[]{Names.POPUP_GEOCATALOG_ADD,
+                    Names.POPUP_GEOCATALOG_FILE},
+                Names.POPUP_GEOCATALOG_ADD, false,
+                OrbisGISIcon.GEOCATALOG_FILE, wbContext);
 
-	/**
-	 * As this plugin is used directly by the geocatalog, it is naturally
-	 * enabled.
-	 * 
-	 * @return
-	 */
-	@Override
-	public boolean isEnabled() {
-		return true;
-	}
+    }
+
+
+    /**
+     * As this plugin is used directly by the geocatalog, it is naturally
+     * enabled.
+     * 
+     * @return
+     */
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+
 }

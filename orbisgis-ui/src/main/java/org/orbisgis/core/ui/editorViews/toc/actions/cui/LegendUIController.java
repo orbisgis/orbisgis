@@ -50,9 +50,9 @@ import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.renderer.se.FeatureTypeStyle;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.Symbolizer;
 
 /**
@@ -64,7 +64,7 @@ public final class LegendUIController {
 
 	private int geometryType;
 	private LegendUIMainPanel mainPanel;
-	private FeatureTypeStyle style;
+	private Style style;
 	// First index is for rules, second for symbolizer
 	private ArrayList<ArrayList<LegendUIComponent>> rootPanels;
 	private ArrayList<LegendUIRulePanel> rulePanels;
@@ -74,9 +74,9 @@ public final class LegendUIController {
 	/**
 	 * @param fts the style to edit.
 	 */
-	public LegendUIController(FeatureTypeStyle fts) throws InvalidStyle {
+	public LegendUIController(Style fts) throws InvalidStyle {
 
-		this.style = new FeatureTypeStyle(fts.getJAXBElement(), fts.getLayer());
+		this.style = new Style(fts.getJAXBElement(), fts.getLayer());
 
 		rootPanels = new ArrayList<ArrayList<LegendUIComponent>>();
 		rulePanels = new ArrayList<LegendUIRulePanel>();
@@ -145,7 +145,7 @@ public final class LegendUIController {
 	 *
 	 * @return the new edited style
 	 */
-	public FeatureTypeStyle getEditedFeatureTypeStyle() {
+	public Style getEditedFeatureTypeStyle() {
 		return style;
 	}
 

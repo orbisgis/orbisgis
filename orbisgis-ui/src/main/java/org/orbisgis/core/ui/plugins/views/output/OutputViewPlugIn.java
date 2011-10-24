@@ -50,44 +50,56 @@ import org.orbisgis.utils.I18N;
 
 public class OutputViewPlugIn extends ViewPlugIn {
 
-	private OutputPanel panel;
-	private JMenuItem menuItem;
-	private JButton btn;
+    private OutputPanel panel;
 
-	public OutputViewPlugIn() {
-		btn = new JButton(OrbisGISIcon.OUTPUT_ICON);
-		btn.setToolTipText(Names.OUTPUT);
-	}
 
-	public void initialize(PlugInContext context) throws Exception {
-		panel = new OutputPanel(Names.OUTPUT);
-		menuItem = context.getFeatureInstaller().addMainMenuItem(this,
-				new String[] { Names.VIEW }, Names.OUTPUT, true,
-				OrbisGISIcon.OUTPUT_ICON, null, panel, context);
-		WorkbenchContext wbcontext = context.getWorkbenchContext();
-		wbcontext.getWorkbench().getFrame().getViewToolBar().addPlugIn(this,
-				btn, context);
-		Services.registerService(OutputManager.class,
-				"Service to send messages to the output system", panel);
-	}
+    private JMenuItem menuItem;
 
-	public boolean execute(PlugInContext context) throws Exception {
-		getPlugInContext().loadView(getId());
-		return true;
-	}
 
-	public boolean isEnabled() {
-		return true;
-	}
+    private JButton btn;
 
-	public boolean isSelected() {
-		boolean isSelected = false;
-		isSelected = getPlugInContext().viewIsOpen(getId());
-		menuItem.setSelected(isSelected);
-		return isSelected;
-	}
 
-	public String getName() {
-		return I18N.getString("orbisgis.org.orbisgis.output.view");
-	}
+    public OutputViewPlugIn() {
+        btn = new JButton(OrbisGISIcon.OUTPUT_ICON);
+        btn.setToolTipText(Names.OUTPUT);
+    }
+
+
+    public void initialize(PlugInContext context) throws Exception {
+        panel = new OutputPanel(Names.OUTPUT);
+        menuItem = context.getFeatureInstaller().addMainMenuItem(this,
+                                                                 new String[]{Names.VIEW}, Names.OUTPUT, true,
+                                                                 OrbisGISIcon.OUTPUT_ICON, null, panel, context);
+        WorkbenchContext wbcontext = context.getWorkbenchContext();
+        wbcontext.getWorkbench().getFrame().getViewToolBar().addPlugIn(this,
+                                                                       btn, context);
+        Services.registerService(OutputManager.class,
+                                 "Service to send messages to the output system", panel);
+    }
+
+
+    public boolean execute(PlugInContext context) throws Exception {
+        getPlugInContext().loadView(getId());
+        return true;
+    }
+
+
+    public boolean isEnabled() {
+        return true;
+    }
+
+
+    public boolean isSelected() {
+        boolean isSelected = false;
+        isSelected = getPlugInContext().viewIsOpen(getId());
+        menuItem.setSelected(isSelected);
+        return isSelected;
+    }
+
+
+    public String getName() {
+        return I18N.getString("orbisgis.org.orbisgis.output.view");
+    }
+
+
 }

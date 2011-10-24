@@ -48,36 +48,44 @@ import org.orbisgis.utils.I18N;
 
 public class InformationViewPlugIn extends ViewPlugIn {
 
-	private Table panel;
-	private JMenuItem menuItem;
+    private Table panel;
 
-	public void initialize(PlugInContext context) throws Exception {
-		panel = new Table();
-		Services.registerService(InformationManager.class,
-				"Service to show tabular information to the user.", panel);
-		menuItem = context.getFeatureInstaller().addMainMenuItem(this,
-				new String[] { Names.VIEW }, Names.INFORMATION, true,
-				OrbisGISIcon.GEOINFORMATION, null, panel, context);
-	}
 
-	public boolean execute(PlugInContext context) throws Exception {
-		getPlugInContext().loadView(getId());
-		return true;
-	}
+    private JMenuItem menuItem;
 
-	public boolean isEnabled() {
-		return true;
-	}
 
-	public boolean isSelected() {
-		boolean isSelected = false;
-		isSelected = getPlugInContext().viewIsOpen(getId());
-		menuItem.setSelected(isSelected);
-		return isSelected;
-	}
+    public void initialize(PlugInContext context) throws Exception {
+        panel = new Table();
+        Services.registerService(InformationManager.class,
+                                 "Service to show tabular information to the user.", panel);
+        menuItem = context.getFeatureInstaller().addMainMenuItem(this,
+                                                                 new String[]{Names.VIEW}, Names.INFORMATION, true,
+                                                                 OrbisGISIcon.GEOINFORMATION, null, panel, context);
+    }
 
-	public String getName() {
-		return I18N.getString("orbisgis.org.orbisgis.information.view");
-	}
+
+    public boolean execute(PlugInContext context) throws Exception {
+        getPlugInContext().loadView(getId());
+        return true;
+    }
+
+
+    public boolean isEnabled() {
+        return true;
+    }
+
+
+    public boolean isSelected() {
+        boolean isSelected = false;
+        isSelected = getPlugInContext().viewIsOpen(getId());
+        menuItem.setSelected(isSelected);
+        return isSelected;
+    }
+
+
+    public String getName() {
+        return I18N.getString("orbisgis.org.orbisgis.information.view");
+    }
+
 
 }

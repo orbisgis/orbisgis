@@ -52,7 +52,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import org.orbisgis.core.renderer.se.FeatureTypeStyle;
+import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.sif.UIPanel;
@@ -74,7 +74,7 @@ public final class LegendUIMainPanel extends JPanel  implements UIPanel  {
 
 	private JButton apply;
 
-	public LegendUIMainPanel (LegendUIController controller, FeatureTypeStyle fts){
+	public LegendUIMainPanel (LegendUIController controller, Style fts){
 		super(new BorderLayout());
 		this.controller = controller;
 
@@ -207,9 +207,9 @@ public final class LegendUIMainPanel extends JPanel  implements UIPanel  {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			try {
-				FeatureTypeStyle eFts = controller.getEditedFeatureTypeStyle();
-				FeatureTypeStyle fts = new FeatureTypeStyle(eFts.getJAXBElement(), eFts.getLayer());
-				eFts.getLayer().setFeatureTypeStyle(fts);
+				Style eFts = controller.getEditedFeatureTypeStyle();
+				Style fts = new Style(eFts.getJAXBElement(), eFts.getLayer());
+				eFts.getLayer().Style(fts);
 			} catch (InvalidStyle ex) {
 				Logger.getLogger(LegendUIMainPanel.class.getName()).log(Level.SEVERE, null, ex);
 			}

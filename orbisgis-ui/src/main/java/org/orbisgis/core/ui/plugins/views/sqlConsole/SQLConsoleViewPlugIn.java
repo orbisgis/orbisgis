@@ -75,152 +75,161 @@ import org.orbisgis.utils.I18N;
 
 public class SQLConsoleViewPlugIn extends ViewPlugIn {
 
-	private SQLConsolePanel panel;
-	private final String EOL = System.getProperty("line.separator");
-	private JMenuItem menuItem;
-	private JButton btn;
+    private SQLConsolePanel panel;
 
-	public SQLConsoleViewPlugIn() {
-		btn = new JButton(OrbisGISIcon.SQLCONSOLE_ICON);
-		btn.setToolTipText(Names.SQLCONSOLE);
-	}
 
-	@Override
-	public void delete() {
-		if (panel != null) {
-			panel.freeResources();
-		}
-	}
+    private final String EOL = System.getProperty("line.separator");
 
-	public void initialize(PlugInContext context) throws Exception {
-		panel = new SQLConsolePanel(new ConsoleListener() {
 
-			public boolean save(String text) throws IOException {
-				final SaveFilePanel outfilePanel = new SaveFilePanel(
-						"org.orbisgis.core.ui.views.sqlConsoleOutFile", I18N
-								.getString("orbisgis.org.orbisgis.saveScript"));
-				outfilePanel.addFilter("sql", "SQL script (*.sql)");
+    private JMenuItem menuItem;
 
-				if (UIFactory.showDialog(outfilePanel)) {
-					final BufferedWriter out = new BufferedWriter(
-							new FileWriter(outfilePanel.getSelectedFile()));
-					out.write(text);
-					out.close();
-                                        return true;
-				}
-                                return false;
-			}
 
-			public String open() throws IOException {
-				final OpenFilePanel inFilePanel = new OpenFilePanel(
-						"org.orbisgis.plugins.core.ui.views.sqlConsoleInFile",
-						I18N.getString("orbisgis.org.orbisgis.openScript"));
-				inFilePanel.addFilter("sql", "SQL script (*.sql)");
+    private JButton btn;
 
-				if (UIFactory.showDialog(inFilePanel)) {
-					File selectedFile = inFilePanel.getSelectedFile();
-					final BufferedReader in = new BufferedReader(
-							new FileReader(selectedFile));
-					String line;
-					StringBuilder ret = new StringBuilder();
-					while ((line = in.readLine()) != null) {
-						ret.append(line).append(EOL);
-					}
-					in.close();
 
-					return ret.toString();
-				} else {
-					return null;
-				}
-			}
+    public SQLConsoleViewPlugIn() {
+        btn = new JButton(OrbisGISIcon.SQLCONSOLE_ICON);
+        btn.setToolTipText(Names.SQLCONSOLE);
+    }
 
-			public void execute(String text) {
-				BackgroundManager bm = Services
-						.getService(BackgroundManager.class);
-				bm.backgroundOperation(new ExecuteScriptProcess(text));
-			}
 
-			@Override
-			public void change() {
-			}
+    @Override
+    public void delete() {
+        if (panel != null) {
+            panel.freeResources();
+        }
+    }
 
-			@Override
-			public boolean showControlButtons() {
-				return true;
-			}
 
-			@Override
-			public String doDrop(Transferable t) {
-				DataFlavor geocogFlavor = TransferableGeocognitionElement.geocognitionFlavor;
-				if (t.isDataFlavorSupported(geocogFlavor)) {
-					try {
-						GeocognitionElement[] elems = (GeocognitionElement[]) t
-								.getTransferData(geocogFlavor);
-						if (elems.length == 1) {
-							if ((elems[0].getTypeId()
-									.equals(OrbisGISPersitenceConfig.GEOCOGNITION_FUNCTION_FACTORY_ID))) {
-								Function f = FunctionManager
-										.getFunction(elems[0].getId());
-								if (f != null) {
-									return f.getSqlOrder();
-								}
-							} else if ((elems[0].getTypeId()
-									.equals(OrbisGISPersitenceConfig.GEOCONGITION_CUSTOMQUERY_FACTORY_ID))) {
-								CustomQuery cq = QueryManager.getQuery(elems[0]
-										.getId());
-								if (cq != null) {
-									return cq.getSqlOrder();
-								}
-							}
-						}
-					} catch (UnsupportedFlavorException e) {
-						ErrorMessages
-								.error(
-										I18N
-												.getString("orbisgis.errorMessages.CannotDropFunction"),
-										e);
-					} catch (IOException e) {
-						ErrorMessages
-								.error(
-										I18N
-												.getString("orbisgis.errorMessages.CannotDropFunction"),
-										e);
-					}
-				}
-				return null;
-			}
+    public void initialize(PlugInContext context) throws Exception {
+        panel = new SQLConsolePanel(new ConsoleListener() {
 
-		});
+            public boolean save(String text) throws IOException {
+                final SaveFilePanel outfilePanel = new SaveFilePanel(
+                        "org.orbisgis.core.ui.views.sqlConsoleOutFile", I18N.getString("orbisgis.org.orbisgis.saveScript"));
+                outfilePanel.addFilter("sql", "SQL script (*.sql)");
 
-		menuItem = context.getFeatureInstaller().addMainMenuItem(this,
-				new String[] { Names.VIEW }, Names.SQLCONSOLE, true,
-				OrbisGISIcon.SQLCONSOLE_ICON, null, panel, context);
+                if (UIFactory.showDialog(outfilePanel)) {
+                    final BufferedWriter out = new BufferedWriter(
+                            new FileWriter(outfilePanel.getSelectedFile()));
+                    out.write(text);
+                    out.close();
+                    return true;
+                }
+                return false;
+            }
 
-		WorkbenchContext wbcontext = context.getWorkbenchContext();
-		wbcontext.getWorkbench().getFrame().getViewToolBar().addPlugIn(this,
-				btn, context);
 
-	}
+            public String open() throws IOException {
+                final OpenFilePanel inFilePanel = new OpenFilePanel(
+                        "org.orbisgis.plugins.core.ui.views.sqlConsoleInFile",
+                        I18N.getString("orbisgis.org.orbisgis.openScript"));
+                inFilePanel.addFilter("sql", "SQL script (*.sql)");
 
-	@Override
-	public boolean execute(PlugInContext context) throws Exception {
-		getPlugInContext().loadView(getId());
-		return true;
-	}
+                if (UIFactory.showDialog(inFilePanel)) {
+                    File selectedFile = inFilePanel.getSelectedFile();
+                    final BufferedReader in = new BufferedReader(
+                            new FileReader(selectedFile));
+                    String line;
+                    StringBuilder ret = new StringBuilder();
+                    while ((line = in.readLine()) != null) {
+                        ret.append(line).append(EOL);
+                    }
+                    in.close();
 
-	public boolean isEnabled() {
-		return true;
-	}
+                    return ret.toString();
+                } else {
+                    return null;
+                }
+            }
 
-	public boolean isSelected() {
-		boolean isSelected = false;
-		isSelected = getPlugInContext().viewIsOpen(getId());
-		menuItem.setSelected(isSelected);
-		return isSelected;
-	}
 
-	public String getName() {
-		return I18N.getString("orbisgis.org.orbisgis.sql.view");
-	}
+            public void execute(String text) {
+                BackgroundManager bm = Services.getService(BackgroundManager.class);
+                bm.backgroundOperation(new ExecuteScriptProcess(text));
+            }
+
+
+            @Override
+            public void change() {
+            }
+
+
+            @Override
+            public boolean showControlButtons() {
+                return true;
+            }
+
+
+            @Override
+            public String doDrop(Transferable t) {
+                DataFlavor geocogFlavor = TransferableGeocognitionElement.geocognitionFlavor;
+                if (t.isDataFlavorSupported(geocogFlavor)) {
+                    try {
+                        GeocognitionElement[] elems = (GeocognitionElement[]) t.getTransferData(geocogFlavor);
+                        if (elems.length == 1) {
+                            if ((elems[0].getTypeId().equals(OrbisGISPersitenceConfig.GEOCOGNITION_FUNCTION_FACTORY_ID))) {
+                                Function f = FunctionManager.getFunction(elems[0].getId());
+                                if (f != null) {
+                                    return f.getSqlOrder();
+                                }
+                            } else if ((elems[0].getTypeId().equals(OrbisGISPersitenceConfig.GEOCONGITION_CUSTOMQUERY_FACTORY_ID))) {
+                                CustomQuery cq = QueryManager.getQuery(elems[0].getId());
+                                if (cq != null) {
+                                    return cq.getSqlOrder();
+                                }
+                            }
+                        }
+                    } catch (UnsupportedFlavorException e) {
+                        ErrorMessages.error(
+                                I18N.getString("orbisgis.errorMessages.CannotDropFunction"),
+                                e);
+                    } catch (IOException e) {
+                        ErrorMessages.error(
+                                I18N.getString("orbisgis.errorMessages.CannotDropFunction"),
+                                e);
+                    }
+                }
+                return null;
+            }
+
+
+        });
+
+        menuItem = context.getFeatureInstaller().addMainMenuItem(this,
+                                                                 new String[]{Names.VIEW}, Names.SQLCONSOLE, true,
+                                                                 OrbisGISIcon.SQLCONSOLE_ICON, null, panel, context);
+
+        WorkbenchContext wbcontext = context.getWorkbenchContext();
+        wbcontext.getWorkbench().getFrame().getViewToolBar().addPlugIn(this,
+                                                                       btn, context);
+
+    }
+
+
+    @Override
+    public boolean execute(PlugInContext context) throws Exception {
+        getPlugInContext().loadView(getId());
+        return true;
+    }
+
+
+    public boolean isEnabled() {
+        return true;
+    }
+
+
+    public boolean isSelected() {
+        boolean isSelected = false;
+        isSelected = getPlugInContext().viewIsOpen(getId());
+        menuItem.setSelected(isSelected);
+        return isSelected;
+    }
+
+
+    public String getName() {
+        return I18N.getString("orbisgis.org.orbisgis.sql.view");
+    }
+
 
 }

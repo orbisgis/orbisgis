@@ -34,7 +34,6 @@
  * or contact directly:
  * info _at_ orbisgis.org
  */
-
 package org.orbisgis.core.ui.plugins.views.geocatalog;
 
 import java.io.IOException;
@@ -54,57 +53,55 @@ import org.orbisgis.utils.I18N;
 
 public class GeocatalogClearPlugIn extends AbstractPlugIn {
 
-	public boolean execute(PlugInContext context) throws Exception {
-		DataManager dm = Services.getService(DataManager.class);
-		execute(dm.getSourceManager());
-		return true;
-	}
+    public boolean execute(PlugInContext context) throws Exception {
+        DataManager dm = Services.getService(DataManager.class);
+        execute(dm.getSourceManager());
+        return true;
+    }
 
-	public void initialize(PlugInContext context) throws Exception {
-		WorkbenchContext wbContext = context.getWorkbenchContext();
-		WorkbenchFrame frame = wbContext.getWorkbench().getFrame()
-				.getGeocatalog();
-		context.getFeatureInstaller().addPopupMenuItem(frame, this,
-				new String[] { Names.POPUP_GEOCATALOG_CLEAR },
-				Names.POPUP_GEOCATALOG_CLEAR_GROUP, false, OrbisGISIcon.CLEAR,
-				wbContext);
-	}
 
-	public void execute(SourceManager sourceManager) {
-		int option = JOptionPane
-				.showConfirmDialog(
-						null,
-						I18N
-								.getString("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.clearAction"),
-						I18N
-								.getString("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.clear"),
-						JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-		if (option == JOptionPane.YES_OPTION) {
-			try {
-				sourceManager.removeAll();
-				sourceManager.loadSystemTables();
-			} catch (IOException e) {
-				Services
-						.getErrorManager()
-						.error(
-								I18N
-										.getString("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.cannotClear"),
-								e);
-			}
-		}
-	}
+    public void initialize(PlugInContext context) throws Exception {
+        WorkbenchContext wbContext = context.getWorkbenchContext();
+        WorkbenchFrame frame = wbContext.getWorkbench().getFrame().getGeocatalog();
+        context.getFeatureInstaller().addPopupMenuItem(frame, this,
+                                                       new String[]{Names.POPUP_GEOCATALOG_CLEAR},
+                                                       Names.POPUP_GEOCATALOG_CLEAR_GROUP, false, OrbisGISIcon.CLEAR,
+                                                       wbContext);
+    }
 
-	public boolean isEnabled() {
-		DataManager dm = Services.getService(DataManager.class);
-		SourceManager sourceManager = dm.getSourceManager();
-		String[] names = sourceManager.getSourceNames();
-		int sum = 0;
-		for (int i = 0; i < names.length; i++) {
-			if (!sourceManager.getSource(names[i]).isSystemTableSource()) {
-				sum += i;
-			}
-		}
 
-		return sum > 0;
-	}
+    public void execute(SourceManager sourceManager) {
+        int option = JOptionPane.showConfirmDialog(
+                null,
+                I18N.getString("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.clearAction"),
+                I18N.getString("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.clear"),
+                JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+        if (option == JOptionPane.YES_OPTION) {
+            try {
+                sourceManager.removeAll();
+                sourceManager.loadSystemTables();
+            } catch (IOException e) {
+                Services.getErrorManager().error(
+                        I18N.getString("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.cannotClear"),
+                        e);
+            }
+        }
+    }
+
+
+    public boolean isEnabled() {
+        DataManager dm = Services.getService(DataManager.class);
+        SourceManager sourceManager = dm.getSourceManager();
+        String[] names = sourceManager.getSourceNames();
+        int sum = 0;
+        for (int i = 0; i < names.length; i++) {
+            if (!sourceManager.getSource(names[i]).isSystemTableSource()) {
+                sum += i;
+            }
+        }
+
+        return sum > 0;
+    }
+
+
 }

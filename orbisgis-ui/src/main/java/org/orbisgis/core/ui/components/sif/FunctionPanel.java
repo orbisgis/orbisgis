@@ -61,167 +61,206 @@ import org.orbisgis.utils.I18N;
 
 public class FunctionPanel extends AbstractUIPanel {
 
-	private String[] names;
-	private String title;
-	private JList lst;
-	private Object[] ids;
-	private boolean multiple = false;
-	private JPanel pnlButtons;
-	private JPanel pane;
-	private FunctionPanelFilter functionPanelFilter;
-	private JPanel searchPanel;
-	private JLabel functionLabelCount;
-	private static int functionsCount;
-	static {
-		functionsCount = FunctionManager.getFunctionNames().length
-				+ QueryManager.getQueryNames().length;
-	}
+    private String[] names;
 
-	public FunctionPanel(String title, String[] names, Object[] ids) {
-		this.title = title;
-		this.names = names;
-		this.ids = ids;
-		initComponent();
-	}
 
-	public void setMultiple(boolean multiple) {
-		this.multiple = multiple;
-		pnlButtons.setVisible(multiple);
-		if (multiple) {
-			lst
-					.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		} else {
-			lst.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		}
-	}
+    private String title;
 
-	public Component getComponent() {
-		return pane;
-	}
 
-	private void initComponent() {
-		pane = new JPanel();
-		pane.setLayout(new BorderLayout());
+    private JList lst;
 
-		pane.add(getSearchSRSPanel(), BorderLayout.NORTH);
-		lst = getJListFunction();
-		pane.add(new JScrollPane(lst), BorderLayout.CENTER);
-		pnlButtons = new JPanel();
-		CRFlowLayout flowLayout = new CRFlowLayout();
-		flowLayout.setAlignment(CRFlowLayout.LEFT);
-		pnlButtons.setLayout(flowLayout);
-		JButton btnAll = new JButton(I18N.getString(Names.SELECT_ALL));
-		btnAll.addActionListener(new ActionListener() {
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				lst.getSelectionModel().setSelectionInterval(0,
-						lst.getModel().getSize() - 1);
-			}
+    private Object[] ids;
 
-		});
-		JButton btnNone = new JButton(I18N.getString(Names.SELECT_NONE));
-		btnNone.addActionListener(new ActionListener() {
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				lst.clearSelection();
-			}
+    private boolean multiple = false;
 
-		});
-		pnlButtons.add(btnAll);
-		pnlButtons.add(new CarriageReturn());
-		pnlButtons.add(btnNone);
-		pnlButtons.setVisible(multiple);
-		pane.add(pnlButtons, BorderLayout.EAST);
-		functionLabelCount = new JLabel(I18N
-				.getString(Names.FUNCTION_PANEL_NUMBER + " : " + names.length)
-				+ " on " + functionsCount + " functions.");
-		pane.add(functionLabelCount, BorderLayout.SOUTH);
 
-	}
+    private JPanel pnlButtons;
 
-	public int getNbAvailableFunctions() {
-		return functionPanelFilter.ids.length;
-	}
 
-	public JList getJListFunction() {
-		if (null == lst) {
-			lst = new JList();
-			functionPanelFilter = new FunctionPanelFilter(names, ids);
-			lst.setModel(functionPanelFilter);
-		}
-		return lst;
-	}
+    private JPanel pane;
 
-	public JPanel getSearchSRSPanel() {
 
-		if (null == searchPanel) {
-			searchPanel = new JPanel();
-			JLabel label = new JLabel(I18N.getString(Names.SEARCH) + " : ");
+    private FunctionPanelFilter functionPanelFilter;
 
-			final JButtonTextField txtFilter = new JButtonTextField();
-			txtFilter.getDocument().addDocumentListener(new DocumentListener() {
 
-				@Override
-				public void removeUpdate(DocumentEvent e) {
-					doFilter(txtFilter);
-				}
+    private JPanel searchPanel;
 
-				@Override
-				public void insertUpdate(DocumentEvent e) {
-					doFilter(txtFilter);
-				}
 
-				@Override
-				public void changedUpdate(DocumentEvent e) {
-					doFilter(txtFilter);
-				}
-			});
-			searchPanel.add(label);
-			searchPanel.add(txtFilter);
-		}
-		return searchPanel;
+    private JLabel functionLabelCount;
 
-	}
 
-	private void doFilter(JButtonTextField txtFilter) {
-		functionPanelFilter.filter(txtFilter.getText());
-	}
+    private static int functionsCount;
 
-	public String getTitle() {
-		return title;
-	}
 
-	public String validateInput() {
-		if (lst.getSelectedIndex() == -1) {
-			return I18N
-					.getString("orbisgis.org.orbisgis.core.anItemMustBeSelected");
-		}
-		return null;
-	}
+    static {
+        functionsCount = FunctionManager.getFunctionNames().length
+                + QueryManager.getQueryNames().length;
+    }
 
-	public Object getSelected() {
-		return functionPanelFilter.ids[lst.getSelectedIndex()];
-	}
 
-	public int getSelectedIndex() {
-		return lst.getSelectedIndex();
-	}
+    public FunctionPanel(String title, String[] names, Object[] ids) {
+        this.title = title;
+        this.names = names;
+        this.ids = ids;
+        initComponent();
+    }
 
-	/**
-	 * Get the selected function in the function panel
-	 * 
-	 * @return
-	 */
-	public Object[] getSelectedElements() {
-		ArrayList<Object> ret = new ArrayList<Object>();
-		int[] indexes = lst.getSelectedIndices();
-		for (int index : indexes) {
-			ret.add(functionPanelFilter.ids[index]);
-		}
 
-		return ret.toArray();
-	}
+    public void setMultiple(boolean multiple) {
+        this.multiple = multiple;
+        pnlButtons.setVisible(multiple);
+        if (multiple) {
+            lst.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        } else {
+            lst.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        }
+    }
+
+
+    public Component getComponent() {
+        return pane;
+    }
+
+
+    private void initComponent() {
+        pane = new JPanel();
+        pane.setLayout(new BorderLayout());
+
+        pane.add(getSearchSRSPanel(), BorderLayout.NORTH);
+        lst = getJListFunction();
+        pane.add(new JScrollPane(lst), BorderLayout.CENTER);
+        pnlButtons = new JPanel();
+        CRFlowLayout flowLayout = new CRFlowLayout();
+        flowLayout.setAlignment(CRFlowLayout.LEFT);
+        pnlButtons.setLayout(flowLayout);
+        JButton btnAll = new JButton(I18N.getString(Names.SELECT_ALL));
+        btnAll.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                lst.getSelectionModel().setSelectionInterval(0,
+                                                             lst.getModel().getSize() - 1);
+            }
+
+
+        });
+        JButton btnNone = new JButton(I18N.getString(Names.SELECT_NONE));
+        btnNone.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                lst.clearSelection();
+            }
+
+
+        });
+        pnlButtons.add(btnAll);
+        pnlButtons.add(new CarriageReturn());
+        pnlButtons.add(btnNone);
+        pnlButtons.setVisible(multiple);
+        pane.add(pnlButtons, BorderLayout.EAST);
+        functionLabelCount = new JLabel(I18N.getString(Names.FUNCTION_PANEL_NUMBER + " : " + names.length)
+                + " on " + functionsCount + " functions.");
+        pane.add(functionLabelCount, BorderLayout.SOUTH);
+
+    }
+
+
+    public int getNbAvailableFunctions() {
+        return functionPanelFilter.ids.length;
+    }
+
+
+    public JList getJListFunction() {
+        if (null == lst) {
+            lst = new JList();
+            functionPanelFilter = new FunctionPanelFilter(names, ids);
+            lst.setModel(functionPanelFilter);
+        }
+        return lst;
+    }
+
+
+    public JPanel getSearchSRSPanel() {
+
+        if (null == searchPanel) {
+            searchPanel = new JPanel();
+            JLabel label = new JLabel(I18N.getString(Names.SEARCH) + " : ");
+
+            final JButtonTextField txtFilter = new JButtonTextField();
+            txtFilter.getDocument().addDocumentListener(new DocumentListener() {
+
+                @Override
+                public void removeUpdate(DocumentEvent e) {
+                    doFilter(txtFilter);
+                }
+
+
+                @Override
+                public void insertUpdate(DocumentEvent e) {
+                    doFilter(txtFilter);
+                }
+
+
+                @Override
+                public void changedUpdate(DocumentEvent e) {
+                    doFilter(txtFilter);
+                }
+
+
+            });
+            searchPanel.add(label);
+            searchPanel.add(txtFilter);
+        }
+        return searchPanel;
+
+    }
+
+
+    private void doFilter(JButtonTextField txtFilter) {
+        functionPanelFilter.filter(txtFilter.getText());
+    }
+
+
+    public String getTitle() {
+        return title;
+    }
+
+
+    public String validateInput() {
+        if (lst.getSelectedIndex() == -1) {
+            return I18N.getString("orbisgis.org.orbisgis.core.anItemMustBeSelected");
+        }
+        return null;
+    }
+
+
+    public Object getSelected() {
+        return functionPanelFilter.ids[lst.getSelectedIndex()];
+    }
+
+
+    public int getSelectedIndex() {
+        return lst.getSelectedIndex();
+    }
+
+
+    /**
+     * Get the selected function in the function panel
+     * 
+     * @return
+     */
+    public Object[] getSelectedElements() {
+        ArrayList<Object> ret = new ArrayList<Object>();
+        int[] indexes = lst.getSelectedIndices();
+        for (int index : indexes) {
+            ret.add(functionPanelFilter.ids[index]);
+        }
+
+        return ret.toArray();
+    }
+
 
 }
