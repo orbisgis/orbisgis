@@ -37,6 +37,7 @@
  */
 package org.orbisgis.core.renderer.se.stroke;
 
+/*
 import net.opengis.se._2_0.core.StrokeAnnotationGraphicType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
@@ -49,7 +50,7 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
-
+*/
 /**
  * {@code StrokeAnnotationGraphic} allows graphic icons to be rendered at any position 
  * along a line and can be used to render arrowheads or street directions, for instance.
@@ -63,32 +64,33 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * </ul>
  * @author maxence, alexis
  */
-public final class StrokeAnnotationGraphic implements SymbolizerNode {
+
+/*public final class StrokeAnnotationGraphic implements SymbolizerNode {
 
         private SymbolizerNode parent;
         private GraphicCollection graphic;
         private RealParameter relativePosition;
         private RelativeOrientation orientation;
-
+*/
         /**
          * Build a new {@code StrokeAnnotationGraphic}. It's oriented NORMAL,
          * at the beginning of the line and contain a default, alone, {@link MarkGraphic}
          * in its inner {@link GraphicCollection}.
          */
-        public StrokeAnnotationGraphic() {
+/*        public StrokeAnnotationGraphic() {
                 GraphicCollection gc = new GraphicCollection();
                 gc.addGraphic(new MarkGraphic());
                 setGraphic(gc);
                 setRelativeOrientation(RelativeOrientation.NORMAL_UP);
                 setRelativePosition(new RealLiteral(0));
         }
-
+*/
         /**
          * Build a new {@code StrokeAnnotationGraphic} from the given JAXB type.
          * @param sagt
          * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
          */
-        public StrokeAnnotationGraphic(StrokeAnnotationGraphicType sagt) throws InvalidStyle {
+  /*      public StrokeAnnotationGraphic(StrokeAnnotationGraphicType sagt) throws InvalidStyle {
                 if (sagt.getGraphic() != null) {
                         setGraphic(new GraphicCollection(sagt.getGraphic(), this));
                 }
@@ -101,32 +103,32 @@ public final class StrokeAnnotationGraphic implements SymbolizerNode {
                         this.setRelativePosition(SeParameterFactory.createRealParameter(sagt.getRelativePosition()));
                 }
         }
-
+*/
         /**
          * Get the inner {@link GraphicCollection} contained in this {@code StrokeAnnotationGraphic}.
          * @return 
          */
-        public GraphicCollection getGraphic() {
+/*        public GraphicCollection getGraphic() {
                 return graphic;
         }
-
+*/
         /**
          * Set the inner {@link GraphicCollection} contained in this {@code StrokeAnnotationGraphic}
          * to {@code graphic}.
          * @param graphic 
          */
-        public void setGraphic(GraphicCollection graphic) {
+  /*      public void setGraphic(GraphicCollection graphic) {
                 this.graphic = graphic;
                 if (graphic != null) {
                         graphic.setParent(this);
                 }
         }
-
+*/
         /**
          * Get the orientation of the graphic against the line.
          * @return 
          */
-        public RelativeOrientation getRelativeOrientation() {
+        /*public RelativeOrientation getRelativeOrientation() {
                 return orientation;
         }
 
@@ -134,7 +136,7 @@ public final class StrokeAnnotationGraphic implements SymbolizerNode {
          * Set the orientation of the graphic against the line.
          * @param orientation 
          */
-        public void setRelativeOrientation(RelativeOrientation orientation) {
+        /*public void setRelativeOrientation(RelativeOrientation orientation) {
                 this.orientation = orientation;
         }
 
@@ -144,7 +146,7 @@ public final class StrokeAnnotationGraphic implements SymbolizerNode {
          * placed in a {@link RealParameterContext#PERCENTAGE_CONTEXT percentage context}.
          * @return 
          */
-        public RealParameter getRelativePosition() {
+        /*public RealParameter getRelativePosition() {
                 return relativePosition;
         }
 
@@ -155,7 +157,7 @@ public final class StrokeAnnotationGraphic implements SymbolizerNode {
          * context}, i.e. as contained between 0 and 1.
          * @param relativePosition 
          */
-        public void setRelativePosition(RealParameter relativePosition) {
+        /*public void setRelativePosition(RealParameter relativePosition) {
                 this.relativePosition = relativePosition;
 
                 if (relativePosition != null) {
@@ -182,7 +184,7 @@ public final class StrokeAnnotationGraphic implements SymbolizerNode {
          * Get a JAXB representation of this {@code StrokeAnnotationGraphic}.
          * @return 
          */
-        StrokeAnnotationGraphicType getJaxbType() {
+        /*StrokeAnnotationGraphicType getJaxbType() {
                 StrokeAnnotationGraphicType sagt = new StrokeAnnotationGraphicType();
 
                 if (getGraphic() != null) {
@@ -206,7 +208,7 @@ public final class StrokeAnnotationGraphic implements SymbolizerNode {
          * depends on.
          * @return 
          */
-        String dependsOnFeature() {
+        /*String dependsOnFeature() {
                 String result = "";
 
                 if (graphic != null) {
@@ -224,3 +226,5 @@ public final class StrokeAnnotationGraphic implements SymbolizerNode {
                 return "Annotation";
         }
 }
+ * 
+ */

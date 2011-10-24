@@ -20,7 +20,7 @@ import org.orbisgis.core.renderer.legend.WMSLegend;
 import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Envelope;
-import org.orbisgis.core.renderer.se.FeatureTypeStyle;
+import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.Rule;
 
 public class WMSLayer extends GdmsLayer {
@@ -213,7 +213,7 @@ public class WMSLayer extends GdmsLayer {
 	}
 
     @Override
-    public FeatureTypeStyle getFeatureTypeStyle(){
+    public Style getStyle(){
         return null;
     }
 

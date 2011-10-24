@@ -43,7 +43,7 @@ public class Translate implements Transformation {
          * @param t
          * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
          */
-        Translate(TranslateType t) throws InvalidStyle {
+        public Translate(TranslateType t) throws InvalidStyle {
                 if (t.getX() != null) {
                         setX(SeParameterFactory.createRealParameter(t.getX()));
                 }
@@ -58,15 +58,15 @@ public class Translate implements Transformation {
         }
 
         @Override
-        public AffineTransform getAffineTransform(SpatialDataSourceDecorator sds, long fid, Uom uom, MapTransform mt, Double width, Double height) throws ParameterException {
+        public AffineTransform getAffineTransform(SpatialDataSourceDecorator sds, long fid, Uom uom, MapTransform mt, Double width100p, Double height100p) throws ParameterException {
                 double tx = 0.0;
                 if (x != null) {
-                        tx = Uom.toPixel(x.getValue(sds, fid), uom, mt.getDpi(), mt.getScaleDenominator(), width);
+                        tx = Uom.toPixel(x.getValue(sds, fid), uom, mt.getDpi(), mt.getScaleDenominator(), width100p);
                 }
 
                 double ty = 0.0;
                 if (y != null) {
-                        ty = Uom.toPixel(y.getValue(sds, fid), uom, mt.getDpi(), mt.getScaleDenominator(), height);
+                        ty = Uom.toPixel(y.getValue(sds, fid), uom, mt.getDpi(), mt.getScaleDenominator(), height100p);
                 }
 
                 return AffineTransform.getTranslateInstance(tx, ty);

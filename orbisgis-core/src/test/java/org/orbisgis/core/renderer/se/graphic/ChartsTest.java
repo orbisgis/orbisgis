@@ -62,7 +62,7 @@ import org.orbisgis.core.ConsoleOutputManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.se.FeatureTypeStyle;
+import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -76,7 +76,7 @@ import org.orbisgis.core.ui.plugins.views.output.OutputManager;
  */
 public class ChartsTest extends TestCase {
 
-    private FeatureTypeStyle fts;
+    private Style fts;
 
     public ChartsTest(String testName) throws IOException {
         super(testName);
@@ -120,7 +120,7 @@ public class ChartsTest extends TestCase {
 
         System.out.println(dj.getColorModel());
 
-        fts = new FeatureTypeStyle(null, "src/test/resources/org/orbisgis/core/renderer/se/charts.se");
+        fts = new Style(null, "src/test/resources/org/orbisgis/core/renderer/se/charts.se");
         PointSymbolizer ps = (PointSymbolizer) fts.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
         GraphicCollection collec = ps.getGraphicCollection();
 

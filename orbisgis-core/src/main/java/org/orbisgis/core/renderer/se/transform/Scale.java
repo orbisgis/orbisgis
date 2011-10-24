@@ -36,8 +36,8 @@ public final class Scale implements Transformation {
      * @param y The vertical factor.
      */
     public Scale(RealParameter x, RealParameter y) {
-		setX(x);
-		setY(y);
+        setX(x);
+        setY(y);
     }
 
     /**
@@ -56,17 +56,17 @@ public final class Scale implements Transformation {
      * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle
      */
     Scale(ScaleType s) throws InvalidStyle {
-        if (s.getXY() != null) {
-            setX(SeParameterFactory.createRealParameter(s.getXY()));
-            setY(SeParameterFactory.createRealParameter(s.getXY()));
-        } else {
-            if (s.getX() != null) {
-                setX(SeParameterFactory.createRealParameter(s.getX()));
-            }
-            if (s.getY() != null) {
-                setY(SeParameterFactory.createRealParameter(s.getY()));
-            }
+        /*if (s.getXY() != null) {
+        setX(SeParameterFactory.createRealParameter(s.getXY()));
+        setY(SeParameterFactory.createRealParameter(s.getXY()));
+        } else {*/
+        if (s.getX() != null) {
+            setX(SeParameterFactory.createRealParameter(s.getX()));
         }
+        if (s.getY() != null) {
+            setY(SeParameterFactory.createRealParameter(s.getY()));
+        }
+        //}
     }
 
     /**
@@ -86,9 +86,9 @@ public final class Scale implements Transformation {
      */
     public void setX(RealParameter x) {
         this.x = x;
-		if (this.x != null){
-			this.x.setContext(RealParameterContext.REAL_CONTEXT);
-		}
+        if (this.x != null) {
+            this.x.setContext(RealParameterContext.REAL_CONTEXT);
+        }
     }
 
     /**
@@ -108,47 +108,52 @@ public final class Scale implements Transformation {
      */
     public void setY(RealParameter y) {
         this.y = y;
-		if (this.y != null){
-			this.y.setContext(RealParameterContext.REAL_CONTEXT);
-		}
+        if (this.y != null) {
+            this.y.setContext(RealParameterContext.REAL_CONTEXT);
+        }
     }
+
 
     @Override
     public boolean allowedForGeometries() {
         return false;
     }
 
-    
+
     @Override
-    public String dependsOnFeature(){
+    public String dependsOnFeature() {
         String result = "";
-        if (x!= null){
+        if (x != null) {
             result += x.dependsOnFeature();
         }
-        if (y != null){
+        if (y != null) {
             result += " " + y.dependsOnFeature();
         }
         return result.trim();
     }
 
+
     @Override
-    public AffineTransform getAffineTransform(SpatialDataSourceDecorator sds, long fid, Uom uom, MapTransform mt, Double width, Double height) throws ParameterException {
+    public AffineTransform getAffineTransform(SpatialDataSourceDecorator sds,
+                                              long fid, Uom uom, MapTransform mt,
+                                              Double width, Double height) throws ParameterException {
         double sx = 1.0;
         if (x != null) {
             //sx = Uom.toPixel(x.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), null);
-			sx = x.getValue(sds, fid);
+            sx = x.getValue(sds, fid);
         }
 
         double sy = 1.0;
         if (y != null) {
             //sy = Uom.toPixel(y.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), null);
-			sy = y.getValue(sds, fid);
+            sy = y.getValue(sds, fid);
         }
 
-		//AffineTransform.getTranslateInstance(A;, sy);
+        //AffineTransform.getTranslateInstance(A;, sy);
 
         return AffineTransform.getScaleInstance(sx, sy);
     }
+
 
     @Override
     public JAXBElement<?> getJAXBElement() {
@@ -158,33 +163,27 @@ public final class Scale implements Transformation {
         return of.createScale(s);
     }
 
+
     @Override
     public ScaleType getJAXBType() {
         ScaleType s = new ScaleType();
 
-        if (y == null ^ x == null) {
-            RealParameter xy;
-            if (x != null) {
-                xy = x;
-            } else {
-                xy = y;
-            }
-            s.setXY(xy.getJAXBParameterValueType());
-        } else {
-            if (x != null) {
-                s.setX(x.getJAXBParameterValueType());
-            }
+        if (x != null) {
+            s.setX(x.getJAXBParameterValueType());
+        }
 
-            if (y != null) {
-                s.setY(y.getJAXBParameterValueType());
-            }
+        if (y != null) {
+            s.setY(y.getJAXBParameterValueType());
         }
         return s;
     }
 
+
     @Override
-    public String toString(){
+    public String toString() {
         return "Scale";
     }
+
+
 
 }

@@ -52,7 +52,6 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Halo;
-import org.orbisgis.core.renderer.se.common.OnlineResource;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
@@ -66,6 +65,7 @@ import org.orbisgis.core.renderer.se.transform.Transform;
 import org.orbisgis.core.renderer.se.StrokeNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.ViewBoxNode;
+import org.orbisgis.core.renderer.se.common.VariableOnlineResource;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
@@ -105,7 +105,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
     private Uom uom;
     private Transform transform;
     private StringParameter wkn;
-    private OnlineResource onlineResource;
+    private VariableOnlineResource onlineResource;
     private ViewBox viewBox;
     private RealParameter pOffset;
     private Halo halo;
@@ -181,8 +181,9 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
             this.setWkn(SeParameterFactory.createStringParameter(t.getWellKnownName()));
         } else {
             if (t.getOnlineResource() != null) {
-                //this.setSource((MarkGraphicSource) new OnlineResource(t.getOnlineResource()));
-                this.setOnlineResource(new OnlineResource(t.getOnlineResource()));
+
+                this.setOnlineResource(new VariableOnlineResource(t.getOnlineResource()));
+
             } else if (t.getInlineContent() != null) {
                 // TODO Not yet implemented
             }
@@ -374,19 +375,12 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
         }
     }
 
-    /*public void setSource(MarkGraphicSource source) {
-    this.source = source;
-
-    if (source instanceof OnlineResource) {
-    // Add listener which update markIndex context!
-    }
-    //updateGraphic();
-    }*/
     @Override
     public Rectangle2D getBounds(SpatialDataSourceDecorator sds, long fid,
             MapTransform mt) throws ParameterException, IOException {
         Shape shp = null;
 
+        
         // If the shape doesn't depends on feature (i.e. not null), we used the cached one
         if (shape == null) {
             shp = getShape(sds, fid, mt);
@@ -398,12 +392,12 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
             shp = WellKnownName.CIRCLE.getShape(viewBox, sds, fid, mt.getScaleDenominator(), mt.getDpi(), markIndex, mimeType);
         }
 
-        if (transform != null) {
+        /*if (transform != null) {
             return this.transform.getGraphicalAffineTransform(false, sds, fid, mt, shp.getBounds().getWidth(),
                     shp.getBounds().getHeight()).createTransformedShape(shp).getBounds2D();
-        } else {
-            return shp.getBounds2D();
-        }
+        } else {*/
+            return shp.getBounds2D();/*
+        }*/
     }
     
     @Override
@@ -509,7 +503,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
      * Get the online resource that defines this {@code MarkGraphic}.
      * @return 
      */
-    public OnlineResource getOnlineResource() {
+    public VariableOnlineResource getOnlineResource() {
         return onlineResource;
     }
 
@@ -517,7 +511,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
      * Set the online resource that defines this {@code MarkGraphic}.
      * @param onlineResource 
      */
-    public void setOnlineResource(OnlineResource onlineResource) {
+    public void setOnlineResource(VariableOnlineResource onlineResource) {
         this.onlineResource = onlineResource;
         if (onlineResource != null) {
             wkn = null;

@@ -60,7 +60,7 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.transform.Transform;
+import org.orbisgis.core.renderer.se.transform.Translate;
 
 /**
  * This class contains the common elements shared by <code>PointSymbolizer</code>,<code>LineSymbolizer</code>
@@ -74,7 +74,6 @@ import org.orbisgis.core.renderer.se.transform.Transform;
  */
 public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 
-    protected Transform transform;
     protected Uom uom;
 
     protected VectorSymbolizer() {
@@ -127,9 +126,6 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
                 } else {
                     Shape shape = mt.getShape(geom);
                     if (shape != null) {
-                        if (transform != null) {
-                            shape = transform.getGraphicalAffineTransform(false, sds, fid, mt, (double) mt.getWidth(), (double) mt.getHeight()).createTransformedShape(shape); // TODO widht and height?
-                        }
                         shapes.add(shape);
                     }
                 }
@@ -168,11 +164,6 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 
 
         AffineTransform at = null;
-
-        if (transform != null) {
-            at = transform.getGraphicalAffineTransform(false, sds, fid,
-                    mt, (double) mt.getWidth(), (double) mt.getHeight());
-        }
 
         while (!geom2Process.isEmpty()) {
             geom = geom2Process.remove(0);
@@ -246,10 +237,6 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 
         AffineTransform at = mt.getAffineTransform();
 
-        if (transform != null) {
-            at.preConcatenate(transform.getGraphicalAffineTransform(false, sds, fid, mt, (double) mt.getWidth(), (double) mt.getHeight()));
-        }
-
         Point point;
 
         try {
@@ -287,9 +274,6 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 
 
         AffineTransform at = mt.getAffineTransform();
-        if (transform != null) {
-            at.preConcatenate(transform.getGraphicalAffineTransform(false, sds, fid, mt, (double) mt.getWidth(), (double) mt.getHeight())); // TODO width and height
-        }
 
         Coordinate[] coordinates = geom.getCoordinates();
 
@@ -323,9 +307,6 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
         ArrayList<Point2D> points = new ArrayList<Point2D>();
 
         AffineTransform at = mt.getAffineTransform();
-        if (transform != null) {
-            at.preConcatenate(transform.getGraphicalAffineTransform(false, sds, fid, mt, (double) mt.getWidth(), (double) mt.getHeight())); // TODO width and height
-        }
 
         Coordinate[] coordinates = geom.getCoordinates();
 
@@ -335,15 +316,6 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
         }
 
         return points;
-    }
-
-    /**
-     * Retrieve the geometric transformation that must be applied to the geometries.
-     * @return 
-     *  The transformation associated to this Symbolizer.
-     */
-    public Transform getTransform() {
-        return transform;
     }
 
     @Override
@@ -363,14 +335,5 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
         } else {
             this.uom = Uom.MM;
         }
-    }
-
-    /**
-     * Get the geometric transformation that must be applied to the geometries.
-     * @param transform 
-     */
-    public void setTransform(Transform transform) {
-        this.transform = transform;
-        transform.setParent(this);
     }
 }

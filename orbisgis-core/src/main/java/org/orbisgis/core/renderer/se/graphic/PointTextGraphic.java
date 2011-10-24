@@ -7,8 +7,8 @@ import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ObjectFactory;
-import net.opengis.se._2_0.core.PointPositionType;
 import net.opengis.se._2_0.core.PointTextGraphicType;
+import net.opengis.se._2_0.core.TranslateType;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -54,7 +54,7 @@ public final class PointTextGraphic extends Graphic implements UomNode {
                 }
 
                 if (tgt.getPointPosition() != null) {
-                        PointPositionType pp = tgt.getPointPosition();
+                        TranslateType pp = tgt.getPointPosition();
                         if (pp.getX() != null) {
                                 setX(SeParameterFactory.createRealParameter(pp.getX()));
                         }
@@ -143,7 +143,7 @@ public final class PointTextGraphic extends Graphic implements UomNode {
                 }
 
                 if (x != null || y != null) {
-                        PointPositionType ppt = new PointPositionType();
+                        TranslateType ppt = new TranslateType();
                         if (x != null) {
                                 ppt.setX(x.getJAXBParameterValueType());
                         }

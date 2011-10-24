@@ -342,7 +342,7 @@ public class Layer extends GdmsLayer {
 
 	@Override
 	public List<Rule> getRenderingRule() throws DriverException {
-		return this.getFeatureTypeStyle().getRules();
+		return this.getStyle().getRules();
 	}
 
 	private class RefreshSelectionEditionListener implements EditionListener {

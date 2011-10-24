@@ -39,9 +39,6 @@ package org.orbisgis.core.renderer.se.stroke;
 
 import java.awt.Graphics2D;
 import java.awt.Shape;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,13 +48,11 @@ import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.map.MapTransform;
 import net.opengis.se._2_0.core.CompoundStrokeType;
 import net.opengis.se._2_0.core.ObjectFactory;
-import net.opengis.se._2_0.core.StrokeAnnotationGraphicType;
+//import net.opengis.se._2_0.core.StrokeAnnotationGraphicType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.UomNode;
-import org.orbisgis.core.renderer.se.common.RelativeOrientation;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.common.Uom;
-import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
@@ -78,7 +73,7 @@ public final class CompoundStroke extends Stroke implements UomNode {
     private RealParameter preGap;
     private RealParameter postGap;
     private List<CompoundStrokeElement> elements;
-    private List<StrokeAnnotationGraphic> annotations;
+    //private List<StrokeAnnotationGraphic> annotations;
     private Uom uom;
 
     /**
@@ -89,7 +84,7 @@ public final class CompoundStroke extends Stroke implements UomNode {
         super();
         elements = new ArrayList<CompoundStrokeElement>();
         addElement(new StrokeElement());
-        annotations = new ArrayList<StrokeAnnotationGraphic>();
+        //annotations = new ArrayList<StrokeAnnotationGraphic>();
     }
 
     /**
@@ -113,7 +108,8 @@ public final class CompoundStroke extends Stroke implements UomNode {
         }
 
         elements = new ArrayList<CompoundStrokeElement>();
-        annotations = new ArrayList<StrokeAnnotationGraphic>();
+        //annotations = new ArrayList<StrokeAnnotationGraphic>();
+        
 
         if (s.getStrokeElementOrAlternativeStrokeElements() != null) {
             for (Object o : s.getStrokeElementOrAlternativeStrokeElements()) {
@@ -122,12 +118,12 @@ public final class CompoundStroke extends Stroke implements UomNode {
             }
         }
 
-        if (s.getStrokeAnnotationGraphic() != null) {
+        /*if (s.getStrokeAnnotationGraphic() != null) {
             for (StrokeAnnotationGraphicType sagt : s.getStrokeAnnotationGraphic()) {
                 StrokeAnnotationGraphic sag = new StrokeAnnotationGraphic(sagt);
                 addStrokeAnnotationGraphic(sag);
             }
-        }
+        }*/
     }
 
     /**
@@ -194,10 +190,11 @@ public final class CompoundStroke extends Stroke implements UomNode {
     /**
      * Get the annotations embedded in this {@code CompoundStroke}
      * @return 
-     */
+     *
     public List<StrokeAnnotationGraphic> getAnnotations() {
         return annotations;
     }
+     * 
 
     /**
      * Gets the stroke elements embedded in this {@code CompoundStroke}.
@@ -412,7 +409,8 @@ public final class CompoundStroke extends Stroke implements UomNode {
                 }
 
 
-                if (annotations.size() > 0) {
+                /*
+                 if (annotations.size() > 0) {
                     List<Shape> splitLineInSeg = ShapeHelper.splitLineInSeg(shp, patternLength);
                     //List<Shape> splitLineInSeg = new ArrayList<Shape>();
                     //splitLineInSeg.add(shp);
@@ -472,7 +470,7 @@ public final class CompoundStroke extends Stroke implements UomNode {
                             graphic.draw(g2, sds, fid, selected, mt, at);
                         }
                     }
-                }
+                }*/
             }
         }
     }
@@ -480,9 +478,9 @@ public final class CompoundStroke extends Stroke implements UomNode {
     @Override
     public String dependsOnFeature() {
         String result = "";
-        for (StrokeAnnotationGraphic sag : annotations) {
+        /*for (StrokeAnnotationGraphic sag : annotations) {
             result += sag.dependsOnFeature();
-        }
+        }*/
 
         for (CompoundStrokeElement elem : elements) {
             result += elem.dependsOnFeature();
@@ -496,10 +494,10 @@ public final class CompoundStroke extends Stroke implements UomNode {
         cse.setParent(this);
     }
 
-    private void addStrokeAnnotationGraphic(StrokeAnnotationGraphic sag) {
+    /*private void addStrokeAnnotationGraphic(StrokeAnnotationGraphic sag) {
         annotations.add(sag);
         sag.setParent(this);
-    }
+    }*/
 
     @Override
     public JAXBElement<CompoundStrokeType> getJAXBElement() {
@@ -530,15 +528,15 @@ public final class CompoundStroke extends Stroke implements UomNode {
 
 
         List<Object> sElem = s.getStrokeElementOrAlternativeStrokeElements();
-        List<StrokeAnnotationGraphicType> sAnnot = s.getStrokeAnnotationGraphic();
+        //List<StrokeAnnotationGraphicType> sAnnot = s.getStrokeAnnotationGraphic();
 
         for (CompoundStrokeElement elem : this.elements) {
             sElem.add(elem.getJaxbType());
         }
 
-        for (StrokeAnnotationGraphic sag : annotations) {
-            sAnnot.add(sag.getJaxbType());
-        }
+        //for (StrokeAnnotationGraphic sag : annotations) {
+        //    sAnnot.add(sag.getJaxbType());
+        //}
 
         return s;
     }
@@ -565,13 +563,14 @@ public final class CompoundStroke extends Stroke implements UomNode {
     /**
      * Add an annotation to the set associated to this {@code CompoundStroke}.
      * @param annotation 
-     */
+     *
     public void addAnnotation(StrokeAnnotationGraphic annotation) {
         if (annotation != null) {
             annotations.add(annotation);
             annotation.setParent(this);
         }
     }
+     * 
 
     /**
      * Move the ith annotation up in the list of annotations.
@@ -579,7 +578,7 @@ public final class CompoundStroke extends Stroke implements UomNode {
      * @return 
      * {@code true} if the ith annotation existed and has been moved. {@code false}
      * if  i was negative, equal to 0 or greater than the list's size.
-     */
+     *
     public boolean moveAnnotationUp(int i) {
         if (i > 0 && i < this.annotations.size()) {
             StrokeAnnotationGraphic anno = annotations.remove(i);
@@ -587,7 +586,7 @@ public final class CompoundStroke extends Stroke implements UomNode {
             return true;
         }
         return false;
-    }
+    }*/
 
     /**
      * Move the ith annotation down in the list of annotations.
@@ -596,7 +595,7 @@ public final class CompoundStroke extends Stroke implements UomNode {
      * @return 
      * {@code true} if the ith annotation existed and has been moved. {@code false}
      * if  i was less than 1 or greater than the list's size -1.
-     */
+     *
     public boolean moveAnnotationDown(int i) {
         if (i >= 0 && i < this.annotations.size() - 1) {
             StrokeAnnotationGraphic anno = annotations.remove(i);
@@ -604,7 +603,7 @@ public final class CompoundStroke extends Stroke implements UomNode {
             return true;
         }
         return false;
-    }
+    }*/
 
     /**
      * Remove the ith annotation, if it exists
@@ -612,7 +611,7 @@ public final class CompoundStroke extends Stroke implements UomNode {
      * @return 
      * {@code true} if i was a valid range of the annotations list, and consequently
      * if something has been removed, false otherwise.
-     */
+     *
     public boolean removeAnnotation(int i) {
         try {
             annotations.remove(i);
@@ -620,7 +619,7 @@ public final class CompoundStroke extends Stroke implements UomNode {
         } catch (Exception e) {
             return false;
         }
-    }
+    }*/
 
     /**
      * Add a stroke in the embedded list of stroke elements.

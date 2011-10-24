@@ -50,7 +50,7 @@ import org.orbisgis.core.renderer.legend.WMSLegend;
 
 import com.vividsolutions.jts.geom.Envelope;
 import java.util.List;
-import org.orbisgis.core.renderer.se.FeatureTypeStyle;
+import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.Rule;
 
 public interface ILayer {
@@ -230,9 +230,9 @@ public interface ILayer {
 	 */
 	SpatialDataSourceDecorator getSpatialDataSource();
 
-    public FeatureTypeStyle getFeatureTypeStyle();
+    public Style getStyle();
 
-    public void setFeatureTypeStyle(FeatureTypeStyle fts);
+    public void Style(Style fts);
 
 	/**
 	 * Gets the legend used to draw the default spatial field in this layer if

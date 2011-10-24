@@ -48,118 +48,143 @@ import org.orbisgis.utils.I18N;
  */
 public class ProportionalMethod {
 
-	int LINEAR = 1;
-	int LOGARITHMIC = 2;
-	int SQUARE = 3;
+    int LINEAR = 1;
 
-	private SpatialDataSourceDecorator ds;
-	private double maxValue;
-	private RealParameter value;
 
-	private final static int MIN_SURFACE = 10;
+    int LOGARITHMIC = 2;
 
-	// The surface reference must be greater or equals than 10.
-	private double minSymbolArea;
-	private double minValue;
-	private int method;
 
-	public ProportionalMethod(SpatialDataSourceDecorator ds, RealParameter value) {
-		this.ds = ds;
-		this.value = value;
-	}
+    int SQUARE = 3;
 
-	// TODO what the surfRef parameter is used to
-	public void build(double minSymbolArea) throws DriverException,
-			ClassificationMethodException,
-			ParameterException {
 
-		double[] valeurs = ClassificationUtils.getSortedValues(ds,value);
+    private SpatialDataSourceDecorator ds;
 
-		maxValue = valeurs[valeurs.length - 1];
-		minValue = valeurs[0];
 
-		if ((method == LOGARITHMIC) && (minValue <= 0)) {
-			throw new ClassificationMethodException(
-					I18N
-							.getString("orbisgis.org.orbisgis.core.renderer.legend.carto.defaultProportionalLegend.symbolSize.logarithmic"));
+    private double maxValue;
 
-		}
-		if (minSymbolArea >= 10) {
-			this.minSymbolArea = minSymbolArea;
-		} else {
-			this.minSymbolArea = MIN_SURFACE;
-		}
 
-	}
+    private RealParameter value;
 
-	public double getSymbolCoef() {
-		return minSymbolArea / maxValue;
-	}
 
-	public double getMaxValue() {
-		return maxValue;
-	}
+    private final static int MIN_SURFACE = 10;
 
-	/**
-	 * Compute the symbol size using a linear method Adpated from SCAP3 :
-	 * http://w3.geoprdc.univ-tlse2.fr/scap/java/
-	 * 
-	 * @param value
-	 * @param coefType
-	 * @return
-	 */
-	public double getLinearSize(double value, int coefType) {
-		double coefSymb = Math.abs(getSymbolCoef());
+    // The surface reference must be greater or equals than 10.
 
-		double surface = Math.abs(value) * coefSymb;
+    private double minSymbolArea;
 
-		return Math.sqrt(surface / coefType);
-	}
 
-	/**
-	 * Compute the symbol size using a squareroot method Adpated from SCAP3 :
-	 * http://w3.geoprdc.univ-tlse2.fr/scap/java/
-	 * 
-	 * @param value
-	 * @param sqrtFactor
-	 * @param coefType
-	 * @return
-	 */
-	public double getSquareSize(double value, double sqrtFactor, int coefType) {
-		double coefSymb = Math.abs(minSymbolArea
-				/ (Math.pow(getMaxValue(), (1 / sqrtFactor))));
-		double surface = Math.pow(Math.abs(value), (1 / sqrtFactor)) * coefSymb;
+    private double minValue;
 
-		return Math.sqrt(surface / coefType);
-	}
 
-	/**
-	 * Compute the symbol size using a logarithm method Adpated from SCAP3 :
-	 * http://w3.geoprdc.univ-tlse2.fr/scap/java/
-	 * 
-	 * @param value
-	 * @param coefType
-	 * @return
-	 */
-	public double getLogarithmicSize(double value, int coefType) {
-		double coefSymb = Math.abs(minSymbolArea
-				/ Math.log(Math.abs(getMaxValue())));
+    private int method;
 
-		double surface = Math.abs(Math.log(Math.abs(value))) * coefSymb;
 
-		return Math.sqrt(surface / coefType);
-	}
+    public ProportionalMethod(SpatialDataSourceDecorator ds, RealParameter value) {
+        this.ds = ds;
+        this.value = value;
+    }
 
-	public double getMinValue() {
-		return minValue;
-	}
+    // TODO what the surfRef parameter is used to
 
-	public void setMethod(int method) {
-		this.method = method;
-	}
+    public void build(double minSymbolArea) throws DriverException,
+            ClassificationMethodException,
+            ParameterException {
 
-	public int getMethod() {
-		return method;
-	}
+        double[] valeurs = ClassificationUtils.getSortedValues(ds, value);
+
+        maxValue = valeurs[valeurs.length - 1];
+        minValue = valeurs[0];
+
+        if ((method == LOGARITHMIC) && (minValue <= 0)) {
+            throw new ClassificationMethodException(
+                    I18N.getString("orbisgis.org.orbisgis.core.renderer.legend.carto.defaultProportionalLegend.symbolSize.logarithmic"));
+
+        }
+        if (minSymbolArea >= 10) {
+            this.minSymbolArea = minSymbolArea;
+        } else {
+            this.minSymbolArea = MIN_SURFACE;
+        }
+
+    }
+
+
+    public double getSymbolCoef() {
+        return minSymbolArea / maxValue;
+    }
+
+
+    public double getMaxValue() {
+        return maxValue;
+    }
+
+
+    /**
+     * Compute the symbol size using a linear method Adpated from SCAP3 :
+     * http://w3.geoprdc.univ-tlse2.fr/scap/java/
+     * 
+     * @param value
+     * @param coefType
+     * @return
+     */
+    public double getLinearSize(double value, int coefType) {
+        double coefSymb = Math.abs(getSymbolCoef());
+
+        double surface = Math.abs(value) * coefSymb;
+
+        return Math.sqrt(surface / coefType);
+    }
+
+
+    /**
+     * Compute the symbol size using a squareroot method Adpated from SCAP3 :
+     * http://w3.geoprdc.univ-tlse2.fr/scap/java/
+     * 
+     * @param value
+     * @param sqrtFactor
+     * @param coefType
+     * @return
+     */
+    public double getSquareSize(double value, double sqrtFactor, int coefType) {
+        double coefSymb = Math.abs(minSymbolArea
+                / (Math.pow(getMaxValue(), (1 / sqrtFactor))));
+        double surface = Math.pow(Math.abs(value), (1 / sqrtFactor)) * coefSymb;
+
+        return Math.sqrt(surface / coefType);
+    }
+
+
+    /**
+     * Compute the symbol size using a logarithm method Adpated from SCAP3 :
+     * http://w3.geoprdc.univ-tlse2.fr/scap/java/
+     * 
+     * @param value
+     * @param coefType
+     * @return
+     */
+    public double getLogarithmicSize(double value, int coefType) {
+        double coefSymb = Math.abs(minSymbolArea
+                / Math.log(Math.abs(getMaxValue())));
+
+        double surface = Math.abs(Math.log(Math.abs(value))) * coefSymb;
+
+        return Math.sqrt(surface / coefType);
+    }
+
+
+    public double getMinValue() {
+        return minValue;
+    }
+
+
+    public void setMethod(int method) {
+        this.method = method;
+    }
+
+
+    public int getMethod() {
+        return method;
+    }
+
 
 }

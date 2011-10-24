@@ -42,7 +42,6 @@ import com.vividsolutions.jts.geom.Geometry;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
@@ -100,10 +99,6 @@ public final class TextSymbolizer extends VectorSymbolizer {
 
 		if (tst.getPerpendicularOffset() != null) {
 			this.setPerpendicularOffset(SeParameterFactory.createRealParameter(tst.getPerpendicularOffset()));
-		}
-
-		if (tst.getTransform() != null) {
-			this.setTransform(new Transform(tst.getTransform()));
 		}
 
 		if (tst.getLabel() != null) {
@@ -192,10 +187,6 @@ public final class TextSymbolizer extends VectorSymbolizer {
 
 		if (this.getUom() != null){
 			s.setUom(this.getUom().toURN());
-		}
-
-		if (transform != null) {
-			s.setTransform(transform.getJAXBType());
 		}
 
 		if (perpendicularOffset != null) {

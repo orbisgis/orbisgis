@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<FeatureTypeStyle xmlns="http://www.opengis.net/se/2.0/core" xmlns:ns2="http://www.opengis.net/ows/2.0" xmlns:ns3="http://www.opengis.net/fes/2.0" xmlns:ns4="http://www.w3.org/1999/xlink">
+<Style xmlns="http://www.opengis.net/se/2.0/core" xmlns:ns2="http://www.opengis.net/ows/2.0" xmlns:ns3="http://www.opengis.net/fes/2.0" xmlns:ns4="http://www.w3.org/1999/xlink">
   <Rule>
     <PointSymbolizer uom="urn:ogc:def:uom:se::mm">
       <CompositeGraphic>
@@ -644,8 +644,8 @@
           </ViewBox>
 	  <GraphicStroke>
                 <MarkGraphic>
-                    <!--<OnlineResource ns4:href="http://bitbucket.org/ovnicraft/ogcserver/raw/649d8bf42a09/haiti/fonts/ERS_v2_Incidents_txt.ttf" />-->
-		    <OnlineResource ns4:href="file:./src/test/resources/FreeMonoOblique.ttf" />
+                    <!--<VariableOnlineResource ns4:href="http://bitbucket.org/ovnicraft/ogcserver/raw/649d8bf42a09/haiti/fonts/ERS_v2_Incidents_txt.ttf" />-->
+		    <VariableOnlineResource ns4:href="file:./src/test/resources/FreeMonoOblique.ttf" />
                     <MarkIndex>97</MarkIndex>
                     <Format>application/x-font-ttf</Format>
                     <ViewBox>
@@ -685,8 +685,8 @@
           </ViewBox>
 	  <GraphicStroke>
                 <MarkGraphic>
-                    <!--<OnlineResource ns4:href="http://bitbucket.org/ovnicraft/ogcserver/raw/649d8bf42a09/haiti/fonts/ERS_v2_Incidents_txt.ttf" />-->
-		    <OnlineResource ns4:href="file:./src/test/resources/FreeMonoOblique.ttf" />
+                    <!--<VariableOnlineResource ns4:href="http://bitbucket.org/ovnicraft/ogcserver/raw/649d8bf42a09/haiti/fonts/ERS_v2_Incidents_txt.ttf" />-->
+		    <VariableOnlineResource ns4:href="file:./src/test/resources/FreeMonoOblique.ttf" />
                     <MarkIndex>98</MarkIndex>
                     <Format>application/x-font-ttf</Format>
                     <ViewBox>
@@ -724,8 +724,8 @@
           </ViewBox>
 	  <GraphicStroke>
                 <MarkGraphic>
-                    <!--<OnlineResource ns4:href="http://bitbucket.org/ovnicraft/ogcserver/raw/649d8bf42a09/haiti/fonts/ERS_v2_Incidents_txt.ttf" />-->
-		    <OnlineResource ns4:href="file:./src/test/resources/FreeMonoOblique.ttf" />
+                    <!--<VariableOnlineResource ns4:href="http://bitbucket.org/ovnicraft/ogcserver/raw/649d8bf42a09/haiti/fonts/ERS_v2_Incidents_txt.ttf" />-->
+		    <VariableOnlineResource ns4:href="file:./src/test/resources/FreeMonoOblique.ttf" />
                     <MarkIndex>99</MarkIndex>
                     <Format>application/x-font-ttf</Format>
                     <ViewBox>
@@ -764,8 +764,8 @@
           </ViewBox>
 	  <GraphicStroke>
                 <MarkGraphic>
-                    <!--<OnlineResource ns4:href="http://bitbucket.org/ovnicraft/ogcserver/raw/649d8bf42a09/haiti/fonts/ERS_v2_Incidents_txt.ttf" />-->
-		    <OnlineResource ns4:href="file:./src/test/resources/FreeMonoOblique.ttf" />
+                    <!--<VariableOnlineResource ns4:href="http://bitbucket.org/ovnicraft/ogcserver/raw/649d8bf42a09/haiti/fonts/ERS_v2_Incidents_txt.ttf" />-->
+		    <VariableOnlineResource ns4:href="file:./src/test/resources/FreeMonoOblique.ttf" />
                     <MarkIndex>100</MarkIndex>
                     <Format>application/x-font-ttf</Format>
                     <ViewBox>
@@ -804,8 +804,8 @@
           </ViewBox>
 	  <GraphicStroke>
                 <MarkGraphic>
-                    <!--<OnlineResource ns4:href="http://bitbucket.org/ovnicraft/ogcserver/raw/649d8bf42a09/haiti/fonts/ERS_v2_Incidents_txt.ttf" />-->
-		    <OnlineResource ns4:href="file:./src/test/resources/FreeMonoOblique.ttf" />
+                    <!--<VariableOnlineResource ns4:href="http://bitbucket.org/ovnicraft/ogcserver/raw/649d8bf42a09/haiti/fonts/ERS_v2_Incidents_txt.ttf" />-->
+		    <VariableOnlineResource ns4:href="file:./src/test/resources/FreeMonoOblique.ttf" />
                     <MarkIndex>101</MarkIndex>
                     <Format>application/x-font-ttf</Format>
                     <ViewBox>
@@ -959,7 +959,7 @@
                     	    <Length>10</Length>
 		        </StrokeElement>
 
-		    <StrokeAnnotationGraphic>
+		    <!--<StrokeAnnotationGraphic>
 		        <MarkGraphic>
 			    <WellKnownName>circle</WellKnownName>
 		            <PenStroke />
@@ -973,7 +973,7 @@
 			    </Transform>
 		        </MarkGraphic>
 			<RelativePosition>0</RelativePosition>
-		    </StrokeAnnotationGraphic>
+		    </StrokeAnnotationGraphic>-->
 		</CompoundStroke>
         </MarkGraphic>
 
@@ -1402,4 +1402,4 @@
       </CompositeGraphic>
     </PointSymbolizer>
   </Rule>
-</FeatureTypeStyle>
+</Style>

@@ -54,7 +54,7 @@ import org.orbisgis.core.renderer.legend.WMSLegend;
 import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Envelope;
-import org.orbisgis.core.renderer.se.FeatureTypeStyle;
+import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.Rule;
 
 public class LayerCollection extends AbstractLayer {
@@ -181,7 +181,7 @@ public class LayerCollection extends AbstractLayer {
 	}
 
     @Override
-    public void setFeatureTypeStyle(FeatureTypeStyle fts) {
+    public void Style(Style fts) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -485,7 +485,7 @@ public class LayerCollection extends AbstractLayer {
 	}
     
     @Override
-    public FeatureTypeStyle getFeatureTypeStyle(){
+    public Style getStyle(){
         throw new UnsupportedOperationException("Cannot set "
 				+ "a legend on a layer collection");
     }

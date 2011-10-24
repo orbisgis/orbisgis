@@ -71,8 +71,8 @@ public class Gallery extends AbstractTest {
 
             ILayer layer = new Layer("swiss", sds);
 
-            FeatureTypeStyle style = new FeatureTypeStyle(layer, stylePath);
-            layer.setFeatureTypeStyle(style);
+            Style style = new Style(layer, stylePath);
+            layer.Style(style);
 
             Renderer renderer = new ImageRenderer();
             BufferedImage image = mt.getImage();

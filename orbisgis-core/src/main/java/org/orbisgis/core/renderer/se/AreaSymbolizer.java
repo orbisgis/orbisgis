@@ -65,7 +65,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
-import org.orbisgis.core.renderer.se.transform.Transform;
+import org.orbisgis.core.renderer.se.transform.Translate;
 
 /**
  * A "AreaSymbolizer" specifies the rendering of a polygon or other area/surface geometry, 
@@ -78,6 +78,8 @@ import org.orbisgis.core.renderer.se.transform.Transform;
  */
 public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, StrokeNode {
 
+    protected Translate translate;
+    
     private RealParameter perpendicularOffset;
     private Stroke stroke;
     private Fill fill;
@@ -117,10 +119,10 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
             this.setPerpendicularOffset(SeParameterFactory.createRealParameter(ast.getPerpendicularOffset()));
         }
 
-        if (ast.getTransform() != null) {
-            this.setTransform(new Transform(ast.getTransform()));
+        if (ast.getDisplacement() != null){
+            this.setTranslate(new Translate(ast.getDisplacement()));
         }
-
+        
         if (ast.getFill() != null) {
             this.setFill(Fill.createFromJAXBElement(ast.getFill()));
         }
@@ -154,6 +156,25 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
     @Override
     public Fill getFill() {
         return fill;
+    }
+
+
+    /**
+     * Retrieve the geometric transformation that must be applied to the geometries.
+     * @return 
+     *  The transformation associated to this Symbolizer.
+     */
+    public Translate getTranslate() {
+        return translate;
+    }
+
+    /**
+     * Get the geometric transformation that must be applied to the geometries.
+     * @param transform 
+     */
+    public void setTranslate(Translate translate) {
+        this.translate = translate;
+        //translate.setParent(this);
     }
 
     /**
@@ -204,7 +225,9 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 
         if (shapes != null) {
             for (Shape shp : shapes) {
-                //Shape shp = mt.getShape(the_geom); // for testing purpose...
+                if (this.getTranslate() != null){
+                    shp = getTranslate().getAffineTransform(sds, fid, uom, mt, (double)mt.getWidth(), (double)mt.getHeight()).createTransformedShape(shp);
+                }
                 if (shp != null) {
                     if (fill != null) {
                         fill.draw(g2, sds, fid, shp, selected, mt);
@@ -234,8 +257,8 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
             s.setUom(this.getUom().toURN());
         }
 
-        if (transform != null) {
-            s.setTransform(transform.getJAXBType());
+        if (getTranslate() != null) {
+            s.setDisplacement(getTranslate().getJAXBType());
         }
 
         if (this.perpendicularOffset != null) {

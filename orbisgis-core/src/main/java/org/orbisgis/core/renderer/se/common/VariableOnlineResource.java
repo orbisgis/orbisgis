@@ -68,93 +68,82 @@ import org.gdms.data.SpatialDataSourceDecorator;
 
 import org.orbisgis.core.map.MapTransform;
 
-import net.opengis.ows._2.OnlineResourceType;
 import net.opengis.se._2_0.core.ExternalGraphicType;
 import net.opengis.se._2_0.core.MarkGraphicType;
 import net.opengis.se._2_0.core.VariableOnlineResourceType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.graphic.ExternalGraphicSource;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphicSource;
 import org.orbisgis.core.renderer.se.graphic.ViewBox;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 
 /**
- * An {@code OnlineResource} is used to keep a reference to an graphic resource
- * that is sotred on disk, or in a remote location, as an image.</p>
- * <p>An online resource is directly dependant on an URL that will be used to
- * retrieve the image we need.
- * @author maxence, alexis
+ *
+ * @author maxence
  * @todo implements MarkGraphicSource
  */
-public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource {
+public class VariableOnlineResource implements ExternalGraphicSource, MarkGraphicSource {
+
+    private StringParameter url;
 
 
-    private URI uri;
     private PlanarImage rawImage;
+
+
     private SVGIcon svgIcon;
+
+
     private Double effectiveWidth;
+
+
     private Double effectiveHeight;
+
+
     private Double svgInitialWidth;
+
+
     private Double svgInitialHeight;
 
+
     /**
-     * Build a new {@code OnlineResource}
+     *
      */
-    public OnlineResource() {
-        uri = null;
+    public VariableOnlineResource() {
+        url = null;
         svgIcon = null;
+        System.out.println ("VAR ONLINE RES: NULL NULL");
     }
 
-    /**
-     * Build a new {@code OnlineResource} with the given String, that is supposed
-     * to be an URL.
-     * @param url
-     * @throws MalformedURLException
-     * If {@code url} can't be used to build an {@code URL} instance.
-     */
-    public OnlineResource(String url) throws URISyntaxException {
-        this.uri = new URI(url);
+
+    public VariableOnlineResource(StringParameter url) throws MalformedURLException {
+        this.url = url;
         svgIcon = null;
+        System.out.println ("VAR ONLINE RES: NEW  " + url);
     }
 
-    /**
-     * Build an {@code OnlineResource} from the given {@code OnlineResourceType}
-     * .
-     * @param onlineResource
-     * @throws MalformedURLException
-     * If the href embedded in {@code onlineResource} can't be used to build an
-     * {@code URL} instance.
-     */
-    public OnlineResource(OnlineResourceType onlineResource) throws URISyntaxException {
-        this.uri = new URI(onlineResource.getHref());
+
+    public VariableOnlineResource(VariableOnlineResourceType onlineResource) throws MalformedURLException, InvalidStyle {
+        System.out.println ("ONLINRE RESOURCE HREF " + onlineResource.getHref());
+        this.url = SeParameterFactory.createStringParameter(onlineResource.getHref());
         svgIcon = null;
+        System.out.println ("VAR ONLINE RES: JAXB " + url);
     }
 
-    /**
-     * Get the {@code URL} contained in this {@code OnlineResource}.
-     * @return
-     * An {@code URL} instance, that points to the location where to find the
-     * resource.
-     */
-    public URI getUri() {
-        return uri;
+
+    public StringParameter getUrl() {
+        return url;
     }
 
-    /**
-     * Set the {@code URL} contained in this {@code OnlineResource}.
-     * @param url
-     * @throws MalformedURLException
-     */
-    public void setUri(String url) throws URISyntaxException {
-        if (url == null || url.isEmpty()) {
-            this.uri = null;
-        } else {
-            this.uri = new URI(url);
-        }
+
+    public void setUrl(StringParameter url) {
+        this.url = null;
     }
 
     //@Override
+
     /**
      * @deprecated
      * @param viewBox
@@ -166,7 +155,9 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
      * @throws IOException
      * @throws ParameterException
      */
-    public RenderedImage getPlanarImage(ViewBox viewBox, SpatialDataSourceDecorator sds, long fid, MapTransform mt, String mimeType)
+    public RenderedImage getPlanarImage(ViewBox viewBox,
+                                        SpatialDataSourceDecorator sds, long fid,
+                                        MapTransform mt, String mimeType)
             throws IOException, ParameterException {
 
         if (mimeType != null && mimeType.equalsIgnoreCase("image/svg+xml")) {
@@ -176,22 +167,15 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
         }
     }
 
-    /**
-     * Get the boundnig box of this {@code OnlineResource} as a {@code
-     * Rectangle2D.Double} instance.
-     * @param viewBox
-     * @param sds
-     * @param fid
-     * @param mt
-     * @param mimeType
-     * @return
-     * @throws ParameterException
-     */
-    public Rectangle2D.Double getJAIBounds(ViewBox viewBox, SpatialDataSourceDecorator sds, long fid, MapTransform mt, String mimeType) throws ParameterException {
+
+    public Rectangle2D.Double getJAIBounds(ViewBox viewBox,
+                                           SpatialDataSourceDecorator sds,
+                                           long fid, MapTransform mt,
+                                           String mimeType) throws ParameterException {
         try {
             if (rawImage == null) {
-                rawImage = JAI.create("url", uri);
-                Logger.getLogger(OnlineResource.class.getName()).log(Level.INFO, "Download ExternalGraphic from: {0}", uri);
+                rawImage = JAI.create("url", url);
+                Logger.getLogger(VariableOnlineResource.class.getName()).log(Level.INFO, "Download ExternalGraphic from: {0}", url);
             }
         } catch (Exception ex) {
             throw new ParameterException(ex);
@@ -226,24 +210,18 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
         return new Rectangle2D.Double(-width / 2, -height / 2, width, height);
     }
 
-    /**
-     *
-     * @param viewBox
-     * @param sds
-     * @param fid
-     * @param mt
-     * @param mimeType
-     * @return
-     * @throws ParameterException
-     */
-    public Rectangle2D.Double getSvgBounds(ViewBox viewBox, SpatialDataSourceDecorator sds,
-            long fid, MapTransform mt, String mimeType) throws ParameterException {
+
+    public Rectangle2D.Double getSvgBounds(ViewBox viewBox,
+                                           SpatialDataSourceDecorator sds,
+                                           long fid, MapTransform mt,
+                                           String mimeType) throws ParameterException {
+        try {
             /*
              * Fetch SVG if not already done
              */
             if (svgIcon == null) {
                 svgIcon = new SVGIcon();
-                svgIcon.setSvgURI(uri);
+                svgIcon.setSvgURI(new URI(url.getValue(sds, fid)));
                 svgIcon.setAntiAlias(true);
 
                 this.svgInitialHeight = (double) svgIcon.getIconHeight();
@@ -276,11 +254,17 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
                 double height = svgInitialHeight;
                 return new Rectangle2D.Double(-width / 2, -height / 2, width, height);
             }
+        } catch (URISyntaxException ex) {
+            throw new ParameterException("Invalid URI", ex);
+        }
     }
 
+
     @Override
-    public Rectangle2D.Double updateCacheAndGetBounds(ViewBox viewBox, SpatialDataSourceDecorator sds,
-                long fid, MapTransform mt, String mimeType) throws ParameterException {
+    public Rectangle2D.Double updateCacheAndGetBounds(ViewBox viewBox,
+                                                      SpatialDataSourceDecorator sds,
+                                                      long fid, MapTransform mt,
+                                                      String mimeType) throws ParameterException {
         effectiveWidth = null;
         effectiveHeight = null;
         if (mimeType != null && mimeType.equalsIgnoreCase("image/svg+xml")) {
@@ -290,12 +274,10 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
         }
     }
 
-    /**
-     * Draw the svg linked to this {@code Onlineresource} in the Graphics2D g2.
-     * @param g2
-     * @param at
-     * @param opacity
+    /*
+     * Draw the svg on g2
      */
+
     public void drawSVG(Graphics2D g2, AffineTransform at, double opacity) {
         AffineTransform fat = new AffineTransform(at);
 
@@ -314,33 +296,27 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
         g2.setTransform(atMedia);
     }
 
-    /**
-     * Draw the image linked to this {@code Onlineresource} in the Graphics2D
-     * g2.
-     * @param g2
-     * @param at
-     * @param mt
-     * @param opacity
-     */
-    public void drawJAI(Graphics2D g2, AffineTransform at, MapTransform mt, double opacity) {
+
+    public void drawJAI(Graphics2D g2, AffineTransform at, MapTransform mt,
+                        double opacity) {
         AffineTransform fat = new AffineTransform(at);
         double width = rawImage.getWidth();
         double height = rawImage.getHeight();
 
         if (effectiveHeight != null && effectiveWidth != null) {
-            double ratioX = effectiveWidth / width;
-            double ratioY = effectiveHeight / height;
+            double ratio_x = effectiveWidth / width;
+            double ratio_y = effectiveHeight / height;
 
             RenderedOp img;
 
-            if (ratioX > 1.0 || ratioY > 1.0) {
+            if (ratio_x > 1.0 || ratio_y > 1.0) {
                 img = JAI.create("scale", rawImage,
-                        (float) ratioX, (float) ratioY,
-                        0.0f, 0.0f,
-                        InterpolationBicubic2.getInstance(InterpolationBicubic2.INTERP_BICUBIC_2),
-                        mt.getRenderingHints());
+                                 (float) ratio_x, (float) ratio_y,
+                                 0.0f, 0.0f,
+                                 InterpolationBicubic2.getInstance(InterpolationBicubic2.INTERP_BICUBIC_2),
+                                 mt.getRenderingHints());
             } else {
-                img = JAI.create("SubsampleAverage", rawImage, ratioX, ratioY, mt.getRenderingHints());
+                img = JAI.create("SubsampleAverage", rawImage, ratio_x, ratio_y, mt.getRenderingHints());
             }
             fat.concatenate(AffineTransform.getTranslateInstance(-img.getWidth() / 2.0, -img.getHeight() / 2.0));
             g2.drawRenderedImage(img, fat);
@@ -350,8 +326,10 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
         }
     }
 
+
     @Override
-    public void draw(Graphics2D g2, AffineTransform at, MapTransform mt, double opacity, String mimeType) {
+    public void draw(Graphics2D g2, AffineTransform at, MapTransform mt,
+                     double opacity, String mimeType) {
         if (mimeType != null && mimeType.equalsIgnoreCase("image/svg+xml")) {
             drawSVG(g2, at, opacity);
         } else {
@@ -359,13 +337,17 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
         }
     }
 
+
     /**
      * @deprecated
      */
-    public RenderedImage getSvgImage(ViewBox viewBox, SpatialDataSourceDecorator sds, long fid, MapTransform mt, String mimeType)
+    public RenderedImage getSvgImage(ViewBox viewBox,
+                                     SpatialDataSourceDecorator sds, long fid,
+                                     MapTransform mt, String mimeType)
             throws IOException, ParameterException {
+        try {
             SVGIcon icon = new SVGIcon();
-            icon.setSvgURI(uri);
+            icon.setSvgURI(new URI(url.getValue(sds, fid)));
             BufferedImage img;
 
             if (viewBox != null && mt != null && viewBox.usable()) {
@@ -398,7 +380,11 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
             }
             icon.paintIcon((Component) null, g2, 0, 0);
             return img;
+        } catch (URISyntaxException ex) {
+            throw new IOException(ex);
+        }
     }
+
 
     /**
      * @deprecated
@@ -411,13 +397,15 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
      * @throws IOException
      * @throws ParameterException
      */
-    public PlanarImage getJAIImage(ViewBox viewBox, SpatialDataSourceDecorator sds, long fid, MapTransform mt, String mimeType)
+    public PlanarImage getJAIImage(ViewBox viewBox,
+                                   SpatialDataSourceDecorator sds, long fid,
+                                   MapTransform mt, String mimeType)
             throws IOException, ParameterException {
 
         try {
             if (rawImage == null) {
-                rawImage = JAI.create("url", uri);
-                Logger.getLogger(OnlineResource.class.getName()).log(Level.INFO, "Download ExternalGraphic from: {0}", uri);
+                rawImage = JAI.create("url", url);
+                Logger.getLogger(VariableOnlineResource.class.getName()).log(Level.INFO, "Download ExternalGraphic from: {0}", url);
             }
         } catch (Exception ex) {
             throw new IOException(ex);
@@ -446,10 +434,10 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
 
                     if (ratio_x > 1.0 || ratio_y > 1.0) {
                         return JAI.create("scale", rawImage,
-                                (float) ratio_x, (float) ratio_y,
-                                0.0f, 0.0f,
-                                InterpolationBicubic2.getInstance(InterpolationBicubic2.INTERP_BICUBIC_2),
-                                mt.getRenderingHints());
+                                          (float) ratio_x, (float) ratio_y,
+                                          0.0f, 0.0f,
+                                          InterpolationBicubic2.getInstance(InterpolationBicubic2.INTERP_BICUBIC_2),
+                                          mt.getRenderingHints());
                     } else {
                         //return JAI.create("SubsampleAverage", pb, mt.getRenderingHints());
                         return JAI.create("SubsampleAverage", img, ratio_x, ratio_y, mt.getRenderingHints());
@@ -467,43 +455,39 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
         }
     }
 
+
     @Override
     public void setJAXBSource(ExternalGraphicType e) {
         VariableOnlineResourceType o = new VariableOnlineResourceType();
 
-        
-        o.setHref(SeParameterFactory.createParameterValueType(uri.toString()));
-
+        o.setHref(url.getJAXBParameterValueType());
         e.setOnlineResource(o);
     }
 
-    /**
-     * Get the {@code Font} linked with this {@code OnlineResource}.
-     * @return
-     * A {@code Font} instance if the url identifies a  valid font, null
-     * otherwise.
-     */
-    public Font getFont() {
+
+    public Font getFont(SpatialDataSourceDecorator sds, Long fid) {
         InputStream iStream = null;
         try {
-            iStream = uri.toURL().openStream();
+            URL u = new URL(this.url.getValue(sds, fid));
+            iStream = u.openStream();
             return Font.createFont(Font.TRUETYPE_FONT, iStream);
         } catch (FontFormatException ex) {
+        } catch (ParameterException ex) {
         } catch (IOException ex) {
         } finally {
-            try {
-                iStream.close();
-            } catch (IOException ex) {
-            }
         }
         return null;
     }
 
-    private Shape getTrueTypeGlyph(ViewBox viewBox, SpatialDataSourceDecorator sds,
-            long fid, Double scale, Double dpi, RealParameter markIndex) throws ParameterException, IOException {
+
+    private Shape getTrueTypeGlyph(ViewBox viewBox,
+                                   SpatialDataSourceDecorator sds, long fid,
+                                   Double scale, Double dpi,
+                                   RealParameter markIndex) throws ParameterException, IOException {
 
         try {
-            InputStream iStream = uri.toURL().openStream();
+            URL u = new URL(this.url.getValue(sds, fid));
+            InputStream iStream = u.openStream();
             Font font = Font.createFont(Font.TRUETYPE_FONT, iStream);
             iStream.close();
 
@@ -533,7 +517,7 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
                 }
 
                 at = AffineTransform.getScaleInstance(dim.getX() / width,
-                        dim.getY() / height);
+                                                      dim.getY() / height);
 
                 fontCtx = new FontRenderContext(at, true, true);
                 tl = new TextLayout(text, font, fontCtx);
@@ -546,13 +530,16 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
             return at.createTransformedShape(glyphOutline);
 
         } catch (FontFormatException ex) {
-            Logger.getLogger(OnlineResource.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(VariableOnlineResource.class.getName()).log(Level.SEVERE, null, ex);
             throw new ParameterException(ex);
         }
     }
 
+
     @Override
-    public Shape getShape(ViewBox viewBox, SpatialDataSourceDecorator sds, long fid, Double scale, Double dpi, RealParameter markIndex, String mimeType) throws ParameterException, IOException {
+    public Shape getShape(ViewBox viewBox, SpatialDataSourceDecorator sds,
+                          long fid, Double scale, Double dpi,
+                          RealParameter markIndex, String mimeType) throws ParameterException, IOException {
 
         if (mimeType != null) {
             if (mimeType.equalsIgnoreCase("application/x-font-ttf")) {
@@ -564,18 +551,21 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
     }
 
     //@Override
+
     public void setJAXBSource(MarkGraphicType m) {
         VariableOnlineResourceType o = new VariableOnlineResourceType();
 
-        o.setHref(SeParameterFactory.createParameterValueType(uri.toString()));
+        o.setHref(url.getJAXBParameterValueType());
 
         m.setOnlineResource(o);
 
     }
 
+
     @Override
     public double getDefaultMaxWidth(SpatialDataSourceDecorator sds, long fid,
-            Double scale, Double dpi, RealParameter markIndex, String mimeType)
+                                     Double scale, Double dpi,
+                                     RealParameter markIndex, String mimeType)
             throws IOException, ParameterException {
 
         if (mimeType != null) {
@@ -588,11 +578,14 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
 
     }
 
-    private double getTrueTypeGlyphMaxSize(SpatialDataSourceDecorator sds, long fid,
-            /*Double scale, Double dpi,*/ RealParameter markIndex)
+
+    private double getTrueTypeGlyphMaxSize(SpatialDataSourceDecorator sds,
+                                           long fid,
+                                           /*Double scale, Double dpi,*/ RealParameter markIndex)
             throws IOException, ParameterException {
         try {
-            InputStream iStream = uri.toURL().openStream();
+            URL u = new URL(url.getValue(sds, fid));
+            InputStream iStream = u.openStream();
             Font font = Font.createFont(Font.TRUETYPE_FONT, iStream);
             iStream.close();
 
@@ -614,8 +607,10 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
             return Math.max(bounds2D.getWidth(), bounds2D.getHeight());
 
         } catch (FontFormatException ex) {
-            Logger.getLogger(OnlineResource.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(VariableOnlineResource.class.getName()).log(Level.SEVERE, null, ex);
             throw new ParameterException(ex);
         }
     }
+
+
 }

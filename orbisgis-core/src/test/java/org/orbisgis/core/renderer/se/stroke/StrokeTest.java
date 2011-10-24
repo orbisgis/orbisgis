@@ -65,8 +65,7 @@ import org.orbisgis.core.ConsoleOutputManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.map.MapTransform;
-import net.opengis.se._2_0.core.FeatureTypeStyleType;
-import org.orbisgis.core.renderer.se.FeatureTypeStyle;
+import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -80,7 +79,7 @@ import org.orbisgis.core.ui.plugins.views.output.OutputManager;
  */
 public class StrokeTest extends TestCase {
 
-    private FeatureTypeStyle fts;
+    private Style fts;
 
     public StrokeTest(String testName) throws IOException {
         super(testName);
@@ -135,21 +134,21 @@ public class StrokeTest extends TestCase {
 
         System.out.println(dj.getColorModel());
 
-        fts = new FeatureTypeStyle(null, "src/test/resources/org/orbisgis/core/renderer/se/strokes.se");
+        fts = new Style(null, "src/test/resources/org/orbisgis/core/renderer/se/strokes.se");
 
         // 1)
-        try {
-			JAXBContext jaxbContext = JAXBContext.newInstance(FeatureTypeStyleType.class);
+        /*try {
+			JAXBContext jaxbContext = JAXBContext.newInstance(Style.class);
 			Marshaller marshaller = jaxbContext.createMarshaller();
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             ByteArrayOutputStream oStream = new ByteArrayOutputStream();
 
-			marshaller.marshal(fts.getJAXBElement(), oStream);
+			//marshaller.marshal(fts.getJAXBElement(), oStream);
 		} catch (Exception ex) {
             Services.getErrorManager().error("Unable to marshall", ex);
             ex.printStackTrace(System.err);
             assertTrue(false);
-		}
+		}*/
 
         PointSymbolizer ps = (PointSymbolizer) fts.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
         GraphicCollection collec = ps.getGraphicCollection();

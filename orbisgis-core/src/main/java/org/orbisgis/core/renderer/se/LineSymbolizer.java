@@ -60,7 +60,6 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
-import org.orbisgis.core.renderer.se.transform.Transform;
 
 /**
  * A {@code LineSymbolizer} is used to style a {@code Stroke} along a linear 
@@ -116,9 +115,9 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
             this.setPerpendicularOffset(SeParameterFactory.createRealParameter(ast.getPerpendicularOffset()));
         }
 
-        if (ast.getTransform() != null) {
-            this.setTransform(new Transform(ast.getTransform()));
-        }
+        /*if (ast.getTranslate() != null) {
+            this.setTranslate(new Translate(ast.getTranslate()));
+        }*/
 
         if (ast.getStroke() != null) {
             this.setStroke(Stroke.createFromJAXBElement(ast.getStroke()));
@@ -201,9 +200,9 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
             s.setUom(this.getUom().toURN());
         }
 
-        if (transform != null) {
-            s.setTransform(transform.getJAXBType());
-        }
+        /*if (translate != null) {
+            s.setTranslate(translate.getJAXBType());
+        }*/
 
         if (this.perpendicularOffset != null) {
             s.setPerpendicularOffset(perpendicularOffset.getJAXBParameterValueType());

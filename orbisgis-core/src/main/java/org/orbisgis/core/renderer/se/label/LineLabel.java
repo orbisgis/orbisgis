@@ -53,7 +53,7 @@ public class LineLabel extends Label {
     }
 
     /**
-     * Build a {@code LineLabel} from a JABElement.
+     * Build a {@code LineLabel} from a JAXBElement.
      * @param l
      * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
      */
@@ -158,7 +158,7 @@ public class LineLabel extends Label {
 
         int way = 1;
 
-        // Do not laid out le label upside-down !
+        // Do not laid out the label upside-down !
         if (ptStart.x > ptStop.x){
             // invert line way
             way = -1;

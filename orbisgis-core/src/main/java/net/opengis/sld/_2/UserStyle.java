@@ -16,10 +16,10 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlType;
 import net.opengis.ows._2.DescriptionType;
-import net.opengis.se._2_0.core.CoverageStyleReferenceType;
-import net.opengis.se._2_0.core.CoverageStyleType;
-import net.opengis.se._2_0.core.FeatureTypeStyleReferenceType;
-import net.opengis.se._2_0.core.FeatureTypeStyleType;
+//import net.opengis.se._2_0.core.CoverageStyleReferenceType;
+//import net.opengis.se._2_0.core.CoverageStyleType;
+//import net.opengis.se._2_0.core.FeatureTypeStyleReferenceType;
+//import net.opengis.se._2_0.core.FeatureTypeStyleType;
 
 
 /**
@@ -66,12 +66,12 @@ public class UserStyle
     protected DescriptionType description;
     @XmlElement(name = "IsDefault")
     protected Boolean isDefault;
-    @XmlElements({
+    /*@XmlElements({
         @XmlElement(name = "FeatureTypeStyle", namespace = "http://www.opengis.net/se/2.0/core", type = FeatureTypeStyleType.class),
         @XmlElement(name = "CoverageStyleReference", namespace = "http://www.opengis.net/se/2.0/core", type = CoverageStyleReferenceType.class),
         @XmlElement(name = "CoverageStyle", namespace = "http://www.opengis.net/se/2.0/core", type = CoverageStyleType.class),
         @XmlElement(name = "FeatureTypeStyleReference", namespace = "http://www.opengis.net/se/2.0/core", type = FeatureTypeStyleReferenceType.class)
-    })
+    })*/
     protected List<Object> featureTypeStyleOrFeatureTypeStyleReferenceOrCoverageStyle;
 
     /**

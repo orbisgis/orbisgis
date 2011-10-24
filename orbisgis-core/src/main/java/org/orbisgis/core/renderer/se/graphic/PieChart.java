@@ -387,12 +387,13 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode,
         }
 
         Rectangle2D bounds = new Rectangle2D.Double(-r, -r, 2 * r, 2 * r);
-        if (transform != null) {
+        /*if (transform != null) {
             AffineTransform at = transform.getGraphicalAffineTransform(false, sds, fid, mt, 2 * r, 2 * r);
             return at.createTransformedShape(bounds).getBounds2D();
         } else {
             return bounds;
-        }
+        }*/
+        return bounds;
     }
 
     @Override

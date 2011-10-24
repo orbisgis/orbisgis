@@ -20,8 +20,8 @@ import org.orbisgis.core.renderer.se.UomNode;
 
 import org.orbisgis.core.renderer.se.ViewBoxNode;
 import org.orbisgis.core.renderer.se.common.Halo;
-import org.orbisgis.core.renderer.se.common.OnlineResource;
 import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.core.renderer.se.common.VariableOnlineResource;
 
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
@@ -96,13 +96,13 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
         if (t.getViewBox() != null) {
             this.setViewBox(new ViewBox(t.getViewBox()));
         }
-        try{
+        //try{
         if (t.getOnlineResource() != null) {
-            this.setSource(new OnlineResource(t.getOnlineResource()));
+            this.setSource(new VariableOnlineResource(t.getOnlineResource()));
         }
-        }catch (URISyntaxException e){
-                throw new InvalidStyle("There's a malformed URI in your style", e);
-        }
+        //}catch (URISyntaxException e){
+        //        throw new InvalidStyle("There's a malformed URI in your style", e);
+        //}
 
         this.mimeType = t.getFormat();
     }
@@ -242,12 +242,14 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
             bounds = new Rectangle2D.Double(px, py, width, height);
         }
 
+        /*
         if (at != null) {
             // take into account AT
             return at.createTransformedShape(bounds).getBounds2D();
         } else {
             return bounds;
-        }
+        }*/
+        return bounds;
     }
 
     @Override

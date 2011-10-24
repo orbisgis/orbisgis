@@ -82,7 +82,7 @@ import org.gdms.data.FilterDataSourceDecorator;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.SemanticException;
-import org.orbisgis.core.renderer.se.FeatureTypeStyle;
+import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
@@ -208,7 +208,7 @@ public abstract class Renderer {
             sds.open();
 
             // Extract into drawSeLayer method !
-            FeatureTypeStyle style = layer.getFeatureTypeStyle();
+            Style style = layer.getStyle();
 
             ArrayList<Symbolizer> symbs = new ArrayList<Symbolizer>();
 

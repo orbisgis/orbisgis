@@ -98,8 +98,8 @@ public class AreaSymbolizerTest extends TestCase {
 
             ILayer layer = new Layer("swiss", sds);
 
-            FeatureTypeStyle style = new FeatureTypeStyle(layer, "/home/maxence/projects/SCAP-c²/SE/choro.se");
-            layer.setFeatureTypeStyle(style);
+            Style style = new Style(layer, "/home/maxence/projects/SCAP-c²/SE/choro.se");
+            layer.Style(style);
 
             Renderer renderer = new ImageRenderer();
 

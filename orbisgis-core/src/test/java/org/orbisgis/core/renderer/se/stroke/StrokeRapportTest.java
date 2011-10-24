@@ -66,12 +66,12 @@ import org.orbisgis.core.ConsoleOutputManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.map.MapTransform;
-import net.opengis.se._2_0.core.FeatureTypeStyleType;
-import org.orbisgis.core.renderer.se.FeatureTypeStyle;
+import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.OnlineResource;
 import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.core.renderer.se.common.VariableOnlineResource;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.ui.plugins.views.output.OutputManager;
@@ -82,7 +82,7 @@ import org.orbisgis.core.ui.plugins.views.output.OutputManager;
  */
 public class StrokeRapportTest extends TestCase {
 
-    private FeatureTypeStyle fts;
+    private Style fts;
 
     public StrokeRapportTest(String testName) throws IOException {
         super(testName);
@@ -112,7 +112,7 @@ public class StrokeRapportTest extends TestCase {
     public void testWKNOnlineExclusivity(){
             MarkGraphic mg = new MarkGraphic();
             mg.setWkn(new StringLiteral("CIRCLE"));
-            mg.setOnlineResource(new OnlineResource());
+            mg.setOnlineResource(new VariableOnlineResource());
             assertNull(mg.getWkn());
             mg.setWkn(new StringLiteral("CIRCLE"));
             assertNull(mg.getOnlineResource());
@@ -131,11 +131,11 @@ public class StrokeRapportTest extends TestCase {
 
         System.out.println(dj.getColorModel());
 
-        fts = new FeatureTypeStyle(null, "src/test/resources/org/orbisgis/core/renderer/se/strokes_rapport.se");
+        fts = new Style(null, "src/test/resources/org/orbisgis/core/renderer/se/strokes_rapport.se");
 
         // 1)
         try {
-			JAXBContext jaxbContext = JAXBContext.newInstance(FeatureTypeStyleType.class);
+			JAXBContext jaxbContext = JAXBContext.newInstance(Style.class);
 			Marshaller marshaller = jaxbContext.createMarshaller();
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             ByteArrayOutputStream oStream = new ByteArrayOutputStream();
