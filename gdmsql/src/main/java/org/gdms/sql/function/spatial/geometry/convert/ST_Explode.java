@@ -91,7 +91,7 @@ public final class ST_Explode extends AbstractTableFunction {
                         if (1 == values.length) {
                                 // if no spatial's field's name is provided, the default (first)
                                 // one is arbitrarily chosen.
-                               spatialFieldIndex = sds.getMetadata().getFieldIndex(values[0].toString());
+                                spatialFieldIndex = sds.getMetadata().getFieldIndex(values[0].toString());
                         } else {
                                 spatialFieldIndex = MetadataUtilities.getSpatialFieldIndex(sds.getMetadata());
                         }
@@ -106,7 +106,7 @@ public final class ST_Explode extends AbstractTableFunction {
                         driver = new DiskBufferDriver(dsf, metadata);
                         int gid = 1;
                         int fieldCount = sds.getMetadata().getFieldCount();
-                        
+
                         for (long i = 0; i < rowCount; i++) {
 
                                 if (i >= 100 && i % 100 == 0) {
@@ -163,18 +163,20 @@ public final class ST_Explode extends AbstractTableFunction {
                 final Metadata metadata = tables[0];
                 // we don't want the resulting Metadata to be constrained !
                 final int fieldCount = metadata.getFieldCount();
-                final Type[] fieldsTypes = new Type[fieldCount];
-                final String[] fieldsNames = new String[fieldCount];
+                final Type[] fieldsTypes = new Type[fieldCount + 1];
+                final String[] fieldsNames = new String[fieldCount + 1];
 
                 for (int fieldId = 0; fieldId < fieldCount; fieldId++) {
                         fieldsNames[fieldId] = metadata.getFieldName(fieldId);
                         final Type tmp = metadata.getFieldType(fieldId);
                         fieldsTypes[fieldId] = TypeFactory.createType(tmp.getTypeCode());
                 }
+                fieldsNames[fieldCount] = "explod_id";
+                fieldsTypes[fieldCount] = TypeFactory.createType(Type.INT);
                 return new DefaultMetadata(fieldsTypes, fieldsNames);
         }
 
-       @Override
+        @Override
         public FunctionSignature[] getFunctionSignatures() {
                 return new FunctionSignature[]{
                                 new TableFunctionSignature(TableDefinition.GEOMETRY,
@@ -191,5 +193,4 @@ public final class ST_Explode extends AbstractTableFunction {
                         driver.stop();
                 }
         }
-
 }
