@@ -369,6 +369,7 @@ public class ShapeHelper {
 
     /**
      * Split a linear feature in the specified number of part, which have all the same length
+     * 
      * @param line  the line to split
      * @param nbPart the number of part to create
      * @return list of equal-length segment
@@ -1519,6 +1520,12 @@ public class ShapeHelper {
         return new Point2D.Double(x, y);
     }
 
+    /**
+     * REF :http://www.springerlink.com/content/nx71u48201887310/fulltext.pdf 
+     * @param shp
+     * @param offset
+     * @return 
+     */
     public static List<Shape> perpendicularOffset(Shape shp, double offset) {
 
         return contourParallelShape(shp, offset);
