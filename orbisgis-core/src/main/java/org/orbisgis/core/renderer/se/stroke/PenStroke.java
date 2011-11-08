@@ -97,31 +97,6 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
     private RealParameter dashOffset;
     private Uom uom;
 
-    @Override
-    public Double getNaturalLength(SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) {
-
-        if (dashArray != null) {
-            // A dashed penstroke has a length
-            try {
-                double sum = 0.0;
-                String sDash = this.dashArray.getValue(sds, fid);
-                String[] splitedDash = sDash.split(" ");
-                for (int i = 0; i < splitedDash.length; i++) {
-                    sum += Uom.toPixel(Double.parseDouble(splitedDash[i]), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-                }
-
-                if (splitedDash.length % 2 == 1) {
-                    // # pattern item is odd -> 2* to close the pattern
-                    sum *= 2;
-                }
-                return sum;
-            } catch (ParameterException ex) {
-                return Double.POSITIVE_INFINITY;
-            }
-        } else {
-            return Double.POSITIVE_INFINITY;
-        }
-    }
 
     /**
      * There are three ways to draw the end of a line : butt, round and square.
@@ -232,6 +207,43 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
         this(s.getValue());
     }
 
+
+    @Override
+    public Double getNaturalLength(SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) {
+
+        if (dashArray != null) {
+            // A dashed penstroke has a length
+            // This is requiered to compute hatches tile but will break the compound stroke natural length logic 
+            // for infinite PenStroke element ! For this reason, compound stroke use getNaturalLengthForCompound
+            try {
+                double sum = 0.0;
+                String sDash = this.dashArray.getValue(sds, fid);
+                String[] splitedDash = sDash.split(" ");
+                for (int i = 0; i < splitedDash.length; i++) {
+                    sum += Uom.toPixel(Double.parseDouble(splitedDash[i]), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                }
+
+                if (splitedDash.length % 2 == 1) {
+                    // # pattern item is odd -> 2* to close the pattern
+                    sum *= 2;
+                }
+                return sum;
+            } catch (ParameterException ex) {
+                return Double.POSITIVE_INFINITY;
+            }
+        } else {
+            return Double.POSITIVE_INFINITY;
+        }
+    }
+
+    @Override
+    public Double getNaturalLengthForCompound(SpatialDataSourceDecorator sds, long fid,
+            Shape shp, MapTransform mt) throws ParameterException, IOException {
+        return Double.POSITIVE_INFINITY;
+    }
+
+
+    
     @Override
     public String dependsOnFeature() {
         String result = "";
@@ -475,11 +487,12 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
             sum += dash;
         }
 
+        // number of element is odd => x2
         if ((dashes.length % 2) == 1) {
             sum *= 2;
         }
 
-        double nbPattern = (int) ((lineLength / sum) + 0.5);
+        double nbPattern = (int) ((lineLength / sum));
 
         if (nbPattern > 0) {
             double f = lineLength / (sum * nbPattern);

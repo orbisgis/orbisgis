@@ -61,6 +61,8 @@ public abstract class Stroke implements SymbolizerNode {
 
         if (s.getExtension() != null) {
             for (ExtensionParameterType param : s.getExtension().getExtensionParameter()) {
+
+                /* Only to handle old styles... */
                 if (param.getName().equalsIgnoreCase("linearRapport")) {
                     linearRapport = param.getContent().equalsIgnoreCase("on");
                 } else if (param.getName().equalsIgnoreCase("offsetRapport")) {
@@ -69,6 +71,9 @@ public abstract class Stroke implements SymbolizerNode {
             }
         }
 
+        if (s.isLinearRapport() != null){
+            linearRapport = s.isLinearRapport();
+        }
     }
 
     /**
@@ -175,7 +180,9 @@ public abstract class Stroke implements SymbolizerNode {
         ObjectFactory of = new ObjectFactory();
         ExtensionType exts = of.createExtensionType();
 
-        ExtensionParameterType linRap = of.createExtensionParameterType();
+        s.setLinearRapport(this.isLengthRapport());
+        
+        /*ExtensionParameterType linRap = of.createExtensionParameterType();
         linRap.setName("linearRapport");
         if (this.linearRapport){
             linRap.setContent("on");
@@ -183,6 +190,7 @@ public abstract class Stroke implements SymbolizerNode {
             linRap.setContent("off");
         }
         exts.getExtensionParameter().add(linRap);
+         */
 
         ExtensionParameterType offRap = of.createExtensionParameterType();
         offRap.setName("offsetRapport");
@@ -203,6 +211,27 @@ public abstract class Stroke implements SymbolizerNode {
     public abstract Double getNaturalLength(SpatialDataSourceDecorator sds, long fid,
             Shape shp, MapTransform mt) throws ParameterException, IOException;
 
+    /**
+     * same as getNaturalLength, but in some case (i.e. PenStroke) the natural length
+     * to use in not the same as returned by the latter : Especially for PenStroke : 
+     * To compute a tile for hatching, we need to know the length of the pen stroke
+     * (i.e. only when the stroke is dashed...), but to embed such a stroke in a compound, 
+     * the natural length shall be +Inf
+     * 
+     * @param sds
+     * @param fid
+     * @param shp
+     * @param mt
+     * @return
+     * @throws ParameterException
+     * @throws IOException 
+     */
+    public Double getNaturalLengthForCompound(SpatialDataSourceDecorator sds, long fid,
+            Shape shp, MapTransform mt) throws ParameterException, IOException {
+        return getNaturalLength(sds, fid, shp, mt);
+    }
+
+    
     /**
      * Get a String representation of the list of features this {@code Stroke}
      * depends on.

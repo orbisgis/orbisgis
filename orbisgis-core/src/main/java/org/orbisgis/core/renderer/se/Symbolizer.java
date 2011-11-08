@@ -41,7 +41,7 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
     public static final String VERSION = "2.0.0";
     protected String name;
     protected String desc;
-    protected GeometryAttribute the_geom;
+    //protected GeometryAttribute the_geom;
     private SymbolizerNode parent;
     protected int level;
 
@@ -158,15 +158,15 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
      * A {@link GeometryAttribute} that can be used to retrieve the geometry 
      * values in the data.
      */
-    public GeometryAttribute getGeometry() {
+    /*public GeometryAttribute getGeometry() {
         return the_geom;
-    }
+    }*/
 
     /**
      * Set the field where to retrieve the geometry in the associated data.
      * @param theGeom 
      */
-    public void setGeometry(GeometryAttribute theGeom) {
+/*    public void setGeometry(GeometryAttribute theGeom) {
         this.the_geom = theGeom;
     }
 
@@ -178,14 +178,14 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
      * @throws DriverException
      * @throws ParameterException 
      */
-    public Geometry getTheGeom(SpatialDataSourceDecorator sds, long fid) throws DriverException, ParameterException {
+/*    public Geometry getTheGeom(SpatialDataSourceDecorator sds, long fid) throws DriverException, ParameterException {
         if (the_geom != null) {
             return the_geom.getTheGeom(sds, fid);
         } else {
             int fieldId = ShapeHelper.getGeometryFieldId(sds);
             return sds.getFieldValue(fid, fieldId).getAsGeometry();
         }
-    }
+    }*/
 
     @Override
     public SymbolizerNode getParent() {

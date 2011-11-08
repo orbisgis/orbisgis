@@ -214,6 +214,8 @@ public final class Style implements SymbolizerNode {
             ftst.setName(this.name);
         }
 
+        ftst.setVersion("2.0.0"); // TODO 
+
         List<RuleType> ruleTypes = ftst.getRule();
         for (Rule r : rules) {
             ruleTypes.add(r.getJAXBType());

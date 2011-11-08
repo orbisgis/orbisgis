@@ -226,6 +226,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
             offset = 0.0;
         } else {
             shapes = new ArrayList<Shape>();
+            // TODO : Extract holes as separate shape !
             shapes.add(shape);
         }
 

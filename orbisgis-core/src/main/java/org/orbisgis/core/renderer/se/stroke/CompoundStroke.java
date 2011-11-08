@@ -286,7 +286,7 @@ public final class CompoundStroke extends Stroke implements UomNode {
                         lengths[i] = Uom.toPixel(sElem.getLength().getValue(sds, fid),
                                 getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
                     } else {
-                        lengths[i] = sElem.getStroke().getNaturalLength(sds, fid, shp, mt);
+                        lengths[i] = sElem.getStroke().getNaturalLengthForCompound(sds, fid, shp, mt);
                     }
 
                     if (sElem.getPreGap() != null) {

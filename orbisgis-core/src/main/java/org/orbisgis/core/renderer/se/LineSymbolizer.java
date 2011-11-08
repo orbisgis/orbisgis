@@ -56,6 +56,7 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
@@ -104,7 +105,7 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
 
 
         if (ast.getGeometry() != null) {
-            // TODO
+            this.setGeometry(new GeometryAttribute(ast.getGeometry()));
         }
 
         if (ast.getUom() != null) {
@@ -195,6 +196,9 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
 
         this.setJAXBProperty(s);
 
+        if (this.getGeometry() != null){
+            s.setGeometry(getGeometry().getJAXBGeometryType());
+        }
 
         if (this.getUom() != null) {
             s.setUom(this.getUom().toURN());

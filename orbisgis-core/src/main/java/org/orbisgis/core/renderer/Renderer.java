@@ -99,12 +99,19 @@ import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 public abstract class Renderer {
 
     static final double EXTRA_EXTENT_FACTOR = 0.01;
+
+
     static final int ONE_HUNDRED_I = 100;
+
+
     static final int BATCH_SIZE = 1000;
 
+
     static final int EXECP_POS = 20;
-    
+
+
     private static OutputManager logger = Services.getOutputManager();
+
 
     /**
      * This method shall returns a graphics2D for each symbolizers in the list.
@@ -114,11 +121,15 @@ public abstract class Renderer {
      */
     //public abstract HashMap<Symbolizer, Graphics2D> getGraphics2D(ArrayList<Symbolizer> symbs,
     //        Graphics2D g2, MapTransform mt);
-    protected abstract void initGraphics2D(List<Symbolizer> symbs, Graphics2D g2, MapTransform mt);
+    protected abstract void initGraphics2D(List<Symbolizer> symbs, Graphics2D g2,
+                                           MapTransform mt);
+
 
     protected abstract Graphics2D getGraphics2D(Symbolizer s);
 
+
     protected abstract void releaseGraphics2D(Graphics2D g2);
+
 
     /**
      * Is called once the layer has been rendered
@@ -126,11 +137,13 @@ public abstract class Renderer {
      */
     protected abstract void disposeLayer(Graphics2D g2);
 
+
     /**
      * Called before each feature
      * @param name the name of the feature
      */
     protected abstract void beginFeature(long id, SpatialDataSourceDecorator sds);
+
 
     /**
      * Called after each feature
@@ -138,17 +151,20 @@ public abstract class Renderer {
      */
     protected abstract void endFeature(long id, SpatialDataSourceDecorator sds);
 
+
     /**
      * Called before each layer
      * @param name the name of the layer
      */
     protected abstract void beginLayer(String name);
 
+
     /**
      * Called after each layer
      * @param name the name of the layer
      */
     protected abstract void endLayer(String name);
+
 
     /**
      * Create a view which correspond to feature in MapContext adjusted extend
@@ -159,8 +175,8 @@ public abstract class Renderer {
      * @throws DriverException
      */
     public FilterDataSourceDecorator featureInExtent(MapTransform mt,
-            SpatialDataSourceDecorator sds,
-            IProgressMonitor pm) throws DriverException {
+                                                     SpatialDataSourceDecorator sds,
+                                                     IProgressMonitor pm) throws DriverException {
         Envelope extent = mt.getAdjustedExtent();
 
         double gap = mt.getScaleDenominator() * EXTRA_EXTENT_FACTOR;
@@ -173,6 +189,7 @@ public abstract class Renderer {
                 + (extent.getMinX() - gap) + " " + (extent.getMinY() - gap) + "))'), "
                 + sds.getSpatialFieldName() + ")");
     }
+
 
     /**
      * Draws the content of the Vector Layer
@@ -192,7 +209,7 @@ public abstract class Renderer {
      * @return the number of rendered objects
      */
     public int drawVector(Graphics2D g2, MapTransform mt, ILayer layer,
-            IProgressMonitor pm, RenderContext perm) throws DriverException {
+                          IProgressMonitor pm, RenderContext perm) throws DriverException {
 
         logger.println("Current DPI is " + mt.getDpi());
         logger.println("Current SCALE is 1: " + mt.getScaleDenominator());
@@ -347,11 +364,17 @@ public abstract class Renderer {
                             originalIndex = featureInExtent.getOriginalIndex(fds.getOriginalIndex(fid));
                         }
 
-                        int fieldID = ShapeHelper.getGeometryFieldId(sds);
                         Geometry theGeom = null;
-                        if (fieldID >= 0) {
-                            theGeom = sds.getGeometry(originalIndex);
-                            //System.out.println ("TheGeom: " + the_geom);
+
+                        // If there is only one geometry, it is fetched now, otherwise, it up to symbolizers
+                        // to retrieve the correct geometry (through the Geometry attribute)
+                        try {
+                            int fieldID = ShapeHelper.getGeometryFieldId(sds);
+                            if (fieldID >= 0) {
+                                theGeom = sds.getGeometry(originalIndex);
+                                //System.out.println ("TheGeom: " + the_geom);
+                            }
+                        } catch (ParameterException ex){
                         }
 
                         boolean emphasis = selected.contains((int) originalIndex);
@@ -361,6 +384,7 @@ public abstract class Renderer {
 
                         for (Symbolizer s : r.getCompositeSymbolizer().getSymbolizerList()) {
                             sTimeFull -= System.currentTimeMillis();
+
 
                             Graphics2D g2S;
                             //if (s instanceof TextSymbolizer) {
@@ -379,7 +403,7 @@ public abstract class Renderer {
                         }
                         endFeature(originalIndex, sds);
 
-                        pm.progressTo((int) (ONE_HUNDRED_I * (long)(++layerCount) / (long)total));
+                        pm.progressTo((int) (ONE_HUNDRED_I * (long) (++layerCount) / (long) total));
                     }
                     long tf2 = System.currentTimeMillis();
                     logger.println("  -> Rule done in  " + (tf2 - tf1) + "[ms]   featInit" + initFeats + "[ms]");
@@ -394,7 +418,7 @@ public abstract class Renderer {
                 logger.println("Full Symb time:      " + sTimeFull + " [ms]");
                 disposeLayer(g2);
 
-                for (FilterDataSourceDecorator fds : rulesDs.values()){
+                for (FilterDataSourceDecorator fds : rulesDs.values()) {
                     if (fds.isOpen() && !fds.equals(featureInExtent)) {
                         fds.close();
                     }
@@ -409,15 +433,15 @@ public abstract class Renderer {
                 logger.println("Total Rendering Time:" + (tV5 - tV1) + "[ms]");
             }
 
-        } catch (DriverLoadException ex){
+        } catch (DriverLoadException ex) {
             printEx(ex, layer, g2);
-        } catch (DataSourceCreationException ex){
+        } catch (DataSourceCreationException ex) {
             printEx(ex, layer, g2);
-        } catch (DriverException ex){
+        } catch (DriverException ex) {
             printEx(ex, layer, g2);
-        } catch (ParseException ex){
+        } catch (ParseException ex) {
             printEx(ex, layer, g2);
-        } catch (SemanticException ex){
+        } catch (SemanticException ex) {
             printEx(ex, layer, g2);
         } catch (ParameterException ex) {
             printEx(ex, layer, g2);
@@ -432,21 +456,24 @@ public abstract class Renderer {
         return layerCount;
     }
 
-    private static void printEx(Exception ex, ILayer layer, Graphics2D g2){
-            java.util.logging.Logger.getLogger("Could not draw " + layer.getName()).log(Level.SEVERE, "Error while drawing " + layer.getName(), ex);
-            ex.printStackTrace(System.err);
-            g2.setColor(Color.red);
-            g2.drawString(ex.toString(), EXECP_POS, EXECP_POS);
+
+    private static void printEx(Exception ex, ILayer layer, Graphics2D g2) {
+        java.util.logging.Logger.getLogger("Could not draw " + layer.getName()).log(Level.SEVERE, "Error while drawing " + layer.getName(), ex);
+        ex.printStackTrace(System.err);
+        g2.setColor(Color.red);
+        g2.drawString(ex.toString(), EXECP_POS, EXECP_POS);
     }
 
+
     public void draw(Graphics2D g2dMap, int width, int height,
-            Envelope extent, ILayer layer, IProgressMonitor pm) {
+                     Envelope extent, ILayer layer, IProgressMonitor pm) {
         MapTransform mt = new MapTransform();
         mt.resizeImage(width, height);
         mt.setExtent(extent);
 
         this.draw(mt, g2dMap, width, height, layer, pm);
     }
+
 
     /**
      * Draws the content of the layer in the specified graphics
@@ -465,13 +492,14 @@ public abstract class Renderer {
      *            Progress monitor to report the status of the drawing
      */
     public void draw(MapTransform mt,
-            ILayer layer, IProgressMonitor pm) {
+                     ILayer layer, IProgressMonitor pm) {
 
         BufferedImage image = mt.getImage();
         Graphics2D g2 = image.createGraphics();
 
         this.draw(mt, g2, image.getWidth(), image.getHeight(), layer, pm);
     }
+
 
     /**
      * Draws the content of the layer in the specified graphics
@@ -490,7 +518,7 @@ public abstract class Renderer {
      *            Progress monitor to report the status of the drawing
      */
     public void draw(MapTransform mt, Graphics2D g2, int width, int height,
-            ILayer lay, IProgressMonitor progressMonitor) {
+                     ILayer lay, IProgressMonitor progressMonitor) {
 
         IProgressMonitor pm;
         if (progressMonitor == null) {
@@ -585,13 +613,15 @@ public abstract class Renderer {
 
     }
 
+
     private boolean sameServer(ILayer layer, ILayer layer2) {
         return layer.getWMSConnection().getClient().getHost().equals(
                 layer2.getWMSConnection().getClient().getHost());
     }
 
+
     private void drawWMS(Graphics2D g2, int width, int height, Envelope extent,
-            WMSConnection connection) {
+                         WMSConnection connection) {
         WMSStatus status = connection.getStatus();
         status.setWidth(width);
         status.setHeight(height);
@@ -613,6 +643,7 @@ public abstract class Renderer {
         }
     }
 
+
     /**
      * Draws the content of the layer in the specified image.
      *
@@ -626,22 +657,27 @@ public abstract class Renderer {
      *            Progress monitor to report the status of the drawing
      */
     public void draw(BufferedImage img, Envelope extent, ILayer layer,
-            IProgressMonitor pm) {
+                     IProgressMonitor pm) {
         MapTransform mt = new MapTransform();
         mt.setExtent(extent);
         mt.setImage(img);
         draw(mt, layer, pm);
     }
 
+
     public void draw(BufferedImage img, Envelope extent, ILayer layer) {
         draw(img, extent, layer, new NullProgressMonitor());
     }
 
+
     private static class DefaultRendererPermission implements RenderContext {
 
         private Quadtree quadtree;
+
+
         private Envelope drawExtent;
         //private Area extent;
+
 
         public DefaultRendererPermission(Envelope drawExtent) {
             this.drawExtent = drawExtent;
@@ -649,10 +685,12 @@ public abstract class Renderer {
             //this.extent = new Area(new Rectangle2D.Double(drawExtent.getMinX(), drawExtent.getMinY(), drawExtent.getWidth(), drawExtent.getHeight()));
         }
 
+
         @Override
         public void addUsedArea(Envelope area) {
             quadtree.insert(area, area);
         }
+
 
         @Override
         public boolean canDraw(Envelope area) {
@@ -665,6 +703,7 @@ public abstract class Renderer {
 
             return true;
         }
+
 
         @Override
         public Geometry getValidGeometry(Geometry geometry, double distance) {
@@ -683,7 +722,10 @@ public abstract class Renderer {
                 return theGeom;
             }
         }
+
+
     }
+
 
     /**
      * Method to change bands order only on the BufferedImage.
@@ -709,7 +751,7 @@ public abstract class Renderer {
             components[2] = getComponent(bds.charAt(2), red, green, blue);
 
             directColorModel = new DirectColorModel(32, components[0],
-                    components[1], components[2], alpha);
+                                                    components[1], components[2], alpha);
             ColorProcessor colorProcessor = new ColorProcessor(bufferedImage);
             colorProcessor.setColorModel(directColorModel);
 
@@ -717,6 +759,7 @@ public abstract class Renderer {
         }
         return bufferedImage;
     }
+
 
     /**
      * Gets the component specified by the char between the int components
@@ -740,4 +783,6 @@ public abstract class Renderer {
                     I18N.getString("orbisgis.org.orbisgis.renderer.cannotCreatRGBCodes")); //$NON-NLS-1$
         }
     }
+
+
 }

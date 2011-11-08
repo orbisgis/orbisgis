@@ -58,9 +58,10 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
+import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.transform.Translate;
+import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
 
 /**
  * This class contains the common elements shared by <code>PointSymbolizer</code>,<code>LineSymbolizer</code>
@@ -75,6 +76,7 @@ import org.orbisgis.core.renderer.se.transform.Translate;
 public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 
     protected Uom uom;
+    private GeometryAttribute theGeom;
 
     protected VectorSymbolizer() {
     }
@@ -83,6 +85,38 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
         super(st);
     }
 
+
+    public GeometryAttribute getGeometry() {
+        return theGeom;
+    }
+
+
+    public void setGeometry(GeometryAttribute theGeom) {
+        this.theGeom = theGeom;
+    }
+
+    public Geometry getTheGeom(SpatialDataSourceDecorator sds, Long fid) throws ParameterException, DriverException{
+        System.out.println ("GetTheGeom !");
+        if (theGeom != null) {
+            System.out.println (" -> From Attribute => " + theGeom.getColumnName());
+            return theGeom.getTheGeom(sds, fid);
+        } else {
+            System.out.println (" -> get default !");
+            // TODO : throw errer if there is more than one geometry field !
+            int fieldId = ShapeHelper.getGeometryFieldId(sds);
+            return sds.getFieldValue(fid, fieldId).getAsGeometry();
+        }
+    }
+
+    public Geometry getGeometry(SpatialDataSourceDecorator sds, Long fid, Geometry theGeom) throws ParameterException, DriverException{
+        if (theGeom == null){
+            return this.getTheGeom(sds, fid);
+        } else {
+            return theGeom;
+        }
+    }
+
+    
     /*
     @Override
     public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
@@ -101,12 +135,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
     public List<Shape> getShapes(SpatialDataSourceDecorator sds, long fid,
             MapTransform mt, Geometry theGeom) throws ParameterException, IOException, DriverException {
 
-        Geometry geom;
-        if (theGeom == null) {
-            geom = this.getTheGeom(sds, fid); // geom + function
-        } else {
-            geom = theGeom;
-        }
+        Geometry geom = getGeometry(sds, fid, theGeom);
 
         //geom = ShapeHelper.clipToExtent(geom, mt.getAdjustedExtent());
 
@@ -147,12 +176,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
     public List<Shape> getLines(SpatialDataSourceDecorator sds, long fid,
             MapTransform mt, Geometry the_geom) throws ParameterException, IOException, DriverException {
 
-        Geometry geom;
-        if (the_geom == null) {
-            geom = this.getTheGeom(sds, fid); // geom + function
-        } else {
-            geom = the_geom;
-        }
+        Geometry geom = getGeometry(sds, fid, the_geom);
 
         //geom = ShapeHelper.clipToExtent(geom, mt.getAdjustedExtent());
 
@@ -224,14 +248,8 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
      * @throws DriverException
      */
     public Point2D getPointShape(SpatialDataSourceDecorator sds, long fid, MapTransform mt, Geometry theGeom) throws ParameterException, IOException, DriverException {
-        Geometry geom;
 
-        if (theGeom == null) {
-            geom = this.getTheGeom(sds, fid); // geom + function
-        } else {
-            geom = theGeom;
-        }
-
+        Geometry geom = getGeometry(sds, fid, theGeom);
         //geom = ShapeHelper.clipToExtent(geom, mt.getAdjustedExtent());
 
 
@@ -262,14 +280,8 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
      * @throws DriverException
      */
     public Point2D getFirstPointShape(SpatialDataSourceDecorator sds, long fid, MapTransform mt, Geometry theGeom) throws ParameterException, IOException, DriverException {
-        Geometry geom;
 
-        if (theGeom == null) {
-            geom = this.getTheGeom(sds, fid); // geom + function
-        } else {
-            geom = theGeom;
-        }
-
+        Geometry geom = getGeometry(sds, fid, theGeom);
         //geom = ShapeHelper.clipToExtent(geom, mt.getAdjustedExtent());
 
 
@@ -295,13 +307,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
     public List<Point2D> getPoints(SpatialDataSourceDecorator sds, long fid,
             MapTransform mt, Geometry theGeom) throws ParameterException, IOException, DriverException {
 
-        Geometry geom;
-        if (theGeom == null) {
-            geom = this.getTheGeom(sds, fid); // geom + function
-        } else {
-            geom = theGeom;
-        }
-
+        Geometry geom = getGeometry(sds, fid, theGeom);
         //geom = ShapeHelper.clipToExtent(geom, mt.getAdjustedExtent());
 
         ArrayList<Point2D> points = new ArrayList<Point2D>();

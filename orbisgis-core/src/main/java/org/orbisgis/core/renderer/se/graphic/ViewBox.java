@@ -123,7 +123,8 @@ public final class ViewBox implements SymbolizerNode {
          * @return 
          */
         public RealParameter getWidth() {
-                return x == null ? y : x;
+            return x;
+                //return x == null ? y : x;
         }
 
         /**
@@ -142,7 +143,8 @@ public final class ViewBox implements SymbolizerNode {
          * @return 
          */
         public RealParameter getHeight() {
-                return y == null ? x : y;
+            return y;
+                //return y == null ? x : y;
         }
 
         @Override

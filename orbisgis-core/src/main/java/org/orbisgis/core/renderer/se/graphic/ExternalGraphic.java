@@ -60,7 +60,7 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
     private RealParameter opacity;
     private Halo halo;
     private Transform transform;
-    private PlanarImage graphic;
+    //private PlanarImage graphic;
     private Uom uom;
     private String mimeType;
 
@@ -196,7 +196,7 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
 
     @Override
     public void updateGraphic() {
-        graphic = null;
+        //graphic = null;
         /*
         try {
         if (source != null) {
@@ -273,13 +273,13 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
 
         // reserve the place for halo
         if (halo != null) {
-            double r = halo.getHaloRadius(sds, fid, mt);
+            /*double r = halo.getHaloRadius(sds, fid, mt);
             width += 2 * r;
             height += 2 * r;
             px -= r;
             py -= r;
 
-            bounds = new Rectangle2D.Double(px, py, width, height);
+            bounds = new Rectangle2D.Double(px, py, width, height);*/
 
             // Draw it
             halo.draw(g2, sds, fid, selected, at.createTransformedShape(bounds), mt, selected);

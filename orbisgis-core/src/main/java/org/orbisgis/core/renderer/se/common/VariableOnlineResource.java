@@ -139,7 +139,7 @@ public class VariableOnlineResource implements ExternalGraphicSource, MarkGraphi
 
 
     public void setUrl(StringParameter url) {
-        this.url = null;
+        this.url = url;
     }
 
     //@Override
@@ -174,7 +174,8 @@ public class VariableOnlineResource implements ExternalGraphicSource, MarkGraphi
                                            String mimeType) throws ParameterException {
         try {
             if (rawImage == null) {
-                rawImage = JAI.create("url", url);
+                URL link = new URL(url.getValue(sds, fid));
+                rawImage = JAI.create("url", link);
                 Logger.getLogger(VariableOnlineResource.class.getName()).log(Level.INFO, "Download ExternalGraphic from: {0}", url);
             }
         } catch (Exception ex) {

@@ -60,7 +60,7 @@ import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.transform.Transform;
+import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
 
 /**
  * {@code PointSymbolizer} are used to draw a graphic at a point. As a symbolizer, 
@@ -115,9 +115,8 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
         PointSymbolizerType pst = st.getValue();
 
         if (pst.getGeometry() != null) {
-            // TODO load GeometryFunction !
+            this.setGeometry(new GeometryAttribute(pst.getGeometry()));
         }
-
 
         onVertex = false;
         if (pst.getExtension() != null) {
@@ -190,6 +189,11 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
         PointSymbolizerType s = of.createPointSymbolizerType();
 
         this.setJAXBProperty(s);
+
+
+        if (this.getGeometry() != null){
+            s.setGeometry(getGeometry().getJAXBGeometryType());
+        }
 
 
         if (this.uom != null) {

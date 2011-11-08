@@ -38,7 +38,10 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 public final class PointLabel extends Label {
 
     private RealParameter rotation;
+
+
     private ExclusionZone exclusionZone;
+
 
     /**
      * Creates a new {@code PointLabel} with default values as detailed in 
@@ -52,6 +55,7 @@ public final class PointLabel extends Label {
         setvAlign(VerticalAlignment.TOP);
         sethAlign(HorizontalAlignment.RIGHT);
     }
+
 
     /**
      * Creates a new {@code PointLabel} from a {@code PointLabelType} instance.
@@ -68,6 +72,7 @@ public final class PointLabel extends Label {
         }
     }
 
+
     /**
      * Creates a new {@code PointLabel} from a {@code JAXBElement} instance.
      * @param plt
@@ -76,6 +81,7 @@ public final class PointLabel extends Label {
     PointLabel(JAXBElement<PointLabelType> pl) throws InvalidStyle {
         this(pl.getValue());
     }
+
 
     /**
      * Get the exclusion zone defined for this {@code PointLabel}. In this zone, 
@@ -87,14 +93,18 @@ public final class PointLabel extends Label {
         return exclusionZone;
     }
 
+
     /**
      * Set the exclusion zone defined for this {@code PointLabel}.
      * @param exclusionZone 
      */
     public void setExclusionZone(ExclusionZone exclusionZone) {
         this.exclusionZone = exclusionZone;
-        exclusionZone.setParent(this);
+        if (exclusionZone != null) {
+            exclusionZone.setParent(this);
+        }
     }
+
 
     /**
      * Get the rotation that must be applied to this {@code PointLabel} before rendering.
@@ -104,6 +114,7 @@ public final class PointLabel extends Label {
     public RealParameter getRotation() {
         return rotation;
     }
+
 
     /**
      * Set the rotation that must be applied to this {@code PointLabel} before rendering.
@@ -116,9 +127,11 @@ public final class PointLabel extends Label {
         }
     }
 
+
     @Override
     public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
-            Shape shp, boolean selected, MapTransform mt, RenderContext perm)
+                     Shape shp, boolean selected, MapTransform mt,
+                     RenderContext perm)
             throws ParameterException, IOException {
         double x;
         double y;
@@ -151,11 +164,13 @@ public final class PointLabel extends Label {
         label.draw(g2, sds, fid, selected, mt, at, perm);
     }
 
+
     @Override
     public JAXBElement<PointLabelType> getJAXBElement() {
         ObjectFactory of = new ObjectFactory();
         return of.createPointLabel(getJAXBType());
     }
+
 
     /**
      * Get a JAXB representation of this element.
@@ -177,6 +192,7 @@ public final class PointLabel extends Label {
         return pl;
     }
 
+
     @Override
     public String dependsOnFeature() {
 
@@ -193,4 +209,6 @@ public final class PointLabel extends Label {
 
         return result.trim();
     }
+
+
 }

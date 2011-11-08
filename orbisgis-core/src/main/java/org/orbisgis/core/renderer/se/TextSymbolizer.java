@@ -35,13 +35,13 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-
 package org.orbisgis.core.renderer.se;
 
 import com.vividsolutions.jts.geom.Geometry;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
@@ -54,14 +54,15 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
+import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.label.Label;
 import org.orbisgis.core.renderer.se.label.PointLabel;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
-import org.orbisgis.core.renderer.se.transform.Transform;
 
 /**
  * {@code TextSymbolizer} instances are used to style text labels. In addition to
@@ -74,129 +75,152 @@ import org.orbisgis.core.renderer.se.transform.Transform;
  */
 public final class TextSymbolizer extends VectorSymbolizer {
 
-	private RealParameter perpendicularOffset;
-	private Label label;
-
-        /**
-         * Build a new {@code TextSymbolizer} using the informations contained 
-         * in the {@code JAXBElement} given in argument.
-         * @param st
-         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
-         */
-	public TextSymbolizer(JAXBElement<TextSymbolizerType> st) throws InvalidStyle {
-		super(st);
-		TextSymbolizerType tst = st.getValue();
+    private RealParameter perpendicularOffset;
 
 
-		if (tst.getGeometry() != null) {
-			// TODO
-		}
-
-		if (tst.getUom() != null) {
-			this.uom = Uom.fromOgcURN(tst.getUom());
-            System.out.println ("Text Symb uom : " + this.getUom());
-		}
-
-		if (tst.getPerpendicularOffset() != null) {
-			this.setPerpendicularOffset(SeParameterFactory.createRealParameter(tst.getPerpendicularOffset()));
-		}
-
-		if (tst.getLabel() != null) {
-			this.setLabel(Label.createLabelFromJAXBElement(tst.getLabel()));
-		}
-	}
+    private Label label;
 
 
-        /**
-         * Build a new {@code TextSymbolizer}, named {@code Label}. It is defined
-         * using a default {@link PointLabel#PointLabel() PointLabel}, and is
-         * measured in {@link Uom#MM}.
-         */
-	public TextSymbolizer() {
-		super();
-		this.name = "Label";
-		setLabel(new PointLabel());
-		uom = Uom.MM;
-	}
+    /**
+     * Build a new {@code TextSymbolizer} using the informations contained 
+     * in the {@code JAXBElement} given in argument.
+     * @param st
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     */
+    public TextSymbolizer(JAXBElement<TextSymbolizerType> st) throws InvalidStyle {
+        super(st);
+        TextSymbolizerType tst = st.getValue();
 
-        /**
-         * Set the label contained in this {@code TextSymbolizer}.
-         * @param label 
-         * The new {@code Label} contained in this {@code TextSymbolizer}. Must 
-         * be non-{@code null}.
-         */
-	public void setLabel(Label label) {
-		label.setParent(this);
-		this.label = label;
-	}
+        if (tst.getGeometry() != null) {
+            this.setGeometry(new GeometryAttribute(tst.getGeometry()));
+        }
 
-        /**
-         * Get the label contained in this {@code TextSymbolizer}.
-         * @return 
-         * The label currently contained in this {@code TextSymbolizer}.
-         */
-	public Label getLabel() {
-		return label;
-	}
+        if (tst.getUom() != null) {
+            this.uom = Uom.fromOgcURN(tst.getUom());
+        }
 
-        /**
-         * Get the offset currently associated to this {@code TextSymbolizer}.
-         * @return 
-         * The current perpendicular offset as a {@code RealParameter}. If null, 
-         * the offset is considered to be equal to {@code 0}.
-         */
-	public RealParameter getPerpendicularOffset() {
-		return perpendicularOffset;
-	}
+        if (tst.getPerpendicularOffset() != null) {
+            this.setPerpendicularOffset(SeParameterFactory.createRealParameter(tst.getPerpendicularOffset()));
+        }
 
-        /**
-         * Set the perpendicular offset associated to this {@code TextSymbolizer}.
-         * @param perpendicularOffset 
-         */
-	public void setPerpendicularOffset(RealParameter perpendicularOffset) {
-		this.perpendicularOffset = perpendicularOffset;
-		if (this.perpendicularOffset != null){
-			this.perpendicularOffset.setContext(RealParameterContext.REAL_CONTEXT);
-		}
-	}
+        if (tst.getLabel() != null) {
+            this.setLabel(Label.createLabelFromJAXBElement(tst.getLabel()));
+        }
+    }
 
-	@Override
-	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, 
-            boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
+
+    /**
+     * Build a new {@code TextSymbolizer}, named {@code Label}. It is defined
+     * using a default {@link PointLabel#PointLabel() PointLabel}, and is
+     * measured in {@link Uom#MM}.
+     */
+    public TextSymbolizer() {
+        super();
+        this.name = "Label";
+        setLabel(new PointLabel());
+        uom = Uom.MM;
+    }
+
+
+    /**
+     * Set the label contained in this {@code TextSymbolizer}.
+     * @param label 
+     * The new {@code Label} contained in this {@code TextSymbolizer}. Must 
+     * be non-{@code null}.
+     */
+    public void setLabel(Label label) {
+        label.setParent(this);
+        this.label = label;
+    }
+
+
+    /**
+     * Get the label contained in this {@code TextSymbolizer}.
+     * @return 
+     * The label currently contained in this {@code TextSymbolizer}.
+     */
+    public Label getLabel() {
+        return label;
+    }
+
+
+    /**
+     * Get the offset currently associated to this {@code TextSymbolizer}.
+     * @return 
+     * The current perpendicular offset as a {@code RealParameter}. If null, 
+     * the offset is considered to be equal to {@code 0}.
+     */
+    public RealParameter getPerpendicularOffset() {
+        return perpendicularOffset;
+    }
+
+
+    /**
+     * Set the perpendicular offset associated to this {@code TextSymbolizer}.
+     * @param perpendicularOffset 
+     */
+    public void setPerpendicularOffset(RealParameter perpendicularOffset) {
+        this.perpendicularOffset = perpendicularOffset;
+        if (this.perpendicularOffset != null) {
+            this.perpendicularOffset.setContext(RealParameterContext.REAL_CONTEXT);
+        }
+    }
+
+
+    @Override
+    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
+                     boolean selected, MapTransform mt, Geometry the_geom,
+                     RenderContext perm)
             throws ParameterException, IOException, DriverException {
 
-		List<Shape> shapes = this.getShapes(sds, fid, mt, the_geom);
+        List<Shape> shapes = this.getShapes(sds, fid, mt, the_geom);
 
-		if (shapes != null) {
-			for (Shape shp : shapes) {
-				if (shp != null && label != null) {
-					label.draw(g2, sds, fid, shp, selected, mt, perm);
-				}
-			}
-		}
-	}
+        if (shapes != null) {
+            for (Shape shp : shapes) {
+                if (shp != null && label != null) {
+                    List<Shape> shps;
+                    if (perpendicularOffset != null) {
+                        Double pOffset = perpendicularOffset.getValue(sds, fid);
+                        shps = ShapeHelper.perpendicularOffset(shp, pOffset);
+                    } else {
+                        shps = new ArrayList<Shape>();
+                        shps.add(shp);
+                    }
+                    for (Shape s : shps) {
+                        label.draw(g2, sds, fid, s, selected, mt, perm);
+                    }
+                }
+            }
+        }
+    }
 
-	@Override
-	public JAXBElement<TextSymbolizerType> getJAXBElement() {
 
-		ObjectFactory of = new ObjectFactory();
-		TextSymbolizerType s = of.createTextSymbolizerType();
+    @Override
+    public JAXBElement<TextSymbolizerType> getJAXBElement() {
 
-		this.setJAXBProperty(s);
+        ObjectFactory of = new ObjectFactory();
+        TextSymbolizerType s = of.createTextSymbolizerType();
+
+        this.setJAXBProperty(s);
+
+        if (this.getGeometry() != null) {
+            s.setGeometry(getGeometry().getJAXBGeometryType());
+        }
+
+        if (this.getUom() != null) {
+            s.setUom(this.getUom().toURN());
+        }
+
+        if (perpendicularOffset != null) {
+            s.setPerpendicularOffset(perpendicularOffset.getJAXBParameterValueType());
+        }
+
+        if (label != null) {
+            s.setLabel(label.getJAXBElement());
+        }
+
+        return of.createTextSymbolizer(s);
+    }
 
 
-		if (this.getUom() != null){
-			s.setUom(this.getUom().toURN());
-		}
-
-		if (perpendicularOffset != null) {
-			s.setPerpendicularOffset(perpendicularOffset.getJAXBParameterValueType());
-		}
-
-		if (label != null) {
-			s.setLabel(label.getJAXBElement());
-		}
-
-		return of.createTextSymbolizer(s);
-	}
 }

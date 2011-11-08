@@ -253,6 +253,10 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 
         this.setJAXBProperty(s);
 
+        if (this.getGeometry() != null){
+            s.setGeometry(getGeometry().getJAXBGeometryType());
+        }
+
         if (uom != null) {
             s.setUom(this.getUom().toURN());
         }
