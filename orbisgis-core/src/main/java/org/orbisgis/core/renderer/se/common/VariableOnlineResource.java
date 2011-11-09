@@ -114,22 +114,22 @@ public class VariableOnlineResource implements ExternalGraphicSource, MarkGraphi
     public VariableOnlineResource() {
         url = null;
         svgIcon = null;
-        System.out.println ("VAR ONLINE RES: NULL NULL");
+        ////System.out.println ("VAR ONLINE RES: NULL NULL");
     }
 
 
     public VariableOnlineResource(StringParameter url) throws MalformedURLException {
         this.url = url;
         svgIcon = null;
-        System.out.println ("VAR ONLINE RES: NEW  " + url);
+        //System.out.println ("VAR ONLINE RES: NEW  " + url);
     }
 
 
     public VariableOnlineResource(VariableOnlineResourceType onlineResource) throws MalformedURLException, InvalidStyle {
-        System.out.println ("ONLINRE RESOURCE HREF " + onlineResource.getHref());
+        //System.out.println ("ONLINRE RESOURCE HREF " + onlineResource.getHref());
         this.url = SeParameterFactory.createStringParameter(onlineResource.getHref());
         svgIcon = null;
-        System.out.println ("VAR ONLINE RES: JAXB " + url);
+        //System.out.println ("VAR ONLINE RES: JAXB " + url);
     }
 
 

@@ -210,8 +210,6 @@ public final class SolidFill extends Fill {
 	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException {
 
         Rectangle2D fbox = shp.getBounds2D();
-        System.out.println ("SHAPE BOX: " + fbox);
-
 		g2.setPaint(getPaint(fid, sds, selected, mt));
 		g2.fill(shp);
 	}

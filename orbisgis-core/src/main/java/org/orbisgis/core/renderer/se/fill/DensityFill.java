@@ -283,7 +283,6 @@ public final class DensityFill extends Fill implements GraphicNode {
                 double gapX =  bounds.getWidth()*ratio - bounds.getWidth();
                 double gapY =  bounds.getHeight()*ratio - bounds.getHeight();
 
-                System.out.println ("New way : ...");
                 painter = GraphicFill.getPaint(fid, sds, selected, mt, mark, gapX, gapY, bounds);
             } else {
                 throw new ParameterException("Neither marks or hatches are defined");

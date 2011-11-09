@@ -231,7 +231,6 @@ public final class HatchedFill extends Fill implements StrokeNode {
                                  MapTransform mt,
                                  double alph, double pDist, Stroke stroke,
                                  double hOffset) throws ParameterException, IOException {
-        System.out.println ("DRAW HATCH :: STATIC METHIOD !");
         double alpha = alph;
         while (alpha < 0.0) {
             alpha += TWO_PI_DEG;
@@ -284,7 +283,6 @@ public final class HatchedFill extends Fill implements StrokeNode {
         double deltaDy = pDist / cosAlpha;
 
         Rectangle2D fbox = shp.getBounds2D();
-        System.out.println ("SHAPE BOX: " + fbox);
 
 
         /* the following block compute the number of times the hatching pattern shall be drawn */
@@ -409,7 +407,6 @@ public final class HatchedFill extends Fill implements StrokeNode {
             }
 
         } else {
-            System.out.println ("GOGOGO");
             if (hymin < hymax) {
                 if (deltaDy < 0.0) {
                     deltaDy *= -1;
@@ -431,9 +428,7 @@ public final class HatchedFill extends Fill implements StrokeNode {
                         l.y2 = y;
                     }
 
-                    //System.out.println ("Line");
                     stroke.draw(g2, sds, fid, l, selected, mt, 0.0);
-                    System.out.println ("Line " + l.getX1() + ";" + l.getY1() + "   " + l.getX2() +";" + l.getY2());
                     //g2.fillOval((int)(l.getX1() - 2),(int)(l.getY1() -2) , 4, 4);
                     //g2.fillOval((int)(l.getX2() - 2),(int)(l.getY2() -2) , 4, 4);
                 }
@@ -462,7 +457,6 @@ public final class HatchedFill extends Fill implements StrokeNode {
                     }
 
                     stroke.draw(g2, sds, fid, l, selected, mt, 0.0);
-                    System.out.println ("Line " + l.getX1() + ";" + l.getY1() + "   " + l.getX2() +";" + l.getY2());
 
                     //g2.fillOval((int)(l.getX1() - 2),(int)(l.getY1() -2) , 4, 4);
                     //g2.fillOval((int)(l.getX2() - 2),(int)(l.getY2() -2) , 4, 4);
