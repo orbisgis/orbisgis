@@ -38,6 +38,12 @@ public class Translate implements Transformation {
         }
 
         /**
+         * Create an new empty <code>Translate</code>
+         */
+        public Translate(){
+        }
+
+        /**
          * Create a new <code>Translate</code>, using the informations contained in 
          * <code>t</code>
          * @param t
