@@ -68,6 +68,7 @@ import org.orbisgis.core.renderer.se.stroke.StrokeElement;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.CheckBoxInput;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.UomInput;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real.LegendUIMetaRealPanel;
 
@@ -90,8 +91,11 @@ public abstract class LegendUICompoundStrokePanel extends LegendUIComponent impl
 
     private LegendUIMetaRealPanel postGap;
 
+    private CheckBoxInput linearRapport;
 
     private LegendUIAbstractPanel content1;
+    private LegendUIAbstractPanel content1a;
+    private LegendUIAbstractPanel content1b;
 
 
     private LegendUIAbstractPanel content2;
@@ -172,6 +176,9 @@ public abstract class LegendUICompoundStrokePanel extends LegendUIComponent impl
         this.compoundStroke = cStroke;
 
         content1 = new LegendUIAbstractPanel(controller);
+        content1a = new LegendUIAbstractPanel(controller);
+        content1b = new LegendUIAbstractPanel(controller);
+        
         content2 = new LegendUIAbstractPanel(controller);
         content3 = new LegendUIAbstractPanel(controller);
         elemEditor = new LegendUIAbstractPanel(controller);
@@ -204,6 +211,14 @@ public abstract class LegendUICompoundStrokePanel extends LegendUIComponent impl
 
         };
         postGap.init();
+
+        this.linearRapport = new CheckBoxInput("LinRap.", compoundStroke.isLengthRapport()) {
+            @Override
+            protected void valueChanged(boolean newValue) {
+                 compoundStroke.setLengthRapport(newValue);
+            }
+        };
+
 
 
         elements = new ArrayList<LegendUIComponent>();
@@ -572,12 +587,18 @@ public abstract class LegendUICompoundStrokePanel extends LegendUIComponent impl
     @Override
     protected void mountComponent() {
         content1.removeAll();
+        content1a.removeAll();
+        content1b.removeAll();
         content2.removeAll();
         content3.removeAll();
 
-        content1.add(preGap, BorderLayout.WEST);
-        content1.add(postGap, BorderLayout.CENTER);
-        content1.add(uom, BorderLayout.EAST);
+        content1a.add(uom, BorderLayout.EAST);
+        content1a.add(linearRapport, BorderLayout.WEST);
+        content1b.add(preGap, BorderLayout.WEST);
+        content1b.add(postGap, BorderLayout.EAST);
+
+        content1.add(content1a, BorderLayout.NORTH);
+        content1.add(content1b, BorderLayout.SOUTH);
 
         elemTools.removeAll();
         elemLeft.removeAll();

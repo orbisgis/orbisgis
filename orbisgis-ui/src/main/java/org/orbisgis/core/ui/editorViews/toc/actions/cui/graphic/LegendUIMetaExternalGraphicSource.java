@@ -41,7 +41,6 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.Icon;
-import org.orbisgis.core.renderer.se.common.OnlineResource;
 import org.orbisgis.core.renderer.se.common.VariableOnlineResource;
 import org.orbisgis.core.renderer.se.graphic.ExternalGraphic;
 import org.orbisgis.core.renderer.se.graphic.ExternalGraphicSource;
@@ -66,14 +65,14 @@ public class LegendUIMetaExternalGraphicSource extends LegendUIAbstractMetaPanel
 
         comp = null;
         ExternalGraphicSource source = extG.getSource();
-        if (source instanceof OnlineResource){
-            comp = getCompForClass(OnlineResource.class);
+        if (source instanceof VariableOnlineResource){
+            comp = getCompForClass(VariableOnlineResource.class);
         }
     }
 
     @Override
     protected final LegendUIComponent getCompForClass(Class newClass) {
-        if (newClass == OnlineResource.class) {
+        if (newClass == VariableOnlineResource.class) {
             return new LegendUIVariableOnlineResourcePanel(controller, this, (VariableOnlineResource) extG.getSource());
         }
         return null;
@@ -101,7 +100,7 @@ public class LegendUIMetaExternalGraphicSource extends LegendUIAbstractMetaPanel
 
     @Override
     public Class getEditedClass() {
-        if (extG.getSource() instanceof OnlineResource){
+        if (extG.getSource() instanceof VariableOnlineResource){
             return VariableOnlineResource.class;
         } else {
             return null;

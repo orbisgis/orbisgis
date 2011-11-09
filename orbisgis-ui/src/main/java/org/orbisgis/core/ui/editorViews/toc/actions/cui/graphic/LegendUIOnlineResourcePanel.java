@@ -40,7 +40,6 @@
 
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.graphic;
 
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import javax.swing.Icon;
 import org.orbisgis.core.renderer.se.common.OnlineResource;
@@ -55,7 +54,7 @@ import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
  *
  * @author maxence
  */
-public class LegendUIOnlineResourcePanel extends LegendUIComponent implements LegendUIExternalSourceComponent {
+public class LegendUIOnlineResourcePanel extends LegendUIComponent /*implements LegendUIExternalSourceComponent*/ {
 
 	TextInput urlInput;
     OnlineResource onlineResource;
@@ -111,10 +110,10 @@ public class LegendUIOnlineResourcePanel extends LegendUIComponent implements Le
 		return WellKnownName.class;
 	}
 
-    @Override
+    /*@Override
     public ExternalGraphicSource getSource() {
         return onlineResource;
-    }
+    }*/
 
 
 

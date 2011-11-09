@@ -46,6 +46,7 @@ import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.CheckBoxInput;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.ComboBoxInput;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.graphic.LegendUICompositeGraphicPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real.LegendUIMetaRealPanel;
@@ -74,6 +75,7 @@ public abstract class LegendUIGraphicStrokePanel extends LegendUIComponent imple
 
     private LegendUIAbstractPanel content1;
 
+    private CheckBoxInput linearRapport;
 
     public LegendUIGraphicStrokePanel(LegendUIController controller,
                                       LegendUIComponent parent,
@@ -118,6 +120,14 @@ public abstract class LegendUIGraphicStrokePanel extends LegendUIComponent imple
 
         };
 
+        this.linearRapport = new CheckBoxInput("LinRap.", graphicStroke.isLengthRapport()) {
+            @Override
+            protected void valueChanged(boolean newValue) {
+                graphicStroke.setLengthRapport(newValue);
+            }
+        };
+
+
         this.content1 = new LegendUIAbstractPanel(controller);
     }
 
@@ -134,7 +144,8 @@ public abstract class LegendUIGraphicStrokePanel extends LegendUIComponent imple
 
         content1.removeAll();
         content1.add(length, BorderLayout.WEST);
-        content1.add(relPos, BorderLayout.EAST);
+        content1.add(relPos, BorderLayout.CENTER);
+        content1.add(linearRapport, BorderLayout.EAST);
 
         editor.add(content1, BorderLayout.CENTER);
         editor.add(gCollection, BorderLayout.SOUTH);

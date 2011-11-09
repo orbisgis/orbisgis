@@ -72,7 +72,7 @@ public class LegendUIPointTextGraphicPanel extends LegendUIComponent implements 
 
         uom = new UomInput(ptg);
 
-        x = new LegendUIMetaRealPanel("X", controller, this, textGraphic.getX(), false) {
+        x = new LegendUIMetaRealPanel("X", controller, this, textGraphic.getX(), true) {
 
             @Override
             public void realChanged(RealParameter newReal) {
@@ -81,7 +81,7 @@ public class LegendUIPointTextGraphicPanel extends LegendUIComponent implements 
         };
         x.init();
 
-        y = new LegendUIMetaRealPanel("Y", controller, this, textGraphic.getY(), false) {
+        y = new LegendUIMetaRealPanel("Y", controller, this, textGraphic.getY(), true) {
 
             @Override
             public void realChanged(RealParameter newReal) {
@@ -105,7 +105,7 @@ public class LegendUIPointTextGraphicPanel extends LegendUIComponent implements 
         header.removeAll();
         header.add(x, BorderLayout.WEST);
         header.add(y, BorderLayout.CENTER);
-        header.add(uom, BorderLayout.WEST);
+        header.add(uom, BorderLayout.EAST);
 
         editor.add(header, BorderLayout.NORTH);
         editor.add(label, BorderLayout.SOUTH);

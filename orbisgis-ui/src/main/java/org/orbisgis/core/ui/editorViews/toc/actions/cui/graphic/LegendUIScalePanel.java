@@ -42,7 +42,6 @@ import java.awt.BorderLayout;
 import javax.swing.Icon;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.transform.Scale;
-import org.orbisgis.core.renderer.se.transform.Translate;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real.LegendUIMetaRealPanel;
@@ -76,7 +75,7 @@ class LegendUIScalePanel extends LegendUIComponent{
 
             @Override
             public void realChanged(RealParameter newReal) {
-                scale.getY();
+                scale.setY(newReal);
             }
         };
         y.init();

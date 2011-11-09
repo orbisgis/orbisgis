@@ -35,10 +35,10 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.graphic;
 
 import java.awt.BorderLayout;
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.transform.Translate;
@@ -47,20 +47,36 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real.LegendUIMetaRealPanel;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
-
 /**
  *
  * @author maxence
  */
-class LegendUITranslatePanel extends LegendUIComponent{
+public abstract class LegendUITranslatePanel extends LegendUIComponent {
 
     private Translate translate;
+
+
     private LegendUIMetaRealPanel x;
+
+
     private LegendUIMetaRealPanel y;
 
-    public LegendUITranslatePanel(LegendUIController controller, LegendUITransformPanel parent, Translate t) {
-        super("", controller, parent, 0, false);
+
+    public LegendUITranslatePanel(String name, LegendUIController controller,
+                                  LegendUIComponent parent, Translate t,
+                                  boolean nullable) {
+        super(name, controller, parent, 0, nullable);
+
+        if (name != null && !name.isEmpty()) {
+            this.setBorder(BorderFactory.createTitledBorder(getName()));
+        }
+
         this.translate = t;
+
+        if (translate == null) {
+            translate = new Translate(null, null);
+            this.isNullComponent = true;
+        }
 
         x = new LegendUIMetaRealPanel("X", controller, this, translate.getX(), true) {
 
@@ -68,6 +84,8 @@ class LegendUITranslatePanel extends LegendUIComponent{
             public void realChanged(RealParameter newReal) {
                 translate.setX(newReal);
             }
+
+
         };
         x.init();
 
@@ -77,14 +95,24 @@ class LegendUITranslatePanel extends LegendUIComponent{
             public void realChanged(RealParameter newReal) {
                 translate.setY(newReal);
             }
+
+
         };
         y.init();
     }
+
+
+    public LegendUITranslatePanel(LegendUIController controller,
+                                  LegendUITransformPanel parent, Translate t) {
+        this("", controller, parent, t, false);
+    }
+
 
     @Override
     public Icon getIcon() {
         return OrbisGISIcon.PALETTE;
     }
+
 
     @Override
     protected void mountComponent() {
@@ -92,16 +120,28 @@ class LegendUITranslatePanel extends LegendUIComponent{
         editor.add(y, BorderLayout.EAST);
     }
 
+
     @Override
     protected void turnOff() {
+        this.isNullComponent = true;
+        translateChange(null);
     }
+
 
     @Override
     protected void turnOn() {
+        this.isNullComponent = false;
+        translateChange(translate);
     }
+
 
     @Override
     public Class getEditedClass() {
         return Translate.class;
     }
+
+
+    public abstract void translateChange(Translate newTranslate);
+
+
 }

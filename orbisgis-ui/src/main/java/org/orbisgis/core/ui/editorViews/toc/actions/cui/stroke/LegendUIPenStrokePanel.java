@@ -51,6 +51,7 @@ import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.CheckBoxInput;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.ComboBoxInput;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.UomInput;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.fill.LegendUIMetaFillPanel;
@@ -80,6 +81,8 @@ public abstract class LegendUIPenStrokePanel extends LegendUIComponent implement
 
 	private ComboBoxInput lineJoin;
 
+    private CheckBoxInput linearRapport;
+
 	private final LineCap[] lCapValues;
 
 	private final LineJoin[] lJoinValues;
@@ -87,6 +90,8 @@ public abstract class LegendUIPenStrokePanel extends LegendUIComponent implement
 	private LegendUIAbstractPanel content;
 	private LegendUIAbstractPanel content2;
 	private LegendUIAbstractPanel header;
+	private LegendUIAbstractPanel headerA;
+	private LegendUIAbstractPanel headerB;
 
 	//private TextInput dashArray;
 	private LegendUIMetaStringPanel dashArray;
@@ -96,12 +101,21 @@ public abstract class LegendUIPenStrokePanel extends LegendUIComponent implement
 		super("pen stroke", controller, parent, 0, isNullable);
 		//this.setLayout(new GridLayout(0,2));
 		this.header = new LegendUIAbstractPanel(controller);
+		this.headerA = new LegendUIAbstractPanel(controller);
+		this.headerB = new LegendUIAbstractPanel(controller);
 		this.penStroke = pStroke;
 
 		this.content = new LegendUIAbstractPanel(controller);
 		this.content2 = new LegendUIAbstractPanel(controller);
 
 		uom = new UomInput(pStroke);
+
+        this.linearRapport = new CheckBoxInput("LinRap.", pStroke.isLengthRapport()) {
+            @Override
+            protected void valueChanged(boolean newValue) {
+                penStroke.setLengthRapport(newValue);
+            }
+        };
 
 		lCapValues = LineCap.values();
 		lJoinValues = LineJoin.values();
@@ -164,9 +178,18 @@ public abstract class LegendUIPenStrokePanel extends LegendUIComponent implement
 	@Override
 	protected void mountComponent() {
 		header.removeAll();
-		header.add(uom, BorderLayout.WEST);
-		header.add(lineCap, BorderLayout.CENTER);
-		header.add(lineJoin, BorderLayout.EAST);
+
+        headerA.removeAll();
+        headerB.removeAll();
+
+        
+		headerA.add(uom, BorderLayout.WEST);
+		headerA.add(linearRapport, BorderLayout.EAST);
+		headerB.add(lineCap, BorderLayout.WEST);
+		headerB.add(lineJoin, BorderLayout.EAST);
+
+        header.add(headerA, BorderLayout.NORTH);
+        header.add(headerB, BorderLayout.SOUTH);
 
 		editor.add(header, BorderLayout.NORTH);
 

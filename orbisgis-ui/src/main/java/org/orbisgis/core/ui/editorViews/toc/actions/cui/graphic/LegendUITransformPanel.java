@@ -344,7 +344,11 @@ public class LegendUITransformPanel extends LegendUIComponent {
 
     private LegendUIComponent getCompForTransformation(Transformation t) {
         if (t instanceof Translate){
-            return new LegendUITranslatePanel(controller, this, (Translate)t);
+            return new LegendUITranslatePanel(controller, this, (Translate)t) {
+                @Override
+                public void translateChange(Translate newTranslate) {
+                }
+            };
         } else if (t instanceof Scale){
             return new LegendUIScalePanel(controller, this, (Scale)t);
         } else if (t instanceof Rotate){

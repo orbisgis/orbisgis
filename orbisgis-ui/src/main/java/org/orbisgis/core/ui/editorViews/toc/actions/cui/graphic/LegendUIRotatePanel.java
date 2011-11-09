@@ -76,7 +76,7 @@ class LegendUIRotatePanel extends LegendUIComponent{
 
             @Override
             public void realChanged(RealParameter newReal) {
-                rotate.getY();
+                rotate.setY(newReal);
             }
         };
         y.init();
@@ -100,7 +100,7 @@ class LegendUIRotatePanel extends LegendUIComponent{
     protected void mountComponent() {
         editor.add(x, BorderLayout.WEST);
         editor.add(y, BorderLayout.CENTER);
-        editor.add(angle, BorderLayout.WEST);
+        editor.add(angle, BorderLayout.EAST);
     }
 
     @Override
