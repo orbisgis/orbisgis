@@ -134,7 +134,7 @@ public class LegendUISymbolizerPanel extends LegendUIComponent {
 
         if (symb instanceof AreaSymbolizer) {
 
-            displacement = new LegendUITranslatePanel("Translate", controller, this, ((AreaSymbolizer) symbolizer).getTranslate(), true) {
+            displacement = new LegendUITranslatePanel("Displacement", controller, this, ((AreaSymbolizer) symbolizer).getTranslate(), true) {
 
                 @Override
                 public void translateChange(Translate newTranslate) {
