@@ -415,11 +415,11 @@ public class LegendUIPieChartPanel extends LegendUIComponent implements LegendUI
         LegendUIMetaFillPanel fill;
 
         public FillInput (Slice s){
-            super("", LegendUIPieChartPanel.this.controller, LegendUIPieChartPanel.this, 0, false);
+            super("Fill", LegendUIPieChartPanel.this.controller, LegendUIPieChartPanel.this, 0, true);
 
             this.s = s;
 
-            fill = new LegendUIMetaFillPanel(this.controller, this, s, false);
+            fill = new LegendUIMetaFillPanel(this.controller, this, s, true);
             fill.extractFromParent();
             fill.init();
         }

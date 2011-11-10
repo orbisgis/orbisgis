@@ -107,6 +107,10 @@ public class LegendUICompositeGraphicPanel extends LegendUIComponent {
         super("Graphic collection", ctrl, parent, 0, false);
         this.gc = graphicCollection;
 
+        left = new LegendUIAbstractPanel(controller);
+        right = new LegendUIAbstractPanel(controller);
+        tools = new LegendUIAbstractPanel(controller);
+
         graphics = new ArrayList<LegendUIComponent>();
 
         model = new DefaultListModel();
@@ -245,10 +249,6 @@ public class LegendUICompositeGraphicPanel extends LegendUIComponent {
         btnDown.setEnabled(false);
         btnRm.setEnabled(false);
 
-
-        left = new LegendUIAbstractPanel(controller);
-        right = new LegendUIAbstractPanel(controller);
-        tools = new LegendUIAbstractPanel(controller);
         tools.setLayout(new FlowLayout(FlowLayout.TRAILING));
 
 
