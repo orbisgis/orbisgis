@@ -113,7 +113,7 @@ public class EditSELegendPlugIn extends AbstractPlugIn {
 			LegendUIController controller = new LegendUIController(layer.getStyle());
 
 			if (UIFactory.showDialog((UIPanel)controller.getMainPanel())) {
-				layer.Style(controller.getEditedFeatureTypeStyle());
+				layer.setStyle(controller.getEditedFeatureTypeStyle());
 			}
 		} catch (InvalidStyle ex) {
 			Services.getErrorManager().error(Names.ERROR_EDIT_LEGEND_LAYER, ex);

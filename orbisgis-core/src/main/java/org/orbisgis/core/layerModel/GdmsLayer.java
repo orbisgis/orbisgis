@@ -242,7 +242,7 @@ public abstract class GdmsLayer extends AbstractLayer {
     }
 
     @Override
-    public void Style(Style fts) {
+    public void setStyle(Style fts) {
         this.fts = fts;
         this.fireStyleChanged();
     }

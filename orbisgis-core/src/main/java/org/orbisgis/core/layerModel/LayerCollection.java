@@ -181,7 +181,7 @@ public class LayerCollection extends AbstractLayer {
 	}
 
     @Override
-    public void Style(Style fts) {
+    public void setStyle(Style fts) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

@@ -209,7 +209,7 @@ public final class LegendUIMainPanel extends JPanel  implements UIPanel  {
 			try {
 				Style eFts = controller.getEditedFeatureTypeStyle();
 				Style fts = new Style(eFts.getJAXBElement(), eFts.getLayer());
-				eFts.getLayer().Style(fts);
+				eFts.getLayer().setStyle(fts);
 			} catch (InvalidStyle ex) {
 				Logger.getLogger(LegendUIMainPanel.class.getName()).log(Level.SEVERE, null, ex);
 			}

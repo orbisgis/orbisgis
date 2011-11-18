@@ -232,7 +232,7 @@ public interface ILayer {
 
     public Style getStyle();
 
-    public void Style(Style fts);
+    public void setStyle(Style fts);
 
 	/**
 	 * Gets the legend used to draw the default spatial field in this layer if

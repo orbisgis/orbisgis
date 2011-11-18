@@ -118,7 +118,7 @@ public class FeatureTypeStyleTest extends TestCase {
 
 
             Style fts = new Style(ftsElem, layer);
-            gdmsLayer.Style(fts);
+            gdmsLayer.setStyle(fts);
 
             layer.getSpatialDataSource().open();
 

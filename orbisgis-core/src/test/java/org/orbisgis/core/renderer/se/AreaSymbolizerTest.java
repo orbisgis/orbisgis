@@ -99,7 +99,7 @@ public class AreaSymbolizerTest extends TestCase {
             ILayer layer = new Layer("swiss", sds);
 
             Style style = new Style(layer, "/home/maxence/projects/SCAP-c²/SE/choro.se");
-            layer.Style(style);
+            layer.setStyle(style);
 
             Renderer renderer = new ImageRenderer();
 
