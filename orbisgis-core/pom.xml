@@ -30,28 +30,11 @@
                         <groupId>batik</groupId>
                         <artifactId>batik-svggen</artifactId>
                         <version>1.6-1</version>
-                        <exclusions>
-                                <exclusion>
-                                        <artifactId>xercesImpl</artifactId>
-                                        <groupId>xerces</groupId>
-                                </exclusion>
-                        </exclusions>
                 </dependency>
                 <dependency>
                         <groupId>org.gdms.sql</groupId>
                         <artifactId>gdmsql</artifactId>
                         <version>0.3-SNAPSHOT</version>
-                        <exclusions>
-                                <exclusion>
-                                        <artifactId>xercesImpl</artifactId>
-                                        <groupId>xerces</groupId>
-                                </exclusion>
-                        </exclusions>
-                </dependency>
-                <dependency>
-                        <artifactId>xercesImpl</artifactId>
-                        <groupId>xerces</groupId>
-                        <version>2.5.0</version>
                 </dependency>
                 <dependency>
                         <groupId>com.iver.cit.gvsig</groupId>
