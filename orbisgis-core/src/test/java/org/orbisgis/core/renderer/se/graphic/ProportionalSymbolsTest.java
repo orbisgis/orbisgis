@@ -105,12 +105,12 @@ public class ProportionalSymbolsTest extends TestCase {
             //We set a dimension, vb becomes usable.
             vb.setWidth(new RealLiteral(7));
             assertTrue(vb.getWidth().getValue(null, 1) == 7);
-            assertTrue(vb.getHeight().getValue(null, 1) == 7);
+            assertNull(vb.getHeight());
             assertTrue(vb.usable());
             //Check that we have the same result if we set only the other dimension.
             vb = new ViewBox();
             vb.setHeight(new RealLiteral(9));
-            assertTrue(vb.getWidth().getValue(null, 1) == 9);
+            assertNull(vb.getWidth());
             assertTrue(vb.getHeight().getValue(null, 1) == 9);
             //And if the two values differ.
             vb.setWidth(new RealLiteral(7));

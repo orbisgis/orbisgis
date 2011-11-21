@@ -23,7 +23,7 @@ public class PointSymbolizerTest extends AbstractTest {
                 PointSymbolizer ps = new PointSymbolizer();
                 MarkGraphic mg = (MarkGraphic) ps.getGraphicCollection().getGraphic(0);
                 assertTrue(mg.getWkn().getValue(null, 0).equalsIgnoreCase("circle"));
-                assertTrue(mg.getViewBox().getHeight().getValue(null, 0) == 3.0);
+                assertTrue(mg.getViewBox().getWidth().getValue(null, 0) == 3.0);
                 assertTrue(mg.getViewBox().getUom() == Uom.MM);
         }
 
