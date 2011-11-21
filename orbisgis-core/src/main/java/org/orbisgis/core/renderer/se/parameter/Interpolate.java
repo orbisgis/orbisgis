@@ -211,7 +211,7 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
                 }
 
                 if (mode != null) {
-                        i.setMode(ModeType.fromValue(mode.toString()));
+                        i.setMode(ModeType.fromValue(mode.toString().toLowerCase()));
                 }
 
                 List<InterpolationPointType> ips = i.getInterpolationPoint();
