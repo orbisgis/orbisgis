@@ -371,8 +371,8 @@ public final class CompoundStroke extends Stroke implements UomNode {
                     if (lengths[i] >= 0) {
                         // get two lines. first is the one we'll style with i'est element
                         List<Shape> splitLine = ShapeHelper.splitLine(scrap, lengths[i]);
-                        System.out.println("Extract: " + lengths[i]);
-                        System.out.println ("Split ? " + splitLine.size());
+                        //System.out.println("Extract: " + lengths[i]);
+                        //System.out.println ("Split ? " + splitLine.size());
                         Shape seg = splitLine.remove(0);
 
                         //System.out.println ("StrokeElement Seg: ");
