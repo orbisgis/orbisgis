@@ -72,4 +72,9 @@ public class RealFunctionTest extends TestCase {
             Logger.getLogger(RealFunctionTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+    public void testgetOperator() {
+            RealFunction op1 = new RealFunction("log");
+            assertTrue(op1.getOperator() == RealFunction.Operators.LOG);
+    }
 }

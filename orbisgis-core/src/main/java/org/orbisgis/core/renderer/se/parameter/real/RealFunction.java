@@ -65,7 +65,7 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
  */
 public class RealFunction implements RealParameter {
 
-    private enum Operators {
+    public enum Operators {
         ADD, MUL, DIV, SUB, SQRT, LOG, LN
     };
 
@@ -107,6 +107,14 @@ public class RealFunction implements RealParameter {
      */
     public RealFunction(JAXBElement<FunctionType> fcn) throws InvalidStyle {
         this(fcn.getValue());
+    }
+
+    /**
+     * Get the instance of {@code Operators} associated to this {@code RealFunction}.
+     * @return 
+     */
+    public Operators getOperator() {
+            return op;
     }
 
     /**
