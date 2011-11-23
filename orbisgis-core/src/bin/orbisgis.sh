@@ -15,7 +15,7 @@ do
 done
 
 #We add the orbisgis-core jar to the CP
-CP=${CP}":./orbisgis-core-3.0.1.jar:"
+CP=${CP}":./orbisgis-core-3.0.2.jar:"
 
 #And we launch the software
 java -Xmx512m -Xms64m -cp ".:${CP}" org.orbisgis.core.Main
