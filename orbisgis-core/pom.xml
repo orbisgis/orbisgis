@@ -4,13 +4,13 @@
 	<parent>
 		<artifactId>platform</artifactId>
 		<groupId>org.orbisgis</groupId>
-		<version>3.0</version>
+		<version>3.0.2</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.orbisgis</groupId>
 	<artifactId>orbisgis-core</artifactId>
 	<name>orbisgis-core</name>
-	<version>3.0.1</version>
+	<version>3.0.2</version>
 	<url>http://orbisgis.org</url>
 	<dependencies>
 		<dependency>
@@ -62,7 +62,7 @@
 		<dependency>
 			<groupId>org.gdms</groupId>
 			<artifactId>gdms</artifactId>
-			<version>1.5.1</version>
+			<version>1.5.1-1</version>
 		</dependency>
 		<dependency>
 			<groupId>bsh</groupId>
