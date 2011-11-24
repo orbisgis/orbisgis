@@ -132,6 +132,8 @@ case class FunctionEvaluator(f: ScalarFunction, l: List[Expression]) extends Eva
   override val childExpressions = l
   override def doPreValidate = {
     if (f == null) throw new FunctionException("The function does not exist.")
+  }
+  override def doValidate = {
     FunctionValidator.failIfTypesDoNotMatchSignature(
       l.map { e => TypeFactory.createType(e.evaluator.sqlType) } toArray,
       f.getFunctionSignatures)
@@ -159,6 +161,8 @@ case class AggregateEvaluator(f: AggregateFunction, l: List[Expression]) extends
   override val childExpressions = l
   override def doPreValidate = {
     if (f == null) throw new FunctionException("The function does not exist.")
+  }
+  override def doValidate = {
     FunctionValidator.failIfTypesDoNotMatchSignature(
       l.map { e => TypeFactory.createType(e.evaluator.sqlType) } toArray,
       f.getFunctionSignatures)

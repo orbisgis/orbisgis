@@ -52,7 +52,7 @@ import org.gdms.data.values.ValueFactory
  */
 abstract class BooleanEvaluator extends Evaluator {
   val sqlType = Type.BOOLEAN
-  override def doPreValidate = {
+  override def doValidate = {
     childExpressions map ( _.evaluator.sqlType ) find
     (_ != Type.BOOLEAN) match {
       case Some(_) => throw new IncompatibleTypesException
@@ -131,7 +131,7 @@ case class EqualsEvaluator(e1: Expression, e2: Expression) extends BooleanEvalua
 case class IsNullEvaluator(e1: Expression) extends BooleanEvaluator {
   def eval = s => ValueFactory.createValue(e1.evaluate(s) isNull)
   override val childExpressions = e1 :: List.empty
-  override val doPreValidate = {}
+  override val doValidate = {}
   override def toString = "ISNULL (" + e1 + ")"
   def doCopy = copy()
 }
@@ -152,7 +152,6 @@ case class InListEvaluator(e1: Expression, e2:Seq[Expression]) extends BooleanEv
     }
   }
   override val childExpressions = e1 :: e2.toList
-  override val doPreValidate = {}
   override def doValidate = {
     val t = e1.evaluator.sqlType
     e2 foreach (e => if (!TypeFactory.canBeCastTo(e.evaluator.sqlType, t)) {

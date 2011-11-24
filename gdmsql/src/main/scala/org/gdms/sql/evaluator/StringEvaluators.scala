@@ -51,7 +51,7 @@ case class StringConcatEvaluator(e1: Expression, e2: Expression) extends Evaluat
   val sqlType = Type.STRING
   def eval = s => e1.evaluate(s) concatWith e2.evaluate(s)
   override val childExpressions = e1 :: e2 :: List.empty
-  override def doPreValidate = {
+  override def doValidate = {
     childExpressions map
     {_.evaluator.sqlType == Type.STRING} reduceLeft (_ || _) match {
       case true =>
@@ -72,7 +72,7 @@ case class LikeEvaluator(e1: Expression, e2: Expression) extends Evaluator {
   val sqlType = Type.BOOLEAN
   def eval = s => e1.evaluate(s) like e2.evaluate(s)
   override val childExpressions = e1 :: e2 :: List.empty
-  override def doPreValidate = {
+  override def doValidate = {
     childExpressions map
     {_.evaluator.sqlType == Type.STRING} reduceLeft (_ && _) match {
       case true =>
