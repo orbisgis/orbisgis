@@ -237,10 +237,20 @@ public class SQLMetadataManager implements SourceListener {
                         final Driver driver = ds.getDriver();
                         synchronized (driver) {
                                 if (driver instanceof FileDriver && ((FileDriver) driver).isOpen()) {
-                                        m = new DefaultMetadata(ds.getMetadata());
+                                        final Metadata mm = ds.getMetadata();
+                                        if (mm == null) {
+                                                // major error, let's skip it.
+                                                return null;
+                                        }
+                                        m = new DefaultMetadata(mm);
                                 } else {
                                         ds.open();
-                                        m = new DefaultMetadata(ds.getMetadata());
+                                        final Metadata mm = ds.getMetadata();
+                                        if (mm == null) {
+                                                // major error, let's skip it.
+                                                return null;
+                                        }
+                                        m = new DefaultMetadata(mm);
                                         ds.close();
                                 }
                         }
