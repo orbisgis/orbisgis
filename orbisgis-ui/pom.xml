@@ -28,11 +28,6 @@
                         <scope>test</scope>
                 </dependency>
                 <dependency>
-                        <groupId>net.sf.kxml</groupId>
-                        <artifactId>kxml2</artifactId>
-                        <version>2.3.0</version>
-                </dependency>
-                <dependency>
                         <groupId>bsh</groupId>
                         <artifactId>bsh</artifactId>
                         <version>2.1-b2</version>

@@ -16,6 +16,7 @@ import org.gdms.driver.MemoryDriver;
 import org.gdms.driver.Driver;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.source.SourceManager;
 import org.gdms.source.directory.DefinitionType;
@@ -129,6 +130,6 @@ public class WMSSourceDefinition extends AbstractDataSourceDefinition {
 
         @Override
         public String getDriverTableName() {
-                return wmsSource.getLayer();
+                return DriverManager.DEFAULT_SINGLE_TABLE_NAME;
         }
 }
