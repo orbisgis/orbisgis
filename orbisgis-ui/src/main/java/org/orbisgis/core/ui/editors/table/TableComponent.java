@@ -561,7 +561,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
          * @param show
          */
         public void setShowRowHeader(boolean show) {
-                if (show) {
+                if (show&& table.getRowCount()>0) {
                         jScrollPane.setRowHeaderView(new TableRowHeader(this));
                 }
         }
