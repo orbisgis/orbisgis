@@ -87,7 +87,7 @@ public final class ExportCall extends AbstractExecutorFunction {
                         } finally {
                                 sourceManager.remove(destName);
                         }
-                } else if (values.length == 9 || values.length == 10) {
+                } else if (values.length > 7 && values.length < 10) {
 
                         final String fromName = values[0].toString();
                         DataSource ds = null;
@@ -154,11 +154,11 @@ public final class ExportCall extends AbstractExecutorFunction {
                 return new FunctionSignature[]{
                                 new ExecutorFunctionSignature(ScalarArgument.STRING, ScalarArgument.STRING),
                                 new ExecutorFunctionSignature(ScalarArgument.STRING, ScalarArgument.STRING,
-                                ScalarArgument.STRING, ScalarArgument.STRING, ScalarArgument.STRING,
+                                ScalarArgument.STRING, ScalarArgument.INT, ScalarArgument.STRING,
                                 ScalarArgument.STRING, ScalarArgument.STRING, ScalarArgument.STRING),
                                 
                                 new ExecutorFunctionSignature(ScalarArgument.STRING, ScalarArgument.STRING,
-                                ScalarArgument.STRING, ScalarArgument.STRING, ScalarArgument.STRING,
+                                ScalarArgument.STRING, ScalarArgument.INT, ScalarArgument.STRING,
                                 ScalarArgument.STRING, ScalarArgument.STRING, ScalarArgument.STRING,
                                 ScalarArgument.STRING)
                         };
