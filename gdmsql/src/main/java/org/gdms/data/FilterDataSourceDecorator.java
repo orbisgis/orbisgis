@@ -47,6 +47,8 @@ import org.gdms.data.edition.MultipleEditionEvent;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.memory.MemoryDataSetDriver;
+import org.gdms.source.SourceManager;
 import org.gdms.sql.engine.ParseException;
 import org.gdms.sql.engine.SQLEngine;
 
@@ -137,7 +139,13 @@ public class FilterDataSourceDecorator extends AbstractDataSourceDecorator {
                 if (getFilter() == null || getFilter().isEmpty()) {
                         throw new IllegalArgumentException("The filter condition cannot be null or empty.");
                 }
-                String rq = "SELECT oid FROM " + getDataSource().getName() + " WHERE " + filter + ";";
+                
+                SourceManager sm = getDataSourceFactory().getSourceManager();
+                MemoryDataSetDriver d = new MemoryDataSetDriver(getDataSource(), true);
+                final String uID = sm.getUID();
+                sm.register(uID, d);
+                
+                String rq = "SELECT oid FROM " + uID + " WHERE " + filter + ";";
                 SQLEngine p = new SQLEngine(getDataSourceFactory());
                 DataSet s = null;
                 try {
@@ -149,6 +157,8 @@ public class FilterDataSourceDecorator extends AbstractDataSourceDecorator {
                 for (int i = 0; i < s.getRowCount(); i++) {
                         ints.add(s.getFieldValue(i, 0).getAsInt());
                 }
+                
+                sm.remove(uID);
                 
                 return ints;
         }
