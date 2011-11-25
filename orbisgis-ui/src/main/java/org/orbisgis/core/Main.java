@@ -73,7 +73,7 @@ public class Main {
                 Splash splash = new Splash();
 
                 if (!IsVersion()) {
-                        JOptionPane.showMessageDialog(null, I18N.getString("OrbisGIS needs at least Java 1.6."));
+                        JOptionPane.showMessageDialog(null, I18N.getString("orbisgis.main.version.error"));
                         splash.setVisible(false);
                         splash.dispose();
                 } else {
