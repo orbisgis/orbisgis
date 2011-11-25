@@ -4,7 +4,7 @@
 	<groupId>org.orbisgis</groupId>
 	<artifactId>platform-se</artifactId>
 	<packaging>pom</packaging>
-	<version>3.1</version>
+	<version>3.2</version>
 	<name>platform SE</name>
 	<organization>
 		<name>IRSTV CNRS-FR-2488</name>
