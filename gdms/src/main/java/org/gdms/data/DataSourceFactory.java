@@ -64,7 +64,7 @@ import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.Instruction;
 import org.gdms.sql.strategies.SQLProcessor;
 import org.gdms.sql.strategies.SemanticException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.utils.I18N;
 
@@ -148,7 +148,7 @@ public class DataSourceFactory {
 	 * @param pm
 	 */
 	public void saveContents(String tableName, DataSource contents,
-			IProgressMonitor pm) throws DriverException {
+			ProgressMonitor pm) throws DriverException {
 		sourceManager.saveContents(tableName, contents, pm);
 	}
 
@@ -353,7 +353,7 @@ public class DataSourceFactory {
 	 * @throws SemanticException
 	 * @throws ParseException
 	 */
-	public DataSource getDataSourceFromSQL(String sql, IProgressMonitor pm)
+	public DataSource getDataSourceFromSQL(String sql, ProgressMonitor pm)
 			throws DriverLoadException, DataSourceCreationException,
 			DriverException, ParseException, SemanticException {
 		return getDataSourceFromSQL(sql, DEFAULT, pm);
@@ -380,7 +380,7 @@ public class DataSourceFactory {
 	 * @throws ParseException
 	 */
 	public DataSource getDataSourceFromSQL(String sql, int mode,
-			IProgressMonitor pm) throws DriverLoadException,
+			ProgressMonitor pm) throws DriverLoadException,
 			DataSourceCreationException, DriverException, ParseException,
 			SemanticException {
 		if (pm == null) {
@@ -406,12 +406,12 @@ public class DataSourceFactory {
 	 * @throws DataSourceCreationException
 	 */
 	public DataSource getDataSource(Instruction instruction, int mode,
-			IProgressMonitor pm) throws DataSourceCreationException {
+			ProgressMonitor pm) throws DataSourceCreationException {
 		return getDataSource(new SQLSourceDefinition(instruction), mode, pm);
 	}
 
 	private DataSource getDataSource(DataSourceDefinition def, int mode,
-			IProgressMonitor pm) throws DriverLoadException,
+			ProgressMonitor pm) throws DriverLoadException,
 			DataSourceCreationException {
 		try {
 			String name = sourceManager.nameAndRegister(def);
@@ -586,7 +586,7 @@ public class DataSourceFactory {
 	}
 
 	private DataSource getDataSource(String tableName, int mode,
-			IProgressMonitor pm) throws NoSuchTableException,
+			ProgressMonitor pm) throws NoSuchTableException,
 			DataSourceCreationException {
 		if (pm == null) {
 			pm = new NullProgressMonitor();
@@ -611,7 +611,7 @@ public class DataSourceFactory {
 	 * @throws DriverException
 	 * @throws ExecutionException
 	 */
-	public void executeSQL(String sql, IProgressMonitor pm)
+	public void executeSQL(String sql, ProgressMonitor pm)
 			throws ParseException, SemanticException, DriverException,
 			ExecutionException {
 		executeSQL(sql, pm, DEFAULT);
@@ -649,7 +649,7 @@ public class DataSourceFactory {
 	 * @throws ExecutionException
 	 *             If there is a problem while executing the SQL
 	 */
-	public void executeSQL(String sql, IProgressMonitor pm, int mode)
+	public void executeSQL(String sql, ProgressMonitor pm, int mode)
 			throws ParseException, SemanticException, DriverException,
 			ExecutionException {
 

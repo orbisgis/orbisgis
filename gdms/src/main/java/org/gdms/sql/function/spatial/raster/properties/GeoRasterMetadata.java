@@ -45,7 +45,7 @@ import org.gdms.data.values.ValueFactory;
 import org.grap.model.GeoRaster;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.OperationException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class GeoRasterMetadata {
 	public static final int MIN = 12, MAX = 13, COUNT = 128, WIDTH = 256,
@@ -73,7 +73,7 @@ public class GeoRasterMetadata {
 		this.method = method;
 	}
 
-	public Value execute(final GeoRaster gr1, IProgressMonitor pm)
+	public Value execute(final GeoRaster gr1, ProgressMonitor pm)
 			throws OperationException {
 		try {
 			RasterMetadata metadata = gr1.getMetadata();

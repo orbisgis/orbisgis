@@ -45,7 +45,7 @@ import org.gdms.data.db.DBTableDataSourceAdapter;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.driver.DBDriver;
 import org.gdms.driver.ReadOnlyDriver;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class FakeDBTableSourceDefinition extends DBTableSourceDefinition {
 
@@ -60,7 +60,7 @@ public class FakeDBTableSourceDefinition extends DBTableSourceDefinition {
 	}
 
 	@Override
-	public DataSource createDataSource(String tableName, IProgressMonitor pm)
+	public DataSource createDataSource(String tableName, ProgressMonitor pm)
 			throws DataSourceCreationException {
 
 		((ReadOnlyDriver) driver).setDataSourceFactory(getDataSourceFactory());

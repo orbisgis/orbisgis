@@ -70,7 +70,7 @@ import org.grap.processing.operation.others.RasteringMode;
 import org.grap.processing.operation.others.Rasterization;
 import org.grap.utilities.JTSConverter;
 import org.grap.utilities.PixelsUtil;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
@@ -96,7 +96,7 @@ public class ST_RasterizeLine implements CustomQuery {
 	}
 
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
-			Value[] values, IProgressMonitor pm) throws ExecutionException {
+			Value[] values, ProgressMonitor pm) throws ExecutionException {
 		final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
 				tables[0]);
 		final SpatialDataSourceDecorator dsRaster = new SpatialDataSourceDecorator(

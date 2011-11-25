@@ -51,7 +51,7 @@ import org.gdms.sql.function.FunctionManager;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.ProjectionOp;
 import org.gdms.sql.strategies.ProjectionOp.StarElement;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class FunctionOperator extends AbstractOperator implements Expression {
 
@@ -77,7 +77,7 @@ public class FunctionOperator extends AbstractOperator implements Expression {
 		this.name = name;
 	}
 
-	public Value evaluateExpression(IProgressMonitor pm)
+	public Value evaluateExpression(ProgressMonitor pm)
 			throws EvaluationException {
 		Function fnc = getFunction();
 		try {

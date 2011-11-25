@@ -7,7 +7,7 @@ import org.orbisgis.core.geocognition.GeocognitionExtensionElement;
 import org.orbisgis.core.geocognition.mapContext.GeocognitionException;
 import org.orbisgis.core.geocognition.persistence.Property;
 import org.orbisgis.core.geocognition.persistence.PropertySet;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public abstract class AbstractBuiltInSQLArtifact extends
 		AbstractExtensionElement implements GeocognitionExtensionElement {
@@ -53,7 +53,7 @@ public abstract class AbstractBuiltInSQLArtifact extends
 	}
 
 	@Override
-	public void close(IProgressMonitor progressMonitor) {
+	public void close(ProgressMonitor progressMonitor) {
 		unsupported();
 	}
 
@@ -63,7 +63,7 @@ public abstract class AbstractBuiltInSQLArtifact extends
 	}
 
 	@Override
-	public void open(IProgressMonitor progressMonitor)
+	public void open(ProgressMonitor progressMonitor)
 			throws UnsupportedOperationException {
 		unsupported();
 	}

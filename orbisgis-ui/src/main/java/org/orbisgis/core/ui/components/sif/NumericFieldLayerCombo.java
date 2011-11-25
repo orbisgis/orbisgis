@@ -38,7 +38,7 @@ package org.orbisgis.core.ui.components.sif;
 
 import java.util.ArrayList;
 
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.sif.multiInputPanel.ComboBoxChoice;

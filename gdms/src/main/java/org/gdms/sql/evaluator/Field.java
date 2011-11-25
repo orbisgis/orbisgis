@@ -41,7 +41,7 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.Operator;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 /**
  * Class that evaluates field references. Before evaluating an expression with
@@ -69,7 +69,7 @@ public class Field extends Operand {
 		this.tableName = tableName;
 	}
 
-	public Value evaluate(IProgressMonitor pm) throws EvaluationException {
+	public Value evaluate(ProgressMonitor pm) throws EvaluationException {
 		try {
 			Value value = fieldContext.getFieldValue(fieldIndex);
 			return value;

@@ -18,7 +18,7 @@ import org.gdms.sql.customQuery.TableDefinition;
 import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.Arguments;
 import org.grap.model.GeoRaster;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
@@ -35,7 +35,7 @@ import com.vividsolutions.jts.geom.Point;
 public class ST_Interpolate implements CustomQuery {
 
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
-			Value[] values, IProgressMonitor pm) throws ExecutionException {
+			Value[] values, ProgressMonitor pm) throws ExecutionException {
 		final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
 				tables[0]);
 		String zField = null;

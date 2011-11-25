@@ -67,7 +67,7 @@ import org.gdms.sql.evaluator.NotEquals;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionManager;
 import org.gdms.sql.function.SpatialIndexedFunction;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class ScanOperator extends AbstractOperator {
 
@@ -112,7 +112,7 @@ public class ScanOperator extends AbstractOperator {
 		return metadata;
 	}
 
-	public ObjectDriver getResultContents(IProgressMonitor pm)
+	public ObjectDriver getResultContents(ProgressMonitor pm)
 			throws ExecutionException {
 		try {
 			ObjectDriver ret = new DataSourceDriver(dataSource);

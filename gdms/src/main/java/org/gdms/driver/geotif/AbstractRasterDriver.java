@@ -56,7 +56,7 @@ import org.gdms.source.SourceManager;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -132,7 +132,7 @@ public abstract class AbstractRasterDriver implements FileReadWriteDriver {
                 FileUtils.copy(in, out);
         }
 
-        public void writeFile(File file, DataSource dataSource, IProgressMonitor pm)
+        public void writeFile(File file, DataSource dataSource, ProgressMonitor pm)
                 throws DriverException {
                 checkMetadata(dataSource.getMetadata());
                 if (dataSource.getRowCount() == 0) {

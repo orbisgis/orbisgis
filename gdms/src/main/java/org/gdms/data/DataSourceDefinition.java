@@ -42,7 +42,7 @@ import java.util.ArrayList;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.source.directory.DefinitionType;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 /**
  * Class to be implemented to add new types of sources to the system.
@@ -57,7 +57,7 @@ public interface DataSourceDefinition {
 	 *            To indicate progress or being canceled
 	 * @return DataSource
 	 */
-	public DataSource createDataSource(String tableName, IProgressMonitor pm)
+	public DataSource createDataSource(String tableName, ProgressMonitor pm)
 			throws DataSourceCreationException;
 
 	/**
@@ -65,7 +65,7 @@ public interface DataSourceDefinition {
 	 * 
 	 * @param contents
 	 */
-	public void createDataSource(DataSource contents, IProgressMonitor pm)
+	public void createDataSource(DataSource contents, ProgressMonitor pm)
 			throws DriverException;
 
 	/**

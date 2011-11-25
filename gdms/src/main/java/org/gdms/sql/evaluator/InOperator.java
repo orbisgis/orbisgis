@@ -50,7 +50,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.Operator;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class InOperator extends ComparisonOperator implements Expression {
 
@@ -69,7 +69,7 @@ public class InOperator extends ComparisonOperator implements Expression {
 	}
 
 	@Override
-	protected Value evaluateExpression(IProgressMonitor pm)
+	protected Value evaluateExpression(ProgressMonitor pm)
 			throws EvaluationException, IncompatibleTypesException {
 		try {
 

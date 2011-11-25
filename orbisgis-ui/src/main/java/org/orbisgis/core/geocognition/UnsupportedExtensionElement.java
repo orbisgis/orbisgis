@@ -2,7 +2,7 @@ package org.orbisgis.core.geocognition;
 
 import org.orbisgis.core.edition.EditableElementException;
 import org.orbisgis.core.geocognition.mapContext.GeocognitionException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class UnsupportedExtensionElement extends AbstractExtensionElement
 		implements GeocognitionExtensionElement {
@@ -37,7 +37,7 @@ public class UnsupportedExtensionElement extends AbstractExtensionElement
 	}
 
 	@Override
-	public void close(IProgressMonitor progressMonitor)
+	public void close(ProgressMonitor progressMonitor)
 			throws UnsupportedOperationException {
 	}
 
@@ -57,7 +57,7 @@ public class UnsupportedExtensionElement extends AbstractExtensionElement
 	}
 
 	@Override
-	public void open(IProgressMonitor progressMonitor)
+	public void open(ProgressMonitor progressMonitor)
 			throws UnsupportedOperationException, EditableElementException {
 	}
 

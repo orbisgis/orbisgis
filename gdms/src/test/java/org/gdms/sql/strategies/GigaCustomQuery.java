@@ -15,13 +15,13 @@ import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.customQuery.TableDefinition;
 import org.gdms.sql.function.Arguments;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class GigaCustomQuery implements CustomQuery {
 
 	@Override
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
-			Value[] values, IProgressMonitor pm) throws ExecutionException {
+			Value[] values, ProgressMonitor pm) throws ExecutionException {
 		try {
 			Metadata metadata = getMetadata(null);
 			DiskBufferDriver dbd = new DiskBufferDriver(dsf, metadata);

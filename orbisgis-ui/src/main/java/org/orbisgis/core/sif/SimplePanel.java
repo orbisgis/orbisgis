@@ -56,8 +56,8 @@ import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.file.FileSourceCreation;
-import org.gdms.data.metadata.DefaultMetadata;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.DefaultMetadata;
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -67,7 +67,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.generic.GenericObjectDriver;
 import org.gdms.sql.parser.ParseException;
-import org.gdms.sql.strategies.SemanticException;
+import org.gdms.sql.engine.SemanticException;
 import org.orbisgis.utils.I18N;
 
 public class SimplePanel extends JPanel {

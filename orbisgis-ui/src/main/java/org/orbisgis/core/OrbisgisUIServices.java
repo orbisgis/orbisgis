@@ -47,7 +47,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSourceFactory;
+import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.InitializationException;
 import org.gdms.data.WarningListener;
 import org.orbisgis.core.configuration.BasicConfiguration;
@@ -118,7 +118,7 @@ public class OrbisgisUIServices {
 
 		IOGWorkspace ews = Services.getService(IOGWorkspace.class);
 
-		DataSourceFactory dsf = new DataSourceFactory(sourcesDir
+		SQLDataSourceFactory dsf = new SQLDataSourceFactory(sourcesDir
 				.getAbsolutePath(), ews.getTempFolder().getAbsolutePath());
 		dsf.setResultDir(ews.getResultsFolder());
 

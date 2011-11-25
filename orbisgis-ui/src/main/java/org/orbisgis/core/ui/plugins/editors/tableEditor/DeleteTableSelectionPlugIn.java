@@ -56,7 +56,7 @@ import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.views.tableEditor.TableEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.I18N;
 
 public class DeleteTableSelectionPlugIn extends AbstractPlugIn {
@@ -73,7 +73,7 @@ public class DeleteTableSelectionPlugIn extends AbstractPlugIn {
                 bm.backgroundOperation(new BackgroundJob() {
 
                         @Override
-                        public void run(IProgressMonitor pm) {
+                        public void run(ProgressMonitor pm) {
 
                                 IEditor editor = context.getActiveEditor();
                                 TableEditableElement element = (TableEditableElement) editor.getElement();

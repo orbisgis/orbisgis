@@ -12,7 +12,7 @@ import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.source.SourceManager;
 import org.gdms.source.directory.DefinitionType;
 import org.gdms.source.directory.SystemDefinitionType;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.I18N;
 
 public class SystemSourceDefinition extends FileSourceDefinition {
@@ -21,7 +21,7 @@ public class SystemSourceDefinition extends FileSourceDefinition {
 		super(systemSource.getFile());
 	}
 
-	public DataSource createDataSource(String tableName, IProgressMonitor pm)
+	public DataSource createDataSource(String tableName, ProgressMonitor pm)
 			throws DataSourceCreationException {
 		if (!file.exists()) {
 			throw new DataSourceCreationException(file + " "

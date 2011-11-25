@@ -45,8 +45,8 @@ import javax.swing.JPanel;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
-import org.gdms.data.metadata.DefaultMetadata;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.DefaultMetadata;
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;

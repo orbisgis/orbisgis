@@ -64,7 +64,7 @@ import org.gdms.data.values.ValueWriter;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.source.SourceManager;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -172,7 +172,7 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	 */
 	@Override
 	public void writeFile(final File file, final DataSource dataSource,
-			IProgressMonitor pm) throws DriverException {
+			ProgressMonitor pm) throws DriverException {
 		try {
 			List<List<String>> content = new ArrayList<List<String>>();
 			Metadata metadata = dataSource.getMetadata();

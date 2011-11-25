@@ -4,11 +4,11 @@ import org.gdms.data.ExecutionException;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class DropViewOperator extends AbstractOperator implements Operator {
 
-	protected ObjectDriver getResultContents(IProgressMonitor pm)
+	protected ObjectDriver getResultContents(ProgressMonitor pm)
 			throws ExecutionException {
 		for (int i = 0; i < getOperatorCount(); i++) {
 			String[] tables = getOperator(i).getReferencedTables();

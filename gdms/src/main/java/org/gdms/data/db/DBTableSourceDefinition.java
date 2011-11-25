@@ -56,7 +56,7 @@ import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.source.directory.DbDefinitionType;
 import org.gdms.source.directory.DefinitionType;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class DBTableSourceDefinition extends AbstractDataSourceDefinition {
 	protected DBSource def;
@@ -71,7 +71,7 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition {
 		this.def = def;
 	}
 
-	public DataSource createDataSource(String tableName, IProgressMonitor pm)
+	public DataSource createDataSource(String tableName, ProgressMonitor pm)
 			throws DataSourceCreationException {
 
 		((ReadOnlyDriver) getDriver())
@@ -98,7 +98,7 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition {
 		return def.getPrefix();
 	}
 
-	public void createDataSource(DataSource contents, IProgressMonitor pm)
+	public void createDataSource(DataSource contents, ProgressMonitor pm)
 			throws DriverException {
 		contents.open();
 		DBReadWriteDriver driver = (DBReadWriteDriver) getDriver();

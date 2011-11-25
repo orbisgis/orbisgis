@@ -44,7 +44,7 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.driver.DriverException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 
@@ -151,7 +151,7 @@ public class IndexEditionManager {
 			indexManagerListener = new IndexManagerListener() {
 
 				public void indexCreated(String source, String field,
-						String indexId, IndexManager im, IProgressMonitor pm)
+						String indexId, IndexManager im, ProgressMonitor pm)
 						throws IndexException {
 					try {
 						if (source.equals(ds.getDataSourceFactory()
@@ -192,7 +192,7 @@ public class IndexEditionManager {
 	}
 
 	private void addIndexWithDataInEdition(String fieldName, String indexId,
-			IndexManager im, IProgressMonitor pm) throws IndexException {
+			IndexManager im, ProgressMonitor pm) throws IndexException {
 		DataSourceIndex index = im.instantiateIndex(indexId);
 		index.setFile(new File(ds.getDataSourceFactory().getTempFile()));
 		index.setFieldName(fieldName);

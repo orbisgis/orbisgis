@@ -16,7 +16,7 @@ import org.orbisgis.core.layerModel.LayerListenerEvent;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.layerModel.MapContextListener;
 import org.orbisgis.core.layerModel.SelectionEvent;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
 
 public class GeocognitionMapContext extends AbstractExtensionElement implements
@@ -57,7 +57,7 @@ public class GeocognitionMapContext extends AbstractExtensionElement implements
 	}
 
 	@Override
-	public void close(IProgressMonitor progressMonitor)
+	public void close(ProgressMonitor progressMonitor)
 			throws UnsupportedOperationException {
 		mapContext.removeMapContextListener(changeListener);
 		mapContext.getLayerModel().removeLayerListenerRecursively(
@@ -67,7 +67,7 @@ public class GeocognitionMapContext extends AbstractExtensionElement implements
 	}
 
 	@Override
-	public void open(IProgressMonitor progressMonitor)
+	public void open(ProgressMonitor progressMonitor)
 			throws UnsupportedOperationException, EditableElementException {
 		try {
 			if (revertStatus == null) {

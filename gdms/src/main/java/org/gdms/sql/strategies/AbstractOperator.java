@@ -47,7 +47,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.source.SourceManager;
 import org.gdms.sql.evaluator.Field;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public abstract class AbstractOperator implements Operator {
 
@@ -182,7 +182,7 @@ public abstract class AbstractOperator implements Operator {
 		this.removeInternal = isRoot;
 	}
 
-	public ObjectDriver getResult(IProgressMonitor pm)
+	public ObjectDriver getResult(ProgressMonitor pm)
 			throws ExecutionException {
 		if (result == null) {
 			result = getResultContents(pm);
@@ -217,7 +217,7 @@ public abstract class AbstractOperator implements Operator {
 		return result;
 	}
 
-	protected abstract ObjectDriver getResultContents(IProgressMonitor pm)
+	protected abstract ObjectDriver getResultContents(ProgressMonitor pm)
 			throws ExecutionException;
 
 	protected Integer getFieldIndexByName(ObjectDriver source, String fieldName)

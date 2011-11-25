@@ -53,7 +53,7 @@ import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.driver.gdms.GdmsDriver;
 import org.gdms.source.directory.DefinitionType;
 import org.gdms.source.directory.FileDefinitionType;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.I18N;
 
 /**
@@ -73,7 +73,7 @@ public class FileSourceDefinition extends AbstractDataSourceDefinition {
                 this.file = new File(fileName);
         }
 
-        public DataSource createDataSource(String tableName, IProgressMonitor pm)
+        public DataSource createDataSource(String tableName, ProgressMonitor pm)
                 throws DataSourceCreationException {
                 if (!file.exists()) {
                         throw new DataSourceCreationException(file + " "
@@ -94,7 +94,7 @@ public class FileSourceDefinition extends AbstractDataSourceDefinition {
                 return file;
         }
 
-        public void createDataSource(DataSource contents, IProgressMonitor pm)
+        public void createDataSource(DataSource contents, ProgressMonitor pm)
                 throws DriverException {
                 FileReadWriteDriver d = (FileReadWriteDriver) getDriver();
                 d.setDataSourceFactory(getDataSourceFactory());

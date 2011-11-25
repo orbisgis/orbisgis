@@ -53,7 +53,7 @@ import org.gdms.sql.evaluator.EvaluationException;
 import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Field;
 import org.gdms.sql.evaluator.FunctionOperator;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class GroupByOperator extends AbstractExpressionOperator implements
 		Operator {
@@ -63,7 +63,7 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 	private int offset = -1;
 	private int limit = -1;
 
-	public ObjectDriver getResultContents(IProgressMonitor pm)
+	public ObjectDriver getResultContents(ProgressMonitor pm)
 			throws ExecutionException {
 		try {
 			ObjectDriver source = getOperator(0).getResult(pm);

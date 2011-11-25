@@ -56,7 +56,7 @@ import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.Instruction;
 import org.gdms.sql.strategies.SQLProcessor;
 import org.gdms.sql.strategies.SemanticException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class SQLSourceDefinition extends AbstractDataSourceDefinition implements
 		DataSourceDefinition {
@@ -77,7 +77,7 @@ public class SQLSourceDefinition extends AbstractDataSourceDefinition implements
 		return file;
 	}
 
-	public File execute(IProgressMonitor pm) throws DriverException,
+	public File execute(ProgressMonitor pm) throws DriverException,
 			ExecutionException, SemanticException {
 		getDataSourceFactory().fireInstructionExecuted(instruction.getSQL());
 		ObjectDriver source = instruction.execute(pm);
@@ -105,7 +105,7 @@ public class SQLSourceDefinition extends AbstractDataSourceDefinition implements
 
 	}
 
-	public DataSource createDataSource(String tableName, IProgressMonitor pm)
+	public DataSource createDataSource(String tableName, ProgressMonitor pm)
 			throws DataSourceCreationException {
 		try {
 			File file = execute(pm);
@@ -127,7 +127,7 @@ public class SQLSourceDefinition extends AbstractDataSourceDefinition implements
 		}
 	}
 
-	public void createDataSource(DataSource contents, IProgressMonitor pm)
+	public void createDataSource(DataSource contents, ProgressMonitor pm)
 			throws DriverException {
 		throw new DriverException("Read only source");
 	}

@@ -48,7 +48,7 @@ import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.SemanticException;
 import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.I18N;
 
 public class ExportInDatabaseOperation implements BackgroundJob {
@@ -78,7 +78,7 @@ public class ExportInDatabaseOperation implements BackgroundJob {
 	}
 
 	@Override
-	public void run(IProgressMonitor pm) {
+	public void run(ProgressMonitor pm) {
 
 		try {
 			boolean changeName = false;

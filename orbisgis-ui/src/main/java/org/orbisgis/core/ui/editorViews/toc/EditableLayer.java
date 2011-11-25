@@ -11,7 +11,7 @@ import org.orbisgis.core.layerModel.LayerListenerEvent;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editors.table.Selection;
 import org.orbisgis.core.ui.editors.table.TableEditableElement;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class EditableLayer extends AbstractTableEditableElement implements
 		TableEditableElement {
@@ -78,7 +78,7 @@ public class EditableLayer extends AbstractTableEditableElement implements
 	}
 
 	@Override
-	public void open(IProgressMonitor progressMonitor)
+	public void open(ProgressMonitor progressMonitor)
 			throws UnsupportedOperationException, EditableElementException {
 		super.open(progressMonitor);
 		element.addElementListener(listener);
@@ -86,7 +86,7 @@ public class EditableLayer extends AbstractTableEditableElement implements
 	}
 
 	@Override
-	public void close(IProgressMonitor progressMonitor)
+	public void close(ProgressMonitor progressMonitor)
 			throws UnsupportedOperationException, EditableElementException {
 		super.close(progressMonitor);
 		element.removeElementListener(listener);

@@ -97,7 +97,7 @@ import org.gdms.sql.strategies.Instruction;
 import org.gdms.sql.strategies.SQLProcessor;
 import org.gdms.sql.strategies.SemanticException;
 import org.gdms.sql.strategies.TableNotFoundException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 
 public class DefaultSourceManager implements SourceManager {
@@ -631,7 +631,7 @@ public class DefaultSourceManager implements SourceManager {
 		return null;
 	}
 
-	public DataSource getDataSource(String name, IProgressMonitor pm)
+	public DataSource getDataSource(String name, ProgressMonitor pm)
 			throws NoSuchTableException, DataSourceCreationException {
 
 		name = getMainNameFor(name);
@@ -783,7 +783,7 @@ public class DefaultSourceManager implements SourceManager {
 	}
 
 	public void saveContents(String sourceName, DataSource contents,
-			IProgressMonitor pm) throws DriverException {
+			ProgressMonitor pm) throws DriverException {
 		ExtendedSource extendedSource = getExtendedSource(sourceName);
 		if (extendedSource == null) {
 			throw new IllegalArgumentException(

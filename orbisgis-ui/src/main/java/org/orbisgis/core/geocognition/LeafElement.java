@@ -12,7 +12,7 @@ import org.orbisgis.core.edition.EditableElementException;
 import org.orbisgis.core.geocognition.mapContext.GeocognitionException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.map.TransformListener;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -177,7 +177,7 @@ public final class LeafElement extends AbstractGeocognitionElement implements
 	}
 
 	@Override
-	public void open(IProgressMonitor progressMonitor)
+	public void open(ProgressMonitor progressMonitor)
 			throws UnsupportedOperationException, EditableElementException {
 		modified = null;
 		element.setElementListener(contentListener);
@@ -185,7 +185,7 @@ public final class LeafElement extends AbstractGeocognitionElement implements
 	}
 
 	@Override
-	public void close(IProgressMonitor progressMonitor)
+	public void close(ProgressMonitor progressMonitor)
 			throws UnsupportedOperationException, EditableElementException {
 		element.close(progressMonitor);
 		element.setElementListener(null);

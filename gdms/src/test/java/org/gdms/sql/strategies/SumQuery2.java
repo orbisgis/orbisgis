@@ -50,7 +50,7 @@ import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.customQuery.TableDefinition;
 import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.Arguments;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 /**
  */
@@ -63,7 +63,7 @@ public class SumQuery2 implements CustomQuery {
 	 *      org.gdms.data.DataSource[], Value[])
 	 */
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
-			Value[] values, IProgressMonitor pm) throws ExecutionException {
+			Value[] values, ProgressMonitor pm) throws ExecutionException {
 		if (tables.length != 1)
 			throw new ExecutionException("SUM only operates on one table");
 		if (values.length != 1)

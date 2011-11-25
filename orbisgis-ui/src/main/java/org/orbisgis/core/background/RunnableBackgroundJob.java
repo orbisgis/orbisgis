@@ -37,15 +37,15 @@
 package org.orbisgis.core.background;
 
 import org.orbisgis.core.Services;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class RunnableBackgroundJob implements Runnable {
 
 	private Job job;
-	private IProgressMonitor pm;
+	private ProgressMonitor pm;
 	private JobQueue jobQueue;
 
-	public RunnableBackgroundJob(JobQueue jobQueue, IProgressMonitor pm, Job job) {
+	public RunnableBackgroundJob(JobQueue jobQueue, ProgressMonitor pm, Job job) {
 		this.job = job;
 		this.pm = pm;
 		this.jobQueue = jobQueue;

@@ -55,7 +55,7 @@ import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.customQuery.TableDefinition;
 import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.Arguments;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -68,7 +68,7 @@ public class ST_CreateWebGrid implements CustomQuery {
 	private final static GeometryFactory GF = new GeometryFactory();
 
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
-			Value[] values, IProgressMonitor pm) throws ExecutionException {
+			Value[] values, ProgressMonitor pm) throws ExecutionException {
 		try {
 			final double deltaR = values[0].getAsDouble();
 			final double deltaT = values[1].getAsDouble();
@@ -106,7 +106,7 @@ public class ST_CreateWebGrid implements CustomQuery {
 
 	private void createGrid(final GenericObjectDriver driver,
 			final Envelope env, double deltaR, double deltaT,
-			final IProgressMonitor pm) throws DriverException {
+			final ProgressMonitor pm) throws DriverException {
 		final double R = 0.5 * Math.sqrt(env.getWidth() * env.getWidth()
 				+ env.getHeight() * env.getHeight());
 		final Coordinate centroid = env.centre();

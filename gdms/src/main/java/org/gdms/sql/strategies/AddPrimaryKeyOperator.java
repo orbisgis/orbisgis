@@ -14,7 +14,7 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class AddPrimaryKeyOperator extends AbstractOperator implements Operator {
 
@@ -30,7 +30,7 @@ public class AddPrimaryKeyOperator extends AbstractOperator implements Operator 
 	}
 
 	@Override
-	protected ObjectDriver getResultContents(IProgressMonitor pm)
+	protected ObjectDriver getResultContents(ProgressMonitor pm)
 			throws ExecutionException {
 
 		DataSource ds;

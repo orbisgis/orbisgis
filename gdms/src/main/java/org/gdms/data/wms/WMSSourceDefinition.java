@@ -18,7 +18,7 @@ import org.gdms.driver.generic.GenericObjectDriver;
 import org.gdms.source.SourceManager;
 import org.gdms.source.directory.DefinitionType;
 import org.gdms.source.directory.WmsDefinitionType;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class WMSSourceDefinition extends AbstractDataSourceDefinition implements
 		DataSourceDefinition {
@@ -55,7 +55,7 @@ public class WMSSourceDefinition extends AbstractDataSourceDefinition implements
 	}
 
 	@Override
-	public DataSource createDataSource(String tableName, IProgressMonitor pm)
+	public DataSource createDataSource(String tableName, ProgressMonitor pm)
 			throws DataSourceCreationException {
 		((ReadOnlyDriver) getDriver())
 				.setDataSourceFactory(getDataSourceFactory());
@@ -66,7 +66,7 @@ public class WMSSourceDefinition extends AbstractDataSourceDefinition implements
 	}
 
 	@Override
-	public void createDataSource(DataSource contents, IProgressMonitor pm)
+	public void createDataSource(DataSource contents, ProgressMonitor pm)
 			throws DriverException {
 		throw new UnsupportedOperationException("Cannot create WMS sources");
 	}

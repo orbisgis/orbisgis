@@ -61,7 +61,7 @@ import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.plugins.views.information.InformationManager;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -156,7 +156,7 @@ public class InfoTool extends AbstractRectangleTool {
 			return "Getting info";
 		}
 
-		public void run(IProgressMonitor pm) {
+		public void run(ProgressMonitor pm) {
 			try {
 				logger.debug("Info query: " + sql);
 				final DataSource ds = ((DataManager) Services

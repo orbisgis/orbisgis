@@ -39,7 +39,7 @@ package org.gdms.sql.evaluator;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.strategies.IncompatibleTypesException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class Substraction extends ArithmeticOperator {
 
@@ -47,7 +47,7 @@ public class Substraction extends ArithmeticOperator {
 		super(children);
 	}
 
-	public Value evaluateExpression(IProgressMonitor pm) throws EvaluationException,
+	public Value evaluateExpression(ProgressMonitor pm) throws EvaluationException,
 			IncompatibleTypesException {
 		return getLeftOperator().evaluate(pm).sum(
 				ValueFactory.createValue(-1).multiply(

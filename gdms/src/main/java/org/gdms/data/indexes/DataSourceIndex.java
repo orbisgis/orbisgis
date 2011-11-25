@@ -42,7 +42,7 @@ import java.io.IOException;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public interface DataSourceIndex extends AdHocIndex {
 
@@ -93,7 +93,7 @@ public interface DataSourceIndex extends AdHocIndex {
 	 * @throws IndexException
 	 */
 	public void buildIndex(DataSourceFactory dsf, DataSource ds,
-			IProgressMonitor pm) throws IndexException;
+			ProgressMonitor pm) throws IndexException;
 
 	/**
 	 * Loads the index information from the file

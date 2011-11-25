@@ -63,7 +63,7 @@ import org.fife.ui.autocomplete.VariableCompletion;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.NoSuchTableException;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.DefaultType;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -89,7 +89,7 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.background.UniqueJobID;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 /**
  * This class provides auto-completion for a JTextComponent.
@@ -223,7 +223,7 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                 bm.nonBlockingBackgroundOperation(jobID, new BackgroundJob() {
 
                         @Override
-                        public void run(IProgressMonitor pm) {
+                        public void run(ProgressMonitor pm) {
                                 String source;
                                 while (true) {
                                         source = sourcesToLoad.poll();

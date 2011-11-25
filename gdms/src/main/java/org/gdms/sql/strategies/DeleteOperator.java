@@ -53,7 +53,7 @@ import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.evaluator.EvaluationException;
 import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Field;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.I18N;
 
 public class DeleteOperator extends AbstractExpressionOperator implements
@@ -70,7 +70,7 @@ public class DeleteOperator extends AbstractExpressionOperator implements
 		this.expressions = expressions;
 	}
 
-	public ObjectDriver getResultContents(IProgressMonitor pm)
+	public ObjectDriver getResultContents(ProgressMonitor pm)
 			throws ExecutionException {
 		ObjectDriver source = getOperator(0).getResult(pm);
 		try {
@@ -137,7 +137,7 @@ public class DeleteOperator extends AbstractExpressionOperator implements
 		return null;
 	}
 
-	private boolean evaluatesToTrue(Expression[] exprs, IProgressMonitor pm)
+	private boolean evaluatesToTrue(Expression[] exprs, ProgressMonitor pm)
 			throws EvaluationException {
 		for (Expression expression : exprs) {
 			if (!evaluatesToTrue(expression, pm)) {
@@ -149,7 +149,7 @@ public class DeleteOperator extends AbstractExpressionOperator implements
 	}
 
 	private static boolean evaluatesToTrue(Expression expression,
-			IProgressMonitor pm) throws IncompatibleTypesException,
+			ProgressMonitor pm) throws IncompatibleTypesException,
 			EvaluationException {
 		Value expressionResult = expression.evaluate(pm);
 		return !expressionResult.isNull() && expressionResult.getAsBoolean();

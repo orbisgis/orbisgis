@@ -12,7 +12,7 @@ import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -43,7 +43,7 @@ public class GdmsWriter {
 		raf.close();
 	}
 
-	public void write(DataSource dataSource, IProgressMonitor pm)
+	public void write(DataSource dataSource, ProgressMonitor pm)
 			throws IOException, DriverException {
 		writeMetadata(dataSource.getRowCount(), dataSource.getMetadata());
 

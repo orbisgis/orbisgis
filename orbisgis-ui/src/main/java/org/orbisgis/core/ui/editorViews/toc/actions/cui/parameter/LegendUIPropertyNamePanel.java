@@ -45,7 +45,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.Icon;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.Metadata;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.se.parameter.ValueReference;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;

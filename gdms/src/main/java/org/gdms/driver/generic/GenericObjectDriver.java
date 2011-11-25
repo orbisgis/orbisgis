@@ -49,7 +49,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.GDMSModelDriver;
 import org.gdms.driver.ObjectReadWriteDriver;
 import org.gdms.source.SourceManager;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
 
 public class GenericObjectDriver extends GDMSModelDriver implements
@@ -101,7 +101,7 @@ public class GenericObjectDriver extends GDMSModelDriver implements
 		dataSource.close();
 	}
 
-	public boolean write(DataSource dataSource, IProgressMonitor pm)
+	public boolean write(DataSource dataSource, ProgressMonitor pm)
 			throws DriverException {
 		ArrayList<ArrayList<Value>> newContents = new ArrayList<ArrayList<Value>>();
 		for (int i = 0; i < dataSource.getRowCount(); i++) {

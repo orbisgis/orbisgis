@@ -44,7 +44,7 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.function.Arguments;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 /**
  * Interface to implement by the custom queries
@@ -67,7 +67,7 @@ public interface CustomQuery {
 	 *             if the custom query execution fails
 	 */
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
-			Value[] values, IProgressMonitor pm) throws ExecutionException;
+			Value[] values, ProgressMonitor pm) throws ExecutionException;
 
 	/**
 	 * Gets the query name. Must be a valid SQL identifier (i.e.: '.' is not

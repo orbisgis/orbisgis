@@ -11,7 +11,7 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class RenameColumnOperator extends AbstractOperator implements Operator {
 
@@ -29,7 +29,7 @@ public class RenameColumnOperator extends AbstractOperator implements Operator {
 	}
 
 	@Override
-	protected ObjectDriver getResultContents(IProgressMonitor pm)
+	protected ObjectDriver getResultContents(ProgressMonitor pm)
 			throws ExecutionException {
 
 		DataSource ds;

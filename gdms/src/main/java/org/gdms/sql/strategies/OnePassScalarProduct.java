@@ -54,7 +54,7 @@ import org.gdms.sql.evaluator.EvaluationException;
 import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Field;
 import org.gdms.sql.strategies.joinOptimization.IndexScan;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class OnePassScalarProduct extends ScalarProductOp {
 
@@ -69,7 +69,7 @@ public class OnePassScalarProduct extends ScalarProductOp {
 	}
 
 	@Override
-	public ObjectDriver getResultContents(IProgressMonitor pm)
+	public ObjectDriver getResultContents(ProgressMonitor pm)
 			throws ExecutionException {
 		try {
 			// Get input and outputs

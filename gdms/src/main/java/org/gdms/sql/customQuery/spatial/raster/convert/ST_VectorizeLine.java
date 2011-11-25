@@ -30,7 +30,7 @@ import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.customQuery.TableDefinition;
 import org.gdms.sql.function.Arguments;
 import org.grap.model.GeoRaster;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -42,7 +42,7 @@ public class ST_VectorizeLine implements CustomQuery {
 	private static final int[] NEIGHBORS_Y = { 0, -1, -1, -1, 0, 1, 1, 1 };
 
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
-			Value[] values, IProgressMonitor pm) throws ExecutionException {
+			Value[] values, ProgressMonitor pm) throws ExecutionException {
 		final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
 				tables[0]);
 

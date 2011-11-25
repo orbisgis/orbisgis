@@ -42,7 +42,7 @@ import java.io.IOException;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.metadata.Metadata;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 /**
  * Interface to be implement by the File drivers that as also RW capabilities
@@ -66,7 +66,7 @@ public interface FileReadWriteDriver extends FileDriver, ReadWriteDriver {
 	 * @param dataWare
 	 *            DataWare with the contents
 	 */
-	void writeFile(File file, DataSource dataSource, IProgressMonitor pm)
+	void writeFile(File file, DataSource dataSource, ProgressMonitor pm)
 			throws DriverException;
 
 	/**

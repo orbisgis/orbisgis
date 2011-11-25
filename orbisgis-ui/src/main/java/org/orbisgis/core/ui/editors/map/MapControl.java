@@ -79,7 +79,7 @@ import org.orbisgis.core.ui.editors.map.tool.ToolListener;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -385,7 +385,7 @@ public class MapControl extends JComponent implements ComponentListener,
 			return I18N.getString("orbisgis.org.orbisgis.ui.mapControl.drawing"); //$NON-NLS-1$
 		}
 
-		public void run(IProgressMonitor pm) {
+		public void run(ProgressMonitor pm) {
 			synchronized (this) {
 				this.pm = new CancellablePM(cancel, pm);
 				pm = this.pm;
@@ -424,12 +424,12 @@ public class MapControl extends JComponent implements ComponentListener,
 		}
 	}
 
-	private class CancellablePM implements IProgressMonitor {
+	private class CancellablePM implements ProgressMonitor {
 
-		private IProgressMonitor decoratedPM;
+		private ProgressMonitor decoratedPM;
 		private boolean cancel;
 
-		public CancellablePM(boolean cancel, IProgressMonitor pm) {
+		public CancellablePM(boolean cancel, ProgressMonitor pm) {
 			this.decoratedPM = pm;
 			this.cancel = cancel;
 		}

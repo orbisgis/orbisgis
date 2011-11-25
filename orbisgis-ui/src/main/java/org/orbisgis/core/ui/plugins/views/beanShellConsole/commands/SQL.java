@@ -44,7 +44,7 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.customQuery.showAttributes.Table;
@@ -61,7 +61,7 @@ import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editors.map.MapContextManager;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 import bsh.CallStack;
 import bsh.Interpreter;
@@ -96,7 +96,7 @@ public class SQL {
 			return "Executing script";
 		}
 
-		public void run(IProgressMonitor pm) {
+		public void run(ProgressMonitor pm) {
 			DataSourceFactory dsf = ((DataManager) Services
 					.getService(DataManager.class)).getDataSourceFactory();
 			SQLProcessor sqlProcessor = new SQLProcessor(dsf);

@@ -79,7 +79,7 @@ import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 import org.orbisgis.core.ui.plugins.views.geocatalog.TransferableSource;
 import org.orbisgis.core.ui.plugins.views.mapEditor.MapEditorPlugIn;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.I18N;
 
 public class Toc extends ResourceTree implements WorkbenchFrame {
@@ -426,7 +426,7 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 			this.dropNode = dropNode;
 		}
 
-		public void run(IProgressMonitor pm) {
+		public void run(ProgressMonitor pm) {
 			int index;
 			if (!dropNode.acceptsChilds()) {
 				ILayer parent = dropNode.getParent();

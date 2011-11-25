@@ -51,7 +51,7 @@ import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.I18N;
 
 public class SetNullPlugIn extends AbstractPlugIn {
@@ -62,7 +62,7 @@ public class SetNullPlugIn extends AbstractPlugIn {
 		bm.backgroundOperation(new BackgroundJob() {
 
 			@Override
-			public void run(IProgressMonitor pm) {
+			public void run(ProgressMonitor pm) {
 
 				IEditor editor = context.getActiveEditor();
 				TableEditableElement element = (TableEditableElement) editor

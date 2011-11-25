@@ -52,7 +52,7 @@ import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.views.geocatalog.Catalog;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.I18N;
 
 public class ExportInFileOperation implements BackgroundJob {
@@ -76,7 +76,7 @@ public class ExportInFileOperation implements BackgroundJob {
 	}
 
 	@Override
-	public void run(IProgressMonitor pm) {
+	public void run(ProgressMonitor pm) {
 
 		String fileName = savedFile.getName();
 		int index = fileName.lastIndexOf('.');

@@ -58,7 +58,7 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.source.SourceManager;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 
 public class DBFDriver implements FileReadWriteDriver {
@@ -105,14 +105,14 @@ public class DBFDriver implements FileReadWriteDriver {
 		}
 	}
 
-	public void writeFile(File file, DataSource dataSource, IProgressMonitor pm)
+	public void writeFile(File file, DataSource dataSource, ProgressMonitor pm)
 			throws DriverException {
 		writeFile(file, new DefaultRowProvider(dataSource), dataSourceFactory
 				.getWarningListener(), pm);
 	}
 
 	public void writeFile(File file, RowProvider dataSource,
-			WarningListener warningListener, IProgressMonitor pm)
+			WarningListener warningListener, ProgressMonitor pm)
 			throws DriverException {
 		try {
 			FileOutputStream fos = new FileOutputStream(file);

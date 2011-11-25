@@ -1,6 +1,6 @@
 package org.orbisgis.core.edition;
 
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public interface EditableBaseElement{
 
@@ -22,7 +22,7 @@ public interface EditableBaseElement{
 	 * @throws EditableElementException
 	 *             If the operati}on cannot be done
 	 */
-	void open(IProgressMonitor progressMonitor)
+	void open(ProgressMonitor progressMonitor)
 			throws UnsupportedOperationException, EditableElementException;
 
 	/**
@@ -49,7 +49,7 @@ public interface EditableBaseElement{
 	 * @throws EditableElementException
 	 *             If the closing was not done
 	 */
-	void close(IProgressMonitor progressMonitor)
+	void close(ProgressMonitor progressMonitor)
 			throws UnsupportedOperationException, EditableElementException;
 
 	/**

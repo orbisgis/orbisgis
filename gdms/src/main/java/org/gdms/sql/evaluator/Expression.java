@@ -41,7 +41,7 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.Operator;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public interface Expression {
 
@@ -53,7 +53,7 @@ public interface Expression {
 	 * @throws EvaluationException
 	 *             If there is some problem evaluating the expression
 	 */
-	Value evaluate(IProgressMonitor pm) throws EvaluationException;
+	Value evaluate(ProgressMonitor pm) throws EvaluationException;
 
 	/**
 	 * Does nothing if the types of the expression are valid. If there is an

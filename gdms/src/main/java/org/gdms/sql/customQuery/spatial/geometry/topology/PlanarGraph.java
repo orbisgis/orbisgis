@@ -57,7 +57,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.generic.GenericObjectDriver;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -79,7 +79,7 @@ public class PlanarGraph {
 
 	private DataSourceFactory dsf = new DataSourceFactory();
 
-	private IProgressMonitor pm;
+	private ProgressMonitor pm;
 
 	private static String ID = "id";
 
@@ -93,7 +93,7 @@ public class PlanarGraph {
 
 	public final static Integer MINUS_ONE = new Integer(-1);
 
-	public PlanarGraph(IProgressMonitor pm) {
+	public PlanarGraph(ProgressMonitor pm) {
 		this.pm = pm;
 	}
 

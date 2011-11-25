@@ -42,7 +42,7 @@ import org.gdms.data.NoSuchTableException;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class DropTableOperator extends AbstractOperator implements Operator {
 
@@ -54,7 +54,7 @@ public class DropTableOperator extends AbstractOperator implements Operator {
 		this.purge = purge;
 	}
 
-	public ObjectDriver getResultContents(IProgressMonitor pm)
+	public ObjectDriver getResultContents(ProgressMonitor pm)
 			throws ExecutionException {
 		for (int i = 0; i < getOperatorCount(); i++) {
 			String[] tables = getOperator(i).getReferencedTables();

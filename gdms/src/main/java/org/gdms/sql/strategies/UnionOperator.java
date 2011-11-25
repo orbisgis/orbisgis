@@ -49,7 +49,7 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class UnionOperator extends AbstractOperator implements Operator {
 
@@ -58,7 +58,7 @@ public class UnionOperator extends AbstractOperator implements Operator {
 		this.addChild(op2);
 	}
 
-	public ObjectDriver getResultContents(IProgressMonitor pm)
+	public ObjectDriver getResultContents(ProgressMonitor pm)
 			throws ExecutionException {
 		try {
 			return new UnionDriver(getOperator(0).getResult(pm), getOperator(1)

@@ -44,7 +44,7 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.source.SourceManager;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class CreateTableOperator extends AbstractOperator implements Operator {
 
@@ -56,7 +56,7 @@ public class CreateTableOperator extends AbstractOperator implements Operator {
 		this.dsf = dsf;
 	}
 
-	public ObjectDriver getResultContents(IProgressMonitor pm)
+	public ObjectDriver getResultContents(ProgressMonitor pm)
 			throws ExecutionException {
 		DataSource ds;
                 SourceManager sourceManager = dsf.getSourceManager();

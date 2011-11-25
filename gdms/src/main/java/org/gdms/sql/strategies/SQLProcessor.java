@@ -49,7 +49,7 @@ import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.parser.SQLEngine;
 import org.gdms.sql.parser.SimpleNode;
 import org.gdms.sql.parser.Token;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
 
 public class SQLProcessor {
@@ -77,7 +77,7 @@ public class SQLProcessor {
 	 * @throws ExecutionException
 	 *             If there is a problem while executing the SQL
 	 */
-	public ObjectDriver execute(String sql, IProgressMonitor pm)
+	public ObjectDriver execute(String sql, ProgressMonitor pm)
 			throws ParseException, SemanticException, DriverException,
 			ExecutionException {
 		// Compilation

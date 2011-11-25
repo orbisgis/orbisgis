@@ -57,7 +57,7 @@ import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.Source;
 import org.gdms.sql.strategies.IncompatibleTypesException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 
@@ -107,7 +107,7 @@ public class IndexManager {
 	 * @throws DataSourceCreationException
 	 */
 	public void buildIndex(String dsName, String fieldName, String indexId,
-			IProgressMonitor pm) throws IndexException, NoSuchTableException {
+			ProgressMonitor pm) throws IndexException, NoSuchTableException {
 		if (pm == null) {
 			pm = new NullProgressMonitor();
 		}
@@ -191,12 +191,12 @@ public class IndexManager {
 	}
 
 	public void buildIndex(String tableName, String fieldName,
-			IProgressMonitor pm) throws NoSuchTableException, IndexException {
+			ProgressMonitor pm) throws NoSuchTableException, IndexException {
 		buildIndex(tableName, fieldName, null, pm);
 	}
 
 	private void fireIndexCreated(String dsName, String fieldName,
-			String indexId, IProgressMonitor pm) throws IndexException {
+			String indexId, ProgressMonitor pm) throws IndexException {
 		for (IndexManagerListener listener : listeners) {
 			listener.indexCreated(dsName, fieldName, indexId, this, pm);
 		}
@@ -455,7 +455,7 @@ public class IndexManager {
 	}
 
 	public AdHocIndex getAdHocIndex(ObjectDriver rightSource, String fieldName,
-			String indexId, IProgressMonitor pm) throws IndexException,
+			String indexId, ProgressMonitor pm) throws IndexException,
 			NoSuchTableException {
 		if (pm == null) {
 			pm = new NullProgressMonitor();

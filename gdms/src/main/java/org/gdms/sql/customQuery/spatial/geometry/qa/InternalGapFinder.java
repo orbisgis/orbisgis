@@ -10,7 +10,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.generic.GenericObjectDriver;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
@@ -25,11 +25,11 @@ public class InternalGapFinder {
 	double EPSYLON = 10e-6;
 	private SpatialDataSourceDecorator sds;
 
-	private IProgressMonitor pm;
+	private ProgressMonitor pm;
 
 	private GenericObjectDriver driver;
 
-	public InternalGapFinder(SpatialDataSourceDecorator sds, IProgressMonitor pm) {
+	public InternalGapFinder(SpatialDataSourceDecorator sds, ProgressMonitor pm) {
 		this.sds = sds;
 		this.pm = pm;
 		findGaps();

@@ -47,7 +47,7 @@ import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.evaluator.EvaluationException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class BTreeIndex implements DataSourceIndex {
 
@@ -61,7 +61,7 @@ public class BTreeIndex implements DataSourceIndex {
 	}
 
 	public void buildIndex(DataSourceFactory dsf, DataSource dataSource,
-			IProgressMonitor pm) throws IndexException {
+			ProgressMonitor pm) throws IndexException {
 		try {
 			fieldId = dataSource.getFieldIndexByName(fieldName);
 			index = new DiskBTree(255, 1024);

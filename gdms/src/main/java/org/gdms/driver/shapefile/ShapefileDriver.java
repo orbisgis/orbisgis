@@ -65,7 +65,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.driver.dbf.DBFDriver;
 import org.gdms.source.SourceManager;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -450,7 +450,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
         }
 
         public void writeFile(final File file, final DataSource dataSource,
-                IProgressMonitor pm) throws DriverException {
+                ProgressMonitor pm) throws DriverException {
                 WarningListener warningListener = dataSourceFactory.getWarningListener();
                 // write dbf
                 DBFDriver dbfDriver = new DBFDriver();

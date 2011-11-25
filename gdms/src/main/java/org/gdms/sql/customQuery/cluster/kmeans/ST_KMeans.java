@@ -62,7 +62,7 @@ import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.Arguments;
 import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.SemanticException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class ST_KMeans implements CustomQuery {
 	private DataSourceFactory dsf;
@@ -88,7 +88,7 @@ public class ST_KMeans implements CustomQuery {
 	}
 
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
-			Value[] values, IProgressMonitor pm) throws ExecutionException {
+			Value[] values, ProgressMonitor pm) throws ExecutionException {
 		this.dsf = dsf;
 		cellIndexFieldName = values[0].toString();
 		nbOfCluster = values[1].getAsInt();

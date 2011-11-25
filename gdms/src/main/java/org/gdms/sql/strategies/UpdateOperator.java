@@ -55,7 +55,7 @@ import org.gdms.sql.evaluator.EvaluationException;
 import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Field;
 import org.gdms.sql.evaluator.FieldContext;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class UpdateOperator extends AbstractExpressionOperator implements
 		Operator {
@@ -76,7 +76,7 @@ public class UpdateOperator extends AbstractExpressionOperator implements
 		return ret.toArray(new Expression[ret.size()]);
 	}
 
-	public ObjectDriver getResultContents(IProgressMonitor pm)
+	public ObjectDriver getResultContents(ProgressMonitor pm)
 			throws ExecutionException {
 		try {
 			String sourceName = getTableName();
@@ -123,7 +123,7 @@ public class UpdateOperator extends AbstractExpressionOperator implements
 
 	}
 
-	private boolean evaluatesToTrue(Expression[] exprs, IProgressMonitor pm)
+	private boolean evaluatesToTrue(Expression[] exprs, ProgressMonitor pm)
 			throws EvaluationException {
 		for (Expression expression : exprs) {
 			if (!evaluatesToTrue(expression, pm)) {
@@ -134,7 +134,7 @@ public class UpdateOperator extends AbstractExpressionOperator implements
 		return true;
 	}
 
-	private static boolean evaluatesToTrue(Expression expression, IProgressMonitor pm)
+	private static boolean evaluatesToTrue(Expression expression, ProgressMonitor pm)
 			throws IncompatibleTypesException, EvaluationException {
 		Value expressionResult = expression.evaluate(pm);
 		return !expressionResult.isNull() && expressionResult.getAsBoolean();

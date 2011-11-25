@@ -50,7 +50,7 @@ import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Field;
 import org.gdms.sql.evaluator.FunctionOperator;
 import org.gdms.sql.evaluator.LessThan;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class OrderByOperator extends AbstractExpressionOperator implements
 		Operator, SelectionTransporter {
@@ -63,7 +63,7 @@ public class OrderByOperator extends AbstractExpressionOperator implements
 		return fields.toArray(new Expression[fields.size()]);
 	}
 
-	public ObjectDriver getResultContents(IProgressMonitor pm)
+	public ObjectDriver getResultContents(ProgressMonitor pm)
 			throws ExecutionException {
 		try {
 			ObjectDriver source = getOperator(0).getResult(pm);

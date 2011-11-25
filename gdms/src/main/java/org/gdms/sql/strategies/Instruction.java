@@ -43,7 +43,7 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.parser.ParseException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
 
 /**
@@ -75,7 +75,7 @@ public class Instruction {
 	 * @throws DriverException
 	 * @throws SemanticException
 	 */
-	public ObjectDriver execute(IProgressMonitor pm) throws ExecutionException,
+	public ObjectDriver execute(ProgressMonitor pm) throws ExecutionException,
 			SemanticException, DriverException {
 		if (pm == null) {
 			pm = new NullProgressMonitor();

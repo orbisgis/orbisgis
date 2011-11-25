@@ -48,7 +48,7 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.evaluator.EvaluationException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -65,7 +65,7 @@ public class RTreeIndex implements DataSourceIndex {
 	}
 
 	public void buildIndex(DataSourceFactory dsf, DataSource dataSource,
-			IProgressMonitor pm) throws IndexException {
+			ProgressMonitor pm) throws IndexException {
 		try {
 			fieldId = dataSource.getFieldIndexByName(fieldName);
 			if (dataSource.getMetadata().getFieldType(fieldId).getTypeCode() != Type.GEOMETRY) {

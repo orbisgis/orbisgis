@@ -55,7 +55,7 @@ import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Field;
 import org.gdms.sql.evaluator.FieldContext;
 import org.gdms.sql.evaluator.FunctionOperator;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class CustomQueryOperator extends AbstractExpressionOperator implements
 		Operator {
@@ -76,7 +76,7 @@ public class CustomQueryOperator extends AbstractExpressionOperator implements
 		functionName = functionOperator.getFunctionName();
 	}
 
-	public ObjectDriver getResultContents(IProgressMonitor pm)
+	public ObjectDriver getResultContents(ProgressMonitor pm)
 			throws ExecutionException {
 		FieldContext fc = new FieldContext() {
 

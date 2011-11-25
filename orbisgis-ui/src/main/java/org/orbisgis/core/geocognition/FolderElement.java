@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.orbisgis.core.OrbisGISPersitenceConfig;
 import org.orbisgis.core.geocognition.mapContext.GeocognitionException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.I18N;
 
 class FolderElement extends AbstractGeocognitionElement implements
@@ -96,12 +96,12 @@ class FolderElement extends AbstractGeocognitionElement implements
 	}
 
 	@Override
-	public void close(IProgressMonitor progressMonitor) {
+	public void close(ProgressMonitor progressMonitor) {
 		unsupported();
 	}
 
 	@Override
-	public void open(IProgressMonitor progressMonitor)
+	public void open(ProgressMonitor progressMonitor)
 			throws UnsupportedOperationException {
 		unsupported();
 	}

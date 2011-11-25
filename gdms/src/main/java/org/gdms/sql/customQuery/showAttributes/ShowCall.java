@@ -54,12 +54,12 @@ import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.Arguments;
 import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.SemanticException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class ShowCall implements CustomQuery {
 
 	public ObjectDriver evaluate(final DataSourceFactory dsf,
-			final DataSource[] tables, final Value[] values, IProgressMonitor pm)
+			final DataSource[] tables, final Value[] values, ProgressMonitor pm)
 			throws ExecutionException {
 		String query = null;
 		String tableName = null;

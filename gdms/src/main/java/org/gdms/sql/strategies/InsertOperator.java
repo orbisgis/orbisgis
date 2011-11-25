@@ -53,7 +53,7 @@ import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.evaluator.EvaluationException;
 import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Field;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class InsertOperator extends AbstractExpressionOperator implements
         Operator {
@@ -77,7 +77,7 @@ public class InsertOperator extends AbstractExpressionOperator implements
                 return fields;
         }
 
-        public ObjectDriver getResultContents(IProgressMonitor pm)
+        public ObjectDriver getResultContents(ProgressMonitor pm)
                 throws ExecutionException {
                 String sourceName = getTableName();
                 try {

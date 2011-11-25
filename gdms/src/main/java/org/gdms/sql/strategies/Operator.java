@@ -45,11 +45,11 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.source.SourceManager;
 import org.gdms.sql.evaluator.Field;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public interface Operator {
 
-	public ObjectDriver getResult(IProgressMonitor pm)
+	public ObjectDriver getResult(ProgressMonitor pm)
 			throws ExecutionException;
 
 	public void addChild(Operator operator);

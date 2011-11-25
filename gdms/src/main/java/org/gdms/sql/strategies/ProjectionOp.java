@@ -57,7 +57,7 @@ import org.gdms.sql.evaluator.FieldContext;
 import org.gdms.sql.evaluator.FunctionOperator;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionManager;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class ProjectionOp extends AbstractExpressionOperator implements
 		Operator, SelectionTransporter {
@@ -75,7 +75,7 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 		expressionList = null;
 	}
 
-	public ObjectDriver getResultContents(IProgressMonitor pm)
+	public ObjectDriver getResultContents(ProgressMonitor pm)
 			throws ExecutionException {
 		ObjectDriver ret = null;
 		try {

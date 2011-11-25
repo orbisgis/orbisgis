@@ -50,7 +50,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.driver.GDMSModelDriver;
 import org.gdms.source.SourceManager;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 
 public class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver {
@@ -73,7 +73,7 @@ public class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver {
                 }
         }
 
-        public void writeFile(File file, DataSource dataSource, IProgressMonitor pm)
+        public void writeFile(File file, DataSource dataSource, ProgressMonitor pm)
                 throws DriverException {
                 try {
                         GdmsWriter writer = new GdmsWriter(file);

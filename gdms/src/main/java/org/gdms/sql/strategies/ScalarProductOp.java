@@ -47,7 +47,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Field;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class ScalarProductOp extends AbstractOperator implements Operator,
 		SelectionTransporter {
@@ -56,7 +56,7 @@ public class ScalarProductOp extends AbstractOperator implements Operator,
 
 	private int offset = -1;
 
-	public ObjectDriver getResultContents(IProgressMonitor pm)
+	public ObjectDriver getResultContents(ProgressMonitor pm)
 			throws ExecutionException {
 		ObjectDriver[] dss = new ObjectDriver[getOperatorCount()];
 		for (int i = 0; i < dss.length; i++) {

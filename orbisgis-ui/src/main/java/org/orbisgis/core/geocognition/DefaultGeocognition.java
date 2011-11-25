@@ -25,7 +25,7 @@ import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.geocognition.mapContext.GeocognitionException;
 import org.orbisgis.core.geocognition.persistence.GeocognitionNode;
 import org.orbisgis.core.geocognition.persistence.NodeContent;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.utils.I18N;
 
@@ -249,7 +249,7 @@ public class DefaultGeocognition implements Geocognition {
 		try {
 			GeocognitionExtensionElement elem = factory.createElementFromXML(
 					jaxbObject, contentTypeId);
-			IProgressMonitor pm = new NullProgressMonitor();
+			ProgressMonitor pm = new NullProgressMonitor();
 			elem.open(pm);
 			elem.close(pm);
 		} catch (PersistenceException e) {

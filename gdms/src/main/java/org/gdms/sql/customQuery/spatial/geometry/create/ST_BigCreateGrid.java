@@ -54,7 +54,7 @@ import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.customQuery.TableDefinition;
 import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.Arguments;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -77,7 +77,7 @@ public class ST_BigCreateGrid implements CustomQuery {
 	private double llcY;
 
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
-			Value[] values, IProgressMonitor pm) throws ExecutionException {
+			Value[] values, ProgressMonitor pm) throws ExecutionException {
 		try {
 			deltaX = values[0].getAsDouble();
 			deltaY = values[1].getAsDouble();
@@ -119,7 +119,7 @@ public class ST_BigCreateGrid implements CustomQuery {
 	}
 
 	private void createGrid(final DiskBufferDriver driver, final Envelope env,
-			final IProgressMonitor pm) throws DriverException {
+			final ProgressMonitor pm) throws DriverException {
 		final int nbX = new Double(Math.ceil((env.getMaxX() - env.getMinX())
 				/ deltaX)).intValue();
 		final int nbY = new Double(Math.ceil((env.getMaxY() - env.getMinY())

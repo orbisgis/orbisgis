@@ -44,7 +44,7 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.parser.ParseException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class CreateViewOperator extends AbstractOperator implements Operator {
 
@@ -59,7 +59,7 @@ public class CreateViewOperator extends AbstractOperator implements Operator {
 		this.dsf = dsf;
 	}
 
-	protected ObjectDriver getResultContents(IProgressMonitor pm) {
+	protected ObjectDriver getResultContents(ProgressMonitor pm) {
 		try {
 			dsf.getSourceManager().register(viewName, statement);
 		} catch (SourceAlreadyExistsException e) {

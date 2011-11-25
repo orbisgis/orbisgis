@@ -77,7 +77,7 @@ import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.plugins.views.geocatalog.WMSGeocatalogPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
 import org.orbisgis.core.workspace.Workspace;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.I18N;
 
 public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
@@ -294,7 +294,7 @@ public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
         bm.backgroundOperation(new BackgroundJob() {
 
             @Override
-            public void run(IProgressMonitor pm) {
+            public void run(ProgressMonitor pm) {
                 String originalWmsURL = cmbURLServer.getSelectedItem().toString();
                 String wmsURL = originalWmsURL.trim();
                 try {

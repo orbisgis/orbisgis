@@ -42,10 +42,10 @@ import java.io.IOException;
 
 import javax.swing.Icon;
 
-import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.DataSource;
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.GeometryDimensionConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
@@ -62,7 +62,7 @@ public abstract class TocAbstractRenderer {
 			if (layer.isWMS()) {
 				return OrbisGISIcon.SERVER_CONNECT;
 			} else {
-				SpatialDataSourceDecorator dataSource = layer.getSpatialDataSource();
+				DataSource dataSource = layer.getDataSource();
 				if (!dataSource.isOpen()) {
 					return null;
 				}
@@ -70,29 +70,40 @@ public abstract class TocAbstractRenderer {
 				// Create a legend for each spatial field
 				Metadata metadata = dataSource.getMetadata();
 				Type fieldType = metadata.getFieldType(spatialField);
-				if (fieldType.getTypeCode() == Type.GEOMETRY) {
-					GeometryConstraint geomTypeConstraint = (GeometryConstraint) fieldType
-							.getConstraint(Constraint.GEOMETRY_TYPE);
-					if (geomTypeConstraint == null) {
-						return OrbisGISIcon.LAYER_MIXE;
-					} else {
-						int geomType = geomTypeConstraint.getGeometryType();
-
-						if ((geomType == GeometryConstraint.POLYGON)
-								|| (geomType == GeometryConstraint.MULTI_POLYGON)) {
-							return OrbisGISIcon.LAYER_POLYGON;
-						} else if ((geomType == GeometryConstraint.LINESTRING)
-								|| (geomType == GeometryConstraint.MULTI_LINESTRING)) {
-							return OrbisGISIcon.LAYER_LINE;
-						} else if ((geomType == GeometryConstraint.POINT)
-								|| (geomType == GeometryConstraint.MULTI_POINT)) {
-							return OrbisGISIcon.LAYER_POINT;
-						} else if ((geomType == GeometryConstraint.GEOMETRY_COLLECTION)) {
+                                int typeCode = fieldType.getTypeCode();
+				if ((typeCode & Type.GEOMETRY) != 0) {
+                                        switch(typeCode){
+                                                case Type.NULL:
 							return OrbisGISIcon.LAYER_MIXE;
-						} else {
-							throw new RuntimeException(I18N.getString("orbisgis.org.orbisgis.toc.tocAbstractRenderer.bug")); //$NON-NLS-1$
-						}
-					}
+                                                case Type.GEOMETRY:
+                                                case Type.GEOMETRYCOLLECTION:
+                                                        GeometryDimensionConstraint gdc =
+                                                                (GeometryDimensionConstraint) fieldType.getConstraint(Constraint.DIMENSION_2D_GEOMETRY);
+                                                        if(gdc == null){
+                                                                return OrbisGISIcon.LAYER_MIXE;
+                                                        } else {
+                                                                switch(gdc.getDimension()){
+                                                                        case GeometryDimensionConstraint.DIMENSION_POINT:
+                                                                                return OrbisGISIcon.LAYER_POINT;
+                                                                        case GeometryDimensionConstraint.DIMENSION_LINE:
+                                                                                return OrbisGISIcon.LAYER_LINE;
+                                                                        case GeometryDimensionConstraint.DIMENSION_POLYGON:
+                                                                                return OrbisGISIcon.LAYER_POLYGON;
+                                                                        default :
+                                                                                return OrbisGISIcon.LAYER_POLYGON;                                                                }
+                                                        }
+                                                case Type.POINT:
+                                                case Type.MULTIPOINT:
+							return OrbisGISIcon.LAYER_POINT;
+                                                case Type.LINESTRING:
+                                                case Type.MULTILINESTRING:
+							return OrbisGISIcon.LAYER_LINE;
+                                                case Type.POLYGON:
+                                                case Type.MULTIPOLYGON:
+							return OrbisGISIcon.LAYER_POLYGON;
+                                                default:
+                                                        throw new RuntimeException(I18N.getString("orbisgis.org.orbisgis.toc.tocAbstractRenderer.bug")); //$NON-NLS-1$
+                                        }
 
 				} else {
 					if (layer.getRaster().getType() == ImagePlus.COLOR_RGB) {

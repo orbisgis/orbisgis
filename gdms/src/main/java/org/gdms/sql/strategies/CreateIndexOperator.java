@@ -46,7 +46,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Field;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class CreateIndexOperator extends AbstractExpressionOperator implements
 		Operator {
@@ -62,7 +62,7 @@ public class CreateIndexOperator extends AbstractExpressionOperator implements
 		this.dsf = dsf;
 	}
 
-	public ObjectDriver getResultContents(IProgressMonitor pm)
+	public ObjectDriver getResultContents(ProgressMonitor pm)
 			throws ExecutionException {
 		try {
 			IndexManager im = dsf.getIndexManager();
