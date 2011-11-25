@@ -9,7 +9,7 @@ import java.io.File;
 import junit.framework.TestCase;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.string.StringAttribute;
@@ -22,7 +22,6 @@ import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 public class PropertyNameTest extends TestCase {
 
     private DataSourceFactory dsf = new DataSourceFactory();
-    private SpatialDataSourceDecorator sds;
     private DataSource ds;
 
     // Data to test
@@ -37,14 +36,13 @@ public class PropertyNameTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         ds = dsf.getDataSource(src);
-        sds = new SpatialDataSourceDecorator(ds);
-        sds.open();
+        ds.open();
     }
 
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
-        sds.close();
+        ds.close();
     }
 
 
@@ -54,9 +52,9 @@ public class PropertyNameTest extends TestCase {
      */
     public void testRealAttribute() throws Exception {
         RealParameter real = new RealAttribute("runoff_win");
-        assertTrue(real.getValue(sds, 0) == 0.05);
-        assertTrue(real.getValue(sds, 50) == 0.4);
-        assertTrue(real.getValue(sds, 1221) == 0.4);
+        assertTrue(real.getValue(ds, 0) == 0.05);
+        assertTrue(real.getValue(ds, 50) == 0.4);
+        assertTrue(real.getValue(ds, 1221) == 0.4);
     }
 
     /**
@@ -66,9 +64,9 @@ public class PropertyNameTest extends TestCase {
     public void testStringAttribute() throws Exception {
         StringParameter string = new StringAttribute("type");
 
-        assertTrue(string.getValue(sds, 56).equals("vegetables"));
-        assertTrue(string.getValue(sds, 47).equals("corn"));
-        assertTrue(string.getValue(sds, 40).equals("grassland"));
+        assertTrue(string.getValue(ds, 56).equals("vegetables"));
+        assertTrue(string.getValue(ds, 47).equals("corn"));
+        assertTrue(string.getValue(ds, 40).equals("grassland"));
     }
     
 

@@ -39,7 +39,7 @@ package org.orbisgis.core.layerModel;
 import java.util.Set;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
@@ -224,11 +224,11 @@ public interface ILayer {
 	/**
 	 * Returns a {@link DataSource} to access the source of this layer
 	 * 
-	 * @return A SpatialDataSourceDecorator or null if this layer is not backed
-	 *         up by a SpatialDataSourceDecorator (Layer collections and WMS
+	 * @return A DataSource or null if this layer is not backed
+	 *         up by a DataSource (Layer collections and WMS
 	 *         layers, for example)
 	 */
-	SpatialDataSourceDecorator getSpatialDataSource();
+	DataSource getSpatialDataSource();
 
     public Style getStyle();
 

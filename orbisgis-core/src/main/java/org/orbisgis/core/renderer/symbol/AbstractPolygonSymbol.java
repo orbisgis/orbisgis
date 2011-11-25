@@ -40,7 +40,7 @@ import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.GeometryTypeConstraint;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
@@ -61,13 +61,13 @@ public abstract class AbstractPolygonSymbol extends AbstractLineSymbol
 		return geom instanceof Polygon || geom instanceof MultiPolygon;
 	}
 
-	public boolean acceptGeometryType(GeometryConstraint geometryConstraint) {
+	public boolean acceptGeometryType(GeometryTypeConstraint geometryConstraint) {
 		if (geometryConstraint == null) {
 			return true;
 		} else {
 			int geometryType = geometryConstraint.getGeometryType();
-			return (geometryType == GeometryConstraint.POLYGON)
-					|| (geometryType == GeometryConstraint.MULTI_POLYGON);
+			return (geometryType == GeometryTypeConstraint.POLYGON)
+					|| (geometryType == GeometryTypeConstraint.MULTI_POLYGON);
 		}
 	}
 

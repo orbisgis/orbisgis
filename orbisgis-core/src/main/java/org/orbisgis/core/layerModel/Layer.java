@@ -47,13 +47,13 @@ import java.util.Random;
 
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.gdms.data.edition.EditionEvent;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MultipleEditionEvent;
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
@@ -78,19 +78,19 @@ import com.vividsolutions.jts.geom.Envelope;
 
 public class Layer extends GdmsLayer {
 
-	private SpatialDataSourceDecorator dataSource;
+	private DataSource dataSource;
 	private HashMap<String, LegendDecorator[]> fieldLegend = new HashMap<String, LegendDecorator[]>();
 	private RefreshSelectionEditionListener editionListener;
 	private int[] selection = new int[0];
 
 	public Layer(String name, DataSource ds) {
 		super(name);
-		this.dataSource = new SpatialDataSourceDecorator(ds);
+		this.dataSource = ds;
 		editionListener = new RefreshSelectionEditionListener();
 	}
 
 	private UniqueSymbolLegend getDefaultVectorialLegend(Type fieldType) {
-		GeometryConstraint gc = (GeometryConstraint) fieldType
+		GeometryTypeConstraint gc = (GeometryTypeConstraint) fieldType
 				.getConstraint(Constraint.GEOMETRY_TYPE);
 
 		final Random r = new Random();
@@ -109,19 +109,19 @@ public class Layer extends GdmsLayer {
 			legend.setSymbol(composite);
 		} else {
 			switch (gc.getGeometryType()) {
-			case GeometryConstraint.POINT:
-			case GeometryConstraint.MULTI_POINT:
+			case GeometryTypeConstraint.POINT:
+			case GeometryTypeConstraint.MULTI_POINT:
 				legend.setSymbol(pointSym);
 				break;
-			case GeometryConstraint.LINESTRING:
-			case GeometryConstraint.MULTI_LINESTRING:
+			case GeometryTypeConstraint.LINESTRING:
+			case GeometryTypeConstraint.MULTI_LINESTRING:
 				legend.setSymbol(lineSym);
 				break;
-			case GeometryConstraint.POLYGON:
-			case GeometryConstraint.MULTI_POLYGON:
+			case GeometryTypeConstraint.POLYGON:
+			case GeometryTypeConstraint.MULTI_POLYGON:
 				legend.setSymbol(polSym);
 				break;
-			case GeometryConstraint.GEOMETRY_COLLECTION:
+			case GeometryTypeConstraint.GEOMETRY_COLLECTION:
 				legend.setSymbol(composite);
 				break;
 			}
@@ -130,7 +130,7 @@ public class Layer extends GdmsLayer {
 		return legend;
 	}
 
-	public SpatialDataSourceDecorator getSpatialDataSource() {
+	public DataSource getSpatialDataSource() {
 		return dataSource;
 	}
 
@@ -170,7 +170,7 @@ public class Layer extends GdmsLayer {
 			for (int i = 0; i < metadata.getFieldCount(); i++) {
 				Type fieldType = metadata.getFieldType(i);
 				int fieldTypeCode = fieldType.getTypeCode();
-				if (fieldTypeCode == Type.GEOMETRY) {
+				if ((fieldTypeCode & Type.GEOMETRY) !=0) {
 					UniqueSymbolLegend legend = getDefaultVectorialLegend(fieldType);
 
 					try {
@@ -180,8 +180,7 @@ public class Layer extends GdmsLayer {
 					}
 
 				} else if (fieldTypeCode == Type.RASTER) {
-					GeoRaster gr = dataSource.getRaster(metadata
-							.getFieldName(i), 0);
+					GeoRaster gr = dataSource.getRaster(0);
 					RasterLegend rasterLegend;
 					rasterLegend = new RasterLegend(gr.getDefaultColorModel(),
 							1f);
@@ -238,7 +237,7 @@ public class Layer extends GdmsLayer {
 	public RasterLegend[] getRasterLegend() throws DriverException {
 		int sfi = dataSource.getSpatialFieldIndex();
 		Metadata metadata = dataSource.getMetadata();
-		if (metadata.getFieldType(sfi).getTypeCode() == Type.GEOMETRY) {
+		if ((metadata.getFieldType(sfi).getTypeCode() & Type.GEOMETRY) != 0) {
 			throw new UnsupportedOperationException(I18N.getString("org.orbisgis.layerModel.layer.the") //$NON-NLS-1$
 					+ I18N.getString("org.orbisgis.layerModel.layer.fieldIsVector")); //$NON-NLS-1$
 		}
@@ -261,7 +260,7 @@ public class Layer extends GdmsLayer {
 	private void validateType(int sfi, int fieldType, String type)
 			throws DriverException {
 		Metadata metadata = dataSource.getMetadata();
-		if (metadata.getFieldType(sfi).getTypeCode() != fieldType) {
+		if ((metadata.getFieldType(sfi).getTypeCode() & fieldType) ==0) {
 			throw new IllegalArgumentException(I18N.getString("org.orbisgis.layerModel.layer.the") + I18N.getString("org.orbisgis.layerModel.layer.fieldIsNot") + type); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
@@ -325,11 +324,11 @@ public class Layer extends GdmsLayer {
 	}
 
 	public boolean isRaster() throws DriverException {
-		return dataSource.isDefaultRaster();
+		return dataSource.isRaster();
 	}
 
 	public boolean isVectorial() throws DriverException {
-		return dataSource.isDefaultVectorial();
+		return dataSource.isVectorial();
 	}
 
 	public GeoRaster getRaster() throws DriverException {

@@ -41,11 +41,10 @@ import java.io.File;
 
 import org.apache.log4j.Logger;
 import org.gdms.data.AlreadyClosedException;
-import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
+import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.indexes.IndexManager;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
@@ -61,24 +60,28 @@ public class DefaultDataManager implements DataManager {
 
 	private static final Logger logger = Logger
 			.getLogger(DefaultDataManager.class);
-	private DataSourceFactory dsf;
+	private SQLDataSourceFactory dsf;
 
-	public DefaultDataManager(DataSourceFactory dsf) {
+	public DefaultDataManager(SQLDataSourceFactory dsf) {
 		this.dsf = dsf;
 	}
 
-	public DataSourceFactory getDataSourceFactory() {
+        @Override
+	public SQLDataSourceFactory getDataSourceFactory() {
 		return dsf;
 	}
 
+        @Override
 	public IndexManager getIndexManager() {
 		return dsf.getIndexManager();
 	}
 
+        @Override
 	public SourceManager getSourceManager() {
 		return dsf.getSourceManager();
 	}
 
+        @Override
 	public ILayer createLayer(String sourceName) throws LayerException {
 		Source src = ((DataManager) Services.getService(DataManager.class))
 				.getDataSourceFactory().getSourceManager().getSource(sourceName);
@@ -107,6 +110,7 @@ public class DefaultDataManager implements DataManager {
 		}
 	}
 
+        @Override
 	public ILayer createLayer(DataSource ds) throws LayerException {
 		int type = ds.getSource().getType();
 		if ((type & SourceManager.WMS) == SourceManager.WMS) {
@@ -114,14 +118,12 @@ public class DefaultDataManager implements DataManager {
 		} else {
 			boolean hasSpatialData = true;
 			if ((type & SourceManager.VECTORIAL) == SourceManager.VECTORIAL) {
-				SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
-						ds);
 				int sfi;
 				try {
-					sds.open();
-					sfi = sds.getSpatialFieldIndex();
+					ds.open();
+					sfi = ds.getSpatialFieldIndex();
 					try {
-						sds.close();
+						ds.close();
 					} catch (AlreadyClosedException e) {
 						// ignore
 						logger.debug("Cannot close", e);
@@ -139,12 +141,14 @@ public class DefaultDataManager implements DataManager {
 		}
 	}
 
+        @Override
 	public ILayer createLayerCollection(String layerName) {
 		return new LayerCollection(layerName);
 	}
 
+        @Override
 	public ILayer createLayer(String name, File file) throws LayerException {
-		DataSourceFactory dsf = ((DataManager) Services
+		SQLDataSourceFactory dsf = ((DataManager) Services
 				.getService(DataManager.class)).getDataSourceFactory();
 		dsf.getSourceManager().register(name, file);
 		try {
@@ -160,8 +164,9 @@ public class DefaultDataManager implements DataManager {
 		}
 	}
 
+        @Override
 	public ILayer createLayer(File file) throws LayerException {
-		DataSourceFactory dsf = ((DataManager) Services
+		SQLDataSourceFactory dsf = ((DataManager) Services
 				.getService(DataManager.class)).getDataSourceFactory();
 		String name = dsf.getSourceManager().nameAndRegister(file);
 		try {

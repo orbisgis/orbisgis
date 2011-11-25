@@ -1,6 +1,6 @@
 package org.orbisgis.core.renderer.se.parameter.string;
 
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 
@@ -20,7 +20,7 @@ public interface StringParameter extends SeParameter {
          * Retrieve a Value using this {@code StringParameter}. It can be retrieved using
          * the given datasource, or not, depending on the realizaton of this interface.
          * @param sds
-         * The {@code SpatialDataSourceDecorator} where to search.
+         * The {@code DataSource} where to search.
          * @param fid
          * The entry where to get the value in the data source. Note that as we don't 
          * know the column where to search, this information must be given externally
@@ -29,7 +29,7 @@ public interface StringParameter extends SeParameter {
          * A {@code String} instance.
          * @throws ParameterException 
          */
-    String getValue(SpatialDataSourceDecorator sds, long fid) throws ParameterException;
+    String getValue(DataSource sds, long fid) throws ParameterException;
 
     /**
      * Set the list of restrictions</p><p>

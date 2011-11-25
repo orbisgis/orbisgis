@@ -44,7 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.ExpressionType;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import net.opengis.se._2_0.core.MapItemType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.ParameterValueType;
@@ -225,7 +225,7 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
          * @param fid
          * @return 
          */
-    public ToType getParameter(SpatialDataSourceDecorator sds, long fid) {
+    public ToType getParameter(DataSource sds, long fid) {
         String key = "";
         try {
             key = lookupValue.getValue(sds, fid);

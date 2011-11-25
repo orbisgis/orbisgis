@@ -43,8 +43,10 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import net.opengis.se._2_0.core.ExtensionType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.PointSymbolizerType;
@@ -151,37 +153,37 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
         graphic.setParent(this);
     }
 
-    @Override
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
-            boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
-            throws IOException, DriverException {
-        if (graphic != null && graphic.getNumGraphics() > 0) {
+        @Override
+        public void draw(Graphics2D g2, DataSource sds, long fid,
+                boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
+                throws IOException, DriverException {
+                if (graphic != null && graphic.getNumGraphics() > 0) {
 
-            try {
-                double x = 0, y = 0;
+                        double x = 0, y = 0;
 
-                if (onVertex) {
-                    for (Point2D pt : getPoints(sds, fid, mt, the_geom)) {
-                        x = pt.getX();
-                        y = pt.getY();
+                        try {
+                                if (onVertex) {
+                                        for (Point2D pt : getPoints(sds, fid, mt, the_geom)) {
+                                                x = pt.getX();
+                                                y = pt.getY();
 
-                        graphic.draw(g2, sds, fid, selected, mt, AffineTransform.getTranslateInstance(x, y));
-                    }
-                } else {
-                    Point2D pt = getPointShape(sds, fid, mt, the_geom);
+                                                graphic.draw(g2, sds, fid, selected, mt, AffineTransform.getTranslateInstance(x, y));
+                                        }
+                                } else {
+                                        Point2D pt = getPointShape(sds, fid, mt, the_geom);
 
 
-                    x = pt.getX();
-                    y = pt.getY();
+                                        x = pt.getX();
+                                        y = pt.getY();
 
-                    // Draw the graphic right over the point !
-                    graphic.draw(g2, sds, fid, selected, mt, AffineTransform.getTranslateInstance(x, y));
+                                        // Draw the graphic right over the point !
+                                        graphic.draw(g2, sds, fid, selected, mt, AffineTransform.getTranslateInstance(x, y));
+                                }
+                        } catch (ParameterException ex) {
+                                Services.getErrorManager().error("Could not render feature ", ex);
+                        }
                 }
-            } catch (ParameterException ex) {
-                Services.getErrorManager().error("Could not render feature ", ex);
-            }
         }
-    }
 
     @Override
     public JAXBElement<PointSymbolizerType> getJAXBElement() {

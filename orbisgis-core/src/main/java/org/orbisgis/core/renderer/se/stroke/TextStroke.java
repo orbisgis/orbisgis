@@ -42,7 +42,7 @@ import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.orbisgis.core.map.MapTransform;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.TextStrokeType;
@@ -113,7 +113,7 @@ public final class TextStroke extends Stroke {
         }
 
         @Override
-        public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp,
+        public void draw(Graphics2D g2, DataSource sds, long fid, Shape shp,
                         boolean selected, MapTransform mt, double offset) throws ParameterException, IOException {
                 if (this.lineLabel != null) {
                         lineLabel.draw(g2, sds, fid, shp, selected, mt, null);
@@ -148,7 +148,7 @@ public final class TextStroke extends Stroke {
         }
 
         @Override
-        public Double getNaturalLength(SpatialDataSourceDecorator sds, long fid,
+        public Double getNaturalLength(DataSource sds, long fid,
                         Shape shp, MapTransform mt) throws ParameterException, IOException {
                 Rectangle2D bounds = lineLabel.getLabel().getBounds(null, sds, fid, mt);
                 return bounds.getWidth();

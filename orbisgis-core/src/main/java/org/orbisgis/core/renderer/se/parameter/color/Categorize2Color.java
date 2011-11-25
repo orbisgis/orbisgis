@@ -3,7 +3,7 @@ package org.orbisgis.core.renderer.se.parameter.color;
 import java.awt.Color;
 import java.util.Iterator;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import net.opengis.se._2_0.core.CategorizeType;
 import net.opengis.se._2_0.core.ParameterValueType;
 import net.opengis.se._2_0.core.ThresholdBelongsToType;
@@ -69,7 +69,7 @@ public class Categorize2Color extends Categorize<ColorParameter, ColorLiteral> i
     }
 
     @Override
-    public Color getColor(SpatialDataSourceDecorator sds, long fid) throws ParameterException {
+    public Color getColor(DataSource sds, long fid) throws ParameterException {
 
         if (sds == null) {
             throw new ParameterException("No feature");

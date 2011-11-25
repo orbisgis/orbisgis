@@ -40,7 +40,7 @@ package org.orbisgis.core.layerModel;
 
 import org.gdms.data.DataSource;
 
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 import com.vividsolutions.jts.geom.Envelope;
 import java.util.ArrayList;
@@ -179,7 +179,7 @@ public interface MapContext {
 	 * @throws IllegalStateException
 	 *             If the map is already open
 	 */
-	void open(IProgressMonitor pm) throws LayerException, IllegalStateException;
+	void open(ProgressMonitor pm) throws LayerException, IllegalStateException;
 
 	/**
 	 * Closes all the layers in the map
@@ -188,7 +188,7 @@ public interface MapContext {
 	 * @throws IllegalStateException
 	 *             If the map is closed
 	 */
-	void close(IProgressMonitor pm) throws IllegalStateException;
+	void close(ProgressMonitor pm) throws IllegalStateException;
 
 	/**
 	 * Return true if this map context is open and false otherwise
@@ -209,7 +209,7 @@ public interface MapContext {
 	 * @throws IllegalStateException
 	 *             If the map is closed
 	 */
-	void draw(MapTransform mt, IProgressMonitor pm)
+	void draw(MapTransform mt, ProgressMonitor pm)
 			throws IllegalStateException;
 
 	/**

@@ -20,9 +20,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
 import junit.framework.TestCase;
-import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.orbisgis.core.ConsoleErrorManager;
 import org.orbisgis.core.ConsoleOutputManager;
 import org.orbisgis.core.Services;
@@ -93,10 +92,8 @@ public class AreaSymbolizerTest extends TestCase {
             DataSourceFactory dsf = new DataSourceFactory();
             DataSource ds = dsf.getDataSource(new File("/home/maxence/data/Geodata/Swiss/g4districts98_region.shp"));
             ds.open();
-
-            SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
-
-            ILayer layer = new Layer("swiss", sds);
+            
+            ILayer layer = new Layer("swiss", ds);
 
             Style style = new Style(layer, "/home/maxence/projects/SCAP-c²/SE/choro.se");
             layer.setStyle(style);

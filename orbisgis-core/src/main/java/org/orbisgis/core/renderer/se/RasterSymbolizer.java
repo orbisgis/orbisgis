@@ -45,7 +45,7 @@ import java.io.IOException;
 
 import javax.xml.bind.JAXBElement;
 
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 
 import org.orbisgis.core.map.MapTransform;
@@ -93,7 +93,7 @@ public class RasterSymbolizer extends Symbolizer {
      */
     private AreaSymbolizer outline;
     @Override
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, 
+    public void draw(Graphics2D g2, DataSource sds, long fid,
             boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
             throws ParameterException, IOException, DriverException {
         throw new UnsupportedOperationException("Not supported yet.");

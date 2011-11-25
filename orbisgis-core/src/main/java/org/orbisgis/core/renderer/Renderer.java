@@ -51,7 +51,6 @@ import java.util.logging.Level;
 
 import javax.imageio.ImageIO;
 
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 
 
@@ -65,7 +64,7 @@ import org.orbisgis.core.layerModel.WMSConnection;
 import org.orbisgis.core.map.MapTransform;
 
 
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.utils.I18N;
 
@@ -77,11 +76,10 @@ import ij.process.ColorProcessor;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
+import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.FilterDataSourceDecorator;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.sql.parser.ParseException;
-import org.gdms.sql.strategies.SemanticException;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Symbolizer;
@@ -142,14 +140,14 @@ public abstract class Renderer {
      * Called before each feature
      * @param name the name of the feature
      */
-    protected abstract void beginFeature(long id, SpatialDataSourceDecorator sds);
+    protected abstract void beginFeature(long id, DataSource sds);
 
 
     /**
      * Called after each feature
      * @param name the name of the feature
      */
-    protected abstract void endFeature(long id, SpatialDataSourceDecorator sds);
+    protected abstract void endFeature(long id, DataSource sds);
 
 
     /**
@@ -175,8 +173,8 @@ public abstract class Renderer {
      * @throws DriverException
      */
     public FilterDataSourceDecorator featureInExtent(MapTransform mt,
-                                                     SpatialDataSourceDecorator sds,
-                                                     IProgressMonitor pm) throws DriverException {
+            DataSource sds,
+            ProgressMonitor pm) throws DriverException {
         Envelope extent = mt.getAdjustedExtent();
 
         double gap = mt.getScaleDenominator() * EXTRA_EXTENT_FACTOR;
@@ -187,7 +185,7 @@ public abstract class Renderer {
                 + (extent.getMaxX() + gap) + " " + (extent.getMaxY() + gap) + ","
                 + (extent.getMaxX() + gap) + " " + (extent.getMinY() - gap) + ","
                 + (extent.getMinX() - gap) + " " + (extent.getMinY() - gap) + "))'), "
-                + sds.getSpatialFieldName() + ")");
+                + sds.getFieldName(sds.getSpatialFieldIndex()) + ")");
     }
 
 
@@ -209,19 +207,18 @@ public abstract class Renderer {
      * @return the number of rendered objects
      */
     public int drawVector(Graphics2D g2, MapTransform mt, ILayer layer,
-                          IProgressMonitor pm, RenderContext perm) throws DriverException {
+            ProgressMonitor pm, RenderContext perm) throws DriverException {
 
         logger.println("Current DPI is " + mt.getDpi());
         logger.println("Current SCALE is 1: " + mt.getScaleDenominator());
 
 
         int layerCount = 0;
-        SpatialDataSourceDecorator sds = null;
+        DataSource sds = null;
         try {
             long tV1 = System.currentTimeMillis();
 
             sds = layer.getSpatialDataSource();
-            //sds.isOpen();
             sds.open();
 
             // Extract into drawSeLayer method !
@@ -247,7 +244,7 @@ public abstract class Renderer {
             logger.println("Initialisation:" + (tV1b - tV1));
 
             // Create new dataSource with only feature in current extent
-            pm.startTask("Filtering (spatial)...");
+            pm.startTask("Filtering (spatial)...", 100);
             pm.progressTo(0);
             FilterDataSourceDecorator featureInExtent = featureInExtent(mt, sds, pm);
             pm.progressTo(ONE_HUNDRED_I);
@@ -263,7 +260,7 @@ public abstract class Renderer {
                 // Foreach rList without ElseFilter
                 for (Rule r : rList) {
 
-                    pm.startTask("Filtering (rule)...");
+                    pm.startTask("Filtering (rule)...", 100);
                     pm.progressTo(0);
                     FilterDataSourceDecorator filteredDs = r.getFilteredDataSource(featureInExtent);
 
@@ -343,7 +340,7 @@ public abstract class Renderer {
                     long tf1 = System.currentTimeMillis();
                     beginLayer(r.getName());
                     logger.println("Drawing rule " + r.getName());
-                    pm.startTask("Drawing " + layer.getName() + " (Rule " + r.getName() + ")");
+                    pm.startTask("Drawing " + layer.getName() + " (Rule " + r.getName() + ")", 100);
 
                     FilterDataSourceDecorator fds = rulesDs.get(r);
 
@@ -439,10 +436,6 @@ public abstract class Renderer {
             printEx(ex, layer, g2);
         } catch (DriverException ex) {
             printEx(ex, layer, g2);
-        } catch (ParseException ex) {
-            printEx(ex, layer, g2);
-        } catch (SemanticException ex) {
-            printEx(ex, layer, g2);
         } catch (ParameterException ex) {
             printEx(ex, layer, g2);
         } catch (IOException ex) {
@@ -466,7 +459,7 @@ public abstract class Renderer {
 
 
     public void draw(Graphics2D g2dMap, int width, int height,
-                     Envelope extent, ILayer layer, IProgressMonitor pm) {
+            Envelope extent, ILayer layer, ProgressMonitor pm) {
         MapTransform mt = new MapTransform();
         mt.resizeImage(width, height);
         mt.setExtent(extent);
@@ -492,7 +485,7 @@ public abstract class Renderer {
      *            Progress monitor to report the status of the drawing
      */
     public void draw(MapTransform mt,
-                     ILayer layer, IProgressMonitor pm) {
+            ILayer layer, ProgressMonitor pm) {
 
         BufferedImage image = mt.getImage();
         Graphics2D g2 = image.createGraphics();
@@ -518,9 +511,9 @@ public abstract class Renderer {
      *            Progress monitor to report the status of the drawing
      */
     public void draw(MapTransform mt, Graphics2D g2, int width, int height,
-                     ILayer lay, IProgressMonitor progressMonitor) {
+            ILayer lay, ProgressMonitor progressMonitor) {
 
-        IProgressMonitor pm;
+        ProgressMonitor pm;
         if (progressMonitor == null) {
             pm = new NullProgressMonitor();
         } else {
@@ -581,12 +574,12 @@ public abstract class Renderer {
                         drawWMS(
                                 g2, width, height, extent, conn);
                     } else {
-                        SpatialDataSourceDecorator sds = layer.getSpatialDataSource();
+                        DataSource sds = layer.getSpatialDataSource();
                         if (sds != null) {
                             try {
-                                if (sds.isDefaultVectorial()) {
+                                if (sds.isVectorial()) {
                                     count += this.drawVector(g2, mt, layer, pm, perm);
-                                } else if (sds.isDefaultRaster()) {
+                                } else if (sds.isRaster()) {
                                     logger.println("Raster Not Yet supported => Not drawn: " + layer.getName(), Color.red);
                                 } else {
                                     logger.println(I18N.getString("orbisgis.org.orbisgis.renderer.notDraw") //$NON-NLS-1$
@@ -657,7 +650,7 @@ public abstract class Renderer {
      *            Progress monitor to report the status of the drawing
      */
     public void draw(BufferedImage img, Envelope extent, ILayer layer,
-                     IProgressMonitor pm) {
+            ProgressMonitor pm) {
         MapTransform mt = new MapTransform();
         mt.setExtent(extent);
         mt.setImage(img);

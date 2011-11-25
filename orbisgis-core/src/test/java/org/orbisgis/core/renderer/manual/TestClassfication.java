@@ -47,7 +47,7 @@ import javax.swing.JLabel;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.DataSourceFactory;
+import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
@@ -68,14 +68,14 @@ import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.renderer.symbol.SymbolFactory;
 
 import com.vividsolutions.jts.geom.Envelope;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.ImageRenderer;
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 
 public class TestClassfication {
 
 	private static Range[] ranges;
-	static DataSourceFactory dsf = new DataSourceFactory();
+	static SQLDataSourceFactory dsf = new SQLDataSourceFactory();
 
 	public static void main(String[] args) throws Exception {
 
@@ -99,8 +99,7 @@ public class TestClassfication {
 		DataSource ds;
 		try {
 			ds = layer.getSpatialDataSource();
-			SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
-			RangeMethod intervalsDicretizationMethod = new RangeMethod(sds,
+                        RangeMethod intervalsDicretizationMethod = new RangeMethod(ds,
 					new RealAttribute("PTOT90"), 4);
 
 			intervalsDicretizationMethod.disecMean();
@@ -169,10 +168,9 @@ public class TestClassfication {
 
 	public static void registerDataManager() {
 		// Installation of the service
-		Services
-				.registerService(
-						DataManager.class,
-						"Access to the sources, to its properties (indexes, etc.) and its contents, either raster or vectorial",
+		Services.registerService(DataManager.class,
+				"Access to the sources, to its properties (indexes, etc.) "
+                        + "and its contents, either raster or vectorial",
 						new DefaultDataManager(dsf));
 	}
 

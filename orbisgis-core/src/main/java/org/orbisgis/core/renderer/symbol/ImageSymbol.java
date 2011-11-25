@@ -16,7 +16,7 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
@@ -42,14 +42,14 @@ public class ImageSymbol extends AbstractSymbol implements Symbol {
 		return (geom instanceof Point) || (geom instanceof MultiPoint);
 	}
 
-	public boolean acceptGeometryType(GeometryConstraint geometryConstraint) {
+	public boolean acceptGeometryType(GeometryTypeConstraint geometryConstraint) {
 		if (geometryConstraint == null) {
 			return true;
 		} else {
 			int gt = geometryConstraint.getGeometryType();
 			switch (gt) {
-			case GeometryConstraint.POINT:
-			case GeometryConstraint.MULTI_POINT:
+			case GeometryTypeConstraint.POINT:
+			case GeometryTypeConstraint.MULTI_POINT:
 				return true;
 			default:
 				return false;

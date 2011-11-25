@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 
 import org.orbisgis.core.map.MapTransform;
 import net.opengis.se._2_0.thematic.ObjectFactory;
@@ -379,7 +379,7 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode,
     }
 
     @Override
-    public Rectangle2D getBounds(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
+    public Rectangle2D getBounds(DataSource sds, long fid, MapTransform mt) throws ParameterException, IOException {
 
         double r = DEFAULT_RADIUS_PX;
         if (radius != null) {
@@ -397,7 +397,7 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode,
     }
 
     @Override
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
+    public void draw(Graphics2D g2, DataSource sds, long fid,
             boolean selected, MapTransform mt, AffineTransform fat) throws ParameterException, IOException {
 
         AffineTransform at = new AffineTransform(fat);

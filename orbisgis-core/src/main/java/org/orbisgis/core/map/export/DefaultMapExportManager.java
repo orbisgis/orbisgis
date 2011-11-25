@@ -18,7 +18,7 @@ import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.Renderer;
 import org.orbisgis.core.renderer.legend.Legend;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
@@ -33,7 +33,7 @@ public class DefaultMapExportManager implements MapExportManager {
 	@Override
 	public void exportSVG(MapContext mapContext, OutputStream outStream,
 			double width, double height, Envelope extent, Scale scale, int dpi,
-			IProgressMonitor pm) throws UnsupportedEncodingException,
+			ProgressMonitor pm) throws UnsupportedEncodingException,
 			IOException, DriverException {
 
 		// Calculate the number of pixels to have the desired dpi when the image
@@ -47,7 +47,7 @@ public class DefaultMapExportManager implements MapExportManager {
 					"The map must be open to call this method");
 		}
 
-		pm.startTask("Drawing map");
+		pm.startTask("Drawing map", 100);
 		Renderer r = new ImageRenderer();
 		DOMImplementation domImpl = GenericDOMImplementation
 				.getDOMImplementation();
@@ -104,7 +104,7 @@ public class DefaultMapExportManager implements MapExportManager {
 		}
 		pm.endTask();
 
-		pm.startTask("writting result");
+		pm.startTask("writting result", 100);
 		Writer out = new OutputStreamWriter(outStream, "UTF-8");
 		svgg.stream(out);
 		pm.endTask();

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.orbisgis.core.map.MapTransform;
 
 import net.opengis.se._2_0.core.GraphicStrokeType;
@@ -166,8 +166,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
 
 
     @Override
-    public Double getNaturalLength(SpatialDataSourceDecorator sds, long fid,
-                                   Shape shp, MapTransform mt) throws ParameterException, IOException {
+    public Double getNaturalLength(DataSource sds, long fid, Shape shp, MapTransform mt) throws ParameterException, IOException {
         double naturalLength;
 
         if (length != null) {
@@ -191,9 +190,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
         return getGraphicWidth(sds, fid, mt);
     }
 
-
-    private double getGraphicWidth(SpatialDataSourceDecorator sds, long fid,
-                                   MapTransform mt) throws ParameterException, IOException {
+    private double getGraphicWidth(DataSource sds, long fid, MapTransform mt) throws ParameterException, IOException {
         RelativeOrientation rOrient = this.getRelativeOrientation();
         Rectangle2D bounds = graphic.getBounds(sds, fid, false, mt);
 
@@ -213,9 +210,8 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
 
 
     @Override
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
-                     Shape shape, boolean selected, MapTransform mt,
-                     double offset)
+    public void draw(Graphics2D g2, DataSource sds, long fid,
+            Shape shape, boolean selected, MapTransform mt, double offset)
             throws ParameterException, IOException {
 
         List<Shape> shapes;

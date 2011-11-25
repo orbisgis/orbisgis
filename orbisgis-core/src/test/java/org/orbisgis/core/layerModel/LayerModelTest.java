@@ -43,7 +43,7 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.source.SourceManager;
 import org.grap.model.GeoRaster;
 import org.orbisgis.core.AbstractTest;
@@ -61,15 +61,15 @@ public class LayerModelTest extends AbstractTest {
 
 	@Override
 	public void setUp() throws Exception {
-		GenericObjectDriver omd = new GenericObjectDriver(
+		MemoryDataSetDriver omd = new MemoryDataSetDriver(
 				new String[] { "the_geom" }, new Type[] { TypeFactory
 						.createType(Type.GEOMETRY) });
 		dsf.getSourceManager().register("vector1", omd);
-		dummy = dsf.getDataSource(omd);
-		omd = new GenericObjectDriver();
+		dummy = dsf.getDataSource("vector1");
+		omd = new MemoryDataSetDriver();
 		dsf.getSourceManager().register("vector2", omd);
 		dummy2 = dsf.getDataSource("vector2");
-		omd = new GenericObjectDriver();
+		omd = new MemoryDataSetDriver();
 		dsf.getSourceManager().register("vector3", omd);
 		dummy3 = dsf.getDataSource("vector3");
 		super.setUp();
@@ -89,10 +89,10 @@ public class LayerModelTest extends AbstractTest {
 			lc = (ILayer) layer;
 			lc.getChildren();
 		} else {
-			if (layer.getSpatialDataSource().isDefaultRaster()) {
+			if (layer.getSpatialDataSource().isRaster()) {
 				GeoRaster fc = layer.getSpatialDataSource().getRaster(0);
 				assertTrue(fc != null);
-			} else if (layer.getSpatialDataSource().isDefaultVectorial()) {
+			} else if (layer.getSpatialDataSource().isVectorial()) {
 				DataSource fc = layer.getSpatialDataSource();
 				assertTrue(fc != null);
 			}

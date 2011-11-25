@@ -48,7 +48,7 @@ import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.Random;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.orbisgis.core.Services;
 
 import org.orbisgis.core.map.MapTransform;
@@ -171,13 +171,13 @@ public final class DotMapFill extends Fill implements GraphicNode {
      * @throws ParameterException
      */
     @Override
-    public Paint getPaint(long fid, SpatialDataSourceDecorator sds,
+    public Paint getPaint(long fid, DataSource sds,
             boolean selected, MapTransform mt) throws ParameterException {
         return null;
     }
 
     @Override
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds,
+    public void draw(Graphics2D g2, DataSource sds,
             long fid, Shape shp, boolean selected, MapTransform mt)
             throws ParameterException, IOException {
 

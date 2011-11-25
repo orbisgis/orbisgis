@@ -44,7 +44,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.metadata.MetadataUtilities;
+import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.driver.DriverException;
 import org.gdms.source.SourceEvent;
 import org.gdms.source.SourceListener;
@@ -58,7 +58,7 @@ import org.orbisgis.core.layerModel.persistence.LayerCollectionType;
 import org.orbisgis.core.layerModel.persistence.LayerType;
 import org.orbisgis.core.layerModel.persistence.SelectedLayer;
 import org.orbisgis.core.renderer.Renderer;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.utils.I18N;
 
@@ -356,12 +356,11 @@ public class DefaultMapContext implements MapContext {
 					try {
 						ret.addLayer(lyr);
 					} catch (Exception e) {
-						Services
-								.getErrorManager()
-								.error(
-										I18N
-												.getString("orbisgis.org.orbisgis.defaultMapContext.cannotAddLayerToCollection") //$NON-NLS-1$
-												+ lyr.getName(), e);
+						Services.getErrorManager().error(I18N
+                                                        .getString(
+                                                        "orbisgis.org.orbisgis."
+                                                        + "defaultMapContext.cannotAddLayerToCollection") //$NON-NLS-1$
+                                                        + lyr.getName(), e);
 					}
 				}
 			}
@@ -370,11 +369,9 @@ public class DefaultMapContext implements MapContext {
 				ret = dataManager.createLayer(layer.getSourceName());
 				layerPersistenceMap.put(ret, layer);
 			} catch (LayerException e) {
-				Services
-						.getErrorManager()
-						.error(
-								I18N
-										.getString("orbisgis.org.orbisgis.defaultMapContext.cannotRecoverLayer") + layer.getName(), e); //$NON-NLS-1$
+				Services.getErrorManager().error(I18N.getString(
+                                        "orbisgis.org.orbisgis.defaultMapContext.cannotRecoverLayer")
+                                        + layer.getName(), e); //$NON-NLS-1$
 			}
 		}
 		return ret;
@@ -382,7 +379,7 @@ public class DefaultMapContext implements MapContext {
 
 	@Override
 	public void draw(MapTransform mt,
-			IProgressMonitor pm) {
+			ProgressMonitor pm) {
 		checkIsOpen();
 		Renderer renderer = new ImageRenderer();
 		renderer.draw(mt, getLayerModel(), pm);
@@ -391,8 +388,8 @@ public class DefaultMapContext implements MapContext {
 	private void checkIsOpen() {
 		if (!isOpen()) {
 			throw new IllegalStateException(
-					I18N
-							.getString("orbisgis.core.ui.plugins.views.geocognition.wizards.newMap")); //$NON-NLS-1$
+					I18N.getString("orbisgis.core.ui.plugins."
+                                + "views.geocognition.wizards.newMap")); //$NON-NLS-1$
 		}
 	}
 
@@ -470,7 +467,7 @@ public class DefaultMapContext implements MapContext {
 	}
 
 	@Override
-	public void close(IProgressMonitor pm) {
+	public void close(ProgressMonitor pm) {
 
 		checkIsOpen();
 
@@ -487,11 +484,9 @@ public class DefaultMapContext implements MapContext {
 				try {
 					layers[i].close();
 				} catch (LayerException e) {
-					Services
-							.getErrorManager()
-							.error(
-									I18N
-											.getString("orbisgis.org.orbisgis.defaultMapContext.cannotCloseLayer") + layers[i].getName()); //$NON-NLS-1$
+					Services.getErrorManager().error(I18N.getString(""
+                                                + "orbisgis.org.orbisgis.defaultMapContext.cannotCloseLayer")
+                                                + layers[i].getName()); //$NON-NLS-1$
 				}
 			}
 		}
@@ -505,12 +500,12 @@ public class DefaultMapContext implements MapContext {
 	}
 
 	@Override
-	public void open(IProgressMonitor pm) throws LayerException {
+	public void open(ProgressMonitor pm) throws LayerException {
 
 		if (isOpen()) {
 			throw new IllegalStateException(
-					I18N
-							.getString("orbisgis.org.orbisgis.defaultMapContext.mapAlreadyOpen")); //$NON-NLS-1$
+					I18N.getString("orbisgis.org.orbisgis.defaultMapContext.mapAlreadyOpen"));
+                        //$NON-NLS-1$
 		}
 
 		this.activeLayer = null;

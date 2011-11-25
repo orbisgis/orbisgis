@@ -38,7 +38,7 @@ package org.orbisgis.core.renderer.legend.carto;
 
 import java.awt.Graphics2D;
 
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.renderer.legend.Legend;
@@ -65,7 +65,7 @@ public class DefaultUniqueSymbolLegend extends AbstractCartoLegend implements
 		fireLegendInvalid();
 	}
 
-	public Symbol getSymbol(SpatialDataSourceDecorator sds, long row)
+	public Symbol getSymbol(DataSource sds, long row)
 			throws RenderException {
 		try {
 			return RenderUtils.buildSymbolToDraw(getSymbol(), sds

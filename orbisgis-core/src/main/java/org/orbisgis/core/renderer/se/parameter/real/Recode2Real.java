@@ -38,7 +38,7 @@
 package org.orbisgis.core.renderer.se.parameter.real;
 
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 
 import net.opengis.se._2_0.core.MapItemType;
 import net.opengis.se._2_0.core.RecodeType;
@@ -90,7 +90,7 @@ public class Recode2Real extends Recode<RealParameter, RealLiteral> implements R
         }
 
         @Override
-        public Double getValue(SpatialDataSourceDecorator sds, long fid) throws ParameterException {
+        public Double getValue(DataSource sds, long fid) throws ParameterException {
                 if (sds == null) {
                         throw new ParameterException("No feature");
                 }

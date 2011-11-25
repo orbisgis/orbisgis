@@ -5,7 +5,7 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.CategorizeType;
 import net.opengis.se._2_0.core.ParameterValueType;
 import net.opengis.se._2_0.core.ThresholdBelongsToType;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.Categorize;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -70,7 +70,7 @@ public final class Categorize2Real extends Categorize<RealParameter, RealLiteral
         }
 
         @Override
-        public Double getValue(SpatialDataSourceDecorator sds, long fid) throws ParameterException{
+        public Double getValue(DataSource sds, long fid) throws ParameterException{
 
 		if (sds == null){
 			throw new ParameterException("No feature");

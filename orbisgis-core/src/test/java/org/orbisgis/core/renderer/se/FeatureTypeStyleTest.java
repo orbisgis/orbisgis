@@ -26,7 +26,7 @@ import junit.framework.TestCase;
 import net.opengis.se._2_0.core.StyleType;
 
 
-import org.gdms.data.DataSourceFactory;
+import org.gdms.data.SQLDataSourceFactory;
 
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
@@ -52,7 +52,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  */
 public class FeatureTypeStyleTest extends TestCase {
 
-    private static DataSourceFactory dsf = new DataSourceFactory();
+    private static SQLDataSourceFactory dsf = new SQLDataSourceFactory();
 
     public static void registerDataManager() {
         // Installation of the service

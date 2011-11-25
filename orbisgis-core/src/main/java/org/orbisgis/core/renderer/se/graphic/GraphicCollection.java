@@ -51,7 +51,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.orbisgis.core.Services;
 import net.opengis.se._2_0.core.CompositeGraphicType;
 import net.opengis.se._2_0.core.GraphicType;
@@ -244,7 +244,7 @@ public final class GraphicCollection implements SymbolizerNode {
      * @throws ParameterException
      * @throws IOException 
      */
-    public Rectangle2D getBounds(SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt)
+    public Rectangle2D getBounds(DataSource sds, long fid, boolean selected, MapTransform mt)
             throws ParameterException, IOException {
 
         double xmin = Double.MAX_VALUE;
@@ -304,7 +304,7 @@ public final class GraphicCollection implements SymbolizerNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt, AffineTransform at)
+    public void draw(Graphics2D g2, DataSource sds, long fid, boolean selected, MapTransform mt, AffineTransform at)
             throws ParameterException, IOException {
         for (Graphic g : graphics) {
             try {

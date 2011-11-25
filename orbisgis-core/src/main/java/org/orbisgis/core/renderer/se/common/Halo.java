@@ -5,7 +5,7 @@ import java.awt.Shape;
 import java.awt.geom.Area;
 
 import java.io.IOException;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 
 import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
@@ -146,7 +146,7 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
      * @return
      * @throws ParameterException
      */
-    public double getHaloRadius(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException {
+    public double getHaloRadius(DataSource sds, long fid, MapTransform mt) throws ParameterException {
         return Uom.toPixel(radius.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null); // TODO 100%
     }
 
@@ -162,7 +162,7 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, Shape shp, MapTransform mt, boolean substract) throws ParameterException, IOException {
+    public void draw(Graphics2D g2, DataSource sds, long fid, boolean selected, Shape shp, MapTransform mt, boolean substract) throws ParameterException, IOException {
         if (radius != null && fill != null) {
             double r = this.getHaloRadius(sds, fid, mt);
             Area initialArea = new Area(shp);

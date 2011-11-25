@@ -11,7 +11,7 @@ import java.awt.geom.Rectangle2D;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 
 import org.orbisgis.core.map.MapTransform;
 
@@ -324,7 +324,7 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
         }
     }
 
-    private Font getFont(SpatialDataSourceDecorator sds, long fid,
+    private Font getFont(DataSource sds, long fid,
             MapTransform mt) throws ParameterException, IOException {
         String family = "Arial";
         if (fontFamily != null) {
@@ -378,7 +378,7 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
      * @throws ParameterException
      * @throws IOException
      */
-    public Rectangle2D getBounds(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
+    public Rectangle2D getBounds(Graphics2D g2, DataSource sds, long fid,
             MapTransform mt) throws ParameterException, IOException {
         String txt = this.text.getValue(sds, fid);
         return getBounds(g2, txt, sds, fid, mt);
@@ -395,7 +395,7 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
      * @throws ParameterException
      * @throws IOException
      */
-    public Rectangle2D getBounds(Graphics2D g2, String text, SpatialDataSourceDecorator sds, long fid,
+    public Rectangle2D getBounds(Graphics2D g2, String text, DataSource sds, long fid,
             MapTransform mt) throws ParameterException, IOException {
 
         Font font = getFont(sds, fid, mt);
@@ -417,13 +417,13 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
      * @throws ParameterException
      * @throws IOException
      */
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
+    public void draw(Graphics2D g2, DataSource sds, long fid,
             boolean selected, MapTransform mt, AffineTransform at, RenderContext perm) throws ParameterException, IOException {
         String txt = this.text.getValue(sds, fid);
         draw(g2, txt, sds, fid, selected, mt, at, perm);
     }
 
-    public Shape getOutline(Graphics2D g2, String text, SpatialDataSourceDecorator sds, long fid,
+    public Shape getOutline(Graphics2D g2, String text, DataSource sds, long fid,
             boolean selected, MapTransform mt, AffineTransform at, RenderContext perm) throws ParameterException, IOException {
 
         Font font = getFont(sds, fid, mt);
@@ -448,7 +448,7 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
         return outline;
     }
 
-    public void drawOutlines(Graphics2D g2, ArrayList<Shape> outlines, SpatialDataSourceDecorator sds, long fid,
+    public void drawOutlines(Graphics2D g2, ArrayList<Shape> outlines, DataSource sds, long fid,
             boolean selected, MapTransform mt) throws ParameterException, IOException {
 
         if (halo != null) {
@@ -492,7 +492,7 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
      * @throws ParameterException
      * @throws IOException
      */
-    public void draw(Graphics2D g2, String text, SpatialDataSourceDecorator sds, long fid,
+    public void draw(Graphics2D g2, String text, DataSource sds, long fid,
             boolean selected, MapTransform mt, AffineTransform at, RenderContext perm) throws ParameterException, IOException {
 
         ArrayList<Shape> outlines = new ArrayList<Shape>();
@@ -508,7 +508,7 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
      * @return
      * @throws ParameterException
      */
-    public double getEmInPixel(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException {
+    public double getEmInPixel(DataSource sds, long fid, MapTransform mt) throws ParameterException {
         double size = Uom.toPixel(12, Uom.PT, mt.getDpi(), mt.getScaleDenominator(), null);
         if (fontSize != null) {
             size = Uom.toPixel(fontSize.getValue(sds, fid), getFontUom(), mt.getDpi(), mt.getScaleDenominator(), null);

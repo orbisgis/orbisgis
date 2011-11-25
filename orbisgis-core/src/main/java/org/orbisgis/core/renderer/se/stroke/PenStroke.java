@@ -48,7 +48,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import net.opengis.se._2_0.core.PenStrokeType;
 
 import org.orbisgis.core.map.MapTransform;
@@ -209,7 +209,7 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
 
 
     @Override
-    public Double getNaturalLength(SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) {
+    public Double getNaturalLength(DataSource sds, long fid, Shape shp, MapTransform mt) {
 
         if (dashArray != null) {
             // A dashed penstroke has a length
@@ -237,7 +237,7 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
     }
 
     @Override
-    public Double getNaturalLengthForCompound(SpatialDataSourceDecorator sds, long fid,
+    public Double getNaturalLengthForCompound(DataSource sds, long fid,
             Shape shp, MapTransform mt) throws ParameterException, IOException {
         return Double.POSITIVE_INFINITY;
     }
@@ -379,7 +379,7 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
         this.dashArray = dashArray;
     }
 
-    private BasicStroke createBasicStroke(SpatialDataSourceDecorator sds, long fid,
+    private BasicStroke createBasicStroke(DataSource sds, long fid,
             Shape shp, MapTransform mt, Double v100p, boolean useDash) throws ParameterException {
 
         int cap;
@@ -471,7 +471,7 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
      * @return
      * @throws ParameterException 
      */
-    public BasicStroke getBasicStroke(SpatialDataSourceDecorator sds, long fid, MapTransform mt, Double v100p) throws ParameterException {
+    public BasicStroke getBasicStroke(DataSource sds, long fid, MapTransform mt, Double v100p) throws ParameterException {
         return this.createBasicStroke(sds, fid, null, mt, v100p, true);
     }
 
@@ -508,7 +508,7 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
      * @todo DashOffset
      */
     @Override
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shape,
+    public void draw(Graphics2D g2, DataSource sds, long fid, Shape shape,
             boolean selected, MapTransform mt, double offset)
             throws ParameterException, IOException {
 
@@ -633,7 +633,7 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
      * @return
      * @throws ParameterException 
      */
-    public double getWidthInPixel(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException {
+    public double getWidthInPixel(DataSource sds, long fid, MapTransform mt) throws ParameterException {
         if (this.width != null) {
             return Uom.toPixel(width.getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
         } else {
@@ -650,7 +650,7 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
      * @return
      * @throws ParameterException 
      */
-    public double getMinLength(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException {
+    public double getMinLength(DataSource sds, long fid, MapTransform mt) throws ParameterException {
         double length = 0;
         if (dashArray != null) {
             String sDash = this.dashArray.getValue(sds, fid);

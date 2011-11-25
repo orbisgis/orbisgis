@@ -2,7 +2,7 @@ package org.orbisgis.core.renderer.se.parameter.string;
 
 import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.LiteralType;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.parameter.Literal;
 
 /**
@@ -36,7 +36,7 @@ public class StringLiteral extends Literal implements StringParameter{
     }
 
     @Override
-    public String getValue(SpatialDataSourceDecorator sds, long fid){
+    public String getValue(DataSource sds, long fid){
         return v;
     }
 

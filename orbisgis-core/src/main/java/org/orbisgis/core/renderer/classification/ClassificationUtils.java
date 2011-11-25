@@ -38,14 +38,14 @@ package org.orbisgis.core.renderer.classification;
 
 import java.util.Arrays;
 
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 public class ClassificationUtils {
 
-	public static double[] getSortedValues(SpatialDataSourceDecorator sds, RealParameter value)
+	public static double[] getSortedValues(DataSource sds, RealParameter value)
 			throws DriverException, ParameterException {
 
 		double[] values = new double[(int) sds.getRowCount()];

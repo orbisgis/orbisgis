@@ -45,7 +45,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.orbisgis.core.map.MapTransform;
 import net.opengis.se._2_0.core.FillType;
 import net.opengis.se._2_0.core.HatchedFillType;
@@ -173,8 +173,7 @@ public final class HatchedFill extends Fill implements StrokeNode {
 
 
     @Override
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
-                     Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
+    public void draw(Graphics2D g2, DataSource sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
 
         if (this.stroke != null) {
             // Perpendicular distance between two lines
@@ -226,12 +225,10 @@ public final class HatchedFill extends Fill implements StrokeNode {
      * @throws ParameterException
      * @throws IOException 
      */
-    public static void drawHatch(Graphics2D g2, SpatialDataSourceDecorator sds,
-                                 long fid, Shape shp, boolean selected,
-                                 MapTransform mt,
-                                 double alph, double pDist, Stroke stroke,
-                                 double hOffset) throws ParameterException, IOException {
-        double alpha = alph;
+    public static void drawHatch(Graphics2D g2, DataSource sds,
+            long fid, Shape shp, boolean selected, MapTransform mt,
+            double alph, double pDist, Stroke stroke, double hOffset) throws ParameterException, IOException {
+            double alpha = alph;
         while (alpha < 0.0) {
             alpha += TWO_PI_DEG;
         }   // Make sure alpha is > 0
@@ -478,8 +475,8 @@ public final class HatchedFill extends Fill implements StrokeNode {
      * @throws ParameterException
      */
     @Override
-    public Paint getPaint(long fid, SpatialDataSourceDecorator sds,
-                          boolean selected, MapTransform mt) throws ParameterException {
+    public Paint getPaint(long fid, DataSource sds,
+            boolean selected, MapTransform mt) throws ParameterException {
         return null;
     }
 

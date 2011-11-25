@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
@@ -65,7 +65,7 @@ public class LineLabel extends Label {
      *
      */
     @Override
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, 
+    public void draw(Graphics2D g2, DataSource sds, long fid, 
             Shape shp, boolean selected, MapTransform mt, RenderContext perm)
             throws ParameterException, IOException {
 

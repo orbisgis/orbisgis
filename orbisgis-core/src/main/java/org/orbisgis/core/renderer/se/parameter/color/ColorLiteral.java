@@ -42,7 +42,7 @@ import java.util.Random;
 import java.awt.Color;
 import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.LiteralType;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.parameter.Literal;
 
 /**
@@ -94,7 +94,7 @@ public class ColorLiteral extends Literal implements ColorParameter{
     }
 
     @Override
-    public Color getColor(SpatialDataSourceDecorator sds, long fid){
+    public Color getColor(DataSource sds, long fid){
         return color;
     }
 

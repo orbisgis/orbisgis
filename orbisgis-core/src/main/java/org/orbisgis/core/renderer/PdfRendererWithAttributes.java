@@ -48,7 +48,7 @@ import java.awt.Graphics2D;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
@@ -109,7 +109,7 @@ public class PdfRendererWithAttributes extends Renderer {
     }
 
     @Override
-    public void beginFeature(long id, SpatialDataSourceDecorator sds) {
+    public void beginFeature(long id, DataSource sds) {
         int fieldNameIndex;
         try {
             fieldNameIndex = sds.getFieldIndexByName(fieldName);
@@ -136,7 +136,7 @@ public class PdfRendererWithAttributes extends Renderer {
             PdfArray properties = new PdfArray();
 
             for (int i = 0; i < sds.getFieldCount(); i++) {
-                if (sds.getFieldType(i).getTypeCode() != Type.GEOMETRY) {
+                if ((sds.getFieldType(i).getTypeCode() & Type.GEOMETRY) == 0) {
                     PdfDictionary property = new PdfDictionary();
                     property.put(PdfName.N, new PdfString(sds.getFieldName(i)));
                     Value v = sds.getFieldValue(id, i);
@@ -157,7 +157,7 @@ public class PdfRendererWithAttributes extends Renderer {
     }
 
     @Override
-    public void endFeature(long id, SpatialDataSourceDecorator sds) {
+    public void endFeature(long id, DataSource sds) {
         cb.addTemplate(pTemp, lx, ly);
         cb.endMarkedContentSequence();
     }

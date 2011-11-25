@@ -41,7 +41,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
@@ -86,13 +86,13 @@ public class PolygonCentroidHalfCircleLeftSymbol extends
 	}
 
 	@Override
-	public boolean acceptGeometryType(GeometryConstraint geometryConstraint) {
+	public boolean acceptGeometryType(GeometryTypeConstraint geometryConstraint) {
 		if (geometryConstraint == null) {
 			return true;
 		} else {
 			int geometryType = geometryConstraint.getGeometryType();
-			return (geometryType == GeometryConstraint.POLYGON)
-					|| (geometryType == GeometryConstraint.MULTI_POLYGON);
+			return (geometryType == GeometryTypeConstraint.POLYGON)
+					|| (geometryType == GeometryTypeConstraint.MULTI_POLYGON);
 		}
 	}
 

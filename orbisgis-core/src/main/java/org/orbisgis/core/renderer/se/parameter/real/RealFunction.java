@@ -45,7 +45,7 @@ import net.opengis.fes._2.FunctionType;
 import net.opengis.fes._2.ObjectFactory;
 import net.opengis.se._2_0.core.ParameterValueType;
 
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -163,7 +163,7 @@ public class RealFunction implements RealParameter {
     }
 
     @Override
-    public Double getValue(SpatialDataSourceDecorator sds, long fid) throws ParameterException {
+    public Double getValue(DataSource sds, long fid) throws ParameterException {
         double result;
 
         switch (op) {

@@ -2,7 +2,7 @@ package org.orbisgis.core.renderer.se.parameter.geometry;
 
 import com.vividsolutions.jts.geom.Geometry;
 import net.opengis.se._2_0.core.GeometryType;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -34,7 +34,7 @@ public class GeometryAttribute extends ValueReference {
      * @return
      * @throws ParameterException 
      */
-    public Geometry getTheGeom(SpatialDataSourceDecorator sds, long fid) throws ParameterException {
+    public Geometry getTheGeom(DataSource sds, long fid) throws ParameterException {
         try {
             return getFieldValue(sds, fid).getAsGeometry();
         } catch (DriverException ex) {

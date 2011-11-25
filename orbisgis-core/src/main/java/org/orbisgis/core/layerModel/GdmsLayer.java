@@ -37,13 +37,13 @@
  */
 package org.orbisgis.core.layerModel;
 
+import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SourceAlreadyExistsException;
 import org.gdms.driver.DriverException;
 import org.gdms.source.SourceEvent;
 import org.gdms.source.SourceListener;
 import org.gdms.source.SourceManager;
 import org.gdms.source.SourceRemovalEvent;
-import org.gdms.sql.strategies.TableNotFoundException;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.renderer.se.Style;
@@ -162,11 +162,13 @@ public abstract class GdmsLayer extends AbstractLayer {
         if (!name.equals(mainName)) {
             super.setName(name);
             try {
-                sourceManager.addName(mainName, name);
-            } catch (TableNotFoundException e) {
-                throw new RuntimeException(I18N.getString("orbisgis.org.orbisgis.layerModel.gdmsLayer.bug"), e); //$NON-NLS-1$
+                        sourceManager.addName(mainName, name);
+            } catch (NoSuchTableException ex) {
+                    throw new RuntimeException(I18N.getString("orbisgis.org.orbisgis.layerModel.gdmsLayer.bug")
+                            , ex); //$NON-NLS-1$
             } catch (SourceAlreadyExistsException e) {
-                throw new LayerException(I18N.getString("orbisgis.org.orbisgis.layerModel.gdmsLayer.sourceAlreadyExists"), e); //$NON-NLS-1$
+                throw new LayerException(I18N.getString("orbisgis.org.orbisgis.layerModel.gdmsLayer.sourceAlreadyExists")
+                        , e); //$NON-NLS-1$
             }
         } else {
             super.setName(name);
@@ -215,7 +217,7 @@ public abstract class GdmsLayer extends AbstractLayer {
                     try {
                         // If this layer name was the mainName
                         sourceManager.addName(mainName, getName());
-                    } catch (TableNotFoundException e1) {
+                    } catch (NoSuchTableException e1) {
                         // The table exists since mainName is the new name
                         throw new RuntimeException(I18N.getString("orbisgis.org.orbisgis.layerModel.gdmsLayer.bug"), e1); //$NON-NLS-1$
                     } catch (SourceAlreadyExistsException e1) {

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
 import org.gvsig.remoteClient.utils.BoundaryBox;
@@ -37,7 +37,7 @@ public class WMSLayer extends GdmsLayer {
 	}
 
 	@Override
-	public SpatialDataSourceDecorator getSpatialDataSource() {
+	public DataSource getSpatialDataSource() {
 		return null;
 	}
 

@@ -41,7 +41,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
@@ -68,7 +68,7 @@ public class DefaultLabelLegend extends AbstractCartoLegend implements
 
 	private boolean smartPlacing;
 
-	private int getSize(SpatialDataSourceDecorator sds, long row)
+	private int getSize(DataSource sds, long row)
 			throws RenderException, DriverException {
 		if (labelSizeField == null) {
 			return fontSize;
@@ -101,7 +101,7 @@ public class DefaultLabelLegend extends AbstractCartoLegend implements
 		return this.fontSize;
 	}
 
-	public Symbol getSymbol(SpatialDataSourceDecorator sds, long row)
+	public Symbol getSymbol(DataSource sds, long row)
 			throws RenderException {
 		try {
 			Value v;

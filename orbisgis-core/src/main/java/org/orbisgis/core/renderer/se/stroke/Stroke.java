@@ -14,7 +14,7 @@ import net.opengis.se._2_0.core.PenStrokeType;
 import net.opengis.se._2_0.core.StrokeType;
 import net.opengis.se._2_0.core.TextStrokeType;
 
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.orbisgis.core.Services;
 
 
@@ -160,7 +160,7 @@ public abstract class Stroke implements SymbolizerNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds,
+    public abstract void draw(Graphics2D g2, DataSource sds,
             long fid, Shape shp, boolean selected, MapTransform mt, double offset) throws ParameterException, IOException;
 
     /**
@@ -208,7 +208,7 @@ public abstract class Stroke implements SymbolizerNode {
     /**
      * Returns the stroke pattern natural length, in pixel unit
      */
-    public abstract Double getNaturalLength(SpatialDataSourceDecorator sds, long fid,
+    public abstract Double getNaturalLength(DataSource sds, long fid,
             Shape shp, MapTransform mt) throws ParameterException, IOException;
 
     /**
@@ -226,7 +226,7 @@ public abstract class Stroke implements SymbolizerNode {
      * @throws ParameterException
      * @throws IOException 
      */
-    public Double getNaturalLengthForCompound(SpatialDataSourceDecorator sds, long fid,
+    public Double getNaturalLengthForCompound(DataSource sds, long fid,
             Shape shp, MapTransform mt) throws ParameterException, IOException {
         return getNaturalLength(sds, fid, shp, mt);
     }

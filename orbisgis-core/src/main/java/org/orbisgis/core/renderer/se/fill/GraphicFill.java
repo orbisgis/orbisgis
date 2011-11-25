@@ -50,7 +50,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 
 import net.opengis.se._2_0.core.GraphicFillType;
 import net.opengis.se._2_0.core.ObjectFactory;
@@ -206,7 +206,7 @@ public final class GraphicFill extends Fill implements UomNode {
      * see Fill
      */
     @Override
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
+    public void draw(Graphics2D g2, DataSource sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
         Paint stipple = this.getPaint(fid, sds, selected, mt);
 
         // TODO handle selected ! 
@@ -226,7 +226,7 @@ public final class GraphicFill extends Fill implements UomNode {
      * @throws IOException
      */
     @Override
-    public Paint getPaint(long fid, SpatialDataSourceDecorator sds, boolean selected, MapTransform mt) throws ParameterException, IOException {
+    public Paint getPaint(long fid, DataSource sds, boolean selected, MapTransform mt) throws ParameterException, IOException {
         double gX = 0.0;
         double gY = 0.0;
 
@@ -251,7 +251,7 @@ public final class GraphicFill extends Fill implements UomNode {
         return getPaint(fid, sds, selected, mt, graphic, gX, gY, bounds);
     }
 
-    public static Paint getPaint(long fid, SpatialDataSourceDecorator sds, boolean selected,
+    public static Paint getPaint(long fid, DataSource sds, boolean selected,
             MapTransform mt, GraphicCollection graphic, double gX, double gY, Rectangle2D bounds)
             throws ParameterException, IOException {
 

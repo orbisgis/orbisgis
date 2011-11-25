@@ -45,7 +45,7 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.CategorizeType;
 import net.opengis.se._2_0.core.ParameterValueType;
 import net.opengis.se._2_0.core.ThresholdBelongsToType;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.Categorize;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -106,7 +106,7 @@ public final class Categorize2String extends Categorize<StringParameter, StringL
     }
 
     @Override
-    public String getValue(SpatialDataSourceDecorator sds, long fid) {
+    public String getValue(DataSource sds, long fid) {
         try {
             return getParameter(sds, fid).getValue(sds, fid);
         } catch (ParameterException ex) {

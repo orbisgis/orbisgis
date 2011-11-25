@@ -45,7 +45,7 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
@@ -118,7 +118,7 @@ public enum WellKnownName implements MarkGraphicSource {
     }
 
     @Override
-    public Shape getShape(ViewBox viewBox, SpatialDataSourceDecorator sds, 
+    public Shape getShape(ViewBox viewBox, DataSource sds, 
             long fid, Double scale, Double dpi, RealParameter markIndex,
             String mimeType) throws ParameterException {
         if (sds == null && viewBox != null && !viewBox.dependsOnFeature().isEmpty()){
@@ -268,7 +268,7 @@ public enum WellKnownName implements MarkGraphicSource {
     }
 
     @Override
-    public double getDefaultMaxWidth(SpatialDataSourceDecorator sds, long fid, 
+    public double getDefaultMaxWidth(DataSource sds, long fid, 
             Double scale, Double dpi, RealParameter markIndex, String mimeType) {
         return DEFAULT_SIZE;
     }

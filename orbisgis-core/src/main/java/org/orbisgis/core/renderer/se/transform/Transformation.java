@@ -9,7 +9,7 @@ package org.orbisgis.core.renderer.se.transform;
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -44,7 +44,7 @@ public interface Transformation {
      * @throws ParameterException
      * @throws IOException
      */
-    abstract AffineTransform getAffineTransform(SpatialDataSourceDecorator sds, long fid, Uom uom, MapTransform mt, Double width, Double height) throws ParameterException, IOException;
+    abstract AffineTransform getAffineTransform(DataSource sds, long fid, Uom uom, MapTransform mt, Double width, Double height) throws ParameterException, IOException;
 
     /**
      * Get a JAXB representation of this {@code Label}

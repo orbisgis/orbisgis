@@ -8,7 +8,7 @@ import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.orbisgis.core.map.MapTransform;
 import net.opengis.se._2_0.core.MatrixType;
 import net.opengis.se._2_0.core.RotateType;
@@ -130,7 +130,7 @@ public class Transform implements SymbolizerNode, UomNode {
          * @return AffineTransofrm
          * @throws ParameterException
          */
-        public AffineTransform getGraphicalAffineTransform(boolean isForSpatialFeatures, SpatialDataSourceDecorator sds, long fid, MapTransform mt, Double width, Double height) throws ParameterException, IOException {
+        public AffineTransform getGraphicalAffineTransform(boolean isForSpatialFeatures, DataSource sds, long fid, MapTransform mt, Double width, Double height) throws ParameterException, IOException {
                 //return consolidateTrasformations(false).getGraphicalAffineTransform();
                 this.consolidateTransformations(sds, fid, isForSpatialFeatures, mt, width, height);
                 return consolidated;
@@ -150,7 +150,7 @@ public class Transform implements SymbolizerNode, UomNode {
          * @throws ParameterException
          * @throws IOException
          */
-        public void consolidateTransformations(SpatialDataSourceDecorator sds, long fid, boolean forGeometries,
+        public void consolidateTransformations(DataSource sds, long fid, boolean forGeometries,
                 MapTransform mt, Double width, Double height) throws ParameterException, IOException {
 
                 // Result is Identity

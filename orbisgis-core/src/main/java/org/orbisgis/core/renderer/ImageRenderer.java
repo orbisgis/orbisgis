@@ -43,7 +43,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Symbolizer;
 
@@ -117,11 +117,11 @@ public class ImageRenderer extends Renderer {
     }
 
     @Override
-    protected void beginFeature(long id, SpatialDataSourceDecorator sds) {
+    protected void beginFeature(long id, DataSource sds) {
     }
 
     @Override
-    protected void endFeature(long id, SpatialDataSourceDecorator sds) {
+    protected void endFeature(long id, DataSource sds) {
     }
 
 }

@@ -51,7 +51,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.SymbolizerType;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
@@ -95,8 +95,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
         this.theGeom = theGeom;
     }
 
-    public Geometry getTheGeom(SpatialDataSourceDecorator sds, Long fid) throws ParameterException, DriverException{
-        System.out.println ("GetTheGeom !");
+    public Geometry getTheGeom(DataSource sds, Long fid) throws ParameterException, DriverException{
         if (theGeom != null) {
             System.out.println (" -> From Attribute => " + theGeom.getColumnName());
             return theGeom.getTheGeom(sds, fid);
@@ -108,7 +107,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
         }
     }
 
-    public Geometry getGeometry(SpatialDataSourceDecorator sds, Long fid, Geometry theGeom) throws ParameterException, DriverException{
+    public Geometry getGeometry(DataSource sds, Long fid, Geometry theGeom) throws ParameterException, DriverException{
         if (theGeom == null){
             return this.getTheGeom(sds, fid);
         } else {
@@ -119,7 +118,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
     
     /*
     @Override
-    public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
+    public abstract void draw(Graphics2D g2, DataSource sds, long fid,
     boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
     throws ParameterException, IOException, DriverException;*/
     /**
@@ -132,7 +131,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
      * @throws IOException
      * @throws DriverException
      */
-    public List<Shape> getShapes(SpatialDataSourceDecorator sds, long fid,
+    public List<Shape> getShapes(DataSource sds, long fid,
             MapTransform mt, Geometry theGeom) throws ParameterException, IOException, DriverException {
 
         Geometry geom = getGeometry(sds, fid, theGeom);
@@ -173,7 +172,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
      * @throws IOException
      * @throws DriverException
      */
-    public List<Shape> getLines(SpatialDataSourceDecorator sds, long fid,
+    public List<Shape> getLines(DataSource sds, long fid,
             MapTransform mt, Geometry the_geom) throws ParameterException, IOException, DriverException {
 
         Geometry geom = getGeometry(sds, fid, the_geom);
@@ -247,7 +246,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
      * @throws IOException
      * @throws DriverException
      */
-    public Point2D getPointShape(SpatialDataSourceDecorator sds, long fid, MapTransform mt, Geometry theGeom) throws ParameterException, IOException, DriverException {
+    public Point2D getPointShape(DataSource sds, long fid, MapTransform mt, Geometry theGeom) throws ParameterException, IOException, DriverException {
 
         Geometry geom = getGeometry(sds, fid, theGeom);
         //geom = ShapeHelper.clipToExtent(geom, mt.getAdjustedExtent());
@@ -279,7 +278,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
      * @throws IOException
      * @throws DriverException
      */
-    public Point2D getFirstPointShape(SpatialDataSourceDecorator sds, long fid, MapTransform mt, Geometry theGeom) throws ParameterException, IOException, DriverException {
+    public Point2D getFirstPointShape(DataSource sds, long fid, MapTransform mt, Geometry theGeom) throws ParameterException, IOException, DriverException {
 
         Geometry geom = getGeometry(sds, fid, theGeom);
         //geom = ShapeHelper.clipToExtent(geom, mt.getAdjustedExtent());
@@ -304,7 +303,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
      * @throws IOException
      * @throws DriverException
      */
-    public List<Point2D> getPoints(SpatialDataSourceDecorator sds, long fid,
+    public List<Point2D> getPoints(DataSource sds, long fid,
             MapTransform mt, Geometry theGeom) throws ParameterException, IOException, DriverException {
 
         Geometry geom = getGeometry(sds, fid, theGeom);

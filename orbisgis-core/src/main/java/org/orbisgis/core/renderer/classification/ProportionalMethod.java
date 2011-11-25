@@ -36,7 +36,7 @@
  */
 package org.orbisgis.core.renderer.classification;
 
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
@@ -50,20 +50,11 @@ public class ProportionalMethod {
 
     int LINEAR = 1;
 
+	private DataSource ds;
+	private double maxValue;
+	private RealParameter value;
 
     int LOGARITHMIC = 2;
-
-
-    int SQUARE = 3;
-
-
-    private SpatialDataSourceDecorator ds;
-
-
-    private double maxValue;
-
-
-    private RealParameter value;
 
 
     private final static int MIN_SURFACE = 10;
@@ -79,7 +70,7 @@ public class ProportionalMethod {
     private int method;
 
 
-    public ProportionalMethod(SpatialDataSourceDecorator ds, RealParameter value) {
+    public ProportionalMethod(DataSource ds, RealParameter value) {
         this.ds = ds;
         this.value = value;
     }

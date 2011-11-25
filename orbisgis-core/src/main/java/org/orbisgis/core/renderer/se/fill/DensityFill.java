@@ -45,7 +45,7 @@ import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import net.opengis.se._2_0.thematic.DensityFillType;
 
 import net.opengis.se._2_0.thematic.ObjectFactory;
@@ -220,7 +220,7 @@ public final class DensityFill extends Fill implements GraphicNode {
     }
 
     @Override
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
+    public void draw(Graphics2D g2, DataSource sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
 
         if (isHatched) {
             double alpha = HatchedFill.DEFAULT_ALPHA;
@@ -260,7 +260,7 @@ public final class DensityFill extends Fill implements GraphicNode {
     }
 
     @Override
-    public Paint getPaint(long fid, SpatialDataSourceDecorator sds, boolean selected, MapTransform mt) throws ParameterException, IOException {
+    public Paint getPaint(long fid, DataSource sds, boolean selected, MapTransform mt) throws ParameterException, IOException {
         double percentage = 0.0;
 
         if (percentageCovered != null) {

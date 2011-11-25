@@ -43,9 +43,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
-import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.AllowAllRenderContext;
@@ -113,7 +112,7 @@ public class DefaultProportionalLineLegend extends AbstractCartoLegend
 	}
 
 	@Override
-	public void preprocess(SpatialDataSourceDecorator sds)
+	public void preprocess(DataSource sds)
 			throws RenderException, ClassificationMethodException {
 		try {
 			proportionnalMethod = new ProportionalMethod(sds, new RealAttribute(field));
@@ -130,7 +129,7 @@ public class DefaultProportionalLineLegend extends AbstractCartoLegend
 	}
 
 	@Override
-	public Symbol getSymbol(SpatialDataSourceDecorator sds, long row)
+	public Symbol getSymbol(DataSource sds, long row)
 			throws RenderException {
 		try {
 			// TODO what's the use of this variable
@@ -152,8 +151,6 @@ public class DefaultProportionalLineLegend extends AbstractCartoLegend
 			StandardLineSymbol ret = (StandardLineSymbol) symbol.cloneSymbol();
 			ret.setLineWidth((int) Math.round(symbolSize));
 			return ret;
-		} catch (IncompatibleTypesException e) {
-			throw new RenderException("Cannot calculate proportionalities", e);
 		} catch (DriverException e) {
 			throw new RenderException("Cannot access layer contents", e);
 		}

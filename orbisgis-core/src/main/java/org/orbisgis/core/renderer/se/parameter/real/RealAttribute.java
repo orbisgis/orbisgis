@@ -2,7 +2,7 @@ package org.orbisgis.core.renderer.se.parameter.real;
 
 import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.ValueReferenceType;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -11,8 +11,8 @@ import org.orbisgis.core.renderer.se.parameter.ValueReference;
 /**
  * The {@code ValueReference} implementation of {@code RealParameter}. That means that 
  * this class is used to retrieve real (numeric) values by using a GDMS 
- * {@code SpatialDataSourceDecorator} as specified in {@link ValueReference ValueReference}.</p>
- * <p>Note that the {@code SpatialDataSourceDecorator} is not directly attached to the class,
+ * {@code DataSource} as specified in {@link ValueReference ValueReference}.</p>
+ * <p>Note that the {@code DataSource} is not directly attached to the class,
  * and must be specified each time you call {@code getValue}.
  * @author alexis, maxence
  */
@@ -49,7 +49,7 @@ public class RealAttribute extends ValueReference implements RealParameter {
     }
 
     @Override
-    public Double getValue(SpatialDataSourceDecorator sds, long fid) throws ParameterException {
+    public Double getValue(DataSource sds, long fid) throws ParameterException {
         try {
             Value value = this.getFieldValue(sds, fid);
             if (value.isNull()) {

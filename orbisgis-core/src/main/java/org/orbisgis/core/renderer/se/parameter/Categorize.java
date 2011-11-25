@@ -10,7 +10,7 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.ExpressionType;
 import net.opengis.se._2_0.core.CategorizeType;
 import org.gdms.data.DataSource;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import net.opengis.se._2_0.core.ExtensionParameterType;
 import net.opengis.se._2_0.core.ExtensionType;
 import net.opengis.se._2_0.core.ObjectFactory;
@@ -329,7 +329,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         fireNewThresoldsOrder();
     }
 
-    protected ToType getParameter(SpatialDataSourceDecorator sds, long fid) {
+    protected ToType getParameter(DataSource sds, long fid) {
         try {
             if (getNumClasses() > 1) {
                 double value = lookupValue.getValue(sds, fid);

@@ -9,7 +9,7 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.PointTextGraphicType;
 import net.opengis.se._2_0.core.TranslateType;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.UomNode;
@@ -104,12 +104,12 @@ public final class PointTextGraphic extends Graphic implements UomNode {
         }
 
         @Override
-        public Rectangle2D getBounds(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
+        public Rectangle2D getBounds(DataSource sds, long fid, MapTransform mt) throws ParameterException, IOException {
                 throw new UnsupportedOperationException("Not supported yet.");
         }
 
         @Override
-        public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
+        public void draw(Graphics2D g2, DataSource sds, long fid,
                 boolean selected, MapTransform mt, AffineTransform fat) throws ParameterException, IOException {
 
                 AffineTransform at = new AffineTransform(fat);
@@ -131,7 +131,7 @@ public final class PointTextGraphic extends Graphic implements UomNode {
 
 
         /*@Override
-        public double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
+        public double getMaxWidth(DataSource sds, long fid, MapTransform mt) throws ParameterException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
         }*/
         @Override

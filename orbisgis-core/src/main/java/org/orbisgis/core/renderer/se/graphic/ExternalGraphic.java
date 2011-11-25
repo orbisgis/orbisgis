@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import javax.media.jai.PlanarImage;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 
 import net.opengis.se._2_0.core.ExternalGraphicType;
 import net.opengis.se._2_0.core.ObjectFactory;
@@ -217,7 +217,7 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
     }
 
     @Override
-    public Rectangle2D getBounds(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
+    public Rectangle2D getBounds(DataSource sds, long fid, MapTransform mt) throws ParameterException, IOException {
         Rectangle2D.Double bounds = source.updateCacheAndGetBounds(viewBox, sds, fid, mt, mimeType);
 
         double px = bounds.getMinX();
@@ -253,7 +253,7 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
     }
 
     @Override
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
+    public void draw(Graphics2D g2, DataSource sds, long fid,
             boolean selected, MapTransform mt, AffineTransform fat) throws ParameterException, IOException {
 
 
@@ -294,7 +294,7 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
     }
 
     /*@Override
-    public RenderableGraphics getRenderableGraphics(SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException {
+    public RenderableGraphics getRenderableGraphics(DataSource sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException {
     // TODO Implements SELECTED!
 
     RenderedImage img;
@@ -354,7 +354,7 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
     return rg;
     }*/
 
-    /*public double getMargin(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
+    /*public double getMargin(DataSource sds, long fid, MapTransform mt) throws ParameterException, IOException {
     double delta = 0.0;
 
     if (this.halo != null) {
@@ -366,7 +366,7 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
 
     /*
     @Override
-    public double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
+    public double getMaxWidth(DataSource sds, long fid, MapTransform mt) throws ParameterException, IOException {
     double delta = 0.0;
     if (viewBox != null && viewBox.usable()) {
     RenderedImage img;

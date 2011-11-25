@@ -8,7 +8,7 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import net.opengis.se._2_0.core.LabelType;
 
 import org.orbisgis.core.map.MapTransform;
@@ -325,7 +325,7 @@ public abstract class Label implements SymbolizerNode, UomNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
+    public abstract void draw(Graphics2D g2, DataSource sds, long fid,
             Shape shp, boolean selected, MapTransform mt, RenderContext perm)
             throws ParameterException, IOException;
 

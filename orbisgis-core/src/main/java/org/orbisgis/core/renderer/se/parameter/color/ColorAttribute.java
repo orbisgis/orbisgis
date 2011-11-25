@@ -43,7 +43,7 @@ package org.orbisgis.core.renderer.se.parameter.color;
 import java.awt.Color;
 import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.ValueReferenceType;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
@@ -52,8 +52,8 @@ import org.orbisgis.core.renderer.se.parameter.ValueReference;
 /**
  * The {@code ValueReference} implementation of {@code ColorParameter}. That means that 
  * this class is used to retrieve color values by using a GDMS 
- * {@code SpatialDataSourceDecorator} as specified in {@link ValueReference ValueReference}.</p>
- * <p>Note that the {@code SpatialDataSourceDecorator} is not directly attached to the class,
+ * {@code DataSource} as specified in {@link ValueReference ValueReference}.</p>
+ * <p>Note that the {@code DataSource} is not directly attached to the class,
  * and must be specified each time you call {@code getValue}.
  * @author alexis, maxence
  */
@@ -77,7 +77,7 @@ public class ColorAttribute extends ValueReference implements ColorParameter {
     }
 
     @Override
-    public Color getColor(SpatialDataSourceDecorator sds, long fid) throws ParameterException {
+    public Color getColor(DataSource sds, long fid) throws ParameterException {
         try {
             return Color.getColor(getFieldValue(sds, fid).getAsString());
         } catch (Exception e) {

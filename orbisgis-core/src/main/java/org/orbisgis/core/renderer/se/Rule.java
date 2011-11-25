@@ -14,8 +14,6 @@ import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.FilterDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.sql.parser.ParseException;
-import org.gdms.sql.strategies.SemanticException;
 
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
@@ -84,13 +82,13 @@ public final class Rule implements SymbolizerNode {
                 this.name = "Default Rule";
 
                 Geometry geometry = null;
-                try {
                         if (layer != null) {
+                        try {
                                 geometry = layer.getSpatialDataSource().getGeometry(0);
+                        } catch (DriverException ex) {
+                                Logger.getLogger(Rule.class.getName()).log(Level.SEVERE, null, ex);
                         }
-                } catch (DriverException ex) {
-                        Logger.getLogger(Rule.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                        }
 
                 Symbolizer symb;
 
@@ -254,7 +252,8 @@ public final class Rule implements SymbolizerNode {
          * @throws ParseException
          * @throws SemanticException
          */
-        public FilterDataSourceDecorator getFilteredDataSource(FilterDataSourceDecorator fds) throws DriverLoadException, DataSourceCreationException, DriverException, ParseException, SemanticException {
+        public FilterDataSourceDecorator getFilteredDataSource(FilterDataSourceDecorator fds)
+                        throws DriverLoadException, DataSourceCreationException, DriverException {
                 if (where != null && !where.isEmpty()) {
                         return new FilterDataSourceDecorator(fds, where + getOrderBy());
                 } else if (!getOrderBy().isEmpty()) {
@@ -320,7 +319,7 @@ public final class Rule implements SymbolizerNode {
         FeatureTypeStyle ft = (FeatureTypeStyle) fts;
         
         ILayer layer = ft.getLayer();
-        SpatialDataSourceDecorator sds = layer.getDataSource();
+        DataSource sds = layer.getDataSource();
         return this.getFilteredDataSource(sds);
         }*/
         /**

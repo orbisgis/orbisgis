@@ -10,7 +10,7 @@ import net.opengis.se._2_0.core.LineSymbolizerType;
 import net.opengis.se._2_0.core.PointSymbolizerType;
 import net.opengis.se._2_0.core.SymbolizerType;
 import net.opengis.se._2_0.raster.RasterSymbolizerType;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
@@ -294,7 +294,7 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
      * @throws IOException
      * @throws DriverException 
      */
-    public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
+    public abstract void draw(Graphics2D g2, DataSource sds, long fid,
             boolean selected, MapTransform mt, Geometry theGeom, RenderContext perm)
             throws ParameterException, IOException, DriverException;
 

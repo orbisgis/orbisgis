@@ -46,7 +46,7 @@ import java.awt.Shape;
 
 import java.awt.geom.Rectangle2D;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.SolidFillType;
@@ -177,7 +177,7 @@ public final class SolidFill extends Fill {
         * @throws ParameterException
         */
 	@Override
-	public Paint getPaint(long fid, SpatialDataSourceDecorator sds, boolean selected, MapTransform mt) throws ParameterException {
+	public Paint getPaint(long fid, DataSource sds, boolean selected, MapTransform mt) throws ParameterException {
 
         Color c, ac; // ac stands 4 colour + alpha channel
 
@@ -207,9 +207,7 @@ public final class SolidFill extends Fill {
 	}
 
 	@Override
-	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException {
-
-        Rectangle2D fbox = shp.getBounds2D();
+	public void draw(Graphics2D g2, DataSource sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException {
 		g2.setPaint(getPaint(fid, sds, selected, mt));
 		g2.fill(shp);
 	}

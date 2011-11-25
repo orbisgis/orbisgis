@@ -7,7 +7,7 @@ import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.PathIterator;
 
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
@@ -42,7 +42,7 @@ public class SelectionSymbol extends AbstractGeometrySymbol {
 	}
 
 	@Override
-	public boolean acceptGeometryType(GeometryConstraint geometryConstraint) {
+	public boolean acceptGeometryType(GeometryTypeConstraint geometryConstraint) {
 		return true;
 	}
 

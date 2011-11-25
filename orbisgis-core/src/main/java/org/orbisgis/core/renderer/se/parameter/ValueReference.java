@@ -6,7 +6,7 @@ import net.opengis.fes._2.ExpressionType;
 import net.opengis.fes._2.ObjectFactory;
 import net.opengis.fes._2.ValueReferenceType;
 import net.opengis.se._2_0.core.ParameterValueType;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 
@@ -113,13 +113,13 @@ public abstract class ValueReference implements SeParameter {
 
         /**
          * Get the GDMS value associated to this Reference in the given table (representing
-         * by the SpatialDataSourceDecorator sds) at line fid.
+         * by the DataSource sds) at line fid.
          * @param sds
          * @param fid
          * @return
          * @throws DriverException 
          */
-	public Value getFieldValue(SpatialDataSourceDecorator sds, long fid) throws DriverException {
+	public Value getFieldValue(DataSource sds, long fid) throws DriverException {
 		if (this.fieldId == -1) {
 			this.fieldId = sds.getMetadata().getFieldIndex(fieldName);
 		}

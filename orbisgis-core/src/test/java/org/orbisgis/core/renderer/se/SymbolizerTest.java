@@ -29,7 +29,7 @@ import junit.framework.TestCase;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.orbisgis.core.map.MapTransform;
@@ -135,17 +135,13 @@ public class SymbolizerTest extends TestCase {
 
             ds.open();
 
-            SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
-
-
-
             System.out.println("Avant Symbolizers");
 
 
             long fid;
             for (fid = 0; fid < ds.getRowCount(); fid++) {
                 for (Symbolizer s : cs.getSymbolizerList()){
-                    s.draw(g2, sds, fid, false, mt, null, null);
+                    s.draw(g2, ds, fid, false, mt, null, null);
                 }
             }
 

@@ -17,7 +17,7 @@ import javax.imageio.ImageIO;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.orbisgis.core.AbstractTest;
@@ -61,14 +61,11 @@ public class HatchIntesiveTest extends AbstractTest {
             DataSource ds = dsf.getDataSource(new File(shapefile));
             ds.open();
 
-            SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
-
-
             MapTransform mt = new MapTransform();
 
 
             if (extent == null) {
-                extent = sds.getFullExtent();
+                extent = ds.getFullExtent();
             }
 
             mt.resizeImage(WIDTH, HEIGHT);
@@ -81,7 +78,7 @@ public class HatchIntesiveTest extends AbstractTest {
 
             g2.setRenderingHints(mt.getCurrentRenderContext().getRenderingHints());
 
-            ILayer layer = new Layer("swiss", sds);
+            ILayer layer = new Layer("swiss", ds);
 
             Style style = new Style(layer, stylePath);
             layer.setStyle(style);

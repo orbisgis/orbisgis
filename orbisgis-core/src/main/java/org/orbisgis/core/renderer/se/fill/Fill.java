@@ -53,7 +53,7 @@ import net.opengis.se._2_0.core.SolidFillType;
 import net.opengis.se._2_0.thematic.DensityFillType;
 import net.opengis.se._2_0.thematic.DotMapFillType;
 
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
@@ -130,7 +130,7 @@ public abstract class Fill implements SymbolizerNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException;
+    public abstract void draw(Graphics2D g2, DataSource sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException;
 
 
     /**
@@ -145,7 +145,7 @@ public abstract class Fill implements SymbolizerNode {
      *
      * @throws ParameterException
      */
-	public abstract Paint getPaint(long fid, SpatialDataSourceDecorator sds, boolean selected, MapTransform mt) throws ParameterException, IOException;
+	public abstract Paint getPaint(long fid, DataSource sds, boolean selected, MapTransform mt) throws ParameterException, IOException;
 
 
     /**

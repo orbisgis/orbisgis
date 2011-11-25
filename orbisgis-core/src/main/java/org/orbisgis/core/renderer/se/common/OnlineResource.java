@@ -64,7 +64,7 @@ import javax.media.jai.InterpolationBicubic2;
 import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
 import javax.media.jai.RenderedOp;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 
 import org.orbisgis.core.map.MapTransform;
 
@@ -166,7 +166,7 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
      * @throws IOException
      * @throws ParameterException
      */
-    public RenderedImage getPlanarImage(ViewBox viewBox, SpatialDataSourceDecorator sds, long fid, MapTransform mt, String mimeType)
+    public RenderedImage getPlanarImage(ViewBox viewBox, DataSource sds, long fid, MapTransform mt, String mimeType)
             throws IOException, ParameterException {
 
         if (mimeType != null && mimeType.equalsIgnoreCase("image/svg+xml")) {
@@ -187,7 +187,7 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
      * @return
      * @throws ParameterException
      */
-    public Rectangle2D.Double getJAIBounds(ViewBox viewBox, SpatialDataSourceDecorator sds, long fid, MapTransform mt, String mimeType) throws ParameterException {
+    public Rectangle2D.Double getJAIBounds(ViewBox viewBox, DataSource sds, long fid, MapTransform mt, String mimeType) throws ParameterException {
         try {
             if (rawImage == null) {
                 rawImage = JAI.create("url", uri);
@@ -236,7 +236,7 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
      * @return
      * @throws ParameterException
      */
-    public Rectangle2D.Double getSvgBounds(ViewBox viewBox, SpatialDataSourceDecorator sds,
+    public Rectangle2D.Double getSvgBounds(ViewBox viewBox, DataSource sds,
             long fid, MapTransform mt, String mimeType) throws ParameterException {
             /*
              * Fetch SVG if not already done
@@ -279,7 +279,7 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
     }
 
     @Override
-    public Rectangle2D.Double updateCacheAndGetBounds(ViewBox viewBox, SpatialDataSourceDecorator sds,
+    public Rectangle2D.Double updateCacheAndGetBounds(ViewBox viewBox, DataSource sds,
                 long fid, MapTransform mt, String mimeType) throws ParameterException {
         effectiveWidth = null;
         effectiveHeight = null;
@@ -362,7 +362,7 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
     /**
      * @deprecated
      */
-    public RenderedImage getSvgImage(ViewBox viewBox, SpatialDataSourceDecorator sds, long fid, MapTransform mt, String mimeType)
+    public RenderedImage getSvgImage(ViewBox viewBox, DataSource sds, long fid, MapTransform mt, String mimeType)
             throws IOException, ParameterException {
             SVGIcon icon = new SVGIcon();
             icon.setSvgURI(uri);
@@ -411,7 +411,7 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
      * @throws IOException
      * @throws ParameterException
      */
-    public PlanarImage getJAIImage(ViewBox viewBox, SpatialDataSourceDecorator sds, long fid, MapTransform mt, String mimeType)
+    public PlanarImage getJAIImage(ViewBox viewBox, DataSource sds, long fid, MapTransform mt, String mimeType)
             throws IOException, ParameterException {
 
         try {
@@ -499,7 +499,7 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
         return null;
     }
 
-    private Shape getTrueTypeGlyph(ViewBox viewBox, SpatialDataSourceDecorator sds,
+    private Shape getTrueTypeGlyph(ViewBox viewBox, DataSource sds,
             long fid, Double scale, Double dpi, RealParameter markIndex) throws ParameterException, IOException {
 
         try {
@@ -552,7 +552,7 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
     }
 
     @Override
-    public Shape getShape(ViewBox viewBox, SpatialDataSourceDecorator sds, long fid, Double scale, Double dpi, RealParameter markIndex, String mimeType) throws ParameterException, IOException {
+    public Shape getShape(ViewBox viewBox, DataSource sds, long fid, Double scale, Double dpi, RealParameter markIndex, String mimeType) throws ParameterException, IOException {
 
         if (mimeType != null) {
             if (mimeType.equalsIgnoreCase("application/x-font-ttf")) {
@@ -574,7 +574,7 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
     }
 
     @Override
-    public double getDefaultMaxWidth(SpatialDataSourceDecorator sds, long fid,
+    public double getDefaultMaxWidth(DataSource sds, long fid,
             Double scale, Double dpi, RealParameter markIndex, String mimeType)
             throws IOException, ParameterException {
 
@@ -588,7 +588,7 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
 
     }
 
-    private double getTrueTypeGlyphMaxSize(SpatialDataSourceDecorator sds, long fid,
+    private double getTrueTypeGlyphMaxSize(DataSource sds, long fid,
             /*Double scale, Double dpi,*/ RealParameter markIndex)
             throws IOException, ParameterException {
         try {

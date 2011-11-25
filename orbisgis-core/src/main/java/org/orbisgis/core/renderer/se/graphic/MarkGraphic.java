@@ -44,7 +44,7 @@ import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import net.opengis.se._2_0.core.MarkGraphicType;
 import net.opengis.se._2_0.core.ObjectFactory;
 
@@ -341,13 +341,13 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
 
     /**
      * Tries to retrieve the source that defines this {@code MarkGraphic} in the 
-     * SpatialDataSourceDecorator, at the diven index.
+     * DataSource, at the diven index.
      * @param sds
      * @param fid
      * @return
      * @throws ParameterException 
      */
-    private MarkGraphicSource getSource(SpatialDataSourceDecorator sds, long fid) throws ParameterException {
+    private MarkGraphicSource getSource(DataSource sds, long fid) throws ParameterException {
         if (wkn != null) {
             return WellKnownName.fromString(wkn.getValue(sds, fid));
         } else if (onlineResource != null) {
@@ -356,7 +356,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
         return null;
     }
 
-    private Shape getShape(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
+    private Shape getShape(DataSource sds, long fid, MapTransform mt) throws ParameterException, IOException {
 
         Double dpi = null;
         Double scaleDenom = null;
@@ -376,7 +376,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
     }
 
     @Override
-    public Rectangle2D getBounds(SpatialDataSourceDecorator sds, long fid,
+    public Rectangle2D getBounds(DataSource sds, long fid,
             MapTransform mt) throws ParameterException, IOException {
         Shape shp = null;
 
@@ -401,7 +401,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
     }
     
     @Override
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
+    public void draw(Graphics2D g2, DataSource sds, long fid,
             boolean selected, MapTransform mt, AffineTransform fat) throws ParameterException, IOException {
         Shape shp = null;
 
@@ -457,7 +457,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
      * @throws ParameterException
      * @throws IOException
      */
-    /*private double getMargin(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
+    /*private double getMargin(DataSource sds, long fid, MapTransform mt) throws ParameterException, IOException {
     double sWidth = 0.0;
     double haloR = 0.0;
     double offset = 0.0;
@@ -480,7 +480,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
 
     /*
     @Override
-    public double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
+    public double getMaxWidth(DataSource sds, long fid, MapTransform mt) throws ParameterException, IOException {
     double delta = 0.0;
 
     if (viewBox != null && viewBox.usable()) {

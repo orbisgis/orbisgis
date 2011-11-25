@@ -7,7 +7,7 @@ import java.io.IOException;
 
 import java.net.URISyntaxException;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import net.opengis.se._2_0.core.GraphicType;
 import org.orbisgis.core.map.MapTransform;
 import net.opengis.se._2_0.thematic.AxisChartType;
@@ -97,7 +97,7 @@ public abstract class Graphic implements SymbolizerNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public abstract Rectangle2D getBounds(SpatialDataSourceDecorator sds,
+    public abstract Rectangle2D getBounds(DataSource sds,
             long fid, MapTransform mt) throws ParameterException, IOException;
 
     /**
@@ -111,7 +111,7 @@ public abstract class Graphic implements SymbolizerNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, 
+    public abstract void draw(Graphics2D g2, DataSource sds, long fid, 
             boolean selected, MapTransform mt, AffineTransform at) throws ParameterException, IOException;
 
 

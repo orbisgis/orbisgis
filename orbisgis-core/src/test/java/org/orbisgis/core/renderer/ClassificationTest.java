@@ -42,7 +42,6 @@ import junit.framework.TestCase;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.classification.ProportionalMethod;
 import org.orbisgis.core.renderer.classification.Range;
 import org.orbisgis.core.renderer.classification.RangeMethod;
@@ -58,10 +57,9 @@ public class ClassificationTest extends TestCase {
 	public void testStandard() throws Exception {
 
 		DataSource ds = dsf.getDataSource(landcover);
-		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
-		sds.open();
+		ds.open();
 
-		RangeMethod rm = new RangeMethod(sds, new RealAttribute("runoff_win"), 3);
+		RangeMethod rm = new RangeMethod(ds, new RealAttribute("runoff_win"), 3);
 
 		rm.disecStandard();
 
@@ -89,10 +87,9 @@ public class ClassificationTest extends TestCase {
 
 	public void testInvalidStandardIntervals() throws Exception {
 		DataSource ds = dsf.getDataSource(landcover);
-		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
-		sds.open();
+		ds.open();
 
-		RangeMethod rm = new RangeMethod(sds, new RealAttribute("runoff_win"), 2);
+		RangeMethod rm = new RangeMethod(ds, new RealAttribute("runoff_win"), 2);
 
 		try {
 			rm.disecStandard();
@@ -100,7 +97,7 @@ public class ClassificationTest extends TestCase {
 		} catch (IllegalArgumentException e) {
 		}
 
-		rm = new RangeMethod(sds, new RealAttribute("runoff_win"), 4);
+		rm = new RangeMethod(ds, new RealAttribute("runoff_win"), 4);
 
 		try {
 			rm.disecStandard();
@@ -112,18 +109,9 @@ public class ClassificationTest extends TestCase {
 
 	public void testInvalidMeanIntervals() throws Exception {
 		DataSource ds = dsf.getDataSource(landcover);
-		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
-		sds.open();
+		ds.open();
 
-		RangeMethod rm = new RangeMethod(sds, new RealAttribute("runoff_win"), 1);
-
-		try {
-			rm.disecMean();
-			assertTrue(false);
-		} catch (IllegalArgumentException e) {
-		}
-
-		rm = new RangeMethod(sds, new RealAttribute("runoff_win"), 3);
+		RangeMethod rm = new RangeMethod(ds, new RealAttribute("runoff_win"), 1);
 
 		try {
 			rm.disecMean();
@@ -131,23 +119,30 @@ public class ClassificationTest extends TestCase {
 		} catch (IllegalArgumentException e) {
 		}
 
-		rm = new RangeMethod(sds, new RealAttribute("runoff_win"), 5);
+		rm = new RangeMethod(ds, new RealAttribute("runoff_win"), 3);
 
 		try {
 			rm.disecMean();
 			assertTrue(false);
 		} catch (IllegalArgumentException e) {
 		}
-		sds.close();
+
+		rm = new RangeMethod(ds, new RealAttribute("runoff_win"), 5);
+
+		try {
+			rm.disecMean();
+			assertTrue(false);
+		} catch (IllegalArgumentException e) {
+		}
+		ds.close();
 	}
 
 	public void testEquivalences() throws Exception {
 
 		DataSource ds = dsf.getDataSource(landcover);
-		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
-		sds.open();
+		ds.open();
 
-		RangeMethod rm = new RangeMethod(sds, new RealAttribute("runoff_win"), 4);
+		RangeMethod rm = new RangeMethod(ds, new RealAttribute("runoff_win"), 4);
 
 		rm.disecEquivalences();
 
@@ -156,17 +151,16 @@ public class ClassificationTest extends TestCase {
 		assertTrue(checkRange(ranges[1], 0.4, 1));
 		assertTrue(checkRange(ranges[2], 1, 1));
 		assertTrue(checkRange(ranges[3], 1, 1));
-		sds.close();
+		ds.close();
 	}
 
 
 	public void testMoyennes() throws Exception {
 
 		DataSource ds = dsf.getDataSource(landcover);
-		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
-		sds.open();
+		ds.open();
 
-		RangeMethod rm = new RangeMethod(sds, new RealAttribute("gid"), 4);
+		RangeMethod rm = new RangeMethod(ds, new RealAttribute("gid"), 4);
 
 		rm.disecMean();
 
@@ -175,16 +169,15 @@ public class ClassificationTest extends TestCase {
 		assertTrue(checkRange(ranges[1], 310, 619));
 		assertTrue(checkRange(ranges[2], 619, 929));
 		assertTrue(checkRange(ranges[3], 929, 1237));
-		sds.close();
+		ds.close();
 	}
 
 	public void testQuantiles() throws Exception {
 
 		DataSource ds = dsf.getDataSource(landcover);
-		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
-		sds.open();
+		ds.open();
 
-		RangeMethod rm = new RangeMethod(sds, new RealAttribute("gid"), 4);
+		RangeMethod rm = new RangeMethod(ds, new RealAttribute("gid"), 4);
 
 		rm.disecQuantiles();
 
@@ -193,15 +186,14 @@ public class ClassificationTest extends TestCase {
 		assertTrue(checkRange(ranges[1], 310, 620));
 		assertTrue(checkRange(ranges[2], 620, 930));
 		assertTrue(checkRange(ranges[3], 930, 1237));
-		sds.close();
+		ds.close();
 	}
 
 	public void testProportionalMethods() throws Exception {
 		DataSource ds = dsf.getDataSource(landcover);
-		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
-		sds.open();
+		ds.open();
 
-		ProportionalMethod pm = new ProportionalMethod(sds, new RealAttribute("gid"));
+		ProportionalMethod pm = new ProportionalMethod(ds, new RealAttribute("gid"));
 
 		pm.build(3000);
 

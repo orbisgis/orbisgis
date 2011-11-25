@@ -6,7 +6,7 @@ package org.orbisgis.core.renderer.se.transform;
 
 import java.awt.geom.AffineTransform;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.orbisgis.core.map.MapTransform;
 
 import net.opengis.se._2_0.core.MatrixType;
@@ -316,7 +316,7 @@ public final class Matrix implements Transformation {
         }
 
         @Override
-        public AffineTransform getAffineTransform(SpatialDataSourceDecorator sds, long fid, Uom uom, MapTransform mt, Double width, Double height) throws ParameterException {
+        public AffineTransform getAffineTransform(DataSource sds, long fid, Uom uom, MapTransform mt, Double width, Double height) throws ParameterException {
                 return new AffineTransform(
                         //Uom.toPixel(a.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), null),
                         a.getValue(sds, fid),

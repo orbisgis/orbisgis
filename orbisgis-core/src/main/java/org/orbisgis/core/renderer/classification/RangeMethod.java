@@ -36,7 +36,7 @@
  */
 package org.orbisgis.core.renderer.classification;
 
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -46,7 +46,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 public class RangeMethod {
 
-	private SpatialDataSourceDecorator sds;
+	private DataSource sds;
 
 	private int nbCl;
 
@@ -56,7 +56,7 @@ public class RangeMethod {
 
 	private RealParameter value;
 
-	public RangeMethod(SpatialDataSourceDecorator sds, RealParameter value, int nbCl)
+	public RangeMethod(DataSource sds, RealParameter value, int nbCl)
 			throws DriverException {
 		this.sds = sds;
 		// Number of ranges
