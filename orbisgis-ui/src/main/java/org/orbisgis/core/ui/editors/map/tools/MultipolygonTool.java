@@ -39,9 +39,7 @@ package org.orbisgis.core.ui.editors.map.tools;
 import java.util.Observable;
 
 import javax.swing.AbstractButton;
-
-import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.types.GeometryConstraint;
+ 
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -52,26 +50,33 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.MultiPolygon;
+import org.gdms.data.DataSource;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 
 public class MultipolygonTool extends AbstractMultipolygonTool {
 
 	AbstractButton button;
 
+        @Override
 	public AbstractButton getButton() {
 		return button;
 	}
 
+        @Override
 	public void setButton(AbstractButton button) {
 		this.button = button;
 	}
 
+        @Override
 	public void update(Observable o, Object arg) {
 		PlugInContext.checkTool(this);
 	}
 
+        @Override
 	protected void multipolygonDone(MultiPolygon mp, MapContext mc,
 			ToolManager tm) throws TransitionException {
-		SpatialDataSourceDecorator sds = mc.getActiveLayer().getSpatialDataSource();
+		DataSource sds = mc.getActiveLayer().getDataSource();
 		try {
 			Value[] row = new Value[sds.getMetadata().getFieldCount()];
                         mp.setSRID(sds.getSRID());
@@ -83,20 +88,24 @@ public class MultipolygonTool extends AbstractMultipolygonTool {
 		}
 	}
 
+        @Override
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
 		return ToolUtilities.geometryTypeIs(vc,
-				GeometryConstraint.MULTI_POLYGON)
+				TypeFactory.createType(Type.MULTIPOLYGON))
 				&& ToolUtilities.isActiveLayerEditable(vc);
 	}
 
+        @Override
 	public boolean isVisible(MapContext vc, ToolManager tm) {
 		return isEnabled(vc, tm);
 	}
 
+        @Override
 	public double getInitialZ(MapContext mapContext) {
 		return ToolUtilities.getActiveLayerInitialZ(mapContext);
 	}
 
+        @Override
 	public String getName() {
 		return I18N.getString("orbisgis.core.ui.editors.map.tool.multipolygon_tooltip"); 
 	}

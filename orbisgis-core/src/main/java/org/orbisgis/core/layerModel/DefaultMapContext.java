@@ -358,7 +358,7 @@ public class DefaultMapContext implements MapContext {
 					} catch (Exception e) {
 						Services.getErrorManager().error(I18N
                                                         .getString(
-                                                        "orbisgis.org.orbisgis."
+                                                        "orbisgis-core.orbisgis.org.orbisgis."
                                                         + "defaultMapContext.cannotAddLayerToCollection") //$NON-NLS-1$
                                                         + lyr.getName(), e);
 					}
@@ -370,7 +370,7 @@ public class DefaultMapContext implements MapContext {
 				layerPersistenceMap.put(ret, layer);
 			} catch (LayerException e) {
 				Services.getErrorManager().error(I18N.getString(
-                                        "orbisgis.org.orbisgis.defaultMapContext.cannotRecoverLayer")
+                                        "orbisgis-core.orbisgis.org.orbisgis.defaultMapContext.cannotRecoverLayer")
                                         + layer.getName(), e); //$NON-NLS-1$
 			}
 		}
@@ -388,8 +388,8 @@ public class DefaultMapContext implements MapContext {
 	private void checkIsOpen() {
 		if (!isOpen()) {
 			throw new IllegalStateException(
-					I18N.getString("orbisgis.core.ui.plugins."
-                                + "views.geocognition.wizards.newMap")); //$NON-NLS-1$
+					I18N.getString("orbisgis-core.org.orbisgis."
+                                + "defaultMapContext.mapNotOpen")); //$NON-NLS-1$
 		}
 	}
 
@@ -456,10 +456,9 @@ public class DefaultMapContext implements MapContext {
 	public void setJAXBObject(Object jaxbObject) {
 		if (isOpen()) {
 			throw new IllegalStateException(
-					I18N
-							.getString("orbisgis.org.orbisgis.defaultMapContext.theMapMust") //$NON-NLS-1$
-							+ I18N
-									.getString("orbisgis.org.orbisgis.defaultMapContext.beClosedToInvokeThisMethod")); //$NON-NLS-1$
+					I18N.getString("orbisgis-core.orbisgis.org.orbisgis.defaultMapContext.theMapMust") //$NON-NLS-1$
+                                        + I18N.getString("orbisgis-core.orbisgis.org.orbisgis."
+                                        + "defaultMapContext.beClosedToInvokeThisMethod")); //$NON-NLS-1$
 		}
 		org.orbisgis.core.layerModel.persistence.MapContext mapContext = (org.orbisgis.core.layerModel.persistence.MapContext) jaxbObject;
 
@@ -485,7 +484,7 @@ public class DefaultMapContext implements MapContext {
 					layers[i].close();
 				} catch (LayerException e) {
 					Services.getErrorManager().error(I18N.getString(""
-                                                + "orbisgis.org.orbisgis.defaultMapContext.cannotCloseLayer")
+                                                + "orbisgis-core.orbisgis.org.orbisgis.defaultMapContext.cannotCloseLayer")
                                                 + layers[i].getName()); //$NON-NLS-1$
 				}
 			}
@@ -504,7 +503,7 @@ public class DefaultMapContext implements MapContext {
 
 		if (isOpen()) {
 			throw new IllegalStateException(
-					I18N.getString("orbisgis.org.orbisgis.defaultMapContext.mapAlreadyOpen"));
+					I18N.getString("orbisgis-core.orbisgis.org.orbisgis.defaultMapContext.mapAlreadyOpen"));
                         //$NON-NLS-1$
 		}
 
@@ -535,9 +534,8 @@ public class DefaultMapContext implements MapContext {
 			} catch (ParseException e) {
 				Services
 						.getErrorManager()
-						.error(
-								I18N
-										.getString("orbisgis.org.orbisgis.defaultMapContext.cannotReadBoundingBox"), e); //$NON-NLS-1$
+						.error(I18N.getString("orbisgis-core.orbisgis.org.orbisgis."
+                                        + "defaultMapContext.cannotReadBoundingBox"), e); //$NON-NLS-1$
 			}
 			/*
 			 * /String wkt = jaxbMapContext.getOgcCrs().getName(); if (wkt !=
@@ -564,13 +562,11 @@ public class DefaultMapContext implements MapContext {
 					try {
 						layers[i].open();
 					} catch (LayerException e) {
-						Services
-								.getService(ErrorManager.class)
-								.warning(
-										I18N
-												.getString("orbisgis.org.orbisgis.defaultMapContext.cannotOpen") + layers[i].getName() //$NON-NLS-1$
-												+ I18N
-														.getString("orbisgis.org.orbisgis.defaultMapContext.layerIsRemoved"), e); //$NON-NLS-1$
+						Services.getService(ErrorManager.class)
+                                                        .warning(I18N.getString("orbisgis-core.orbisgis.org.orbisgis."
+                                                        + "defaultMapContext.cannotOpen") + layers[i].getName() //$NON-NLS-1$
+                                                        + I18N.getString("orbisgis-core.orbisgis.org.orbisgis."
+                                                        + "defaultMapContext.layerIsRemoved"), e); //$NON-NLS-1$
 						toRemove.add(layers[i]);
 					}
 				}
@@ -580,13 +576,11 @@ public class DefaultMapContext implements MapContext {
 							layers[i].restoreLayer(layerPersistenceMap
 									.get(layers[i]));
 						} catch (LayerException e) {
-							Services
-									.getService(ErrorManager.class)
-									.warning(
-											I18N
-													.getString("orbisgis.org.orbisgis.defaultMapContext.cannotRestore") + layers[i].getName() //$NON-NLS-1$
-													+ I18N
-															.getString("orbisgis.org.orbisgis.defaultMapContext.layerIsRemoved"), e); //$NON-NLS-1$
+							Services.getService(ErrorManager.class)
+                                                                .warning(I18N.getString("orbisgis-core.orbisgis.org."
+                                                                + "orbisgis.defaultMapContext.cannotRestore") +
+                                                                layers[i].getName() + I18N.getString("orbisgis-core.orbisgis.org."
+                                                                + "orbisgis.defaultMapContext.layerIsRemoved"), e); 
 							toRemove.add(layers[i]);
 						}
 					}
@@ -673,13 +667,10 @@ public class DefaultMapContext implements MapContext {
 				try {
 					layer.getParent().remove(layer);
 				} catch (LayerException e) {
-					Services
-							.getErrorManager()
-							.error(
-									I18N
-											.getString("orbisgis.org.orbisgis.defaultMapContext.cannotAssociateLayer") + layer.getName() //$NON-NLS-1$
-											+ I18N
-													.getString("orbisgis.org.orbisgis.defaultMapContext.layerMustRemovedManually")); //$NON-NLS-1$
+					Services.getErrorManager().error(I18N.getString("orbisgis-core.orbisgis.org."
+                                                + "orbisgis.defaultMapContext.cannotAssociateLayer") + layer.getName()
+                                                + I18N.getString("orbisgis-core.orbisgis.org.orbisgis."
+                                                + "defaultMapContext.layerMustRemovedManually")); //$NON-NLS-1$
 				}
 			}
 		}

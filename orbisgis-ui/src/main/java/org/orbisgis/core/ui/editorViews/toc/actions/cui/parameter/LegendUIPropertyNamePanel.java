@@ -44,7 +44,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.Icon;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.gdms.data.schema.Metadata;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.se.parameter.ValueReference;
@@ -79,7 +79,7 @@ public abstract class LegendUIPropertyNamePanel extends LegendUIComponent
 
 		ArrayList<String> possibilities = new ArrayList<String>();
 		possibilities.add("Select...");
-		SpatialDataSourceDecorator ds = controller.getEditedFeatureTypeStyle().getLayer().getSpatialDataSource();
+		DataSource ds = controller.getEditedFeatureTypeStyle().getLayer().getDataSource();
 
 		int current = 0;
 

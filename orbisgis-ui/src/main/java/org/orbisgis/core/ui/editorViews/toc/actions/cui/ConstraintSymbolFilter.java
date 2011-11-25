@@ -35,26 +35,32 @@
  *    thomas.leduc _at_ cerma.archi.fr
  */
 package org.orbisgis.core.ui.editorViews.toc.actions.cui;
-
-import org.gdms.data.types.GeometryConstraint;
+ 
+import org.gdms.data.types.Constraint;
+import org.gdms.data.types.GeometryTypeConstraint;
+import org.gdms.data.types.Type;
 import org.orbisgis.core.renderer.symbol.Symbol;
 
 @Deprecated
 public class ConstraintSymbolFilter implements SymbolFilter {
 
-	private GeometryConstraint[] constraint;
+	private Type[] constraint;
 
-	public ConstraintSymbolFilter(GeometryConstraint... constraint) {
+	public ConstraintSymbolFilter(Type... constraint) {
 		this.constraint = constraint;
 	}
 
 	public boolean accept(Symbol symbol) {
 		boolean accepted = false;
 		for (int i = 0; i < constraint.length; i++) {
-			if (symbol.acceptGeometryType(constraint[i])) {
-				accepted = true;
-				break;
-			}
+                        for(int j=0; j<constraint[i].getConstraints().length; j++) {
+                                Constraint cst = constraint[i].getConstraints()[j];
+                                if (cst instanceof GeometryTypeConstraint && 
+                                                symbol.acceptGeometryType((GeometryTypeConstraint) cst)) {
+                                        accepted = true;
+                                        break;
+                                }
+                        }
 		}
 
 		return accepted;

@@ -46,6 +46,8 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.net.URL;
 
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.renderer.legend.carto.LegendFactory;
 import org.orbisgis.core.renderer.legend.carto.UniqueSymbolLegend;
@@ -72,7 +74,7 @@ public class PnlUniqueSymbolLegend extends javax.swing.JPanel implements
 	private LegendContext legendContext;
 
 	private SymbolFilter getSymbolFilter() {
-		return new ConstraintSymbolFilter(legendContext.getGeometryConstraint());
+		return new ConstraintSymbolFilter(new Type[]{TypeFactory.createType(legendContext.getGeometryType())});
 	}
 
 	/**

@@ -38,8 +38,8 @@
 package org.orbisgis.core.background;
 
 import java.util.ArrayList;
-
 import org.orbisgis.progress.DefaultProgressMonitor;
+
 import org.orbisgis.progress.ProgressMonitor;
 
 public class Job implements BackgroundJob, ProgressMonitor {
@@ -113,8 +113,8 @@ public class Job implements BackgroundJob, ProgressMonitor {
 		}
 	}
 
-	public void init(String taskName, long t) {
-		pm.init(taskName, t);
+	public void init(String taskName, long end) {
+		pm.init(taskName, end);
 		fireProgressTo();
 	}
 
@@ -137,8 +137,8 @@ public class Job implements BackgroundJob, ProgressMonitor {
 		pm.setCancelled(cancelled);
 	}
 
-	public void startTask(String taskName, long t) {
-		pm.startTask(taskName, t);
+	public void startTask(String taskName, long end) {
+		pm.startTask(taskName, end);
 		fireSubTaskStarted();
 	}
 

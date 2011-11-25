@@ -44,7 +44,6 @@ import javax.swing.JButton;
 
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
-import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.components.sif.AskValidRow;
 import org.orbisgis.core.ui.editor.IEditor;
@@ -100,8 +99,6 @@ public class NewRowTablePlugIn extends AbstractPlugIn {
 			}
 		} catch (IllegalArgumentException e) {
 			ErrorMessages.error(ErrorMessages.CannotInsertANewRow, e);
-		} catch (IncompatibleTypesException e) {
-			ErrorMessages.error(ErrorMessages.IncompatibleFieldTypes, e);
 		} catch (DriverException e) {
 			ErrorMessages.error(ErrorMessages.DataError, e);
 		} catch (ParseException e) {

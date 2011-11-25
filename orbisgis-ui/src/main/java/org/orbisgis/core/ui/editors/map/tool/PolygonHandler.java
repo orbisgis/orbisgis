@@ -64,6 +64,8 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
+import org.gdms.geometryUtils.GeometryEdit;
+import org.gdms.geometryUtils.GeometryException;
 
 public class PolygonHandler extends AbstractHandler implements Handler {
 
@@ -76,7 +78,7 @@ public class PolygonHandler extends AbstractHandler implements Handler {
 	}
 
 	public com.vividsolutions.jts.geom.Geometry removeVertex()
-			throws CannotChangeGeometryException {
+			throws GeometryException {
 		com.vividsolutions.jts.geom.Geometry ret = null;
 		Polygon p = (Polygon) geometry;
 		if (holeIndex == -1) {
@@ -106,7 +108,7 @@ public class PolygonHandler extends AbstractHandler implements Handler {
 		}
 
 		if (!ret.isValid()) {
-			throw new CannotChangeGeometryException(THE_GEOMETRY_IS_NOT_VALID);
+			throw new GeometryException(THE_GEOMETRY_IS_NOT_VALID);
 		}
 
 		return ret;
@@ -115,10 +117,11 @@ public class PolygonHandler extends AbstractHandler implements Handler {
 	/**
 	 * @see org.orbisgis.plugins.core.ui.editors.map.tool.estouro.theme.Handler#remove()
 	 */
-	public Geometry remove() throws CannotChangeGeometryException {
+        @Override
+	public Geometry remove() throws GeometryException {
 		com.vividsolutions.jts.geom.Geometry ret = removeVertex();
 		if (!ret.isValid()) {
-			throw new CannotChangeGeometryException(THE_GEOMETRY_IS_NOT_VALID);
+			throw new GeometryException(THE_GEOMETRY_IS_NOT_VALID);
 		}
 		return ret;
 	}
@@ -147,6 +150,7 @@ public class PolygonHandler extends AbstractHandler implements Handler {
 	 * @see org.orbisgis.plugins.core.ui.editors.map.tool.estouro.theme.Handler#moveTo(double,
 	 *      double)
 	 */
+        @Override
 	public Geometry moveTo(double x, double y)
 			throws CannotChangeGeometryException {
 		com.vividsolutions.jts.geom.Geometry g = moveJTSTo(x, y);
@@ -158,8 +162,8 @@ public class PolygonHandler extends AbstractHandler implements Handler {
 
 	private LinearRing removePolygonVertex(int vertexIndex,
 			com.vividsolutions.jts.geom.Geometry p)
-			throws CannotChangeGeometryException {
-		Coordinate[] coords = removeVertex(vertexIndex, p, 4);
+			throws GeometryException {
+		Coordinate[] coords = GeometryEdit.removeVertex(vertexIndex, p, 4);
 		if (vertexIndex == 0) {
 			coords[coords.length - 1].x = coords[0].x;
 			coords[coords.length - 1].y = coords[0].y;
@@ -167,7 +171,7 @@ public class PolygonHandler extends AbstractHandler implements Handler {
 
 		LinearRing ret = gf.createLinearRing(coords);
 		if (!ret.isValid()) {
-			throw new CannotChangeGeometryException(THE_GEOMETRY_IS_NOT_VALID);
+			throw new GeometryException(THE_GEOMETRY_IS_NOT_VALID);
 		}
 
 		return ret;

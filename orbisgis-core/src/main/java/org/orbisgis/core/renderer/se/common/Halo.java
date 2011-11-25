@@ -181,7 +181,8 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
                         fill.draw(g2, sds, fid, aHalo, selected, mt);
 
                     } else {
-                        Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.renderer.cannotCreatePerpendicularOffset"));
+                        Services.getErrorManager().error(
+                                I18N.getString("orbisgis-core.orbisgis.org.orbisgis.renderer.cannotCreatePerpendicularOffset"));
                     }
                 }
             }

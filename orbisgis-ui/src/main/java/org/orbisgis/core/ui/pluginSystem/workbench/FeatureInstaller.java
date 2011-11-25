@@ -52,12 +52,9 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.MenuElement;
 
-import org.gdms.sql.customQuery.CustomQuery;
-import org.gdms.sql.customQuery.QueryManager;
+import org.apache.log4j.Logger;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionManager;
-import org.orbisgis.core.Services;
-import org.orbisgis.core.geocognition.Geocognition;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
@@ -68,311 +65,298 @@ import org.orbisgis.core.ui.pluginSystem.utils.StringUtil;
 import org.orbisgis.utils.I18N;
 
 public class FeatureInstaller {
+        
+        private static final Logger LOG = Logger.getLogger(FeatureInstaller.class);
 
-	private interface MenuOG {
+        private interface MenuOG {
 
-		void insert(JMenuItem menuItem, int i);
+                void insert(JMenuItem menuItem, int i);
 
-		String getText();
+                String getText();
 
-		int getItemCount();
+                int getItemCount();
 
-		void add(JMenuItem menuItem);
+                void add(JMenuItem menuItem);
+        }
+        private WorkbenchContext workbenchContext;
 
-	}
+        public FeatureInstaller(WorkbenchContext workbenchContext) {
+                this.workbenchContext = workbenchContext;
+        }
 
-	private WorkbenchContext workbenchContext;
+        /**
+         * @return the menu with the given name, or null if no such menu exists
+         */
+        public JMenu menuBarMenu(String childName) {
+                MenuElement[] subElements = menuBar().getSubElements();
+                for (int i = 0; i < subElements.length; i++) {
+                        if (!(subElements[i] instanceof JMenuItem)) {
+                                continue;
+                        }
+                        JMenuItem menuItem = (JMenuItem) subElements[i];
+                        if (menuItem.getText().equals(childName)) {
+                                return (JMenu) menuItem;
+                        }
+                }
+                return null;
+        }
 
-	public FeatureInstaller(WorkbenchContext workbenchContext) {
-		this.workbenchContext = workbenchContext;
-	}
+        public String[] behead(String[] a1) {
+                String[] a2 = new String[a1.length - 1];
+                System.arraycopy(a1, 1, a2, 0, a2.length);
+                return a2;
+        }
 
-	/**
-	 * @return the menu with the given name, or null if no such menu exists
-	 */
-	public JMenu menuBarMenu(String childName) {
-		MenuElement[] subElements = menuBar().getSubElements();
-		for (int i = 0; i < subElements.length; i++) {
-			if (!(subElements[i] instanceof JMenuItem)) {
-				continue;
-			}
-			JMenuItem menuItem = (JMenuItem) subElements[i];
-			if (menuItem.getText().equals(childName)) {
-				return (JMenu) menuItem;
-			}
-		}
-		return null;
-	}
+        /**
+         * @return the leaf
+         */
+        public JMenu createMenusIfNecessary(PlugIn plugIn, JMenu parent,
+                String[] menuPath) {
+                if (menuPath.length == 0) {
+                        return parent;
+                }
+                JMenu child = (JMenu) childMenuItem(I18N.getString(menuPath[0]), parent);
+                if (child == null) {
+                        child = (JMenu) installMnemonic(
+                                new JMenu(I18N.getString(menuPath[0])), parent);
+                        parent.add(child);
+                }
+                return createMenusIfNecessary(plugIn, child, behead(menuPath));
+        }
 
-	public String[] behead(String[] a1) {
-		String[] a2 = new String[a1.length - 1];
-		System.arraycopy(a1, 1, a2, 0, a2.length);
-		return a2;
-	}
+        public JMenuBar menuBar() {
+                return workbenchContext.getWorkbench().getFrame().getJMenuBar();
+        }
 
-	/**
-	 * @return the leaf
-	 */
-	public JMenu createMenusIfNecessary(PlugIn plugIn, JMenu parent,
-			String[] menuPath) {
-		if (menuPath.length == 0) {
-			return parent;
-		}
-		JMenu child = (JMenu) childMenuItem(I18N.getString(menuPath[0]), parent);
-		if (child == null) {
-			child = (JMenu) installMnemonic(
-					new JMenu(I18N.getString(menuPath[0])), parent);
-			parent.add(child);
-		}
-		return createMenusIfNecessary(plugIn, child, behead(menuPath));
-	}
+        public static JMenuItem childMenuItem(String childName, MenuElement menu) {
+                if (menu instanceof JMenu) {
+                        return childMenuItem(childName, ((JMenu) menu).getPopupMenu());
+                }
+                MenuElement[] childMenuItems = menu.getSubElements();
+                for (int i = 0; i < childMenuItems.length; i++) {
+                        if (childMenuItems[i] instanceof JMenuItem
+                                && ((JMenuItem) childMenuItems[i]).getText().equals(
+                                childName)) {
+                                return ((JMenuItem) childMenuItems[i]);
+                        }
+                }
+                return null;
+        }
 
-	public JMenuBar menuBar() {
-		return workbenchContext.getWorkbench().getFrame().getJMenuBar();
-	}
+        public static JMenuItem installMnemonic(JMenuItem menuItem,
+                MenuElement parent) {
+                String text = menuItem.getText();
+                StringUtil.replaceAll(text, "&&", "##");
+                int ampersandPosition = text.indexOf('&');
+                if (-1 < ampersandPosition && ampersandPosition + 1 < text.length()) {
+                        menuItem.setMnemonic(text.charAt(ampersandPosition + 1));
+                        text = StringUtil.replace(text, "&", "", false);
+                } else {
+                        installDefaultMnemonic(menuItem, parent);
+                }
+                StringUtil.replaceAll(text, "##", "&");
+                menuItem.setText(text);
+                return menuItem;
+        }
 
-	public static JMenuItem childMenuItem(String childName, MenuElement menu) {
-		if (menu instanceof JMenu) {
-			return childMenuItem(childName, ((JMenu) menu).getPopupMenu());
-		}
-		MenuElement[] childMenuItems = menu.getSubElements();
-		for (int i = 0; i < childMenuItems.length; i++) {
-			if (childMenuItems[i] instanceof JMenuItem
-					&& ((JMenuItem) childMenuItems[i]).getText().equals(
-							childName)) {
-				return ((JMenuItem) childMenuItems[i]);
-			}
-		}
-		return null;
-	}
+        private static void installDefaultMnemonic(JMenuItem menuItem,
+                MenuElement parent) {
+                outer:
+                for (int i = 0; i < menuItem.getText().length(); i++) {
+                        char candidate = Character.toUpperCase(menuItem.getText().charAt(i));
+                        if (!Character.isLetter(candidate)) {
+                                continue;
+                        }
+                        for (Iterator j = menuItems(parent).iterator(); j.hasNext();) {
+                                JMenuItem other = (JMenuItem) j.next();
+                                if (other.getMnemonic() == candidate) {
+                                        continue outer;
+                                }
+                        }
+                        menuItem.setMnemonic(candidate);
+                        return;
+                }
+                menuItem.setMnemonic(menuItem.getText().charAt(0));
+        }
 
-	public static JMenuItem installMnemonic(JMenuItem menuItem,
-			MenuElement parent) {
-		String text = menuItem.getText();
-		StringUtil.replaceAll(text, "&&", "##");
-		int ampersandPosition = text.indexOf('&');
-		if (-1 < ampersandPosition && ampersandPosition + 1 < text.length()) {
-			menuItem.setMnemonic(text.charAt(ampersandPosition + 1));
-			text = StringUtil.replace(text, "&", "", false);
-		} else {
-			installDefaultMnemonic(menuItem, parent);
-		}
-		StringUtil.replaceAll(text, "##", "&");
-		menuItem.setText(text);
-		return menuItem;
-	}
+        private static Collection menuItems(MenuElement element) {
+                ArrayList menuItems = new ArrayList();
+                if (element instanceof JMenuBar) {
+                        for (int i = 0; i < ((JMenuBar) element).getMenuCount(); i++) {
+                                CollectionUtil.addIfNotNull(((JMenuBar) element).getMenu(i),
+                                        menuItems);
+                        }
+                } else if (element instanceof JMenu) {
+                        for (int i = 0; i < ((JMenu) element).getItemCount(); i++) {
+                                CollectionUtil.addIfNotNull(((JMenu) element).getItem(i),
+                                        menuItems);
+                        }
+                } else if (element instanceof JPopupMenu) {
+                        MenuElement[] children = ((JPopupMenu) element).getSubElements();
+                        for (int i = 0; i < children.length; i++) {
+                                if (children[i] instanceof JMenuItem) {
+                                        menuItems.add(children[i]);
+                                }
+                        }
+                } else {
+                        // Assert.shouldNeverReachHere(element.getClass().getName());
+                }
+                return menuItems;
+        }
 
-	private static void installDefaultMnemonic(JMenuItem menuItem,
-			MenuElement parent) {
-		outer: for (int i = 0; i < menuItem.getText().length(); i++) {
-			char candidate = Character
-					.toUpperCase(menuItem.getText().charAt(i));
-			if (!Character.isLetter(candidate)) {
-				continue;
-			}
-			for (Iterator j = menuItems(parent).iterator(); j.hasNext();) {
-				JMenuItem other = (JMenuItem) j.next();
-				if (other.getMnemonic() == candidate) {
-					continue outer;
-				}
-			}
-			menuItem.setMnemonic(candidate);
-			return;
-		}
-		menuItem.setMnemonic(menuItem.getText().charAt(0));
-	}
+        /**
+         * Workaround for Java Bug 4809393: "Menus disappear prematurely after
+         * displaying modal dialog" Evidently fixed in Java 1.5. The workaround is
+         * to wrap #actionPerformed with SwingUtilities#invokeLater.
+         */
+        public JMenuItem addMainMenuItem(PlugIn plugIn, String[] menuPath,
+                String menuItemName, boolean checkBox, ImageIcon icon,
+                String[] editors, JComponent panel, PlugInContext plugInContext) {
+                WorkbenchContext wbContext = plugInContext.getWorkbenchContext();
+                // If PlugIn is a View PlugIn get is panel Component
+                if (wbContext != null && panel != null) {
+                        ((ViewPlugIn) plugIn).createPlugInContext(panel, I18N.getString(menuItemName), icon, editors, wbContext);
+                } else {
+                        ((AbstractPlugIn) plugIn).createPlugInContext(wbContext);
+                }
+                // ((AbstractPlugIn) plugIn).setPlugInContext(plugInContext);
+                JMenuItem menuItem = installMenuItem(plugIn, menuPath, I18N.getString(menuItemName), checkBox, icon);
+                return menuItem;
+        }
 
-	private static Collection menuItems(MenuElement element) {
-		ArrayList menuItems = new ArrayList();
-		if (element instanceof JMenuBar) {
-			for (int i = 0; i < ((JMenuBar) element).getMenuCount(); i++) {
-				CollectionUtil.addIfNotNull(((JMenuBar) element).getMenu(i),
-						menuItems);
-			}
-		} else if (element instanceof JMenu) {
-			for (int i = 0; i < ((JMenu) element).getItemCount(); i++) {
-				CollectionUtil.addIfNotNull(((JMenu) element).getItem(i),
-						menuItems);
-			}
-		} else if (element instanceof JPopupMenu) {
-			MenuElement[] children = ((JPopupMenu) element).getSubElements();
-			for (int i = 0; i < children.length; i++) {
-				if (children[i] instanceof JMenuItem) {
-					menuItems.add(children[i]);
-				}
-			}
-		} else {
-			// Assert.shouldNeverReachHere(element.getClass().getName());
-		}
-		return menuItems;
-	}
+        public JMenuItem installMenuItem(PlugIn plugIn, String[] menuPath,
+                String menuItemName, boolean checkBox, Icon icon) {
+                JMenu menu = menuBarMenu(I18N.getString(menuPath[0]));
+                if (menu == null) {
+                        menu = (JMenu) installMnemonic(
+                                new JMenu(I18N.getString(menuPath[0])), menuBar());
+                        addToMenuBar(menu);
+                }
+                JMenu parent = createMenusIfNecessary(plugIn, menu, behead(menuPath));
+                final JMenuItem menuItem = installMnemonic(
+                        checkBox ? new JCheckBoxMenuItem(I18N.getString(menuItemName))
+                        : new JMenuItem(I18N.getString(menuItemName)), parent);
+                menuItem.setIcon(icon);
+                associate(menuItem, plugIn);
+                insert(menuItem, createMenu(parent), null);
+                return menuItem;
+        }
 
-	/**
-	 * Workaround for Java Bug 4809393: "Menus disappear prematurely after
-	 * displaying modal dialog" Evidently fixed in Java 1.5. The workaround is
-	 * to wrap #actionPerformed with SwingUtilities#invokeLater.
-	 */
+        private void addToMenuBar(JMenu menu) {
+                menuBar().add(menu);
+                // Ensure Window and Help are placed at the end.
+                JMenu windowMenu = menuBarMenu("Window");
+                JMenu helpMenu = menuBarMenu("Help");
+                // Customized workbenches may not have Window or Help menus
+                if (windowMenu != null) {
+                        menuBar().remove(windowMenu);
+                }
+                if (helpMenu != null) {
+                        menuBar().remove(helpMenu);
+                }
+                if (windowMenu != null) {
+                        menuBar().add(windowMenu);
+                }
+                if (helpMenu != null) {
+                        menuBar().add(helpMenu);
+                }
+        }
 
-	public JMenuItem addMainMenuItem(PlugIn plugIn, String[] menuPath,
-			String menuItemName, boolean checkBox, ImageIcon icon,
-			String[] editors, JComponent panel, PlugInContext plugInContext) {
-		WorkbenchContext wbContext = plugInContext.getWorkbenchContext();
-		// If PlugIn is a View PlugIn get is panel Component
-		if (wbContext != null && panel != null)
-			((ViewPlugIn) plugIn).createPlugInContext(panel, I18N
-					.getString(menuItemName), icon, editors, wbContext);
-		else
-			((AbstractPlugIn) plugIn).createPlugInContext(wbContext);
-		// ((AbstractPlugIn) plugIn).setPlugInContext(plugInContext);
-		JMenuItem menuItem = installMenuItem(plugIn, menuPath, I18N
-				.getString(menuItemName), checkBox, icon);
-		return menuItem;
-	}
+        private MenuOG createMenu(final JMenu menu) {
+                return new MenuOG() {
 
-	public JMenuItem installMenuItem(PlugIn plugIn, String[] menuPath,
-			String menuItemName, boolean checkBox, Icon icon) {
-		JMenu menu = menuBarMenu(I18N.getString(menuPath[0]));
-		if (menu == null) {
-			menu = (JMenu) installMnemonic(
-					new JMenu(I18N.getString(menuPath[0])), menuBar());
-			addToMenuBar(menu);
-		}
-		JMenu parent = createMenusIfNecessary(plugIn, menu, behead(menuPath));
-		final JMenuItem menuItem = installMnemonic(
-				checkBox ? new JCheckBoxMenuItem(I18N.getString(menuItemName))
-						: new JMenuItem(I18N.getString(menuItemName)), parent);
-		menuItem.setIcon(icon);
-		associate(menuItem, plugIn);
-		insert(menuItem, createMenu(parent), null);
-		return menuItem;
-	}
+                        public void insert(JMenuItem menuItem, int i) {
+                                menu.insert(menuItem, i);
+                        }
 
-	private void addToMenuBar(JMenu menu) {
-		menuBar().add(menu);
-		// Ensure Window and Help are placed at the end.
-		JMenu windowMenu = menuBarMenu("Window");
-		JMenu helpMenu = menuBarMenu("Help");
-		// Customized workbenches may not have Window or Help menus
-		if (windowMenu != null) {
-			menuBar().remove(windowMenu);
-		}
-		if (helpMenu != null) {
-			menuBar().remove(helpMenu);
-		}
-		if (windowMenu != null) {
-			menuBar().add(windowMenu);
-		}
-		if (helpMenu != null) {
-			menuBar().add(helpMenu);
-		}
-	}
+                        public String getText() {
+                                return menu.getText();
+                        }
 
-	private MenuOG createMenu(final JMenu menu) {
-		return new MenuOG() {
+                        public int getItemCount() {
+                                return menu.getItemCount();
+                        }
 
-			public void insert(JMenuItem menuItem, int i) {
-				menu.insert(menuItem, i);
-			}
+                        public void add(JMenuItem menuItem) {
+                                menu.add(menuItem);
+                        }
+                };
+        }
 
-			public String getText() {
-				return menu.getText();
-			}
+        private void insert(final JMenuItem menuItem, MenuOG parent, Map properties) {
+                parent.add(menuItem);
+        }
 
-			public int getItemCount() {
-				return menu.getItemCount();
-			}
+        private void associate(JMenuItem menuItem, PlugIn plugIn) {
+                menuItem.addActionListener(AbstractPlugIn.toActionListener(plugIn,
+                        workbenchContext));
+        }
 
-			public void add(JMenuItem menuItem) {
-				menu.add(menuItem);
-			}
-		};
-	}
+        /**
+         * Create a popupmenu only with text
+         * 
+         * @param frame
+         * @param plugIn
+         * @param menuPath
+         * @param wbContext
+         */
+        public void addPopupMenuItem(WorkbenchFrame frame, AbstractPlugIn plugIn,
+                String[] menuPath, WorkbenchContext wbContext) {
+                addPopupMenuItem(frame, plugIn, menuPath, null, false, null, wbContext);
 
-	private void insert(final JMenuItem menuItem, MenuOG parent, Map properties) {
-		parent.add(menuItem);
-	}
+        }
 
-	private void associate(JMenuItem menuItem, PlugIn plugIn) {
-		menuItem.addActionListener(AbstractPlugIn.toActionListener(plugIn,
-				workbenchContext));
-	}
+        /**
+         * Create a popupmenu without icon
+         * 
+         * @param frame
+         * @param plugIn
+         * @param menuPath
+         * @param group
+         * @param checkBox
+         * @param wbContext
+         */
+        public void addPopupMenuItem(WorkbenchFrame frame, AbstractPlugIn plugIn,
+                String[] menuPath, String group, boolean checkBox,
+                WorkbenchContext wbContext) {
+                addPopupMenuItem(frame, plugIn, menuPath, group, checkBox, null,
+                        wbContext);
+        }
 
-	/**
-	 * Create a popupmenu only with text
-	 * 
-	 * @param frame
-	 * @param plugIn
-	 * @param menuPath
-	 * @param wbContext
-	 */
-	public void addPopupMenuItem(WorkbenchFrame frame, AbstractPlugIn plugIn,
-			String[] menuPath, WorkbenchContext wbContext) {
-		addPopupMenuItem(frame, plugIn, menuPath, null, false, null, wbContext);
+        /**
+         * Create a popup memu, attached to an orbisgis workbenchFrame.
+         * 
+         * @param frame
+         * @param plugIn
+         * @param menuPath
+         * @param group
+         * @param checkBox
+         * @param icon
+         * @param wbContext
+         */
+        public void addPopupMenuItem(WorkbenchFrame frame, AbstractPlugIn plugIn,
+                String[] menuPath, String group, boolean checkBox, ImageIcon icon,
+                WorkbenchContext wbContext) {
+                plugIn.createPlugInContext(wbContext);
+                Menu mymenu = null;
+                for (int i = 0; i < menuPath.length; i++) {
+                        String parent = i == 0 ? null : I18N.getString(menuPath[i - 1]);
+                        mymenu = new Menu(parent, I18N.getString(menuPath[i]),
+                                i != menuPath.length - 1 ? null : group, I18N.getString(menuPath[i]),
+                                i != menuPath.length - 1 ? null : icon,
+                                i != menuPath.length - 1 ? null : plugIn, checkBox);
+                        frame.getMenuTreePopup().addMenu(mymenu);
+                }
+        }
 
-	}
+        public void addRegisterFunction(Class<? extends Function> functionClass) {
+                if (FunctionManager.getFunction(functionClass.getSimpleName()) == null) {
+                        try {
+                                FunctionManager.addFunction(functionClass);
+                        } catch (IllegalArgumentException e) {
+                                LOG.error("Error registering function.", e);
+                        }
 
-	/**
-	 * Create a popupmenu without icon
-	 * 
-	 * @param frame
-	 * @param plugIn
-	 * @param menuPath
-	 * @param group
-	 * @param checkBox
-	 * @param wbContext
-	 */
-	public void addPopupMenuItem(WorkbenchFrame frame, AbstractPlugIn plugIn,
-			String[] menuPath, String group, boolean checkBox,
-			WorkbenchContext wbContext) {
-		addPopupMenuItem(frame, plugIn, menuPath, group, checkBox, null,
-				wbContext);
-	}
-
-	/**
-	 * Create a popup memu, attached to an orbisgis workbenchFrame.
-	 * 
-	 * @param frame
-	 * @param plugIn
-	 * @param menuPath
-	 * @param group
-	 * @param checkBox
-	 * @param icon
-	 * @param wbContext
-	 */
-	public void addPopupMenuItem(WorkbenchFrame frame, AbstractPlugIn plugIn,
-			String[] menuPath, String group, boolean checkBox, ImageIcon icon,
-			WorkbenchContext wbContext) {
-		plugIn.createPlugInContext(wbContext);
-		Menu mymenu = null;
-		for (int i = 0; i < menuPath.length; i++) {
-			String parent = i == 0 ? null : I18N.getString(menuPath[i - 1]);
-			mymenu = new Menu(parent, I18N.getString(menuPath[i]),
-					i != menuPath.length - 1 ? null : group, I18N
-							.getString(menuPath[i]),
-					i != menuPath.length - 1 ? null : icon,
-					i != menuPath.length - 1 ? null : plugIn, checkBox);
-			frame.getMenuTreePopup().addMenu(mymenu);
-		}
-	}
-
-	public void addRegisterCustomQuery(Class<? extends CustomQuery> queryClass) {
-		if (QueryManager.getQuery(queryClass.getSimpleName()) == null) {
-			QueryManager.registerQuery(queryClass);
-			addToGeocognition(queryClass.getSimpleName(), queryClass);
-		}
-
-	}
-
-	public void addRegisterFunction(Class<? extends Function> functionClass) {
-		if (FunctionManager.getFunction(functionClass.getSimpleName()) == null) {
-			FunctionManager.addFunction(functionClass);
-			addToGeocognition(functionClass.getSimpleName(), functionClass);
-		}
-	}
-
-	public void addToGeocognition(String name, Class clazz) {
-		Geocognition geocognition = Services.getService(Geocognition.class);
-		geocognition.addElement("SQL/" + name, clazz);
-	}
-
+                }
+        }
 }

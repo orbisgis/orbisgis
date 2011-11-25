@@ -118,11 +118,11 @@ public abstract class AbstractHandler implements Handler {
 
 	/**
 	 * removes the vertex from the JTS geometry
-	 * 
+	 *
 	 * @param g
-	 * 
+	 *
 	 * @return
-	 * 
+	 *
 	 * @throws CannotChangeGeometryException
 	 */
 	protected Coordinate[] removeVertex(int vertexIndex,
@@ -142,7 +142,7 @@ public abstract class AbstractHandler implements Handler {
 				newCoords[i - 1] = new Coordinate(coords[i].x, coords[i].y);
 			}
 		}
-
+	
 		return newCoords;
 	}
 

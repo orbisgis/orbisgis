@@ -43,7 +43,6 @@ import java.util.Arrays;
 import javax.swing.JButton;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
@@ -72,7 +71,7 @@ public class DeleteMapSelectionPlugIn extends AbstractPlugIn {
 		ILayer activeLayer = map.getActiveLayer();
 		int[] sel = activeLayer.getSelection().clone();
 		Arrays.sort(sel);
-		SpatialDataSourceDecorator dataSource = activeLayer.getSpatialDataSource();
+		DataSource dataSource = activeLayer.getDataSource();
 		try {
 			dataSource.setDispatchingMode(DataSource.STORE);
 			for (int i = sel.length - 1; i >= 0; i--) {

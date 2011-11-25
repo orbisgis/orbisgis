@@ -37,50 +37,77 @@
  */
 package org.orbisgis.core.ui.plugins.toc;
 
+import javax.swing.JOptionPane;
+import org.gdms.data.NonEditableDataSourceException;
+import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext.LayerAvailability;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext.SelectionAvailability;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.utils.I18N;
 
 public class SetActivePlugIn extends AbstractPlugIn {
 
-	public boolean execute(PlugInContext context) throws Exception {
-		MapContext mapContext = getPlugInContext().getMapContext();
-		ILayer[] selectedResources = mapContext.getSelectedLayers();
+        public boolean execute(PlugInContext context) throws Exception {
+                MapContext mapContext = getPlugInContext().getMapContext();
+                ILayer[] selectedResources = mapContext.getSelectedLayers();
+                ILayer layerToBeActivated = selectedResources[0];
+                ILayer activeLayer = mapContext.getActiveLayer();
+                //Test if one layer is already in edition
+                if ((activeLayer != null) && (activeLayer != layerToBeActivated)) {
+                        if (activeLayer.getDataSource().isModified()) {
+                                int option = JOptionPane.showConfirmDialog(null, I18N.getString("orbisgis.org.orbisgis.edit.saveChange"), I18N.getString("orbisgis.org.orbisgis.edit.stopEdition"),
+                                        JOptionPane.YES_NO_CANCEL_OPTION);
+                                if (option == JOptionPane.YES_OPTION) {
+                                        try {
+                                                activeLayer.getDataSource().commit();
+                                                mapContext.setActiveLayer(null);
+                                        } catch (DriverException e) {
+                                                ErrorMessages.error(ErrorMessages.CannotSavelayer, e);
+                                        } catch (NonEditableDataSourceException e) {
+                                                ErrorMessages.error(ErrorMessages.CannotSavelayer, e);
+                                        }
+                                } else if (option == JOptionPane.NO_OPTION) {
+                                        try {
+                                                activeLayer.getDataSource().syncWithSource();
+                                                mapContext.setActiveLayer(null);
+                                        } catch (DriverException e) {
+                                                ErrorMessages.error(ErrorMessages.CannotRevertlayer, e);
+                                        }
+                                } else {
+                                       return true;
+                                }
+                        }
 
-		if (selectedResources.length > 0) {
-			for (ILayer resource : selectedResources) {
-				execute(mapContext, resource);
-			}
-		}
-		return true;
-	}
+                }
 
-	public void initialize(PlugInContext context) throws Exception {
-		WorkbenchContext wbContext = context.getWorkbenchContext();
-		WorkbenchFrame frame = wbContext.getWorkbench().getFrame().getToc();
-		context.getFeatureInstaller().addPopupMenuItem(frame, this,
-				new String[] { Names.POPUP_TOC_ACTIVE_PATH1 },
-				Names.POPUP_TOC_ACTIVE_GROUP, false, OrbisGISIcon.PENCIL,
-				wbContext);
-	}
+                mapContext.setActiveLayer(layerToBeActivated);
 
-	public void execute(MapContext mapContext, ILayer layer) {
-		mapContext.setActiveLayer(layer);
-	}
+                return true;
+        }
 
-	public boolean isEnabled() {
-		return getPlugInContext().checkLayerAvailability(
-				new SelectionAvailability[] { SelectionAvailability.EQUAL },
-				1,
-				new LayerAvailability[] { LayerAvailability.VECTORIAL,
-						LayerAvailability.NOT_ACTIVE_LAYER,
-						LayerAvailability.IS_EDTABLE });
-	}
+        public void initialize(PlugInContext context) throws Exception {
+                WorkbenchContext wbContext = context.getWorkbenchContext();
+                WorkbenchFrame frame = wbContext.getWorkbench().getFrame().getToc();
+                context.getFeatureInstaller().addPopupMenuItem(frame, this,
+                        new String[]{Names.POPUP_TOC_ACTIVE_PATH1},
+                        Names.POPUP_TOC_ACTIVE_GROUP, false, OrbisGISIcon.PENCIL,
+                        wbContext);
+        }
+
+        public boolean isEnabled() {
+                return getPlugInContext().checkLayerAvailability(
+                        new SelectionAvailability[]{SelectionAvailability.EQUAL},
+                        1,
+                        new LayerAvailability[]{LayerAvailability.VECTORIAL,
+                                LayerAvailability.NOT_ACTIVE_LAYER,
+                                LayerAvailability.IS_EDTABLE});
+        }
 }

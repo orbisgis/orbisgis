@@ -85,17 +85,25 @@ import org.orbisgis.utils.I18N;
 public class Toc extends ResourceTree implements WorkbenchFrame {
 
 	private MyLayerListener ll;
+
 	private TocRenderer tocRenderer;
+
 	private TocTreeModel treeModel;
+
 	private boolean ignoreSelection = false;
+
 	private MyMapContextListener myMapContextListener;
+
 	private MapContext mapContext = null;
 
 	public MapContext getMapContext() {
 		return mapContext;
 	}
+
 	private EditableElement element = null;
+
 	private MapEditorPlugIn mapEditor;
+
 	private org.orbisgis.core.ui.pluginSystem.menu.MenuTree menuTree;
 
 	public org.orbisgis.core.ui.pluginSystem.menu.MenuTree getMenuTreePopup() {
@@ -156,7 +164,8 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 								&& (1 == e.getClickCount())) {
 							try {
 								Rule rule;
-								rule = ruleNode.getLayer().getRenderingRule().get(ruleNode.getRuleIndex());
+								rule = ruleNode.getLayer().getRenderingRule().
+                                                                        get(ruleNode.getRuleIndex());
 								if (!rule.isVisible()) {
 									rule.setVisible(true);
 								} else {
@@ -178,6 +187,7 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 					}
 				}
 			}
+
 		});
 
 		myMapContextListener = new MyMapContextListener();
@@ -198,7 +208,7 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 								mapContext.setSelectedLayers(new ILayer[0]);
 							} else {
 
-								ArrayList<ILayer> layers = getSelectedLayers(selectedPaths);
+							ArrayList<ILayer> layers = getSelectedLayers(selectedPaths);
 								if (layers.size() > 0) {
 									mapContext.setSelectedLayers(layers.toArray(new ILayer[0]));
 								}
@@ -266,7 +276,8 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 		try {
 
 			if (trans.isDataFlavorSupported(TransferableLayer.getLayerFlavor())) {
-				ILayer[] draggedLayers = (ILayer[]) trans.getTransferData(TransferableLayer.getLayerFlavor());
+				ILayer[] draggedLayers = (ILayer[]) trans
+						.getTransferData(TransferableLayer.getLayerFlavor());
 				if (dropNode.acceptsChilds()) {
 					for (ILayer layer : draggedLayers) {
 						try {
@@ -287,15 +298,18 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 								} catch (LayerException e) {
 									Services.getErrorManager().error(
 											I18N.getString("orbisgis.org.orbisgis.ui.toc.cannotMoveLayer") //$NON-NLS-1$
-											+ layer.getName());
+													+ layer.getName());
 								}
 							}
 						}
 					}
 				}
-			} else if (trans.isDataFlavorSupported(TransferableSource.getResourceFlavor())) {
-				final String[] draggedResources = (String[]) trans.getTransferData(TransferableSource.getResourceFlavor());
-				BackgroundManager bm = (BackgroundManager) Services.getService(BackgroundManager.class);
+			} else if (trans.isDataFlavorSupported(TransferableSource
+					.getResourceFlavor())) {
+				final String[] draggedResources = (String[]) trans
+						.getTransferData(TransferableSource.getResourceFlavor());
+				BackgroundManager bm = (BackgroundManager) Services
+						.getService(BackgroundManager.class);
 				bm.backgroundOperation(new MoveProcess(draggedResources,
 						dropNode));
 			} else {
@@ -310,10 +324,11 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 		return true;
 	}
 
+        @Override
 	public Transferable getDragData(DragGestureEvent dge) {
 		TreePath[] resources = getSelection();
 		ArrayList<ILayer> layers = getSelectedLayers(resources);
-		if (layers.size() == 0) {
+		if (layers.isEmpty()) {
 			return null;
 		} else {
 			return new TransferableLayer(element, layers.toArray(new ILayer[layers.size()]));
@@ -321,11 +336,12 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 	}
 
 	private final class MyMapContextListener implements MapContextListener {
-
+                @Override
 		public void layerSelectionChanged(MapContext mapContext) {
 			setTocSelection(mapContext);
 		}
 
+                @Override
 		public void activeLayerChanged(ILayer previousActiveLayer,
 				MapContext mapContext) {
 			treeModel.refresh();
@@ -335,6 +351,7 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 	private class MyLayerListener implements LayerListener, EditionListener,
 			DataSourceListener {
 
+                @Override
 		public void layerAdded(final LayerCollectionEvent e) {
 			for (final ILayer layer : e.getAffected()) {
 				addLayerListenerRecursively(layer, ll);
@@ -342,6 +359,7 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 			treeModel.refresh();
 		}
 
+                @Override
 		public void layerMoved(LayerCollectionEvent e) {
 			treeModel.refresh();
 		}
@@ -368,6 +386,7 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 			return true;
 		}
 
+                @Override
 		public void layerRemoved(final LayerCollectionEvent e) {
 			for (final ILayer layer : e.getAffected()) {
 				removeLayerListenerRecursively(layer, ll);
@@ -375,39 +394,49 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 			treeModel.refresh();
 		}
 
+                @Override
 		public void nameChanged(LayerListenerEvent e) {
 		}
 
+                @Override
 		public void styleChanged(LayerListenerEvent e) {
 			treeModel.refresh();
 		}
 
+                @Override
 		public void visibilityChanged(LayerListenerEvent e) {
 			treeModel.refresh();
 		}
 
+                @Override
 		public void selectionChanged(SelectionEvent e) {
 			treeModel.refresh();
 		}
 
+                @Override
 		public void multipleModification(MultipleEditionEvent e) {
 			treeModel.refresh();
 		}
 
+                @Override
 		public void singleModification(EditionEvent e) {
 			treeModel.refresh();
 		}
 
+                @Override
 		public void cancel(DataSource ds) {
 		}
 
+                @Override
 		public void commit(DataSource ds) {
 			treeModel.refresh();
 		}
 
+                @Override
 		public void open(DataSource ds) {
 			treeModel.refresh();
 		}
+
 	}
 
 	public void delete() {
@@ -426,6 +455,7 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 			this.dropNode = dropNode;
 		}
 
+                @Override
 		public void run(ProgressMonitor pm) {
 			int index;
 			if (!dropNode.acceptsChilds()) {
@@ -441,7 +471,8 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 			} else {
 				index = dropNode.getLayerCount();
 			}
-			DataManager dataManager = (DataManager) Services.getService(DataManager.class);
+			DataManager dataManager = (DataManager) Services
+					.getService(DataManager.class);
 			for (int i = 0; i < draggedResources.length; i++) {
 				String sourceName = draggedResources[i];
 				if (pm.isCancelled()) {
@@ -449,7 +480,8 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 				} else {
 					pm.progressTo(100 * i / draggedResources.length);
 					try {
-						dropNode.insertLayer(dataManager.createLayer(sourceName), index);
+						dropNode.insertLayer(dataManager
+								.createLayer(sourceName), index);
 					} catch (LayerException e) {
 						throw new RuntimeException(I18N.getString("orbisgis.org.orbisgis.ui.toc.cannot") //$NON-NLS-1$
 								+ I18N.getString("orbisgis.org.orbisgis.ui.toc.addLayerToDestination"), e); //$NON-NLS-1$
@@ -466,7 +498,7 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 	private void addLayerListenerRecursively(ILayer rootLayer,
 			MyLayerListener refreshLayerListener) {
 		rootLayer.addLayerListener(refreshLayerListener);
-		DataSource dataSource = rootLayer.getSpatialDataSource();
+		DataSource dataSource = rootLayer.getDataSource();
 		if (dataSource != null) {
 			dataSource.addEditionListener(refreshLayerListener);
 			dataSource.addDataSourceListener(refreshLayerListener);
@@ -480,7 +512,7 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 	private void removeLayerListenerRecursively(ILayer rootLayer,
 			MyLayerListener refreshLayerListener) {
 		rootLayer.removeLayerListener(refreshLayerListener);
-		DataSource dataSource = rootLayer.getSpatialDataSource();
+		DataSource dataSource = rootLayer.getDataSource();
 		if (dataSource != null) {
 			dataSource.removeEditionListener(refreshLayerListener);
 			dataSource.removeDataSourceListener(refreshLayerListener);

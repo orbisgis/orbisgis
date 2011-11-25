@@ -188,7 +188,7 @@ public class LegendUISymbolizerPanel extends LegendUIComponent {
             ILayer layer = controller.getEditedFeatureTypeStyle().getLayer();
 
             try {
-                if (layer.isVectorial() && layer.getSpatialDataSource().getGeometry(0).getDimension() > 0) {
+                if (layer.isVectorial() && layer.getDataSource().getGeometry(0).getDimension() > 0) {
                     String[] options = {"one", "on vertices"};
                     sMode = new ComboBoxInput(options, ps.isOnVertex() ? 1 : 0) {
 

@@ -56,14 +56,6 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendContext;
  */
 @Deprecated
 public interface ILegendPanel {
-	int POINT = 1;
-	int LINE = 2;
-	int POLYGON = 4;
-	/**
-	 * POINT | LINE | POLYGON
-	 */
-	int ALL = POINT | LINE | POLYGON;
-
 	/**
 	 * This function will return the Component of the object (normally a
 	 * JPanel).

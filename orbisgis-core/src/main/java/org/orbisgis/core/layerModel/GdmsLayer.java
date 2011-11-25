@@ -81,15 +81,18 @@ public abstract class GdmsLayer extends AbstractLayer {
     }
 
     public void addLayer(ILayer layer) {
-        throw new IllegalArgumentException(I18N.getString("orbisgis.org.orbisgis.layerModel.gdmsLayer.layerCannotHaveChildren")); //$NON-NLS-1$
+        throw new IllegalArgumentException(I18N.getString("orbisgis-core.orbisgis.org.orbisgis."
+                + "layerModel.gdmsLayer.layerCannotHaveChildren")); //$NON-NLS-1$
     }
 
     public ILayer remove(ILayer layer) {
-        throw new IllegalArgumentException(I18N.getString("orbisgis.org.orbisgis.layerModel.gdmsLayer.layerCannotDoesntChildren")); //$NON-NLS-1$
+        throw new IllegalArgumentException(I18N.getString("orbisgis-core.orbisgis.org.orbisgis."
+                + "layerModel.gdmsLayer.layerCannotDoesntChildren")); //$NON-NLS-1$
     }
 
     public ILayer remove(String layerName) {
-        throw new IllegalArgumentException(I18N.getString("orbisgis.org.orbisgis.layerModel.gdmsLayer.layerCannotDoesntChildren")); //$NON-NLS-1$
+        throw new IllegalArgumentException(I18N.getString("orbisgis-core.orbisgis.org.orbisgis."
+                + "layerModel.gdmsLayer.layerCannotDoesntChildren")); //$NON-NLS-1$
     }
 
     public boolean acceptsChilds() {
@@ -105,7 +108,8 @@ public abstract class GdmsLayer extends AbstractLayer {
     }
 
     public void insertLayer(ILayer layer, int index) throws LayerException {
-        throw new IllegalArgumentException(I18N.getString("orbisgis.org.orbisgis.layerModel.gdmsLayer.layerCannotHaveChildren")); //$NON-NLS-1$
+        throw new IllegalArgumentException(I18N.getString("orbisgis-core.orbisgis.org.orbisgis."
+                + "layerModel.gdmsLayer.layerCannotHaveChildren")); //$NON-NLS-1$
     }
 
     public void addLayerListenerRecursively(LayerListener listener) {
@@ -117,16 +121,19 @@ public abstract class GdmsLayer extends AbstractLayer {
     }
 
     public void addLayer(ILayer layer, boolean isMoving) throws LayerException {
-        throw new IllegalArgumentException(I18N.getString("orbisgis.org.orbisgis.layerModel.gdmsLayer.layerCannotHaveChildren")); //$NON-NLS-1$
+        throw new IllegalArgumentException(I18N.getString("orbisgis-core.orbisgis.org.orbisgis."
+                + "layerModel.gdmsLayer.layerCannotHaveChildren")); //$NON-NLS-1$
     }
 
     public ILayer remove(ILayer layer, boolean isMoving) throws LayerException {
-        throw new IllegalArgumentException(I18N.getString("orbisgis.org.orbisgis.layerModel.gdmsLayer.layerCannotHaveChildren")); //$NON-NLS-1$
+        throw new IllegalArgumentException(I18N.getString("orbisgis-core.orbisgis.org.orbisgis."
+                + "layerModel.gdmsLayer.layerCannotHaveChildren")); //$NON-NLS-1$
     }
 
     public void insertLayer(ILayer layer, int index, boolean isMoving)
             throws LayerException {
-        throw new IllegalArgumentException(I18N.getString("orbisgis.org.orbisgis.layerModel.gdmsLayer.layerCannotHaveChildren")); //$NON-NLS-1$
+        throw new IllegalArgumentException(I18N.getString("orbisgis-core.orbisgis.org.orbisgis."
+                + "layerModel.gdmsLayer.layerCannotHaveChildren")); //$NON-NLS-1$
     }
 
     public int getLayerCount() {
@@ -135,7 +142,8 @@ public abstract class GdmsLayer extends AbstractLayer {
 
     public ILayer getLayer(final int index) {
         throw new ArrayIndexOutOfBoundsException(
-                I18N.getString("orbisgis.org.orbisgis.layerModel.gdmsLayer.layerDoesntContainAnyChild")); //$NON-NLS-1$
+                I18N.getString("orbisgis-core.orbisgis.org.orbisgis.layerModel."
+                + "gdmsLayer.layerDoesntContainAnyChild")); //$NON-NLS-1$
     }
 
     public ILayer getLayerByName(String layerName) {
@@ -164,10 +172,12 @@ public abstract class GdmsLayer extends AbstractLayer {
             try {
                         sourceManager.addName(mainName, name);
             } catch (NoSuchTableException ex) {
-                    throw new RuntimeException(I18N.getString("orbisgis.org.orbisgis.layerModel.gdmsLayer.bug")
+                    throw new RuntimeException(I18N.getString("orbisgis-core.orbisgis.org.orbisgis."
+                            + "layerModel.gdmsLayer.bug")
                             , ex); //$NON-NLS-1$
             } catch (SourceAlreadyExistsException e) {
-                throw new LayerException(I18N.getString("orbisgis.org.orbisgis.layerModel.gdmsLayer.sourceAlreadyExists")
+                throw new LayerException(I18N.getString("orbisgis-core.orbisgis.org.orbisgis."
+                        + "layerModel.gdmsLayer.sourceAlreadyExists")
                         , e); //$NON-NLS-1$
             }
         } else {
@@ -219,11 +229,13 @@ public abstract class GdmsLayer extends AbstractLayer {
                         sourceManager.addName(mainName, getName());
                     } catch (NoSuchTableException e1) {
                         // The table exists since mainName is the new name
-                        throw new RuntimeException(I18N.getString("orbisgis.org.orbisgis.layerModel.gdmsLayer.bug"), e1); //$NON-NLS-1$
+                        throw new RuntimeException(I18N.getString("orbisgis-core.orbisgis.org."
+                                + "orbisgis.layerModel.gdmsLayer.bug"), e1); //$NON-NLS-1$
                     } catch (SourceAlreadyExistsException e1) {
                         // This layer had the old source name so there is no
                         // possibility for a conflict to happen
-                        throw new RuntimeException(I18N.getString("orbisgis.org.orbisgis.layerModel.gdmsLayer.bug"), e1); //$NON-NLS-1$
+                        throw new RuntimeException(I18N.getString("orbisgis-core.orbisgis."
+                                + "org.orbisgis.layerModel.gdmsLayer.bug"), e1); //$NON-NLS-1$
                     }
                 }
             }

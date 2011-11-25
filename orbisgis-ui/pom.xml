@@ -17,7 +17,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>3.8.1</version>
+            <version>4.8.2</version>
             <type>jar</type>
             <scope>test</scope>
         </dependency>
@@ -51,11 +51,27 @@
             <artifactId>ecj</artifactId>
             <version>3.5.1</version>
         </dependency>
-        <dependency>
-            <groupId>com.fifesoft</groupId>
-            <artifactId>autocomplete</artifactId>
-            <version>1.4.1</version>
-        </dependency>
+                <dependency>
+                        <groupId>com.fifesoft</groupId>
+                        <artifactId>autocomplete</artifactId>
+                        <version>1.5.2</version>
+                </dependency>
+                <dependency>
+                        <groupId>com.fifesoft</groupId>
+                        <artifactId>rsyntaxtextarea</artifactId>
+                        <version>1.5.2</version>
+                </dependency>
+                <dependency>
+                        <groupId>com.fifesoft</groupId>
+                        <artifactId>languagesupport</artifactId>
+                        <version>0.7</version>
+                        <exclusions>
+                                <exclusion>
+                                        <groupId>com.fifesoft</groupId>
+                                        <artifactId>autocomplete</artifactId>
+                                </exclusion>
+                        </exclusions>
+                </dependency>
     </dependencies>
     <build>
         <plugins>

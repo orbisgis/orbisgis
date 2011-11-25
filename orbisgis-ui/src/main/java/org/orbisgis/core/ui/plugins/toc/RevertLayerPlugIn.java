@@ -52,38 +52,29 @@ import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 public class RevertLayerPlugIn extends AbstractPlugIn {
 
-	public boolean execute(PlugInContext context) throws Exception {
-		MapContext mapContext = getPlugInContext().getMapContext();
-		ILayer[] selectedResources = mapContext.getSelectedLayers();
-		if (selectedResources.length >= 0) {
-			for (ILayer resource : selectedResources) {
-				execute(mapContext, resource);
-			}
-		}
-		return true;
-	}
+        public boolean execute(PlugInContext context) throws Exception {
+                MapContext mapContext = getPlugInContext().getMapContext();
+                ILayer[] selectedResources = mapContext.getSelectedLayers();
+                try {
+                        selectedResources[0].getDataSource().syncWithSource();
+                } catch (DriverException e) {
+                        ErrorMessages.error(ErrorMessages.CannotRevertSource, e);
+                }
+                return true;
+        }
 
-	public void initialize(PlugInContext context) throws Exception {
-		WorkbenchContext wbContext = context.getWorkbenchContext();
-		WorkbenchFrame frame = wbContext.getWorkbench().getFrame().getToc();
-		context.getFeatureInstaller().addPopupMenuItem(frame, this,
-				new String[] { Names.POPUP_TOC_REVERT_PATH1 },
-				Names.POPUP_TOC_INACTIVE_GROUP, false, OrbisGISIcon.REVERT,
-				wbContext);
-	}
+        public void initialize(PlugInContext context) throws Exception {
+                WorkbenchContext wbContext = context.getWorkbenchContext();
+                WorkbenchFrame frame = wbContext.getWorkbench().getFrame().getToc();
+                context.getFeatureInstaller().addPopupMenuItem(frame, this,
+                        new String[]{Names.POPUP_TOC_REVERT_PATH1},
+                        Names.POPUP_TOC_INACTIVE_GROUP, false, OrbisGISIcon.REVERT,
+                        wbContext);
+        }
 
-	public void execute(MapContext mapContext, ILayer layer) {
-		try {
-			layer.getSpatialDataSource().syncWithSource();
-		} catch (DriverException e) {
-			ErrorMessages.error(ErrorMessages.CannotRevertSource, e);
-			return;
-		}
-	}
-
-	public boolean isEnabled() {
-		return getPlugInContext().checkLayerAvailability(
-				new SelectionAvailability[] { SelectionAvailability.EQUAL }, 1,
-				new LayerAvailability[] { LayerAvailability.IS_MODIFIED });
-	}
+        public boolean isEnabled() {
+                return getPlugInContext().checkLayerAvailability(
+                        new SelectionAvailability[]{SelectionAvailability.EQUAL}, 1,
+                        new LayerAvailability[]{LayerAvailability.IS_MODIFIED});
+        }
 }

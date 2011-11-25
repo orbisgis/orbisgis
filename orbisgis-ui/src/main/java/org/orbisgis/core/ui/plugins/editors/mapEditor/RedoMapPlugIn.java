@@ -68,7 +68,7 @@ public class RedoMapPlugIn extends AbstractPlugIn {
 		MapContext mc = (MapContext) mapEditor.getElement().getObject();
 		ILayer activeLayer = mc.getActiveLayer();
 		try {
-			activeLayer.getSpatialDataSource().redo();
+			activeLayer.getDataSource().redo();
 		} catch (DriverException e) {
 			ErrorMessages.error(ErrorMessages.CannotRedo, e);
 		}
@@ -88,7 +88,7 @@ public class RedoMapPlugIn extends AbstractPlugIn {
 			MapContext mc = (MapContext) mapEditor.getElement().getObject();
 			ILayer activeLayer = mc.getActiveLayer();
 			isEnabled = (activeLayer != null)
-					&& activeLayer.getSpatialDataSource().canRedo();
+					&& activeLayer.getDataSource().canRedo();
 		}
 		btn.setEnabled(isEnabled);
 		return isEnabled;

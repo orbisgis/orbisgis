@@ -124,7 +124,7 @@ public class TocTreeModel extends AbstractTreeModel {
 				rule = layer.getRenderingRule().get(ruleIndex);
 			} catch (DriverException ex) {
 				Logger.getLogger(TocTreeModel.class.getName()).log(Level.SEVERE, null, ex);
-			}
+		}
 		}
 
 		public ILayer getLayer() {
@@ -137,6 +137,6 @@ public class TocTreeModel extends AbstractTreeModel {
 
 		public Rule getRule(){
 			return rule;
-		}
-	}
+                }
+        }
 }

@@ -54,7 +54,7 @@ import javax.swing.JPanel;
 import javax.swing.JTree;
 import javax.swing.tree.TreeCellRenderer;
 
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
@@ -110,7 +110,7 @@ public class TocRenderer extends TocAbstractRenderer implements
 							ruleNode.getRuleIndex(), selected, expanded,
 							leaf, row, hasFocus);
 					return ourJPanel.getJPanel();
-				}
+				} 
 				
 				else {
 					RasterLegendRenderPanel ourJPanel = new RasterLegendRenderPanel();
@@ -165,7 +165,7 @@ public class TocRenderer extends TocAbstractRenderer implements
 				iconAndLabel.setIcon(icon);
 			}
 			String name = node.getName();
-			SpatialDataSourceDecorator dataSource = node.getSpatialDataSource();
+			DataSource dataSource = node.getDataSource();
 			if ((dataSource != null) && (dataSource.isModified())) {
 				name += "*"; //$NON-NLS-1$
 			}
@@ -200,7 +200,7 @@ public class TocRenderer extends TocAbstractRenderer implements
 		}
 
 		@Override
-		public void setNodeCosmetic(JTree tree, ILayer layer, int ruleIndex,
+		public void setNodeCosmetic(JTree tree, ILayer layer, int legendIndex,
 				boolean selected, boolean expanded, boolean leaf, int row,
 				boolean hasFocus) {
 		}
@@ -263,7 +263,7 @@ public class TocRenderer extends TocAbstractRenderer implements
 
 				label.setText(rule.getName());
 				label.setVisible(true);
-				
+
 				// What's the best size to represent this legend ?
 				/*int[] imageSize = rule.getImageSize(dummyGraphics);
 				if ((imageSize[0] != 0) && (imageSize[1] != 0)) {

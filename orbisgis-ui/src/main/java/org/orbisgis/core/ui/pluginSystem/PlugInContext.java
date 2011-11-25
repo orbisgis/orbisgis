@@ -41,18 +41,14 @@ import java.util.ArrayList;
 
 import javax.swing.tree.TreePath;
 
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.gdms.source.Source;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
-import org.orbisgis.core.OrbisGISPersitenceConfig;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.geocognition.Geocognition;
 import org.orbisgis.core.geocognition.GeocognitionElement;
 import org.orbisgis.core.geocognition.mapContext.GeocognitionException;
-import org.orbisgis.core.geocognition.sql.GeocognitionBuiltInCustomQuery;
-import org.orbisgis.core.geocognition.sql.GeocognitionBuiltInFunction;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editor.IEditor;
@@ -72,6 +68,7 @@ import org.orbisgis.core.ui.plugins.views.mapEditor.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.tableEditor.TableEditorPlugIn;
 
 import com.vividsolutions.jts.util.Assert;
+import org.gdms.data.DataSource;
 
 /**
  * Adapt context to OrbisGIS from OpenJump Project.
@@ -160,14 +157,14 @@ public class PlugInContext {
 								return false;
 							break;
 						case IS_MODIFIED:
-							SpatialDataSourceDecorator dataSource = layer
-									.getSpatialDataSource();
+							DataSource dataSource = layer
+									.getDataSource();
 							if ((dataSource == null)
 									|| !dataSource.isModified())
 								return false;
 							break;
 						case DATASOURCE_NOT_NULL:
-							if (layer.getSpatialDataSource() == null)
+							if (layer.getDataSource() == null)
 								return false;
 							break;
 						case ACTIVE_LAYER:
@@ -179,7 +176,7 @@ public class PlugInContext {
 								return false;
 							break;
 						case IS_EDTABLE:
-							if (!layer.getSpatialDataSource().isEditable())
+							if (!layer.getDataSource().isEditable())
 								return false;
 							break;
 						case ROW_SELECTED:
@@ -293,56 +290,7 @@ public class PlugInContext {
 								.getService(EditorManager.class);
 						if (!em.hasEditor(el))
 							return false;
-						break;
-					case CUSTOM_QUERY_IS_NOT_REGISTERED:
-						if (OrbisGISPersitenceConfig.GEOCONGITION_CUSTOMQUERY_FACTORY_ID
-								.equals(el.getTypeId())) {
-							String registered = el.getProperties().get(
-									GeocognitionBuiltInCustomQuery.REGISTERED);
-							if ((registered != null)
-									&& registered
-											.equals(GeocognitionBuiltInCustomQuery.IS_NOT_REGISTERED)) {
-								break;
-							}
-						}
-						return false;
-					case FUNCTION_QUERY_IS_NOT_REGISTERED:
-						if (OrbisGISPersitenceConfig.GEOCOGNITION_FUNCTION_FACTORY_ID
-								.equals(el.getTypeId())) {
-							String registered = el.getProperties().get(
-									GeocognitionBuiltInFunction.REGISTERED);
-							if ((registered != null)
-									&& registered
-											.equals(GeocognitionBuiltInFunction.IS_NOT_REGISTERED)) {
-								break;
-							}
-						}
-						return false;
-					case CUSTOM_QUERY_IS_REGISTERED:
-						if (OrbisGISPersitenceConfig.GEOCONGITION_CUSTOMQUERY_FACTORY_ID
-								.equals(el.getTypeId())) {
-							String registered = el.getProperties().get(
-									GeocognitionBuiltInCustomQuery.REGISTERED);
-							if ((registered != null)
-									&& registered
-											.equals(GeocognitionBuiltInCustomQuery.IS_REGISTERED)) {
-								break;
-							}
-						}
-						return false;
-					case FUNCTION_QUERY_IS_REGISTERED:
-						if (OrbisGISPersitenceConfig.GEOCOGNITION_FUNCTION_FACTORY_ID
-								.equals(el.getTypeId())) {
-							String registered = el.getProperties().get(
-									GeocognitionBuiltInFunction.REGISTERED);
-							if ((registered != null)
-									&& registered
-											.equals(GeocognitionBuiltInFunction.IS_REGISTERED)) {
-								break;
-							}
-						}
-						return false;
-
+						break;					
 					default:
 						break;
 					}
@@ -605,12 +553,12 @@ public class PlugInContext {
 	 */
 	public boolean areSelectedLayersSelectedInEditing() {
 		MapContext mapContext = null;
-		SpatialDataSourceDecorator sds = null;
+		DataSource sds = null;
 		if ((mapContext = getMapContext()) != null) {
 			ILayer[] selectedLayers = mapContext.getSelectedLayers();
 			if (selectedLayers.length > 0) {
 				for (ILayer layer : selectedLayers) {
-					if ((sds = layer.getSpatialDataSource()) != null
+					if ((sds = layer.getDataSource()) != null
 							&& !sds.isModified())
 						return false;
 				}
@@ -626,12 +574,12 @@ public class PlugInContext {
 	 */
 	public boolean areSelectedLayersSelectedEditable() {
 		MapContext mapContext = null;
-		SpatialDataSourceDecorator sds = null;
+		DataSource sds = null;
 		if ((mapContext = getMapContext()) != null) {
 			ILayer[] selectedLayers = mapContext.getSelectedLayers();
 			if (selectedLayers.length > 0) {
 				for (ILayer layer : selectedLayers) {
-					if ((sds = layer.getSpatialDataSource()) != null
+					if ((sds = layer.getDataSource()) != null
 							&& !sds.isEditable())
 						return false;
 				}

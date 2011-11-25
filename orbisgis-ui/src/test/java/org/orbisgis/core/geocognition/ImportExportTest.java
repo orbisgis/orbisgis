@@ -37,57 +37,62 @@
  */
 package org.orbisgis.core.geocognition;
 
+import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 import org.orbisgis.core.layerModel.DefaultMapContext;
 
+import static org.junit.Assert.*;
+
 public class ImportExportTest extends AbstractGeocognitionTest {
 
-	public void testExportRootDoesNotCreateContainer() throws Exception {
-		gc.addElement("A", new DefaultMapContext());
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		gc.write(bos, "/");
-		GeocognitionElement imported = gc.createTree(new ByteArrayInputStream(
-				bos.toByteArray()));
-		imported.setId(gc.getRoot().getId());
-		equals(gc.getRoot(), imported);
-	}
+        @Test
+        public void testExportRootDoesNotCreateContainer() throws Exception {
+                gc.addElement("A", new DefaultMapContext());
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                gc.write(bos, "/");
+                GeocognitionElement imported = gc.createTree(new ByteArrayInputStream(
+                        bos.toByteArray()));
+                imported.setId(gc.getRoot().getId());
+                equals(gc.getRoot(), imported);
+        }
 
-	private void equals(GeocognitionElement root, GeocognitionElement imported) {
-		assertTrue(root.getId().equals(imported.getId()));
-		if (root.isFolder()) {
-			assertTrue(root.getElementCount() == imported.getElementCount());
-			for (int i = 0; i < root.getElementCount(); i++) {
-				equals(root.getElement(i), imported.getElement(i));
-			}
-		} else {
-			assertTrue(!imported.isFolder());
-		}
-	}
+        private void equals(GeocognitionElement root, GeocognitionElement imported) {
+                assertTrue(root.getId().equals(imported.getId()));
+                if (root.isFolder()) {
+                        assertEquals(root.getElementCount(), imported.getElementCount());
+                        for (int i = 0; i < root.getElementCount(); i++) {
+                                equals(root.getElement(i), imported.getElement(i));
+                        }
+                } else {
+                        assertFalse(imported.isFolder());
+                }
+        }
 
-	public void testExportFolderDoesNotCreateContainer() throws Exception {
-		gc.addFolder("A");
-		gc.addElement("/A/Map", new DefaultMapContext());
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		gc.write(bos, "/A");
-		GeocognitionElement imported = gc.createTree(new ByteArrayInputStream(
-				bos.toByteArray()));
-		GeocognitionElement compareNode = gc.getGeocognitionElement("/A");
-		imported.setId(compareNode.getId());
-		equals(compareNode, imported);
-	}
+        @Test
+        public void testExportFolderDoesNotCreateContainer() throws Exception {
+                gc.addFolder("A");
+                gc.addElement("/A/Map", new DefaultMapContext());
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                gc.write(bos, "/A");
+                GeocognitionElement imported = gc.createTree(new ByteArrayInputStream(
+                        bos.toByteArray()));
+                GeocognitionElement compareNode = gc.getGeocognitionElement("/A");
+                imported.setId(compareNode.getId());
+                equals(compareNode, imported);
+        }
 
-	public void testExportLeaveCreateContainer() throws Exception {
-		gc.addFolder("A");
-		gc.addElement("/A/Map", new DefaultMapContext());
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		gc.write(bos, "/A/Map");
-		GeocognitionElement imported = gc.createTree(new ByteArrayInputStream(
-				bos.toByteArray()));
-		GeocognitionElement compareNode = gc.getGeocognitionElement("/A");
-		imported.setId(compareNode.getId());
-		equals(compareNode, imported);
-	}
-
+        @Test
+        public void testExportLeaveCreateContainer() throws Exception {
+                gc.addFolder("A");
+                gc.addElement("/A/Map", new DefaultMapContext());
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                gc.write(bos, "/A/Map");
+                GeocognitionElement imported = gc.createTree(new ByteArrayInputStream(
+                        bos.toByteArray()));
+                GeocognitionElement compareNode = gc.getGeocognitionElement("/A");
+                imported.setId(compareNode.getId());
+                equals(compareNode, imported);
+        }
 }

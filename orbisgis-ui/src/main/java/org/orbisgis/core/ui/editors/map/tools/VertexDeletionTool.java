@@ -43,11 +43,9 @@ import java.util.Observable;
 
 import javax.swing.AbstractButton;
 
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.core.ui.editors.map.tool.CannotChangeGeometryException;
 import org.orbisgis.core.ui.editors.map.tool.DrawingException;
 import org.orbisgis.core.ui.editors.map.tool.FinishedAutomatonException;
 import org.orbisgis.core.ui.editors.map.tool.Handler;
@@ -58,109 +56,111 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Geometry;
+import org.gdms.data.DataSource; 
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
+import org.gdms.geometryUtils.GeometryException;
 
 public class VertexDeletionTool extends VertexDeletion {
 
-	AbstractButton button;
+        AbstractButton button;
+
+        @Override
+        public AbstractButton getButton() {
+                return button;
+        }
 
 	@Override
-	public AbstractButton getButton() {
-		return button;
-	}
+        public void setButton(AbstractButton button) {
+                this.button = button;
+        }
 
-	public void setButton(AbstractButton button) {
-		this.button = button;
-	}
+        @Override
+        public void update(Observable o, Object arg) {
+                PlugInContext.checkTool(this);
+        }
 
-	@Override
-	public void update(Observable o, Object arg) {
-		PlugInContext.checkTool(this);
-	}
+        @Override
+        public void transitionTo_Standby(MapContext vc, ToolManager tm)
+                throws FinishedAutomatonException, TransitionException {
+        }
 
-	@Override
-	public void transitionTo_Standby(MapContext vc, ToolManager tm)
-			throws FinishedAutomatonException, TransitionException {
+        @Override
+        public void transitionTo_Done(MapContext mc, ToolManager tm)
+                throws FinishedAutomatonException, TransitionException {
+                Point2D p = tm.getLastRealMousePosition();
+                ArrayList<Handler> handlers = tm.getCurrentHandlers();
+                ILayer activeLayer = mc.getActiveLayer();
+                DataSource sds = activeLayer.getDataSource();
 
-	}
+                for (Handler handler : handlers) {
+                        if (p.distance(handler.getPoint()) < tm.getTolerance()) {
+                                try {
+                                        if (p.distance(handler.getPoint()) < tm.getTolerance()) {
+                                                sds.setGeometry(handler.getGeometryIndex(), handler.remove());
+                                                break;
+                                        }
+                                } catch (GeometryException e) {
+                                        throw new TransitionException(e.getMessage());
+                                } catch (DriverException e) {
+                                        throw new TransitionException(e.getMessage());
+                                }
+                        }
+                }
+                transition("init"); //$NON-NLS-1$
+        }
 
-	@Override
-	public void transitionTo_Done(MapContext mc, ToolManager tm)
-			throws FinishedAutomatonException, TransitionException {
-		Point2D p = tm.getLastRealMousePosition();
-		ArrayList<Handler> handlers = tm.getCurrentHandlers();
-		ILayer activeLayer = mc.getActiveLayer();
-		SpatialDataSourceDecorator sds = activeLayer.getSpatialDataSource();
+        @Override
+        public void transitionTo_Cancel(MapContext vc, ToolManager tm)
+                throws FinishedAutomatonException, TransitionException {
+        }
 
-		for (Handler handler : handlers) {
-			if (p.distance(handler.getPoint()) < tm.getTolerance()) {
-				try {
-					if (p.distance(handler.getPoint()) < tm.getTolerance()) {
-						sds.setGeometry(handler.getGeometryIndex(), handler
-								.remove());
-						break;
-					}
-				} catch (CannotChangeGeometryException e) {
-					throw new TransitionException(e.getMessage());
-				} catch (DriverException e) {
-					throw new TransitionException(e.getMessage());
-				}
-			}
-		}
-		transition("init"); //$NON-NLS-1$
-	}
+        @Override
+        public void drawIn_Standby(Graphics g, MapContext vc, ToolManager tm)
+                throws DrawingException {
+                Point2D p = tm.getLastRealMousePosition();
+                ArrayList<Handler> handlers = tm.getCurrentHandlers();
 
-	@Override
-	public void transitionTo_Cancel(MapContext vc, ToolManager tm)
-			throws FinishedAutomatonException, TransitionException {
+                for (Handler handler : handlers) {
+                        try {
+                                if (p.distance(handler.getPoint()) < tm.getTolerance()) {
+                                        Geometry geom = handler.remove();
+                                        if (geom != null) {
+                                                tm.addGeomToDraw(geom);
+                                                break;
+                                        }
+                                }
+                        } catch (GeometryException e) {
+                                throw new DrawingException(
+                                        I18N.getString("orbisgis.core.ui.editors.map.tool.VertexDeletionTool_1")); //$NON-NLS-1$
+                        }
+                }
+        }
 
-	}
+        @Override
+        public void drawIn_Done(Graphics g, MapContext vc, ToolManager tm)
+                throws DrawingException {
+        }
 
-	@Override
-	public void drawIn_Standby(Graphics g, MapContext vc, ToolManager tm)
-			throws DrawingException {
-		Point2D p = tm.getLastRealMousePosition();
-		ArrayList<Handler> handlers = tm.getCurrentHandlers();
-
-		for (Handler handler : handlers) {
-			try {
-				if (p.distance(handler.getPoint()) < tm.getTolerance()) {
-					Geometry geom = handler.remove();
-					if (geom != null) {
-						tm.addGeomToDraw(geom);
-						break;
-					}
-				}
-			} catch (CannotChangeGeometryException e) {
-				throw new DrawingException(
-						I18N
-								.getString("orbisgis.core.ui.editors.map.tool.VertexDeletionTool_1")); //$NON-NLS-1$
-			}
-		}
-	}
-
-	@Override
-	public void drawIn_Done(Graphics g, MapContext vc, ToolManager tm)
-			throws DrawingException {
-
-	}
+        @Override
+        public void drawIn_Cancel(Graphics g, MapContext vc, ToolManager tm)
+                throws DrawingException {
+        }
 
 	@Override
-	public void drawIn_Cancel(Graphics g, MapContext vc, ToolManager tm)
-			throws DrawingException {
+        public boolean isEnabled(MapContext vc, ToolManager tm) {
+                return ToolUtilities.activeSelectionGreaterThan(vc, 0)
+                        && ToolUtilities.isActiveLayerEditable(vc) && ToolUtilities.isSelectionGreaterOrEqualsThan(vc, 1)
+                        && !ToolUtilities.geometryTypeIs(vc, TypeFactory.createType(Type.POINT));
+        }
 
-	}
+	@Override
+        public boolean isVisible(MapContext vc, ToolManager tm) {
+                return isEnabled(vc, tm);
+        }
 
-	public boolean isEnabled(MapContext vc, ToolManager tm) {
-		return ToolUtilities.activeSelectionGreaterThan(vc, 0)
-				&& ToolUtilities.isActiveLayerEditable(vc);
-	}
-
-	public boolean isVisible(MapContext vc, ToolManager tm) {
-		return isEnabled(vc, tm);
-	}
-
-	public String getName() {
-		return I18N
-				.getString("orbisgis.core.ui.editors.map.tool.vertexDeletion_tooltip");
-	}
+	@Override
+        public String getName() {
+                return I18N.getString("orbisgis.core.ui.editors.map.tool.vertexDeletion_tooltip");
+        }
 }

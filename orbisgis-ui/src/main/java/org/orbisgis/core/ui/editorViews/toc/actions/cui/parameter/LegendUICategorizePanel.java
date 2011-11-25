@@ -60,7 +60,7 @@ import java.util.ArrayList;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 
 import org.orbisgis.core.renderer.classification.Range;
 import org.orbisgis.core.renderer.classification.RangeMethod;
@@ -420,7 +420,7 @@ public abstract class LegendUICategorizePanel extends LegendUIComponent
         footer.removeAll();
         JLabel text;
 
-        SpatialDataSourceDecorator sds = controller.getEditedFeatureTypeStyle().getLayer().getSpatialDataSource();
+        DataSource sds = controller.getEditedFeatureTypeStyle().getLayer().getDataSource();
 
         try {
             RangeMethod rangesHelper = new RangeMethod(sds, (RealAttribute) p, 4);

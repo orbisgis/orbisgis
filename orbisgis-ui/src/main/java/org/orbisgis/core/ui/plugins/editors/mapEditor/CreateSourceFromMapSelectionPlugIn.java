@@ -54,6 +54,7 @@ import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
@@ -94,7 +95,7 @@ public class CreateSourceFromMapSelectionPlugIn extends AbstractPlugIn {
 			MapContext mc = (MapContext) editor.getElement().getObject();
 			ILayer[] layers = mc.getSelectedLayers();// getLayersRecursively();
 			for (ILayer layer : layers) {
-				createSourceFromSelection(layer.getSpatialDataSource(), layer
+				createSourceFromSelection(layer.getDataSource(), layer
 						.getSelection());
 			}
 		}
@@ -118,7 +119,7 @@ public class CreateSourceFromMapSelectionPlugIn extends AbstractPlugIn {
 			DataSourceCreation dsc = new FileSourceCreation(file, original
 					.getMetadata());
 			dsf.createDataSource(dsc);
-			FileSourceDefinition dsd = new FileSourceDefinition(file);
+			FileSourceDefinition dsd = new FileSourceDefinition(file, DriverManager.DEFAULT_SINGLE_TABLE_NAME);
 
 			// Find an unique name to register
 			SourceManager sm = dm.getSourceManager();

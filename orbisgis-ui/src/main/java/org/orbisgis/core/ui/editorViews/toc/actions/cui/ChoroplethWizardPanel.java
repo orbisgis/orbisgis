@@ -85,7 +85,7 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
 	public Rule getRule() throws DriverException {
 
 
-		Metadata metadata = layer.getSpatialDataSource().getMetadata();
+		Metadata metadata = layer.getDataSource().getMetadata();
 
 		// Quick (and hugly) step to fetch the first numeric attribute
 		String retainedFiledName = null;
@@ -102,7 +102,7 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
 		if (retainedFiledName != null) {
 			try {
 				RealAttribute field = new RealAttribute(retainedFiledName);
-				RangeMethod rangesHelper = new RangeMethod(layer.getSpatialDataSource(), field, 4);
+				RangeMethod rangesHelper = new RangeMethod(layer.getDataSource(), field, 4);
 
 				rangesHelper.disecMean();
 				Range[] ranges = rangesHelper.getRanges();

@@ -2,7 +2,7 @@ package org.orbisgis.core.ui.plugins.demo.extensions.tocMenu;
 
 import java.awt.Color;
 
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
@@ -51,8 +51,7 @@ public class CountFeaturesTOCMenu extends AbstractPlugIn {
 		ILayer[] selectedLayers = mapContext.getSelectedLayers();
 
 		//Récupération de l'objet GDMS contenant les données de la couche.
-		SpatialDataSourceDecorator sds = selectedLayers[0]
-				.getSpatialDataSource();
+		DataSource sds = selectedLayers[0].getDataSource();
 		//Le résultat est affiché dans OrbisGIS avec la fenêtre OutputManager.
 		Services.getOutputManager().print(
 				"Nombre d'objets :" + sds.getRowCount(), Color.RED);

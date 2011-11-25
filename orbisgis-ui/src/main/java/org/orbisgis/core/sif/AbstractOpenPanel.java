@@ -193,5 +193,11 @@ public abstract class AbstractOpenPanel extends AbstractUIPanel implements SQLUI
 		fileChooser.setCurrentDirectory(dir);
 	}
 
+        @Override
+        public String getInfoText() {
+                final String infoText = super.getInfoText();
+                return infoText == null ? " " : infoText;
+        }
+
 
 }

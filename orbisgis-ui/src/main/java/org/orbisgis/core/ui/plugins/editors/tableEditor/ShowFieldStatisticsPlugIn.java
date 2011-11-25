@@ -42,16 +42,16 @@ import java.awt.Color;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.DataSourceFactory;
+import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.driver.generic.GenericObjectDriver;
-import org.gdms.sql.parser.ParseException;
-import org.gdms.sql.strategies.SemanticException;
+import org.gdms.driver.driverManager.DriverManager;
+import org.gdms.driver.memory.MemoryDataSetDriver;
+import org.gdms.sql.engine.ParseException;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.editor.IEditor;
@@ -73,7 +73,7 @@ public class ShowFieldStatisticsPlugIn extends AbstractPlugIn {
 		final TableEditableElement element = (TableEditableElement) editor
 				.getElement();
 		try {
-			final DataSourceFactory dsf = (Services
+			final SQLDataSourceFactory dsf = (Services
 					.getService(DataManager.class)).getDataSourceFactory();
 
 			DataSource ds = element.getDataSource();
@@ -91,10 +91,10 @@ public class ShowFieldStatisticsPlugIn extends AbstractPlugIn {
 
 					dsResult = dsf.getDataSourceFromSQL(query);
 				} else {
-					GenericObjectDriver subds = getSubData(fieldName, ds,
+					MemoryDataSetDriver subds = getSubData(fieldName, ds,
 							selected);
 
-					query = getQuery(fieldName, dsf.getDataSource(subds))
+					query = getQuery(fieldName, dsf.getDataSource(subds, DriverManager.DEFAULT_SINGLE_TABLE_NAME))
 							.append(" ;").toString();
 
 					dsResult = dsf.getDataSourceFromSQL(query);
@@ -139,8 +139,6 @@ public class ShowFieldStatisticsPlugIn extends AbstractPlugIn {
 			ErrorMessages.error(ErrorMessages.CannotCreateDataSource, e);
 		} catch (ParseException e) {
 			ErrorMessages.error(ErrorMessages.CannotCreateDataSource, e);
-		} catch (SemanticException e) {
-			ErrorMessages.error(ErrorMessages.WrongSQLQuery, e);
 		}
 		return true;
 	}
@@ -155,7 +153,7 @@ public class ShowFieldStatisticsPlugIn extends AbstractPlugIn {
 				OrbisGISIcon.TABLE_SHOWFIELDSTAT, wbContext);
 	}
 
-	private GenericObjectDriver getSubData(String fieldName, DataSource ds,
+	private MemoryDataSetDriver getSubData(String fieldName, DataSource ds,
 			int[] selected) throws DriverException {
 
 		int fieldIndex = ds.getFieldIndexByName(fieldName);
@@ -164,7 +162,7 @@ public class ShowFieldStatisticsPlugIn extends AbstractPlugIn {
 		DefaultMetadata metadata = new DefaultMetadata();
 		metadata.addField(fieldName, fieldType);
 
-		GenericObjectDriver driver = new GenericObjectDriver(metadata);
+		MemoryDataSetDriver driver = new MemoryDataSetDriver(metadata);
 
 		for (int i = 0; i < selected.length; i++) {
 

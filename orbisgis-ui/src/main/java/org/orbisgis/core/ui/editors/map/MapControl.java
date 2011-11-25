@@ -201,7 +201,7 @@ public class MapControl extends JComponent implements ComponentListener,
 					MapTransform mapTransform) {
 				invalidateImage();
 				// Record new BoundingBox value for map context
-				mapContext.setBoundingBox(mapTransform.getExtent());
+				mapContext.setBoundingBox(mapTransform.getAdjustedExtent());
 			}
 
 		});
@@ -219,7 +219,7 @@ public class MapControl extends JComponent implements ComponentListener,
 	private void addLayerListenerRecursively(ILayer rootLayer,
 			RefreshLayerListener refreshLayerListener) {
 		rootLayer.addLayerListener(refreshLayerListener);
-		DataSource dataSource = rootLayer.getSpatialDataSource();
+		DataSource dataSource = rootLayer.getDataSource();
 		if (dataSource != null) {
 			dataSource.addEditionListener(refreshLayerListener);
 			dataSource.addDataSourceListener(refreshLayerListener);
@@ -233,7 +233,7 @@ public class MapControl extends JComponent implements ComponentListener,
 	private void removeLayerListenerRecursively(ILayer rootLayer,
 			RefreshLayerListener refreshLayerListener) {
 		rootLayer.removeLayerListener(refreshLayerListener);
-		DataSource dataSource = rootLayer.getSpatialDataSource();
+		DataSource dataSource = rootLayer.getDataSource();
 		if (dataSource != null) {
 			dataSource.removeEditionListener(refreshLayerListener);
 			dataSource.removeDataSourceListener(refreshLayerListener);
@@ -391,7 +391,7 @@ public class MapControl extends JComponent implements ComponentListener,
 				pm = this.pm;
 			}
 			try {
-				mapContext.draw(mapTransform, pm);
+				mapContext.draw( mapTransform, pm);
 
 			} catch (ClosedDataSourceException e) {
 				if (!cancel) {
@@ -402,10 +402,10 @@ public class MapControl extends JComponent implements ComponentListener,
 			} catch (Error e) {
 				throw e;
 			} finally {
-				mapContext.setBoundingBox(mapTransform.getExtent());
+				mapContext.setBoundingBox(mapTransform.getAdjustedExtent());
 				timer.stop();
-                MapControl.this.repaint();
-				mapContext.setBoundingBox(mapTransform.getExtent());
+				MapControl.this.repaint();
+				mapContext.setBoundingBox(mapTransform.getAdjustedExtent());
 				WorkbenchContext wbContext = Services
 						.getService(WorkbenchContext.class);
 				wbContext.setLastAction("Update toolbar"); //$NON-NLS-1$
@@ -450,21 +450,26 @@ public class MapControl extends JComponent implements ComponentListener,
 			return decoratedPM.getOverallProgress();
 		}
 
-		public void init(String taskName) {
-			decoratedPM.init(taskName);
+		public void init(String taskName, long i) {
+			decoratedPM.init(taskName, i);
 		}
 
 		public boolean isCancelled() {
 			return cancel || decoratedPM.isCancelled();
 		}
 
-		public void progressTo(int progress) {
+		public void progressTo(long progress) {
 			decoratedPM.progressTo(progress);
 		}
 
-		public void startTask(String taskName) {
-			decoratedPM.startTask(taskName);
+		public void startTask(String taskName, long i) {
+			decoratedPM.startTask(taskName, i);
 		}
+
+                @Override
+                public void setCancelled(boolean cancelled) {
+                        throw new UnsupportedOperationException("Not supported yet.");
+                }
 
 	}
 

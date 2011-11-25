@@ -45,8 +45,6 @@ import java.util.logging.Logger;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import org.gdms.data.types.Constraint;
-import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
@@ -85,32 +83,33 @@ public final class LegendUIController {
 
 		maxAllowedSize = new Dimension(1000, 750);
 
-		GeometryConstraint cons = null;
+                Type type = null;
+
 		try {
 			ILayer layer = style.getLayer();
-			Type type = layer.getSpatialDataSource().getMetadata().getFieldType(layer.getSpatialDataSource().getSpatialFieldIndex());
-			cons = (GeometryConstraint) type.getConstraint(Constraint.GEOMETRY_TYPE);
+			type = layer.getDataSource().getMetadata().getFieldType(layer.getDataSource().getSpatialFieldIndex());
 		} catch (DriverException ex) {
 			Logger.getLogger(LegendUIController.class.getName()).log(Level.SEVERE, null, ex);
 		}
 
-		if (cons == null) {
-			geometryType = GeometryConstraint.ALL;
+		if (type == null) {
+			geometryType = Type.GEOMETRY;
 		} else {
-			geometryType = cons.getGeometryType();
+			geometryType = type.getTypeCode();
 		}
 
 		switch (geometryType) {
 			default:
-			case GeometryConstraint.ALL:
-			case GeometryConstraint.POLYGON:
-			case GeometryConstraint.MULTI_POLYGON:
+			case Type.GEOMETRY:
+			case Type.GEOMETRYCOLLECTION:
+			case Type.POLYGON:
+			case Type.MULTIPOLYGON:
 				availableSymbolizers.add("Area Symbolizer");
-			case GeometryConstraint.LINESTRING:
-			case GeometryConstraint.MULTI_LINESTRING:
+			case Type.LINESTRING:
+			case Type.MULTILINESTRING:
 				availableSymbolizers.add("Line Symbolizer");
-			case GeometryConstraint.POINT:
-			case GeometryConstraint.MULTI_POINT:
+			case Type.POINT:
+			case Type.MULTIPOINT:
 				availableSymbolizers.add("Point Symbolizer");
 		}
 

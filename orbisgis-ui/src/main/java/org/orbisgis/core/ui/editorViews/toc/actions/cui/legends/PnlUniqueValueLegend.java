@@ -47,7 +47,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
@@ -77,7 +77,7 @@ public class PnlUniqueValueLegend extends PnlAbstractClassifiedLegend {
 	@Override
 	protected void addAllAction() {
 		ILayer layer = legendContext.getLayer();
-		SpatialDataSourceDecorator sdsd = layer.getSpatialDataSource();
+		DataSource sdsd = layer.getDataSource();
 		String selitem = (String) cmbFields.getSelectedItem();
 
 		legend.clear();
@@ -123,8 +123,8 @@ public class PnlUniqueValueLegend extends PnlAbstractClassifiedLegend {
 
 		if (rowCount < 32) {
 			try {
-				SpatialDataSourceDecorator ds = legendContext.getLayer()
-						.getSpatialDataSource();
+				DataSource ds = legendContext.getLayer()
+						.getDataSource();
 				ArrayList<String> options = new ArrayList<String>();
 				ArrayList<Value> values = new ArrayList<Value>();
 				for (int i = 0; i < ds.getRowCount() && values.size() < 32; i++) {
@@ -191,7 +191,7 @@ public class PnlUniqueValueLegend extends PnlAbstractClassifiedLegend {
 				try {
 					legend.setClassificationField((String) cmbFields
 							.getSelectedItem(), legendContext.getLayer()
-							.getSpatialDataSource());
+							.getDataSource());
 				} catch (DriverException e1) {
 					Services.getErrorManager().error(
 							"Cannot access the type of the field", e1);
@@ -222,12 +222,12 @@ public class PnlUniqueValueLegend extends PnlAbstractClassifiedLegend {
 		ArrayList<String> comboValuesArray = new ArrayList<String>();
 		try {
 			ILayer layer = legendContext.getLayer();
-			int numFields = layer.getSpatialDataSource().getFieldCount();
+			int numFields = layer.getDataSource().getFieldCount();
 			for (int i = 0; i < numFields; i++) {
-				int fieldType = layer.getSpatialDataSource().getFieldType(i)
+				int fieldType = layer.getDataSource().getFieldType(i)
 						.getTypeCode();
 				if (fieldType != Type.GEOMETRY && fieldType != Type.RASTER) {
-					comboValuesArray.add(layer.getSpatialDataSource().getFieldName(i));
+					comboValuesArray.add(layer.getDataSource().getFieldName(i));
 				}
 			}
 		} catch (DriverException e) {

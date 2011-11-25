@@ -228,7 +228,7 @@ public interface ILayer {
 	 *         up by a DataSource (Layer collections and WMS
 	 *         layers, for example)
 	 */
-	DataSource getSpatialDataSource();
+	DataSource getDataSource();
 
     public Style getStyle();
 

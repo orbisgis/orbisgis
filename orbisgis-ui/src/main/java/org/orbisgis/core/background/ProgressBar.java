@@ -57,6 +57,7 @@ import org.orbisgis.core.sif.CarriageReturn;
 import org.orbisgis.core.ui.components.button.J3DButton;
 import org.orbisgis.core.ui.components.job.GradientProgressBarUI;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.utils.I18N;
 
 public class ProgressBar extends JPanel {
 
@@ -102,7 +103,7 @@ public class ProgressBar extends JPanel {
 		ImageIcon icon = OrbisGISIcon.REMOVE;
 		JButton btn = new J3DButton();
 		btn.setIcon(icon);
-		btn.setToolTipText("Stop the process");
+		btn.setToolTipText(I18N.getString("orbisgis.org.orbisgis.core.progressBar.stop"));
 		btn.setPreferredSize(new Dimension(icon.getIconWidth() + 4, icon
 				.getIconHeight() + 4));
 		this.add(btn, BorderLayout.EAST);
@@ -158,9 +159,9 @@ public class ProgressBar extends JPanel {
 				lblSubTask.setText(currentTaskName + " (" + job.getCurrentProgress()
 						+ "%)");
 		} else if (job.isStarted()) {
-			lblSubTask.setText("processing...");
+			lblSubTask.setText(I18N.getString("orbisgis.org.orbisgis.core.progressBar.processing")+"..");
 		} else {
-			lblSubTask.setText("waiting...");
+			lblSubTask.setText(I18N.getString("orbisgis.org.orbisgis.core.progressBar.waiting")+"..");
 		}
 	}
 

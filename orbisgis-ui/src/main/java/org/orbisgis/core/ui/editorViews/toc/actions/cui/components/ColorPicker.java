@@ -55,7 +55,7 @@ import org.orbisgis.core.sif.UIPanel;
 public class ColorPicker extends javax.swing.JPanel implements UIPanel {
 
 	/** Creates new form ColorPicker */
-    	public ColorPicker() {
+	public ColorPicker() {
 		initComponents(null);
 	}
 
@@ -67,7 +67,7 @@ public class ColorPicker extends javax.swing.JPanel implements UIPanel {
 
 	private void initComponents(Color initialColor) {
         if (initialColor == null){
-		    jColorChooser1 = new javax.swing.JColorChooser();
+		jColorChooser1 = new javax.swing.JColorChooser();
         } else {
 		    jColorChooser1 = new javax.swing.JColorChooser(initialColor);
         }

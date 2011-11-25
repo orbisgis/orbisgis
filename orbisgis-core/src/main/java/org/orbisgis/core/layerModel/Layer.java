@@ -130,7 +130,7 @@ public class Layer extends GdmsLayer {
 		return legend;
 	}
 
-	public DataSource getSpatialDataSource() {
+	public DataSource getDataSource() {
 		return dataSource;
 	}
 
@@ -336,7 +336,7 @@ public class Layer extends GdmsLayer {
 			throw new UnsupportedOperationException(
 					I18N.getString("org.orbisgis.layerModel.layer.isNotARasterLayer")); //$NON-NLS-1$
 		}
-		return getSpatialDataSource().getRaster(0);
+		return getDataSource().getRaster(0);
 	}
 
 	@Override

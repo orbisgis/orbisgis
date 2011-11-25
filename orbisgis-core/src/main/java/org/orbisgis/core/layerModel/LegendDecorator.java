@@ -92,7 +92,8 @@ public class LegendDecorator implements Legend, EditionListener {
 		} catch (Exception e) {
 			valid = false;
 			// Catch exception since we don't trust Legend implementations
-			throw new RenderException(I18N.getString("orbisgis.org.orbisgis.layerModel.LegendDecorator.cannotCacheSymbols"), e); //$NON-NLS-1$
+			throw new RenderException(I18N.getString("orbisgis-core.orbisgis.org.orbisgis."
+                                + "layerModel.LegendDecorator.cannotCacheSymbols"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -114,7 +115,8 @@ public class LegendDecorator implements Legend, EditionListener {
 				initialize(sds);
 			} catch (RenderException e1) {
 				valid = false;
-				logger.error(I18N.getString("orbisgis.org.orbisgis.layerModel.LegendDecorator.cannotUpdateSymbol"), e1); //$NON-NLS-1$
+				logger.error(I18N.getString("orbisgis-core.orbisgis.org.orbisgis."
+                                        + "layerModel.LegendDecorator.cannotUpdateSymbol"), e1);
 			}
 		} else {
 			switch (e.getType()) {
@@ -127,7 +129,8 @@ public class LegendDecorator implements Legend, EditionListener {
 							.getRowIndex()));
 				} catch (RenderException e1) {
 					symbols.add(null);
-					logger.error(I18N.getString("orbisgis.org.orbisgis.layerModel.LegendDecorator.cannotUpdateSymbol"), e1); //$NON-NLS-1$
+					logger.error(I18N.getString("orbisgis-core.orbisgis.org."
+                                                + "orbisgis.layerModel.LegendDecorator.cannotUpdateSymbol"), e1);
 				}
 				break;
 			case EditionEvent.MODIFY:
@@ -136,7 +139,8 @@ public class LegendDecorator implements Legend, EditionListener {
 							.getRowIndex()));
 				} catch (RenderException e1) {
 					symbols.set((int) e.getRowIndex(), null);
-					logger.error(I18N.getString("orbisgis.org.orbisgis.layerModel.LegendDecorator.cannotUpdateSymbol"), e1); //$NON-NLS-1$
+					logger.error(I18N.getString("orbisgis-core.orbisgis."
+                                                + "org.orbisgis.layerModel.LegendDecorator.cannotUpdateSymbol"), e1);
 				}
 				break;
 			}

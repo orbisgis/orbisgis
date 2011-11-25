@@ -45,11 +45,9 @@ import org.gdms.data.InitializationException;
 import org.gdms.data.SourceAlreadyExistsException;
 import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.file.FileSourceDefinition;
+import org.gdms.driver.Driver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
-import org.gdms.driver.ReadOnlyDriver;
-import org.gdms.driver.ReadWriteDriver;
-import org.gdms.driver.driverManager.Driver;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.AndDriverFilter;
 import org.gdms.source.FileDriverFilter;
@@ -75,31 +73,34 @@ import org.orbisgis.utils.I18N;
 
 public class GeocatalogCreateFileSourcePlugIn extends AbstractPlugIn {
 
-    public boolean execute(PlugInContext context) throws Exception {
-        DataManager dm = Services.getService(DataManager.class);
-        String[] res = getPlugInContext().getSelectedSources();
-        if (res.length == 0) {
-            execute(dm.getSourceManager(), null);
-        } else {
-            for (String resource : res) {
-                execute(dm.getSourceManager(), resource);
-            }
-        }
-        return true;
-    }
+        @Override
+	public boolean execute(PlugInContext context) throws Exception {
+		DataManager dm = Services.getService(DataManager.class);
+		String[] res = getPlugInContext().getSelectedSources();
+		if (res.length == 0) {
+			execute(dm.getSourceManager(), null);
+		} else {
+			for (String resource : res) {
+				execute(dm.getSourceManager(), resource);
+			}
+		}
+		return true;
+	}
 
-
-    public void initialize(PlugInContext context) throws Exception {
-        WorkbenchContext wbContext = context.getWorkbenchContext();
-        WorkbenchFrame frame = wbContext.getWorkbench().getFrame().getGeocatalog();
-        context.getFeatureInstaller().addPopupMenuItem(
-                frame,
-                this,
-                new String[]{Names.POPUP_GEOCATALOG_CREATE_SRC_PATH1,
-                    Names.POPUP_GEOCATALOG_CREATE_SRC_PATH2},
-                Names.POPUP_GEOCATALOG_CREATE_SRC_GROUP, false, null,
-                wbContext);
-    }
+        @Override
+	public void initialize(PlugInContext context) throws Exception {
+		WorkbenchContext wbContext = context.getWorkbenchContext();
+		WorkbenchFrame frame = wbContext.getWorkbench().getFrame()
+				.getGeocatalog();
+		context.getFeatureInstaller()
+				.addPopupMenuItem(
+						frame,
+						this,
+						new String[] { Names.POPUP_GEOCATALOG_CREATE_SRC_PATH1,
+								Names.POPUP_GEOCATALOG_CREATE_SRC_PATH2 },
+						Names.POPUP_GEOCATALOG_CREATE_SRC_GROUP, false, null,
+						wbContext);
+	}
 
 
     public void execute(SourceManager sourceManager, String sourceName) {
@@ -115,72 +116,75 @@ public class GeocatalogCreateFileSourcePlugIn extends AbstractPlugIn {
     }
 
 
-    static void createSource(DataManager dm, DriverManager driverManager,
-                             Driver[] filtered) {
-        String[] typeNames = new String[filtered.length];
-        String[] driverNames = new String[filtered.length];
-        SourceManager sourceManager = dm.getSourceManager();
-        for (int i = 0; i < filtered.length; i++) {
-            driverNames[i] = filtered[i].getDriverId();
-            ReadOnlyDriver rod = (ReadOnlyDriver) filtered[i];
-            typeNames[i] = rod.getTypeDescription();
-        }
+	static void createSource(DataManager dm, DriverManager driverManager,
+			Driver[] filtered) {
+		String[] typeNames = new String[filtered.length];
+		String[] driverNames = new String[filtered.length];
+		SourceManager sourceManager = dm.getSourceManager();
+		for (int i = 0; i < filtered.length; i++) {
+			driverNames[i] = filtered[i].getDriverId();
+			Driver rod = filtered[i];
+			typeNames[i] = rod.getTypeDescription();
+		}
 
-        ChoosePanel cp = new ChoosePanel(
-                I18N.getString("orbisgis.org.orbisgis.core.geocatalog.selectTypeSource"),
-                typeNames, driverNames);
-        if (UIFactory.showDialog(cp)) {
-            // Create wizard
-            UIPanel[] wizardPanels = new UIPanel[2];
-            ReadWriteDriver driver = (ReadWriteDriver) driverManager.getDriver((String) cp.getSelected());
-            boolean file;
-            if ((driver.getType() & SourceManager.FILE) == SourceManager.FILE) {
-                file = true;
-            } else if ((driver.getType() & SourceManager.DB) == SourceManager.DB) {
-                file = false;
-            } else {
-                ErrorMessages.error(ErrorMessages.UnsupportedSourceType + " "
-                        + cp.getSelected());
-                return;
-            }
-            SaveFilePanel saveFilePanel = new SaveFilePanel(null, I18N.getString("orbisgis.org.core.selectFileCreate"));
-            if (file) {
-                saveFilePanel.setFileMustNotExist(true);
-                saveFilePanel.addFilter(((FileDriver) driver).getFileExtensions(), driver.getTypeDescription());
-                wizardPanels[0] = saveFilePanel;
-            } else {
-                throw new UnsupportedOperationException(
-                        ErrorMessages.NotImplementedYet);
-            }
-            MetadataCreation mc = new MetadataCreation(driver);
-            wizardPanels[1] = mc;
-            if (UIFactory.showDialog(wizardPanels)) {
-                DataSourceCreation dsc = null;
-                DataSourceDefinition dsd = null;
-                String name = null;
-                if (file) {
-                    File selectedFile = saveFilePanel.getSelectedFile();
-                    String selectedPath = selectedFile.getAbsolutePath();
-                    boolean hasExtension = false;
-                    String[] extensions = ((FileDriver) driver).getFileExtensions();
-                    for (String extension : extensions) {
-                        if (selectedPath.toLowerCase().endsWith(
-                                extension.toLowerCase())) {
-                            hasExtension = true;
-                            break;
-                        }
-                    }
-                    if (!hasExtension) {
-                        selectedFile = new File(selectedPath + "."
-                                + extensions[0]);
-                    }
-                    dsc = new FileSourceCreation(selectedFile, mc.getMetadata());
-                    dsd = new FileSourceDefinition(selectedFile);
-                    name = FileUtils.getFileNameWithoutExtensionU(selectedFile);
-                } else {
-                    throw new UnsupportedOperationException(
-                            ErrorMessages.NotImplementedYet);
-                }
+		ChoosePanel cp = new ChoosePanel(
+				I18N.getString("orbisgis.org.orbisgis.core.geocatalog.selectTypeSource"),
+				typeNames, driverNames);	
+		if (UIFactory.showDialog(cp)) {
+			// Create wizard
+			UIPanel[] wizardPanels = new UIPanel[2];
+			Driver driver = driverManager.getDriver((String) cp.getSelected());
+			boolean file;
+			if ((driver.getSupportedType() & SourceManager.FILE) == SourceManager.FILE) {
+				file = true;
+			} else if ((driver.getSupportedType() & SourceManager.DB) == SourceManager.DB) {
+				file = false;
+			} else {
+				ErrorMessages.error(ErrorMessages.UnsupportedSourceType + " "
+						+ cp.getSelected());
+				return;
+			}
+			SaveFilePanel saveFilePanel = new SaveFilePanel(null, I18N
+					.getString("orbisgis.org.core.selectFileCreate"));
+			if (file) {
+				saveFilePanel.setFileMustNotExist(true);
+				saveFilePanel.addFilter(((FileDriver) driver)
+						.getFileExtensions(), driver.getTypeDescription());
+				wizardPanels[0] = saveFilePanel;
+			} else {
+				throw new UnsupportedOperationException(
+						ErrorMessages.NotImplementedYet);
+			}
+			MetadataCreation mc = new MetadataCreation(driver);
+			wizardPanels[1] = mc;
+			if (UIFactory.showDialog(wizardPanels)) {
+				DataSourceCreation dsc = null;
+				DataSourceDefinition dsd = null;
+				String name = null;
+				if (file) {
+					File selectedFile = saveFilePanel.getSelectedFile();
+					String selectedPath = selectedFile.getAbsolutePath();
+					boolean hasExtension = false;
+					String[] extensions = ((FileDriver) driver)
+							.getFileExtensions();
+					for (String extension : extensions) {
+						if (selectedPath.toLowerCase().endsWith(
+								extension.toLowerCase())) {
+							hasExtension = true;
+							break;
+						}
+					}
+					if (!hasExtension) {
+						selectedFile = new File(selectedPath + "."
+								+ extensions[0]);
+					}
+					dsc = new FileSourceCreation(selectedFile, mc.getMetadata());
+					dsd = new FileSourceDefinition(selectedFile, DriverManager.DEFAULT_SINGLE_TABLE_NAME);
+					name = FileUtils.getFileNameWithoutExtensionU(selectedFile);
+				} else {
+					throw new UnsupportedOperationException(
+							ErrorMessages.NotImplementedYet);
+				}
 
                 try {
                     dm.getDataSourceFactory().createDataSource(dsc);
@@ -202,10 +206,8 @@ public class GeocatalogCreateFileSourcePlugIn extends AbstractPlugIn {
         }
     }
 
-
-    public boolean isEnabled() {
-        return true;
-    }
-
-
+        @Override
+	public boolean isEnabled() {
+		return true;
+	}
 }

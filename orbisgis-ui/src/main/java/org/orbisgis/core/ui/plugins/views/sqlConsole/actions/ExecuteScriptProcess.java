@@ -5,15 +5,6 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
- *  Team leader Erwan BOCHER, scientific researcher,
- * 
- *  User support leader : Gwendall Petit, geomatic engineer.
- *
- *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
  *
  * This file is part of OrbisGIS.
  *
@@ -32,25 +23,21 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info _at_ orbisgis.org
  */
-
 package org.orbisgis.core.ui.plugins.views.sqlConsole.actions;
 
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.ExecutionException;
+import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.schema.Metadata;
-import org.gdms.data.types.Type;
+import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.driver.DriverException;
-import org.gdms.sql.parser.ParseException;
-import org.gdms.sql.parser.TokenMgrError;
-import org.gdms.sql.strategies.Instruction;
-import org.gdms.sql.strategies.SQLProcessor;
-import org.gdms.sql.strategies.SemanticException;
+import org.gdms.sql.engine.SQLEngine;
+import org.gdms.sql.engine.SqlStatement;
+import org.gdms.sql.engine.ParseException;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
@@ -59,157 +46,138 @@ import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editors.map.MapContextManager;
 import org.orbisgis.core.ui.plugins.views.output.OutputManager;
+import org.orbisgis.core.ui.plugins.views.sqlConsole.ui.SQLConsolePanel;
 import org.orbisgis.progress.ProgressMonitor;
 
 public class ExecuteScriptProcess implements BackgroundJob {
 
-	private String script;
-	
+        private String script;
+        private static final Logger logger = Logger.getLogger(ExecuteScriptProcess.class);
+        private SQLConsolePanel panel;
 
-	private static final Logger logger = Logger
-			.getLogger(ExecuteScriptProcess.class);
+        public ExecuteScriptProcess(String script) {
+                this.script = script;
+        }
 
-	public ExecuteScriptProcess(String script) {
-		this.script = script;
-	}
+        public ExecuteScriptProcess(String script, SQLConsolePanel panel) {
+                this.script = script;
+                this.panel = panel;
+        }
 
-	public String getTaskName() {
-		return "Executing script";
-	}
+        public String getTaskName() {
+                return "Executing script";
+        }
 
-	public void run(ProgressMonitor pm) {
+        public void run(ProgressMonitor pm) {
 
-		DataManager dataManager = (DataManager) Services
-				.getService(DataManager.class);
-		DataSourceFactory dsf = dataManager.getDataSourceFactory();
-		SQLProcessor sqlProcessor = new SQLProcessor(dsf);
-		String[] instructions = new String[0];
+                DataManager dataManager = (DataManager) Services.getService(DataManager.class);
+                SQLDataSourceFactory dsf = dataManager.getDataSourceFactory();
+                SQLEngine engine = new SQLEngine(dsf);
+                SqlStatement[] statements = null;
 
-		long t1 = System.currentTimeMillis();
-		try {
-			logger.debug("Preparing script: " + script);
-			try {
-				instructions = sqlProcessor.getScriptInstructions(script);
-			} catch (SemanticException e) {
-				Services.getErrorManager().error(
-						"Semantic error in the script", e);
-			} catch (ParseException e) {
-				Services.getErrorManager().error("Cannot parse script", e);
-			} catch (TokenMgrError e) {
-				Services.getErrorManager().error("Cannot parse script", e);
-			}
+                long t1 = System.currentTimeMillis();
+                try {
+                        logger.debug("Preparing script: " + script);
+                        try {
+                                statements = engine.parse(script);
+                        } catch (ParseException e) {
+                                Services.getErrorManager().error("Cannot parse script", e);
+                                if (panel != null) {
+                                        panel.setStatusMessage("Failed to parse the script.");
+                                }
+                                return;
+                        }
 
-			MapContext vc = ((MapContextManager) Services
-					.getService(MapContextManager.class))
-					.getActiveMapContext();
+                        MapContext vc = ((MapContextManager) Services.getService(MapContextManager.class)).getActiveMapContext();
 
-			for (int i = 0; i < instructions.length; i++) {
+                        for (int i = 0; i < statements.length; i++) {
 
-				logger.debug("Preparing instruction: " + instructions[i]);
-				try {
-					Instruction instruction = sqlProcessor
-							.prepareInstruction(instructions[i]);
+                                SqlStatement st = statements[i];
+                                logger.debug("Preparing instruction: " + st.getSQL());
+                                boolean spatial = false;
+                                try {
+                                        st.prepare(dsf);
+                                        Metadata metadata = st.getResultMetadata();
+                                        if (metadata != null) {
+                                                spatial = MetadataUtilities.isSpatial(metadata);
 
-					Metadata metadata = instruction.getResultMetadata();
-					if (metadata != null) {
-						boolean spatial = false;
-						for (int k = 0; k < metadata.getFieldCount(); k++) {
-							int typeCode = metadata.getFieldType(k)
-									.getTypeCode();
-							if ((typeCode == Type.GEOMETRY)
-									|| (typeCode == Type.RASTER)) {
-								spatial = true;
-							}
-						}
+                                                DataSource ds = dsf.getDataSource(st,
+                                                        DataSourceFactory.DEFAULT, pm);
+                                                if (pm.isCancelled()) {
+                                                        break;
+                                                }
 
-						DataSource ds = dsf.getDataSource(instruction,
-								DataSourceFactory.DEFAULT, pm);
+                                                if (spatial && vc != null) {
 
-						if (pm.isCancelled()) {
-							break;
-						}
+                                                        try {
+                                                                final ILayer layer = dataManager.createLayer(ds);
 
-						if (spatial && vc != null) {
+                                                                vc.getLayerModel().insertLayer(layer, 0);
 
-							try {
-								final ILayer layer = dataManager
-										.createLayer(ds);
+                                                        } catch (LayerException e) {
+                                                                Services.getErrorManager().error(
+                                                                        "Impossible to create the layer:"
+                                                                        + ds.getName(), e);
+                                                                break;
+                                                        }
+                                                } else {
+                                                        OutputManager om = Services.getService(OutputManager.class);
 
-								vc.getLayerModel().insertLayer(layer, 0);
+                                                        ds.open();
+                                                        StringBuilder aux = new StringBuilder();
+                                                        int fc = ds.getMetadata().getFieldCount();
+                                                        int rc = (int) ds.getRowCount();
 
-							} catch (LayerException e) {
-								Services.getErrorManager().error(
-										"Impossible to create the layer:"
-												+ ds.getName(), e);
-								break;
-							}
-						} else {
+                                                        for (int j = 0; j < fc; j++) {
+                                                                om.print(ds.getFieldName(j));
+                                                                om.print("\t");
+                                                        }
+                                                        om.println("");
+                                                        for (int row = 0; row < rc; row++) {
+                                                                for (int j = 0; j < fc; j++) {
+                                                                        om.print(ds.getFieldValue(row, j).toString());
+                                                                        om.print("\t");
+                                                                }
+                                                                om.println("");
+                                                                if (row > 100) {
+                                                                        om.println("and more... total " + rc
+                                                                                + " rows");
+                                                                        break;
+                                                                }
+                                                        }
+                                                        ds.close();
 
-							ds.open();
-							StringBuilder aux = new StringBuilder();
-							int fc = ds.getMetadata().getFieldCount();
-							int rc = (int) ds.getRowCount();
 
-							for (int j = 0; j < fc; j++) {
-								aux.append(ds.getFieldName(j)).append("\t");
-							}
-							aux.append("\n");
-							for (int row = 0; row < rc; row++) {
-								for (int j = 0; j < fc; j++) {
-									aux.append(ds.getFieldValue(row, j))
-											.append("\t");
-								}
-								aux.append("\n");
-								if (row > 100) {
-									aux.append("and more... total " + rc
-											+ " rows");
-									break;
-								}
-							}
-							ds.close();
+                                                        om.println(aux.toString());
+                                                }
+                                        } else {
+                                                st.execute();
+                                                if (pm.isCancelled()) {
+                                                        break;
+                                                }
 
-							OutputManager om = Services
-									.getService(OutputManager.class);
-							om.println(aux.toString());
-						}
-					} else {
-						instruction.execute(pm);
+                                        }
+                                } catch (DataSourceCreationException e) {
+                                        Services.getErrorManager().error(
+                                                "Cannot create the DataSource:"
+                                                + st.getSQL(), e);
+                                        break;
+                                } finally {
+                                        st.cleanUp();
+                                }
 
-						if (pm.isCancelled()) {
-							break;
-						}
+                                pm.progressTo(100 * i / statements.length);
+                        }
 
-					}
-				} catch (ExecutionException e) {
-					Services.getErrorManager().error(
-							"Error executing the instruction:"
-									+ instructions[i], e);
-					break;
-				} catch (SemanticException e) {
-					Services.getErrorManager().error(
-							"Semantic error in instruction:"
-									+ instructions[i], e);
-					break;
-				} catch (DataSourceCreationException e) {
-					Services.getErrorManager().error(
-							"Cannot create the DataSource:"
-									+ instructions[i], e);
-					break;
-				} catch (ParseException e) {
-					Services.getErrorManager().error(
-							"Parse error in statement:" + instructions[i],
-							e);
-					break;
-				}
+                } catch (DriverException e) {
+                        Services.getErrorManager().error("Data access error:", e);
+                }
 
-				pm.progressTo(100 * i / instructions.length);
-			}
-
-		} catch (DriverException e) {
-			Services.getErrorManager().error("Data access error:", e);
-		}
-
-		long t2 = System.currentTimeMillis();
-		logger.debug("Execution time: " + ((t2 - t1) / 1000.0));
-	}
+                long t2 = System.currentTimeMillis();
+                double lastExecTime = ((t2 - t1) / 1000.0);
+                logger.debug("Execution time: " + lastExecTime);
+                if (panel != null) {
+                        panel.setStatusMessage("Execution time: " + lastExecTime);
+                }
+        }
 }

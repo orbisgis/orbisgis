@@ -39,9 +39,7 @@ package org.orbisgis.core.ui.editors.map.tools;
 import java.util.Observable;
 
 import javax.swing.AbstractButton;
-
-import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.types.GeometryConstraint;
+ 
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -53,6 +51,9 @@ import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
+import org.gdms.data.DataSource;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 
 public class PolygonTool extends AbstractPolygonTool {
 
@@ -63,6 +64,7 @@ public class PolygonTool extends AbstractPolygonTool {
 		return button;
 	}
 
+	@Override
 	public void setButton(AbstractButton button) {
 		this.button = button;
 	}
@@ -76,12 +78,12 @@ public class PolygonTool extends AbstractPolygonTool {
 	protected void polygonDone(com.vividsolutions.jts.geom.Polygon pol,
 			MapContext mc, ToolManager tm) throws TransitionException {
 		Geometry g = pol;
-		if (ToolUtilities.geometryTypeIs(mc, GeometryConstraint.MULTI_POLYGON)) {
+		if (ToolUtilities.geometryTypeIs(mc, TypeFactory.createType(Type.MULTIPOLYGON))) {
 			g = ToolManager.toolsGeometryFactory
 					.createMultiPolygon(new Polygon[] { pol });
 		}
 
-		SpatialDataSourceDecorator sds = mc.getActiveLayer().getSpatialDataSource();
+		DataSource sds = mc.getActiveLayer().getDataSource();
 		try {
 			Value[] row = new Value[sds.getMetadata().getFieldCount()];
                         g.setSRID(sds.getSRID());
@@ -93,20 +95,23 @@ public class PolygonTool extends AbstractPolygonTool {
 		}
 	}
 
+	@Override
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
-		return ToolUtilities.geometryTypeIs(vc, GeometryConstraint.POLYGON,
-				GeometryConstraint.MULTI_POLYGON)
+		return ToolUtilities.geometryTypeIs(vc, TypeFactory.createType(Type.POLYGON))
 				&& ToolUtilities.isActiveLayerEditable(vc);
 	}
 
+	@Override
 	public boolean isVisible(MapContext vc, ToolManager tm) {
 		return isEnabled(vc, tm);
 	}
 
+	@Override
 	public double getInitialZ(MapContext mapContext) {
 		return ToolUtilities.getActiveLayerInitialZ(mapContext);
 	}
 
+	@Override
 	public String getName() {
 		return I18N
 				.getString("orbisgis.core.ui.editors.map.tool.polygon_tooltip");

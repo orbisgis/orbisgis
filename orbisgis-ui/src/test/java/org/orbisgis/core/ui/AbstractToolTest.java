@@ -40,12 +40,10 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JLabel;
 
-import junit.framework.TestCase;
 
-import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
-import org.gdms.driver.generic.GenericObjectDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.DefaultDataManager;
 import org.orbisgis.core.Services;
@@ -55,42 +53,48 @@ import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tools.SelectionTool;
 
 import com.vividsolutions.jts.geom.Envelope;
+import org.gdms.data.SQLDataSourceFactory;
+import org.junit.Before;
+import org.orbisgis.progress.NullProgressMonitor;
 
-public abstract class AbstractToolTest extends TestCase {
+public abstract class AbstractToolTest {
 
-	protected DefaultMapContext mapContext;
-	protected MapTransform mapTransform;
-	protected ToolManager tm;
-	protected SelectionTool defaultTool;
-	private DefaultDataManager dataManager;
+        protected DefaultMapContext mapContext;
+        protected MapTransform mapTransform;
+        protected ToolManager tm;
+        protected SelectionTool defaultTool;
+        private DefaultDataManager dataManager;
 
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
+        @Before
+        public void setUp() throws Exception {
 
-		DataSourceFactory dsf = new DataSourceFactory(
-				"src/test/resources/backup", "src/test/resources/backup");
+                SQLDataSourceFactory dsf = new SQLDataSourceFactory(
+                        "src/test/resources/backup", "src/test/resources/backup");
 
-		dataManager = new DefaultDataManager(dsf);
-		Services.registerService(DataManager.class, "", dataManager);
+                dataManager = new DefaultDataManager(dsf);
+                Services.registerService(DataManager.class, "", dataManager);
 
-		createSource("mixed", TypeFactory.createType(Type.GEOMETRY));
+                createSource("mixed", TypeFactory.createType(Type.GEOMETRY));
 
-		mapContext = new DefaultMapContext();
-		mapContext.getLayerModel().addLayer(dataManager.createLayer("mixed"));
-		mapTransform = new MapTransform();
-		mapTransform.setImage(new BufferedImage(100, 100,
-				BufferedImage.TYPE_INT_ARGB));
-		mapTransform.setExtent(new Envelope(0, 100, 0, 100));
-		defaultTool = new SelectionTool();
-		tm = new ToolManager(defaultTool, mapContext, mapTransform,
-				new JLabel());
-	}
+                mapContext = new DefaultMapContext();
+                mapContext.open(new NullProgressMonitor());
+                mapContext.getLayerModel().addLayer(dataManager.createLayer("mixed"));
+                mapTransform = new MapTransform();
+                mapTransform.setImage(new BufferedImage(100, 100,
+                        BufferedImage.TYPE_INT_ARGB));
+                mapTransform.setExtent(new Envelope(0, 100, 0, 100));
+                defaultTool = new SelectionTool();
+                tm = new ToolManager(defaultTool, mapContext, mapTransform,
+                        new JLabel());
+        }
+        
+        public void tearDown() {
+                mapContext.close(new NullProgressMonitor());
+        }
 
-	private void createSource(String name, Type geomType) {
-		GenericObjectDriver omd = new GenericObjectDriver(
-				new String[] { "the_geom" }, new Type[] { geomType });
-		dataManager.getSourceManager().register(name, omd);
-	}
-
+        private void createSource(String name, Type geomType) {
+                MemoryDataSetDriver omd = new MemoryDataSetDriver(
+                        new String[]{"the_geom"}, new Type[]{geomType});
+                dataManager.getSourceManager().register(name, omd);
+        }
 }

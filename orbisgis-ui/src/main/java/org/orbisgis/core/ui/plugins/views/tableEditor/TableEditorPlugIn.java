@@ -74,6 +74,9 @@ public class TableEditorPlugIn extends ViewPlugIn implements IEditor {
     public TableEditorPlugIn() {
     }
 
+        public void revertSelection() {
+		table.revertSelection();
+	}
 
     public void initialize(PlugInContext context) {
         table = new TableComponent(this);
@@ -136,6 +139,7 @@ public class TableEditorPlugIn extends ViewPlugIn implements IEditor {
     }
 
 
+        @Override
     public boolean execute(PlugInContext context) throws Exception {
         return false;
     }

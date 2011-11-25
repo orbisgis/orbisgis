@@ -54,8 +54,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
-
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.Constraint;
+import org.gdms.data.types.GeometryTypeConstraint;
+import org.gdms.data.types.Type;
+ 
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LegendDecorator;
@@ -67,6 +69,7 @@ import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.sif.UIPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ISymbolEditor;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
 import org.orbisgis.utils.I18N;
 
 @Deprecated
@@ -80,7 +83,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 	private JPanel pnlContainer;
 	private CardLayout cardLayout;
 	private String lastUID = ""; //$NON-NLS-1$
-	private GeometryConstraint gc;
+	private Type gc;
 	private ILayer layer;
 	private JTextField txtMinScale;
 	private JTextField txtMaxScale;
@@ -89,30 +92,31 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 	private JButton btnCurrentScaleToMin;
 	private JButton btnCurrentScaleToMax;
 
-	public void init(MapTransform mt, GeometryConstraint gc, Legend[] legends,
+	public void init(MapTransform mt, Type gc, Legend[] legends,
 			ILegendPanel[] availableLegends, ISymbolEditor[] availableEditors,
 			ILayer layer) {
 		this.mt = mt;
 		this.gc = gc;
 		this.layer = layer;
 		if (gc == null) {
-			geometryType = ILegendPanel.ALL;
+			geometryType = GeometryProperties.ALL;
 		} else {
-			switch (gc.getGeometryType()) {
-			case GeometryConstraint.POINT:
-			case GeometryConstraint.MULTI_POINT:
-				geometryType = ILegendPanel.POINT;
+			switch (gc.getTypeCode()) {
+			case Type.POINT:
+			case Type.MULTIPOINT:
+				geometryType = GeometryProperties.POINT;
 				break;
-			case GeometryConstraint.LINESTRING:
-			case GeometryConstraint.MULTI_LINESTRING:
-				geometryType = ILegendPanel.LINE;
+			case Type.LINESTRING:
+			case Type.MULTILINESTRING:
+				geometryType = GeometryProperties.LINE;
 				break;
-			case GeometryConstraint.POLYGON:
-			case GeometryConstraint.MULTI_POLYGON:
-				geometryType = ILegendPanel.POLYGON;
+			case Type.POLYGON:
+			case Type.MULTIPOLYGON:
+				geometryType = GeometryProperties.POLYGON;
 				break;
-			case GeometryConstraint.GEOMETRY_COLLECTION:
-				geometryType = ILegendPanel.ALL;
+			case Type.GEOMETRYCOLLECTION:
+			case Type.GEOMETRY:
+				geometryType = GeometryProperties.ALL;
 				break;
 			}
 		}
@@ -223,6 +227,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		btnCurrentScaleToMin = new JButton(I18N.getString("orbisgis.org.orbisgis.ui.toc.legendsPanel.currentScale")); //$NON-NLS-1$
 		btnCurrentScaleToMin.addActionListener(new ActionListener() {
 
+                        @Override
 			public void actionPerformed(ActionEvent e) {
 				txtMinScale.setText(Integer
 						.toString((int) getCurrentMapTransform()
@@ -236,6 +241,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		btnCurrentScaleToMax = new JButton(I18N.getString("orbisgis.org.orbisgis.ui.toc.legendsPanel.currentScale")); //$NON-NLS-1$
 		btnCurrentScaleToMax.addActionListener(new ActionListener() {
 
+                        @Override
 			public void actionPerformed(ActionEvent e) {
 				txtMaxScale.setText(Integer
 						.toString((int) getCurrentMapTransform()
@@ -284,20 +290,24 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		return availableLegends;
 	}
 
+        @Override
 	public int getGeometryType() {
 		return geometryType;
 	}
 
+        @Override
 	public boolean isLine() {
-		return (geometryType & ILegendPanel.LINE) > 0;
+		return (geometryType & GeometryProperties.LINE) > 0;
 	}
 
+        @Override
 	public boolean isPoint() {
-		return (geometryType & ILegendPanel.POINT) > 0;
+		return (geometryType & GeometryProperties.POINT) > 0;
 	}
 
+        @Override
 	public boolean isPolygon() {
-		return (geometryType & ILegendPanel.POLYGON) > 0;
+		return (geometryType & GeometryProperties.POLYGON) > 0;
 	}
 
 	private void refresh() {
@@ -392,35 +402,39 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		refresh();
 	}
 
+        @Override
 	public Component getComponent() {
 		return this;
 	}
 
-	@Override
+        @Override
 	public URL getIconURL() {
 		return UIFactory.getDefaultIcon();
 	}
 
-	@Override
+        @Override
 	public String getInfoText() {
 		return UIFactory.getDefaultOkMessage();
 	}
 
-	@Override
+        @Override
 	public String getTitle() {
 		return I18N.getString("orbisgis.org.orbisgis.ui.toc.legendsPanel.legendEdition"); //$NON-NLS-1$
 	}
 
+        @Override
 	public String initialize() {
 		return null;
 	}
 
+        @Override
 	public String postProcess() {
 		return null;
 	}
 
+        @Override
 	public String validateInput() {
-		if (legends.size() == 0) {
+		if (legends.isEmpty()) {
 			return I18N.getString("orbisgis.org.orbisgis.ui.toc.legendsPanel.mustCreateAlmostOneLegend"); //$NON-NLS-1$
 		}
 
@@ -466,20 +480,22 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		return ret;
 	}
 
-	@Override
-	public GeometryConstraint getGeometryConstraint() {
-		return gc;
+        @Override
+	public GeometryTypeConstraint getGeometryTypeConstraint() {
+		return (GeometryTypeConstraint) gc.getConstraint(Constraint.GEOMETRY_TYPE);
 	}
 
-	@Override
+        @Override
 	public ILayer getLayer() {
 		return layer;
 	}
 
+        @Override
 	public MapTransform getCurrentMapTransform() {
 		return mt;
 	}
 
+        @Override
 	public ISymbolEditor[] getAvailableSymbolEditors() {
 		return availableEditors;
 	}

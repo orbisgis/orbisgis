@@ -74,7 +74,7 @@ public class ClearMapSelectionPlugIn extends AbstractPlugIn {
 						.getSelection();
 				if (!mc.isSelectionInducedRefresh()) {
 					mc.checkSelectionRefresh(new int[0], selection
-							.getSelectedRows(), lyr.getSpatialDataSource());
+							.getSelectedRows(), lyr.getDataSource());
 				}
 				selection.clearSelection();
 			}

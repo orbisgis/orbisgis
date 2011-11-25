@@ -43,11 +43,12 @@ import javax.swing.JOptionPane;
 
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.NoSuchTableException;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.SourceManager;
-import org.gdms.sql.strategies.SemanticException;
 import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
@@ -83,7 +84,7 @@ public class ExportInFileOperation implements BackgroundJob {
 		if (index != -1) {
 			fileName = fileName.substring(0, index);
 		}
-		final FileSourceDefinition def = new FileSourceDefinition(savedFile);
+		final FileSourceDefinition def = new FileSourceDefinition(savedFile, DriverManager.DEFAULT_SINGLE_TABLE_NAME);
 		final SourceManager sourceManager = dsf.getSourceManager();
 		if (sourceManager.exists(fileName)) {
 			fileName = sourceManager.getUniqueName(fileName);
@@ -93,13 +94,13 @@ public class ExportInFileOperation implements BackgroundJob {
 			dsf.saveContents(fileName, dsf.getDataSource(sourceName), pm);
 			JOptionPane.showMessageDialog(null,
 					I18N.getString("orbisgis.org.orbisgis.exportInFile.geocatalog"));
-		} catch (SemanticException e) {
-			ErrorMessages.error(ErrorMessages.SQLStatementError, e);
 		} catch (DriverException e) {
 			ErrorMessages.error(ErrorMessages.CannotCreateDataSource, e);
 		} catch (DriverLoadException e) {
 			ErrorMessages.error(ErrorMessages.CannotReadDataSource, e);
 		} catch (DataSourceCreationException e) {
+			ErrorMessages.error(ErrorMessages.CannotReadDataSource, e);
+		} catch (NoSuchTableException e) {
 			ErrorMessages.error(ErrorMessages.CannotReadDataSource, e);
 		}
 

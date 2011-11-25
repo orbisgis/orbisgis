@@ -84,7 +84,7 @@ public final class Rule implements SymbolizerNode {
                 Geometry geometry = null;
                         if (layer != null) {
                         try {
-                                geometry = layer.getSpatialDataSource().getGeometry(0);
+                                geometry = layer.getDataSource().getGeometry(0);
                         } catch (DriverException ex) {
                                 Logger.getLogger(Rule.class.getName()).log(Level.SEVERE, null, ex);
                         }

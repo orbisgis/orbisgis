@@ -39,26 +39,23 @@ package org.orbisgis.core.geocognition;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import org.junit.Before;
 
 import org.orbisgis.core.AbstractTest;
 import org.orbisgis.core.geocognition.mapContext.GeocognitionMapContextFactory;
-import org.orbisgis.core.geocognition.sql.GeocognitionCustomQueryFactory;
-import org.orbisgis.core.geocognition.sql.GeocognitionFunctionFactory;
 import org.orbisgis.core.geocognition.symbology.GeocognitionLegendFactory;
 import org.orbisgis.core.geocognition.symbology.GeocognitionSymbolFactory;
 
 public abstract class AbstractGeocognitionTest extends AbstractTest {
 	protected Geocognition gc;
 
-	@Override
+        @Before
 	public void setUp() throws Exception {
 		super.setUp();
 		super.registerDataManager();
 
 		gc = new DefaultGeocognition();
 		gc.addElementFactory(new GeocognitionSymbolFactory());
-		gc.addElementFactory(new GeocognitionFunctionFactory());
-		gc.addElementFactory(new GeocognitionCustomQueryFactory());
 		gc.addElementFactory(new GeocognitionLegendFactory());
 		gc.addElementFactory(new GeocognitionMapContextFactory());
 	}

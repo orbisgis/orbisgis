@@ -79,18 +79,19 @@ public class SaveLayerPlugIn extends AbstractPlugIn {
     }
 
 
-    public void execute(MapContext mapContext, ILayer layer) {
-        try {
-            layer.getSpatialDataSource().commit();
-        } catch (DriverException e) {
-            ErrorMessages.error(ErrorMessages.CannotSavelayer, e);
-            return;
-        } catch (NonEditableDataSourceException e) {
-            ErrorMessages.error(ErrorMessages.CannotExportInSelectedFormat, e);
-            return;
-        }
-        JOptionPane.showMessageDialog(null, I18N.getString("orbisgis.org.orbisgis.layerSaved"));
-    }
+	public void execute(MapContext mapContext, ILayer layer) {
+		try {
+			layer.getDataSource().commit();
+		} catch (DriverException e) {
+			ErrorMessages.error(ErrorMessages.CannotSavelayer, e);
+			return;
+		} catch (NonEditableDataSourceException e) {
+			ErrorMessages.error(ErrorMessages.CannotExportInSelectedFormat, e);
+			return;
+		}
+		JOptionPane.showMessageDialog(null, I18N
+				.getString("orbisgis.org.orbisgis.layerSaved"));
+	}
 
 
     public boolean isEnabled() {

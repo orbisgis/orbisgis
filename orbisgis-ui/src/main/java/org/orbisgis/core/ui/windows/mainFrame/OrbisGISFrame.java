@@ -52,6 +52,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
@@ -97,506 +98,434 @@ import org.orbisgis.utils.I18N;
 
 public class OrbisGISFrame extends JFrame implements IWindow {
 
-    private static final Logger logger = Logger.getLogger(OrbisGISFrame.class);
-
-
-    private JMenuBar actionMenuBar;
-
-
-    private JobPopup jobPopup;
-
-
-    private WorkbenchToolBar workbenchToolBar;
-
-
-    public JMenuBar getActionMenuBar() {
-        return actionMenuBar;
-    }
-
-
-    public WorkbenchToolBar getWorkbenchToolBar() {
-        return workbenchToolBar;
-    }
-
-
-    private ArrayList<ViewDecorator> views = new ArrayList<ViewDecorator>();
-
-
-    private RootWindow root;
-
-
-    private MyViewSerializer viewSerializer = new MyViewSerializer();
-
-
-    private boolean perspectiveLoaded = false;
-
-
-    private WorkbenchContext workbenchContext;
-
-
-    private org.orbisgis.core.ui.pluginSystem.menu.MenuTree menuTableTreePopup;
-
-
-    public org.orbisgis.core.ui.pluginSystem.menu.MenuTree getMenuTableTreePopup() {
-        return menuTableTreePopup;
-    }
-
-
-    public void setTableMenuTreePopup() {
-        this.menuTableTreePopup = getTableEditor().getMenuTreePopup();
-    }
-
-
-    public ArrayList<ViewDecorator> getViews() {
-        return views;
-    }
-
-
-    private org.orbisgis.core.ui.pluginSystem.menu.MenuTree menuMapTreePopup;
-
-
-    public org.orbisgis.core.ui.pluginSystem.menu.MenuTree getMenuMapTreePopup() {
-        return menuMapTreePopup;
-    }
-
-
-    public void setMapMenuTreePopup() {
-        this.menuMapTreePopup = getMapEditor().getMenuTreePopup();
-    }
-
-
-    public WorkbenchToolBar getToolBar(String id) {
-        return workbenchToolBar.getToolbars().get(id);
-    }
-
-
-    public WorkbenchToolBar getMainToolBar() {
-        return workbenchToolBar.getToolbars().get(Names.TOOLBAR_MAIN);
-    }
-
-
-    public WorkbenchToolBar getRasterToolBar() {
-        return workbenchToolBar.getToolbars().get(Names.TOOLBAR_RASTER);
-    }
-
-
-    public WorkbenchToolBar getNavigationToolBar() {
-        return workbenchToolBar.getToolbars().get(Names.TOOLBAR_NAVIGATION);
-    }
-
-
-    public WorkbenchToolBar getInfoToolBar() {
-        return workbenchToolBar.getToolbars().get(Names.TOOLBAR_INFO);
-    }
-
-
-    public WorkbenchToolBar getDrawingToolBar() {
-        return workbenchToolBar.getToolbars().get(Names.TOOLBAR_DRAWING);
-    }
-
-
-    public WorkbenchToolBar getMesureToolBar() {
-        return workbenchToolBar.getToolbars().get(Names.TOOLBAR_MESURE);
-    }
-
-
-    public WorkbenchToolBar getEditionMapToolBar() {
-        return workbenchToolBar.getToolbars().get(Names.TOOLBAR_MAP);
-    }
-
-
-    public WorkbenchToolBar getEditionTableToolBar() {
-        return workbenchToolBar.getToolbars().get(Names.TOOLBAR_TABLE);
-    }
-
-
-    public WorkbenchToolBar getMainStatusToolBar() {
-        return workbenchToolBar.getToolbars().get(
-                Names.MAIN_STATUS_TOOLBAR_MAIN);
-    }
-
-
-    public WorkbenchToolBar getViewToolBar() {
-        return workbenchToolBar.getToolbars().get(Names.VIEW_TOOLBAR);
-    }
-
-
-    public Toc getToc() {
-        return ((TocViewPlugIn) getViewDecorator(Names.TOC).getView()).getPanel();
-    }
-
-
-    /**
-     * Get the GeoCognition view
-     * 
-     * @return {@link GeocognitionView}
-     */
-    public GeocognitionView getGeocognitionView() {
-        return ((GeocognitionViewPlugIn) getViewDecorator(Names.GEOCOGNITION).getView()).getPanel();
-    }
-
-
-    /**
-     * Get the GeoCatalogView
-     * 
-     * @return {@link Catalog}
-     */
-    public Catalog getGeocatalog() {
-        return ((GeoCatalogViewPlugIn) getViewDecorator(Names.GEOCATALOG).getView()).getPanel();
-    }
-
-
-    public TableComponent getTableEditor() {
-        return ((TableEditorPlugIn) getViewDecorator(Names.EDITOR_TABLE_ID).getView()).getPanel();
-    }
-
-
-    public MapEditorPlugIn getMapEditor() {
-        return (MapEditorPlugIn) getViewDecorator(Names.EDITOR_MAP_ID).getView();
-    }
-
-
-    public OrbisGISFrame() {
-        OrbisWorkbench orbisWorkbench = new OrbisWorkbench(this);
-        this.workbenchContext = orbisWorkbench.getWorkbenchContext();
-        workbenchToolBar = new WorkbenchToolBar(this.workbenchContext,
-                                                "OrbisGIS main tools");
-        workbenchToolBar.setFloatable(true);
-
-        actionMenuBar = new JMenuBar();
-        this.setLayout(new BorderLayout());
-        this.getContentPane().add(workbenchToolBar, BorderLayout.PAGE_START);
-
-        // Initialize views
-        root = new RootWindow(viewSerializer);
-
-        root.getRootWindowProperties().getComponentProperties().setInsets(
-                new Insets(0, 0, 0, 0));
-        root.getRootWindowProperties().getSplitWindowProperties().setContinuousLayoutEnabled(false);
-
-        root.getRootWindowProperties().getWindowAreaProperties().setInsets(
-                new Insets(0, 0, 0, 0));
-        root.getRootWindowProperties().getWindowAreaProperties().setBorder(
-                BorderFactory.createEmptyBorder());
-
-        root.getRootWindowProperties().getTabWindowProperties().getTabProperties().getFocusedProperties().getComponentProperties().setBackgroundColor(
-                new Color(100, 140, 190));
-
-        // Some options for window properties
-        root.getRootWindowProperties().getTabWindowProperties().getCloseButtonProperties().setVisible(false);
-        root.getRootWindowProperties().getTabWindowProperties().getDockButtonProperties().setVisible(false);
-        root.getRootWindowProperties().getTabWindowProperties().getMaximizeButtonProperties().setVisible(false);
-        root.getRootWindowProperties().getTabWindowProperties().getUndockButtonProperties().setVisible(false);
-
-        DockingWindowsTheme theme = new ShapedGradientDockingTheme();
-        // Apply theme
-        root.getRootWindowProperties().addSuperObject(
-                theme.getRootWindowProperties());
-
-        this.getContentPane().add(root, BorderLayout.CENTER);
-
-        // Prepare menu and toolbar
-        this.setJMenuBar(actionMenuBar);
-
-        Services.registerService(RootWindow.class, "Root window", root);
-        orbisWorkbench.runWorkbench();
-        initializeViews();
-
-        ApplicationInfo ai = (ApplicationInfo) Services.getService(ApplicationInfo.class);
-
-        this.setTitle(I18N.getString("orbisgis.platform") + " - "
-                + ai.getVersionNumber() + " - " + ai.getVersionName());
-
-        this.setIconImage(OrbisGISIcon.ORBISGIS_LOGOMINI.getImage());
-        Toolkit toolkit = Toolkit.getDefaultToolkit();
-        Dimension screenSize = toolkit.getScreenSize();
-        this.setSize((int) screenSize.width, (int) screenSize.height);
-        this.setLocationRelativeTo(null);
-        this.setExtendedState(this.getExtendedState() | JFrame.MAXIMIZED_BOTH);
-
-        this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        this.addWindowListener(new WindowAdapter() {
-
-            @Override
-            public void windowClosing(WindowEvent e) {
-                ExitPlugIn.openExitDialog(workbenchContext.getWorkbench().getFrame());
-            }
-
-
-        });
-
-        /* Job popup at bootom right to follow processes loading */
-        jobPopup = new JobPopup(this);
-        jobPopup.initialize();
-
-        // A panel to display the statustoolbar on the left side and the
-        // viewtoolbar on the rigth side
-        JPanel jPanel = new JPanel();
-        BorderLayout layout = new BorderLayout();
-        jPanel.setLayout(layout);
-        jPanel.add(getMainStatusToolBar(), BorderLayout.WEST);
-        jPanel.add(getViewToolBar(), BorderLayout.EAST);
-
-        this.getContentPane().add(jPanel, BorderLayout.SOUTH);
-    }
-
-
-    private void initializeViews() {
-        for (ViewDecorator view : views) {
-            try {
-                view.getView().initialize(workbenchContext);
-            } catch (Exception e) {
-                Services.getErrorManager().error(
-                        "Error initializating view " + view.getId(), e);
-            }
+        private static final Logger logger = Logger.getLogger(OrbisGISFrame.class);
+        private JMenuBar actionMenuBar;
+        private JobPopup jobPopup;
+        private WorkbenchToolBar workbenchToolBar;
+
+        public JMenuBar getActionMenuBar() {
+                return actionMenuBar;
         }
 
-        final EditorManager em = Services.getService(EditorManager.class);
-        if (em == null) {
-            throw new RuntimeException(
-                    "A view must initialize the EditorManager service");
+        public WorkbenchToolBar getWorkbenchToolBar() {
+                return workbenchToolBar;
+        }
+        private ArrayList<ViewDecorator> views = new ArrayList<ViewDecorator>();
+        private RootWindow root;
+        private MyViewSerializer viewSerializer = new MyViewSerializer();
+        private boolean perspectiveLoaded = false;
+        private WorkbenchContext workbenchContext;
+        private org.orbisgis.core.ui.pluginSystem.menu.MenuTree menuTableTreePopup;
+
+        public org.orbisgis.core.ui.pluginSystem.menu.MenuTree getMenuTableTreePopup() {
+                return menuTableTreePopup;
         }
 
-        em.addEditorListener(new EditorListener() {
+        public void setTableMenuTreePopup() {
+                this.menuTableTreePopup = getTableEditor().getMenuTreePopup();
+        }
 
-            public void activeEditorChanged(IEditor previous, IEditor current) {
-                WorkbenchContext wbContext = Services.getService(WorkbenchContext.class);
-                wbContext.setLastAction("Editor Changed");
-                IEditor activeEditor = em.getActiveEditor();
+        public ArrayList<ViewDecorator> getViews() {
+                return views;
+        }
+        private org.orbisgis.core.ui.pluginSystem.menu.MenuTree menuMapTreePopup;
+
+        public org.orbisgis.core.ui.pluginSystem.menu.MenuTree getMenuMapTreePopup() {
+                return menuMapTreePopup;
+        }
+
+        public void setMapMenuTreePopup() {
+                this.menuMapTreePopup = getMapEditor().getMenuTreePopup();
+        }
+
+        public WorkbenchToolBar getToolBar(String id) {
+                return workbenchToolBar.getToolbars().get(id);
+        }
+
+        public WorkbenchToolBar getMainToolBar() {
+                return workbenchToolBar.getToolbars().get(Names.TOOLBAR_MAIN);
+        }
+
+        public WorkbenchToolBar getRasterToolBar() {
+                return workbenchToolBar.getToolbars().get(Names.TOOLBAR_RASTER);
+        }
+
+        public WorkbenchToolBar getNavigationToolBar() {
+                return workbenchToolBar.getToolbars().get(Names.TOOLBAR_NAVIGATION);
+        }
+
+        public WorkbenchToolBar getInfoToolBar() {
+                return workbenchToolBar.getToolbars().get(Names.TOOLBAR_INFO);
+        }
+
+        public WorkbenchToolBar getDrawingToolBar() {
+                return workbenchToolBar.getToolbars().get(Names.TOOLBAR_DRAWING);
+        }
+
+        public WorkbenchToolBar getMesureToolBar() {
+                return workbenchToolBar.getToolbars().get(Names.TOOLBAR_MESURE);
+        }
+
+        public WorkbenchToolBar getEditionMapToolBar() {
+                return workbenchToolBar.getToolbars().get(Names.TOOLBAR_MAP);
+        }
+
+        public WorkbenchToolBar getEditionTableToolBar() {
+                return workbenchToolBar.getToolbars().get(Names.TOOLBAR_TABLE);
+        }
+
+        public WorkbenchToolBar getMainStatusToolBar() {
+                return workbenchToolBar.getToolbars().get(
+                        Names.MAIN_STATUS_TOOLBAR_MAIN);
+        }
+
+        public WorkbenchToolBar getViewToolBar() {
+                return workbenchToolBar.getToolbars().get(Names.VIEW_TOOLBAR);
+        }
+
+        public Toc getToc() {
+                return ((TocViewPlugIn) getViewDecorator(Names.TOC).getView()).getPanel();
+        }
+
+        /**
+         * Get the GeoCognition view
+         *
+         * @return {@link GeocognitionView}
+         */
+        public GeocognitionView getGeocognitionView() {
+                return ((GeocognitionViewPlugIn) getViewDecorator(Names.GEOCOGNITION).getView()).getPanel();
+        }
+
+        /**
+         * Get the GeoCatalogView
+         *
+         * @return {@link Catalog}
+         */
+        public Catalog getGeocatalog() {
+                return ((GeoCatalogViewPlugIn) getViewDecorator(Names.GEOCATALOG).getView()).getPanel();
+        }
+
+        public TableComponent getTableEditor() {
+                return ((TableEditorPlugIn) getViewDecorator(Names.EDITOR_TABLE_ID).getView()).getPanel();
+        }
+
+        public MapEditorPlugIn getMapEditor() {
+                return (MapEditorPlugIn) getViewDecorator(Names.EDITOR_MAP_ID).getView();
+        }
+
+        public OrbisGISFrame() {
+                OrbisWorkbench orbisWorkbench = new OrbisWorkbench(this);
+                this.workbenchContext = orbisWorkbench.getWorkbenchContext();
+                workbenchToolBar = new WorkbenchToolBar(this.workbenchContext,
+                        "OrbisGIS main tools");
+                workbenchToolBar.setFloatable(true);
+
+                actionMenuBar = new JMenuBar();
+                this.setLayout(new BorderLayout());
+                this.getContentPane().add(workbenchToolBar, BorderLayout.PAGE_START);
+
+                // Initialize views
+                root = new RootWindow(viewSerializer);
+
+                root.getRootWindowProperties().getComponentProperties().setInsets(
+                        new Insets(0, 0, 0, 0));
+                root.getRootWindowProperties().getSplitWindowProperties().setContinuousLayoutEnabled(false);
+
+                root.getRootWindowProperties().getWindowAreaProperties().setInsets(
+                        new Insets(0, 0, 0, 0));
+                root.getRootWindowProperties().getWindowAreaProperties().setBorder(
+                        BorderFactory.createEmptyBorder());
+
+                root.getRootWindowProperties().getTabWindowProperties().getTabProperties().getFocusedProperties().getComponentProperties().setBackgroundColor(
+                        new Color(100, 140, 190));
+
+                // Some options for window properties
+                root.getRootWindowProperties().getTabWindowProperties().getCloseButtonProperties().setVisible(false);
+                root.getRootWindowProperties().getTabWindowProperties().getDockButtonProperties().setVisible(false);
+                root.getRootWindowProperties().getTabWindowProperties().getMaximizeButtonProperties().setVisible(false);
+                root.getRootWindowProperties().getTabWindowProperties().getUndockButtonProperties().setVisible(false);
+
+                DockingWindowsTheme theme = new ShapedGradientDockingTheme();
+                // Apply theme
+                root.getRootWindowProperties().addSuperObject(
+                        theme.getRootWindowProperties());
+
+                this.getContentPane().add(root, BorderLayout.CENTER);
+
+                // Prepare menu and toolbar
+                this.setJMenuBar(actionMenuBar);
+
+                Services.registerService(RootWindow.class, "Root window", root);
+                orbisWorkbench.runWorkbench();
+                initializeViews();
+
+                ApplicationInfo ai = (ApplicationInfo) Services.getService(ApplicationInfo.class);
+
+                this.setTitle("OrbisGIS "
+                        + ai.getVersionNumber() + " - " + ai.getVersionName() + " - " + Locale.getDefault().getCountry());
+
+                this.setIconImage(OrbisGISIcon.ORBISGIS_LOGOMINI.getImage());
+                Toolkit toolkit = Toolkit.getDefaultToolkit();
+                Dimension screenSize = toolkit.getScreenSize();
+                this.setSize((int) screenSize.width, (int) screenSize.height);
+                this.setLocationRelativeTo(null);
+                this.setExtendedState(this.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+
+                this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+                this.addWindowListener(new WindowAdapter() {
+
+                        @Override
+                        public void windowClosing(WindowEvent e) {
+                                ExitPlugIn.openExitDialog(workbenchContext.getWorkbench().getFrame());
+                        }
+                });
+
+                /* Job popup at bootom right to follow processes loading */
+                jobPopup = new JobPopup(this);
+                jobPopup.initialize();
+
+                // A panel to display the statustoolbar on the left side and the
+                // viewtoolbar on the rigth side
+                JPanel jPanel = new JPanel();
+                BorderLayout layout = new BorderLayout();
+                jPanel.setLayout(layout);
+                jPanel.add(getMainStatusToolBar(), BorderLayout.WEST);
+                jPanel.add(getViewToolBar(), BorderLayout.EAST);
+
+                this.getContentPane().add(jPanel, BorderLayout.SOUTH);
+        }
+
+        private void initializeViews() {
                 for (ViewDecorator view : views) {
-                    view.editorChanged(activeEditor, em.getEditorId(activeEditor));
+                        try {
+                                view.getView().initialize(workbenchContext);
+                        } catch (Exception e) {
+                                Services.getErrorManager().error(
+                                        "Error initializating view " + view.getId(), e);
+                        }
                 }
-            }
 
+                final EditorManager em = Services.getService(EditorManager.class);
+                if (em == null) {
+                        throw new RuntimeException(
+                                "A view must initialize the EditorManager service");
+                }
 
-            public void activeEditorClosed(IEditor editor, String editorId) {
+                em.addEditorListener(new EditorListener() {
+
+                        public void activeEditorChanged(IEditor previous, IEditor current) {
+                                WorkbenchContext wbContext = Services.getService(WorkbenchContext.class);
+                                wbContext.setLastAction("Editor Changed");
+                                IEditor activeEditor = em.getActiveEditor();
+                                for (ViewDecorator view : views) {
+                                        view.editorChanged(activeEditor, em.getEditorId(activeEditor));
+                                }
+                        }
+
+                        public void activeEditorClosed(IEditor editor, String editorId) {
+                                for (ViewDecorator view : views) {
+                                        view.editorClosed(editorId);
+                                }
+                        }
+
+                        @Override
+                        public boolean activeEditorClosing(IEditor editor, String editorId) {
+                                return true;
+                        }
+
+                        @Override
+                        public void elementLoaded(IEditor editor, Component comp) {
+                        }
+                });
+        }
+
+        public void showWindow() {
+                if (!perspectiveLoaded) {
+                        // Load default perspective
+                        loadPerspective(OrbisGISFrame.class.getResourceAsStream(OrbisGISPersitenceConfig.LAYOUT_PERSISTENCE_FILE));
+                }
+                this.setVisible(true);
+
+        }
+
+        public Component getView(String viewId) {
+                ViewDecorator ret = getViewDecorator(viewId);
+                if (ret != null) {
+                        if (!ret.isOpen()) {
+                                EditorManager em = Services.getService(EditorManager.class);
+                                IEditor activeEditor = em.getActiveEditor();
+                                ret.open(root, activeEditor, em.getEditorId(activeEditor));
+                        }
+                        return ret.getViewComponent();
+                } else {
+                        return null;
+                }
+        }
+
+        public void showView(String id) {
+                ViewDecorator view = getViewDecorator(id);
+                if (view != null) {
+                        EditorManager em = Services.getService(EditorManager.class);
+                        IEditor activeEditor = em.getActiveEditor();
+                        view.open(root, activeEditor, em.getEditorId(activeEditor));
+                }
+        }
+
+        public void hideView(String id) {
+                ViewDecorator view = getViewDecorator(id);
+                if (view != null) {
+                        view.close();
+                }
+        }
+
+        public ViewDecorator getViewDecorator(String id) {
                 for (ViewDecorator view : views) {
-                    view.editorClosed(editorId);
+                        if (view.getId().equals(id)) {
+                                return view;
+                        }
                 }
-            }
 
-
-            @Override
-            public boolean activeEditorClosing(IEditor editor, String editorId) {
-                return true;
-            }
-
-
-            @Override
-            public void elementLoaded(IEditor editor, Component comp) {
-            }
-
-
-        });
-    }
-
-
-    public void showWindow() {
-        if (!perspectiveLoaded) {
-            // Load default perspective
-            loadPerspective(OrbisGISFrame.class.getResourceAsStream(OrbisGISPersitenceConfig.LAYOUT_PERSISTENCE_FILE));
-        }
-        this.setVisible(true);
-
-    }
-
-
-    public Component getView(String viewId) {
-        ViewDecorator ret = getViewDecorator(viewId);
-        if (ret != null) {
-            if (!ret.isOpen()) {
-                EditorManager em = Services.getService(EditorManager.class);
-                IEditor activeEditor = em.getActiveEditor();
-                ret.open(root, activeEditor, em.getEditorId(activeEditor));
-            }
-            return ret.getViewComponent();
-        } else {
-            return null;
-        }
-    }
-
-
-    public void showView(String id) {
-        ViewDecorator view = getViewDecorator(id);
-        if (view != null) {
-            EditorManager em = Services.getService(EditorManager.class);
-            IEditor activeEditor = em.getActiveEditor();
-            view.open(root, activeEditor, em.getEditorId(activeEditor));
-        }
-    }
-
-
-    public void hideView(String id) {
-        ViewDecorator view = getViewDecorator(id);
-        if (view != null) {
-            view.close();
-        }
-    }
-
-
-    public ViewDecorator getViewDecorator(String id) {
-        for (ViewDecorator view : views) {
-            if (view.getId().equals(id)) {
-                return view;
-            }
+                return null;
         }
 
-        return null;
-    }
-
-
-    public void delete() {
-        this.setVisible(false);
-        this.dispose();
-        for (ViewDecorator vd : views) {
-            if (vd.getViewComponent() != null) {
-                vd.getView().delete();
-            }
-        }
-    }
-
-
-    public RootWindow getRoot() {
-        return root;
-    }
-
-
-    public JFrame getMainFrame() {
-        return this;
-    }
-
-
-    public Rectangle getPosition() {
-        return this.getBounds();
-    }
-
-
-    public boolean isOpened() {
-        return this.isVisible();
-    }
-
-
-    public void load(Map<String, String> properties)
-            throws PersistenceException {
-        // we override the default layout
-        this.getContentPane().remove(root);
-        root = new RootWindow(viewSerializer);
-
-        DockingWindowsTheme theme = new ShapedGradientDockingTheme();
-
-        // Apply theme
-        root.getRootWindowProperties().addSuperObject(
-                theme.getRootWindowProperties());
-
-        this.getContentPane().add(root, BorderLayout.CENTER);
-
-        loadWorkspacePerspective();
-
-    }
-
-
-    /**
-     * Method to load the workspace perspective used by docking window.
-     */
-    private void loadWorkspacePerspective() {
-        Workspace ws = (Workspace) Services.getService(Workspace.class);
-        FileInputStream layoutStream;
-        try {
-            layoutStream = new FileInputStream(ws.getFile(OrbisGISPersitenceConfig.LAYOUT_PERSISTENCE_FILE));
-            loadPerspective(layoutStream);
-        } catch (FileNotFoundException e) {
-            logger.error("Could not recover perspective, missing file", e);
-        }
-    }
-
-
-    public void loadPerspective(InputStream layoutStream) {
-        try {
-            ObjectInputStream ois = new ObjectInputStream(layoutStream);
-            root.read(ois);
-            perspectiveLoaded = true;
-            ois.close();
-        } catch (Exception e) {
-            Services.getErrorManager().error(
-                    I18N.getString("orbisgis.org.orbisgis.layout.cannotRecoverLayout"),
-                    e);
-        }
-    }
-
-
-    public Map<String, String> save() throws PersistenceException {
-        try {
-            Workspace ws = (Workspace) Services.getService(Workspace.class);
-            FileOutputStream fos = new FileOutputStream(ws.getFile(OrbisGISPersitenceConfig.LAYOUT_PERSISTENCE_FILE));
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-            root.write(oos);
-            oos.close();
-        } catch (IOException e) {
-            throw new PersistenceException(e);
+        public void delete() {
+                this.setVisible(false);
+                this.dispose();
+                for (ViewDecorator vd : views) {
+                        if (vd.getViewComponent() != null) {
+                                vd.getView().delete();
+                        }
+                }
         }
 
-        return null;
-    }
+        public RootWindow getRoot() {
+                return root;
+        }
 
+        public JFrame getMainFrame() {
+                return this;
+        }
 
-    public void setPosition(Rectangle position) {
-        this.setBounds(position);
-    }
+        public Rectangle getPosition() {
+                return this.getBounds();
+        }
 
+        public boolean isOpened() {
+                return this.isVisible();
+        }
 
-    /**
-     * Writes the id of the view and then writes the status. Reads the id,
-     * obtains the data from the extension xml and reads the status
-     * 
-     */
-    private class MyViewSerializer implements ViewSerializer {
+        public void load(Map<String, String> properties)
+                throws PersistenceException {
+                // we override the default layout
+                this.getContentPane().remove(root);
+                root = new RootWindow(viewSerializer);
 
-        public View readView(ObjectInputStream ois) throws IOException {
-            String id = ois.readUTF();
-            ViewDecorator vd = OrbisGISFrame.this.getViewDecorator(id);
-            if (vd != null) {
+                DockingWindowsTheme theme = new ShapedGradientDockingTheme();
+
+                // Apply theme
+                root.getRootWindowProperties().addSuperObject(
+                        theme.getRootWindowProperties());
+
+                this.getContentPane().add(root, BorderLayout.CENTER);
+
+                loadWorkspacePerspective();
+
+        }
+
+        /**
+         * Method to load the workspace perspective used by docking window.
+         */
+        private void loadWorkspacePerspective() {
+                Workspace ws = (Workspace) Services.getService(Workspace.class);
+                FileInputStream layoutStream;
                 try {
-                    EditorManager em = Services.getService(EditorManager.class);
-                    IEditor activeEditor = em.getActiveEditor();
-                    vd.loadStatus(activeEditor, em.getEditorId(activeEditor));
-                    return vd.getDockingView();
-                } catch (Throwable t) {
-                    ErrorMessages.error(ErrorMessages.CannotRecoverView + " "
-                            + id, t);
+                        layoutStream = new FileInputStream(ws.getFile(OrbisGISPersitenceConfig.LAYOUT_PERSISTENCE_FILE));
+                        loadPerspective(layoutStream);
+                } catch (FileNotFoundException e) {
+                        logger.error("Could not recover perspective, missing file", e);
                 }
-            }
-
-            return null;
         }
 
-
-        public void writeView(View view, ObjectOutputStream oos)
-                throws IOException {
-            ViewDecorator vd = getViewDecorator(view);
-            if (vd != null) {
-                oos.writeUTF(vd.getId());
+        public void loadPerspective(InputStream layoutStream) {
                 try {
-                    vd.getView().saveStatus();
-                } catch (Throwable e) {
-                    Services.getErrorManager().error(
-                            "Cannot save view " + vd.getId(), e);
+                        ObjectInputStream ois = new ObjectInputStream(layoutStream);
+                        root.read(ois);
+                        perspectiveLoaded = true;
+                        ois.close();
+                } catch (Exception e) {
+                        Services.getErrorManager().error(
+                                I18N.getString("orbisgis.org.orbisgis.layout.cannotRecoverLayout"),
+                                e);
                 }
-            }
-
         }
 
-
-        private ViewDecorator getViewDecorator(View view) {
-            for (ViewDecorator viewDecorator : views) {
-                if (viewDecorator.getDockingView() == view) {
-                    return viewDecorator;
+        public Map<String, String> save() throws PersistenceException {
+                try {
+                        Workspace ws = (Workspace) Services.getService(Workspace.class);
+                        FileOutputStream fos = new FileOutputStream(ws.getFile(OrbisGISPersitenceConfig.LAYOUT_PERSISTENCE_FILE));
+                        ObjectOutputStream oos = new ObjectOutputStream(fos);
+                        root.write(oos);
+                        oos.close();
+                } catch (IOException e) {
+                        throw new PersistenceException(e);
                 }
 
-            }
-
-            return null;
+                return null;
         }
 
+        public void setPosition(Rectangle position) {
+                this.setBounds(position);
+        }
 
-    }
+        /**
+         * Writes the id of the view and then writes the status. Reads the id,
+         * obtains the data from the extension xml and reads the status
+         *
+         */
+        private class MyViewSerializer implements ViewSerializer {
+
+                public View readView(ObjectInputStream ois) throws IOException {
+                        String id = ois.readUTF();
+                        ViewDecorator vd = OrbisGISFrame.this.getViewDecorator(id);
+                        if (vd != null) {
+                                try {
+                                        EditorManager em = Services.getService(EditorManager.class);
+                                        IEditor activeEditor = em.getActiveEditor();
+                                        vd.loadStatus(activeEditor, em.getEditorId(activeEditor));
+                                        return vd.getDockingView();
+                                } catch (Throwable t) {
+                                        ErrorMessages.error(ErrorMessages.CannotRecoverView + " "
+                                                + id, t);
+                                }
+                        }
+
+                        return null;
+                }
+
+                public void writeView(View view, ObjectOutputStream oos)
+                        throws IOException {
+                        ViewDecorator vd = getViewDecorator(view);
+                        if (vd != null) {
+                                oos.writeUTF(vd.getId());
+                                try {
+                                        vd.getView().saveStatus();
+                                } catch (Throwable e) {
+                                        Services.getErrorManager().error(
+                                                "Cannot save view " + vd.getId(), e);
+                                }
+                        }
+
+                }
+
+                private ViewDecorator getViewDecorator(View view) {
+                        for (ViewDecorator viewDecorator : views) {
+                                if (viewDecorator.getDockingView() == view) {
+                                        return viewDecorator;
+                                }
+
+                        }
+
+                        return null;
+                }
+        }
 }

@@ -1,8 +1,5 @@
 package org.orbisgis.core.ui.plugins.toc;
 
-
-import org.gdms.data.types.Constraint;
-import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
@@ -52,14 +49,12 @@ public class ExportFeatureTypeStylePlugIn extends AbstractPlugIn {
 
 	public void execute(MapContext mapContext, ILayer layer) {
 		try {
-			Type typ = layer.getSpatialDataSource().getMetadata().getFieldType(
-					layer.getSpatialDataSource().getSpatialFieldIndex());
-			GeometryConstraint cons = (GeometryConstraint) typ
-					.getConstraint(Constraint.GEOMETRY_TYPE);
+			Type typ = layer.getDataSource().getMetadata().getFieldType(
+					layer.getDataSource().getSpatialFieldIndex());
 
             final SaveFilePanel outputXMLPanel = new SaveFilePanel(
 					"org.orbisgis.core.ui.editorViews.toc.actions.ImportStyle",
-					"Youpiiiiii ICI");
+					"Choose a location");
 
             outputXMLPanel.addFilter("se", "Symbology Encoding FeatureTypeStyle");
 

@@ -53,18 +53,18 @@ public class DefaultErrorManager implements ErrorManager {
 			try {
 				listener.error(userMsg, exception);
 			} catch (Throwable t) {
-				logger.error(I18N.getString("orbisgis.org.orbisgis.defaultErrorManager.ErrorManagingException"), t); //$NON-NLS-1$
+				logger.error(I18N.getString("orbisgis-core.orbisgis.org.orbisgis.defaultErrorManager.ErrorManagingException"), t); //$NON-NLS-1$
 			}
 		}
 	}
 
 	public void warning(String userMsg, Throwable exception) {
-		logger.error(I18N.getString("orbisgis.org.orbisgis.defaultErrorManager.warning") + userMsg, exception); //$NON-NLS-1$
+		logger.error(I18N.getString("orbisgis-core.orbisgis.org.orbisgis.defaultErrorManager.warning") + userMsg, exception); //$NON-NLS-1$
 		for (ErrorListener listener : listeners) {
 			try {
 				listener.warning(userMsg, exception);
 			} catch (Throwable t) {
-				logger.error(I18N.getString("orbisgis.org.orbisgis.defaultErrorManager.ErrorManagingException"), t); //$NON-NLS-1$
+				logger.error(I18N.getString("orbisgis-core.orbisgis.org.orbisgis.defaultErrorManager.ErrorManagingException"), t); //$NON-NLS-1$
 			}
 		}
 	}

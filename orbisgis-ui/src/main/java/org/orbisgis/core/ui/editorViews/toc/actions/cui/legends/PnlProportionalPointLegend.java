@@ -64,9 +64,8 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.DataSource;
 import org.gdms.data.schema.Metadata;
-import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
@@ -92,6 +91,8 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
 
 import com.vividsolutions.jts.geom.Envelope;
+import org.gdms.data.types.GeometryDimensionConstraint;
+import org.gdms.data.types.TypeFactory;
 
 @Deprecated
 public class PnlProportionalPointLegend extends JPanel implements ILegendPanel {
@@ -237,7 +238,7 @@ public class PnlProportionalPointLegend extends JPanel implements ILegendPanel {
 
 			public void actionPerformed(ActionEvent e) {
 				try {
-					legend.preprocess(legendContext.getLayer().getSpatialDataSource());
+					legend.preprocess(legendContext.getLayer().getDataSource());
 
 					// Transform max to pixels
 					int maxSize = Integer.parseInt(txtMaxSize.getText());
@@ -334,10 +335,18 @@ public class PnlProportionalPointLegend extends JPanel implements ILegendPanel {
 
 	private SymbolFilter getSymbolFilter() {
 		return new CompositeSymbolFilter(new ConstraintSymbolFilter(
-				new GeometryConstraint(GeometryConstraint.POINT),
-				new GeometryConstraint(GeometryConstraint.MULTI_POINT),
-				new GeometryConstraint(GeometryConstraint.POLYGON),
-				new GeometryConstraint(GeometryConstraint.MULTI_POLYGON)),
+                        TypeFactory.createType(Type.POINT),
+                        TypeFactory.createType(Type.MULTIPOINT),
+                        TypeFactory.createType(Type.POLYGON),
+                        TypeFactory.createType(Type.MULTIPOLYGON),
+                        TypeFactory.createType(Type.GEOMETRYCOLLECTION,
+                                new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_POINT)),
+                        TypeFactory.createType(Type.GEOMETRYCOLLECTION,
+                                new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_POLYGON)),
+                        TypeFactory.createType(Type.GEOMETRY,
+                                new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_POINT)),
+                        TypeFactory.createType(Type.GEOMETRY,
+                                new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_POLYGON))),
 				new SymbolFilter() {
 
 					@Override
@@ -347,24 +356,29 @@ public class PnlProportionalPointLegend extends JPanel implements ILegendPanel {
 				});
 	}
 
+        @Override
 	public boolean acceptsGeometryType(int geometryType) {
-		return (geometryType == ILegendPanel.POLYGON)
-				|| (geometryType == ILegendPanel.POINT)
-				|| (geometryType == ILegendPanel.ALL);
+		return (geometryType == GeometryProperties.POLYGON)
+				|| (geometryType == GeometryProperties.POINT)
+				|| (geometryType == GeometryProperties.ALL);
 	}
 
+        @Override
 	public Component getComponent() {
 		return this;
 	}
 
+        @Override
 	public Legend getLegend() {
 		return legend;
 	}
 
+        @Override
 	public ILegendPanel newInstance() {
 		return new PnlProportionalPointLegend();
 	}
 
+        @Override
 	public void setLegend(Legend legend) {
 		this.legend = (ProportionalLegend) legend;
 		syncWithLegend();
@@ -372,8 +386,7 @@ public class PnlProportionalPointLegend extends JPanel implements ILegendPanel {
 
 	private void syncWithLegend() {
 		try {
-			SpatialDataSourceDecorator sds = legendContext.getLayer()
-					.getSpatialDataSource();
+			DataSource sds = legendContext.getLayer().getDataSource();
 			Metadata m = sds.getMetadata();
 			ArrayList<String> fieldNames = new ArrayList<String>();
 
@@ -433,6 +446,7 @@ public class PnlProportionalPointLegend extends JPanel implements ILegendPanel {
 
 	}
 
+        @Override
 	public void initialize(LegendContext lc) {
 		this.legendContext = lc;
 		legend = LegendFactory.createProportionalPointLegend();
@@ -440,6 +454,7 @@ public class PnlProportionalPointLegend extends JPanel implements ILegendPanel {
 		init();
 	}
 
+        @Override
 	public String validateInput() {
 
 		if (legend.getClassificationField() == null) {

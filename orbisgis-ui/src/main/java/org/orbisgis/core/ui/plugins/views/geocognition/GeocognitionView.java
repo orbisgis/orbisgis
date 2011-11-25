@@ -65,11 +65,8 @@ import org.orbisgis.core.edition.EditableElement;
 import org.orbisgis.core.edition.EditableElementListener;
 import org.orbisgis.core.geocognition.Geocognition;
 import org.orbisgis.core.geocognition.GeocognitionElement;
-import org.orbisgis.core.geocognition.GeocognitionFilter;
 import org.orbisgis.core.geocognition.GeocognitionListener;
 import org.orbisgis.core.geocognition.mapContext.GeocognitionMapContextFactory;
-import org.orbisgis.core.geocognition.sql.GeocognitionCustomQueryFactory;
-import org.orbisgis.core.geocognition.sql.GeocognitionFunctionFactory;
 import org.orbisgis.core.geocognition.symbology.GeocognitionSymbolFactory;
 import org.orbisgis.core.layerModel.DefaultMapContext;
 import org.orbisgis.core.layerModel.MapContext;
@@ -81,12 +78,10 @@ import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 import org.orbisgis.core.ui.plugins.views.geocognition.filters.IGeocognitionFilter;
 import org.orbisgis.core.ui.plugins.views.geocognition.filters.Map;
-import org.orbisgis.core.ui.plugins.views.geocognition.filters.SQL;
 import org.orbisgis.core.ui.plugins.views.geocognition.filters.Symbology;
 import org.orbisgis.core.ui.plugins.views.geocognition.wizard.ElementRenderer;
 import org.orbisgis.core.ui.plugins.views.geocognition.wizards.NewFolder;
 import org.orbisgis.core.ui.plugins.views.geocognition.wizards.NewMap;
-import org.orbisgis.core.ui.plugins.views.geocognition.wizards.NewRegisteredSQLArtifact;
 import org.orbisgis.core.ui.plugins.views.geocognition.wizards.NewSymbol;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.workspace.Workspace;
@@ -170,20 +165,7 @@ public class GeocognitionView extends JPanel implements WorkbenchFrame {
 			IGeocognitionFilter filter = new Map();
 			filterButtons.add(new FilterButton(filter, btn));
 
-			btn = new JToggleButton(OrbisGISIcon.SCRIPT_CODE);
-			btn.setMargin(new Insets(0, 0, 0, 0));
-			btn.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					doFilter();
-				}
-			});
-			btn.setBorderPainted(false);
-			btn.setOpaque(true);
-			btn.setSelected(true);
-			controlPanel.add(btn);
-			filter = new SQL();
+			
 			filterButtons.add(new FilterButton(filter, btn));
 			btn = new JToggleButton(OrbisGISIcon.PALETTE);
 			btn.setMargin(new Insets(0, 0, 0, 0));
@@ -237,20 +219,16 @@ public class GeocognitionView extends JPanel implements WorkbenchFrame {
 
 		// TODO:mettre les éléments geocognition sous forme de plugins
 		Geocognition geocog = Services.getService(Geocognition.class);
-		geocog.addElementFactory(new GeocognitionFunctionFactory());
-		geocog.addElementFactory(new GeocognitionCustomQueryFactory());
 		geocog.addElementFactory(new GeocognitionMapContextFactory());
 		geocog.addElementFactory(new GeocognitionSymbolFactory());
 
-		ElementRenderer[] renderers = new ElementRenderer[4];
-		NewRegisteredSQLArtifact newRegisteredSQLArtifact = new NewRegisteredSQLArtifact();
-		renderers[0] = newRegisteredSQLArtifact.getElementRenderer();
+		ElementRenderer[] renderers = new ElementRenderer[3];
 		NewMap newMap = new NewMap();
-		renderers[1] = newMap.getElementRenderer();
+		renderers[0] = newMap.getElementRenderer();
 		NewFolder newFolder = new NewFolder();
-		renderers[2] = newFolder.getElementRenderer();
+		renderers[1] = newFolder.getElementRenderer();
 		NewSymbol newSymbol = new NewSymbol();
-		renderers[3] = newSymbol.getElementRenderer();
+		renderers[2] = newSymbol.getElementRenderer();
 		tree.setRenderers(renderers);
 
 		// Load startup if it's the first time
@@ -264,8 +242,7 @@ public class GeocognitionView extends JPanel implements WorkbenchFrame {
 			MapContext mc = new DefaultMapContext();
 			geocognition.addElement(FIRST_MAP, mc);
 
-			populateGeoCognitionWithOGCFunctions(geocognition);
-
+			
 			// Open first map
 			GeocognitionElement element = geocognition
 					.getGeocognitionElement(FIRST_MAP);
@@ -281,30 +258,7 @@ public class GeocognitionView extends JPanel implements WorkbenchFrame {
 		geocog.addGeocognitionListener(treeListener);
 	}
 
-	/**
-	 * A simple method to populate the geocognition on the fly
-	 * 
-	 * @param geocognition
-	 */
-	private void populateGeoCognitionWithOGCFunctions(Geocognition geocognition) {
-
-		String[] functions = FunctionManager.getFunctionNames();
-
-		String SQLFolder = "SQL";
-		geocognition.addFolder(SQLFolder);
-
-		for (int i = 0; i < functions.length; i++) {
-
-			String functionName = functions[i].toLowerCase();
-
-			Function function = FunctionManager.getFunction(functionName);
-
-			geocognition.addElement(SQLFolder + "/" + function.getName(),
-					function.getClass());
-
-		}
-
-	}
+	
 
 	private void addListenerRecursively(GeocognitionElement element) {
 		if (element.isFolder()) {

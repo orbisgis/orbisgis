@@ -38,6 +38,7 @@
 
 package org.orbisgis.core.ui.plugins.orbisgisFrame.help;
 
+import java.awt.Dialog.ModalityType;
 import javax.swing.JMenuItem;
 
 import org.orbisgis.core.ApplicationInfo;
@@ -59,13 +60,14 @@ public class AboutOrbisGISPlugIn extends AbstractPlugIn {
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {
-		final SIFDialog sifDialog = UIFactory.getSimpleDialog(new HtmlViewer(
-				getClass().getResource("about.html")));
-		sifDialog.setSize(650, 600);
+                AboutFrame f = new AboutFrame();
+		final SIFDialog sifDialog = UIFactory.getSimpleDialog(f);
+                sifDialog.setSize(687, 750);
 		ApplicationInfo ai = (ApplicationInfo) Services
 				.getService(ApplicationInfo.class);
-		sifDialog.setTitle(ai.getName() + " " + ai.getVersionNumber() + "("
+		sifDialog.setTitle(ai.getName() + " " + ai.getVersionNumber() + " ("
 				+ ai.getVersionName() + ")" + " - " + ai.getOrganization());
+                sifDialog.setModalityType(ModalityType.APPLICATION_MODAL);
 		sifDialog.setVisible(true);
 		return true;
 	}

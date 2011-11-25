@@ -44,7 +44,7 @@ import javax.swing.Icon;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.schema.Metadata;
-import org.gdms.data.types.Constraint;
+import org.gdms.data.types.Constraint; 
 import org.gdms.data.types.GeometryDimensionConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
@@ -77,7 +77,7 @@ public abstract class TocAbstractRenderer {
 							return OrbisGISIcon.LAYER_MIXE;
                                                 case Type.GEOMETRY:
                                                 case Type.GEOMETRYCOLLECTION:
-                                                        GeometryDimensionConstraint gdc =
+                                                        GeometryDimensionConstraint gdc = 
                                                                 (GeometryDimensionConstraint) fieldType.getConstraint(Constraint.DIMENSION_2D_GEOMETRY);
                                                         if(gdc == null){
                                                                 return OrbisGISIcon.LAYER_MIXE;

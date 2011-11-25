@@ -120,7 +120,7 @@ public class FeatureTypeStyleTest extends TestCase {
             Style fts = new Style(ftsElem, layer);
             gdmsLayer.setStyle(fts);
 
-            layer.getSpatialDataSource().open();
+            layer.getDataSource().open();
 
             Envelope extent = layer.getEnvelope();
 
@@ -144,7 +144,7 @@ public class FeatureTypeStyleTest extends TestCase {
 
             System.out.println ("End of rendering...");
 
-            layer.getSpatialDataSource().close();
+            layer.getDataSource().close();
 
             JFrame frm = new JFrame();
             frm.getContentPane().add(new JLabel(new ImageIcon(img)));

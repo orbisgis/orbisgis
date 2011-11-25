@@ -48,6 +48,7 @@ import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
+import org.orbisgis.core.ui.plugins.views.sqlConsole.language.SQLMetadataManager;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.workspace.OrbisGISWorkspace;
 import org.orbisgis.utils.I18N;
@@ -81,6 +82,10 @@ public class ExitPlugIn extends AbstractPlugIn {
 				.getString("orbisgis.org.orbisgis.core.exit"), "OrbisGIS",
 				JOptionPane.YES_NO_OPTION);
 		if (answer == JOptionPane.YES_OPTION) {
+                        SQLMetadataManager ma = Services.getService(SQLMetadataManager.class);
+                        if (ma != null) {
+                                ma.stop();
+                        }
 			OrbisGISWorkspace psm = (OrbisGISWorkspace) Services
 					.getService(OrbisGISWorkspace.class);
 			psm.stopPlugins();

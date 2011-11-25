@@ -38,6 +38,7 @@
 package org.orbisgis.core.ui.pluginSystem.workbench;
 
 import java.io.File;
+import org.orbisgis.core.Main;
 
 import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.pluginSystem.PlugInManager;
@@ -71,7 +72,7 @@ public class OrbisWorkbench {
 	}
 
 	public void runWorkbench() {
-		File extensionsDirectory = new File("lib/ext");
+		File extensionsDirectory = new File(Main.PLUGIN_DIRECTORY);
 		boolean fileExists = extensionsDirectory.exists() && extensionsDirectory.isDirectory();
 
 		if(!fileExists)

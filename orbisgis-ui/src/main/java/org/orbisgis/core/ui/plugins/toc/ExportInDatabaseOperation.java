@@ -39,13 +39,11 @@ package org.orbisgis.core.ui.plugins.toc;
 
 import javax.swing.JOptionPane;
 
-import org.gdms.data.DataSourceFactory;
-import org.gdms.data.ExecutionException;
+import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.db.DBSource;
 import org.gdms.driver.DBDriver;
 import org.gdms.driver.DriverException;
-import org.gdms.sql.parser.ParseException;
-import org.gdms.sql.strategies.SemanticException;
+import org.gdms.sql.engine.ParseException;
 import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.progress.ProgressMonitor;
@@ -53,14 +51,14 @@ import org.orbisgis.utils.I18N;
 
 public class ExportInDatabaseOperation implements BackgroundJob {
 
-	private DataSourceFactory dsf;
+	private SQLDataSourceFactory dsf;
 	private DBSource dbSource;
 	private DBDriver dbDriver;
 	private String schemaName;
 	private String inSourceName;
 	private String outSourceName;
 
-	public ExportInDatabaseOperation(DataSourceFactory dsf,
+	public ExportInDatabaseOperation(SQLDataSourceFactory dsf,
 			String inSourceName, String outSourceName, String schemaName,
 			DBSource dbSource, DBDriver dbDriver) {
 		this.outSourceName = outSourceName;
@@ -113,11 +111,7 @@ public class ExportInDatabaseOperation implements BackgroundJob {
 
 		} catch (ParseException e) {
 			ErrorMessages.error(ErrorMessages.SQLStatementError, e);
-		} catch (SemanticException e) {
-			ErrorMessages.error(ErrorMessages.SQLStatementError, e);
-		} catch (DriverException e) {
-			ErrorMessages.error(ErrorMessages.CannotCreateDataSource, e);
-		} catch (ExecutionException e) {
+		}catch (DriverException e) {
 			ErrorMessages.error(ErrorMessages.CannotCreateDataSource, e);
 		}
 

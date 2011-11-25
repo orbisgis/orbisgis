@@ -67,7 +67,7 @@ public class GeomarkViewPlugIn extends ViewPlugIn {
         menuItem = context.getFeatureInstaller().addMainMenuItem(this,
                                                                  new String[]{Names.VIEW}, Names.GEOMARK, true,
                                                                  OrbisGISIcon.GEOMARK_ICON, editors, panel, context);
-        context.getFeatureInstaller().addRegisterCustomQuery(OG_Geomark.class);
+        context.getFeatureInstaller().addRegisterFunction(OG_Geomark.class);
     }
 
 

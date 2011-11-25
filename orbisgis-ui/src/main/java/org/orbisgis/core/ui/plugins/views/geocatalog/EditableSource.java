@@ -141,7 +141,7 @@ public class EditableSource extends AbstractTableEditableElement implements
 	}
 
 	public boolean isEditable() {
-		if (ds.getSource().isSystemTableSource()) {
+		if (ds.getSource().isSystemTableSource() || ds.getSource().isLiveSource()) {
 			return false;
 		}
 		return editing && ds.isEditable();

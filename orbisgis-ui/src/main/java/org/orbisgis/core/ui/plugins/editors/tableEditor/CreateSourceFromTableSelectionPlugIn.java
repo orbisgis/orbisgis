@@ -14,7 +14,7 @@
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
  * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
- *
+ * 
  * Copyright (C) 2011 Erwan BOCHER, Alexis GUEGANNO, Antoine GOURLAY
  *
  * This file is part of OrbisGIS.
@@ -54,6 +54,7 @@ import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
@@ -78,12 +79,12 @@ public class CreateSourceFromTableSelectionPlugIn extends AbstractPlugIn {
 	public CreateSourceFromTableSelectionPlugIn() {
 		btn = new JButton(OrbisGISIcon.TABLE_CREATE_SRC_ICON);
 		btn.setToolTipText(I18N
-                .getString("orbisgis.ui.popupmenu.table.createFromSelection"));
+				.getString("orbisgis.ui.popupmenu.table.createFromSelection"));
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {
 		TableEditorPlugIn tableEditor = null;
-		if((tableEditor=getPlugInContext().getTableEditor()) != null){
+		if ((tableEditor = getPlugInContext().getTableEditor()) != null) {
 			TableEditableElement element = (TableEditableElement) tableEditor
 					.getElement();
 			int[] selectedRows = element.getSelection().getSelectedRows();
@@ -94,7 +95,7 @@ public class CreateSourceFromTableSelectionPlugIn extends AbstractPlugIn {
 			MapContext mc = (MapContext) editor.getElement().getObject();
 			ILayer[] layers = mc.getSelectedLayers();
 			for (ILayer layer : layers) {
-				createSourceFromSelection(layer.getSpatialDataSource(), layer
+				createSourceFromSelection(layer.getDataSource(), layer
 						.getSelection());
 			}
 		}
@@ -118,7 +119,7 @@ public class CreateSourceFromTableSelectionPlugIn extends AbstractPlugIn {
 			DataSourceCreation dsc = new FileSourceCreation(file, original
 					.getMetadata());
 			dsf.createDataSource(dsc);
-			FileSourceDefinition dsd = new FileSourceDefinition(file);
+			FileSourceDefinition dsd = new FileSourceDefinition(file, DriverManager.DEFAULT_SINGLE_TABLE_NAME);
 
 			// Find an unique name to register
 			SourceManager sm = dm.getSourceManager();
@@ -138,28 +139,27 @@ public class CreateSourceFromTableSelectionPlugIn extends AbstractPlugIn {
 			}
 			newds.commit();
 			newds.close();
-
-        } catch (SourceAlreadyExistsException e) {
-            ErrorMessages.error(ErrorMessages.CannotRegisterSource, e);
-        } catch (DriverLoadException e) {
-            ErrorMessages.error(ErrorMessages.CannotFindTheDataSource, e);
-        } catch (NoSuchTableException e) {
-            ErrorMessages.error(ErrorMessages.CannotFindTheDataSource, e);
-        } catch (DriverException e) {
-            ErrorMessages.error(ErrorMessages.CannotCreateSource, e);
-        } catch (DataSourceCreationException e) {
-            ErrorMessages.error(ErrorMessages.CannotCreateSource, e);
-        } catch (NonEditableDataSourceException e) {
-            ErrorMessages.error(ErrorMessages.CannotModifyDataSource, e);
-        }
+		} catch (SourceAlreadyExistsException e) {
+			ErrorMessages.error(ErrorMessages.CannotRegisterSource, e);
+		} catch (DriverLoadException e) {
+			ErrorMessages.error(ErrorMessages.CannotFindTheDataSource, e);
+		} catch (NoSuchTableException e) {
+			ErrorMessages.error(ErrorMessages.CannotFindTheDataSource, e);
+		} catch (DriverException e) {
+			ErrorMessages.error(ErrorMessages.CannotCreateSource, e);
+		} catch (DataSourceCreationException e) {
+			ErrorMessages.error(ErrorMessages.CannotCreateSource, e);
+		} catch (NonEditableDataSourceException e) {
+			ErrorMessages.error(ErrorMessages.CannotModifyDataSource, e);
+		}
 	}
 
 	public boolean isEnabled() {
 		boolean isEnabled = false;
-		isEnabled =  getPlugInContext().getTableEditor() != null
-						&& getPlugInContext()
-							.checkLayerAvailability(
-								new SelectionAvailability[] {SelectionAvailability.SUPERIOR},
+		isEnabled = getPlugInContext().getTableEditor() != null
+				&& getPlugInContext()
+						.checkLayerAvailability(
+								new SelectionAvailability[] { SelectionAvailability.SUPERIOR },
 								0,
 								new LayerAvailability[] {
 										LayerAvailability.VECTORIAL,

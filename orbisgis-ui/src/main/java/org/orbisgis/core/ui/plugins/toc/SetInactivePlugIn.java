@@ -56,63 +56,53 @@ import org.orbisgis.utils.I18N;
 
 public class SetInactivePlugIn extends AbstractPlugIn {
 
-    public boolean execute(PlugInContext context) throws Exception {
-        MapContext mapContext = getPlugInContext().getMapContext();
-        ILayer[] selectedResources = mapContext.getSelectedLayers();
-
-        if (selectedResources.length > 0) {
-            for (ILayer resource : selectedResources) {
-                execute(mapContext, resource);
-            }
+        public boolean execute(PlugInContext context) throws Exception {
+                MapContext mapContext = getPlugInContext().getMapContext();
+                ILayer[] selectedResources = mapContext.getSelectedLayers();
+                execute(mapContext, selectedResources[0]);
+                return true;
         }
-        return true;
-    }
 
-
-    public void initialize(PlugInContext context) throws Exception {
-        WorkbenchContext wbContext = context.getWorkbenchContext();
-        WorkbenchFrame frame = wbContext.getWorkbench().getFrame().getToc();
-        context.getFeatureInstaller().addPopupMenuItem(frame, this,
-                                                       new String[]{Names.POPUP_TOC_INACTIVE_PATH1},
-                                                       Names.POPUP_TOC_INACTIVE_GROUP, false,
-                                                       OrbisGISIcon.LAYER_STOPEDITION, wbContext);
-    }
-
-
-    public void execute(MapContext mapContext, ILayer layer) {
-        // we close directly if nothing is modified
-        if (!mapContext.getActiveLayer().getSpatialDataSource().isModified()) {
-            mapContext.setActiveLayer(null);
-            return;
+        public void initialize(PlugInContext context) throws Exception {
+                WorkbenchContext wbContext = context.getWorkbenchContext();
+                WorkbenchFrame frame = wbContext.getWorkbench().getFrame().getToc();
+                context.getFeatureInstaller().addPopupMenuItem(frame, this,
+                        new String[]{Names.POPUP_TOC_INACTIVE_PATH1},
+                        Names.POPUP_TOC_INACTIVE_GROUP, false,
+                        OrbisGISIcon.LAYER_STOPEDITION, wbContext);
         }
-        int option = JOptionPane.showConfirmDialog(null, I18N.getString("orbisgis.org.orbisgis.edit.saveChange"), I18N.getString("orbisgis.org.orbisgis.edit.stopEdition"),
-                                                   JOptionPane.YES_NO_CANCEL_OPTION);
-        if (option == JOptionPane.YES_OPTION) {
-            try {
-                mapContext.getActiveLayer().getSpatialDataSource().commit();
-                mapContext.setActiveLayer(null);
-            } catch (DriverException e) {
-                ErrorMessages.error(ErrorMessages.CannotSavelayer, e);
-            } catch (NonEditableDataSourceException e) {
-                ErrorMessages.error(ErrorMessages.CannotSavelayer, e);
-            }
-        } else if (option == JOptionPane.NO_OPTION) {
-            try {
-                layer.getSpatialDataSource().syncWithSource();
-                mapContext.setActiveLayer(null);
-            } catch (DriverException e) {
-                ErrorMessages.error(ErrorMessages.CannotRevertlayer, e);
-                return;
-            }
+
+        public void execute(MapContext mapContext, ILayer layer) {
+                // we close directly if nothing is modified
+                if (!mapContext.getActiveLayer().getDataSource().isModified()) {
+                        mapContext.setActiveLayer(null);
+                        return;
+                }
+                int option = JOptionPane.showConfirmDialog(null, I18N.getString("orbisgis.org.orbisgis.edit.saveChange"), I18N.getString("orbisgis.org.orbisgis.edit.stopEdition"),
+                        JOptionPane.YES_NO_CANCEL_OPTION);
+                if (option == JOptionPane.YES_OPTION) {
+                        try {
+                                mapContext.getActiveLayer().getDataSource().commit();
+                                mapContext.setActiveLayer(null);
+                        } catch (DriverException e) {
+                                ErrorMessages.error(ErrorMessages.CannotSavelayer, e);
+                        } catch (NonEditableDataSourceException e) {
+                                ErrorMessages.error(ErrorMessages.CannotSavelayer, e);
+                        }
+                } else if (option == JOptionPane.NO_OPTION) {
+                        try {
+                                layer.getDataSource().syncWithSource();
+                                mapContext.setActiveLayer(null);
+                        } catch (DriverException e) {
+                                ErrorMessages.error(ErrorMessages.CannotRevertlayer, e);
+                                return;
+                        }
+                }
         }
-    }
 
-
-    public boolean isEnabled() {
-        return getPlugInContext().checkLayerAvailability(
-                new SelectionAvailability[]{SelectionAvailability.EQUAL}, 1,
-                new LayerAvailability[]{LayerAvailability.ACTIVE_LAYER});
-    }
-
-
+        public boolean isEnabled() {
+                return getPlugInContext().checkLayerAvailability(
+                        new SelectionAvailability[]{SelectionAvailability.EQUAL}, 1,
+                        new LayerAvailability[]{LayerAvailability.ACTIVE_LAYER});
+        }
 }

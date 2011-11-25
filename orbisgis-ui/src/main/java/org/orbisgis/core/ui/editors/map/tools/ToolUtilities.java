@@ -1,45 +1,45 @@
 /*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at French IRSTV institute and is able
- * to manipulate and create vector and raster spatial information. OrbisGIS
- * is distributed under GPL 3 license. It is produced  by the geo-informatic team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/>, CNRS FR 2488:
- *    Erwan BOCHER, scientific researcher,
- *    Thomas LEDUC, scientific researcher,
- *    Fernando GONZALEZ CORTES, computer engineer.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ *
+ *  Team leader Erwan BOCHER, scientific researcher,
+ *
+ *
+ * Copyright (C) 2007-2008 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ *
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Antoine GOURLAY, Alexis GUEGANNO, Maxence LAURENT, Gwendall PETIT
+ *
+ * Copyright (C) 2011 Erwan BOCHER, Antoine GOURLAY, Alexis GUEGANNO, Maxence LAURENT, Gwendall PETIT
+ *
  *
  * This file is part of OrbisGIS.
  *
- * OrbisGIS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * OrbisGIS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
- * For more information, please consult:
- *    <http://orbisgis.cerma.archi.fr/>
- *    <http://sourcesup.cru.fr/projects/orbisgis/>
+ * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- *    erwan.bocher _at_ ec-nantes.fr
- *    fergonco _at_ gmail.com
- *    thomas.leduc _at_ cerma.archi.fr
+ * info _at_ orbisgis.org
  */
 package org.orbisgis.core.ui.editors.map.tools;
 
 import java.text.ParseException;
 import java.util.ArrayList;
 
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
@@ -52,15 +52,17 @@ import org.orbisgis.core.ui.editors.map.tool.Automaton;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import org.gdms.data.DataSource;
+import org.gdms.data.types.GeometryDimensionConstraint;
 
 public class ToolUtilities {
 
 	public static double getActiveLayerInitialZ(MapContext mapContext) {
-		SpatialDataSourceDecorator sds = mapContext.getActiveLayer()
-				.getSpatialDataSource();
+		DataSource sds = mapContext.getActiveLayer()
+				.getDataSource();
 		try {
 			Type type = sds.getFieldType(sds.getSpatialFieldIndex());
-			if (type.getIntConstraint(Constraint.GEOMETRY_DIMENSION) == 3) {
+			if (type.getIntConstraint(Constraint.DIMENSION_3D_GEOMETRY) == 3) {
 				return 0;
 			}
 		} catch (DriverException e) {
@@ -77,7 +79,7 @@ public class ToolUtilities {
 	 * @throws DriverException
 	 * @throws TransitionException
 	 */
-	public static Value[] populateNotNullFields(SpatialDataSourceDecorator sds,
+	public static Value[] populateNotNullFields(DataSource sds,
 			Value[] row) throws DriverException, TransitionException {
 		Value[] ret = new Value[row.length];
 		for (int i = 0; i < sds.getFieldCount(); i++) {
@@ -123,7 +125,7 @@ public class ToolUtilities {
 		if (activeLayer == null) {
 			return false;
 		} else {
-			return activeLayer.getSpatialDataSource().isEditable();
+			return activeLayer.getDataSource().isEditable();
 		}
 	}
 
@@ -136,6 +138,36 @@ public class ToolUtilities {
 		}
 	}
 
+        /**
+         * Check if the selection (features) is greater than a parameter.
+         * @param vc
+         * @param i
+         * @return
+         */
+        public static boolean isSelectionGreaterOrEqualsThan(MapContext vc, int i){
+                ILayer activeLayer = vc.getActiveLayer();
+		if (activeLayer == null) {
+			return false;
+		} else {
+			return activeLayer.getSelection().length>=i;
+		}
+        }
+
+        /**
+         * Check if the selection (features) is equal to a parameter.
+         * @param vc
+         * @param i
+         * @return
+         */
+        public static boolean isSelectionEqualsTo(MapContext vc, int i){
+                ILayer activeLayer = vc.getActiveLayer();
+		if (activeLayer == null) {
+			return false;
+		} else {
+			return activeLayer.getSelection().length==i;
+		}
+        }
+
 	public static boolean activeSelectionGreaterThan(MapContext vc, int i) {
 		ILayer activeLayer = vc.getActiveLayer();
 		if (activeLayer == null) {
@@ -145,22 +177,40 @@ public class ToolUtilities {
 		}
 	}
 
-	public static boolean geometryTypeIs(MapContext vc, int... geometryTypes) {
+        /**
+         * Check that the geometry of the active layer of vc is valid against the list
+         * of geometry types.
+         * @param vc
+         * @param geometryTypes
+         *      The geometry type codes we are testing. They are listed in {@link Type}.
+         * @return 
+         */
+	public static boolean geometryTypeIs(MapContext vc, Type... geometryTypes) {
 		ILayer activeLayer = vc.getActiveLayer();
 		if (activeLayer == null) {
 			return false;
 		} else {
 			try {
-				SpatialDataSourceDecorator sds = activeLayer.getSpatialDataSource();
+				DataSource sds = activeLayer.getDataSource();
 				Type type = sds.getFieldType(sds.getSpatialFieldIndex());
-				int geometryType = type
-						.getIntConstraint(Constraint.GEOMETRY_TYPE);
+				int geometryType = type.getTypeCode();
 				if (geometryType == -1) {
 					return true;
 				} else {
-					for (int geomType : geometryTypes) {
-						if (geomType == geometryType) {
-							return true;
+					for (Type geomType : geometryTypes) {
+						if (geomType.getTypeCode() == geometryType) {
+                                                        GeometryDimensionConstraint gdc =
+                                                                (GeometryDimensionConstraint) 
+                                                                geomType.getConstraint(Constraint.DIMENSION_2D_GEOMETRY);
+                                                        if(gdc == null){
+                                                                return true;
+                                                        } else {
+                                                                GeometryDimensionConstraint gdc2 =
+                                                                        (GeometryDimensionConstraint) 
+                                                                        type.getConstraint(Constraint.DIMENSION_2D_GEOMETRY);
+                                                                
+                                                                return gdc2 != null && gdc.getDimension() == gdc2.getDimension();
+                                                        }
 						}
 					}
 				}

@@ -44,20 +44,19 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import org.gdms.data.SpatialDataSourceDecorator;
-
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.GeometryDimensionConstraint;
+import org.gdms.data.types.Type;
+ 
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.geometryUtils.GeometryTypeUtil;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.renderer.classification.RangeMethod;
@@ -103,11 +102,12 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 
 		cmbFieldNames.addActionListener(new ActionListener() {
 
+                        @Override
 			public void actionPerformed(ActionEvent e) {
 				try {
 					legend.setClassificationField((String) cmbFieldNames
 							.getSelectedItem(), legendContext.getLayer()
-							.getSpatialDataSource());
+							.getDataSource());
 				} catch (DriverException e1) {
 					Services.getErrorManager().error(
 							"Cannot access the type of the field", e1);
@@ -121,6 +121,7 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 		cmbIntervalCount = new javax.swing.JComboBox();
 		cmbIntervalType = new javax.swing.JComboBox();
 		cmbIntervalType.addActionListener(new java.awt.event.ActionListener() {
+                        @Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				intervalTypeChanged(evt);
 			}
@@ -223,10 +224,12 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 				.toArray(new Integer[0])));
 	}
 
+	@Override
 	public ILegendPanel newInstance() {
 		return new PnlIntervalLegend();
 	}
 
+	@Override
 	public void setLegend(Legend legend) {
 		this.legend = (IntervalLegend) legend;
 		syncFieldsWithLegend();
@@ -248,12 +251,12 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 		}
 		try {
 			ILayer layer = legendContext.getLayer();
-			int numFields = layer.getSpatialDataSource().getFieldCount();
+			int numFields = layer.getDataSource().getFieldCount();
 			for (int i = 0; i < numFields; i++) {
-				int fieldType = layer.getSpatialDataSource().getFieldType(i)
+				int fieldType = layer.getDataSource().getFieldType(i)
 						.getTypeCode();
 				if (TypeFactory.isNumerical(fieldType)) {
-					validFieldNames.add(layer.getSpatialDataSource().getFieldName(i));
+					validFieldNames.add(layer.getDataSource().getFieldName(i));
 				}
 			}
 		} catch (DriverException e) {
@@ -275,7 +278,7 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 	protected void addAllAction() {
 		RangeMethod rm = null;
 		try {
-			rm = new RangeMethod(legendContext.getLayer().getSpatialDataSource(),
+			rm = new RangeMethod(legendContext.getLayer().getDataSource(),
 					new RealAttribute((String) cmbFieldNames.getSelectedItem()),
 					(Integer) cmbIntervalCount.getSelectedItem());
 
@@ -366,7 +369,6 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 	 * @return Symbol
 	 */
 	private Symbol createSymbol(Color fillColor) {
-		Symbol s;
 
 		Color outline = Color.black;
 
@@ -375,31 +377,21 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 				fillColor, 10);
 		Symbol polygonSymbol = SymbolFactory.createPolygonSymbol(outline,
 				fillColor);
-		GeometryConstraint geometryConstraint = legendContext
-				.getGeometryConstraint();
-		if (geometryConstraint == null) {
-			s = SymbolFactory.createSymbolComposite(polygonSymbol, lineSymbol,
+		Type geomType = TypeFactory.createType(legendContext.getGeometryType());
+                int dimension = GeometryTypeUtil.getTypeDimension(geomType);
+                switch (dimension) {
+			case GeometryDimensionConstraint.DIMENSION_POINT:
+				return lineSymbol;
+			case GeometryDimensionConstraint.DIMENSION_LINE:
+				return pointSymbol;
+			case GeometryDimensionConstraint.DIMENSION_POLYGON:
+				return polygonSymbol;
+                        case -1:
+                               return SymbolFactory.createSymbolComposite(polygonSymbol, lineSymbol,
 					pointSymbol);
-		} else {
-			int geometry = geometryConstraint.getGeometryType();
-			switch (geometry) {
-			case GeometryConstraint.LINESTRING:
-			case GeometryConstraint.MULTI_LINESTRING:
-				s = lineSymbol;
-				break;
-			case GeometryConstraint.POINT:
-			case GeometryConstraint.MULTI_POINT:
-				s = pointSymbol;
-				break;
-			case GeometryConstraint.POLYGON:
-			case GeometryConstraint.MULTI_POLYGON:
-				s = polygonSymbol;
-				break;
 			default:
 				throw new RuntimeException("bug!");
-			}
-		}
-		return s;
+                }
 	}
 
 	@Override

@@ -64,7 +64,6 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
@@ -90,6 +89,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
 
 import com.vividsolutions.jts.geom.Envelope;
+import org.gdms.data.DataSource;
 
 @Deprecated
 public class PnlProportionalLineLegend extends JPanel implements ILegendPanel {
@@ -235,7 +235,7 @@ public class PnlProportionalLineLegend extends JPanel implements ILegendPanel {
 
 			public void actionPerformed(ActionEvent e) {
 				try {
-					legend.preprocess(legendContext.getLayer().getSpatialDataSource());
+					legend.preprocess(legendContext.getLayer().getDataSource());
 
 					// Transform max to pixels
 					int maxSize = Integer.parseInt(txtMaxSize.getText());
@@ -341,7 +341,7 @@ public class PnlProportionalLineLegend extends JPanel implements ILegendPanel {
 	}
 
 	public boolean acceptsGeometryType(int geometryType) {
-		return (geometryType == ILegendPanel.LINE);
+		return (geometryType == GeometryProperties.LINE);
 	}
 
 	public Component getComponent() {
@@ -363,8 +363,7 @@ public class PnlProportionalLineLegend extends JPanel implements ILegendPanel {
 
 	private void syncWithLegend() {
 		try {
-			SpatialDataSourceDecorator sds = legendContext.getLayer()
-					.getSpatialDataSource();
+			DataSource sds = legendContext.getLayer().getDataSource();
 			Metadata m = sds.getMetadata();
 			ArrayList<String> fieldNames = new ArrayList<String>();
 
