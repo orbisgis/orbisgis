@@ -9,7 +9,7 @@
 						<LookupValue>
 							<fes:ValueReference>IRMOY98</fes:ValueReference>
 						</LookupValue>
-						<FirstValue>#113355</FirstValue>
+						<Value>#113355</Value>
 						<Threshold>70000</Threshold>
 						<Value>#dd66ee</Value>
 						<Threshold>100000</Threshold>

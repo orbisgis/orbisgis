@@ -50,7 +50,7 @@ public class Categorize2Color extends Categorize<ColorParameter, ColorLiteral> i
         Iterator<JAXBElement<ParameterValueType>> it = t.getThresholdAndValue().iterator();
 
 
-        this.setClassValue(0, SeParameterFactory.createColorParameter(t.getFirstValue()));
+        this.setClassValue(0, SeParameterFactory.createColorParameter(it.next().getValue()));
 
         // Fetch class values and thresholds
         while (it.hasNext()) {
