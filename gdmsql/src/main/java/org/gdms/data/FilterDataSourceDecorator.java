@@ -47,10 +47,12 @@ import org.gdms.data.edition.MultipleEditionEvent;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.source.SourceManager;
 import org.gdms.sql.engine.ParseException;
 import org.gdms.sql.engine.SQLEngine;
+import org.gdms.sql.engine.SqlStatement;
 
 /**
  * This Decorator can filter a underlying DataSource with a SQL Expression.
@@ -142,21 +144,25 @@ public class FilterDataSourceDecorator extends AbstractDataSourceDecorator {
                 
                 SourceManager sm = getDataSourceFactory().getSourceManager();
                 MemoryDataSetDriver d = new MemoryDataSetDriver(getDataSource(), true);
-                final String uID = sm.getUID();
-                sm.register(uID, d);
+                final String uID = sm.nameAndRegister(d, DriverManager.DEFAULT_SINGLE_TABLE_NAME);
                 
                 String rq = "SELECT oid FROM " + uID + " WHERE " + filter + ";";
                 SQLEngine p = new SQLEngine(getDataSourceFactory());
-                DataSet s = null;
+                SqlStatement s = null;
                 try {
-                        s = p.query(rq);
+                        s = p.parse(rq)[0];
                 } catch (ParseException ex) {
                         throw new DriverException(ex);
                 }
                 
-                for (int i = 0; i < s.getRowCount(); i++) {
-                        ints.add(s.getFieldValue(i, 0).getAsInt());
+                s.prepare(getDataSourceFactory());
+                DataSet dset = s.execute();
+                
+                for (int i = 0; i < dset.getRowCount(); i++) {
+                        ints.add(dset.getFieldValue(i, 0).getAsInt());
                 }
+                
+                s.cleanUp();
                 
                 sm.remove(uID);
                 
