@@ -36,15 +36,23 @@
  */
 package org.gdms.sql.function.spatial.create;
 
+import com.vividsolutions.jts.geom.Geometry;
+import org.gdms.driver.DataSet;
+import org.gdms.data.types.TypeFactory;
+import org.gdms.data.types.Type;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.junit.Test;
 import com.vividsolutions.jts.geom.CoordinateArrays;
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.io.WKTReader;
+import com.vividsolutions.jts.geom.Polygon;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.FunctionTest;
+import org.gdms.sql.function.spatial.geometry.create.ST_CreateGrid;
+import org.gdms.sql.function.spatial.geometry.create.ST_CreatePointsGrid;
 import org.gdms.sql.function.spatial.geometry.create.ST_MakeEnvelope;
 import org.gdms.sql.function.spatial.geometry.create.ST_RemoveDuplicateCoordinate;
+import org.orbisgis.progress.NullProgressMonitor;
 
 import static org.junit.Assert.*;
 
@@ -74,21 +82,134 @@ public class CreateFunctionTest extends FunctionTest {
         @Test
         public void testRemoveDuplicateCoordinate() throws Exception {
                 ST_RemoveDuplicateCoordinate sT_RemoveRepeatedPoints = new ST_RemoveDuplicateCoordinate();
-                WKTReader wktr = new WKTReader();
-                Value[] values = new Value[]{ValueFactory.createValue(wktr.read("LINESTRING(0 0, 1 0, 1 0, 2 10, 0 0 )"))};
+                Value[] values = new Value[]{ValueFactory.createValue(wktReader.read("LINESTRING(0 0, 1 0, 1 0, 2 10, 0 0 )"))};
                 Value result = evaluate(sT_RemoveRepeatedPoints, values);
                 assertTrue(JTSMultiPoint2D.getNumGeometries() != result.getAsGeometry().getNumGeometries());
                 assertFalse(CoordinateArrays.hasRepeatedPoints(result.getAsGeometry().getCoordinates()));
 
-                values = new Value[]{ValueFactory.createValue(wktr.read("POLYGON((0 0, 1 0, 1 0, 2 10, 0 0 ))"))};
+                values = new Value[]{ValueFactory.createValue(wktReader.read("POLYGON((0 0, 1 0, 1 0, 2 10, 0 0 ))"))};
                 result = evaluate(sT_RemoveRepeatedPoints, values);
                 assertTrue(JTSMultiPoint2D.getNumGeometries() != result.getAsGeometry().getNumGeometries());
                 assertFalse(CoordinateArrays.hasRepeatedPoints(result.getAsGeometry().getCoordinates()));
 
-                values = new Value[]{ValueFactory.createValue(wktr.read("POLYGON (( 155 186, 155 282, 276 282, 276 282, 276 186, 155 186 ), ( 198 253, 198 253, 198 218, 198 218, 244 222, 239 243, 198 253 ))"))};
+                values = new Value[]{ValueFactory.createValue(wktReader.read("POLYGON (( 155 186, 155 282, 276 282, 276 282, 276 186, 155 186 ), ( 198 253, 198 253, 198 218, 198 218, 244 222, 239 243, 198 253 ))"))};
                 result = evaluate(sT_RemoveRepeatedPoints, values);
                 assertTrue(JTSMultiPoint2D.getNumGeometries() != result.getAsGeometry().getNumGeometries());
                 assertFalse(CoordinateArrays.hasRepeatedPoints(result.getAsGeometry().getCoordinates()));
 
+        }
+
+        /**
+         * Test the ST_CreatePointsGrid with a mask.
+         * @throws Exception
+         */
+        @Test
+        public void testST_CreatePointsGridMask() throws Exception {
+                ST_CreatePointsGrid sT_CreatePointsGrid = new ST_CreatePointsGrid();
+                Polygon polygon = (Polygon) wktReader.read("POLYGON((0 0, 1 0, 1 0, 2 10, 0 0 ))");
+
+                // first datasource
+                final MemoryDataSetDriver driver1 = new MemoryDataSetDriver(
+                        new String[]{"the_geom"},
+                        new Type[]{TypeFactory.createType(Type.POLYGON)});
+                // insert all filled rows...
+                driver1.addValues(new Value[]{ValueFactory.createValue(polygon)});
+
+                Value[] values = new Value[]{ValueFactory.createValue(1), ValueFactory.createValue(1), ValueFactory.createValue(true)};
+
+                DataSet[] tables = new DataSet[]{driver1};
+                DataSet result = sT_CreatePointsGrid.evaluate(dsf, tables, values, new NullProgressMonitor());
+
+                for (int i = 0; i < result.getRowCount(); i++) {
+                        Geometry geom = result.getGeometry(i, 0);
+                        assertTrue(polygon.contains(geom));
+                }
+        }
+
+        /**
+         * Test to create a regular square grid
+         * @throws Exception
+         */
+        @Test
+        public void testST_CreateSquareGRID() throws Exception {
+                ST_CreateGrid sT_CreateGrid = new ST_CreateGrid();
+                Polygon polygon = (Polygon) wktReader.read("POLYGON((0 0, 1 0, 1 0, 2 10, 0 0 ))");
+
+                // first datasource
+                final MemoryDataSetDriver driver1 = new MemoryDataSetDriver(
+                        new String[]{"the_geom"},
+                        new Type[]{TypeFactory.createType(Type.POLYGON)});
+                // insert all filled rows...
+                driver1.addValues(new Value[]{ValueFactory.createValue(polygon)});
+
+                Value[] values = new Value[]{ValueFactory.createValue(1), ValueFactory.createValue(1)};
+
+                DataSet[] tables = new DataSet[]{driver1};
+                DataSet result = sT_CreateGrid.evaluate(dsf, tables, values, new NullProgressMonitor());
+                checkGrid(result, true);
+        }
+
+        /**
+         * Test to create an oriented regular square grid
+         * @throws Exception
+         */
+        @Test
+        public void testST_CreateOrientedSquareGRID() throws Exception {
+                ST_CreateGrid sT_CreateGrid = new ST_CreateGrid();
+                Polygon polygon = (Polygon) wktReader.read("POLYGON((0 0, 1 0, 1 0, 2 10, 0 0 ))");
+
+                // first datasource
+                final MemoryDataSetDriver driver1 = new MemoryDataSetDriver(
+                        new String[]{"the_geom"},
+                        new Type[]{TypeFactory.createType(Type.POLYGON)});
+                // insert all filled rows...
+                driver1.addValues(new Value[]{ValueFactory.createValue(polygon)});
+
+                Value[] values = new Value[]{ValueFactory.createValue(1), ValueFactory.createValue(1), ValueFactory.createValue(0)};
+
+                DataSet[] tables = new DataSet[]{driver1};
+                DataSet result = sT_CreateGrid.evaluate(dsf, tables, values, new NullProgressMonitor());
+                checkGrid(result, true);
+        }
+
+        /**
+         * Test to create an oriented regular square grid
+         * @throws Exception
+         */
+        @Test
+        public void testST_CreateOrientedSquareGRID2() throws Exception {
+                ST_CreateGrid sT_CreateGrid = new ST_CreateGrid();
+                Polygon polygon = (Polygon) wktReader.read("POLYGON((0 0, 1 0, 1 0, 2 10, 0 0 ))");
+
+                // first datasource
+                final MemoryDataSetDriver driver1 = new MemoryDataSetDriver(
+                        new String[]{"the_geom"},
+                        new Type[]{TypeFactory.createType(Type.POLYGON)});
+                // insert all filled rows...
+                driver1.addValues(new Value[]{ValueFactory.createValue(polygon)});
+
+                Value[] values = new Value[]{ValueFactory.createValue(1), ValueFactory.createValue(1), ValueFactory.createValue(90)};
+
+                DataSet[] tables = new DataSet[]{driver1};
+                DataSet result = sT_CreateGrid.evaluate(dsf, tables, values, new NullProgressMonitor());
+                checkGrid(result, true);
+        }
+
+        private void checkGrid(final DataSet dataSource, final boolean checkCentroid)
+                throws Exception {
+                final long rowCount = dataSource.getRowCount();
+                for (long rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+                        final Value[] fields = dataSource.getRow(rowIndex);
+                        final Geometry geom = fields[0].getAsGeometry();
+                        final int id = fields[1].getAsInt();
+                        assertTrue(geom instanceof Polygon);
+                        assertTrue(Math.abs(1 - geom.getArea()) < 0.000001);
+                        if (checkCentroid) {
+                                assertEquals(0.5 + (id - 1) / 2, geom.getCentroid().getCoordinate().x, 0);
+                                assertEquals(0.5 + (id - 1) % 2, geom.getCentroid().getCoordinate().y, 0);
+                        }
+
+                        System.out.println();
+                }
         }
 }

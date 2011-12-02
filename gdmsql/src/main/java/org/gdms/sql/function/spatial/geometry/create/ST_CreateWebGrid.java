@@ -47,7 +47,6 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.sql.function.table.TableDefinition;
 import org.gdms.sql.function.ScalarArgument;
 import org.orbisgis.progress.ProgressMonitor;
@@ -60,6 +59,7 @@ import com.vividsolutions.jts.geom.LinearRing;
 import org.apache.log4j.Logger;
 import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.DataSet;
+import org.gdms.driver.DiskBufferDriver;
 import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.table.AbstractTableFunction;
 import org.gdms.sql.function.table.TableArgument;
@@ -70,6 +70,7 @@ public final class ST_CreateWebGrid extends AbstractTableFunction {
         private static final double DPI = 2 * Math.PI;
         private final GeometryFactory gf = new GeometryFactory();
         private static final Logger LOG = Logger.getLogger(ST_CreateWebGrid.class);
+        private DiskBufferDriver driver;
 
         @Override
         public DataSet evaluate(SQLDataSourceFactory dsf, DataSet[] tables,
@@ -82,18 +83,25 @@ public final class ST_CreateWebGrid extends AbstractTableFunction {
                         final DataSet inSds = tables[0];
 
                         // built the driver for the resulting datasource and register it...
-                        final MemoryDataSetDriver driver = new MemoryDataSetDriver(
-                                getMetadata(null));
+                        driver = new DiskBufferDriver(dsf, getMetadata(null));
                         final Envelope envelope = DriverUtilities.getFullExtent(inSds);
                         createGrid(driver, envelope, deltaR, deltaT, pm);
-
-                        return driver.getTable("main");
+                        driver.writingFinished();
+                        driver.start();
+                        return driver;
                 } catch (AlreadyClosedException e) {
                         throw new FunctionException(e);
                 } catch (DriverException e) {
                         throw new FunctionException(e);
                 } catch (DriverLoadException e) {
                         throw new FunctionException(e);
+                }
+        }
+
+        @Override
+        public void workFinished() throws DriverException {
+                if (driver != null) {
+                        driver.stop();
                 }
         }
 
@@ -109,10 +117,10 @@ public final class ST_CreateWebGrid extends AbstractTableFunction {
 
         @Override
         public String getSqlOrder() {
-                return "select * " + getName() + "(table, 4000,1000);";
+                return "select * from " + getName() + "(table, 4000,1000);";
         }
 
-        private void createGrid(final MemoryDataSetDriver driver,
+        private void createGrid(final DiskBufferDriver driver,
                 final Envelope env, double deltaR, double deltaT,
                 final ProgressMonitor pm) throws DriverException {
                 final double r = 0.5 * Math.sqrt(env.getWidth() * env.getWidth()
@@ -146,9 +154,9 @@ public final class ST_CreateWebGrid extends AbstractTableFunction {
                 pm.endTask();
         }
 
-        private void createGridCell(final MemoryDataSetDriver driver,
+        private void createGridCell(final DiskBufferDriver driver,
                 final Coordinate centroid, final int r, final int t,
-                final int gridCellIndex, final double deltaR, final double deltaT) {
+                final int gridCellIndex, final double deltaR, final double deltaT) throws DriverException {
                 final Coordinate[] summits = new Coordinate[5];
                 summits[0] = polar2cartesian(centroid, r, t, deltaR, deltaT);
                 summits[1] = polar2cartesian(centroid, r + 1, t, deltaR, deltaT);
@@ -166,8 +174,8 @@ public final class ST_CreateWebGrid extends AbstractTableFunction {
                         * Math.sin(tt));
         }
 
-        private void createGridCell(final MemoryDataSetDriver driver,
-                final Coordinate[] summits, final int gridCellIndex) {
+        private void createGridCell(final DiskBufferDriver driver,
+                final Coordinate[] summits, final int gridCellIndex) throws DriverException {
                 final LinearRing g = gf.createLinearRing(summits);
                 final Geometry gg = gf.createPolygon(g, null);
                 driver.addValues(new Value[]{ValueFactory.createValue(gg),
@@ -177,7 +185,7 @@ public final class ST_CreateWebGrid extends AbstractTableFunction {
         @Override
         public Metadata getMetadata(Metadata[] tables) throws DriverException {
                 return new DefaultMetadata(new Type[]{
-                                TypeFactory.createType(Type.GEOMETRY),
+                                TypeFactory.createType(Type.POLYGON),
                                 TypeFactory.createType(Type.INT)}, new String[]{"the_geom",
                                 "gid"});
         }

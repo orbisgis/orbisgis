@@ -36,6 +36,7 @@
  */
 package org.gdms.sql.function.spatial.geometry.create;
 
+import com.vividsolutions.jts.algorithm.locate.IndexedPointInAreaLocator;
 import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.data.schema.DefaultMetadata;
@@ -55,7 +56,10 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Location;
+import com.vividsolutions.jts.geom.Polygon;
 import org.apache.log4j.Logger;
+import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.DataSet;
 import org.gdms.sql.function.FunctionSignature;
@@ -69,6 +73,7 @@ public final class ST_CreatePointsGrid extends AbstractTableFunction {
         private double deltaX;
         private double deltaY;
         private static final Logger LOG = Logger.getLogger(ST_CreatePointsGrid.class);
+        private DiskBufferDriver driver;
 
         @Override
         public DataSet evaluate(SQLDataSourceFactory dsf, DataSet[] tables,
@@ -80,11 +85,14 @@ public final class ST_CreatePointsGrid extends AbstractTableFunction {
                         final DataSet inSds = tables[0];
 
                         // built the driver for the resulting datasource and register it...
-                        final DiskBufferDriver driver = new DiskBufferDriver(dsf,
-                                getMetadata(null));
+                        driver = new DiskBufferDriver(dsf, getMetadata(null));
 
-                        createGrid(driver, DriverUtilities.getFullExtent(inSds), pm);
+                        if (values.length == 2) {
+                                createGrid(driver, DriverUtilities.getFullExtent(inSds), pm);
+                        } else {
 
+                                createPointsInsidePolygon(driver, inSds, values[2].getAsBoolean(), pm);
+                        }
                         driver.writingFinished();
                         driver.start();
                         return driver;
@@ -96,31 +104,35 @@ public final class ST_CreatePointsGrid extends AbstractTableFunction {
         }
 
         @Override
+        public void workFinished() throws DriverException {
+                if (driver != null) {
+                        driver.stop();
+                }
+        }
+
+        @Override
         public String getName() {
                 return "ST_CreatePointsGrid";
         }
 
         @Override
         public String getDescription() {
-                return "Calculate a regular points grid. Use a geometry to exclude some area.";
+                return "Calculate a regular points grid. The grid can be limited to a polygon area.";
         }
 
         @Override
         public String getSqlOrder() {
-                return "select * from " + getName() + "(table, 4000,1000);";
+                return "select * from " + getName() + "(table, 4000,1000 [, true]);";
         }
 
         private void createGrid(final DiskBufferDriver driver, final Envelope env,
                 final ProgressMonitor pm) throws DriverException {
-                final int nbX = (int) Math.ceil((env.getMaxX() - env.getMinX()
-				/ deltaX));
+                final int nbX = (int) Math.ceil((env.getMaxX() - env.getMinX())
+                        / deltaX);
                 pm.startTask("Creating grid", nbX);
-		final int nbY = (int) Math.ceil((env.getMaxY() - env.getMinY()
-				/ deltaY));
                 int gridCellIndex = 0;
-                double x = env.centre().x - (deltaX * nbX) / 2;
-                for (int i = 0; i < nbX; i++, x += deltaX) {
-
+                int i = 0;
+                for (double x = env.getMinX(); x < env.getMaxX(); x += deltaX) {
                         if (i >= 100 && i % 100 == 0) {
                                 if (pm.isCancelled()) {
                                         break;
@@ -129,22 +141,87 @@ public final class ST_CreatePointsGrid extends AbstractTableFunction {
                                 }
                         }
 
-                        double y = env.centre().y - (deltaY * nbY) / 2;
-                        for (int j = 0; j < nbY; j++, y += deltaY) {
+                        for (double y = env.getMinY(); y < env.getMaxY(); y += deltaY) {
                                 gridCellIndex++;
                                 Geometry g = GF.createPoint(new Coordinate(x, y));
                                 driver.addValues(new Value[]{ValueFactory.createValue(g),
                                                 ValueFactory.createValue(gridCellIndex)});
                         }
+                        i++;
                 }
                 pm.progressTo(nbX);
+                pm.endTask();
+        }
+
+        public void createPointsInsidePolygon(final DiskBufferDriver driver, DataSet inSds, boolean mask,
+                final ProgressMonitor pm) throws FunctionException, DriverException {
+                int gridCellIndex = 0;
+                long rowCount = inSds.getRowCount();
+                Metadata met = inSds.getMetadata();
+                int geomIndex = MetadataUtilities.getGeometryFieldIndex(met);
+                int geomDim = MetadataUtilities.getGeometryDimension(met, geomIndex);
+                if (geomDim == 2) {
+                        if (mask) {
+                                for (int i = 0; i < rowCount; i++) {
+                                        Geometry geom = inSds.getGeometry(i, geomIndex);
+                                        int numGeom = geom.getNumGeometries();
+                                        if (numGeom > 1) {
+                                                for (int j = 0; j < numGeom; j++) {
+                                                        createGeometryGrid(driver, (Polygon) geom.getGeometryN(j), Location.INTERIOR, gridCellIndex, pm);
+                                                        gridCellIndex++;
+                                                }
+                                        } else {
+                                                createGeometryGrid(driver, (Polygon) geom.getGeometryN(0), Location.INTERIOR, gridCellIndex, pm);
+                                                gridCellIndex++;
+                                        }
+                                }
+                        } else {
+                                createGrid(driver, DriverUtilities.getFullExtent(inSds), pm);
+                        }
+                } else {
+                        throw new FunctionException("Only multi or simple polygon are allowed");
+                }
+        }
+
+        /**
+         * Create regular points using a polygon as mask.
+         * @param driver
+         * @param polygon
+         * @param pm
+         * @throws DriverException
+         */
+        private void createGeometryGrid(final DiskBufferDriver driver, final Polygon polygon, int location, int gridCellIndex, final ProgressMonitor pm) throws DriverException {
+                IndexedPointInAreaLocator extentLocator = new IndexedPointInAreaLocator(polygon);
+                Envelope env = polygon.getEnvelopeInternal();
+                pm.startTask("Creating points", 100);
+                int i = 0;
+                double moduloX = env.getMinX() - (env.getMinX() % deltaX);
+                double moduloY = env.getMinY() - (env.getMinY() % deltaY);
+                for (double x = moduloX + deltaX; x < env.getMaxX(); x += deltaX) {
+                        if (i >= 100 && i % 100 == 0) {
+                                if (pm.isCancelled()) {
+                                        break;
+                                } else {
+                                        pm.progressTo(i);
+                                }
+                        }
+                        for (double y = moduloY + deltaY; y < env.getMaxY(); y += deltaY) {
+                                if (extentLocator.locate(new Coordinate(x, y)) == location) {
+                                        gridCellIndex++;
+                                        Geometry g = GF.createPoint(new Coordinate(x, y));
+                                        driver.addValues(new Value[]{ValueFactory.createValue(g),
+                                                        ValueFactory.createValue(gridCellIndex)});
+                                }
+                        }
+                        i++;
+                }
                 pm.endTask();
         }
 
         @Override
         public Metadata getMetadata(Metadata[] tables) throws DriverException {
                 return new DefaultMetadata(new Type[]{
-                                TypeFactory.createType(Type.GEOMETRY),
+                                TypeFactory.createType(Type.POINT),
                                 TypeFactory.createType(Type.INT)}, new String[]{"the_geom",
                                 "gid"});
         }
@@ -155,7 +232,11 @@ public final class ST_CreatePointsGrid extends AbstractTableFunction {
                                 new TableFunctionSignature(TableDefinition.GEOMETRY,
                                 new TableArgument(TableDefinition.GEOMETRY),
                                 ScalarArgument.DOUBLE,
-                                ScalarArgument.DOUBLE)
+                                ScalarArgument.DOUBLE),
+                                new TableFunctionSignature(TableDefinition.GEOMETRY,
+                                new TableArgument(TableDefinition.GEOMETRY),
+                                ScalarArgument.DOUBLE,
+                                ScalarArgument.DOUBLE, ScalarArgument.BOOLEAN)
                         };
         }
 }

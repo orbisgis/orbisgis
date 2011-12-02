@@ -97,7 +97,6 @@ import org.gdms.sql.function.spatial.geometry.convert.ST_ToMultiLine;
 import org.gdms.sql.function.spatial.geometry.convert.ST_ToMultiPoint;
 import org.gdms.sql.function.spatial.geometry.convert.ST_ToMultiSegments;
 import org.gdms.sql.function.spatial.geometry.create.ST_AddVertex;
-import org.gdms.sql.function.spatial.geometry.create.ST_BigCreateGrid;
 import org.gdms.sql.function.spatial.geometry.create.ST_Boundary;
 import org.gdms.sql.function.spatial.geometry.create.ST_BoundingCircle;
 import org.gdms.sql.function.spatial.geometry.create.ST_CreateGrid;
@@ -348,7 +347,6 @@ public final class FunctionManager {
                 addFunction(FunctionHelp.class);
                 addFunction(ST_CreateGrid.class);
                 addFunction(ST_CreateWebGrid.class);
-                addFunction(ST_BigCreateGrid.class);
                 addFunction(ST_RandomGeometry.class);
                 addFunction(ST_InternalGapFinder.class);
                 addFunction(ST_RasterizeLine.class);
@@ -460,7 +458,6 @@ public final class FunctionManager {
                 while (it.hasNext()) {
                         ret.add(it.next());
                 }
-
                 return ret.toArray(new String[ret.size()]);
         }
 
