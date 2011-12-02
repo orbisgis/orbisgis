@@ -40,18 +40,43 @@
 
 package org.orbisgis.core.renderer.se.parameter.color;
 
+import java.awt.Color;
+import java.io.FileInputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.Unmarshaller;
 import junit.framework.TestCase;
+import net.opengis.se._2_0.core.AreaSymbolizerType;
+import net.opengis.se._2_0.core.CategorizeType;
+import net.opengis.se._2_0.core.PenStrokeType;
+import net.opengis.se._2_0.core.SolidFillType;
+import net.opengis.se._2_0.core.StyleType;
+import org.junit.Test;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 /**
  *
  * @author maxence
  */
 public class Categorize2ColorTest extends TestCase {
+
+    protected Categorize2Color categorize;
+
+    protected ColorParameter class1;
+    protected ColorParameter class2;
+    protected ColorParameter class3;
+    protected ColorParameter class4;
+
+    protected RealLiteral t1;
+    protected RealLiteral t2;
+    protected RealLiteral t3;
+    protected RealLiteral t4;
+    protected RealLiteral t5;
+
+    protected ColorLiteral fallback;
 
     public Categorize2ColorTest(String testName) {
         super(testName);
@@ -179,22 +204,27 @@ public class Categorize2ColorTest extends TestCase {
         }
     }
 
-    public void testGetParameter(){
-        
+    /**
+     * test that e are able to build a Categorize2Color directly from a Jaxb categorize
+     * structure.
+     * @throws Exception
+     */
+    @Test
+    public void testFromJaxb() throws Exception{
+            //We want to import it directly from the input file.
+            String xmlRecode = "src/test/resources/org/orbisgis/core/renderer/se/colorCategorize.se";
+        JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
+        Unmarshaller u = jaxbContext.createUnmarshaller();
+        JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
+                new FileInputStream(xmlRecode));
+        AreaSymbolizerType ast = (AreaSymbolizerType)(ftsElem.getValue().getRule().get(0).getSymbolizer().getValue());
+        SolidFillType pst = (SolidFillType)(ast.getFill().getValue());
+        JAXBElement je = (JAXBElement)(pst.getColor().getContent().get(1));
+        Categorize2Color c2c = new Categorize2Color((JAXBElement<CategorizeType>) je);
+        assertTrue(c2c.getClassValue(0).getColor(null, 0).equals(new Color(0x11,0x33,0x55)));
+        assertTrue(c2c.getClassValue(1).getColor(null, 0).equals(new Color(0xdd,0x66,0xee)));
+        assertTrue(c2c.getClassValue(2).getColor(null, 0).equals(new Color(0xff,0xaa,0x99)));
+            
     }
-
-    protected Categorize2Color categorize;
     
-    protected ColorParameter class1;
-    protected ColorParameter class2;
-    protected ColorParameter class3;
-    protected ColorParameter class4;
-
-    protected RealLiteral t1;
-    protected RealLiteral t2;
-    protected RealLiteral t3;
-    protected RealLiteral t4;
-    protected RealLiteral t5;
-
-    protected ColorLiteral fallback;
 }
