@@ -47,7 +47,6 @@ import org.gdms.data.schema.DefaultMetadata
 import org.gdms.data.schema.MetadataUtilities
 import org.gdms.data.types.Type
 import org.gdms.data.types.TypeFactory
-import org.gdms.data.values.Value
 import org.gdms.sql.engine.GdmSQLPredef._
 import org.gdms.sql.engine.commands.Row
 import org.gdms.sql.engine.SemanticException
@@ -73,8 +72,20 @@ class SpatialIndexedJoinCommand(expr: Expression) extends Command with Expressio
   var big: IndexQueryScanCommand = null
   var bigSpatialFieldName: String = null
   
+  // fields to drop after the filter but before its gets upper in the tree
+  // this should be refactored into something somewhat cleaner...
+  var dropped: List[Int] = Nil
+  private val d = new DefaultMetadata()
+  
   protected final def doWork(r: Iterator[RowStream]): RowStream = {
-    for (r <- small.execute ; s <- queryIndex(r); t <- filter(r ++ s)) yield t
+    // if we need to drop somethink, lets drop it, else we do nothing
+    val clean: (Row) => Row = if (dropped.isEmpty) identity _ else drop _
+    
+    for (r <- small.execute ; s <- queryIndex(r); t <- filter(r ++ s)) yield clean(t)
+  }
+  
+  private def drop(r: Row) = {
+    Row(r.indices filterNot(i => dropped.contains(i)) map(i => r(i)))
   }
   
   private def queryIndex(r: Row) = {
@@ -95,8 +106,6 @@ class SpatialIndexedJoinCommand(expr: Expression) extends Command with Expressio
   val exp = expr :: Nil
   
   override def getMetadata = {
-    val d = new DefaultMetadata()
-    List(small, big) foreach { c => addAndRename(d, c.getMetadata) }
     SQLMetadata("", d)
   }
   
@@ -104,7 +113,12 @@ class SpatialIndexedJoinCommand(expr: Expression) extends Command with Expressio
     // fields are given an internal name 'field$table'
     // for reference by expressions upper in the query tree
     m.getFieldNames.zipWithIndex foreach { n =>
-      d.addField(n._1 + "$" + m.table,m.getFieldType(n._2))
+      if (n._1.startsWith("$")) {
+        // internal-use field (starts with '$') --> is not moved upwards.
+        dropped = n._2 :: dropped
+      } else {
+        d.addField(n._1 + "$" + m.table,m.getFieldType(n._2))
+      }
     }
   }
   
@@ -138,6 +152,9 @@ class SpatialIndexedJoinCommand(expr: Expression) extends Command with Expressio
     }
     
     children = Nil
+    
+    d.clear
+    List(small, big) foreach { c => addAndRename(d, c.getMetadata) }
   }
   
   override def preDoCleanUp = {

@@ -95,11 +95,14 @@ object PhysicalPlanBuilder {
     LogicPlanOptimizer.matchOperationFromBottom(op, {ch =>
         // gets Join(Inner(_))
         ch.isInstanceOf[Join] && (ch.asInstanceOf[Join].joinType match {
-            // find spatial joins
-            case Inner(_, true) => true
+            // find actual spatial joins
+            case Inner(_, true) => {
+                ch.children.filter(_.isInstanceOf[ValuesScan]).isEmpty
+              }
             case _ => false
           })
       }, {ch =>
+        
         // will hold table names
         var tables: List[String] = Nil
         
@@ -176,6 +179,7 @@ object PhysicalPlanBuilder {
               new ExpressionBasedLoopJoinCommand(ex, false, true)
           }
         }
+      case ValuesScan(ex, alias) => new ValuesScanCommand(ex, alias)
       case Projection(exp) => new ProjectionCommand(exp toArray)
       case a @ Aggregate(exp) => {
           val grouping = a.children.head match {

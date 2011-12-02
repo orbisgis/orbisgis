@@ -58,6 +58,7 @@ object ExecutionGraphBuilder {
   private val LOG: Logger = Logger.getLogger(ExecutionGraphBuilder.getClass)
   
   private val OPTIMIZEJOINS = "optimizer.optimiseJoins"
+  private val OPTIMIZEFILTERS = "optimizer.optimiseFilters"
   private val EXPLAIN = "output.explain"
 
   /**
@@ -103,6 +104,14 @@ object ExecutionGraphBuilder {
       }
       a foreach(LogicPlanOptimizer.optimizeCrossJoins)
       a foreach(LogicPlanOptimizer.optimizeSpatialIndexedJoins)
+    }
+    
+    // optimize filter expressions
+    if (!isPropertyTurnedOff(p, OPTIMIZEFILTERS)) {
+      if (isPropertyTurnedOn(p, EXPLAIN)) {
+        LOG.info("Optimizing filters.")
+      }
+      a foreach(LogicPlanOptimizer.optimizeFilterExpressions)
     }
     
     if (isPropertyTurnedOn(p, EXPLAIN)) {

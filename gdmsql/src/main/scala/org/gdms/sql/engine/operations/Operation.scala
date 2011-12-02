@@ -133,6 +133,18 @@ case class IndexQueryScan(table: String, alias: Option[String] = None, query: In
       " on " + query.getFieldName + (if (query.isStrict) " strict" else "")
     } else ""}
 }
+
+/**
+ * Represents a 'constant table' on a list of expressions.
+ * 
+ * @param exp a list of rows (seq of expressions that do not reference fields)
+ * @param alias an optional alias for this table
+ * @author Antoine Gourlay
+ * @since 0.3
+ */
+case class ValuesScan(exp: Seq[Seq[Expression]], alias: Option[String] = None) extends Operation {
+  override def toString = "ValuesScan of (" + exp + ") " + (if (alias.isDefined) alias else "")
+}
   
 
 /**

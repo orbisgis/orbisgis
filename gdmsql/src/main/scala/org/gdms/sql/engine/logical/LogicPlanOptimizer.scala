@@ -46,7 +46,7 @@ import org.gdms.sql.engine.operations._
 import org.gdms.sql.evaluator.AndEvaluator
 import org.gdms.sql.evaluator.Evaluator
 import org.gdms.sql.evaluator.FunctionEvaluator
-import org.gdms.sql.evaluator.Expression
+import org.gdms.sql.evaluator._
 import org.gdms.sql.function.SpatialIndexedFunction
 
 object LogicPlanOptimizer {
@@ -61,6 +61,14 @@ object LogicPlanOptimizer {
       f(e)
     } else if (e.evaluator.isInstanceOf[AndEvaluator]) {
       e foreach (matchExpressionAndAny(_, c, f))
+    }
+  }
+  
+  def replaceEvaluatorAndAny(e: Expression, c: Evaluator => Boolean, f: Evaluator => Evaluator): Unit = {
+    if (c(e.evaluator)) {
+      e.evaluator = f(e.evaluator)
+    } else if (e.evaluator.isInstanceOf[AndEvaluator]) {
+      e foreach (replaceEvaluatorAndAny(_, c, f))
     }
   }
   
@@ -144,6 +152,75 @@ object LogicPlanOptimizer {
                 })
             }
           case _ => 
+        }
+      })
+  }
+  
+  /**
+   * Optimises filter expressions.
+   * 
+   * For now, only takes care of the transformation :
+   *  -     Filter(SpatialIndexedFunction(FieldA, Constant) <- ScanA 
+   *    ==> Join(SpatialIndexedFunction(FieldA, FieldB)) <-  IndexScanA
+   *                                                         ValuesScanB
+   *    This enables Spatial Join optimization when working on a single table and a constant.
+   */
+  def optimizeFilterExpressions(o: Operation) {
+    replaceOperationFromBottom(o, {ch =>
+        ch.isInstanceOf[Filter]
+      }, {ch =>
+        val f = ch.asInstanceOf[Filter]
+        
+        if (f.children.head.isInstanceOf[Scan]) {
+          var ok = false
+          matchExpressionAndAny(f.e, {e => 
+              e.isInstanceOf[FunctionEvaluator] && e.asInstanceOf[FunctionEvaluator].f.isInstanceOf[SpatialIndexedFunction]
+            }, {e => ok = true})
+          if (ok) {          
+            val sc = f.children.head.asInstanceOf[Scan]
+          
+            // a spatial join on the filter expression
+            val j = Join(Inner(f.e, true))
+          
+            // an index query scan on the table
+            val isc = IndexQueryScan(sc.table, sc.alias)
+            j.children = List(isc)
+          
+            replaceEvaluatorAndAny(f.e, {e =>
+                // we wand SpatialIndexedFunctions (with anything And-ed to it)
+                e.isInstanceOf[FunctionEvaluator] && e.asInstanceOf[FunctionEvaluator].f.isInstanceOf[SpatialIndexedFunction]
+              }, {e=>
+                // we have a spatial indexed filter that is not a join
+                // Filter <- Scan
+                // will become
+                // Join(inner, spatial) <- IndexScan
+                //                      <- ValuesScan
+                var inc = -1;
+                // we keep fields and replace the rest with new fields on constant expressions
+                val se: Seq[Evaluator] = e.childExpressions flatMap {c =>
+                  if (c.evaluator.isInstanceOf[FieldEvaluator]) {
+                    None
+                  } else {
+                    inc = inc + 1
+                    val oldeval = c.evaluator
+                    c.evaluator = FieldEvaluator("$exp" + inc, Some("$$"))
+                    Some(oldeval)
+                  }
+                } 
+              
+                // a constant expression value scan on the expressions created above
+                val v = ValuesScan((se map (new Expression(_))) :: Nil, Some("$$"))
+                j.children = v :: j.children
+            
+                e 
+              })
+          
+            j
+          } else {
+            ch
+          }
+        } else {
+          ch
         }
       })
   }
