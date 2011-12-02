@@ -10,6 +10,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -73,49 +74,48 @@ public class AreaSymbolizerTest extends TestCase {
 
     }
 
-    public void testAreaSymbolizer() throws ParameterException, IOException {
-        try {
-            MapTransform mt = new MapTransform();
-            mt.resizeImage(1200, 800);
+    public void testAreaSymbolizer() throws Exception {
+//            MapTransform mt = new MapTransform();
+//            mt.resizeImage(1200, 800);
+//
+//            Envelope extent = new Envelope(472212.0, 843821.0, 68786.0, 293586.0);
+//
+//            mt.setExtent(extent);
+//
+//            extent = mt.getAdjustedExtent();
 
-            Envelope extent = new Envelope(472212.0, 843821.0, 68786.0, 293586.0);
+//            BufferedImage img = mt.getImage();
+//            Graphics2D g2 = (Graphics2D) img.getGraphics();
 
-            mt.setExtent(extent);
+//            g2.setRenderingHints(mt.getCurrentRenderContext().getRenderingHints());
 
-            extent = mt.getAdjustedExtent();
-
-            BufferedImage img = mt.getImage();
-            Graphics2D g2 = (Graphics2D) img.getGraphics();
-
-            g2.setRenderingHints(mt.getCurrentRenderContext().getRenderingHints());
-
-            DataSourceFactory dsf = new DataSourceFactory();
-            DataSource ds = dsf.getDataSource(new File("/home/maxence/data/Geodata/Swiss/g4districts98_region.shp"));
-            ds.open();
+//            DataSourceFactory dsf = new DataSourceFactory();
+//            DataSource ds = dsf.getDataSource(new File("/home/maxence/data/Geodata/Swiss/g4districts98_region.shp"));
+//            ds.open();
             
-            ILayer layer = new Layer("swiss", ds);
+//            ILayer layer = new Layer("swiss", ds);
 
-            Style style = new Style(layer, "/home/maxence/projects/SCAP-c²/SE/choro.se");
-            layer.setStyle(style);
+            Style style = new Style(null, "src/test/resources/org/orbisgis/core/renderer/se/Districts/choro.se");
+//            layer.setStyle(style);
+//
+//            Renderer renderer = new ImageRenderer();
+//
+//            renderer.draw(img, extent, layer);
 
-            Renderer renderer = new ImageRenderer();
-
-            renderer.draw(img, extent, layer);
-
-
-            System.out.println("Creation JFrame");
-
-            JFrame frame = new JFrame("Test AreaSymbolizer");
+//
+//            System.out.println("Creation JFrame");
+//
+//            JFrame frame = new JFrame("Test AreaSymbolizer");
 
             // Create an instance of DisplayJAI.
-            ImagePanel panel = new ImagePanel(img);
-
-            frame.getContentPane().add(panel);
+//            ImagePanel panel = new ImagePanel(img);
+//
+//            frame.getContentPane().add(panel);
 
             // Set the closing operation so the application is finished.
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(1200, 800); // adjust the frame size.
-            frame.setVisible(true); // show the frame.
+//            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//            frame.setSize(1200, 800); // adjust the frame size.
+//            frame.setVisible(true); // show the frame.
 
 
             System.out.print("Marshall");
@@ -130,28 +130,10 @@ public class AreaSymbolizerTest extends TestCase {
             //System.out.println("Validator returned " + validator.validate(collection));
             System.out.println("Created a content tree " +
                "and marshalled it to jaxbOutput2.xml");
-/*
-            marshaller.marshal(((Symbolizer)(aSymb)).getJAXBElement(),
-                    new FileOutputStream("/tmp/aSymb.xml"));
 
-            marshaller.marshal(((Symbolizer)(aSymb2)).getJAXBElement(),
-                  new FileOutputStream("/tmp/aSymb2.xml"));
+            marshaller.marshal(style.getJAXBElement(), new FileOutputStream("target/output.se"));
+            assertTrue(true);
+            //We've read and write this symbolizer, and even the global style"
 
-
-            marshaller.marshal(((Symbolizer)(aSymb3)).getJAXBElement(),
-                  new FileOutputStream("/tmp/aSymb3.xml"));
-
-            marshaller.marshal(((Symbolizer)(pSymb)).getJAXBElement(),
-                  new FileOutputStream("/tmp/pSymb.xml"));
-
-
-            System.out.println("See output in /tmp/symbolizer.xml " ) ;
-*/
-
-            Thread.sleep(20000);
-        } catch (Exception ex) {
-            Logger.getLogger(AreaSymbolizerTest.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("error");
-        }
     }
 }

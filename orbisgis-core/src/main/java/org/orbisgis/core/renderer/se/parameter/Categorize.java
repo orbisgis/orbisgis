@@ -10,7 +10,6 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.ExpressionType;
 import net.opengis.se._2_0.core.CategorizeType;
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSource;
 import net.opengis.se._2_0.core.ExtensionParameterType;
 import net.opengis.se._2_0.core.ExtensionType;
 import net.opengis.se._2_0.core.ObjectFactory;
@@ -185,7 +184,6 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         }
 
         int tIndex = thresholds.indexOf(threshold);
-        System.out.println("ADD CLASS " + tIndex);
         classValues.add(tIndex, value);
         this.method = CategorizeMethod.MANUAL;
         fireClassAdded(tIndex + 1);
@@ -219,12 +217,9 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
      * @return 
      */
     public ToType getClassValue(int i) {
-        System.out.println("GET CLASS VALUE");
         if (i == 0) {
-            System.out.println(" -> first class");
             return firstClass;
         } else {
-            System.out.println(" -> " + i);
             return classValues.get(i - 1);
         }
     }
@@ -235,7 +230,6 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
      * @param val 
      */
     public void setClassValue(int i, ToType val) {
-        System.out.println("Set Class n° " + i + " value :" + val);
         int n = i;
         if (n == 0) {
             firstClass = val;
