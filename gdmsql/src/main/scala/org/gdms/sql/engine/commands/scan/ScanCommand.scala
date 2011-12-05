@@ -55,8 +55,6 @@ class ScanCommand(table: String, alias: Option[String] = None, edition: Boolean 
 
   var metadata: Metadata = null
   
-  private var end: Long = -1
-  
   override protected def doCleanUp = {
     // close the DataSource
     if (ds != null) ds.close
@@ -67,7 +65,6 @@ class ScanCommand(table: String, alias: Option[String] = None, edition: Boolean 
     else dsf.getDataSource(table, DataSourceFactory.NORMAL)
     ds.open
     metadata = ds.getMetadata
-    end = ds.getRowCount
   }
 
   protected def doWork(r: Iterator[RowStream]) = {

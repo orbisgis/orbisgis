@@ -55,8 +55,6 @@ class IndexQueryScanCommand(table: String, alias: Option[String] = None, var que
 
   var metadata: Metadata = null
   
-  private var end: Long = -1
-  
   override protected def doCleanUp = {
     // close the DataSource
     if (ds != null) ds.close
@@ -65,9 +63,7 @@ class IndexQueryScanCommand(table: String, alias: Option[String] = None, var que
   override protected def doPrepare = {
     ds = dsf.getDataSource(table, DataSourceFactory.NORMAL)
     ds.open
-    metadata = ds.getMetadata
-    end = ds.getRowCount
-    
+    metadata = ds.getMetadata    
   }
 
   protected def doWork(r: Iterator[RowStream]) = {
