@@ -75,7 +75,7 @@ public class ExportMapAsSLDRequestPlugIn extends AbstractPlugIn {
 
         final SaveFilePanel outputXMLPanel = new SaveFilePanel(
                 "org.orbisgis.core.ui.editorViews.toc.actions.ImportStyle",
-                "Youpiiiiii ICI");
+                "Choose a destination");
 
         outputXMLPanel.addFilter("sld", "Styled Layer Descriptor Format (*.sld)");
 
