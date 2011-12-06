@@ -430,6 +430,11 @@ public abstract class Names {
 			.getString("orbisgis.ui.popupmenu.map.export.pdf.path1");
 	public static final String POPUP_MAP_EXPORT_PDF_GROUP = I18N
 			.getString("orbisgis.ui.popupmenu.map.export.pdf.group");
+    // Export SLD Request
+    public static final String POPUP_MAP_EXPORT_SLD = I18N
+			.getString("orbisgis.ui.popupmenu.map.export.sld.path1");
+	public static final String POPUP_MAP_EXPORT_SLD_GROUP = I18N
+			.getString("orbisgis.ui.popupmenu.map.export.sld.group");
 	// Show coordinate
 	public static final String POPUP_MAP_SHOW_XY = I18N
 			.getString("orbisgis.ui.popupmenu.map.show.xy.path1");
