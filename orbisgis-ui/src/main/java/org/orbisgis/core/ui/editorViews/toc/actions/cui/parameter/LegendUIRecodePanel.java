@@ -160,16 +160,16 @@ public abstract class LegendUIRecodePanel extends LegendUIComponent
 				int index = -1;
 
 				if (classValue instanceof RealParameter) {
-					index = recode.addMapItem("new key", new RealLiteral(1.0));
+					index = recode.addMapItem(new StringLiteral("new key"), new RealLiteral(1.0));
 				} else if (classValue instanceof ColorParameter) {
-					index = recode.addMapItem("new key", new ColorLiteral());
+					index = recode.addMapItem(new StringLiteral("new key"), new ColorLiteral());
 				} else if (classValue instanceof StringParameter) {
-					index = recode.addMapItem("new key", new StringLiteral("value"));
+					index = recode.addMapItem(new StringLiteral("new key"), new StringLiteral("value"));
 					//categorize.addClass(new RealLiteral(1000.0), new StringLiteral(""));
 				}
 
 				if (index >= 0) {
-					keys.add(new KeyInput(index, null, recode.getMapItemKey(index), 10));
+					keys.add(new KeyInput(index, null, recode.getMapItemKey(index).toString(), 10));
 					SeParameter value = recode.getMapItemValue(index);
 
 					if (value instanceof ColorParameter) {
@@ -200,7 +200,7 @@ public abstract class LegendUIRecodePanel extends LegendUIComponent
 		rmBtns = new ArrayList<RmButton>();
 
 		for (i = 0; i < recode.getNumMapItem(); i++) {
-			keys.add(new KeyInput(i, null, recode.getMapItemKey(i), 10));
+			keys.add(new KeyInput(i, null, recode.getMapItemKey(i).toString(), 10));
 			SeParameter value = recode.getMapItemValue(i);
 
 			if (value instanceof ColorParameter) {
@@ -292,7 +292,7 @@ public abstract class LegendUIRecodePanel extends LegendUIComponent
 
 		@Override
 		protected void valueChanged(String s) {
-			LegendUIRecodePanel.this.recode.getMapItem(index).setKey(s);
+			LegendUIRecodePanel.this.recode.getMapItem(index).setKey(new StringLiteral(s));
 		}
 
 		public void setIndex(int index) {

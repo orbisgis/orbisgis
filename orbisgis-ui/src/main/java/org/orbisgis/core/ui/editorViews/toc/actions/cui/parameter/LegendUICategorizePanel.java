@@ -494,7 +494,7 @@ public abstract class LegendUICategorizePanel extends LegendUIComponent
 
         @Override
         public void realChanged(RealParameter newReal) {
-            categorize.setThresholdValue(i, newReal);
+            categorize.setThresholdValue(i, (RealLiteral)newReal);
             fireChange();
         }
 
