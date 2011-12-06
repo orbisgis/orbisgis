@@ -83,6 +83,7 @@ import org.orbisgis.core.ui.plugins.editors.mapEditor.CreateSourceFromMapSelecti
 import org.orbisgis.core.ui.plugins.editors.mapEditor.DeleteMapSelectionPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.ExportMapAsImagePlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.ExportMapAsPDFPlugIn;
+import org.orbisgis.core.ui.plugins.editors.mapEditor.ExportMapAsSLDRequestPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.FullExtentPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.RedoMapPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.ShowXYPlugIn;
@@ -284,6 +285,7 @@ public class OrbisConfiguration implements Setup {
 	// right click on Map
 	private ExportMapAsImagePlugIn exportMasAsImagePlugIn = new ExportMapAsImagePlugIn();
 	private ExportMapAsPDFPlugIn exportMapAsPDFPlugIn = new ExportMapAsPDFPlugIn();
+    private ExportMapAsSLDRequestPlugIn exportMapAsSLDPlugIn = new ExportMapAsSLDRequestPlugIn();
 
 	// private TestPlugIn testPlugIn = new TestPlugIn();
 
@@ -413,6 +415,7 @@ public class OrbisConfiguration implements Setup {
 			// Map editor : right click on Map
 			exportMasAsImagePlugIn.initialize(context);
 			exportMapAsPDFPlugIn.initialize(context);
+			exportMapAsSLDPlugIn.initialize(context);
 
 			// testPlugIn.initialize(context);
 
