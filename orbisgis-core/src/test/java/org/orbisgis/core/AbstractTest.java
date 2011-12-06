@@ -37,6 +37,7 @@
  */
 package org.orbisgis.core;
 
+import java.io.File;
 import junit.framework.TestCase;
 import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.source.SourceManager;
@@ -67,6 +68,8 @@ public abstract class AbstractTest extends TestCase {
 
         public static void registerDataManager() {
                 SQLDataSourceFactory dsf = new SQLDataSourceFactory();
+                dsf.setResultDir(new File("target/results"));
+                dsf.setTempDir("target/results");
                 registerDataManager(dsf);
         }
 

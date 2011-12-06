@@ -59,6 +59,7 @@ import org.orbisgis.utils.FileUtils;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
+import org.gdms.data.DataSourceFactory;
 
 @Deprecated
 public class MapContextTest extends AbstractTest {
@@ -413,7 +414,6 @@ public class MapContextTest extends AbstractTest {
 				legendFieldIndex));
 		layer.setLegend(labelLegend);
 		mc.close(null);
-                
 		DataSource ds = getDataManager().getDataSourceFactory().getDataSource(
 				shp);
 		ds.open();
