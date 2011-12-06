@@ -62,7 +62,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
     private ToType firstClass;
     private double sdFactor;
     private List<ToType> classValues;
-    private List<RealParameter> thresholds;
+    private List<RealLiteral> thresholds;
     private List<CategorizeListener> listeners;
 
     /**
@@ -78,7 +78,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
      */
     protected Categorize() {
         this.classValues = new ArrayList<ToType>();
-        this.thresholds = new ArrayList<RealParameter>();
+        this.thresholds = new ArrayList<RealLiteral>();
         this.listeners = new ArrayList<CategorizeListener>();
         this.sdFactor = 1.0;
     }
@@ -176,7 +176,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
      * @param threshold
      * @param value
      */
-    public void addClass(RealParameter threshold, ToType value) {
+    public void addClass(RealLiteral threshold, ToType value) {
         thresholds.add(threshold);
         threshold.setContext(RealParameterContext.REAL_CONTEXT);
         if (threshold instanceof RealLiteral) {
@@ -248,7 +248,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
      * @param i
      * @param threshold 
      */
-    public void setThresholdValue(int i, RealParameter threshold) {
+    public void setThresholdValue(int i, RealLiteral threshold) {
         if (i >= 0 && i < getNumClasses() - 1) {
             RealParameter remove = thresholds.remove(i);
             thresholds.add(i, threshold);
@@ -328,7 +328,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
             if (getNumClasses() > 1) {
                 double value = lookupValue.getValue(sds, fid);
                 Iterator<ToType> cIt = classValues.iterator();
-                Iterator<RealParameter> tIt = thresholds.iterator();
+                Iterator<RealLiteral> tIt = thresholds.iterator();
                 ToType classValue = this.firstClass;
                 while (cIt.hasNext()) {
                     double threshold = tIt.next().getValue(sds, fid);
@@ -466,7 +466,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
     }
 
     @Override
-    public JAXBElement<? extends ExpressionType> getJAXBExpressionType() {
+    public JAXBElement<?> getJAXBExpressionType() {
         CategorizeType c = new CategorizeType();
 
         if (fallbackValue != null) {
@@ -484,17 +484,17 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         }
         ObjectFactory of = new ObjectFactory();
 
-        List<JAXBElement<ParameterValueType>> tv = c.getThresholdAndValue();
+        List<Object> tv = c.getThresholdAndValue();
 
         if (firstClass != null) {
             tv.add(of.createValue(firstClass.getJAXBParameterValueType()));
             //c.setFirstValue(firstClass.getJAXBParameterValueType());
         }
-        Iterator<RealParameter> tIt = thresholds.iterator();
+        Iterator<RealLiteral> tIt = thresholds.iterator();
         Iterator<ToType> cIt = classValues.iterator();
 
         while (tIt.hasNext()) {
-            tv.add(of.createThreshold(tIt.next().getJAXBParameterValueType()));
+            tv.add(of.createThreshold(tIt.next().getJAXBLiteralType()));
             tv.add(of.createValue(cIt.next().getJAXBParameterValueType()));
         }
 

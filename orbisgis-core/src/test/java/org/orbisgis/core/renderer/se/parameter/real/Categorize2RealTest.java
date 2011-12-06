@@ -29,7 +29,7 @@ public class Categorize2RealTest extends TestCase {
                 AreaSymbolizerType ast = (AreaSymbolizerType) (ftsElem.getValue().getRule().get(0).getSymbolizer().getValue());
                 DensityFillType dft = (DensityFillType) (ast.getFill().getValue());
                 JAXBElement je = (JAXBElement) (dft.getPercentage().getContent().get(1));
-                Categorize2Real c2r = new Categorize2Real((JAXBElement<CategorizeType>) je);
+                Categorize2Real c2r = new Categorize2Real((CategorizeType) je.getValue());
                 assertTrue(c2r.getClassValue(0).getValue(null, 0) == 0.3);
                 assertTrue(c2r.getClassValue(1).getValue(null, 0) == 0.4);
                 assertTrue(c2r.getClassValue(2).getValue(null, 0) == 0.45);

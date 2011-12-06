@@ -90,27 +90,27 @@ public final class SeParameterFactory {
      * </ul>
      * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
      */
-    public static RealParameter createRealParameter(JAXBElement<? extends Object> expr) throws InvalidStyle {
+    public static RealParameter createRealParameter(Object expr) throws InvalidStyle {
         if (expr == null){
             return null;
         }
 
-        if (expr.getDeclaredType() == net.opengis.fes._2.FunctionType.class) {
-            return new RealFunction((JAXBElement<FunctionType>)expr);
-        } else if (expr.getDeclaredType() == ValueReferenceType.class) {
-            return new RealAttribute((JAXBElement<ValueReferenceType>) expr);
+        if (expr instanceof net.opengis.fes._2.FunctionType) {
+            return new RealFunction((FunctionType) expr);
+        } else if (expr instanceof ValueReferenceType) {
+            return new RealAttribute((ValueReferenceType) expr);
 
-        } else if (expr.getDeclaredType() == LiteralType.class) {
-            return new RealLiteral((JAXBElement<LiteralType>) expr);
+        } else if (expr instanceof LiteralType) {
+            return new RealLiteral((LiteralType) expr);
 
-        } else if (expr.getDeclaredType() == net.opengis.se._2_0.core.CategorizeType.class) {
-            return new Categorize2Real((JAXBElement<CategorizeType>) expr);
+        } else if (expr instanceof net.opengis.se._2_0.core.CategorizeType) {
+            return new Categorize2Real((CategorizeType) expr);
 
-        } else if (expr.getDeclaredType() == net.opengis.se._2_0.core.RecodeType.class) {
-            return new Recode2Real((JAXBElement<RecodeType>) expr);
+        } else if (expr instanceof net.opengis.se._2_0.core.RecodeType) {
+            return new Recode2Real((RecodeType) expr);
 
-        } else if (expr.getDeclaredType() == net.opengis.se._2_0.core.InterpolateType.class) {
-            return new Interpolate2Real((JAXBElement<InterpolateType>) expr);
+        } else if (expr instanceof net.opengis.se._2_0.core.InterpolateType) {
+            return new Interpolate2Real((InterpolateType) expr);
         }
 
         return null;
@@ -156,7 +156,7 @@ public final class SeParameterFactory {
      * <li>A <code>ColorParameter</code> otherwise.</li>
      * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
      */
-    public static ColorParameter createColorParameter(JAXBElement<? extends ExpressionType> expr) throws InvalidStyle {
+    public static ColorParameter createColorParameter(JAXBElement<? > expr) throws InvalidStyle {
         if (expr == null){
             return null;
         }
@@ -221,7 +221,7 @@ public final class SeParameterFactory {
      * <li>A <code>StringParameter</code> otherwise.</li>
      * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
      */
-    public static StringParameter createStringParameter(JAXBElement<? extends ExpressionType> expr) throws InvalidStyle {
+    public static StringParameter createStringParameter(JAXBElement<?> expr) throws InvalidStyle {
         if (expr == null){
             return null;
         }

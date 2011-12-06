@@ -32,8 +32,8 @@ public interface SeParameter{
    
     
     /**
-     * Get the JAXBElementthat would represent this {@code SeParameter}
+     * Get the JAXBElement that would represent this {@code SeParameter}
      * @return 
      */
-    JAXBElement<? extends ExpressionType> getJAXBExpressionType();
+    JAXBElement<?> getJAXBExpressionType();
 }

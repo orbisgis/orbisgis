@@ -46,7 +46,7 @@ package org.orbisgis.core.renderer.se.parameter;
  */
 public class MapItem<Type> implements Comparable {
 
-    private String key = null;
+    private Literal key = null;
     private Type value = null;
 
     /**
@@ -55,7 +55,7 @@ public class MapItem<Type> implements Comparable {
      * @param value
      * @param key 
      */
-    public MapItem(Type value, String key){
+    public MapItem(Type value, Literal key){
         this.value = value;
         this.key = key;
     }
@@ -80,7 +80,7 @@ public class MapItem<Type> implements Comparable {
      * Get the key stored in this <code>MapItem</code>
      * @return 
      */
-    public String getKey(){
+    public Literal getKey(){
         return key;
     }
     
@@ -88,7 +88,7 @@ public class MapItem<Type> implements Comparable {
      * Set the key stored in this <code>MapItem</code>.
      * @param value 
      */
-    public void setKey(String key){
+    public void setKey(Literal key){
         this.key = key;
     }
 
@@ -112,7 +112,7 @@ public class MapItem<Type> implements Comparable {
     @Override
     public int compareTo(Object o) {
         MapItem<Type> item = (MapItem<Type>) o;
-        return item.key.compareToIgnoreCase(this.key);
+        return item.toString().compareTo(this.key.toString());
     }
 
 }

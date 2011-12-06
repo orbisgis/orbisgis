@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.ExpressionType;
+import net.opengis.fes._2.LiteralType;
 import org.gdms.data.DataSource;
 import net.opengis.se._2_0.core.MapItemType;
 import net.opengis.se._2_0.core.ObjectFactory;
@@ -151,7 +152,7 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
      * @param value
      * @return index of new map item or -1 when key already exists
      */
-    public int addMapItem(String key, ToType value) {
+    public int addMapItem(Literal key, ToType value) {
         MapItem<ToType> item = new MapItem<ToType>(value, key);
 
         if (mapItems.contains(item)) {
@@ -168,7 +169,7 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
      * @param key
      * @return 
      */
-    public ToType getMapItemValue(String key) {
+    public ToType getMapItemValue(Literal key) {
         MapItem<ToType> item = new MapItem<ToType>(null, key);
         return mapItems.get(mapItems.indexOf(item)).getValue();
     }
@@ -196,7 +197,7 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
      * @param i
      * @return 
      */
-    public String getMapItemKey(int i) {
+    public Literal getMapItemKey(int i) {
         return mapItems.get(i).getKey();
     }
 
@@ -204,7 +205,7 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
      * Remove the <code>MapItem</code> whose key is <code>key</code>
      * @param key 
      */
-    public void removeMapItem(String key) {
+    public void removeMapItem(Literal key) {
         MapItem<ToType> item = new MapItem<ToType>(null, key);
         mapItems.remove(item);
     }
@@ -229,9 +230,9 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
         String key = "";
         try {
             key = lookupValue.getValue(sds, fid);
-            return getMapItemValue(key);
+            return getMapItemValue(new StringLiteral(key));
         } catch (Exception e) {
-            Services.getOutputManager().println("Fallback (" + key + "): " + e, Color.yellow);
+            Services.getOutputManager().println("Fallback (" + key + "): " + e, Color.DARK_GRAY);
             return fallbackValue;
         }
     }
@@ -246,7 +247,7 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
     }
 
     @Override
-    public JAXBElement<? extends ExpressionType> getJAXBExpressionType() {
+    public JAXBElement<?> getJAXBExpressionType() {
         RecodeType r = new RecodeType();
 
         if (fallbackValue != null) {
@@ -261,7 +262,7 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
         for (MapItem<ToType> m : mapItems) {
             MapItemType mt = new MapItemType();
             mt.setValue(m.getValue().getJAXBParameterValueType());
-            mt.setKey(m.getKey());
+            mt.setKey((LiteralType)(m.getKey().getJAXBExpressionType().getValue()));
             mi.add(mt);
         }
         ObjectFactory of = new ObjectFactory();

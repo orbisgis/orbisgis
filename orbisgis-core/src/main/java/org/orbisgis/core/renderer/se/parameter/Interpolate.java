@@ -200,7 +200,7 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
         }
 
         @Override
-        public JAXBElement<? extends ExpressionType> getJAXBExpressionType() {
+        public JAXBElement<?> getJAXBExpressionType() {
                 InterpolateType i = new InterpolateType();
 
                 if (fallbackValue != null) {

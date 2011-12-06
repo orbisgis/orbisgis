@@ -44,9 +44,11 @@ import net.opengis.se._2_0.core.MapItemType;
 import net.opengis.se._2_0.core.RecodeType;
 
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.parameter.Literal;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.Recode;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 
 /**
@@ -77,15 +79,15 @@ public class Recode2Real extends Recode<RealParameter, RealLiteral> implements R
          * @param expr
          * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
          */
-        public Recode2Real(JAXBElement<RecodeType> expr) throws InvalidStyle {
-                RecodeType t = expr.getValue();
+        public Recode2Real(RecodeType expr) throws InvalidStyle {
                 ctx = RealParameterContext.REAL_CONTEXT;
 
-                this.setFallbackValue(new RealLiteral(t.getFallbackValue()));
-                this.setLookupValue(SeParameterFactory.createStringParameter(t.getLookupValue()));
+                this.setFallbackValue(new RealLiteral(expr.getFallbackValue()));
+                this.setLookupValue(SeParameterFactory.createStringParameter(expr.getLookupValue()));
 
-                for (MapItemType mi : t.getMapItem()) {
-                        this.addMapItem(mi.getKey(), SeParameterFactory.createRealParameter(mi.getValue()));
+                for (MapItemType mi : expr.getMapItem()) {
+                        this.addMapItem(new StringLiteral(mi.getKey().getContent().get(0).toString()),
+                                SeParameterFactory.createRealParameter(mi.getValue()));
                 }
         }
 
@@ -99,7 +101,7 @@ public class Recode2Real extends Recode<RealParameter, RealLiteral> implements R
         }
 
         @Override
-        public int addMapItem(String key, RealParameter p) {
+        public final int addMapItem(Literal key, RealParameter p) {
                 p.setContext(ctx);
                 return super.addMapItem(key, p);
         }

@@ -2,6 +2,7 @@ package org.orbisgis.core.renderer.se.parameter.real;
 
 import java.util.Iterator;
 import javax.xml.bind.JAXBElement;
+import net.opengis.fes._2.LiteralType;
 import net.opengis.se._2_0.core.CategorizeType;
 import net.opengis.se._2_0.core.ParameterValueType;
 import net.opengis.se._2_0.core.ThresholdBelongsToType;
@@ -41,32 +42,31 @@ public final class Categorize2Real extends Categorize<RealParameter, RealLiteral
          * @param expr
          * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
          */
-        public Categorize2Real(JAXBElement<CategorizeType> expr) throws InvalidStyle {
-                CategorizeType t = expr.getValue();
+        public Categorize2Real(CategorizeType expr) throws InvalidStyle {
+                
+                this.setFallbackValue(new RealLiteral(expr.getFallbackValue()));
+                this.setLookupValue(SeParameterFactory.createRealParameter(expr.getLookupValue()));
 
 
-                this.setFallbackValue(new RealLiteral(t.getFallbackValue()));
-                this.setLookupValue(SeParameterFactory.createRealParameter(t.getLookupValue()));
+                Iterator<Object> it = expr.getThresholdAndValue().iterator();
 
-
-                Iterator<JAXBElement<ParameterValueType>> it = t.getThresholdAndValue().iterator();
-
-                this.setClassValue(0, SeParameterFactory.createRealParameter(it.next().getValue()));
+                this.setClassValue(0, SeParameterFactory.createRealParameter(expr.getValue()));
 
                 // Fetch class values and thresholds
                 while (it.hasNext()) {
-                        this.addClass(SeParameterFactory.createRealParameter(it.next().getValue()),
-                                SeParameterFactory.createRealParameter(it.next().getValue()));
+                        RealLiteral th = new RealLiteral((LiteralType)(it.next()));
+                        RealParameter vl = SeParameterFactory.createRealParameter(it.next());
+                        this.addClass(th,vl);
                 }
 
-                if (t.getThresholdBelongsTo() == ThresholdBelongsToType.PRECEDING) {
+                if (expr.getThresholdBelongsTo() == ThresholdBelongsToType.PRECEDING) {
                         this.setThresholdsPreceding();
                 }
                 else {
                         this.setThresholdsSucceeding();
                 }
              
-                super.setPropertyFromJaxB(t);
+                super.setPropertyFromJaxB(expr);
         }
 
         @Override

@@ -255,7 +255,7 @@ public class RealFunction implements RealParameter {
 	}
 
     @Override
-    public JAXBElement<? extends ExpressionType> getJAXBExpressionType() {
+    public JAXBElement<?> getJAXBExpressionType() {
         FunctionType fcn = new FunctionType();
         fcn.setName(op.name());
         List<JAXBElement<?>> expression = fcn.getExpression();

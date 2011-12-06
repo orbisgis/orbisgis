@@ -50,6 +50,7 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.Categorize;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 /**
  * A categorization from {@code RealParameter} to {@code StringParamter}
@@ -87,14 +88,17 @@ public final class Categorize2String extends Categorize<StringParameter, StringL
         this.setLookupValue(SeParameterFactory.createRealParameter(t.getLookupValue()));
 
 
-        Iterator<JAXBElement<ParameterValueType>> it = t.getThresholdAndValue().iterator();
+        Iterator<Object> it = t.getThresholdAndValue().iterator();
 
-        this.setClassValue(0, SeParameterFactory.createStringParameter(it.next().getValue()));
+        this.setClassValue(0, SeParameterFactory.createStringParameter(t.getValue()));
 
         // Fetch class values and thresholds
         while (it.hasNext()) {
-            this.addClass(SeParameterFactory.createRealParameter(it.next().getValue()),
-                    SeParameterFactory.createStringParameter(it.next().getValue()));
+            RealLiteral th = (RealLiteral) SeParameterFactory.createRealParameter(
+               ((JAXBElement<ParameterValueType>)(it.next())).getValue());
+            StringParameter vl = SeParameterFactory.createStringParameter(
+               ((JAXBElement<ParameterValueType>)(it.next())).getValue());
+            this.addClass(th,vl);
         }
 
         if (t.getThresholdBelongsTo() == ThresholdBelongsToType.PRECEDING) {
@@ -115,7 +119,7 @@ public final class Categorize2String extends Categorize<StringParameter, StringL
     }
 
     @Override
-    public void addClass(RealParameter th, StringParameter value){
+    public void addClass(RealLiteral th, StringParameter value){
         super.addClass(th, value);
         value.setRestrictionTo(restriction);
     }

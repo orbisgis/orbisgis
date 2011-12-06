@@ -43,7 +43,7 @@ public class RealAttribute extends ValueReference implements RealParameter {
      * all the needed informations.
      * @param fieldName 
      */
-    public RealAttribute(JAXBElement<ValueReferenceType> expr) throws InvalidStyle {
+    public RealAttribute(ValueReferenceType expr) throws InvalidStyle {
         super(expr);
         ctx = RealParameterContext.REAL_CONTEXT;
     }

@@ -66,4 +66,16 @@ public class StringLiteral extends Literal implements StringParameter{
         return restriction;
     }
 
+    @Override
+    public boolean equals(Object o){
+            return v.equals(o.toString());
+    }
+
+        @Override
+        public int hashCode() {
+                int hash = 7;
+                hash = 11 * hash + (this.v != null ? this.v.hashCode() : 0);
+                return hash;
+        }
+
 }

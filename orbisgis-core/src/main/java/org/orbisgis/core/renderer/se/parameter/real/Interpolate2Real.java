@@ -40,23 +40,22 @@ public final class Interpolate2Real extends Interpolate<RealParameter, RealLiter
          * @param expr
          * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
          */
-        public Interpolate2Real(JAXBElement<InterpolateType> expr) throws InvalidStyle {
+        public Interpolate2Real(InterpolateType expr) throws InvalidStyle {
                 super();
                 ctx = RealParameterContext.REAL_CONTEXT;
-                InterpolateType t = expr.getValue();
 
-                this.setFallbackValue(new RealLiteral(t.getFallbackValue()));
-                this.setLookupValue(SeParameterFactory.createRealParameter(t.getLookupValue()));
+                this.setFallbackValue(new RealLiteral(expr.getFallbackValue()));
+                this.setLookupValue(SeParameterFactory.createRealParameter(expr.getLookupValue()));
 
-                if (t.getMode() == ModeType.COSINE) {
+                if (expr.getMode() == ModeType.COSINE) {
                         this.setInterpolationMode(InterpolationMode.COSINE);
-                } else if (t.getMode() == ModeType.CUBIC) {
+                } else if (expr.getMode() == ModeType.CUBIC) {
                         this.setInterpolationMode(InterpolationMode.CUBIC);
                 } else {
                         this.setInterpolationMode(InterpolationMode.LINEAR);
                 }
 
-                for (InterpolationPointType ipt : t.getInterpolationPoint()) {
+                for (InterpolationPointType ipt : expr.getInterpolationPoint()) {
                         InterpolationPoint<RealParameter> ip = new InterpolationPoint<RealParameter>();
 
                         ip.setData(ipt.getData());

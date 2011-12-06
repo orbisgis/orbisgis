@@ -7,7 +7,6 @@ package org.orbisgis.core.renderer.se.parameter;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
-import net.opengis.fes._2.ExpressionType;
 import net.opengis.fes._2.LiteralType;
 import net.opengis.fes._2.ObjectFactory;
 import net.opengis.se._2_0.core.ParameterValueType;
@@ -57,13 +56,24 @@ public abstract class Literal implements SeParameter {
 
         @Override
         public ParameterValueType getJAXBParameterValueType() {
-                ParameterValueType p = new ParameterValueType();
-                p.getContent().add(this.toString());
-                return p;
+                ParameterValueType pvt = new ParameterValueType();
+                pvt.getContent().add(this.toString());
+                return pvt;
+        }
+
+        /**
+         * As these literals can be seen as independants from ParameterValue, we
+         * provide a way to retrieve them as {@code LiteralType} instances.
+         * @return
+         */
+        public LiteralType getJAXBLiteralType() {
+                LiteralType t = new LiteralType();
+                t.getContent().add(this.toString());
+                return t;
         }
 
         @Override
-        public JAXBElement<? extends ExpressionType> getJAXBExpressionType() {
+        public JAXBElement<?> getJAXBExpressionType() {
                 LiteralType l = new LiteralType();
                 l.getContent().add(this.toString());
                 ObjectFactory of = new ObjectFactory();

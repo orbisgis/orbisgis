@@ -10,6 +10,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 import org.orbisgis.core.renderer.se.parameter.Recode;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 
 /**
@@ -44,7 +45,8 @@ public class Recode2Color extends Recode<ColorParameter, ColorLiteral> implement
                 this.setLookupValue(SeParameterFactory.createStringParameter(t.getLookupValue()));
 
                 for (MapItemType mi : t.getMapItem()) {
-                        this.addMapItem(mi.getKey(), SeParameterFactory.createColorParameter(mi.getValue()));
+                        this.addMapItem(new StringLiteral(mi.getKey().getContent().get(0).toString()),
+                                SeParameterFactory.createColorParameter(mi.getValue()));
                 }
         }
 

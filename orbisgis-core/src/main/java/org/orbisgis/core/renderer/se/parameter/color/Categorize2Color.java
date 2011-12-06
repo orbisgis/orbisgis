@@ -12,6 +12,7 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.Categorize;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 /**
@@ -47,15 +48,16 @@ public class Categorize2Color extends Categorize<ColorParameter, ColorLiteral> i
         this.setFallbackValue(new ColorLiteral(t.getFallbackValue()));
         this.setLookupValue(SeParameterFactory.createRealParameter(t.getLookupValue()));
 
-        Iterator<JAXBElement<ParameterValueType>> it = t.getThresholdAndValue().iterator();
+        Iterator<Object> it = t.getThresholdAndValue().iterator();
 
 
         this.setClassValue(0, SeParameterFactory.createColorParameter(it.next().getValue()));
 
         // Fetch class values and thresholds
         while (it.hasNext()) {
-            RealParameter th = SeParameterFactory.createRealParameter(it.next().getValue());
-            ColorParameter c = SeParameterFactory.createColorParameter(it.next().getValue());
+            RealLiteral th =(RealLiteral) SeParameterFactory.createRealParameter(
+                    ((JAXBElement<ParameterValueType>)(it.next())).getValue());
+            ColorParameter c = SeParameterFactory.createColorParameter(((JAXBElement<ParameterValueType>)(it.next())).getValue());
             this.addClass(th, c);
         }
 

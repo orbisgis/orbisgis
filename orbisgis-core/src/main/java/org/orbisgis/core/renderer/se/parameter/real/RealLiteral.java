@@ -39,6 +39,7 @@ package org.orbisgis.core.renderer.se.parameter.real;
 
 import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.LiteralType;
+import net.opengis.se._2_0.core.ParameterValueType;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.parameter.Literal;
 
@@ -88,6 +89,11 @@ public class RealLiteral extends Literal implements RealParameter {
          */
         public RealLiteral(JAXBElement<LiteralType> l) {
                 this(l.getValue().getContent().get(0).toString());
+                ctx = RealParameterContext.REAL_CONTEXT;
+        }
+
+        public RealLiteral(LiteralType l){
+                this(l.getContent().get(0).toString());
                 ctx = RealParameterContext.REAL_CONTEXT;
         }
 

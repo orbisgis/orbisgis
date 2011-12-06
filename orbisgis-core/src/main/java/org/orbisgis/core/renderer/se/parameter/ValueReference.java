@@ -134,10 +134,8 @@ public abstract class ValueReference implements SeParameter {
 	}
 
 	@Override
-	public JAXBElement<? extends ExpressionType> getJAXBExpressionType() {
-		ValueReferenceType p = new ValueReferenceType();
-		p.getContent().add(fieldName);
+	public JAXBElement<?> getJAXBExpressionType() {
 		ObjectFactory of = new ObjectFactory();
-		return of.createValueReference(p);
+		return of.createValueReference(fieldName);
 	}
 }
