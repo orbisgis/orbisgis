@@ -184,10 +184,11 @@ public class LineLabel extends Label {
                 //System.out.println("Glyph : curPos:" + currentPos + " w: " + ri.getWidth());
                 Point2D.Double pAt = ShapeHelper.getPointAt(shp, currentPos);
                 Point2D.Double pAfter = ShapeHelper.getPointAt(shp, currentPos + glyphWidth);
+                Point2D.Double pMiddle = ShapeHelper.getPointAt(shp, currentPos + glyphWidth/2.0);
 
                 double theta = Math.atan2(pAfter.y - pAt.y, pAfter.x - pAt.x);
 
-                AffineTransform at = AffineTransform.getTranslateInstance(pAt.x, pAt.y);
+                AffineTransform at = AffineTransform.getTranslateInstance(pMiddle.x, pMiddle.y);
                 at.concatenate(AffineTransform.getRotateInstance(theta));
 
                 currentPos += glyphWidth;
