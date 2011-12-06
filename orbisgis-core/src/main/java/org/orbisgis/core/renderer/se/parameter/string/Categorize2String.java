@@ -90,7 +90,7 @@ public final class Categorize2String extends Categorize<StringParameter, StringL
 
         Iterator<Object> it = t.getThresholdAndValue().iterator();
 
-        this.setClassValue(0, SeParameterFactory.createStringParameter(t.getValue()));
+        this.setClassValue(0, SeParameterFactory.createStringParameter(((JAXBElement<ParameterValueType>)(it.next())).getValue()));
 
         // Fetch class values and thresholds
         while (it.hasNext()) {

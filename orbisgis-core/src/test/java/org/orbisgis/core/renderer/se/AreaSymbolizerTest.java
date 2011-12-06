@@ -21,6 +21,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
 import junit.framework.TestCase;
+import net.opengis.se._2_0.core.StyleType;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.ConsoleErrorManager;
@@ -118,11 +119,11 @@ public class AreaSymbolizerTest extends TestCase {
 //            frame.setVisible(true); // show the frame.
 
 
-            System.out.print("Marshall");
+            System.out.println("Marshall");
 
             JAXBContext jaxbContext;
 
-            jaxbContext = JAXBContext.newInstance(SymbolizerType.class);
+            jaxbContext = JAXBContext.newInstance(StyleType.class);
             Marshaller marshaller = jaxbContext.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             //Validator validator = jaxbContext.createValidator();

@@ -487,15 +487,14 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         List<Object> tv = c.getThresholdAndValue();
 
         if (firstClass != null) {
-            tv.add(of.createValue(firstClass.getJAXBParameterValueType()));
-            //c.setFirstValue(firstClass.getJAXBParameterValueType());
+            tv.add(firstClass.getJAXBParameterValueType());
         }
         Iterator<RealLiteral> tIt = thresholds.iterator();
         Iterator<ToType> cIt = classValues.iterator();
 
         while (tIt.hasNext()) {
-            tv.add(of.createThreshold(tIt.next().getJAXBLiteralType()));
-            tv.add(of.createValue(cIt.next().getJAXBParameterValueType()));
+            tv.add(tIt.next().getJAXBLiteralType());
+            tv.add(cIt.next().getJAXBParameterValueType());
         }
 
 

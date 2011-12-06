@@ -50,12 +50,12 @@ public final class Categorize2Real extends Categorize<RealParameter, RealLiteral
 
                 Iterator<Object> it = expr.getThresholdAndValue().iterator();
 
-                this.setClassValue(0, SeParameterFactory.createRealParameter(expr.getValue()));
+                this.setClassValue(0, SeParameterFactory.createRealParameter((ParameterValueType)it.next()));
 
                 // Fetch class values and thresholds
                 while (it.hasNext()) {
                         RealLiteral th = new RealLiteral((LiteralType)(it.next()));
-                        RealParameter vl = SeParameterFactory.createRealParameter(it.next());
+                        RealParameter vl = SeParameterFactory.createRealParameter((ParameterValueType)it.next());
                         this.addClass(th,vl);
                 }
 

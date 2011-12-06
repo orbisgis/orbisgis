@@ -32,9 +32,14 @@
                         </LookupValue>
                         <Value>0.3</Value>
                         <Threshold>30.0</Threshold>
-                        <Value>0.4</Value>
+			<Value>
+				0.4
+			</Value>
                         <Threshold>40.0</Threshold>
-                        <Value>0.45</Value>
+			<Value>
+				
+				0.45
+			</Value>
                         <Threshold>45.0</Threshold>
                         <Value>0.5</Value>
                         <Threshold>50.0</Threshold>

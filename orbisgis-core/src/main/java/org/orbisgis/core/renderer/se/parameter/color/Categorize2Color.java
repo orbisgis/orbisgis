@@ -3,6 +3,7 @@ package org.orbisgis.core.renderer.se.parameter.color;
 import java.awt.Color;
 import java.util.Iterator;
 import javax.xml.bind.JAXBElement;
+import net.opengis.fes._2.LiteralType;
 import org.gdms.data.DataSource;
 import net.opengis.se._2_0.core.CategorizeType;
 import net.opengis.se._2_0.core.ParameterValueType;
@@ -51,13 +52,12 @@ public class Categorize2Color extends Categorize<ColorParameter, ColorLiteral> i
         Iterator<Object> it = t.getThresholdAndValue().iterator();
 
 
-        this.setClassValue(0, SeParameterFactory.createColorParameter(it.next().getValue()));
+        this.setClassValue(0, SeParameterFactory.createColorParameter((ParameterValueType)it.next()));
 
         // Fetch class values and thresholds
         while (it.hasNext()) {
-            RealLiteral th =(RealLiteral) SeParameterFactory.createRealParameter(
-                    ((JAXBElement<ParameterValueType>)(it.next())).getValue());
-            ColorParameter c = SeParameterFactory.createColorParameter(((JAXBElement<ParameterValueType>)(it.next())).getValue());
+            RealLiteral th =(RealLiteral) SeParameterFactory.createRealParameter((LiteralType)(it.next()));
+            ColorParameter c = SeParameterFactory.createColorParameter((ParameterValueType)it.next());
             this.addClass(th, c);
         }
 

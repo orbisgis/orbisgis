@@ -93,9 +93,7 @@ public final class SeParameterFactory {
     public static RealParameter createRealParameter(Object expr) throws InvalidStyle {
         if (expr == null){
             return null;
-        }
-
-        if (expr instanceof net.opengis.fes._2.FunctionType) {
+        }else if (expr instanceof net.opengis.fes._2.FunctionType) {
             return new RealFunction((FunctionType) expr);
         } else if (expr instanceof ValueReferenceType) {
             return new RealAttribute((ValueReferenceType) expr);
@@ -114,6 +112,17 @@ public final class SeParameterFactory {
         }
 
         return null;
+
+    }
+
+    public static RealParameter createRealParameter(JAXBElement expr) throws InvalidStyle {
+        if (expr == null){
+            return null;
+        } else if(expr.getName().getLocalPart().equals("ValueReference") ){
+            return new RealAttribute((String) expr.getValue());
+        } else {
+                return SeParameterFactory.createRealParameter(expr.getValue());
+        }
 
     }
 
