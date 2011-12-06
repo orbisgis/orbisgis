@@ -347,8 +347,6 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
         double size = 12.0;
         if (fontSize != null) {
             size = Uom.toPixel(fontSize.getValue(sds, fid), getFontUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-            //size = (size * mt.getDpi()) / 72.0;
-            size = size * 72.0 / mt.getDpi();
         }
 
         int st = Font.PLAIN;
