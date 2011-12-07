@@ -136,6 +136,9 @@ object LogicPlanOptimizer {
         join.joinType = join.joinType match {
           case Cross() => Inner(filter.e)
           case Inner(ex, s, a) => Inner(ex & filter.e, s, a)
+          case OuterLeft(cond) => OuterLeft(cond.map(_ & filter.e))
+          case OuterFull(cond) => OuterLeft(cond.map(_ & filter.e))
+          case a @ Natural() => a
         }
         join
       })
