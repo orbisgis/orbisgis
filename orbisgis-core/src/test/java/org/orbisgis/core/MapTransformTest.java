@@ -36,33 +36,34 @@
  */
 package org.orbisgis.core;
 
-import java.awt.image.BufferedImage;
-
-import junit.framework.TestCase;
-
-import org.orbisgis.core.map.MapTransform;
-
 import com.vividsolutions.jts.geom.Envelope;
+import java.awt.image.BufferedImage;
+import org.junit.Before;
+import org.junit.Test;
+import org.orbisgis.core.map.MapTransform;
+import static org.junit.Assert.*;
 
-public class MapTransformTest extends TestCase {
+public class MapTransformTest {
 
 	private BufferedImage img;
 	private Envelope extent;
 	private MapTransform mt;
 
-	@Override
-	protected void setUp() throws Exception {
+	@Before
+	public void setUp() throws Exception {
 		img = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
 		mt = new MapTransform();
 		extent = new Envelope(0, 100, 0, 100);
 	}
 
+        @Test
 	public void testExtentAndImage() throws Exception {
 		mt.setExtent(extent);
 		mt.setImage(img);
 		assertTrue(mt.getAdjustedExtent().equals(extent));
 	}
 
+        @Test
 	public void testImageAndExtent() throws Exception {
 		mt.setImage(img);
 		mt.setExtent(extent);

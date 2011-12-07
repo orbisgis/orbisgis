@@ -51,6 +51,7 @@ import javax.imageio.ImageIO;
 import javax.media.jai.RenderableGraphics;
 import javax.swing.JFrame;
 import junit.framework.TestCase;
+import org.junit.Before;
 import org.orbisgis.core.ConsoleErrorManager;
 import org.orbisgis.core.ConsoleOutputManager;
 import org.orbisgis.core.Services;
@@ -63,26 +64,24 @@ import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.ui.plugins.views.output.OutputManager;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 
 /**
  *
  * @author maxence
  */
-public class ProportionalSymbolsTest extends TestCase {
+public class ProportionalSymbolsTest {
 
     private Style fts;
 
-    public ProportionalSymbolsTest(String testName) throws IOException {
-        super(testName);
-    }
 
     protected ConsoleErrorManager failErrorManager;
     protected ConsoleOutputManager failOutput;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
 
         failErrorManager = new ConsoleErrorManager();
         Services.registerService(ErrorManager.class, "", failErrorManager);
@@ -90,15 +89,11 @@ public class ProportionalSymbolsTest extends TestCase {
         Services.registerService(OutputManager.class, "", failOutput);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
     /**
      * Proportional symbols are drawn using ViewBox instances, most of the time.
      * Let's test it...
      */
+    @Test
     public void testViewBox() throws ParameterException {
             ViewBox vb = new ViewBox();
             assertFalse(vb.usable());

@@ -8,23 +8,25 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import junit.framework.TestCase;
 import net.opengis.se._2_0.core.LineSymbolizerType;
 import net.opengis.se._2_0.core.PenStrokeType;
 import net.opengis.se._2_0.core.RecodeType;
 import net.opengis.se._2_0.core.RuleType;
 import net.opengis.se._2_0.core.SolidFillType;
 import net.opengis.se._2_0.core.StyleType;
+import org.junit.Before;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  *
  * @author maxence
  */
-public class Recode2ColorTest extends TestCase {
+public class Recode2ColorTest {
 
     protected Recode2Color recode;
 
@@ -43,14 +45,9 @@ public class Recode2ColorTest extends TestCase {
     ColorLiteral fb;
 
     StringParameter lookup;
-    
-    public Recode2ColorTest(String testName) {
-        super(testName);
-    }
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         key1 = "k1";
         key2 = "k2";
         key3 = "k3";
@@ -70,11 +67,7 @@ public class Recode2ColorTest extends TestCase {
         recode = new Recode2Color(fb, lookup);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testAddMapItems(){
         try {
             recode.addMapItem(new StringLiteral(key1), c1);
@@ -100,6 +93,7 @@ public class Recode2ColorTest extends TestCase {
         }
     }
 
+    @Test
     public void testGetParameter(){
         try {
             testAddMapItems();
@@ -116,6 +110,7 @@ public class Recode2ColorTest extends TestCase {
         }
     }
 
+    @Test
     public void testRemoveMapItem(){
         testAddMapItems();
         assertTrue(recode.getNumMapItem() == 3);
@@ -130,6 +125,7 @@ public class Recode2ColorTest extends TestCase {
         assertTrue(recode.getNumMapItem() == 0);
     }
 
+    @Test
     public void testMarshalUnmarshal() throws Exception {
             String xml = "src/test/resources/org/orbisgis/core/renderer/se/colorRecode.se";
                 JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);

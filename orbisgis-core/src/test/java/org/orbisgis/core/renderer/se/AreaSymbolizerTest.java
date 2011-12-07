@@ -4,44 +4,29 @@
  */
 package org.orbisgis.core.renderer.se;
 
-import com.vividsolutions.jts.geom.Envelope;
 
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
-
-import junit.framework.TestCase;
 import net.opengis.se._2_0.core.StyleType;
-import org.gdms.data.DataSourceFactory;
-import org.gdms.data.DataSource;
+import org.junit.Test;
 import org.orbisgis.core.ConsoleErrorManager;
 import org.orbisgis.core.ConsoleOutputManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorManager;
-import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.layerModel.Layer;
-import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.Renderer;
-import net.opengis.se._2_0.core.SymbolizerType;
-import org.orbisgis.core.renderer.ImageRenderer;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.ui.plugins.views.output.OutputManager;
+import static org.junit.Assert.*;
 
 /**
  *
  * @author maxence
  */
-public class AreaSymbolizerTest extends TestCase {
+public class AreaSymbolizerTest {
 
     ConsoleOutputManager output;
     ConsoleErrorManager error;
@@ -65,8 +50,7 @@ public class AreaSymbolizerTest extends TestCase {
     }
 
 
-    public AreaSymbolizerTest(String testName) throws IOException {
-        super(testName);
+    public AreaSymbolizerTest() throws IOException {
 
         error = new ConsoleErrorManager();
         Services.registerService(ErrorManager.class, "", error);
@@ -75,6 +59,7 @@ public class AreaSymbolizerTest extends TestCase {
 
     }
 
+    @Test
     public void testAreaSymbolizer() throws Exception {
 //            MapTransform mt = new MapTransform();
 //            mt.resizeImage(1200, 800);

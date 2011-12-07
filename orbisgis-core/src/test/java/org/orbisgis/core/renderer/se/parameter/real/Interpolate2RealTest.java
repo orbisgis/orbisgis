@@ -5,33 +5,21 @@
 
 package org.orbisgis.core.renderer.se.parameter.real;
 
-import junit.framework.TestCase;
 import net.opengis.se._2_0.core.ModeType;
 import org.orbisgis.core.renderer.se.parameter.Interpolate;
 import org.orbisgis.core.renderer.se.parameter.Interpolate.InterpolationMode;
 import org.orbisgis.core.renderer.se.parameter.InterpolationPoint;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  *
  * @author maxence
  */
-public class Interpolate2RealTest extends TestCase {
-    
-    public Interpolate2RealTest(String testName) {
-        super(testName);
-    }
+public class Interpolate2RealTest {
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+        @Test
         public void testInterpolateWKN() throws Exception {
                 ModeType.fromValue(Interpolate.InterpolationMode.COSINE.toString().toLowerCase());
                 ModeType.fromValue(Interpolate.InterpolationMode.LINEAR.toString().toLowerCase());
@@ -56,7 +44,9 @@ public class Interpolate2RealTest extends TestCase {
 
 	/**
 	 * Test of linear interpolation
-	 */ public void testLinearInterpolation() throws ParameterException {
+	 */
+        @Test
+        public void testLinearInterpolation() throws ParameterException {
 		System.out.println("Linear Interpolation");
 		Interpolate2Real interpolate = new Interpolate2Real(new RealLiteral(-1));
 
@@ -84,28 +74,30 @@ public class Interpolate2RealTest extends TestCase {
 		result = interpolate.getValue(null, -1);
 
 		System.out.println("Result is: " + result);
-		assertEquals(result, 100.0);
+		assertEquals(result, 100.0, 0.00000001);
 
 		interpolate.setLookupValue(new RealLiteral(20.0));
 		result = interpolate.getValue(null, -1);
 		System.out.println("Result is: " + result);
-		assertEquals(result, 102.5);
+		assertEquals(result, 102.5, 0.00000001);
 
 		interpolate.setLookupValue(new RealLiteral(55.0));
 		result = interpolate.getValue(null, -1);
 		System.out.println("Result is: " + result);
-		assertEquals(result, 155.0);
+		assertEquals(result, 155.0, 0.00000001);
 
 		interpolate.setLookupValue(new RealLiteral(70.0));
 		result = interpolate.getValue(null, -1);
 		System.out.println("Result is: " + result);
-		assertEquals(result, 200.0);
+		assertEquals(result, 200.0, 0.00000001);
 	}
 
 
 	/**
 	 * Test of linear interpolation
-	 */ public void testCosineInterpolation() throws ParameterException {
+	 */ 
+        @Test
+        public void testCosineInterpolation() throws ParameterException {
 		System.out.println("Cosine Interpolation");
 		Interpolate2Real interpolate = new Interpolate2Real(new RealLiteral(-1));
 
@@ -132,22 +124,22 @@ public class Interpolate2RealTest extends TestCase {
 		interpolate.setLookupValue(new RealLiteral(1.0));
 		result = interpolate.getValue(null, -1);
 		System.out.println("Result is: " + result);
-		assertEquals(result, 100.0);
+		assertEquals(result, 100.0, 0.00000001);
 
 		interpolate.setLookupValue(new RealLiteral(20.0));
 		result = interpolate.getValue(null, -1);
 		System.out.println("Result is: " + result);
-		assertEquals(result, 101.46446609406726);
+		assertEquals(result, 101.46446609406726, 0.00000001);
 
 		interpolate.setLookupValue(new RealLiteral(55.0));
 		result = interpolate.getValue(null, -1);
 		System.out.println("Result is: " + result);
-		assertEquals(result, 155.0);
+		assertEquals(result, 155.0, 0.00000001);
 
 		interpolate.setLookupValue(new RealLiteral(70.0));
 		result = interpolate.getValue(null, -1);
 		System.out.println("Result is: " + result);
-		assertEquals(result, 200.0);
+		assertEquals(result, 200.0, 0.00000001);
 	}
 
 }

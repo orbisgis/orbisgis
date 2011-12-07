@@ -36,6 +36,7 @@
  */
 package org.orbisgis.core.renderer;
 
+import org.junit.Before;
 import java.awt.Shape;
 import java.awt.geom.PathIterator;
 
@@ -51,6 +52,8 @@ import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 public class LiteShapeTest extends TestCase {
 
@@ -61,6 +64,34 @@ public class LiteShapeTest extends TestCase {
 	private Geometry multiPoint;
 	private Geometry point;
 
+	@Override
+        @Before
+	public void setUp() throws Exception {
+		GeometryFactory gf = new GeometryFactory();
+
+		point = gf.createPoint(new Coordinate(1238, 3844));
+
+		multiPoint = gf.createMultiPoint(new Coordinate[] {
+				new Coordinate(239587, 23453), new Coordinate(239587, 23453),
+				new Coordinate(239587, 23453), });
+
+		lineString = gf.createLinearRing(new Coordinate[] {
+				new Coordinate(0, 0), new Coordinate(10, 0),
+				new Coordinate(110, 0), new Coordinate(10, 240),
+				new Coordinate(0, 0) });
+
+		multiLineString = gf.createMultiLineString(new LineString[] { gf
+				.createLineString(new Coordinate[] { new Coordinate(0, 0),
+						new Coordinate(10, 0), new Coordinate(110, 0),
+						new Coordinate(10, 240), new Coordinate(0, 0) }) });
+
+		polygon = gf.createPolygon((LinearRing) lineString, null);
+
+		multiPolygon = gf.createMultiPolygon(new Polygon[] { polygon });
+
+	}
+
+        @Test
 	public void testLinearRingLiteShape() throws Exception {
 		doTest(polygon.getExteriorRing());
 	}
@@ -117,6 +148,7 @@ public class LiteShapeTest extends TestCase {
 		PathIterator pi = ls.getPathIterator(null);
 
 		iterate(pi);
+                assertTrue(true);
 	}
 
 	private void iterate(PathIterator pi) {
@@ -136,31 +168,5 @@ public class LiteShapeTest extends TestCase {
 			}
 			pi.next();
 		}
-	}
-
-	@Override
-	protected void setUp() throws Exception {
-		GeometryFactory gf = new GeometryFactory();
-
-		point = gf.createPoint(new Coordinate(1238, 3844));
-
-		multiPoint = gf.createMultiPoint(new Coordinate[] {
-				new Coordinate(239587, 23453), new Coordinate(239587, 23453),
-				new Coordinate(239587, 23453), });
-
-		lineString = gf.createLinearRing(new Coordinate[] {
-				new Coordinate(0, 0), new Coordinate(10, 0),
-				new Coordinate(110, 0), new Coordinate(10, 240),
-				new Coordinate(0, 0) });
-
-		multiLineString = gf.createMultiLineString(new LineString[] { gf
-				.createLineString(new Coordinate[] { new Coordinate(0, 0),
-						new Coordinate(10, 0), new Coordinate(110, 0),
-						new Coordinate(10, 240), new Coordinate(0, 0) }) });
-
-		polygon = gf.createPolygon((LinearRing) lineString, null);
-
-		multiPolygon = gf.createMultiPolygon(new Polygon[] { polygon });
-
 	}
 }

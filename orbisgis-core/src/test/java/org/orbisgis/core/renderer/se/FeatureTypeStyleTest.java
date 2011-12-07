@@ -4,16 +4,10 @@
  */
 package org.orbisgis.core.renderer.se;
 
-import com.vividsolutions.jts.geom.Envelope;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -22,7 +16,6 @@ import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventLocator;
 import javax.xml.bind.util.ValidationEventCollector;
 import javax.xml.validation.Schema;
-import junit.framework.TestCase;
 import net.opengis.se._2_0.core.StyleType;
 
 
@@ -31,26 +24,25 @@ import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 
+import org.junit.After;
+import org.junit.Before;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.DefaultDataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.layerModel.GdmsLayer;
-import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.layerModel.LayerException;
-import org.orbisgis.core.renderer.Renderer;
-import org.orbisgis.core.renderer.ImageRenderer;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import static org.junit.Assert.*;
 
 
 
 
+import org.junit.Test;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 /**
  *
  * @author maxence
  */
-public class FeatureTypeStyleTest extends TestCase {
+public class FeatureTypeStyleTest {
 
     private static SQLDataSourceFactory dsf = new SQLDataSourceFactory();
 
@@ -66,21 +58,16 @@ public class FeatureTypeStyleTest extends TestCase {
         return (DataManager) Services.getService(DataManager.class);
     }
 
-    public FeatureTypeStyleTest(String testName) {
-        super(testName);
-    }
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         registerDataManager();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @After
+    public void tearDown() throws Exception {
     }
 
+    @Test
     public void testAreaSymbolizer() throws ParameterException, IOException, DriverException, InvalidStyle {
         String xml = "src/test/resources/org/orbisgis/core/renderer/se/Districts/density_hatch_classif.se";
 

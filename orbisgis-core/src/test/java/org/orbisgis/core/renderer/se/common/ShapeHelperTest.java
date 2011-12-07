@@ -11,28 +11,21 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D.Double;
 import java.util.List;
 import org.orbisgis.core.AbstractTest;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  *
  * @author maxence
  */
 public class ShapeHelperTest extends AbstractTest {
-    
-
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
 
 
 	/**
 	 * Test of splitLine method, of class ShapeHelper.
-	 */ public void testSplitLine_Shape_double() {
+	 */ 
+        @Test
+        public void testSplitLine_Shape_double() {
 		System.out.println("splitLine");
 
 		Path2D.Double line = new Path2D.Double() {};
@@ -85,7 +78,7 @@ public class ShapeHelperTest extends AbstractTest {
 		}
 	}
 
-
+         @Test
 	 public void testGetPointAt() {
          Path2D.Double path = new Path2D.Double();
          path.moveTo(10, 10);
@@ -97,8 +90,8 @@ public class ShapeHelperTest extends AbstractTest {
          Double pointAt = ShapeHelper.getPointAt(path, 30);
 
          System.out.println ("PT: " + pointAt.getX() + ";" + pointAt.getY());
-         assertEquals(pointAt.getX(), 20.0);
-         assertEquals(pointAt.getY(), 30.0);
+         assertEquals(pointAt.getX(), 20.0, 0.00001);
+         assertEquals(pointAt.getY(), 30.0, 0.00001);
 
 
          path = new Path2D.Double();

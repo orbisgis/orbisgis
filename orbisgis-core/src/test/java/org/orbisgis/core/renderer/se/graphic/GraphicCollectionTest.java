@@ -22,7 +22,7 @@ import javax.imageio.ImageIO;
 
 import javax.swing.JFrame;
 
-import junit.framework.TestCase;
+import org.junit.Before;
 import org.orbisgis.core.ConsoleErrorManager;
 import org.orbisgis.core.ConsoleOutputManager;
 import org.orbisgis.core.Services;
@@ -34,35 +34,27 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.ui.plugins.views.output.OutputManager;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  *
  * @author maxence
  */
-public class GraphicCollectionTest extends TestCase {
+public class GraphicCollectionTest {
 
     private Style fts;
-
-    public GraphicCollectionTest(String testName) throws IOException {
-        super(testName);
-    }
 
     protected ConsoleErrorManager failErrorManager;
     protected ConsoleOutputManager failOutput;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
 
         failErrorManager = new ConsoleErrorManager();
         Services.registerService(ErrorManager.class, "", failErrorManager);
         failOutput = new ConsoleOutputManager();
         Services.registerService(OutputManager.class, "", failOutput);
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
     }
 
     public void variousGraphicDisplay() throws IOException, ParameterException, InvalidStyle {
@@ -129,7 +121,8 @@ public class GraphicCollectionTest extends TestCase {
         }
         assertTrue(true);
     }
-    
+
+    @Test
     public void testMoveUp() throws Exception{
             GraphicCollection gc = new GraphicCollection();
             PointTextGraphic ptg1 = new PointTextGraphic();
@@ -164,7 +157,8 @@ public class GraphicCollectionTest extends TestCase {
             assertTrue(gc.getGraphic(2) == ptg4);
             assertTrue(gc.getGraphic(3) == ptg3);
     }
-    
+
+    @Test
     public void testMoveDown() throws Exception{
             GraphicCollection gc = new GraphicCollection();
             PointTextGraphic ptg1 = new PointTextGraphic();

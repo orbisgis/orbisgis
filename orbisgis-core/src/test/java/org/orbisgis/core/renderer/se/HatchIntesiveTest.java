@@ -17,7 +17,6 @@ import javax.imageio.ImageIO;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.orbisgis.core.AbstractTest;
@@ -30,6 +29,8 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.fill.HatchedFill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -40,14 +41,10 @@ public class HatchIntesiveTest extends AbstractTest {
     private final static int WIDTH = 1000;
     private final static int HEIGHT = 1000;
 
-    @Override
-	public void setUp() throws Exception {
-        super.setUp();
-    }
-
     /**
      * We don't want negative distances
      */
+    @Test
     public void testDistanceContext() throws ParameterException {
             HatchedFill hf = new HatchedFill();
             hf.setDistance(new RealLiteral(-1));
@@ -55,8 +52,9 @@ public class HatchIntesiveTest extends AbstractTest {
     }
 
     public void template(String shapefile, String title, String stylePath, String source,
-            String savePath, Envelope extent)
+            String savePath, Envelope ext)
             throws IOException, InvalidStyle, DriverException, DriverLoadException, DataSourceCreationException {
+            Envelope extent = ext;
             DataSourceFactory dsf = new DataSourceFactory();
             DataSource ds = dsf.getDataSource(new File(shapefile));
             ds.open();

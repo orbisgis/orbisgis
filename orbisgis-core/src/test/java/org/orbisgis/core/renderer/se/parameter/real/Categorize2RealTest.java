@@ -16,6 +16,8 @@ import net.opengis.se._2_0.core.StyleType;
 import net.opengis.se._2_0.thematic.DensityFillType;
 import org.orbisgis.core.AbstractTest;
 import org.orbisgis.core.renderer.se.Style;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -25,6 +27,7 @@ public class Categorize2RealTest extends AbstractTest {
         
         private String xml = "src/test/resources/org/orbisgis/core/renderer/se/Districts/density_hatch_classif.se";
 
+        @Test
         public void testFromJAXB() throws Exception {
                 JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
                 Unmarshaller u = jaxbContext.createUnmarshaller();
@@ -44,6 +47,7 @@ public class Categorize2RealTest extends AbstractTest {
                 assertTrue(c2r.getClassValue(7).getValue(null, 0) == 0.8);
         }
 
+        @Test
         public void testMarshalAndUnmarshal() throws Exception {
                 JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
                 Unmarshaller u = jaxbContext.createUnmarshaller();

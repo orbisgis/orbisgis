@@ -37,6 +37,7 @@
  */
 package org.orbisgis.core;
 
+import org.junit.Before;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -59,17 +60,20 @@ import org.orbisgis.utils.FileUtils;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
-import org.gdms.data.DataSourceFactory;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 @Deprecated
 public class MapContextTest extends AbstractTest {
 
 	@Override
+        @Before
 	public void setUp() throws Exception {
 		super.setUp();
 		super.registerDataManager();
 	}
 
+        @Test
 	public void testRemoveSelectedLayer() throws Exception {
 		MapContext mc = new DefaultMapContext();
 		mc.open(null);
@@ -84,6 +88,7 @@ public class MapContextTest extends AbstractTest {
 		mc.close(null);
 	}
 
+        @Test
 	public void testSetBadLayerSelection() throws Exception {
 		MapContext mc = new DefaultMapContext();
 		mc.open(null);
@@ -99,6 +104,7 @@ public class MapContextTest extends AbstractTest {
 		mc.close(null);
 	}
 
+        @Test
 	public void testRemoveActiveLayer() throws Exception {
 		MapContext mc = new DefaultMapContext();
 		mc.open(null);
@@ -111,6 +117,7 @@ public class MapContextTest extends AbstractTest {
 		mc.close(null);
 	}
 
+        @Test
 	public void testSaveAndRecoverMapContext() throws Exception {
 		MapContext mc = new DefaultMapContext();
 		mc.open(null);
@@ -141,6 +148,7 @@ public class MapContextTest extends AbstractTest {
 		mc2.close(null);
 	}
 
+        @Test
 	public void testSaveAndRecoverTwoNestedCollections() throws Exception {
 		MapContext mc = new DefaultMapContext();
 		mc.open(null);
@@ -164,6 +172,7 @@ public class MapContextTest extends AbstractTest {
 		mc.close(null);
 	}
 
+        @Test
 	public void testOperateOnClosedMapContext() throws Exception {
 		MapContext mc = new DefaultMapContext();
 		try {
@@ -203,6 +212,7 @@ public class MapContextTest extends AbstractTest {
 		}
 	}
 
+        @Test
 	public void testIsOpen() throws Exception {
 		MapContext mc = new DefaultMapContext();
 		assertTrue(!mc.isOpen());
@@ -210,6 +220,7 @@ public class MapContextTest extends AbstractTest {
 		assertTrue(mc.isOpen());
 	}
 
+        @Test
 	public void testOpenTwice() throws Exception {
 		MapContext mc = new DefaultMapContext();
 		mc.open(new NullProgressMonitor());
@@ -220,6 +231,7 @@ public class MapContextTest extends AbstractTest {
 		}
 	}
 
+        @Test
 	public void testCloseClosedMap() throws Exception {
 		MapContext mc = new DefaultMapContext();
 		try {
@@ -229,6 +241,7 @@ public class MapContextTest extends AbstractTest {
 		}
 	}
 
+        @Test
 	public void testSetJAXBOnOpenMap() throws Exception {
 		MapContext mc = new DefaultMapContext();
 		Object obj = mc.getJAXBObject();
@@ -240,6 +253,7 @@ public class MapContextTest extends AbstractTest {
 		}
 	}
 
+        @Test
 	public void testRemoveSource() throws Exception {
 		MapContext mc = new DefaultMapContext();
 		mc.open(null);
@@ -251,6 +265,7 @@ public class MapContextTest extends AbstractTest {
 		mc.close(null);
 	}
 
+        @Test
 	public void testGetJAXBObject() throws Exception {
 		MapContext mc = getSampleMapContext();
 		Object jaxbObj = mc.getJAXBObject();
@@ -278,6 +293,7 @@ public class MapContextTest extends AbstractTest {
 		return mc;
 	}
 
+        @Test
 	public void testSetJAXBOpenTwice() throws Exception {
 		MapContext mc = getSampleMapContext();
 		Object jaxbObj = mc.getJAXBObject();
@@ -296,6 +312,7 @@ public class MapContextTest extends AbstractTest {
 		mc2.close(null);
 	}
 
+        @Test
 	public void testLegendPersistenceOpeningTwice() throws Exception {
 		MapContext mc = new DefaultMapContext();
 		mc.open(null);
@@ -323,6 +340,7 @@ public class MapContextTest extends AbstractTest {
 		mc2.close(null);
 	}
 
+        @Test
 	public void testgetJAXBAfterSetModifyAndClose() throws Exception {
 		MapContext mc = getSampleMapContext();
 		Object jaxbObj = mc.getJAXBObject();
@@ -347,6 +365,7 @@ public class MapContextTest extends AbstractTest {
 		mc3.close(null);
 	}
 
+        @Test
 	public void testActiveLayerClearedOnClose() throws Exception {
 		MapContext mc = new DefaultMapContext();
 		mc.open(null);
@@ -359,6 +378,7 @@ public class MapContextTest extends AbstractTest {
 		assertTrue(mc.getActiveLayer() == null);
 	}
 
+        @Test
 	public void testGetJAXBAfterModify() throws Exception {
 		MapContext mc = new DefaultMapContext();
 		mc.open(null);
@@ -372,6 +392,7 @@ public class MapContextTest extends AbstractTest {
 		mc.close(null);
 	}
 
+        @Test
 	public void testMapOpensWithBadLayer() throws Exception {
 		File shp = new File("target/bv_sap.shp");
 		File dbf = new File("target/bv_sap.dbf");
@@ -397,6 +418,7 @@ public class MapContextTest extends AbstractTest {
 		mc.close(null);
 	}
 
+        @Test
 	public void testRemoveFieldUsedInLegend() throws Exception {
 		File shp = new File("target/bv_sap.shp");
 		File dbf = new File("target/bv_sap.dbf");
@@ -430,6 +452,7 @@ public class MapContextTest extends AbstractTest {
 		mc.close(null);
 	}
 
+        @Test
 	public void testExportSVG() throws Exception {
 		MapContext mc = new DefaultMapContext();
 		mc.open(null);
@@ -456,6 +479,7 @@ public class MapContextTest extends AbstractTest {
 		}
 	}
 
+        @Test
 	public void testRenameLayerSource() throws Exception {
 		MapContext mc = new DefaultMapContext();
 		mc.open(null);
@@ -469,6 +493,7 @@ public class MapContextTest extends AbstractTest {
 		mc.close(null);
 	}
 
+        @Test
 	public void testRenameLayerBack() throws Exception {
 		MapContext mc = new DefaultMapContext();
 		mc.open(null);

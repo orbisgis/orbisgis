@@ -46,14 +46,17 @@ import org.orbisgis.core.renderer.classification.ProportionalMethod;
 import org.orbisgis.core.renderer.classification.Range;
 import org.orbisgis.core.renderer.classification.RangeMethod;
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-public class ClassificationTest extends TestCase {
+public class ClassificationTest {
 
 	private DataSourceFactory dsf = new DataSourceFactory();
 
 	// Data to test
 	File landcover = new File("src/test/resources/data//landcover2000.shp");
 
+        @Test
 	public void testStandard() throws Exception {
 
 		DataSource ds = dsf.getDataSource(landcover);
@@ -85,6 +88,7 @@ public class ClassificationTest extends TestCase {
 		return false;
 	}
 
+        @Test
 	public void testInvalidStandardIntervals() throws Exception {
 		DataSource ds = dsf.getDataSource(landcover);
 		ds.open();
@@ -107,6 +111,7 @@ public class ClassificationTest extends TestCase {
 		ds.close();
 	}
 
+        @Test
 	public void testInvalidMeanIntervals() throws Exception {
 		DataSource ds = dsf.getDataSource(landcover);
 		ds.open();
@@ -137,6 +142,7 @@ public class ClassificationTest extends TestCase {
 		ds.close();
 	}
 
+        @Test
 	public void testEquivalences() throws Exception {
 
 		DataSource ds = dsf.getDataSource(landcover);
@@ -155,6 +161,7 @@ public class ClassificationTest extends TestCase {
 	}
 
 
+        @Test
 	public void testMoyennes() throws Exception {
 
 		DataSource ds = dsf.getDataSource(landcover);
@@ -172,6 +179,7 @@ public class ClassificationTest extends TestCase {
 		ds.close();
 	}
 
+        @Test
 	public void testQuantiles() throws Exception {
 
 		DataSource ds = dsf.getDataSource(landcover);
@@ -189,6 +197,7 @@ public class ClassificationTest extends TestCase {
 		ds.close();
 	}
 
+        @Test
 	public void testProportionalMethods() throws Exception {
 		DataSource ds = dsf.getDataSource(landcover);
 		ds.open();

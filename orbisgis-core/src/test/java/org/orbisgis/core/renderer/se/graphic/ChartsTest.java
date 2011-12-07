@@ -56,7 +56,7 @@ import javax.media.jai.RenderableGraphics;
 
 import javax.swing.JFrame;
 
-import junit.framework.TestCase;
+import org.junit.Before;
 import org.orbisgis.core.ConsoleErrorManager;
 import org.orbisgis.core.ConsoleOutputManager;
 import org.orbisgis.core.Services;
@@ -69,25 +69,23 @@ import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.ui.plugins.views.output.OutputManager;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  *
  * @author maxence
  */
-public class ChartsTest extends TestCase {
+public class ChartsTest {
 
     private Style fts;
 
-    public ChartsTest(String testName) throws IOException {
-        super(testName);
-    }
 
     protected ConsoleErrorManager failErrorManager;
     protected ConsoleOutputManager failOutput;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
 
         failErrorManager = new ConsoleErrorManager();
         Services.registerService(ErrorManager.class, "", failErrorManager);
@@ -95,11 +93,7 @@ public class ChartsTest extends TestCase {
         Services.registerService(OutputManager.class, "", failOutput);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testCategoryWidthContext() throws ParameterException {
             AxisChart as = new AxisChart();
             as.setCategoryWidth(new RealLiteral(-1));

@@ -47,21 +47,21 @@ import java.util.logging.Logger;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Unmarshaller;
-import junit.framework.TestCase;
 import net.opengis.se._2_0.core.AreaSymbolizerType;
 import net.opengis.se._2_0.core.CategorizeType;
-import net.opengis.se._2_0.core.PenStrokeType;
 import net.opengis.se._2_0.core.SolidFillType;
 import net.opengis.se._2_0.core.StyleType;
-import org.junit.Test;
+import org.junit.Before;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  *
  * @author maxence
  */
-public class Categorize2ColorTest extends TestCase {
+public class Categorize2ColorTest {
 
     protected Categorize2Color categorize;
 
@@ -78,13 +78,8 @@ public class Categorize2ColorTest extends TestCase {
 
     protected ColorLiteral fallback;
 
-    public Categorize2ColorTest(String testName) {
-        super(testName);
-    }
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
 
         fallback = new ColorLiteral();
 
@@ -100,17 +95,9 @@ public class Categorize2ColorTest extends TestCase {
         t5 = new RealLiteral(300.0);
 
         categorize = new Categorize2Color(class1, fallback, new RealLiteral());
-        //categorize.addClass(t1, class2);
-        //categorize.addClass(t2, class3);
-        //categorize.addClass(t3, class4);
-
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testConstructor(){
         assertTrue(categorize.getNumClasses() == 1);
         try {
@@ -120,6 +107,7 @@ public class Categorize2ColorTest extends TestCase {
         }
     }
 
+    @Test
     public void testAddClasses(){
         try {
             categorize.addClass(t1, class2);
@@ -145,6 +133,7 @@ public class Categorize2ColorTest extends TestCase {
 
     }
 
+    @Test
     public void testSetThresholds(){
         try {
             // To retrieve classes...
@@ -181,9 +170,8 @@ public class Categorize2ColorTest extends TestCase {
         }
 
     }
-
-
-
+    
+    @Test
     public void testRemoveClasses(){
         try {
             testAddClasses();

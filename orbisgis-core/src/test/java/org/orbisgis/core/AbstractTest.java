@@ -38,18 +38,18 @@
 package org.orbisgis.core;
 
 import java.io.File;
-import junit.framework.TestCase;
 import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.source.SourceManager;
+import org.junit.Before;
 import org.orbisgis.core.errorManager.ErrorListener;
 import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 
-public abstract class AbstractTest extends TestCase {
+public abstract class AbstractTest {
 
         protected FailErrorManager failErrorManager;
 
-        @Override
+        @Before
         public void setUp() throws Exception {
                 failErrorManager = new FailErrorManager();
                 Services.registerService(ErrorManager.class, "", failErrorManager);

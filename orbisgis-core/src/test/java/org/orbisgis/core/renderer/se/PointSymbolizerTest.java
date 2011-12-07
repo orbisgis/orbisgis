@@ -4,6 +4,8 @@
  */
 package org.orbisgis.core.renderer.se;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
 import org.orbisgis.core.AbstractTest;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
@@ -19,6 +21,7 @@ public class PointSymbolizerTest extends AbstractTest {
          * When building a PointSymbolizer without argument, we want it to
          * contain a single default MarkGraphic.
          */
+        @Test
         public void testDefaultSymbolizer() throws ParameterException {
                 PointSymbolizer ps = new PointSymbolizer();
                 MarkGraphic mg = (MarkGraphic) ps.getGraphicCollection().getGraphic(0);

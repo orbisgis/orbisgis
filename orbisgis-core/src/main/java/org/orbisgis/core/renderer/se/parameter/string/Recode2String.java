@@ -63,7 +63,7 @@ public final class Recode2String extends Recode<StringParameter, StringLiteral> 
         }
 
         @Override
-        public final int addMapItem(Literal key, StringParameter value) {
+        public int addMapItem(Literal key, StringParameter value) {
                 value.setRestrictionTo(restriction);
                 return super.addMapItem(key, value);
         }

@@ -53,8 +53,9 @@ public class Gallery extends AbstractTest {
             MapTransform mt = new MapTransform();
 
 
-            if (extent == null)
-                extent = ds.getFullExtent();
+            if (extent == null) {
+                        extent = ds.getFullExtent();
+                }
 
             mt.resizeImage(WIDTH, HEIGHT);
             mt.setExtent(extent);

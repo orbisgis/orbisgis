@@ -50,6 +50,9 @@ import org.orbisgis.core.AbstractTest;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.renderer.legend.carto.LegendFactory;
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 @Deprecated
 public class LayerModelTest extends AbstractTest {
@@ -60,6 +63,7 @@ public class LayerModelTest extends AbstractTest {
 	private DataSource dummy3;
 
 	@Override
+        @Before
 	public void setUp() throws Exception {
 		MemoryDataSetDriver omd = new MemoryDataSetDriver(
 				new String[] { "the_geom" }, new Type[] { TypeFactory
@@ -76,6 +80,7 @@ public class LayerModelTest extends AbstractTest {
 		super.registerDataManager();
 	}
 
+        @Test
 	public void testTreeExploring() throws Exception {
 		ILayer vl = getDataManager().createLayer((DataSource) dummy);
 		ILayer rl = getDataManager().createLayer("my tiff",
@@ -99,6 +104,7 @@ public class LayerModelTest extends AbstractTest {
 		}
 	}
 
+        @Test
 	public void testLayerEvents() throws Exception {
 		TestLayerListener listener = new TestLayerListener();
 		ILayer vl = getDataManager().createLayer((DataSource) dummy);
@@ -123,6 +129,7 @@ public class LayerModelTest extends AbstractTest {
 		vl.close();
 	}
 
+        @Test
 	public void testLayerRemovalCancellation() throws Exception {
 		TestLayerListener listener = new TestLayerListener() {
 			@Override
@@ -140,6 +147,7 @@ public class LayerModelTest extends AbstractTest {
 		assertTrue(lc.remove(vl, true) != null);
 	}
 
+        @Test
 	public void testRepeatedName() throws Exception {
 		DataSourceFactory dsf = ((DataManager) Services
 				.getService(DataManager.class)).getDataSourceFactory();
@@ -170,6 +178,7 @@ public class LayerModelTest extends AbstractTest {
 		assertTrue(!lc1.getName().equals("vector2"));
 	}
 
+        @Test
 	public void testAddWithSameName() throws Exception {
 		DataSourceFactory dsf = ((DataManager) Services
 				.getService(DataManager.class)).getDataSourceFactory();
@@ -185,6 +194,7 @@ public class LayerModelTest extends AbstractTest {
 
 	}
 
+        @Test
 	public void testAddToChild() throws Exception {
 		ILayer lc1 = getDataManager().createLayerCollection("firstLevel");
 		ILayer lc2 = getDataManager().createLayerCollection("secondLevel");
@@ -210,6 +220,7 @@ public class LayerModelTest extends AbstractTest {
 		assertTrue(listener.lm == 1);
 	}
 
+        @Test
 	public void testContainsLayer() throws Exception {
 		ILayer lc = getDataManager().createLayerCollection("root");
 		ILayer l2 = getDataManager().createLayerCollection("secondlevel");
@@ -219,6 +230,7 @@ public class LayerModelTest extends AbstractTest {
 		assertTrue(lc.getAllLayersNames().contains(vl1.getName()));
 	}
 
+        @Test
 	public void testGetLayerByName() throws Exception {
 		ILayer lc = getDataManager().createLayerCollection("root");
 		ILayer l2 = getDataManager().createLayerCollection("secondlevel");

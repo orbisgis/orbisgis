@@ -39,6 +39,7 @@
 package org.orbisgis.core.renderer.se.stroke;
 
 
+import org.junit.Before;
 import java.awt.image.RenderedImage;
 import org.orbisgis.core.renderer.se.graphic.*;
 import com.sun.media.jai.widget.DisplayJAI;
@@ -60,7 +61,6 @@ import javax.swing.JFrame;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
-import junit.framework.TestCase;
 import org.orbisgis.core.ConsoleErrorManager;
 import org.orbisgis.core.ConsoleOutputManager;
 import org.orbisgis.core.Services;
@@ -69,31 +69,27 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.common.OnlineResource;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.common.VariableOnlineResource;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.ui.plugins.views.output.OutputManager;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  *
  * @author maxence
  */
-public class StrokeRapportTest extends TestCase {
+public class StrokeRapportTest {
 
     private Style fts;
-
-    public StrokeRapportTest(String testName) throws IOException {
-        super(testName);
-    }
 
     protected ConsoleErrorManager failErrorManager;
     protected ConsoleOutputManager failOutput;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
 
         failErrorManager = new ConsoleErrorManager();
         Services.registerService(ErrorManager.class, "", failErrorManager);
@@ -101,14 +97,10 @@ public class StrokeRapportTest extends TestCase {
         Services.registerService(OutputManager.class, "", failOutput);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
     /**
      * We must not be able to have WKN and onlineResource set in a MarkGraphic.
      */
+    @Test
     public void testWKNOnlineExclusivity(){
             MarkGraphic mg = new MarkGraphic();
             mg.setWkn(new StringLiteral("CIRCLE"));

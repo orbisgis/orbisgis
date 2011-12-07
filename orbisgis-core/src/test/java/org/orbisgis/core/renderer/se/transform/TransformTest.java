@@ -5,30 +5,17 @@
 package org.orbisgis.core.renderer.se.transform;
 
 import java.awt.geom.AffineTransform;
-import junit.framework.TestCase;
+import org.junit.Test;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
+import static org.junit.Assert.*;
 
 /**
  *
  * @author maxence
  */
-public class TransformTest extends TestCase {
-
-    public TransformTest(String testName) {
-        super(testName);
-    }
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
+public class TransformTest {
 
     public void testRotation() {
         Transform t = new Transform();
@@ -53,6 +40,7 @@ public class TransformTest extends TestCase {
 
     }
 
+    @Test
     public void testTranslation() {
         Transform t = new Transform();
         t.setUom(Uom.PX);
@@ -79,6 +67,7 @@ public class TransformTest extends TestCase {
 
     }
 
+    @Test
     public void testScale() {
         Transform t = new Transform();
         MapTransform mt = new MapTransform();

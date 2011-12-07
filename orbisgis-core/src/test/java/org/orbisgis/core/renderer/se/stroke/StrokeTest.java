@@ -60,6 +60,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
 import junit.framework.TestCase;
+import org.junit.Before;
 import org.orbisgis.core.ConsoleErrorManager;
 import org.orbisgis.core.ConsoleOutputManager;
 import org.orbisgis.core.Services;
@@ -72,25 +73,22 @@ import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.ui.plugins.views.output.OutputManager;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  *
  * @author maxence
  */
-public class StrokeTest extends TestCase {
+public class StrokeTest {
 
     private Style fts;
-
-    public StrokeTest(String testName) throws IOException {
-        super(testName);
-    }
 
     protected ConsoleErrorManager failErrorManager;
     protected ConsoleOutputManager failOutput;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
 
         failErrorManager = new ConsoleErrorManager();
         Services.registerService(ErrorManager.class, "", failErrorManager);
@@ -98,11 +96,7 @@ public class StrokeTest extends TestCase {
         Services.registerService(OutputManager.class, "", failOutput);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testDashLengthOdd() {
             String dashes = "1 1 2 1 3";
             PenStroke str = new PenStroke();
@@ -112,6 +106,7 @@ public class StrokeTest extends TestCase {
             assertTrue(res == 16);
     }
 
+    @Test
     public void testDashLengthEven() {
             String dashes = "1 1 2 1 3 1";
             PenStroke str = new PenStroke();
