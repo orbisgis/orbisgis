@@ -74,20 +74,29 @@ trait JoinCommand extends Command {
     for (p <- left; q <- r; s <- doReduce(p, q)) yield s
   }
   
-  def doLeftOuterJoin(left: RowStream, right: RowStream, exp: Expression) = {
+  def doLeftOuterJoin(left: RowStream, right: RowStream, exp: Expression): RowStream = {
     val r = right.toSeq
     val empty = nullArray(r.head.size)
     val doReduce = (i: Row, j: Row) => {
       val a = i ++ j
       val e = exp.evaluate(a).getAsBoolean
       if (e != null && e.booleanValue) {
-        a
+        a :: Nil
       } else {
-        i ++ empty
+        Nil
       }
     }
     
-    for (p <- left; q <- r) yield doReduce(p, q)
+    val doFilter = (p: Row, r: Seq[Row]) => {
+      val f = r.flatMap(doReduce(p, _))
+      if (f.isEmpty) {
+        (p ++ empty) :: Nil
+      } else {
+        f
+      }
+    }
+    
+    for (p <- left; q <- doFilter(p, r)) yield q
   }
   
   private def nullArray(size: Int): Array[Value] = {
