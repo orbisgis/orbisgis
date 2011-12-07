@@ -52,12 +52,14 @@ package org.gdms.sql.engine.physical
 import java.util.Properties
 import org.apache.log4j.Logger
 import org.gdms.data.SQLDataSourceFactory
+import org.gdms.data.schema.Metadata
 import org.gdms.sql.engine.commands._
 import org.gdms.sql.engine.commands.scan._
 import org.gdms.sql.engine.commands.ddl._
 import org.gdms.sql.engine.commands.join._
 import org.gdms.sql.engine.logical.LogicPlanOptimizer
 import org.gdms.sql.engine.operations._
+import org.gdms.sql.evaluator._
 import org.gdms.sql.function.table.TableFunction
 
 object PhysicalPlanBuilder {
@@ -96,7 +98,7 @@ object PhysicalPlanBuilder {
         // gets Join(Inner(_))
         ch.isInstanceOf[Join] && (ch.asInstanceOf[Join].joinType match {
             // find actual spatial joins
-            case Inner(_, true) => {
+            case Inner(_, true, _) => {
                 ch.children.filter(_.isInstanceOf[ValuesScan]).isEmpty
               }
             case _ => false
@@ -136,6 +138,70 @@ object PhysicalPlanBuilder {
           })
       })
   }
+  
+  private def optimizeAlphaJoins(dsf: SQLDataSourceFactory, op: Operation) {
+    LogicPlanOptimizer.matchOperationFromBottom(op, {ch =>
+        ch.isInstanceOf[Join] && (ch.asInstanceOf[Join].joinType match {
+            // find actual alpha joins
+            case Inner(_, false, _) => true
+            case _ => false
+          })
+      }, {ch =>
+        var j = ch.asInstanceOf[Join].joinType.asInstanceOf[Inner]
+        LogicPlanOptimizer.matchExpressionAndAny(j.cond, {e =>
+            e.isInstanceOf[EqualsEvaluator] && !e.childExpressions.exists(!_.evaluator.isInstanceOf[FieldEvaluator])
+          }, {e =>
+            // we may have an equijoin
+            //    WHERE toto.field = tata.otherField
+             
+            // will hold table names
+            var tables: List[String] = Nil
+        
+            // gets the table names from the scans
+            LogicPlanOptimizer.matchOperationAndStop(ch, {c =>
+                c.isInstanceOf[Scan]
+              }, {c => tables = c.asInstanceOf[Scan].table :: tables
+              })
+        
+            // gets the sizes of the tables + fields
+            val sizes = tables map { t =>
+              val d = dsf.getDataSource(t)
+              d.open
+              val m = d.getMetadata
+              val count = d.getRowCount
+              d.close
+              (count, t, m)
+            }
+            
+            // gets the best candidate for index scan
+            // in this case the table with the most rows
+            val best = sizes.reduceLeft {(a, b) => 
+              if (a._1 >= b._1) a else b
+            }
+            
+            // very basic limit for now:
+            // the biggest table (the one being indexed) must have > 500 rows
+            if (best._1 > 500) {
+              // find field
+              val f = e map (e => e.asInstanceOf[FieldEvaluator])
+              val field: Option[String] = f.find(ev => ev.table.isDefined && ev.table.get == best._2 && best._3.getFieldIndex(ev.name) != -1).orElse(
+                f.find(ev => !ev.table.isDefined && best._3.getFieldIndex(ev.name) != -1)).map (_.name)
+              
+              if (field.isDefined) {
+                // replaces the Scan by an IndexQueryScan
+                LogicPlanOptimizer.replaceOperationAndStop(ch,{c =>
+                    c.isInstanceOf[Scan] && c.asInstanceOf[Scan].table == best._2
+                  }, {c => 
+                    val s = c.asInstanceOf[Scan]
+                    IndexQueryScan(s.table, s.alias, null)
+                  })
+                j.withIndexOn = field
+              }
+            }
+            
+          })
+      })
+  }
 
   /**
    * Builds a command tree from a operation tree.
@@ -166,18 +232,21 @@ object PhysicalPlanBuilder {
           case Cross() => {
               new ExpressionBasedLoopJoinCommand(None)
             }
-          case Inner(ex, false) => {
+          case Inner(ex, false, None) => {
               new ExpressionBasedLoopJoinCommand(Some(ex))
             }
-          case Inner(ex, true) => {
+          case Inner(ex, false, Some(field)) => {
+              new IndexedJoinCommand(ex, field)
+            }
+          case Inner(ex, true, _) => {
               new SpatialIndexedJoinCommand(ex)
             }
           case Natural() => {
               new ExpressionBasedLoopJoinCommand(None, true)
-          }
+            }
           case OuterLeft(ex) => {
               new ExpressionBasedLoopJoinCommand(ex, false, true)
-          }
+            }
         }
       case ValuesScan(ex, alias) => new ValuesScanCommand(ex, alias)
       case Projection(exp) => new ProjectionCommand(exp toArray)

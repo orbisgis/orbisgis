@@ -81,6 +81,11 @@ object LogicPlanOptimizer {
     o.children foreach (matchOperation(_, c, f))
   }
   
+  def matchOperationAndStop(o: Operation, c: Operation => Boolean, f: Operation => Unit): Unit = {
+    if (c(o)) f(o)
+    else o.children foreach (matchOperationAndStop(_, c, f))
+  }
+  
   def matchOperationFromBottom(o: Operation, c: Operation => Boolean, f: Operation => Unit): Unit = {
     o.children foreach (matchOperation(_, c, f))
     if (c(o)) f(o)
@@ -89,6 +94,13 @@ object LogicPlanOptimizer {
   def replaceOperation(o: Operation, c: Operation => Boolean, f: Operation => Operation): Unit = {
     o.children = o.children map { ch => if (c(ch)) f(ch) else ch }
     o.children foreach (replaceOperation(_, c, f))
+  }
+  
+  def replaceOperationAndStop(o: Operation, c: Operation => Boolean, f: Operation => Operation): Unit = {
+    o.children = o.children map { ch => if (c(ch)) f(ch) else {
+        replaceOperationAndStop(ch, c, f)
+        ch
+      } }
   }
   
   def replaceOperationFromBottom(o: Operation, c: Operation => Boolean, f: Operation => Operation): Unit = {
@@ -123,7 +135,7 @@ object LogicPlanOptimizer {
         val filter = ch.asInstanceOf[Filter]
         join.joinType = join.joinType match {
           case Cross() => Inner(filter.e)
-          case Inner(ex, s) => Inner(ex & filter.e, s)
+          case Inner(ex, s, a) => Inner(ex & filter.e, s, a)
         }
         join
       })
@@ -136,14 +148,14 @@ object LogicPlanOptimizer {
     matchOperationFromBottom(o, {ch =>
         // gets Join(Inner(_))
         ch.isInstanceOf[Join] && (ch.asInstanceOf[Join].joinType match {
-            case Inner(_, _) => true
+            case Inner(_, _, None) => true
             case _ => false
           })
       }, {ch =>
         // finds if there is a SpatialIndexedFunction in the Expression
         val join = ch.asInstanceOf[Join]
         join.joinType match {
-          case a @ Inner(ex, false) => {
+          case a @ Inner(ex, false, None) => {
               matchExpressionAndAny(ex, {e =>
                   e.isInstanceOf[FunctionEvaluator] && e.asInstanceOf[FunctionEvaluator].f.isInstanceOf[SpatialIndexedFunction]
                 }, {e=>

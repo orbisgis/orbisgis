@@ -193,7 +193,8 @@ sealed class Expression(var evaluator: Evaluator) extends Iterable[Expression] {
   def preValidate: Unit = evaluator.preValidate
 
   override def toString = "Ex(" + evaluator.toString + ")"
-
+  
+  def prepared(r: Row) = new Expression(PreparedEvaluator(r, this))
 }
 
 object Expression {

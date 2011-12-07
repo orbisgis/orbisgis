@@ -215,3 +215,10 @@ case class CastEvaluator(e: Expression, sqlType: Int) extends Evaluator {
   def eval = s => e.evaluate(s).toType(sqlType)
   def doCopy = copy()
 }
+
+case class PreparedEvaluator(r: Row, e: Expression) extends Evaluator {
+  override val childExpressions = e :: Nil
+  def eval = _ => e.evaluate(r)
+  def doCopy = copy()
+  def sqlType = e.evaluator.sqlType
+}
