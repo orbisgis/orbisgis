@@ -42,6 +42,7 @@ package org.orbisgis.core.renderer.se.parameter.string;
 
 import java.util.Iterator;
 import javax.xml.bind.JAXBElement;
+import net.opengis.fes._2.LiteralType;
 import net.opengis.se._2_0.core.CategorizeType;
 import net.opengis.se._2_0.core.ParameterValueType;
 import net.opengis.se._2_0.core.ThresholdBelongsToType;
@@ -58,7 +59,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
  */
 public final class Categorize2String extends Categorize<StringParameter, StringLiteral> implements StringParameter {
 
-    private String[] restriction;
+    private String[] restriction = new String[]{};
 
         /**
          * Build a new {@code Categorize2String} with the given parameters. Built using 
@@ -90,14 +91,12 @@ public final class Categorize2String extends Categorize<StringParameter, StringL
 
         Iterator<Object> it = t.getThresholdAndValue().iterator();
 
-        this.setClassValue(0, SeParameterFactory.createStringParameter(((JAXBElement<ParameterValueType>)(it.next())).getValue()));
+        this.setClassValue(0, SeParameterFactory.createStringParameter((ParameterValueType)it.next()));
 
         // Fetch class values and thresholds
         while (it.hasNext()) {
-            RealLiteral th = (RealLiteral) SeParameterFactory.createRealParameter(
-               ((JAXBElement<ParameterValueType>)(it.next())).getValue());
-            StringParameter vl = SeParameterFactory.createStringParameter(
-               ((JAXBElement<ParameterValueType>)(it.next())).getValue());
+            RealLiteral th = new RealLiteral((LiteralType)(it.next()));
+            StringParameter vl = SeParameterFactory.createStringParameter((ParameterValueType)it.next());
             this.addClass(th,vl);
         }
 
