@@ -23,7 +23,7 @@ import static org.junit.Assert.*;
 public class StringParameterTest extends AbstractTest {
 
         @Test
-        public void testMarshallAndUnmarshall() throws Exception {
+        public void testMarshallAndUnmarshallCategorize() throws Exception {
                 String xml= "src/test/resources/org/orbisgis/core/renderer/se/stringCategorize.se";
                 JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
                 Unmarshaller u = jaxbContext.createUnmarshaller();
@@ -36,6 +36,22 @@ public class StringParameterTest extends AbstractTest {
                 m.marshal(elem, new FileOutputStream("target/c2routput.se"));
                 assertTrue(true);
                 
+        }
+
+        @Test
+        public void testMarshallAndUnmarshallRecode() throws Exception {
+                String xml= "src/test/resources/org/orbisgis/core/renderer/se/stringRecode.se";
+                JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
+                Unmarshaller u = jaxbContext.createUnmarshaller();
+                JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
+                        new FileInputStream(xml));
+                Marshaller m = jaxbContext.createMarshaller();
+                m.marshal(ftsElem, new FileOutputStream("target/c2routput.se"));
+                Style st = new Style(ftsElem, null);
+                JAXBElement<StyleType> elem = st.getJAXBElement();
+                m.marshal(elem, new FileOutputStream("target/c2routput.se"));
+                assertTrue(true);
+
         }
 
 }

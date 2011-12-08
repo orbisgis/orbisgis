@@ -19,7 +19,7 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
  */
 public final class Recode2String extends Recode<StringParameter, StringLiteral> implements StringParameter {
 
-        private String[] restriction;
+        private String[] restriction = new String[]{};
         
         /**
          * Creates a new instance of <code>Recode2String</code>. The default result value
@@ -70,7 +70,6 @@ public final class Recode2String extends Recode<StringParameter, StringLiteral> 
 
         @Override
         public void setRestrictionTo(String[] list) {
-            HashMap ola;
                 restriction = list.clone();
                 for (int i = 0; i < this.getNumMapItem(); i++) {
                         getMapItemValue(i).setRestrictionTo(list);

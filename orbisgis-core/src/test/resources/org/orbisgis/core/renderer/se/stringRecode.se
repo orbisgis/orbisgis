@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Style xmlns="http://www.opengis.net/se/2.0/core" xmlns:ns2="http://www.opengis.net/ows/2.0" xmlns:ns3="http://www.opengis.net/fes/2.0" xmlns:ns4="http://www.w3.org/1999/xlink">
+	<Rule>
+		<PointSymbolizer uom="urn:ogc:def:uom:se::mm">
+			<PointTextGraphic>
+				<PointLabel>
+					<StyledText>
+						<Text>
+							<Recode fallbackValue="Road">
+								<LookupValue>
+									<ns3:ValueReference>Largeur</ns3:ValueReference>
+								</LookupValue>
+								<MapItem>
+									<Key>2</Key>
+									<Value>Étroite</Value>
+								</MapItem>
+								<MapItem>
+									<Key>4</Key>
+									<Value>Moyenne</Value>
+								</MapItem>
+								<MapItem>
+									<Key>6</Key>
+									<Value>Large</Value>
+								</MapItem>
+							</Recode>
+						</Text>
+					</StyledText>
+				</PointLabel>
+				<PointPosition>
+					<X>-60</X>
+					<Y>40</Y>
+				</PointPosition>
+			</PointTextGraphic>
+		</PointSymbolizer>
+	</Rule>
+</Style>
+
