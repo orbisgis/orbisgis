@@ -75,19 +75,12 @@ import com.vividsolutions.jts.index.quadtree.Quadtree;
 import ij.process.ColorProcessor;
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.FilterDataSourceDecorator;
 import org.gdms.data.NoSuchTableException;
-import org.gdms.data.indexes.DataSourceIndex;
 import org.gdms.data.indexes.DefaultSpatialIndexQuery;
 import org.gdms.data.indexes.IndexException;
 import org.gdms.data.indexes.IndexManager;
-import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.indexes.IndexQueryException;
-import org.gdms.data.indexes.RTreeIndex;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.Rule;
@@ -269,57 +262,6 @@ public abstract class Renderer {
 
             if (featureInExtent.length > 0) {
 
-                // Assign filtered data source to each rule
-//                HashMap<Rule, FilterDataSourceDecorator> rulesDs = new HashMap<Rule, FilterDataSourceDecorator>();
-//
-//                String elseWhere = "";
-//                // Foreach rList without ElseFilter
-//                for (Rule r : rList) {
-//
-//                    pm.startTask("Filtering (rule)...", 100);
-//                    pm.progressTo(0);
-//                    FilterDataSourceDecorator filteredDs = r.getFilteredDataSource(featureInExtent);
-//
-//                    if (!filteredDs.equals(featureInExtent)) {
-//                        filteredDs.open();
-//                    }
-//
-//                    ArrayList<Integer> fids = new ArrayList<Integer>();
-//                    fids.addAll(filteredDs.getIndexMap());
-//
-//                    rulesDs.put(r, filteredDs);
-//
-//                    if (r.getWhere() != null) {
-//                        if (elseWhere.isEmpty()) {
-//                            elseWhere += "not (" + r.getWhere() + ")";
-//                        } else {
-//                            elseWhere += "and not(" + r.getWhere() + ")";
-//                        }
-//                    } else {
-//                        elseWhere = "1 = 0";
-//                    }
-//                    pm.progressTo(ONE_HUNDRED_I);
-//                    pm.endTask();
-//                }
-//
-//
-//                FilterDataSourceDecorator elseDs;
-//                if (elseWhere.isEmpty()) {
-//                    elseDs = featureInExtent;
-//                } else {
-//                    elseDs = new FilterDataSourceDecorator(featureInExtent, elseWhere);
-//                    elseDs.open();
-//                }
-
-
-//                /**
-//                 * Register elseRules as standard rules
-//                 */
-//                for (Rule elseR : fRList) {
-//                    rulesDs.put(elseR, elseDs);
-//                    rList.add(elseR);
-//                }
-
                 HashSet<Integer> selected = new HashSet<Integer>();
                 for (long sFid : layer.getSelection()) {
                     selected.add((int) sFid);
@@ -343,12 +285,9 @@ public abstract class Renderer {
 
 
                 // Get a graphics for each symbolizer
-                //HashMap<Symbolizer, Graphics2D> g2Symbs = getGraphics2D(symbs, g2, mt);
                 initGraphics2D(symbs, g2, mt);
 
-                //for (Symbolizer s : symbs) {
                 for (Rule r : rList) {
-//                    total += rulesDs.get(r).getRowCount();
                     total += featureInExtent.length;
                 }
                 logger.println("TOTAL : " + total);
@@ -359,7 +298,6 @@ public abstract class Renderer {
                     logger.println("Drawing rule " + r.getName());
                     pm.startTask("Drawing " + layer.getName() + " (Rule " + r.getName() + ")", 100);
 
-//                    FilterDataSourceDecorator fds = rulesDs.get(r);
 
                     int fid = 0;
 
@@ -372,11 +310,6 @@ public abstract class Renderer {
                         }
 
                         long originalIndex = featureInExtent[fid];
-//                        if (fds.equals(featureInExtent)) {
-//                            originalIndex = fds.getOriginalIndex(fid);
-//                        } else {
-//                            originalIndex = featureInExtent.getOriginalIndex(fds.getOriginalIndex(fid));
-//                        }
 
                         Geometry theGeom = null;
 
@@ -432,16 +365,8 @@ public abstract class Renderer {
                 logger.println("Full Symb time:      " + sTimeFull + " [ms]");
                 disposeLayer(g2);
 
-//                for (FilterDataSourceDecorator fds : rulesDs.values()) {
-//                    if (fds.isOpen() && !fds.equals(featureInExtent)) {
-//                        fds.close();
-//                    }
-//                }
-
                 long tV4 = System.currentTimeMillis();
                 logger.println("Images stacked :" + (tV4 - tV3) + "[ms]");
-
-//                featureInExtent.close();
 
                 long tV5 = System.currentTimeMillis();
                 logger.println("Total Rendering Time:" + (tV5 - tV1) + "[ms]");
