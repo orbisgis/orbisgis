@@ -75,10 +75,19 @@ import com.vividsolutions.jts.index.quadtree.Quadtree;
 import ij.process.ColorProcessor;
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.FilterDataSourceDecorator;
+import org.gdms.data.NoSuchTableException;
+import org.gdms.data.indexes.DataSourceIndex;
+import org.gdms.data.indexes.DefaultSpatialIndexQuery;
+import org.gdms.data.indexes.IndexException;
+import org.gdms.data.indexes.IndexManager;
+import org.gdms.data.indexes.IndexQuery;
+import org.gdms.data.indexes.IndexQueryException;
+import org.gdms.data.indexes.RTreeIndex;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.Rule;
@@ -172,20 +181,28 @@ public abstract class Renderer {
      * @return
      * @throws DriverException
      */
-    public FilterDataSourceDecorator featureInExtent(MapTransform mt,
-            DataSource sds,
-            ProgressMonitor pm) throws DriverException {
+    public int[] featureInExtent(MapTransform mt,
+            DataSource sds, ProgressMonitor pm) throws DriverException {
         Envelope extent = mt.getAdjustedExtent();
-
-        double gap = mt.getScaleDenominator() * EXTRA_EXTENT_FACTOR;
-
-        return new FilterDataSourceDecorator(sds, "ST_Intersects(ST_GeomFromText('POLYGON(("
-                + (extent.getMinX() - gap) + " " + (extent.getMinY() - gap) + ","
-                + (extent.getMinX() - gap) + " " + (extent.getMaxY() + gap) + ","
-                + (extent.getMaxX() + gap) + " " + (extent.getMaxY() + gap) + ","
-                + (extent.getMaxX() + gap) + " " + (extent.getMinY() - gap) + ","
-                + (extent.getMinX() - gap) + " " + (extent.getMinY() - gap) + "))'), "
-                + sds.getFieldName(sds.getSpatialFieldIndex()) + ")");
+        int sfi = sds.getSpatialFieldIndex();
+        String sfn = sds.getFieldName(sfi);
+        IndexManager im = sds.getDataSourceFactory().getIndexManager();
+        try{
+                if(im.getIndex(sds, sfn) == null){
+                        im.buildIndex(sds, sfn, new NullProgressMonitor());
+                }
+                double gap = mt.getScaleDenominator() * EXTRA_EXTENT_FACTOR;
+                Envelope envelope = new Envelope(extent.getMinX() - gap, extent.getMaxX() + gap, 
+                        extent.getMinY() - gap, extent.getMaxY() + gap);
+                DefaultSpatialIndexQuery iq = new DefaultSpatialIndexQuery(envelope, sfn);
+                return im.queryIndex(sds, iq);
+        } catch(IndexException ie){
+                throw new DriverException("Can't handle the index", ie);
+        } catch(NoSuchTableException nste){
+                throw new DriverException("Are you sure the table actually exists ?", nste);
+        }catch(IndexQueryException iqe){
+                throw new DriverException("Can't query the index properly", iqe);
+        }
     }
 
 
@@ -246,63 +263,62 @@ public abstract class Renderer {
             // Create new dataSource with only feature in current extent
             pm.startTask("Filtering (spatial)...", 100);
             pm.progressTo(0);
-            FilterDataSourceDecorator featureInExtent = featureInExtent(mt, sds, pm);
+            int[] featureInExtent = featureInExtent(mt, sds, pm);
             pm.progressTo(ONE_HUNDRED_I);
             pm.endTask();
 
-            if (featureInExtent != null) {
-                featureInExtent.open();
+            if (featureInExtent.length > 0) {
 
                 // Assign filtered data source to each rule
-                HashMap<Rule, FilterDataSourceDecorator> rulesDs = new HashMap<Rule, FilterDataSourceDecorator>();
+//                HashMap<Rule, FilterDataSourceDecorator> rulesDs = new HashMap<Rule, FilterDataSourceDecorator>();
+//
+//                String elseWhere = "";
+//                // Foreach rList without ElseFilter
+//                for (Rule r : rList) {
+//
+//                    pm.startTask("Filtering (rule)...", 100);
+//                    pm.progressTo(0);
+//                    FilterDataSourceDecorator filteredDs = r.getFilteredDataSource(featureInExtent);
+//
+//                    if (!filteredDs.equals(featureInExtent)) {
+//                        filteredDs.open();
+//                    }
+//
+//                    ArrayList<Integer> fids = new ArrayList<Integer>();
+//                    fids.addAll(filteredDs.getIndexMap());
+//
+//                    rulesDs.put(r, filteredDs);
+//
+//                    if (r.getWhere() != null) {
+//                        if (elseWhere.isEmpty()) {
+//                            elseWhere += "not (" + r.getWhere() + ")";
+//                        } else {
+//                            elseWhere += "and not(" + r.getWhere() + ")";
+//                        }
+//                    } else {
+//                        elseWhere = "1 = 0";
+//                    }
+//                    pm.progressTo(ONE_HUNDRED_I);
+//                    pm.endTask();
+//                }
+//
+//
+//                FilterDataSourceDecorator elseDs;
+//                if (elseWhere.isEmpty()) {
+//                    elseDs = featureInExtent;
+//                } else {
+//                    elseDs = new FilterDataSourceDecorator(featureInExtent, elseWhere);
+//                    elseDs.open();
+//                }
 
-                String elseWhere = "";
-                // Foreach rList without ElseFilter
-                for (Rule r : rList) {
 
-                    pm.startTask("Filtering (rule)...", 100);
-                    pm.progressTo(0);
-                    FilterDataSourceDecorator filteredDs = r.getFilteredDataSource(featureInExtent);
-
-                    if (!filteredDs.equals(featureInExtent)) {
-                        filteredDs.open();
-                    }
-
-                    ArrayList<Integer> fids = new ArrayList<Integer>();
-                    fids.addAll(filteredDs.getIndexMap());
-
-                    rulesDs.put(r, filteredDs);
-
-                    if (r.getWhere() != null) {
-                        if (elseWhere.isEmpty()) {
-                            elseWhere += "not (" + r.getWhere() + ")";
-                        } else {
-                            elseWhere += "and not(" + r.getWhere() + ")";
-                        }
-                    } else {
-                        elseWhere = "1 = 0";
-                    }
-                    pm.progressTo(ONE_HUNDRED_I);
-                    pm.endTask();
-                }
-
-
-                FilterDataSourceDecorator elseDs;
-                if (elseWhere.isEmpty()) {
-                    elseDs = featureInExtent;
-                } else {
-                    elseDs = new FilterDataSourceDecorator(featureInExtent, elseWhere);
-                    elseDs.open();
-                }
-
-
-                /**
-                 * Register elseRules as standard rules
-                 */
-                for (Rule elseR : fRList) {
-                    rulesDs.put(elseR, elseDs);
-                    rList.add(elseR);
-                }
+//                /**
+//                 * Register elseRules as standard rules
+//                 */
+//                for (Rule elseR : fRList) {
+//                    rulesDs.put(elseR, elseDs);
+//                    rList.add(elseR);
+//                }
 
                 HashSet<Integer> selected = new HashSet<Integer>();
                 for (long sFid : layer.getSelection()) {
@@ -332,7 +348,8 @@ public abstract class Renderer {
 
                 //for (Symbolizer s : symbs) {
                 for (Rule r : rList) {
-                    total += rulesDs.get(r).getRowCount();
+//                    total += rulesDs.get(r).getRowCount();
+                    total += featureInExtent.length;
                 }
                 logger.println("TOTAL : " + total);
 
@@ -342,24 +359,24 @@ public abstract class Renderer {
                     logger.println("Drawing rule " + r.getName());
                     pm.startTask("Drawing " + layer.getName() + " (Rule " + r.getName() + ")", 100);
 
-                    FilterDataSourceDecorator fds = rulesDs.get(r);
+//                    FilterDataSourceDecorator fds = rulesDs.get(r);
 
                     int fid = 0;
 
 
                     long initFeats = 0;
-                    for (fid = 0; fid < fds.getRowCount(); fid++) {
+                    for (fid = 0; fid < featureInExtent.length; fid++) {
                         initFeats -= System.currentTimeMillis();
                         if (layerCount % BATCH_SIZE == 0 && pm.isCancelled()) {
                             return layerCount;
                         }
 
-                        long originalIndex;
-                        if (fds.equals(featureInExtent)) {
-                            originalIndex = fds.getOriginalIndex(fid);
-                        } else {
-                            originalIndex = featureInExtent.getOriginalIndex(fds.getOriginalIndex(fid));
-                        }
+                        long originalIndex = featureInExtent[fid];
+//                        if (fds.equals(featureInExtent)) {
+//                            originalIndex = fds.getOriginalIndex(fid);
+//                        } else {
+//                            originalIndex = featureInExtent.getOriginalIndex(fds.getOriginalIndex(fid));
+//                        }
 
                         Geometry theGeom = null;
 
@@ -415,16 +432,16 @@ public abstract class Renderer {
                 logger.println("Full Symb time:      " + sTimeFull + " [ms]");
                 disposeLayer(g2);
 
-                for (FilterDataSourceDecorator fds : rulesDs.values()) {
-                    if (fds.isOpen() && !fds.equals(featureInExtent)) {
-                        fds.close();
-                    }
-                }
+//                for (FilterDataSourceDecorator fds : rulesDs.values()) {
+//                    if (fds.isOpen() && !fds.equals(featureInExtent)) {
+//                        fds.close();
+//                    }
+//                }
 
                 long tV4 = System.currentTimeMillis();
                 logger.println("Images stacked :" + (tV4 - tV3) + "[ms]");
 
-                featureInExtent.close();
+//                featureInExtent.close();
 
                 long tV5 = System.currentTimeMillis();
                 logger.println("Total Rendering Time:" + (tV5 - tV1) + "[ms]");
@@ -432,8 +449,8 @@ public abstract class Renderer {
 
         } catch (DriverLoadException ex) {
             printEx(ex, layer, g2);
-        } catch (DataSourceCreationException ex) {
-            printEx(ex, layer, g2);
+//        } catch (DataSourceCreationException ex) {
+//            printEx(ex, layer, g2);
         } catch (DriverException ex) {
             printEx(ex, layer, g2);
         } catch (ParameterException ex) {
@@ -541,8 +558,7 @@ public abstract class Renderer {
         Envelope graphicExtent = new Envelope(0, 0, mt.getWidth(), mt.getHeight());
         DefaultRendererPermission perm = new DefaultRendererPermission(graphicExtent);
 
-        for (int i = layers.length - 1; i
-                >= 0; i--) {
+        for (int i = layers.length - 1; i>= 0; i--) {
             if (pm.isCancelled()) {
                 break;
             } else {
