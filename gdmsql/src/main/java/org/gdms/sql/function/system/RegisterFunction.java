@@ -50,7 +50,7 @@ public final class RegisterFunction extends AbstractExecutorFunction {
 
         @Override
         public String getSqlOrder() {
-                return "SELECT FunctionRegister('org.gdms.myFunction')";
+                return "EXECUTE FunctionRegister('org.gdms.myFunction')";
         }
 
         @Override

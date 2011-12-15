@@ -142,10 +142,10 @@ public final class ExportCall extends AbstractExecutorFunction {
 
         @Override
         public String getSqlOrder() {
-                return "1) SELECT Export('myTable', '/home/myuser/myFile.shp')\n"
-                        + "2) SELECT Export('myTable', vendor', 'host', port, "
+                return "1) EXECUTE Export('myTable', '/home/myuser/myFile.shp')\n"
+                        + "2) EXECUTE Export('myTable', vendor', 'host', port, "
                         + "dbName, user, password, tableName);\n"
-                        + "3) select Export('myTable', vendor', 'host', port, "
+                        + "3) EXECUTE Export('myTable', vendor', 'host', port, "
                         + "dbName, user, password, schema, tableName);\n";
         }
 

@@ -102,11 +102,11 @@ public final class RegisterCall extends AbstractExecutorFunction {
                                         user, password, schemaName, tableName, "jdbc:" + vendor)));
                         } else {
                                 throw new FunctionException("Usage: \n"
-                                        + "1) select register ('path_to_file');\n"
-                                        + "2) select register ('path_to_file', 'name');\n"
-                                        + "3) select register ('vendor', 'host', port, "
+                                        + "1) EXECUTE register ('path_to_file');\n"
+                                        + "2) EXECUTE register ('path_to_file', 'name');\n"
+                                        + "3) EXECUTE register ('vendor', 'host', port, "
                                         + "dbName, user, password, tableName, dsEntryName);\n"
-                                        + "4) select register ('vendor', 'host', port, "
+                                        + "4) EXECUTE register ('vendor', 'host', port, "
                                         + "dbName, user, password, schema, tableName, dsEntryName);\n");
                         }
                 } catch (SourceAlreadyExistsException e) {
@@ -127,11 +127,11 @@ public final class RegisterCall extends AbstractExecutorFunction {
         @Override
         public String getSqlOrder() {
                 return "Usage: \n"
-                        + "1) select register ('name');\n"
-                        + "2) select register ('path_to_file', 'name');\n"
-                        + "3) select register ('vendor', 'host', port, "
+                        + "1) EXECUTE register ('name');\n"
+                        + "2) EXECUTE register ('path_to_file', 'name');\n"
+                        + "3) EXECUTE register ('vendor', 'host', port, "
                         + "dbName, user, password, tableName, dsEntryName);\n"
-                        + "4) select register ('vendor', 'host', port, "
+                        + "4) EXECUTE register ('vendor', 'host', port, "
                         + "dbName, user, password, schema, tableName, dsEntryName);\n";
         }
 
