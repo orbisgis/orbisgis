@@ -43,6 +43,7 @@ import org.gdms.data.schema.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.DataSet;
+import org.gdms.driver.DiskBufferDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.table.TableDefinition;
@@ -52,57 +53,65 @@ import org.gdms.sql.function.table.TableArgument;
 import org.gdms.sql.function.table.TableFunctionSignature;
 import org.orbisgis.progress.ProgressMonitor;
 
-
 public final class ST_InternalGapFinder extends AbstractTableFunction {
 
-    private static final Logger LOG = Logger.getLogger(ST_InternalGapFinder.class);
+        private static final Logger LOG = Logger.getLogger(ST_InternalGapFinder.class);
+        private DiskBufferDriver diskBufferDriver;
 
         @Override
-	public String getName() {
-		return "ST_InternalGaps";
-	}
+        public String getName() {
+                return "ST_InternalGaps";
+        }
 
         @Override
-	public String getSqlOrder() {
-		return "select * from ST_InternalGaps(table, the_geom);";
-	}
+        public String getSqlOrder() {
+                return "select * from ST_InternalGaps(table, the_geom);";
+        }
 
         @Override
-	public String getDescription() {
-		return "Find gaps on a set og geometries";
-	}
+        public String getDescription() {
+                return "Find gaps on a set of geometries";
+        }
 
         @Override
-	public DataSet evaluate(SQLDataSourceFactory dsf, DataSet[] tables,
-			Value[] values, ProgressMonitor pm) throws FunctionException {
-            LOG.trace("Evaluating");
-		try {
-			final DataSet sds = tables[0];
+        public DataSet evaluate(SQLDataSourceFactory dsf, DataSet[] tables,
+                Value[] values, ProgressMonitor pm) throws FunctionException {
+                LOG.trace("Evaluating");
+                try {
+                        final DataSet sds = tables[0];
 
-			final String spatialFieldName = values[0].toString();
-			int spatialFieldIndex = sds.getMetadata().getFieldIndex(spatialFieldName);
+                        final String spatialFieldName = values[0].toString();
+                        int spatialFieldIndex = sds.getMetadata().getFieldIndex(spatialFieldName);
 
-			InternalGapFinder internalGapFinder = new InternalGapFinder(sds,spatialFieldIndex, pm);
+                        InternalGapFinder internalGapFinder = new InternalGapFinder(dsf, sds, spatialFieldIndex, pm);
                         internalGapFinder.findGaps();
-			return internalGapFinder.getObjectMemoryDriver().getTable("main");
-		} catch (DriverLoadException e) {
-			throw new FunctionException(e);
-		} catch (DriverException e) {
-			throw new FunctionException(e);
-		}
-	}
+                        diskBufferDriver = internalGapFinder.getDriver();
+                        return diskBufferDriver;
+                } catch (DriverLoadException e) {
+                        throw new FunctionException(e);
+                } catch (DriverException e) {
+                        throw new FunctionException(e);
+                }
+        }
 
         @Override
-	public Metadata getMetadata(Metadata[] tables) throws DriverException {
-		return tables[0];
-	}
+        public void workFinished() throws DriverException {
+                if (diskBufferDriver != null) {
+                        diskBufferDriver.stop();
+                }
+        }
 
-	@Override
+        @Override
+        public Metadata getMetadata(Metadata[] tables) throws DriverException {
+                return tables[0];
+        }
+
+        @Override
         public FunctionSignature[] getFunctionSignatures() {
-                return new FunctionSignature[] {
-                        new TableFunctionSignature(TableDefinition.GEOMETRY,
+                return new FunctionSignature[]{
+                                new TableFunctionSignature(TableDefinition.GEOMETRY,
                                 new TableArgument(TableDefinition.GEOMETRY),
                                 ScalarArgument.STRING)
-                };
+                        };
         }
 }
