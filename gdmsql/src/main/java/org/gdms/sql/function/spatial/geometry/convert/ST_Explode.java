@@ -126,7 +126,9 @@ public final class ST_Explode extends AbstractTableFunction {
                                         fieldsValues.length);
                                 newValues[fieldsValues.length] = ValueFactory.createValue(gid++);
                                 final Geometry geometry = sds.getFieldValue(i, spatialFieldIndex).getAsGeometry();
+                                if (geometry!=null){
                                 explode(driver, newValues, geometry, spatialFieldIndex);
+                                }
                         }
                         pm.progressTo(rowCount);
                         driver.writingFinished();
