@@ -54,7 +54,6 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.table.TableDefinition;
 import org.gdms.sql.function.ScalarArgument;
@@ -70,6 +69,7 @@ import com.vividsolutions.jts.operation.union.CascadedPolygonUnion;
 import org.apache.log4j.Logger;
 import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.driver.DataSet;
+import org.gdms.driver.DiskBufferDriver;
 import org.gdms.sql.function.table.AbstractTableFunction;
 import org.gdms.sql.function.table.TableArgument;
 import org.gdms.sql.function.table.TableFunctionSignature;
@@ -79,6 +79,7 @@ public final class ST_RasterToPolygons extends AbstractTableFunction {
         private static final GeometryFactory GF = new GeometryFactory();
         private static final int THRESHOLD = 100;
         private static final Logger LOG = Logger.getLogger(ST_RasterToPolygons.class);
+        private DiskBufferDriver driver;
 
         @Override
         public DataSet evaluate(SQLDataSourceFactory dsf, DataSet[] tables,
@@ -95,7 +96,7 @@ public final class ST_RasterToPolygons extends AbstractTableFunction {
                                 spatialFieldIndex = MetadataUtilities.getSpatialFieldIndex(sds.getMetadata());
                         }
 
-                        final MemoryDataSetDriver driver = new MemoryDataSetDriver(
+                        driver = new DiskBufferDriver(dsf,
                                 getMetadata(null));
 
                         final long rowCount = sds.getRowCount();
@@ -110,10 +111,7 @@ public final class ST_RasterToPolygons extends AbstractTableFunction {
                                 final float halfPixelSizeX = geoRasterSrc.getMetadata().getPixelSize_X() / 2;
                                 final float halfPixelSizeY = geoRasterSrc.getMetadata().getPixelSize_Y() / 2;
 
-                                // Metadata ddm = new DefaultMetadata(new Type[] {}, new
-                                // String[] {});
-                                // dsf.createDataSource(dsc);
-
+                               
                                 final Map<Double, LinkedList<Geometry>> hm = new HashMap<Double, LinkedList<Geometry>>();
 
                                 pm.startTask("Processing raster", nrows);
@@ -125,7 +123,6 @@ public final class ST_RasterToPolygons extends AbstractTableFunction {
                                                         pm.progressTo(y);
                                                 }
                                         }
-
                                         for (int x = 0; x < ncols; x++) {
                                                 final Double height = (double) processor.getPixelValue(
                                                         x, y);
@@ -160,6 +157,7 @@ public final class ST_RasterToPolygons extends AbstractTableFunction {
                                 pm.progressTo(nrows);
                                 pm.endTask();
                         }
+                        driver.start();
                         return driver;
                 } catch (DriverException e) {
                         throw new FunctionException(e);
@@ -167,6 +165,13 @@ public final class ST_RasterToPolygons extends AbstractTableFunction {
                         throw new FunctionException(e);
                 } catch (IOException e) {
                         throw new FunctionException(e);
+                }
+        }
+
+        @Override
+        public void workFinished() throws DriverException {
+                if (driver != null) {
+                        driver.stop();
                 }
         }
 
@@ -207,7 +212,7 @@ public final class ST_RasterToPolygons extends AbstractTableFunction {
         public Metadata getMetadata(Metadata[] tables) throws DriverException {
                 return new DefaultMetadata(new Type[]{
                                 TypeFactory.createType(Type.INT),
-                                TypeFactory.createType(Type.GEOMETRY),
+                                TypeFactory.createType(Type.POLYGON),
                                 TypeFactory.createType(Type.DOUBLE)}, new String[]{"gid",
                                 "the_geom", "value"});
         }
