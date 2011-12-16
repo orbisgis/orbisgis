@@ -27,6 +27,10 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
  */
 public class Number2String implements StringParameter {
 
+        //We're currently forced to keep some duplicated informations about the
+        //content of the formatting pattern. Indeed, it's not possible to
+        //easily retrieve the default and negative patterns using directly
+        //formatter.
         private RealParameter numericValue;
 
         private String formattingPattern;
@@ -37,6 +41,10 @@ public class Number2String implements StringParameter {
 
         private String decimalPoint;
 
+        //We use DecimalFormat here, because it seems simple. Take care of bugs
+        //that are hidden in it, though...
+        //Because of these bugs, we don't let access to formatter through
+        //accessors.
         private DecimalFormat formatter;
 
         /**
@@ -113,6 +121,133 @@ public class Number2String implements StringParameter {
                 fnt.setPattern(formattingPattern);
                 fnt.setNumericValue(numericValue.getJAXBParameterValueType());
                 return of.createFormatNumber(fnt);
+        }
+
+        /**
+         * Get the character that must be used to separate the integer and the
+         * fraction part of the numbers that will be represented with this
+         * function.
+         * @return
+         */
+        public String getDecimalPoint() {
+                return decimalPoint;
+        }
+
+        /**
+         * Set the character that must be used to separate the integer and the
+         * fraction part of the numbers that will be represented with this
+         * function.
+         * @param decimalPt
+         */
+        public void setDecimalPoint(String decimalPt) {
+                if(decimalPt.length() > 1){
+                        throw new IllegalArgumentException("The input you give must not be exactly"
+                                + "one charater long - blank characters are characters too !");
+                }
+                DecimalFormatSymbols dfs = formatter.getDecimalFormatSymbols();
+                dfs.setDecimalSeparator(decimalPt.charAt(0));
+                formatter.setDecimalFormatSymbols(dfs);
+                decimalPoint = decimalPt;
+        }
+
+        /**
+         * Get the pattern that is used to format the input numbers. This
+         * pattern is used to format positive numbers. If {@code
+         * getNegativePattern()} returns null or an empty {@code String}, this
+         * pattern will be used to format negative numbers too. In this case,
+         * negative numbers will be prefixed with a minus sign.
+         * @return
+         * A String, whose content is compatible with the pattern part described
+         * in the {@code DecimalFormat} class from the Java API.
+         */
+        public String getFormattingPattern() {
+                return formattingPattern;
+        }
+
+        /**
+         * Set the formatting pattern that must be used for positive numbers. If
+         * {@code getNegativePattern()} returns {@code null} or an empty {@code
+         * String}, this pattern will be used to format negative numbers too.
+         * @param formattingPat
+         * The {@code String} given in argument must match the syntax for
+         * patterns that is given in the Java class {@code DecimalFormat}.
+         */
+        public void setFormattingPattern(String formattingPat) {
+                String pattern;
+                if(negativePattern != null && !negativePattern.isEmpty()){
+                        pattern = formattingPat+";"+negativePattern;
+                } else {
+                        pattern = formattingPat;
+                }
+                formatter.applyPattern(pattern);
+                formattingPattern = formattingPat;
+        }
+
+        /**
+         * Get the character that is used to separate the groups of digits in
+         * the numbers this class will format.
+         * @return
+         */
+        public String getGroupingSeparator() {
+                return groupingSeparator;
+        }
+
+        /**
+         * Set the character that must be used to separate the groups of digits
+         * in the numbers this class will format.
+         * @param groupingseparator
+         * Shall be a String made of only one character.
+         */
+        public void setGroupingSeparator(String groupingseparator) {
+                if(groupingseparator.length() != 1){
+                        throw new IllegalArgumentException("The input you give must not be exactly"
+                                + "one charater long - blank characters are characters too !");
+                }
+                DecimalFormatSymbols dfs = formatter.getDecimalFormatSymbols();
+                dfs.setGroupingSeparator(groupingseparator.charAt(0));
+                formatter.setDecimalFormatSymbols(dfs);
+                this.groupingSeparator = groupingseparator;
+        }
+
+        /**
+         * Get the pattern used to format the numerical values that are lower
+         * than 0.
+         * @return
+         * The pattern as a string. The semantics follow what is explained in SE
+         * 2.0, and in the Java API class {@code DecimalFormat}.
+         */
+        public String getNegativePattern() {
+                throw new UnsupportedOperationException("There is still some work in SE...");
+        }
+
+        /**
+         * Set the pattern used to format the numerical values that are lower
+         * than 0. The pattern must be usable for the Java API class {@code
+         * DecimalFormat}.
+         * @param negativePattern
+         * The pattern to be used for negative numbers. It must match the
+         * semantics described in {@code DecimalFormat}.
+         */
+        public void setNegativePattern(String negativePattern) {
+                throw new UnsupportedOperationException("There is still some work in SE...");
+        }
+
+        /**
+         * Get the {@code RealParameter} that returns the values we format using
+         * this class.
+         * @return
+         */
+        public RealParameter getNumericValue() {
+                return numericValue;
+        }
+
+        /**
+         * Set the {@code RealParameter} instance that will be used to retrieve
+         * the numeric values we want to format thanks to this class.
+         * @param numericValue
+         */
+        public void setNumericValue(RealParameter numericValue) {
+                this.numericValue = numericValue;
         }
 
 }

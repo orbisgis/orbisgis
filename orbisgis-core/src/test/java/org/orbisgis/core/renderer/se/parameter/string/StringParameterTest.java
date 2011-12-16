@@ -12,6 +12,7 @@ import java.io.FileOutputStream;
 import javax.xml.bind.Marshaller;
 import java.io.FileInputStream;
 import java.text.DecimalFormat;
+import java.util.Locale;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBContext;
@@ -27,7 +28,7 @@ public class StringParameterTest extends AbstractTest {
 
         @Test
         public void testMarshallAndUnmarshallCategorize() throws Exception {
-                String xml= "src/test/resources/org/orbisgis/core/renderer/se/stringCategorize.se";
+                String xml = "src/test/resources/org/orbisgis/core/renderer/se/stringCategorize.se";
                 JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
                 Unmarshaller u = jaxbContext.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
@@ -38,12 +39,12 @@ public class StringParameterTest extends AbstractTest {
                 JAXBElement<StyleType> elem = st.getJAXBElement();
                 m.marshal(elem, new FileOutputStream("target/c2routput.se"));
                 assertTrue(true);
-                
+
         }
 
         @Test
         public void testMarshallAndUnmarshallRecode() throws Exception {
-                        String xml= "src/test/resources/org/orbisgis/core/renderer/se/stringRecode.se";
+                String xml = "src/test/resources/org/orbisgis/core/renderer/se/stringRecode.se";
                 JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
                 Unmarshaller u = jaxbContext.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
@@ -65,11 +66,11 @@ public class StringParameterTest extends AbstractTest {
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml));
                 Style st = new Style(ftsElem, null);
-                PointTextGraphic ptg = (PointTextGraphic)((PointSymbolizer)st.getRules().get(0).getCompositeSymbolizer().
+                PointTextGraphic ptg = (PointTextGraphic) ((PointSymbolizer) st.getRules().get(0).getCompositeSymbolizer().
                         getSymbolizerList().get(0)).getGraphicCollection().getGraphic(0);
                 StringParameter sp = ptg.getPointLabel().getLabel().getText();
                 assertTrue(sp instanceof Number2String);
-                Number2String ns = (Number2String)sp;
+                Number2String ns = (Number2String) sp;
                 String ret = ns.getValue(null, 0);
                 assertTrue(ret.equals("12+345:6"));
                 JAXBElement<StyleType> elem = st.getJAXBElement();
@@ -78,4 +79,58 @@ public class StringParameterTest extends AbstractTest {
                 assertTrue(true);
         }
 
+        @Test
+        public void testFormatNumberDecimalPoint() throws Exception {
+                String xml = "src/test/resources/org/orbisgis/core/renderer/se/numberFormat.se";
+                JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
+                Unmarshaller u = jaxbContext.createUnmarshaller();
+                JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
+                        new FileInputStream(xml));
+                Style st = new Style(ftsElem, null);
+                PointTextGraphic ptg = (PointTextGraphic) ((PointSymbolizer) st.getRules().get(0).getCompositeSymbolizer().
+                        getSymbolizerList().get(0)).getGraphicCollection().getGraphic(0);
+                StringParameter sp = ptg.getPointLabel().getLabel().getText();
+                Number2String ns = (Number2String) sp;
+                String ret = ns.getValue(null, 0);
+                assertTrue(ns.getDecimalPoint().equals(":"));
+                assertTrue(ret.equals("12+345:6"));
+                ns.setDecimalPoint("è");
+                ret = ns.getValue(null, 0);
+                assertTrue(ns.getDecimalPoint().equals("è"));
+                assertTrue(ret.equals("12+345è6"));
+                try{
+                        ns.setDecimalPoint("youhou ?");
+                        fail();
+                } catch(IllegalArgumentException i){
+                        assertTrue(true);
+                }
+        }
+
+        @Test
+        public void testFormatNumberGroupingSeparator() throws Exception {
+                String xml = "src/test/resources/org/orbisgis/core/renderer/se/numberFormat.se";
+                JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
+                Unmarshaller u = jaxbContext.createUnmarshaller();
+                JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
+                        new FileInputStream(xml));
+                Style st = new Style(ftsElem, null);
+                PointTextGraphic ptg = (PointTextGraphic) ((PointSymbolizer) st.getRules().get(0).getCompositeSymbolizer().
+                        getSymbolizerList().get(0)).getGraphicCollection().getGraphic(0);
+                StringParameter sp = ptg.getPointLabel().getLabel().getText();
+                Number2String ns = (Number2String) sp;
+                String ret = ns.getValue(null, 0);
+                assertTrue(ns.getGroupingSeparator().equals("+"));
+                assertTrue(ret.equals("12+345:6"));
+                ns.setGroupingSeparator("!");
+                ret = ns.getValue(null, 0);
+                assertTrue(ns.getGroupingSeparator().equals("!"));
+                assertTrue(ret.equals("12!345:6"));
+                try{
+                        ns.setGroupingSeparator("youhou ?");
+                        fail();
+                } catch(IllegalArgumentException i){
+                        assertTrue(true);
+                }
+        }
+        
 }
