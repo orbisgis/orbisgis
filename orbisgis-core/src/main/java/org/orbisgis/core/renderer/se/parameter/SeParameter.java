@@ -6,7 +6,6 @@
 package org.orbisgis.core.renderer.se.parameter;
 
 import javax.xml.bind.JAXBElement;
-import net.opengis.fes._2.ExpressionType;
 import net.opengis.se._2_0.core.ParameterValueType;
 
 

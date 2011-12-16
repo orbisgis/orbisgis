@@ -46,6 +46,7 @@ import net.opengis.fes._2.LiteralType;
 import net.opengis.fes._2.ValueReferenceType;
 
 import net.opengis.se._2_0.core.CategorizeType;
+import net.opengis.se._2_0.core.FormatNumberType;
 import net.opengis.se._2_0.core.InterpolateType;
 import net.opengis.se._2_0.core.ParameterValueType;
 import net.opengis.se._2_0.core.RecodeType;
@@ -65,6 +66,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.Recode2Real;
 import org.orbisgis.core.renderer.se.parameter.string.Categorize2String;
+import org.orbisgis.core.renderer.se.parameter.string.Number2String;
 import org.orbisgis.core.renderer.se.parameter.string.Recode2String;
 import org.orbisgis.core.renderer.se.parameter.string.StringAttribute;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
@@ -235,8 +237,8 @@ public final class SeParameterFactory {
             return null;
         }
 
-        if (expr.getDeclaredType() == FunctionType.class) {
-            // TODO ??
+        if (expr.getDeclaredType() == FormatNumberType.class) {
+            return new Number2String((JAXBElement<FormatNumberType>) expr);
         } else if (expr.getDeclaredType() == ValueReferenceType.class) {
             return new StringAttribute((JAXBElement<ValueReferenceType>) expr);
 
