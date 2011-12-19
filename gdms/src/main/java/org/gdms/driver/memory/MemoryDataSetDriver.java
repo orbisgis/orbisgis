@@ -55,6 +55,8 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.GDMSModelDriver;
 import org.gdms.driver.EditableMemoryDriver;
 import org.gdms.driver.DataSet;
+import org.gdms.driver.FileDriver;
+import org.gdms.driver.MemoryDriver;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.SourceManager;
 import org.orbisgis.progress.ProgressMonitor;
@@ -183,10 +185,16 @@ public class MemoryDataSetDriver extends GDMSModelDriver implements
 
         @Override
         public void start() throws DriverException {
+                if (realSource instanceof MemoryDriver) {
+                        ((MemoryDriver) realSource).start();
+                }
         }
 
         @Override
         public void stop() throws DriverException {
+                if (realSource instanceof MemoryDriver) {
+                        ((MemoryDriver) realSource).stop();
+                }
         }
 
         @Override
@@ -212,10 +220,10 @@ public class MemoryDataSetDriver extends GDMSModelDriver implements
                 row.addAll(Arrays.asList(values));
                 contents.add(row);
         }
-        
-       @Override
+
+        @Override
         public int getSupportedType() {
-                return SourceManager.MEMORY| SourceManager.VECTORIAL | SourceManager.RASTER;
+                return SourceManager.MEMORY | SourceManager.VECTORIAL | SourceManager.RASTER;
         }
 
         @Override
@@ -225,7 +233,7 @@ public class MemoryDataSetDriver extends GDMSModelDriver implements
                         Metadata m = schema.getTableByName("main");
                         for (int i = 0; i < m.getFieldCount(); i++) {
                                 Type fieldType = m.getFieldType(i);
-                                if ((fieldType.getTypeCode() & Type.GEOMETRY) !=0) {
+                                if ((fieldType.getTypeCode() & Type.GEOMETRY) != 0) {
                                         type |= SourceManager.VECTORIAL;
                                 } else if (fieldType.getTypeCode() == Type.RASTER) {
                                         type |= SourceManager.RASTER;

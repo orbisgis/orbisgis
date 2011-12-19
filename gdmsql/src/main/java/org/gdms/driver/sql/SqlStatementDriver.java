@@ -51,6 +51,7 @@ import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.driver.AbstractDataSet;
 import org.gdms.driver.DataSet;
+import org.gdms.driver.Driver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.MemoryDriver;
 import org.gdms.driver.driverManager.DriverManager;
@@ -75,7 +76,7 @@ public class SqlStatementDriver extends AbstractDataSet implements MemoryDriver 
                 schema = new DefaultSchema("sql");
                 schema.addTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME, metadata);
         }
-        
+
         @Override
         public void start() throws DriverException {
                 sql.prepare(dsf);
@@ -97,7 +98,7 @@ public class SqlStatementDriver extends AbstractDataSet implements MemoryDriver 
         @Override
         public DataSet getTable(String name) {
                 if (DriverManager.DEFAULT_SINGLE_TABLE_NAME.equals(name)) {
-                        return set;
+                        return this;
                 }
                 return null;
         }
@@ -117,7 +118,11 @@ public class SqlStatementDriver extends AbstractDataSet implements MemoryDriver 
 
         @Override
         public int getType() {
-                return getSupportedType();
+                if (set instanceof Driver) {
+                        return getSupportedType() | ((Driver) set).getType();
+                } else {
+                        return getSupportedType();
+                }
         }
 
         @Override
@@ -168,5 +173,5 @@ public class SqlStatementDriver extends AbstractDataSet implements MemoryDriver 
         @Override
         public Metadata getMetadata() throws DriverException {
                 return set.getMetadata();
-        }       
+        }
 }

@@ -156,6 +156,10 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
         @Override
         public Number[] getScope(int dimension) throws DriverException {
                 if (cachedScope == null) {
+                        boolean open = isOpen();
+                        if (!open) {
+                                open();
+                        }
                         for (int i = 0; i < getRowCount(); i++) {
                                 Metadata m = getMetadata();
                                 for (int j = 0; j < m.getFieldCount(); j++) {
@@ -180,6 +184,9 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
                                                 }
                                         }
                                 }
+                        }
+                        if (!open) {
+                                close();
                         }
 
                 }

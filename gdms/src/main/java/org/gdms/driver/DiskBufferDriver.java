@@ -113,6 +113,18 @@ public class DiskBufferDriver extends AbstractDataSet implements MemoryDriver {
                 }
                 writer = null;
         }
+        
+        private void checkIsOpen() throws DriverException {
+                if (!isOpen()) {
+                        throw new DriverException("This driver is closed! You must call open() before calling this method.");
+                }
+        }
+        
+        private void checkIsWriting() throws DriverException {
+                if (writer == null) {
+                        throw new DriverException("This driver is not open for writing!");
+                }
+        }
 
         /**
          * This method must be called when all the contents have been added to the
@@ -141,6 +153,7 @@ public class DiskBufferDriver extends AbstractDataSet implements MemoryDriver {
                 if (isOpen()) {
                         try {
                                 reader.close();
+                                reader = null;
                         } catch (IOException e) {
                                 throw new DriverException("Cannot close gdms reader", e);
                         }
@@ -188,11 +201,12 @@ public class DiskBufferDriver extends AbstractDataSet implements MemoryDriver {
          * @throws DriverException
          */
         public void addValues(Value... row) throws DriverException {
+                checkIsWriting();
                 writeMetadataOnce();
                 writer.addValues(row);
         }
         
-        public boolean isOpen() {
+        public final boolean isOpen() {
                 return reader != null && reader.isOpen();
         }
 
@@ -205,6 +219,7 @@ public class DiskBufferDriver extends AbstractDataSet implements MemoryDriver {
         }
 
         private void writeMetadataOnce() throws DriverException {
+                checkIsWriting();
                 if (firstRow) {
                         try {
                                 writer.writeMetadata(0, schema.getTableByName("main"));
@@ -231,16 +246,19 @@ public class DiskBufferDriver extends AbstractDataSet implements MemoryDriver {
 
         @Override
         public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
+                checkIsOpen();
                 return reader.getFieldValue(rowIndex, fieldId);
         }
 
         @Override
         public long getRowCount() throws DriverException {
+                checkIsOpen();
                 return reader.getRowCount();
         }
 
         @Override
         public Number[] getScope(int dimension) throws DriverException {
+                checkIsOpen();
                 return reader.getScope(dimension);
         }
 
