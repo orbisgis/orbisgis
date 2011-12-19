@@ -229,7 +229,7 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
         @Override
         public void initialize() throws DriverException {
                 if (statement == null) {
-                        SQLEngine engine = new SQLEngine(getDataSourceFactory());
+                        SQLEngine engine = getDataSourceFactory().getSqlEngine();
                         try {
                                 statement = engine.parse(tempSQL)[0];
                         } catch (ParseException ex) {

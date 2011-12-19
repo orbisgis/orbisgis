@@ -147,7 +147,7 @@ public class FilterDataSourceDecorator extends AbstractDataSourceDecorator {
                 final String uID = sm.nameAndRegister(d, DriverManager.DEFAULT_SINGLE_TABLE_NAME);
                 
                 String rq = "SELECT oid FROM " + uID + " WHERE " + filter + ";";
-                SQLEngine p = new SQLEngine(getDataSourceFactory());
+                SQLEngine p = getDataSourceFactory().getSqlEngine();
                 SqlStatement s = null;
                 try {
                         s = p.parse(rq)[0];
