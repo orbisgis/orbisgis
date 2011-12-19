@@ -55,8 +55,9 @@ import org.orbisgis.progress.NullProgressMonitor;
  */
 public class SQLDataSourceFactory extends DataSourceFactory {
 
-        private List<DataSourceFactoryListener> listeners = new ArrayList<DataSourceFactoryListener>();
+        private final List<DataSourceFactoryListener> listeners = new ArrayList<DataSourceFactoryListener>();
         private static final Logger LOG = Logger.getLogger(SQLDataSourceFactory.class);
+        private final SQLEngine sqlEngine = new SQLEngine(this);
 
         /**
          * Creates a new {@code SQLDataSourceFactory} with a <tt>sourceInfoDir</tt>
@@ -253,7 +254,7 @@ public class SQLDataSourceFactory extends DataSourceFactory {
 
                 fireInstructionExecuted(sql);
 
-                SQLEngine engine = new SQLEngine(this);
+                SQLEngine engine = getSqlEngine();
 
                 engine.execute(sql);
         }
@@ -300,7 +301,7 @@ public class SQLDataSourceFactory extends DataSourceFactory {
         public final void register(String name, String sql)
                 throws ParseException,
                 DriverException {
-                SQLEngine engine = new SQLEngine(this);
+                SQLEngine engine = getSqlEngine();
                 SqlStatement[] instruction = engine.parse(sql);
                 getSourceManager().register(name, new SQLSourceDefinition(instruction[0]));
 
@@ -314,8 +315,12 @@ public class SQLDataSourceFactory extends DataSourceFactory {
          */
         public final String nameAndRegister(String sql) throws ParseException,
                 DriverException {
-                SQLEngine engine = new SQLEngine(this);
+                SQLEngine engine = getSqlEngine();
                 SqlStatement[] instruction = engine.parse(sql);
                 return getSourceManager().nameAndRegister(new SQLSourceDefinition(instruction[0]));
+        }
+
+        public final SQLEngine getSqlEngine() {
+                return sqlEngine;
         }
 }

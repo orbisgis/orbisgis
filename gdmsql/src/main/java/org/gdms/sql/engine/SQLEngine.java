@@ -40,6 +40,7 @@ package org.gdms.sql.engine;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.logging.Level;
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.MismatchedTokenException;
@@ -47,6 +48,7 @@ import org.antlr.runtime.NoViableAltException;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.CommonTree;
+import org.apache.log4j.Logger;
 import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
@@ -61,7 +63,19 @@ import org.gdms.sql.parser.GdmSQLParser.start_rule_return;
 public final class SQLEngine {
 
         private SQLDataSourceFactory dsf;
-        private Properties properties;
+        private Properties properties = new Properties(defaultProperties);
+        private static final Logger LOG = Logger.getLogger(SQLEngine.class);
+        private static final Properties defaultProperties;
+
+        static {
+                defaultProperties = new Properties();
+                try {
+                        defaultProperties.load(SQLEngine.class.getResourceAsStream("flags.properties"));
+                } catch (IOException ex) {
+                        LOG.warn("Failed to load the default SQL Engine flags, falling back to the internal"
+                                + " default values of the engine (not good).", ex);
+                }
+        }
 
         /**
          * Creates a new SQLEngine with the given <code>SQLDataSourceFactory</code>
@@ -222,5 +236,9 @@ public final class SQLEngine {
                         str = "'='";
                 }
                 return str;
+        }
+
+        public Properties getProperties() {
+                return properties;
         }
 }

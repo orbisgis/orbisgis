@@ -74,7 +74,7 @@ public class ExecuteScriptProcess implements BackgroundJob {
 
                 DataManager dataManager = (DataManager) Services.getService(DataManager.class);
                 SQLDataSourceFactory dsf = dataManager.getDataSourceFactory();
-                SQLEngine engine = new SQLEngine(dsf);
+                SQLEngine engine = dsf.getSqlEngine();
                 SqlStatement[] statements = null;
 
                 long t1 = System.currentTimeMillis();
