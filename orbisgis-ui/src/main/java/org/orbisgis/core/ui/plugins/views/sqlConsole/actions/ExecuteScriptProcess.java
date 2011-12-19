@@ -64,10 +64,12 @@ public class ExecuteScriptProcess implements BackgroundJob {
                 this.panel = panel;
         }
 
+        @Override
         public String getTaskName() {
                 return "Executing script";
         }
 
+        @Override
         public void run(ProgressMonitor pm) {
 
                 DataManager dataManager = (DataManager) Services.getService(DataManager.class);
