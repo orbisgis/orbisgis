@@ -40,6 +40,7 @@ package org.gdms.sql.engine.commands
 
 import Row._
 import java.io.File
+import org.gdms.data.SourceAlreadyExistsException
 import org.gdms.sql.engine.GdmSQLPredef._
 
 /**
@@ -56,6 +57,10 @@ class CreateTableCommand(name: String) extends Command with OutputCommand {
   override def preDoPrepare = {
     // register the new source
     // this will throw an exception if a source with that name already exists
+    if (dsf.getSourceManager.exists(name)) {
+      throw new SourceAlreadyExistsException("The source '" + name + "' already exists.")
+    }
+     
     resultFile = dsf.getResultFile
     
     val o = children.head.asInstanceOf[OutputCommand]
