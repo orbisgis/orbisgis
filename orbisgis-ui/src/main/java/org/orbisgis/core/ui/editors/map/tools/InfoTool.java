@@ -78,6 +78,7 @@ public class InfoTool extends AbstractRectangleTool {
 		return button;
 	}
 
+        @Override
 	public void setButton(AbstractButton button) {
 		this.button = button;
 	}
@@ -123,6 +124,7 @@ public class InfoTool extends AbstractRectangleTool {
 		}
 	}
 
+        @Override
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
 		if (vc.getSelectedLayers().length == 1) {
 			try {
@@ -137,6 +139,7 @@ public class InfoTool extends AbstractRectangleTool {
 		return false;
 	}
 
+        @Override
 	public boolean isVisible(MapContext vc, ToolManager tm) {
 		return true;
 	}
@@ -149,10 +152,12 @@ public class InfoTool extends AbstractRectangleTool {
 			this.sql = sql;
 		}
 
+                @Override
 		public String getTaskName() {
 			return "Getting info";
 		}
 
+                @Override
 		public void run(ProgressMonitor pm) {
 			try {
 				logger.debug("Info query: " + sql);
@@ -174,7 +179,6 @@ public class InfoTool extends AbstractRectangleTool {
 				Services.getErrorManager().error("Cannot access the data", e);
 			} catch (DriverLoadException e) {
 				Services.getErrorManager().error("Cannot execute the query", e);
-				e.printStackTrace();
 			} catch (ParseException e) {
 				Services.getErrorManager().error(
 						"Cannot parse the instruction", e);
@@ -182,6 +186,7 @@ public class InfoTool extends AbstractRectangleTool {
 		}
 	}
 
+        @Override
 	public String getName() {
 		return I18N.getString("orbisgis.core.ui.editors.map.tool.information");
 	}
