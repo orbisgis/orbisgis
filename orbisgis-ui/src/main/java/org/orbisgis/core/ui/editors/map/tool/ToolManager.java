@@ -63,6 +63,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -164,9 +165,11 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
                 updateCursor();
                 mapContextListener = new MapContextListener() {
 
+                        @Override
                         public void layerSelectionChanged(MapContext mapContext) {
                         }
 
+                        @Override
                         public void activeLayerChanged(ILayer previousActiveLayer, MapContext mapContext) {
                                 ILayer layer = mapContext.getActiveLayer();
                                 if (activeLayer == layer) {
@@ -196,11 +199,13 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 
                 mapTransform.addTransformListener(new TransformListener() {
 
+                        @Override
                         public void extentChanged(Envelope oldExtent,
                                 MapTransform mapTransform) {
                                 recalculateHandlers();
                         }
 
+                        @Override
                         public void imageSizeChanged(int oldWidth, int oldHeight,
                                 MapTransform mapTransform) {
                                 recalculateHandlers();
@@ -221,6 +226,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
                 }
         }
 
+        @Override
         public void mouseMoved(MouseEvent e) {
                 lastMouseX = e.getPoint().x;
                 lastMouseY = e.getPoint().y;
@@ -236,10 +242,12 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
                 setAdjustedHandler();
         }
 
+        @Override
         public void mouseDragged(MouseEvent e) {
                 mouseMoved(e);
         }
 
+        @Override
         public void mouseClicked(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1) {
                         if (e.getClickCount() == 2) {
@@ -254,6 +262,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
                 }
         }
 
+        @Override
         public void mouseWheelMoved(MouseWheelEvent e) {
                 int notches = e.getWheelRotation();
                 Automaton oldTool = getTool();
@@ -380,8 +389,9 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
                 Graphics2D g2 = (Graphics2D) g;
                 for (int i = 0; i < geomToDraw.size(); i++) {
                         try {
-                                Geometry geometry = geomToDraw.get(i).getGeometry();
-                                Symbol symbol = geomToDraw.get(i).getSymbol();
+                                GeometryAndSymbol geomAndSymbol = geomToDraw.get(i);
+                                Geometry geometry = geomAndSymbol.getGeometry();
+                                Symbol symbol = geomAndSymbol.getSymbol();
                                 if (symbol == null) {
                                         if ((geometry instanceof com.vividsolutions.jts.geom.Point)
                                                 || (geometry instanceof com.vividsolutions.jts.geom.MultiPoint)) {
@@ -590,6 +600,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
                                 item.setActionCommand(codes[i]);
                                 item.addActionListener(new ActionListener() {
 
+                                        @Override
                                         public void actionPerformed(ActionEvent e) {
                                                 try {
                                                         transition(e.getActionCommand());
@@ -711,9 +722,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
                                 if (geometry != null) {
                                         p = new Primitive(geometry, selectedRow);
                                         Handler[] handlers = p.getHandlers();
-                                        for (int j = 0; j < handlers.length; j++) {
-                                                currentHandlers.add(handlers[j]);
-                                        }
+                                        currentHandlers.addAll(Arrays.asList(handlers));
                                 }
                         }
                 } catch (DriverException e) {
@@ -776,31 +785,37 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
         }
 
         public GeometryFactory getToolsFactory() {
-               return toolsGeometryFactory;
+                return toolsGeometryFactory;
         }
 
         private class ToolLayerListener extends LayerListenerAdapter implements
                 LayerListener, EditionListener, DataSourceListener {
 
+                @Override
                 public void selectionChanged(SelectionEvent e) {
                         recalculateHandlers();
                 }
 
+                @Override
                 public void multipleModification(MultipleEditionEvent e) {
                         recalculateHandlers();
                 }
 
+                @Override
                 public void singleModification(EditionEvent e) {
                         recalculateHandlers();
                 }
 
+                @Override
                 public void cancel(DataSource ds) {
                         clearHandlers();
                 }
 
+                @Override
                 public void commit(DataSource ds) {
                 }
 
+                @Override
                 public void open(DataSource ds) {
                         recalculateHandlers();
                 }
