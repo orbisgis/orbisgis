@@ -35,7 +35,6 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-
 package org.orbisgis.core;
 
 import java.awt.Color;
@@ -58,82 +57,78 @@ import org.orbisgis.core.renderer.symbol.SymbolManager;
 
 public class OrbisgisCoreServices {
 
-	private static final String SOURCES_DIR_NAME = "sources";
-	private final static Logger logger = Logger
-			.getLogger(OrbisgisCoreServices.class);
+        /**
+         * Installs all the OrbisGIS core services
+         */
+        public static void installServices() {
+                // Error service must be installed
+                if (Services.getService(ErrorManager.class) == null) {
+                        throw new IllegalStateException("Error service must be installed "
+                                + "before initializing OrbisGIS services");
+                }
+                if (Services.getService(ErrorManager.class) == null) {
+                        throw new IllegalStateException(
+                                "Workspace service must be installed "
+                                + "before initializing OrbisGIS services");
+                }
 
-	/**
-	 * Installs all the OrbisGIS core services
-	 */
-	public static void installServices() {
-		// Error service must be installed
-		if (Services.getService(ErrorManager.class) == null) {
-			throw new IllegalStateException("Error service must be installed "
-					+ "before initializing OrbisGIS services");
-		}
-		if (Services.getService(ErrorManager.class) == null) {
-			throw new IllegalStateException(
-					"Workspace service must be installed "
-							+ "before initializing OrbisGIS services");
-		}
+                installSymbologyServices();
 
-		installSymbologyServices();
+                installExportServices();
 
-		installExportServices();
+        }
 
-	}
+        private static void installExportServices() {
+                DefaultMapExportManager mem = new DefaultMapExportManager();
+                Services.registerService(MapExportManager.class,
+                        "Manages the export of MapContexts to different formats.", mem);
+                mem.registerScale(SingleLineScale.class);
+                mem.registerScale(RectanglesScale.class);
+        }
 
-	private static void installExportServices() {
-		DefaultMapExportManager mem = new DefaultMapExportManager();
-		Services.registerService(MapExportManager.class,
-				"Manages the export of MapContexts to different formats.", mem);
-		mem.registerScale(SingleLineScale.class);
-		mem.registerScale(RectanglesScale.class);
-	}
+        public static void installSymbologyServices() {
+                DefaultSymbolManager sm = new DefaultSymbolManager();
+                Services.registerService(SymbolManager.class,
+                        "Manages the list of available symbol types", sm);
 
-	public static void installSymbologyServices() {
-		DefaultSymbolManager sm = new DefaultSymbolManager();
-		Services.registerService(SymbolManager.class,
-				"Manages the list of available symbol types", sm);
+                DefaultLegendManager lm = new DefaultLegendManager();
+                Services.registerService(LegendManager.class,
+                        "Manages the list of available legend types", lm);
 
-		DefaultLegendManager lm = new DefaultLegendManager();
-		Services.registerService(LegendManager.class,
-				"Manages the list of available legend types", lm);
+                sm.addSymbol(SymbolFactory.createPointCircleSymbol(Color.black, 1,
+                        Color.red, 10, false));
+                sm.addSymbol(SymbolFactory.createHalfCircleRightPointSymbol(
+                        Color.black, 1, Color.green, 10, false));
+                sm.addSymbol(SymbolFactory.createHalfCircleLeftPointSymbol(Color.black,
+                        1, Color.yellow, 10, false));
+                sm.addSymbol(SymbolFactory.createPointSquareSymbol(Color.black, 1,
+                        Color.red, 10, false));
+                sm.addSymbol(SymbolFactory.createVertexCircleSymbol(Color.black, 1,
+                        Color.red, 10, false));
+                sm.addSymbol(SymbolFactory.createVertexSquareSymbol(Color.black, 1,
+                        Color.red, 10, false));
+                sm.addSymbol(SymbolFactory.createPolygonCentroidSquareSymbol(
+                        Color.black, 1, Color.red, 10, false));
+                sm.addSymbol(SymbolFactory.createPolygonCentroidCircleSymbol(
+                        Color.black, 1, Color.red, 10, false));
+                sm.addSymbol(SymbolFactory.createPolygonCentroidHalfCircleLeftSymbol(
+                        Color.black, 1, Color.red, 10, false));
+                sm.addSymbol(SymbolFactory.createPolygonCentroidHalfCircleRigthSymbol(
+                        Color.black, 1, Color.red, 10, false));
+                sm.addSymbol(SymbolFactory.createPolygonSymbol());
+                sm.addSymbol(SymbolFactory.createLineSymbol(Color.black, 1));
+                sm.addSymbol(SymbolFactory.createImageSymbol());
+                sm.addSymbol(new ArrowSymbol(8, 6, Color.red, Color.black, 1));
+                // sm.addSymbol(new Shading3DPolygon(Color.black, 1, Color.gray));
 
-		sm.addSymbol(SymbolFactory.createPointCircleSymbol(Color.black, 1,
-				Color.red, 10, false));
-		sm.addSymbol(SymbolFactory.createHalfCircleRightPointSymbol(
-				Color.black, 1, Color.green, 10, false));
-		sm.addSymbol(SymbolFactory.createHalfCircleLeftPointSymbol(Color.black,
-				1, Color.yellow, 10, false));
-		sm.addSymbol(SymbolFactory.createPointSquareSymbol(Color.black, 1,
-				Color.red, 10, false));
-		sm.addSymbol(SymbolFactory.createVertexCircleSymbol(Color.black, 1,
-				Color.red, 10, false));
-		sm.addSymbol(SymbolFactory.createVertexSquareSymbol(Color.black, 1,
-				Color.red, 10, false));
-		sm.addSymbol(SymbolFactory.createPolygonCentroidSquareSymbol(
-				Color.black, 1, Color.red, 10, false));
-		sm.addSymbol(SymbolFactory.createPolygonCentroidCircleSymbol(
-				Color.black, 1, Color.red, 10, false));
-		sm.addSymbol(SymbolFactory.createPolygonCentroidHalfCircleLeftSymbol(
-				Color.black, 1, Color.red, 10, false));
-		sm.addSymbol(SymbolFactory.createPolygonCentroidHalfCircleRigthSymbol(
-				Color.black, 1, Color.red, 10, false));
-		sm.addSymbol(SymbolFactory.createPolygonSymbol());
-		sm.addSymbol(SymbolFactory.createLineSymbol(Color.black, 1));
-		sm.addSymbol(SymbolFactory.createImageSymbol());
-		sm.addSymbol(new ArrowSymbol(8, 6, Color.red, Color.black, 1));
-		// sm.addSymbol(new Shading3DPolygon(Color.black, 1, Color.gray));
+                lm.addLegend(LegendFactory.createUniqueSymbolLegend());
+                lm.addLegend(LegendFactory.createUniqueValueLegend());
+                lm.addLegend(LegendFactory.createIntervalLegend());
+                lm.addLegend(LegendFactory.createProportionalPointLegend());
+                lm.addLegend(LegendFactory.createProportionalLineLegend());
+                lm.addLegend(LegendFactory.createLabelLegend());
+                lm.addLegend(new RasterLegend(1));
+                lm.addLegend(new WMSLegend(null, null));
 
-		lm.addLegend(LegendFactory.createUniqueSymbolLegend());
-		lm.addLegend(LegendFactory.createUniqueValueLegend());
-		lm.addLegend(LegendFactory.createIntervalLegend());
-		lm.addLegend(LegendFactory.createProportionalPointLegend());
-		lm.addLegend(LegendFactory.createProportionalLineLegend());
-		lm.addLegend(LegendFactory.createLabelLegend());
-		lm.addLegend(new RasterLegend(1));
-		lm.addLegend(new WMSLegend(null, null));
-
-	}
+        }
 }

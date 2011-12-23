@@ -67,18 +67,22 @@ public class DefaultDataManager implements DataManager {
 		this.dsf = dsf;
 	}
 
+        @Override
 	public SQLDataSourceFactory getDataSourceFactory() {
 		return dsf;
 	}
 
+        @Override
 	public IndexManager getIndexManager() {
 		return dsf.getIndexManager();
 	}
 
+        @Override
 	public SourceManager getSourceManager() {
 		return dsf.getSourceManager();
 	}
 
+        @Override
 	public ILayer createLayer(String sourceName) throws LayerException {
 		Source src = ((DataManager) Services.getService(DataManager.class))
 				.getDataSourceFactory().getSourceManager().getSource(sourceName);
@@ -107,6 +111,8 @@ public class DefaultDataManager implements DataManager {
 		}
 	}
 
+        
+        @Override
 	public ILayer createLayer(DataSource sds) throws LayerException {
 		int type = sds.getSource().getType();
 		if ((type & SourceManager.WMS) == SourceManager.WMS) {
@@ -137,10 +143,12 @@ public class DefaultDataManager implements DataManager {
 		}
 	}
 
+        @Override
 	public ILayer createLayerCollection(String layerName) {
 		return new LayerCollection(layerName);
 	}
 
+        @Override
 	public ILayer createLayer(String name, File file) throws LayerException {
 		DataSourceFactory dsf = ((DataManager) Services
 				.getService(DataManager.class)).getDataSourceFactory();
@@ -174,5 +182,5 @@ public class DefaultDataManager implements DataManager {
 			throw new LayerException("Cannot instantiate layer", e);
 		}
 	}
-
+              
 }
