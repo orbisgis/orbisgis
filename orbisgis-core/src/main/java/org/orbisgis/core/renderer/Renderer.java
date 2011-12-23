@@ -56,11 +56,15 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
 
 import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
+import org.gdms.data.NoSuchTableException;
 import org.gdms.data.indexes.DefaultSpatialIndexQuery;
+import org.gdms.data.indexes.IndexException;
+import org.gdms.data.indexes.IndexManager;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
 import org.gvsig.remoteClient.exceptions.ServerErrorException;
@@ -317,22 +321,8 @@ public class Renderer {
                                         continue;
                                 }
 
-                                /*
-                                 * FilterDataSourceDecorator filterDataSourceDecorator = new
-                                 * FilterDataSourceDecorator( sds,
-                                 * "ST_Intersects(ST_GeomFromText('POLYGON((" + extent.getMinX()
-                                 * + " " + extent.getMinY() + "," + extent.getMinX() + " " +
-                                 * extent.getMaxY() + "," + extent.getMaxX() + " " +
-                                 * extent.getMaxY() + "," + extent.getMaxX() + " " +
-                                 * extent.getMinY() + "," + extent.getMinX() + " " +
-                                 * extent.getMinY() + "))'), " + sds.getSpatialFieldName() +
-                                 * ")");
-                                 *
-                                 * Iterator<Integer> it =
-                                 * filterDataSourceDecorator.getIndexMap().iterator();
-                                 */
+                                Iterator<Integer> it = new FullIterator(sds);
 
-                                Iterator<Integer> it = getIterator(mt.getAdjustedExtent(), sds);
 
                                 long rowCount = sds.getRowCount();
                                 pm.startTask(I18N.getString("orbisgis-core.org.orbisgis.renderer.drawing") + layer.getName(), 100); //$NON-NLS-1$
@@ -384,19 +374,6 @@ public class Renderer {
                         Services.getErrorManager().warning(
                                 I18N.getString("orbisgis-core.org.orbisgis.renderer.cannotDrawLayer") + layer.getName(), e); //$NON-NLS-1$
                 }
-        }
-
-        private Iterator<Integer> getIterator(Envelope adjustedExtent,
-                DataSource sds) throws DriverException {
-                if (adjustedExtent.equals(sds.getFullExtent())) {
-                        return new FullIterator(sds);
-                } else {
-                        DefaultSpatialIndexQuery query = new DefaultSpatialIndexQuery(
-                                adjustedExtent, sds.getMetadata().getFieldName(
-                                sds.getSpatialFieldIndex()));
-                        return sds.queryIndex(query);
-                }
-
         }
 
         private boolean validScale(MapTransform mt, Legend legend) {
