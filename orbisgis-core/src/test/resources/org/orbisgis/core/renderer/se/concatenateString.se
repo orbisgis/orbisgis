@@ -6,14 +6,9 @@
 				<PointLabel>
 					<StyledText>
 						<Text>
-							<Concatenate>
-								<FormatNumber fallbackValue="8" decimalPoint=":" groupingSeparator="+">
-									<NumericValue>
-										12345.6
-									</NumericValue>
-									<Pattern>###,000.##</Pattern>
-								</FormatNumber>
-								<StringValue>testing now !</StringValue>
+							<Concatenate fallbackValue="hello">
+								<StringValue>A</StringValue>
+								<StringValue>Z</StringValue>
 							</Concatenate>
 						</Text>
 					</StyledText>

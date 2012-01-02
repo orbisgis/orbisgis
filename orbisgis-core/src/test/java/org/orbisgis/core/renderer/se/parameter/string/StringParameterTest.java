@@ -166,9 +166,47 @@ public class StringParameterTest extends AbstractTest {
                 Marshaller m = jaxbContext.createMarshaller();
                 m.marshal(ftsElem, new FileOutputStream("target/concatoutput.se"));
                 Style st = new Style(ftsElem, null);
+                PointTextGraphic ptg = (PointTextGraphic) ((PointSymbolizer) st.getRules().get(0).getCompositeSymbolizer().
+                        getSymbolizerList().get(0)).getGraphicCollection().getGraphic(0);
+                StringParameter sp = ptg.getPointLabel().getLabel().getText();
+                assertTrue(sp instanceof StringConcatenate);
                 JAXBElement<StyleType> elem = st.getJAXBElement();
                 m.marshal(elem, new FileOutputStream("target/concatoutput.se"));
                 assertTrue(true);
+        }
+
+        @Test
+        public void testStringConcatenateSizeAndAdd() throws Exception {
+                String xml = "src/test/resources/org/orbisgis/core/renderer/se/concatenateString.se";
+                JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
+                Unmarshaller u = jaxbContext.createUnmarshaller();
+                JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
+                        new FileInputStream(xml));
+                Style st = new Style(ftsElem, null);
+                PointTextGraphic ptg = (PointTextGraphic) ((PointSymbolizer) st.getRules().get(0).getCompositeSymbolizer().
+                        getSymbolizerList().get(0)).getGraphicCollection().getGraphic(0);
+                StringParameter sp = ptg.getPointLabel().getLabel().getText();
+                StringConcatenate conc = (StringConcatenate) sp;
+                assertTrue(conc.size()==2);
+                conc.add(new StringLiteral("third parameter"));
+                assertTrue(conc.size()==3);
+                conc.add(1,new StringLiteral("fourth parameter"));
+                assertTrue(conc.size()==4);
+                assertTrue(conc.get(1).getValue(null, 0).equals("fourth parameter"));
+                conc.set(1,new StringLiteral("fifth parameter"));
+                assertTrue(conc.size()==4);
+                assertTrue(conc.get(1).getValue(null, 0).equals("fifth parameter"));
+                JAXBElement<StyleType> elem = st.getJAXBElement();
+                Marshaller m = jaxbContext.createMarshaller();
+                m.marshal(elem, new FileOutputStream("target/concatoutput.se"));
+                JAXBElement<StyleType> ftsElemBis = (JAXBElement<StyleType>) u.unmarshal(
+                        new FileInputStream("target/concatoutput.se"));
+                st = new Style(ftsElemBis, null);
+                ptg = (PointTextGraphic) ((PointSymbolizer) st.getRules().get(0).getCompositeSymbolizer().
+                        getSymbolizerList().get(0)).getGraphicCollection().getGraphic(0);
+                sp = ptg.getPointLabel().getLabel().getText();
+                conc = (StringConcatenate) sp;
+                assertTrue(conc.size()==4);
         }
         
 }
