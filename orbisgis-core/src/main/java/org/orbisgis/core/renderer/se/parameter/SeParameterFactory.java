@@ -46,6 +46,7 @@ import net.opengis.fes._2.LiteralType;
 import net.opengis.fes._2.ValueReferenceType;
 
 import net.opengis.se._2_0.core.CategorizeType;
+import net.opengis.se._2_0.core.ConcatenateType;
 import net.opengis.se._2_0.core.FormatNumberType;
 import net.opengis.se._2_0.core.InterpolateType;
 import net.opengis.se._2_0.core.ParameterValueType;
@@ -69,6 +70,7 @@ import org.orbisgis.core.renderer.se.parameter.string.Categorize2String;
 import org.orbisgis.core.renderer.se.parameter.string.Number2String;
 import org.orbisgis.core.renderer.se.parameter.string.Recode2String;
 import org.orbisgis.core.renderer.se.parameter.string.StringAttribute;
+import org.orbisgis.core.renderer.se.parameter.string.StringConcatenate;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 
@@ -250,6 +252,8 @@ public final class SeParameterFactory {
 
         } else if (expr.getDeclaredType() == net.opengis.se._2_0.core.RecodeType.class) {
             return new Recode2String((JAXBElement<RecodeType>) expr);
+        } else if (expr.getDeclaredType() == ConcatenateType.class){
+            return new StringConcatenate((JAXBElement<ConcatenateType>) expr);
         }
 
         return null;

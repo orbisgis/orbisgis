@@ -132,5 +132,43 @@ public class StringParameterTest extends AbstractTest {
                         assertTrue(true);
                 }
         }
+
+        @Test
+        public void testFormatNumberPattern() throws Exception {
+                String xml = "src/test/resources/org/orbisgis/core/renderer/se/numberFormat.se";
+                JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
+                Unmarshaller u = jaxbContext.createUnmarshaller();
+                JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
+                        new FileInputStream(xml));
+                Style st = new Style(ftsElem, null);
+                PointTextGraphic ptg = (PointTextGraphic) ((PointSymbolizer) st.getRules().get(0).getCompositeSymbolizer().
+                        getSymbolizerList().get(0)).getGraphicCollection().getGraphic(0);
+                StringParameter sp = ptg.getPointLabel().getLabel().getText();
+                Number2String ns = (Number2String) sp;
+                String ret = ns.getValue(null, 0);
+                assertTrue(ns.getFormattingPattern().equals("###,000.##"));
+                assertTrue(ret.equals("12+345:6"));
+                ns.setFormattingPattern("00000000.0");
+                ret = ns.getValue(null, 0);
+                assertTrue(ns.getFormattingPattern().equals("00000000.0"));
+                assertTrue(ret.equals("00012345:6"));
+                ns.setFormattingPattern("bonjour");
+                assertTrue(true);
+        }
+
+        @Test
+        public void testStringConcatenateUnmarshallMarshall() throws Exception {
+                String xml = "src/test/resources/org/orbisgis/core/renderer/se/concatenateString.se";
+                JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
+                Unmarshaller u = jaxbContext.createUnmarshaller();
+                JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
+                        new FileInputStream(xml));
+                Marshaller m = jaxbContext.createMarshaller();
+                m.marshal(ftsElem, new FileOutputStream("target/concatoutput.se"));
+                Style st = new Style(ftsElem, null);
+                JAXBElement<StyleType> elem = st.getJAXBElement();
+                m.marshal(elem, new FileOutputStream("target/concatoutput.se"));
+                assertTrue(true);
+        }
         
 }
