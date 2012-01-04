@@ -62,10 +62,10 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  *
  * @author maxence
  */
-public class ShapeHelper {
+public final class ShapeHelper {
 
     public static final double ONE_DEG_IN_RAD = Math.PI / 180.0;
-    private static boolean _DEBUG_ = false;
+    private static boolean DEBUG = false;
     private static final boolean ENABLE_QUAD = true;
     private static final double FLATNESS = 1e-5;
     private static ErrorManager logger = Services.getErrorManager();
@@ -275,8 +275,8 @@ public class ShapeHelper {
         List<Shape> shapes = new ArrayList<Shape>();
         double totalLength = ShapeHelper.getLineLength(line);
 
-        if (_DEBUG_) {
-        System.out.println("Line To SplitLength: " + totalLength);
+        if (DEBUG) {
+                System.out.println("Line To SplitLength: " + totalLength);
         }
 
         if (segLength <= 0.0 || segLength >= totalLength) {
@@ -339,7 +339,7 @@ public class ShapeHelper {
                 // On termine le segment, l'ajoute à la liste de shapes
                 segment.lineTo(x1, y1);
                 p = 0;
-        if (_DEBUG_) {
+        if (DEBUG) {
                 System.out.println("   SegLength: " + ShapeHelper.getLineLength(segment));
         }
                 shapes.add(segment);
@@ -359,7 +359,7 @@ public class ShapeHelper {
         //last segment end with last point
         //segment.lineTo(x1, y1);
 
-        if (_DEBUG_) {
+        if (DEBUG) {
         System.out.println("   SegLength: " + ShapeHelper.getLineLength(segment));
         }
         shapes.add(segment);
@@ -648,7 +648,7 @@ public class ShapeHelper {
 
         ArrayList<Vertex> vertexes = new ArrayList<Vertex>();
 
-        if (_DEBUG_) {
+        if (DEBUG) {
             System.out.println("New subshape:");
         }
         double coords[] = new double[6];
@@ -660,7 +660,7 @@ public class ShapeHelper {
             int type = it.currentSegment(coords);
             switch (type) {
                 case PathIterator.SEG_CLOSE:
-                    if (_DEBUG_) {
+                    if (DEBUG) {
                         System.out.println("Close;");
                     }
                     shapes.add(vertexes);
@@ -672,7 +672,7 @@ public class ShapeHelper {
                 case PathIterator.SEG_LINETO:
                 case PathIterator.SEG_MOVETO:
                     v = new Vertex(coords[0], coords[1]);
-                    if (_DEBUG_) {
+                    if (DEBUG) {
                         System.out.println("LineTo;" + v);
                     }
                     if (vertexes.size() > 0) {
@@ -787,7 +787,7 @@ public class ShapeHelper {
 
                 gamma = Math.acos((cLength * cLength - aLength * aLength - bLength * bLength) / (-2 * aLength * bLength));
 
-                if (_DEBUG_) {
+                if (DEBUG) {
                     System.out.println("Gamma is : " + gamma / ONE_DEG_IN_RAD);
                 }
 
@@ -799,13 +799,13 @@ public class ShapeHelper {
                 }
 
                 double angleStatus = crossProduct(vM1.x, vM1.y, v.x, v.y, vP1.x, vP1.y) * offset;
-                if (_DEBUG_) {
+                if (DEBUG) {
                     System.out.println("Status is: " + angleStatus);
                 }
 
                 if (angleStatus < 0) {
                     // Interior
-                    if (_DEBUG_) {
+                    if (DEBUG) {
                         System.out.println("Interior:");
                     }
                     double dx = eP1X - eX;
@@ -822,7 +822,7 @@ public class ShapeHelper {
 
                 } else {
                     // Exterior
-                    if (_DEBUG_) {
+                    if (DEBUG) {
                         System.out.println("Exterior:");
                     }
                     double dx = eX - eP1X;
@@ -948,7 +948,7 @@ public class ShapeHelper {
                 double d1 = absOffset;
                 double d2 = absOffset;
                 int j;
-                if (_DEBUG_) {
+                if (DEBUG) {
                     System.out.println("NEW EDGE: " + i);
                 }
                 for (j = 0; j < offstedEdges.size() - (closed ? 0 : 1); j++) {
@@ -957,7 +957,7 @@ public class ShapeHelper {
 
                     double d = getDistanceFromSegment(p1.x, p1.y, p2.x, p2.y, p31.x, p31.y);
                     if (d < d1) {
-                        if (_DEBUG_) {
+                        if (DEBUG) {
                             System.out.println("New shortest : " + " pt" + i + " edge" + j);
                         }
                         d1 = d;
@@ -966,7 +966,7 @@ public class ShapeHelper {
                     d = getDistanceFromSegment(p1.x, p1.y, p2.x, p2.y, p32.x, p32.y);
 
                     if (d < d2) {
-                        if (_DEBUG_) {
+                        if (DEBUG) {
                             System.out.println("New shortest : " + " pt" + (i + 1) + " edge" + j);
                         }
                         d2 = d;
@@ -974,7 +974,7 @@ public class ShapeHelper {
 
 
                     if (d1 < absOffset - 0.1 && d2 < absOffset - 0.1) {
-                        if (_DEBUG_) {
+                        if (DEBUG) {
                             System.out.println("Invalid !: " + d1 + ";" + d2 + ";" + absOffset);
                         }
                         e.mPos = 0;
@@ -1082,7 +1082,7 @@ public class ShapeHelper {
         for (i = 0; i < offsetLinkList.size(); i++) {
             int id = offsetLinkList.get(i);
             Edge e = edges.get(id);
-            if (_DEBUG_) {
+            if (DEBUG) {
                 System.out.println("Edge is: " + e);
             }
             if (e.is11()) {
@@ -1096,7 +1096,7 @@ public class ShapeHelper {
 
         while (backward < offsetLinkList.size()) {
 
-            if (_DEBUG_) {
+            if (DEBUG) {
                 System.out.println("Backward edge is " + offsetLinkList.get(backward));
             }
             for (i = (backward + 1) % offsetLinkList.size(); i != backward; i = (i + 1) % offsetLinkList.size()) {
@@ -1123,7 +1123,7 @@ public class ShapeHelper {
                 }
             }
 
-            if (_DEBUG_) {
+            if (DEBUG) {
                 System.out.println("Forward edge is " + offsetLinkList.get(forward));
             }
 
@@ -1132,7 +1132,7 @@ public class ShapeHelper {
                 break;
             }
 
-            if (_DEBUG_) {
+            if (DEBUG) {
                 System.out.println("Status : " + edges.get(offsetLinkList.get(backward)) + ";" + edges.get(offsetLinkList.get(forward)));
                 System.out.println(" in_dir: " + inDir + "    in_pos: " + inPos);
             }
@@ -1142,14 +1142,14 @@ public class ShapeHelper {
 
             if (inDir == 0 && inPos == 0) {
                 // Add backward edge 2nd point
-                if (_DEBUG_) {
+                if (DEBUG) {
                     System.out.println("Add " + vertexes.get(bn));
                 }
                 rawLink.add(vertexes.get(bn));
             } else if (inDir == 0 && inPos > 0) {
                 for (Integer j : bufferLinkList) {
                     rawLink.add(vertexes.get(j));
-                    if (_DEBUG_) {
+                    if (DEBUG) {
                         System.out.println("Add " + vertexes.get(j));
                     }
                 }
@@ -1185,7 +1185,7 @@ public class ShapeHelper {
                     // 3.1
                     Vertex nv = new Vertex(inter.x, inter.y);
                     rawLink.add(nv);
-                    if (_DEBUG_) {
+                    if (DEBUG) {
                         System.out.println("Add3.1 " + nv);
                     }
                 } else {
@@ -1205,13 +1205,13 @@ public class ShapeHelper {
 
                             Vertex nv = new Vertex(i1.x, i1.y);
                             rawLink.add(nv);
-                            if (_DEBUG_) {
+                            if (DEBUG) {
                                 System.out.println("Add3.2a " + nv);
                             }
 
                             nv = new Vertex(i2.x, i2.y);
                             rawLink.add(nv);
-                            if (_DEBUG_) {
+                            if (DEBUG) {
                                 System.out.println("Add3.2b " + nv);
                             }
                         }
@@ -1322,7 +1322,7 @@ public class ShapeHelper {
         //}
 
         for (List<Vertex> vertexes : shapes) {
-            if (_DEBUG_) {
+            if (DEBUG) {
                 System.out.println("Original vertexes: ");
                 for (Vertex v : vertexes) {
                     System.out.println(v);
@@ -1344,7 +1344,7 @@ public class ShapeHelper {
                 return rawShapes;
             }
 
-            if (_DEBUG_) {
+            if (DEBUG) {
                 System.out.println("Cleaned vertexes: ");
                 for (Vertex v : vertexes) {
                     System.out.println(v);
@@ -1358,7 +1358,7 @@ public class ShapeHelper {
 
             List<Edge> edges = computeEdges(vertexes, offsetVertexes, offset, closed);
 
-            if (_DEBUG_) {
+            if (DEBUG) {
                 System.out.println("Edges: ");
                 for (Edge e : edges) {
                     System.out.println(e);
@@ -1367,7 +1367,7 @@ public class ShapeHelper {
 
             List<Vertex> rawLink = computeRawLink(edges, offsetVertexes, closed);
 
-            if (_DEBUG_) {
+            if (DEBUG) {
                 System.out.println("Raw Link: ");
                 for (Vertex v : rawLink) {
                     System.out.println(v);
@@ -1485,7 +1485,7 @@ public class ShapeHelper {
         double x;
         double y;
 
-        if (_DEBUG_) {
+        if (DEBUG) {
             System.out.println(x1 + ";" + y1 + " --> " + x2 + ";" + y2);
             System.out.println(x3 + ";" + y3 + " --> " + x4 + ";" + y4);
             System.out.println("a1: " + a1);
@@ -1503,7 +1503,7 @@ public class ShapeHelper {
             y = a1 * x + b1;
         } else {
             x = (b2 - b1) / (a1 - a2);
-            if (_DEBUG_) {
+            if (DEBUG) {
                 System.out.println("a1-a2:" + (a1 - a2));
                 System.out.println("b1-b2:" + (b2 - b1));
             }
@@ -1513,7 +1513,7 @@ public class ShapeHelper {
             }
         }
 
-        if (_DEBUG_) {
+        if (DEBUG) {
             System.out.println(" intersection is: " + x + ";" + y);
         }
 
