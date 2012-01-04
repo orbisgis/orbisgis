@@ -1,6 +1,5 @@
 package org.orbisgis.core.renderer.se.parameter.real;
 
-import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.ValueReferenceType;
 import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;

@@ -6,8 +6,6 @@ import java.awt.geom.Rectangle2D;
 
 import java.io.IOException;
 
-import java.net.URISyntaxException;
-import javax.media.jai.PlanarImage;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
 

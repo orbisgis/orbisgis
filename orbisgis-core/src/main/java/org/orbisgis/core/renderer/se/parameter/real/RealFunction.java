@@ -40,7 +40,6 @@ package org.orbisgis.core.renderer.se.parameter.real;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
-import net.opengis.fes._2.ExpressionType;
 import net.opengis.fes._2.FunctionType;
 import net.opengis.fes._2.ObjectFactory;
 import net.opengis.se._2_0.core.ParameterValueType;

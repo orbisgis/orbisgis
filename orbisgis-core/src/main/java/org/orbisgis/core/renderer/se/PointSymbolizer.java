@@ -43,8 +43,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
 import net.opengis.se._2_0.core.ExtensionType;

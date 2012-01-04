@@ -48,17 +48,17 @@ public interface SliceListener {
      * iest slice become (i-1)est
      * @param i
      */
-    public void sliceMoveUp(int i);
+    void sliceMoveUp(int i);
 
     /**
      * iest slice become i+1 est
      * @param i
      */
-    public void sliceMoveDown(int i);
+    void sliceMoveDown(int i);
 
     /**
      * ith {@code Slice} of the {@code PieChart} has been removed.
      * @param i
      */
-    public void sliceRemoved(int i);
+    void sliceRemoved(int i);
 }

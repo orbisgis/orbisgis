@@ -36,12 +36,12 @@ public interface ExternalGraphicSource {
          * @return
          * @throws ParameterException
          */
-    public Rectangle2D.Double updateCacheAndGetBounds(ViewBox viewBox, 
+    Rectangle2D.Double updateCacheAndGetBounds(ViewBox viewBox, 
             DataSource sds, long fid, MapTransform mt, String mimeType) throws ParameterException;
     
-    public void draw(Graphics2D g2, AffineTransform at, MapTransform mt, double opacity, String mimeType);
+    void draw(Graphics2D g2, AffineTransform at, MapTransform mt, double opacity, String mimeType);
 
     //public abstract RenderedImage getPlanarImage(ViewBox viewBox, DataSource sds, long fid, MapTransform mt, String mimeType) throws IOException, ParameterException;
 
-    public void setJAXBSource(ExternalGraphicType e);
+    void setJAXBSource(ExternalGraphicType e);
 }

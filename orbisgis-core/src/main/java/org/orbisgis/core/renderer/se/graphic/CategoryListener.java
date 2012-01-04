@@ -48,14 +48,14 @@ public interface CategoryListener {
      * iest category become (i-1)est
      * @param i
      */
-    public void categoryMoveUp(int i);
+    void categoryMoveUp(int i);
 
     /**
      * iest category become i+1 est
      * @param i
      */
-    public void categoryMoveDown(int i);
+    void categoryMoveDown(int i);
 
 
-    public void categoryRemoved(int i);
+    void categoryRemoved(int i);
 }

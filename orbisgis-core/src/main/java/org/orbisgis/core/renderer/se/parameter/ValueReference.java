@@ -2,7 +2,6 @@ package org.orbisgis.core.renderer.se.parameter;
 
 import java.util.ArrayList;
 import javax.xml.bind.JAXBElement;
-import net.opengis.fes._2.ExpressionType;
 import net.opengis.fes._2.ObjectFactory;
 import net.opengis.fes._2.ValueReferenceType;
 import net.opengis.se._2_0.core.ParameterValueType;

@@ -40,8 +40,6 @@
 
 package org.orbisgis.core.renderer.se;
 
-import java.net.URISyntaxException;
-
 /**
  *
  * @author maxence

@@ -26,5 +26,5 @@ public interface UomNode {
          * @return 
          * A Uom instance, if this has got one, null otherwise.
          */
-	public Uom getOwnUom();
+	Uom getOwnUom();
 }

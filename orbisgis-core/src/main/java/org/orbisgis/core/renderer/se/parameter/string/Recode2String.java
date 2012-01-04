@@ -1,7 +1,6 @@
 package org.orbisgis.core.renderer.se.parameter.string;
 
 import java.awt.Color;
-import java.util.HashMap;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.MapItemType;
 import net.opengis.se._2_0.core.RecodeType;

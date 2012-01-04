@@ -37,7 +37,6 @@
  */
 package org.orbisgis.core.renderer.se.parameter.real;
 
-import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
 
 import net.opengis.se._2_0.core.MapItemType;

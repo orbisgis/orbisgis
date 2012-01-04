@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.bind.JAXBElement;
-import net.opengis.fes._2.ExpressionType;
 import net.opengis.se._2_0.core.CategorizeType;
 import org.gdms.data.DataSource;
 import net.opengis.se._2_0.core.ExtensionParameterType;

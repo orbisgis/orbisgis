@@ -18,9 +18,7 @@ import net.opengis.se._2_0.core.ExtensionType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.TextSymbolizerType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
 
 /**
  * Entry point for all kind of symbolizer

@@ -44,21 +44,21 @@ public interface Transformation {
      * @throws ParameterException
      * @throws IOException
      */
-    abstract AffineTransform getAffineTransform(DataSource sds, long fid, Uom uom, MapTransform mt, Double width, Double height) throws ParameterException, IOException;
+    AffineTransform getAffineTransform(DataSource sds, long fid, Uom uom, MapTransform mt, Double width, Double height) throws ParameterException, IOException;
 
     /**
      * Get a JAXB representation of this {@code Label}
      * @return
      * A {@code JAXBElement} that contains a {@code LabelType} specialization.
      */
-    abstract JAXBElement<?> getJAXBElement();
+    JAXBElement<?> getJAXBElement();
 
     /**
      * Get a JAXB representation of this {@code Label}
      * @return
      * A {@code JAXBType} that represents a {@code LabelType} specialization.
      */
-    abstract Object getJAXBType();
+    Object getJAXBType();
 
     /**
      * Get a String representation of the list of features this {@code Transformation}

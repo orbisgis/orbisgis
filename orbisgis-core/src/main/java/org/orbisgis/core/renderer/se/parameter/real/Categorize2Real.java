@@ -1,7 +1,6 @@
 package org.orbisgis.core.renderer.se.parameter.real;
 
 import java.util.Iterator;
-import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.LiteralType;
 import net.opengis.se._2_0.core.CategorizeType;
 import net.opengis.se._2_0.core.ParameterValueType;

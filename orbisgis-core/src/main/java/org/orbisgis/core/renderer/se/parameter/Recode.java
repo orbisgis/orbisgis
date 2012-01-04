@@ -43,7 +43,6 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
-import net.opengis.fes._2.ExpressionType;
 import net.opengis.fes._2.LiteralType;
 import org.gdms.data.DataSource;
 import net.opengis.se._2_0.core.MapItemType;

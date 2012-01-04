@@ -45,9 +45,6 @@ import net.opengis.fes._2.ValueReferenceType;
 import org.gdms.data.DataSource;
 
 import org.gdms.data.values.Value;
-
-import org.gdms.driver.DriverException;
-
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.ValueReference;
