@@ -253,7 +253,7 @@ public final class Rule implements SymbolizerNode {
          * @throws SemanticException
          */
         public FilterDataSourceDecorator getFilteredDataSource(FilterDataSourceDecorator fds)
-                        throws DriverLoadException, DataSourceCreationException, DriverException {
+                        throws DataSourceCreationException, DriverException {
                 if (where != null && !where.isEmpty()) {
                         return new FilterDataSourceDecorator(fds, where + getOrderBy());
                 } else if (!getOrderBy().isEmpty()) {
