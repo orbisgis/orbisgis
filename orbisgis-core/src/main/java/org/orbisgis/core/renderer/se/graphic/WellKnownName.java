@@ -70,7 +70,7 @@ public enum WellKnownName implements MarkGraphicSource {
     /**
      * Default size to be used to render graphics based on well-known names.
      */
-    public static double DEFAULT_SIZE = 10.0;
+    public static final double DEFAULT_SIZE = 10.0;
 
     /**
      * Get all the {@code String} values that can be used to build a {@code WellKnownName}.
@@ -165,10 +165,10 @@ public enum WellKnownName implements MarkGraphicSource {
 
                 Polygon star = new Polygon();
 
-                double cos1 = 0.587785252292472915058851867798;
-                double cos2 = 0.951056516295153531181938433292;
-                double sin1 = 0.809016994374947562285171898111;
-                double sin2 = 0.309016994374947617796323129369;
+                final double cos1 = 0.587785252292472915058851867798;
+                final double cos2 = 0.951056516295153531181938433292;
+                final double sin1 = 0.809016994374947562285171898111;
+                final double sin2 = 0.309016994374947617796323129369;
 
                 star.addPoint(0, (int) (cry - 0.5));
                 // alpha = 234

@@ -87,7 +87,7 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode,
     public PieChart() {
         slices = new ArrayList<Slice>();
         type = PieChartSubType.WHOLE;
-        radius = new RealLiteral(10);
+        radius = new RealLiteral(DEFAULT_RADIUS_PX);
         this.listeners = new ArrayList<SliceListener>();
     }
 
