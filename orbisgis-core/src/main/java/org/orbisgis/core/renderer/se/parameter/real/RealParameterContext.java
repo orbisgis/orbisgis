@@ -46,9 +46,9 @@ import java.awt.Font;
  */
 public class RealParameterContext {
 
-	public final static RealParameterContext PERCENTAGE_CONTEXT;
-        public final static RealParameterContext NON_NEGATIVE_CONTEXT;
-        public final static RealParameterContext REAL_CONTEXT;
+	public static final RealParameterContext PERCENTAGE_CONTEXT;
+        public static final RealParameterContext NON_NEGATIVE_CONTEXT;
+        public static final RealParameterContext REAL_CONTEXT;
         
         protected Double min;
         protected Double max;

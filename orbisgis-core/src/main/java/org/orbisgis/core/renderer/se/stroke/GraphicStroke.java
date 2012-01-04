@@ -42,7 +42,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  */
 public final class GraphicStroke extends Stroke implements GraphicNode, UomNode {
 
-    public final static double MIN_LENGTH = 1; // In pixel !
+    public static final double MIN_LENGTH = 1; // In pixel !
 
     private GraphicCollection graphic;
     private RealParameter length;

@@ -59,7 +59,7 @@ import org.orbisgis.core.renderer.symbol.SymbolManager;
 public class OrbisgisCoreServices {
 
 	private static final String SOURCES_DIR_NAME = "sources";
-	private final static Logger logger = Logger
+	private static final Logger logger = Logger
 			.getLogger(OrbisgisCoreServices.class);
 
 	/**
