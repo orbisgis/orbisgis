@@ -78,7 +78,7 @@ import org.orbisgis.core.renderer.se.transform.Translate;
  */
 public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, StrokeNode {
 
-    protected Translate translate;
+    private Translate translate;
     
     private RealParameter perpendicularOffset;
     private Stroke stroke;
