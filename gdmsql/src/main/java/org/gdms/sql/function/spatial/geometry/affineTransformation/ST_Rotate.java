@@ -64,7 +64,7 @@ public final class ST_Rotate extends AbstractScalarSpatialFunction {
 
                 Coordinate centre = geom.getEnvelopeInternal().centre();
                 AffineTransformation trans = AffineTransformation.rotationInstance(
-                        rotation * Math.PI, rotation, centre.x, centre.y);
+                        rotation, centre.x, centre.y);
                 return ValueFactory.createValue(trans.transform(geom));
 
         }
@@ -76,12 +76,12 @@ public final class ST_Rotate extends AbstractScalarSpatialFunction {
 
         @Override
         public String getDescription() {
-                return "Rotate a geometry using a given value. ";
+                return "Rotate a geometry using a value in radians. ";
         }
 
         @Override
         public String getSqlOrder() {
-                return "select ST_Rotate(geometry, scale) from myTable;";
+                return "select ST_Rotate(geometry, angle ) from myTable;";
         }
 
         @Override
