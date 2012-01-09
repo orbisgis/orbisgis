@@ -65,7 +65,6 @@ import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.background.DefaultJobId;
 import org.orbisgis.core.edition.EditableElement;
 import org.orbisgis.core.errorManager.ErrorManager;
-import org.orbisgis.core.geocognition.LeafElement;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerCollectionEvent;
 import org.orbisgis.core.layerModel.LayerListener;
@@ -205,10 +204,6 @@ public class MapControl extends JComponent implements ComponentListener,
 			}
 
 		});
-
-		// Add editable element listen transform event
-		if (element instanceof LeafElement)
-			mapTransform.addTransformListener((LeafElement) element);
 
                 refreshLayerListener = new RefreshLayerListener();
 

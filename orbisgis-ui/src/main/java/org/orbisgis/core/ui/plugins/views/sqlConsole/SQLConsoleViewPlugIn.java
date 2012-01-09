@@ -27,9 +27,7 @@
  */
 package org.orbisgis.core.ui.plugins.views.sqlConsole;
 
-import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -40,20 +38,15 @@ import java.io.IOException;
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
 
-import org.gdms.sql.function.Function;
-import org.gdms.sql.function.FunctionManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundManager;
-import org.orbisgis.core.geocognition.GeocognitionElement;
 import org.orbisgis.core.sif.OpenFilePanel;
 import org.orbisgis.core.sif.SaveFilePanel;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
-import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
-import org.orbisgis.core.ui.plugins.views.geocognition.TransferableGeocognitionElement;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.actions.ConsoleListener;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.actions.ExecuteScriptProcess;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.ui.SQLConsolePanel;
@@ -140,26 +133,6 @@ public class SQLConsoleViewPlugIn extends ViewPlugIn {
 
                         @Override
                         public String doDrop(Transferable t) {
-                                DataFlavor geocogFlavor = TransferableGeocognitionElement.geocognitionFlavor;
-                                if (t.isDataFlavorSupported(geocogFlavor)) {
-                                        try {
-                                                GeocognitionElement[] elems = (GeocognitionElement[]) t.getTransferData(geocogFlavor);
-                                                if (elems.length == 1) {
-                                                        Function f = FunctionManager.getFunction(elems[0].getId());
-                                                        if (f != null) {
-                                                                return f.getSqlOrder();
-                                                        }
-                                                }
-                                        } catch (UnsupportedFlavorException e) {
-                                                ErrorMessages.error(
-                                                        I18N.getString("orbisgis.errorMessages.CannotDropFunction"),
-                                                        e);
-                                        } catch (IOException e) {
-                                                ErrorMessages.error(
-                                                        I18N.getString("orbisgis.errorMessages.CannotDropFunction"),
-                                                        e);
-                                        }
-                                }
                                 return null;
                         }
                 });

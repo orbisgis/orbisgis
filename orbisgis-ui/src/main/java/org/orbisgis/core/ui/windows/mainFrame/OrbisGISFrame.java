@@ -86,8 +86,6 @@ import org.orbisgis.core.ui.plugins.views.ViewDecorator;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 import org.orbisgis.core.ui.plugins.views.geocatalog.Catalog;
 import org.orbisgis.core.ui.plugins.views.geocatalog.GeoCatalogViewPlugIn;
-import org.orbisgis.core.ui.plugins.views.geocognition.GeocognitionView;
-import org.orbisgis.core.ui.plugins.views.geocognition.GeocognitionViewPlugIn;
 import org.orbisgis.core.ui.plugins.views.mapEditor.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.tableEditor.TableEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.toc.TocViewPlugIn;
@@ -185,15 +183,6 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 
         public Toc getToc() {
                 return ((TocViewPlugIn) getViewDecorator(Names.TOC).getView()).getPanel();
-        }
-
-        /**
-         * Get the GeoCognition view
-         *
-         * @return {@link GeocognitionView}
-         */
-        public GeocognitionView getGeocognitionView() {
-                return ((GeocognitionViewPlugIn) getViewDecorator(Names.GEOCOGNITION).getView()).getPanel();
         }
 
         /**

@@ -135,7 +135,6 @@ import org.orbisgis.core.ui.plugins.toc.SaveInFilePlugIn;
 import org.orbisgis.core.ui.plugins.toc.SaveLayerPlugIn;
 import org.orbisgis.core.ui.plugins.toc.SetActivePlugIn;
 import org.orbisgis.core.ui.plugins.toc.SetInactivePlugIn;
-import org.orbisgis.core.ui.plugins.toc.ShowInTablePlugIn;
 import org.orbisgis.core.ui.plugins.toc.ZoomToLayerPlugIn;
 import org.orbisgis.core.ui.plugins.toc.raster.nodata.SetnodataValuePlugIn;
 import org.orbisgis.core.ui.plugins.toc.raster.style.RasterDefaultStylePlugIn;
@@ -155,12 +154,6 @@ import org.orbisgis.core.ui.plugins.views.geocatalog.NewGeocatalogFilePlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.NewGeocatalogFolderPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.NewGeocognitionDBPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.WMSGeocatalogPlugIn;
-import org.orbisgis.core.ui.plugins.views.geocognition.GeocognitionAddMapPlugIn;
-import org.orbisgis.core.ui.plugins.views.geocognition.GeocognitionClearPlugIn;
-import org.orbisgis.core.ui.plugins.views.geocognition.GeocognitionNewFolderPlugIn;
-import org.orbisgis.core.ui.plugins.views.geocognition.GeocognitionNewSymbolPlugIn;
-import org.orbisgis.core.ui.plugins.views.geocognition.OpenGeocognitionPlugIn;
-import org.orbisgis.core.ui.plugins.views.geocognition.RemoveGeocognitionPlugIn;
 import org.orbisgis.core.ui.plugins.views.mapEditor.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.tableEditor.TableEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
@@ -192,7 +185,6 @@ public class OrbisConfiguration implements Setup {
         private RasterDefaultStylePlugIn rasterDefaultStylePlugIn = new RasterDefaultStylePlugIn();
         private SetnodataValuePlugIn setnodataValuePlugIn = new SetnodataValuePlugIn();
         private RasterThresholdPlugIn rasterThresholdPlugIn = new RasterThresholdPlugIn();
-        private ShowInTablePlugIn showInTablePlugIn = new ShowInTablePlugIn();
         private SaveInFilePlugIn saveInFilePlugIn = new SaveInFilePlugIn();
         private SaveInDataBasePlugIn saveInDataBasePlugIn = new SaveInDataBasePlugIn();
         private GroupLayersPlugIn groupLayersPlugIn = new GroupLayersPlugIn();
@@ -205,19 +197,12 @@ public class OrbisConfiguration implements Setup {
         private ZoomToLayerPlugIn zoomToLayerPlugIn = new ZoomToLayerPlugIn();
         // DEMO
         // private MyTOCMenu myTOCMenu = new MyTOCMenu();
-        // Geocognition popup
-        private OpenGeocognitionPlugIn openGeocognitionPlugIn = new OpenGeocognitionPlugIn();
-        private RemoveGeocognitionPlugIn removeGeocognitionPlugIn = new RemoveGeocognitionPlugIn();
-        private GeocognitionAddMapPlugIn geocognitionAddMapPlugIn = new GeocognitionAddMapPlugIn();
-        private GeocognitionNewFolderPlugIn geocognitionNewFolder = new GeocognitionNewFolderPlugIn();
-        private GeocognitionNewSymbolPlugIn geocognitionNewSymbol = new GeocognitionNewSymbolPlugIn();
         // Geocatalog popup
         private NewGeocatalogFilePlugIn newGeocatalogFile = new NewGeocatalogFilePlugIn();
         private NewGeocatalogFolderPlugIn newGeocatalogFolder = new NewGeocatalogFolderPlugIn();
         private NewGeocognitionDBPlugIn newGeocognitionDB = new NewGeocognitionDBPlugIn();
         private ConvertXYZDemGeocatalogPlugIn convertXYZDemGeocatalogPlugIn = new ConvertXYZDemGeocatalogPlugIn();
         private WMSGeocatalogPlugIn wMSGeocatalogPlugIn = new WMSGeocatalogPlugIn();
-        private GeocognitionClearPlugIn geocognitionClearPlugIn = new GeocognitionClearPlugIn();
         private GeocatalogCreateFileSourcePlugIn geocatalogCreateFileSource = new GeocatalogCreateFileSourcePlugIn();
         private GeocatalogDeleteSourcePlugIn geocatalogDeleteSource = new GeocatalogDeleteSourcePlugIn();
         private GeocatalogClearPlugIn geocatalogClear = new GeocatalogClearPlugIn();
@@ -330,7 +315,6 @@ public class OrbisConfiguration implements Setup {
                         rasterDefaultStylePlugIn.initialize(context);
                         setnodataValuePlugIn.initialize(context);
                         rasterThresholdPlugIn.initialize(context);
-                        showInTablePlugIn.initialize(context);
                         saveInFilePlugIn.initialize(context);
                         saveInDataBasePlugIn.initialize(context);
                         groupLayersPlugIn.initialize(context);
@@ -342,17 +326,6 @@ public class OrbisConfiguration implements Setup {
                         revertLayerPlugIn.initialize(context);
                         saveLayerPlugIn.initialize(context);
 
-                        // DEMO
-
-                        // myTOCMenu.initialize(context);
-
-                        // Geocognition popup
-                        openGeocognitionPlugIn.initialize(context);
-                        removeGeocognitionPlugIn.initialize(context);
-                        geocognitionClearPlugIn.initialize(context);
-                        geocognitionAddMapPlugIn.initialize(context);
-                        geocognitionNewFolder.initialize(context);
-                        geocognitionNewSymbol.initialize(context);
 
                         // Geocatalog popup
                         newGeocatalogFile.initialize(context);

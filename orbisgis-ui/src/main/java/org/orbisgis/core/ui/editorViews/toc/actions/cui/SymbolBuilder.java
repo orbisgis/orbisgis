@@ -56,7 +56,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
@@ -65,7 +64,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.orbisgis.core.Services;
-import org.orbisgis.core.geocognition.Geocognition;
 import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.renderer.symbol.SymbolFactory;
 import org.orbisgis.core.renderer.symbol.SymbolManager;
@@ -344,20 +342,12 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 		btnToCollection.setFocusable(false);
 		btnToCollection.setHorizontalTextPosition(SwingConstants.CENTER);
 		btnToCollection.setVerticalTextPosition(SwingConstants.BOTTOM);
-		btnToCollection.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				jButtonToCollectionActionPerformed(evt);
-			}
-		});
+
 		jPanelButtonsCollection.add(btnToCollection);
 
 		btnFromCollection.setIcon(OrbisGISIcon.ADD);
 		btnFromCollection.setToolTipText(I18N.getString("orbisgis.org.orbisgis.ui.toc.symbolBuilder.add")); //$NON-NLS-1$
-		btnFromCollection.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				jButtonFromCollectionActionPerformed(evt);
-			}
-		});
+
 		jPanelButtonsCollection.add(btnFromCollection);
 
 		jPanelPreview.add(jPanelButtonsCollection);
@@ -537,17 +527,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 		}
 	}
 
-	/**
-	 * gets the symbols and adds to the collection as a new Composite
-	 *
-	 * @param evt
-	 */
-	private void jButtonToCollectionActionPerformed(ActionEvent evt) {
-		Geocognition geocognition = Services.getService(Geocognition.class);
-		geocognition.addElement(geocognition.getUniqueId("symbol"), //$NON-NLS-1$
-				getSymbolComposite());
-		JOptionPane.showMessageDialog(this, I18N.getString("orbisgis.org.orbisgis.ui.toc.symbolBuilder.symbolSavedInGeocognition")); //$NON-NLS-1$
-	}
+
 
 	private JPanel canvasPreview;
 	private JButton btnFromCollection;

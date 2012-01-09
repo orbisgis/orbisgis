@@ -55,9 +55,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.orbisgis.core.Services;
-import org.orbisgis.core.geocognition.Geocognition;
-import org.orbisgis.core.geocognition.GeocognitionElement;
-import org.orbisgis.core.geocognition.GeocognitionFilter;
 import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.sif.UIPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendContext;
@@ -75,33 +72,6 @@ public class SymbolCollection extends javax.swing.JPanel implements UIPanel {
 		this.legendContext = legendContext;
 		initComponents();
 
-		Geocognition geocognition = Services.getService(Geocognition.class);
-		GeocognitionElement[] symbols = geocognition
-				.getElements(new GeocognitionFilter() {
-
-					@Override
-					public boolean accept(GeocognitionElement element) {
-						return element
-								.getTypeId()
-								.equals(
-										"org.orbisgis.core.geocognition.Symbol");
-					}
-
-				});
-		for (int i = 0; i < symbols.length; i++) {
-			SelectableCanvas can = new SelectableCanvas(symbols[i].getId());
-
-			can.setSymbol(((Symbol) symbols[i].getObject()).cloneSymbol());
-			can.setPreferredSize(new Dimension(126, 70));
-
-			can.addMouseListener(new java.awt.event.MouseAdapter() {
-				public void mouseClicked(java.awt.event.MouseEvent evt) {
-					jPanelPreviewSymbolsMouseClicked(evt);
-				}
-			});
-
-			pnlSymbols.add(can);
-		}
 	}
 
 	/**

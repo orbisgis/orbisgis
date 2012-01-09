@@ -77,7 +77,6 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
-import org.orbisgis.core.ui.plugins.views.geocognition.OpenGeocognitionElementJob;
 import org.orbisgis.core.ui.plugins.views.mapEditor.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.tableEditor.TableEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
@@ -144,32 +143,7 @@ public class EditorPanel extends Container {
 
 		});
 
-		this.setDropTarget(new DropTarget(this, new DropTargetAdapter() {
-
-			@Override
-			public void drop(DropTargetDropEvent dtde) {
-				BackgroundManager backgroundManager = (BackgroundManager) Services
-						.getService(BackgroundManager.class);
-				Transferable trans = dtde.getTransferable();
-				if (trans
-						.isDataFlavorSupported(TransferableEditableElement.editableElementFlavor)) {
-					try {
-						EditableElement[] elements = (EditableElement[]) trans
-								.getTransferData(TransferableEditableElement.editableElementFlavor);
-						backgroundManager
-								.backgroundOperation(new OpenGeocognitionElementJob(
-										elements));
-					} catch (UnsupportedFlavorException e) {
-						Services.getErrorManager().error(
-								I18N.getString("orbisgis.org.orbisgis.ui.editorPanel.cannotOpenElementType"), e); //$NON-NLS-1$
-					} catch (IOException e) {
-						Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.ui.editorPanel.cannotOpenElement"), //$NON-NLS-1$
-								e);
-					}
-				}
-			}
-
-		}));
+		
 	}
 
 	public EditableElement getCurrentDocument() {

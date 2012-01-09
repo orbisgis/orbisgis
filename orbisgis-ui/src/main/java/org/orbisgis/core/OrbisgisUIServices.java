@@ -54,8 +54,6 @@ import org.gdms.plugins.PlugInManagerListener;
 import org.orbisgis.core.configuration.BasicConfiguration;
 import org.orbisgis.core.configuration.DefaultBasicConfiguration;
 import org.orbisgis.core.errorManager.ErrorManager;
-import org.orbisgis.core.geocognition.DefaultGeocognition;
-import org.orbisgis.core.geocognition.Geocognition;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.javaManager.DefaultJavaManager;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.javaManager.JavaManager;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.language.SQLMetadataManager;
@@ -76,9 +74,6 @@ public class OrbisgisUIServices {
 
                 installApplicationInfoServices();
 
-                // installWorkspaceServices();
-
-                installGeocognitionService();
 
                 try {
                         installJavaServices();
@@ -168,13 +163,6 @@ public class OrbisgisUIServices {
 
         }
 
-        public static void installGeocognitionService() {
-                DefaultGeocognition dg = new DefaultGeocognition();
-                Services.registerService(
-                        Geocognition.class,
-                        "Registry containing all the artifacts produced and shared by the users",
-                        dg);
-        }
 
         protected static void installConfigurationService() {
                 BasicConfiguration bc = new DefaultBasicConfiguration();

@@ -39,7 +39,6 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.BeanShellConsoleViewPlugIn;
 import org.orbisgis.core.ui.plugins.views.editor.EditorViewPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.GeoCatalogViewPlugIn;
-import org.orbisgis.core.ui.plugins.views.geocognition.GeocognitionViewPlugIn;
 import org.orbisgis.core.ui.plugins.views.geomark.GeomarkViewPlugIn;
 import org.orbisgis.core.ui.plugins.views.information.InformationViewPlugIn;
 import org.orbisgis.core.ui.plugins.views.memory.MemoryViewPlugIn;
@@ -62,9 +61,6 @@ public class OrbisGISConfiguration {
 		
 		GeoCatalogViewPlugIn catalogViewPlugIn = new GeoCatalogViewPlugIn();
 		catalogViewPlugIn.initialize(pluginContext);
-
-		GeocognitionViewPlugIn geocognitionPlugin = new GeocognitionViewPlugIn();
-		geocognitionPlugin.initialize(pluginContext);
 
 		SQLConsoleViewPlugIn consoleViewPlugIn = new SQLConsoleViewPlugIn();
 		consoleViewPlugIn.initialize(pluginContext);

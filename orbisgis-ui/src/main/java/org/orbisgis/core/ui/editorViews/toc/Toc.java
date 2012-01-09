@@ -309,7 +309,7 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 	public Transferable getDragData(DragGestureEvent dge) {
 		TreePath[] resources = getSelection();
 		ArrayList<ILayer> layers = getSelectedLayers(resources);
-		if (layers.size() == 0) {
+		if (layers.isEmpty()) {
 			return null;
 		} else {
 			return new TransferableLayer(element, layers.toArray(new ILayer[layers.size()]));
@@ -317,10 +317,12 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 	}
 
 	private final class MyMapContextListener implements MapContextListener {
+        @Override
 		public void layerSelectionChanged(MapContext mapContext) {
 			setTocSelection(mapContext);
 		}
 
+        @Override
 		public void activeLayerChanged(ILayer previousActiveLayer,
 				MapContext mapContext) {
 			treeModel.refresh();
@@ -330,6 +332,7 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 	private class MyLayerListener implements LayerListener, EditionListener,
 			DataSourceListener {
 
+        @Override
 		public void layerAdded(final LayerCollectionEvent e) {
 			for (final ILayer layer : e.getAffected()) {
 				addLayerListenerRecursively(layer, ll);
@@ -337,6 +340,7 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 			treeModel.refresh();
 		}
 
+        @Override
 		public void layerMoved(LayerCollectionEvent e) {
 			treeModel.refresh();
 		}
@@ -363,6 +367,7 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 			return true;
 		}
 
+        @Override
 		public void layerRemoved(final LayerCollectionEvent e) {
 			for (final ILayer layer : e.getAffected()) {
 				removeLayerListenerRecursively(layer, ll);
@@ -370,21 +375,26 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 			treeModel.refresh();
 		}
 
+        @Override
 		public void nameChanged(LayerListenerEvent e) {
 		}
 
+        @Override
 		public void styleChanged(LayerListenerEvent e) {
 			treeModel.refresh();
 		}
 
+        @Override
 		public void visibilityChanged(LayerListenerEvent e) {
 			treeModel.refresh();
 		}
 
+        @Override
 		public void selectionChanged(SelectionEvent e) {
 			treeModel.refresh();
 		}
 
+        @Override
 		public void multipleModification(MultipleEditionEvent e) {
 			treeModel.refresh();
 		}

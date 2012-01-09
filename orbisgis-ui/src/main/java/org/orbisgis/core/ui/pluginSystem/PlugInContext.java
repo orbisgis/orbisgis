@@ -46,9 +46,6 @@ import org.gdms.source.Source;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.geocognition.Geocognition;
-import org.orbisgis.core.geocognition.GeocognitionElement;
-import org.orbisgis.core.geocognition.mapContext.GeocognitionException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editor.IEditor;
@@ -60,10 +57,6 @@ import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.ViewDecorator;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
-import org.orbisgis.core.ui.plugins.views.geocognition.GeocognitionTree;
-import org.orbisgis.core.ui.plugins.views.geocognition.wizard.EPGeocognitionWizardHelper;
-import org.orbisgis.core.ui.plugins.views.geocognition.wizard.INewGeocognitionElement;
-import org.orbisgis.core.ui.plugins.views.geocognition.wizard.NewGeocognitionObject;
 import org.orbisgis.core.ui.plugins.views.mapEditor.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.tableEditor.TableEditorPlugIn;
 
@@ -240,126 +233,10 @@ public class PlugInContext {
 		return toolManager;
 	}
 
-	/****** Geocognition PlugIns ******/
-
-	public boolean checkLayerAvailability(
-			SelectionAvailability[] selectionAvailability, int nbElements,
-			ElementAvailability[] elAvailability) {
-		// TODO - refactor
-
-		GeocognitionElement[] elements = getElements();
-		if (selectionAvailability != null && elements != null) {
-			for (SelectionAvailability test : selectionAvailability) {
-				switch (test) {
-				case EQUAL:
-					if (!(elements.length == nbElements))
-						return false;
-					break;
-				case SUPERIOR:
-					if (!(elements.length > nbElements))
-						return false;
-					break;
-				case INFERIOR_EQUAL:
-					if (!(elements.length <= nbElements))
-						return false;
-					break;
-				case ACTIVE_MAPCONTEXT:
-					if (Services.getService(MapContextManager.class)
-							.getActiveMapContext() == null)
-						return false;
-					break;
-				default:
-					break;
-				}
-			}
-		}
-		for (GeocognitionElement el : elements) {
-			if (elAvailability != null) {
-				for (ElementAvailability test : elAvailability) {
-					switch (test) {
-					case FOLDER:
-						if (!el.isFolder())
-							return false;
-						break;
-					case FOLDER_OR_NULL:
-						if (!(el.isFolder() || el == null))
-							return false;
-						break;
-					case HAS_EDITOR:
-						EditorManager em = Services
-								.getService(EditorManager.class);
-						if (!em.hasEditor(el))
-							return false;
-						break;					
-					default:
-						break;
-					}
-				}
-
-			}
-		}
-		return true;
-	}
-
-	// Run PlugIns actions from one Geocognition element
-	public void executeGeocognitionElement(INewGeocognitionElement element) {
-		EPGeocognitionWizardHelper wh = new EPGeocognitionWizardHelper();
-		GeocognitionTree tree = workbenchContext.getWorkbench().getFrame()
-				.getGeocognitionView().getTree();
-		TreePath[] parents = tree.getSelection();
-		try {
-			element.runWizard();
-		} catch (GeocognitionException e) {
-			Services.getErrorManager().error("Cannot generate element", e);
-		}
-		NewGeocognitionObject[] objs = new NewGeocognitionObject[element
-				.getElementCount()];
-		for (int i = 0; i < element.getElementCount(); i++) {
-			NewGeocognitionObject newGeocognitionObject;
-			String name = element.getFixedName(i);
-			if (name == null) {
-				name = element.getBaseName(i);
-				newGeocognitionObject = new NewGeocognitionObject(name, element
-						.getElement(i));
-			} else {
-				newGeocognitionObject = new NewGeocognitionObject(name, element
-						.getElement(i));
-				newGeocognitionObject.setFixedName(true);
-			}
-			newGeocognitionObject.setUniqueId(element.isUniqueIdRequired(i));
-			objs[i] = newGeocognitionObject;
-		}
-		if (objs != null) {
-			if (parents.length == 0) {
-				wh.addElements(objs, "");
-			} else {
-				GeocognitionElement parent = (GeocognitionElement) parents[0]
-						.getLastPathComponent();
-				String parentPath = parent.getIdPath();
-				wh.addElements(objs, parentPath);
-			}
-		}
-	}
-
 	public static enum ElementAvailability {
 		FOLDER, FOLDER_OR_NULL, CUSTOM_QUERY_IS_NOT_REGISTERED, FUNCTION_QUERY_IS_NOT_REGISTERED, CUSTOM_QUERY_IS_REGISTERED, FUNCTION_QUERY_IS_REGISTERED, HAS_EDITOR
 	};
 
-	public GeocognitionElement[] getElements() {
-		GeocognitionTree tree = workbenchContext.getWorkbench().getFrame()
-				.getGeocognitionView().getTree();
-		TreePath[] res = tree.getSelection();
-		return tree.toElementArray(res);
-	}
-
-	public GeocognitionTree getTree() {
-		return workbenchContext.getWorkbench().getFrame().getGeocognitionView()
-				.getTree();
-	}
-
-	public Geocognition getGeocognition() {
-		return Services.getService(Geocognition.class);
-	}
 
 	/****** Geocatalog PlugIns ******/
 
