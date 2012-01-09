@@ -199,8 +199,8 @@ public abstract class AbstractOutsideFrame extends JDialog implements
 	}
 	
 	public void stateChanged(ChangeEvent evt) { 
-		JTabbedPane pane = (JTabbedPane)evt.getSource(); // Get current tab 
-		int sel = pane.getSelectedIndex(); 	
+		
+		
 	}
 	
 
