@@ -119,9 +119,6 @@ public abstract class Names {
 	// Memory
 	public static final String MEMORY = I18N
 			.getString("orbisgis.ui.menu.view.text.memory");
-	// Geocognition
-	public static final String GEOCOGNITION = I18N
-			.getString("orbisgis.ui.menu.view.text.geocognition");
 	// Beanshell
 	public static final String BEANSHELL = I18N
 			.getString("orbisgis.ui.menu.view.text.beanshell");
@@ -208,66 +205,6 @@ public abstract class Names {
 			.getString("orbisgis.ui.popupmenu.TOC.zoom.path1");
 	public static final String POPUP_TOC_ZOOM_GROUP = I18N
 			.getString("orbisgis.ui.popupmenu.TOC.zoom.group");
-
-	// PopupMenu Geocognition
-	// Open
-	public static final String POPUP_GEOCOGNITION_OPEN_PATH1 = I18N
-			.getString("orbisgis.ui.popupmenu.geocognition.open.path1");
-	public static final String POPUP_GEOCOGNITION_OPEN_GROUP = I18N
-			.getString("orbisgis.ui.popupmenu.geocognition.open.group");
-	// Remove
-	public static final String POPUP_GEOCOGNITION_REMOVE_PATH1 = I18N
-			.getString("orbisgis.ui.popupmenu.geocognition.remove.path1");
-	public static final String POPUP_GEOCOGNITION_REMOVE_GROUP = I18N
-			.getString("orbisgis.ui.popupmenu.geocognition.remove.group");
-	// Clear
-	public static final String POPUP_GEOCOGNITION_CLEAR_PATH1 = I18N
-			.getString("orbisgis.ui.popupmenu.geocognition.clear.path1");
-	public static final String POPUP_GEOCOGNITION_CLEAR_GROUP = I18N
-			.getString("orbisgis.ui.popupmenu.geocognition.clear.group");
-
-	public static final String POPUP_GEOCOGNITION_ADD = I18N
-			.getString("orbisgis.ui.popupmenu.geocognition.add");
-	// New Registered SQL Artifact
-	public static final String POPUP_GEOCOGNITION_REG_SQL_PATH1 = I18N
-			.getString("orbisgis.ui.popupmenu.geocognition.reg.sql.path1");
-	public static final String POPUP_GEOCOGNITION_REG_SQL_GROUP = I18N
-			.getString("orbisgis.ui.popupmenu.geocognition.reg.sql.group");
-	// Add Map
-	public static final String POPUP_GEOCOGNITION_ADD_MAP_PATH1 = I18N
-			.getString("orbisgis.ui.popupmenu.geocognition.add.map.path1");
-	public static final String POPUP_GEOCOGNITION_ADD_MAP_GROUP = I18N
-			.getString("orbisgis.ui.popupmenu.geocognition.add.map.group");
-	// Add folder
-	public static final String POPUP_GEOCOGNITION_ADD_FOLDER_PATH1 = I18N
-			.getString("orbisgis.ui.popupmenu.geocognition.add.folder.path1");
-	public static final String POPUP_GEOCOGNITION_ADD_FOLDER_GROUP = I18N
-			.getString("orbisgis.ui.popupmenu.geocognition.add.folder.group");
-	// New Symbol
-	public static final String POPUP_GEOCOGNITION_NEW_SYMBOL_PATH1 = I18N
-			.getString("orbisgis.ui.popupmenu.geocognition.new.symbol.path1");
-	public static final String POPUP_GEOCOGNITION_NEW_SYMBOL_GROUP = I18N
-			.getString("orbisgis.ui.popupmenu.geocognition.new.symbol.group");
-	// Register built in function
-	public static final String POPUP_GEOCOGNITION_REG_BUILT_PATH1 = I18N
-			.getString("orbisgis.ui.popupmenu.geocognition.reg.built.path1");
-	public static final String POPUP_GEOCOGNITION_REG_BUILT_GROUP = I18N
-			.getString("orbisgis.ui.popupmenu.geocognition.reg.built.group");
-	// Unregister built in function
-	public static final String POPUP_GEOCOGNITION_UNREG_BUILT_PATH1 = I18N
-			.getString("orbisgis.ui.popupmenu.geocognition.unreg.built.path1");
-	public static final String POPUP_GEOCOGNITION_UNREG_BUILT_GROUP = I18N
-			.getString("orbisgis.ui.popupmenu.geocognition.unreg.built.group");
-	// Register built in custom query
-	public static final String POPUP_GEOCOGNITION_REG_BUILT_QUERY_PATH1 = I18N
-			.getString("orbisgis.ui.popupmenu.geocognition.reg.built.query.path1");
-	public static final String POPUP_GEOCOGNITION_REG_BUILT_QUERY_GROUP = I18N
-			.getString("orbisgis.ui.popupmenu.geocognition.reg.built.query.group");
-	// Register built in custom query
-	public static final String POPUP_GEOCOGNITION_UNREG_BUILT_QUERY_PATH1 = I18N
-			.getString("orbisgis.ui.popupmenu.geocognition.unreg.built.query.path1");
-	public static final String POPUP_GEOCOGNITION_UNREG_BUILT_QUERY_GROUP = I18N
-			.getString("orbisgis.ui.popupmenu.geocognition.unreg.built.query.group");
 
 	// PopupMenu Geocatalog
 	public static final String POPUP_GEOCATALOG_ADD = I18N

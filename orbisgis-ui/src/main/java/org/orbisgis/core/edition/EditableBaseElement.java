@@ -39,9 +39,7 @@ public interface EditableBaseElement{
 	void save() throws UnsupportedOperationException, EditableElementException;
 
 	/**
-	 * Closes the element. All resources should be freed and all memory should
-	 * be released because there may be plenty of GeocognitionElements in closed
-	 * state
+	 * Closes the element.
 	 * 
 	 * @param progressMonitor
 	 * @throws UnsupportedOperationException

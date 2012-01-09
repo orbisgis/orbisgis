@@ -38,9 +38,6 @@ public class IconNames {
 	// Memory
 	public static final String MEMORY_ICON =Icon.get(
 			"ui.menu.view.icon.memory");
-	// Geocognition
-	public static final String GEOCOGNITION_ICON =Icon.get(
-			"ui.menu.view.icon.geocognition");	
 	// Beanshell
 	public static final String BEANSHELL_ICON = Icon.get(
 			"ui.menu.view.icon.beanshell");
@@ -83,38 +80,6 @@ public class IconNames {
 	// Zoom to layer
 	public static final String POPUP_TOC_ZOOM_ICON = Icon.get(
 			"ui.popupmenu.TOC.zoom.icon");
-	
-	// PopupMenu Geocognition
-	// Open
-	public static final String POPUP_GEOCOGNITION_OPEN_ICON = Icon.get(
-			"ui.popupmenu.geocognition.open.icon");
-	// Clear
-	public static final String POPUP_GEOCOGNITION_CLEAR_ICON = Icon.get(
-			"ui.popupmenu.geocognition.clear.icon");
-
-	public static final String POPUP_GEOCOGNITION_ADD = Icon.get(
-			"ui.popupmenu.geocognition.add");
-	// New Registered SQL Artifact
-	public static final String POPUP_GEOCOGNITION_REG_SQL_ICON = Icon.get(
-			"ui.popupmenu.geocognition.reg.sql.icon");	
-	// Add folder
-	public static final String POPUP_GEOCOGNITION_ADD_FOLDER_ICON = Icon.get(
-			"ui.popupmenu.geocognition.add.folder.icon");
-	// New Symbol
-	public static final String POPUP_GEOCOGNITION_NEW_SYMBOL_ICON = Icon.get(
-			"ui.popupmenu.geocognition.new.symbol.icon");
-	// Register built in function
-	public static final String POPUP_GEOCOGNITION_REG_BUILT_ICON = Icon.get(
-			"ui.popupmenu.geocognition.reg.built.icon");
-	// Unregister built in function
-	public static final String POPUP_GEOCOGNITION_UNREG_BUILT_ICON = Icon.get(
-			"ui.popupmenu.geocognition.unreg.built.icon");
-	// Register built in custom query
-	public static final String POPUP_GEOCOGNITION_REG_BUILT_QUERY_ICON = Icon.get(
-			"ui.popupmenu.geocognition.reg.built.query.icon");
-	// Register built in custom query
-	public static final String POPUP_GEOCOGNITION_UNREG_BUILT_QUERY_ICON = Icon.get(
-			"ui.popupmenu.geocognition.unreg.built.query.icon");
 	
 	// PopupMenu Geocatalog
 	public static final String POPUP_GEOCATALOG_WMS_ICON = Icon.get(
