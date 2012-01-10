@@ -300,8 +300,12 @@ public abstract class Renderer {
 
 
                     int fid = 0;
+                    int fieldID = -1;
 
-
+                    try {
+                        fieldID = ShapeHelper.getGeometryFieldId(sds);
+                    } catch (ParameterException ex){
+                    }
                     long initFeats = 0;
                     for (fid = 0; fid < featureInExtent.length; fid++) {
                         initFeats -= System.currentTimeMillis();
@@ -315,14 +319,10 @@ public abstract class Renderer {
 
                         // If there is only one geometry, it is fetched now, otherwise, it up to symbolizers
                         // to retrieve the correct geometry (through the Geometry attribute)
-                        try {
-                            int fieldID = ShapeHelper.getGeometryFieldId(sds);
                             if (fieldID >= 0) {
                                 theGeom = sds.getGeometry(originalIndex);
                                 //System.out.println ("TheGeom: " + the_geom);
                             }
-                        } catch (ParameterException ex){
-                        }
 
                         boolean emphasis = selected.contains((int) originalIndex);
 
