@@ -140,6 +140,13 @@ public final class SQLValueFactory {
                 
                 // geometry
                 TYPES.put("geometry", Type.GEOMETRY);
+                TYPES.put("geometrycollection", Type.GEOMETRYCOLLECTION);
+                TYPES.put("linestring", Type.LINESTRING);
+                TYPES.put("multilinestring", Type.MULTILINESTRING);
+                TYPES.put("multipoint", Type.MULTIPOINT);
+                TYPES.put("multipolygon", Type.MULTIPOLYGON);
+                TYPES.put("point", Type.POINT);
+                TYPES.put("polygon", Type.POLYGON);
                 
                 // integer
                 TYPES.put("integer", Type.INT);
