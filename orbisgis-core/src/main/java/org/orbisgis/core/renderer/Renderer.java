@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -75,9 +75,11 @@ import com.vividsolutions.jts.index.quadtree.Quadtree;
 import ij.process.ColorProcessor;
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Iterator;
 import org.gdms.data.DataSource;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.indexes.DefaultSpatialIndexQuery;
+import org.gdms.data.indexes.FullIterator;
 import org.gdms.data.indexes.IndexException;
 import org.gdms.data.indexes.IndexManager;
 import org.gdms.data.indexes.IndexQueryException;
@@ -99,19 +101,10 @@ import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 public abstract class Renderer {
 
     static final double EXTRA_EXTENT_FACTOR = 0.01;
-
-
     static final int ONE_HUNDRED_I = 100;
-
-
     static final int BATCH_SIZE = 1000;
-
-
     static final int EXECP_POS = 20;
-
-
     private static OutputManager logger = Services.getOutputManager();
-
 
     /**
      * This method shall returns a graphics2D for each symbolizers in the list.
@@ -122,14 +115,11 @@ public abstract class Renderer {
     //public abstract HashMap<Symbolizer, Graphics2D> getGraphics2D(ArrayList<Symbolizer> symbs,
     //        Graphics2D g2, MapTransform mt);
     protected abstract void initGraphics2D(List<Symbolizer> symbs, Graphics2D g2,
-                                           MapTransform mt);
-
+            MapTransform mt);
 
     protected abstract Graphics2D getGraphics2D(Symbolizer s);
 
-
     protected abstract void releaseGraphics2D(Graphics2D g2);
-
 
     /**
      * Is called once the layer has been rendered
@@ -137,13 +127,11 @@ public abstract class Renderer {
      */
     protected abstract void disposeLayer(Graphics2D g2);
 
-
     /**
      * Called before each feature
      * @param name the name of the feature
      */
     protected abstract void beginFeature(long id, DataSource sds);
-
 
     /**
      * Called after each feature
@@ -151,20 +139,17 @@ public abstract class Renderer {
      */
     protected abstract void endFeature(long id, DataSource sds);
 
-
     /**
      * Called before each layer
      * @param name the name of the layer
      */
     protected abstract void beginLayer(String name);
 
-
     /**
      * Called after each layer
      * @param name the name of the layer
      */
     protected abstract void endLayer(String name);
-
 
     /**
      * Create a view which correspond to feature in MapContext adjusted extend
@@ -180,24 +165,23 @@ public abstract class Renderer {
         int sfi = sds.getSpatialFieldIndex();
         String sfn = sds.getFieldName(sfi);
         IndexManager im = sds.getDataSourceFactory().getIndexManager();
-        try{
-                if(im.getIndex(sds, sfn) == null){
-                        im.buildIndex(sds, sfn, new NullProgressMonitor());
-                }
-                double gap = mt.getScaleDenominator() * EXTRA_EXTENT_FACTOR;
-                Envelope envelope = new Envelope(extent.getMinX() - gap, extent.getMaxX() + gap, 
-                        extent.getMinY() - gap, extent.getMaxY() + gap);
-                DefaultSpatialIndexQuery iq = new DefaultSpatialIndexQuery(envelope, sfn);
-                return im.queryIndex(sds, iq);
-        } catch(IndexException ie){
-                throw new DriverException("Can't handle the index", ie);
-        } catch(NoSuchTableException nste){
-                throw new DriverException("Are you sure the table actually exists ?", nste);
-        }catch(IndexQueryException iqe){
-                throw new DriverException("Can't query the index properly", iqe);
+        try {
+            if (im.getIndex(sds, sfn) == null) {
+                im.buildIndex(sds, sfn, new NullProgressMonitor());
+            }
+            double gap = mt.getScaleDenominator() * EXTRA_EXTENT_FACTOR;
+            Envelope envelope = new Envelope(extent.getMinX() - gap, extent.getMaxX() + gap,
+                    extent.getMinY() - gap, extent.getMaxY() + gap);
+            DefaultSpatialIndexQuery iq = new DefaultSpatialIndexQuery(envelope, sfn);
+            return im.queryIndex(sds, iq);
+        } catch (IndexException ie) {
+            throw new DriverException("Can't handle the index", ie);
+        } catch (NoSuchTableException nste) {
+            throw new DriverException("Are you sure the table actually exists ?", nste);
+        } catch (IndexQueryException iqe) {
+            throw new DriverException("Can't query the index properly", iqe);
         }
     }
-
 
     /**
      * Draws the content of the Vector Layer
@@ -221,7 +205,7 @@ public abstract class Renderer {
 
         logger.println("Current DPI is " + mt.getDpi());
         logger.println("Current SCALE is 1: " + mt.getScaleDenominator());
-
+        Envelope extent = mt.getAdjustedExtent();
 
         int layerCount = 0;
         DataSource sds = null;
@@ -256,11 +240,14 @@ public abstract class Renderer {
             // Create new dataSource with only feature in current extent
             pm.startTask("Filtering (spatial)...", 100);
             pm.progressTo(0);
-            int[] featureInExtent = featureInExtent(mt, sds, pm);
+
+            Iterator<Integer> it = new FullIterator(sds);
+
+            //  int[] featureInExtent = featureInExtent(mt, sds, pm);
             pm.progressTo(ONE_HUNDRED_I);
             pm.endTask();
 
-            if (featureInExtent.length > 0) {
+            if (it.hasNext()) {
 
                 HashSet<Integer> selected = new HashSet<Integer>();
                 for (long sFid : layer.getSelection()) {
@@ -287,10 +274,10 @@ public abstract class Renderer {
                 // Get a graphics for each symbolizer
                 initGraphics2D(symbs, g2, mt);
 
-                for (Rule r : rList) {
-                    total += featureInExtent.length;
-                }
-                logger.println("TOTAL : " + total);
+                //for (Rule r : rList) {
+                ///  total += featureInExtent.length;
+                //}
+                //logger.println("TOTAL : " + total);
 
                 for (Rule r : rList) {
                     long tf1 = System.currentTimeMillis();
@@ -307,50 +294,68 @@ public abstract class Renderer {
                     } catch (ParameterException ex){
                     }
                     long initFeats = 0;
-                    for (fid = 0; fid < featureInExtent.length; fid++) {
+
+                    long rowCount = sds.getRowCount();
+
+                    int i = 0;
+                    while (it.hasNext()) {
+                        Integer originalIndex = it.next();
+
+                        if (i / 1000 == i / 1000.0) {
+                            if (pm.isCancelled()) {
+                                break;
+                            } else {
+                                pm.progressTo((int) (100 * i / rowCount));
+                            }
+                        }
+                        i++;
+
                         initFeats -= System.currentTimeMillis();
                         if (layerCount % BATCH_SIZE == 0 && pm.isCancelled()) {
                             return layerCount;
                         }
 
-                        long originalIndex = featureInExtent[fid];
-
                         Geometry theGeom = null;
 
                         // If there is only one geometry, it is fetched now, otherwise, it up to symbolizers
                         // to retrieve the correct geometry (through the Geometry attribute)
-                            if (fieldID >= 0) {
-                                theGeom = sds.getGeometry(originalIndex);
-                                //System.out.println ("TheGeom: " + the_geom);
-                            }
-
-                        boolean emphasis = selected.contains((int) originalIndex);
-
-                        beginFeature(originalIndex, sds);
-                        initFeats += System.currentTimeMillis();
-
-                        for (Symbolizer s : r.getCompositeSymbolizer().getSymbolizerList()) {
-                            sTimeFull -= System.currentTimeMillis();
-
-
-                            Graphics2D g2S;
-                            //if (s instanceof TextSymbolizer) {
-                            // TextSymbolizer always rendered on overlay
-                            //g2S = overlayImage.createGraphics();
-                            //} else {
-                            //g2S = g2Symbs.get(s);
-                            g2S = getGraphics2D(s);
-                            //}
-                            sTimer -= System.currentTimeMillis();
-                            s.draw(g2S, sds, originalIndex, emphasis, mt, theGeom, perm);
-                            sTimer += System.currentTimeMillis();
-                            //s.draw(g2, sds, originalIndex, emphasis, mt, the_geom, perm);
-                            releaseGraphics2D(g2S);
-                            sTimeFull += System.currentTimeMillis();
+                        if (fieldID >= 0) {
+                            theGeom = sds.getGeometry(originalIndex);
+                            //System.out.println ("TheGeom: " + the_geom);
                         }
-                        endFeature(originalIndex, sds);
 
-                        pm.progressTo((int) (ONE_HUNDRED_I * (long) (++layerCount) / (long) total));
+
+                        Envelope geomEnvelope = theGeom.getEnvelopeInternal();
+
+                        // Do not display geom when the envelope is too small
+                        if (geomEnvelope.intersects(extent)) {
+
+                            boolean emphasis = selected.contains((int) originalIndex);
+
+                            beginFeature(originalIndex, sds);
+                            initFeats += System.currentTimeMillis();
+
+                            for (Symbolizer s : r.getCompositeSymbolizer().getSymbolizerList()) {
+                                sTimeFull -= System.currentTimeMillis();
+
+
+                                Graphics2D g2S;
+                                //if (s instanceof TextSymbolizer) {
+                                // TextSymbolizer always rendered on overlay
+                                //g2S = overlayImage.createGraphics();
+                                //} else {
+                                //g2S = g2Symbs.get(s);
+                                g2S = getGraphics2D(s);
+                                //}
+                                sTimer -= System.currentTimeMillis();
+                                s.draw(g2S, sds, originalIndex, emphasis, mt, theGeom, perm);
+                                sTimer += System.currentTimeMillis();
+                                releaseGraphics2D(g2S);
+                                sTimeFull += System.currentTimeMillis();
+                            }
+                            endFeature(originalIndex, sds);
+
+                        }
                     }
                     long tf2 = System.currentTimeMillis();
                     logger.println("  -> Rule done in  " + (tf2 - tf1) + "[ms]   featInit" + initFeats + "[ms]");
@@ -391,14 +396,12 @@ public abstract class Renderer {
         return layerCount;
     }
 
-
     private static void printEx(Exception ex, ILayer layer, Graphics2D g2) {
         java.util.logging.Logger.getLogger("Could not draw " + layer.getName()).log(Level.SEVERE, "Error while drawing " + layer.getName(), ex);
         ex.printStackTrace(System.err);
         g2.setColor(Color.red);
         g2.drawString(ex.toString(), EXECP_POS, EXECP_POS);
     }
-
 
     public void draw(Graphics2D g2dMap, int width, int height,
             Envelope extent, ILayer layer, ProgressMonitor pm) {
@@ -408,7 +411,6 @@ public abstract class Renderer {
 
         this.draw(mt, g2dMap, width, height, layer, pm);
     }
-
 
     /**
      * Draws the content of the layer in the specified graphics
@@ -434,7 +436,6 @@ public abstract class Renderer {
 
         this.draw(mt, g2, image.getWidth(), image.getHeight(), layer, pm);
     }
-
 
     /**
      * Draws the content of the layer in the specified graphics
@@ -483,7 +484,7 @@ public abstract class Renderer {
         Envelope graphicExtent = new Envelope(0, 0, mt.getWidth(), mt.getHeight());
         DefaultRendererPermission perm = new DefaultRendererPermission(graphicExtent);
 
-        for (int i = layers.length - 1; i>= 0; i--) {
+        for (int i = layers.length - 1; i >= 0; i--) {
             if (pm.isCancelled()) {
                 break;
             } else {
@@ -547,15 +548,13 @@ public abstract class Renderer {
 
     }
 
-
     private boolean sameServer(ILayer layer, ILayer layer2) {
         return layer.getWMSConnection().getClient().getHost().equals(
                 layer2.getWMSConnection().getClient().getHost());
     }
 
-
     private void drawWMS(Graphics2D g2, int width, int height, Envelope extent,
-                         WMSConnection connection) {
+            WMSConnection connection) {
         WMSStatus status = connection.getStatus();
         status.setWidth(width);
         status.setHeight(height);
@@ -577,7 +576,6 @@ public abstract class Renderer {
         }
     }
 
-
     /**
      * Draws the content of the layer in the specified image.
      *
@@ -598,20 +596,15 @@ public abstract class Renderer {
         draw(mt, layer, pm);
     }
 
-
     public void draw(BufferedImage img, Envelope extent, ILayer layer) {
         draw(img, extent, layer, new NullProgressMonitor());
     }
 
-
     private static class DefaultRendererPermission implements RenderContext {
 
         private Quadtree quadtree;
-
-
         private Envelope drawExtent;
         //private Area extent;
-
 
         public DefaultRendererPermission(Envelope drawExtent) {
             this.drawExtent = drawExtent;
@@ -619,12 +612,10 @@ public abstract class Renderer {
             //this.extent = new Area(new Rectangle2D.Double(drawExtent.getMinX(), drawExtent.getMinY(), drawExtent.getWidth(), drawExtent.getHeight()));
         }
 
-
         @Override
         public void addUsedArea(Envelope area) {
             quadtree.insert(area, area);
         }
-
 
         @Override
         public boolean canDraw(Envelope area) {
@@ -637,7 +628,6 @@ public abstract class Renderer {
 
             return true;
         }
-
 
         @Override
         public Geometry getValidGeometry(Geometry geometry, double distance) {
@@ -656,10 +646,7 @@ public abstract class Renderer {
                 return theGeom;
             }
         }
-
-
     }
-
 
     /**
      * Method to change bands order only on the BufferedImage.
@@ -685,7 +672,7 @@ public abstract class Renderer {
             components[2] = getComponent(bds.charAt(2), red, green, blue);
 
             directColorModel = new DirectColorModel(32, components[0],
-                                                    components[1], components[2], alpha);
+                    components[1], components[2], alpha);
             ColorProcessor colorProcessor = new ColorProcessor(bufferedImage);
             colorProcessor.setColorModel(directColorModel);
 
@@ -693,7 +680,6 @@ public abstract class Renderer {
         }
         return bufferedImage;
     }
-
 
     /**
      * Gets the component specified by the char between the int components
@@ -717,6 +703,4 @@ public abstract class Renderer {
                     I18N.getString("orbisgis-core.orbisgis.org.orbisgis.renderer.cannotCreatRGBCodes")); //$NON-NLS-1$
         }
     }
-
-
 }
