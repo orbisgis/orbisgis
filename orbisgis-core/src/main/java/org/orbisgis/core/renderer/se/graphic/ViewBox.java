@@ -163,13 +163,7 @@ public final class ViewBox implements SymbolizerNode {
                 parent = node;
         }
 
-    /**
-     * Get a String representation of the list of features this {@code ViewBox}
-     * depends on.
-     * @return
-     * The features this {@code Label} depends on, in a {@code String}.
-     */
-    @Override
+        @Override
         public HashSet<String> dependsOnFeature() {
             HashSet<String> hs = null;
             if (x != null) {

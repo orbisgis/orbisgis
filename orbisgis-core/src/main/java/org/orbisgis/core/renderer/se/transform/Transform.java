@@ -237,12 +237,7 @@ public class Transform implements SymbolizerNode, UomNode {
                 return t;
         }
 
-        /**
-         * Get a String representation of the list of features this {@code Transform}
-         * depends on.
-         * @return
-         * The features this {@code Transform} depends on, in a {@code String}.
-         */
+        @Override
         public HashSet<String> dependsOnFeature() {
                 HashSet<String> result = new HashSet<String>();
                 for (Transformation t : this.transformations) {

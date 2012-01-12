@@ -95,13 +95,4 @@ public abstract class CompoundStrokeElement implements SymbolizerNode {
 		this.parent = node;
 	}
 
-    /**
-     * Get a String representation of the list of features this {@code CompoundStrokeElement}
-     * depends on.
-     * @return
-     * The features this {@code CompoundStrokeElement} depends on, in a
-     * {@code String}.
-     */
-	public abstract HashSet<String> dependsOnFeature();
-
 }

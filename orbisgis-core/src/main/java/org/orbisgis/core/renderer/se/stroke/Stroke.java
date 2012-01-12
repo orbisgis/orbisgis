@@ -231,13 +231,5 @@ public abstract class Stroke implements SymbolizerNode {
             Shape shp, MapTransform mt) throws ParameterException, IOException {
         return getNaturalLength(sds, fid, shp, mt);
     }
-
     
-    /**
-     * Get a String representation of the list of features this {@code Stroke}
-     * depends on.
-     * @return
-     * The features this {@code Stroke} depends on, in a {@code String}.
-     */
-    public abstract HashSet<String> dependsOnFeature();
 }

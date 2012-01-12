@@ -313,10 +313,7 @@ public final class GraphicCollection implements SymbolizerNode {
         }
     }
 
-    /**
-     * Print the list of features this GraphicCollection depends on.
-     * @return 
-     */
+    @Override
     public HashSet<String> dependsOnFeature() {
         HashSet<String> result = new HashSet<String>();
         for (Graphic g : this.graphics) {

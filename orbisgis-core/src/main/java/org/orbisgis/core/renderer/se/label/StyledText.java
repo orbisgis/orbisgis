@@ -565,12 +565,7 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
         return l;
     }
 
-    /**
-     * Get a String representation of the list of features this {@code StyledText}
-     * depends on.
-     * @return
-     * The features this {@code StyledText} depends on, in a {@code String}.
-     */
+    @Override
     public HashSet<String> dependsOnFeature() {
 
         HashSet<String> result = new HashSet<String>();

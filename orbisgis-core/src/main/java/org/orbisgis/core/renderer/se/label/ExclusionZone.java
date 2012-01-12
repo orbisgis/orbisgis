@@ -77,11 +77,6 @@ public abstract class ExclusionZone implements SymbolizerNode, UomNode {
                 parent = node;
         }
 
-    /**
-     * Get a String representation of the list of features this {@code ExclusionZone}
-     * depends on.
-     * @return
-     * The features this {@code ExclusionZone} depends on, in a {@code String}.
-     */
+        @Override
         public abstract HashSet<String> dependsOnFeature();
 }

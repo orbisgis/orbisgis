@@ -114,16 +114,6 @@ public abstract class Graphic implements SymbolizerNode {
     public abstract void draw(Graphics2D g2, DataSource sds, long fid, 
             boolean selected, MapTransform mt, AffineTransform at) throws ParameterException, IOException;
 
-
-    /**
-     * Get a String representation of the list of features this {@code Graphic}
-     * depends on.
-     * @return
-     * The features this {@code Graphic} depends on, in a {@code String}.
-     */
-    public abstract HashSet<String> dependsOnFeature();
-
-
     /**
      * Get a JAXB representation of this {@code Graphic}
      * @return

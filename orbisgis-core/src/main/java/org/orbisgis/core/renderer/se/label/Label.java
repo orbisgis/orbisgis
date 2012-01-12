@@ -335,11 +335,4 @@ public abstract class Label implements SymbolizerNode, UomNode {
      */
     public abstract JAXBElement<? extends LabelType> getJAXBElement();
 
-    /**
-     * Get a String representation of the list of features this {@code Label}
-     * depends on.
-     * @return
-     * The features this {@code Label} depends on, in a {@code String}.
-     */
-    public abstract HashSet<String> dependsOnFeature();
 }

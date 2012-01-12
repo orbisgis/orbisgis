@@ -115,12 +115,6 @@ public abstract class Fill implements SymbolizerNode {
         return parent.getUom();
     }
 
-
-    /**
-     * @return space separated list of field the style element depends on
-     */
-    public abstract HashSet<String> dependsOnFeature();
-
     /**
      *
      * Fill the shape according to this SE Fill

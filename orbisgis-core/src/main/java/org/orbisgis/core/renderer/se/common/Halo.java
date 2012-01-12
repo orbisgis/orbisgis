@@ -190,12 +190,6 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
         }
     }
 
-    /**
-     * Get a String representation of the list of features this {@code Halo}
-     * depends on.
-     * @return
-     * The features this {@code Halo} depends on, in a {@code String}.
-     */
     @Override
     public HashSet<String> dependsOnFeature() {
         HashSet<String> ret = new HashSet<String>();

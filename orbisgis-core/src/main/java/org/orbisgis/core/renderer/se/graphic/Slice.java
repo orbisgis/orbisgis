@@ -136,12 +136,7 @@ public class Slice implements SymbolizerNode, FillNode {
                 return s;
         }
 
-        /**
-         * Get a String representation of the list of features this {@code Slice}
-         * depends on.
-         * @return
-         * The features this {@code Slice} depends on, in a {@code String}.
-         */
+        @Override
         public HashSet<String> dependsOnFeature() {
                 HashSet<String> result = new HashSet<String>();
                 if (fill != null) {

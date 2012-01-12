@@ -17,10 +17,11 @@ import net.opengis.se._2_0.core.ParameterValueType;
 public interface SeParameter{
 
     /**
-     * return field names the parameter depends on.
-     * Actually, it means that at least one child of this parameter access a feature attribute.
-     *
-     * @return field names the parameter depends on or null if parameter doesn't depends on the feature
+     * Get a set containing the name of the features that are referenced in 
+     * this {@code Style}. We use a {@code HashSet}. This way, we can be sure
+     * that features are not referenced twice.
+     * @return 
+     * The names of all the needed features, in a {@code HashSet} instance.
      */
     HashSet<String> dependsOnFeature();
 

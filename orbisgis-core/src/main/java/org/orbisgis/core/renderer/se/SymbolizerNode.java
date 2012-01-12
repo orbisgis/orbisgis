@@ -30,6 +30,13 @@ public interface SymbolizerNode{
      */
     void setParent(SymbolizerNode node);
 
+    /**
+     * Get a set containing the name of the features that are referenced in 
+     * this {@code Style}. We use a {@code HashSet}. This way, we can be sure
+     * that features are not referenced twice.
+     * @return 
+     * The names of all the needed features, in a {@code HashSet} instance.
+     */
     HashSet<String> dependsOnFeature();
     /*
      * this methos will be used to update all cached element.
