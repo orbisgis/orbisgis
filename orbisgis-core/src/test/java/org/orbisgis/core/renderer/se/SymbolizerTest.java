@@ -7,6 +7,7 @@ package org.orbisgis.core.renderer.se;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
+import java.util.HashSet;
 import javax.swing.JPanel;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -18,12 +19,18 @@ import javax.xml.validation.Schema;
 import net.opengis.se._2_0.core.SymbolizerType;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.orbisgis.core.AbstractTest;
+import org.orbisgis.core.renderer.se.fill.SolidFill;
+import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
+import org.orbisgis.core.renderer.se.parameter.color.Recode2Color;
+import org.orbisgis.core.renderer.se.parameter.string.StringAttribute;
+import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 
 /**
  *
  * @author maxence
  */
-public class SymbolizerTest {
+public class SymbolizerTest extends AbstractTest {
 
     private class ImagePanel extends JPanel {
 
@@ -78,7 +85,29 @@ public class SymbolizerTest {
                 //We've encountered an error - everything's normal.
                 assertTrue(true);
             }
-
-
+    }
+    
+    @Test 
+    public void testDependsOnFeature() throws Exception {
+        String xml = "src/test/resources/org/orbisgis/core/renderer/se/symbol_prop_canton_interpol_lin.se";
+        Style fts = new Style(null, xml);
+        HashSet<String> feat = fts.dependsOnFeature();
+        assertTrue(feat.size() == 1);
+        assertTrue(feat.contains("PTOT99"));
+        AreaSymbolizer as = (AreaSymbolizer)fts.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
+        SolidFill fill = (SolidFill) as.getFill();
+        StringAttribute sa = new StringAttribute("PTOT99");
+        Recode2Color rc = new Recode2Color(new ColorLiteral("#887766"), sa);
+        rc.addMapItem(new StringLiteral("bonjour"), new ColorLiteral("#546576"));
+        fill.setColor(rc);
+        feat = fts.dependsOnFeature();
+        assertTrue(feat.size() == 1);
+        assertTrue(feat.contains("PTOT99"));
+        sa.setColumnName("ohhai");
+        feat = fts.dependsOnFeature();
+        assertTrue(feat.size() == 2);
+        assertTrue(feat.contains("PTOT99"));
+        assertTrue(feat.contains("ohhai"));
+        
     }
 }
