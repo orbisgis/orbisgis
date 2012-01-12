@@ -48,6 +48,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.HashSet;
 
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
@@ -290,22 +291,20 @@ public final class GraphicFill extends Fill implements UomNode {
     }
 
     @Override
-    public String dependsOnFeature() {
-        StringBuilder sb = new StringBuilder();
+    public HashSet<String> dependsOnFeature() {
+        HashSet<String> sb = new HashSet<String>();
 
         if (gapX != null) {
-            sb.append(gapX.dependsOnFeature());
+            sb.addAll(gapX.dependsOnFeature());
         }
         if (gapY != null) {
-            sb.append(" ");
-            sb.append(gapY.dependsOnFeature());
+            sb.addAll(gapY.dependsOnFeature());
         }
         if (graphic != null) {
-            sb.append(" ");
-            sb.append(graphic.dependsOnFeature());
+            sb.addAll(graphic.dependsOnFeature());
         }
 
-        return sb.toString().trim();
+        return sb;
     }
 
     @Override

@@ -38,6 +38,7 @@
 package org.orbisgis.core.renderer.se.parameter.real;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.FunctionType;
@@ -238,12 +239,12 @@ public class RealFunction implements RealParameter {
 
 
     @Override
-    public String dependsOnFeature() {
-        String result = "";
+    public HashSet<String> dependsOnFeature() {
+        HashSet<String> result = new HashSet<String>();
         for (RealParameter p : operands){
-            result += " " + p.dependsOnFeature();
+            result.addAll(p.dependsOnFeature());
         }
-        return result.trim();
+        return result;
     }
 
     @Override

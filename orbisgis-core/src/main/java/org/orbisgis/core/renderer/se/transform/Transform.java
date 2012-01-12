@@ -7,6 +7,7 @@ package org.orbisgis.core.renderer.se.transform;
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.map.MapTransform;
@@ -242,12 +243,12 @@ public class Transform implements SymbolizerNode, UomNode {
          * @return
          * The features this {@code Transform} depends on, in a {@code String}.
          */
-        public String dependsOnFeature() {
-                String result = "";
+        public HashSet<String> dependsOnFeature() {
+                HashSet<String> result = new HashSet<String>();
                 for (Transformation t : this.transformations) {
-                        result += t.dependsOnFeature();
+                        result.addAll(t.dependsOnFeature());
                 }
-                return result.trim();
+                return result;
         }
 
         @Override

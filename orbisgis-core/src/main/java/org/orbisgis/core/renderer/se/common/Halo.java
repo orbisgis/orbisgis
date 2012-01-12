@@ -5,6 +5,7 @@ import java.awt.Shape;
 import java.awt.geom.Area;
 
 import java.io.IOException;
+import java.util.HashSet;
 import org.gdms.data.DataSource;
 
 import org.orbisgis.core.Services;
@@ -195,8 +196,12 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
      * @return
      * The features this {@code Halo} depends on, in a {@code String}.
      */
-    public String dependsOnFeature() {
-        return (radius.dependsOnFeature() + " " + fill.dependsOnFeature()).trim();
+    @Override
+    public HashSet<String> dependsOnFeature() {
+        HashSet<String> ret = new HashSet<String>();
+        ret.addAll(radius.dependsOnFeature());
+        ret.addAll(fill.dependsOnFeature());
+        return ret;
     }
 
     /**

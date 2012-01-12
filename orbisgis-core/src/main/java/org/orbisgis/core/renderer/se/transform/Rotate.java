@@ -5,11 +5,12 @@
 package org.orbisgis.core.renderer.se.transform;
 
 import java.awt.geom.AffineTransform;
+import java.util.HashSet;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.DataSource;
-import org.orbisgis.core.map.MapTransform;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.RotateType;
+import org.gdms.data.DataSource;
+import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -156,20 +157,26 @@ public final class Rotate implements Transformation {
         }
 
         @Override
-        public String dependsOnFeature() {
-                String result = "";
+        public HashSet<String> dependsOnFeature() {
+                HashSet<String> result = null;
                 if (x != null) {
                         result = x.dependsOnFeature();
                 }
                 if (y != null) {
-                        result += " " + y.dependsOnFeature();
+                    if(result == null){
+                        result = y.dependsOnFeature();
+                    } else {
+                        result.addAll(y.dependsOnFeature());
+                    }
                 }
-
                 if (rotation != null) {
-                        result += " " + rotation.dependsOnFeature();
+                    if(result == null){
+                        result = rotation.dependsOnFeature();
+                    } else {
+                        result.addAll(rotation.dependsOnFeature());
+                    }
                 }
-
-                return result.trim();
+                return result;
         }
 
         @Override

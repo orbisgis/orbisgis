@@ -44,6 +44,7 @@ import java.awt.Paint;
 import java.awt.Shape;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -245,23 +246,23 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
 
     
     @Override
-    public String dependsOnFeature() {
-        String result = "";
+    public HashSet<String> dependsOnFeature() {
+        HashSet<String> result = new HashSet<String>();
 
         if (fill != null) {
-            result = fill.dependsOnFeature();
+            result.addAll(fill.dependsOnFeature());
         }
         if (dashOffset != null) {
-            result += " " + dashOffset.dependsOnFeature();
+            result.addAll(dashOffset.dependsOnFeature());
         }
         if (dashArray != null) {
-            result += " " + dashArray.dependsOnFeature();
+            result.addAll(dashArray.dependsOnFeature());
         }
         if (width != null) {
-            result += " " + width.dependsOnFeature();
+            result.addAll(width.dependsOnFeature());
         }
 
-        return result.trim();
+        return result;
     }
 
     @Override

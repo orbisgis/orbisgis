@@ -4,17 +4,17 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
-
 import java.net.URISyntaxException;
+import java.util.HashSet;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.DataSource;
-import net.opengis.se._2_0.core.GraphicType;
-import org.orbisgis.core.map.MapTransform;
-import net.opengis.se._2_0.thematic.AxisChartType;
 import net.opengis.se._2_0.core.ExternalGraphicType;
+import net.opengis.se._2_0.core.GraphicType;
 import net.opengis.se._2_0.core.MarkGraphicType;
-import net.opengis.se._2_0.thematic.PieChartType;
 import net.opengis.se._2_0.core.PointTextGraphicType;
+import net.opengis.se._2_0.thematic.AxisChartType;
+import net.opengis.se._2_0.thematic.PieChartType;
+import org.gdms.data.DataSource;
+import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -121,7 +121,7 @@ public abstract class Graphic implements SymbolizerNode {
      * @return
      * The features this {@code Graphic} depends on, in a {@code String}.
      */
-    public abstract String dependsOnFeature();
+    public abstract HashSet<String> dependsOnFeature();
 
 
     /**

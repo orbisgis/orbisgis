@@ -10,6 +10,7 @@ import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.xml.bind.JAXBElement;
@@ -545,25 +546,25 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode,
     }
 
     @Override
-    public String dependsOnFeature() {
-        String result = "";
+    public HashSet<String> dependsOnFeature() {
+        HashSet<String> result = new HashSet<String>();
         if (radius != null) {
-            result += " " + radius.dependsOnFeature();
+            result.addAll(radius.dependsOnFeature());
         }
         if (holeRadius != null) {
-            result += " " + holeRadius.dependsOnFeature();
+            result.addAll(holeRadius.dependsOnFeature());
         }
         if (stroke != null) {
-            result += " " + stroke.dependsOnFeature();
+            result.addAll(stroke.dependsOnFeature());
         }
         if (this.transform != null) {
-            result += " " + transform.dependsOnFeature();
+            result.addAll(transform.dependsOnFeature());
         }
         for (Slice s : slices) {
-            result += s.dependsOnFeature();
+            result.addAll(s.dependsOnFeature());
         }
 
-        return result.trim();
+        return result;
     }
 
     @Override

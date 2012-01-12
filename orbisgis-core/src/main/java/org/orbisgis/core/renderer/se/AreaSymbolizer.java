@@ -41,6 +41,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.AreaSymbolizerType;
@@ -279,4 +280,23 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 
         return of.createAreaSymbolizer(s);
     }
+
+    @Override
+    public HashSet<String> dependsOnFeature() {
+        HashSet<String> ret = new HashSet<String>();
+        if(translate != null){
+            ret.addAll(translate.dependsOnFeature());
+        }
+        if(fill != null){
+            ret.addAll(fill.dependsOnFeature());
+        }
+        if(stroke != null){
+            ret.addAll(stroke.dependsOnFeature());
+        }
+        if(perpendicularOffset != null){
+            ret.addAll(perpendicularOffset.dependsOnFeature());
+        }
+        return ret;
+    }
+
 }

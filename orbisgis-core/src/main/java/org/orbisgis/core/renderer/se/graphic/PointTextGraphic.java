@@ -5,6 +5,7 @@ import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
+import java.util.HashSet;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.PointTextGraphicType;
@@ -161,19 +162,19 @@ public final class PointTextGraphic extends Graphic implements UomNode {
         }
 
         @Override
-        public String dependsOnFeature() {
-                String result = "";
+        public HashSet<String> dependsOnFeature() {
+                HashSet<String> result = new HashSet<String>();
                 if (pointLabel != null) {
-                        result += pointLabel.dependsOnFeature();
+                        result.addAll(pointLabel.dependsOnFeature());
                 }
                 if (x != null) {
-                        result += " " + x.dependsOnFeature();
+                        result.addAll(x.dependsOnFeature());
                 }
                 if (y != null) {
-                        result += " " + y.dependsOnFeature();
+                        result.addAll(y.dependsOnFeature());
                 }
 
-                return result.trim();
+                return result;
         }
 
         /**

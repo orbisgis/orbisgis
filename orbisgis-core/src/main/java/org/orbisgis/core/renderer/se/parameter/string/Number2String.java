@@ -6,6 +6,7 @@ package org.orbisgis.core.renderer.se.parameter.string;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.HashSet;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.FormatNumberType;
 import net.opengis.se._2_0.core.ObjectFactory;
@@ -100,7 +101,7 @@ public class Number2String implements StringParameter {
         }
 
         @Override
-        public String dependsOnFeature() {
+        public HashSet<String> dependsOnFeature() {
                 return numericValue.dependsOnFeature();
         }
 

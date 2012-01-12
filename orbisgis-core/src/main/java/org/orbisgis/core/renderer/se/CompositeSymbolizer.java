@@ -38,6 +38,7 @@
 package org.orbisgis.core.renderer.se;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.CompositeSymbolizerType;
@@ -194,4 +195,14 @@ public final class CompositeSymbolizer implements SymbolizerNode {
         public void setParent(SymbolizerNode rule) {
                 this.parent = rule;
         }
+
+    @Override
+    public HashSet<String> dependsOnFeature() {
+        HashSet<String> ret = new HashSet<String>();
+        for(Symbolizer symb : symbolizers){
+            ret.addAll(symb.dependsOnFeature());
+        }
+        return ret;
+    }
+
 }

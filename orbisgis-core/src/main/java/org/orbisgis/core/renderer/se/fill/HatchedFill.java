@@ -44,12 +44,13 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
+import java.util.HashSet;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.DataSource;
-import org.orbisgis.core.map.MapTransform;
 import net.opengis.se._2_0.core.FillType;
 import net.opengis.se._2_0.core.HatchedFillType;
 import net.opengis.se._2_0.core.ObjectFactory;
+import org.gdms.data.DataSource;
+import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.StrokeNode;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -147,27 +148,22 @@ public final class HatchedFill extends Fill implements StrokeNode {
 
 
     @Override
-    public String dependsOnFeature() {
-
-        String a = "";
-        String d = "";
-        String s = "";
-        String o = "";
-
+    public HashSet<String> dependsOnFeature() {
+        HashSet<String> ret = new HashSet<String>();
         if (angle != null) {
-            a = angle.dependsOnFeature();
+            ret.addAll(angle.dependsOnFeature());
         }
         if (distance != null) {
-            d = distance.dependsOnFeature();
+            ret.addAll(distance.dependsOnFeature());
         }
         if (offset != null) {
-            o = offset.dependsOnFeature();
+            ret.addAll(offset.dependsOnFeature());
         }
         if (stroke != null) {
-            s = stroke.dependsOnFeature();
+            ret.addAll(stroke.dependsOnFeature());
         }
 
-        return (a + " " + d + " " + o + " " + s).trim();
+        return ret;
 
     }
 

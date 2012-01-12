@@ -5,6 +5,7 @@
 package org.orbisgis.core.renderer.se;
 
 import com.vividsolutions.jts.geom.Geometry;
+import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.opengis.se._2_0.core.ElseFilterType;
@@ -465,5 +466,9 @@ public final class Rule implements SymbolizerNode {
          */
         public void setName(String name) {
                 this.name = name;
+        }
+        
+        public HashSet<String> dependsOnFeature(){
+            return symbolizer.dependsOnFeature();
         }
 }

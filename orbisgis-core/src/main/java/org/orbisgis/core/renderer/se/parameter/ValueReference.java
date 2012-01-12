@@ -1,6 +1,7 @@
 package org.orbisgis.core.renderer.se.parameter;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.ObjectFactory;
 import net.opengis.fes._2.ValueReferenceType;
@@ -87,8 +88,10 @@ public abstract class ValueReference implements SeParameter {
 	}
 
 	@Override
-	public String dependsOnFeature() {
-		return getColumnName();
+	public HashSet<String> dependsOnFeature() {
+            HashSet<String> out = new HashSet<String>();
+            out.add(getColumnName());
+            return out;
 	}
 
         /**

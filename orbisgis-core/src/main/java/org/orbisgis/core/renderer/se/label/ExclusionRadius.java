@@ -4,6 +4,7 @@
  */
 package org.orbisgis.core.renderer.se.label;
 
+import java.util.HashSet;
 import javax.xml.bind.JAXBElement;
 
 import net.opengis.se._2_0.core.ExclusionRadiusType;
@@ -92,10 +93,10 @@ public final class ExclusionRadius extends ExclusionZone {
         }
 
         @Override
-        public String dependsOnFeature() {
+        public HashSet<String> dependsOnFeature() {
                 if (radius != null) {
                         return radius.dependsOnFeature();
                 }
-                return "";
+                return new HashSet<String>();
         }
 }

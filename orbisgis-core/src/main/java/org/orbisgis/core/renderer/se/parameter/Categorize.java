@@ -1,9 +1,6 @@
 package org.orbisgis.core.renderer.se.parameter;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.bind.JAXBElement;
@@ -102,25 +99,12 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
     }
 
     @Override
-    public final String dependsOnFeature() {
-        StringBuilder result = new StringBuilder();
-
-        String lookup = this.getLookupValue().dependsOnFeature();
-        if (lookup != null && !lookup.isEmpty()) {
-            result.append(lookup);
+    public final HashSet<String> dependsOnFeature() {
+        HashSet<String>  out = this.getLookupValue().dependsOnFeature();
+        for (int i = 0; i < this.getNumClasses(); i++) {
+            out.addAll(this.getClassValue(i).dependsOnFeature());
         }
-
-        int i;
-        for (i = 0; i < this.getNumClasses(); i++) {
-            String r = this.getClassValue(i).dependsOnFeature();
-            if (r != null && !r.isEmpty()) {
-                result.append(" ");
-                result.append(r);
-            }
-        }
-
-        String res = result.toString();
-        return res.trim();
+        return out;
     }
 
     /**

@@ -1,5 +1,6 @@
 package org.orbisgis.core.renderer.se.graphic;
 
+import java.util.HashSet;
 import net.opengis.se._2_0.thematic.AxisScaleType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
@@ -73,5 +74,16 @@ public final class AxisScale {
         }
 
         return scale;
+    }
+    
+    public HashSet<String> dependsOnFeature() {
+        HashSet<String> ret = new HashSet<String>();
+        if(axisLength != null){
+            ret.addAll(axisLength.dependsOnFeature());
+        }
+        if(measure != null){
+            ret.addAll(measure.dependsOnFeature());
+        }
+        return ret;
     }
 }

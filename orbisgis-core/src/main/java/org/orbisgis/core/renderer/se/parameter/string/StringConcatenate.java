@@ -4,11 +4,7 @@
  */
 package org.orbisgis.core.renderer.se.parameter.string;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ConcatenateType;
 import net.opengis.se._2_0.core.ObjectFactory;
@@ -75,12 +71,12 @@ public class StringConcatenate implements StringParameter, Iterable<StringParame
         }
 
         @Override
-        public String dependsOnFeature() {
-                StringBuilder sb = new StringBuilder();
+        public HashSet<String> dependsOnFeature() {
+                HashSet<String> sb = new HashSet<String>();
                 for(StringParameter sp :inputStrings){
-                        sb.append(sp.dependsOnFeature());
+                        sb.addAll(sp.dependsOnFeature());
                 }
-                return sb.toString();
+                return sb;
         }
 
         @Override

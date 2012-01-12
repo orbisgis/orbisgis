@@ -44,6 +44,7 @@ import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -316,13 +317,12 @@ public final class GraphicCollection implements SymbolizerNode {
      * Print the list of features this GraphicCollection depends on.
      * @return 
      */
-    public String dependsOnFeature() {
-        StringBuilder result = new StringBuilder("");
+    public HashSet<String> dependsOnFeature() {
+        HashSet<String> result = new HashSet<String>();
         for (Graphic g : this.graphics) {
-            result.append(" ");
-            result.append(g.dependsOnFeature());
+            result.addAll(g.dependsOnFeature());
         }
-        return result.toString().trim();
+        return result;
     }
 
     /**

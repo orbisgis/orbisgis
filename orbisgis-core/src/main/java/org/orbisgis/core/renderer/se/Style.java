@@ -42,6 +42,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -71,6 +72,10 @@ import org.orbisgis.core.renderer.se.common.Uom;
  */
 public final class Style implements SymbolizerNode {
 
+    private String name;
+    private ArrayList<Rule> rules;
+    private ILayer layer;
+    
     public Style(ILayer layer, boolean addDefaultRule) {
         rules = new ArrayList<Rule>();
         this.layer = layer;
@@ -360,7 +365,12 @@ public final class Style implements SymbolizerNode {
             return false;
         }
     }
-    private String name;
-    private ArrayList<Rule> rules;
-    private ILayer layer;
+    
+    public HashSet<String> dependsOnFeature() {
+        HashSet<String> hs = new HashSet<String>();
+        for(Rule r : rules){
+            hs.addAll(r.dependsOnFeature());
+        }
+        return hs;
+    }
 }

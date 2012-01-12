@@ -41,6 +41,7 @@ package org.orbisgis.core.renderer.se.parameter;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.LiteralType;
@@ -87,21 +88,12 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
     }
 
     @Override
-    public final String dependsOnFeature() {
-        StringBuilder result = new StringBuilder();
-        String lookup = this.getLookupValue().dependsOnFeature();
-        if (lookup != null && !lookup.isEmpty()){
-            result.append(lookup);
+    public final HashSet<String> dependsOnFeature() {
+        HashSet<String> out = this.getLookupValue().dependsOnFeature();
+        for (int i = 0; i < this.getNumMapItem(); i++) {
+            out.addAll(this.getMapItemValue(i).dependsOnFeature());
         }
-        int i;
-        for (i = 0; i < this.getNumMapItem(); i++) {
-            String r = this.getMapItemValue(i).dependsOnFeature();
-            if (r != null && !r.isEmpty()){
-                result .append(" ");
-                result .append(r);
-            }
-        }
-        return result.toString().trim();
+        return out;
     }
 
     /**

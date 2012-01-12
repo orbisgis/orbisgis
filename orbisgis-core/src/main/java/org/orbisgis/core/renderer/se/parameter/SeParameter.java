@@ -5,6 +5,7 @@
 
 package org.orbisgis.core.renderer.se.parameter;
 
+import java.util.HashSet;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ParameterValueType;
 
@@ -21,7 +22,7 @@ public interface SeParameter{
      *
      * @return field names the parameter depends on or null if parameter doesn't depends on the feature
      */
-    String dependsOnFeature();
+    HashSet<String> dependsOnFeature();
 
     /**
      * Get the JAXB type that would represent this {@code SeParameter}

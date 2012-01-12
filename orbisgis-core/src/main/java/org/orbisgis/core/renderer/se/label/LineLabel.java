@@ -11,6 +11,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
@@ -220,10 +221,10 @@ public class LineLabel extends Label {
     }
 
     @Override
-    public String dependsOnFeature() {
+    public HashSet<String> dependsOnFeature() {
         if (label != null) {
             return label.dependsOnFeature();
         }
-        return "";
+        return new HashSet<String>();
     }
 }

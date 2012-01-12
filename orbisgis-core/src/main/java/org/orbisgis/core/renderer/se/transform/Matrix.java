@@ -5,6 +5,7 @@
 package org.orbisgis.core.renderer.se.transform;
 
 import java.awt.geom.AffineTransform;
+import java.util.HashSet;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.map.MapTransform;
@@ -306,13 +307,15 @@ public final class Matrix implements Transformation {
         }
 
         @Override
-        public String dependsOnFeature() {
-                return (a.dependsOnFeature() + " "
-                        + b.dependsOnFeature() + " "
-                        + c.dependsOnFeature() + " "
-                        + d.dependsOnFeature() + " "
-                        + e.dependsOnFeature() + " "
-                        + f.dependsOnFeature()).trim();
+        public HashSet<String> dependsOnFeature() {
+            HashSet<String> hs = new HashSet<String>();
+            hs.addAll(a.dependsOnFeature());
+            hs.addAll(b.dependsOnFeature());
+            hs.addAll(c.dependsOnFeature());
+            hs.addAll(d.dependsOnFeature());
+            hs.addAll(e.dependsOnFeature());
+            hs.addAll(f.dependsOnFeature());
+            return hs;
         }
 
         @Override
@@ -342,12 +345,12 @@ public final class Matrix implements Transformation {
          * @throws ParameterException when something went wrong...
          */
         public void simplify() throws ParameterException {
-                String sa = a.dependsOnFeature();
-                String sb = b.dependsOnFeature();
-                String sc = c.dependsOnFeature();
-                String sd = d.dependsOnFeature();
-                String se = e.dependsOnFeature();
-                String sf = f.dependsOnFeature();
+                HashSet<String> sa = a.dependsOnFeature();
+                HashSet<String> sb = b.dependsOnFeature();
+                HashSet<String>sc = c.dependsOnFeature();
+                HashSet<String> sd = d.dependsOnFeature();
+                HashSet<String> se = e.dependsOnFeature();
+                HashSet<String> sf = f.dependsOnFeature();
 
                 if (sa != null && !sa.isEmpty()) {
                         setA(new RealLiteral(a.getValue(null, -1)));

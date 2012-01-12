@@ -41,6 +41,7 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
+import java.util.HashSet;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.map.MapTransform;
@@ -143,7 +144,7 @@ public final class TextStroke extends Stroke {
         }
 
         @Override
-        public String dependsOnFeature() {
+        public HashSet<String> dependsOnFeature() {
                 return lineLabel.dependsOnFeature();
         }
 

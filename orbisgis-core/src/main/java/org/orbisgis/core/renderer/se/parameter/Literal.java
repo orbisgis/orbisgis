@@ -5,6 +5,7 @@
 package org.orbisgis.core.renderer.se.parameter;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.LiteralType;
@@ -50,8 +51,8 @@ public abstract class Literal implements SeParameter {
         }
 
         @Override
-        public String dependsOnFeature() {
-                return "";
+        public HashSet<String> dependsOnFeature() {
+                return new HashSet<String>();
         }
 
         @Override

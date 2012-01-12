@@ -2,6 +2,7 @@ package org.orbisgis.core.renderer.se.parameter;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.InterpolateType;
@@ -61,20 +62,13 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
         }
 
         @Override
-        public final String dependsOnFeature() {
-                StringBuilder result = new StringBuilder();
-                String lookup = this.getLookupValue().dependsOnFeature();
-                if (lookup != null && !lookup.isEmpty()) {
-                        result.append(lookup);
-                }
-                int i;
-                for (i = 0; i < this.getNumInterpolationPoint(); i++) {
-                        String r = this.getInterpolationPoint(i).getValue().dependsOnFeature();
-                        if (r != null && !r.isEmpty()) {
-                                result.append(r);
-                        }
-                }
-                return result.toString().trim();
+        public final HashSet<String> dependsOnFeature() {
+            HashSet<String> out = this.getLookupValue().dependsOnFeature();
+            for (int i = 0; i < this.getNumInterpolationPoint(); i++) {
+                HashSet<String> r = this.getInterpolationPoint(i).getValue().dependsOnFeature();
+                out.addAll(r);
+            }
+            return out;
         }
 
         /**

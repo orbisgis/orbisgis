@@ -38,6 +38,7 @@
 package org.orbisgis.core.renderer.se.stroke;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import net.opengis.se._2_0.core.AlternativeStrokeElementsType;
 import net.opengis.se._2_0.core.StrokeElementType;
@@ -93,12 +94,12 @@ public class AlternativeStrokeElements extends CompoundStrokeElement {
         }
 
         @Override
-        public String dependsOnFeature() {
-                String result = " ";
+        public HashSet<String> dependsOnFeature() {
+                HashSet<String> result = new HashSet<String>();
                 for (StrokeElement elem : elements) {
-                        result += elem.dependsOnFeature();
+                        result.addAll(elem.dependsOnFeature());
                 }
-                return result.trim();
+                return result;
         }
 
         /**

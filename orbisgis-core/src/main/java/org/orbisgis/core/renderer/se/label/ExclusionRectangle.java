@@ -4,6 +4,7 @@
  */
 package org.orbisgis.core.renderer.se.label;
 
+import java.util.HashSet;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ExclusionRectangleType;
 import net.opengis.se._2_0.core.ObjectFactory;
@@ -114,17 +115,19 @@ public final class ExclusionRectangle extends ExclusionZone {
     }
 
 	@Override
-	public String dependsOnFeature() {
-        String result = "";
-
-        if (x != null) {
-                        result = x.dependsOnFeature();
+	public HashSet<String> dependsOnFeature() {
+            HashSet<String> result = null;
+            if (x != null) {
+                result = x.dependsOnFeature();
+            }
+            if (y != null) {
+                if(result == null){
+                    result = y.dependsOnFeature();
+                } else {
+                    result.addAll(y.dependsOnFeature());
                 }
-        if (y != null) {
-                        result += " " + y.dependsOnFeature();
-                }
-
-        return result.trim();
+            }
+            return result;
 	}
 
 }

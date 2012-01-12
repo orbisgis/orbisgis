@@ -5,6 +5,7 @@
 package org.orbisgis.core.renderer.se.transform;
 
 import java.awt.geom.AffineTransform;
+import java.util.HashSet;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.map.MapTransform;
@@ -79,18 +80,20 @@ public class Translate implements Transformation {
         }
 
         @Override
-        public String dependsOnFeature() {
-                String result = "";
-                if (x != null) {
-                        result = x.dependsOnFeature();
+        public HashSet<String> dependsOnFeature() {
+            HashSet<String> result = null;
+            if (x != null) {
+                result = x.dependsOnFeature();
+            }
+            if (y != null) {
+                if(result == null) {
+                    result = y.dependsOnFeature();
+                } else {
+                    result.addAll(y.dependsOnFeature());
                 }
-
-                if (y != null) {
-                        result += " " + y.dependsOnFeature();
-                }
-
-                return result.trim();
-        }
+            }
+            return result;
+    }
 
         @Override
         public JAXBElement<?> getJAXBElement() {

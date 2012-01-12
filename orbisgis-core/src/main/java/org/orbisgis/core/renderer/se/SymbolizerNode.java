@@ -1,5 +1,6 @@
 package org.orbisgis.core.renderer.se;
 
+import java.util.HashSet;
 import org.orbisgis.core.renderer.se.common.Uom;
 
 /**
@@ -29,7 +30,7 @@ public interface SymbolizerNode{
      */
     void setParent(SymbolizerNode node);
 
-
+    HashSet<String> dependsOnFeature();
     /*
      * this methos will be used to update all cached element.
      * It should be called after each style modification

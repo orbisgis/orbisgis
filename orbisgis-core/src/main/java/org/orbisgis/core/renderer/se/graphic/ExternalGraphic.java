@@ -5,6 +5,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 
 import java.io.IOException;
+import java.util.HashSet;
 
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
@@ -389,28 +390,22 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
     return delta;
     }*/
     @Override
-    public String dependsOnFeature() {
-
-        String h = "";
-        String o = "";
-        String t = "";
-        String v = "";
-
-
+    public HashSet<String> dependsOnFeature() {
+        HashSet<String> ret = new HashSet<String>();
         if (halo != null) {
-            h = halo.dependsOnFeature();
+            ret.addAll(halo.dependsOnFeature());
         }
         if (opacity != null) {
-            o = opacity.dependsOnFeature();
+            ret.addAll(opacity.dependsOnFeature());
         }
         if (transform != null) {
-            t = transform.dependsOnFeature();
+            ret.addAll(transform.dependsOnFeature());
         }
         if (viewBox != null) {
-            v = viewBox.dependsOnFeature();
+            ret.addAll(viewBox.dependsOnFeature());
         }
 
-        return (h + " " + o + " " + t + " " + v + " ").trim();
+        return ret;
     }
 
     @Override

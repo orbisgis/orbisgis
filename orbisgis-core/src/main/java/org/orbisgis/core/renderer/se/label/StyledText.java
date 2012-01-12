@@ -11,6 +11,7 @@ import java.awt.geom.Rectangle2D;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import org.gdms.data.DataSource;
 
 import org.orbisgis.core.map.MapTransform;
@@ -570,25 +571,25 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
      * @return
      * The features this {@code StyledText} depends on, in a {@code String}.
      */
-    public String dependsOnFeature() {
+    public HashSet<String> dependsOnFeature() {
 
-        String result = "";
+        HashSet<String> result = new HashSet<String>();
         if (text != null) {
-            result += " " + text.dependsOnFeature();
+            result.addAll(text.dependsOnFeature());
         }
         if (fontFamily != null) {
-            result += " " + fontFamily.dependsOnFeature();
+            result.addAll(fontFamily.dependsOnFeature());
         }
         if (fontWeight != null) {
-            result += " " + fontWeight.dependsOnFeature();
+            result.addAll(fontWeight.dependsOnFeature());
         }
         if (fontStyle != null) {
-            result += " " + fontStyle.dependsOnFeature();
+            result.addAll(fontStyle.dependsOnFeature());
         }
         if (fontSize != null) {
-            result += " " + fontSize.dependsOnFeature();
+            result.addAll(fontSize.dependsOnFeature());
         }
 
-        return result.trim();
+        return result;
     }
 }

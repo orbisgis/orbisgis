@@ -43,17 +43,13 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Shape;
-
-import java.awt.geom.Rectangle2D;
+import java.util.HashSet;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.DataSource;
-
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.SolidFillType;
-
+import org.gdms.data.DataSource;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.color.ColorHelper;
@@ -218,17 +214,19 @@ public final class SolidFill extends Fill {
 	}
 
 	@Override
-	public String dependsOnFeature() {
-                String c = "";
-                if (color != null) {
-                    c = color.dependsOnFeature();
+	public HashSet<String> dependsOnFeature() {
+            HashSet<String> ret = null;
+            if (color != null) {
+                ret = color.dependsOnFeature();
+            }
+            if (opacity != null) {
+                if(ret == null) {
+                    ret = opacity.dependsOnFeature();
+                } else {
+                    ret.addAll(opacity.dependsOnFeature());
                 }
-
-                String o = "";
-                if (opacity != null) {
-                    o = opacity.dependsOnFeature();
-                }
-                return (c + " " + o).trim();
+            }
+                return ret;
 	}
 
 	@Override

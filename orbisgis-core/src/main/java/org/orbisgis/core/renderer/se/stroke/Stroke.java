@@ -3,6 +3,7 @@ package org.orbisgis.core.renderer.se.stroke;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
+import java.util.HashSet;
 
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.CompoundStrokeType;
@@ -238,5 +239,5 @@ public abstract class Stroke implements SymbolizerNode {
      * @return
      * The features this {@code Stroke} depends on, in a {@code String}.
      */
-    public abstract String dependsOnFeature();
+    public abstract HashSet<String> dependsOnFeature();
 }

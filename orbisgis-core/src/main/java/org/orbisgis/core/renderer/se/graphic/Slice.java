@@ -1,5 +1,6 @@
 package org.orbisgis.core.renderer.se.graphic;
 
+import java.util.HashSet;
 import net.opengis.se._2_0.thematic.SliceType;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
@@ -141,18 +142,18 @@ public class Slice implements SymbolizerNode, FillNode {
          * @return
          * The features this {@code Slice} depends on, in a {@code String}.
          */
-        public String dependsOnFeature() {
-                String result = "";
+        public HashSet<String> dependsOnFeature() {
+                HashSet<String> result = new HashSet<String>();
                 if (fill != null) {
-                        result += " " + fill.dependsOnFeature();
+                        result.addAll(fill.dependsOnFeature());
                 }
                 if (value != null) {
-                        result += " " + value.dependsOnFeature();
+                        result.addAll(value.dependsOnFeature());
                 }
                 if (gap != null) {
-                        result += " " + gap.dependsOnFeature();
+                        result.addAll(gap.dependsOnFeature());
                 }
 
-                return result.trim();
+                return result;
         }
 }

@@ -41,6 +41,7 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
@@ -476,17 +477,17 @@ public final class CompoundStroke extends Stroke implements UomNode {
     }
 
     @Override
-    public String dependsOnFeature() {
-        String result = "";
+    public HashSet<String> dependsOnFeature() {
+        HashSet<String> result = new HashSet<String>();
         /*for (StrokeAnnotationGraphic sag : annotations) {
             result += sag.dependsOnFeature();
         }*/
 
         for (CompoundStrokeElement elem : elements) {
-            result += elem.dependsOnFeature();
+            result.addAll(elem.dependsOnFeature());
         }
 
-        return result.trim();
+        return result;
     }
 
     private void addCompoundStrokeElement(CompoundStrokeElement cse) {

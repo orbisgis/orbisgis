@@ -43,6 +43,7 @@ import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Shape;
 import java.io.IOException;
+import java.util.HashSet;
 import javax.xml.bind.JAXBElement;
 
 import net.opengis.se._2_0.core.FillType;
@@ -118,7 +119,7 @@ public abstract class Fill implements SymbolizerNode {
     /**
      * @return space separated list of field the style element depends on
      */
-    public abstract String dependsOnFeature();
+    public abstract HashSet<String> dependsOnFeature();
 
     /**
      *

@@ -47,6 +47,7 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
@@ -924,60 +925,26 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
         }
 
         @Override
-        public String dependsOnFeature() {
-                StringBuffer buf = new StringBuffer();
-
+        public HashSet<String> dependsOnFeature() {
+                HashSet<String> ret = new HashSet<String>();
                 if (areaFill != null) {
-                        buf.append(" ");
-                        buf.append(this.areaFill.dependsOnFeature());
+                        ret.addAll(areaFill.dependsOnFeature());
                 }
-
                 if (lineStroke != null) {
-                        buf.append(" ");
-                        buf.append(this.lineStroke.dependsOnFeature());
+                        ret.addAll(lineStroke.dependsOnFeature());
                 }
-
                 if (this.categoryGap != null) {
-                        buf.append(" ");
-                        buf.append(categoryGap.dependsOnFeature());
+                        ret.addAll(categoryGap.dependsOnFeature());
                 }
-
                 if (categoryWidth != null) {
-                        buf.append(" ");
-                        buf.append(categoryWidth.dependsOnFeature());
+                        ret.addAll(categoryWidth.dependsOnFeature());
                 }
-
                 if (axisScale != null) {
-                        if (axisScale.getAxisLength() != null) {
-                                buf.append(" ");
-                                buf.append(axisScale.getAxisLength().dependsOnFeature());
-                        }
-                        if (axisScale.getMeasureValue() != null) {
-                                buf.append(" ");
-                                buf.append(axisScale.getMeasureValue().dependsOnFeature());
-                        }
+                        ret.addAll(axisScale.dependsOnFeature());
                 }
-
                 for (Category c : categories) {
-                        if (c.getFill() != null) {
-                                buf.append(" ");
-                                buf.append(c.getFill().dependsOnFeature());
-                        }
-                        if (c.getStroke() != null) {
-                                buf.append(" ");
-                                buf.append(c.getStroke().dependsOnFeature());
-                        }
-                        if (c.getGraphicCollection() != null) {
-                                buf.append(" ");
-                                buf.append(c.getGraphicCollection().dependsOnFeature());
-                        }
-                        if (c.getMeasure() != null) {
-                                buf.append(" ");
-                                buf.append(c.getMeasure().dependsOnFeature());
-                        }
+                        ret.addAll(c.dependsOnFeature());
                 }
-
-                String s = buf.toString().trim();
-                return s;
+                return ret;
         }
 }

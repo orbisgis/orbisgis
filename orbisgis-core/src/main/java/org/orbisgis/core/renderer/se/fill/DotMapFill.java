@@ -46,6 +46,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Random;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
@@ -235,22 +236,20 @@ public final class DotMapFill extends Fill implements GraphicNode {
     }
 
     @Override
-    public String dependsOnFeature() {
-        String m = "";
-        String q = "";
-        String t = "";
+    public HashSet<String> dependsOnFeature() {
+        HashSet<String> ret = new HashSet<String>();
 
         if (mark != null) {
-            m = mark.dependsOnFeature();
+            ret.addAll(mark.dependsOnFeature());
         }
         if (this.quantityPerMark != null) {
-            q = quantityPerMark.dependsOnFeature();
+            ret.addAll(quantityPerMark.dependsOnFeature());
         }
         if (this.totalQuantity != null) {
-            t = totalQuantity.dependsOnFeature();
+            ret.addAll(totalQuantity.dependsOnFeature());
         }
 
-        return (m + " " + q + " " + t).trim();
+        return ret;
     }
 
     @Override

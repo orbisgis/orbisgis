@@ -42,6 +42,7 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
@@ -219,6 +220,18 @@ public final class TextSymbolizer extends VectorSymbolizer {
         }
 
         return of.createTextSymbolizer(s);
+    }
+
+    @Override
+    public HashSet<String> dependsOnFeature() {
+        HashSet<String> ret = new HashSet<String>();
+        if(perpendicularOffset != null){
+            ret.addAll(perpendicularOffset.dependsOnFeature());
+        }
+        if(label != null){
+            ret.addAll(label.dependsOnFeature());
+        }
+        return ret;
     }
 
 

@@ -43,6 +43,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.HashSet;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
 import net.opengis.se._2_0.core.MarkGraphicType;
@@ -589,35 +590,35 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
     }
 
     @Override
-    public String dependsOnFeature() {
+    public HashSet<String> dependsOnFeature() {
 
-        String result = "";
+        HashSet<String> result = new HashSet<String>();
 
         if (wkn != null) {
-            result += " " + wkn.dependsOnFeature();
+            result.addAll(wkn.dependsOnFeature());
         }
         if (viewBox != null) {
-            result += " " + viewBox.dependsOnFeature();
+            result.addAll(viewBox.dependsOnFeature());
         }
         if (pOffset != null) {
-            result += " " + pOffset.dependsOnFeature();
+            result.addAll(pOffset.dependsOnFeature());
         }
         if (halo != null) {
-            result += " " + halo.dependsOnFeature();
+            result.addAll(halo.dependsOnFeature());
         }
         if (fill != null) {
-            result += " " + fill.dependsOnFeature();
+            result.addAll(fill.dependsOnFeature());
         }
         if (stroke != null) {
-            result += " " + stroke.dependsOnFeature();
+            result.addAll(stroke.dependsOnFeature());
         }
         if (transform != null) {
-            result += " " + transform.dependsOnFeature();
+            result.addAll(transform.dependsOnFeature());
         }
         if (markIndex != null) {
-            result += " " + markIndex.dependsOnFeature();
+            result.addAll(markIndex.dependsOnFeature());
         }
 
-        return result.trim();
+        return result;
     }
 }

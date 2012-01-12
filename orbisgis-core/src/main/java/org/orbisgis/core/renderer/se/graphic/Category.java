@@ -1,5 +1,6 @@
 package org.orbisgis.core.renderer.se.graphic;
 
+import java.util.HashSet;
 import net.opengis.se._2_0.thematic.CategoryType;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.GraphicNode;
@@ -187,5 +188,26 @@ public final class Category implements SymbolizerNode, FillNode, StrokeNode, Gra
                 }
 
                 return ct;
+        }
+        
+        @Override
+        public HashSet<String> dependsOnFeature() {
+            HashSet<String> ret = new HashSet<String>();
+            if (this.getFill() != null) {
+                ret.addAll(this.getFill().dependsOnFeature());
+            }
+
+            if (this.getStroke() != null) {
+                ret.addAll(getStroke().dependsOnFeature());
+            }
+
+            if (this.getGraphicCollection() != null) {
+                ret.addAll(getGraphicCollection().dependsOnFeature());
+            }
+
+            if (this.getMeasure() != null) {
+                ret.addAll(getMeasure().dependsOnFeature());
+            }
+            return ret;
         }
 }

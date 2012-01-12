@@ -38,6 +38,7 @@
 package org.orbisgis.core.renderer.se.graphic;
 
 import java.awt.geom.Point2D;
+import java.util.HashSet;
 import org.gdms.data.DataSource;
 import net.opengis.se._2_0.core.ViewBoxType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -168,18 +169,21 @@ public final class ViewBox implements SymbolizerNode {
      * @return
      * The features this {@code Label} depends on, in a {@code String}.
      */
-        public String dependsOnFeature() {
-                String sx = "";
-                String sy = "";
-
-                if (x != null) {
-                        sx = x.dependsOnFeature();
+    @Override
+        public HashSet<String> dependsOnFeature() {
+            HashSet<String> hs = null;
+            if (x != null) {
+                    hs = x.dependsOnFeature();
+            }
+            if (y != null) { 
+                if(hs == null) {
+                    hs = y.dependsOnFeature();
+                } else {
+                    hs.addAll(y.dependsOnFeature());
                 }
-                if (y != null) {
-                        sy = y.dependsOnFeature();
-                }
+            }
 
-                return (sx + " " + sy).trim();
+            return hs;
         }
 
         /**

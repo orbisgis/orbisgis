@@ -4,6 +4,7 @@
  */
 package org.orbisgis.core.renderer.se.label;
 
+import java.util.HashSet;
 import javax.xml.bind.JAXBElement;
 
 import net.opengis.se._2_0.core.ExclusionRadiusType;
@@ -82,5 +83,5 @@ public abstract class ExclusionZone implements SymbolizerNode, UomNode {
      * @return
      * The features this {@code ExclusionZone} depends on, in a {@code String}.
      */
-        public abstract String dependsOnFeature();
+        public abstract HashSet<String> dependsOnFeature();
 }

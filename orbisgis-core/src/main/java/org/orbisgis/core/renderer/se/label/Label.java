@@ -7,16 +7,15 @@ package org.orbisgis.core.renderer.se.label;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
+import java.util.HashSet;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.DataSource;
 import net.opengis.se._2_0.core.LabelType;
-
-import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.RenderContext;
-
 import net.opengis.se._2_0.core.LineLabelType;
 import net.opengis.se._2_0.core.ParameterValueType;
 import net.opengis.se._2_0.core.PointLabelType;
+import org.gdms.data.DataSource;
+import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
@@ -342,5 +341,5 @@ public abstract class Label implements SymbolizerNode, UomNode {
      * @return
      * The features this {@code Label} depends on, in a {@code String}.
      */
-    public abstract String dependsOnFeature();
+    public abstract HashSet<String> dependsOnFeature();
 }

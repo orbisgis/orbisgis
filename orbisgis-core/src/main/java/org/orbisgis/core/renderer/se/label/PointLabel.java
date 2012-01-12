@@ -11,6 +11,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 
 import java.io.IOException;
+import java.util.HashSet;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
 
@@ -193,20 +194,20 @@ public final class PointLabel extends Label {
 
 
     @Override
-    public String dependsOnFeature() {
+    public HashSet<String> dependsOnFeature() {
 
-        String result = "";
+        HashSet<String> result = new HashSet<String>();
         if (label != null) {
-            result = label.dependsOnFeature();
+            result.addAll(label.dependsOnFeature());
         }
         if (exclusionZone != null) {
-            result += " " + exclusionZone.dependsOnFeature();
+            result.addAll(exclusionZone.dependsOnFeature());
         }
         if (rotation != null) {
-            result += " " + rotation.dependsOnFeature();
+            result.addAll(rotation.dependsOnFeature());
         }
 
-        return result.trim();
+        return result;
     }
 
 

@@ -8,6 +8,7 @@ package org.orbisgis.core.renderer.se.transform;
 
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
+import java.util.HashSet;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.map.MapTransform;
@@ -44,7 +45,8 @@ public interface Transformation {
      * @throws ParameterException
      * @throws IOException
      */
-    AffineTransform getAffineTransform(DataSource sds, long fid, Uom uom, MapTransform mt, Double width, Double height) throws ParameterException, IOException;
+    AffineTransform getAffineTransform(DataSource sds, long fid, Uom uom, MapTransform mt, 
+            Double width, Double height) throws ParameterException, IOException;
 
     /**
      * Get a JAXB representation of this {@code Label}
@@ -66,5 +68,5 @@ public interface Transformation {
      * @return
      * The features this {@code Transformation} depends on, in a {@code String}.
      */
-    String dependsOnFeature();
+    HashSet<String> dependsOnFeature();
 }

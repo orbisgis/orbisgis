@@ -43,6 +43,7 @@ import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 
 import java.io.IOException;
+import java.util.HashSet;
 
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
@@ -302,28 +303,22 @@ public final class DensityFill extends Fill implements GraphicNode {
     }
 
     @Override
-    public String dependsOnFeature() {
-
-        String pc = "";
+    public HashSet<String> dependsOnFeature() {
+        HashSet<String> ret = new HashSet<String>();
         if (percentageCovered != null) {
-            pc = percentageCovered.dependsOnFeature();
+            ret.addAll(percentageCovered.dependsOnFeature());
         }
-
         if (useHatches()) {
-            String h = "";
-            String o = "";
             if (hatches != null) {
-                h = hatches.dependsOnFeature();
+                ret.addAll(hatches.dependsOnFeature());
             }
             if (orientation != null) {
-                o = orientation.dependsOnFeature();
+                ret.addAll(orientation.dependsOnFeature());
             }
-            return (pc + " " + o + " " + h).trim();
         } else if (mark != null) {
-            return (pc + " " + mark.dependsOnFeature()).trim();
+            ret.addAll(mark.dependsOnFeature());
         }
-
-        return "";
+        return ret;
     }
 
     @Override

@@ -37,6 +37,7 @@
  */
 package org.orbisgis.core.renderer.se.stroke;
 
+import java.util.HashSet;
 import net.opengis.se._2_0.core.StrokeElementType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.StrokeNode;
@@ -220,24 +221,24 @@ public final class StrokeElement extends CompoundStrokeElement implements Stroke
         }
 
         @Override
-        public String dependsOnFeature() {
+        public HashSet<String> dependsOnFeature() {
 
-                String result = "";
+                HashSet<String> result = new HashSet<String>();
 
                 if (length != null) {
-                        result += " " + length.dependsOnFeature();
+                        result.addAll(length.dependsOnFeature());
                 }
                 if (preGap != null) {
-                        result += " " + preGap.dependsOnFeature();
+                        result.addAll(preGap.dependsOnFeature());
                 }
                 if (postGap != null) {
-                        result += " " + postGap.dependsOnFeature();
+                        result.addAll(postGap.dependsOnFeature());
                 }
                 if (stroke != null) {
-                        result += " " + stroke.dependsOnFeature();
+                        result.addAll(stroke.dependsOnFeature());
                 }
 
-                return result.trim();
+                return result;
         }
 
         @Override

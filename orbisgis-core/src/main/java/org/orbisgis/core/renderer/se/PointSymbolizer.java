@@ -43,6 +43,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 
 import java.io.IOException;
+import java.util.HashSet;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
 import net.opengis.se._2_0.core.ExtensionType;
@@ -221,6 +222,11 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
 
     public void setOnVertex(boolean onVertex) {
         this.onVertex = onVertex;
+    }
+
+    @Override
+    public HashSet<String> dependsOnFeature() {
+        return graphic.dependsOnFeature();
     }
     
 }

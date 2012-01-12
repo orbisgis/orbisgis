@@ -41,6 +41,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.LineSymbolizerType;
@@ -219,4 +220,17 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
 
         return of.createLineSymbolizer(s);
     }
+
+    @Override
+    public HashSet<String> dependsOnFeature() {
+        HashSet<String> ret = new HashSet<String>();
+        if(perpendicularOffset != null){
+            ret.addAll(perpendicularOffset.dependsOnFeature());
+        }
+        if(stroke != null){
+            ret.addAll(stroke.dependsOnFeature());
+        }
+        return ret;
+    }
+    
 }
