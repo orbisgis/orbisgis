@@ -97,7 +97,7 @@ public final class TextSymbolizer extends VectorSymbolizer {
         }
 
         if (tst.getUom() != null) {
-            this.uom = Uom.fromOgcURN(tst.getUom());
+            setUom(Uom.fromOgcURN(tst.getUom()));
         }
 
         if (tst.getPerpendicularOffset() != null) {
@@ -119,7 +119,7 @@ public final class TextSymbolizer extends VectorSymbolizer {
         super();
         this.name = "Label";
         setLabel(new PointLabel());
-        uom = Uom.MM;
+        setUom(Uom.MM);
     }
 
 

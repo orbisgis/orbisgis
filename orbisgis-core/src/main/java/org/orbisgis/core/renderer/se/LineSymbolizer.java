@@ -110,7 +110,7 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
         }
 
         if (ast.getUom() != null) {
-            this.uom = Uom.fromOgcURN(ast.getUom());
+            setUom(Uom.fromOgcURN(ast.getUom()));
         }
 
         if (ast.getPerpendicularOffset() != null) {

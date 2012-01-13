@@ -47,15 +47,11 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.AreaSymbolizerType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import org.gdms.data.DataSource;
-
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-
-
 import org.orbisgis.core.renderer.se.common.Uom;
-
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -63,7 +59,6 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
-
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.renderer.se.transform.Translate;
@@ -92,7 +87,7 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
     public AreaSymbolizer() {
         super();
         name = "Area symbolizer";
-        uom = Uom.MM;
+        setUom(Uom.MM);
         this.setFill(new SolidFill());
         this.setStroke(new PenStroke());
     }
@@ -113,7 +108,7 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
         }
 
         if (ast.getUom() != null) {
-            this.uom = Uom.fromOgcURN(ast.getUom());
+            setUom(Uom.fromOgcURN(ast.getUom()));
         }
 
         if (ast.getPerpendicularOffset() != null) {
@@ -227,7 +222,8 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
         if (shapes != null) {
             for (Shape shp : shapes) {
                 if (this.getTranslate() != null){
-                    shp = getTranslate().getAffineTransform(sds, fid, uom, mt, (double)mt.getWidth(), (double)mt.getHeight()).createTransformedShape(shp);
+                    shp = getTranslate().getAffineTransform(sds, fid, getUom(), mt, 
+                            (double)mt.getWidth(), (double)mt.getHeight()).createTransformedShape(shp);
                 }
                 if (shp != null) {
                     if (fill != null) {
@@ -258,7 +254,7 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
             s.setGeometry(getGeometry().getJAXBGeometryType());
         }
 
-        if (uom != null) {
+        if (getUom() != null) {
             s.setUom(this.getUom().toURN());
         }
 

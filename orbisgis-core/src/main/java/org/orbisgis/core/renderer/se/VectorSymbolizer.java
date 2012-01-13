@@ -37,12 +37,7 @@
  */
 package org.orbisgis.core.renderer.se;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.geom.TopologyException;
+import com.vividsolutions.jts.geom.*;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
@@ -52,12 +47,10 @@ import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.SymbolizerType;
 import org.gdms.data.DataSource;
-
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -66,8 +59,9 @@ import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
 /**
  * This class contains the common elements shared by <code>PointSymbolizer</code>,<code>LineSymbolizer</code>
  * ,<code>AreaSymbolizer</code> and <code>TextSymbolizer</code>. Those vector layers all contains 
- * the elements defined in <code>Symbolizer</code>, and :<ul>
- *  <li> - an unit of measure (Uom)</li>
+ * the elements defined in <code>Symbolizer</code>, and :
+ * <ul>
+ *  <li> - a unit of measure (Uom)</li>
  *  <li> - an affine transformation def (transform)</li>
  * </ul>
  *
@@ -75,9 +69,10 @@ import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
  */
 public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 
-    protected Uom uom;
+    private Uom uom;
     private GeometryAttribute theGeom;
 
+    
     protected VectorSymbolizer() {
     }
 
@@ -95,11 +90,8 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 
     public Geometry getTheGeom(DataSource sds, Long fid) throws ParameterException, DriverException {
         if (theGeom != null) {
-            System.out.println(" -> From Attribute => " + theGeom.getColumnName());
             return theGeom.getTheGeom(sds, fid);
         } else {
-            System.out.println(" -> get default !");
-            // TODO : throw errer if there is more than one geometry field !
             int fieldId = ShapeHelper.getGeometryFieldId(sds);
             return sds.getFieldValue(fid, fieldId).getAsGeometry();
         }
@@ -249,22 +241,15 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
     public Point2D getPointShape(DataSource sds, long fid, MapTransform mt, Geometry theGeom) throws ParameterException, IOException, DriverException {
 
         Geometry geom = getGeometry(sds, fid, theGeom);
-        //geom = ShapeHelper.clipToExtent(geom, mt.getAdjustedExtent());
-
-
         AffineTransform at = mt.getAffineTransform();
-
         Point point;
 
         try {
-            // try/catch prevent to fail when such a point can't be computed
             point = geom.getInteriorPoint();
         } catch (TopologyException ex) {
             Services.getOutputManager().println("getPointShape :: TopologyException: " + ex);
             point = geom.getCentroid();
         }
-        //Point point = geom.getCentroid();
-
         return at.transform(new Point2D.Double(point.getX(), point.getY()), null);
     }
 
@@ -281,9 +266,6 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
     public Point2D getFirstPointShape(DataSource sds, long fid, MapTransform mt, Geometry theGeom) throws ParameterException, IOException, DriverException {
 
         Geometry geom = getGeometry(sds, fid, theGeom);
-        //geom = ShapeHelper.clipToExtent(geom, mt.getAdjustedExtent());
-
-
         AffineTransform at = mt.getAffineTransform();
 
         Coordinate[] coordinates = geom.getCoordinates();
