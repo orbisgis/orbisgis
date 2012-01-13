@@ -48,92 +48,110 @@ import com.vividsolutions.jts.geom.Geometry;
  */
 public class GeometryDimensionConstraint extends AbstractIntConstraint {
 
-        /**
-         * Constant to use to build constraint for point or multipoint.
-         */
-        public static final int DIMENSION_POINT = 0;
-        /**
-         * Constant to use to build constraint for line or multilinestring.
-         */
-        public static final int DIMENSION_LINE = 1;
+    /**
+     * Constant to use to display human constraint name for unknown geometry.
+     */
+    public static final String HUMAN_DIMENSION_UNKNOWN = "UNKNOWN";
+    /**
+     * Constant to use to display human constraint name  for point or multipoint.
+     */
+    public static final String HUMAN_DIMENSION_POINT = "POINT";
+    /**
+     * Constant to use to display human constraint name  for line or multilinestring.
+     */
+    public static final String HUMAN_DIMENSION_CURVE = "CURVE";
+    /**
+     * Constant to use to display human constraint name for polygon or multipolygon.
+     */
+    public static final String HUMAN_DIMENSION_SURFACE = "SURFACE";
+    /**
+     * Constant to use to build constraint for unknown geometry.
+     */
+    public static final int DIMENSION_UNKNOWN = -1;
+    /**
+     * Constant to use to build constraint for point or multipoint.
+     */
+    public static final int DIMENSION_POINT = 0;
+    /**
+     * Constant to use to build constraint for line or multilinestring.
+     */
+    public static final int DIMENSION_CURVE = 1;
+    /**
+     * Constant to use to build constraint for polygon or multipolygon.
+     */
+    public static final int DIMENSION_SURFACE = 2;
 
-        /**
-         * Constant to use to build constraint for polygon or multipolygon.
-         */
-        public static final int DIMENSION_POLYGON = 2;
-
-
-        /**
-         * The dimension of the  geometries. 
-         * 0 = point (point, multipoint)
-         * 1 = line (linestring, multilinestring)
-         * 2 = polygon (polygon, multipolygon)
-         *
-         * @param constraintValue
-         */
-        public GeometryDimensionConstraint(final int constraintValue) {
-                super(constraintValue);
-                if ((constraintValue < DIMENSION_POINT) || (constraintValue > DIMENSION_POLYGON)) {
-                        throw new IllegalArgumentException("Only 0, 1 and 2 are allowed");
-                }
+    /**
+     * The dimension of the  geometries. 
+     * 0 = point (point, multipoint)
+     * 1 = curve (linestring, multilinestring)
+     * 2 = surface (polygon, multipolygon)
+     *
+     * @param constraintValue
+     */
+    public GeometryDimensionConstraint(final int constraintValue) {
+        super(constraintValue);
+        if ((constraintValue < DIMENSION_POINT) || (constraintValue > DIMENSION_SURFACE)) {
+            throw new IllegalArgumentException("Only 0, 1 and 2 are allowed");
         }
+    }
 
-        GeometryDimensionConstraint(byte[] constraintBytes) {
-                super(constraintBytes);
-        }
+    GeometryDimensionConstraint(byte[] constraintBytes) {
+        super(constraintBytes);
+    }
 
-        @Override
-        public int getConstraintCode() {
-                return Constraint.DIMENSION_2D_GEOMETRY;
-        }
+    @Override
+    public int getConstraintCode() {
+        return Constraint.DIMENSION_2D_GEOMETRY;
+    }
 
-        @Override
-        public String check(Value value) {
-                if (!value.isNull()) {
-                        final Geometry geom = value.getAsGeometry();
-                        if ((getDimension(geom) != constraintValue)) {
-                                return "Invalid dimension. " + getDimensionDescription()
-                                        + " expected";
-                        }
-                }
-                return null;
+    @Override
+    public String check(Value value) {
+        if (!value.isNull()) {
+            final Geometry geom = value.getAsGeometry();
+            if ((getDimension(geom) != constraintValue)) {
+                return "Invalid dimension. " + getDimensionDescription()
+                        + " expected";
+            }
         }
+        return null;
+    }
 
-        private String getDimensionDescription() {
-                if (constraintValue == DIMENSION_POINT) {
-                        return "POINT";
-                } else if (constraintValue == DIMENSION_LINE) {
-                        return "LINE";
-                } else {
-                        return "POLYGON";
-                }
+    private String getDimensionDescription() {
+        if (constraintValue == DIMENSION_POINT) {
+            return HUMAN_DIMENSION_POINT;
+        } else if (constraintValue == DIMENSION_CURVE) {
+            return HUMAN_DIMENSION_CURVE;
+        } else {
+            return HUMAN_DIMENSION_SURFACE;
         }
+    }
 
-        private int getDimension(Geometry geom) {
-                return geom.getDimension();
-        }
+    private int getDimension(Geometry geom) {
+        return geom.getDimension();
+    }
 
-        public int getDimension() {
-                return constraintValue;
-        }
+    public int getDimension() {
+        return constraintValue;
+    }
 
-        @Override
-        public int getType() {
-                return CONSTRAINT_TYPE_CHOICE;
-        }
+    @Override
+    public int getType() {
+        return CONSTRAINT_TYPE_CHOICE;
+    }
 
-        @Override
-        public int[] getChoiceCodes() {
-                return new int[]{0, 1, 2};
-        }
+    @Override
+    public int[] getChoiceCodes() {
+        return new int[]{0, 1, 2};
+    }
 
-        @Override
-        public String[] getChoiceStrings() {
-                return new String[]{"POINT", "LINE", "POLYGON"};
-        }
+    @Override
+    public String[] getChoiceStrings() {
+        return new String[]{HUMAN_DIMENSION_POINT, HUMAN_DIMENSION_CURVE, HUMAN_DIMENSION_SURFACE};
+    }
 
-        @Override
-        public String getConstraintHumanValue() {
-                return getDimensionDescription();
-        }
+    @Override
+    public String getConstraintHumanValue() {
+        return getDimensionDescription();
+    }
 }

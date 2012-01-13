@@ -359,9 +359,9 @@ public abstract class TestBase extends SourceTest<Value, Geometry> {
                                                         if(gdc1 != null){
                                                                 if (gdc1.getConstraintIntValue()==GeometryDimensionConstraint.DIMENSION_POINT){
                                                                         geometryType = Type.POINT;
-                                                                } else if (gdc1.getConstraintIntValue()==GeometryDimensionConstraint.DIMENSION_LINE){
+                                                                } else if (gdc1.getConstraintIntValue()==GeometryDimensionConstraint.DIMENSION_CURVE){
                                                                         geometryType = Type.LINESTRING;
-                                                                } else if (gdc1.getConstraintIntValue()==GeometryDimensionConstraint.DIMENSION_POLYGON){
+                                                                } else if (gdc1.getConstraintIntValue()==GeometryDimensionConstraint.DIMENSION_SURFACE){
                                                                         geometryType = Type.POLYGON;
                                                                 }
                                                         }
@@ -377,9 +377,9 @@ public abstract class TestBase extends SourceTest<Value, Geometry> {
                                                         if(gdc2 != null){
                                                                 if (gdc2.getConstraintIntValue()==GeometryDimensionConstraint.DIMENSION_POINT){
                                                                         geometryType = Type.MULTIPOINT;
-                                                                } else if (gdc2.getConstraintIntValue()==GeometryDimensionConstraint.DIMENSION_LINE){
+                                                                } else if (gdc2.getConstraintIntValue()==GeometryDimensionConstraint.DIMENSION_CURVE){
                                                                         geometryType = Type.MULTILINESTRING;
-                                                                } else if (gdc2.getConstraintIntValue()==GeometryDimensionConstraint.DIMENSION_POLYGON){
+                                                                } else if (gdc2.getConstraintIntValue()==GeometryDimensionConstraint.DIMENSION_SURFACE){
                                                                         geometryType = Type.MULTIPOLYGON;
                                                                 }
                                                         }

@@ -55,180 +55,187 @@ import org.gdms.geometryUtils.filter.CoordinateSequenceDimensionFilter;
  */
 public final class GeometryTypeUtil {
 
-        private static final GeometryFactory FACTORY = new GeometryFactory();
-        public static final String POINT_GEOMETRY_TYPE;
-        public static final String MULTIPOINT_GEOMETRY_TYPE;
-        public static final String LINESTRING_GEOMETRY_TYPE;
-        public static final String LINEARRING_GEOMETRY_TYPE;
-        public static final String MULTILINESTRING_GEOMETRY_TYPE;
-        public static final String POLYGON_GEOMETRY_TYPE;
-        public static final String MULTIPOLYGON_GEOMETRY_TYPE;
-        public static final String GEOMETRYCOLLECTION_GEOMETRY_TYPE;
+    private static final GeometryFactory FACTORY = new GeometryFactory();
+    public static final String POINT_GEOMETRY_TYPE;
+    public static final String MULTIPOINT_GEOMETRY_TYPE;
+    public static final String LINESTRING_GEOMETRY_TYPE;
+    public static final String LINEARRING_GEOMETRY_TYPE;
+    public static final String MULTILINESTRING_GEOMETRY_TYPE;
+    public static final String POLYGON_GEOMETRY_TYPE;
+    public static final String MULTIPOLYGON_GEOMETRY_TYPE;
+    public static final String GEOMETRYCOLLECTION_GEOMETRY_TYPE;
 
-        static {
-                POINT_GEOMETRY_TYPE = FACTORY.createPoint(new Coordinate(0, 0)).getGeometryType();
-                MULTIPOINT_GEOMETRY_TYPE = FACTORY.createMultiPoint(
-                        new Coordinate[]{new Coordinate(0, 0)}).getGeometryType();
-                LineString ls = FACTORY.createLineString(new Coordinate[]{
-                                new Coordinate(0, 0), new Coordinate(1, 0)});
-                LINESTRING_GEOMETRY_TYPE = ls.getGeometryType();
-                MULTILINESTRING_GEOMETRY_TYPE = FACTORY.createMultiLineString(
-                        new LineString[]{ls}).getGeometryType();
-                LinearRing lr = FACTORY.createLinearRing(new Coordinate[]{
-                                new Coordinate(0, 0), new Coordinate(1, 1),
-                                new Coordinate(1, 0), new Coordinate(0, 0)});
-                LINEARRING_GEOMETRY_TYPE = lr.getGeometryType();
-                Polygon pol = FACTORY.createPolygon(lr, new LinearRing[0]);
-                POLYGON_GEOMETRY_TYPE = pol.getGeometryType();
-                MULTIPOLYGON_GEOMETRY_TYPE = FACTORY.createMultiPolygon(
-                        new Polygon[]{pol}).getGeometryType();
-                GEOMETRYCOLLECTION_GEOMETRY_TYPE = FACTORY.createGeometryCollection(new Geometry[]{pol, ls}).getGeometryType();
+    static {
+        POINT_GEOMETRY_TYPE = FACTORY.createPoint(new Coordinate(0, 0)).getGeometryType();
+        MULTIPOINT_GEOMETRY_TYPE = FACTORY.createMultiPoint(
+                new Coordinate[]{new Coordinate(0, 0)}).getGeometryType();
+        LineString ls = FACTORY.createLineString(new Coordinate[]{
+                    new Coordinate(0, 0), new Coordinate(1, 0)});
+        LINESTRING_GEOMETRY_TYPE = ls.getGeometryType();
+        MULTILINESTRING_GEOMETRY_TYPE = FACTORY.createMultiLineString(
+                new LineString[]{ls}).getGeometryType();
+        LinearRing lr = FACTORY.createLinearRing(new Coordinate[]{
+                    new Coordinate(0, 0), new Coordinate(1, 1),
+                    new Coordinate(1, 0), new Coordinate(0, 0)});
+        LINEARRING_GEOMETRY_TYPE = lr.getGeometryType();
+        Polygon pol = FACTORY.createPolygon(lr, new LinearRing[0]);
+        POLYGON_GEOMETRY_TYPE = pol.getGeometryType();
+        MULTIPOLYGON_GEOMETRY_TYPE = FACTORY.createMultiPolygon(
+                new Polygon[]{pol}).getGeometryType();
+        GEOMETRYCOLLECTION_GEOMETRY_TYPE = FACTORY.createGeometryCollection(new Geometry[]{pol, ls}).getGeometryType();
+    }
+
+    /**
+     * Tests if the geometry is a Point.
+     * @param geometry
+     * @return
+     */
+    public static boolean isPoint(Geometry geometry) {
+        return geometry.getGeometryType().equals(POINT_GEOMETRY_TYPE);
+    }
+
+    /**
+     * Tests if the geometry is a LineString.
+     * @param geometry
+     * @return
+     */
+    public static boolean isLineString(Geometry geometry) {
+        return geometry.getGeometryType().equals(LINESTRING_GEOMETRY_TYPE);
+    }
+
+    /**
+     * Tests if the geometry is a LinearRing.
+     * @param geometry
+     * @return
+     */
+    public static boolean isLinearRing(Geometry geometry) {
+        return geometry.getGeometryType().equals(LINEARRING_GEOMETRY_TYPE);
+    }
+
+    /**
+     * Tests if the geometry is a Polygon.
+     * @param geometry
+     * @return
+     */
+    public static boolean isPolygon(Geometry geometry) {
+        return geometry.getGeometryType().equals(POLYGON_GEOMETRY_TYPE);
+    }
+
+    /**
+     * Tests if the geometry is a MultiPoint.
+     * @param geometry
+     * @return
+     */
+    public static boolean isMultiPoint(Geometry geometry) {
+        return geometry.getGeometryType().equals(MULTIPOINT_GEOMETRY_TYPE);
+    }
+
+    /**
+     * Tests if the geometry is a MultiPoint.
+     * @param geometry
+     * @return
+     */
+    public static boolean isMultiLineString(Geometry geometry) {
+        return geometry.getGeometryType().equals(MULTILINESTRING_GEOMETRY_TYPE);
+    }
+
+    /**
+     * Tests if the geometry is a MultiPolygon.
+     * @param geometry
+     * @return
+     */
+    public static boolean isMultiPolygon(Geometry geometry) {
+        return geometry.getGeometryType().equals(MULTIPOLYGON_GEOMETRY_TYPE);
+    }
+
+    /**
+     * Tests if the geometry is a GeometryCollection.
+     * @param geometry
+     * @return
+     */
+    public static boolean isGeometryCollection(Geometry geometry) {
+        return geometry.getGeometryType().equals(GEOMETRYCOLLECTION_GEOMETRY_TYPE);
+    }
+
+    /**
+     * Returns true is a geometry contains at least one z value.
+     * @param geometry
+     * @return
+     */
+    public static boolean is25Geometry(Geometry geom) {
+        CoordinateSequenceDimensionFilter cf = new CoordinateSequenceDimensionFilter();
+        cf.setMAXDim(CoordinateSequenceDimensionFilter.XYZ);
+        geom.apply(cf);
+        return cf.getDimension() >= CoordinateSequenceDimensionFilter.XYZ;
+    }
+
+    /**
+     * Gets the (planar) dimension of the geometry type given in argument. Note
+     * that if you give an invalid (not vectorial) type as an input, this method will 
+     * throw a InvalidArgumentException
+     * @param type
+     * @return 
+     * <ul><li>{@code GeometryDimensionConstraint.DIMENSION_POINT} : if we have a point or a collection of points</li>
+     * <li>{@code GeometryDimensionConstraint.DIMENSION_LINE} : if we have a line or a collection of lines</li>
+     * <li>{@code GeometryDimensionConstraint.DIMENSION_POLYGON} : if we have a polygon or collection of polygons</li>
+     * <li>-1 otherwise (if the type is too generic)</li></ul>
+     */
+    public static int getTypeDimension(Type type) {
+        if (type == null || (type.getTypeCode() & Type.GEOMETRY) == 0 || type.getTypeCode() == Type.NULL) {
+            throw new IllegalArgumentException("We can only treat geometry types here.");
+        } else {
+            switch (type.getTypeCode()) {
+                case Type.POINT:
+                case Type.MULTIPOINT:
+                    return GeometryDimensionConstraint.DIMENSION_POINT;
+                case Type.LINESTRING:
+                case Type.MULTILINESTRING:
+                    return GeometryDimensionConstraint.DIMENSION_CURVE;
+                case Type.POLYGON:
+                case Type.MULTIPOLYGON:
+                    return GeometryDimensionConstraint.DIMENSION_SURFACE;
+                case Type.GEOMETRY:
+                case Type.GEOMETRYCOLLECTION:
+                    GeometryDimensionConstraint gdc =
+                            (GeometryDimensionConstraint) type.getConstraint(Constraint.DIMENSION_2D_GEOMETRY);
+                    if (gdc == null) {
+                        return GeometryDimensionConstraint.DIMENSION_UNKNOWN;
+                    } else {
+                        return gdc.getDimension();
+                    }
+                default:
+                    return -1;
+            }
         }
+    }
 
-        /**
-         * Tests if the geometry is a Point.
-         * @param geometry
-         * @return
-         */
-        public static boolean isPoint(Geometry geometry) {
-                return geometry.getGeometryType().equals(POINT_GEOMETRY_TYPE);
-        }
+    /**
+     * Returns the coordinate dimension
+     * 2 for XY
+     * 3 for XYZ
+     * 4 for XYZM
+     *
+     * XYM is not allowed.
+     * @param geom
+     * @return
+     */
+    public static int getCoordinateDimension(Geometry geom) {
+        CoordinateSequenceDimensionFilter cf = new CoordinateSequenceDimensionFilter();
+        geom.apply(cf);
+        return cf.getDimension();
+    }
 
-        /**
-         * Tests if the geometry is a LineString.
-         * @param geometry
-         * @return
-         */
-        public static boolean isLineString(Geometry geometry) {
-                return geometry.getGeometryType().equals(LINESTRING_GEOMETRY_TYPE);
-        }
+    /**
+     * Returns true if the geometry type is a surface
+     * @param geom 
+     */
+    public static boolean  isSurface(Geometry geom) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
 
-        /**
-         * Tests if the geometry is a LinearRing.
-         * @param geometry
-         * @return
-         */
-        public static boolean isLinearRing(Geometry geometry) {
-                return geometry.getGeometryType().equals(LINEARRING_GEOMETRY_TYPE);
-        }
-
-        /**
-         * Tests if the geometry is a Polygon.
-         * @param geometry
-         * @return
-         */
-        public static boolean isPolygon(Geometry geometry) {
-                return geometry.getGeometryType().equals(POLYGON_GEOMETRY_TYPE);
-        }
-
-        /**
-         * Tests if the geometry is a MultiPoint.
-         * @param geometry
-         * @return
-         */
-        public static boolean isMultiPoint(Geometry geometry) {
-                return geometry.getGeometryType().equals(MULTIPOINT_GEOMETRY_TYPE);
-        }
-
-        /**
-         * Tests if the geometry is a MultiPoint.
-         * @param geometry
-         * @return
-         */
-        public static boolean isMultiLineString(Geometry geometry) {
-                return geometry.getGeometryType().equals(MULTILINESTRING_GEOMETRY_TYPE);
-        }
-
-        /**
-         * Tests if the geometry is a MultiPolygon.
-         * @param geometry
-         * @return
-         */
-        public static boolean isMultiPolygon(Geometry geometry) {
-                return geometry.getGeometryType().equals(MULTIPOLYGON_GEOMETRY_TYPE);
-        }
-
-        /**
-         * Tests if the geometry is a GeometryCollection.
-         * @param geometry
-         * @return
-         */
-        public static boolean isGeometryCollection(Geometry geometry) {
-                return geometry.getGeometryType().equals(GEOMETRYCOLLECTION_GEOMETRY_TYPE);
-        }
-
-        /**
-         * Returns true is a geometry contains at least one z value.
-         * @param geometry
-         * @return
-         */
-        public static boolean is25Geometry(Geometry geom) {
-                CoordinateSequenceDimensionFilter cf = new CoordinateSequenceDimensionFilter();
-                cf.setMAXDim(CoordinateSequenceDimensionFilter.XYZ);
-                geom.apply(cf);
-                return cf.getDimension()>=CoordinateSequenceDimensionFilter.XYZ;
-        }
-
-        /**
-         * Gets the (planar) dimension of the geometry type given in argument. Note
-         * that if you give an invalid (not vectorial) type as an input, this method will 
-         * throw a InvalidArgumentException
-         * @param type
-         * @return 
-         * <ul><li>{@code GeometryDimensionConstraint.DIMENSION_POINT} : if we have a point or a collection of points</li>
-         * <li>{@code GeometryDimensionConstraint.DIMENSION_LINE} : if we have a line or a collection of lines</li>
-         * <li>{@code GeometryDimensionConstraint.DIMENSION_POLYGON} : if we have a polygon or collection of polygons</li>
-         * <li>-1 otherwise (if the type is too generic)</li></ul>
-         */
-        public static int getTypeDimension(Type type){
-                if(type == null || (type.getTypeCode() & Type.GEOMETRY) == 0 || type.getTypeCode() == Type.NULL ){
-                        throw new IllegalArgumentException("We can only treat geometry types here.");
-                } else {
-                        switch(type.getTypeCode()){
-                                case Type.POINT:
-                                case Type.MULTIPOINT:
-                                        return GeometryDimensionConstraint.DIMENSION_POINT;
-                                case Type.LINESTRING:
-                                case Type.MULTILINESTRING:
-                                        return GeometryDimensionConstraint.DIMENSION_LINE;
-                                case Type.POLYGON:
-                                case Type.MULTIPOLYGON:
-                                        return GeometryDimensionConstraint.DIMENSION_POLYGON;
-                                case Type.GEOMETRY:
-                                case Type.GEOMETRYCOLLECTION:
-                                        GeometryDimensionConstraint gdc = 
-                                                (GeometryDimensionConstraint) type.getConstraint(Constraint.DIMENSION_2D_GEOMETRY);
-                                        if(gdc == null){
-                                                return -1;
-                                        } else {
-                                                return gdc.getDimension();
-                                        }
-                                default:
-                                        return -1;
-                        }
-                }
-        }
-
-
-        /**
-         * Returns the coordinate dimension
-         * 2 for XY
-         * 3 for XYZ
-         * 4 for XYZM
-         *
-         * XYM is not allowed.
-         * @param geom
-         * @return
-         */
-        public static int getCoordinateDimension(Geometry geom) {
-                CoordinateSequenceDimensionFilter cf = new CoordinateSequenceDimensionFilter();
-                geom.apply(cf);
-                return cf.getDimension();
-        }
-
-        /**
-         * Private constructor for utility class.
-         */
-        private GeometryTypeUtil() {
-        }
+    /**
+     * Private constructor for utility class.
+     */
+    private GeometryTypeUtil() {
+    }
 }
