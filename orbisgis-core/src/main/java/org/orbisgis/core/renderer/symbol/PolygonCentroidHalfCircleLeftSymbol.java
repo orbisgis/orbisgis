@@ -98,7 +98,7 @@ public class PolygonCentroidHalfCircleLeftSymbol extends
                         } else if(geometryType == Type.GEOMETRY || geometryType == Type.GEOMETRYCOLLECTION){
                                 GeometryDimensionConstraint gdc = 
                                         (GeometryDimensionConstraint) geomType.getConstraint(Constraint.DIMENSION_2D_GEOMETRY);
-                                if(gdc != null && gdc.getDimension() == GeometryDimensionConstraint.DIMENSION_POLYGON){
+                                if(gdc != null && gdc.getDimension() == GeometryDimensionConstraint.DIMENSION_SURFACE){
                                         return true;
                                 } 
                         }

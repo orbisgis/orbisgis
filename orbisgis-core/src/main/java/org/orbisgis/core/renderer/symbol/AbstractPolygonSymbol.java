@@ -75,7 +75,7 @@ public abstract class AbstractPolygonSymbol extends AbstractLineSymbol
                                 //We can still check the generic geometries
                                 GeometryDimensionConstraint gdc = 
                                         (GeometryDimensionConstraint) geomType.getConstraint(Constraint.DIMENSION_2D_GEOMETRY);
-                                valid = gdc.getDimension() == GeometryDimensionConstraint.DIMENSION_POLYGON;
+                                valid = gdc.getDimension() == GeometryDimensionConstraint.DIMENSION_SURFACE;
                         }
                         return valid;
 		}

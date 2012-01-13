@@ -94,9 +94,9 @@ public class ArrowSymbol extends AbstractPointSymbol implements
                                                (GeometryDimensionConstraint) geomType.getConstraint(Constraint.DIMENSION_2D_GEOMETRY);
                                 if(gdc != null){
                                         boolean line = geometryType == Type.GEOMETRY 
-                                                        && gdc.getDimension() == GeometryDimensionConstraint.DIMENSION_LINE;
+                                                        && gdc.getDimension() == GeometryDimensionConstraint.DIMENSION_CURVE;
                                         boolean lineOrPt = geometryType==Type.GEOMETRYCOLLECTION
-                                                        && gdc.getDimension() == GeometryDimensionConstraint.DIMENSION_LINE
+                                                        && gdc.getDimension() == GeometryDimensionConstraint.DIMENSION_CURVE
                                                         && gdc.getDimension() == GeometryDimensionConstraint.DIMENSION_POINT;
                                         valid = line || lineOrPt;
                                 }

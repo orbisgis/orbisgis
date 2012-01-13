@@ -56,15 +56,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
-import java.util.logging.Level;
 
 import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
-import org.gdms.data.NoSuchTableException;
-import org.gdms.data.indexes.DefaultSpatialIndexQuery;
-import org.gdms.data.indexes.IndexException;
-import org.gdms.data.indexes.IndexManager;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
 import org.gvsig.remoteClient.exceptions.ServerErrorException;
