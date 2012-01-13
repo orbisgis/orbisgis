@@ -279,6 +279,10 @@ public abstract class Renderer {
                 //}
                 //logger.println("TOTAL : " + total);
 
+                
+                //Let's not come back to the beginning if we haven't found 
+                //a geometry that is contained in the area we want to draw...
+                boolean somethingReached = false;
                 for (Rule r : rList) {
                     long tf1 = System.currentTimeMillis();
                     beginLayer(r.getName());
@@ -303,9 +307,6 @@ public abstract class Renderer {
                     //its end if we are not rendering the first rule, we are at the end
                     //of the file. And as we've tested that the Iterator is not empty...
                     //It has sense to reinitialize it only if we are at the end.
-                    //Let's not come back to the beginning if we haven't found 
-                    //a geometry that is contained in the area we want to draw...
-                    boolean somethingReached = false;
                     if(!it.hasNext() && somethingReached){
                         it = new FullIterator(sds);
                     }
