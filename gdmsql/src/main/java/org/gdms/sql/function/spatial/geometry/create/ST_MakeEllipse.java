@@ -36,15 +36,10 @@
  */
 package org.gdms.sql.function.spatial.geometry.create;
 
-import com.vividsolutions.jts.awt.ShapeReader;
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.util.GeometricShapeFactory;
-import java.awt.Shape;
-import java.awt.geom.Ellipse2D;
 import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;

@@ -115,12 +115,12 @@ public class ST_SetZToExtremities extends AbstractScalarFunction {
         public FunctionSignature[] getFunctionSignatures() {
                 return new FunctionSignature[]{
                                 new BasicFunctionSignature(TypeFactory.createType(Type.GEOMETRY,
-                                new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_LINE)),
+                                new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_CURVE)),
                                 ScalarArgument.LINESTRING,
                                 ScalarArgument.DOUBLE,
                                 ScalarArgument.DOUBLE),
                                 new BasicFunctionSignature(TypeFactory.createType(Type.GEOMETRY,
-                                new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_LINE)),
+                                new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_CURVE)),
                                 ScalarArgument.MULTILINESTRING,
                                 ScalarArgument.DOUBLE,
                                 ScalarArgument.DOUBLE)};

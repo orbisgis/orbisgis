@@ -36,7 +36,7 @@ public class EditFunctionTest extends FunctionTest {
                 // first datasource
                 final MemoryDataSetDriver driver1 = new MemoryDataSetDriver(
                         new String[]{"the_geom"},
-                        new Type[]{TypeFactory.createType(Type.GEOMETRY, new Constraint[]{new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_LINE)})});
+                        new Type[]{TypeFactory.createType(Type.GEOMETRY, new Constraint[]{new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_CURVE)})});
 
                 // insert all filled rows...
                 driver1.addValues(new Value[]{ValueFactory.createValue(wktReader.read("LINESTRING ( 1 1, 6 1 )"))
@@ -65,7 +65,7 @@ public class EditFunctionTest extends FunctionTest {
                 // first datasource
                 final MemoryDataSetDriver driver1 = new MemoryDataSetDriver(
                         new String[]{"the_geom"},
-                        new Type[]{TypeFactory.createType(Type.GEOMETRY, new Constraint[]{new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_LINE)})});
+                        new Type[]{TypeFactory.createType(Type.GEOMETRY, new Constraint[]{new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_CURVE)})});
 
                 // insert all filled rows...
                 driver1.addValues(new Value[]{ValueFactory.createValue(wktReader.read("LINESTRING ( 1 1, 6 1 )"))
@@ -94,7 +94,7 @@ public class EditFunctionTest extends FunctionTest {
                 // first datasource
                 final MemoryDataSetDriver driver1 = new MemoryDataSetDriver(
                         new String[]{"the_geom"},
-                        new Type[]{TypeFactory.createType(Type.GEOMETRY, new Constraint[]{new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_LINE)})});
+                        new Type[]{TypeFactory.createType(Type.GEOMETRY, new Constraint[]{new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_CURVE)})});
 
                 // insert all filled rows...
                 driver1.addValues(new Value[]{ValueFactory.createValue(wktReader.read("LINESTRING ( 1 1, 6 1, 10 1 )"))
@@ -127,7 +127,7 @@ public class EditFunctionTest extends FunctionTest {
                 // first datasource
                 final MemoryDataSetDriver driver1 = new MemoryDataSetDriver(
                         new String[]{"the_geom"},
-                        new Type[]{TypeFactory.createType(Type.GEOMETRY, new Constraint[]{new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_LINE)})});
+                        new Type[]{TypeFactory.createType(Type.GEOMETRY, new Constraint[]{new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_CURVE)})});
 
                 // insert all filled rows...
                 driver1.addValues(new Value[]{ValueFactory.createValue(wktReader.read("LINESTRING ( 57 206, 345 204 )"))
@@ -160,7 +160,7 @@ public class EditFunctionTest extends FunctionTest {
                 // first datasource
                 final MemoryDataSetDriver driver1 = new MemoryDataSetDriver(
                         new String[]{"the_geom"},
-                        new Type[]{TypeFactory.createType(Type.GEOMETRY, new Constraint[]{new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_LINE)})});
+                        new Type[]{TypeFactory.createType(Type.GEOMETRY, new Constraint[]{new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_CURVE)})});
 
                 driver1.addValues(new Value[]{ValueFactory.createValue(wktReader.read("LINESTRING ( 1 1 , 10 1)"))});
                 driver1.addValues(new Value[]{ValueFactory.createValue(wktReader.read("LINESTRING (6 0, 6 6 )"))

@@ -60,13 +60,11 @@ public final class ST_Scale extends AbstractScalarSpatialFunction {
 	public Value evaluate(SQLDataSourceFactory dsf, Value[] args) throws FunctionException {
 
 		final Geometry geom = args[0].getAsGeometry();
-		final double scale = args[1].getAsDouble();
-		
+		final double scale = args[1].getAsDouble();		
 		Coordinate centre = geom.getEnvelopeInternal().centre();
 		AffineTransformation trans = AffineTransformation.scaleInstance(scale,
 				scale, centre.x, centre.y);
 		return ValueFactory.createValue(trans.transform(geom));
-
 	}
 
         @Override
