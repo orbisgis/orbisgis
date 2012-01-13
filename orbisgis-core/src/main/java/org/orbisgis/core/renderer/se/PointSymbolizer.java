@@ -112,7 +112,7 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
         PointSymbolizerType pst = st.getValue();
 
         if (pst.getGeometry() != null) {
-            this.setGeometry(new GeometryAttribute(pst.getGeometry()));
+            this.setGeometryAttribute(new GeometryAttribute(pst.getGeometry()));
         }
 
         onVertex = false;
@@ -190,8 +190,8 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
         this.setJAXBProperty(s);
 
 
-        if (this.getGeometry() != null) {
-            s.setGeometry(getGeometry().getJAXBGeometryType());
+        if (this.getGeometryAttribute() != null){
+            s.setGeometry(getGeometryAttribute().getJAXBGeometryType());
         }
 
 

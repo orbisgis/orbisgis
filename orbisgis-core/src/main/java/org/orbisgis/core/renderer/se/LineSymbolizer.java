@@ -105,7 +105,7 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
 
 
         if (ast.getGeometry() != null) {
-            this.setGeometry(new GeometryAttribute(ast.getGeometry()));
+            this.setGeometryAttribute(new GeometryAttribute(ast.getGeometry()));
         }
 
         if (ast.getUom() != null) {
@@ -196,8 +196,8 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
 
         this.setJAXBProperty(s);
 
-        if (this.getGeometry() != null){
-            s.setGeometry(getGeometry().getJAXBGeometryType());
+        if (this.getGeometryAttribute() != null){
+            s.setGeometry(getGeometryAttribute().getJAXBGeometryType());
         }
 
         if (this.getUom() != null) {

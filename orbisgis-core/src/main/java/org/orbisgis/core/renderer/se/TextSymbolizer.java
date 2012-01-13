@@ -90,7 +90,7 @@ public final class TextSymbolizer extends VectorSymbolizer {
         TextSymbolizerType tst = st.getValue();
 
         if (tst.getGeometry() != null) {
-            this.setGeometry(new GeometryAttribute(tst.getGeometry()));
+            this.setGeometryAttribute(new GeometryAttribute(tst.getGeometry()));
         }
 
         if (tst.getUom() != null) {
@@ -200,8 +200,8 @@ public final class TextSymbolizer extends VectorSymbolizer {
 
         this.setJAXBProperty(s);
 
-        if (this.getGeometry() != null) {
-            s.setGeometry(getGeometry().getJAXBGeometryType());
+        if (this.getGeometryAttribute() != null) {
+            s.setGeometry(getGeometryAttribute().getJAXBGeometryType());
         }
 
         if (this.getUom() != null) {

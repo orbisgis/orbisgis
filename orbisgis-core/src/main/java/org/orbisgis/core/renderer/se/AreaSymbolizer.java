@@ -103,7 +103,7 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 
 
         if (ast.getGeometry() != null) {
-            this.setGeometry(new GeometryAttribute(ast.getGeometry()));
+            this.setGeometryAttribute(new GeometryAttribute(ast.getGeometry()));
         }
 
         if (ast.getUom() != null) {
@@ -249,8 +249,8 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 
         this.setJAXBProperty(s);
 
-        if (this.getGeometry() != null){
-            s.setGeometry(getGeometry().getJAXBGeometryType());
+        if (this.getGeometryAttribute() != null){
+            s.setGeometry(getGeometryAttribute().getJAXBGeometryType());
         }
 
         if (getUom() != null) {

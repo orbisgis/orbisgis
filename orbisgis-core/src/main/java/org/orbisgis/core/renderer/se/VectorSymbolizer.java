@@ -72,23 +72,49 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
     private Uom uom;
     private GeometryAttribute theGeom;
 
+    /**
+     * Default constructor for this abstract class. Only set the inner unit of
+     * measure to {@code Uom.MM}.
+     */
     protected VectorSymbolizer() {
         setUom(Uom.MM);
     }
 
+    /**
+     * Build a VectorSymbolizer from the inpur JAXB type.
+     * @param st
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+     */
     protected VectorSymbolizer(JAXBElement<? extends SymbolizerType> st) throws InvalidStyle {
         super(st);
     }
 
-    public GeometryAttribute getGeometry() {
+    /**
+     * Get the name of the column where the geometry data will be retrieved.
+     * @return 
+     */
+    public final GeometryAttribute getGeometryAttribute() {
         return theGeom;
     }
 
-    public void setGeometry(GeometryAttribute theGeom) {
+
+    /**
+     * Set the name of the column where the geometry data will be retrieved.
+     * @param theGeom 
+     */
+    public final void setGeometryAttribute(GeometryAttribute theGeom) {
         this.theGeom = theGeom;
     }
 
-    public Geometry getTheGeom(DataSource sds, Long fid) throws ParameterException, DriverException {
+    /**
+     * Get the {@code Geometry} stored in {@code sds} at index {@code fid}.
+     * @param sds
+     * @param fid
+     * @return
+     * @throws ParameterException
+     * @throws DriverException 
+     */
+    public Geometry getGeometry(DataSource sds, Long fid) throws ParameterException, DriverException {
         if (theGeom != null) {
             return theGeom.getTheGeom(sds, fid);
         } else {
@@ -97,9 +123,18 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
         }
     }
 
-    public Geometry getGeometry(DataSource sds, Long fid, Geometry theGeom) throws ParameterException, DriverException {
-        if (theGeom == null) {
-            return this.getTheGeom(sds, fid);
+    /**
+     * If {@code theGeom} is null, get the {@code Geometry} stored in 
+     * {@code sds} at index {@code fid}. Otherwise, return {@code theGeom}.
+     * @param sds
+     * @param fid
+     * @return
+     * @throws ParameterException
+     * @throws DriverException 
+     */
+    public Geometry getGeometry(DataSource sds, Long fid, Geometry theGeom) throws ParameterException, DriverException{
+        if (theGeom == null){
+            return this.getGeometry(sds, fid);
         } else {
             return theGeom;
         }
