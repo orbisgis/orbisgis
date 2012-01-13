@@ -90,7 +90,6 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
     public LineSymbolizer() {
         super();
         this.name = "Line Symbolizer";
-        setUom(Uom.MM);
         setStroke(new PenStroke());
     }
 

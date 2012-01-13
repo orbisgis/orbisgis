@@ -45,16 +45,13 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.DataSource;
-
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.TextSymbolizerType;
-
+import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.label.Label;

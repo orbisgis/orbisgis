@@ -87,7 +87,6 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
     public AreaSymbolizer() {
         super();
         name = "Area symbolizer";
-        setUom(Uom.MM);
         this.setFill(new SolidFill());
         this.setStroke(new PenStroke());
     }

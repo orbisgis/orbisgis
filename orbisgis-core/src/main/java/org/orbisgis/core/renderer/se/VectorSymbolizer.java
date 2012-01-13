@@ -72,8 +72,8 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
     private Uom uom;
     private GeometryAttribute theGeom;
 
-    
     protected VectorSymbolizer() {
+        setUom(Uom.MM);
     }
 
     protected VectorSymbolizer(JAXBElement<? extends SymbolizerType> st) throws InvalidStyle {
@@ -308,17 +308,17 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
     }
 
     @Override
-    public Uom getUom() {
+    public final Uom getUom() {
         return uom;
     }
 
     @Override
-    public Uom getOwnUom() {
+    public final Uom getOwnUom() {
         return uom;
     }
 
     @Override
-    public void setUom(Uom uom) {
+    public final void setUom(Uom uom) {
         if (uom != null) {
             this.uom = uom;
         } else {

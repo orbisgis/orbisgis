@@ -96,8 +96,6 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
         super();
         this.name = "Point symbolizer";
         setGraphicCollection(new GraphicCollection());
-        setUom(Uom.MM);
-
         MarkGraphic mark = new MarkGraphic();
         graphic.addGraphic(mark);
         onVertex = false;
