@@ -109,10 +109,10 @@ public class AutoCompletePolygonTool extends AbstractPolygonTool {
                                                 TypeFactory.createType(Type.MULTIPOLYGON),
                                                 TypeFactory.createType(Type.GEOMETRY,
                                                         ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 
-                                                                GeometryDimensionConstraint.DIMENSION_POLYGON)),
+                                                                GeometryDimensionConstraint.DIMENSION_SURFACE)),
                                                 TypeFactory.createType(Type.GEOMETRYCOLLECTION,
                                                         ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 
-                                                        GeometryDimensionConstraint.DIMENSION_POLYGON))
+                                                        GeometryDimensionConstraint.DIMENSION_SURFACE))
                                 )) {
                                 if (geom instanceof Polygon) {
                                         Polygon polygon = (Polygon) geom;
@@ -191,10 +191,10 @@ public class AutoCompletePolygonTool extends AbstractPolygonTool {
                                 TypeFactory.createType(Type.MULTIPOLYGON),
                                 TypeFactory.createType(Type.GEOMETRY,
                                         ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 
-                                                GeometryDimensionConstraint.DIMENSION_POLYGON)),
+                                                GeometryDimensionConstraint.DIMENSION_SURFACE)),
                                 TypeFactory.createType(Type.GEOMETRYCOLLECTION,
                                         ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 
-                                                GeometryDimensionConstraint.DIMENSION_POLYGON)))
+                                                GeometryDimensionConstraint.DIMENSION_SURFACE)))
                         && ToolUtilities.isActiveLayerEditable(vc) 
                         && ToolUtilities.isSelectionGreaterOrEqualsThan(vc, 1);
 

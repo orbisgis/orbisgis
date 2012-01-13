@@ -376,9 +376,9 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
                 switch (dimension) {
 			case GeometryDimensionConstraint.DIMENSION_POINT:
 				return lineSymbol;
-			case GeometryDimensionConstraint.DIMENSION_LINE:
+			case GeometryDimensionConstraint.DIMENSION_CURVE:
 				return pointSymbol;
-			case GeometryDimensionConstraint.DIMENSION_POLYGON:
+			case GeometryDimensionConstraint.DIMENSION_SURFACE:
 				return polygonSymbol;
                         case -1:
                                return SymbolFactory.createSymbolComposite(polygonSymbol, lineSymbol,

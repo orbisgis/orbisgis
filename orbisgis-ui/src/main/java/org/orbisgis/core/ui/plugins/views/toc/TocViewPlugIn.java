@@ -65,6 +65,7 @@ public class TocViewPlugIn extends ViewPlugIn {
 	private JMenuItem menuItem;
 	private EditorListener closingListener = null;
 
+    @Override
 	public Toc getPanel() {
 		return panel;
 	}

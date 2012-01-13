@@ -52,108 +52,108 @@ import org.orbisgis.core.ui.plugins.views.ViewDecorator;
 import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
 import org.orbisgis.utils.I18N;
 
-import bsh.This;
 
 /**
  * Default implementation of Docking PlugIn. OrbisGIS based on Docking Window library.
  * So to add docking view as plug-in we created a specific plug-in
  */
-
 public abstract class ViewPlugIn implements PlugIn {
 
-	private String id;
-	private Component component;	
-	private PlugInContext plugInContext;
-	
-	// private ResourceBundle i18n;
-	private String langAndCountry;
-	// Constructors
+    private String id;
+    private Component component;
+    private PlugInContext plugInContext;
+    // private ResourceBundle i18n;
+    private String langAndCountry;
+    // Constructors
+
     public ViewPlugIn() {
-    	getI18n();
+        getI18n();
     }
-	
-	public void i18nConfigure(String langAndCountry) {
-		delI18n();
-		this.langAndCountry = langAndCountry;	
-		getI18n();
-	}
 
-	private void delI18n() {
-		I18N.delI18n(null, this.getClass());		
-	}
-	
-	public void getI18n() {
-		I18N.addI18n(langAndCountry, null, this.getClass());
-	}
+    public void i18nConfigure(String langAndCountry) {
+        delI18n();
+        this.langAndCountry = langAndCountry;
+        getI18n();
+    }
 
-	public void createPlugInContext(JComponent c, String id,
-			ImageIcon icon, String[] editors, WorkbenchContext context) {
-		this.component = c;
-		this.id = id;
-		context.getWorkbench().getFrame().getViews().add(
-				new ViewDecorator(this, id, icon,
-						(editors == null) ? new String[0] : editors));
-		if(plugInContext == null)
-			plugInContext = context.createPlugInContext(this);
-		if(!context.getViewsPlugInObservers().contains(this))
-			context.getViewsPlugInObservers().add(this);		
-	}
-	
-	protected PlugInContext getPlugInContext() {
-			return plugInContext;
-	}
-	
-	public void setPlugInContext(PlugInContext plugInContext) {
-		this.plugInContext = plugInContext;
-	}
+    private void delI18n() {
+        I18N.delI18n(null, this.getClass());
+    }
 
-	public void update(Observable o, Object arg) {
-		isEnabled();
-		isSelected();		
-	}
-    
-	// View PlugIn Icon
-	public static ImageIcon getIcon(String nameIcone) {
-		return IconLoader.getIcon(nameIcone);
-	}
+    public void getI18n() {
+        I18N.addI18n(langAndCountry, null, this.getClass());
+    }
 
-	// Get View PlugIn Id
-	public String getId() {
-		return id;
-	}
+    public void createPlugInContext(JComponent c, String id,
+            ImageIcon icon, String[] editors, WorkbenchContext context) {
+        this.component = c;
+        this.id = id;
+        context.getWorkbench().getFrame().getViews().add(
+                new ViewDecorator(this, id, icon,
+                (editors == null) ? new String[0] : editors));
+        if (plugInContext == null) {
+            plugInContext = context.createPlugInContext(this);
+        }
+        if (!context.getViewsPlugInObservers().contains(this)) {
+            context.getViewsPlugInObservers().add(this);
+        }
+    }
 
-	// get panel in the View PlugIn for load his popup
-	public JPanel getPanel() {
-		return null;
-	}
+    protected PlugInContext getPlugInContext() {
+        return plugInContext;
+    }
 
-	// PlugIn implementation
-	// Editor in View (used by DW to place MapEditor & TableEditor Views in
-	// EditorPanel)
-	public void editorViewDisabled() {
-	}
+    public void setPlugInContext(PlugInContext plugInContext) {
+        this.plugInContext = plugInContext;
+    }
 
-	public boolean setEditor(IEditor editor) {
-		return false;
-	}
+    public void update(Observable o, Object arg) {
+        isEnabled();
+        isSelected();
+    }
 
-	// ViewPlugIn persistence
-	public Component getComponent() {
-		return component;
-	}
+    // View PlugIn Icon
+    public static ImageIcon getIcon(String nameIcone) {
+        return IconLoader.getIcon(nameIcone);
+    }
 
-	public void delete() {
-	}
+    // Get View PlugIn Id
+    public String getId() {
+        return id;
+    }
 
-	public void loadStatus() throws PersistenceException {
-	}
+    // get panel in the View PlugIn for load his popup
+    public JPanel getPanel() {
+        return null;
+    }
 
-	public void saveStatus() throws PersistenceException {
-	}
+    // PlugIn implementation
+    // Editor in View (used by DW to place MapEditor & TableEditor Views in
+    // EditorPanel)
+    public void editorViewDisabled() {
+    }
 
-	public void initialize(WorkbenchContext wbContext) {
-	}
+    public boolean setEditor(IEditor editor) {
+        return false;
+    }
 
-	public void initialize(PlugInContext wbContext, Automaton automaton) {
-	}
+    // ViewPlugIn persistence
+    public Component getComponent() {
+        return component;
+    }
+
+    public void delete() {
+    }
+
+    public void loadStatus() throws PersistenceException {
+    }
+
+    public void saveStatus() throws PersistenceException {
+    }
+
+    public void initialize(WorkbenchContext wbContext) {
+    }
+
+    public void initialize(PlugInContext wbContext, Automaton automaton) {
+    }
 }
