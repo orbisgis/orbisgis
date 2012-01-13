@@ -298,6 +298,17 @@ public abstract class Renderer {
                     long rowCount = sds.getRowCount();
 
                     int i = 0;
+                    //If we want all the rules to be displayed, we must come back, here,
+                    //to the beginning of the input DataSource. Indeed, we may have reached
+                    //its end if we are not rendering the first rule, we are at the end
+                    //of the file. And as we've tested that the Iterator is not empty...
+                    //It has sense to reinitialize it only if we are at the end.
+                    //Let's not come back to the beginning if we haven't found 
+                    //a geometry that is contained in the area we want to draw...
+                    boolean somethingReached = false;
+                    if(!it.hasNext() && somethingReached){
+                        it = new FullIterator(sds);
+                    }
                     while (it.hasNext()) {
                         Integer originalIndex = it.next();
 
@@ -329,7 +340,7 @@ public abstract class Renderer {
 
                         // Do not display geom when the envelope is too small
                         if (geomEnvelope.intersects(extent)) {
-
+                            somethingReached = true;
                             boolean emphasis = selected.contains((int) originalIndex);
 
                             beginFeature(originalIndex, sds);
