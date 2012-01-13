@@ -98,7 +98,6 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
     private RealParameter dashOffset;
     private Uom uom;
 
-
     /**
      * There are three ways to draw the end of a line : butt, round and square.
      */
@@ -208,7 +207,6 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
         this(s.getValue());
     }
 
-
     @Override
     public Double getNaturalLength(DataSource sds, long fid, Shape shp, MapTransform mt) {
 
@@ -220,11 +218,12 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
                 double sum = 0.0;
                 String sDash = this.dashArray.getValue(sds, fid);
                 String[] splitedDash = sDash.split(" ");
-                for (int i = 0; i < splitedDash.length; i++) {
+                int size = splitedDash.length;
+                for (int i = 0; i < size; i++) {
                     sum += Uom.toPixel(Double.parseDouble(splitedDash[i]), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
                 }
 
-                if (splitedDash.length % 2 == 1) {
+                if (size % 2 == 1) {
                     // # pattern item is odd -> 2* to close the pattern
                     sum *= 2;
                 }
@@ -243,8 +242,6 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
         return Double.POSITIVE_INFINITY;
     }
 
-
-    
     @Override
     public HashSet<String> dependsOnFeature() {
         HashSet<String> result = new HashSet<String>();
@@ -434,9 +431,9 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
 
             String sDash = this.dashArray.getValue(sds, fid);
             String[] splitedDash = sDash.split(" ");
-
-            dashA = new double[splitedDash.length];
-            for (int i = 0; i < splitedDash.length; i++) {
+            int dashSize = splitedDash.length;
+            dashA = new double[dashSize];
+            for (int i = 0; i < dashSize; i++) {
                 dashA[i] = Uom.toPixel(Double.parseDouble(splitedDash[i]), getUom(),
                         mt.getDpi(), mt.getScaleDenominator(), v100p);
             }
@@ -451,7 +448,8 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
             }
 
             float[] dashes = new float[dashA.length];
-            for (int i = 0; i < dashes.length; i++) {
+            int dashesSize = dashes.length;
+            for (int i = 0; i < dashesSize; i++) {
                 dashes[i] = (float) dashA[i];
             }
 
@@ -488,8 +486,9 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
             sum += dash;
         }
 
+        int dashesSize = dashes.length;
         // number of element is odd => x2
-        if ((dashes.length % 2) == 1) {
+        if ((dashesSize % 2) == 1) {
             sum *= 2;
         }
 
@@ -497,7 +496,7 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
 
         if (nbPattern > 0) {
             double f = lineLength / (sum * nbPattern);
-            for (int i = 0; i < dashes.length; i++) {
+            for (int i = 0; i < dashesSize; i++) {
                 dashes[i] *= f;
             }
         }
@@ -512,6 +511,7 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
     public void draw(Graphics2D g2, DataSource sds, long fid, Shape shape,
             boolean selected, MapTransform mt, double offset)
             throws ParameterException, IOException {
+
 
         if (this.fill != null) {
 
@@ -538,8 +538,9 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
                     List<Shape> fragments = new ArrayList<Shape>();
                     BasicStroke bs = createBasicStroke(sds, fid, shp, mt, null, false);
 
-                    double dashLengths[] = new double[split.length];
-                    for (int i = 0; i < split.length; i++) {
+                    int splitSize = split.length;
+                    double dashLengths[] = new double[splitSize];
+                    for (int i = 0; i < splitSize; i++) {
                         dashLengths[i] = Uom.toPixel(Double.parseDouble(split[i]), getUom(),
                                 mt.getDpi(), mt.getScaleDenominator(), null);
                     }
@@ -575,7 +576,8 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
                     }
 
                     for (Shape seg : fragments) {
-                        for (Shape oSeg : ShapeHelper.perpendicularOffset(seg, offset)) {
+                        List<Shape> ses = ShapeHelper.perpendicularOffset(seg, offset);
+                        for (Shape oSeg : ses) {
                             if (oSeg != null) {
                                 if (paint != null) {
                                     g2.draw(oSeg);
@@ -595,7 +597,8 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
                     g2.setStroke(stroke);
 
                     if (Math.abs(offset) > 0.0) {
-                        for (Shape oShp : ShapeHelper.perpendicularOffset(shp, offset)) {
+                        List<Shape> ses = ShapeHelper.perpendicularOffset(shp, offset);
+                        for (Shape oShp : ses) {
                             if (oShp != null) {
 
                                 if (paint != null) {
@@ -656,8 +659,8 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
         if (dashArray != null) {
             String sDash = this.dashArray.getValue(sds, fid);
             String[] splitedDash = sDash.split(" ");
-
-            for (int i = 0; i < splitedDash.length; i++) {
+            int size = splitedDash.length;
+            for (int i = 0; i < size; i++) {
                 length += Uom.toPixel(Double.parseDouble(splitedDash[i]), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
             }
         }

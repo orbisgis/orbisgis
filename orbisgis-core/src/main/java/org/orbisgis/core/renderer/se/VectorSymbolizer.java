@@ -316,7 +316,8 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
         Coordinate[] coordinates = geom.getCoordinates();
 
         int i;
-        for (i = 0; i < coordinates.length; i++) {
+        int size = coordinates.length;
+        for (i = 0; i < size; i++) {
             Coordinate coord = coordinates[i];
             points.add(at.transform(new Point2D.Double(coord.x, coord.y), null));
         }
