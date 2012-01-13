@@ -641,16 +641,9 @@ public final class ShapeHelper {
      * @return array list of coordinate, same order
      */
     private static List<ArrayList<Vertex>> getVertexes(Shape shp) {
-
         ArrayList<ArrayList<Vertex>> shapes = new ArrayList<ArrayList<Vertex>>();
-
         PathIterator it = shp.getPathIterator(null, FLATNESS);
-
         ArrayList<Vertex> vertexes = new ArrayList<Vertex>();
-
-        if (DEBUG) {
-            System.out.println("New subshape:");
-        }
         double coords[] = new double[6];
 
         Vertex v;
@@ -660,9 +653,6 @@ public final class ShapeHelper {
             int type = it.currentSegment(coords);
             switch (type) {
                 case PathIterator.SEG_CLOSE:
-                    if (DEBUG) {
-                        System.out.println("Close;");
-                    }
                     shapes.add(vertexes);
                     vertexes = new ArrayList<Vertex>();
                     break;
@@ -672,9 +662,6 @@ public final class ShapeHelper {
                 case PathIterator.SEG_LINETO:
                 case PathIterator.SEG_MOVETO:
                     v = new Vertex(coords[0], coords[1]);
-                    if (DEBUG) {
-                        System.out.println("LineTo;" + v);
-                    }
                     if (vertexes.size() > 0) {
                         if (!v.equals(vertexes.get(vertexes.size() - 1))) {
                             vertexes.add(v);
@@ -1253,63 +1240,7 @@ public final class ShapeHelper {
     private static boolean isClosed(List<Vertex> vertexes) {
         return vertexes.get(0).equals(vertexes.get(vertexes.size() - 1));
     }
-
-    /*
-     * private static void normalize(ArrayList<Vertex> vertexes) {
-    double maxY = Double.NEGATIVE_INFINITY;
-    int id = -1;
-    int i = 0;
     
-    if (_DEBUG_) {
-    System.out.println("Normalize");
-    }
-    
-    for (Vertex v : vertexes) {
-    if (v.y > maxY) {
-    maxY = v.y;
-    id = i;
-    }
-    
-    if (_DEBUG_) {
-    System.out.println(v);
-    }
-    
-    i++;
-    }
-    
-    Vertex p = vertexes.get(id);
-    Vertex pp1 = vertexes.get((id + 1) % vertexes.size());
-    Vertex pm1 = vertexes.get((id - 1 + vertexes.size()) % vertexes.size());
-    
-    if (_DEBUG_) {
-    System.out.println("----");
-    System.out.println(pm1);
-    System.out.println(p);
-    System.out.println(pp1);
-    }
-    
-    double px = (pp1.x + pm1.x) / 2;
-    double py = (pp1.y + pm1.y) / 2;
-    
-    px = p.x - 2 * (p.x - px);
-    py = p.y - 2 * (p.y - py);
-    
-    if (_DEBUG_) {
-    System.out.println(px + ";" + py);
-    }
-    double cp = crossProduct(p.x, p.y, px, py, pp1.x, pp1.y);
-    
-    
-    if (_DEBUG_) {
-    System.out.println("CROSSPRODUCT: " + cp);
-    }
-    
-    if (cp > 0) {
-    Collections.reverse(vertexes);
-    }
-    }
-     * 
-     */
     private static List<Shape> contourParallelShape(Shape shp, double offset) {
 
         List<ArrayList<Vertex>> shapes = getVertexes(shp);
@@ -1322,18 +1253,8 @@ public final class ShapeHelper {
         //}
 
         for (List<Vertex> vertexes : shapes) {
-            if (DEBUG) {
-                System.out.println("Original vertexes: ");
-                for (Vertex v : vertexes) {
-                    System.out.println(v);
-                }
-                System.out.println(".....................");
-            }
-
             boolean closed = isClosed(vertexes);
-
             removeUselessVertex(vertexes);
-
             //if (closed) {
             //    normalize(vertexes);
             //}
@@ -1344,35 +1265,8 @@ public final class ShapeHelper {
                 return rawShapes;
             }
 
-            if (DEBUG) {
-                System.out.println("Cleaned vertexes: ");
-                for (Vertex v : vertexes) {
-                    System.out.println(v);
-                }
-
-                System.out.println("Offset vertexes: ");
-                for (Vertex v : offsetVertexes) {
-                    System.out.println(v);
-                }
-            }
-
             List<Edge> edges = computeEdges(vertexes, offsetVertexes, offset, closed);
-
-            if (DEBUG) {
-                System.out.println("Edges: ");
-                for (Edge e : edges) {
-                    System.out.println(e);
-                }
-            }
-
             List<Vertex> rawLink = computeRawLink(edges, offsetVertexes, closed);
-
-            if (DEBUG) {
-                System.out.println("Raw Link: ");
-                for (Vertex v : rawLink) {
-                    System.out.println(v);
-                }
-            }
             Shape finalShape = createShapeFromVertexes(rawLink, closed);
             if (finalShape != null) {
                 rawShapes.add(finalShape);
