@@ -85,37 +85,34 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
         super(st);
     }
 
-
     public GeometryAttribute getGeometry() {
         return theGeom;
     }
-
 
     public void setGeometry(GeometryAttribute theGeom) {
         this.theGeom = theGeom;
     }
 
-    public Geometry getTheGeom(DataSource sds, Long fid) throws ParameterException, DriverException{
+    public Geometry getTheGeom(DataSource sds, Long fid) throws ParameterException, DriverException {
         if (theGeom != null) {
-            System.out.println (" -> From Attribute => " + theGeom.getColumnName());
+            System.out.println(" -> From Attribute => " + theGeom.getColumnName());
             return theGeom.getTheGeom(sds, fid);
         } else {
-            System.out.println (" -> get default !");
+            System.out.println(" -> get default !");
             // TODO : throw errer if there is more than one geometry field !
             int fieldId = ShapeHelper.getGeometryFieldId(sds);
             return sds.getFieldValue(fid, fieldId).getAsGeometry();
         }
     }
 
-    public Geometry getGeometry(DataSource sds, Long fid, Geometry theGeom) throws ParameterException, DriverException{
-        if (theGeom == null){
+    public Geometry getGeometry(DataSource sds, Long fid, Geometry theGeom) throws ParameterException, DriverException {
+        if (theGeom == null) {
             return this.getTheGeom(sds, fid);
         } else {
             return theGeom;
         }
     }
 
-    
     /*
     @Override
     public abstract void draw(Graphics2D g2, DataSource sds, long fid,
@@ -148,7 +145,8 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
             geom = geom2Process.remove(0);
             if (geom != null) {
                 if (geom instanceof GeometryCollection) {
-                    for (int i = 0; i < geom.getNumGeometries(); i++) {
+                    int numGeom = geom.getNumGeometries();
+                    for (int i = 0; i < numGeom; i++) {
                         geom2Process.add(geom.getGeometryN(i));
                     }
                 } else {
@@ -195,7 +193,8 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 
                 if (geom instanceof GeometryCollection) {
                     // Uncollectionize
-                    for (int i = 0; i < geom.getNumGeometries(); i++) {
+                    int numGeom = geom.getNumGeometries();
+                    for (int i = 0; i < numGeom; i++) {
                         geom2Process.add(geom.getGeometryN(i));
                     }
                 } else if (geom instanceof Polygon) {
@@ -210,7 +209,8 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
                     }
                     int i;
                     // Be aware of polygon holes !
-                    for (i = 0; i < p.getNumInteriorRing(); i++) {
+                    int numRing = p.getNumInteriorRing();
+                    for (i = 0; i < numRing; i++) {
                         shape = mt.getShape(p.getInteriorRingN(i));
                         if (shape != null) {
                             if (at != null) {
@@ -259,7 +259,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
         try {
             // try/catch prevent to fail when such a point can't be computed
             point = geom.getInteriorPoint();
-        } catch (TopologyException ex){
+        } catch (TopologyException ex) {
             Services.getOutputManager().println("getPointShape :: TopologyException: " + ex);
             point = geom.getCentroid();
         }
@@ -317,7 +317,8 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 
         int i;
         for (i = 0; i < coordinates.length; i++) {
-            points.add(at.transform(new Point2D.Double(coordinates[i].x, coordinates[i].y), null));
+            Coordinate coord = coordinates[i];
+            points.add(at.transform(new Point2D.Double(coord.x, coord.y), null));
         }
 
         return points;
