@@ -121,9 +121,9 @@ public class CutPolygonTool extends AbstractPolygonTool {
                         TypeFactory.createType(Type.POLYGON), 
                         TypeFactory.createType(Type.MULTIPOLYGON), 
                         TypeFactory.createType(Type.GEOMETRY, 
-                                new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_POLYGON)), 
+                                new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_SURFACE)), 
                         TypeFactory.createType(Type.MULTIPOLYGON, 
-                                new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_POLYGON))) && 
+                                new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_SURFACE))) && 
                         ToolUtilities.isActiveLayerEditable(vc) && ToolUtilities.isSelectionEqualsTo(vc, 1);
         }
 

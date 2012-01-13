@@ -84,7 +84,7 @@ public class MultilineTool extends AbstractMultilineTool {
 		return ToolUtilities.geometryTypeIs(vc,
 				TypeFactory.createType(Type.MULTILINESTRING),
                                 TypeFactory.createType(Type.GEOMETRYCOLLECTION, 
-                                        new GeometryDimensionConstraint((GeometryDimensionConstraint.DIMENSION_LINE))))
+                                        new GeometryDimensionConstraint((GeometryDimensionConstraint.DIMENSION_CURVE))))
 				&& ToolUtilities.isActiveLayerEditable(vc);
 	}
 

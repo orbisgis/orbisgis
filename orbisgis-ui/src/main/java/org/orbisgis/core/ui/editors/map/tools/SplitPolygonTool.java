@@ -93,10 +93,10 @@ public class SplitPolygonTool extends AbstractLineTool {
                                 TypeFactory.createType(Type.POLYGON), 
                                 TypeFactory.createType(Type.MULTIPOLYGON), 
                                 TypeFactory.createType(Type.GEOMETRY, 
-                                        new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_POLYGON)), 
+                                        new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_SURFACE)), 
                                 TypeFactory.createType(Type.GEOMETRYCOLLECTION, 
                                         ConstraintFactory.createConstraint(Constraint.DIMENSION_2D_GEOMETRY,
-                                                GeometryDimensionConstraint.DIMENSION_POLYGON))))
+                                                GeometryDimensionConstraint.DIMENSION_SURFACE))))
                         && ToolUtilities.isActiveLayerEditable(vc) && ToolUtilities.isSelectionEqualsTo(vc, 1);
         }
 
@@ -120,7 +120,7 @@ public class SplitPolygonTool extends AbstractLineTool {
                                         TypeFactory.createType(Type.MULTIPOLYGON), 
                                         TypeFactory.createType(Type.GEOMETRYCOLLECTION, 
                                                 ConstraintFactory.createConstraint(Constraint.DIMENSION_2D_GEOMETRY,
-                                                        GeometryDimensionConstraint.DIMENSION_POLYGON)))) {
+                                                        GeometryDimensionConstraint.DIMENSION_SURFACE)))) {
                                 List<Polygon> pols = new ArrayList<Polygon>();
                                 for (int i = 0; i < geom.getNumGeometries(); i++) {
                                         pols.addAll(GeometryEdit.splitPolygon((Polygon) geom.getGeometryN(i), ls));
@@ -133,7 +133,7 @@ public class SplitPolygonTool extends AbstractLineTool {
                                         TypeFactory.createType(Type.POLYGON), 
                                         TypeFactory.createType(Type.GEOMETRY, 
                                                 ConstraintFactory.createConstraint(Constraint.DIMENSION_2D_GEOMETRY,
-                                                        GeometryDimensionConstraint.DIMENSION_POLYGON)))) {
+                                                        GeometryDimensionConstraint.DIMENSION_SURFACE)))) {
                                 List<Polygon> polygons = GeometryEdit.splitPolygon((Polygon) geom, ls);
                                 if (polygons != null) {
                                         sds.deleteRow(handler.getGeometryIndex());

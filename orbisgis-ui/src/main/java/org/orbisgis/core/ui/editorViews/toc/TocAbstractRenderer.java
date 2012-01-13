@@ -85,9 +85,9 @@ public abstract class TocAbstractRenderer {
                                                                 switch(gdc.getDimension()){
                                                                         case GeometryDimensionConstraint.DIMENSION_POINT:
                                                                                 return OrbisGISIcon.LAYER_POINT;
-                                                                        case GeometryDimensionConstraint.DIMENSION_LINE:
+                                                                        case GeometryDimensionConstraint.DIMENSION_CURVE:
                                                                                 return OrbisGISIcon.LAYER_LINE;
-                                                                        case GeometryDimensionConstraint.DIMENSION_POLYGON:
+                                                                        case GeometryDimensionConstraint.DIMENSION_SURFACE:
                                                                                 return OrbisGISIcon.LAYER_POLYGON;
                                                                         default :
                                                                                 return OrbisGISIcon.LAYER_POLYGON;                                                                }

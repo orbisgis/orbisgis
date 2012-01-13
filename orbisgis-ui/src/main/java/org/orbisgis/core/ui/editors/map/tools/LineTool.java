@@ -119,7 +119,7 @@ public class LineTool extends AbstractLineTool {
                         TypeFactory.createType(Type.MULTILINESTRING),
                         TypeFactory.createType(Type.GEOMETRYCOLLECTION, 
                                 ConstraintFactory.createConstraint(Constraint.DIMENSION_2D_GEOMETRY, 
-                                        GeometryDimensionConstraint.DIMENSION_LINE))
+                                        GeometryDimensionConstraint.DIMENSION_CURVE))
                         )
                 ) {
                         g = ToolManager.toolsGeometryFactory.createMultiLineString(new LineString[]{ls});
