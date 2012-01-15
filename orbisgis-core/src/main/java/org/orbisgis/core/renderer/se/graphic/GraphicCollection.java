@@ -273,7 +273,7 @@ public final class GraphicCollection implements SymbolizerNode {
                     if (mX + w > xmax) {
                         xmax = mX + w;
                     }
-                    if (bounds.getMinY() + bounds.getHeight() > ymax) {
+                    if (mY + h > ymax) {
                         ymax = mY + h;
                     }
                 }
