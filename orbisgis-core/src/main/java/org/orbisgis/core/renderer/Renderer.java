@@ -279,7 +279,8 @@ public abstract class Renderer {
                 //}
                 //logger.println("TOTAL : " + total);
 
-                
+
+                long rowCount = sds.getRowCount();
                 //Let's not come back to the beginning if we haven't found 
                 //a geometry that is contained in the area we want to draw...
                 boolean somethingReached = false;
@@ -295,11 +296,10 @@ public abstract class Renderer {
 
                     try {
                         fieldID = ShapeHelper.getGeometryFieldId(sds);
-                    } catch (ParameterException ex){
+                    } catch (ParameterException ex) {
                     }
                     long initFeats = 0;
 
-                    long rowCount = sds.getRowCount();
 
                     int i = 0;
                     //If we want all the rules to be displayed, we must come back, here,
@@ -307,7 +307,7 @@ public abstract class Renderer {
                     //its end if we are not rendering the first rule, we are at the end
                     //of the file. And as we've tested that the Iterator is not empty...
                     //It has sense to reinitialize it only if we are at the end.
-                    if(!it.hasNext() && somethingReached){
+                    if (!it.hasNext() && somethingReached) {
                         it = new FullIterator(sds);
                     }
                     while (it.hasNext()) {
@@ -339,7 +339,7 @@ public abstract class Renderer {
 
                         Envelope geomEnvelope = theGeom.getEnvelopeInternal();
 
-                        // Do not display geom when the envelope is too small
+                        // Do not display the geometry when the envelope does'nt intersect the current mapcontext area.
                         if (geomEnvelope.intersects(extent)) {
                             somethingReached = true;
                             boolean emphasis = selected.contains((int) originalIndex);
@@ -347,9 +347,9 @@ public abstract class Renderer {
                             beginFeature(originalIndex, sds);
                             initFeats += System.currentTimeMillis();
 
-                            for (Symbolizer s : r.getCompositeSymbolizer().getSymbolizerList()) {
+                            List<Symbolizer> sl = r.getCompositeSymbolizer().getSymbolizerList();
+                            for (Symbolizer s : sl) {
                                 sTimeFull -= System.currentTimeMillis();
-
 
                                 Graphics2D g2S;
                                 //if (s instanceof TextSymbolizer) {
@@ -495,8 +495,8 @@ public abstract class Renderer {
 
         Envelope graphicExtent = new Envelope(0, 0, mt.getWidth(), mt.getHeight());
         DefaultRendererPermission perm = new DefaultRendererPermission(graphicExtent);
-
-        for (int i = layers.length - 1; i >= 0; i--) {
+        int numLayers = layers.length;
+        for (int i = numLayers - 1; i >= 0; i--) {
             if (pm.isCancelled()) {
                 break;
             } else {
@@ -510,9 +510,7 @@ public abstract class Renderer {
                         // WMS server
                         WMSStatus status = (WMSStatus) layer.getWMSConnection().getStatus().clone();
                         if (i > 0) {
-                            for (int j = i - 1;
-                                    (j >= 0)
-                                    && (layers[j].isWMS() || !layers[j].isVisible()); j--) {
+                            for (int j = i - 1; (j >= 0) && (layers[j].isWMS() || !layers[j].isVisible()); j--) {
                                 if (layers[j].isVisible()) {
                                     i = j;
                                     if (sameServer(layer, layers[j])) {
