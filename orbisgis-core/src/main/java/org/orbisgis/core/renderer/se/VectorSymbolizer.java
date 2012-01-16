@@ -140,11 +140,6 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
         }
     }
 
-    /*
-    @Override
-    public abstract void draw(Graphics2D g2, DataSource sds, long fid,
-    boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
-    throws ParameterException, IOException, DriverException;*/
     /**
      * Convert a spatial feature into a LiteShape, should add parameters to handle
      * the scale and to perform a scale dependent generalization !
