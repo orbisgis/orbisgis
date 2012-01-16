@@ -2,6 +2,8 @@ package org.orbisgis.core.renderer.se.common;
 
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Arc2D;
 import java.awt.geom.Area;
 
 import java.io.IOException;
@@ -18,6 +20,8 @@ import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
+import org.orbisgis.core.renderer.se.graphic.ViewBox;
+import org.orbisgis.core.renderer.se.graphic.WellKnownName;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
@@ -152,7 +156,8 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
     }
 
     /**
-     * Draw this {@code Halo} in {@code g2}.
+     * Draw this {@code Halo} in {@code g2}. Basically compute an offseted shape
+     * and fill the difference with the original one.
      * @param g2
      * @param sds
      * @param fid
@@ -163,30 +168,75 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public void draw(Graphics2D g2, DataSource sds, long fid, boolean selected, Shape shp, MapTransform mt, boolean substract) throws ParameterException, IOException {
+    public void draw(Graphics2D g2, DataSource sds, long fid, boolean selected, 
+            Shape shp, MapTransform mt, boolean substract) throws ParameterException, IOException {
         if (radius != null && fill != null) {
             double r = this.getHaloRadius(sds, fid, mt);
-            Area initialArea = new Area(shp);
-
             if (r > 0.0) {
                 for (Shape halo : ShapeHelper.perpendicularOffset(shp, r)) {
-
-                    // TODO only fill  (halo - shp) !!!
-                    if (halo != null) {
-                        Area aHalo = new Area(halo);
-
-                        if (substract){
-                            aHalo.subtract(initialArea);
-                        }
-
-                        fill.draw(g2, sds, fid, aHalo, selected, mt);
-
-                    } else {
-                        Services.getErrorManager().error(
-                                I18N.getString("orbisgis-core.orbisgis.org.orbisgis.renderer.cannotCreatePerpendicularOffset"));
-                    }
+                    fillHalo(halo, shp, g2, sds, fid, selected, mt, substract);
                 }
             }
+        }
+    }
+    
+    /**
+     * In order to improve performance when drawing a halo on a Circle, we use a
+     * dedicated method, where we won't compute all the offseted point of the
+     * original shape. It's faster to compute directly a new Shape.</p>
+     * <p>To achieve this goal, we use the original shape, that is supposed to be
+     * an {@code Arc2D}. We compute the new {@code Arc2D} by adding the wanted
+     * radius, and finally apply the current AffineTransform obtained from the
+     * MapTransform.
+     * @param g2
+     * The {@code Graphics} where we are going to draw.
+     * @param sds
+     * Our DataSource
+     * @param fid
+     * The index of the current feature in sds.
+     * @param selected
+     * @param shp
+     * The original Shape
+     * @param atShp
+     * The shape obtained by applying mt to shp
+     * @param mt
+     * The current {@code MapTransform}.
+     * @param substract
+     * @param viewBox
+     * @param at
+     * @throws ParameterException
+     * @throws IOException 
+     */
+    public void drawCircle(Graphics2D g2, DataSource sds, long fid, boolean selected, 
+            Arc2D shp, Shape atShp, MapTransform mt, boolean substract, 
+            ViewBox viewBox, AffineTransform at) throws ParameterException, IOException {
+        //We want to make a halo around a WKN.CIRCLE instance. 
+        if (radius != null && fill != null) {
+            double r = this.getHaloRadius(sds, fid, mt);
+            double x = shp.getX() - r/2;
+            double y = shp.getY() - r/2;
+            double height = shp.getHeight() + r;
+            double width = shp.getWidth() + r;
+            Shape origin = new Arc2D.Double(x, y, width, height, shp.getAngleStart(), shp.getAngleExtent(), shp.getArcType());
+            Shape halo = at.createTransformedShape(origin);
+            fillHalo(halo, atShp, g2, sds, fid, selected, mt, substract);
+            
+        }
+    }
+    
+    private void fillHalo(Shape halo, Shape initialShp, Graphics2D g2, 
+                DataSource sds, long fid, boolean selected,MapTransform mt, boolean substract) 
+                throws ParameterException, IOException {
+        if (halo != null && initialShp != null) {
+            Area initialArea = new Area(initialShp);
+            Area aHalo = new Area(halo);
+            if (substract){
+                aHalo.subtract(initialArea);
+            }
+            fill.draw(g2, sds, fid, aHalo, selected, mt);
+        } else {
+            Services.getErrorManager().error(
+                    I18N.getString("orbisgis-core.orbisgis.org.orbisgis.renderer.cannotCreatePerpendicularOffset"));
         }
     }
 

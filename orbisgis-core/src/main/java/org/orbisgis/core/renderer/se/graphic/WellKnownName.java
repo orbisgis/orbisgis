@@ -138,15 +138,9 @@ public enum WellKnownName implements MarkGraphicSource {
 		int minxy6 = (int)Math.min(x/6, y/6);
 
         switch (this.valueOf(this.name())) {
-            // TODO Implement other well known name !
             case HALFCIRCLE:
-                Path2D.Double p = new Path2D.Double();
-                p.moveTo(0, 0);
                 Arc2D.Double arc = new Arc2D.Double(-x2, -y2, x, y, -90, -180, Arc2D.CHORD);
-                p.append(arc, true);
-                p.moveTo(0, 0);
-                p.closePath();
-                return p;
+                return arc;
             case CIRCLE:
                 return new Arc2D.Double(-x2, -y2, x, y, 0, -360, Arc2D.CHORD);
             case TRIANGLE: {

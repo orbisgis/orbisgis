@@ -40,6 +40,7 @@ package org.orbisgis.core.renderer.se.graphic;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Arc2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -404,7 +405,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
     @Override
     public void draw(Graphics2D g2, DataSource sds, long fid,
             boolean selected, MapTransform mt, AffineTransform fat) throws ParameterException, IOException {
-        Shape shp = null;
+        Shape shp;
 
         AffineTransform at = new AffineTransform(fat);
 
@@ -433,8 +434,12 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
             this.setStroke(new PenStroke());
         }
 
+        //We give the raw shape to the drawHalo method in order not to lose the 
+        //type of the original Shape - It will be easier to compute the halo.
+        //We give the transformed shape too... This way we are sure we won't
+        //compute it twice, as it is a complicated operation.
         if (halo != null) {
-            halo.draw(g2, sds, fid, selected, atShp, mt, true);
+            drawHalo(g2, sds, fid, selected, shp, atShp, mt, at);
         }
 
         if (fill != null) {
@@ -450,6 +455,19 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
         }
     }
 
+    private void drawHalo(Graphics2D g2, DataSource sds, long fid, 
+            boolean selected, Shape shp,Shape atShp, MapTransform mt, 
+            AffineTransform fat) throws ParameterException, IOException {
+        //If we are dealing with a WKN, and if it is a Circle or a half-circle, 
+        //we must be a little more clever...
+        if(shp instanceof Arc2D){
+            halo.drawCircle(g2, sds, fid, selected, (Arc2D)shp, atShp, mt, true, viewBox, fat);
+        } else {
+            halo.draw(g2, sds, fid, selected, atShp, mt, true);
+        }
+    
+    }
+    
     /**
      * compute required extra space. This extra space equals the max bw stroke width and halo radius
      * @param ds
