@@ -4,27 +4,22 @@
  */
 package org.orbisgis.core.renderer.se;
 
-import com.vividsolutions.jts.geom.Geometry;
 import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.opengis.se._2_0.core.ElseFilterType;
 import net.opengis.se._2_0.core.RuleType;
-
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.FilterDataSourceDecorator;
 import org.gdms.data.schema.Metadata;
-import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryDimensionConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
-
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.graphic.ExternalGraphic;
@@ -132,6 +127,7 @@ public final class Rule implements SymbolizerNode {
                                             throw new UnsupportedOperationException("Can't get the dimension of this type : " + TypeFactory.getTypeName(typeCode));
                                     }
                                 }
+                                break;
                             case Type.POINT:
                             case Type.MULTIPOINT:
                                 symb = new PointSymbolizer();
