@@ -9,7 +9,6 @@ import net.opengis.se._2_0.core.ParameterValueType;
 import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
 /**

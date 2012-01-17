@@ -6,10 +6,8 @@ package org.orbisgis.core.renderer.se.label;
 
 import java.util.HashSet;
 import javax.xml.bind.JAXBElement;
-
 import net.opengis.se._2_0.core.ExclusionRadiusType;
 import net.opengis.se._2_0.core.ObjectFactory;
-
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;

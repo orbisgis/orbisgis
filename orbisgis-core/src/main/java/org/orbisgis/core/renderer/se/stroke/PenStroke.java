@@ -37,11 +37,7 @@
  */
 package org.orbisgis.core.renderer.se.stroke;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Paint;
-import java.awt.Shape;
+import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -49,12 +45,11 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.DataSource;
-import net.opengis.se._2_0.core.PenStrokeType;
-
-import org.orbisgis.core.map.MapTransform;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.ParameterValueType;
+import net.opengis.se._2_0.core.PenStrokeType;
+import org.gdms.data.DataSource;
+import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.UomNode;

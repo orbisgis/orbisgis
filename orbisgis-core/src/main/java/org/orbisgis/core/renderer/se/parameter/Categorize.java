@@ -4,15 +4,9 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.bind.JAXBElement;
-import net.opengis.se._2_0.core.CategorizeType;
+import net.opengis.se._2_0.core.*;
 import org.gdms.data.DataSource;
-import net.opengis.se._2_0.core.ExtensionParameterType;
-import net.opengis.se._2_0.core.ExtensionType;
-import net.opengis.se._2_0.core.ObjectFactory;
-import net.opengis.se._2_0.core.ParameterValueType;
-import net.opengis.se._2_0.core.ThresholdBelongsToType;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
-
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 

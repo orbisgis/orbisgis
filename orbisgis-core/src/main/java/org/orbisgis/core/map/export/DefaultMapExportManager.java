@@ -1,30 +1,24 @@
 package org.orbisgis.core.map.export;
 
+import com.vividsolutions.jts.geom.Envelope;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
-
 import org.apache.batik.dom.GenericDOMImplementation;
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.ImageRenderer;
 import org.orbisgis.core.renderer.Renderer;
 import org.orbisgis.core.renderer.legend.Legend;
-import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
-
-import com.vividsolutions.jts.geom.Envelope;
-import org.orbisgis.core.renderer.ImageRenderer;
 
 public class DefaultMapExportManager implements MapExportManager {
 

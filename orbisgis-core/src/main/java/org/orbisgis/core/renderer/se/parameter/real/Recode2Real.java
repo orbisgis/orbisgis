@@ -37,11 +37,9 @@
  */
 package org.orbisgis.core.renderer.se.parameter.real;
 
-import org.gdms.data.DataSource;
-
 import net.opengis.se._2_0.core.MapItemType;
 import net.opengis.se._2_0.core.RecodeType;
-
+import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.Literal;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;

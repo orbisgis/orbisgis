@@ -41,13 +41,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import java.awt.Shape;
-import java.awt.geom.Line2D;
-import java.awt.geom.Path2D;
-
-import java.awt.geom.PathIterator;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-
+import java.awt.geom.*;
 import java.util.ArrayList;
 import java.util.List;
 import org.gdms.data.DataSource;

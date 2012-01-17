@@ -32,7 +32,6 @@
 package org.orbisgis.core.ui.util;
 
 import java.lang.reflect.InvocationTargetException;
-
 import javax.swing.SwingUtilities;
 
 public class GUIUtil {

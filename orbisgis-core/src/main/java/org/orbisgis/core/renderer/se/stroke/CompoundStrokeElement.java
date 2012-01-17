@@ -40,7 +40,6 @@
 
 package org.orbisgis.core.renderer.se.stroke;
 
-import java.util.HashSet;
 import net.opengis.se._2_0.core.AlternativeStrokeElementsType;
 import net.opengis.se._2_0.core.StrokeElementType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;

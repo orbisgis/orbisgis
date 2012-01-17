@@ -38,23 +38,14 @@
 package org.orbisgis.core;
 
 import java.io.File;
-
 import org.apache.log4j.Logger;
-import org.gdms.data.AlreadyClosedException;
-import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.NoSuchTableException;
-import org.gdms.data.DataSource;
-import org.gdms.data.SQLDataSourceFactory;
+import org.gdms.data.*;
 import org.gdms.data.indexes.IndexManager;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.Source;
 import org.gdms.source.SourceManager;
-import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.layerModel.Layer;
-import org.orbisgis.core.layerModel.LayerCollection;
-import org.orbisgis.core.layerModel.LayerException;
-import org.orbisgis.core.layerModel.WMSLayer;
+import org.orbisgis.core.layerModel.*;
 
 public class DefaultDataManager implements DataManager {
 

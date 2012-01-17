@@ -39,7 +39,6 @@ package org.orbisgis.core.layerModel;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.orbisgis.utils.CollectionUtils;
 import org.orbisgis.utils.I18N;
 

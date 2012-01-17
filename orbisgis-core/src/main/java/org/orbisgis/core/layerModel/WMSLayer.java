@@ -1,12 +1,11 @@
 package org.orbisgis.core.layerModel;
 
+import com.vividsolutions.jts.geom.Envelope;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.util.ArrayList;
-
 import org.gdms.data.AlreadyClosedException;
-import org.gdms.data.DataSource;
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
@@ -17,11 +16,9 @@ import org.orbisgis.core.layerModel.persistence.LayerType;
 import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.renderer.legend.RasterLegend;
 import org.orbisgis.core.renderer.legend.WMSLegend;
-import org.orbisgis.utils.I18N;
-
-import com.vividsolutions.jts.geom.Envelope;
-import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.Rule;
+import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.utils.I18N;
 
 public class WMSLayer extends GdmsLayer {
 

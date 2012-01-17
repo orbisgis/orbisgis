@@ -44,35 +44,11 @@ import net.opengis.fes._2.ExpressionType;
 import net.opengis.fes._2.FunctionType;
 import net.opengis.fes._2.LiteralType;
 import net.opengis.fes._2.ValueReferenceType;
-
-import net.opengis.se._2_0.core.CategorizeType;
-import net.opengis.se._2_0.core.ConcatenateType;
-import net.opengis.se._2_0.core.FormatNumberType;
-import net.opengis.se._2_0.core.InterpolateType;
-import net.opengis.se._2_0.core.ParameterValueType;
-import net.opengis.se._2_0.core.RecodeType;
-
+import net.opengis.se._2_0.core.*;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.parameter.color.Categorize2Color;
-import org.orbisgis.core.renderer.se.parameter.color.ColorAttribute;
-import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
-import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
-import org.orbisgis.core.renderer.se.parameter.color.Interpolate2Color;
-import org.orbisgis.core.renderer.se.parameter.color.Recode2Color;
-import org.orbisgis.core.renderer.se.parameter.real.Categorize2Real;
-import org.orbisgis.core.renderer.se.parameter.real.Interpolate2Real;
-import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
-import org.orbisgis.core.renderer.se.parameter.real.RealFunction;
-import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
-import org.orbisgis.core.renderer.se.parameter.real.Recode2Real;
-import org.orbisgis.core.renderer.se.parameter.string.Categorize2String;
-import org.orbisgis.core.renderer.se.parameter.string.Number2String;
-import org.orbisgis.core.renderer.se.parameter.string.Recode2String;
-import org.orbisgis.core.renderer.se.parameter.string.StringAttribute;
-import org.orbisgis.core.renderer.se.parameter.string.StringConcatenate;
-import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
-import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
+import org.orbisgis.core.renderer.se.parameter.color.*;
+import org.orbisgis.core.renderer.se.parameter.real.*;
+import org.orbisgis.core.renderer.se.parameter.string.*;
 
 /**
  * This class will build <code>SeParameter</code> instances using the given <code>JAXBElement</code> instances.

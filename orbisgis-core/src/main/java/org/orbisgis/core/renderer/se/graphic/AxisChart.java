@@ -50,15 +50,13 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.DataSource;
-import org.orbisgis.core.map.MapTransform;
-
 import net.opengis.se._2_0.thematic.AxisChartSubtypeType;
 import net.opengis.se._2_0.thematic.AxisChartType;
 import net.opengis.se._2_0.thematic.CategoryType;
 import net.opengis.se._2_0.thematic.ObjectFactory;
+import org.gdms.data.DataSource;
+import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.FillNode;
-
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.StrokeNode;
 import org.orbisgis.core.renderer.se.UomNode;

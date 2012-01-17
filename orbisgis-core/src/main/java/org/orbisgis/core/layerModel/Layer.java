@@ -37,16 +37,11 @@
  */
 package org.orbisgis.core.layerModel;
 
+import com.vividsolutions.jts.geom.Envelope;
 import java.awt.Color;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-
+import java.util.*;
 import org.gdms.data.AlreadyClosedException;
-import org.gdms.data.DataSource;
 import org.gdms.data.DataSource;
 import org.gdms.data.edition.EditionEvent;
 import org.gdms.data.edition.EditionListener;
@@ -73,8 +68,6 @@ import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.renderer.symbol.SymbolFactory;
 import org.orbisgis.utils.I18N;
-
-import com.vividsolutions.jts.geom.Envelope;
 
 public class Layer extends GdmsLayer {
 

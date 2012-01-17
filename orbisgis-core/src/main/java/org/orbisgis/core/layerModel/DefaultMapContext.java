@@ -36,13 +36,12 @@
  */
 package org.orbisgis.core.layerModel;
 
-import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
+import java.util.*;
 import org.gdms.data.DataSource;
 import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.driver.DriverException;
@@ -52,24 +51,14 @@ import org.gdms.source.SourceRemovalEvent;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorManager;
-import org.orbisgis.core.layerModel.persistence.BoundingBox;
-import org.orbisgis.core.layerModel.persistence.IdTime;
-import org.orbisgis.core.layerModel.persistence.LayerCollectionType;
-import org.orbisgis.core.layerModel.persistence.LayerType;
-import org.orbisgis.core.layerModel.persistence.SelectedLayer;
-import org.orbisgis.core.renderer.Renderer;
-import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.progress.NullProgressMonitor;
-import org.orbisgis.utils.I18N;
-
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKTReader;
+import org.orbisgis.core.layerModel.persistence.*;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.ImageRenderer;
+import org.orbisgis.core.renderer.Renderer;
 import org.orbisgis.core.renderer.se.Rule;
+import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.utils.I18N;
 
 /**
  * Class that contains the status of the map view.

@@ -38,14 +38,12 @@
  **/
 package org.orbisgis.core.layerModel;
 
-import org.gdms.data.DataSource;
-
-import org.orbisgis.progress.ProgressMonitor;
-
 import com.vividsolutions.jts.geom.Envelope;
 import java.util.ArrayList;
+import org.gdms.data.DataSource;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Rule;
+import org.orbisgis.progress.ProgressMonitor;
 
 /**
  * This interface provides information to the tool system and receives

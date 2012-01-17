@@ -43,17 +43,13 @@ import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Shape;
 import java.io.IOException;
-import java.util.HashSet;
 import javax.xml.bind.JAXBElement;
-
 import net.opengis.se._2_0.core.FillType;
 import net.opengis.se._2_0.core.GraphicFillType;
 import net.opengis.se._2_0.core.HatchedFillType;
 import net.opengis.se._2_0.core.SolidFillType;
-
 import net.opengis.se._2_0.thematic.DensityFillType;
 import net.opengis.se._2_0.thematic.DotMapFillType;
-
 import org.gdms.data.DataSource;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;

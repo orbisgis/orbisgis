@@ -39,7 +39,6 @@
 package org.orbisgis.core;
 
 import java.awt.Color;
-
 import org.apache.log4j.Logger;
 import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.map.export.DefaultMapExportManager;

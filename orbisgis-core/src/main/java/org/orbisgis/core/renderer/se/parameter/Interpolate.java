@@ -5,12 +5,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
-import net.opengis.se._2_0.core.InterpolateType;
-import net.opengis.se._2_0.core.InterpolationPointType;
-import net.opengis.se._2_0.core.ModeType;
-import net.opengis.se._2_0.core.ObjectFactory;
-import net.opengis.se._2_0.core.ParameterValueType;
-
+import net.opengis.se._2_0.core.*;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 

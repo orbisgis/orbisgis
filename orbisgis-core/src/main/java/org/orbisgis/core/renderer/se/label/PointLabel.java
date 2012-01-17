@@ -4,22 +4,18 @@
  */
 package org.orbisgis.core.renderer.se.label;
 
-//import com.vividsolutions.jts.awt.PolygonShape;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
-
 import java.io.IOException;
 import java.util.HashSet;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.DataSource;
-
-import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.RenderContext;
-
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.PointLabelType;
+import org.gdms.data.DataSource;
+import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;

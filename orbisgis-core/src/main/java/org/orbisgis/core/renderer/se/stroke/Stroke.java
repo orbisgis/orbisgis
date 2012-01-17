@@ -3,24 +3,11 @@ package org.orbisgis.core.renderer.se.stroke;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
-import java.util.HashSet;
-
 import javax.xml.bind.JAXBElement;
-import net.opengis.se._2_0.core.CompoundStrokeType;
-import net.opengis.se._2_0.core.ExtensionParameterType;
-import net.opengis.se._2_0.core.ExtensionType;
-import net.opengis.se._2_0.core.GraphicStrokeType;
-import net.opengis.se._2_0.core.ObjectFactory;
-import net.opengis.se._2_0.core.PenStrokeType;
-import net.opengis.se._2_0.core.StrokeType;
-import net.opengis.se._2_0.core.TextStrokeType;
-
+import net.opengis.se._2_0.core.*;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.Services;
-
-
 import org.orbisgis.core.map.MapTransform;
-
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;

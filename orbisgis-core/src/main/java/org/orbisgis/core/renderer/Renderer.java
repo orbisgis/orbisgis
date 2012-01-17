@@ -37,6 +37,12 @@
  */
 package org.orbisgis.core.renderer;
 
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.index.quadtree.Quadtree;
+import ij.process.ColorProcessor;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.geom.Rectangle2D;
@@ -45,15 +51,17 @@ import java.awt.image.ColorModel;
 import java.awt.image.DirectColorModel;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
-
 import javax.imageio.ImageIO;
-
+import org.gdms.data.DataSource;
+import org.gdms.data.NoSuchTableException;
+import org.gdms.data.indexes.*;
 import org.gdms.driver.DriverException;
-
-
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.gvsig.remoteClient.exceptions.ServerErrorException;
 import org.gvsig.remoteClient.exceptions.WMSException;
 import org.gvsig.remoteClient.wms.WMSStatus;
@@ -62,34 +70,15 @@ import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.WMSConnection;
 import org.orbisgis.core.map.MapTransform;
-
-
-import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.progress.NullProgressMonitor;
-import org.orbisgis.utils.I18N;
-
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.index.quadtree.Quadtree;
-import ij.process.ColorProcessor;
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Iterator;
-import org.gdms.data.DataSource;
-import org.gdms.data.NoSuchTableException;
-import org.gdms.data.indexes.DefaultSpatialIndexQuery;
-import org.gdms.data.indexes.FullIterator;
-import org.gdms.data.indexes.IndexException;
-import org.gdms.data.indexes.IndexManager;
-import org.gdms.data.indexes.IndexQueryException;
-import org.gdms.driver.driverManager.DriverLoadException;
-import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.Rule;
+import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.ui.plugins.views.output.OutputManager;
+import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.utils.I18N;
 
 /**
  * Renderer contains all the logic of the Symbology Encoding process based on java

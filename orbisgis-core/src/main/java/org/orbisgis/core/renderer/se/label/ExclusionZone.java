@@ -6,11 +6,9 @@ package org.orbisgis.core.renderer.se.label;
 
 import java.util.HashSet;
 import javax.xml.bind.JAXBElement;
-
 import net.opengis.se._2_0.core.ExclusionRadiusType;
 import net.opengis.se._2_0.core.ExclusionRectangleType;
 import net.opengis.se._2_0.core.ExclusionZoneType;
-
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;

@@ -45,14 +45,14 @@ import java.util.HashSet;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.LiteralType;
-import org.gdms.data.DataSource;
 import net.opengis.se._2_0.core.MapItemType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.ParameterValueType;
 import net.opengis.se._2_0.core.RecodeType;
+import org.gdms.data.DataSource;
 import org.orbisgis.core.Services;
-
-import org.orbisgis.core.renderer.se.parameter.string.*;
+import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
+import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 
 /**
  * Recoding is defined as the "transformation of discrete values to any other values".

@@ -43,7 +43,6 @@ package org.orbisgis.core.renderer.se.parameter.string;
 import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.ValueReferenceType;
 import org.gdms.data.DataSource;
-
 import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;

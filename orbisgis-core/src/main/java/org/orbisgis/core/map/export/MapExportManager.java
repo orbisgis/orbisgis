@@ -1,14 +1,12 @@
 package org.orbisgis.core.map.export;
 
+import com.vividsolutions.jts.geom.Envelope;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.progress.ProgressMonitor;
-
-import com.vividsolutions.jts.geom.Envelope;
 
 public interface MapExportManager {
 

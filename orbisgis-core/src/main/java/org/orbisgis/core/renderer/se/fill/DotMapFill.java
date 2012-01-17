@@ -44,18 +44,15 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Random;
 import javax.xml.bind.JAXBElement;
+import net.opengis.se._2_0.thematic.DotMapFillType;
+import net.opengis.se._2_0.thematic.ObjectFactory;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.Services;
-
 import org.orbisgis.core.map.MapTransform;
-import net.opengis.se._2_0.thematic.DotMapFillType;
-
-import net.opengis.se._2_0.thematic.ObjectFactory;
 import org.orbisgis.core.renderer.se.GraphicNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;

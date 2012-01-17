@@ -12,10 +12,10 @@ import net.opengis.se._2_0.core.FormatNumberType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.ParameterValueType;
 import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
-import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
 /**
  * This class is used to embed {@code DecimalFormat} in a {@code

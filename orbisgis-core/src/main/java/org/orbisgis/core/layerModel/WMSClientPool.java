@@ -3,7 +3,6 @@ package org.orbisgis.core.layerModel;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.util.HashMap;
-
 import org.gvsig.remoteClient.wms.WMSClient;
 
 public class WMSClientPool {

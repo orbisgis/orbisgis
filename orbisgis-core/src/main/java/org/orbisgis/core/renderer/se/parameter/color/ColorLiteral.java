@@ -38,8 +38,8 @@
 
 package org.orbisgis.core.renderer.se.parameter.color;
 
-import java.util.Random;
 import java.awt.Color;
+import java.util.Random;
 import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.LiteralType;
 import org.gdms.data.DataSource;

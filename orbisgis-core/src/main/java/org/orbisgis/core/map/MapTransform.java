@@ -37,35 +37,23 @@
  */
 package org.orbisgis.core.map;
 
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsEnvironment;
-import java.awt.Point;
-import java.awt.Shape;
-import java.awt.Toolkit;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.NoninvertibleTransformException;
-import java.awt.geom.Point2D;
-import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-
-import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
-
 import com.vividsolutions.jts.awt.PointTransformation;
 import com.vividsolutions.jts.awt.ShapeWriter;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
-import java.awt.Color;
-import java.awt.HeadlessException;
-import java.awt.Polygon;
-import java.awt.RenderingHints;
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.renderable.RenderContext;
+import java.util.ArrayList;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.JAI;
-//import net.LiteShape.LiteShape;
-import net.LiteShape.LiteShape;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
 
 public class MapTransform implements PointTransformation  {
 

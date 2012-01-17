@@ -41,7 +41,6 @@ package org.orbisgis.core.renderer.se.graphic;
 import java.awt.Shape;
 import java.io.IOException;
 import org.gdms.data.DataSource;
-
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 

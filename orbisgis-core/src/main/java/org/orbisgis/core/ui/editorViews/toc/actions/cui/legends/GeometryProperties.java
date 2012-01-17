@@ -1,12 +1,10 @@
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.legends;
 
-import java.util.HashSet;
-
-import org.gdms.data.values.Value;
-import org.gdms.data.values.ValueFactory;
-
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import java.util.HashSet;
+import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
 
 @Deprecated
 public class GeometryProperties {

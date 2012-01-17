@@ -12,15 +12,12 @@ import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
-
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.DataSource;
-
-import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.RenderContext;
-
 import net.opengis.se._2_0.core.LineLabelType;
 import net.opengis.se._2_0.core.ObjectFactory;
+import org.gdms.data.DataSource;
+import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;

@@ -37,7 +37,6 @@
 package org.orbisgis.core.errorManager;
 
 import java.util.ArrayList;
-
 import org.apache.log4j.Logger;
 import org.orbisgis.utils.I18N;
 

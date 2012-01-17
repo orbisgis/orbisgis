@@ -44,7 +44,6 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.CompositeSymbolizerType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.SymbolizerType;
-
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 

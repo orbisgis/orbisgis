@@ -44,12 +44,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.DataSource;
-
-import org.orbisgis.core.map.MapTransform;
 import net.opengis.se._2_0.core.CompoundStrokeType;
 import net.opengis.se._2_0.core.ObjectFactory;
-//import net.opengis.se._2_0.core.StrokeAnnotationGraphicType;
+import org.gdms.data.DataSource;
+import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;

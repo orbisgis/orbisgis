@@ -7,7 +7,6 @@ package org.orbisgis.core.renderer.se.label;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
-import java.util.HashSet;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.LabelType;
 import net.opengis.se._2_0.core.LineLabelType;

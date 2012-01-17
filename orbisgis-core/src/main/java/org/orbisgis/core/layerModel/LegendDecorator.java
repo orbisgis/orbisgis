@@ -38,7 +38,6 @@ package org.orbisgis.core.layerModel;
 
 import java.awt.Graphics2D;
 import java.util.ArrayList;
-
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.edition.EditionEvent;

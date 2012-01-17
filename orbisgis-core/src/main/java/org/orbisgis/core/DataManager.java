@@ -38,7 +38,6 @@
 package org.orbisgis.core;
 
 import java.io.File;
-
 import org.gdms.data.DataSource;
 import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.indexes.IndexManager;

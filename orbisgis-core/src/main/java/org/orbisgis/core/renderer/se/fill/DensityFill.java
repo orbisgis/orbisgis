@@ -41,21 +41,15 @@ import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
-
 import java.io.IOException;
 import java.util.HashSet;
-
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.DataSource;
 import net.opengis.se._2_0.thematic.DensityFillType;
-
 import net.opengis.se._2_0.thematic.ObjectFactory;
-
+import org.gdms.data.DataSource;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.GraphicNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-
-
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
