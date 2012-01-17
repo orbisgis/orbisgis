@@ -53,13 +53,12 @@ import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 /**
- *
- * @author maxence
+ * Provides utility methods to handle Shape instances.
+ * @author maxence, alexis
  */
 public final class ShapeHelper {
 
     public static final double ONE_DEG_IN_RAD = Math.PI / 180.0;
-    private static boolean DEBUG = false;
     private static final boolean ENABLE_QUAD = true;
     private static final double FLATNESS = 1e-5;
     private static ErrorManager logger = Services.getErrorManager();
@@ -181,18 +180,14 @@ public final class ShapeHelper {
 
         PathIterator it = line.getPathIterator(null, FLATNESS);
         double coords[] = new double[6];
-
-        Double x1 = null;
-        Double y1 = null;
-
         Path2D.Double segment = new Path2D.Double();
         double p = 0.0;
         double p1;
 
         it.currentSegment(coords);
 
-        x1 = coords[0];
-        y1 = coords[1];
+        double x1 = coords[0];
+        double y1 = coords[1];
         segment.moveTo(x1, y1);
 
         double xFirst = x1;
@@ -200,8 +195,8 @@ public final class ShapeHelper {
 
         it.next();
 
-        double x2 = 0.0;
-        double y2 = 0.0;
+        double x2;
+        double y2;
 
         boolean first = true;
 
@@ -251,7 +246,6 @@ public final class ShapeHelper {
             }
         }
         //last segment end with last point
-        //segment.lineTo(x1, y1);
 
         shapes.add(segment);
 
@@ -268,11 +262,6 @@ public final class ShapeHelper {
     public static List<Shape> splitLineInSeg(Shape line, double segLength) {
         List<Shape> shapes = new ArrayList<Shape>();
         double totalLength = ShapeHelper.getLineLength(line);
-
-        if (DEBUG) {
-                System.out.println("Line To SplitLength: " + totalLength);
-        }
-
         if (segLength <= 0.0 || segLength >= totalLength) {
             shapes.add(line);
             return shapes;
@@ -281,8 +270,6 @@ public final class ShapeHelper {
         PathIterator it = line.getPathIterator(null, FLATNESS);
         double coords[] = new double[6];
 
-        Double x1 = null;
-        Double y1 = null;
 
         Path2D.Double segment = new Path2D.Double();
         double p = 0.0;
@@ -290,8 +277,8 @@ public final class ShapeHelper {
 
         it.currentSegment(coords);
 
-        x1 = coords[0];
-        y1 = coords[1];
+        double x1 = coords[0];
+        double y1 = coords[1];
 
         double xFirst = x1;
         double yFirst = y1;
@@ -300,8 +287,8 @@ public final class ShapeHelper {
 
         it.next();
 
-        double x2 = 0.0;
-        double y2 = 0.0;
+        double x2;
+        double y2;
 
         while (!it.isDone()) {
             int type = it.currentSegment(coords);
@@ -333,9 +320,6 @@ public final class ShapeHelper {
                 // On termine le segment, l'ajoute à la liste de shapes
                 segment.lineTo(x1, y1);
                 p = 0;
-        if (DEBUG) {
-                System.out.println("   SegLength: " + ShapeHelper.getLineLength(segment));
-        }
                 shapes.add(segment);
 
                 // Et commence le nouveau segment à
@@ -350,14 +334,7 @@ public final class ShapeHelper {
                 it.next();
             }
         }
-        //last segment end with last point
-        //segment.lineTo(x1, y1);
-
-        if (DEBUG) {
-        System.out.println("   SegLength: " + ShapeHelper.getLineLength(segment));
-        }
         shapes.add(segment);
-
         return shapes;
     }
 
@@ -377,17 +354,14 @@ public final class ShapeHelper {
         PathIterator it = line.getPathIterator(null, FLATNESS);
         double coords[] = new double[6];
 
-        Double x1 = null;
-        Double y1 = null;
-
         Path2D.Double segment = new Path2D.Double();
         double p = 0.0;
         double p1;
 
         it.currentSegment(coords);
 
-        x1 = coords[0];
-        y1 = coords[1];
+        double x1 = coords[0];
+        double y1 = coords[1];
 
         double xFirst = x1;
         double yFirst = y1;
@@ -396,8 +370,8 @@ public final class ShapeHelper {
 
         it.next();
 
-        double x2 = 0.0;
-        double y2 = 0.0;
+        double x2;
+        double y2;
 
         while (!it.isDone()) {
             int type = it.currentSegment(coords);
@@ -464,10 +438,7 @@ public final class ShapeHelper {
      */
     private static Point2D.Double getPointAt(double x1, double y1, double x2, double y2, double distance) {
         double length = Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
-
-        Point2D.Double pt = new Point2D.Double(x1 + distance * (x2 - x1) / length, y1 + distance * (y2 - y1) / length);
-
-        return pt;
+        return new Point2D.Double(x1 + distance * (x2 - x1) / length, y1 + distance * (y2 - y1) / length);
     }
 
     /**
@@ -768,10 +739,6 @@ public final class ShapeHelper {
 
                 gamma = Math.acos((cLength * cLength - aLength * aLength - bLength * bLength) / (-2 * aLength * bLength));
 
-                if (DEBUG) {
-                    System.out.println("Gamma is : " + gamma / ONE_DEG_IN_RAD);
-                }
-
                 // Skip straight segment
                 if (Double.isNaN(gamma) || Math.abs(gamma - Math.PI) < 2 * ONE_DEG_IN_RAD || Math.abs(gamma) < 2 * ONE_DEG_IN_RAD) {
                     vertexes.remove(i);
@@ -780,15 +747,9 @@ public final class ShapeHelper {
                 }
 
                 double angleStatus = crossProduct(vM1.x, vM1.y, v.x, v.y, vP1.x, vP1.y) * offset;
-                if (DEBUG) {
-                    System.out.println("Status is: " + angleStatus);
-                }
 
                 if (angleStatus < 0) {
                     // Interior
-                    if (DEBUG) {
-                        System.out.println("Interior:");
-                    }
                     double dx = eP1X - eX;
                     double dy = eP1Y - eY;
                     double dNorm = Math.sqrt(dx * dx + dy * dy);
@@ -803,9 +764,6 @@ public final class ShapeHelper {
 
                 } else {
                     // Exterior
-                    if (DEBUG) {
-                        System.out.println("Exterior:");
-                    }
                     double dx = eX - eP1X;
                     double dy = eY - eP1Y;
                     double dNorm = Math.sqrt(dx * dx + dy * dy);
@@ -929,35 +887,23 @@ public final class ShapeHelper {
                 double d1 = absOffset;
                 double d2 = absOffset;
                 int j;
-                if (DEBUG) {
-                    System.out.println("NEW EDGE: " + i);
-                }
                 for (j = 0; j < offstedEdges.size() - (closed ? 0 : 1); j++) {
                     Vertex p1 = vertexes.get(j);
                     Vertex p2 = vertexes.get((j + 1) % vertexes.size());
 
                     double d = getDistanceFromSegment(p1.x, p1.y, p2.x, p2.y, p31.x, p31.y);
                     if (d < d1) {
-                        if (DEBUG) {
-                            System.out.println("New shortest : " + " pt" + i + " edge" + j);
-                        }
                         d1 = d;
                     }
 
                     d = getDistanceFromSegment(p1.x, p1.y, p2.x, p2.y, p32.x, p32.y);
 
                     if (d < d2) {
-                        if (DEBUG) {
-                            System.out.println("New shortest : " + " pt" + (i + 1) + " edge" + j);
-                        }
                         d2 = d;
                     }
 
 
                     if (d1 < absOffset - 0.1 && d2 < absOffset - 0.1) {
-                        if (DEBUG) {
-                            System.out.println("Invalid !: " + d1 + ";" + d2 + ";" + absOffset);
-                        }
                         e.mPos = 0;
                         break;
                     }
@@ -1063,9 +1009,6 @@ public final class ShapeHelper {
         for (i = 0; i < offsetLinkList.size(); i++) {
             int id = offsetLinkList.get(i);
             Edge e = edges.get(id);
-            if (DEBUG) {
-                System.out.println("Edge is: " + e);
-            }
             if (e.is11()) {
                 backward = i;
                 break;
@@ -1076,10 +1019,6 @@ public final class ShapeHelper {
         }
 
         while (backward < offsetLinkList.size()) {
-
-            if (DEBUG) {
-                System.out.println("Backward edge is " + offsetLinkList.get(backward));
-            }
             for (i = (backward + 1) % offsetLinkList.size(); i != backward; i = (i + 1) % offsetLinkList.size()) {
                 int id = offsetLinkList.get(i);
                 Edge e = edges.get(id);
@@ -1103,36 +1042,18 @@ public final class ShapeHelper {
                     }
                 }
             }
-
-            if (DEBUG) {
-                System.out.println("Forward edge is " + offsetLinkList.get(forward));
-            }
-
-
             if (backward == forward) {
                 break;
             }
-
-            if (DEBUG) {
-                System.out.println("Status : " + edges.get(offsetLinkList.get(backward)) + ";" + edges.get(offsetLinkList.get(forward)));
-                System.out.println(" in_dir: " + inDir + "    in_pos: " + inPos);
-            }
-
             int bn = (offsetLinkList.get(backward) + 1) % vertexes.size();
             int fn = (offsetLinkList.get(forward) + 1) % vertexes.size();
 
             if (inDir == 0 && inPos == 0) {
                 // Add backward edge 2nd point
-                if (DEBUG) {
-                    System.out.println("Add " + vertexes.get(bn));
-                }
                 rawLink.add(vertexes.get(bn));
             } else if (inDir == 0 && inPos > 0) {
                 for (Integer j : bufferLinkList) {
                     rawLink.add(vertexes.get(j));
-                    if (DEBUG) {
-                        System.out.println("Add " + vertexes.get(j));
-                    }
                 }
                 /*} else if (in_dir == 1) {
                 Vertex v1 = vertexes.get(offsetLinkList.get(backward));
@@ -1166,9 +1087,6 @@ public final class ShapeHelper {
                     // 3.1
                     Vertex nv = new Vertex(inter.x, inter.y);
                     rawLink.add(nv);
-                    if (DEBUG) {
-                        System.out.println("Add3.1 " + nv);
-                    }
                 } else {
                     // 3.2
                     for (int j = backward + 1; j < forward; j++) {
@@ -1186,15 +1104,8 @@ public final class ShapeHelper {
 
                             Vertex nv = new Vertex(i1.x, i1.y);
                             rawLink.add(nv);
-                            if (DEBUG) {
-                                System.out.println("Add3.2a " + nv);
-                            }
-
                             nv = new Vertex(i2.x, i2.y);
                             rawLink.add(nv);
-                            if (DEBUG) {
-                                System.out.println("Add3.2b " + nv);
-                            }
                         }
                     }
                 }
@@ -1373,13 +1284,6 @@ public final class ShapeHelper {
         double x;
         double y;
 
-        if (DEBUG) {
-            System.out.println(x1 + ";" + y1 + " --> " + x2 + ";" + y2);
-            System.out.println(x3 + ";" + y3 + " --> " + x4 + ";" + y4);
-            System.out.println("a1: " + a1);
-            System.out.println("a2: " + a2);
-        }
-
 
         if (Double.isInfinite(a1) && Double.isInfinite(a2)) {
             return null;
@@ -1391,25 +1295,16 @@ public final class ShapeHelper {
             y = a1 * x + b1;
         } else {
             x = (b2 - b1) / (a1 - a2);
-            if (DEBUG) {
-                System.out.println("a1-a2:" + (a1 - a2));
-                System.out.println("b1-b2:" + (b2 - b1));
-            }
             y = a1 * x + b1;
             if (Double.isNaN(x) || Double.isInfinite(x)) {
                 return null;
             }
         }
-
-        if (DEBUG) {
-            System.out.println(" intersection is: " + x + ";" + y);
-        }
-
         return new Point2D.Double(x, y);
     }
 
     /**
-     * REF :http://www.springerlink.com/content/nx71u48201887310/fulltext.pdf 
+     * REF : http://www.springerlink.com/content/nx71u48201887310/fulltext.pdf 
      * @param shp
      * @param offset
      * @return 
