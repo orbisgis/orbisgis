@@ -379,7 +379,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
     @Override
     public Rectangle2D getBounds(DataSource sds, long fid,
             MapTransform mt) throws ParameterException, IOException {
-        Shape shp = null;
+        Shape shp;
 
         
         // If the shape doesn't depends on feature (i.e. not null), we used the cached one

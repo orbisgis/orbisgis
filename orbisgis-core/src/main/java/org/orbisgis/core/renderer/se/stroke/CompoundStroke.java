@@ -213,8 +213,8 @@ public final class CompoundStroke extends Stroke implements UomNode {
     public void draw(Graphics2D g2, DataSource sds, long fid, Shape shape,
             boolean selected, MapTransform mt, double off) throws ParameterException, IOException {
         double offset = off;
-        double initGap = 0.0;
-        double endGap = 0.0;
+        double initGap;
+        double endGap;
 
         List<Shape> shapes;
         // if not using offset rapport, compute perpendiculat offset first
@@ -248,7 +248,6 @@ public final class CompoundStroke extends Stroke implements UomNode {
                 if (postGap != null) {
                     endGap = Uom.toPixel(postGap.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
                     if (endGap > 0.0) {
-                        //System.out.println ("Remove Global PostGap");
                         double lineLength = ShapeHelper.getLineLength(shp);
                         shp = ShapeHelper.splitLine(shp, lineLength - endGap).get(0);
                     }
@@ -313,11 +312,9 @@ public final class CompoundStroke extends Stroke implements UomNode {
                 double patternLength = lineLength - remainingLength;
                 if (nbInfinite > 0) {
                     double infiniteLength = remainingLength / nbInfinite;
-                    //System.out.println(" Share remaining: " + infiniteLength);
                     for (i = 0; i < lengths.length; i++) {
                         if (Double.isInfinite(lengths[i])) {
                             lengths[i] = infiniteLength;
-                            //System.out.println ("Set infinite lenght to: " + infiniteLength);
                         }
                     }
                 } else { // fixed length pattern
@@ -339,7 +336,6 @@ public final class CompoundStroke extends Stroke implements UomNode {
                                 postGaps[i] *= f;
                             }
                         }
-                        patternLength *= f;
                     }
                 }
 
@@ -357,12 +353,9 @@ public final class CompoundStroke extends Stroke implements UomNode {
 
                     if (preGaps[i] != null && preGaps[i] > 0) {
                         List<Shape> splitLine = ShapeHelper.splitLine(scrap, preGaps[i]);
-                        //System.out.println("  preGap: " + preGaps[i]);
                         if (splitLine.size() > 1) {
                             scrap = splitLine.get(1);
                         } else {
-                            scrap = null;
-                            //System.out.println ("  -> End of line !");
                             break;
                         }
                     }
@@ -370,36 +363,21 @@ public final class CompoundStroke extends Stroke implements UomNode {
                     if (lengths[i] >= 0) {
                         // get two lines. first is the one we'll style with i'est element
                         List<Shape> splitLine = ShapeHelper.splitLine(scrap, lengths[i]);
-                        //System.out.println("Extract: " + lengths[i]);
-                        //System.out.println ("Split ? " + splitLine.size());
                         Shape seg = splitLine.remove(0);
-
-                        //System.out.println ("StrokeElement Seg: ");
-                        //ShapeHelper.printvertices(seg);
-
                         strokes[i].draw(g2, sds, fid, seg, selected, mt, offset);
 
                         if (splitLine.size() > 0) {
                             scrap = splitLine.remove(0);
                         } else {
-                            scrap = null;
-                            //System.out.println ("  -> End of line !");
                             break;
                         }
-
-                        //System.out.println ("StrokeElement SCRAP: ");
-                        //ShapeHelper.printvertices(scrap);
-
-                        //System.out.println("length: " + lengths[i]);
                     }
 
                     if (postGaps[i] != null && postGaps[i] > 0) {
                         List<Shape> splitLine = ShapeHelper.splitLine(scrap, postGaps[i]);
-                        //System.out.println("postGap: " + postGaps[i]);
                         if (splitLine.size() > 1) {
                             scrap = splitLine.get(1);
                         } else {
-                            scrap = null;
                             break;
                         }
                     }
@@ -530,7 +508,7 @@ public final class CompoundStroke extends Stroke implements UomNode {
         //List<StrokeAnnotationGraphicType> sAnnot = s.getStrokeAnnotationGraphic();
 
         for (CompoundStrokeElement elem : this.elements) {
-            sElem.add(elem.getJaxbType());
+            sElem.add(elem.getJAXBType());
         }
 
         //for (StrokeAnnotationGraphic sag : annotations) {

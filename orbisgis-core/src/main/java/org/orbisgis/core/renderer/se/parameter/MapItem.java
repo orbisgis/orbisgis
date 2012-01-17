@@ -105,8 +105,7 @@ public class MapItem<Type> implements Comparable {
     public int hashCode() {
         final int hasht = 5;
         final int hashm = 41;
-        int hash = hashm * hasht + (this.key != null ? this.key.hashCode() : 0);
-        return hash;
+        return hashm * hasht + (this.key != null ? this.key.hashCode() : 0);
     }
 
     @Override

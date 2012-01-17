@@ -79,8 +79,8 @@ public final class ExclusionRadius extends ExclusionZone {
         public JAXBElement<ExclusionRadiusType> getJAXBElement() {
                 ExclusionRadiusType r = new ExclusionRadiusType();
 
-                if (uom != null) {
-                        r.setUom(uom.toString());
+                if (getUom() != null) {
+                        r.setUom(getUom().toString());
                 }
                 if (radius != null) {
                         r.setRadius(radius.getJAXBParameterValueType());

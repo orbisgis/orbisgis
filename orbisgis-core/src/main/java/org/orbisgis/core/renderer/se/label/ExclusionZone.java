@@ -20,8 +20,8 @@ import org.orbisgis.core.renderer.se.common.Uom;
  * @author alexis, maxence
  */
 public abstract class ExclusionZone implements SymbolizerNode, UomNode {
-        protected SymbolizerNode parent;
-        protected Uom uom;
+        private SymbolizerNode parent;
+        private Uom uom;
 
         /**
          * Gets a JAXB representation of this {@code ExclusionZone}

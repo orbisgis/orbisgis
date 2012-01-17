@@ -248,27 +248,10 @@ public abstract class Renderer {
                 logger.println("Filtering done in " + (tV2 - tV1) + "[ms]");
 
                 // And now, features will be rendered
-                // How many object to process ?
-                long total = 0;
-
                 long sTimer = 0;
                 long sTimeFull = 0;
-
-
-                // Make sure TextSymbolizer are rendered on top
-                //symbs.addAll(overlays);
-
-
-
                 // Get a graphics for each symbolizer
                 initGraphics2D(symbs, g2, mt);
-
-                //for (Rule r : rList) {
-                ///  total += featureInExtent.length;
-                //}
-                //logger.println("TOTAL : " + total);
-
-
                 long rowCount = sds.getRowCount();
                 //Let's not come back to the beginning if we haven't found 
                 //a geometry that is contained in the area we want to draw...
@@ -278,9 +261,6 @@ public abstract class Renderer {
                     beginLayer(r.getName());
                     logger.println("Drawing rule " + r.getName());
                     pm.startTask("Drawing " + layer.getName() + " (Rule " + r.getName() + ")", 100);
-
-
-                    int fid = 0;
                     int fieldID = -1;
 
                     try {

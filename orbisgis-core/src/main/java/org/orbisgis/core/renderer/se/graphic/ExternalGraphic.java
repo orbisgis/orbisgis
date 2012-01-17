@@ -212,10 +212,6 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
     @Override
     public Rectangle2D getBounds(DataSource sds, long fid, MapTransform mt) throws ParameterException, IOException {
         Rectangle2D.Double bounds = source.updateCacheAndGetBounds(viewBox, sds, fid, mt, mimeType);
-
-        double px = bounds.getMinX();
-        double py = bounds.getMinY();
-
         double width = bounds.getWidth();
         double height = bounds.getHeight();
 
@@ -229,8 +225,8 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
             double r = halo.getHaloRadius(sds, fid, mt);
             width += 2 * r;
             height += 2 * r;
-            px -= r;
-            py -= r;
+            double px = bounds.getMinX()-r;
+            double py = bounds.getMinY()-r;
 
             bounds = new Rectangle2D.Double(px, py, width, height);
         }
@@ -253,10 +249,6 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
         Rectangle2D.Double bounds = source.updateCacheAndGetBounds(viewBox, sds, fid, mt, mimeType);
 
         AffineTransform at = new AffineTransform(fat);
-
-        double px = bounds.getMinX();
-        double py = bounds.getMinY();
-
         double width = bounds.getWidth();
         double height = bounds.getHeight();
 
@@ -266,14 +258,6 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
 
         // reserve the place for halo
         if (halo != null) {
-            /*double r = halo.getHaloRadius(sds, fid, mt);
-            width += 2 * r;
-            height += 2 * r;
-            px -= r;
-            py -= r;
-
-            bounds = new Rectangle2D.Double(px, py, width, height);*/
-
             // Draw it
             halo.draw(g2, sds, fid, selected, at.createTransformedShape(bounds), mt, selected);
         }

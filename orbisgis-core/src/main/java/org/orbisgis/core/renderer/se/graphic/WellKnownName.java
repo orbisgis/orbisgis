@@ -137,8 +137,7 @@ public enum WellKnownName implements MarkGraphicSource {
 
         switch (this.valueOf(this.name())) {
             case HALFCIRCLE:
-                Arc2D.Double arc = new Arc2D.Double(-x2, -y2, x, y, -90, -180, Arc2D.CHORD);
-                return arc;
+                return new Arc2D.Double(-x2, -y2, x, y, -90, -180, Arc2D.CHORD);
             case CIRCLE:
                 return new Arc2D.Double(-x2, -y2, x, y, 0, -360, Arc2D.CHORD);
             case TRIANGLE: {

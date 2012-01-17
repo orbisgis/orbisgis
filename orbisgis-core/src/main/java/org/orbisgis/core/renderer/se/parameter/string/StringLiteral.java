@@ -68,7 +68,7 @@ public class StringLiteral extends Literal implements StringParameter{
 
     @Override
     public boolean equals(Object o){
-            return (o != null && o instanceof StringLiteral) ? v.equals(o.toString()) : false;
+            return (o instanceof StringLiteral) ? v.equals(o.toString()) : false;
     }
 
         @Override

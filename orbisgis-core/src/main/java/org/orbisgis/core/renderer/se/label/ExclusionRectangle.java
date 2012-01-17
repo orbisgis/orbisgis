@@ -97,8 +97,8 @@ public final class ExclusionRectangle extends ExclusionZone {
     public JAXBElement<ExclusionRectangleType> getJAXBElement() {
         ExclusionRectangleType r = new ExclusionRectangleType();
 
-        if (uom != null) {
-            r.setUom(uom.toString());
+        if (getUom() != null) {
+            r.setUom(getUom().toString());
         }
 
         if (x != null) {

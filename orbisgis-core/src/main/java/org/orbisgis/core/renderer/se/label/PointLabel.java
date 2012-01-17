@@ -49,8 +49,8 @@ public final class PointLabel extends Label {
     public PointLabel() {
         super();
         rotation = new RealLiteral(0.0);
-        setvAlign(VerticalAlignment.TOP);
-        sethAlign(HorizontalAlignment.RIGHT);
+        setVerticalAlign(VerticalAlignment.TOP);
+        setHorizontalAlign(HorizontalAlignment.RIGHT);
     }
 
 
@@ -136,7 +136,7 @@ public final class PointLabel extends Label {
         double deltaX = 0;
         double deltaY = 0;
 
-        Rectangle2D bounds = this.label.getBounds(g2, sds, fid, mt);
+        Rectangle2D bounds = getLabel().getBounds(g2, sds, fid, mt);
         x = shp.getBounds2D().getCenterX() + bounds.getWidth() / 2;
         y = shp.getBounds2D().getCenterY() - bounds.getHeight() / 2;
 
@@ -157,7 +157,7 @@ public final class PointLabel extends Label {
 
         AffineTransform at = AffineTransform.getTranslateInstance(x + deltaX, y + deltaY);
 
-        label.draw(g2, sds, fid, selected, mt, at, perm);
+        getLabel().draw(g2, sds, fid, selected, mt, at, perm);
     }
 
 
@@ -193,8 +193,8 @@ public final class PointLabel extends Label {
     public HashSet<String> dependsOnFeature() {
 
         HashSet<String> result = new HashSet<String>();
-        if (label != null) {
-            result.addAll(label.dependsOnFeature());
+        if (getLabel() != null) {
+            result.addAll(getLabel().dependsOnFeature());
         }
         if (exclusionZone != null) {
             result.addAll(exclusionZone.dependsOnFeature());

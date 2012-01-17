@@ -156,10 +156,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
     public void addClass(RealLiteral threshold, ToType value) {
         thresholds.add(threshold);
         threshold.setContext(RealParameterContext.REAL_CONTEXT);
-        if (threshold instanceof RealLiteral) {
-            ((RealLiteral) threshold).register(this);
-        }
-
+        threshold.register(this);
         int tIndex = thresholds.indexOf(threshold);
         classValues.add(tIndex, value);
         this.method = CategorizeMethod.MANUAL;
@@ -230,11 +227,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
             RealParameter remove = thresholds.remove(i);
             thresholds.add(i, threshold);
             threshold.setContext(RealParameterContext.REAL_CONTEXT);
-
-            if (threshold instanceof RealLiteral) {
-                ((RealLiteral) threshold).register(this);
-            }
-
+            threshold.register(this);
             if (! remove.equals(threshold)) {
                 sortClasses();
             }

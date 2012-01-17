@@ -77,7 +77,7 @@ public abstract class CompoundStrokeElement implements SymbolizerNode {
          * Get the JAXB representation of this object.
          * @return 
          */
-	public abstract Object getJaxbType();
+	public abstract Object getJAXBType();
 
 	@Override
 	public Uom getUom() {

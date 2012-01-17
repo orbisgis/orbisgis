@@ -102,17 +102,17 @@ public class LegendUIPointLabelPanel extends LegendUIComponent implements Legend
         };
         rotation.init();
 
-        vAlign = new ComboBoxInput(Label.VerticalAlignment.getList(), label.getvAlign().ordinal()) {
+        vAlign = new ComboBoxInput(Label.VerticalAlignment.getList(), label.getVerticalAlign().ordinal()) {
             @Override
             protected void valueChanged(int i) {
-                label.setvAlign(Label.VerticalAlignment.values()[i]);
+                label.setVerticalAlign(Label.VerticalAlignment.values()[i]);
             }
         };
 
-        hAlign = new ComboBoxInput(Label.HorizontalAlignment.getList(), label.gethAlign().ordinal()) {
+        hAlign = new ComboBoxInput(Label.HorizontalAlignment.getList(), label.getHorizontalAlign().ordinal()) {
             @Override
             protected void valueChanged(int i) {
-                label.sethAlign(Label.HorizontalAlignment.values()[i]);
+                label.setHorizontalAlign(Label.HorizontalAlignment.values()[i]);
             }
         };
     }

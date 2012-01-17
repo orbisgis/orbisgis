@@ -81,13 +81,13 @@ public class AlternativeStrokeElements extends CompoundStrokeElement {
         }
 
         @Override
-        public Object getJaxbType() {
+        public Object getJAXBType() {
                 AlternativeStrokeElementsType aset = new AlternativeStrokeElementsType();
 
                 List<StrokeElementType> strokeElement = aset.getStrokeElement();
 
                 for (StrokeElement elem : this.elements) {
-                        strokeElement.add((StrokeElementType) elem.getJaxbType());
+                        strokeElement.add((StrokeElementType) elem.getJAXBType());
                 }
 
                 return aset;

@@ -393,8 +393,7 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
         Font font = getFont(sds, fid, mt);
         FontMetrics metrics = new FontMetrics(font) {
         };
-        Rectangle2D bounds = metrics.getStringBounds(text, null);
-        return bounds;
+        return metrics.getStringBounds(text, null);
     }
 
     /**

@@ -37,8 +37,8 @@ public class LineLabel extends Label {
          */
     public LineLabel() {
         super();
-        setvAlign(VerticalAlignment.MIDDLE);
-        sethAlign(HorizontalAlignment.CENTER);
+        setVerticalAlign(VerticalAlignment.MIDDLE);
+        setHorizontalAlign(HorizontalAlignment.CENTER);
     }
 
     /**
@@ -67,7 +67,7 @@ public class LineLabel extends Label {
             Shape shp, boolean selected, MapTransform mt, RenderContext perm)
             throws ParameterException, IOException {
 
-        Rectangle2D bounds = label.getBounds(g2, sds, fid, mt);
+        Rectangle2D bounds = getLabel().getBounds(g2, sds, fid, mt);
         double totalWidth = bounds.getWidth();
 
         // TODO, is shp a polygon ? Yes so create a line like:
@@ -99,8 +99,8 @@ public class LineLabel extends Label {
 
          */
 
-        VerticalAlignment vA = this.vAlign;
-        HorizontalAlignment hA = this.hAlign;
+        VerticalAlignment vA = getVerticalAlign();
+        HorizontalAlignment hA = getHorizontalAlign();
 
         if (vA == null) {
             vA = VerticalAlignment.TOP;
@@ -168,14 +168,14 @@ public class LineLabel extends Label {
         double currentPos = startAt;
         double glyphWidth;
 
-        String text = label.getText().getValue(sds, fid);
+        String text = getLabel().getText().getValue(sds, fid);
         String[] glyphs = text.split("");
 
         ArrayList<Shape> outlines = new ArrayList<Shape>();
 
         for (String glyph : glyphs) {
             if (glyph != null && !glyph.isEmpty()) {
-                Rectangle2D gBounds = label.getBounds(g2, glyph, sds, fid, mt);
+                Rectangle2D gBounds = getLabel().getBounds(g2, glyph, sds, fid, mt);
 
                 glyphWidth = gBounds.getWidth()*way;
 
@@ -189,7 +189,7 @@ public class LineLabel extends Label {
                 at.concatenate(AffineTransform.getRotateInstance(theta));
 
                 currentPos += glyphWidth;
-                outlines.add(label.getOutline(g2, glyph, sds, fid, selected, mt, at, perm));
+                outlines.add(getLabel().getOutline(g2, glyph, sds, fid, selected, mt, at, perm));
 
                 //g2.drawRenderedImage(ri , at);
             } else {
@@ -197,7 +197,7 @@ public class LineLabel extends Label {
                 //currentPos += emWidth*way;
             }
         }
-        label.drawOutlines(g2, outlines, sds, fid, selected, mt);
+        getLabel().drawOutlines(g2, outlines, sds, fid, selected, mt);
     }
 
     @Override
@@ -219,8 +219,8 @@ public class LineLabel extends Label {
 
     @Override
     public HashSet<String> dependsOnFeature() {
-        if (label != null) {
-            return label.dependsOnFeature();
+        if (getLabel() != null) {
+            return getLabel().dependsOnFeature();
         }
         return new HashSet<String>();
     }

@@ -179,8 +179,9 @@ public final class LineIterator extends AbstractLiteIterator {
 	 */
 	public void init(LineString ls, AffineTransform at, boolean generalize,
 			float maxDistance) {
-		if (at == null)
-			at = new AffineTransform();
+		if (at == null) {
+                    at = new AffineTransform();
+                }
 		_init(ls, at, generalize, maxDistance);
 
 		xScale = (float) Math.sqrt((at.getScaleX() * at.getScaleX())
@@ -310,6 +311,7 @@ public final class LineIterator extends AbstractLiteIterator {
 	 * @see #WIND_EVEN_ODD
 	 * @see #WIND_NON_ZERO
 	 */
+        @Override
 	public int getWindingRule() {
 		return WIND_NON_ZERO;
 	}
@@ -320,7 +322,8 @@ public final class LineIterator extends AbstractLiteIterator {
 	 * @return <code>true</code> if all the segments have been read;
 	 *         <code>false</code> otherwise.
 	 */
-	public boolean isDone() {
+        @Override
+    	public boolean isDone() {
 		return done;
 	}
 
@@ -329,6 +332,7 @@ public final class LineIterator extends AbstractLiteIterator {
 	 * primary direction of traversal as long as there are more points in that
 	 * direction.
 	 */
+        @Override
 	public void next() {
 		if (currentCoord == (coordinateCount - 1)) {
 			done = true;
@@ -369,6 +373,7 @@ public final class LineIterator extends AbstractLiteIterator {
 	/**
 	 * @see java.awt.geom.PathIterator#currentSegment(double[])
 	 */
+        @Override
 	public int currentSegment(double[] coords) {
 		if (currentCoord == 0) {
 			coords[0] = (double) coordinates.getX(0);

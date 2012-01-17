@@ -198,7 +198,7 @@ public final class StrokeElement extends CompoundStrokeElement implements Stroke
         }
 
         @Override
-        public Object getJaxbType() {
+        public Object getJAXBType() {
                 StrokeElementType set = new StrokeElementType();
 
                 if (this.getLength() != null) {

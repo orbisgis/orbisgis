@@ -119,10 +119,12 @@ public class DefaultMapContext implements MapContext {
 		return root;
 	}
 
+        @Override
 	public long getIdTime() {
 		return idTime;
 	}
 
+        @Override
 	public Envelope getBoundingBox() {
 		if (boundingBox != null) {
 			return boundingBox;
@@ -198,8 +200,7 @@ public class DefaultMapContext implements MapContext {
 		this.selectionInducedRefresh = selectionInducedRefresh;
 	}
 
-	private final class OpenerListener extends LayerListenerAdapter implements
-			LayerListener {
+	private final class OpenerListener extends LayerListenerAdapter {
 
 		@Override
 		public void layerAdded(LayerCollectionEvent e) {
@@ -211,23 +212,19 @@ public class DefaultMapContext implements MapContext {
 						// checking & possibly setting SRID
 						// checkSRID(layer);
 					} catch (LayerException ex) {
-						Services
-								.getErrorManager()
-								.error(
-										I18N
-												.getString("orbisgis.org.orbisgis.defaultMapContext.cannotOpenLayer") + layer.getName() //$NON-NLS-1$
-												+ I18N
-														.getString("orbisgis.org.orbisgis.defaultMapContext.layerRemovedFromView"), //$NON-NLS-1$
-										ex);
+						Services.getErrorManager().error(
+							I18N.getString("orbisgis.org.orbisgis.defaultMapContext.cannotOpenLayer")
+                                                        + layer.getName() //$NON-NLS-1$
+							+ I18N.getString("orbisgis.org.orbisgis.defaultMapContext.layerRemovedFromView"), 
+                                                        //$NON-NLS-1$
+							ex);
 						try {
 							layer.getParent().remove(layer);
 						} catch (LayerException e1) {
-							Services
-									.getErrorManager()
-									.error(
-											I18N
-													.getString("orbisgis.org.orbisgis.defaultMapContext.cannotRemoveLayer") + layer.getName(), //$NON-NLS-1$
-											ex);
+							Services.getErrorManager()
+								.error(I18N.getString("orbisgis.org.orbisgis.defaultMapContext.cannotRemoveLayer")
+                                                                + layer.getName(), //$NON-NLS-1$
+								ex);
 						}
 					}
 				}
@@ -412,15 +409,15 @@ public class DefaultMapContext implements MapContext {
 			xmlMapContext.setIdTime(tempIdTime);
 
 			// get BoundinBox from ,persistence file
-			BoundingBox boundingBox = new BoundingBox();
+			BoundingBox bB = new BoundingBox();
 			if (getBoundingBox() != null) {
 				GeometryFactory geomF = new GeometryFactory();
 				Geometry geom = geomF.toGeometry(getBoundingBox());
-				boundingBox.setName(geom.toText());
+				bB.setName(geom.toText());
 			} else {
-				boundingBox.setName(""); //$NON-NLS-1$
+				bB.setName(""); //$NON-NLS-1$
 			}
-			xmlMapContext.setBoundingBox(boundingBox);
+			xmlMapContext.setBoundingBox(bB);
 
 			for (ILayer selected : selectedLayers) {
 				SelectedLayer sl = new SelectedLayer();
@@ -607,7 +604,6 @@ public class DefaultMapContext implements MapContext {
 					public void action(ILayer layer) {
 						if (selectedLayer.getName().equals(layer.getName())) {
 							selected.add(layer);
-							return;
 						}
 					}
 				});
@@ -650,6 +646,7 @@ public class DefaultMapContext implements MapContext {
 			resourceNames.add(e.getName());
 		}
 
+                @Override
 		public void action(ILayer layer) {
 			String layerName = layer.getName();
 			if (resourceNames.contains(layerName)) {
@@ -681,9 +678,10 @@ public class DefaultMapContext implements MapContext {
 		 * crs) { this.crs = crs; }
 		 */
 
+        @Override
 	public void checkSelectionRefresh(final int[] selectedRows,
 			final int[] oldSelectedRows, final DataSource dataSource) {
-		Envelope env = new Envelope();
+		Envelope env;
 		env = getBoundingBox();
 		boolean mustUpdate = false;
 		try {

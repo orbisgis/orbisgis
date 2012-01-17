@@ -120,8 +120,9 @@ public class LiteShape implements Shape, Cloneable {
 	 *
 	 */
 	public LiteShape(Geometry geom, AffineTransform at, boolean generalize) {
-		if (geom != null)
+		if (geom != null){
 			this.geometry = getGeometryFactory().createGeometry(geom);
+                }
 		this.affineTransform = at;
 		this.generalize = false;
 		if (at == null) {
@@ -183,6 +184,7 @@ public class LiteShape implements Shape, Cloneable {
 	 *
 	 * @see #contains(double, double, double, double)
 	 */
+        @Override
 	public boolean contains(Rectangle2D r) {
 		Geometry rect = rectangleToGeometry(r);
 
@@ -200,6 +202,7 @@ public class LiteShape implements Shape, Cloneable {
 	 *         inside the boundary of the <code>Shape</code>;
 	 *         <code>false</code> otherwise.
 	 */
+        @Override
 	public boolean contains(Point2D p) {
 		Coordinate coord = new Coordinate(p.getX(), p.getY());
 		Geometry point = geometry.getFactory().createPoint(coord);
@@ -219,6 +222,7 @@ public class LiteShape implements Shape, Cloneable {
 	 * @return <code>true</code> if the specified coordinates are inside the
 	 *         <code>Shape</code> boundary; <code>false</code> otherwise.
 	 */
+        @Override
 	public boolean contains(double x, double y) {
 		Coordinate coord = new Coordinate(x, y);
 		Geometry point = geometry.getFactory().createPoint(coord);
@@ -268,6 +272,7 @@ public class LiteShape implements Shape, Cloneable {
 	 * @see java.awt.geom.Area
 	 * @see #intersects
 	 */
+        @Override
 	public boolean contains(double x, double y, double w, double h) {
 		Geometry rect = createRectangle(x, y, w, h);
 
@@ -291,6 +296,7 @@ public class LiteShape implements Shape, Cloneable {
 	 *
 	 * @see #getBounds2D
 	 */
+        @Override
 	public Rectangle getBounds() {
 		Coordinate[] coords = geometry.getEnvelope().getCoordinates();
 
@@ -359,6 +365,7 @@ public class LiteShape implements Shape, Cloneable {
 	 *
 	 * @see #getBounds
 	 */
+        @Override
 	public Rectangle2D getBounds2D() {
 		Envelope env = geometry.getEnvelopeInternal();
 		return new Rectangle2D.Double(env.getMinX(), env.getMinY(), env
@@ -400,10 +407,11 @@ public class LiteShape implements Shape, Cloneable {
 	 * @return a new <code>PathIterator</code> object, which independently
 	 *         traverses the geometry of the <code>Shape</code>.
 	 */
+        @Override
 	public PathIterator getPathIterator(AffineTransform at) {
 		AbstractLiteIterator pi = null;
 
-		AffineTransform combined = null;
+		AffineTransform combined;
 
 		if (affineTransform == null) {
 			combined = at;
@@ -434,12 +442,14 @@ public class LiteShape implements Shape, Cloneable {
 			// generalize,
 			// (float) maxDistance);
 			// else
-			if (combined == affineTransform)
-				lineIterator.init((LineString) geometry, combined, generalize,
-						(float) maxDistance, xScale, yScale);
-			else
-				lineIterator.init((LineString) geometry, combined, generalize,
-						(float) maxDistance);
+			if (combined == affineTransform) {
+                                lineIterator.init((LineString) geometry, combined, generalize,
+                                                (float) maxDistance, xScale, yScale);
+                        }
+			else {
+                                lineIterator.init((LineString) geometry, combined, generalize,
+                                                (float) maxDistance);
+                        }
 			pi = lineIterator;
 		} else if (this.geometry instanceof GeometryCollection) {
 			collIterator.init((GeometryCollection) geometry, combined,
@@ -507,6 +517,7 @@ public class LiteShape implements Shape, Cloneable {
 	 * @return a new <code>PathIterator</code> that independently traverses
 	 *         the <code>Shape</code> geometry.
 	 */
+        @Override
 	public PathIterator getPathIterator(AffineTransform at, double flatness) {
 		return getPathIterator(at);
 	}
@@ -537,6 +548,7 @@ public class LiteShape implements Shape, Cloneable {
 	 *
 	 * @see #intersects(double, double, double, double)
 	 */
+        @Override
 	public boolean intersects(Rectangle2D r) {
 		Geometry rect = rectangleToGeometry(r);
 
@@ -582,6 +594,7 @@ public class LiteShape implements Shape, Cloneable {
 	 *
 	 * @see java.awt.geom.Area
 	 */
+        @Override
 	public boolean intersects(double x, double y, double w, double h) {
 		Geometry rect = createRectangle(x, y, w, h);
 

@@ -81,9 +81,9 @@ import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
  */
 public final class PenStroke extends Stroke implements FillNode, UomNode {
 
-    private static double DEFAULT_WIDTH_PX = 1.0;
-    private static LineCap DEFAULT_CAP = LineCap.BUTT;
-    private static LineJoin DEFAULT_JOIN = LineJoin.ROUND;
+    private static final double DEFAULT_WIDTH_PX = 1.0;
+    private static final LineCap DEFAULT_CAP = LineCap.BUTT;
+    private static final LineJoin DEFAULT_JOIN = LineJoin.ROUND;
     private Fill fill;
     //private RealParameter opacity;
     private RealParameter width;

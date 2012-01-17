@@ -33,9 +33,9 @@ public abstract class Label implements SymbolizerNode, UomNode {
 
     private SymbolizerNode parent;
     private Uom uom;
-    protected StyledText label;
-    protected HorizontalAlignment hAlign;
-    protected VerticalAlignment vAlign;
+    private StyledText label;
+    private HorizontalAlignment hAlign;
+    private VerticalAlignment vAlign;
     
     /**
      * Possible values for the HorizontalAlignment of a Label. It can be left, centered or right aligned.
@@ -251,7 +251,7 @@ public abstract class Label implements SymbolizerNode, UomNode {
      * @return 
      * The current <code>HorizontalAlignment</code>
      */
-    public HorizontalAlignment gethAlign() {
+    public HorizontalAlignment getHorizontalAlign() {
         return hAlign;
     }
 
@@ -259,7 +259,7 @@ public abstract class Label implements SymbolizerNode, UomNode {
      * Set the current <code>HorizontalAlignment</code>
      * @param hAlign 
      */
-    public void sethAlign(HorizontalAlignment hAlign) {
+    public void setHorizontalAlign(HorizontalAlignment hAlign) {
         if (hAlign != null) {
             this.hAlign = hAlign;
         }
@@ -270,7 +270,7 @@ public abstract class Label implements SymbolizerNode, UomNode {
      * @return 
      * The current <code>VerticalAlignment</code>
      */
-    public VerticalAlignment getvAlign() {
+    public VerticalAlignment getVerticalAlign() {
         return vAlign;
     }
 
@@ -278,7 +278,7 @@ public abstract class Label implements SymbolizerNode, UomNode {
      * Set the current <code>VerticalAlignment</code>
      * @param vAlign 
      */
-    public void setvAlign(VerticalAlignment vAlign) {
+    public void setVerticalAlign(VerticalAlignment vAlign) {
         if (vAlign != null) {
             this.vAlign = vAlign;
         }

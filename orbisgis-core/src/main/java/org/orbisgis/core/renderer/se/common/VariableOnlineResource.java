@@ -297,19 +297,19 @@ public class VariableOnlineResource implements ExternalGraphicSource, MarkGraphi
         double height = rawImage.getHeight();
 
         if (effectiveHeight != null && effectiveWidth != null) {
-            double ratio_x = effectiveWidth / width;
-            double ratio_y = effectiveHeight / height;
+            double ratioX = effectiveWidth / width;
+            double ratioY = effectiveHeight / height;
 
             RenderedOp img;
 
-            if (ratio_x > 1.0 || ratio_y > 1.0) {
+            if (ratioX > 1.0 || ratioY > 1.0) {
                 img = JAI.create("scale", rawImage,
-                                 (float) ratio_x, (float) ratio_y,
+                                 (float) ratioX, (float) ratioY,
                                  0.0f, 0.0f,
                                  InterpolationBicubic2.getInstance(InterpolationBicubic2.INTERP_BICUBIC_2),
                                  mt.getRenderingHints());
             } else {
-                img = JAI.create("SubsampleAverage", rawImage, ratio_x, ratio_y, mt.getRenderingHints());
+                img = JAI.create("SubsampleAverage", rawImage, ratioX, ratioY, mt.getRenderingHints());
             }
             fat.concatenate(AffineTransform.getTranslateInstance(-img.getWidth() / 2.0, -img.getHeight() / 2.0));
             g2.drawRenderedImage(img, fat);
@@ -422,18 +422,18 @@ public class VariableOnlineResource implements ExternalGraphicSource, MarkGraphi
                 double heightDst = dim.getY();
 
                 if (widthDst > 0 && heightDst > 0) {
-                    double ratio_x = widthDst / width;
-                    double ratio_y = heightDst / height;
+                    double ratioX = widthDst / width;
+                    double ratioY = heightDst / height;
 
-                    if (ratio_x > 1.0 || ratio_y > 1.0) {
+                    if (ratioX > 1.0 || ratioY > 1.0) {
                         return JAI.create("scale", rawImage,
-                                          (float) ratio_x, (float) ratio_y,
+                                          (float) ratioX, (float) ratioY,
                                           0.0f, 0.0f,
                                           InterpolationBicubic2.getInstance(InterpolationBicubic2.INTERP_BICUBIC_2),
                                           mt.getRenderingHints());
                     } else {
                         //return JAI.create("SubsampleAverage", pb, mt.getRenderingHints());
-                        return JAI.create("SubsampleAverage", img, ratio_x, ratio_y, mt.getRenderingHints());
+                        return JAI.create("SubsampleAverage", img, ratioX, ratioY, mt.getRenderingHints());
                     }
                 } else {
                     return img;
@@ -459,7 +459,7 @@ public class VariableOnlineResource implements ExternalGraphicSource, MarkGraphi
 
 
     public Font getFont(DataSource sds, Long fid) {
-        InputStream iStream = null;
+        InputStream iStream;
         try {
             URL u = new URL(this.url.getValue(sds, fid));
             iStream = u.openStream();
@@ -467,7 +467,6 @@ public class VariableOnlineResource implements ExternalGraphicSource, MarkGraphi
         } catch (FontFormatException ex) {
         } catch (ParameterException ex) {
         } catch (IOException ex) {
-        } finally {
         }
         return null;
     }
