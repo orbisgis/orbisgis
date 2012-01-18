@@ -70,15 +70,18 @@ public abstract class LegendUIPropertyNamePanel extends LegendUIComponent
 	private ComboBoxInput fieldList;
 	private ValueReference p;
 
-	public LegendUIPropertyNamePanel(String name, LegendUIController controller, LegendUIComponent parent, ValueReference p, boolean isNullable) {
+	public LegendUIPropertyNamePanel(String name, LegendUIController controller, LegendUIComponent parent, ValueReference val, boolean isNullable) {
 		super(name, controller, parent, 0, isNullable);
-		this.p = p;
+                if(val == null){
+                        throw new IllegalArgumentException("This ValueReference should not be null !");
+                }
+                this.p = val;
+
 
 		Metadata meta;
 		int mask = 0;
 
 		ArrayList<String> possibilities = new ArrayList<String>();
-		possibilities.add("Select...");
 		DataSource ds = controller.getEditedFeatureTypeStyle().getLayer().getDataSource();
 
 		int current = 0;
@@ -99,13 +102,13 @@ public abstract class LegendUIPropertyNamePanel extends LegendUIComponent
 				mask = Type.STRING;
 			}
 
-			System.out.println("Mask: " + mask + "(" + p.getClass() + ")");
-
 			for (int i = 0; i < meta.getFieldCount(); i++) {
 				if ((meta.getFieldType(i).getTypeCode() & mask) > 0) {
 					possibilities.add(meta.getFieldName(i));
-					if (p.getColumnName() != null && p.getColumnName().
-							equalsIgnoreCase(meta.getFieldName(i))) {
+                                        if(p.getColumnName().equals("")){
+                                                p.setColumnName(meta.getFieldName(i));
+                                        }
+					if (p.getColumnName().equalsIgnoreCase(meta.getFieldName(i))) {
 						current = possibilities.size() - 1;
 					}
 				}
