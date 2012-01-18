@@ -126,6 +126,11 @@ public final class ShapeHelper {
         return getAreaPerimeterLength(line);
     }
 
+    /**
+     * Uses the current logger to print the coordinate of each vertex of the 
+     * given {@code Shape}.
+     * @param shp 
+     */
     public static void printvertices(Shape shp) {
         PathIterator it = shp.getPathIterator(null, FLATNESS);
 
@@ -557,11 +562,7 @@ public final class ShapeHelper {
 
         @Override
         public String toString() {
-            //if (quadX1 != null) {
-            //    return "" + x + ";" + y + "   " + quadX1 + ";" + quadY2 + "  " + quadX2 + ";" + quadY2 + "   " + quadX3 + ";" + quadY3;
-            //} else {
             return "" + x + ";" + y;
-            //}
         }
     }
 
@@ -1055,25 +1056,6 @@ public final class ShapeHelper {
                 for (Integer j : bufferLinkList) {
                     rawLink.add(vertexes.get(j));
                 }
-                /*} else if (in_dir == 1) {
-                Vertex v1 = vertexes.get(offsetLinkList.get(backward));
-                Vertex v2 = vertexes.get(bn);
-                Vertex v3 = vertexes.get(offsetLinkList.get(forward));
-                Vertex v4 = vertexes.get(fn);
-                
-                Point2D.Double inter = getLineIntersection(v1.x, v1.y, v2.x, v2.y, v3.x, v3.y, v4.x, v4.y);
-                
-                if (inter != null) {
-                Vertex nv = new Vertex(inter.x, inter.y);
-                rawLink.add(nv);
-                if (_DEBUG_) {
-                System.out.println("Add " + nv);
-                }
-                } else {
-                if (_DEBUG_) {
-                System.out.println("Skip");
-                }
-                }*/
             } else if (inDir >= 1) {
                 Vertex v1 = vertexes.get(offsetLinkList.get(backward));
                 Vertex v2 = vertexes.get(bn);
