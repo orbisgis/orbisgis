@@ -77,7 +77,7 @@ public class StringAttribute extends ValueReference implements StringParameter{
      * all the needed informations.
      * @param fieldName 
      */
-    public StringAttribute(JAXBElement<ValueReferenceType> expr) throws InvalidStyle {
+    public StringAttribute(JAXBElement<String> expr) throws InvalidStyle {
         super(expr);
     }
 

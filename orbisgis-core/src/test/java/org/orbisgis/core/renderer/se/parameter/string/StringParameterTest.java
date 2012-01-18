@@ -16,6 +16,7 @@ import java.util.Locale;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBContext;
+import net.opengis.fes._2.ValueReferenceType;
 import org.orbisgis.core.AbstractTest;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -207,6 +208,14 @@ public class StringParameterTest extends AbstractTest {
                 sp = ptg.getPointLabel().getLabel().getText();
                 conc = (StringConcatenate) sp;
                 assertTrue(conc.size()==4);
+        }
+        
+        @Test
+        public void testBasicJAXBSerialization() throws Exception {
+                StringAttribute sa = new StringAttribute("bonjour");
+                JAXBElement<?> je = sa.getJAXBExpressionType();
+                sa = new StringAttribute((JAXBElement<String>) je);
+                assertTrue(sa.getColumnName().equals("bonjour"));
         }
         
 }

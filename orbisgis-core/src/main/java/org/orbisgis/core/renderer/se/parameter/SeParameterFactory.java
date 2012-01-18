@@ -152,8 +152,8 @@ public final class SeParameterFactory {
 
         if (expr.getDeclaredType() == net.opengis.fes._2.FunctionType.class) {
             // TODO ??
-        } else if (expr.getDeclaredType() == ValueReferenceType.class) {
-            return new ColorAttribute((JAXBElement<ValueReferenceType>) expr);
+        } else if (expr.getDeclaredType() == String.class) {
+            return new ColorAttribute((JAXBElement<String>) expr);
 
         } else if (expr.getDeclaredType() == LiteralType.class) {
             return new ColorLiteral((JAXBElement<LiteralType>) expr);
@@ -217,8 +217,8 @@ public final class SeParameterFactory {
 
         if (expr.getDeclaredType() == FormatNumberType.class) {
             return new Number2String((JAXBElement<FormatNumberType>) expr);
-        } else if (expr.getDeclaredType() == ValueReferenceType.class) {
-            return new StringAttribute((JAXBElement<ValueReferenceType>) expr);
+        } else if (expr.getDeclaredType() == String.class) {
+            return new StringAttribute((JAXBElement<String>) expr);
 
         } else if (expr.getDeclaredType() == LiteralType.class) {
             return new StringLiteral((JAXBElement<LiteralType>) expr);

@@ -60,7 +60,7 @@ public abstract class ValueReference implements SeParameter {
          * @param expr
          * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
          */
-	public ValueReference(JAXBElement<ValueReferenceType> expr) throws InvalidStyle {
+	public ValueReference(JAXBElement<String> expr) throws InvalidStyle {
 		this(expr.getValue());
 	}
 
