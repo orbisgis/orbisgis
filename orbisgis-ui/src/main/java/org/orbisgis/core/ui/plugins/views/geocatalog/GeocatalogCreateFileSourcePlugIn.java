@@ -49,12 +49,7 @@ import org.gdms.driver.Driver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.driverManager.DriverManager;
-import org.gdms.source.AndDriverFilter;
-import org.gdms.source.FileDriverFilter;
-import org.gdms.source.NotDriverFilter;
-import org.gdms.source.RasterDriverFilter;
 import org.gdms.source.SourceManager;
-import org.gdms.source.WritableDriverFilter;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.sif.SaveFilePanel;
@@ -108,9 +103,9 @@ public class GeocatalogCreateFileSourcePlugIn extends AbstractPlugIn {
         DataManager dm = (DataManager) Services.getService(DataManager.class);
         DriverManager driverManager = sourceManager.getDriverManager();
 
-        Driver[] filtered = driverManager.getDrivers(new AndDriverFilter(
-                new FileDriverFilter(), new NotDriverFilter(
-                new RasterDriverFilter()), new WritableDriverFilter()));
+        Driver[] filtered = driverManager.getDrivers(
+                                new GeocatalogCreateFileFilter()
+                        );
 
         createSource(dm, driverManager, filtered);
     }

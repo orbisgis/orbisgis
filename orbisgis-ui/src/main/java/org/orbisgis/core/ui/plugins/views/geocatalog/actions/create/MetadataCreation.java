@@ -61,159 +61,164 @@ import org.orbisgis.core.ui.components.listManager.ListManagerListener;
 
 public class MetadataCreation extends AbstractUIPanel implements UIPanel {
 
-	private JPanel panel;
-	private ListManager listManager;
-	private FieldModel fieldModel;
-	private Driver driver;
+    private JPanel panel;
+    private ListManager listManager;
+    private FieldModel fieldModel;
+    private Driver driver;
 
-	public MetadataCreation(final Driver driver) {
-		this.driver = driver;
-		panel = new JPanel();
-		panel.setLayout(new BorderLayout());
-		fieldModel = new FieldModel();
-		listManager = new ListManager(new ListManagerListener() {
+    public MetadataCreation(final Driver driver) {
+        this.driver = driver;
+        panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        fieldModel = new FieldModel();
+        listManager = new ListManager(new ListManagerListener() {
 
-			public void removeElement(int selectedRow) {
-				fieldModel.removeElement(selectedRow);
-			}
+            @Override
+            public void removeElement(int selectedRow) {
+                fieldModel.removeElement(selectedRow);
+            }
 
-			public void modifyElement(int selectedRow) {
-				FieldEditor te = new FieldEditor(fieldModel
-						.getName(selectedRow), fieldModel.getType(selectedRow),
-						driver.getTypesDefinitions());
-				if (UIFactory.showDialog(te)) {
-					String fieldName = te.getFieldName();
-					Type type = te.getType();
-					fieldModel.modify(selectedRow, fieldName, type);
-				}
-			}
+            @Override
+            public void modifyElement(int selectedRow) {
+                FieldEditor te = new FieldEditor(fieldModel.getName(selectedRow), fieldModel.getType(selectedRow),
+                        driver.getTypesDefinitions());
+                if (UIFactory.showDialog(te)) {
+                    String fieldName = te.getFieldName();
+                    Type type = te.getType();
+                    fieldModel.modify(selectedRow, fieldName, type);
+                }
+            }
 
-			public void addNewElement() {
-				FieldEditor te = new FieldEditor(driver.getTypesDefinitions());
-				if (UIFactory.showDialog(te)) {
-					String fieldName = te.getFieldName();
-					Type type = te.getType();
-					fieldModel.add(fieldName, type);
-				}
-			}
+            @Override
+            public void addNewElement() {
+                FieldEditor te = new FieldEditor(driver.getTypesDefinitions());
+                if (UIFactory.showDialog(te)) {
+                    String fieldName = te.getFieldName();
+                    Type type = te.getType();
+                    fieldModel.add(fieldName, type);
+                }
+            }
+        }, fieldModel);
 
-		}, fieldModel);
+        panel.add(listManager, BorderLayout.CENTER);
+    }
 
-		panel.add(listManager, BorderLayout.CENTER);
-	}
+    @Override
+    public Component getComponent() {
+        return panel;
+    }
 
-	public Component getComponent() {
-		return panel;
-	}
+    @Override
+    public String getTitle() {
+        return "Configure fields";
+    }
 
-	public String getTitle() {
-		return "Configure fields";
-	}
+    @Override
+    public String validateInput() {
+        if (fieldModel.getRowCount() == 0) {
+            return "At least one field have to be created";
+        }
 
-	public String validateInput() {
-		if (fieldModel.getRowCount() == 0) {
-			return "At least one field have to be created";
-		}
+        try {
+            String driverValidation = driver.validateMetadata(getMetadata());
+            if (driverValidation != null) {
+                return driverValidation;
+            }
+        } catch (DriverException e) {
+            return e.getMessage();
+        }
 
-		try {
-			String driverValidation = driver.validateMetadata(getMetadata());
-			if (driverValidation != null) {
-				return driverValidation;
-			}
-		} catch (DriverException e) {
-			return e.getMessage();
-		}
+        HashSet<String> names = new HashSet<String>();
+        for (int i = 0; i < fieldModel.names.size(); i++) {
+            String name = fieldModel.getName(i);
+            if (names.contains(name)) {
+                return "Cannot have duplicated field names";
+            } else {
+                names.add(name);
+            }
+        }
+        return null;
+    }
 
-		HashSet<String> names = new HashSet<String>();
-		for (int i = 0; i < fieldModel.names.size(); i++) {
-			String name = fieldModel.getName(i);
-			if (names.contains(name)) {
-				return "Cannot have duplicated field names";
-			} else {
-				names.add(name);
-			}
-		}
-		return null;
-	}
+    public Metadata getMetadata() {
+        return fieldModel.getMetadata();
+    }
 
-	public Metadata getMetadata() {
-		return fieldModel.getMetadata();
-	}
+    private class FieldModel extends AbstractTableModel implements TableModel {
 
-	private class FieldModel extends AbstractTableModel implements TableModel {
+        private ArrayList<String> names = new ArrayList<String>();
+        private ArrayList<Type> types = new ArrayList<Type>();
 
-		private ArrayList<String> names = new ArrayList<String>();
-		private ArrayList<Type> types = new ArrayList<Type>();
+        @Override
+        public int getColumnCount() {
+            return 2;
+        }
 
-		public int getColumnCount() {
-			return 2;
-		}
+        public Metadata getMetadata() {
+            DefaultMetadata metadata = new DefaultMetadata();
+            for (int i = 0; i < names.size(); i++) {
+                try {
+                    metadata.addField(names.get(i), types.get(i));
+                } catch (DriverException e) {
+                    Services.getService(ErrorManager.class).error(
+                            "The field already exits. ", e);
+                }
+            }
 
-		public Metadata getMetadata() {
-			DefaultMetadata metadata = new DefaultMetadata();
-			for (int i = 0; i < names.size(); i++) {
-				try {
-					metadata.addField(names.get(i), types.get(i));
-				} catch (DriverException e) {
-					Services.getService(ErrorManager.class).error(
-							"The field already exits. ", e);
-				}
-			}
+            return metadata;
+        }
 
-			return metadata;
-		}
+        public void add(String fieldName, Type type) {
+            names.add(fieldName);
+            types.add(type);
 
-		public void add(String fieldName, Type type) {
-			names.add(fieldName);
-			types.add(type);
+            fireTableRowsInserted(names.size() - 1, names.size() - 1);
+        }
 
-			fireTableRowsInserted(names.size() - 1, names.size() - 1);
-		}
+        public void modify(int selectedRow, String fieldName, Type type) {
+            names.set(selectedRow, fieldName);
+            types.set(selectedRow, type);
 
-		public void modify(int selectedRow, String fieldName, Type type) {
-			names.set(selectedRow, fieldName);
-			types.set(selectedRow, type);
+            fireTableRowsUpdated(selectedRow, selectedRow);
+        }
 
-			fireTableRowsUpdated(selectedRow, selectedRow);
-		}
+        public Type getType(int selectedRow) {
+            return types.get(selectedRow);
+        }
 
-		public Type getType(int selectedRow) {
-			return types.get(selectedRow);
-		}
+        public String getName(int selectedRow) {
+            return names.get(selectedRow);
+        }
 
-		public String getName(int selectedRow) {
-			return names.get(selectedRow);
-		}
+        public void removeElement(int selectedRow) {
+            names.remove(selectedRow);
+            types.remove(selectedRow);
 
-		public void removeElement(int selectedRow) {
-			names.remove(selectedRow);
-			types.remove(selectedRow);
+            fireTableRowsDeleted(selectedRow, selectedRow);
+        }
 
-			fireTableRowsDeleted(selectedRow, selectedRow);
-		}
+        @Override
+        public int getRowCount() {
+            return names.size();
+        }
 
-		public int getRowCount() {
-			return names.size();
-		}
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            if (columnIndex == 0) {
+                return names.get(rowIndex);
+            } else {
+                int typeCode = types.get(rowIndex).getTypeCode();
+                return TypeFactory.getTypeName(typeCode);
+            }
+        }
 
-		public Object getValueAt(int rowIndex, int columnIndex) {
-			if (columnIndex == 0) {
-				return names.get(rowIndex);
-			} else {
-				int typeCode = types.get(rowIndex).getTypeCode();
-				return TypeFactory.getTypeName(typeCode);
-			}
-		}
-
-		@Override
-		public String getColumnName(int column) {
-			if (column == 0) {
-				return "Name";
-			} else {
-				return "Type";
-			}
-		}
-
-	}
-
+        @Override
+        public String getColumnName(int column) {
+            if (column == 0) {
+                return "Name";
+            } else {
+                return "Type";
+            }
+        }
+    }
 }
