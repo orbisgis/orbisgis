@@ -123,6 +123,7 @@ public class ExecuteScriptProcess implements BackgroundJob {
                                                                 break;
                                                         }
                                                 } else {
+                                                        try {
                                                         OutputManager om = Services.getService(OutputManager.class);
 
                                                         ds.open();
@@ -151,9 +152,16 @@ public class ExecuteScriptProcess implements BackgroundJob {
 
 
                                                         om.println(aux.toString());
+                                                        } finally {
+                                                                st.cleanUp();
+                                                        }
                                                 }
                                         } else {
+                                                try {
                                                 st.execute();
+                                                } finally {
+                                                        st.cleanUp();
+                                                }
                                                 if (pm.isCancelled()) {
                                                         break;
                                                 }
@@ -164,8 +172,6 @@ public class ExecuteScriptProcess implements BackgroundJob {
                                                 "Cannot create the DataSource:"
                                                 + st.getSQL(), e);
                                         break;
-                                } finally {
-                                        st.cleanUp();
                                 }
 
                                 pm.progressTo(100 * i / statements.length);
