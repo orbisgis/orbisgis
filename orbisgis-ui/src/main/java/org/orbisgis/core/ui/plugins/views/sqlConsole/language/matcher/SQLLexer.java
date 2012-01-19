@@ -112,6 +112,10 @@ final class SQLLexer {
                         }
 
                         trimIncorrectChars();
+                        
+                        if (currentIndex == -1) {
+                                return "";
+                        }
 
                         char currChar = s.charAt(currentIndex);
 

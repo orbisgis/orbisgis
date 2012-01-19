@@ -254,7 +254,9 @@ public class SQLMatcher {
                                         "RIGHT JOIN", "CROSS JOIN", "NATURAL JOIN");
                                 addOperators();
                                 return;
-                        } 
+                        } else if ("TABLE".equalsIgnoreCase(b)) {
+                                matchSourceNamesInDrop();
+                        }
 
                         if (b.contains(";")) {
                                 return;
@@ -319,6 +321,18 @@ public class SQLMatcher {
                         // DROP TABLE
                         addKeyWord("IF EXISTS");
                         addTables(false);
+                }
+        }
+        
+        private void matchSourceNamesInDrop() {
+                if (!it.hasNext()) {
+                        return;
+                }
+                String a = it.next();
+
+                if ("DROP".equalsIgnoreCase(a)) {
+                        // DROP TABLE toto PURGE
+                        addKeyWord("PURGE");
                 }
         }
 
