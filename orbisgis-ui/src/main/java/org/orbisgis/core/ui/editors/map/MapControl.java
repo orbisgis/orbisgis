@@ -397,10 +397,6 @@ public class MapControl extends JComponent implements ComponentListener,
 				if (!cancel) {
 					throw e;
 				}
-			} catch (RuntimeException e) {
-				throw e;
-			} catch (Error e) {
-				throw e;
 			} finally {
 				mapContext.setBoundingBox(mapTransform.getAdjustedExtent());
 				timer.stop();
