@@ -35,7 +35,6 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-
 package org.orbisgis.core.ui.plugins.editors.tableEditor;
 
 import java.awt.Color;
@@ -68,160 +67,158 @@ import org.orbisgis.utils.I18N;
 
 public class ShowFieldStatisticsPlugIn extends AbstractPlugIn {
 
-	public boolean execute(PlugInContext context) throws Exception {
-		IEditor editor = context.getActiveEditor();
-		final TableEditableElement element = (TableEditableElement) editor
-				.getElement();
-		try {
-			final SQLDataSourceFactory dsf = (Services
-					.getService(DataManager.class)).getDataSourceFactory();
+        @Override
+        public boolean execute(PlugInContext context) throws Exception {
+                IEditor editor = context.getActiveEditor();
+                final TableEditableElement element = (TableEditableElement) editor.getElement();
+                try {
+                        final SQLDataSourceFactory dsf = (Services.getService(DataManager.class)).getDataSourceFactory();
 
-			DataSource ds = element.getDataSource();
+                        DataSource ds = element.getDataSource();
 
-			Metadata metadata = ds.getMetadata();
+                        Metadata metadata = ds.getMetadata();
 
-			String fieldName = metadata.getFieldName(getSelectedColumn());
-			DataSource dsResult = null;
-			String query = null;
-			int countSelection = element.getSelection().getSelectedRows().length;
-			int[] selected = element.getSelection().getSelectedRows();
-			if (selected.length > 0) {
-				if (countSelection == ds.getRowCount()) {
-					query = getQuery(fieldName, ds).append(" ;").toString();
+                        String fieldName = metadata.getFieldName(getSelectedColumn());
+                        DataSource dsResult = null;
+                        String query = null;
+                        int countSelection = element.getSelection().getSelectedRows().length;
+                        int[] selected = element.getSelection().getSelectedRows();
+                        if (selected.length > 0) {
+                                if (countSelection == ds.getRowCount()) {
+                                        query = getQuery(fieldName, ds).append(" ;").toString();
 
-					dsResult = dsf.getDataSourceFromSQL(query);
-				} else {
-					MemoryDataSetDriver subds = getSubData(fieldName, ds,
-							selected);
+                                        dsResult = dsf.getDataSourceFromSQL(query);
+                                } else {
+                                        MemoryDataSetDriver subds = getSubData(fieldName, ds,
+                                                selected);
 
-					query = getQuery(fieldName, dsf.getDataSource(subds, DriverManager.DEFAULT_SINGLE_TABLE_NAME))
-							.append(" ;").toString();
+                                        query = getQuery(fieldName, dsf.getDataSource(subds, DriverManager.DEFAULT_SINGLE_TABLE_NAME)).append(" ;").toString();
 
-					dsResult = dsf.getDataSourceFromSQL(query);
+                                        dsResult = dsf.getDataSourceFromSQL(query);
 
-				}
+                                }
 
-			} else {
-				query = getQuery(fieldName, element.getDataSource()).append(
-						" ;").toString();
+                        } else {
+                                query = getQuery(fieldName, element.getDataSource()).append(
+                                        " ;").toString();
 
-				dsResult = dsf.getDataSourceFromSQL(query);
+                                dsResult = dsf.getDataSourceFromSQL(query);
 
-			}
+                        }
 
-			OutputManager om = Services.getService(OutputManager.class);
+                        OutputManager om = Services.getService(OutputManager.class);
 
-			dsResult.open();
-			Metadata metadataResult = dsResult.getMetadata();
+                        dsResult.open();
+                        Metadata metadataResult = dsResult.getMetadata();
 
-			om
-					.println(
-							I18N
-									.getString("orbisgis.org.orbisgis.core.ui.plugins.editors.tableEditor.fieldStatistics")
-									+ fieldName, Color.red);
-			for (int i = 0; i < dsResult.getRowCount(); i++) {
+                        om.println(
+                                I18N.getString("orbisgis.org.orbisgis.core.ui.plugins.editors.tableEditor.fieldStatistics")
+                                + ' ' + fieldName, Color.red);
+                        for (int i = 0; i < dsResult.getRowCount(); i++) {
 
-				for (int k = 0; k < metadataResult.getFieldCount(); k++) {
-					om.println(metadataResult.getFieldName(k) + " : "
-							+ dsResult.getFieldValue(i, k).getAsDouble());
+                                for (int k = 0; k < metadataResult.getFieldCount(); k++) {
+                                        om.println(metadataResult.getFieldName(k) + " : "
+                                                + dsResult.getFieldValue(i, k).getAsDouble());
 
-				}
+                                }
 
-			}
-			om.println("----------------------------------", Color.red);
-			dsResult.close();
+                        }
+                        om.println("----------------------------------", Color.red);
+                        dsResult.close();
 
-		} catch (DriverException e) {
-			ErrorMessages.error(ErrorMessages.CannotAccessFieldInformation, e);
-		} catch (DriverLoadException e) {
-			ErrorMessages.error(ErrorMessages.CannotObtainDataSource, e);
-		} catch (DataSourceCreationException e) {
-			ErrorMessages.error(ErrorMessages.CannotCreateDataSource, e);
-		} catch (ParseException e) {
-			ErrorMessages.error(ErrorMessages.CannotCreateDataSource, e);
-		}
-		return true;
-	}
+                } catch (DriverException e) {
+                        ErrorMessages.error(ErrorMessages.CannotAccessFieldInformation, e);
+                } catch (DriverLoadException e) {
+                        ErrorMessages.error(ErrorMessages.CannotObtainDataSource, e);
+                } catch (DataSourceCreationException e) {
+                        ErrorMessages.error(ErrorMessages.CannotCreateDataSource, e);
+                } catch (ParseException e) {
+                        ErrorMessages.error(ErrorMessages.CannotCreateDataSource, e);
+                }
+                return true;
+        }
 
-	public void initialize(PlugInContext context) throws Exception {
-		WorkbenchContext wbContext = context.getWorkbenchContext();
-		WorkbenchFrame frame = wbContext.getWorkbench()
-				.getFrame().getTableEditor();
-		context.getFeatureInstaller().addPopupMenuItem(frame, this,
-				new String[] { Names.POPUP_TABLE_SHOWFIELDSTAT_PATH1 },
-				Names.POPUP_TABLE_SHOWFIELDSTAT_GROUP, false,
-				OrbisGISIcon.TABLE_SHOWFIELDSTAT, wbContext);
-	}
+        @Override
+        public void initialize(PlugInContext context) throws Exception {
+                WorkbenchContext wbContext = context.getWorkbenchContext();
+                WorkbenchFrame frame = wbContext.getWorkbench().getFrame().getTableEditor();
+                context.getFeatureInstaller().addPopupMenuItem(frame, this,
+                        new String[]{Names.POPUP_TABLE_SHOWFIELDSTAT_PATH1},
+                        Names.POPUP_TABLE_SHOWFIELDSTAT_GROUP, false,
+                        OrbisGISIcon.TABLE_SHOWFIELDSTAT, wbContext);
+        }
 
-	private MemoryDataSetDriver getSubData(String fieldName, DataSource ds,
-			int[] selected) throws DriverException {
+        private MemoryDataSetDriver getSubData(String fieldName, DataSource ds,
+                int[] selected) throws DriverException {
 
-		int fieldIndex = ds.getFieldIndexByName(fieldName);
-		int fieldType = ds.getFieldType(fieldIndex).getTypeCode();
+                int fieldIndex = ds.getFieldIndexByName(fieldName);
+                int fieldType = ds.getFieldType(fieldIndex).getTypeCode();
 
-		DefaultMetadata metadata = new DefaultMetadata();
-		metadata.addField(fieldName, fieldType);
+                DefaultMetadata metadata = new DefaultMetadata();
+                metadata.addField(fieldName, fieldType);
 
-		MemoryDataSetDriver driver = new MemoryDataSetDriver(metadata);
+                MemoryDataSetDriver driver = new MemoryDataSetDriver(metadata);
 
-		for (int i = 0; i < selected.length; i++) {
+                for (int i = 0; i < selected.length; i++) {
 
-			driver.addValues(new Value[] { ds.getFieldValue(selected[i],
-					fieldIndex) });
+                        driver.addValues(new Value[]{ds.getFieldValue(selected[i],
+                                        fieldIndex)});
 
-		}
+                }
 
-		return driver;
-	}
+                return driver;
+        }
 
-	private StringBuffer getQuery(String fieldName, DataSource ds) {
-		StringBuffer stringBuffer = new StringBuffer("SELECT ");
+        private StringBuffer getQuery(String fieldName, DataSource ds) {
+                String escapedName = '\"' + fieldName + '\"';
 
-		stringBuffer.append("COUNT(" + fieldName + ") as count");
-		stringBuffer.append(" , ");
-		stringBuffer.append("SUM(" + fieldName + ") as sum");
-		stringBuffer.append(" , ");
-		stringBuffer.append("MIN(" + fieldName + ") as min");
-		stringBuffer.append(" , ");
-		stringBuffer.append("MAX(" + fieldName + ") as max");
-		stringBuffer.append(" , ");
-		stringBuffer.append("AVG(" + fieldName + ") as mean");
-		stringBuffer.append(" , ");
-		stringBuffer.append("StandardDeviation(" + fieldName + ") as std");
-		stringBuffer.append(" FROM  " + ds.getName());
+                StringBuffer stringBuffer = new StringBuffer("SELECT ");
 
-		return stringBuffer;
-	}
+                stringBuffer.append("COUNT(").append(escapedName).append(") as count");
+                stringBuffer.append(" , ");
+                stringBuffer.append("SUM(").append(escapedName).append(") as sum");
+                stringBuffer.append(" , ");
+                stringBuffer.append("MIN(").append(escapedName).append(") as min");
+                stringBuffer.append(" , ");
+                stringBuffer.append("MAX(").append(escapedName).append(") as max");
+                stringBuffer.append(" , ");
+                stringBuffer.append("AVG(").append(escapedName).append(") as mean");
+                stringBuffer.append(" , ");
+                stringBuffer.append("StandardDeviation(").append(escapedName).append(") as std");
+                stringBuffer.append(" FROM  ").append(ds.getName());
 
-	public boolean isEnabled() {
-		boolean isEnabled = false;
-		IEditor editor = null;
-		if ((editor = getPlugInContext().getTableEditor()) != null
-				&& getSelectedColumn() != -1) {
-			final TableEditableElement element = (TableEditableElement) editor
-					.getElement();
-			try {
-				Metadata metadata = element.getDataSource().getMetadata();
-				Type type = metadata.getFieldType(getSelectedColumn());
-				int typeCode = type.getTypeCode();
-				switch (typeCode) {
-				case Type.BYTE:
-				case Type.DOUBLE:
-				case Type.FLOAT:
-				case Type.INT:
-				case Type.LONG:
-				case Type.SHORT:
-					isEnabled = true;
-					break;
-				default:
-					isEnabled = false;
-				}
+                return stringBuffer;
+        }
 
-			} catch (DriverException e) {
-				ErrorMessages.error(ErrorMessages.CannotAccessFieldInformation,
-						e);
-			}
-		}
-		return isEnabled;
-	}
+        @Override
+        public boolean isEnabled() {
+                boolean isEnabled = false;
+                IEditor editor = null;
+                if ((editor = getPlugInContext().getTableEditor()) != null
+                        && getSelectedColumn() != -1) {
+                        final TableEditableElement element = (TableEditableElement) editor.getElement();
+                        try {
+                                Metadata metadata = element.getDataSource().getMetadata();
+                                Type type = metadata.getFieldType(getSelectedColumn());
+                                int typeCode = type.getTypeCode();
+                                switch (typeCode) {
+                                        case Type.BYTE:
+                                        case Type.DOUBLE:
+                                        case Type.FLOAT:
+                                        case Type.INT:
+                                        case Type.LONG:
+                                        case Type.SHORT:
+                                                isEnabled = true;
+                                                break;
+                                        default:
+                                                isEnabled = false;
+                                }
+
+                        } catch (DriverException e) {
+                                ErrorMessages.error(ErrorMessages.CannotAccessFieldInformation,
+                                        e);
+                        }
+                }
+                return isEnabled;
+        }
 }
