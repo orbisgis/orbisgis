@@ -172,6 +172,8 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
 
         if (t.getWidth() != null) {
             this.setWidth(SeParameterFactory.createRealParameter(t.getWidth()));
+        } else {
+            setWidth(new RealLiteral(DEFAULT_WIDTH_PX));
         }
 
         if (t.getLineCap() != null) {
@@ -585,7 +587,7 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
                     }
                 } else {
 
-                    BasicStroke stroke = null;
+                    BasicStroke stroke;
 
                     stroke = this.createBasicStroke(sds, fid, shp, mt, null /*ShapeHelper.getAreaPerimeterLength(shp)*/, true);
                     g2.setPaint(paint);

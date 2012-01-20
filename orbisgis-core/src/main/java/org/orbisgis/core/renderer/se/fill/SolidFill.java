@@ -121,7 +121,9 @@ public final class SolidFill extends Fill {
 	public SolidFill(JAXBElement<SolidFillType> sf) throws InvalidStyle {
 		if (sf.getValue().getColor() != null) {
 			setColor(SeParameterFactory.createColorParameter(sf.getValue().getColor()));
-		}
+		} else {
+            setColor(new ColorLiteral(new Color((int) GRAY50, (int) GRAY50, (int) GRAY50)));
+        }
 
 		if (sf.getValue().getOpacity() != null) {
 			setOpacity(SeParameterFactory.createRealParameter(sf.getValue().getOpacity()));
