@@ -49,6 +49,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.data.types.GeometryDimensionConstraint;
 import org.gdms.data.types.Type;
  
@@ -56,7 +57,6 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.geometryUtils.GeometryTypeUtil;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.renderer.classification.RangeMethod;
@@ -378,7 +378,7 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 		Symbol polygonSymbol = SymbolFactory.createPolygonSymbol(outline,
 				fillColor);
 		Type geomType = TypeFactory.createType(legendContext.getGeometryType());
-                int dimension = GeometryTypeUtil.getTypeDimension(geomType);
+                int dimension = MetadataUtilities.getGeometryTypeDimension(geomType);
                 switch (dimension) {
 			case GeometryDimensionConstraint.DIMENSION_POINT:
 				return lineSymbol;
