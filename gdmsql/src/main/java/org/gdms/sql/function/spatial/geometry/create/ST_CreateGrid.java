@@ -136,13 +136,13 @@ public final class ST_CreateGrid extends AbstractTableFunction {
         private void createGrid(final DiskBufferDriver driver,
                 final Envelope env, final ProgressMonitor pm)
                 throws DriverException {
+            
                 final int nbX = (int) Math.ceil((env.getMaxX() - env.getMinX())
                         / deltaX);
                 pm.startTask("Creating grid", nbX);
-                final int nbY = (int) Math.ceil((env.getMaxY() - env.getMinY()) / deltaY);
                 int gridCellIndex = 0;
-                double x = env.centre().x - (deltaX * nbX) / 2;
-                for (int i = 0; i < nbX; i++, x += deltaX) {
+                int i = 0;
+                for (double x = env.getMinX(); x < env.getMaxX(); x += deltaX) {
 
                         if (i >= 100 && i % 100 == 0) {
                                 if (pm.isCancelled()) {
@@ -151,9 +151,7 @@ public final class ST_CreateGrid extends AbstractTableFunction {
                                         pm.progressTo(i);
                                 }
                         }
-
-                        double y = env.centre().y - (deltaY * nbY) / 2;
-                        for (int j = 0; j < nbY; j++, y += deltaY) {
+                        for (double y = env.getMinY(); y < env.getMaxY(); y += deltaY) {
                                 gridCellIndex++;
                                 final Coordinate[] summits = new Coordinate[5];
                                 summits[0] = invTranslateAndRotate(x, y);
