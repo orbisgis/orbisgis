@@ -37,6 +37,7 @@
  */
 package org.gdms.data.schema;
 
+import org.gdms.data.types.GeometryDimensionConstraint;
 import org.gdms.data.types.Type;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,90 +50,119 @@ import static org.junit.Assert.*;
  */
 public class MetadataUtilitiesTest {
 
-        private DefaultMetadata basicMetadata;
-        private DefaultMetadata geometryMetadata;
-        private DefaultMetadata rasterMetadata;
+    private DefaultMetadata basicMetadata;
+    private DefaultMetadata geometryMetadata;
+    private DefaultMetadata rasterMetadata;
 
-        @Before
-        public void setUp() throws Exception {
-                basicMetadata = new DefaultMetadata();
-                basicMetadata.addField("name", Type.STRING);
-                basicMetadata.addField("surname", Type.STRING);
-                basicMetadata.addField("location", Type.STRING);
+    @Before
+    public void setUp() throws Exception {
+        basicMetadata = new DefaultMetadata();
+        basicMetadata.addField("name", Type.STRING);
+        basicMetadata.addField("surname", Type.STRING);
+        basicMetadata.addField("location", Type.STRING);
 
-                geometryMetadata = new DefaultMetadata();
-                geometryMetadata.addField("the_geom", Type.GEOMETRY);
-                geometryMetadata.addField("surname", Type.STRING);
-                geometryMetadata.addField("location", Type.STRING);
+        geometryMetadata = new DefaultMetadata();
+        geometryMetadata.addField("the_geom", Type.GEOMETRY);
+        geometryMetadata.addField("surname", Type.STRING);
+        geometryMetadata.addField("location", Type.STRING);
 
-                rasterMetadata = new DefaultMetadata();
-                rasterMetadata.addField("raster", Type.RASTER);
-                rasterMetadata.addField("surname", Type.STRING);
-                rasterMetadata.addField("location", Type.STRING);
+        rasterMetadata = new DefaultMetadata();
+        rasterMetadata.addField("raster", Type.RASTER);
+        rasterMetadata.addField("surname", Type.STRING);
+        rasterMetadata.addField("location", Type.STRING);
+    }
+
+    @Test
+    public void testGetSpatialFieldIndex() throws Exception {
+        assertTrue(MetadataUtilities.getSpatialFieldIndex(basicMetadata) == -1);
+        assertTrue(MetadataUtilities.getSpatialFieldIndex(geometryMetadata) == 0);
+        assertTrue(MetadataUtilities.getSpatialFieldIndex(rasterMetadata) == 0);
+
+    }
+
+    @Test
+    public void testGetGeometryFieldIndex() throws Exception {
+        assertTrue(MetadataUtilities.getGeometryFieldIndex(basicMetadata) == -1);
+        assertTrue(MetadataUtilities.getGeometryFieldIndex(geometryMetadata) == 0);
+        assertTrue(MetadataUtilities.getGeometryFieldIndex(rasterMetadata) == -1);
+    }
+
+    @Test
+    public void testGetRasterFieldIndex() throws Exception {
+        assertTrue(MetadataUtilities.getRasterFieldIndex(basicMetadata) == -1);
+        assertTrue(MetadataUtilities.getRasterFieldIndex(geometryMetadata) == -1);
+        assertTrue(MetadataUtilities.getRasterFieldIndex(rasterMetadata) == 0);
+    }
+
+    @Test
+    public void testisGeometry() throws Exception {
+        assertTrue(!MetadataUtilities.isGeometry(basicMetadata));
+        assertTrue(MetadataUtilities.isGeometry(geometryMetadata));
+        assertTrue(!MetadataUtilities.isGeometry(rasterMetadata));
+    }
+
+    @Test
+    public void testisRaster() throws Exception {
+        assertTrue(!MetadataUtilities.isRaster(basicMetadata));
+        assertTrue(!MetadataUtilities.isRaster(geometryMetadata));
+        assertTrue(MetadataUtilities.isRaster(rasterMetadata));
+    }
+
+    @Test
+    public void testGeometryDimension() throws Exception {
+        DefaultMetadata dm = new DefaultMetadata();
+        dm.addField("name", Type.STRING);
+        dm.addField("point", Type.POINT);
+        dm.addField("MultiPoint", Type.MULTIPOINT);
+        dm.addField("LineString", Type.LINESTRING);
+        dm.addField("MultiLineString", Type.MULTILINESTRING);
+        dm.addField("Polygon", Type.POLYGON);
+        dm.addField("MultiPolygon", Type.MULTIPOLYGON);
+        dm.addField("Geometry", Type.GEOMETRY);
+        dm.addField("GeometryCollection", Type.GEOMETRYCOLLECTION);
+        try {
+            int ret = MetadataUtilities.getGeometryDimension(dm, 0);
+            fail();
+        } catch (UnsupportedOperationException e) {
+            assertTrue(true);
         }
+        assertEquals(MetadataUtilities.getGeometryDimension(dm, 1), 0);
+        assertEquals(MetadataUtilities.getGeometryDimension(dm, 2), 0);
+        assertEquals(MetadataUtilities.getGeometryDimension(dm, 3), 1);
+        assertEquals(MetadataUtilities.getGeometryDimension(dm, 4), 1);
+        assertEquals(MetadataUtilities.getGeometryDimension(dm, 5), 2);
+        assertEquals(MetadataUtilities.getGeometryDimension(dm, 6), 2);
+        assertEquals(MetadataUtilities.getGeometryDimension(dm, 7), -1);
+        assertEquals(MetadataUtilities.getGeometryDimension(dm, 8), -1);
 
-        @Test
-        public void testGetSpatialFieldIndex() throws Exception {
-                assertTrue(MetadataUtilities.getSpatialFieldIndex(basicMetadata) == -1);
-                assertTrue(MetadataUtilities.getSpatialFieldIndex(geometryMetadata) == 0);
-                assertTrue(MetadataUtilities.getSpatialFieldIndex(rasterMetadata) == 0);
+    }
 
+    @Test
+    public void testHumanGeometryDimension() throws Exception {
+        DefaultMetadata dm = new DefaultMetadata();
+        dm.addField("name", Type.STRING);
+        dm.addField("point", Type.POINT);
+        dm.addField("MultiPoint", Type.MULTIPOINT);
+        dm.addField("LineString", Type.LINESTRING);
+        dm.addField("MultiLineString", Type.MULTILINESTRING);
+        dm.addField("Polygon", Type.POLYGON);
+        dm.addField("MultiPolygon", Type.MULTIPOLYGON);
+        dm.addField("Geometry", Type.GEOMETRY);
+        dm.addField("GeometryCollection", Type.GEOMETRYCOLLECTION);
+        try {
+            int ret = MetadataUtilities.getGeometryDimension(dm, 0);
+            fail();
+        } catch (UnsupportedOperationException e) {
+            assertTrue(true);
         }
+        assertEquals(MetadataUtilities.getHumanGeometryDimension(dm, 1), GeometryDimensionConstraint.HUMAN_DIMENSION_POINT);
+        assertEquals(MetadataUtilities.getHumanGeometryDimension(dm, 2), GeometryDimensionConstraint.HUMAN_DIMENSION_POINT);
+        assertEquals(MetadataUtilities.getHumanGeometryDimension(dm, 3), GeometryDimensionConstraint.HUMAN_DIMENSION_CURVE);
+        assertEquals(MetadataUtilities.getHumanGeometryDimension(dm, 4), GeometryDimensionConstraint.HUMAN_DIMENSION_CURVE);
+        assertEquals(MetadataUtilities.getHumanGeometryDimension(dm, 5), GeometryDimensionConstraint.HUMAN_DIMENSION_SURFACE);
+        assertEquals(MetadataUtilities.getHumanGeometryDimension(dm, 6), GeometryDimensionConstraint.HUMAN_DIMENSION_SURFACE);
+        assertEquals(MetadataUtilities.getHumanGeometryDimension(dm, 7), GeometryDimensionConstraint.HUMAN_DIMENSION_UNKNOWN);
+        assertEquals(MetadataUtilities.getHumanGeometryDimension(dm, 8), GeometryDimensionConstraint.HUMAN_DIMENSION_UNKNOWN);
 
-        @Test
-        public void testGetGeometryFieldIndex() throws Exception {
-                assertTrue(MetadataUtilities.getGeometryFieldIndex(basicMetadata) == -1);
-                assertTrue(MetadataUtilities.getGeometryFieldIndex(geometryMetadata) == 0);
-                assertTrue(MetadataUtilities.getGeometryFieldIndex(rasterMetadata) == -1);
-        }
-
-        @Test
-        public void testGetRasterFieldIndex() throws Exception {
-                assertTrue(MetadataUtilities.getRasterFieldIndex(basicMetadata) == -1);
-                assertTrue(MetadataUtilities.getRasterFieldIndex(geometryMetadata) == -1);
-                assertTrue(MetadataUtilities.getRasterFieldIndex(rasterMetadata) == 0);
-        }
-
-        @Test
-        public void testisGeometry() throws Exception {
-                assertTrue(!MetadataUtilities.isGeometry(basicMetadata));
-                assertTrue(MetadataUtilities.isGeometry(geometryMetadata));
-                assertTrue(!MetadataUtilities.isGeometry(rasterMetadata));
-        }
-
-        @Test
-        public void testisRaster() throws Exception {
-                assertTrue(!MetadataUtilities.isRaster(basicMetadata));
-                assertTrue(!MetadataUtilities.isRaster(geometryMetadata));
-                assertTrue(MetadataUtilities.isRaster(rasterMetadata));
-        }
-        
-        @Test
-        public void testGeometryDimension() throws Exception{
-                DefaultMetadata dm = new DefaultMetadata();
-                dm.addField("name", Type.STRING);
-                dm.addField("point", Type.POINT);
-                dm.addField("MultiPoint", Type.MULTIPOINT);
-                dm.addField("LineString", Type.LINESTRING);
-                dm.addField("MultiLineString", Type.MULTILINESTRING);
-                dm.addField("Polygon", Type.POLYGON);
-                dm.addField("MultiPolygon", Type.MULTIPOLYGON);
-                dm.addField("Geometry", Type.GEOMETRY);
-                dm.addField("GeometryCollection", Type.GEOMETRYCOLLECTION);
-                try{
-                        int ret = MetadataUtilities.getGeometryDimension(dm, 0);
-                        fail();
-                } catch(UnsupportedOperationException e){
-                        assertTrue(true);
-                }
-                assertEquals(MetadataUtilities.getGeometryDimension(dm, 1),0);
-                assertEquals(MetadataUtilities.getGeometryDimension(dm, 2),0);
-                assertEquals(MetadataUtilities.getGeometryDimension(dm, 3),1);
-                assertEquals(MetadataUtilities.getGeometryDimension(dm, 4),1);
-                assertEquals(MetadataUtilities.getGeometryDimension(dm, 5),2);
-                assertEquals(MetadataUtilities.getGeometryDimension(dm, 6),2);
-                assertEquals(MetadataUtilities.getGeometryDimension(dm, 7),-1);
-                assertEquals(MetadataUtilities.getGeometryDimension(dm, 8),-1);
-                
-        }
+    }
 }

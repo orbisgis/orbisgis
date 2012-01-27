@@ -244,42 +244,18 @@ public final class MetadataUtilities {
         }
         return metadatas;
     }
-    
+
     /**
      * Gets the dimension of the Geometry at the specified fieldIndex
      * @param metadata the Metadata to search
      * @param spatialField the fieldIndex to look for
-     * @return an int dimension 0 = POINT, 1 = CURVE, 2 = SURFACE and 3 = UNKNOWN
+     * @return an int dimension 0 = POINT, 1 = CURVE, 2 = SURFACE and -1 = UNKNOWN
      * @throws DriverException
      */
     public static int getGeometryDimension(Metadata metadata, int spatialField) throws DriverException {
-
         Type fieldType = metadata.getFieldType(spatialField);
-        int tc = fieldType.getTypeCode();
-        switch (tc) {
-            case Type.GEOMETRY:
-            case Type.GEOMETRYCOLLECTION:
-                GeometryDimensionConstraint gdc =
-                        (GeometryDimensionConstraint) fieldType.getConstraint(Constraint.DIMENSION_2D_GEOMETRY);
-                if (gdc == null) {
-                    return GeometryDimensionConstraint.DIMENSION_UNKNOWN;
-                } else {
-                    return gdc.getDimension();                   
-                }
-            case Type.POINT:
-            case Type.MULTIPOINT:
-                return GeometryDimensionConstraint.DIMENSION_POINT;
-            case Type.LINESTRING:
-            case Type.MULTILINESTRING:
-                return GeometryDimensionConstraint.DIMENSION_CURVE;
-            case Type.POLYGON:
-            case Type.MULTIPOLYGON:
-                return GeometryDimensionConstraint.DIMENSION_SURFACE;
-            default:
-                throw new UnsupportedOperationException("Can't get the dimension of this type : " + TypeFactory.getTypeName(tc));
-        }
+        return getGeometryTypeDimension(fieldType);
     }
-
 
     /**
      * Gets the dimension of the Geometry at the specified fieldIndex
@@ -289,42 +265,8 @@ public final class MetadataUtilities {
      * @throws DriverException
      */
     public static String getHumanGeometryDimension(Metadata metadata, int spatialField) throws DriverException {
-
         Type fieldType = metadata.getFieldType(spatialField);
-        int tc = fieldType.getTypeCode();
-        switch (tc) {
-            case Type.GEOMETRY:
-            case Type.GEOMETRYCOLLECTION:
-                GeometryDimensionConstraint gdc =
-                        (GeometryDimensionConstraint) fieldType.getConstraint(Constraint.DIMENSION_2D_GEOMETRY);
-                if (gdc == null) {
-                    return GeometryDimensionConstraint.HUMAN_DIMENSION_UNKNOWN;
-                } else {
-                    int dim = gdc.getDimension();
-                    switch (dim) {
-                        case GeometryDimensionConstraint.DIMENSION_POINT:
-                            return GeometryDimensionConstraint.HUMAN_DIMENSION_POINT;
-                        case GeometryDimensionConstraint.DIMENSION_CURVE:
-                            return GeometryDimensionConstraint.HUMAN_DIMENSION_CURVE;
-                        case GeometryDimensionConstraint.DIMENSION_SURFACE:
-                            return GeometryDimensionConstraint.HUMAN_DIMENSION_SURFACE;
-                        default:
-                            throw new UnsupportedOperationException("Can't get the dimension of this type : " + TypeFactory.getTypeName(tc));
-
-                    }
-                }
-            case Type.POINT:
-            case Type.MULTIPOINT:
-                return GeometryDimensionConstraint.HUMAN_DIMENSION_POINT;
-            case Type.LINESTRING:
-            case Type.MULTILINESTRING:
-                return GeometryDimensionConstraint.HUMAN_DIMENSION_CURVE;
-            case Type.POLYGON:
-            case Type.MULTIPOLYGON:
-                return GeometryDimensionConstraint.HUMAN_DIMENSION_SURFACE;
-            default:
-                throw new UnsupportedOperationException("Can't get the dimension of this type : " + TypeFactory.getTypeName(tc));
-        }
+        return getHumanGeometryTypeDimension(fieldType);
     }
 
     /**
@@ -361,20 +303,11 @@ public final class MetadataUtilities {
     public static int getGeometryFieldIndex(Metadata metadata)
             throws DriverException {
         int spatialFieldIndex = -1;
-
-
-        for (int i = 0; i
-                < metadata.getFieldCount(); i++) {
+        for (int i = 0; i < metadata.getFieldCount(); i++) {
             int typeCode = metadata.getFieldType(i).getTypeCode();
-
-
             if (((typeCode & ANYGEOMETRY) != 0)) {
                 spatialFieldIndex = i;
-
-
                 break;
-
-
             }
         }
         return spatialFieldIndex;
@@ -392,25 +325,14 @@ public final class MetadataUtilities {
     public static int getRasterFieldIndex(Metadata metadata)
             throws DriverException {
         int spatialFieldIndex = -1;
-
-
-        for (int i = 0; i
-                < metadata.getFieldCount(); i++) {
+        for (int i = 0; i < metadata.getFieldCount(); i++) {
             int typeCode = metadata.getFieldType(i).getTypeCode();
-
-
             if ((typeCode == Type.RASTER)) {
                 spatialFieldIndex = i;
-
-
                 break;
-
-
             }
         }
         return spatialFieldIndex;
-
-
     }
 
     /**
@@ -423,6 +345,87 @@ public final class MetadataUtilities {
         return getSpatialFieldIndex(metadata) != -1;
 
 
+    }
+
+    /**
+     * Gets the (planar) dimension of the geometry type given in argument. Note
+     * that if you give an invalid (not vectorial) type as an input, this method will 
+     * throw a InvalidArgumentException
+     * @param type
+     * @return 
+     * <ul><li>{@code GeometryDimensionConstraint.DIMENSION_POINT} : if we have a point or a collection of points</li>
+     * <li>{@code GeometryDimensionConstraint.DIMENSION_CURVE} : if we have a line or a collection of lines</li>
+     * <li>{@code GeometryDimensionConstraint.DIMENSION_SURFACE} : if we have a polygon or collection of polygons</li>
+     * <li>DIMENSION_UNKNOWN otherwise (if the type is too generic)</li></ul>
+     */
+    public static int getGeometryTypeDimension(Type type) {
+        if (type == null || (type.getTypeCode() & Type.GEOMETRY) == 0 || type.getTypeCode() == Type.NULL) {
+            throw new IllegalArgumentException("We can only treat geometry types here.");
+        } else {
+            switch (type.getTypeCode()) {
+                case Type.POINT:
+                case Type.MULTIPOINT:
+                    return GeometryDimensionConstraint.DIMENSION_POINT;
+                case Type.LINESTRING:
+                case Type.MULTILINESTRING:
+                    return GeometryDimensionConstraint.DIMENSION_CURVE;
+                case Type.POLYGON:
+                case Type.MULTIPOLYGON:
+                    return GeometryDimensionConstraint.DIMENSION_SURFACE;
+                case Type.GEOMETRY:
+                case Type.GEOMETRYCOLLECTION:
+                    GeometryDimensionConstraint gdc =
+                            (GeometryDimensionConstraint) type.getConstraint(Constraint.DIMENSION_2D_GEOMETRY);
+                    if (gdc == null) {
+                        return GeometryDimensionConstraint.DIMENSION_UNKNOWN;
+                    } else {
+                        return gdc.getDimension();
+                    }
+                default:
+                    return GeometryDimensionConstraint.DIMENSION_UNKNOWN;
+            }
+        }
+    }
+
+    /**
+     * Gets the  text representation (planar) dimension of the geometry type given in argument. Note
+     * that if you give an invalid (not vectorial) type as an input, this method will 
+     * throw a InvalidArgumentException
+     * @param type
+     * @return 
+     * <ul><li>{@code GeometryDimensionConstraint.HUMAN_DIMENSION_POINT} : if we have a point or a collection of points</li>
+     * <li>{@code GeometryDimensionConstraint.HUMAN_DIMENSION_CURVE} : if we have a line or a collection of lines</li>
+     * <li>{@code GeometryDimensionConstraint.HUMAN_DIMENSION_SURFACE} : if we have a polygon or collection of polygons</li>
+     * <li>HUMAN_DIMENSION_UNKNOWN otherwise (if the type is too generic)</li></ul>
+     */
+    public static String getHumanGeometryTypeDimension(Type type) {
+        if (type == null || (type.getTypeCode() & Type.GEOMETRY) == 0 || type.getTypeCode() == Type.NULL) {
+            throw new IllegalArgumentException("We can only treat geometry types here.");
+        } else {
+            int tc = type.getTypeCode();
+            switch (tc) {
+                case Type.GEOMETRY:
+                case Type.GEOMETRYCOLLECTION:
+                    GeometryDimensionConstraint gdc =
+                            (GeometryDimensionConstraint) type.getConstraint(Constraint.DIMENSION_2D_GEOMETRY);
+                    if (gdc == null) {
+                        return GeometryDimensionConstraint.HUMAN_DIMENSION_UNKNOWN;
+                    } else {
+                        return gdc.getConstraintHumanValue();
+                    }
+                case Type.POINT:
+                case Type.MULTIPOINT:
+                    return GeometryDimensionConstraint.HUMAN_DIMENSION_POINT;
+                case Type.LINESTRING:
+                case Type.MULTILINESTRING:
+                    return GeometryDimensionConstraint.HUMAN_DIMENSION_CURVE;
+                case Type.POLYGON:
+                case Type.MULTIPOLYGON:
+                    return GeometryDimensionConstraint.HUMAN_DIMENSION_SURFACE;
+                default:
+                    return GeometryDimensionConstraint.HUMAN_DIMENSION_UNKNOWN;
+            }
+        }
     }
 
     /**

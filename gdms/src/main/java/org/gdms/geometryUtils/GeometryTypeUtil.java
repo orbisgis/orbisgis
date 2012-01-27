@@ -169,45 +169,7 @@ public final class GeometryTypeUtil {
         return cf.getDimension() >= CoordinateSequenceDimensionFilter.XYZ;
     }
 
-    /**
-     * Gets the (planar) dimension of the geometry type given in argument. Note
-     * that if you give an invalid (not vectorial) type as an input, this method will 
-     * throw a InvalidArgumentException
-     * @param type
-     * @return 
-     * <ul><li>{@code GeometryDimensionConstraint.DIMENSION_POINT} : if we have a point or a collection of points</li>
-     * <li>{@code GeometryDimensionConstraint.DIMENSION_LINE} : if we have a line or a collection of lines</li>
-     * <li>{@code GeometryDimensionConstraint.DIMENSION_POLYGON} : if we have a polygon or collection of polygons</li>
-     * <li>-1 otherwise (if the type is too generic)</li></ul>
-     */
-    public static int getTypeDimension(Type type) {
-        if (type == null || (type.getTypeCode() & Type.GEOMETRY) == 0 || type.getTypeCode() == Type.NULL) {
-            throw new IllegalArgumentException("We can only treat geometry types here.");
-        } else {
-            switch (type.getTypeCode()) {
-                case Type.POINT:
-                case Type.MULTIPOINT:
-                    return GeometryDimensionConstraint.DIMENSION_POINT;
-                case Type.LINESTRING:
-                case Type.MULTILINESTRING:
-                    return GeometryDimensionConstraint.DIMENSION_CURVE;
-                case Type.POLYGON:
-                case Type.MULTIPOLYGON:
-                    return GeometryDimensionConstraint.DIMENSION_SURFACE;
-                case Type.GEOMETRY:
-                case Type.GEOMETRYCOLLECTION:
-                    GeometryDimensionConstraint gdc =
-                            (GeometryDimensionConstraint) type.getConstraint(Constraint.DIMENSION_2D_GEOMETRY);
-                    if (gdc == null) {
-                        return GeometryDimensionConstraint.DIMENSION_UNKNOWN;
-                    } else {
-                        return gdc.getDimension();
-                    }
-                default:
-                    return -1;
-            }
-        }
-    }
+   
 
     /**
      * Returns the coordinate dimension
@@ -229,7 +191,7 @@ public final class GeometryTypeUtil {
      * Returns true if the geometry type is a surface
      * @param geom 
      */
-    public static boolean  isSurface(Geometry geom) {
+    public static boolean isSurface(Geometry geom) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
