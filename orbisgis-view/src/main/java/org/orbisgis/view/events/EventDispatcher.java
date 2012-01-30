@@ -32,10 +32,7 @@
  */
 package org.orbisgis.view.events;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 /**
  * @brief manage the processing of propagation of events.
  * 
@@ -85,8 +82,11 @@ class EventDispatcher {
                //Search the instance related listener list
                ListenerList llist = foundManager.get((EventSource)parameters.getSource());
                if(llist!=null) {
-                   //For each UUID
-                   for(EventSourceInstanceFinalizeWitness listenerInst : llist) {                  
+                   //For each UUID    
+                   Iterator<EventSourceInstanceFinalizeWitness> itListener = llist.iterator();
+                   EventSourceInstanceFinalizeWitness listenerInst=null;
+                   while(itListener.hasNext()) {
+                       listenerInst = itListener.next();
                        Listener listener = listeners.get(listenerInst.getUniqueId());
                        if(listener!=null) {
                            try {
@@ -100,10 +100,11 @@ class EventDispatcher {
                            }
                        } else {
                            //The listener has been removed by the target
-                           //Remove the reference in the source list
-                           llist.remove(listenerInst);
+                           //Remove the reference in the listener UUID list
+                           itListener.remove();
                            if(llist.isEmpty()) {
                                //That was the last listener attached to this source
+                               //Remove the weakReference of the source
                                foundManager.remove((EventSource)parameters.getSource());
                                break;
                            }
