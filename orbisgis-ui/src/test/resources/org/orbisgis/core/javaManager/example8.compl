@@ -1,8 +1,0 @@
-129;variable-theMessage
-import javax.swing.JOptionPane;
-
-int a;
-
-private void showMessage(String theMessage) {
-JOptionPane.showMessageDialog(null, themes
-}
