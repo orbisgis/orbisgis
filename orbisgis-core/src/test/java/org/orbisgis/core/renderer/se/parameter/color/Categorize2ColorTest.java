@@ -138,7 +138,7 @@ public class Categorize2ColorTest {
         try {
             // To retrieve classes...
             testAddClasses();
-            categorize.setThresholdValue(2, t4);
+            categorize.setClassThreshold(2, t4);
             assertTrue(categorize.getNumClasses() == 4);
             assertTrue(categorize.getClassValue(0).getColor(null, -1) == class1.getColor(null, -1));
             assertTrue(categorize.getClassValue(1).getColor(null, -1) == class2.getColor(null, -1));
@@ -146,22 +146,22 @@ public class Categorize2ColorTest {
             assertTrue(categorize.getClassValue(3).getColor(null, -1) == class4.getColor(null, -1));
 
             // Thresholds : 75, 100, 200
-            assertEquals(categorize.getThresholdValue(0).getValue(null, -1), t4.getValue(null, -1));
-            assertEquals(categorize.getThresholdValue(1).getValue(null, -1), t1.getValue(null, -1));
-            assertEquals(categorize.getThresholdValue(2).getValue(null, -1), t2.getValue(null, -1));
+            assertEquals(categorize.getClassThreshold(0).getValue(null, -1), t4.getValue(null, -1));
+            assertEquals(categorize.getClassThreshold(1).getValue(null, -1), t1.getValue(null, -1));
+            assertEquals(categorize.getClassThreshold(2).getValue(null, -1), t2.getValue(null, -1));
 
 
             // Thresholds : 75, 100, 200, 500
-            categorize.setThresholdValue(0, t5);
+            categorize.setClassThreshold(0, t5);
             assertTrue(categorize.getNumClasses() == 4);
             assertTrue(categorize.getClassValue(0).getColor(null, -1) == class1.getColor(null, -1));
             assertTrue(categorize.getClassValue(1).getColor(null, -1) == class2.getColor(null, -1));
             assertTrue(categorize.getClassValue(2).getColor(null, -1) == class3.getColor(null, -1));
             assertTrue(categorize.getClassValue(3).getColor(null, -1) == class4.getColor(null, -1));
 
-            assertEquals(categorize.getThresholdValue(0).getValue(null, -1), t1.getValue(null, -1));
-            assertEquals(categorize.getThresholdValue(1).getValue(null, -1), t2.getValue(null, -1));
-            assertEquals(categorize.getThresholdValue(2).getValue(null, -1), t5.getValue(null, -1));
+            assertEquals(categorize.getClassThreshold(0).getValue(null, -1), t1.getValue(null, -1));
+            assertEquals(categorize.getClassThreshold(1).getValue(null, -1), t2.getValue(null, -1));
+            assertEquals(categorize.getClassThreshold(2).getValue(null, -1), t5.getValue(null, -1));
 
 
 

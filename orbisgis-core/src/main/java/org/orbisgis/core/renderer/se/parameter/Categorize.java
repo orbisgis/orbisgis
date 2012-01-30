@@ -220,7 +220,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
      * @param i
      * @param threshold 
      */
-    public void setThresholdValue(int i, RealLiteral threshold) {
+    public void setClassThreshold(int i, RealLiteral threshold) {
         if (i >= 0 && i < getNumClasses() - 1) {
             RealParameter remove = thresholds.get(i);
             thresholds.set(i, threshold);
@@ -243,7 +243,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
      * @param i
      * @return 
      */
-    public RealParameter getThresholdValue(int i) {
+    public RealParameter getClassThreshold(int i) {
         return thresholds.get(i);
     }
 
