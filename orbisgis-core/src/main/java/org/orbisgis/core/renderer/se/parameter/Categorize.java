@@ -224,8 +224,8 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
      */
     public void setThresholdValue(int i, RealLiteral threshold) {
         if (i >= 0 && i < getNumClasses() - 1) {
-            RealParameter remove = thresholds.remove(i);
-            thresholds.add(i, threshold);
+            RealParameter remove = thresholds.get(i);
+            thresholds.set(i, threshold);
             threshold.setContext(RealParameterContext.REAL_CONTEXT);
             threshold.register(this);
             if (! remove.equals(threshold)) {
