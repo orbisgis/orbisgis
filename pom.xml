@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
         <modelVersion>4.0.0</modelVersion>
         <groupId>org.orbisgis</groupId>
-        <artifactId>orbisgis</artifactId>
+        <artifactId>orbisgis-monomap</artifactId>
         <packaging>pom</packaging>
         <version>4.0-SNAPSHOT</version>
         <name>platform</name>
@@ -52,14 +52,6 @@
                 <plugins>
                         <plugin>
                                 <groupId>org.apache.maven.plugins</groupId>
-                                <artifactId>maven-compiler-plugin</artifactId>
-                                <configuration>
-                                        <source>1.6</source>
-                                        <target>1.6</target>
-                                </configuration>
-                        </plugin>
-                        <plugin>
-                                <groupId>org.apache.maven.plugins</groupId>
                                 <artifactId>maven-dependency-plugin</artifactId>
                                 <configuration>
                                         <useRepositoryLayout>true</useRepositoryLayout>
@@ -76,8 +68,8 @@
                                                         <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                                                 </manifest>
                                                 <manifestEntries>
-                                                        <Specification-Vendor-URL>${pom.organization.url}</Specification-Vendor-URL>
-                                                        <Specification-URL>${pom.url}</Specification-URL>
+                                                        <Specification-Vendor-URL>${project.organization.url}</Specification-Vendor-URL>
+                                                        <Specification-URL>${project.url}</Specification-URL>
                                                 </manifestEntries>
                                         </archive>
                                 </configuration>
