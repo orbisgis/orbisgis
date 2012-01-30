@@ -212,8 +212,6 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
             n--; // first class in not in the list
             classValues.remove(n);
             classValues.add(n, val);
-        } else {
-            // TODO throw
         }
     }
 
