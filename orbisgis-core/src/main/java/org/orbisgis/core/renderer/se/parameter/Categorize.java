@@ -231,8 +231,6 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
             if (! remove.equals(threshold)) {
                 sortClasses();
             }
-        } else {
-            // TODO throw
         }
         this.method = CategorizeMethod.MANUAL;
     }
