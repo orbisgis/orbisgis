@@ -12,17 +12,10 @@
         </organization>
         <url>http://orbisgis.org</url>
         <modules>
-                <module>commons</module>
-                <module>gdms</module>
-                <module>gdmstest</module>
-                <module>gdmsql</module>
-                <module>grap</module>
-                <module>orbisgis-core</module>
-                <module>orbisgis-ui</module>
-    <module>orbisgis-view-controler</module>
-    <module>orbisgis-view</module>
-    <module>orbisgis-model</module>
-  </modules>
+            <module>orbisgis-view-controler</module>
+            <module>orbisgis-view</module>
+            <module>orbisgis-model</module>
+        </modules>
 	<properties>
                 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
                 <netbeans.hint.license>OrbisGIS</netbeans.hint.license>
