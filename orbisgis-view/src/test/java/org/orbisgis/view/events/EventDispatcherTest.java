@@ -101,7 +101,7 @@ public class EventDispatcherTest extends TestCase {
         //OnFire must not be already called
         assertFalse(targetSample.isFiredEventWitness());
         
-        //Ask the Event source to fire an event
+        //Ask the Event sourcsourceGarbageCollectingCheck()e to fire an event
         sourceSample.fireSomething();
         
         
@@ -110,6 +110,9 @@ public class EventDispatcherTest extends TestCase {
         
         //Remove the listener from the target
         EventDispatcher.removeListeners(targetSample);
+        
+        //Ask the Event sourcsourceGarbageCollectingCheck()e to fire an event
+        sourceSample.fireSomething();
     }
     
     public void testMultiLevelEvent() {

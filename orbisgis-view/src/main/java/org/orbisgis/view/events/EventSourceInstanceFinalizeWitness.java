@@ -37,10 +37,16 @@ import java.util.UUID;
  */
 public class EventSourceInstanceFinalizeWitness {
     UUID uniqueId;
+    /**
+     * Default constructor, initialize the unique ID of the listener
+     */
     public EventSourceInstanceFinalizeWitness() {
         uniqueId=UUID.randomUUID();
     }
-
+    /**
+     * 
+     * @return Unique ID of the listener
+     */
     public UUID getUniqueId() {
         return uniqueId;
     }

@@ -43,7 +43,7 @@ public interface Listener extends EventListener {
      * @param evtName The event name, it can be the same as the event linked with this event but it can be also a more specific event.
      * @param evtData The event information, like the instance that fired the event.
      */
-    public void onEvent(EventData evtData) throws ListenerException;
+    void onEvent(EventData evtData) throws ListenerException;
     
     
 }

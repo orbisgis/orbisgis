@@ -28,6 +28,8 @@
  */
 package org.orbisgis.view.events;
 
+import java.util.Locale;
+
 /**
  * @brief Event name describe the event by a hierarchical way
  * The final level (rightmost) is the most precise description
@@ -36,7 +38,7 @@ package org.orbisgis.view.events;
  */
 public class EventName {
     private String chain="";
-    private final static String sep="/";
+    private final static String SEP="/";
     /**
      * An empty event name
      */
@@ -50,10 +52,20 @@ public class EventName {
     public EventName(String item) {
         push(item);
     }
+    /**
+     * Build an event name by the concatenation of root name and fold name
+     * @param parent Root of the event name
+     * @param eventItem Last level of event name
+     */
     public EventName(EventName parent,String eventItem) {
         chain=parent.toString();
         this.push(eventItem);
     }
+    /**
+     * Build an event name by the concatenation of root name and fold name
+     * @param parent Root of the event name
+     * @param eventItem Last level of event name
+     */
     public EventName(EventName parent,EventName eventItem) {
         chain=parent.toString();
         for(String item : eventItem.getEventItems()) {
@@ -65,17 +77,17 @@ public class EventName {
      * @param eventItem A string corresponding to a more precise description that the last one
      * @return Instance of this EventName.
      */
-    final public EventName push(String eventItem) {
-        //eventItem.replaceAll(sep, "\\"+sep); //Escape special char
-        String lowerEvent=eventItem.toLowerCase();
+    public final EventName push(String eventItem) {
+        //eventItem.replaceAll(SEP, "\\"+SEP); //Escape special char
+        String lowerEvent=eventItem.toLowerCase(Locale.getDefault());
         if(!chain.isEmpty()) {
-            chain+=sep;
+            chain+=SEP;
         }
         chain+=lowerEvent;
         return this;
     }
     private String[] getEventItems() {
-        return chain.split(sep);
+        return chain.split(SEP);
     }
     /**
      * @return Return all sub compounds of this particular event. For a.b.c.d return [a.b.c,a.b,a]

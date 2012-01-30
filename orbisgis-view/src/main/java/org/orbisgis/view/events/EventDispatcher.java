@@ -34,6 +34,7 @@ package org.orbisgis.view.events;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 /**
  * @brief manage the processing of propagation of events.
@@ -55,16 +56,16 @@ import java.util.UUID;
  *   The target object must free the listeners by using this method :
  *   code: EventDispatcher.removeListeners(targetInstance);
  */
-public class EventDispatcher {
+class EventDispatcher {
     //Link between the event name, event source and listener ID
     //Used by OnEvent
-    private static HashMap<EventName,ListenerListManager> links = new HashMap<EventName,ListenerListManager>();
+    private static Map<EventName,ListenerListManager> links = new HashMap<EventName,ListenerListManager>();
     //Active listener list
-    private static HashMap<UUID,Listener> listeners = new  HashMap<UUID,Listener>();
+    private static Map<UUID,Listener> listeners = new  HashMap<UUID,Listener>();
     //Link between target and listeners
     //Used by target to no longer by called by listener, and guarentee 
     //that the target will be freed by the garbage collector
-    private static HashMap<Integer,ArrayList<UUID>> targetToListener = new HashMap<Integer,ArrayList<UUID>>();
+    private static Map<Integer,ArrayList<UUID>> targetToListener = new HashMap<Integer,ArrayList<UUID>>();
     /**
      * Called by an Event Source to fire attached listeners
      * @param evtName Event description
@@ -104,6 +105,7 @@ public class EventDispatcher {
                            if(llist.isEmpty()) {
                                //That was the last listener attached to this source
                                foundManager.remove((EventSource)parameters.getSource());
+                               break;
                            }
                        }                       
                    }

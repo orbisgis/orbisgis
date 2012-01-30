@@ -50,7 +50,10 @@ public class EventTargetSample {
     public void setFiredRootEvent() {
         this.firedRootEvent = true;
     }
-
+    /**
+     * 
+     * @return True if setFiredRootEvent has been called
+     */
     public boolean isFiredSubEvent() {
         return firedSubEvent;
     }
@@ -61,7 +64,10 @@ public class EventTargetSample {
     public void setFiredSubEvent() {
         this.firedSubEvent = true;
     }
-    
+    /**
+     * Called by the listener
+     * @param evtName The name of the event
+     */
     public void onFire(EventName evtName) {
         firedEvent = true;
     }
