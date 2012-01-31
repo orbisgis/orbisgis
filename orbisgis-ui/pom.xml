@@ -82,14 +82,6 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>rpm-maven-plugin</artifactId>
                 <version>2.1-alpha-1</version>
-                <executions>
-                    <execution>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>rpm</goal>
-                        </goals>
-                    </execution>
-                </executions>
                 <configuration>
                     <copyright>GPL</copyright>
                     <distribution>OrsbiGIS</distribution>
