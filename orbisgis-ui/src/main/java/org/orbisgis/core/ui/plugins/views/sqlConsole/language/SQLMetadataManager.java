@@ -39,6 +39,7 @@
 package org.orbisgis.core.ui.plugins.views.sqlConsole.language;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -55,6 +56,7 @@ import org.gdms.driver.Driver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.source.CommitListener;
 import org.gdms.source.SourceEvent;
 import org.gdms.source.SourceListener;
 import org.gdms.source.SourceRemovalEvent;
@@ -77,6 +79,7 @@ public class SQLMetadataManager implements SourceListener {
         private final Map<String, Metadata> cachedMetadatas = Collections.synchronizedMap(new TreeMap<String, Metadata>());
         // source loading & thread synchronisation
         private final BlockingDeque<String> sourcesToLoad = new LinkedBlockingDeque<String>();
+        private Map<String, CommitListener> commitListeners = new HashMap<String, CommitListener>();
         private volatile boolean isLoadingSources = false;
         private final Object lock = new Object();
         private UniqueJobID jobID;
@@ -207,7 +210,7 @@ public class SQLMetadataManager implements SourceListener {
         public String[] getSourceNames() {
                 return cachedMetadatas.keySet().toArray(new String[cachedMetadatas.size()]);
         }
-        
+
         /**
          * Gets some metadata from the cache.
          * @param name the name of the source
@@ -222,7 +225,7 @@ public class SQLMetadataManager implements SourceListener {
          * @param sourceName the name of the source
          * @return the <code>Metadata</code> object containing the field names and types
          */
-        public Metadata getMetadata(String sourceName) {
+        public Metadata getMetadata(final String sourceName) {
                 // checking the cache
                 Metadata m = cachedMetadatas.get(sourceName);
                 if (m != null) {
@@ -256,6 +259,35 @@ public class SQLMetadataManager implements SourceListener {
                         }
                         // then we cache it
                         cachedMetadatas.put(sourceName, m);
+                        // and we add a commit listener
+                        
+                        final CommitListener newC = new CommitListener() {
+
+                                @Override
+                                public void isCommiting(String name, Object source) throws DriverException {
+                                }
+
+                                @Override
+                                public void commitDone(String name) throws DriverException {
+                                        Metadata m = cachedMetadatas.remove(name);
+                                        if (m != null) {
+                                                fireMetadataRemoved(name, m);
+                                                sourcesToLoad.add(name);
+                                        }
+                                }
+
+                                @Override
+                                public String getName() {
+                                        return sourceName;
+                                }
+                        };
+
+                        CommitListener old = commitListeners.put(sourceName, newC);
+                        if (old != null) {
+                                dataManager.getSourceManager().removeCommitListener(old);
+                        }
+                        dataManager.getSourceManager().addCommitListener(newC);
+
                         fireMetadataAdded(sourceName, m);
                         return m;
                 } catch (DriverLoadException ex) {
@@ -268,7 +300,7 @@ public class SQLMetadataManager implements SourceListener {
                         return null;
                 }
         }
-        
+
         /**
          * Registers a MetadataListener.
          * @param l a listener
@@ -276,7 +308,7 @@ public class SQLMetadataManager implements SourceListener {
         public void registerMetadataListener(SQLMetadataListener l) {
                 listeners.add(l);
         }
-        
+
         /**
          * Unregisters a MetadataListener.
          * @param l a (registered) listener
@@ -284,15 +316,15 @@ public class SQLMetadataManager implements SourceListener {
         public void unregisterMetadataListener(SQLMetadataListener l) {
                 listeners.remove(l);
         }
-        
+
         private void fireMetadataAdded(String name, Metadata m) {
-                for(SQLMetadataListener l : listeners) {
+                for (SQLMetadataListener l : listeners) {
                         l.metadataAdded(name, m);
                 }
         }
-        
+
         private void fireMetadataRemoved(String name, Metadata m) {
-                for(SQLMetadataListener l : listeners) {
+                for (SQLMetadataListener l : listeners) {
                         l.metadataRemoved(name, m);
                 }
         }
