@@ -5,16 +5,15 @@
         <artifactId>orbisgis-monomap</artifactId>
         <packaging>pom</packaging>
         <version>4.0-SNAPSHOT</version>
-        <name>platform</name>
+        <name>platform-monomap</name>
         <organization>
                 <name>IRSTV CNRS-FR-2488</name>
                 <url>http://www.irstv.fr/</url>
         </organization>
         <url>http://orbisgis.org</url>
         <modules>
-            <module>orbisgis-view-controler</module>
+            <module>orbisgis-base</module>
             <module>orbisgis-view</module>
-            <module>orbisgis-model</module>
         </modules>
 	<properties>
                 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
