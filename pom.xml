@@ -33,7 +33,7 @@
                 <repository>
                         <id>sonatype-oss-maven</id>
                         <name>Sonatype OSS Maven Repository for Staging Snapshots</name>
-                        <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                        <url>http://oss.sonatype.org/content/repositories/snapshots/</url>
                         <releases>
                                 <enabled>false</enabled>
                         </releases>
