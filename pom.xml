@@ -31,9 +31,17 @@
                         <url>http://repo2.maven.org/maven2</url>
                 </repository>
                 <repository>
-                   <id>oss.sonatype.org</id>
-                   <name>Sonotype repository</name>
-                   <url>http://oss.sonatype.org/content/repositories/snapshots/</url>
+                        <id>sonatype-oss-maven</id>
+                        <name>Sonatype OSS Maven Repository for Staging Snapshots</name>
+                        <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                        <releases>
+                                <enabled>false</enabled>
+                        </releases>
+                        <snapshots>
+                                <enabled>true</enabled>
+                                <updatePolicy>always</updatePolicy>
+                                <checksumPolicy>fail</checksumPolicy>
+                        </snapshots>
                 </repository>
         </repositories>
         <pluginRepositories>
