@@ -126,7 +126,7 @@ final class EventDispatcher {
      * to let the garbage collector free your target instance.
      * @return The unique ID of the new event listener
      */
-    public synchronized static UUID addListener(Object target,Listener listener,EventName evtName, EventSource watchedInstance) {
+    public static synchronized  UUID addListener(Object target,Listener listener,EventName evtName, EventSource watchedInstance) {
         //Compute a unique ID for the listener
         EventSourceInstanceFinalizeWitness evtLink = new EventSourceInstanceFinalizeWitness();
         //Retrieve the target listener list
@@ -162,7 +162,7 @@ final class EventDispatcher {
     /**
      * When a target is no longer used, the listeners created by it must be removed.
      */
-    public synchronized static void removeListeners(Object target) {
+    public static synchronized void removeListeners(Object target) {
         //Retrieve all UUID linked with this target
         ArrayList<UUID> thelist = targetToListener.get(target.hashCode());
         if(thelist!=null) {
@@ -176,7 +176,7 @@ final class EventDispatcher {
      * Remove a specific listener
      * @param listenerId 
      */
-    public synchronized static void removeListener(UUID listenerId) {
+    public static synchronized void removeListener(UUID listenerId) {
         if(listeners.containsKey(listenerId)) {
             listeners.remove(listenerId);
         }

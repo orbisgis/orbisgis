@@ -40,5 +40,10 @@ public class Core implements ComponentCollector {
     public Collection<Component> listComponents() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
+    	/**
+	 * Starts the application. This method creates the {@link MainFrame}
+	 */
+	public void startup(){
+            
+        }
 }

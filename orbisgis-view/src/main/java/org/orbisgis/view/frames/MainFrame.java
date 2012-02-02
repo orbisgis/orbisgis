@@ -27,7 +27,7 @@
  * info _at_ orbisgis.org
  */
 
-package org.orbisgis.view.main;
+package org.orbisgis.view.frames;
 
 public class MainFrame {
     
