@@ -29,6 +29,22 @@
 
 package org.orbisgis.view.frames;
 
-public class MainFrame {
-    
+import javax.swing.JFrame;
+import org.orbisgis.view.icons.OrbisGISIcon;
+
+/**
+ * Host of the {@link DockStation}s, this frame contain 
+ * all other dackable frames
+ *
+ */
+public class MainFrame extends JFrame{
+    	/**
+	 * Creates a new frame. The content of the frame is not created by
+	 * this constructor, clients must call {@link #setup(Core)}.
+	 */
+	public MainFrame(){
+		setTitle( "Notes - Demonstration of DockingFrames" );
+		setDefaultCloseOperation( DO_NOTHING_ON_CLOSE );
+		setIconImage(OrbisGISIcon.getIconImage("mini_orbisgis"));
+	}
 }

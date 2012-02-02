@@ -31,12 +31,14 @@ package org.orbisgis.view.main;
 import bibliothek.gui.dock.support.lookandfeel.ComponentCollector;
 import java.awt.Component;
 import java.util.Collection;
+import org.orbisgis.view.frames.MainFrame;
 
 /**
  * The core manage the look and feel for each view of the Main Frame
+ * This is the main UIContext
  */
 public class Core implements ComponentCollector {
-
+    private MainFrame mainFrame;
     public Collection<Component> listComponents() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -44,6 +46,8 @@ public class Core implements ComponentCollector {
 	 * Starts the application. This method creates the {@link MainFrame}
 	 */
 	public void startup(){
-            
+            if(mainFrame!=null) {
+                
+            }
         }
 }
