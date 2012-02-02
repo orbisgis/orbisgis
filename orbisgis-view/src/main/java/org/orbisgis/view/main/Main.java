@@ -31,7 +31,7 @@ package org.orbisgis.view.main;
 /**
  * Entry point of User Interface
  */
-public class Main 
+final class Main 
 {
     /**
     * Entry point of User Interface

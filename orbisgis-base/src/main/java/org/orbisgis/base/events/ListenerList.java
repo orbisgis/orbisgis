@@ -35,5 +35,5 @@ import java.util.ArrayList;
  * Only to attach a name on this specific arraylist
  */
 public class ListenerList extends ArrayList<EventSourceInstanceFinalizeWitness> {
-    
+    private static final long serialVersionUID = 1L; //Modification version of the class, increment when add/delete/update fields
 }

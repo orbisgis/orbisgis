@@ -36,7 +36,7 @@ import java.util.UUID;
  * by the garbage collector.
  */
 public class EventSourceInstanceFinalizeWitness {
-    UUID uniqueId;
+    private UUID uniqueId;
     /**
      * Default constructor, initialize the unique ID of the listener
      */
@@ -52,9 +52,9 @@ public class EventSourceInstanceFinalizeWitness {
     }
 
     @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
+    protected void finalize() throws Throwable  {
         EventDispatcher.removeListener(uniqueId);
+        super.finalize();
     }
     
 }

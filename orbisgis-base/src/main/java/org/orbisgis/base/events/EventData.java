@@ -35,8 +35,8 @@ import java.util.EventObject;
  * @link http://en.wikipedia.org/wiki/JavaBean
  */
 public class EventData extends EventObject {
-    EventName eventName;
-
+    private EventName eventName;
+    private static final long serialVersionUID = 1L; //Modification version of the class, increment when add/delete/update fields
     /**
      * Unique constructor, with minimal parameters
      * @param eventName The event description, statically stored by the inherited class of EventSource

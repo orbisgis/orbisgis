@@ -46,4 +46,12 @@ public class EventException extends Exception {
     public EventException(String msg) {
         super(msg);
     }
+    /**
+     * Constructs an instance of <code>EventException</code> with throw information.
+     * @param thr The throw informations
+     * @note Use this constructor when catch another Exception
+     */
+    public EventException(Throwable thr) {
+        super(thr);
+    }
 }

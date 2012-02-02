@@ -28,6 +28,7 @@
  */
 package org.orbisgis.base.events;
 
+import java.io.Serializable;
 import java.util.Locale;
 
 /**
@@ -36,7 +37,7 @@ import java.util.Locale;
  * Ex: mainclass/view/button/hide
  * New eventName must be specified as a static variable inside the event source class. In that case, the modification of the event name will not break other class that reference to this event name.
  */
-public class EventName {
+public class EventName implements Serializable{
     private String chain="";
     private final static String SEP="/";
     /**

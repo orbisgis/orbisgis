@@ -53,7 +53,7 @@ import java.util.*;
  *   The target object must free the listeners by using this method :
  *   code: EventDispatcher.removeListeners(targetInstance);
  */
-class EventDispatcher {
+final class EventDispatcher {
     //Link between the event name, event source and listener ID
     //Used by OnEvent
     private static Map<EventName,ListenerListManager> links = new HashMap<EventName,ListenerListManager>();
@@ -95,7 +95,7 @@ class EventDispatcher {
                            }
                            catch (ListenerException exc){ //If the event throw an error then stop propagation if the listener want to
                                if(!exc.letContinueProcessing()) {
-                                   throw new EventException(exc.getMessage());
+                                   throw new EventException(exc);
                                }
                            }
                        } else {

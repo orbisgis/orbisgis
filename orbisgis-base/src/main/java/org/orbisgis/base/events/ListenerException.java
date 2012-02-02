@@ -33,7 +33,7 @@ package org.orbisgis.base.events;
  * This exception let other listener to manage the event if continueProcessing is True
  */
 public class ListenerException extends Exception {
-    boolean continueProcessing;
+    private boolean continueProcessing;
     /**
      * Creates a new instance of <code>ListenerException</code> without detail message.
      */
