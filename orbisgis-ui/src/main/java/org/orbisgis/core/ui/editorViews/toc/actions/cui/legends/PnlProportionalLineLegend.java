@@ -233,6 +233,7 @@ public class PnlProportionalLineLegend extends JPanel implements ILegendPanel {
 		btnPreview = new JButton("Build");
 		btnPreview.addActionListener(new ActionListener() {
 
+            @Override
 			public void actionPerformed(ActionEvent e) {
 				try {
 					legend.preprocess(legendContext.getLayer().getDataSource());
@@ -340,22 +341,27 @@ public class PnlProportionalLineLegend extends JPanel implements ILegendPanel {
 		});
 	}
 
+    @Override
 	public boolean acceptsGeometryType(int geometryType) {
 		return (geometryType == GeometryProperties.LINE);
 	}
 
+    @Override
 	public Component getComponent() {
 		return this;
 	}
 
+    @Override
 	public Legend getLegend() {
 		return legend;
 	}
 
+    @Override
 	public ILegendPanel newInstance() {
 		return new PnlProportionalLineLegend();
 	}
 
+    @Override
 	public void setLegend(Legend legend) {
 		this.legend = (ProportionalLegend) legend;
 		syncWithLegend();

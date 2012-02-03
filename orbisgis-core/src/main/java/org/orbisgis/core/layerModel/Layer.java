@@ -123,10 +123,12 @@ public class Layer extends GdmsLayer {
 		return legend;
 	}
 
+    @Override
 	public DataSource getDataSource() {
 		return dataSource;
 	}
 
+    @Override
 	public Envelope getEnvelope() {
 		Envelope result = new Envelope();
 
@@ -142,6 +144,7 @@ public class Layer extends GdmsLayer {
 		return result;
 	}
 
+    @Override
 	public void close() throws LayerException {
 		super.close();
 		try {
@@ -339,6 +342,7 @@ public class Layer extends GdmsLayer {
 
 	private class RefreshSelectionEditionListener implements EditionListener {
 
+        @Override
 		public void multipleModification(MultipleEditionEvent e) {
 			EditionEvent[] events = e.getEvents();
 			int[] selection = getSelection();
@@ -350,6 +354,7 @@ public class Layer extends GdmsLayer {
 			setSelection(selection);
 		}
 
+        @Override
 		public void singleModification(EditionEvent e) {
 			if (e.getType() == EditionEvent.DELETE) {
 				int[] selection = getSelection();
@@ -380,6 +385,7 @@ public class Layer extends GdmsLayer {
 		}
 	}
 
+    @Override
 	public LayerType saveLayer() {
 		LayerType ret = new LayerType();
 		ret.setName(getName());
@@ -408,6 +414,7 @@ public class Layer extends GdmsLayer {
 		return ret;
 	}
 
+    @Override
 	public void restoreLayer(LayerType lyr) throws LayerException {
 		LayerType layer = (LayerType) lyr;
 		this.setName(layer.getName());

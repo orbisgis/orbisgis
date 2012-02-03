@@ -37,7 +37,6 @@
 package org.orbisgis.core.renderer.legend;
 
 import java.awt.Graphics2D;
-
 import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.symbol.Symbol;
 

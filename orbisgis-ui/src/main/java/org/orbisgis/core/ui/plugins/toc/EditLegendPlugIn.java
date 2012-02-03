@@ -38,7 +38,6 @@
 package org.orbisgis.core.ui.plugins.toc;
 
 import javax.swing.JOptionPane;
-
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
@@ -99,7 +98,7 @@ public class EditLegendPlugIn extends AbstractPlugIn {
 			// Obtain MapTransform
 			EditorManager em = (EditorManager) Services
 					.getService(EditorManager.class);
-			MapTransform mt = null;
+			MapTransform mt;
 			// Find the map editor editing mapContext
 			IEditor editor = em.getEditors(Names.EDITOR_MAP_ID, mapContext)[0];
 			mt = ((MapEditorPlugIn) editor).getMapTransform();
@@ -134,6 +133,7 @@ public class EditLegendPlugIn extends AbstractPlugIn {
 		}
 	}
 
+    @Override
 	public boolean isEnabled() {
 		return getPlugInContext().checkLayerAvailability(
 				new SelectionAvailability[] { SelectionAvailability.EQUAL }, 1,

@@ -38,8 +38,6 @@
 package org.orbisgis.core.ui.plugins.toc;
 
 import javax.swing.JOptionPane;
-import org.gdms.data.types.Type;
-import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
@@ -49,7 +47,6 @@ import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.sif.UIPanel;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
-
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext.LayerAvailability;
@@ -90,13 +87,9 @@ public class EditSELegendPlugIn extends AbstractPlugIn {
 
 	public void execute(MapContext mapContext, ILayer layer) {
 		try {
-			Type typ = layer.getDataSource().getMetadata().getFieldType(
-					layer.getDataSource().getSpatialFieldIndex());
-
-
 			// Obtain MapTransform
 			EditorManager em = (EditorManager) Services.getService(EditorManager.class);
-			MapTransform mt = null;
+			MapTransform mt;
 			// Find the map editor editing mapContext
 			IEditor editor = em.getEditors(Names.EDITOR_MAP_ID, mapContext)[0];
 			mt = ((MapEditorPlugIn) editor).getMapTransform();
@@ -113,8 +106,6 @@ public class EditSELegendPlugIn extends AbstractPlugIn {
 			}
 		} catch (InvalidStyle ex) {
 			Services.getErrorManager().error(Names.ERROR_EDIT_LEGEND_LAYER, ex);
-		} catch (DriverException e) {
-			Services.getErrorManager().error(Names.ERROR_EDIT_LEGEND_LAYER, e);
 		}
 	}
 

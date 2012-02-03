@@ -39,9 +39,7 @@ package org.orbisgis.core.ui.editorViews.toc.actions.cui.components;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-
 import javax.swing.JPanel;
-
 import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.renderer.symbol.SymbolUtil;
 

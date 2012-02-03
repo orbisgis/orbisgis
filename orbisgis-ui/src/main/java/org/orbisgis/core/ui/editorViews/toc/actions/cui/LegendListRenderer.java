@@ -3,13 +3,7 @@ package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Rectangle;
-
-import javax.swing.BoxLayout;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.ListCellRenderer;
+import javax.swing.*;
 
 @Deprecated
 public class LegendListRenderer implements ListCellRenderer {

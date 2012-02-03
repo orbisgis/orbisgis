@@ -37,12 +37,8 @@
  */
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.legends;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import com.vividsolutions.jts.geom.Envelope;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -51,22 +47,14 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-
-import javax.swing.BorderFactory;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-
 import org.gdms.data.DataSource;
 import org.gdms.data.schema.Metadata;
+import org.gdms.data.types.GeometryDimensionConstraint;
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
@@ -80,19 +68,10 @@ import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.sif.CRFlowLayout;
 import org.orbisgis.core.sif.CarriageReturn;
 import org.orbisgis.core.sif.UIFactory;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.CompositeSymbolFilter;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.ConstraintSymbolFilter;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendContext;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.SymbolBuilder;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.SymbolEditionValidation;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.SymbolFilter;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.*;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.Canvas;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
-
-import com.vividsolutions.jts.geom.Envelope;
-import org.gdms.data.types.GeometryDimensionConstraint;
-import org.gdms.data.types.TypeFactory;
 
 @Deprecated
 public class PnlProportionalPointLegend extends JPanel implements ILegendPanel {

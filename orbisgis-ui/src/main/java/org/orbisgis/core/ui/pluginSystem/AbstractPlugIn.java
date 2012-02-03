@@ -38,15 +38,9 @@
 package org.orbisgis.core.ui.pluginSystem;
 
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.Observable;
-
 import javax.swing.JComponent;
-
 import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.utils.I18N;
@@ -158,10 +152,12 @@ public abstract class AbstractPlugIn implements PlugIn {
 	 * @param WorkbenchContext
 	 */
 	public void createPlugInContext(WorkbenchContext context) {
-		if (plugInContext == null)
-			plugInContext = context.createPlugInContext(this);
-		if (!context.getPopupPlugInObservers().contains(this))
-			context.getPopupPlugInObservers().add(this);
+		if (plugInContext == null) {
+            plugInContext = context.createPlugInContext(this);
+        }
+		if (!context.getPopupPlugInObservers().contains(this)) {
+            context.getPopupPlugInObservers().add(this);
+        }
 	}
 
 	/**

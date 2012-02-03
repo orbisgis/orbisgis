@@ -1,32 +1,18 @@
 package org.orbisgis.core.renderer.symbol;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Paint;
-import java.awt.RenderingHints;
-import java.awt.Shape;
-import java.awt.Stroke;
+import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
+import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
-
+import net.LiteShape.LiteShape;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.AllowAllRenderContext;
 import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.ui.util.GUIUtil;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
-import net.LiteShape.LiteShape;
 
 @Deprecated
 public class SymbolUtil {
@@ -89,6 +75,7 @@ public class SymbolUtil {
 
 		try {
 			GUIUtil.invokeOnEventThread(new Runnable() {
+                @Override
 				public void run() {
 					try {
 						graphics.draw(shape);
@@ -162,7 +149,7 @@ public class SymbolUtil {
 			return;
 		}
 		GeometryFactory gf = new GeometryFactory();
-		Geometry geom = null;
+		Geometry geom;
 
 		try {
 			if (simple) {
@@ -234,8 +221,7 @@ public class SymbolUtil {
 		RenderContext renderPermission = new AllowAllRenderContext();
 		if (symbol.acceptGeometry(geom)) {
 			Symbol sym = RenderUtils.buildSymbolToDraw(symbol, geom);
-			sym
-					.draw((Graphics2D) g, geom, new MapTransform(),
+			sym.draw((Graphics2D) g, geom, new MapTransform(),
 							renderPermission);
 		}
 	}
