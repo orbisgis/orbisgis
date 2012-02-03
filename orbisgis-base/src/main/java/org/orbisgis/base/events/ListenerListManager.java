@@ -33,6 +33,6 @@ import java.util.WeakHashMap;
 /**
  * @brief Internal class of EventDispatcher
  */
-public class ListenerListManager extends WeakHashMap<EventSource, ListenerList> {
+public class ListenerListManager extends WeakHashMap<Object, ListenerList> {
     
 }

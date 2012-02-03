@@ -28,26 +28,141 @@
  */
 package org.orbisgis.view.main;
 
+import bibliothek.extension.gui.dock.DockingFramesPreference;
+import bibliothek.extension.gui.dock.preference.PreferenceTreeModel;
+import bibliothek.extension.gui.dock.theme.EclipseTheme;
+import bibliothek.extension.gui.dock.theme.eclipse.stack.tab.RectGradientPainter;
+import bibliothek.gui.DockController;
+import bibliothek.gui.DockFrontend;
+import bibliothek.gui.dock.FlapDockStation;
+import bibliothek.gui.dock.station.flap.button.ButtonContent;
 import bibliothek.gui.dock.support.lookandfeel.ComponentCollector;
+import bibliothek.gui.dock.support.lookandfeel.LookAndFeelList;
+import bibliothek.gui.dock.themes.BasicTheme;
 import java.awt.Component;
+import java.beans.EventHandler;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import javax.swing.SwingUtilities;
+import org.orbisgis.base.context.main.MainContext;
+import org.orbisgis.base.events.EventDispatcher;
+import org.orbisgis.base.events.Listener;
+import org.orbisgis.utils.I18N;
 import org.orbisgis.view.frames.MainFrame;
+import org.orbisgis.view.translation.OrbisGISI18N;
 
 /**
  * The core manage the look and feel for each view of the Main Frame
  * This is the main UIContext
  */
 public class Core implements ComponentCollector {
-    private MainFrame mainFrame;
-    public Collection<Component> listComponents() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    /////////////////////
+    //view package
+    private MainFrame mainFrame;     /*!< The DockStation */
+    
+    /////////////////////
+    //base package :
+    private MainContext mainContext; /*!< The larger surrounding part of OrbisGis base */
+    
+    /////////////////////
+    //DockingFrames package :
+    private PreferenceTreeModel preferences; /*< Organizes {@link PreferenceModel}s in a tree */
+    private DockFrontend frontend; /*!< link to the docking-frames */
+    private LookAndFeelList lookAndFeels;    /*!< /*!< link to the docking-frames */
+
+    public Core() {
+        this.mainContext = new MainContext();
     }
-    	/**
-	 * Starts the application. This method creates the {@link MainFrame}
-	 */
-	public void startup(){
-            if(mainFrame!=null) {
-                
-            }
+    /**
+     * Help DockingFrames to update the Look And Feel of all views.
+     * @return All views of OrbisGis
+     */
+    public Collection<Component> listComponents() {
+        List<Component> components = new ArrayList<Component>();
+        
+        components.add(mainFrame);
+        return components;
+    }
+    /**
+     * 
+     * @return Instance of main context
+     */
+    public MainContext getMainContext() {
+        return mainContext;
+    }
+    /**
+     * Instance of main frame, null if startup() has not be called.
+     * @return MainFrame instance
+     */
+    public MainFrame getMainFrame() {
+        return mainFrame;
+    }
+    private void makeMainFrame() {
+        mainFrame = new MainFrame();
+        //When the user ask to close OrbisGis it call
+        //the shutdown method here, 
+        //then we link this event with our shutdown method
+        EventDispatcher.addListener(this,
+        EventHandler.create(Listener.class, this, "shutdown"),
+        MainFrame.MAIN_FRAME_CLOSING, mainFrame);
+    }
+    /**
+    * Starts the application. This method creates the {@link MainFrame},
+    * and manage the Look And Feel declarations
+    */
+    public void startup(){
+        if(mainFrame!=null) {
+            return;//This method can't be called twice
         }
+        initI18n();        
+        
+        makeMainFrame();
+        final DockController controller = new DockController();
+        
+        controller.setTheme( new BasicTheme() );
+        controller.getProperties().set( EclipseTheme.PAINT_ICONS_WHEN_DESELECTED, true );
+        controller.getProperties().set( EclipseTheme.TAB_PAINTER, RectGradientPainter.FACTORY );
+        controller.getProperties().set( FlapDockStation.BUTTON_CONTENT, ButtonContent.ICON_AND_TEXT_ONLY );
+
+        frontend = new DockFrontend( controller, mainFrame );
+	preferences = new DockingFramesPreference( controller );
+        
+        
+        lookAndFeels = LookAndFeelList.getDefaultList();
+        lookAndFeels.addComponentCollector( this );
+        
+        mainFrame.setup();
+	mainFrame.setBounds( 20, 20, 600, 400 );
+        
+        // Show the application when Swing will be ready
+        SwingUtilities.invokeLater( new Runnable(){
+                public void run(){
+                        mainFrame.setVisible( true );
+                        //views.getScreen().setShowing( true );
+                }
+        });
+    }
+    /**
+     * Add the properties of OrbisGis view to I18n translation manager
+     */
+    private void initI18n() {
+        // Init I18n
+        I18N.addI18n("", "orbisgis", OrbisGISI18N.class);
+    }
+    /**
+    * Stops this application, closes the {@link MainFrame} and saves
+    * all properties if the application is not in a {@link #isSecure() secure environment}.
+    */
+    public void shutdown(){
+        try{
+            mainFrame.dispose();
+
+
+            frontend.getController().kill();
+        }
+        finally{
+            System.exit( 0 );
+        }
+    }
 }

@@ -52,7 +52,7 @@ import javax.swing.ImageIcon;
 public class OrbisGISIcon {
     private static Map<String,ImageIcon> LOADED_ICONS=new HashMap<String,ImageIcon>();/*!< This map contain all loaded icons */
     
-    private static final ImageIcon ORBISGIS_MISSING_ICON = new ImageIcon(OrbisGISIcon.class.getResource("not_found_icon")); /*!< Icon displayed when the requested icon is not found */
+    private static final ImageIcon ORBISGIS_MISSING_ICON = new ImageIcon(OrbisGISIcon.class.getResource("remove.png")); /*!< Icon displayed when the requested icon is not found */
     
     
     /**

@@ -53,7 +53,7 @@ import java.util.*;
  *   The target object must free the listeners by using this method :
  *   code: EventDispatcher.removeListeners(targetInstance);
  */
-final class EventDispatcher {
+public class EventDispatcher {
     //Link between the event name, event source and listener ID
     //Used by OnEvent
     private static Map<EventName,ListenerListManager> links = new HashMap<EventName,ListenerListManager>();
@@ -70,21 +70,18 @@ final class EventDispatcher {
      * @param watchedInstance The source of the event, usually "this"
      */
     public static void onEvent(EventData parameters) throws EventException {
-       if(!(parameters.getSource() instanceof EventSource)) {
-           throw new EventException("Event source must implement EventSourceInstance.");
-       }
-        //Compute all sub event (for an EventName of a/b/c it will fire a/b/c then a/b then a )
+       //Compute all sub event (for an EventName of a/b/c it will fire a/b/c then a/b then a )
        EventName[] evtHierarchy=parameters.getEventName().getDecomposedEvent();
        for(EventName firedEvent : evtHierarchy) {
            //Search for this event in the hashTable
            ListenerListManager foundManager=links.get(firedEvent);
            if(foundManager!=null) {
                //Search the instance related listener list
-               ListenerList llist = foundManager.get((EventSource)parameters.getSource());
+               ListenerList llist = foundManager.get(parameters.getSource());
                if(llist!=null) {
                    //For each UUID    
                    Iterator<EventSourceInstanceFinalizeWitness> itListener = llist.iterator();
-                   EventSourceInstanceFinalizeWitness listenerInst=null;
+                   EventSourceInstanceFinalizeWitness listenerInst;
                    while(itListener.hasNext()) {
                        listenerInst = itListener.next();
                        Listener listener = listeners.get(listenerInst.getUniqueId());
@@ -105,7 +102,7 @@ final class EventDispatcher {
                            if(llist.isEmpty()) {
                                //That was the last listener attached to this source
                                //Remove the weakReference of the source
-                               foundManager.remove((EventSource)parameters.getSource());
+                               foundManager.remove(parameters.getSource());
                                break;
                            }
                        }                       
@@ -126,7 +123,7 @@ final class EventDispatcher {
      * to let the garbage collector free your target instance.
      * @return The unique ID of the new event listener
      */
-    public static synchronized  UUID addListener(Object target,Listener listener,EventName evtName, EventSource watchedInstance) {
+    public static synchronized  UUID addListener(Object target,Listener listener,EventName evtName, Object watchedInstance) {
         //Compute a unique ID for the listener
         EventSourceInstanceFinalizeWitness evtLink = new EventSourceInstanceFinalizeWitness();
         //Retrieve the target listener list

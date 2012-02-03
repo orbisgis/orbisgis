@@ -42,8 +42,8 @@ public class EventData extends EventObject {
      * @param eventName The event description, statically stored by the inherited class of EventSource
      * @param o The instance of EventSource that fire this event
      */
-    public EventData(EventName eventName, EventSource o) {
-        super(o);
+    public EventData(EventName eventName, Object eventSource) {
+        super(eventSource);
         this.eventName = eventName;
     }
     /**

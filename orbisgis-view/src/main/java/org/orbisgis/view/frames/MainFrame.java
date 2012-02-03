@@ -29,7 +29,15 @@
 
 package org.orbisgis.view.frames;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.Locale;
 import javax.swing.JFrame;
+import org.orbisgis.base.events.EventData;
+import org.orbisgis.base.events.EventDispatcher;
+import org.orbisgis.base.events.EventException;
+import org.orbisgis.base.events.EventName;
+import org.orbisgis.utils.I18N;
 import org.orbisgis.view.icons.OrbisGISIcon;
 
 /**
@@ -38,13 +46,35 @@ import org.orbisgis.view.icons.OrbisGISIcon;
  *
  */
 public class MainFrame extends JFrame{
+        public final static EventName MAIN_FRAME_CLOSING = new EventName("windowclose");
     	/**
 	 * Creates a new frame. The content of the frame is not created by
 	 * this constructor, clients must call {@link #setup(Core)}.
 	 */
 	public MainFrame(){
-		setTitle( "Notes - Demonstration of DockingFrames" );
+		setTitle( "OrbisGIS "
+                        + I18N.getString("orbisgis.org.orbisgis.version") + " - " + I18N.getString("orbisgis.org.orbisgis.versionName") + " - " + Locale.getDefault().getCountry() );
 		setDefaultCloseOperation( DO_NOTHING_ON_CLOSE );
-		setIconImage(OrbisGISIcon.getIconImage("mini_orbisgis"));
+		setIconImage(OrbisGISIcon.getIconImage("mini_orbisgis"));                
 	}
+        
+        /**
+	 * Creates and adds all observers that are needed by this {@link MainFrame}.
+	 */
+	private void setupListeners(){
+            // Link the Swing Event with the MainFrame event
+            addWindowListener( new WindowAdapter(){
+                @Override
+                public void windowClosing( WindowEvent e ){
+                    try {
+                        EventDispatcher.onEvent(new EventData(MAIN_FRAME_CLOSING,e.getSource()));
+                    } catch (EventException ex) {
+                        //Do nothing in this case if the event raise a fatal error (a listener throw an error with stoping procedure instruction)
+                    }
+                }
+            });
+	}
+        public void setup() {
+            setupListeners();
+        }
 }

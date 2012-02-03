@@ -28,7 +28,7 @@
  */
 package org.orbisgis.base.events;
 
-public class EventSourceSample implements EventSource {
+public class EventSourceSample {
     //This is a single level event
     public final static EventName SOMETHING_EVENT = new EventName("eventofsource");
     //This events use multi level event
