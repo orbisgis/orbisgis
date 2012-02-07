@@ -33,7 +33,8 @@ public class EventSourceSample {
     public final static String secretMessage = "Hello world";
     //This is a single level event
     public final ListenerContainer<EventObjectSample> somethingEventHandler = new ListenerContainer<EventObjectSample>();
-    //This events use multi level event
+    //This events use multi levels calls
+    //Listeners of root will be called when listeners of subEvent where called.
     public final ListenerContainer rootEventHandler = new ListenerContainer();
     public final ListenerContainer subEventHandler = new ListenerContainer(rootEventHandler);
     

@@ -37,15 +37,24 @@ public class EventTargetSample {
     private boolean firedRootEvent = false;
     private boolean firedSubEvent = false;
     private String privateMessage = "";
-
+    /**
+     * 
+     * @return The message passed from the source event
+     */
     public String getPrivateMessage() {
         return privateMessage;
     }
-
+    /**
+     * 
+     * @param privateMessage The message to set, called by the listener
+     */
     public void setPrivateMessage(String privateMessage) {
         this.privateMessage = privateMessage;
     }
-
+    /**
+     * Is the listener call setFireRootEvent()
+     * @return 
+     */
     public boolean isFiredRootEvent() {
         return firedRootEvent;
     }

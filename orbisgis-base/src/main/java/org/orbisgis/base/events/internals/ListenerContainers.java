@@ -26,37 +26,15 @@
  * or contact directly:
  * info _at_ orbisgis.org
  */
-package org.orbisgis.base.events;
+package org.orbisgis.base.events.internals;
 
-import java.util.EventObject;
+import java.util.ArrayList;
+import org.orbisgis.base.events.ListenerContainer;
+
 
 /**
- * @brief Event Data Sample for unit test
- * This is the event Data attached with an event (a call on listeners)
+ * @brief Declaration of an ArrayList<ListenerContainer>
  */
-public class EventObjectSample extends EventObject {
-    String message;
-    /**
-     * 
-     * @param message The secret message from the Event Source
-     * @param o The event source
-     */
-    public EventObjectSample(String message, Object o) {
-        super(o);
-        this.message = message;
-    }
-    /**
-     * 
-     * @return The message
-     */
-    public String getMessage() {
-        return message;
-    }
-    /**
-     * 
-     * @param message The message to send to the target
-     */
-    public void setMessage(String message) {
-        this.message = message;
-    }    
+public class ListenerContainers extends ArrayList<ListenerContainer> {
+    
 }

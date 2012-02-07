@@ -32,35 +32,19 @@
  */
 package org.orbisgis.base.events;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import org.orbisgis.base.events.internals.ListenerContainers;
 /**
- * @brief manage the processing of releasing all listeners attached to a specific target
+ * @brief Release all listeners attached to a specific target in one call.
  * 
- * Ex :
- *
- * An eventListener is linked with at least 2 objects,
- * an EventSource and an EventTarget. The listener will be removed automatically
- * if the associated EventSource no longer exist. 
- * However the event target is hard linked with a listener, then an event target
- * would remove listener.
- * 
- * To declare an new event :
- *   The class that own the event must store in final static the EventName related to it and an ListenerContainer for each EventName.
- *   The class that will create listeners and be called by them should create the listener by this way :
- *   code : EventHandler.create(Listener.class, targetInstance, "methodOfTarget","the property name of EventData to pass into the methodOfTarget as parameter");
- *   EventHandler will return a new listener, this listener must be pushed into the ListenerContainer :
- *   eventSource.anEvent.addListener(target,thelistener)
- *   code :EventDispatcher.addListener(targetInstance,theNewListener, EventSourceClass.SOMETHING_EVENT, sourceInstance);
- *   The target object must free the listeners by using this method :
- *   code: ListenerRelease.removeListeners(targetInstance);
+ * When a target will no longer receive listener calls, 
+ * ListenerRelease.releaseListeners(target) must be called to avoid 
+ * java memory leaks and let the garbage collector to collect the target.
  */
 public class ListenerRelease {
-    //Link between the event name, event source and listener ID
-    //Used by OnEvent
-    //Link between target and listeners
-    //Used by target to no longer be called by listeners, and guarentee 
-    //that the target will be freed by the garbage collector
-    private static WeakHashMap<Object,ListenerContainer> targetToListenerContainer = new WeakHashMap<Object,ListenerContainer>();
+    private final static Map<Object,ListenerContainers> targetToListenerContainer = Collections.synchronizedMap(new HashMap<Object,ListenerContainers>());
 
     /**
      * Add a listener to an Object/Event
@@ -74,19 +58,34 @@ public class ListenerRelease {
      * to let the garbage collector free your target instance.
      * @return The unique ID of the new event listener
      */
-    
+    /**
+     * Add a container to a target
+     * @warning Must be called by ListenerContainer only
+     * @param target The object target
+     * @param container The container instance
+     */
     public static synchronized void addListenerTarget(Object target,ListenerContainer container) {
-        targetToListenerContainer.put(target, container);
+        ListenerContainers containersList;
+        if(!targetToListenerContainer.containsKey(target)) {
+            containersList = new ListenerContainers();
+            targetToListenerContainer.put(target, containersList);            
+        } else {
+            containersList = targetToListenerContainer.get(target);
+        }
+        containersList.add(container);
     }
     /**
      * When a target is no longer used, the listeners created by it must be removed.
      */
     public static synchronized void releaseListeners(Object target) {
-        //Retrieve all UUID linked with this target
-        ListenerContainer theContainer = targetToListenerContainer.get(target);
-        if(theContainer!=null) {
-            theContainer.removeListeners(target);
-            targetToListenerContainer.remove(target);
+        ListenerContainers containersList;
+        if(targetToListenerContainer.containsKey(target)) {
+            containersList = targetToListenerContainer.get(target);
+            //Retrieve all UUID linked with this target
+            for(ListenerContainer container : containersList) {
+                    container.removeListeners(target);
+            }
         }
+        targetToListenerContainer.remove(target);
     }
 }
