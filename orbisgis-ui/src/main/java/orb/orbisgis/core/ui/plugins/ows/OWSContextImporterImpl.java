@@ -26,7 +26,6 @@ import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.db.DBSource;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
-import org.orbisgis.core.DefaultDataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
@@ -46,20 +45,11 @@ public class OWSContextImporterImpl implements OWSContextImporter {
     static SQLDataSourceFactory dsf = new SQLDataSourceFactory();
     
     public OWSContextImporterImpl() throws ParserConfigurationException {
-        registerDataManager();
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         // In order to get a xerces implementation which takes namespaces
         // into account
         dbf.setNamespaceAware(true); 
         builder = dbf.newDocumentBuilder();
-    }
-    
-    public static void registerDataManager() {
-        // Installation of the service
-        Services.registerService(
-                DataManager.class,
-                "Access to the sources, to its properties (indexes, etc.) and its contents, either raster or vectorial",
-                new DefaultDataManager(dsf));
     }
     
     private JAXBElement<OWSContextType> unmarshalDocument(Node node) throws JAXBException {
