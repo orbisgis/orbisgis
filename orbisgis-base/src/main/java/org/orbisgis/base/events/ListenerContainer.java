@@ -38,9 +38,9 @@ import org.orbisgis.utils.I18N;
 /**
  * @brief Accessor to listeners
  * The listener container manager the Add,Remove and Call to listeners
- * corresponding to a single EventName
+ * corresponding to a single event type
  * The listener container is fully compatible with Java Beans specifications.
- * A listener must have only one method
+ * @warning A listener must have only one method
  * This is a refactorisation, leading to remove duplicate code.
  */
 

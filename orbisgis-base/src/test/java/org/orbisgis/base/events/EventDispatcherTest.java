@@ -59,10 +59,7 @@ public class EventDispatcherTest extends TestCase {
         
         
         //Attach a listener to the watch target
-        //local onFire method request the event name, then we extract
-        //the event name from EventData by specify the string "getEventName"
-        //The listener will no longer exist when testSample instance will be garbage collected
-        Listener evtListener=EventHandler.create(Listener.class, targetSample, "onFire","eventName");
+        Listener evtListener=EventHandler.create(Listener.class, targetSample, "setPrivateMessage","message");
         sourceSample.somethingEventHandler.addListener(targetSample, evtListener);
 
         //Only for this unit test purpose :
@@ -90,9 +87,6 @@ public class EventDispatcherTest extends TestCase {
         EventTargetSample targetSample = new EventTargetSample();
         
         //Attach a listener to the watch target
-        //local onFire method request the event name, then we extract
-        //the event name from EventData by specify the string "getEventName"
-        //The listener will no longer exist when testSample instance will be garbage collected
         sourceSample.somethingEventHandler.addListener(targetSample,
                 EventHandler.create(Listener.class, targetSample, "setPrivateMessage","message"));
         //This is equivalent to this inner class :
