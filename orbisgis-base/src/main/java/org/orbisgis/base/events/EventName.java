@@ -73,6 +73,15 @@ public class EventName implements Serializable{
             this.push(item);            
         }
     }
+    public boolean contains(EventName otherName) {
+        EventName[] allitems = getDecomposedEvent();
+        for(EventName decEventName : allitems)  {
+            if(decEventName.equals(otherName)) {
+                return true;
+            }
+        }
+        return false;
+    }
     /**
      * Add a sub-level to this event
      * @param eventItem A string corresponding to a more precise description that the last one
