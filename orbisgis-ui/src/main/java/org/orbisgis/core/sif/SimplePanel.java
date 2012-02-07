@@ -242,7 +242,7 @@ public class SimplePanel extends JPanel {
                     try {
                         for (int i = 0; i < errMsgs.length; i++) {
                             String sql = "select * from source where " //$NON-NLS-1$
-                                    + validationExpr[i];
+                                    + validationExpr[i] + ";";
                             logger.debug(
                                     I18N.getString(
                                     "orbisgis.org.orbisgis.sif.simplePanel.validatingInterface") + sql); //$NON-NLS-1$

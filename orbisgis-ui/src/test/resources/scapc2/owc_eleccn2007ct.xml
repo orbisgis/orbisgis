@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OWSContext id="ElecCN2007" version="0.4.2" xmlns="http://www.opengis.net/ows-context" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.opengis.net/ows-context http://geosysin.iict.ch/ogc_schemas/owc/owsContext_0.4.2.xsd" 
+	xmlns:ows="http://www.opengis.net/ows/2.0" 
+	xmlns:sld="http://www.opengis.net/sld/2.0"
+        xmlns:se="http://www.opengis.net/se/2.0/core" 
+	xmlns:xlink="http://www.w3.org/1999/xlink"> 
+	
+    <General>
+        <ows:BoundingBox crs="EPSG:21781">
+            <ows:LowerCorner>485472 75285</ows:LowerCorner>
+            <ows:UpperCorner>833838 295935</ows:UpperCorner>
+        </ows:BoundingBox>
+        
+        <ows:Title>Elections fédérales 2007, Conseil National</ows:Title>
+        <ows:Abstract>Les élections fédérales suisses de 2007 ont eu lieu le 21 octobre 2007. Elles ont permis le renouvellement des 200 membres qui composent le Conseil national (CN) et des 43 à 46 membres du Conseil des États (CE), élus le 24 octobre 2003, pour la 48e législature de quatre ans (2007-2011).</ows:Abstract>
+
+        <ows:Keywords>
+            <ows:Keyword>suisse</ows:Keyword>
+            <ows:Keyword>élections fédérales</ows:Keyword>
+            <ows:Keyword>conseil national</ows:Keyword>
+        </ows:Keywords>
+
+        <LogoURL format="image/png">
+            <OnlineResource xlink:href="http://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Swiss_Council_Logo.png/40px-Swiss_Council_Logo.png"/>		
+        </LogoURL>
+        
+        <DescriptionURL format="text/html">
+            <OnlineResource xlink:href="http://fr.wikipedia.org/wiki/%C3%89lections_f%C3%A9d%C3%A9rales_suisses_de_2007"/>		
+        </DescriptionURL>
+
+    </General>
+
+    <ResourceList>
+        <Layer hidden="false">
+            <ows:Title>Résultats par canton</ows:Title>
+            
+            <!-- SHARE -->
+            <DataURL>                
+                <OnlineResource xlink:href="pgsql://127.0.0.1:5432/scapdata/g4eleccn2007_ct"/>
+            </DataURL>
+                       
+            <StyleList>
+                <Style current="true">
+                    <SLD>
+                        <Name>Entete_CN2007ct</Name>
+                        <Title>Partis en tête</Title>
+
+                        <LegendURL>
+                            <OnlineResource xlink:href="HTTP URL sans doute à définir par le cartopublisher"/>						
+                        </LegendURL>
+
+                        <Style xmlns="http://www.opengis.net/se/2.0/core" 
+                               xmlns:ns2="http://www.opengis.net/ows/2.0" 
+			       xmlns:ns3="http://www.opengis.net/fes/2.0" 
+			       version="2.0.0">
+                            <Rule>
+                                <AreaSymbolizer uom="urn:ogc:def:uom:se::mm" version="2.0.0">
+                                    <Name>Area symbolizer</Name>
+                                    <Extension>
+                                        <ExtensionParameter name="level">1</ExtensionParameter>
+                                    </Extension>
+                                    <SolidFill>
+                                        <Color>
+                                            <Recode fallbackValue="#CCCCFF">
+                                                <LookupValue>
+                                                    <ns3:ValueReference>entete</ns3:ValueReference>
+                                                </LookupValue>
+                                                <MapItem>
+                                                    <Key>UDC</Key>
+                                                    <Value>#408c50</Value>
+                                                </MapItem>
+                                                <MapItem>
+                                                    <Key>PDC</Key>
+                                                    <Value>#f99d1b</Value>
+                                                </MapItem>
+                                                <MapItem>
+                                                    <Key>PRD</Key>
+                                                    <Value>#004687</Value>
+                                                </MapItem>
+                                                <MapItem>
+                                                    <Key>PSS</Key>
+                                                    <Value>#d31f49</Value>
+                                                </MapItem>
+                                            </Recode>
+                                        </Color>
+                                        <Opacity>1</Opacity>
+                                    </SolidFill>
+                                    <PenStroke>
+                                        <LinearRapport>false</LinearRapport>
+                                        <Extension>
+                                            <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
+                                        </Extension>
+                                        <SolidFill>
+                                            <Color>#000000</Color>
+                                            <Opacity>1.0</Opacity>
+                                        </SolidFill>
+                                        <Width>0.1</Width>
+                                    </PenStroke>
+                                </AreaSymbolizer>
+                            </Rule>
+                        </Style>
+                        
+                    </SLD>					
+                </Style>
+                <Style current="true">
+                    <SLD>
+                    
+                        <Style xmlns="http://www.opengis.net/se/2.0/core" 
+                               xmlns:ns2="http://www.opengis.net/ows/2.0" 
+			       xmlns:ns3="http://www.opengis.net/fes/2.0" 
+			       version="2.0.0">
+                            <Rule>
+                                <AreaSymbolizer uom="urn:ogc:def:uom:se::mm" version="2.0.0">
+                                    <Name>Area symbolizer</Name>
+                                    <Extension>
+                                        <ExtensionParameter name="level">1</ExtensionParameter>
+                                    </Extension>
+                                    <SolidFill>
+                                        <Color>
+                                            <Categorize thresholdBelongsTo="succeeding" fallbackValue="#FF0000">
+                                                <LookupValue>
+                                                    <ns3:ValueReference>udc</ns3:ValueReference>
+                                                </LookupValue>
+                                                <FirstValue>#f7fffc</FirstValue>
+                                                <Threshold>8.7</Threshold>
+                                                <Value>#d5ffdf</Value>
+                                                <Threshold>16.6</Threshold>
+                                                <Value>#b3f5c1</Value>
+                                                <Threshold>25</Threshold>
+                                                <Value>#90e2a2</Value>
+                                                <Threshold>32.9</Threshold>
+                                                <Value>#6cc67f</Value>
+                                                <Threshold>42.3</Threshold>
+                                                <Value>#408c50</Value>
+                                                <Extension>
+                                                    <ExtensionParameter name="method">MANUAL</ExtensionParameter>
+                                                </Extension>
+                                            </Categorize>
+                                        </Color>
+                                        <Opacity>1.0</Opacity>
+                                    </SolidFill>
+                                    <PenStroke>
+                                        <LinearRapport>false</LinearRapport>
+                                        <Extension>
+                                            <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
+                                        </Extension>
+                                        <SolidFill>
+                                            <Color>#000000</Color>
+                                            <Opacity>1.0</Opacity>
+                                        </SolidFill>
+                                        <Width>0.1</Width>
+                                    </PenStroke>
+                                </AreaSymbolizer>
+                            </Rule>
+                        </Style>                    
+                    
+                    </SLD>
+                </Style>
+                    
+            </StyleList>
+        </Layer>
+		
+    </ResourceList>
+</OWSContext>

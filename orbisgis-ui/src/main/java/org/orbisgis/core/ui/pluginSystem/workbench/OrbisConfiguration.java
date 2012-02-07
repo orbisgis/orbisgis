@@ -45,6 +45,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
+import orb.orbisgis.core.ui.plugins.ows.OwsPlugIn;
 import org.gdms.driver.Driver;
 
 import org.gdms.driver.FileDriver;
@@ -276,6 +277,7 @@ public class OrbisConfiguration implements Setup {
         private RasterAlgebraPlugIn rasterAlgebraPlugIn = new RasterAlgebraPlugIn();
         // Tool bar on map
         private ShowXYPlugIn showXYPlugIn = new ShowXYPlugIn();
+        private OwsPlugIn owsPlugin = new OwsPlugIn();
         // Scale panel plugin is a swing component to execute action on map editor
         // private ScalePlugIn scalePlugIn = new ScalePlugIn();
         // private CoordinateReferenceSystemPlugIn CRSPlugIn = new
@@ -497,6 +499,8 @@ public class OrbisConfiguration implements Setup {
 
                 // Raster Tool bar
                 rasterAlgebraPlugIn.initialize(plugInContext);
+                
+                owsPlugin.initialize(plugInContext);
         }
 
         /**

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OWSContext xmlns="http://www.opengis.net/ows-context" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ows="http://www.opengis.net/ows/2.0" xmlns:sld="http://www.opengis.net/sld/2.0" xmlns:se="http://www.opengis.net/se/2.0/core" xmlns:xlink="http://www.w3.org/1999/xlink" id="Votations" version="0.4.2" xsi:schemaLocation="http://www.opengis.net/ows-context http://geosysin.iict.ch/ogc_schemas/owc/owsContext_0.4.2.xsd">
+  <General>
+    <ows:BoundingBox crs="EPSG:21781">
+      <ows:LowerCorner>485472 75285</ows:LowerCorner>
+      <ows:UpperCorner>833838 295935</ows:UpperCorner>
+    </ows:BoundingBox>
+    <ows:Title>Diverses votations</ows:Title>
+    <ows:Abstract>Scrutins populaires tels que les initiatives et les différents types de référendums organisés trois ou quatre fois par an.</ows:Abstract>
+    <ows:Keywords>
+      <ows:Keyword>suisse</ows:Keyword>
+      <ows:Keyword>votations</ows:Keyword>
+    </ows:Keywords>
+    <LogoURL format="image/png">
+      <OnlineResource xlink:href="http://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Coat_of_Arms_of_Switzerland.svg/541px-Coat_of_Arms_of_Switzerland.svg.png"/>
+    </LogoURL>
+  </General>
+  <ResourceList>
+    <Layer hidden="false">
+      <ows:Title>Résultats par district</ows:Title>
+      <!-- SHARE -->
+      <DataURL>
+        <OnlineResource xlink:href="pgsql://127.0.0.1:5432/scapdata/g4districts98_view"/>
+        <!--<OnlineResource xlink:href="pgsql://127.0.0.1:5432/scapdata/g4districts98"/>-->
+      </DataURL>
+      <StyleList>
+        <Style current="true">
+          <SLD>
+            <Name>UEMARS2001</Name>
+            <Title>Adhésion UE (2001)</Title>
+            <LegendURL>
+              <OnlineResource xlink:href="HTTP URL sans doute à définir par le cartopublisher"/>
+            </LegendURL>
+            <Style xmlns="http://www.opengis.net/se/2.0/core" xmlns:ns2="http://www.opengis.net/ows/2.0" xmlns:ns3="http://www.opengis.net/fes/2.0" version="2.0.0">
+              <Rule>
+                <AreaSymbolizer uom="urn:ogc:def:uom:se::mm" version="2.0.0">
+                  <Name>Area symbolizer</Name>
+                  <Extension>
+                    <ExtensionParameter name="level">1</ExtensionParameter>
+                  </Extension>
+                  <SolidFill>
+                    <Color>
+                      <Categorize thresholdBelongsTo="succeeding" fallbackValue="#FF0000">
+                        <LookupValue>
+                          <ns3:ValueReference>uemars2001</ns3:ValueReference>
+                        </LookupValue>
+                        <Value>#d5ffdf</Value>
+                        <Threshold>52.3</Threshold>
+                        <Value>#b3f5c1</Value>
+                        <Threshold>64.21</Threshold>
+                        <Value>#90e2a2</Value>
+                        <Threshold>76.21</Threshold>
+                        <Value>#6cc67f</Value>
+                        <Threshold>88.04</Threshold>
+                        <Value>#408c50</Value>
+                        <Extension>
+                          <ExtensionParameter name="method">MANUAL</ExtensionParameter>
+                        </Extension>
+                      </Categorize>
+                    </Color>
+                    <Opacity>1.0</Opacity>
+                  </SolidFill>
+                  <PenStroke>
+                    <LinearRapport>false</LinearRapport>
+                    <Extension>
+                      <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
+                    </Extension>
+                    <SolidFill>
+                      <Color>#000000</Color>
+                      <Opacity>1.0</Opacity>
+                    </SolidFill>
+                    <Width>0.1</Width>
+                  </PenStroke>
+                </AreaSymbolizer>
+              </Rule>
+            </Style>
+          </SLD>
+        </Style>
+        <Style current="false">
+          <SLD>
+            <Name>ONU2002</Name>
+            <Title>Adhésion ONU (2002)</Title>
+            <LegendURL>
+              <OnlineResource xlink:href="HTTP URL sans doute à définir par le cartopublisher"/>
+            </LegendURL>
+            <Style xmlns="http://www.opengis.net/se/2.0/core" xmlns:ns2="http://www.opengis.net/ows/2.0" xmlns:ns3="http://www.opengis.net/fes/2.0" version="2.0.0">
+              <Rule>
+                <AreaSymbolizer uom="urn:ogc:def:uom:se::mm" version="2.0.0">
+                  <Name>Area symbolizer</Name>
+                  <Extension>
+                    <ExtensionParameter name="level">1</ExtensionParameter>
+                  </Extension>
+                  <SolidFill>
+                    <Color>
+                      <Categorize thresholdBelongsTo="succeeding" fallbackValue="#FF0000">
+                        <LookupValue>
+                          <ns3:ValueReference>onu_2002</ns3:ValueReference>
+                        </LookupValue>
+                        <Value>#d5ffdf</Value>
+                        <Threshold>37.9</Threshold>
+                        <Value>#b3f5c1</Value>
+                        <Threshold>46.2</Threshold>
+                        <Value>#90e2a2</Value>
+                        <Threshold>54.6</Threshold>
+                        <Value>#6cc67f</Value>
+                        <Threshold>62.9</Threshold>
+                        <Value>#408c50</Value>
+                        <Extension>
+                          <ExtensionParameter name="method">MANUAL</ExtensionParameter>
+                        </Extension>
+                      </Categorize>
+                    </Color>
+                    <Opacity>1.0</Opacity>
+                  </SolidFill>
+                  <PenStroke>
+                    <LinearRapport>false</LinearRapport>
+                    <Extension>
+                      <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
+                    </Extension>
+                    <SolidFill>
+                      <Color>#000000</Color>
+                      <Opacity>1.0</Opacity>
+                    </SolidFill>
+                    <Width>0.1</Width>
+                  </PenStroke>
+                </AreaSymbolizer>
+              </Rule>
+            </Style>
+          </SLD>
+        </Style>
+      </StyleList>
+    </Layer>
+  </ResourceList>
+</OWSContext>
