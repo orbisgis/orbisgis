@@ -29,21 +29,24 @@
 package org.orbisgis.base.events;
 
 public class EventSourceSample {
+    //Secret message
+    public final static String secretMessage = "Hello world";
     //This is a single level event
-    public final static EventName SOMETHING_EVENT = new EventName("eventofsource");
+    public final ListenerContainer<EventObjectSample> somethingEventHandler = new ListenerContainer<EventObjectSample>();
     //This events use multi level event
-    public final static EventName ROOT_EVENT = new EventName("theRootEvent");
-    public final static EventName SUB_EVENT = new EventName(ROOT_EVENT,"SpecificSubEvent");
+    public final ListenerContainer rootEventHandler = new ListenerContainer();
+    public final ListenerContainer subEventHandler = new ListenerContainer(rootEventHandler);
+    
     void fireSomething() {
         try {
-            EventDispatcher.onEvent(new EventData(SOMETHING_EVENT,this));
+            somethingEventHandler.callListeners(new EventObjectSample(secretMessage,this));
         } catch (EventException ex) {
             //Do nothing in this case if the event raise a fatal error (a listener throw an error with stoping procedure instruction)
         }
     }    
     void fireSubEvent() {
         try {
-            EventDispatcher.onEvent(new EventData(SUB_EVENT,this));
+            subEventHandler.callListeners(null);
         } catch (EventException ex) {
             //Do nothing in this case if the event raise a fatal error (a listener throw an error with stoping procedure instruction)
         }

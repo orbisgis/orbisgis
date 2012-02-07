@@ -63,8 +63,8 @@ public class EventDispatcherTest extends TestCase {
         //the event name from EventData by specify the string "getEventName"
         //The listener will no longer exist when testSample instance will be garbage collected
         Listener evtListener=EventHandler.create(Listener.class, targetSample, "onFire","eventName");
-        EventDispatcher.addListener(targetSample,evtListener, EventSourceSample.SOMETHING_EVENT, sourceSample);
-        
+        sourceSample.somethingEventHandler.addListener(targetSample, evtListener);
+
         //Only for this unit test purpose :
         //Add a local reference, to test if the garbage collector has free the listener
         WeakReference<Listener> refTest=new WeakReference<Listener>(evtListener); 
@@ -73,7 +73,7 @@ public class EventDispatcherTest extends TestCase {
         sourceSample.fireSomething();
 
         //Remove the listener from the target
-        EventDispatcher.removeListeners(targetSample);
+        ListenerRelease.releaseListeners(targetSample);
         
         return refTest;
     }
@@ -93,25 +93,31 @@ public class EventDispatcherTest extends TestCase {
         //local onFire method request the event name, then we extract
         //the event name from EventData by specify the string "getEventName"
         //The listener will no longer exist when testSample instance will be garbage collected
-        EventDispatcher.addListener(targetSample,
-                EventHandler.create(Listener.class, targetSample, "onFire","eventName"),
-                EventSourceSample.SOMETHING_EVENT, sourceSample);
-                
+        sourceSample.somethingEventHandler.addListener(targetSample,
+                EventHandler.create(Listener.class, targetSample, "setPrivateMessage","message"));
+        //This is equivalent to this inner class :
+        // new Listener() {
+        //    public void onEvent(EventObject obj) {
+        //        targetSample.setPrivateMessage((String)obj.getMessage()); 
+        //    }
+        // }
+        //
+        //
         
         //OnFire must not be already called
-        assertFalse(targetSample.isFiredEventWitness());
+        assertFalse(targetSample.getPrivateMessage().equals(EventSourceSample.secretMessage));
         
         //Ask the Event sourcsourceGarbageCollectingCheck()e to fire an event
         sourceSample.fireSomething();
         
         
-        //Test if the event has been succefully propagate to the local method onFire
-        assertTrue(targetSample.isFiredEventWitness());
+        //Test if the event has been succefully propagate to the local method setMessage
+        assertTrue(targetSample.getPrivateMessage().equals(EventSourceSample.secretMessage));
         
         //Remove the listener from the target
-        EventDispatcher.removeListeners(targetSample);
+        ListenerRelease.releaseListeners(targetSample);
         
-        //Ask the Event sourcsourceGarbageCollectingCheck()e to fire an event
+        //Check fire without listeners
         sourceSample.fireSomething();
     }
     
@@ -125,13 +131,12 @@ public class EventDispatcherTest extends TestCase {
         
         // Attach a listener to the root event, when the sub event will be fired,
         // the root event will be fired too
-        EventDispatcher.addListener(targetSample,
-                EventHandler.create(Listener.class, targetSample, "setFiredRootEvent")
-                , EventSourceSample.ROOT_EVENT, sourceSample);
+        sourceSample.rootEventHandler.addListener(targetSample,
+                EventHandler.create(Listener.class, targetSample, "setFiredRootEvent"));
         //Attach a listener to the sub event
-       EventDispatcher.addListener(targetSample,
-                EventHandler.create(Listener.class, targetSample, "setFiredSubEvent")
-                , EventSourceSample.SUB_EVENT, sourceSample);
+        sourceSample.subEventHandler.addListener(targetSample,
+                EventHandler.create(Listener.class, targetSample, "setFiredSubEvent"));
+
         
         //Test if the event has not be already propagatated to the two listeners
         assertFalse(targetSample.isFiredRootEvent());
@@ -145,6 +150,6 @@ public class EventDispatcherTest extends TestCase {
         assertTrue(targetSample.isFiredSubEvent());
         
         //Remove the listener from the target
-        EventDispatcher.removeListeners(targetSample);        
+        ListenerRelease.releaseListeners(targetSample);        
     }
 }

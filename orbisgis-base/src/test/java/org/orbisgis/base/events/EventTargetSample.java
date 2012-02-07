@@ -34,11 +34,16 @@ package org.orbisgis.base.events;
  * The target can be the model, not dependencies with source or controler.
  */
 public class EventTargetSample {
-    private boolean firedEvent = false;
     private boolean firedRootEvent = false;
     private boolean firedSubEvent = false;
-    public boolean isFiredEventWitness() {
-        return firedEvent;
+    private String privateMessage = "";
+
+    public String getPrivateMessage() {
+        return privateMessage;
+    }
+
+    public void setPrivateMessage(String privateMessage) {
+        this.privateMessage = privateMessage;
     }
 
     public boolean isFiredRootEvent() {
@@ -64,11 +69,5 @@ public class EventTargetSample {
     public void setFiredSubEvent() {
         this.firedSubEvent = true;
     }
-    /**
-     * Called by the listener
-     * @param evtName The name of the event
-     */
-    public void onFire(EventName evtName) {
-        firedEvent = true;
-    }
+
 }
