@@ -40,13 +40,14 @@ import bibliothek.gui.dock.support.lookandfeel.ComponentCollector;
 import bibliothek.gui.dock.support.lookandfeel.LookAndFeelList;
 import bibliothek.gui.dock.themes.BasicTheme;
 import java.awt.Component;
+import java.awt.Rectangle;
 import java.beans.EventHandler;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.swing.SwingUtilities;
 import org.orbisgis.base.context.main.MainContext;
-import org.orbisgis.base.events.EventDispatcher;
+import org.orbisgis.base.events.ListenerRelease;
 import org.orbisgis.base.events.Listener;
 import org.orbisgis.utils.I18N;
 import org.orbisgis.view.frames.MainFrame;
@@ -60,7 +61,7 @@ public class Core implements ComponentCollector {
     /////////////////////
     //view package
     private MainFrame mainFrame;     /*!< The DockStation */
-    
+    private final static Rectangle mainViewPositionAndSize = new Rectangle(20,20,800,600);/*!< Bounds of mainView, x,y and width height*/
     /////////////////////
     //base package :
     private MainContext mainContext; /*!< The larger surrounding part of OrbisGis base */
@@ -103,9 +104,7 @@ public class Core implements ComponentCollector {
         //When the user ask to close OrbisGis it call
         //the shutdown method here, 
         //then we link this event with our shutdown method
-        EventDispatcher.addListener(this,
-        EventHandler.create(Listener.class, this, "shutdown"),
-        MainFrame.MAIN_FRAME_CLOSING, mainFrame);
+        mainFrame.mainFrameClosing.addListener(this, EventHandler.create(Listener.class, this, "shutdown"));
     }
     /**
     * Starts the application. This method creates the {@link MainFrame},
@@ -133,7 +132,7 @@ public class Core implements ComponentCollector {
         lookAndFeels.addComponentCollector( this );
         
         mainFrame.setup();
-	mainFrame.setBounds( 20, 20, 600, 400 );
+	mainFrame.setBounds(mainViewPositionAndSize);
         
         // Show the application when Swing will be ready
         SwingUtilities.invokeLater( new Runnable(){
@@ -153,12 +152,13 @@ public class Core implements ComponentCollector {
     /**
     * Stops this application, closes the {@link MainFrame} and saves
     * all properties if the application is not in a {@link #isSecure() secure environment}.
+    * This method is called through the MainFrame.MAIN_FRAME_CLOSING event listener.
     */
     public void shutdown(){
         try{
+            //Remove all listeners created by this object
+            ListenerRelease.releaseListeners(this);
             mainFrame.dispose();
-
-
             frontend.getController().kill();
         }
         finally{

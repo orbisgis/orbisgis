@@ -33,6 +33,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.ImageIcon;
+import org.apache.log4j.Logger;
+import org.orbisgis.utils.I18N;
 
 /**
  * @package org.orbisgis.view.icons
@@ -54,7 +56,14 @@ public class OrbisGISIcon {
     
     private static final ImageIcon ORBISGIS_MISSING_ICON = new ImageIcon(OrbisGISIcon.class.getResource("remove.png")); /*!< Icon displayed when the requested icon is not found */
     
+    private static final Logger LOG = Logger.getLogger(OrbisGISIcon.class); /*!< Logger of OrbisGISIcon */
     
+    /**
+     * This is a static class
+     */
+    private OrbisGISIcon() {
+        
+    }
     /**
      * Retrieve icon awt Image by its name
      * @param iconName The icon name, without extension. All icons are stored in the png format.
@@ -77,7 +86,7 @@ public class OrbisGISIcon {
                 LOADED_ICONS.put(iconName, newIcon);
                 return newIcon;
             } else {
-                //TODO Add Warning message to logging context
+                LOG.warn(I18N.getString("org.orbisgis.view.icons.OrbisGISIcon.icon_not_found")+" : "+iconName);
                 return ORBISGIS_MISSING_ICON;
             }            
         } else {

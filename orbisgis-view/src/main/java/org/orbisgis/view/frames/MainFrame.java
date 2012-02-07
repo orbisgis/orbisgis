@@ -31,12 +31,12 @@ package org.orbisgis.view.frames;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.beans.EventHandler;
 import java.util.Locale;
 import javax.swing.JFrame;
-import org.orbisgis.base.events.EventData;
-import org.orbisgis.base.events.EventDispatcher;
 import org.orbisgis.base.events.EventException;
-import org.orbisgis.base.events.EventName;
+import org.orbisgis.base.events.ListenerContainer;
 import org.orbisgis.utils.I18N;
 import org.orbisgis.view.icons.OrbisGISIcon;
 
@@ -46,8 +46,8 @@ import org.orbisgis.view.icons.OrbisGISIcon;
  *
  */
 public class MainFrame extends JFrame{
-        public final static EventName MAIN_FRAME_CLOSING = new EventName("windowclose");
-    	/**
+    	public final ListenerContainer mainFrameClosing = new ListenerContainer();
+        /**
 	 * Creates a new frame. The content of the frame is not created by
 	 * this constructor, clients must call {@link #setup(Core)}.
 	 */
@@ -57,23 +57,28 @@ public class MainFrame extends JFrame{
 		setDefaultCloseOperation( DO_NOTHING_ON_CLOSE );
 		setIconImage(OrbisGISIcon.getIconImage("mini_orbisgis"));                
 	}
-        
+        public void onClosing() {
+            try {
+                mainFrameClosing.callListeners(null);
+            } catch (EventException ex) {
+                //Do nothing
+            }
+        }
         /**
 	 * Creates and adds all observers that are needed by this {@link MainFrame}.
 	 */
-	private void setupListeners(){
+	private void setupListeners() {
             // Link the Swing Event with the MainFrame event
             addWindowListener( new WindowAdapter(){
                 @Override
                 public void windowClosing( WindowEvent e ){
-                    try {
-                        EventDispatcher.onEvent(new EventData(MAIN_FRAME_CLOSING,e.getSource()));
-                    } catch (EventException ex) {
-                        //Do nothing in this case if the event raise a fatal error (a listener throw an error with stoping procedure instruction)
-                    }
+                    ((MainFrame)e.getWindow()).onClosing();
                 }
             });
 	}
+        /**
+         * Setup the Listeners of the {@link MainFrame}.
+         */
         public void setup() {
             setupListeners();
         }

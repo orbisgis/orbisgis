@@ -6,8 +6,13 @@ package org.orbisgis.view.translation;
  * 
  */
 public class OrbisGISI18N {
+    /**
+     * This is a static class
+     */
+    private OrbisGISI18N() {
 
-	static String getI18NPath() {
-		return OrbisGISI18N.class.getCanonicalName();
-	}
+    }
+    static String getI18NPath() {
+            return OrbisGISI18N.class.getCanonicalName();
+    }
 }
