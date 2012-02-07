@@ -47,8 +47,8 @@ import java.util.Collection;
 import java.util.List;
 import javax.swing.SwingUtilities;
 import org.orbisgis.base.context.main.MainContext;
-import org.orbisgis.base.events.ListenerRelease;
 import org.orbisgis.base.events.Listener;
+import org.orbisgis.base.events.ListenerRelease;
 import org.orbisgis.utils.I18N;
 import org.orbisgis.view.frames.MainFrame;
 import org.orbisgis.view.translation.OrbisGISI18N;
@@ -104,7 +104,8 @@ public class Core implements ComponentCollector {
         //When the user ask to close OrbisGis it call
         //the shutdown method here, 
         //then we link this event with our shutdown method
-        mainFrame.mainFrameClosing.addListener(this, EventHandler.create(Listener.class, this, "shutdown"));
+        mainFrame.getMainFrameClosing().addListener(this,
+                EventHandler.create(Listener.class, this, "shutdown"));
     }
     /**
     * Starts the application. This method creates the {@link MainFrame},
@@ -149,6 +150,12 @@ public class Core implements ComponentCollector {
         // Init I18n
         I18N.addI18n("", "orbisgis", OrbisGISI18N.class);
     }
+    public void dispose() {
+        //Remove all listeners created by this object
+        ListenerRelease.releaseListeners(this);
+        mainFrame.dispose();
+        frontend.getController().kill();
+    }
     /**
     * Stops this application, closes the {@link MainFrame} and saves
     * all properties if the application is not in a {@link #isSecure() secure environment}.
@@ -156,10 +163,7 @@ public class Core implements ComponentCollector {
     */
     public void shutdown(){
         try{
-            //Remove all listeners created by this object
-            ListenerRelease.releaseListeners(this);
-            mainFrame.dispose();
-            frontend.getController().kill();
+            this.dispose();
         }
         finally{
             System.exit( 0 );

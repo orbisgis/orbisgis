@@ -29,7 +29,6 @@
 
 package org.orbisgis.view.frames;
 
-import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.Locale;
@@ -45,7 +44,16 @@ import org.orbisgis.view.icons.OrbisGISIcon;
  *
  */
 public class MainFrame extends JFrame implements WindowListener{
-    	public final ListenerContainer mainFrameClosing = new ListenerContainer(); /*!< User want to close the frame */
+    	private final ListenerContainer mainFrameClosing = new ListenerContainer(); /*!< User want to close the frame */
+
+        /**
+         * 
+         * @return 
+         */
+        public ListenerContainer getMainFrameClosing() {
+            return mainFrameClosing;
+        }
+        
         /**
 	 * Creates a new frame. The content of the frame is not created by
 	 * this constructor, clients must call {@link #setup(Core)}.

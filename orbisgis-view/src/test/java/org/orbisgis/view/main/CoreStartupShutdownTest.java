@@ -28,33 +28,29 @@
  */
 package org.orbisgis.view.main;
 
+import junit.framework.Test;
 import junit.framework.TestCase;
-import org.junit.After;
-import org.junit.Before;
-/**
- * Unit Test of org.orbisgis.view.main.Core
- */
-public class CoreTest extends TestCase {
-    Core instance;
-    public CoreTest(String testName) {
+import junit.framework.TestSuite;
+
+public class CoreStartupShutdownTest extends TestCase {
+    
+    public CoreStartupShutdownTest(String testName) {
         super(testName);
         
-    }   
-
-    /**
-     * Test of startup method, of class Core.
-     */
-    @Before public void testStartup() {
-        System.out.println("startup");
-        instance = new Core();
-        instance.startup();
     }
-    
+   
     /**
-     * Test of shutdown method, of class Core.
+     * @return the suite of tests being tested
      */
-    @After public void dispose() {
-        System.out.println("dispose");
-        instance.dispose();
+    public static Test suite()
+    {
+        return new TestSuite( CoreStartupShutdownTest.class );
+    }
+    public void testStartupShutdown() {
+        Core instance = new Core();
+        assertTrue(instance.getMainFrame()==null);
+        instance.startup();
+        assertTrue(instance.getMainFrame()!=null);
+        instance.dispose();      
     }
 }
