@@ -42,7 +42,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.log4j.Logger;
-
 import org.gdms.data.values.Value;
 
 public class DefaultType implements Type {
@@ -174,5 +173,59 @@ public class DefaultType implements Type {
                 }
 
                 return ret.toArray(new Constraint[ret.size()]);
+        }
+
+        @Override
+        public String getHumanType() {
+                switch (getTypeCode()) {
+                        case BINARY:
+                                return "BINARY";
+                        case BOOLEAN:
+                                return "BOOLEAN";
+                        case BYTE:
+                                return "BYTE";
+                        case DATE:
+                                return "DATE";
+                        case DOUBLE:
+                                return "DOUBLE";
+                        case FLOAT:
+                                return "FLOAT";
+                        case INT:
+                                return "INT";
+                        case LONG:
+                                return "LONG";
+                        case SHORT:
+                                return "SHORT";
+                        case STRING:
+                                return "STRING";
+                        case TIMESTAMP:
+                                return "TIMESTAMP";
+                        case TIME:
+                                return "TIME";
+                        case GEOMETRY:
+                                return "GEOMETRY";
+                        case RASTER:
+                                return "RASTER";
+                        case NULL:
+                                return "NULL";
+                        case COLLECTION:
+                                return "COLLECTION";
+                        case POINT:
+                                return "POINT";
+                        case LINESTRING:
+                                return "LINESTRING";
+                        case POLYGON:
+                                return "POLYGON";
+                        case MULTIPOLYGON:
+                                return "MULTIPOLYGON";
+                        case MULTILINESTRING:
+                                return "MULTILINESTRING";
+                        case MULTIPOINT:
+                                return "MULTIPOINT";
+                        case GEOMETRYCOLLECTION:
+                                return "GEOMETRYCOLLECTION";
+                }
+                throw new IllegalArgumentException("How did you manage to create"
+                        + "an unrecognized type ?");
         }
 }

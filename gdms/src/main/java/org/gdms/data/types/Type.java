@@ -148,4 +148,10 @@ public interface Type {
 	 * @return
 	 */
 	Constraint[] getConstraints(int constraintMask);
+
+    /**
+     * Get a human readable definition of the {@code Type} instance.
+     * @return
+     */
+    String getHumanType();
 }

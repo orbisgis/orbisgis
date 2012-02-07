@@ -1,8 +1,10 @@
 package org.gdms.data.types;
 
+import java.lang.reflect.Field;
 import org.gdms.TestBase;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -38,5 +40,24 @@ public class TypeFactoryTest extends TestBase {
                 assertFalse(TypeFactory.isVectorial(Type.RASTER));
                 assertFalse(TypeFactory.isVectorial(Type.COLLECTION));
 
+        }
+
+        /**
+         * We check that all the int fields found in Type can be used to
+         * generate a human readable description. We assume here that the
+         * Type interface only has int fields, and that these fields are all
+         * associated to a type code.
+         * @throws Exception
+         */
+        @Test
+        public void testHumanReadableType() throws Exception {
+                Class typeClass = Class.forName("org.gdms.data.types.Type");
+                Field[] fieldArray = typeClass.getDeclaredFields();
+                for(Field f : fieldArray){
+                        int i = f.getInt(typeClass);
+                        Type t = TypeFactory.createType(i);
+                        assertTrue(t.getHumanType().equalsIgnoreCase(f.getName()));
+                }
+                assertTrue(true);
         }
 }
