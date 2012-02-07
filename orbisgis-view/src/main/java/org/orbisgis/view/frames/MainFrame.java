@@ -32,7 +32,6 @@ package org.orbisgis.view.frames;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.beans.EventHandler;
 import java.util.Locale;
 import javax.swing.JFrame;
 import org.orbisgis.base.events.EventException;
@@ -45,8 +44,8 @@ import org.orbisgis.view.icons.OrbisGISIcon;
  * all other dackable frames
  *
  */
-public class MainFrame extends JFrame{
-    	public final ListenerContainer mainFrameClosing = new ListenerContainer();
+public class MainFrame extends JFrame implements WindowListener{
+    	public final ListenerContainer mainFrameClosing = new ListenerContainer(); /*!< User want to close the frame */
         /**
 	 * Creates a new frame. The content of the frame is not created by
 	 * this constructor, clients must call {@link #setup(Core)}.
@@ -57,29 +56,43 @@ public class MainFrame extends JFrame{
 		setDefaultCloseOperation( DO_NOTHING_ON_CLOSE );
 		setIconImage(OrbisGISIcon.getIconImage("mini_orbisgis"));                
 	}
-        public void onClosing() {
-            try {
-                mainFrameClosing.callListeners(null);
-            } catch (EventException ex) {
-                //Do nothing
-            }
-        }
         /**
 	 * Creates and adds all observers that are needed by this {@link MainFrame}.
 	 */
 	private void setupListeners() {
-            // Link the Swing Event with the MainFrame event
-            addWindowListener( new WindowAdapter(){
-                @Override
-                public void windowClosing( WindowEvent e ){
-                    ((MainFrame)e.getWindow()).onClosing();
-                }
-            });
+            // Link the Swing Events with the MainFrame event
+            addWindowListener( this );
 	}
         /**
          * Setup the Listeners of the {@link MainFrame}.
          */
         public void setup() {
             setupListeners();
+        }
+
+        public void windowOpened(WindowEvent we) {
+        }
+
+        public void windowClosing(WindowEvent we) {
+            try {
+                mainFrameClosing.callListeners(null);
+            } catch (EventException ex) {
+                //Do nothing
+            }
+        }
+
+        public void windowClosed(WindowEvent we) {
+        }
+
+        public void windowIconified(WindowEvent we) {
+        }
+
+        public void windowDeiconified(WindowEvent we) {
+        }
+
+        public void windowActivated(WindowEvent we) {
+        }
+
+        public void windowDeactivated(WindowEvent we) {
         }
 }
