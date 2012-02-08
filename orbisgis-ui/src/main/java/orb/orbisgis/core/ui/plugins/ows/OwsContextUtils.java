@@ -5,8 +5,11 @@
 package orb.orbisgis.core.ui.plugins.ows;
 
 import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Properties;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -68,5 +71,26 @@ public class OwsContextUtils {
         }
         
         return instream;
+    }
+    
+    private static Properties readProperties(String filename) throws FileNotFoundException, IOException {
+        Properties properties = new Properties();
+        InputStream in = OwsService.class.getResourceAsStream(filename);
+        properties.load(in);
+        return properties;
+    }
+    
+    public static String getServiceGetAllUrl() {
+        String url = "";
+        try {
+            Properties properties = readProperties("services.properties");
+            url = properties.getProperty("orb.orbisgis.core.ui.plugins.ows.service_url_getall");
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(OwsContextUtils.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(OwsContextUtils.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return url;
     }
 }

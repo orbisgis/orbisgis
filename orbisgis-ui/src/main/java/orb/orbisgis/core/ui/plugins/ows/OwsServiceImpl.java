@@ -26,7 +26,6 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class OwsServiceImpl implements OwsService {
 
-    private static String SERVICE_URL_GETALL = "http://poulpe.heig-vd.ch/scapc2/serviceapi/web/index.php/context";
     private SAXParser parser;
     private final OwsSAXHandler owsSaxHandler;
     private DocumentBuilder builder;
@@ -41,13 +40,15 @@ public class OwsServiceImpl implements OwsService {
         dbf.setNamespaceAware(true); 
         builder = dbf.newDocumentBuilder();
     }
+    
+    
 
     @Override
     public List<OwsFileBasic> getAllOwsFiles() {
         List<OwsFileBasic> owsFiles = new ArrayList<OwsFileBasic>();
 
         try {
-            this.parser.parse(OwsContextUtils.callService(SERVICE_URL_GETALL), this.owsSaxHandler);
+            this.parser.parse(OwsContextUtils.callService(OwsContextUtils.getServiceGetAllUrl()), this.owsSaxHandler);
             owsFiles = this.owsSaxHandler.getFiles();
         } catch (SAXException ex) {
             Logger.getLogger(OwsServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
