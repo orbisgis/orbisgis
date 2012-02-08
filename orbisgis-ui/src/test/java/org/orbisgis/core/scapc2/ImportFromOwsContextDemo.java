@@ -4,7 +4,7 @@
  */
 package org.orbisgis.core.scapc2;
 
-import java.io.InputStream;
+import org.w3c.dom.Node;
 import javax.xml.parsers.ParserConfigurationException;
 import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.ui.plugins.views.output.OutputManager;
@@ -31,10 +31,10 @@ import orb.orbisgis.core.ui.plugins.ows.DbConnectionString;
 import orb.orbisgis.core.ui.plugins.ows.OWSContextImporter;
 import orb.orbisgis.core.ui.plugins.ows.OWSContextImporterImpl;
 import orb.orbisgis.core.ui.plugins.ows.OwsContextUtils;
-import org.gdms.data.DataSource;
+import orb.orbisgis.core.ui.plugins.ows.OwsService;
+import orb.orbisgis.core.ui.plugins.ows.OwsServiceImpl;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.SQLDataSourceFactory;
-import org.gdms.data.db.DBSource;
 import org.gdms.driver.DriverException;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,6 +50,7 @@ import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.progress.DefaultProgressMonitor;
 import static org.junit.Assert.*;
+import org.xml.sax.SAXException;
 
 /**
  *
@@ -57,21 +58,23 @@ import static org.junit.Assert.*;
  */
 public class ImportFromOwsContextDemo {
 
-    private static final String SERVICE_TEST_URL = "http://poulpe.heig-vd.ch/scapc2/serviceapi/web/index.php/context/10";
     static SQLDataSourceFactory dsf = new SQLDataSourceFactory();
 
     protected ConsoleErrorManager failErrorManager;
     protected ConsoleOutputManager failOutput;
     
     private OWSContextImporter importer;
+    private OwsService owsService;
     
-    public ImportFromOwsContextDemo() throws ParserConfigurationException {
+    public ImportFromOwsContextDemo() throws ParserConfigurationException, SAXException {
         importer = new OWSContextImporterImpl();
+        owsService = new OwsServiceImpl();
     }
 
     @Before
     public void setUp() throws Exception {
 
+        registerDataManager();
         failErrorManager = new ConsoleErrorManager();
         Services.registerService(ErrorManager.class, "", failErrorManager);
         failOutput = new ConsoleOutputManager();
@@ -80,13 +83,12 @@ public class ImportFromOwsContextDemo {
     
     @Test
     public void testUnmarshallingOwsContext() throws LayerException, JAXBException, DataSourceCreationException, DriverException, ParameterException {
-
-        InputStream is = OwsContextUtils.callService(SERVICE_TEST_URL);
-        List<ILayer> layers = importer.extractLayers(is);
+        Node owsContextNode = owsService.getOwsFile(10);
+        JAXBElement<OWSContextType> owsContext = importer.unmarshallOwsContext(owsContextNode);
+        List<ILayer> layers = importer.extractLayers(owsContext);
         
         assertTrue(layers.size() == 1);
     }
-    
     
     @Test
     public void testExtractDbUrn() {
@@ -158,18 +160,6 @@ public class ImportFromOwsContextDemo {
 
     }
     
-    private static DataSource createNewDataSource(DbConnectionString db) throws 
-            DataSourceCreationException, DriverException {
-        DBSource newDbSource = new DBSource(db.getHost(), db.getPort(),
-                db.getDb(), "postgres", "ieniiNg3", db.getTable(), "jdbc:postgresql");
-        
-        DataSource ds = dsf.getDataSource(newDbSource);
-        ds.open();
-        
-        return ds;
-        
-    }
-    
     /**
      * According to the unit test in org.orbisgis.core.layerModel.LayerModelTest,
      * we can group a list of layers. It's actually a layer of type
@@ -208,18 +198,18 @@ public class ImportFromOwsContextDemo {
         return context;
     }
     
-    private void runDemo() throws ParameterException {
-        InputStream is = OwsContextUtils.callService(SERVICE_TEST_URL);
-        List<ILayer> layers = importer.extractLayers(is);
-        showGraphics(layers);
-    }
-    
-    public static void main(String[] args) throws LayerException, JAXBException, 
-            DataSourceCreationException, DriverException, ParameterException, Exception {
-        
-        ImportFromOwsContextDemo demo = new ImportFromOwsContextDemo();
-        demo.setUp();
-        demo.runDemo();
-        
-    }
+//    private void runDemo() throws ParameterException {
+//        InputStream is = OwsContextUtils.callService(SERVICE_TEST_URL);
+//        List<ILayer> layers = importer.extractLayers(is);
+//        showGraphics(layers);
+//    }
+//    
+//    public static void main(String[] args) throws LayerException, JAXBException, 
+//            DataSourceCreationException, DriverException, ParameterException, Exception {
+//        
+//        ImportFromOwsContextDemo demo = new ImportFromOwsContextDemo();
+//        demo.setUp();
+//        demo.runDemo();
+//        
+//    }
 }
