@@ -11,7 +11,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
@@ -23,13 +22,15 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingWorker;
-import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.bind.JAXBElement;
+import net.opengis.ows_context.OWSContextType;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.sif.AbstractUIPanel;
 import org.orbisgis.progress.ProgressMonitor;
+import org.w3c.dom.Node;
 
 /**
  * Display a panel which allows the user to select an ows context file
@@ -132,20 +133,20 @@ public class OwsImportPanel extends AbstractUIPanel {
         @Override
         public void actionPerformed(ActionEvent ae) {
             if (list.getSelectedIndex() > 0) {
+                
+                final OWSContextImporter importer = new OWSContextImporterImpl();
+                Node owsContextNode = 
+                        OwsImportPanel.this.owsService.getOwsFile(((OwsFileBasic)list.getSelectedValue()).getId());
+                
+                final JAXBElement<OWSContextType> owsContext = importer.unmarshallOwsContext(owsContextNode);
+                //importer.extractDataSources(owsContext);
+                
                 this.bm.backgroundOperation(new BackgroundJob() {
 
                     @Override
                     public void run(ProgressMonitor pm) {
-                        try {
-                            OWSContextImporter importer = new OWSContextImporterImpl();
-                            String url = OwsPlugIn.URL_GET_ONE_OWS + 
-                                    ((OwsFileBasic)list.getSelectedValue()).getId();
-                            InputStream is = OwsContextUtils.callService(url);
-                            List<ILayer> importedLayers = importer.extractLayers(is);
-                            OwsImportPanel.this.owsFileImportListener.fireOwsExtracted(importedLayers);
-                        } catch (ParserConfigurationException ex) {
-                            Logger.getLogger(OwsImportPanel.class.getName()).log(Level.SEVERE, null, ex);
-                        }
+                        List<ILayer> importedLayers = importer.extractLayers(owsContext);
+                        OwsImportPanel.this.owsFileImportListener.fireOwsExtracted(importedLayers);
                     }
 
                     @Override

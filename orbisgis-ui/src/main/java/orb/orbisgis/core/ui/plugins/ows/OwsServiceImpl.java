@@ -10,38 +10,44 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
  *
- * @author cleglaun
+ * @author CŽdric Le Glaunec <cedric.leglaunec@gmail.com>
  */
 public class OwsServiceImpl implements OwsService {
 
     private static String SERVICE_URL_GETALL = "http://poulpe.heig-vd.ch/scapc2/serviceapi/web/index.php/context";
     private SAXParser parser;
     private final OwsSAXHandler owsSaxHandler;
+    private DocumentBuilder builder;
 
     public OwsServiceImpl() throws ParserConfigurationException, SAXException {
         this.parser = SAXParserFactory.newInstance().newSAXParser();
         this.owsSaxHandler = new OwsSAXHandler();
+        
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        // In order to get a xerces implementation which takes namespaces
+        // into account
+        dbf.setNamespaceAware(true); 
+        builder = dbf.newDocumentBuilder();
     }
 
+    @Override
     public List<OwsFileBasic> getAllOwsFiles() {
         List<OwsFileBasic> owsFiles = new ArrayList<OwsFileBasic>();
 
         try {
-            this.parser.parse(this.callService(SERVICE_URL_GETALL), this.owsSaxHandler);
+            this.parser.parse(OwsContextUtils.callService(SERVICE_URL_GETALL), this.owsSaxHandler);
             owsFiles = this.owsSaxHandler.getFiles();
         } catch (SAXException ex) {
             Logger.getLogger(OwsServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
@@ -51,32 +57,25 @@ public class OwsServiceImpl implements OwsService {
         
         return owsFiles;
     }
-
-    private InputStream callService(String serviceUrl) {
-        InputStream instream = null;
+    
+    @Override
+    public Node getOwsFile(int id) {
+        String url = OwsPlugIn.URL_GET_ONE_OWS + id;
+        InputStream owsInput = OwsContextUtils.callService(url);
+        Node node = null;
+        
         try {
-            HttpClient httpClient = new DefaultHttpClient();
-            HttpGet httpGet = new HttpGet(serviceUrl);
-            HttpResponse response = httpClient.execute(httpGet);
-            System.out.println(response.getStatusLine());
-
-            HttpEntity entity = response.getEntity();
-
-            if (entity != null) {
-                instream = entity.getContent();
-
-                // When HttpClient instance is no longer needed,
-                // shut down the connection manager to ensure
-                // immediate deallocation of all system resources
-                httpClient.getConnectionManager().shutdown();
-            }
-        } catch (ClientProtocolException ex) {
+            Document doc = builder.parse(owsInput);
+            doc.getDocumentElement().normalize();
+            node = doc.getElementsByTagName("OWSContext").item(0);
+        } catch (SAXException ex) {
             Logger.getLogger(OwsServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(OwsServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        return instream;
+        return node;
+
     }
 
     private class OwsSAXHandler extends DefaultHandler {

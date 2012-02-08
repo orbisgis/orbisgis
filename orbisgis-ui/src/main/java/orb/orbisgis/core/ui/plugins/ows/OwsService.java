@@ -5,10 +5,11 @@
 package orb.orbisgis.core.ui.plugins.ows;
 
 import java.util.List;
+import org.w3c.dom.Node;
 
 /**
  *
- * @author cleglaun
+ * @author CŽdric Le Glaunec <cedric.leglaunec@gmail.com>
  */
 public interface OwsService {
     
@@ -17,4 +18,13 @@ public interface OwsService {
      * @return 
      */
     public List<OwsFileBasic> getAllOwsFiles();
+    
+    /**
+     * Loads the specified ows context file id from the repository
+     * @param id The ows context file id in the repository
+     * @return A DOM node repsenting the extracted ows context content.
+     * WARNING: the implementation should take  into consideration namespaces
+     * if the result is intended to be unmarshalled by JAXB.
+     */
+    public Node getOwsFile(int id);
 }
