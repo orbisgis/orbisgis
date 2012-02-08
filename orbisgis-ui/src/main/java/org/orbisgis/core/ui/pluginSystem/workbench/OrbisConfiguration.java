@@ -45,7 +45,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
-import orb.orbisgis.core.ui.plugins.ows.OwsPlugIn;
+import org.orbisgis.core.ui.plugins.ows.OwsPlugIn;
 import org.gdms.driver.Driver;
 
 import org.gdms.driver.FileDriver;
