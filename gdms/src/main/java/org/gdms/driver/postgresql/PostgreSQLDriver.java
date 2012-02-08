@@ -269,7 +269,7 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
         @Override
         protected String getSelectSQL(String orderFieldName) throws DriverException {
                 String sql = "SELECT * FROM " + getTableAndSchemaName();
-                if (orderFieldName != null) {
+                if (orderFieldName != null && !orderFieldName.trim().isEmpty()) {
                         sql += " ORDER BY " + orderFieldName;
                 }
                 sql += " OFFSET " + wnd.offset + " LIMIT " + wnd.length;
@@ -395,19 +395,19 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                 int geometryDimension, WarningListener wl) throws DriverException {
                 int desiredCode;
                 if ("POINT".equals(geometryType)) {
-                        desiredCode=Type.POINT;
+                        desiredCode = Type.POINT;
                 } else if ("MULTIPOINT".equals(geometryType)) {
-                        desiredCode=Type.MULTIPOINT;
+                        desiredCode = Type.MULTIPOINT;
                 } else if ("LINESTRING".equals(geometryType)) {
-                        desiredCode=Type.LINESTRING;
+                        desiredCode = Type.LINESTRING;
                 } else if ("MULTILINESTRING".equals(geometryType)) {
-                        desiredCode=Type.MULTILINESTRING;
+                        desiredCode = Type.MULTILINESTRING;
                 } else if ("POLYGON".equals(geometryType)) {
-                        desiredCode=Type.POLYGON;
+                        desiredCode = Type.POLYGON;
                 } else if ("MULTIPOLYGON".equals(geometryType)) {
-                        desiredCode=Type.MULTIPOLYGON;
+                        desiredCode = Type.MULTIPOLYGON;
                 } else if (GEOMETRYFIELDNAME.equals(geometryType)) {
-                        desiredCode=Type.GEOMETRY;
+                        desiredCode = Type.GEOMETRY;
                 } else {
                         wl.throwWarning("Unrecognized geometry type: " + geometryType
                                 + ". Using 'MIXED'");
@@ -426,7 +426,7 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                         cons.add(new SRIDConstraint(srid));
                 }
                 cons.add(dc);
-                return TypeFactory.createType(desiredCode,cons.toArray(new Constraint[cons.size()]));
+                return TypeFactory.createType(desiredCode, cons.toArray(new Constraint[cons.size()]));
         }
 
         @Override
@@ -632,8 +632,8 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                         }
                 }
         }
-        
-       @Override
+
+        @Override
         public int getSupportedType() {
                 return SourceManager.DB | SourceManager.VECTORIAL;
         }
@@ -716,7 +716,7 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                                 return ValueFactory.createNullValue();
                         }
                 } else {
-                        return PostgreSQLDriver.super.getTable(tableName).getFieldValue(rowIndex, fieldId);
+                         return super.getFieldValue(rowIndex, fieldId);
                 }
         }
 
