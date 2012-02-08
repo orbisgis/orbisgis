@@ -4,8 +4,8 @@
  */
 package org.orbisgis.core.ui.plugins.ows;
 
-import java.util.List;
-import org.orbisgis.core.layerModel.ILayer;
+import javax.xml.bind.JAXBElement;
+import net.opengis.ows_context.OWSContextType;
 
 /**
  *
@@ -14,9 +14,8 @@ import org.orbisgis.core.layerModel.ILayer;
 public interface OwsFileImportListener {
     
     /**
-     * Called when the layers of an ows context file have been
-     * extracted.
+     * Called when the ows context file has been unmarshalled
      * @param layers The collection of layers which have been extracted.
      */
-    public void fireOwsExtracted(List<ILayer> layers);
+    public void fireOwsExtracted(JAXBElement<OWSContextType> owsContext);
 }

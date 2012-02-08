@@ -11,7 +11,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
+import javax.xml.bind.JAXBElement;
 import javax.xml.parsers.ParserConfigurationException;
+import net.opengis.ows_context.OWSContextType;
 import org.orbisgis.core.geocognition.Geocognition;
 import org.orbisgis.core.geocognition.GeocognitionElement;
 import org.orbisgis.core.geocognition.GeocognitionListener;
@@ -88,9 +90,13 @@ public class OwsPlugIn extends AbstractPlugIn {
     public class OwsFileImportListenerImpl implements OwsFileImportListener {
 
         @Override
-        public void fireOwsExtracted(final List<ILayer> layers) {
-            // TODO: Update map context
+        public void fireOwsExtracted(final JAXBElement<OWSContextType> owsContext) {
+
+            OWSContextImporter importer = new OWSContextImporterImpl();
+            
+            final List<ILayer> layers = importer.extractLayers(owsContext);
             Logger.getLogger(OwsPlugIn.class.getName()).log(Level.INFO, "{0} layer(s) imported.", layers.size());
+            
             
             getPlugInContext().getGeocognition().addGeocognitionListener(new GeocognitionListener() {
                 @Override

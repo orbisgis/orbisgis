@@ -135,18 +135,16 @@ public class OwsImportPanel extends AbstractUIPanel {
             if (list.getSelectedIndex() > 0) {
                 
                 final OWSContextImporter importer = new OWSContextImporterImpl();
-                Node owsContextNode = 
-                        OwsImportPanel.this.owsService.getOwsFile(((OwsFileBasic)list.getSelectedValue()).getId());
-                
-                final JAXBElement<OWSContextType> owsContext = importer.unmarshallOwsContext(owsContextNode);
-                //importer.extractDataSources(owsContext);
                 
                 this.bm.backgroundOperation(new BackgroundJob() {
 
                     @Override
                     public void run(ProgressMonitor pm) {
-                        List<ILayer> importedLayers = importer.extractLayers(owsContext);
-                        OwsImportPanel.this.owsFileImportListener.fireOwsExtracted(importedLayers);
+                        Node owsContextNode = 
+                                OwsImportPanel.this.owsService.getOwsFile(((OwsFileBasic)list.getSelectedValue()).getId());
+
+                        JAXBElement<OWSContextType> owsContext = importer.unmarshallOwsContext(owsContextNode);
+                        OwsImportPanel.this.owsFileImportListener.fireOwsExtracted(owsContext);
                     }
 
                     @Override
