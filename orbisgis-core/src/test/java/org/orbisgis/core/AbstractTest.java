@@ -64,7 +64,7 @@ public abstract class AbstractTest {
         }
 
         public static void registerDataManager() {
-                SQLDataSourceFactory dsf = new SQLDataSourceFactory();
+                SQLDataSourceFactory dsf = new SQLDataSourceFactory("target/tempsGdms", "target/tempsGdms");
                 registerDataManager(dsf);
         }
 
