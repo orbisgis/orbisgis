@@ -22,5 +22,10 @@ public class BeanShellScriptTest{
                BeanshellScript.main(new String[]{"-f", "src/test/resources/beanshell/helloWorld.bsh"});
         }
         
+        @Test
+        public void testMapDisplayScript() throws Exception {                
+               BeanshellScript.main(new String[]{"-f", "src/test/resources/beanshell/mapDisplayDatasource.bsh"});
+        }
+        
         
 }
