@@ -61,11 +61,8 @@ public class BeanshellScript {
          * @throws FileNotFoundException
          */
         public static void main(String[] args) throws EvalError, FileNotFoundException {
-                String help = "Beanshell script"
-                        + "Parameter :  [-f <path script file>]\n";
                 if (args.length == 0) {
-                        System.out.println(help);
-
+                        printHelp();
                 } else if (args.length == 2) {
                         if (args[0].equals("-f")) {
                                 String script = args[1];
@@ -76,7 +73,7 @@ public class BeanshellScript {
                                     System.out.println("The second parameter must be not null.");    
                                 }
                         } else {
-                                System.out.println(help);
+                                printHelp();
                         }
                 }
         }
@@ -136,5 +133,19 @@ public class BeanshellScript {
                         FileReader reader = new FileReader(file);
                         interpreter.eval(reader);
                 }
+        }
+
+        /**
+         * Print the help associated to this executable.
+         */
+        public static void printHelp(){
+                System.out.print(getHelp());
+        }
+
+        /**
+         * Get the help associated to this executable.
+         */
+        public static String getHelp(){
+                return "Beanshell script Parameter :  [-f <path script file>]\n";
         }
 }
