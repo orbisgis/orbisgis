@@ -26,30 +26,59 @@
  * or contact directly:
  * info _at_ orbisgis.org
  */
-package org.orbisgis.view.main;
+package org.orbisgis.view.compenents.text;
 
-/**
- * Entry point of User Interface
- */
-final class Main 
-{
-    /**
-     * Utility class
-     */
-    private Main() {
-        
-    }
-    /**
-    * Entry point of User Interface
-    */
-    public static void main( String[] args )
-    {
-        Core viewCore = new Core();
-        try {
-            viewCore.startup();
-        }
-        catch(RuntimeException exc) {
-            System.exit(0);
-        }
-    }
+import java.awt.Graphics;
+import java.awt.Insets;
+import javax.swing.Icon;
+import javax.swing.JTextField;
+import org.orbisgis.view.icons.OrbisGISIcon;
+
+public class JButtonTextField extends JTextField {
+
+	private static int columns = 8;
+	private Icon icon;
+
+	/**
+	 * Create a jtextfield with an icon inside
+	 * 
+	 * @param icon
+	 * @param columns
+	 */
+	public JButtonTextField(Icon icon, int columns) {
+		super(columns);
+		this.icon = icon;
+	}
+
+	/**
+	 * Create a jtextfield with an icon inside
+	 * 
+	 * @param columns
+	 */
+	public JButtonTextField(int columns) {
+		super(columns);
+		this.icon = OrbisGISIcon.getIcon("small_search.png");
+	}
+
+	/**
+	 * Create a jtextfield with an icon inside
+	 */
+	public JButtonTextField() {
+		super(columns);
+		this.icon = OrbisGISIcon.getIcon("small_search.png");
+	}
+
+    @Override
+	protected void paintComponent(final Graphics g) {
+		super.paintComponent(g);
+		this.icon.paintIcon(null, g, 1, 1);
+	}
+
+    @Override
+	public Insets getInsets() {
+		Insets i = super.getInsets();
+		i.left += icon.getIconWidth() + 10;
+		return i;
+	}
+
 }

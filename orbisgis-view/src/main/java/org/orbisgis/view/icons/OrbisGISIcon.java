@@ -51,7 +51,7 @@ import org.orbisgis.utils.I18N;
  */
 
 
-public class OrbisGISIcon {
+public final class OrbisGISIcon {
     private static Map<String,ImageIcon> LOADED_ICONS=new HashMap<String,ImageIcon>();/*!< This map contain all loaded icons */
     
     private static final ImageIcon ORBISGIS_MISSING_ICON = new ImageIcon(OrbisGISIcon.class.getResource("remove.png")); /*!< Icon displayed when the requested icon is not found */

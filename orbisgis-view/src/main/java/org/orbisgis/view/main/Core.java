@@ -50,6 +50,8 @@ import org.orbisgis.base.context.main.MainContext;
 import org.orbisgis.base.events.Listener;
 import org.orbisgis.base.events.ListenerRelease;
 import org.orbisgis.utils.I18N;
+import org.orbisgis.view.docking.DockingManager;
+import org.orbisgis.view.frames.Catalog;
 import org.orbisgis.view.frames.MainFrame;
 import org.orbisgis.view.translation.OrbisGISI18N;
 
@@ -60,8 +62,9 @@ import org.orbisgis.view.translation.OrbisGISI18N;
 public class Core implements ComponentCollector {
     /////////////////////
     //view package
-    private MainFrame mainFrame;     /*!< The DockStation */
+    private MainFrame mainFrame;     /*!< The main window */
     private final static Rectangle mainViewPositionAndSize = new Rectangle(20,20,800,600);/*!< Bounds of mainView, x,y and width height*/
+    private DockingManager dockManager; /*!< The DockStation manager */
     /////////////////////
     //base package :
     private MainContext mainContext; /*!< The larger surrounding part of OrbisGis base */
@@ -83,6 +86,7 @@ public class Core implements ComponentCollector {
         List<Component> components = new ArrayList<Component>();
         
         components.add(mainFrame);
+        components.addAll(this.dockManager.getPanels());
         return components;
     }
     /**
@@ -127,13 +131,16 @@ public class Core implements ComponentCollector {
 
         frontend = new DockFrontend( controller, mainFrame );
 	preferences = new DockingFramesPreference( controller );
-        
+        dockManager = new DockingManager(frontend,mainFrame);
         
         lookAndFeels = LookAndFeelList.getDefaultList();
         lookAndFeels.addComponentCollector( this );
         
         mainFrame.setup();
 	mainFrame.setBounds(mainViewPositionAndSize);
+        dockManager.show(new Catalog(), dockManager.getRightDockStation(), null);
+        dockManager.show(new Catalog(), dockManager.getSplit(), null);
+        //Load GeoCatalog
         
         // Show the application when Swing will be ready
         SwingUtilities.invokeLater( new Runnable(){
@@ -150,9 +157,13 @@ public class Core implements ComponentCollector {
         // Init I18n
         I18N.addI18n("", "orbisgis", OrbisGISI18N.class);
     }
+    /**
+     * Free all resources in preparation of exit the software.
+     */
     public void dispose() {
         //Remove all listeners created by this object
         ListenerRelease.releaseListeners(this);
+        //Free UI resources
         mainFrame.dispose();
         frontend.getController().kill();
     }
@@ -166,7 +177,15 @@ public class Core implements ComponentCollector {
             this.dispose();
         }
         finally{
-            System.exit( 0 );
+            // If there is another unclosed windows, java machine may continue to run
+            // In this case, the following command would exit the application
+            /*
+            SwingUtilities.invokeLater( new Runnable(){
+                    public void run(){
+                            System.exit(0);
+                    }
+            */
+            
         }
     }
 }

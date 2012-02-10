@@ -5,7 +5,7 @@ package org.orbisgis.view.translation;
  * Simple class to load OrbisGIS translation file.
  * 
  */
-public class OrbisGISI18N {
+public final class OrbisGISI18N {
     /**
      * This is a static class
      */

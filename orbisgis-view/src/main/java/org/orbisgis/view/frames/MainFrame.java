@@ -40,7 +40,7 @@ import org.orbisgis.view.icons.OrbisGISIcon;
 
 /**
  * Host of the {@link DockStation}s, this frame contain 
- * all other dackable frames
+ * all other dockable frames
  *
  */
 public class MainFrame extends JFrame implements WindowListener{
@@ -78,9 +78,19 @@ public class MainFrame extends JFrame implements WindowListener{
             setupListeners();
         }
 
+        /**
+         * Implementation of WindowListener
+         * @param we 
+         */
         public void windowOpened(WindowEvent we) {
         }
 
+
+        /**
+         * Implementation of WindowListener
+         * Call of the Event mainFrameClosing
+         * @param we 
+         */
         public void windowClosing(WindowEvent we) {
             try {
                 mainFrameClosing.callListeners(null);
@@ -89,18 +99,42 @@ public class MainFrame extends JFrame implements WindowListener{
             }
         }
 
+
+        /**
+         * Implementation of WindowListener
+         * @param we 
+         */
         public void windowClosed(WindowEvent we) {
         }
 
+
+        /**
+         * Implementation of WindowListener
+         * @param we 
+         */
         public void windowIconified(WindowEvent we) {
         }
 
+
+        /**
+         * Implementation of WindowListener
+         * @param we 
+         */
         public void windowDeiconified(WindowEvent we) {
         }
 
+        /**
+         * Implementation of WindowListener
+         * @param we 
+         */
         public void windowActivated(WindowEvent we) {
         }
 
+
+        /**
+         * Implementation of WindowListener
+         * @param we 
+         */
         public void windowDeactivated(WindowEvent we) {
         }
 }

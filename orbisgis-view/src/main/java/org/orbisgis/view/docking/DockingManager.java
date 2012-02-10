@@ -30,20 +30,30 @@ package org.orbisgis.view.docking;
 
 import bibliothek.gui.DockFrontend;
 import bibliothek.gui.DockStation;
+import bibliothek.gui.Dockable;
+import bibliothek.gui.dock.DefaultDockable;
 import bibliothek.gui.dock.FlapDockStation;
 import bibliothek.gui.dock.ScreenDockStation;
 import bibliothek.gui.dock.SplitDockStation;
+import bibliothek.gui.dock.layout.DockableProperty;
 import bibliothek.gui.dock.util.PropertyKey;
-import java.awt.Window;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 import org.orbisgis.utils.I18N;
 import org.orbisgis.view.icons.OrbisGISIcon;
 /**
- * @brief Manage left,right,up,down,center docking stations.
+ * @brief Manage left,right,down,center docking stations.
  * 
  * This manager can save and load emplacement of views in XML.
  */
-public class DockingManager {
+public final class DockingManager {
 
+        private Map<JPanel,Dockable> views = new HashMap<JPanel,Dockable>();
 	/** the {@link DockStation} in the center of the {@link MainFrame} */
 	private SplitDockStation split;
 	/** the {@link DockStation} at the right side of the {@link MainFrame} */
@@ -57,13 +67,19 @@ public class DockingManager {
 	
 	/** link to the docking-frames */
 	private DockFrontend frontend;
-	
+        /**
+         * Return the docked panels
+         * @return The set of panels managed by this docking manager.
+         */
+	public Set<JPanel> getPanels() {
+            return views.keySet();
+        }
 	/**
 	 * Creates the new manager
 	 * @param frontend link to the docking-frames
 	 * @param owner the window used as parent for all dialogs
 	 */
-	public DockingManager( DockFrontend frontend, Window owner){
+	public DockingManager( DockFrontend frontend, JFrame owner){
 		this.frontend = frontend;
 		
                 //TODO add hide and close buttons
@@ -87,8 +103,41 @@ public class DockingManager {
 		frontend.addRoot( "down", down );
 
 		frontend.setDefaultStation( split );
+                
+                
+                Container content = owner.getContentPane();
+
+                content.setLayout( new BorderLayout() );
+
+                content.add( getSplit(), BorderLayout.CENTER );
+                content.add( getDownDockStation().getComponent(), BorderLayout.SOUTH );
+                content.add( getRightDockStation().getComponent(), BorderLayout.EAST );
+                content.add( getLeftDockStation().getComponent(), BorderLayout.WEST );
 	}
-	
+	/**
+	 * Shows a view at the given location as child
+	 * of <code>root</code>.
+	 * @param frame the <code>JPanel</code> for which a view should be opened
+	 * @param root the preferred parent, might be <code>null</code>
+	 * @param location the preferred location, relative to <code>root</code>. Might
+	 * be <code>null</code>.
+	 */
+	public void show( JPanel frame, DockStation root, DockableProperty location ){
+		if( !views.containsKey( frame ) ){
+                        Dockable dockItem = new DefaultDockable( frame, frame.getName() );
+			
+			if( root == null || location == null ){
+				frontend.getDefaultStation().drop( dockItem );
+			}
+			else{
+				if( !root.drop( dockItem, location )){
+					frontend.getDefaultStation().drop( dockItem );
+				}
+			}
+			views.put( frame, dockItem);
+		}
+		frontend.getController().setFocusedDockable( views.get(frame), false );
+	}	
 	/**
 	 * Gets the {@link DockStation} that is on the right side of the {@link MainFrame}.
 	 * @return the station in the right
@@ -136,17 +185,21 @@ public class DockingManager {
      * is unknown
      */
 	public String getDockStationSide( DockStation station ){
-		if( station == split )
+		if( station.equals(split)) {
 			return "split";
-		if( station == right )
+                }
+		if( station.equals(right)) {
 			return "right";
-		if( station == left )
+                }
+		if( station.equals(left)) {
 			return "left";
-		if( station == down )
-			return "south";
-		if( station == screen )
-			return "screen";
-		
+                }
+		if( station.equals(down)) {
+			return "down";
+                }
+		if( station.equals(screen)) {
+			return "screen";	
+                }
 		return null;
 	}
 }
