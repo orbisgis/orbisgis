@@ -120,6 +120,8 @@ public abstract class TestBase extends SourceTest<Value, Geometry> {
                                         + "hedgerow.shp"));
                                 toTest.add(new FileTestSource("landcover2000dbf", internalData
                                         + "landcover2000.dbf"));
+                                toTest.add(new FileTestSource("tif440606", internalData
+                                        + "tif440606.gdms"));
 
                                 toTest.add(new FileTestSource(SHPTABLE, internalData
                                         + "landcover2000.shp"));

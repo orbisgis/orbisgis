@@ -393,7 +393,7 @@ public class ShapefileDriverTest {
         @Test
         public void testReadAndWriteDBF() throws Exception {
                 File file = new File(TestBase.internalData + "alltypes.dbf");
-                File backup = new File(TestBase.internalData + "backup/alltypes.dbf");
+                File backup = new File(TestBase.backupDir+"alltypes.dbf");
                 FileUtils.copy(file, backup);
                 DataSource ds = dsf.getDataSource(backup);
                 for (int i = 0; i < 2; i++) {
@@ -420,14 +420,14 @@ public class ShapefileDriverTest {
         @Test
         public void testReadAndWriteSHP() throws Exception {
                 File file = new File(TestBase.internalData + "alltypes.shp");
-                File backup1 = new File(TestBase.internalData + "backup/alltypes.shp");
+                File backup1 = new File(TestBase.backupDir+"alltypes.shp");
                 FileUtils.copy(file, backup1);
                 File backup = backup1;
                 file = new File(TestBase.internalData + "alltypes.shx");
-                File backup2 = new File(TestBase.internalData + "backup/alltypes.shx");
+                File backup2 = new File(TestBase.backupDir+"alltypes.shx");
                 FileUtils.copy(file, backup2);
                 file = new File(TestBase.internalData + "alltypes.dbf");
-                File backup3 = new File(TestBase.internalData + "backup/alltypes.dbf");
+                File backup3 = new File(TestBase.backupDir+"alltypes.dbf");
                 FileUtils.copy(file, backup3);
                 DataSource ds = dsf.getDataSource(backup);
                 GeometryFactory gf = new GeometryFactory();

@@ -58,6 +58,7 @@ public class FileTestSource extends TestSource {
 		this.originalFile = new File(file);
 	}
 
+        @Override
 	public void backup() throws Exception {
 		File backupFile = getBackupFile();
 		String prefix = originalFile.getAbsolutePath();
@@ -75,7 +76,7 @@ public class FileTestSource extends TestSource {
 	}
 
 	private File getDestDirectory() {
-		return new File(SourceTest.backupDir.getAbsolutePath() + "/"
+		return new File(SourceTest.backupDir.getAbsolutePath() + "../"
 				+ name);
 	}
 
