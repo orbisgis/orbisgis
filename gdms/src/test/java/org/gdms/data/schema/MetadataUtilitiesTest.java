@@ -123,7 +123,7 @@ public class MetadataUtilitiesTest {
         try {
             int ret = MetadataUtilities.getGeometryDimension(dm, 0);
             fail();
-        } catch (UnsupportedOperationException e) {
+        } catch (IllegalArgumentException e) {
             assertTrue(true);
         }
         assertEquals(MetadataUtilities.getGeometryDimension(dm, 1), 0);
@@ -152,7 +152,7 @@ public class MetadataUtilitiesTest {
         try {
             int ret = MetadataUtilities.getGeometryDimension(dm, 0);
             fail();
-        } catch (UnsupportedOperationException e) {
+        } catch (IllegalArgumentException e) {
             assertTrue(true);
         }
         assertEquals(MetadataUtilities.getHumanGeometryDimension(dm, 1), GeometryDimensionConstraint.HUMAN_DIMENSION_POINT);
