@@ -63,18 +63,8 @@ public class BeanshellScript {
         public static void main(String[] args) throws EvalError, FileNotFoundException {
                 if (args.length == 0) {
                         printHelp();
-                } else if (args.length == 2) {
-                        if (args[0].equals("-f")) {
-                                String script = args[1];
-                                if (script != null && !script.isEmpty()) {
-                                        execute(script);
-                                }
-                                else {
-                                    System.out.println("The second parameter must be not null.");    
-                                }
-                        } else {
-                                printHelp();
-                        }
+                } else {
+                        execute(args);
                 }
         }
 
@@ -113,39 +103,48 @@ public class BeanshellScript {
 
         /**
          * Here the method to execute the beanshell script
-         * @param script
+         * @param  args
          * @throws EvalError
          * @throws FileNotFoundException 
          */
-        private static void execute(String script) throws EvalError, FileNotFoundException {
-                File file = new File(script);
+        private static void execute(String[] args) throws EvalError, FileNotFoundException {
 
-                if (!file.exists()) {
-                        System.out.println("The file doesn't exist.");
+                String script = args[0];
+                if (script != null && !script.isEmpty()) {
+                        File file = new File(script);
+                        if (!file.isFile()){
+                            printHelp();    
+                        }
+                        else if (!file.exists()) {
+                                System.out.println("The file doesn't exist.");
+                        } else {
+                                servicesRegister();
+                                Interpreter interpreter = new Interpreter();
+                                interpreter.setOut(System.out);
+                                DataManager dm = Services.getService(DataManager.class);
+                                interpreter.setClassLoader(dm.getDataSourceFactory().getClass().getClassLoader());
+                                interpreter.set("bsh.args", args);
+                                interpreter.set("dsf", dm.getDataSourceFactory());
+                                interpreter.eval("setAccessibility(true)");
+                                FileReader reader = new FileReader(file);
+                                interpreter.eval(reader);
+                        }
                 } else {
-                        servicesRegister();
-                        Interpreter interpreter = new Interpreter();
-                        interpreter.setOut(System.out);
-                        DataManager dm = Services.getService(DataManager.class);
-                        interpreter.setClassLoader(dm.getDataSourceFactory().getClass().getClassLoader());
-                        interpreter.set("dsf", dm.getDataSourceFactory());
-                        interpreter.eval("setAccessibility(true)");
-                        FileReader reader = new FileReader(file);
-                        interpreter.eval(reader);
+                        System.out.print("The second parameter must be not null.\n");
                 }
         }
 
         /**
          * Print the help associated to this executable.
          */
-        public static void printHelp(){
+        public static void printHelp() {
                 System.out.print(getHelp());
         }
 
         /**
          * Get the help associated to this executable.
          */
-        public static String getHelp(){
-                return "Beanshell script Parameter :  [-f <path script file>]\n";
+        public static String getHelp() {
+                return "Beanshell script arguments. The first argument must be  a path to the script file.\n";
         }
 }

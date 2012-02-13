@@ -17,7 +17,7 @@ public class BeanShellScriptTest {
                 PrintStream ps = new PrintStream(baos);
                 PrintStream psbak = System.out;
                 System.setOut(ps);
-                BeanshellScript.main(new String[]{"-f", ""});
+                BeanshellScript.main(new String[]{""});
                 String out = baos.toString();
                 assertTrue(out.equals("The second parameter must be not null.\n"));
                 System.setOut(psbak);
@@ -41,7 +41,7 @@ public class BeanShellScriptTest {
                 PrintStream ps = new PrintStream(baos);
                 PrintStream psbak = System.out;
                 System.setOut(ps);
-                BeanshellScript.main(new String[]{"youhou", "youhou"});
+                BeanshellScript.main(new String[]{ "youhou", "src/test/resources/beanshell/helloWorld.bsh"});
                 String out = baos.toString();
                 assertTrue(out.equals(BeanshellScript.getHelp()));
                 System.setOut(psbak);
@@ -49,20 +49,26 @@ public class BeanShellScriptTest {
 
         @Test
         public void testSimpleFileScript() throws Exception {
-                BeanshellScript.main(new String[]{"-f", "src/test/resources/beanshell/helloWorld.bsh"});
+                BeanshellScript.main(new String[]{"src/test/resources/beanshell/helloWorld.bsh"});
                 assertTrue(true);
         }
 
         @Test
         public void testMapDisplayScript() throws Exception {
-                BeanshellScript.main(new String[]{"-f", "src/test/resources/beanshell/mapDisplayDatasource.bsh"});
+                BeanshellScript.main(new String[]{"src/test/resources/beanshell/mapDisplayDatasource.bsh"});
                 Thread.sleep(3000);
                 assertTrue(true);
         }
 
         @Test
         public void testMapToPng() throws Exception {
-                BeanshellScript.main(new String[]{"-f", "src/test/resources/beanshell/datatsourceTopng.bsh"});
+                BeanshellScript.main(new String[]{"src/test/resources/beanshell/datatsourceTopng.bsh"});
+                assertTrue(true);
+        }
+        
+        @Test
+        public void testSeveralArguments() throws Exception {
+                BeanshellScript.main(new String[]{"src/test/resources/beanshell/testSeveralArguments.bsh", "orbis","1"});
                 assertTrue(true);
         }
 }
