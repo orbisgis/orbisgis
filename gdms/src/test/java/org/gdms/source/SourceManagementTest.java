@@ -479,8 +479,8 @@ public class SourceManagementTest {
                 } catch (IOException e) {
                 }
                 testFile = new File(TestBase.internalData + "test.csv");
-                testDB = new DBSource(null, 0, TestBase.internalData
-                        + "backup/testhsqldb", "sa", "", "gisapps", "jdbc:hsqldb:file");
+                testDB = new DBSource(null, 0, TestBase.backupDir
+                        + "testhsqldb", "sa", "", "gisapps", "jdbc:hsqldb:file");
                 testWMS = new WMSSource("127.0.0.1", "cantons", "EPSG:1234",
                         "format/pig");
                 obj = new MemoryDataSetDriver();

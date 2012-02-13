@@ -284,7 +284,7 @@ public class GDMSDriverTest {
 
         @Test
         public void testKeepNoDataValue() throws Exception {
-                DataSource ds = dsf.getDataSource(new File(TestBase.backupDir+"/tif440606.gdms"));
+                DataSource ds = dsf.getDataSource(new File(TestBase.internalData+"/tif440606.gdms"));
                 ds.open();
                 GeoRaster gr = ds.getRaster(0);
                 gr.setNodataValue(345);

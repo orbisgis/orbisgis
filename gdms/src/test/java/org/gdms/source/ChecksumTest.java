@@ -66,7 +66,7 @@ public class ChecksumTest {
 
                 name = "db";
                 DBSource testDB = new DBSource(null, 0, TestBase.internalData
-                        + "backup/testhsqldb", "sa", "", "gisapps", "jdbc:hsqldb:file");
+                        + "testhsqldb", "sa", "", "gisapps", "jdbc:hsqldb:file");
                 DBTestSource dbTestSource = new DBTestSource(name,
                         "org.hsqldb.jdbcDriver", TestBase.internalData
                         + "testhsqldb.sql", testDB);

@@ -145,7 +145,7 @@ public abstract class TestBase extends SourceTest<Value, Geometry> {
                                 }
                                 final DBTestSource dBTestHsqlDb = new DBTestSource("testhsqldb", "org.hsqldb.jdbcDriver",
                                         internalData + "testhsqldb.sql", new DBSource(null, 0,
-                                        internalData + "backup/testhsqldb", "sa", "",
+                                        internalData + "testhsqldb", "sa", "",
                                         "gisapps", "jdbc:hsqldb:file"));
                                 hsqlDbAvailable = dBTestHsqlDb.isConnected();
 
