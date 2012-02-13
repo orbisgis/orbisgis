@@ -259,8 +259,7 @@ public class FooEmptyResultSet implements ResultSet {
 	}
 
 	public ResultSetMetaData getMetaData() throws SQLException {
-
-		return null;
+                return new FooResultSetMetadata();
 	}
 
 	public Object getObject(int columnIndex) throws SQLException {

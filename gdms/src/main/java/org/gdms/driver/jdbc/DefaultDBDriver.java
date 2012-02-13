@@ -124,7 +124,7 @@ public abstract class DefaultDBDriver extends DefaultSQL {
                                         fKSet = dbmd.getImportedKeys(null, schemaName,
                                                 tableName);
 
-                                        while (fKSet.next()) {
+                                        while (fKSet != null && fKSet.next()) {
                                                 fKFieldsList.add(pKSet.getString("COLUMN_NAME"));
                                         }
                                 } finally {

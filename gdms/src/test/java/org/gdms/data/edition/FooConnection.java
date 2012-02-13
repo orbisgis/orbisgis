@@ -65,7 +65,7 @@ public class FooConnection implements Connection {
 
 	public Statement createStatement() throws SQLException {
 
-		return null;
+		return new FooStatement();
 	}
 
 	public PreparedStatement prepareStatement(String arg0) throws SQLException {
@@ -149,9 +149,9 @@ public class FooConnection implements Connection {
 
 	}
 
+        @Override
 	public Statement createStatement(int arg0, int arg1) throws SQLException {
-
-		return null;
+                return createStatement();
 	}
 
 	public PreparedStatement prepareStatement(String arg0, int arg1, int arg2)
@@ -201,8 +201,7 @@ public class FooConnection implements Connection {
 
 	public Statement createStatement(int arg0, int arg1, int arg2)
 			throws SQLException {
-
-		return null;
+                return createStatement();
 	}
 
 	public PreparedStatement prepareStatement(String arg0, int arg1, int arg2,
@@ -294,24 +293,19 @@ public class FooConnection implements Connection {
 		return null;
 	}
 
-        //@Override
         public void setSchema(String schema) throws SQLException {
         }
 
-        //@Override
         public String getSchema() throws SQLException {
                 return null;
         }
 
-        //@Override
         public void abort(Executor executor) throws SQLException {
         }
 
-        //@Override
         public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
         }
 
-        //@Override
         public int getNetworkTimeout() throws SQLException {
                 return 0;
         }

@@ -132,6 +132,7 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
                 try {
                         con = getConnection();
                         driver.open(con, def.getTableName(), def.getSchemaName());
+                        fireOpen(this);
                 } catch (SQLException e) {
                         throw new DriverException(I18N.getString(GDMS_DRIVER_ERROR_CONNECTION_OPEN), e);
                 }
