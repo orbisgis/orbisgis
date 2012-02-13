@@ -255,12 +255,13 @@ public final class DefaultSourceManager implements SourceManager {
 
         @Override
         public void removeAll() throws IOException {
-                File[] files = new File(baseDir).listFiles();
+                File f = new File(baseDir);
+                File[] files = f.listFiles();
                 for (File file : files) {
                         if (file.getName().startsWith(".")) {
                                 continue;
-                        }
-                        if (!file.getName().equals("directory.xml") && !file.delete()) {
+                        } if (!file.getName().equals("directory.xml") && !file.isDirectory()
+                                        && !file.delete()) {
                                 throw new IOException(
                                         "Cannot delete file associated with property: "
                                         + file.getAbsolutePath());
