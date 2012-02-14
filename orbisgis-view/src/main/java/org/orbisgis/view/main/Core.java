@@ -41,13 +41,13 @@ import bibliothek.gui.dock.support.lookandfeel.LookAndFeelList;
 import bibliothek.gui.dock.themes.BasicTheme;
 import java.awt.Component;
 import java.awt.Rectangle;
+import java.awt.event.WindowListener;
 import java.beans.EventHandler;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.swing.SwingUtilities;
 import org.orbisgis.base.context.main.MainContext;
-import org.orbisgis.base.events.Listener;
 import org.orbisgis.base.events.ListenerRelease;
 import org.orbisgis.utils.I18N;
 import org.orbisgis.view.docking.DockingManager;
@@ -107,9 +107,14 @@ public class Core implements ComponentCollector {
         mainFrame = new MainFrame();
         //When the user ask to close OrbisGis it call
         //the shutdown method here, 
-        //then we link this event with our shutdown method
-        mainFrame.getMainFrameClosing().addListener(this,
-                EventHandler.create(Listener.class, this, "shutdown"));
+        // Link the Swing Events with the MainFrame event
+        //Thanks to EventHandler we don't have to build a listener class
+        mainFrame.addWindowListener(EventHandler.create(
+                WindowListener.class, //The listener class
+                this,                 //The event target object
+                "shutdown",           //The event target method to call
+                null,                 //the event parameter to pass(none)
+                "windowClosing"));    //The listener method to use
     }
     /**
     * Starts the application. This method creates the {@link MainFrame},
@@ -136,7 +141,6 @@ public class Core implements ComponentCollector {
         lookAndFeels = LookAndFeelList.getDefaultList();
         lookAndFeels.addComponentCollector( this );
         
-        mainFrame.setup();
 	mainFrame.setBounds(mainViewPositionAndSize);
         dockManager.show(new Catalog(), dockManager.getRightDockStation(), null);
         dockManager.show(new Catalog(), dockManager.getSplit(), null);

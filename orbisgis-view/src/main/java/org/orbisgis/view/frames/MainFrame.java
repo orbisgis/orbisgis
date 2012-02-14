@@ -29,30 +29,16 @@
 
 package org.orbisgis.view.frames;
 
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.util.Locale;
 import javax.swing.JFrame;
-import org.orbisgis.base.events.EventException;
-import org.orbisgis.base.events.ListenerContainer;
 import org.orbisgis.utils.I18N;
 import org.orbisgis.view.icons.OrbisGISIcon;
 
 /**
  * Host of the {@link DockStation}s, this frame contain 
  * all other dockable frames
- *
  */
-public class MainFrame extends JFrame implements WindowListener{
-    	private final ListenerContainer mainFrameClosing = new ListenerContainer(); /*!< User want to close the frame */
-
-        /**
-         * 
-         * @return 
-         */
-        public ListenerContainer getMainFrameClosing() {
-            return mainFrameClosing;
-        }
+public class MainFrame extends JFrame {
         
         /**
 	 * Creates a new frame. The content of the frame is not created by
@@ -64,77 +50,4 @@ public class MainFrame extends JFrame implements WindowListener{
 		setDefaultCloseOperation( DO_NOTHING_ON_CLOSE );
 		setIconImage(OrbisGISIcon.getIconImage("mini_orbisgis"));                
 	}
-        /**
-	 * Creates and adds all observers that are needed by this {@link MainFrame}.
-	 */
-	private void setupListeners() {
-            // Link the Swing Events with the MainFrame event
-            addWindowListener( this );
-	}
-        /**
-         * Setup the Listeners of the {@link MainFrame}.
-         */
-        public void setup() {
-            setupListeners();
-        }
-
-        /**
-         * Implementation of WindowListener
-         * @param we 
-         */
-        public void windowOpened(WindowEvent we) {
-        }
-
-
-        /**
-         * Implementation of WindowListener
-         * Call of the Event mainFrameClosing
-         * @param we 
-         */
-        public void windowClosing(WindowEvent we) {
-            try {
-                mainFrameClosing.callListeners(null);
-            } catch (EventException ex) {
-                //Do nothing
-            }
-        }
-
-
-        /**
-         * Implementation of WindowListener
-         * @param we 
-         */
-        public void windowClosed(WindowEvent we) {
-        }
-
-
-        /**
-         * Implementation of WindowListener
-         * @param we 
-         */
-        public void windowIconified(WindowEvent we) {
-        }
-
-
-        /**
-         * Implementation of WindowListener
-         * @param we 
-         */
-        public void windowDeiconified(WindowEvent we) {
-        }
-
-        /**
-         * Implementation of WindowListener
-         * @param we 
-         */
-        public void windowActivated(WindowEvent we) {
-        }
-
-
-        /**
-         * Implementation of WindowListener
-         * @param we 
-         */
-        public void windowDeactivated(WindowEvent we) {
-        }
 }
