@@ -40,24 +40,27 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import java.util.*;
 import org.apache.log4j.Logger;
-
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.indexes.IndexQuery;
-import org.gdms.data.schema.*;
+import org.gdms.data.schema.DefaultMetadata;
+import org.gdms.data.schema.DefaultSchema;
+import org.gdms.data.schema.Metadata;
+import org.gdms.data.schema.Schema;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
-import org.gdms.driver.DriverException;
-import org.gdms.driver.GDMSModelDriver;
-import org.gdms.driver.EditableMemoryDriver;
-import org.gdms.driver.DataSet;
-import org.gdms.driver.FileDriver;
-import org.gdms.driver.MemoryDriver;
+import org.gdms.driver.*;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.SourceManager;
-import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
+/**
+ * {@code MemoryDataSetDriver} gives access to a DataSet that is kept in memory.
+ * It is editable, because we can add rows to the {@code DataSet}. However, as a
+ * {@code DataSet}, it does not provide any method to remove rows.
+ * @author alexis
+ */
 public class MemoryDataSetDriver extends GDMSModelDriver implements
         EditableMemoryDriver {
 
@@ -69,6 +72,8 @@ public class MemoryDataSetDriver extends GDMSModelDriver implements
         private Schema schema;
         private DataSet realSource;
         private static final Logger LOG = Logger.getLogger(MemoryDataSetDriver.class);
+        private Envelope envelope = null;
+        private List<Integer> geomIndices = null;
 
         /**
          * Create a new empty source of data in memory. The source will have as many
@@ -151,6 +156,9 @@ public class MemoryDataSetDriver extends GDMSModelDriver implements
                 final Metadata metadata = dataSource.getMetadata();
                 final int fieldCount = metadata.getFieldCount();
                 List<List<Value>> newContents = new ArrayList<List<Value>>();
+                if(geomIndices == null){
+                        computeGeomIndices();
+                }
                 for (int i = 0; i < rowCount; i++) {
                         if (i >= 100 && i % 100 == 0) {
                                 if (pm.isCancelled()) {
@@ -163,6 +171,7 @@ public class MemoryDataSetDriver extends GDMSModelDriver implements
                         for (int j = 0; j < fieldCount; j++) {
                                 rowArray.add(dataSource.getFieldValue(i, j));
                         }
+                        expandTo(rowArray);
 
                         newContents.add(rowArray);
                 }
@@ -211,9 +220,13 @@ public class MemoryDataSetDriver extends GDMSModelDriver implements
                 this.commitable = commitable;
         }
 
-        public void addValues(Value... values) {
+        public void addValues(Value... values) throws DriverException {
+                if(geomIndices == null){
+                        computeGeomIndices();
+                }
                 ArrayList<Value> row = new ArrayList<Value>();
                 row.addAll(Arrays.asList(values));
+                expandTo(row);
                 contents.add(row);
         }
 
@@ -284,14 +297,23 @@ public class MemoryDataSetDriver extends GDMSModelDriver implements
 
         @Override
         public Number[] getScope(int dimension) throws DriverException {
-                Envelope env = computeEnvelope();
-                switch(dimension){
-                        case 0:
-                                return new Number[]{env.getMinX(), env.getMaxX()};
-                        case 1:
-                                return new Number[]{env.getMinY(), env.getMaxY()};
-                        default:
-                                throw new DriverException("Can only work in two dimensions here.");
+                if(geomIndices == null){
+                        computeGeomIndices();
+                }
+                if(envelope == null){
+                        envelope = new Envelope();
+                }
+                if(realSource != null){
+                        return realSource.getScope(dimension);
+                } else {
+                        switch(dimension){
+                                case 0:
+                                        return new Number[]{envelope.getMinX(), envelope.getMaxX()};
+                                case 1:
+                                        return new Number[]{envelope.getMinY(), envelope.getMaxY()};
+                                default:
+                                        throw new DriverException("Can only work in two dimensions here.");
+                        }
                 }
         }
 
@@ -320,25 +342,29 @@ public class MemoryDataSetDriver extends GDMSModelDriver implements
          * Go through the rows, and compute the envelope of this DataSet.
          * @return
          */
-        private Envelope computeEnvelope() throws DriverException{
-                //The envelope we will fill.
-                Envelope env = new Envelope();
-                //We retrieve the indices of the geometry column
-                List<Integer> indices = new LinkedList<Integer>();
-                Metadata met = getMetadata();
-                for(int i=0; i<met.getFieldCount(); i++){
-                        Type t = met.getFieldType(i);
-                        if((t.getTypeCode() & Type.GEOMETRY) != 0){
-                                indices.add(i);
-                        }
+        private void expandTo(List<Value> row) throws DriverException{
+                if(envelope == null){
+                        envelope = new Envelope();
                 }
                 //We can walk through the rows now
-                for(List<Value> row : contents){
-                        for(Integer i : indices){
-                                Geometry geom = row.get(i).getAsGeometry();
-                                env.expandToInclude(geom.getEnvelopeInternal());
+                for(Integer i : geomIndices){
+                        Geometry geom = row.get(i).getAsGeometry();
+                        //A null value is a geometry.
+                        if(geom !=null){
+                                envelope.expandToInclude(geom.getEnvelopeInternal());
                         }
                 }
-                return env;
+        }
+
+        private void computeGeomIndices() throws DriverException{
+                Metadata met = getMetadata();
+                final int fieldCount = met.getFieldCount();
+                List<Integer> geometries = new LinkedList<Integer>();
+                for(int i=0; i<fieldCount; i++){
+                        if((met.getFieldType(i).getTypeCode() & Type.GEOMETRY)!=0){
+                                geometries.add(i);
+                        }
+                }
+                geomIndices = geometries;
         }
 }
