@@ -61,6 +61,8 @@ import org.gdms.driver.memory.MemoryDataSetDriver;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.io.WKTReader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.gdms.sql.engine.SemanticException;
 
 import static org.junit.Assert.*;
@@ -1336,7 +1338,11 @@ public class SQLTest extends SQLBaseTest {
                 MemoryDataSetDriver omd = new MemoryDataSetDriver(
                         new String[]{fieldName}, new Type[]{TypeFactory.createType(Type.INT)});
                 for (int value : values) {
-                        omd.addValues(new Value[]{ValueFactory.createValue(value)});
+                        try {
+                                omd.addValues(new Value[]{ValueFactory.createValue(value)});
+                        } catch (DriverException ex) {
+                                Logger.getLogger(SQLTest.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                 }
 
                 dsf.getSourceManager().register(name, omd);
