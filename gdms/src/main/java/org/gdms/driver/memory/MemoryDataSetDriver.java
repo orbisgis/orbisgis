@@ -36,19 +36,15 @@
  */
 package org.gdms.driver.memory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import java.util.*;
 import org.apache.log4j.Logger;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.indexes.IndexQuery;
-import org.gdms.data.schema.DefaultMetadata;
-import org.gdms.data.schema.DefaultSchema;
-import org.gdms.data.schema.Metadata;
-import org.gdms.data.schema.Schema;
+import org.gdms.data.schema.*;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
@@ -288,7 +284,15 @@ public class MemoryDataSetDriver extends GDMSModelDriver implements
 
         @Override
         public Number[] getScope(int dimension) throws DriverException {
-                return null;
+                Envelope env = computeEnvelope();
+                switch(dimension){
+                        case 0:
+                                return new Number[]{env.getMinX(), env.getMaxX()};
+                        case 1:
+                                return new Number[]{env.getMinY(), env.getMaxY()};
+                        default:
+                                throw new DriverException("Can only work in two dimensions here.");
+                }
         }
 
         @Override
@@ -310,5 +314,31 @@ public class MemoryDataSetDriver extends GDMSModelDriver implements
         @Override
         public Iterator<Integer> queryIndex(DataSourceFactory dsf, IndexQuery queryIndex) throws DriverException {
                 return dsf.getIndexManager().iterateUsingIndexQuery(this, queryIndex);
+        }
+
+        /**
+         * Go through the rows, and compute the envelope of this DataSet.
+         * @return
+         */
+        private Envelope computeEnvelope() throws DriverException{
+                //The envelope we will fill.
+                Envelope env = new Envelope();
+                //We retrieve the indices of the geometry column
+                List<Integer> indices = new LinkedList<Integer>();
+                Metadata met = getMetadata();
+                for(int i=0; i<met.getFieldCount(); i++){
+                        Type t = met.getFieldType(i);
+                        if((t.getTypeCode() & Type.GEOMETRY) != 0){
+                                indices.add(i);
+                        }
+                }
+                //We can walk through the rows now
+                for(List<Value> row : contents){
+                        for(Integer i : indices){
+                                Geometry geom = row.get(i).getAsGeometry();
+                                env.expandToInclude(geom.getEnvelopeInternal());
+                        }
+                }
+                return env;
         }
 }
