@@ -33,9 +33,8 @@ public class SpatialReferenceSystemTest extends TestBase {
                 WKTReader wktReader = new WKTReader();
 
                 for (int i = 0; i < ds.getRowCount(); i++) {
-
-                        int sourceCodeCRS = ds.getFieldValue(i, 0).getAsInt();
-                        int targetCodeCRS = ds.getFieldValue(i, 2).getAsInt();
+                        int sourceCodeCRS = Integer.decode(ds.getFieldValue(i, 0).getAsString());
+                        int targetCodeCRS = Integer.decode(ds.getFieldValue(i, 2).getAsString());
 
                         SpatialReferenceSystem spatialReferenceSystem = new SpatialReferenceSystem(
                                 dsf, sourceCodeCRS, targetCodeCRS);
