@@ -45,6 +45,7 @@ import java.awt.event.ComponentEvent;
 import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.logging.Level;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
@@ -325,8 +326,11 @@ public class SimplePanel extends JPanel {
     private void registerUISource(SQLUIPanel sqlPanel) {
         MemoryDataSetDriver omd = new MemoryDataSetDriver(
                 sqlPanel.getFieldNames(), getGDMSTypes(sqlPanel.getFieldTypes()));
-        omd.addValues(getGDMSValues(sqlPanel.getValues(),
-                                    sqlPanel.getFieldTypes()));
+                try {
+                        omd.addValues(getGDMSValues(sqlPanel.getValues(),
+                                                    sqlPanel.getFieldTypes()));
+                } catch (DriverException ex) {
+                }
         if (UIFactory.dsf.exists(dsName)) {
             UIFactory.dsf.remove(dsName);
         }
