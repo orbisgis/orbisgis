@@ -41,11 +41,18 @@ package org.gdms.data.types;
 import org.gdms.data.values.Value;
 
 /**
- * Indicates the precision of the values
- * 
+ * This constraint counts the number of decimal digits of the input values, and
+ * check it is lower than the int value given when building the constraint.
+ *
+ * @author fernando, alexis, antoine
  */
 public class PrecisionConstraint extends AbstractIntConstraint {
 
+        /**
+         * Build a new PrecisionConstraint that will check that the number of
+         * decimal digit is lower than {@code constraintValue}.
+         * @param constraintValue
+         */
         public PrecisionConstraint(final int constraintValue) {
                 super(constraintValue);
         }
@@ -67,7 +74,7 @@ public class PrecisionConstraint extends AbstractIntConstraint {
                 return null;
         }
 
-        private static int getDecimalDigitsCount(double value) {
+        private int getDecimalDigitsCount(double value) {
                 String str = Double.toString(value);
                 if (str.endsWith(".0")) {
                         return 0;

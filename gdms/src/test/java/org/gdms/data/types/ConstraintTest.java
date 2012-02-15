@@ -162,8 +162,8 @@ public class ConstraintTest {
         public void testPrecision() throws Exception {
                 setType(TypeFactory.createType(Type.DOUBLE, new PrecisionConstraint(3)));
                 setValidValues(ValueFactory.createValue(123), ValueFactory.createValue(12.3), ValueFactory.createValue(0.13),
-                        ValueFactory.createNullValue());
-                setInvalidValues(ValueFactory.createValue(0.123), ValueFactory.createValue(1235));
+                        ValueFactory.createNullValue(), ValueFactory.createValue(0.123), ValueFactory.createValue(12345));
+                setInvalidValues(ValueFactory.createValue(0.1234), ValueFactory.createValue(123.4567));
                 doEdition();
         }
 
