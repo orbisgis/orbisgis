@@ -31,25 +31,44 @@ package org.orbisgis.base.events;
 public class EventSourceSample {
     //Secret message
     public final static String secretMessage = "Hello world";
+    // ListenerRelease help Source to clear all listeners
+    private ListenerRelease listenerRelease=new ListenerRelease();
     //This is a single level event
-    public final ListenerContainer<EventObjectSample> somethingEventHandler = new ListenerContainer<EventObjectSample>();
+    private ListenerContainer<EventObjectSample> somethingEventHandler = new ListenerContainer<EventObjectSample>().addReleaseTool(listenerRelease);
     //This events use multi levels calls
-    //Listeners of root will be called when listeners of subEvent where called.
-    public final ListenerContainer rootEventHandler = new ListenerContainer();
-    public final ListenerContainer subEventHandler = new ListenerContainer(rootEventHandler);
+    //Listeners ofpublic final root will be called when listeners of subEvent where called.
+    private ListenerContainer rootEventHandler = new ListenerContainer().addReleaseTool(listenerRelease);
+    private ListenerContainer subEventHandler = new ListenerContainer(rootEventHandler).addReleaseTool(listenerRelease);
     
-    void fireSomething() {
+    public void fireSomething() {
         try {
             somethingEventHandler.callListeners(new EventObjectSample(secretMessage,this));
         } catch (EventException ex) {
             //Do nothing in this case if the event raise a fatal error (a listener throw an error with stoping procedure instruction)
         }
     }    
-    void fireSubEvent() {
+    public void fireSubEvent() {
         try {
             subEventHandler.callListeners(null);
         } catch (EventException ex) {
             //Do nothing in this case if the event raise a fatal error (a listener throw an error with stoping procedure instruction)
         }
     }
+
+    public ListenerRelease getListenerRelease() {
+        return listenerRelease;
+    }
+
+    public ListenerContainer getRootEventHandler() {
+        return rootEventHandler;
+    }
+
+    public ListenerContainer<EventObjectSample> getSomethingEventHandler() {
+        return somethingEventHandler;
+    }
+
+    public ListenerContainer getSubEventHandler() {
+        return subEventHandler;
+    }
+    
 }

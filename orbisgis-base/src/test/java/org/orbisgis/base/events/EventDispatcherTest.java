@@ -50,17 +50,15 @@ public class EventDispatcherTest extends TestCase {
     }
 
     
-    private WeakReference<Listener> garbageCollectingCheck() {
+    private WeakReference<Listener> garbageCollectingCheck(EventTargetSample targetSample) {
        //We are the Controller
         //Instanciate the object to watch, the event raiser, it can be the View
         EventSourceSample sourceSample = new EventSourceSample();
-        //Instanciate the object that will do the job, event catcher, the Model
-        EventTargetSample targetSample = new EventTargetSample();
         
         
         //Attach a listener to the watch target
         Listener evtListener=EventHandler.create(Listener.class, targetSample, "setPrivateMessage","message");
-        sourceSample.somethingEventHandler.addListener(targetSample, evtListener);
+        sourceSample.getSomethingEventHandler().addListener(targetSample, evtListener);
 
         //Only for this unit test purpose :
         //Add a local reference, to test if the garbage collector has free the listener
@@ -69,13 +67,16 @@ public class EventDispatcherTest extends TestCase {
         //Ask the Event source to fire an event
         sourceSample.fireSomething();
 
-        //Remove the listener from the target
-        ListenerRelease.releaseListeners(targetSample);
+        //Remove the listener(s) from the target
+        //sourceSample.getListenerRelease().releaseListeners(targetSample);
         
         return refTest;
     }
     public void testGarbageCollectingEvent() {
-        WeakReference<Listener> refTest = garbageCollectingCheck();
+        
+        //Instanciate the object that will do the job, event catcher, the Model
+        EventTargetSample targetSample = new EventTargetSample();
+        WeakReference<Listener> refTest = garbageCollectingCheck(targetSample);
         //Now we check if the listener has been succesfully destroyed
         System.gc();
         assertTrue(refTest.get()==null);
@@ -87,7 +88,7 @@ public class EventDispatcherTest extends TestCase {
         EventTargetSample targetSample = new EventTargetSample();
         
         //Attach a listener to the watch target
-        sourceSample.somethingEventHandler.addListener(targetSample,
+        sourceSample.getSomethingEventHandler().addListener(targetSample,
                 EventHandler.create(Listener.class, targetSample, "setPrivateMessage","message"));
         //This is equivalent to this inner class :
         // new Listener() {
@@ -109,12 +110,18 @@ public class EventDispatcherTest extends TestCase {
         assertTrue(targetSample.getPrivateMessage().equals(EventSourceSample.secretMessage));
         
         //Remove the listener from the target
-        ListenerRelease.releaseListeners(targetSample);
+        sourceSample.getListenerRelease().releaseListeners(targetSample);
         
         //Check fire without listeners
         sourceSample.fireSomething();
     }
-    
+    public void testRemoveListener() {
+        EventTargetSample targetSample = new EventTargetSample();
+        ListenerContainer listOfListener = new ListenerContainer();
+        Listener listenerToRemove = EventHandler.create(Listener.class, targetSample, "setFiredRootEvent");
+        listOfListener.addListener(this, listenerToRemove);
+        assertTrue(listOfListener.removeListener(listenerToRemove));
+    }
     public void testMultiLevelEvent() {
 
         //We are the Controller
@@ -125,10 +132,10 @@ public class EventDispatcherTest extends TestCase {
         
         // Attach a listener to the root event, when the sub event will be fired,
         // the root event will be fired too
-        sourceSample.rootEventHandler.addListener(targetSample,
+        sourceSample.getRootEventHandler().addListener(targetSample,
                 EventHandler.create(Listener.class, targetSample, "setFiredRootEvent"));
         //Attach a listener to the sub event
-        sourceSample.subEventHandler.addListener(targetSample,
+        sourceSample.getSubEventHandler().addListener(targetSample,
                 EventHandler.create(Listener.class, targetSample, "setFiredSubEvent"));
 
         
@@ -144,6 +151,6 @@ public class EventDispatcherTest extends TestCase {
         assertTrue(targetSample.isFiredSubEvent());
         
         //Remove the listener from the target
-        ListenerRelease.releaseListeners(targetSample);        
+        sourceSample.getListenerRelease().releaseListeners(targetSample);
     }
 }

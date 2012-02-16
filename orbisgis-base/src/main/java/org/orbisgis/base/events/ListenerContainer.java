@@ -28,8 +28,10 @@
  */
 package org.orbisgis.base.events;
 
+import java.lang.ref.WeakReference;
 import java.security.InvalidParameterException;
 import java.util.*;
+import org.apache.log4j.Logger;
 import org.orbisgis.utils.I18N;
 
 /**
@@ -41,15 +43,18 @@ import org.orbisgis.utils.I18N;
  * @warning A listener must have only one method
  */
 
-public class ListenerContainer<EventObjectType> {
+public class ListenerContainer<EventObjectType extends EventObject> {
+    private static Logger logger = Logger.getLogger(ListenerContainer.class);
     private ListenerContainer upLevelContainer = null; /*!< This container will call the upLevelContainer on a new event */
-    private static Map<Object,ArrayList<Listener> > targetToListeners = Collections.synchronizedMap(new HashMap<Object,ArrayList<Listener>>()); /*!< Contain the list of listeners */
+    private Map<Object,ArrayList<WeakReference<Listener>>> targetToListeners = Collections.synchronizedMap(new HashMap<Object,ArrayList<WeakReference<Listener>>>()); /*!< Contain the link between target and listeners */
+    private Set<Listener> listeners = Collections.synchronizedSet(new HashSet<Listener>()); /*!< Listerners of this container */
+
     /**
      * Declare the root or single event listener collection.
      */
     public ListenerContainer() {
-        
     }
+    
     /**
      * A leaf listener collection
      * This container will call the upLevelContainer on a new event
@@ -58,29 +63,61 @@ public class ListenerContainer<EventObjectType> {
     public ListenerContainer(ListenerContainer upLevelContainer) {
         this.upLevelContainer = upLevelContainer;
     }
+    
+    /**
+     * Add this container in the release object
+     * @param listenerRelease The instance of release manager
+     * @return this object
+     */
+    public ListenerContainer addReleaseTool(ListenerRelease listenerRelease) {
+        listenerRelease.addContainer(this);
+        return this;
+    }
     /**
      * Attach a listener between the event source and the event target
      * @param target The target called by the listener.
      * @param listener The listener object. Created by EventHandler
      */
     public void addListener(Object target,Listener listener) {
-        ArrayList<Listener> listenerList;
-        if(!targetToListeners.containsKey(target)) {
-            listenerList = new ArrayList<Listener>();
-            targetToListeners.put(target, listenerList);
-        } else {
-            listenerList = targetToListeners.get(target);
+        if(listeners.contains(listener)) {
+            throw(new InvalidParameterException(I18N.getString("org.orbisgis.base.events.ListenerContainer.eventListernerAlreadyPushed")));
         }
-        listenerList.add(listener);
-        ListenerRelease.addListenerTarget(target, this);
+        ArrayList<WeakReference<Listener>> listenersOfTarget;
+        if(!targetToListeners.containsKey(target)) {
+            listenersOfTarget = new ArrayList<WeakReference<Listener>>();
+            targetToListeners.put(target,listenersOfTarget);
+        } else {
+            listenersOfTarget = targetToListeners.get(target);
+        }
+        listenersOfTarget.add( new WeakReference<Listener>(listener));
+        listeners.add(listener);
+    }
+    /**
+     * Remove a provided listener
+     * @param listener The listener instance
+     * @return True if the listener has been found and removed
+     */
+    public boolean removeListener(Listener listener) {
+        if(listeners.contains(listener)) {
+            listeners.remove(listener);
+            return true;
+        }else{
+            return false;
+        }
     }
     /**
      * Remove the listeners linked with a specific target
-     * @warning Called by ListenerRelease. This is more conveniant to simply call ListenerRelease.release
      * @param target The instance of the target object
      */
     public void removeListeners(Object target) {
         if(targetToListeners.containsKey(target)) {
+            ArrayList<WeakReference<Listener>> listenersOfTarget = targetToListeners.get(target);
+            for(WeakReference<Listener> listenerRef : listenersOfTarget) {
+                Listener listener = listenerRef.get();
+                if(listener!=null) {
+                    removeListener(listener);
+                }
+            }
             targetToListeners.remove(target);
         }
     }
@@ -89,38 +126,39 @@ public class ListenerContainer<EventObjectType> {
      */
     public void clearListeners() {
         targetToListeners.clear();
+        listeners.clear();
     }
     /**
      * Call all listeners of this collection.
      * @param data Null or the event data specified in the declaration.
      * @throws EventException Throwed by a Listener
-     * @throws InvalidParameterException if data is not null and is not an instance of EventObject.
+     * @throws InvalidParameterException if data is not null and is not EventObjectan instance of EventObject.
      */
     public void callListeners(EventObjectType data) throws EventException {
-        //EventObjectType must inherit from EventObject
-        if(data!= null && !(data instanceof EventObject)) { //TODO find a nice way to set this constraint
-            throw(new InvalidParameterException(I18N.getString("org.orbisgis.base.events.ListenerContainer.eventDataInvalid")));
-        }
-        Iterator<ArrayList<Listener>> itListener = targetToListeners.values().iterator();
-        ArrayList<Listener> currentList;
-        //For all targets
+        Iterator<Listener> itListener = listeners.iterator();
         while(itListener.hasNext()) {
-            currentList=itListener.next();
-            //For all listeners of the target
-            for(Listener listener: currentList) {
-                try {
-                    if(data!=null) {
-                        listener.onEvent((EventObject)data);
-                    }else{
-                        listener.onEvent(null);                        
-                    }
-                } catch (ListenerException ex) {
-                    //This listener stop the propagation of the event
-                    if(!ex.letContinueProcessing()) {
-                        throw(new EventException(ex));
-                    }
+            Listener listener = itListener.next();
+            try {
+                if(data!=null) {
+                    listener.onEvent((EventObject)data);
+                }else{
+                    listener.onEvent(null);                        
                 }
-            }
+            } catch (ListenerException ex) {
+                //This listener stop the propagation of the event
+                if(!ex.letContinueProcessing()) {
+                    logger.error(I18N.getString("org.orbisgis.base.events.ListenerContainer.ListernerThrowStopEvent"), ex);
+                    return;
+                }
+            } catch (RuntimeException e) { 
+                //The listener throw unexpected error
+                //To keep the thread and continue to propagate the event
+                //the listener is removed and an error message is sent
+                //@link http://www.ibm.com/developerworks/java/library/j-jtp07265/index.html#3.0
+                logger.error(I18N.getString("org.orbisgis.base.events.ListenerContainer.ListernerUnexpectedThrow"), e);
+                removeListener(listener);
+                itListener.remove();
+           }
         }
         if(this.upLevelContainer!=null) {
             this.upLevelContainer.callListeners(data);

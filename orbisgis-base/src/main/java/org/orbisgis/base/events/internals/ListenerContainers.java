@@ -30,7 +30,10 @@ package org.orbisgis.base.events.internals;
 
 import java.util.ArrayList;
 import org.orbisgis.base.events.ListenerContainer;
-
+/**
+ * @package org.orbisgis.base.events.internals
+ * @brief Internal class of event/listener system
+ */
 
 /**
  * @brief Declaration of an ArrayList<ListenerContainer>

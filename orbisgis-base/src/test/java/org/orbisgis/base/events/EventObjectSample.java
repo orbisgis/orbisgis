@@ -35,7 +35,7 @@ import java.util.EventObject;
  * This is the event Data attached with an event (a call on listeners)
  */
 public class EventObjectSample extends EventObject {
-    String message;
+    private String message;
     /**
      * 
      * @param message The secret message from the Event Source
