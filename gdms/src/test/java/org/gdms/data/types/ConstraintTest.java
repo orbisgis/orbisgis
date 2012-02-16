@@ -19,6 +19,7 @@ import org.gdms.driver.memory.MemoryDataSetDriver;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -36,6 +37,13 @@ public class ConstraintTest {
         private Value doubleValue = ValueFactory.createValue(4.4d);
         private Value floatValue = ValueFactory.createValue(3.3f);
         private Value geomValue = ValueFactory.createValue(Geometries.getPoint());
+        private Value ptValue = ValueFactory.createValue(Geometries.getPoint());
+        private Value lineValue = ValueFactory.createValue(Geometries.getLinestring());
+        private Value polyValue = ValueFactory.createValue(Geometries.getPolygon());
+        private Value multiPtValue = ValueFactory.createValue(Geometries.getMultiPoint3D());
+        private Value multiLineValue = ValueFactory.createValue(Geometries.getMultilineString());
+        private Value multiPolyValue = ValueFactory.createValue(Geometries.getMultiPolygon2D());
+        private Value geomColValue = ValueFactory.createValue(Geometries.getGeometryCollection());
         private Value intValue = ValueFactory.createValue(3);
         private Value longValue = ValueFactory.createValue(4L);
         private Value shortValue = ValueFactory.createValue((short) 3);
@@ -203,17 +211,21 @@ public class ConstraintTest {
                 setValidValues(binaryValue);
                 setInvalidValues(booleanValue, byteValue, dateValue, doubleValue,
                         floatValue, geomValue, intValue, longValue, shortValue,
-                        stringValue, timeValue, timestampValue, collectionValue);
+                        stringValue, timeValue, timestampValue, collectionValue,
+                        ptValue, lineValue, polyValue, multiPtValue, multiLineValue,
+                        multiPolyValue, geomColValue);
                 doEdition();
         }
 
         @Test
         public void testAddWrongTypeBoolean() throws Exception {
                 setType(TypeFactory.createType(Type.BOOLEAN));
-                setValidValues(booleanValue, stringValue);
+                setValidValues(booleanValue);
                 setInvalidValues(binaryValue, byteValue, dateValue, doubleValue,
                         floatValue, geomValue, intValue, longValue, shortValue,
-                        timeValue, timestampValue, collectionValue);
+                        timeValue, timestampValue, collectionValue, stringValue,
+                        ptValue, lineValue, polyValue, multiPtValue, multiLineValue,
+                        multiPolyValue, geomColValue);
                 doEdition();
         }
 
@@ -223,27 +235,99 @@ public class ConstraintTest {
                 setValidValues(collectionValue);
                 setInvalidValues(binaryValue, booleanValue, byteValue, dateValue,
                         doubleValue, floatValue, geomValue, intValue, longValue,
-                        shortValue, stringValue, timeValue, timestampValue);
+                        shortValue, stringValue, timeValue, timestampValue,
+                        ptValue, lineValue, polyValue, multiPtValue, multiLineValue,
+                        multiPolyValue, geomColValue);
                 doEdition();
         }
 
         @Test
         public void testAddWrongTypeDate() throws Exception {
                 setType(TypeFactory.createType(Type.DATE));
-                setValidValues(timeValue, dateValue, timestampValue, ValueFactory.createValue("1980-09-05"), byteValue, intValue, longValue,
-                        shortValue);
+                setValidValues(timeValue, dateValue, timestampValue);
                 setInvalidValues(binaryValue, booleanValue, doubleValue, floatValue,
-                        geomValue, stringValue, collectionValue);
+                        geomValue, stringValue, collectionValue, ValueFactory.createValue("1980-09-05"),
+                        byteValue, intValue, longValue,shortValue,
+                        ptValue, lineValue, polyValue, multiPtValue, multiLineValue,
+                        multiPolyValue, geomColValue);
                 doEdition();
         }
 
         @Test
         public void testAddWrongTypeGeometry() throws Exception {
                 setType(TypeFactory.createType(Type.GEOMETRY));
-                setValidValues(geomValue);
-                setInvalidValues(binaryValue, ValueFactory.createValue("POINT (0 0)"), booleanValue, byteValue, dateValue,
-                        doubleValue, floatValue, intValue, longValue, shortValue,
-                        stringValue, timeValue, timestampValue, collectionValue);
+                setValidValues(geomValue,ptValue, lineValue, polyValue, multiPtValue, 
+                        multiLineValue, multiPolyValue, geomColValue);
+                setInvalidValues(ValueFactory.createValue("POINT (0 0)"));
+                doEdition();
+        }
+
+        @Test
+        public void testAddWrongTypePoint() throws Exception {
+                setType(TypeFactory.createType(Type.POINT));
+                setValidValues(geomValue,ptValue);
+                setInvalidValues(ValueFactory.createValue("POINT (0 0)"), lineValue,
+                        polyValue, multiPtValue, multiLineValue, multiPolyValue, geomColValue);
+                doEdition();
+        }
+
+        @Test
+        public void testAddWrongTypeLine() throws Exception {
+                setType(TypeFactory.createType(Type.LINESTRING));
+                setValidValues(lineValue);
+                String str = lineValue.toString();
+                setInvalidValues(ValueFactory.createValue(str), geomValue,ptValue ,
+                        polyValue, multiPtValue, multiLineValue, multiPolyValue, geomColValue);
+                doEdition();
+        }
+
+        @Test
+        public void testAddWrongTypePolygon() throws Exception {
+                setType(TypeFactory.createType(Type.POLYGON));
+                setValidValues(polyValue);
+                String str = polyValue.toString();
+                setInvalidValues(ValueFactory.createValue(str), geomValue,ptValue ,
+                        lineValue, multiPtValue, multiLineValue, multiPolyValue, geomColValue);
+                doEdition();
+        }
+
+        @Test
+        public void testAddWrongTypeMultiPoint() throws Exception {
+                setType(TypeFactory.createType(Type.MULTIPOINT));
+                setValidValues(multiPtValue);
+                String str = multiPtValue.toString();
+                setInvalidValues(ValueFactory.createValue(str), geomValue,ptValue ,
+                        lineValue, polyValue, multiLineValue, multiPolyValue, geomColValue);
+                doEdition();
+        }
+
+        @Test
+        public void testAddWrongTypeMultiLine() throws Exception {
+                setType(TypeFactory.createType(Type.MULTILINESTRING));
+                setValidValues(multiLineValue);
+                String str = multiLineValue.toString();
+                setInvalidValues(ValueFactory.createValue(str), geomValue,ptValue ,
+                        lineValue, polyValue, multiPtValue, multiPolyValue, geomColValue);
+                doEdition();
+        }
+
+        @Test
+        public void testAddWrongTypeMultiPolygon() throws Exception {
+                setType(TypeFactory.createType(Type.MULTIPOLYGON));
+                setValidValues(multiPolyValue);
+                String str = multiPolyValue.toString();
+                setInvalidValuesGeom(ValueFactory.createValue(str), geomValue,ptValue ,
+                        lineValue, polyValue, multiPtValue, multiLineValue, geomColValue);
+                doEdition();
+        }
+
+        @Test
+        public void testAddWrongTypeGeometryCollection() throws Exception {
+                setType(TypeFactory.createType(Type.GEOMETRYCOLLECTION));
+                setValidValues(multiPolyValue, multiPtValue, multiLineValue, geomColValue);
+                String str = multiPolyValue.toString();
+                setInvalidValuesGeom(ValueFactory.createValue(str), geomValue,ptValue ,
+                        lineValue, polyValue);
                 doEdition();
         }
 
@@ -253,27 +337,35 @@ public class ConstraintTest {
                 setValidValues(binaryValue, booleanValue, byteValue, dateValue,
                         doubleValue, floatValue, geomValue, intValue, longValue,
                         shortValue, stringValue, timeValue, timestampValue,
-                        collectionValue);
+                        collectionValue,
+                        ptValue, lineValue, polyValue, multiPtValue, multiLineValue,
+                        multiPolyValue, geomColValue);
                 doEdition();
         }
 
         @Test
         public void testAddWrongTypeTime() throws Exception {
                 setType(TypeFactory.createType(Type.TIME));
-                setValidValues(dateValue, ValueFactory.createValue("1980-09-05 12:00:20"), byteValue, intValue,
-                        longValue, shortValue, timeValue, timestampValue);
+                setValidValues(dateValue, timeValue, timestampValue);
                 setInvalidValues(binaryValue, booleanValue, doubleValue, floatValue,
-                        geomValue, stringValue, collectionValue);
+                        geomValue, stringValue, collectionValue, ValueFactory.createValue("1980-09-05 12:00:20"),
+                        byteValue, intValue,
+                        longValue, shortValue,
+                        ptValue, lineValue, polyValue, multiPtValue, multiLineValue,
+                        multiPolyValue, geomColValue);
                 doEdition();
         }
 
         @Test
         public void testAddWrongTypeTimestamp() throws Exception {
                 setType(TypeFactory.createType(Type.TIMESTAMP));
-                setValidValues(dateValue, ValueFactory.createValue("1980-09-05 12:00:24.12132"), byteValue, intValue,
-                        longValue, shortValue, timeValue, timestampValue);
+                setValidValues(dateValue, timeValue, timestampValue);
                 setInvalidValues(binaryValue, booleanValue, doubleValue, floatValue,
-                        geomValue, stringValue, collectionValue);
+                        geomValue, stringValue, collectionValue, ValueFactory.createValue("1980-09-05 12:00:20"),
+                        byteValue, intValue,
+                        longValue, shortValue,
+                        ptValue, lineValue, polyValue, multiPtValue, multiLineValue,
+                        multiPolyValue, geomColValue);
                 doEdition();
         }
 
@@ -287,7 +379,9 @@ public class ConstraintTest {
                 setValidValues(byteValue, intValue, longValue, shortValue, doubleValue, floatValue);
                 setInvalidValues(binaryValue, booleanValue, dateValue, 
                         geomValue, stringValue, timeValue, timestampValue,
-                        collectionValue);
+                        collectionValue,
+                        ptValue, lineValue, polyValue, multiPtValue, multiLineValue,
+                        multiPolyValue, geomColValue);
                 doEdition();
         }
 
@@ -350,6 +444,31 @@ public class ConstraintTest {
                         fail();
                 } catch (DriverException e) {
                 }
+        }
+
+        private List<Value> getInvalidValuesGeom(){
+                LinkedList<Value> ll = new LinkedList<Value>();
+                ll.add(binaryValue);
+                ll.add(booleanValue);
+                ll.add(byteValue);
+                ll.add(dateValue);
+                ll.add(doubleValue);
+                ll.add(floatValue);
+                ll.add(intValue);
+                ll.add(longValue);
+                ll.add(shortValue);
+                ll.add(stringValue);
+                ll.add(timeValue);
+                ll.add(timestampValue);
+                ll.add(collectionValue);
+                return ll;
+        }
+
+        private void setInvalidValuesGeom(Value... values){
+                List<Value> ll = getInvalidValuesGeom();
+                List<Value> plus = Arrays.asList(values);
+                ll.addAll(plus);
+                invalidValues = ll.toArray(new Value[0]);
         }
 
         private void setValidValues(Value... values) {

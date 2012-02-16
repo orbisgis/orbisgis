@@ -313,10 +313,6 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
                 if (val == null) {
                         val = ValueFactory.createNullValue();
                 }
-                Type fieldType = getMetadata().getFieldType(fieldId);
-                if (!val.isNull() && (fieldType.getTypeCode() != val.getType())) {
-                        val = val.toType(fieldType.getTypeCode());
-                }
 
                 // write check
                 checkConstraints(val, fieldId);
@@ -927,6 +923,7 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
                         case Type.MULTIPOLYGON :
                                 return valueType == fieldType || valueType == Type.NULL;
                         case Type.GEOMETRYCOLLECTION :
+                                return (valueType & (fieldType ^ Type.GEOMETRY)) !=0;
                         case Type.GEOMETRY :
                                 return (valueType & fieldType) != 0;
                         default :
@@ -959,7 +956,10 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
                 // Cast value
                 Value val = castValue(type, value);
                 int broadType = TypeFactory.getBroaderType(fieldType, val.getType());
-                if(val.getType() != broadType && val.getType() != Type.NULL && !checkGeometry(val.getType(), fieldType)){
+                if(val.getType() != broadType
+                     && val.getType() != Type.NULL
+                     && !checkGeometry(val.getType(), fieldType)
+                     && fieldType != Type.STRING){
                         return "Can't cast a "+TypeFactory.getTypeName(value.getType())
                                 +" to a "+TypeFactory.getTypeName(fieldType);
                 }
