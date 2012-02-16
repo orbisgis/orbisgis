@@ -323,15 +323,19 @@ public class SimplePanel extends JPanel {
     }
 
     private void registerUISource(SQLUIPanel sqlPanel) {
-        MemoryDataSetDriver omd = new MemoryDataSetDriver(
-                sqlPanel.getFieldNames(), getGDMSTypes(sqlPanel.getFieldTypes()));
-        omd.addValues(getGDMSValues(sqlPanel.getValues(),
-                                    sqlPanel.getFieldTypes()));
-        if (UIFactory.dsf.exists(dsName)) {
-            UIFactory.dsf.remove(dsName);
+        try {
+                MemoryDataSetDriver omd = new MemoryDataSetDriver(
+                        sqlPanel.getFieldNames(), getGDMSTypes(sqlPanel.getFieldTypes()));
+                omd.addValues(getGDMSValues(sqlPanel.getValues(),
+                                                sqlPanel.getFieldTypes()));
+                if (UIFactory.dsf.exists(dsName)) {
+                        UIFactory.dsf.remove(dsName);
+                }
+                UIFactory.dsf.registerDataSource(dsName,
+                                                        new MemorySourceDefinition(omd, DriverManager.DEFAULT_SINGLE_TABLE_NAME));
+        } catch (DriverException ex) {
+                logger.warn(ex);
         }
-        UIFactory.dsf.registerDataSource(dsName,
-                                         new MemorySourceDefinition(omd, DriverManager.DEFAULT_SINGLE_TABLE_NAME));
     }
 
     private Value[] getGDMSValues(String[] values, int[] types) {
