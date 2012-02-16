@@ -38,18 +38,25 @@ import org.orbisgis.view.icons.OrbisGISIcon;
  * This is the cell renderer for DataSource in the GeoCatalog list
  */
 
-public class DataSourceListCellRenderer extends JLabel implements ListCellRenderer {
+public class DataSourceListCellRenderer implements ListCellRenderer {
 
-     public Component getListCellRendererComponent(
-         JList list,
-         Object value,
-         int index,
-         boolean isSelected,
-         boolean cellHasFocus)
-     {
-         JLabel sourceComponent = new JLabel();
-         sourceComponent.setIcon(OrbisGISIcon.getIcon("geofile"));
-         return sourceComponent;
+    /**
+     * Return a component that has been configured to display the specified value.
+     * @param list - The JList we're painting.
+     * @param value - The value returned by list.getModel().getElementAt(index).
+     * @param index - The cells index.
+     * @param isSelected - True if the specified cell was selected.
+     * @param cellHasFocus - True if the specified cell has the focus. 
+     * @return 
+     */
+     public Component getListCellRendererComponent(JList list,Object value,
+                                                    int index,
+                                                    boolean isSelected,
+                                                    boolean cellHasFocus)
+    {
+        JLabel sourceComponent = new JLabel();
+        sourceComponent.setIcon(OrbisGISIcon.getIcon("geofile"));
+        return sourceComponent;
     }
     
 }

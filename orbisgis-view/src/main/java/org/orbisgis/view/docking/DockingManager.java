@@ -99,7 +99,7 @@ public final class DockingManager {
 		//frontend.getController().addActionGuard( new Hide( frontend, views ));
 		
                 //DEFAULT property of a view
-		frontend.getController().getProperties().set( PropertyKey.DOCK_STATION_TITLE, I18N.getString("") );
+		frontend.getController().getProperties().set( PropertyKey.DOCK_STATION_TITLE, I18N.getString("orbisgis.view.docking.stationTitle") );
 		frontend.getController().getProperties().set( PropertyKey.DOCK_STATION_ICON, OrbisGISIcon.getIcon("mini_orbisgis") );
 				
 		split = new SplitDockStation();

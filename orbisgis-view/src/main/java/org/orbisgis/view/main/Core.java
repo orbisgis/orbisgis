@@ -63,6 +63,7 @@ public class Core implements ComponentCollector {
     /////////////////////
     //view package
     private MainFrame mainFrame;     /*!< The main window */
+    private Catalog geoCatalog;      /*!< The GeoCatalog */
     private final static Rectangle mainViewPositionAndSize = new Rectangle(20,20,800,600);/*!< Bounds of mainView, x,y and width height*/
     private DockingManager dockManager; /*!< The DockStation manager */
     /////////////////////
@@ -122,6 +123,13 @@ public class Core implements ComponentCollector {
                 "windowClosing"));    //The listener method to use
     }
     /**
+     * Create the GeoCatalog view
+     */
+    private void makeGeoCatalogPanel() {
+        geoCatalog = new Catalog();
+        dockManager.show(geoCatalog, dockManager.getScreen(), null);
+    }
+    /**
      * The user want to close the main window
      * Then the application has to be closed
      */
@@ -154,9 +162,9 @@ public class Core implements ComponentCollector {
         lookAndFeels.addComponentCollector( this );
         
 	mainFrame.setBounds(mainViewPositionAndSize);
-        dockManager.show(new Catalog(), dockManager.getRightDockStation(), null);
-        //dockManager.show(new Catalog(), dockManager.getSplit(), null);
+        
         //Load GeoCatalog
+        makeGeoCatalogPanel();
         
         // Show the application when Swing will be ready
         SwingUtilities.invokeLater( new Runnable(){
