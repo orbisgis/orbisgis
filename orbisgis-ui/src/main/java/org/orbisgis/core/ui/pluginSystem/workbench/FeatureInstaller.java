@@ -338,7 +338,7 @@ public class FeatureInstaller {
                 String[] menuPath, String group, boolean checkBox, ImageIcon icon,
                 WorkbenchContext wbContext) {
                 plugIn.createPlugInContext(wbContext);
-                Menu mymenu = null;
+                Menu mymenu;
                 for (int i = 0; i < menuPath.length; i++) {
                         String parent = i == 0 ? null : I18N.getString(menuPath[i - 1]);
                         mymenu = new Menu(parent, I18N.getString(menuPath[i]),
