@@ -166,6 +166,10 @@ public class Core implements ComponentCollector {
                 }
         });
     }
+
+    public DockingManager getDockManager() {
+        return dockManager;
+    }
     /**
      * Add the properties of OrbisGis view to I18n translation manager
      */

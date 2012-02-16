@@ -30,11 +30,16 @@
 package org.orbisgis.view.docking.internals;
 
 import bibliothek.gui.dock.DefaultDockable;
+import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
 import org.orbisgis.view.docking.DockingPanelParameters;
 /**
  * @brief The OrbisGis form of Docking Frames dockable
  * 
- * Listen to DockingPanelParameters to change the behaviour of this dockable
+ * Listen to DockingPanelParameters to change the behaviour of this dockable.
+ * 
+ * This class help to add OrbisGis specific actions ( Reduce, close view ..)
+ * and custom compenents like custom titles.
  */
 public class OrbisGISView  extends DefaultDockable {
     DockingPanelParameters dockableParameters;
@@ -45,6 +50,26 @@ public class OrbisGISView  extends DefaultDockable {
         if(dockableParameters.getTitleIcon()!=null) {
             this.setTitleIcon(dockableParameters.getTitleIcon());
         }
+        setPropertyListeners();
     }
-    
+    /**
+     * Link DefaultDockable parameters with OrbisGis parameters
+     */
+    private void setPropertyListeners() {
+        //Link title text change
+        dockableParameters.addPropertyChangeListener(
+                            DockingPanelParameters.PROP_TITLE,
+                            EventHandler.create(PropertyChangeListener.class,
+                                                this,
+                                                "setTitleText",
+                                                "newValue"));
+        //Link title icon change
+        dockableParameters.addPropertyChangeListener(
+                            DockingPanelParameters.PROP_TITLEICON,
+                            EventHandler.create(PropertyChangeListener.class,
+                                                this,
+                                                "setTitleIcon",
+                                                "newValue"));
+  
+    }
 }

@@ -26,34 +26,31 @@
  * or contact directly:
  * info _at_ orbisgis.org
  */
-package org.orbisgis.view.geocatalog;
+package org.orbisgis.view.docking;
 
-import java.awt.BorderLayout;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import org.orbisgis.utils.I18N;
-import org.orbisgis.view.docking.DockingPanel;
-import org.orbisgis.view.docking.DockingPanelParameters;
-import org.orbisgis.view.icons.OrbisGISIcon;
 
 
 /**
- * @brief This is the GeoCatalog panel. That Panel show the list of avaible layers
- * 
- * This is connected with the layer collection model.
+ * @brief This is a dummy panel.
  */
-public class Catalog extends JPanel implements DockingPanel {
+public class DummyViewPanel extends JPanel implements DockingPanel {
     private DockingPanelParameters dockingParameters = new DockingPanelParameters();
-    
+    public static final String OLD_TITLE = "old dummy title";
     /**
      * Default constructor
      */
-    public Catalog() {
-            dockingParameters.setTitle(I18N.getString("orbisgis.org.orbisgis.Catalog.title"));
-            dockingParameters.setTitleIcon(OrbisGISIcon.getIcon("geocatalog"));
-            this.setLayout(new BorderLayout());
-            this.add(new JScrollPane(), BorderLayout.CENTER);
+    public DummyViewPanel() {
+            dockingParameters.setTitle(OLD_TITLE);
     }    
+    
+    /**
+     * Change the title during execution
+     * @param newTitle New title string
+     */
+    public void setTitle(String newTitle) {
+        dockingParameters.setTitle(newTitle);
+    }
     
     /**
      * Give information on the behaviour of this panel related to the current

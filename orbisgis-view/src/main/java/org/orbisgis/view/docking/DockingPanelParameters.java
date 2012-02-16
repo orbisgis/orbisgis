@@ -39,11 +39,15 @@ import javax.swing.Icon;
  * Theses parameters indicate the behavior related to a panel
  * in a docking environnement.
  * 
- * This class is created thanks to NetBeans user interface.
+ * This class is created thanks to the NetBeans user interface.
+ * Use the "Add property" NetBeans function to add properties easily.
  * See documentation related to java.beans management systems
+ * 
+ * @warning New properties must be linked with the current docking system {@link OrbisGISView} 
  */
 public class DockingPanelParameters implements Serializable {
-    
+    private PropertyChangeSupport propertySupport;
+   
     private String title;
     public static final String PROP_TITLE = "title";
     
@@ -90,19 +94,48 @@ public class DockingPanelParameters implements Serializable {
         this.title = title;
         propertySupport.firePropertyChange(PROP_TITLE, oldTitle, title);
     }
-
     
-    private PropertyChangeSupport propertySupport;
-    
+    /**
+     * Default constructor
+     */
     public DockingPanelParameters() {
         propertySupport = new PropertyChangeSupport(this);
     }
     
+    /**
+     * Add a property-change listener for all properties.
+     * The listener is called for all properties.
+     * @param listener The PropertyChangeListener instance
+     * @note Use EventHandler.create to build the PropertyChangeListener instance
+     */
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         propertySupport.addPropertyChangeListener(listener);
     }
-    
+    /**
+     * Add a property-change listener for a specific property.
+     * The listener is called only when there is a change to 
+     * the specified property.
+     * @param prop The static property name PROP_..
+     * @param listener The PropertyChangeListener instance
+     * @note Use EventHandler.create to build the PropertyChangeListener instance
+     */
+    public void addPropertyChangeListener(String prop,PropertyChangeListener listener) {
+        propertySupport.addPropertyChangeListener(prop, listener);
+    }
+    /**
+     * Remove the specified listener from the list
+     * @param listener The listener instance
+     */
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         propertySupport.removePropertyChangeListener(listener);
+    }
+    
+    /**
+     * Remove the specified listener for a specified property from the list
+     * @param prop The static property name PROP_..
+     * @param listener The listener instance
+     */
+    public void removePropertyChangeListener(String prop,PropertyChangeListener listener) {
+        propertySupport.removePropertyChangeListener(prop,listener);
     }
 }

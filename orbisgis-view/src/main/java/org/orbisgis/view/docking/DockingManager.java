@@ -38,6 +38,7 @@ import bibliothek.gui.dock.layout.DockableProperty;
 import bibliothek.gui.dock.util.PropertyKey;
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -72,6 +73,18 @@ public final class DockingManager {
          */
 	public Set<DockingPanel> getPanels() {
             return views.keySet();
+        }
+        /**
+         * @return Docking Frames dockable instances
+         */
+        public Collection<Dockable> getDockables() {
+            return views.values();
+        }
+        /**
+         * @return Dockable instance, null if not exists
+         */
+        public Dockable getDockable(DockingPanel panel) {
+            return views.get(panel);
         }
 	/**
 	 * Creates the new manager
