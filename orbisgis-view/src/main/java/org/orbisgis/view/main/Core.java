@@ -34,6 +34,7 @@ import bibliothek.extension.gui.dock.theme.EclipseTheme;
 import bibliothek.extension.gui.dock.theme.eclipse.stack.tab.RectGradientPainter;
 import bibliothek.gui.DockController;
 import bibliothek.gui.DockFrontend;
+import bibliothek.gui.Dockable;
 import bibliothek.gui.dock.FlapDockStation;
 import bibliothek.gui.dock.station.flap.button.ButtonContent;
 import bibliothek.gui.dock.support.lookandfeel.ComponentCollector;
@@ -48,11 +49,10 @@ import java.util.Collection;
 import java.util.List;
 import javax.swing.SwingUtilities;
 import org.orbisgis.base.context.main.MainContext;
-import org.orbisgis.base.events.ListenerRelease;
 import org.orbisgis.utils.I18N;
 import org.orbisgis.view.docking.DockingManager;
-import org.orbisgis.view.frames.Catalog;
-import org.orbisgis.view.frames.MainFrame;
+import org.orbisgis.view.geocatalog.Catalog;
+import org.orbisgis.view.main.frames.MainFrame;
 import org.orbisgis.view.translation.OrbisGISI18N;
 
 /**
@@ -86,7 +86,9 @@ public class Core implements ComponentCollector {
         List<Component> components = new ArrayList<Component>();
         
         components.add(mainFrame);
-        components.addAll(this.dockManager.getPanels());
+        for( Dockable d : frontend.getController().getRegister().listDockables() ){
+        	components.add( d.getComponent() );
+        }
         return components;
     }
     /**
@@ -103,6 +105,9 @@ public class Core implements ComponentCollector {
     public MainFrame getMainFrame() {
         return mainFrame;
     }
+    /**
+     * Create the Instance of the main frame
+     */
     private void makeMainFrame() {
         mainFrame = new MainFrame();
         //When the user ask to close OrbisGis it call
@@ -112,9 +117,16 @@ public class Core implements ComponentCollector {
         mainFrame.addWindowListener(EventHandler.create(
                 WindowListener.class, //The listener class
                 this,                 //The event target object
-                "shutdown",           //The event target method to call
+                "OnMainWindowClosing",//The event target method to call
                 null,                 //the event parameter to pass(none)
                 "windowClosing"));    //The listener method to use
+    }
+    /**
+     * The user want to close the main window
+     * Then the application has to be closed
+     */
+    public void OnMainWindowClosing() {
+        this.shutdown();
     }
     /**
     * Starts the application. This method creates the {@link MainFrame},
@@ -143,7 +155,7 @@ public class Core implements ComponentCollector {
         
 	mainFrame.setBounds(mainViewPositionAndSize);
         dockManager.show(new Catalog(), dockManager.getRightDockStation(), null);
-        dockManager.show(new Catalog(), dockManager.getSplit(), null);
+        //dockManager.show(new Catalog(), dockManager.getSplit(), null);
         //Load GeoCatalog
         
         // Show the application when Swing will be ready
@@ -162,11 +174,11 @@ public class Core implements ComponentCollector {
         I18N.addI18n("", "orbisgis", OrbisGISI18N.class);
     }
     /**
-     * Free all resources in preparation of exit the software.
+     * Free all resources allocated by this object
      */
     public void dispose() {
         //Remove all listeners created by this object
-        ListenerRelease.releaseListeners(this);
+
         //Free UI resources
         mainFrame.dispose();
         frontend.getController().kill();

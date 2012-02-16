@@ -26,28 +26,30 @@
  * or contact directly:
  * info _at_ orbisgis.org
  */
+package org.orbisgis.view.geocatalog.renderer;
 
-package org.orbisgis.view.frames;
-
-import java.util.Locale;
-import javax.swing.JFrame;
-import org.orbisgis.utils.I18N;
+import java.awt.Component;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.ListCellRenderer;
 import org.orbisgis.view.icons.OrbisGISIcon;
 
 /**
- * Host of the {@link DockStation}s, this frame contain 
- * all other dockable frames
+ * This is the cell renderer for DataSource in the GeoCatalog list
  */
-public class MainFrame extends JFrame {
-        
-        /**
-	 * Creates a new frame. The content of the frame is not created by
-	 * this constructor, clients must call {@link #setup(Core)}.
-	 */
-	public MainFrame(){
-		setTitle( "OrbisGIS "
-                        + I18N.getString("orbisgis.org.orbisgis.version") + " - " + I18N.getString("orbisgis.org.orbisgis.versionName") + " - " + Locale.getDefault().getCountry() );
-		setDefaultCloseOperation( DO_NOTHING_ON_CLOSE );
-		setIconImage(OrbisGISIcon.getIconImage("mini_orbisgis"));                
-	}
+
+public class DataSourceListCellRenderer extends JLabel implements ListCellRenderer {
+
+     public Component getListCellRendererComponent(
+         JList list,
+         Object value,
+         int index,
+         boolean isSelected,
+         boolean cellHasFocus)
+     {
+         JLabel sourceComponent = new JLabel();
+         sourceComponent.setIcon(OrbisGISIcon.getIcon("geofile"));
+         return sourceComponent;
+    }
+    
 }

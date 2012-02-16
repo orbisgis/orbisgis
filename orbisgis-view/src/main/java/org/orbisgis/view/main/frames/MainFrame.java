@@ -26,50 +26,28 @@
  * or contact directly:
  * info _at_ orbisgis.org
  */
-package org.orbisgis.view.frames;
 
-import java.awt.BorderLayout;
-import java.awt.dnd.*;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+package org.orbisgis.view.main.frames;
+
+import java.util.Locale;
+import javax.swing.JFrame;
 import org.orbisgis.utils.I18N;
+import org.orbisgis.view.icons.OrbisGISIcon;
+
 /**
- * @brief This is the GeoCatalog panel. That Panel show the list of avaible layers
- * 
- * It is connected with the layer collection model.
+ * Host of the {@link DockStation}s, this frame contain 
+ * all other dockable frames
  */
-public class Catalog extends JPanel implements DragGestureListener,
-		DragSourceListener {
-
-	private DragSource dragSource;
-
-	public Catalog() {
-	        this.setName(I18N.getString("org.orbisgis.view.frames.Catalog.title"));
-		this.setLayout(new BorderLayout());
-		this.add(new JScrollPane(), BorderLayout.CENTER);
-		dragSource = DragSource.getDefaultDragSource();
-
-	}
+public class MainFrame extends JFrame {
+        
         /**
-         * Implement DragGestureListener
-         * @param dge DragGestureEvent instance
-         */
-        public void dragGestureRecognized(DragGestureEvent dge) {
-        }
-
-        public void dragEnter(DragSourceDragEvent dsde) {
-        }
-
-        public void dragOver(DragSourceDragEvent dsde) {
-        }
-
-        public void dropActionChanged(DragSourceDragEvent dsde) {
-        }
-
-        public void dragExit(DragSourceEvent dse) {
-        }
-
-        public void dragDropEnd(DragSourceDropEvent dsde) {
-        }
-
+	 * Creates a new frame. The content of the frame is not created by
+	 * this constructor, clients must call {@link #setup(Core)}.
+	 */
+	public MainFrame(){
+		setTitle( "OrbisGIS "
+                        + I18N.getString("orbisgis.org.orbisgis.version") + " - " + I18N.getString("orbisgis.org.orbisgis.versionName") + " - " + Locale.getDefault().getCountry() );
+                setDefaultCloseOperation( DO_NOTHING_ON_CLOSE );
+		setIconImage(OrbisGISIcon.getIconImage("mini_orbisgis"));                
+	}
 }

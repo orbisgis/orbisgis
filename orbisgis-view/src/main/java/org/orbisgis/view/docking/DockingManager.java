@@ -31,7 +31,6 @@ package org.orbisgis.view.docking;
 import bibliothek.gui.DockFrontend;
 import bibliothek.gui.DockStation;
 import bibliothek.gui.Dockable;
-import bibliothek.gui.dock.DefaultDockable;
 import bibliothek.gui.dock.FlapDockStation;
 import bibliothek.gui.dock.ScreenDockStation;
 import bibliothek.gui.dock.SplitDockStation;
@@ -43,8 +42,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import org.orbisgis.utils.I18N;
+import org.orbisgis.view.docking.internals.OrbisGISView;
 import org.orbisgis.view.icons.OrbisGISIcon;
 /**
  * @brief Manage left,right,down,center docking stations.
@@ -53,7 +52,7 @@ import org.orbisgis.view.icons.OrbisGISIcon;
  */
 public final class DockingManager {
 
-        private Map<JPanel,Dockable> views = new HashMap<JPanel,Dockable>();
+        private Map<DockingPanel,Dockable> views = new HashMap<DockingPanel,Dockable>();
 	/** the {@link DockStation} in the center of the {@link MainFrame} */
 	private SplitDockStation split;
 	/** the {@link DockStation} at the right side of the {@link MainFrame} */
@@ -71,7 +70,7 @@ public final class DockingManager {
          * Return the docked panels
          * @return The set of panels managed by this docking manager.
          */
-	public Set<JPanel> getPanels() {
+	public Set<DockingPanel> getPanels() {
             return views.keySet();
         }
 	/**
@@ -117,22 +116,20 @@ public final class DockingManager {
 	/**
 	 * Shows a view at the given location as child
 	 * of <code>root</code>.
-	 * @param frame the <code>JPanel</code> for which a view should be opened
+	 * @param frame the <code>DockingPanel</code> for which a view should be opened
 	 * @param root the preferred parent, might be <code>null</code>
 	 * @param location the preferred location, relative to <code>root</code>. Might
 	 * be <code>null</code>.
 	 */
-	public void show( JPanel frame, DockStation root, DockableProperty location ){
+	public void show( DockingPanel frame, DockStation root, DockableProperty location ){
 		if( !views.containsKey( frame ) ){
-                        Dockable dockItem = new DefaultDockable( frame, frame.getName() );
-			
+                        Dockable dockItem = new OrbisGISView( frame.getDockingParameters() );
 			if( root == null || location == null ){
-				frontend.getDefaultStation().drop( dockItem );
-			}
-			else{
-				if( !root.drop( dockItem, location )){
-					frontend.getDefaultStation().drop( dockItem );
-				}
+                            frontend.getDefaultStation().drop( dockItem );
+			} else {
+                            if( !root.drop( dockItem, location )){
+                                    frontend.getDefaultStation().drop( dockItem );
+                            }
 			}
 			views.put( frame, dockItem);
 		}
