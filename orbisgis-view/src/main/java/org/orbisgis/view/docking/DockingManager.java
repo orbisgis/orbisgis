@@ -28,6 +28,11 @@
  */
 package org.orbisgis.view.docking;
 
+import bibliothek.extension.gui.dock.DockingFramesPreference;
+import bibliothek.extension.gui.dock.preference.PreferenceTreeModel;
+import bibliothek.extension.gui.dock.theme.EclipseTheme;
+import bibliothek.extension.gui.dock.theme.eclipse.stack.tab.RectGradientPainter;
+import bibliothek.gui.DockController;
 import bibliothek.gui.DockFrontend;
 import bibliothek.gui.DockStation;
 import bibliothek.gui.Dockable;
@@ -35,13 +40,15 @@ import bibliothek.gui.dock.FlapDockStation;
 import bibliothek.gui.dock.ScreenDockStation;
 import bibliothek.gui.dock.SplitDockStation;
 import bibliothek.gui.dock.layout.DockableProperty;
+import bibliothek.gui.dock.station.flap.button.ButtonContent;
+import bibliothek.gui.dock.support.lookandfeel.ComponentCollector;
+import bibliothek.gui.dock.support.lookandfeel.LookAndFeelList;
+import bibliothek.gui.dock.themes.BasicTheme;
 import bibliothek.gui.dock.util.PropertyKey;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Container;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import javax.swing.JFrame;
 import org.orbisgis.utils.I18N;
 import org.orbisgis.view.docking.internals.OrbisGISView;
@@ -51,7 +58,13 @@ import org.orbisgis.view.icons.OrbisGISIcon;
  * 
  * This manager can save and load emplacement of views in XML.
  */
-public final class DockingManager {
+public final class DockingManager implements ComponentCollector {
+
+        JFrame owner;   /*<! The main frame */
+        
+        private PreferenceTreeModel preferences; /*< Organizes {@link PreferenceModel}s in a tree */
+        private DockFrontend frontend; /*!< link to the docking-frames */
+        private LookAndFeelList lookAndFeels;    /*!< /*!< link to the docking-frames */
 
         private Map<DockingPanel,Dockable> views = new HashMap<DockingPanel,Dockable>();
 	/** the {@link DockStation} in the center of the {@link MainFrame} */
@@ -65,14 +78,18 @@ public final class DockingManager {
 	/** the {@link DockStation} that represents the screen */
 	private ScreenDockStation screen;
 	
-	/** link to the docking-frames */
-	private DockFrontend frontend;
         /**
          * Return the docked panels
          * @return The set of panels managed by this docking manager.
          */
 	public Set<DockingPanel> getPanels() {
             return views.keySet();
+        }
+        /**
+         * Free docking resources
+         */
+        public void dispose() {
+            frontend.getController().kill();
         }
         /**
          * @return Docking Frames dockable instances
@@ -86,14 +103,42 @@ public final class DockingManager {
         public Dockable getDockable(DockingPanel panel) {
             return views.get(panel);
         }
+        
+        /**
+        * Help DockingFrames to update the Look And Feel of all views.
+        * @return All views of OrbisGis
+        */
+        public Collection<Component> listComponents() {
+            List<Component> components = new ArrayList<Component>();
+
+            components.add(owner);
+            for( Dockable d : frontend.getController().getRegister().listDockables() ){
+                    components.add( d.getComponent() );
+            }
+            return components;
+        }
+        
 	/**
 	 * Creates the new manager
-	 * @param frontend link to the docking-frames
 	 * @param owner the window used as parent for all dialogs
 	 */
-	public DockingManager( DockFrontend frontend, JFrame owner){
-		this.frontend = frontend;
-		
+	public DockingManager( JFrame owner){
+		this.frontend = new DockFrontend();
+		this.owner = owner;
+                
+
+                final DockController controller = new DockController();
+
+                controller.setTheme( new BasicTheme() );
+                controller.getProperties().set( EclipseTheme.PAINT_ICONS_WHEN_DESELECTED, true );
+                controller.getProperties().set( EclipseTheme.TAB_PAINTER, RectGradientPainter.FACTORY );
+                controller.getProperties().set( FlapDockStation.BUTTON_CONTENT, ButtonContent.ICON_AND_TEXT_ONLY );
+
+                frontend = new DockFrontend( controller, owner );
+                preferences = new DockingFramesPreference( controller );
+
+                lookAndFeels = LookAndFeelList.getDefaultList();
+                lookAndFeels.addComponentCollector( this );
                 //TODO add hide and close buttons
 		//frontend.getController().addActionGuard( new ViewDeleteAction( ));
 		//frontend.getController().addActionGuard( new Hide( frontend, views ));

@@ -28,25 +28,9 @@
  */
 package org.orbisgis.view.main;
 
-import bibliothek.extension.gui.dock.DockingFramesPreference;
-import bibliothek.extension.gui.dock.preference.PreferenceTreeModel;
-import bibliothek.extension.gui.dock.theme.EclipseTheme;
-import bibliothek.extension.gui.dock.theme.eclipse.stack.tab.RectGradientPainter;
-import bibliothek.gui.DockController;
-import bibliothek.gui.DockFrontend;
-import bibliothek.gui.Dockable;
-import bibliothek.gui.dock.FlapDockStation;
-import bibliothek.gui.dock.station.flap.button.ButtonContent;
-import bibliothek.gui.dock.support.lookandfeel.ComponentCollector;
-import bibliothek.gui.dock.support.lookandfeel.LookAndFeelList;
-import bibliothek.gui.dock.themes.BasicTheme;
-import java.awt.Component;
 import java.awt.Rectangle;
 import java.awt.event.WindowListener;
 import java.beans.EventHandler;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import javax.swing.SwingUtilities;
 import org.orbisgis.base.context.main.MainContext;
 import org.orbisgis.utils.I18N;
@@ -56,42 +40,26 @@ import org.orbisgis.view.main.frames.MainFrame;
 import org.orbisgis.view.translation.OrbisGISI18N;
 
 /**
- * The core manage the look and feel for each view of the Main Frame
+ * The core manage the view of the application
  * This is the main UIContext
  */
-public class Core implements ComponentCollector {
+public class Core {
     /////////////////////
     //view package
     private MainFrame mainFrame;     /*!< The main window */
     private Catalog geoCatalog;      /*!< The GeoCatalog */
     private final static Rectangle mainViewPositionAndSize = new Rectangle(20,20,800,600);/*!< Bounds of mainView, x,y and width height*/
     private DockingManager dockManager; /*!< The DockStation manager */
+    
+    
     /////////////////////
     //base package :
     private MainContext mainContext; /*!< The larger surrounding part of OrbisGis base */
     
-    /////////////////////
-    //DockingFrames package :
-    private PreferenceTreeModel preferences; /*< Organizes {@link PreferenceModel}s in a tree */
-    private DockFrontend frontend; /*!< link to the docking-frames */
-    private LookAndFeelList lookAndFeels;    /*!< /*!< link to the docking-frames */
-
     public Core() {
         this.mainContext = new MainContext();
     }
-    /**
-     * Help DockingFrames to update the Look And Feel of all views.
-     * @return All views of OrbisGis
-     */
-    public Collection<Component> listComponents() {
-        List<Component> components = new ArrayList<Component>();
-        
-        components.add(mainFrame);
-        for( Dockable d : frontend.getController().getRegister().listDockables() ){
-        	components.add( d.getComponent() );
-        }
-        return components;
-    }
+    
     /**
      * 
      * @return Instance of main context
@@ -147,23 +115,14 @@ public class Core implements ComponentCollector {
         initI18n();        
         
         makeMainFrame();
-        final DockController controller = new DockController();
         
-        controller.setTheme( new BasicTheme() );
-        controller.getProperties().set( EclipseTheme.PAINT_ICONS_WHEN_DESELECTED, true );
-        controller.getProperties().set( EclipseTheme.TAB_PAINTER, RectGradientPainter.FACTORY );
-        controller.getProperties().set( FlapDockStation.BUTTON_CONTENT, ButtonContent.ICON_AND_TEXT_ONLY );
-
-        frontend = new DockFrontend( controller, mainFrame );
-	preferences = new DockingFramesPreference( controller );
-        dockManager = new DockingManager(frontend,mainFrame);
+        //Initiate the docking management system
+        dockManager = new DockingManager(mainFrame);
         
-        lookAndFeels = LookAndFeelList.getDefaultList();
-        lookAndFeels.addComponentCollector( this );
-        
+        //Set the main frame position and size
 	mainFrame.setBounds(mainViewPositionAndSize);
         
-        //Load GeoCatalog
+        //Load the GeoCatalog
         makeGeoCatalogPanel();
         
         // Show the application when Swing will be ready
@@ -193,7 +152,7 @@ public class Core implements ComponentCollector {
 
         //Free UI resources
         mainFrame.dispose();
-        frontend.getController().kill();
+        dockManager.dispose();
     }
     /**
     * Stops this application, closes the {@link MainFrame} and saves
