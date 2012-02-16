@@ -438,7 +438,8 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
 
         private Value castValue(Type type, Value value) {
                 Value newValue = value;
-                if (!value.isNull() && (type.getTypeCode() != value.getType())) {
+                if (!value.isNull() && type.getTypeCode() != value.getType()
+                        && TypeFactory.canBeCastTo(value.getType(), type.getTypeCode())) {
                         newValue = value.toType(type.getTypeCode());
                 }
                 return newValue;
@@ -945,18 +946,23 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
                                 return null;
                         }
                 }
-
+                int fieldType = type.getTypeCode();
                 //Test geometry types.
                 if(TypeFactory.isVectorial(type.getTypeCode())){
                         int valueType = value.getType();
-                        int fieldType = type.getTypeCode();
+                        
                         if(!checkGeometry(valueType, fieldType)){
                                 return "Can't put a "+TypeFactory.getTypeName(valueType)+" in a "
                                         +TypeFactory.getTypeName(fieldType) +" column.";
                         }
                 }
                 // Cast value
-                castValue(type, value);
+                Value val = castValue(type, value);
+                int broadType = TypeFactory.getBroaderType(fieldType, val.getType());
+                if(val.getType() != broadType && val.getType() != Type.NULL && !checkGeometry(val.getType(), fieldType)){
+                        return "Can't cast a "+TypeFactory.getTypeName(value.getType())
+                                +" to a "+TypeFactory.getTypeName(fieldType);
+                }
 
                 // Check constraints
                 String fieldName = getMetadata().getFieldName(fieldId);
