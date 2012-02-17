@@ -32,14 +32,13 @@
  */
 package org.orbisgis.base.events;
 
-import java.util.List;
 import org.orbisgis.base.events.internals.ListenerContainers;
 /**
  * @brief Release all listeners attached to a specific target in one call.
  */
 public class ListenerRelease {
 
-    private List<ListenerContainer> containers = new ListenerContainers();
+    private ListenerContainers containers = new ListenerContainers();
 
     /**
      * Add a container to manage with this class

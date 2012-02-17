@@ -39,5 +39,5 @@ import org.orbisgis.base.events.ListenerContainer;
  * @brief Declaration of an ArrayList<ListenerContainer>
  */
 public class ListenerContainers extends ArrayList<ListenerContainer> {
-    
+    private static final long serialVersionUID = 1L;
 }
