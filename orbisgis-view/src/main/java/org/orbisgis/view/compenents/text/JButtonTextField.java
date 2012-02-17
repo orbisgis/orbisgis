@@ -36,7 +36,7 @@ import org.orbisgis.view.icons.OrbisGISIcon;
 
 public class JButtonTextField extends JTextField {
 
-	private static int columns = 8;
+	private final static int COLUMNS = 8;
 	private Icon icon;
 
 	/**
@@ -46,7 +46,7 @@ public class JButtonTextField extends JTextField {
 	 * @param columns
 	 */
 	public JButtonTextField(Icon icon, int columns) {
-		super(columns);
+		super(COLUMNS);
 		this.icon = icon;
 	}
 
@@ -64,7 +64,7 @@ public class JButtonTextField extends JTextField {
 	 * Create a jtextfield with an icon inside
 	 */
 	public JButtonTextField() {
-		super(columns);
+		super(COLUMNS);
 		this.icon = OrbisGISIcon.getIcon("small_search.png");
 	}
 

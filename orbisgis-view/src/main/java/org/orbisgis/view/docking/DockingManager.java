@@ -60,7 +60,7 @@ import org.orbisgis.view.icons.OrbisGISIcon;
  */
 public final class DockingManager implements ComponentCollector {
 
-        JFrame owner;   /*<! The main frame */
+        private JFrame owner;   /*<! The main frame */
         
         private PreferenceTreeModel preferences; /*< Organizes {@link PreferenceModel}s in a tree */
         private DockFrontend frontend; /*!< link to the docking-frames */

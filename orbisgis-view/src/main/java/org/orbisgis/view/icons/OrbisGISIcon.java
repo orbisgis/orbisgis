@@ -52,7 +52,7 @@ import org.orbisgis.utils.I18N;
 
 
 public final class OrbisGISIcon {
-    private static Map<String,ImageIcon> LOADED_ICONS=new HashMap<String,ImageIcon>();/*!< This map contain all loaded icons */
+    private static Map<String,ImageIcon> loadedIcons=new HashMap<String,ImageIcon>();/*!< This map contain all loaded icons */
     
     private static final ImageIcon ORBISGIS_MISSING_ICON = new ImageIcon(OrbisGISIcon.class.getResource("remove.png")); /*!< Icon displayed when the requested icon is not found */
     
@@ -78,12 +78,12 @@ public final class OrbisGISIcon {
      * @return The ImageIcon requested, or an ImageIcon corresponding to a Missing Resource
      */
     public static ImageIcon getIcon(String iconName) {
-        if(!LOADED_ICONS.containsKey(iconName)) {
+        if(!loadedIcons.containsKey(iconName)) {
             //This is the first request for this icon
             URL url = OrbisGISIcon.class.getResource(iconName+".png");
             if(url!=null) {
                 ImageIcon newIcon = new ImageIcon(url);
-                LOADED_ICONS.put(iconName, newIcon);
+                loadedIcons.put(iconName, newIcon);
                 return newIcon;
             } else {
                 LOG.warn(I18N.getString("org.orbisgis.view.icons.OrbisGISIcon.icon_not_found")+" : "+iconName);
@@ -91,7 +91,7 @@ public final class OrbisGISIcon {
             }            
         } else {
             //Icon was already loaded, return its content
-            return LOADED_ICONS.get(iconName);
+            return loadedIcons.get(iconName);
         }
     }
 }

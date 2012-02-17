@@ -46,6 +46,8 @@ import javax.swing.Icon;
  * @warning New properties must be linked with the current docking system {@link OrbisGISView} 
  */
 public class DockingPanelParameters implements Serializable {
+    private static final long serialVersionUID = 2L; /*<! Update this integer while adding properties (1 for each new property)*/
+    
     private PropertyChangeSupport propertySupport;
    
     private String title;

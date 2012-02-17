@@ -42,7 +42,7 @@ import org.orbisgis.view.docking.DockingPanelParameters;
  * and custom compenents like custom titles.
  */
 public class OrbisGISView  extends DefaultDockable {
-    DockingPanelParameters dockableParameters;
+    private DockingPanelParameters dockableParameters;
 
     public OrbisGISView(DockingPanelParameters dockableParameters) {
         this.dockableParameters = dockableParameters;

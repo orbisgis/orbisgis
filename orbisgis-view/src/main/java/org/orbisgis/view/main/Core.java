@@ -46,10 +46,10 @@ import org.orbisgis.view.translation.OrbisGISI18N;
 public class Core {
     /////////////////////
     //view package
-    private MainFrame mainFrame;     /*!< The main window */
-    private Catalog geoCatalog;      /*!< The GeoCatalog */
-    private final static Rectangle mainViewPositionAndSize = new Rectangle(20,20,800,600);/*!< Bounds of mainView, x,y and width height*/
-    private DockingManager dockManager; /*!< The DockStation manager */
+    private MainFrame mainFrame = null;     /*!< The main window */
+    private Catalog geoCatalog= null;      /*!< The GeoCatalog */
+    private static final Rectangle MAIN_VIEW_POSITION_AND_SIZE = new Rectangle(20,20,800,600);/*!< Bounds of mainView, x,y and width height*/
+    private DockingManager dockManager = null; /*!< The DockStation manager */
     
     
     /////////////////////
@@ -86,7 +86,7 @@ public class Core {
         mainFrame.addWindowListener(EventHandler.create(
                 WindowListener.class, //The listener class
                 this,                 //The event target object
-                "OnMainWindowClosing",//The event target method to call
+                "onMainWindowClosing",//The event target method to call
                 null,                 //the event parameter to pass(none)
                 "windowClosing"));    //The listener method to use
     }
@@ -101,7 +101,7 @@ public class Core {
      * The user want to close the main window
      * Then the application has to be closed
      */
-    public void OnMainWindowClosing() {
+    public void onMainWindowClosing() {
         this.shutdown();
     }
     /**
@@ -120,7 +120,7 @@ public class Core {
         dockManager = new DockingManager(mainFrame);
         
         //Set the main frame position and size
-	mainFrame.setBounds(mainViewPositionAndSize);
+	mainFrame.setBounds(MAIN_VIEW_POSITION_AND_SIZE);
         
         //Load the GeoCatalog
         makeGeoCatalogPanel();
@@ -163,16 +163,16 @@ public class Core {
         try{
             this.dispose();
         }
-        finally{
-            // If there is another unclosed windows, java machine may continue to run
-            // In this case, the following command would exit the application
-            /*
+        catch (RuntimeException e) { 
+            // If an error occuring while unload resources, java machine
+            // may continue to run. In this case, the following command
+            // would terminate the application.
+            
             SwingUtilities.invokeLater( new Runnable(){
                     public void run(){
                             System.exit(0);
                     }
-            */
-            
+            } );
         }
     }
 }
