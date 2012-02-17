@@ -101,7 +101,7 @@ public class FailedEditionTest extends TestBase {
         public void testSpatialObjectfailedCommit() throws Exception {
                 DataSource ds = dsf.getDataSource("object");
                 ds.open();
-                failedCommit(dsf.getDataSource("object"), new DefaultSpatialIndexQuery(ds.getFullExtent(),
+                failedCommit(ds, new DefaultSpatialIndexQuery(ds.getFullExtent(),
                         SPATIAL_FIELD_NAME));
         }
 
