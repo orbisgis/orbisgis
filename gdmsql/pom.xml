@@ -38,30 +38,6 @@
                         <version>3.3</version>
                 </dependency>
         </dependencies>
-        <repositories>
-                <repository>  
-                        <id>IRSTV</id>  
-                        <name>IRSTV repository</name>  
-                        <url>http://repo.orbisgis.org</url>  
-                </repository>  
-                <repository>
-                        <id>scala-tools.org</id>
-                        <name>Scala-tools Maven2 Repository</name>
-                        <url>http://scala-tools.org/repo-releases</url>
-                </repository>
-                <repository>
-                        <id>scala-tools-snapshots</id>
-                        <name>Scala-tools Maven2 Repository - Snapshots</name>
-                        <url>http://scala-tools.org/repo-snapshots</url>
-                </repository>
-        </repositories>
-        <pluginRepositories>
-                <pluginRepository>
-                        <id>scala-tools.org</id>
-                        <name>Scala-tools Maven2 Repository</name>
-                        <url>http://scala-tools.org/repo-releases</url>
-                </pluginRepository>
-        </pluginRepositories>
         <build>
                 <plugins>
                         <plugin>
