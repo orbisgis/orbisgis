@@ -39,6 +39,7 @@ package org.gdms;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.io.WKTWriter;
+import java.io.File;
 import java.io.IOException;
 import java.sql.DriverManager;
 import java.util.ArrayList;
@@ -76,6 +77,7 @@ import org.gdms.spatial.SeveralSpatialFieldsDriver;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.orbisgis.utils.FileUtils;
 
 public abstract class TestBase extends SourceTest<Value, Geometry> {
 
@@ -143,9 +145,10 @@ public abstract class TestBase extends SourceTest<Value, Geometry> {
                                         LOG.warn("H2 database not available!!");
                                         LOG.warn("Skipping H2 DB tests.");
                                 }
+                                FileUtils.copyFileToDirectory(new File(internalData + "testhsqldb.sql"), backupDir);
                                 final DBTestSource dBTestHsqlDb = new DBTestSource("testhsqldb", "org.hsqldb.jdbcDriver",
-                                        internalData + "testhsqldb.sql", new DBSource(null, 0,
-                                        internalData + "testhsqldb", "sa", "",
+                                        backupDir+ File.separator + "testhsqldb.sql", new DBSource(null, 0,
+                                        backupDir + "testhsqldb", "sa", "",
                                         "gisapps", "jdbc:hsqldb:file"));
                                 hsqlDbAvailable = dBTestHsqlDb.isConnected();
 
@@ -162,8 +165,10 @@ public abstract class TestBase extends SourceTest<Value, Geometry> {
                                 toTest.add(new FileTestSource("repeatedRows", internalData
                                         + "repeatedRows.csv"));
 
+                                FileUtils.copyFileToDirectory(new File(internalData + "hedgerow.sql"), backupDir);
+                                FileUtils.copyFileToDirectory(new File(internalData + "testpostgres.sql"), backupDir);
                                 final DBTestSource dBTestPostGIS = new DBTestSource("pghedgerow", "org.postgresql.Driver",
-                                        internalData + "hedgerow.sql", new DBSource("127.0.0.1",
+                                        backupDir+File.separator + "hedgerow.sql", new DBSource("127.0.0.1",
                                         -1, "gdms", "postgres", "postgres", "hedgerow",
                                         "jdbc:postgresql"));
                                 postGisAvailable = dBTestPostGIS.isConnected();
@@ -172,7 +177,7 @@ public abstract class TestBase extends SourceTest<Value, Geometry> {
                                         LOG.info("PostGIS database available.");
                                         toTest.add(dBTestPostGIS);
                                         toTest.add(new DBTestSource("postgres", "org.postgresql.Driver",
-                                                internalData + "testpostgres.sql", new DBSource(
+                                                backupDir+File.separator + "testpostgres.sql", new DBSource(
                                                 "127.0.0.1", -1, "gdms", "postgres", "postgres",
                                                 "gisapps", "jdbc:postgresql")));
                                 } else {

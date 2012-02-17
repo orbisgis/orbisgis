@@ -49,6 +49,7 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.db.DBSource;
 
 import static org.junit.Assert.*;
+import org.orbisgis.utils.FileUtils;
 
 public class ChecksumTest {
 
@@ -65,11 +66,12 @@ public class ChecksumTest {
                 testModifyingSourceOutsideFactory(name, false);
 
                 name = "db";
-                DBSource testDB = new DBSource(null, 0, TestBase.internalData
+                FileUtils.copyFileToDirectory(new File(TestBase.internalData + "testhsqldb.sql"), TestBase.backupDir);
+                DBSource testDB = new DBSource(null, 0, TestBase.backupDir
                         + "testhsqldb", "sa", "", "gisapps", "jdbc:hsqldb:file");
                 DBTestSource dbTestSource = new DBTestSource(name,
-                        "org.hsqldb.jdbcDriver", TestBase.internalData
-                        + "testhsqldb.sql", testDB);
+                        "org.hsqldb.jdbcDriver", TestBase.backupDir
+                        + "/testhsqldb.sql", testDB);
                 dbTestSource.backup();
                 sm.register(name, testDB);
                 testModifyingSourceOutsideFactory(name, false);

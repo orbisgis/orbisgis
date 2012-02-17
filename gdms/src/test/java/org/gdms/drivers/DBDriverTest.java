@@ -78,6 +78,8 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 
 import static org.junit.Assert.*;
 import static org.junit.Assume.*;
+import org.junit.Before;
+import org.orbisgis.utils.FileUtils;
 
 public class DBDriverTest extends TestBase {
 
@@ -122,9 +124,7 @@ public class DBDriverTest extends TestBase {
         private DBSource hsqldbDBSource = new DBSource(null, 0,
                 TestBase.backupDir + File.separator + "hsqldbAllTypes", "sa",
                 null, "alltypes", "jdbc:hsqldb:file");
-        private DBTestSource hsqldbSrc = new DBTestSource("source",
-                "org.hsqldb.jdbcDriver", TestBase.internalData
-                + "hsqldbAllTypes.sql", hsqldbDBSource);
+        private DBTestSource hsqldbSrc;
         private DBSource h2DBSource = new DBSource(null, 0, TestBase.backupDir
                 + File.separator + "h2AllTypes", "sa", null, "alltypes", "jdbc:h2");
         private DBTestSource h2Src = new DBTestSource("source", "org.h2.Driver",
@@ -137,13 +137,25 @@ public class DBDriverTest extends TestBase {
         private DBSource schemaHsqldbDBSource = new DBSource(null, 0,
                 TestBase.backupDir + File.separator + "hsqldbSchemaTest", "sa",
                 null, "gis_schema", "schema_test", "jdbc:hsqldb:file");
-        private DBTestSource schemaHsqldbSrc = new DBTestSource("source",
-                "org.hsqldb.jdbcDriver", TestBase.internalData
-                + "hsqldbSchemaTest.sql", schemaHsqldbDBSource);
+        private DBTestSource schemaHsqldbSrc;
         private DBSource schemaH2DBSource = new DBSource(null, 0, TestBase.backupDir
                 + File.separator + "h2SchemaTest", "sa", null, "gis_schema", "schema_test", "jdbc:h2");
         private DBTestSource schemaH2Src = new DBTestSource("source", "org.h2.Driver",
                 TestBase.internalData + "h2SchemaTest.sql", schemaH2DBSource);
+
+        @Before
+        @Override
+        public void setUp() throws Exception{
+                super.setUp();
+                FileUtils.copyFileToDirectory(new File(internalData+"hsqldbSchemaTest.sql"), backupDir);
+                schemaHsqldbSrc = new DBTestSource("source",
+                        "org.hsqldb.jdbcDriver", TestBase.backupDir+File.separator
+                        + "hsqldbSchemaTest.sql", schemaHsqldbDBSource);
+                FileUtils.copyFileToDirectory(new File(internalData+"hsqldbAllTypes.sql"), backupDir);
+                hsqldbSrc = new DBTestSource("source",
+                        "org.hsqldb.jdbcDriver", TestBase.backupDir+File.separator
+                        + "hsqldbAllTypes.sql", hsqldbDBSource);
+        }
 
         private void testReadAllTypes(DBSource dbSource, DBTestSource src)
                 throws Exception {
