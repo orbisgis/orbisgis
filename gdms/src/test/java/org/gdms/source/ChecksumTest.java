@@ -134,7 +134,7 @@ public class ChecksumTest {
         }
 
         private void instantiateDSF() {
-                dsf = new DataSourceFactory(TestBase.internalData
+                dsf = new DataSourceFactory(TestBase.backupDir
                         + "source-management");
                 sm = dsf.getSourceManager();
         }

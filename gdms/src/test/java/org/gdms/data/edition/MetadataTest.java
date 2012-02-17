@@ -39,6 +39,7 @@ package org.gdms.data.edition;
 import org.junit.Test;
 import org.junit.Before;
 import java.io.File;
+import org.gdms.FileTestSource;
 
 import org.gdms.TestBase;
 import org.gdms.data.DataSource;
@@ -170,10 +171,12 @@ public class MetadataTest extends TestBase {
         @Test
         public void testAddField() throws Exception {
                 dsf.getSourceManager().remove("landcover");
+                FileTestSource fts = new FileTestSource("landcover",TestBase.internalData+ "landcover2000.shp");
+                fts.backup();
+                dsf.getSourceManager().remove("landcover");
                 dsf.getSourceManager().register(
                         "landcover",
-                        new FileSourceCreation(new File(TestBase.internalData
-                        + "landcover2000.shp"), null));
+                        new FileSourceCreation(fts.getBackupFile(), null));
                 testAddField("landcover", TypeFactory.createType(Type.STRING, "String"));
         }
 
@@ -194,10 +197,12 @@ public class MetadataTest extends TestBase {
         @Test
         public void testDeleteField() throws Exception {
                 dsf.getSourceManager().remove("big");
+                FileTestSource fts = new FileTestSource("big",TestBase.internalData+ "landcover2000.shp");
+                fts.backup();
+                dsf.getSourceManager().remove("big");
                 dsf.getSourceManager().register(
                         "big",
-                        new FileSourceCreation(new File(TestBase.internalData
-                        + "landcover2000.shp"), null));
+                        new FileSourceCreation(fts.getBackupFile(), null));
                 testDeleteField("big");
 
         }
@@ -293,10 +298,12 @@ public class MetadataTest extends TestBase {
         @Test
         public void testEditionWithFieldRemoved() throws Exception {
                 dsf.getSourceManager().remove("ile");
+                FileTestSource fts = new FileTestSource("ile",TestBase.internalData+ "landcover2000.shp");
+                fts.backup();
+                dsf.getSourceManager().remove("ile");
                 dsf.getSourceManager().register(
                         "land",
-                        new FileSourceCreation(new File(TestBase.internalData
-                        + "landcover2000.shp"), null));
+                        new FileSourceCreation(fts.getBackupFile(), null));
                 testEditionWithFieldRemoved("land");
         }
 

@@ -277,7 +277,7 @@ public class SourceManagementTest {
                 associateString(source, statistics);
                 String memento = sm.getMemento();
 
-                String newSourceInfoDir = TestBase.internalData
+                String newSourceInfoDir = TestBase.backupDir
                         + "source-management2";
                 sm.setSourceInfoDirectory(newSourceInfoDir);
 
@@ -489,7 +489,7 @@ public class SourceManagementTest {
         }
 
         private void instantiateDSF() {
-                dsf = new DataSourceFactory(TestBase.internalData
+                dsf = new DataSourceFactory(TestBase.backupDir
                         + "source-management");
                 sm = dsf.getSourceManager();
 
