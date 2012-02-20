@@ -28,6 +28,7 @@
  */
 package org.orbisgis.view.docking;
 
+import java.awt.Component;
 import javax.swing.JPanel;
 
 
@@ -59,5 +60,9 @@ public class DummyViewPanel extends JPanel implements DockingPanel {
      */
     public DockingPanelParameters getDockingParameters() {
         return dockingParameters;
+    }
+
+    public Component getComponent() {
+        return this;
     }
 }
