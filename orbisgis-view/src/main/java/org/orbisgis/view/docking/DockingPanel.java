@@ -28,8 +28,14 @@
  */
 package org.orbisgis.view.docking;
 
+import java.awt.Component;
+
 /**
- * A panel must implement theses function to 
+ * A panel must implement theses function to return a DockingPanel properties
+ * @warning Do not change this interface otherwise the plugins
+ * that implement this interface will no longer work.
+ * Add new properties in dockingParameters instead.
+ * This interface allow to choose another Docking system later.
  */
 
 
@@ -40,4 +46,10 @@ public interface DockingPanel {
      * @return The panel parameter instance
      */
     DockingPanelParameters getDockingParameters();
+    
+    /**
+     * Return the content of the view.
+     * @return An awt content to show in this panel
+     */
+    Component getComponent();
 }

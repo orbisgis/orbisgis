@@ -32,6 +32,7 @@ package org.orbisgis.view.docking.internals;
 import bibliothek.gui.dock.DefaultDockable;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
+import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
 /**
  * @brief The OrbisGis form of Docking Frames dockable
@@ -44,8 +45,13 @@ import org.orbisgis.view.docking.DockingPanelParameters;
 public class OrbisGISView  extends DefaultDockable {
     private DockingPanelParameters dockableParameters;
 
-    public OrbisGISView(DockingPanelParameters dockableParameters) {
-        this.dockableParameters = dockableParameters;
+    /**
+     * Constructor of the OrbisGISView
+     * @param dockingPanel The dockingPanel instance
+     */
+    public OrbisGISView(DockingPanel dockingPanel) {
+        super(dockingPanel.getComponent());
+        this.dockableParameters = dockingPanel.getDockingParameters();
         this.setTitleText(dockableParameters.getTitle());
         if(dockableParameters.getTitleIcon()!=null) {
             this.setTitleIcon(dockableParameters.getTitleIcon());

@@ -28,18 +28,28 @@
  */
 package org.orbisgis.view.geocatalog.renderer;
 
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.FlowLayout;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 import org.orbisgis.view.icons.OrbisGISIcon;
 
 /**
- * This is the cell renderer for DataSource in the GeoCatalog list
+ * @brief Item renderer factory of GeoCatalog
+ * This is the cell renderer factory for the DataSource List
+ * in the GeoCatalog panel.
+ * 
  */
 
 public class DataSourceListCellRenderer implements ListCellRenderer {
 
+    private static final Color SELECTED = Color.lightGray;      /*!< Item background color */
+    private static final Color DESELECTED = Color.white;        /*!< Item background color */
+    private static final Color SELECTED_FONT = Color.white;     /*!< Item font color */
+    private static final Color DESELECTED_FONT = Color.black;   /*!< Item font color */
     /**
      * Return a component that has been configured to display the specified value.
      * @param list - The JList we're painting.
@@ -54,9 +64,28 @@ public class DataSourceListCellRenderer implements ListCellRenderer {
                                                     boolean isSelected,
                                                     boolean cellHasFocus)
     {
-        JLabel sourceComponent = new JLabel();
-        sourceComponent.setIcon(OrbisGISIcon.getIcon("geofile"));
-        return sourceComponent;
+        //The panel show the background of the DataSource Item
+        JPanel sourcePanel = new JPanel();
+        FlowLayout fl = new FlowLayout(FlowLayout.LEADING);
+        fl.setHgap(0);
+        sourcePanel.setLayout(fl);
+        //The label show the Icon and Text of the DataSource Item
+        JLabel sourceLabel = new JLabel();
+        sourceLabel.setIcon(OrbisGISIcon.getIcon("geofile"));
+        sourceLabel.setText(value.toString());
+        sourceLabel.setVisible(true);
+        //Change the item panel background color
+        //and the label text color depending on the selection state
+        if (isSelected) {
+                sourcePanel.setBackground(SELECTED);
+                sourceLabel.setForeground(SELECTED_FONT);
+        } else {
+                sourcePanel.setBackground(DESELECTED);
+                sourceLabel.setForeground(DESELECTED_FONT);
+        }
+        //Add the label into the Panel
+        sourcePanel.add(sourceLabel);
+        return sourcePanel;
     }
     
 }

@@ -29,31 +29,48 @@
 package org.orbisgis.view.geocatalog;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import org.orbisgis.utils.I18N;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
+import org.orbisgis.view.geocatalog.renderer.DataSourceListCellRenderer;
 import org.orbisgis.view.icons.OrbisGISIcon;
 
 
 /**
- * @brief This is the GeoCatalog panel. That Panel show the list of avaible layers
+ * @brief This is the GeoCatalog panel. That Panel show the list of avaible DataSource
  * 
- * This is connected with the layer collection model.
+ * This is connected with the SourceManager model.
  */
 public class Catalog extends JPanel implements DockingPanel {
-    private DockingPanelParameters dockingParameters = new DockingPanelParameters();
+    private DockingPanelParameters dockingParameters = new DockingPanelParameters(); /*!< GeoCatalog docked panel properties */
+    JPopupMenu popupMenu; /*!< Popup of GeoCatalog Source List */
+    JList sourceList;
     
     /**
      * Default constructor
      */
     public Catalog() {
+            super(new BorderLayout());
             dockingParameters.setTitle(I18N.getString("orbisgis.org.orbisgis.Catalog.title"));
             dockingParameters.setTitleIcon(OrbisGISIcon.getIcon("geocatalog"));
-            this.setLayout(new BorderLayout());
-            this.add(new JScrollPane(), BorderLayout.CENTER);
-    }    
+            //Add the Source List in a Scroll Pane, 
+            //then add the scroll pane in this panel
+            add(new JScrollPane(makeSourceList()), BorderLayout.CENTER);
+    }
+    
+    /**
+     * Create the Source List ui compenent
+     */
+    private JList makeSourceList() {
+        sourceList = new JList(new String[] {"el1","el2","el3"});
+        sourceList.setCellRenderer(new DataSourceListCellRenderer());
+        return sourceList;
+    }
     
     /**
      * Give information on the behaviour of this panel related to the current
@@ -62,5 +79,9 @@ public class Catalog extends JPanel implements DockingPanel {
      */
     public DockingPanelParameters getDockingParameters() {
         return dockingParameters;
+    }
+
+    public Component getComponent() {
+        return this;
     }
 }

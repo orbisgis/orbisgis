@@ -163,7 +163,7 @@ public class Core {
         try{
             this.dispose();
         }
-        catch (RuntimeException e) { 
+        finally { 
             // If an error occuring while unload resources, java machine
             // may continue to run. In this case, the following command
             // would terminate the application.

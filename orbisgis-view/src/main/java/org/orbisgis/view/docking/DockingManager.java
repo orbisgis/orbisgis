@@ -180,8 +180,8 @@ public final class DockingManager implements ComponentCollector {
 	 * be <code>null</code>.
 	 */
 	public void show( DockingPanel frame, DockStation root, DockableProperty location ){
-		if( !views.containsKey( frame ) ){
-                        Dockable dockItem = new OrbisGISView( frame.getDockingParameters() );
+		if( !views.containsKey( frame ) ) {
+                        Dockable dockItem = new OrbisGISView( frame );
 			if( root == null || location == null ){
                             frontend.getDefaultStation().drop( dockItem );
 			} else {
