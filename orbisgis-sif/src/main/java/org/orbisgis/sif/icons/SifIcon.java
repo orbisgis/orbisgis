@@ -37,7 +37,7 @@ import org.apache.log4j.Logger;
 import org.orbisgis.utils.I18N;
 
 /**
- * @package org.orbisgis.view.icons
+ * @package org.orbisgis.sif.icons
  * @brief Manage Icons loading
  */
 
@@ -45,9 +45,9 @@ import org.orbisgis.utils.I18N;
  * @class SifIcon
  * @brief Use this class to retrieve the data of an icon
  * This final class load icons only on request. This feature help to reduce
- * the loading time of OrbisGis. Moreover this class does'nt have to be updated
+ * the loading time of OrbisGis. Moreover this class does not have to be updated
  * when new icons are added.
- * Icon files are placed in the resource package org.orbisgis.view.icons
+ * Icon files are placed in the resource package org.orbisgis.sif.icons
  */
 
 
