@@ -34,6 +34,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import org.gdms.source.SourceManager;
 import org.orbisgis.utils.I18N;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
@@ -50,28 +51,51 @@ public class Catalog extends JPanel implements DockingPanel {
     private DockingPanelParameters dockingParameters = new DockingPanelParameters(); /*!< GeoCatalog docked panel properties */
     JPopupMenu popupMenu; /*!< Popup of GeoCatalog Source List */
     JList sourceList;
+    SourceListModel sourceListContent;
+
+    /**
+     * For the Unit test purpose
+     * @return The source list instance
+     */
+    public JList getSourceList() {
+        return sourceList;
+    }
     
     /**
      * Default constructor
      */
-    public Catalog() {
+    public Catalog(SourceManager sourceManager) {
             super(new BorderLayout());
             dockingParameters.setTitle(I18N.getString("orbisgis.org.orbisgis.Catalog.title"));
             dockingParameters.setTitleIcon(OrbisGISIcon.getIcon("geocatalog"));
             //Add the Source List in a Scroll Pane, 
             //then add the scroll pane in this panel
-            add(new JScrollPane(makeSourceList()), BorderLayout.CENTER);
+            add(new JScrollPane(makeSourceList(sourceManager)), BorderLayout.CENTER);
+            
     }
     
     /**
      * Create the Source List ui compenent
      */
-    private JList makeSourceList() {
-        sourceList = new JList(new String[] {"el1","el2","el3"});
-        sourceList.setCellRenderer(new DataSourceListCellRenderer());
+    private JList makeSourceList(SourceManager sourceManager) {
+        sourceList = new JList();
+        //Set the list content renderer
+        sourceList.setCellRenderer(new DataSourceListCellRenderer()); 
+        //Create the list content manager
+        sourceListContent = new SourceListModel(sourceManager); 
+        //Replace the default model by the GeoCatalog model
+        sourceList.setModel(sourceListContent); 
+        //Attach the content to the DataSource instance
+        sourceListContent.setListeners();
         return sourceList;
     }
-    
+    /**
+     * Free listeners, Catalog must not be reachable to let the Garbage Collector
+     * free this instance
+     */
+    public void dispose() {
+        sourceListContent.dispose();
+    }
     /**
      * Give information on the behaviour of this panel related to the current
      * docking system

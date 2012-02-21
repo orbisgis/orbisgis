@@ -59,6 +59,13 @@ public class Core {
     public Core() {
         this.mainContext = new MainContext();
     }
+    /**
+     * For UnitTest purpose
+     * @return The Catalog instance
+     */
+    public Catalog getGeoCatalog() {
+        return geoCatalog;
+    }
     
     /**
      * 
@@ -94,7 +101,9 @@ public class Core {
      * Create the GeoCatalog view
      */
     private void makeGeoCatalogPanel() {
-        geoCatalog = new Catalog();
+        //The geocatalog view content is read from SourceManager
+        geoCatalog = new Catalog(mainContext.getDataSourceFactory().getSourceManager());
+        //Add the view as a new Docking Panel
         dockManager.show(geoCatalog, dockManager.getScreen(), null);
     }
     /**
@@ -126,14 +135,16 @@ public class Core {
         makeGeoCatalogPanel();
         
         // Show the application when Swing will be ready
-        SwingUtilities.invokeLater( new Runnable(){
-                public void run(){
-                        mainFrame.setVisible( true );
-                        //views.getScreen().setShowing( true );
-                }
-        });
+        SwingUtilities.invokeLater( new ShowSwingApplication());
     }
-
+    /**
+     * Change the state of the main frame in the swing thread
+     */
+    private class ShowSwingApplication implements Runnable {
+        public void run(){
+                mainFrame.setVisible( true );
+        }
+    }
     public DockingManager getDockManager() {
         return dockManager;
     }

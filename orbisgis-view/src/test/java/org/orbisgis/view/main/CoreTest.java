@@ -33,6 +33,7 @@ import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.orbisgis.view.docking.DummyViewPanel;
+import org.orbisgis.view.geocatalog.Catalog;
 /**
  * Unit Test of org.orbisgis.view.main.Core
  */
@@ -52,7 +53,14 @@ public class CoreTest extends TestCase {
         instance = new Core();
         instance.startup();
     }
-    
+    /**
+     * Test the propagation of DataSource content change to the GeoCatalog List
+     */
+    public void testGeoCatalogLinkWithDataSourceManager() {
+        Catalog geoCatalog = instance.getGeoCatalog();
+        //Retrieve the number of DataSource shown in the list
+        int nbsource = geoCatalog.getSourceList().getModel().getSize();
+    }
     /**
      * Test propagation of docking parameters modifications
      */
