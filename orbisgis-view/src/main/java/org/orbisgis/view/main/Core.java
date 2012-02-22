@@ -55,7 +55,10 @@ public class Core {
     /////////////////////
     //base package :
     private MainContext mainContext; /*!< The larger surrounding part of OrbisGis base */
-    
+    /**
+     * Core constructor, init Model instances
+     * @note Call startup() to init Swing
+     */
     public Core() {
         this.mainContext = new MainContext();
     }
@@ -141,10 +144,17 @@ public class Core {
      * Change the state of the main frame in the swing thread
      */
     private class ShowSwingApplication implements Runnable {
+        /**
+        * Change the state of the main frame in the swing thread
+        */
         public void run(){
                 mainFrame.setVisible( true );
         }
     }
+    /**
+     * Return the docking manager. This function is used by Unit Tests.
+     * @return The Docking Manager
+     */
     public DockingManager getDockManager() {
         return dockManager;
     }
@@ -162,6 +172,7 @@ public class Core {
         //Remove all listeners created by this object
 
         //Free UI resources
+        geoCatalog.dispose();
         mainFrame.dispose();
         dockManager.dispose();
     }
@@ -174,15 +185,15 @@ public class Core {
         try{
             this.dispose();
         }
-        finally { 
-            // If an error occuring while unload resources, java machine
-            // may continue to run. In this case, the following command
-            // would terminate the application.
-            
+        finally {             
             SwingUtilities.invokeLater( new Runnable(){
-                    public void run(){
-                            System.exit(0);
-                    }
+                /** If an error occuring while unload resources, java machine
+                * may continue to run. In this case, the following command
+                * would terminate the application.
+                */
+                public void run(){
+                        System.exit(0);
+                }
             } );
         }
     }

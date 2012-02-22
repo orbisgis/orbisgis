@@ -28,12 +28,8 @@
  */
 package org.orbisgis.view.geocatalog;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
+import java.awt.*;
+import javax.swing.*;
 import org.gdms.source.SourceManager;
 import org.orbisgis.utils.I18N;
 import org.orbisgis.view.docking.DockingPanel;
@@ -52,7 +48,7 @@ public class Catalog extends JPanel implements DockingPanel {
     JPopupMenu popupMenu; /*!< Popup of GeoCatalog Source List */
     JList sourceList;
     SourceListModel sourceListContent;
-
+    JPanel filterListPanel;/*!< This panel contain the set of filters */
     /**
      * For the Unit test purpose
      * @return The source list instance
@@ -68,12 +64,61 @@ public class Catalog extends JPanel implements DockingPanel {
             super(new BorderLayout());
             dockingParameters.setTitle(I18N.getString("orbisgis.org.orbisgis.Catalog.title"));
             dockingParameters.setTitleIcon(OrbisGISIcon.getIcon("geocatalog"));
+            //Add the filter list at the top of the geocatalog
+            add(makeFilterPanel(), BorderLayout.NORTH);
             //Add the Source List in a Scroll Pane, 
             //then add the scroll pane in this panel
             add(new JScrollPane(makeSourceList(sourceManager)), BorderLayout.CENTER);
             
     }
-    
+    /**
+     * Built the filter button component
+     * @return The button
+     * @note listener are created in this function
+     */
+    private Component makeAddFilterButton() {
+        //This JPanel set the button at the top
+        JPanel buttonAlignement = new JPanel(new BorderLayout());
+        //Create a compact button
+        JButton addFilterButton = new JButton(OrbisGISIcon.getIcon("add_filter"));
+        addFilterButton.setMargin(new Insets(0, 0, 0, 0));
+        addFilterButton.setBorderPainted(false);
+        addFilterButton.setContentAreaFilled(false);
+        buttonAlignement.add(addFilterButton,BorderLayout.NORTH);
+        return buttonAlignement;
+    }
+    /**
+     * Temporary function, for Panel alignement test
+     * @return 
+     */
+    private Component getDummyComponent() {
+        //test component
+        String[] petStrings = { "Bird", "Cat", "Dog", "Rabbit", "Pig" };
+        JComboBox petList = new JComboBox(petStrings);
+        return petList;
+    }
+    /**
+     * Create the filter panel
+     * @return The builded panel
+     */
+    private JPanel makeFilterPanel() {
+        JPanel filterPanel = new JPanel(new BorderLayout());
+        //This panel contain the
+        JPanel buttonAndFilterList = new JPanel(new BorderLayout());
+        //Add the toggle button
+        buttonAndFilterList.add(makeAddFilterButton(), BorderLayout.LINE_START);
+        //GridLayout with 1 column (vertical stack) and n(0) rows
+        filterListPanel = new JPanel(new GridLayout(0,1));
+        filterListPanel.add(getDummyComponent());
+        filterListPanel.add(getDummyComponent());
+        filterListPanel.add(getDummyComponent());
+        //Filter List must take all horizontal space
+        buttonAndFilterList.add(filterListPanel, BorderLayout.CENTER);
+        //Add the AddFilter button and Filter list in the main filter panel
+        //CENTER will expand the content to take all avaible place
+        filterPanel.add(buttonAndFilterList,BorderLayout.CENTER);
+        return filterPanel;
+    }
     /**
      * Create the Source List ui compenent
      */
@@ -105,6 +150,10 @@ public class Catalog extends JPanel implements DockingPanel {
         return dockingParameters;
     }
 
+    /**
+     * Return the content of the view.
+     * @return An awt content to show in this panel
+     */
     public Component getComponent() {
         return this;
     }

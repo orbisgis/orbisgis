@@ -103,6 +103,9 @@ public class SourceListModel extends AbstractListModel {
         * Refresh the JList on the swing thread
         */
         private class ReadDataManagerOnSwingThread implements Runnable {
+            /**
+             * Refresh the JList on the swing thread
+             */
             public void run(){
                 awaitingRefresh.set(false);
                 readDataManager();
@@ -180,6 +183,12 @@ public class SourceListModel extends AbstractListModel {
 	    readDataManager();
         }
 	private final class OrFilter implements IFilter {
+		/**
+                 * Does this filter reject or accept this Source
+                 * @param sm Source Manager instance
+                 * @param sourceName Source name
+                 * @return True if the Source should be shown
+                 */
 
 		public boolean accepts(SourceManager sm, String sourceName) {
 			for (int i = 0; i < filters.size(); i++) {
@@ -192,7 +201,12 @@ public class SourceListModel extends AbstractListModel {
 	}
 	
 	private final class DefaultFilter implements IFilter {
-		
+		/**
+                 * Does this filter reject or accept this Source
+                 * @param sm Source Manager instance
+                 * @param sourceName Source name
+                 * @return True if the Source should be shown
+                 */
 		public boolean accepts(SourceManager sm, String sourceName) {
 			Source source = sm.getSource(sourceName);
 			return (source != null) && source.isWellKnownName();			

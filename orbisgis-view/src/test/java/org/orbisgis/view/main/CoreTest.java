@@ -31,8 +31,6 @@ package org.orbisgis.view.main;
 import bibliothek.gui.Dockable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
 import junit.framework.TestCase;
 import org.gdms.driver.MemoryDriver;

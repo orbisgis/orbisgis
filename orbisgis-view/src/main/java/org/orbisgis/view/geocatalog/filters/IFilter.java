@@ -33,5 +33,11 @@ import org.gdms.source.SourceManager;
  * A filter reject or accept DataSource according to properties
  */
 public interface IFilter {
+        /**
+            * Does this filter reject or accept this Source
+            * @param sm Source Manager instance
+            * @param sourceName Source name
+            * @return True if the Source should be shown
+            */
 	public boolean accepts(SourceManager sm, String sourceName);
 }
