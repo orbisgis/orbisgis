@@ -72,28 +72,6 @@ public class DBMetadataTest extends AbstractDBTest {
                         getHSQLDBSource(tableName));
         }
 
-        @Test
-        public void testH2ReadString() throws Exception {
-                assumeTrue(TestBase.h2Available);
-                String tableName;
-                tableName = "testh2metadatastring2";
-                DBSource source = getH2Source(tableName);
-                deleteTable(source);
-                executeScript(source, "CREATE TABLE " + tableName
-                        + " (id integer primary key, limitedstring varchar(12), "
-                        + "unlimitedstring varchar);");
-                sm.register("source", source);
-
-                DataSource ds = dsf.getDataSource("source", DataSourceFactory.STATUS_CHECK);
-                ds.open();
-                Metadata m = ds.getMetadata();
-                assertEquals(m.getFieldName(1), "limitedstring");
-                assertEquals(m.getFieldType(1).getConstraints().length, 0);
-                assertEquals(m.getFieldName(2), "unlimitedstring");
-                assertEquals(m.getFieldType(2).getConstraints().length, 0);
-                ds.close();
-        }
-
         private void testString(String createSQL, String tableName, DBSource source)
                 throws Exception {
                 deleteTable(source);
@@ -120,20 +98,6 @@ public class DBMetadataTest extends AbstractDBTest {
                         + " (id integer primary key, limitednumeric1 numeric(12),"
                         + " limitednumeric2 numeric(12, 3), "
                         + "unlimitedinteger int4) ; ");
-                sm.removeAll();
-        }
-
-        @Test
-        public void testReadNumericH2() throws Exception {
-                assumeTrue(TestBase.h2Available);
-                String tableName = "testh2metadatanumeric";
-                testReadNumeric(
-                        getH2Source(tableName),
-                        "CREATE TABLE "
-                        + tableName
-                        + " (id integer primary key, limitednumeric1 numeric(12),"
-                        + " limitednumeric2 numeric(12, 3), "
-                        + "\"unlimitedinteger\" int4) ; ");
                 sm.removeAll();
         }
 
@@ -177,13 +141,6 @@ public class DBMetadataTest extends AbstractDBTest {
                 assumeTrue(TestBase.postGisAvailable);
                 String tableName = "test_metadata_write_string";
                 testWriteString(getPostgreSQLSource(tableName), 4, 4);
-        }
-
-        @Test
-        public void testWriteStringH2() throws Exception {
-                assumeTrue(TestBase.h2Available);
-                String tableName = "test_metadata_write_string";
-                testWriteString(getH2Source(tableName), 4, -1);
         }
 
         @Test
@@ -244,33 +201,6 @@ public class DBMetadataTest extends AbstractDBTest {
                         new LengthConstraint(8)),
                         TypeFactory.createType(Type.INT), pgSource);
 
-        }
-
-        @Test
-        public void testWriteNumericH2() throws Exception {
-                assumeTrue(TestBase.h2Available);
-                String tableName = "test_metadata_write_string";
-                DBSource h2Source = getH2Source(tableName);
-
-                testTypeIO(TypeFactory.createType(Type.BYTE), TypeFactory.createType(Type.BYTE), h2Source);
-                testTypeIO(TypeFactory.createType(Type.BYTE,
-                        new Constraint[]{new PrecisionConstraint(4)}), TypeFactory.createType(Type.SHORT), h2Source);
-                testTypeIO(TypeFactory.createType(Type.SHORT), TypeFactory.createType(Type.SHORT), h2Source);
-
-                testTypeIO(TypeFactory.createType(Type.INT), TypeFactory.createType(Type.INT), h2Source);
-
-                testTypeIO(TypeFactory.createType(Type.LONG), TypeFactory.createType(Type.LONG), h2Source);
-
-                testTypeIO(TypeFactory.createType(Type.SHORT,
-                        new Constraint[]{new PrecisionConstraint(5)}), TypeFactory.createType(Type.INT), h2Source);
-                testTypeIO(TypeFactory.createType(Type.INT,
-                        new Constraint[]{new PrecisionConstraint(14)}), TypeFactory.createType(Type.LONG), h2Source);
-                testTypeIO(TypeFactory.createType(Type.INT,
-                        new Constraint[]{new PrecisionConstraint(34)}), TypeFactory.createType(Type.DOUBLE), h2Source);
-
-                testTypeIO(TypeFactory.createType(Type.INT, new PrecisionConstraint(6),
-                        new LengthConstraint(8)),
-                        TypeFactory.createType(Type.INT), h2Source);
         }
 
         @Test

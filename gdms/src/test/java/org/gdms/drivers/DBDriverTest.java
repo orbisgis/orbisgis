@@ -125,10 +125,6 @@ public class DBDriverTest extends TestBase {
                 TestBase.backupDir + File.separator + "hsqldbAllTypes", "sa",
                 null, "alltypes", "jdbc:hsqldb:file");
         private DBTestSource hsqldbSrc;
-        private DBSource h2DBSource = new DBSource(null, 0, TestBase.backupDir
-                + File.separator + "h2AllTypes", "sa", null, "alltypes", "jdbc:h2");
-        private DBTestSource h2Src = new DBTestSource("source", "org.h2.Driver",
-                TestBase.internalData + "h2AllTypes.sql", h2DBSource);
         private DBSource schemaPostgreSQLDBSource = new DBSource("127.0.0.1", 5432,
                 "gisdb", "gis", "gis", "gis_schema", "schema_test", "jdbc:postgresql");
         private DBTestSource schemaPostgreSQLSrc = new DBTestSource("source",
@@ -138,10 +134,6 @@ public class DBDriverTest extends TestBase {
                 TestBase.backupDir + File.separator + "hsqldbSchemaTest", "sa",
                 null, "gis_schema", "schema_test", "jdbc:hsqldb:file");
         private DBTestSource schemaHsqldbSrc;
-        private DBSource schemaH2DBSource = new DBSource(null, 0, TestBase.backupDir
-                + File.separator + "h2SchemaTest", "sa", null, "gis_schema", "schema_test", "jdbc:h2");
-        private DBTestSource schemaH2Src = new DBTestSource("source", "org.h2.Driver",
-                TestBase.internalData + "h2SchemaTest.sql", schemaH2DBSource);
 
         @Before
         @Override
@@ -205,11 +197,6 @@ public class DBDriverTest extends TestBase {
         }
 
         @Test
-        public void testReadSchemaH2() throws Exception {
-                testReadAllTypes(schemaH2DBSource, schemaH2Src);
-        }
-
-        @Test
         public void testReadAllTypesPostgreSQL() throws Exception {
                 assumeTrue(TestBase.postGisAvailable);
                 testReadAllTypes(postgreSQLDBSource, postgreSQLSrc);
@@ -218,11 +205,6 @@ public class DBDriverTest extends TestBase {
         @Test
         public void testReadAllTypesHSQLDB() throws Exception {
                 testReadAllTypes(hsqldbDBSource, hsqldbSrc);
-        }
-
-        @Test
-        public void testReadAllTypesH2() throws Exception {
-                testReadAllTypes(h2DBSource, h2Src);
         }
 
         private void testCreateAllTypes(DBSource dbSource, boolean byte_,
@@ -272,16 +254,6 @@ public class DBDriverTest extends TestBase {
                 int fieldId = ds.getFieldIndexByName(fieldName);
                 Type type = ds.getMetadata().getFieldType(fieldId);
                 return (type.getConstraint(constraint) != null);
-        }
-
-        @Test
-        public void testCreateAllTypesH2() throws Exception {
-                assumeTrue(TestBase.h2Available);
-                DBTestSource src = new DBTestSource("source", "org.h2.Driver",
-                        TestBase.internalData + "removeAllTypes.sql", h2DBSource);
-                TestBase.dsf.getSourceManager().removeAll();
-                src.backup();
-                testCreateAllTypes(h2DBSource, true, false);
         }
 
         @Test
@@ -412,34 +384,6 @@ public class DBDriverTest extends TestBase {
                 DefaultMetadata metadata = new DefaultMetadata(new Type[]{
                                 TypeFactory.createType(Type.STRING, new PrimaryKeyConstraint())},
                         new String[]{"field1"});
-                testCommitTwice(dbSource, metadata);
-        }
-
-        @Test
-        public void testH2CommitTwice() throws Exception {
-                assumeTrue(TestBase.h2Available);
-                DBSource dbSource = new DBSource(null, -1,
-                        "src/test/resources/backup/testH2Commit", "sa", "", "mytable",
-                        "jdbc:h2");
-                DefaultMetadata metadata = new DefaultMetadata(new Type[]{
-                                TypeFactory.createType(Type.STRING, new PrimaryKeyConstraint())},
-                        new String[]{"field1"});
-                testCommitTwice(dbSource, metadata);
-        }
-
-        @Test
-        public void testDoublePrimaryKey() throws Exception {
-                assumeTrue(TestBase.h2Available);
-                DefaultMetadata metadata = new DefaultMetadata(
-                        new Type[]{
-                                TypeFactory.createType(Type.STRING,
-                                new PrimaryKeyConstraint()),
-                                TypeFactory.createType(Type.STRING,
-                                new PrimaryKeyConstraint())}, new String[]{
-                                "field1", "field2"});
-                DBSource dbSource = new DBSource(null, -1,
-                        "src/test/resources/backup/testH2Commit", "sa", "", "mytable",
-                        "jdbc:h2");
                 testCommitTwice(dbSource, metadata);
         }
 

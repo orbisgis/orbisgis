@@ -100,7 +100,6 @@ public abstract class TestBase extends SourceTest<Value, Geometry> {
         private static String fnewGeometry = "newGeometry";
         private static String fwrite = "write";
         public static boolean postGisAvailable;
-        public static boolean h2Available;
         public static boolean hsqlDbAvailable;
         private static final Logger LOG = Logger.getLogger(TestBase.class);
         
@@ -132,19 +131,6 @@ public abstract class TestBase extends SourceTest<Value, Geometry> {
                                 final DBTestSource dBTestH2 = new DBTestSource("testh2", "org.h2.Driver", internalData
                                         + "testh2.sql", new DBSource(null, 0, internalData
                                         + "backup/testh2", "sa", "", "POINT", "jdbc:h2"));
-                                h2Available = false;
-                                try{
-                                        h2Available = dBTestH2.isConnected();
-                                } catch (ClassNotFoundException cnf){
-
-                                }
-                                if (h2Available) {
-                                        LOG.info("H2 database available.");
-                                        toTest.add(dBTestH2);
-                                } else {
-                                        LOG.warn("H2 database not available!!");
-                                        LOG.warn("Skipping H2 DB tests.");
-                                }
                                 FileUtils.copyFileToDirectory(new File(internalData + "testhsqldb.sql"), backupDir);
                                 final DBTestSource dBTestHsqlDb = new DBTestSource("testhsqldb", "org.hsqldb.jdbcDriver",
                                         backupDir+ File.separator + "testhsqldb.sql", new DBSource(null, 0,
@@ -247,9 +233,6 @@ public abstract class TestBase extends SourceTest<Value, Geometry> {
                 sources.add(new TestSourceData("landcover2000dbf", null, false));
                 sources.add(new TestSourceData("memory_spatial_object", null, false));
                 sources.add(new TestSourceData(SHPTABLE, null, false));
-                if (h2Available) {
-                        sources.add(new TestSourceData("testh2", null, false));
-                }
                 if (hsqlDbAvailable) {
                         sources.add(new TestSourceData("testhsqldb", "version", false));
                 }

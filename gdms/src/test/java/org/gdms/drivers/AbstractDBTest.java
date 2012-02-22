@@ -91,11 +91,6 @@ public abstract class AbstractDBTest {
                         tableName, "jdbc:postgresql");
         }
 
-        protected DBSource getH2Source(String tableName) {
-                return new DBSource(null, -1, "src/test/resources/backup/" + tableName,
-                        "sa", "", tableName, "jdbc:h2");
-        }
-
         protected DBSource getHSQLDBSource(String tableName) {
                 return new DBSource(null, -1, "src/test/resources/backup/" + tableName,
                         "sa", "", tableName, "jdbc:hsqldb:file");
