@@ -34,11 +34,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.AbstractListModel;
-import javax.swing.ListModel;
 import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
-import org.gdms.source.*;
+import org.gdms.source.Source;
+import org.gdms.source.SourceListener;
+import org.gdms.source.SourceManager;
 import org.orbisgis.view.geocatalog.filters.IFilter;
 
 /**
@@ -51,12 +53,24 @@ public class SourceListModel extends AbstractListModel {
 	private static final Logger logger = Logger.getLogger(SourceListModel.class);
         private SourceManager sourceManager; /*!< The SourceManager instance*/
         private SourceListener sourceListener=null; /*!< The listener put in the sourceManager*/
-	private String[] names;/*!< Source */
+	private String[] names;/*!< Sources */
 	private List<IFilter> filters = new ArrayList<IFilter>();
+        private AtomicBoolean awaitingRefresh=new AtomicBoolean(false); /*!< If true a swing runnable
+         * is pending to refresh the content of SourceListModel*/
+      
 
+        /**
+         * Return the filters stored in the Source Model
+         * @return A list of filters
+         */
 	public List<IFilter> getFilters() {
 		return filters;
 	}
+        /**
+         * Constructor
+         * @param sourceManager The sourceManager to listen
+         * @note Do not forget to call dispose()
+         */
 	public SourceListModel(SourceManager sourceManager) {
                 this.sourceManager=sourceManager;
                 //Install listeners
@@ -72,6 +86,27 @@ public class SourceListModel extends AbstractListModel {
                                                     "onDataManagerChange"
                                                     );
             this.sourceManager.addSourceListener(sourceListener);
+        }
+        /**
+         * The DataManager fire a DataSourceEvent
+         * Swing will update the list later.
+         * This method is called by the EventSource listener
+         */
+        public void onDataManagerChange() {
+            //This is useless to invoke a refresh thread because
+            //The content will be soonly refreshed by another ReadDataManagerOnSwingThread
+            if(awaitingRefresh.getAndSet(true)==false) {
+                SwingUtilities.invokeLater(new ReadDataManagerOnSwingThread());
+            }
+        }
+       /**
+        * Refresh the JList on the swing thread
+        */
+        private class ReadDataManagerOnSwingThread implements Runnable {
+            public void run(){
+                awaitingRefresh.set(false);
+                readDataManager();
+            }
         }
         /**
          * Remove listeners created by the instance
@@ -113,20 +148,37 @@ public class SourceListModel extends AbstractListModel {
 		String[] array = filteredNames.toArray(new String[filteredNames.size()]);
 		return array;
 	}
-
+        /**
+         * 
+         * @param index The item index @see getSize()
+         * @return The item
+         */
 	public Object getElementAt(int index) {
 		return names[index];
 	}
-
+        /**
+         * 
+         * @return The number of source shown
+         */
 	public int getSize() {
 		return names.length;
 	}
-
-	public void filter(ArrayList<IFilter> filters) {
+        /**
+         * Set the filter and refresh the Source list
+         * according to the new filter
+         * @param filters A collection of filters
+         */
+	public void setFilters(List<IFilter> filters) {
 		this.filters = filters;
 		readDataManager();
 	}
-
+        /**
+         * Remove all filters and refresh the Source list
+         */
+        public void clearFilters() {
+            this.filters.clear();
+	    readDataManager();
+        }
 	private final class OrFilter implements IFilter {
 
 		public boolean accepts(SourceManager sm, String sourceName) {

@@ -29,11 +29,22 @@
 package org.orbisgis.view.main;
 
 import bibliothek.gui.Dockable;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.SwingUtilities;
 import junit.framework.TestCase;
+import org.gdms.driver.MemoryDriver;
+import org.gdms.driver.memory.MemoryDataSetDriver;
+import org.gdms.source.SourceManager;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 import org.orbisgis.view.docking.DummyViewPanel;
 import org.orbisgis.view.geocatalog.Catalog;
+import org.orbisgis.view.geocatalog.SourceListModel;
+import org.orbisgis.view.geocatalog.filters.IFilter;
 /**
  * Unit Test of org.orbisgis.view.main.Core
  */
@@ -56,14 +67,45 @@ public class CoreTest extends TestCase {
     /**
      * Test the propagation of DataSource content change to the GeoCatalog List
      */
-    public void testGeoCatalogLinkWithDataSourceManager() {
+    @Test
+    public void testGeoCatalogLinkWithDataSourceManager() throws InterruptedException, InvocationTargetException {
+        //Retrieve instance of View And Gdms managers
         Catalog geoCatalog = instance.getGeoCatalog();
-        //Retrieve the number of DataSource shown in the list
+        SourceManager gdmsSourceManager = instance.getMainContext().getDataSourceFactory().getSourceManager();
+        SourceListModel UImodel = ((SourceListModel)geoCatalog.getSourceList().getModel());
+        //Retrieve and clear filters, this must done to this unit test
+        List<IFilter> filters = UImodel.getFilters();
+        UImodel.clearFilters();
+        //Retrieve the number of DataSource shown in the list before insertion
         int nbsource = geoCatalog.getSourceList().getModel().getSize();
+        //Add a memory driver source in the gdms source manager
+        MemoryDriver testDataSource = new MemoryDataSetDriver();        
+        String nameoftable = gdmsSourceManager.getUniqueName("unit_test_table");
+        gdmsSourceManager.register(nameoftable, testDataSource);
+        //Wait
+        SwingUtilities.invokeAndWait(new DummyThread());
+        //Test if the GeoCatalog has successfully listen to the event
+        assertTrue(nbsource==geoCatalog.getSourceList().getModel().getSize()-1);
+        //Remove the source
+        gdmsSourceManager.remove(nameoftable);
+        //Wait
+        SwingUtilities.invokeAndWait(new DummyThread());
+        //Test if the GeoCatalog has successfully listen to the event
+        assertTrue(nbsource==geoCatalog.getSourceList().getModel().getSize());
+        //Set back the filters
+        UImodel.setFilters(filters);
+    }
+   /**
+    * This runnable is just to wait the execution of other runnables
+    */
+    private class DummyThread implements Runnable {
+        public void run(){
+        }
     }
     /**
      * Test propagation of docking parameters modifications
      */
+    @Test
     public void testDockingParameterChange() {
         String newTitle = "new dummy name";
         //Create the instance of the panel
