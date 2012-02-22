@@ -214,15 +214,15 @@ public abstract class DefaultDBDriver extends DefaultSQL {
                         case Types.TINYINT:
                                 ret = Type.BYTE;
                                 break;
-                        case Types.BINARY:
-                        case Types.VARBINARY:
-                        case Types.LONGVARBINARY:
                         case Types.TIMESTAMP:
                                 ret = Type.TIMESTAMP;
                                 break;
                         case Types.TIME:
                                 ret = Type.TIME;
                                 break;
+                        case Types.BINARY:
+                        case Types.VARBINARY:
+                        case Types.LONGVARBINARY:
                         case Types.BLOB:
                         case Types.OTHER:
                                 ret = Type.BINARY;
