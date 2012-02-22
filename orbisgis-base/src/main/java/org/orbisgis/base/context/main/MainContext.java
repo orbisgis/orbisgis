@@ -28,6 +28,11 @@
  */
 package org.orbisgis.base.context.main;
 
+import org.gdms.data.DataSourceFactory;
+import org.gdms.data.SQLDataSourceFactory;
+import org.gdms.driver.driverManager.DriverManager;
+import org.gdms.source.SourceManager;
+import org.orbisgis.base.workspace.CoreWorkspace;
 /**
  * @class MainContext
  * @brief The larger surrounding part of OrbisGis base 
@@ -37,5 +42,29 @@ package org.orbisgis.base.context.main;
 
 
 public class MainContext {
-    
+    private DataSourceFactory dataSourceFactory;
+    private CoreWorkspace coreWorkspace;
+    /**
+     * Constructor of the workspace
+     */
+    public MainContext() {
+        coreWorkspace = new CoreWorkspace();
+        dataSourceFactory = new SQLDataSourceFactory(coreWorkspace.getSourceFolder(), coreWorkspace.getTempFolder(), coreWorkspace.getPluginFolder());
+    }
+
+    /**
+     * Return the core path information.
+     * @return CoreWorkspace instance
+     */
+    public CoreWorkspace getCoreWorkspace() {
+        return coreWorkspace;
+    }
+
+    /**
+     * 
+     * @return The data source factory instance
+     */
+    public DataSourceFactory getDataSourceFactory() {
+        return dataSourceFactory;
+    }
 }
