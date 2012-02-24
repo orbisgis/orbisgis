@@ -54,13 +54,12 @@ public class SourceListModel extends AbstractListModel {
         private SourceManager sourceManager; /*!< The SourceManager instance*/
         private SourceListener sourceListener=null; /*!< The listener put in the sourceManager*/
 	private String[] names;/*!< Sources */
-	private List<IFilter> filters = new ArrayList<IFilter>();
+	private List<IFilter> filters = new ArrayList<IFilter>(); /*!< Active filters */
         private AtomicBoolean awaitingRefresh=new AtomicBoolean(false); /*!< If true a swing runnable
          * is pending to refresh the content of SourceListModel*/
       
-
         /**
-         * Return the filters stored in the Source Model
+         * Read filters components and generate filter instances
          * @return A list of filters
          */
 	public List<IFilter> getFilters() {
@@ -123,11 +122,10 @@ public class SourceListModel extends AbstractListModel {
 		if (!filters.isEmpty()) {
                     //Apply filter with the Or
                     tempSourceNames = filter(sourceManager, tempSourceNames, new OrFilter());
-                } else {	
-                    //If the user do not define a filter, SystemTables are hidden
-                    tempSourceNames = filter(sourceManager, tempSourceNames, new DefaultFilter());
                 }
-
+                //System table are not shown, except if the user want to see them (through or filter)
+                tempSourceNames = filter(sourceManager, tempSourceNames, new DefaultFilter());
+                
 		Arrays.sort(tempSourceNames, new Comparator<String>() {
 
 			@Override
@@ -141,10 +139,10 @@ public class SourceListModel extends AbstractListModel {
 	}
 
 	private String[] filter(SourceManager sourceManager, String[] names,
-			IFilter textFilter) {
+			IFilter sourceFilter) {
 		ArrayList<String> filteredNames = new ArrayList<String>();
 		for (String name : names) {
-			if (textFilter.accepts(sourceManager, name)) {
+			if (sourceFilter.accepts(sourceManager, name)) {
 				filteredNames.add(name);
 			}
 		}
@@ -199,7 +197,9 @@ public class SourceListModel extends AbstractListModel {
 			return false;
 		}
 	}
-	
+	/**
+         * This filter is always applied, to hide system table
+         */
 	private final class DefaultFilter implements IFilter {
 		/**
                  * Does this filter reject or accept this Source
@@ -209,7 +209,7 @@ public class SourceListModel extends AbstractListModel {
                  */
 		public boolean accepts(SourceManager sm, String sourceName) {
 			Source source = sm.getSource(sourceName);
-			return (source != null) && source.isWellKnownName();			
+			return (source != null) && !source.isSystemTableSource();			
 		}
 	}
 }

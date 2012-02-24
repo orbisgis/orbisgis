@@ -43,6 +43,7 @@ import org.orbisgis.view.docking.DummyViewPanel;
 import org.orbisgis.view.geocatalog.Catalog;
 import org.orbisgis.view.geocatalog.SourceListModel;
 import org.orbisgis.view.geocatalog.filters.IFilter;
+import org.orbisgis.view.main.geocatalog.filters.UnitTestFilterFactory;
 /**
  * Unit Test of org.orbisgis.view.main.Core
  */
@@ -62,6 +63,36 @@ public class CoreTest extends TestCase {
         instance = new Core();
         instance.startup();
     }
+    /**
+     * Test adding custom filter factory to the GeoCatalog
+     */
+    @Test
+    public void testGeoCatalogSuppliedFilter() {
+         //Retrieve instance of View And Gdms managers
+        Catalog geoCatalog = instance.getGeoCatalog();
+        SourceManager gdmsSourceManager = instance.getMainContext().getDataSourceFactory().getSourceManager();
+        SourceListModel UImodel = ((SourceListModel)geoCatalog.getSourceList().getModel());
+        //Register a custom factory
+        UnitTestFilterFactory unitTestFactory = new UnitTestFilterFactory();
+        geoCatalog.registerFilterFactory(unitTestFactory);
+        //Add a new filter with this factory
+        geoCatalog.addFilter(unitTestFactory.getFactoryId(), "");
+        //In the SourceListModel, search the generated IFilter
+        List<IFilter> filters = UImodel.getFilters();
+        boolean filterFounds=false;
+        for(IFilter filter : filters) {
+            if(filter instanceof UnitTestFilterFactory.UnitTestFilter) {
+                filterFounds=true;
+                break;
+            }
+        }
+        assertTrue(filterFounds);
+        //Remove the filter
+        geoCatalog.removeFilters(unitTestFactory.getFactoryId());
+        
+    }
+    
+    
     /**
      * Test the propagation of DataSource content change to the GeoCatalog List
      */
