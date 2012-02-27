@@ -63,6 +63,7 @@ import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.plugins.PlugInManager;
 import org.gdms.source.DefaultSourceManager;
 import org.gdms.source.SourceManager;
+import org.jproj.CRSFactory;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.utils.I18N;
@@ -103,6 +104,7 @@ public class DataSourceFactory {
         private IndexManager indexManager;
         private File resultDir;
         private PlugInManager plugInManager;
+        private CRSFactory crsFactory;
         private static final Logger LOG = Logger.getLogger(DataSourceFactory.class);
 
         /**
@@ -611,19 +613,27 @@ public class DataSourceFactory {
          */
         private void initialize(String sourceInfoDir, String tempDir, String[] sourceContextPaths) {
                 LOG.trace("DataSourceFactory initializing");
+
+                I18N.addI18n(I18NLocale, "gdms", this.getClass());
+                indexManager = new IndexManager(this);
+                indexManager.addIndex(IndexManager.RTREE_SPATIAL_INDEX,
+                        RTreeIndex.class);
+                indexManager.addIndex(IndexManager.BTREE_ALPHANUMERIC_INDEX,
+                        BTreeIndex.class);
+
+                setTempDir(tempDir);
+                setResultDir(new File(tempDir));
+
                 try {
-                        I18N.addI18n(I18NLocale, "gdms", this.getClass());
-                        indexManager = new IndexManager(this);
-                        indexManager.addIndex(IndexManager.RTREE_SPATIAL_INDEX,
-                                RTreeIndex.class);
-                        indexManager.addIndex(IndexManager.BTREE_ALPHANUMERIC_INDEX,
-                                BTreeIndex.class);
-
-                        setTempDir(tempDir);
-                        setResultDir(new File(tempDir));
-
                         Class.forName("org.hsqldb.jdbcDriver");
 
+                } catch (ClassNotFoundException e) {
+                        throw new InitializationException(e);
+                }
+
+                crsFactory = new CRSFactory();
+
+                try {
                         sourceManager = new DefaultSourceManager(this, sourceInfoDir);
                         if (sourceContextPaths != null) {
                                 for (int i = 0; i < sourceContextPaths.length; i++) {
@@ -632,8 +642,6 @@ public class DataSourceFactory {
                         }
                         sourceManager.init();
 
-                } catch (ClassNotFoundException e) {
-                        throw new InitializationException(e);
                 } catch (IOException e) {
                         throw new InitializationException(e);
                 }
@@ -825,7 +833,19 @@ public class DataSourceFactory {
                 return sourceManager.getSchema();
         }
 
+        /**
+         * Gets the plugin manager for this DataSourceFactory.
+         * @return the plugin manager
+         */
         public PlugInManager getPlugInManager() {
                 return plugInManager;
+        }
+
+        /**
+         * Gets the CRS Factory for this instance of Gdms.
+         * @return  the CRS factory
+         */
+        public CRSFactory getCrsFactory() {
+                return crsFactory;
         }
 }

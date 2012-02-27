@@ -51,8 +51,6 @@ import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.MultiPoint;
 import org.gdms.data.DataSource;
-import org.gdms.data.types.Constraint;
-import org.gdms.data.types.ConstraintFactory;
 import org.gdms.data.types.GeometryDimensionConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -82,7 +80,6 @@ public class MultipointTool extends AbstractMultipointTool {
 		DataSource sds = mc.getActiveLayer().getDataSource();
 		try {
 			Value[] row = new Value[sds.getMetadata().getFieldCount()];
-                        mp.setSRID(sds.getSRID());
 			row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(mp);
 			row = ToolUtilities.populateNotNullFields(sds, row);
 			sds.insertFilledRow(row);

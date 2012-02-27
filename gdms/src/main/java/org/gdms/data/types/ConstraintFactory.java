@@ -54,7 +54,7 @@ public final class ConstraintFactory {
                 samples.put(Constraint.MAX, new MaxConstraint(3));
                 samples.put(Constraint.MIN, new MinConstraint(3));
                 samples.put(Constraint.NOT_NULL, new NotNullConstraint());
-                samples.put(Constraint.SRID, new SRIDConstraint(1));
+                samples.put(Constraint.CRS, new CRSConstraint());
                 samples.put(Constraint.PATTERN, new PatternConstraint(""));
                 samples.put(Constraint.PK, new PrimaryKeyConstraint());
                 samples.put(Constraint.FK, new ForeignKeyConstraint());
@@ -75,8 +75,8 @@ public final class ConstraintFactory {
                         case Constraint.AUTO_INCREMENT:
                                 c = new AutoIncrementConstraint();
                                 break;
-                        case Constraint.SRID:
-                                c = new SRIDConstraint(constraintBytes);
+                        case Constraint.CRS:
+                                c = new CRSConstraint(constraintBytes);
                                 break;
                         case Constraint.GEOMETRY_TYPE:
                                 c = new GeometryTypeConstraint(constraintBytes);
@@ -146,7 +146,7 @@ public final class ConstraintFactory {
                         case Constraint.AUTO_INCREMENT:
                                 c = "AutoIncrement";
                                 break;
-                        case Constraint.SRID:
+                        case Constraint.CRS:
                                 c = "SRID";
                                 break;
                         case Constraint.DIMENSION_3D_GEOMETRY:
@@ -271,8 +271,6 @@ public final class ConstraintFactory {
                                 return new PrecisionConstraint(i);
                         case Constraint.SCALE:
                                 return new ScaleConstraint(i);
-                        case Constraint.SRID:
-                                return new SRIDConstraint(i);
                         case Constraint.RASTER_TYPE:
                                 return new RasterTypeConstraint(i);
                         default:

@@ -36,42 +36,64 @@
  */
 package org.gdms.data.types;
 
-import com.vividsolutions.jts.geom.Geometry;
 import org.gdms.data.values.Value;
+import org.jproj.CRSFactory;
+import org.jproj.CoordinateReferenceSystem;
 
 /**
  * Indicates that the field is part of the primary key
  *
  */
-public class SRIDConstraint extends AbstractIntConstraint {
+public class CRSConstraint extends AbstractConstraint {
 
-        public SRIDConstraint(int constraintValue) {
-                super(constraintValue);
+        private CoordinateReferenceSystem crs;
+
+        public CRSConstraint(CoordinateReferenceSystem constraintValue) {
+                crs = constraintValue;
         }
 
-        SRIDConstraint(byte[] constraintBytes) {
-                super(constraintBytes);
+        CRSConstraint(byte[] constraintBytes) {
+                CRSFactory f = new CRSFactory();
+                crs = f.createFromName(new String(constraintBytes));
+        }
+        
+        /**
+         * For use only as a sample in ConstraintFactory.
+         */
+        CRSConstraint() {
         }
 
         @Override
-	public int getConstraintCode() {
-		return Constraint.SRID;
-	}
+        public int getConstraintCode() {
+                return Constraint.CRS;
+        }
 
         @Override
-	public boolean allowsFieldRemoval() {
-		return true;
-	}
+        public boolean allowsFieldRemoval() {
+                return true;
+        }
 
         @Override
         public String check(Value value) {
-                if ((value.getType() & Type.GEOMETRY) != 0 || value.getType() == Type.RASTER) {
-                        Geometry g = value.getAsGeometry();
-                        if (g.getSRID() != constraintValue) {
-                                return "Expected SRID " + constraintValue + ", found " + g.getSRID();
-                        }
-                        return null;
-                }
-                return "The value is not spatial!";
+                return null;
+        }
+
+        @Override
+        public String getConstraintValue() {
+                return crs.toString();
+        }
+
+        @Override
+        public byte[] getBytes() {
+                return crs.getParameterString().getBytes();
+        }
+
+        @Override
+        public int getType() {
+                return Constraint.CONSTRAINT_TYPE_CRS;
+        }
+
+        public CoordinateReferenceSystem getCRS() {
+                return crs;
         }
 }

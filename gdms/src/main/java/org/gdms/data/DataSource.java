@@ -57,6 +57,7 @@ import org.gdms.driver.Driver;
 import org.gdms.source.Source;
 import org.gdms.data.types.IncompatibleTypesException;
 import org.grap.model.GeoRaster;
+import org.jproj.CoordinateReferenceSystem;
 
 /**
  * Interface to access any data source
@@ -788,11 +789,11 @@ public interface DataSource extends DataSet {
         GeoRaster getRaster(long rowIndex) throws DriverException;
 
         /**
-         * Gets the declared SRID of this DataSource, or -1 if unknown.
-         * @return a valid SRID or -1 if unknown
+         * Gets the declared CRS of this DataSource, or null if unknown or if it is not spatial.
+         * @return a valid SRID or null if unknown
          * @throws DriverException
          */
-        int getSRID() throws DriverException;
+        CoordinateReferenceSystem getCRS() throws DriverException;
 
         /**
          * Set the field name for the getGeometry(int) method. If this method is not

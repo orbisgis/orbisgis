@@ -48,7 +48,7 @@ import org.gdms.data.values.Value;
 public interface Constraint {
 
         int AUTO_INCREMENT = 1;
-        int SRID = 2;
+        int CRS = 2;
         int GEOMETRY_TYPE = 4;
         int DIMENSION_3D_GEOMETRY = 8;
         int LENGTH = 16;
@@ -66,7 +66,7 @@ public interface Constraint {
         int FK = 65536;
         int DIMENSION_2D_GEOMETRY = 131072;
 
-        int ALL = AUTO_INCREMENT | SRID | DIMENSION_3D_GEOMETRY
+        int ALL = AUTO_INCREMENT | CRS | DIMENSION_3D_GEOMETRY
                 | LENGTH | MAX | MIN | NOT_NULL | PATTERN | PK
                 | PRECISION | READONLY | SCALE | UNIQUE | RASTER_TYPE| DIMENSION_2D_GEOMETRY;
         int CONSTRAINT_TYPE_FIELD = 0;
@@ -74,6 +74,7 @@ public interface Constraint {
         int CONSTRAINT_TYPE_STRING_LITERAL = 2;
         int CONSTRAINT_TYPE_INTEGER_LITERAL = 3;
         int CONSTRAINT_TYPE_RASTER = 4;
+        int CONSTRAINT_TYPE_CRS = 5;
 
         /**
          * Gets the human readable constraint name

@@ -413,7 +413,7 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                 } else {
                         dc = new Dimension3DConstraint(2);
                 }
-                //We check the SRID and create the appropriate constraint.
+                //We check the CRS and create the appropriate constraint.
                 ArrayList<Constraint> cons = new ArrayList<Constraint>();
 //                if (srid != -1) {
 //                        cons.add(new SRIDConstraint(srid));

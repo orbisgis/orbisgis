@@ -49,6 +49,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.Driver;
 import org.gdms.driver.DataSet;
 import org.gdms.source.Source;
+import org.jproj.CoordinateReferenceSystem;
 
 /**
  * This is the base class for any DataSourceDecorator.
@@ -487,7 +488,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
         }
 
         @Override
-        public int getSRID() throws DriverException {
-                return internalDataSource.getSRID();
+        public CoordinateReferenceSystem getCRS() throws DriverException {
+                return internalDataSource.getCRS();
         }
 }
