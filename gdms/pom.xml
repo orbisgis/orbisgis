@@ -47,16 +47,6 @@
                         <version>2.2.4</version>
                 </dependency>
                 <dependency>
-                        <groupId>fr.cts</groupId>
-                        <artifactId>cts</artifactId>
-                        <version>0.0.3</version>
-                </dependency>
-                <dependency>
-                        <groupId>proj4j</groupId>
-                        <artifactId>proj4j</artifactId>
-                        <version>0.0.1-SNAPSHOT</version>
-                </dependency>
-                <dependency>
                         <groupId>jGridShiftApi</groupId>
                         <artifactId>jGridShiftApi</artifactId>
                         <version>1.0.0</version>
@@ -82,6 +72,11 @@
                         <artifactId>gdmstest</artifactId>
                         <version>0.3-SNAPSHOT</version>
                         <scope>test</scope>
+                </dependency>
+                <dependency>
+                        <groupId>org.jproj</groupId>
+                        <artifactId>jproj</artifactId>
+                        <version>0.1-SNAPSHOT</version>
                 </dependency>
         </dependencies>
 </project>

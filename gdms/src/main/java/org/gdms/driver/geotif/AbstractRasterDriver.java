@@ -56,7 +56,6 @@ import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 
 import com.vividsolutions.jts.geom.Envelope;
-import fr.cts.crs.CoordinateReferenceSystem;
 import org.apache.log4j.Logger;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.DefaultSchema;
@@ -65,8 +64,6 @@ import org.gdms.data.schema.Schema;
 import org.gdms.data.types.RasterTypeConstraint;
 import org.gdms.driver.AbstractDataSet;
 import org.gdms.driver.DataSet;
-import org.orbisgis.wkt.parser.PRJUtils;
-import org.orbisgis.wkt.parser.ParseException;
 
 public abstract class AbstractRasterDriver extends AbstractDataSet implements FileReadWriteDriver {
 
@@ -91,18 +88,11 @@ public abstract class AbstractRasterDriver extends AbstractDataSet implements Fi
                         // Check prjFile File prjFile =
                         File prj = FileUtils.getFileWithExtension(file, "prj");
 
-                        if (prj != null && prj.exists()) {
-                                try {
-                                        // we have a prj!!
-                                        CoordinateReferenceSystem c = PRJUtils.getCRSFromPRJ(prj);
-                                        if (c.getAuthority() != null) {
-                                                // let's set the SRID of this source
-                                                srid = c.getAuthority().getCode();
-                                        }
-                                } catch (ParseException ex) {
-                                }
-
-                        }
+//                        if (prj != null && prj.exists()) {
+//                                // we have a prj!!
+//                                // but we have no way of keeping the CRS, only some SRID which we
+//                                // do not know...
+//                        }
 
                         gdmsMetadata.clear();
                         if (srid == -1) {
@@ -197,8 +187,8 @@ public abstract class AbstractRasterDriver extends AbstractDataSet implements Fi
                 }
                 return null;
         }
-        
-       @Override
+
+        @Override
         public int getSupportedType() {
                 return SourceManager.FILE | SourceManager.RASTER;
         }
@@ -225,7 +215,7 @@ public abstract class AbstractRasterDriver extends AbstractDataSet implements Fi
                 }
                 return this;
         }
-        
+
         @Override
         public boolean isOpen() {
                 // once .open() is called, the content is always accessible

@@ -76,7 +76,6 @@ import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
-import fr.cts.crs.CoordinateReferenceSystem;
 import org.apache.log4j.Logger;
 import org.gdms.data.schema.DefaultSchema;
 import org.gdms.data.schema.MetadataUtilities;
@@ -86,8 +85,6 @@ import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.geometryUtils.GeometryClean;
 import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.wkt.parser.PRJUtils;
-import org.orbisgis.wkt.parser.ParseException;
 
 public final class ShapefileDriver extends AbstractDataSet implements FileReadWriteDriver {
 
@@ -191,18 +188,15 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                         // Check prjFile File prjFile =
                         File prj = FileUtils.getFileWithExtension(file, "prj");
 
-                        if (prj != null && prj.exists()) {
-                                try {
-                                        // we have a prj!!
-                                        CoordinateReferenceSystem c = PRJUtils.getCRSFromPRJ(prj);
-                                        if (c.getAuthority() != null) {
-                                                // let's set the SRID of this source
-                                                srid = c.getAuthority().getCode();
-                                        }
-                                } catch (ParseException ex) {
-                                }
-
-                        }
+//                        if (prj != null && prj.exists()) {
+//                                try {
+//                                        // we have a prj!!
+//                                        // but we have no way of keeping the CRS, only some SRID which we
+//                                        // do not know...
+//                                } catch (ParseException ex) {
+//                                }
+//
+//                        }
 
                         // Constraint crsConstraint = new CRSConstraint(crs);
                         Constraint[] constraints = new Constraint[]{ dc};

@@ -36,7 +36,6 @@
  */
 package org.gdms.data.crs;
 
-import java.util.List;
 
 import org.gdms.data.DataSourceFactory;
 
@@ -45,15 +44,12 @@ import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 import com.vividsolutions.jts.geom.util.GeometryTransformer;
-
-import fr.cts.CoordinateOperation;
-import fr.cts.Identifier;
-import fr.cts.IllegalCoordinateException;
-import fr.cts.crs.GeodeticCRS;
-import fr.cts.crs.Proj4CRSFactory;
-import fr.cts.op.CoordinateOperationFactory;
-import fr.cts.op.CoordinateOperationSequence;
 import org.apache.log4j.Logger;
+import org.jproj.BasicCoordinateTransform;
+import org.jproj.CRSFactory;
+import org.jproj.CoordinateReferenceSystem;
+import org.jproj.CoordinateTransform;
+import org.jproj.ProjCoordinate;
 
 /**
  * 
@@ -62,36 +58,31 @@ import org.apache.log4j.Logger;
  */
 public class SpatialReferenceSystem {
 
-        private CoordinateOperationSequence coordinateOperationSequence = null;
         private static final Logger LOG = Logger.getLogger(SpatialReferenceSystem.class);
+        private static final CRSFactory FAC = new CRSFactory();
+        private CoordinateTransform coordTransform;
         private int targetSRID;
 
         public SpatialReferenceSystem(DataSourceFactory dsf, int sourceCRS, int targetCRS) {
-                init((GeodeticCRS) Proj4CRSFactory.getCRS(String.valueOf(sourceCRS)),
-                        (GeodeticCRS) Proj4CRSFactory.getCRS(String.valueOf(targetCRS)));
+                init(FAC.createFromName("EPSG:" + sourceCRS), FAC.createFromName("EPSG:" + sourceCRS));
                 this.targetSRID = targetCRS;
         }
 
-        public SpatialReferenceSystem(GeodeticCRS sourceCRS, GeodeticCRS targetCRS) {
-
+        public SpatialReferenceSystem(CoordinateReferenceSystem sourceCRS, CoordinateReferenceSystem targetCRS) {
                 init(sourceCRS, targetCRS);
         }
 
-        private void init(GeodeticCRS sourceCRS, GeodeticCRS targetCRS) {
+        private void init(CoordinateReferenceSystem sourceCRS, CoordinateReferenceSystem targetCRS) {
                 if ((sourceCRS != null) && (targetCRS != null)) {
-                        List<CoordinateOperation> ops = CoordinateOperationFactory.createCoordinateOperations(sourceCRS, targetCRS);
-                        coordinateOperationSequence = new CoordinateOperationSequence(
-                                new Identifier(SpatialReferenceSystem.class, "From  "
-                                + sourceCRS.getCode() + " to "
-                                + targetCRS.getCode()), ops);
+                        coordTransform = new BasicCoordinateTransform(sourceCRS, targetCRS);
                 } else {
                         throw new IllegalArgumentException("Source and target CRS cannot be null.");
                 }
 
         }
 
-        public CoordinateOperationSequence getCoordinateOperationSequence() {
-                return coordinateOperationSequence;
+        public CoordinateTransform getCoordinateTransform() {
+                return coordTransform;
         }
 
         public Geometry transform(Geometry geom) {
@@ -111,18 +102,12 @@ public class SpatialReferenceSystem {
                                 CoordinateSequence newcs = new CoordinateArraySequence(cc);
                                 for (int i = 0; i < cc.length; i++) {
                                         Coordinate c = cc[i];
-                                        try {
-                                                double[] xyz = coordinateOperationSequence.transform(new double[]{c.x, c.y, c.z});
-                                                newcs.setOrdinate(i, 0, xyz[0]);
-                                                newcs.setOrdinate(i, 1, xyz[1]);
-                                                if (xyz.length > 2) {
-                                                        newcs.setOrdinate(i, 2, xyz[2]);
-                                                } else {
-                                                        newcs.setOrdinate(i, 2, Double.NaN);
-                                                }
-                                        } catch (IllegalCoordinateException ice) {
-                                                LOG.error("Cannot apply transformation", ice);
-                                        }
+                                        ProjCoordinate co = new ProjCoordinate(c.x, c.y, c.z);
+                                        ProjCoordinate tg = new ProjCoordinate();
+                                        coordTransform.transform(co, tg);
+                                        newcs.setOrdinate(i, 0, tg.x);
+                                        newcs.setOrdinate(i, 1, tg.y);
+                                        newcs.setOrdinate(i, 2, tg.z);
                                 }
                                 return newcs;
                         }
