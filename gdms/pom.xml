@@ -47,12 +47,6 @@
                         <version>2.2.4</version>
                 </dependency>
                 <dependency>
-                        <groupId>jGridShiftApi</groupId>
-                        <artifactId>jGridShiftApi</artifactId>
-                        <version>1.0.0</version>
-                        <scope>compile</scope>
-                </dependency>
-                <dependency>
                         <groupId>biz.source_code</groupId>
                         <artifactId>base64coder</artifactId>
                         <version>2010-12-19</version>
