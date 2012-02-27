@@ -44,9 +44,7 @@ import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 import com.vividsolutions.jts.geom.util.GeometryTransformer;
-import org.apache.log4j.Logger;
 import org.jproj.BasicCoordinateTransform;
-import org.jproj.CRSFactory;
 import org.jproj.CoordinateReferenceSystem;
 import org.jproj.CoordinateTransform;
 import org.jproj.ProjCoordinate;
@@ -58,13 +56,11 @@ import org.jproj.ProjCoordinate;
  */
 public class SpatialReferenceSystem {
 
-        private static final Logger LOG = Logger.getLogger(SpatialReferenceSystem.class);
-        private static final CRSFactory FAC = new CRSFactory();
         private CoordinateTransform coordTransform;
         private int targetSRID;
 
         public SpatialReferenceSystem(DataSourceFactory dsf, int sourceCRS, int targetCRS) {
-                init(FAC.createFromName("EPSG:" + sourceCRS), FAC.createFromName("EPSG:" + sourceCRS));
+                init(dsf.getCrsFactory().createFromName("EPSG:" + sourceCRS), dsf.getCrsFactory().createFromName("EPSG:" + sourceCRS));
                 this.targetSRID = targetCRS;
         }
 
