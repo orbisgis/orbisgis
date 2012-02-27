@@ -73,7 +73,6 @@ public abstract class AbstractRasterDriver extends AbstractDataSet implements Fi
         private DefaultMetadata gdmsMetadata;
         protected Envelope envelope;
         private static final Logger LOG = Logger.getLogger(AbstractRasterDriver.class);
-        private int srid = -1;
         private File file;
 
         @Override
@@ -85,24 +84,11 @@ public abstract class AbstractRasterDriver extends AbstractDataSet implements Fi
                         metadata = geoRaster.getMetadata();
                         envelope = metadata.getEnvelope();
 
-                        // Check prjFile File prjFile =
                         File prj = FileUtils.getFileWithExtension(file, "prj");
 
-//                        if (prj != null && prj.exists()) {
-//                                // we have a prj!!
-//                                // but we have no way of keeping the CRS, only some SRID which we
-//                                // do not know...
-//                        }
+                        gdmsMetadata.addField("raster", TypeFactory.createType(Type.RASTER,
+                                new RasterTypeConstraint(geoRaster.getType())));
 
-                        gdmsMetadata.clear();
-                        if (srid == -1) {
-                                gdmsMetadata.addField("raster", TypeFactory.createType(Type.RASTER,
-                                        new RasterTypeConstraint(geoRaster.getType())));
-                        } else {
-                                gdmsMetadata.addField("raster", TypeFactory.createType(Type.RASTER,
-                                        new RasterTypeConstraint(geoRaster.getType()),
-                                        new RasterTypeConstraint(srid)));
-                        }
 
                 } catch (IOException e) {
                         throw new DriverException("Cannot access the source: " + file, e);

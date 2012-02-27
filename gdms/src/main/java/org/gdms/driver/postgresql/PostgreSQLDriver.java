@@ -77,7 +77,6 @@ import java.util.Map;
 import java.util.Properties;
 import org.apache.log4j.Logger;
 import org.gdms.data.schema.MetadataUtilities;
-import org.gdms.data.types.SRIDConstraint;
 
 /**
  *
@@ -102,7 +101,6 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
         private Map<String, Integer> geometryDimensions;
         private Window wnd;
         private int rowCount;
-        private int srid;
         private List<DriverException> nonblockingErrors = new ArrayList<DriverException>();
 
         /**
@@ -201,10 +199,7 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                         while (res.next()) {
                                 isPostGISTable = true;
                                 String geomFieldName = res.getString("f_geometry_column");
-                                int tempSrid = res.getInt("srid");
-                                if (tempSrid != 0) {
-                                        srid = tempSrid;
-                                }
+                                //int tempSrid = res.getInt("srid");
                                 geometryFields.add(geomFieldName);
                                 geometryTypes.put(geomFieldName, res.getString("type"));
                                 int dim = res.getInt("coord_dimension");
@@ -217,7 +212,6 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                                         }
                                 }
                                 geometryDimensions.put(geomFieldName, dim);
-                                srid = res.getInt("srid");
 
                         }
                 } catch (SQLException ex) {
@@ -308,7 +302,6 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                                                 if (thisSrid == 0) {
                                                         thisSrid = -1;
                                                 }
-                                                tableDescriptions[i].setSrid(thisSrid);
 
                                                 String geomType = res.getString("type");
                                                 if (geomType.equals("MULTIPOLYGON")
@@ -422,9 +415,9 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                 }
                 //We check the SRID and create the appropriate constraint.
                 ArrayList<Constraint> cons = new ArrayList<Constraint>();
-                if (srid != -1) {
-                        cons.add(new SRIDConstraint(srid));
-                }
+//                if (srid != -1) {
+//                        cons.add(new SRIDConstraint(srid));
+//                }
                 cons.add(dc);
                 return TypeFactory.createType(desiredCode, cons.toArray(new Constraint[cons.size()]));
         }

@@ -99,7 +99,6 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
         private Schema schema;
         private DefaultMetadata metadata;
         private static final Logger LOG = Logger.getLogger(ShapefileDriver.class);
-        private int srid = -1;
         private File file;
 
         @Override
@@ -185,26 +184,13 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                                 throw new DriverException("Unknown geometric type !");
                         }
 
-                        // Check prjFile File prjFile =
                         File prj = FileUtils.getFileWithExtension(file, "prj");
-
-//                        if (prj != null && prj.exists()) {
-//                                try {
-//                                        // we have a prj!!
-//                                        // but we have no way of keeping the CRS, only some SRID which we
-//                                        // do not know...
-//                                } catch (ParseException ex) {
-//                                }
-//
-//                        }
 
                         // Constraint crsConstraint = new CRSConstraint(crs);
                         Constraint[] constraints = new Constraint[]{ dc};
                         metadata.clear();
                         metadata.addField(0, "the_geom", gtype, constraints);
                         metadata.addAll(driver.getMetadata());
-
-                        reader.setSrid(srid);
 
                 } catch (IOException e) {
                         throw new DriverException(e);

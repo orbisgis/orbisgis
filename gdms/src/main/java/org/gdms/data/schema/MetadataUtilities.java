@@ -465,43 +465,4 @@ public final class MetadataUtilities {
 
     private MetadataUtilities() {
     }
-
-    /*
-     * public static Constraint getCRSConstraint(int srid) {
-     *
-     * if (srid == -1) { return new
-     * CRSConstraint(CRSUtil.getCRSFromEPSG("4326").toWkt()); } else { return
-     * new CRSConstraint(CRSUtil.getCRSFromEPSG(
-     * Integer.toString(srid)).toWkt()); } }
-     *
-     *
-     * public static CoordinateReferenceSystem getCRS(Metadata metadata) throws
-     * DriverException { CoordinateReferenceSystem crs = NullCRS.singleton; for
-     * (int i = 0; i < metadata.getFieldCount(); i++) { Type fieldType =
-     * metadata.getFieldType(i); if (fieldType.getTypeCode() == Type.GEOMETRY) {
-     * CRSConstraint crsConstraint = (CRSConstraint) fieldType
-     * .getConstraint(Constraint.CRS); if ((crsConstraint != null) &&
-     * (crsConstraint.getConstraintCode() != -1)) { crs =
-     * crsConstraint.getCrs(); break; } } } return crs; }
-     *
-     * public static Metadata addCRSConstraint(Metadata metadata, String
-     * geomField, GeodeticCRS targetCRS) throws DriverException {
-     * DefaultMetadata defaultMetadata = new DefaultMetadata(); for (int i = 0;
-     * i < metadata.getFieldCount(); i++) { String fieldName =
-     * metadata.getFieldName(i); Type fieldType = metadata.getFieldType(i); if
-     * (fieldName.equals(geomField)) { Constraint[] constrs =
-     * fieldType.getConstraints(Constraint.ALL &
-     * ~Constraint.GEOMETRY_DIMENSION); ArrayList<Constraint> constTarget = new
-     * ArrayList<Constraint>(); for (Constraint constraint : constrs) {
-     *
-     * if (!(constraint instanceof CRSConstraint)) {
-     * constTarget.add(constraint); }
-     *
-     * } constTarget.add(new CRSConstraint(targetCRS.toWkt()));
-     * defaultMetadata.addField(fieldName, TypeFactory.createType(
-     * Type.GEOMETRY, constTarget.toArray(new Constraint[0])));
-     *
-     * } else { defaultMetadata.addField(fieldName, fieldType); } } return
-     * defaultMetadata; }
-     */
 }

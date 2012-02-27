@@ -49,7 +49,6 @@ public class TableDescription {
         private String type;
         private String schema;
         private int geometryType;
-        private int srid = -1;
 
         public TableDescription(String name, String type) {
                 this(name, type, null);
@@ -59,16 +58,11 @@ public class TableDescription {
                 this(name, type, schema, 0);
         }
 
-        public TableDescription(String name, String type, String schema, int geometryType) {
-                this(name, type, schema, geometryType, -1);
-        }
-
-        public TableDescription(String name, String type, String schema, int geometryType, int srid) {
+       public TableDescription(String name, String type, String schema, int geometryType) {
                 this.name = name;
                 this.type = type;
                 this.schema = schema;
                 this.geometryType = geometryType;
-                this.srid = srid;
         }
 
         public String getName() {
@@ -103,19 +97,5 @@ public class TableDescription {
         public int getGeometryType() {
                 return this.geometryType;
 
-        }
-
-        /**
-         * @return the srid
-         */
-        public int getSrid() {
-                return srid;
-        }
-
-        /**
-         * @param srid the srid to set
-         */
-        public void setSrid(int srid) {
-                this.srid = srid;
         }
 }
