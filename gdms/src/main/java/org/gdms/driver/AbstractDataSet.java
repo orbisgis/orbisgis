@@ -49,14 +49,22 @@ import java.util.Date;
 import java.util.Iterator;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.indexes.IndexQuery;
+import org.gdms.data.schema.MetadataUtilities;
+import org.gdms.data.types.CRSConstraint;
+import org.gdms.data.types.Constraint;
 import org.gdms.data.types.IncompatibleTypesException;
 import org.gdms.data.values.Value;
+import org.jproj.CoordinateReferenceSystem;
 
 /**
  * Abstract implementation of DataSet that implements the getRow method.
  * @author Antoine Gourlay
  */
 public abstract class AbstractDataSet implements DataSet {
+
+        private CoordinateReferenceSystem crs;
+        private boolean crsLoaded = false;
+        private int spatialFieldIndex = -1;
 
         @Override
         public Value[] getRow(long rowIndex) throws DriverException {
@@ -267,5 +275,29 @@ public abstract class AbstractDataSet implements DataSet {
         @Override
         public final boolean isNull(long row, String fieldName) throws DriverException {
                 return isNull(row, getMetadata().getFieldIndex(fieldName));
+        }
+
+        @Override
+        public CoordinateReferenceSystem getCRS() throws DriverException {
+                if (!crsLoaded) {
+                        Constraint[] c = getMetadata().getFieldType(getSpatialFieldIndex()).getConstraints(Constraint.CRS);
+                        if (c.length != 0) {
+                                crs = ((CRSConstraint) c[0]).getCRS();
+                        }
+                        crsLoaded = true;
+                }
+                return crs;
+        }
+
+        @Override
+        public int getSpatialFieldIndex() throws DriverException {
+                if (spatialFieldIndex == -1) {
+                        spatialFieldIndex = MetadataUtilities.getSpatialFieldIndex(getMetadata());
+                }
+                return spatialFieldIndex;
+        }
+        
+        protected void setSpatialFieldIndex(int index) {
+                spatialFieldIndex = index;
         }
 }

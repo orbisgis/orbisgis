@@ -47,6 +47,7 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.values.Value;
+import org.jproj.CoordinateReferenceSystem;
 
 /**
  * Interface that defines the read methods in gdms
@@ -372,4 +373,19 @@ public interface DataSet {
          * if the operation fails
          */
         Envelope getFullExtent() throws DriverException;
+
+        /**
+         * Gets the declared CRS of this DataSource, or null if unknown or if it is not spatial.
+         * @return a valid SRID or null if unknown
+         * @throws DriverException
+         */
+        CoordinateReferenceSystem getCRS() throws DriverException;
+
+        /**
+         * Returns the index of the field containing spatial data
+         *
+         * @return
+         * @throws DriverException
+         */
+        int getSpatialFieldIndex() throws DriverException;
 }

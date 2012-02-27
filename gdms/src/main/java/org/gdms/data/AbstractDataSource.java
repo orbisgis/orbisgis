@@ -63,8 +63,6 @@ import org.grap.model.GeoRaster;
  */
 public abstract class AbstractDataSource extends AbstractDataSet implements DataSource {
 
-        private int spatialFieldIndex = -1;
-
         /**
          * This method select the rows in the datasource where the value at fieldId match value
          * @param fieldId the field where it lookups
@@ -361,14 +359,6 @@ public abstract class AbstractDataSource extends AbstractDataSet implements Data
         }
 
         @Override
-        public int getSpatialFieldIndex() throws DriverException {
-                if (spatialFieldIndex == -1) {
-                        spatialFieldIndex = MetadataUtilities.getSpatialFieldIndex(getMetadata());
-                }
-                return spatialFieldIndex;
-        }
-
-        @Override
         public void setDefaultSpatialFieldName(String fieldName) throws DriverException {
                 final int tmpSpatialFieldIndex = getFieldIndexByName(fieldName);
                 if (-1 == tmpSpatialFieldIndex) {
@@ -376,7 +366,7 @@ public abstract class AbstractDataSource extends AbstractDataSet implements Data
                 } else {
                         int fieldType = getMetadata().getFieldType(tmpSpatialFieldIndex).getTypeCode();
                         if ((fieldType & Type.GEOMETRY) != 0 || (fieldType == Type.RASTER)) {
-                                spatialFieldIndex = tmpSpatialFieldIndex;
+                                setSpatialFieldIndex(tmpSpatialFieldIndex);
                         } else {
                                 throw new DriverException(fieldName
                                         + " is not a spatial field !");

@@ -789,13 +789,6 @@ public interface DataSource extends DataSet {
         GeoRaster getRaster(long rowIndex) throws DriverException;
 
         /**
-         * Gets the declared CRS of this DataSource, or null if unknown or if it is not spatial.
-         * @return a valid SRID or null if unknown
-         * @throws DriverException
-         */
-        CoordinateReferenceSystem getCRS() throws DriverException;
-
-        /**
          * Set the field name for the getGeometry(int) method. If this method is not
          * called, the default geometry is the first spatial field
          *
@@ -803,14 +796,6 @@ public interface DataSource extends DataSet {
          * @throws DriverException
          */
         void setDefaultSpatialFieldName(String fieldName) throws DriverException;
-
-        /**
-         * Returns the index of the field containing spatial data
-         *
-         * @return
-         * @throws DriverException
-         */
-        int getSpatialFieldIndex() throws DriverException;
 
         /**
          * Sets the default geometry of the DataSource to a JTS geometry

@@ -55,8 +55,6 @@ public abstract class DataSourceCommonImpl extends AbstractDataSource {
         private static final String NOT_SUPPORTED_UNDOABLE = "Not supported. Try to obtain the DataSource with the DataSourceFactory.UNDOABLE constant";
         private static final String NO_EDITION = "The DataSource wasn't retrieved with edition capabilities";
         protected DataSourceFactory dsf;
-        private CoordinateReferenceSystem crs;
-        private boolean crsLoaded = false;
 
         @Override
         public final DataSourceFactory getDataSourceFactory() {
@@ -184,17 +182,5 @@ public abstract class DataSourceCommonImpl extends AbstractDataSource {
         @Override
         public boolean isModified() {
                 return false;
-        }
-
-        @Override
-        public CoordinateReferenceSystem getCRS() throws DriverException {
-                if (!crsLoaded) {
-                        Constraint[] c = getMetadata().getFieldType(getSpatialFieldIndex()).getConstraints(Constraint.CRS);
-                        if (c.length != 0) {
-                                crs = ((CRSConstraint)c[0]).getCRS();
-                        }
-                        crsLoaded = true;
-                }
-                return crs;
         }
 }
