@@ -68,6 +68,7 @@ import org.gdms.driver.jdbc.StringRule;
 import org.gdms.driver.jdbc.TimeRule;
 import org.gdms.driver.jdbc.TimestampRule;
 import org.gdms.source.SourceManager;
+import org.jproj.CoordinateReferenceSystem;
 import org.postgis.jts.JtsBinaryParser;
 import org.postgresql.PGConnection;
 
@@ -77,6 +78,7 @@ import java.util.Map;
 import java.util.Properties;
 import org.apache.log4j.Logger;
 import org.gdms.data.schema.MetadataUtilities;
+import org.gdms.data.types.CRSConstraint;
 
 /**
  *
@@ -101,6 +103,7 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
         private Map<String, Integer> geometryDimensions;
         private Window wnd;
         private int rowCount;
+        private CoordinateReferenceSystem crs;
         private List<DriverException> nonblockingErrors = new ArrayList<DriverException>();
 
         /**
@@ -199,7 +202,10 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                         while (res.next()) {
                                 isPostGISTable = true;
                                 String geomFieldName = res.getString("f_geometry_column");
-                                //int tempSrid = res.getInt("srid");
+                                int srid = res.getInt("srid");
+                                if (srid != -1) {
+                                        crs = getDataSourceFactory().getCrsFactory().createFromName("EPSG:" + srid);
+                                }
                                 geometryFields.add(geomFieldName);
                                 geometryTypes.put(geomFieldName, res.getString("type"));
                                 int dim = res.getInt("coord_dimension");
@@ -415,9 +421,9 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                 }
                 //We check the CRS and create the appropriate constraint.
                 ArrayList<Constraint> cons = new ArrayList<Constraint>();
-//                if (srid != -1) {
-//                        cons.add(new SRIDConstraint(srid));
-//                }
+                if (crs != null) {
+                        cons.add(new CRSConstraint(crs));
+                }
                 cons.add(dc);
                 return TypeFactory.createType(desiredCode, cons.toArray(new Constraint[cons.size()]));
         }
@@ -709,7 +715,7 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                                 return ValueFactory.createNullValue();
                         }
                 } else {
-                         return super.getFieldValue(rowIndex, fieldId);
+                        return super.getFieldValue(rowIndex, fieldId);
                 }
         }
 

@@ -79,11 +79,13 @@ import com.vividsolutions.jts.geom.Polygon;
 import org.apache.log4j.Logger;
 import org.gdms.data.schema.DefaultSchema;
 import org.gdms.data.schema.MetadataUtilities;
+import org.gdms.data.types.CRSConstraint;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.AbstractDataSet;
 import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.geometryUtils.GeometryClean;
+import org.jproj.CoordinateReferenceSystem;
 import org.orbisgis.progress.ProgressMonitor;
 
 public final class ShapefileDriver extends AbstractDataSet implements FileReadWriteDriver {
@@ -184,10 +186,21 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                                 throw new DriverException("Unknown geometric type !");
                         }
 
-                        File prj = FileUtils.getFileWithExtension(file, "prj");
+                        Constraint[] constraints;
 
-                        // Constraint crsConstraint = new CRSConstraint(crs);
-                        Constraint[] constraints = new Constraint[]{ dc};
+                        File prj = FileUtils.getFileWithExtension(file, "prj");
+                        if (prj != null && prj.exists()) {
+                                CoordinateReferenceSystem crs = dataSourceFactory.getCrsFactory().createFromPrj(prj);
+                                if (crs != null) {
+                                        CRSConstraint cc = new CRSConstraint(crs);
+                                        constraints = new Constraint[]{dc, cc};
+                                } else {
+                                        constraints = new Constraint[]{dc};
+                                }
+                        } else {
+                                constraints = new Constraint[]{dc};
+                        }
+
                         metadata.clear();
                         metadata.addField(0, "the_geom", gtype, constraints);
                         metadata.addAll(driver.getMetadata());
@@ -331,7 +344,7 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                         throw new DriverException(e);
                 }
         }
-        
+
         /**
          * We try to retrieve the type of the geometry recorded in metadata.
          * @param metadata
@@ -365,7 +378,7 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                                         if (dataSource != null) {
                                                 for (int j = 0; j < dataSource.getRowCount(); j++) {
                                                         Geometry g = dataSource.getFieldValue(j, i).getAsGeometry();
-                                                        if (g != null && g.getCoordinate()!= null) {
+                                                        if (g != null && g.getCoordinate() != null) {
                                                                 if (Double.isNaN(g.getCoordinate().z)) {
                                                                         return 2;
                                                                 } else {
@@ -396,7 +409,7 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
          * @return
          * @throws DriverException 
          */
-        private ShapeType getShapeType(Type geometryType, int dimension)throws DriverException {
+        private ShapeType getShapeType(Type geometryType, int dimension) throws DriverException {
                 int typeCode = geometryType.getTypeCode();
                 switch (typeCode) {
                         case Type.POINT:
@@ -427,12 +440,12 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                                 }
                         case Type.GEOMETRY:
                         case Type.GEOMETRYCOLLECTION:
-                                Constraint cons = 
+                                Constraint cons =
                                         geometryType.getConstraint(Constraint.DIMENSION_2D_GEOMETRY);
-                                if(cons == null){
+                                if (cons == null) {
                                         throw new DriverException("Shapefiles need a specific geometry type");
                                 } else {
-                                        switch(Integer.valueOf(cons.getConstraintValue())){
+                                        switch (Integer.valueOf(cons.getConstraintValue())) {
                                                 case 0:
                                                         if (dimension == 2) {
                                                                 return ShapeType.MULTIPOINT;
@@ -451,11 +464,11 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                                                         } else {
                                                                 return ShapeType.POLYGONZ;
                                                         }
-                                                default :
+                                                default:
                                                         throw new DriverException("Not a valid geometry constraint code.");
                                         }
                                 }
-                                
+
                 }
                 //Geometry and GeometryCollection are not valid shape types.
                 return null;
@@ -495,7 +508,7 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                         //Are we dealing with a general vectorial type ?
                         boolean isGeneral = typeCode == Type.GEOMETRY || typeCode == Type.GEOMETRYCOLLECTION;
                         //Do we have a constraint upon dimension ?
-                        boolean noDimCons =geomType.getConstraint(Constraint.DIMENSION_3D_GEOMETRY) == null;
+                        boolean noDimCons = geomType.getConstraint(Constraint.DIMENSION_3D_GEOMETRY) == null;
                         if (isGeneral && typeCode != Type.NULL && noDimCons) {
                                 //We're in a case that is too general for a shape... let's
                                 //try to improve this as far as we can.
@@ -549,7 +562,7 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                 return new File(prefix + suffix);
         }
 
-        private ShapeType getFirstShapeType(DataSet ds,int dimension) throws DriverException {
+        private ShapeType getFirstShapeType(DataSet ds, int dimension) throws DriverException {
                 final int spatialFieldIndex = MetadataUtilities.getSpatialFieldIndex(ds.getMetadata());
                 for (int i = 0; i < ds.getRowCount(); i++) {
                         Value v = ds.getFieldValue(i, spatialFieldIndex);
@@ -617,8 +630,8 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
         public boolean isCommitable() {
                 return true;
         }
-        
-       @Override
+
+        @Override
         public int getSupportedType() {
                 return SourceManager.FILE | SourceManager.VECTORIAL;
         }
@@ -635,7 +648,7 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                 for (int i = 0; i < m.getFieldCount(); i++) {
                         Type fieldType = m.getFieldType(i);
                         int typeCode = fieldType.getTypeCode();
-                        if (TypeFactory.isVectorial(typeCode) && typeCode != Type.NULL){
+                        if (TypeFactory.isVectorial(typeCode) && typeCode != Type.NULL) {
                                 //At this point, we're sure we have a geometry type that is not Type.NULL
                                 if (spatialIndex != -1) {
                                         return "Cannot store sources with several geometries on a shapefile: "
@@ -643,7 +656,7 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                                                 + " and "
                                                 + m.getFieldName(i) + " found";
                                 } else {
-                                        
+
                                         if ((typeCode & Type.LINESTRING) != 0) {
                                                 return "Linestrings are not allowed. Use Multilinestrings instead";
                                         } else if ((typeCode & Type.POLYGON) != 0) {

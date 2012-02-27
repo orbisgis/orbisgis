@@ -450,15 +450,13 @@ public abstract class DefaultDBDriver extends DefaultSQL {
                 return dsf.getWarningListener();
         }
 
-        /**
-         * @see org.gdms.data.driver.DriverCommons#setDataSourceFactory(org.gdms.data.DataSourceFactory)
-         */
-        /**
-         * @see org.gdms.driver.ReadOnlyDriver#setDataSourceFactory(org.gdms.data.DataSourceFactory)
-         */
         @Override
         public void setDataSourceFactory(DataSourceFactory dsf) {
                 this.dsf = dsf;
+        }
+        
+        protected DataSourceFactory getDataSourceFactory() {
+                return dsf;
         }
 
         /**

@@ -61,9 +61,12 @@ import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.DefaultSchema;
 import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.data.schema.Schema;
+import org.gdms.data.types.CRSConstraint;
+import org.gdms.data.types.Constraint;
 import org.gdms.data.types.RasterTypeConstraint;
 import org.gdms.driver.AbstractDataSet;
 import org.gdms.driver.DataSet;
+import org.jproj.CoordinateReferenceSystem;
 
 public abstract class AbstractRasterDriver extends AbstractDataSet implements FileReadWriteDriver {
 
@@ -71,6 +74,7 @@ public abstract class AbstractRasterDriver extends AbstractDataSet implements Fi
         protected RasterMetadata metadata;
         protected Schema schema;
         private DefaultMetadata gdmsMetadata;
+        private DataSourceFactory dsf;
         protected Envelope envelope;
         private static final Logger LOG = Logger.getLogger(AbstractRasterDriver.class);
         private File file;
@@ -84,10 +88,23 @@ public abstract class AbstractRasterDriver extends AbstractDataSet implements Fi
                         metadata = geoRaster.getMetadata();
                         envelope = metadata.getEnvelope();
 
-                        File prj = FileUtils.getFileWithExtension(file, "prj");
+                        Constraint[] constraints;
+                        Constraint dc = new RasterTypeConstraint(geoRaster.getType());
 
-                        gdmsMetadata.addField("raster", TypeFactory.createType(Type.RASTER,
-                                new RasterTypeConstraint(geoRaster.getType())));
+                        File prj = FileUtils.getFileWithExtension(file, "prj");
+                        if (prj != null && prj.exists()) {
+                                CoordinateReferenceSystem crs = dsf.getCrsFactory().createFromPrj(prj);
+                                if (crs != null) {
+                                        CRSConstraint cc = new CRSConstraint(crs);
+                                        constraints = new Constraint[]{dc, cc};
+                                } else {
+                                        constraints = new Constraint[]{dc};
+                                }
+                        } else {
+                                constraints = new Constraint[]{dc};
+                        }
+
+                        gdmsMetadata.addField("raster", TypeFactory.createType(Type.RASTER, constraints));
 
 
                 } catch (IOException e) {
@@ -97,6 +114,7 @@ public abstract class AbstractRasterDriver extends AbstractDataSet implements Fi
 
         @Override
         public void setDataSourceFactory(DataSourceFactory dsf) {
+                this.dsf = dsf;
         }
 
         @Override
