@@ -34,10 +34,11 @@ import javax.swing.event.DocumentListener;
 
 /**
  * This listener update an ActiveLayer at each modification of a JTextField
+ * This listener is used by DataSourceFilterFactories that use a JTextField
  */
 public class TextFieldDocumentListener implements DocumentListener {
-    JTextField textField;
-    ActiveFilter activeFilter;
+    private JTextField textField;
+    private ActiveFilter activeFilter;
     /**
      * Constructor
      * @param textField TextField to read
@@ -47,15 +48,24 @@ public class TextFieldDocumentListener implements DocumentListener {
         this.textField = textField;
         this.activeFilter = activeFilter;
     }
-
+    /**
+     * User insert characters
+     * @param de the document event
+     */
     public void insertUpdate(DocumentEvent de) {
         activeFilter.setCurrentFilterValue(textField.getText());
     }
-
+    /**
+     * User remove characters
+     * @param de the document event
+     */
     public void removeUpdate(DocumentEvent de) {
         activeFilter.setCurrentFilterValue(textField.getText());
     }
-
+    /**
+     * Gives notification that an attribute or set of attributes changed.
+     * @param de the document event
+     */
     public void changedUpdate(DocumentEvent de) {
     }
     

@@ -1,0 +1,88 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrbisGis 4.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-02-28 14:55+0100\n"
+"PO-Revision-Date: 2012-02-28 14:56+0100\n"
+"Last-Translator: Nicolas Fortin <nicolas.fortin@ec-nantes.fr>\n"
+"Language-Team: OrbisGis <info@orbisgis.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: I18N.getString\n"
+"X-Poedit-Basepath: ../../../../../..\n"
+"X-Poedit-Language: English\n"
+"X-Poedit-Country: UNITED KINGDOM\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-SearchPath-0: java\n"
+
+#: java/org/orbisgis/view/docking/DockingManager.java:147
+msgid "orbisgis.view.docking.stationTitle"
+msgstr "Docked Window"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:88
+msgid "orbisgis.org.orbisgis.Catalog.title"
+msgstr "GeoCatalog"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:271
+msgid "orbisgis.view.geocatalog.removefilter"
+msgstr "Delete this filter"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:292
+msgid "orbisgis.view.geocatalog.addfilter"
+msgstr "Add a new filter"
+
+#: java/org/orbisgis/view/geocatalog/filters/factories/NameContains.java:61
+msgid "orbisgis.view.geocatalog.filters.factories.NameContainsLabel"
+msgstr "Name contains"
+
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:66
+msgid "orbisgis.view.geocatalog.filters.AlphanumericFilter"
+msgstr "Alphanumeric"
+
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:69
+msgid "orbisgis.view.geocatalog.filters.DbsFilter"
+msgstr "DataBase"
+
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:73
+msgid "orbisgis.view.geocatalog.filters.FilesFilter"
+msgstr "Files"
+
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:77
+msgid "orbisgis.view.geocatalog.filters.GeoFilter"
+msgstr "Geometry"
+
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:81
+msgid "orbisgis.view.geocatalog.filters.RasterFilter"
+msgstr "Raster"
+
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:85
+msgid "orbisgis.view.geocatalog.filters.VectorialFilter"
+msgstr "Vectorial"
+
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:89
+msgid "orbisgis.view.geocatalog.filters.WMSFilter"
+msgstr "Web Map Services"
+
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:107
+msgid "orbisgis.view.geocatalog.filters.factories.TypeIsLabel"
+msgstr "Type is"
+
+#: java/org/orbisgis/view/geocatalog/filters/factories/NameNotContains.java:61
+msgid "orbisgis.view.geocatalog.filters.factories.NameNotContainsLabel"
+msgstr "Name not contains"
+
+#: java/org/orbisgis/view/icons/OrbisGISIcon.java:89
+#, fuzzy
+msgid "orbisgis.view.icons.OrbisGISIcon.icon_not_found"
+msgstr "Icon file not found"
+
+#: java/org/orbisgis/view/main/frames/MainFrame.java:49
+msgid "orbisgis.org.orbisgis.version"
+msgstr "4.0 Beta"
+
+#: java/org/orbisgis/view/main/frames/MainFrame.java:49
+msgid "orbisgis.org.orbisgis.versionName"
+msgstr "La Rochelle"
+

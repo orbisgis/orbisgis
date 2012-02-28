@@ -39,5 +39,5 @@ public interface IFilter {
             * @param sourceName Source name
             * @return True if the Source should be shown
             */
-	public boolean accepts(SourceManager sm, String sourceName);
+	boolean accepts(SourceManager sm, String sourceName);
 }

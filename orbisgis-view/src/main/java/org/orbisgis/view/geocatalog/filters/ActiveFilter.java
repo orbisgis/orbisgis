@@ -47,6 +47,11 @@ public class ActiveFilter {
     private String currentFilterValue = "";
     public static final String PROP_CURRENTFILTERVALUE = "currentFilterValue";
 
+    /**
+     * Bean constructor
+     * @param factoryId The factory unique ID
+     * @param currentFilterValue The filter value
+     */
     public ActiveFilter(String factoryId,String currentFilterValue) {
         propertySupport = new PropertyChangeSupport(this);
         this.factoryId = factoryId;
@@ -80,10 +85,7 @@ public class ActiveFilter {
      */
     public String getFactoryId() {
         return factoryId;
-    }
-
-  
-   
+    }  
 
     /**
      * Add a property-change listener for all properties.

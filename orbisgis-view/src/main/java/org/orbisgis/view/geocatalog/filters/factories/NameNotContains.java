@@ -42,14 +42,14 @@ import org.orbisgis.view.geocatalog.filters.TextFieldDocumentListener;
  * This is the data source name contains x filter
  */
 
-public class NameContains implements DataSourceFilterFactory {
+public class NameNotContains implements DataSourceFilterFactory {
     /**
      * The factory ID
      *
      * @return Internal name of the filter type
      */
     public String getFactoryId() {
-        return "name_contains";
+        return "name_not_contains";
     }
 
     /**
@@ -58,7 +58,7 @@ public class NameContains implements DataSourceFilterFactory {
      * @return
      */
     public String getFilterLabel() {
-        return I18N.getString("orbisgis.view.geocatalog.filters.factories.NameContainsLabel");
+        return I18N.getString("orbisgis.view.geocatalog.filters.factories.NameNotContainsLabel");
     }
 
     /**
@@ -104,7 +104,7 @@ public class NameContains implements DataSourceFilterFactory {
         * @return True if the Source should be shown
         */
         public boolean accepts(SourceManager sm, String sourceName) {
-            return sourceName.toLowerCase().contains(nameFilter.toLowerCase());
+            return !sourceName.toLowerCase().contains(nameFilter.toLowerCase());
         }     
     }
 }

@@ -35,17 +35,20 @@ import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
-import java.util.*;
 import java.util.Map.Entry;
+import java.util.*;
 import javax.swing.*;
 import org.gdms.source.SourceManager;
 import org.orbisgis.utils.I18N;
+import org.orbisgis.view.components.ContainerItemKey;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.geocatalog.filters.ActiveFilter;
 import org.orbisgis.view.geocatalog.filters.DataSourceFilterFactory;
 import org.orbisgis.view.geocatalog.filters.IFilter;
 import org.orbisgis.view.geocatalog.filters.factories.NameContains;
+import org.orbisgis.view.geocatalog.filters.factories.NameNotContains;
+import org.orbisgis.view.geocatalog.filters.factories.SourceTypeIs;
 import org.orbisgis.view.geocatalog.renderer.DataSourceListCellRenderer;
 import org.orbisgis.view.icons.OrbisGISIcon;
 
@@ -57,19 +60,18 @@ import org.orbisgis.view.icons.OrbisGISIcon;
  */
 public class Catalog extends JPanel implements DockingPanel {
     private DockingPanelParameters dockingParameters = new DockingPanelParameters(); /*!< GeoCatalog docked panel properties */
-    JPopupMenu popupMenu; /*!< Popup of GeoCatalog Source List */
-    JList sourceList;
-    SourceListModel sourceListContent;
-    JPanel filterListPanel;/*!< This panel contain the set of filters */
+    private JList sourceList;
+    private SourceListModel sourceListContent;
+    private JPanel filterListPanel;/*!< This panel contain the set of filters */
     //List of active filters
-    Map<Component,ActiveFilter> filterValues = Collections.synchronizedMap(new HashMap<Component,ActiveFilter>());
+    private Map<Component,ActiveFilter> filterValues = Collections.synchronizedMap(new HashMap<Component,ActiveFilter>());
     //List of filter factories
-    Map<String,DataSourceFilterFactory> filterFactories = Collections.synchronizedMap(new HashMap<String,DataSourceFilterFactory>());
+    private Map<String,DataSourceFilterFactory> filterFactories = Collections.synchronizedMap(new HashMap<String,DataSourceFilterFactory>());
     //Factory index, this retrieve the factory name from an integer in
     //all JComboBox filter factories
-    List<String> filterFactoriesIndex = new ArrayList<String>();
+    private List<ContainerItemKey> filterFactoriesComboLabels = new ArrayList<ContainerItemKey>();
     //The factory shown when the user click on new factory button
-    private final static String DEFAULT_FILTER_FACTORY = "name_contains";
+    private static final String DEFAULT_FILTER_FACTORY = "name_contains";
     /**
      * For the Unit test purpose
      * @return The source list instance
@@ -98,6 +100,8 @@ public class Catalog extends JPanel implements DockingPanel {
      */
     private void registerFilterFactories() {
         registerFilterFactory(new NameContains());
+        registerFilterFactory(new SourceTypeIs());
+        registerFilterFactory(new NameNotContains());
     }
     
     /**
@@ -105,12 +109,13 @@ public class Catalog extends JPanel implements DockingPanel {
      * @param filterFactory The filter factory instance
      */
     public final void registerFilterFactory(DataSourceFilterFactory filterFactory) {
-        if(!filterValues.isEmpty()) {
-            //Some filters are already set
-            //TODO The filter combo box must be updated
-        }
+        //Add filter factory in the HashMap
         filterFactories.put(filterFactory.getFactoryId(), filterFactory);
-        filterFactoriesIndex.add(filterFactory.getFactoryId());
+        
+        //Add filter factory label and id in a list (for all GUI ComboBox)
+        filterFactoriesComboLabels.add(new ContainerItemKey(filterFactory.getFactoryId(),filterFactory.getFilterLabel()));
+        
+        //TODO if some filters are shows, refresh all factories combo box
     }
     /**
      * Remove all filters registered with the provided factory id
@@ -174,7 +179,7 @@ public class Catalog extends JPanel implements DockingPanel {
         //Create a layout to contain the factory and filter components
         JPanel factoryAndFilter = new JPanel(new BorderLayout());
         //Create the filter factory combobox
-        factoryAndFilter.add(makeFilterFactoriesComboBox(),BorderLayout.WEST);
+        factoryAndFilter.add(makeFilterFactoriesComboBox(activeFilter.getFactoryId()),BorderLayout.WEST);
         if(newFilterComponent!=null) {
             //Add the factory component in the filter panel
             factoryAndFilter.add(newFilterComponent,BorderLayout.CENTER);
@@ -230,11 +235,9 @@ public class Catalog extends JPanel implements DockingPanel {
     /**
      * The user selected a filter factory
      * A new filter is shown with the selected filter factory
-     * @param choosenItemFactory The filter factory combo box index selected
+     * @param filterFactoryId The filter factory name
      */
-    public void onChooseFilterFactory(int selectItemFactory) {
-        //Retrieve the factory string id from the factory integer index
-        String filterFactoryId = filterFactoriesIndex.get(selectItemFactory);
+    public void onChooseFilterFactory(String filterFactoryId) {
         //Add a new filter with an empty value
         addFilter(filterFactoryId,"");
     }
@@ -242,13 +245,11 @@ public class Catalog extends JPanel implements DockingPanel {
      * Create a new filter factories combo box
      * @return A new instance of filterFactoriesComboBox
      */ 
-    private JComboBox makeFilterFactoriesComboBox() {
-        //Make the label entries of the combo box
-        String[] factoriesLabels = new String[filterFactoriesIndex.size()];
-        for(int idFactory=0;idFactory<filterFactoriesIndex.size();idFactory++) {
-            factoriesLabels[idFactory] = filterFactories.get(filterFactoriesIndex.get(idFactory)).getFilterLabel();
-        }
-        JComboBox filterFactoriesCombo = new JComboBox(factoriesLabels);   
+    private JComboBox makeFilterFactoriesComboBox(String selectedFactory) {
+        //Set a unique data model for all filterFactoriesCombo
+        JComboBox filterFactoriesCombo = new JComboBox(this.filterFactoriesComboLabels.toArray());
+        //Select the factory
+        filterFactoriesCombo.setSelectedItem(new ContainerItemKey(selectedFactory, ""));
         //Add a listener to remove the filter
         filterFactoriesCombo.addActionListener(
                 EventHandler.create(ActionListener.class, this,
@@ -256,7 +257,7 @@ public class Catalog extends JPanel implements DockingPanel {
         //Add a listener to add a new filter with the selected factory
         filterFactoriesCombo.addActionListener(
                 EventHandler.create(ActionListener.class, this,
-                "onChooseFilterFactory","source.selectedIndex"));
+                "onChooseFilterFactory","source.selectedItem.getKey"));
         return filterFactoriesCombo;
     }
     /**
@@ -295,16 +296,7 @@ public class Catalog extends JPanel implements DockingPanel {
                 );        
         return buttonAlignement;
     }
-    /**
-     * Temporary function, for Panel alignement test
-     * @return 
-     */
-    private Component getDummyComponent() {
-        //test component
-        String[] petStrings = { "Bird", "Cat", "Dog", "Rabbit", "Pig" };
-        JComboBox petList = new JComboBox(petStrings);
-        return petList;
-    }
+    
     /**
      * Create the filter panel
      * @return The builded panel

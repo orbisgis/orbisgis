@@ -42,6 +42,7 @@ import org.gdms.source.Source;
 import org.gdms.source.SourceListener;
 import org.gdms.source.SourceManager;
 import org.orbisgis.view.geocatalog.filters.IFilter;
+import org.orbisgis.view.geocatalog.filters.TableSystemFilter;
 
 /**
  * @brief Manage entries of GeoCatalog according to a GDMS SourceManager
@@ -50,7 +51,7 @@ import org.orbisgis.view.geocatalog.filters.IFilter;
  */
 public class SourceListModel extends AbstractListModel {
 
-	private static final Logger logger = Logger.getLogger(SourceListModel.class);
+	private static final Logger LOGGER = Logger.getLogger(SourceListModel.class);
         private SourceManager sourceManager; /*!< The SourceManager instance*/
         private SourceListener sourceListener=null; /*!< The listener put in the sourceManager*/
 	private String[] names;/*!< Sources */
@@ -94,7 +95,7 @@ public class SourceListModel extends AbstractListModel {
         public void onDataManagerChange() {
             //This is useless to invoke a refresh thread because
             //The content will be soonly refreshed by another ReadDataManagerOnSwingThread
-            if(awaitingRefresh.getAndSet(true)==false) {
+            if(!awaitingRefresh.getAndSet(true)) {
                 SwingUtilities.invokeLater(new ReadDataManagerOnSwingThread());
             }
         }
@@ -111,43 +112,64 @@ public class SourceListModel extends AbstractListModel {
             }
         }
         /**
+         * 
+         * @return True if at least one of filter is an instance of TableSystemFilter
+         */
+        private boolean isSystemTableFilterInFilters() {
+            for(IFilter filter : filters) {
+                if(filter instanceof TableSystemFilter) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        /**
          * Remove listeners created by the instance
          */
         public void dispose() {
             this.sourceManager.removeSourceListener(sourceListener);
         }
 	private void readDataManager() {
-		String[] tempSourceNames = sourceManager.getSourceNames(); //Retrieve all sources names
-                
-		if (!filters.isEmpty()) {
-                    //Apply filter with the Or
-                    tempSourceNames = filter(sourceManager, tempSourceNames, new OrFilter());
+            String[] tempSourceNames = sourceManager.getSourceNames(); //Retrieve all sources names
+
+            if (!filters.isEmpty()) {
+                //Apply filter with the Or
+                tempSourceNames = filter(sourceManager, tempSourceNames, new AndFilter());
+                //Undo system table only if a SystemTable filter is not activated
+                if(!isSystemTableFilterInFilters()) {
+                    tempSourceNames = filter(sourceManager, tempSourceNames, new DefaultFilter());
                 }
+            } else {
                 //System table are not shown, except if the user want to see them (through or filter)
                 tempSourceNames = filter(sourceManager, tempSourceNames, new DefaultFilter());
-                
-		Arrays.sort(tempSourceNames, new Comparator<String>() {
+            }
+            Arrays.sort(tempSourceNames, new Comparator<String>() {
 
-			@Override
-			public int compare(String o1, String o2) {
-				return o1.toLowerCase().compareTo(o2.toLowerCase());
-			}
-		});
-		this.names = tempSourceNames;
-		fireIntervalRemoved(this, 0, getSize());
-		fireIntervalAdded(this, 0, getSize());
+                @Override
+                public int compare(String o1, String o2) {
+                        return o1.toLowerCase().compareTo(o2.toLowerCase());
+                }
+            });
+            this.names = tempSourceNames;
+            fireIntervalRemoved(this, 0, this.names.length);
+            fireIntervalAdded(this, 0, this.names.length);
 	}
-
+        /**
+         * Apply the filter sourceFilter on the provided data source names
+         * @param sourceManager The source manager instance
+         * @param names The names of data source
+         * @param sourceFilter The IFilter instance
+         * @return 
+         */   
 	private String[] filter(SourceManager sourceManager, String[] names,
-			IFilter sourceFilter) {
-		ArrayList<String> filteredNames = new ArrayList<String>();
-		for (String name : names) {
-			if (sourceFilter.accepts(sourceManager, name)) {
-				filteredNames.add(name);
-			}
-		}
-		String[] array = filteredNames.toArray(new String[filteredNames.size()]);
-		return array;
+                    IFilter sourceFilter) {
+            ArrayList<String> filteredNames = new ArrayList<String>(names.length);
+            for (String name : names) {
+                if (sourceFilter.accepts(sourceManager, name)) {
+                    filteredNames.add(name);
+                }
+            }
+            return filteredNames.toArray(new String[0]);
 	}
         /**
          * 
@@ -180,36 +202,39 @@ public class SourceListModel extends AbstractListModel {
             this.filters.clear();
 	    readDataManager();
         }
-	private final class OrFilter implements IFilter {
-		/**
-                 * Does this filter reject or accept this Source
-                 * @param sm Source Manager instance
-                 * @param sourceName Source name
-                 * @return True if the Source should be shown
-                 */
+        /**
+         * @brief Apply all filters with the logical connective And 
+         */
+	private final class AndFilter implements IFilter {
+            /**
+            * Does this filter reject or accept this Source
+            * @param sm Source Manager instance
+            * @param sourceName Source name
+            * @return True if the Source should be shown
+            */
 
-		public boolean accepts(SourceManager sm, String sourceName) {
-			for (int i = 0; i < filters.size(); i++) {
-				if (filters.get(i).accepts(sm, sourceName)) {
-					return true;
-				}
-			}
-			return false;
-		}
+            public boolean accepts(SourceManager sm, String sourceName) {
+                for (int i = 0; i < filters.size(); i++) {
+                    if (!filters.get(i).accepts(sm, sourceName)) {
+                            return false;
+                    }
+                }
+                return true;
+            }
 	}
 	/**
          * This filter is always applied, to hide system table
          */
 	private final class DefaultFilter implements IFilter {
-		/**
-                 * Does this filter reject or accept this Source
-                 * @param sm Source Manager instance
-                 * @param sourceName Source name
-                 * @return True if the Source should be shown
-                 */
-		public boolean accepts(SourceManager sm, String sourceName) {
-			Source source = sm.getSource(sourceName);
-			return (source != null) && !source.isSystemTableSource();			
-		}
+            /**
+            * Does this filter reject or accept this Source
+            * @param sm Source Manager instance
+            * @param sourceName Source name
+            * @return True if the Source should be shown
+            */
+            public boolean accepts(SourceManager sm, String sourceName) {
+                Source source = sm.getSource(sourceName);
+                return (source != null) && !source.isSystemTableSource();			
+            }
 	}
 }

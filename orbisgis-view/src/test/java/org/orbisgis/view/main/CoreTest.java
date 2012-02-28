@@ -70,7 +70,6 @@ public class CoreTest extends TestCase {
     public void testGeoCatalogSuppliedFilter() {
          //Retrieve instance of View And Gdms managers
         Catalog geoCatalog = instance.getGeoCatalog();
-        SourceManager gdmsSourceManager = instance.getMainContext().getDataSourceFactory().getSourceManager();
         SourceListModel UImodel = ((SourceListModel)geoCatalog.getSourceList().getModel());
         //Register a custom factory
         UnitTestFilterFactory unitTestFactory = new UnitTestFilterFactory();
@@ -88,8 +87,7 @@ public class CoreTest extends TestCase {
         }
         assertTrue(filterFounds);
         //Remove the filter
-        geoCatalog.removeFilters(unitTestFactory.getFactoryId());
-        
+        geoCatalog.removeFilters(unitTestFactory.getFactoryId());        
     }
     
     

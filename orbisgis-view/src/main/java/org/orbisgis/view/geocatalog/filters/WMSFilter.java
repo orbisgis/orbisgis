@@ -28,41 +28,15 @@
  */
 package org.orbisgis.view.geocatalog.filters;
 
-import java.awt.Component;
-
+import org.gdms.source.SourceManager;
 /**
- * Create a filter and the compo
+ * DataSource is a WMS
  */
-public interface DataSourceFilterFactory {
+public class WMSFilter implements IFilter {
 
-    /**
-     * The factory ID
-     *
-     * @return Internal name of the filter type
-     */
-    String getFactoryId();
+	public boolean accepts(SourceManager sm, String sourceName) {
+		int type = sm.getSource(sourceName).getType();
+		return (type & SourceManager.WMS) == SourceManager.WMS;
+	}
 
-    /**
-     * The user see this label when choosing a filter from a list
-     *
-     * @return
-     */
-    String getFilterLabel();
-
-    /**
-     * Make the filter corresponding to the filter value
-     *
-     * @param filterValue The new value fired by PropertyChangeEvent
-     * @return
-     */
-    IFilter getFilter(String filterValue);
-
-   
-    /**
-     * The DataSourceFilterFactory build the component that let the user to
-     * define the filter parameters. 
-     * @param filterValue When the control change the ActiveFilter value must be updated
-     * @return The swing component.
-     */
-    Component makeFilterField(ActiveFilter filterValue);
 }
