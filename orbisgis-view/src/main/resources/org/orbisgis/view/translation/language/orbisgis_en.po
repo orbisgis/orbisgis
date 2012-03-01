@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OrbisGis 4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-02-28 14:55+0100\n"
-"PO-Revision-Date: 2012-02-28 14:56+0100\n"
+"POT-Creation-Date: 2012-02-29 16:29+0100\n"
+"PO-Revision-Date: 2012-02-29 16:29+0100\n"
 "Last-Translator: Nicolas Fortin <nicolas.fortin@ec-nantes.fr>\n"
 "Language-Team: OrbisGis <info@orbisgis.org>\n"
 "Language: \n"
@@ -21,17 +21,37 @@ msgstr ""
 msgid "orbisgis.view.docking.stationTitle"
 msgstr "Docked Window"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:88
+#: java/org/orbisgis/view/geocatalog/Catalog.java:109
 msgid "orbisgis.org.orbisgis.Catalog.title"
 msgstr "GeoCatalog"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:271
+#: java/org/orbisgis/view/geocatalog/Catalog.java:222
+msgid "orbisgis.view.geocatalog.validateClearMessage"
+msgstr "All data source of the GeoCatalog will be removed. Are you sure ?"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:223
+msgid "orbisgis.view.geocatalog.validateClearTitle"
+msgstr "Clear the GeoCatalog"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:237
+msgid "orbisgis.view.geocatalog.clearGeoCatalogMenuItem"
+msgstr "Clear the GeoCatalog"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:249
+msgid "orbisgis.view.geocatalog.listenerMenuThrown"
+msgstr "An external code stop the creation of the PopUp menu"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:417
 msgid "orbisgis.view.geocatalog.removefilter"
 msgstr "Delete this filter"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:292
+#: java/org/orbisgis/view/geocatalog/Catalog.java:438
 msgid "orbisgis.view.geocatalog.addfilter"
 msgstr "Add a new filter"
+
+#: java/org/orbisgis/view/geocatalog/SourceListModel.java:172
+msgid "orbisgis.view.geocatalog.CannotReadDataSourceSchema"
+msgstr "Data source schema could not be read"
 
 #: java/org/orbisgis/view/geocatalog/filters/factories/NameContains.java:61
 msgid "orbisgis.view.geocatalog.filters.factories.NameContainsLabel"
@@ -65,7 +85,11 @@ msgstr "Vectorial"
 msgid "orbisgis.view.geocatalog.filters.WMSFilter"
 msgstr "Web Map Services"
 
-#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:107
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:93
+msgid "orbisgis.view.geocatalog.filters.TableSystemFilter"
+msgstr "System Table"
+
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:112
 msgid "orbisgis.view.geocatalog.filters.factories.TypeIsLabel"
 msgstr "Type is"
 
@@ -74,7 +98,6 @@ msgid "orbisgis.view.geocatalog.filters.factories.NameNotContainsLabel"
 msgstr "Name not contains"
 
 #: java/org/orbisgis/view/icons/OrbisGISIcon.java:89
-#, fuzzy
 msgid "orbisgis.view.icons.OrbisGISIcon.icon_not_found"
 msgstr "Icon file not found"
 

@@ -38,9 +38,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.AbstractListModel;
 import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
+import org.gdms.data.schema.Schema;
+import org.gdms.driver.DriverException;
 import org.gdms.source.Source;
 import org.gdms.source.SourceListener;
 import org.gdms.source.SourceManager;
+import org.orbisgis.utils.I18N;
+import org.orbisgis.view.components.ContainerItemKey;
 import org.orbisgis.view.geocatalog.filters.IFilter;
 import org.orbisgis.view.geocatalog.filters.TableSystemFilter;
 
@@ -54,7 +58,7 @@ public class SourceListModel extends AbstractListModel {
 	private static final Logger LOGGER = Logger.getLogger(SourceListModel.class);
         private SourceManager sourceManager; /*!< The SourceManager instance*/
         private SourceListener sourceListener=null; /*!< The listener put in the sourceManager*/
-	private String[] names;/*!< Sources */
+	private ContainerItemKey[] sourceList;/*!< Sources */
 	private List<IFilter> filters = new ArrayList<IFilter>(); /*!< Active filters */
         private AtomicBoolean awaitingRefresh=new AtomicBoolean(false); /*!< If true a swing runnable
          * is pending to refresh the content of SourceListModel*/
@@ -150,9 +154,29 @@ public class SourceListModel extends AbstractListModel {
                         return o1.toLowerCase().compareTo(o2.toLowerCase());
                 }
             });
-            this.names = tempSourceNames;
-            fireIntervalRemoved(this, 0, this.names.length);
-            fireIntervalAdded(this, 0, this.names.length);
+            this.sourceList = new ContainerItemKey[tempSourceNames.length];
+            //Set the label of elements from source names
+            for(int rowidSource=0;rowidSource<tempSourceNames.length;rowidSource++) {
+                //Try to read the parent schema and place it in the label
+                String schemaName = "";
+                try {
+                    Schema dataSourceSchema = sourceManager.getSource(tempSourceNames[rowidSource]).getDataSourceDefinition().getSchema();
+                    if(dataSourceSchema!=null) {
+                        Schema parentSchema=dataSourceSchema.getParentSchema();
+                        if(parentSchema!=null) {
+                            schemaName = parentSchema.getName()+".";
+                        }
+                    }
+                } catch(DriverException ex) {
+                    //Log warning
+                    LOGGER.warn(I18N.getString("orbisgis.view.geocatalog.CannotReadDataSourceSchema"),ex);
+                }
+                sourceList[rowidSource] = new ContainerItemKey(
+                                                tempSourceNames[rowidSource], //Source Name
+                                                schemaName+tempSourceNames[rowidSource]);//Source Label
+            }
+            fireIntervalRemoved(this, 0, this.sourceList.length);
+            fireIntervalAdded(this, 0, this.sourceList.length);
 	}
         /**
          * Apply the filter sourceFilter on the provided data source names
@@ -177,15 +201,37 @@ public class SourceListModel extends AbstractListModel {
          * @return The item
          */
 	public Object getElementAt(int index) {
-		return names[index];
+		return sourceList[index];
 	}
         /**
          * 
          * @return The number of source shown
          */
 	public int getSize() {
-		return names.length;
+		return sourceList.length;
 	}
+        /**
+         * This method clear all source in the SourceManager except source Table
+         */
+        public void clearAllSourceExceptSystemTables() {
+            for(String sourceName : sourceManager.getSourceNames()) {
+                if(!sourceManager.getSource(sourceName).isSystemTableSource()) {
+                    sourceManager.remove(sourceName);
+                }
+            }            
+        }
+        /**
+        * Return true if the data source manager has only system tables
+        * @return 
+        */
+        public boolean isDataSourceManagerEmpty() {
+            for(String sourceName : sourceManager.getSourceNames()) {
+                if(!sourceManager.getSource(sourceName).isSystemTableSource()) {
+                    return false;
+                }
+            }
+            return true;
+        }
         /**
          * Set the filter and refresh the Source list
          * according to the new filter

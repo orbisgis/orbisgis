@@ -33,12 +33,18 @@ import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.util.Map.Entry;
 import java.util.*;
 import javax.swing.*;
+import org.apache.log4j.Logger;
 import org.gdms.source.SourceManager;
+import org.orbisgis.base.events.EventException;
+import org.orbisgis.base.events.ListenerContainer;
+import org.orbisgis.utils.CollectionUtils;
 import org.orbisgis.utils.I18N;
 import org.orbisgis.view.components.ContainerItemKey;
 import org.orbisgis.view.docking.DockingPanel;
@@ -57,8 +63,12 @@ import org.orbisgis.view.icons.OrbisGISIcon;
  * @brief This is the GeoCatalog panel. That Panel show the list of avaible DataSource
  * 
  * This is connected with the SourceManager model.
+ * @note If you want to add new functionnality to data source items without change
+ * this class you can use the eventSourceListPopupMenuCreating listener container
+ * to add more items in the source list popup menu.
  */
 public class Catalog extends JPanel implements DockingPanel {
+    private static final Logger LOGGER = Logger.getLogger(Catalog.class);
     private DockingPanelParameters dockingParameters = new DockingPanelParameters(); /*!< GeoCatalog docked panel properties */
     private JList sourceList;
     private SourceListModel sourceListContent;
@@ -72,12 +82,23 @@ public class Catalog extends JPanel implements DockingPanel {
     private List<ContainerItemKey> filterFactoriesComboLabels = new ArrayList<ContainerItemKey>();
     //The factory shown when the user click on new factory button
     private static final String DEFAULT_FILTER_FACTORY = "name_contains";
+    //The popup menu event listener manager
+    private ListenerContainer<MenuPopupEventData> eventSourceListPopupMenuCreating = new ListenerContainer<MenuPopupEventData>();
     /**
      * For the Unit test purpose
      * @return The source list instance
      */
     public JList getSourceList() {
         return sourceList;
+    }
+    /**
+     * The popup menu event listener manager
+     * The popup menu is being created,
+     * all listeners are able to feed the menu with custom functions
+     * @return 
+     */
+    public ListenerContainer<MenuPopupEventData> getEventSourceListPopupMenuCreating() {
+        return eventSourceListPopupMenuCreating;
     }
     
     /**
@@ -115,7 +136,7 @@ public class Catalog extends JPanel implements DockingPanel {
         //Add filter factory label and id in a list (for all GUI ComboBox)
         filterFactoriesComboLabels.add(new ContainerItemKey(filterFactory.getFactoryId(),filterFactory.getFilterLabel()));
         
-        //TODO if some filters are shows, refresh all factories combo box
+        //TODO if some filters are already shown, refresh all factories combo box (Future Plugin-Filter ?)
     }
     /**
      * Remove all filters registered with the provided factory id
@@ -149,6 +170,87 @@ public class Catalog extends JPanel implements DockingPanel {
         //Update filters
         reloadFilters();
     }
+    
+    /**
+     * The user click on the source list control
+     * @param e The mouse event fired by the LI
+     */
+    public void onMouseActionOnSourceList(MouseEvent e) {
+        //Manage selection of items before popping up the menu
+        if (e.isPopupTrigger()) { //Right mouse button under linux and windows
+            int itemUnderMouse = -1; //Item under the position of the mouse event
+            //Find the Item under the position of the mouse cursor
+            for (int i = 0; i < sourceListContent.getSize(); i++) {
+                //If the coordinate of the cursor cover the cell bouding box
+                if (sourceList.getCellBounds(i, i).contains(e.getPoint())) {
+                    itemUnderMouse = i;
+                    break;
+                }
+            }
+            //Retrieve all selected items index
+            int[] selectedItems = sourceList.getSelectedIndices();
+            //If there are a list item under the mouse
+            if ((selectedItems != null) && (itemUnderMouse != -1)) {
+                //If the item under the mouse was not previously selected
+                if (!CollectionUtils.contains(selectedItems, itemUnderMouse)) {
+                    //Control must be pushed to add the list item to the selection
+                    if (e.isControlDown()) {
+                        sourceList.addSelectionInterval(itemUnderMouse, itemUnderMouse);
+                    } else {
+                        //Unselect the other items and select only the item under the mouse
+                        sourceList.setSelectionInterval(itemUnderMouse, itemUnderMouse);
+                    }
+                }
+            } else if (itemUnderMouse == -1) {
+                //Unselect all items
+                sourceList.clearSelection();
+            }
+            //Selection are ready, now create the popup menu
+            JPopupMenu popup = makePopupMenu();
+            if (popup != null) {
+                popup.show(e.getComponent(), e.getX(), e.getY());
+            }
+
+        }
+    }
+    /**
+     * The user click on the menu item called "clear geocatalog"
+     */
+    public void onMenuClearGeoCatalog() {
+        //User must validate this action
+        int option = JOptionPane.showConfirmDialog(this,
+                                I18N.getString("orbisgis.view.geocatalog.validateClearMessage"),
+                                I18N.getString("orbisgis.view.geocatalog.validateClearTitle"),
+                                JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+        if (option == JOptionPane.YES_OPTION) {
+            sourceListContent.clearAllSourceExceptSystemTables();
+        }
+    }
+    /**
+     * Create a popup menu corresponding to the current state of source selection
+     * @return A new popup menu
+     */
+    private JPopupMenu makePopupMenu() {
+        JPopupMenu rootMenu = new JPopupMenu();
+        //Clear catalog item added if the datasource manager is not empty
+        if(!sourceListContent.isDataSourceManagerEmpty()) {
+            JMenuItem clearCatalogItem = new JMenuItem(I18N.getString("orbisgis.view.geocatalog.clearGeoCatalogMenuItem"),
+                                                OrbisGISIcon.getIcon("trash"));
+            clearCatalogItem.addActionListener(EventHandler.create(ActionListener.class,
+                                                                this,
+                                                                "onMenuClearGeoCatalog"));
+            rootMenu.add(clearCatalogItem);
+        }
+        //Add additionnal extern data source functions
+        try {
+            eventSourceListPopupMenuCreating.callListeners(new MenuPopupEventData(rootMenu, this));
+        } catch (EventException ex) {
+            //A listener cancel the creation of the popup menu
+            LOGGER.warn(I18N.getString("orbisgis.view.geocatalog.listenerMenuThrown"),ex);
+            return null;
+        }        
+        return rootMenu;
+    }
     /**
      * The user click on add filter button
      */
@@ -161,9 +263,9 @@ public class Catalog extends JPanel implements DockingPanel {
      * This method will add a remove filter button,
      * a filter factory JComboBox and the specified component
      * @param newFilterComponent Returned by a DataSourceFilterFactory
+     * @warning onFilterChanged Must retrieve the FilterFactoriesComboBox !
      */
     private void addFilterComponent(Component newFilterComponent,ActiveFilter activeFilter) {
-        //TODO replace the last filter combobox by a JLabel that contain
         //the factory name
         JPanel filterPanel = new JPanel(new BorderLayout());
         //Create the remove button
@@ -205,13 +307,57 @@ public class Catalog extends JPanel implements DockingPanel {
             ActiveFilter activeFilter = new ActiveFilter(filterFactoryId,filterValue);
             //If the filter value is modified reloadFilters must be called
             activeFilter.addPropertyChangeListener(ActiveFilter.PROP_CURRENTFILTERVALUE,
-                    EventHandler.create(PropertyChangeListener.class, this,"reloadFilters"));
+                    EventHandler.create(PropertyChangeListener.class, this,"onFilterChanged"));
             //Create the Swing component
             Component swingFiterField = filterFactory.makeFilterField(activeFilter);
             addFilterComponent(swingFiterField, activeFilter);
             //Update the filters
             reloadFilters();
         }
+    }
+
+    /**
+     * Replace all FactoryComboBox by Labels
+     * Navigation through components is quite difficult and verbose
+     */
+    private void replaceFactoryComboBoxByLabels() {
+        boolean uiChange=false;
+        for (Component removeButtonFactoryFilter : filterListPanel.getComponents()) {
+            if(removeButtonFactoryFilter instanceof JPanel) {
+                Component factoryAndFilter = ((BorderLayout)((JPanel)removeButtonFactoryFilter).getLayout()).getLayoutComponent(BorderLayout.CENTER);
+                if(factoryAndFilter!=null) {
+                    Component factoryList = ((BorderLayout)((JPanel)factoryAndFilter).getLayout()).getLayoutComponent(BorderLayout.WEST);
+                    if(factoryList==null || !(factoryList instanceof JComboBox || factoryList instanceof JLabel)) {
+                        //Could not find Filter Factory list
+                        LOGGER.debug("Update onFilterChanged according to the change on Filter Factory ComboBox panel layout");
+                    } else {
+                        if(factoryList instanceof JComboBox) {
+                            String itemLabel = ((JComboBox)factoryList).getSelectedItem().toString();
+                            //Remove the factory list
+                            ((JPanel)factoryAndFilter).remove(factoryList);
+                            //Place the Label
+                            ((JPanel)factoryAndFilter).add(new JLabel(itemLabel), BorderLayout.WEST);
+                            ((JPanel)factoryAndFilter).doLayout();
+                            uiChange=true;
+                        }
+                    }                    
+                }
+            }
+        }
+        
+        if(uiChange) {
+            this.updateUI();
+        }
+    }
+    /**
+     * The input of a filter has been edited by the user
+     */
+    public void onFilterChanged() {
+        //The user change the content of the filter
+        //Then the user accept the current factories
+        //Replace all factories by labels to free spaces
+        replaceFactoryComboBoxByLabels();
+        reloadFilters();
     }
     /**
      * Regenerate all filters from filters components
@@ -321,6 +467,11 @@ public class Catalog extends JPanel implements DockingPanel {
         sourceList = new JList();
         //Set the list content renderer
         sourceList.setCellRenderer(new DataSourceListCellRenderer()); 
+        //Add mouse listener for popup menu
+        sourceList.addMouseListener(EventHandler.create(MouseListener.class,
+                                    this,
+                                    "onMouseActionOnSourceList",
+                                    "")); //This method ask the event data as argument
         //Create the list content manager
         sourceListContent = new SourceListModel(sourceManager); 
         //Replace the default model by the GeoCatalog model
