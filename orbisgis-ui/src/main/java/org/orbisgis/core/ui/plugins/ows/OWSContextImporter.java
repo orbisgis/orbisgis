@@ -32,10 +32,9 @@ public interface OWSContextImporter {
     public List<ILayer> extractLayers(JAXBElement<OWSContextType> owsContext);
     
     /**
-     * Extracts every data source used in the ows context file so
-     * that we can ask the user to give credentials if needed
+     * Extracts every data source that has not been registered.
      * @param owsContext The ows context
-     * @return 
+     * @return A list of data sources attributes (without username and password)
      */
-    public List<ILayer> extractDataSources(JAXBElement<OWSContextType> owsContext);
+    public List<DbConnectionString> extractUndefinedDataSources(JAXBElement<OWSContextType> owsContext);
 }

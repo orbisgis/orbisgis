@@ -27,8 +27,8 @@ import net.opengis.ows_context.OWSContextType;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.background.BackgroundManager;
-import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.sif.AbstractUIPanel;
+import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.progress.ProgressMonitor;
 import org.w3c.dom.Node;
 
@@ -53,7 +53,7 @@ public class OwsImportPanel extends AbstractUIPanel {
         this.validateInputMessage = "";
         this.panel = new JPanel();
         this.panel.setLayout(new BorderLayout());
-        this.cmdImportOwsContext = new JButton("Import OWS Context file");
+        this.cmdImportOwsContext = new JButton(Names.LABEL_OWS_IMPORT_BUTTON);
         this.cmdImportOwsContext.addActionListener(new ImportButtonActionListener());
         
         this.listModel = new OwsFileListModelImpl();
@@ -66,7 +66,7 @@ public class OwsImportPanel extends AbstractUIPanel {
         listScroller.setAlignmentX(Component.LEFT_ALIGNMENT);
         
         JPanel panelTop = new JPanel();
-        panelTop.add(new JLabel("OWC File path: "));
+        panelTop.add(new JLabel(Names.LABEL_OWS_PROJECTS));
         panelTop.add(listScroller);
         
         JPanel panelBottom = new JPanel();
@@ -80,7 +80,7 @@ public class OwsImportPanel extends AbstractUIPanel {
     
     @Override
     public String getTitle() {
-        return "Import an OWS file";
+        return Names.LABEL_OWS_IMPORT_PROJECT;
     }
 
     @Override
@@ -132,6 +132,7 @@ public class OwsImportPanel extends AbstractUIPanel {
         
         @Override
         public void actionPerformed(ActionEvent ae) {
+            validateInputMessage = "";
             if (list.getSelectedIndex() > 0) {
                 
                 final OWSContextImporter importer = new OWSContextImporterImpl();
@@ -149,14 +150,14 @@ public class OwsImportPanel extends AbstractUIPanel {
 
                     @Override
                     public String getTaskName() {
-                        return "Extracting OWS Context file";
+                        return Names.LABEL_OWS_EXTRACTING_CONTEXT_STATUS;
                         //return I18N.getString("orbisgis.org.orbisgis.zoomToLayer"); //$NON-NLS-1$
                     }
                 });
 
             }
             else {
-                validateInputMessage = "You must select a file";
+                validateInputMessage = Names.LABEL_OWS_MUST_SELECT_FILE;
                 OwsImportPanel.this.validateInput();
             }
         }

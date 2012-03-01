@@ -61,7 +61,7 @@ public class OwsServiceImpl implements OwsService {
     
     @Override
     public Node getOwsFile(int id) {
-        String url = OwsPlugIn.URL_GET_ONE_OWS + id;
+        String url = OwsContextUtils.getServiceGetOneOwsUrl() + "/" + id;
         InputStream owsInput = OwsContextUtils.callService(url);
         Node node = null;
         

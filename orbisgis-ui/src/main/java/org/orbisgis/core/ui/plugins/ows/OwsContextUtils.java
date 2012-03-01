@@ -5,7 +5,6 @@
 package org.orbisgis.core.ui.plugins.ows;
 
 import java.io.BufferedInputStream;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +19,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.gdms.data.db.DBSource;
 
 /**
  *
@@ -92,5 +92,31 @@ public class OwsContextUtils {
         }
         
         return url;
+    }
+    
+    public static String getServiceGetOneOwsUrl() {
+        String url = "";
+        try {
+            Properties properties = readProperties("services.properties");
+            url = properties.getProperty("orb.orbisgis.core.ui.plugins.ows.service_url_getoneows");
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(OwsContextUtils.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(OwsContextUtils.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return url;
+    }
+    
+    private static String generateSourceId(String table, String db, String host) {
+        return table + "_" + db + "_" + host;
+    }
+    
+    public static String generateSourceId(DbConnectionString db) {
+        return generateSourceId(db.getTable(), db.getDb(), db.getHost());
+    }
+    
+    public static String generateSourceId(DBSource db) {
+        return generateSourceId(db.getTableName(), db.getDbName(), db.getHost());
     }
 }

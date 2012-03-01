@@ -17,7 +17,6 @@ import net.opengis.ows_context.LayerType;
 import net.opengis.ows_context.OWSContextType;
 import net.opengis.ows_context.StyleType;
 import net.opengis.se._2_0.core.RuleType;
-import org.gdms.data.db.DBSource;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
@@ -52,7 +51,6 @@ public class OWSContextImporterImpl implements OWSContextImporter {
         return null;
     }
     
-
     @Override
     public List<ILayer> extractLayers(JAXBElement<OWSContextType> owsContext) {
         
@@ -72,11 +70,8 @@ public class OWSContextImporterImpl implements OWSContextImporter {
                 DbConnectionString dbConnectionString =
                         OwsContextUtils.extractDbConnectionString(owsLayer.getDataURL().getOnlineResource().getHref());
 
-                DBSource newDbSource = new DBSource(dbConnectionString.getHost(), dbConnectionString.getPort(),
-                        dbConnectionString.getDb(), "postgres", "ieniiNg3", dbConnectionString.getTable(), "jdbc:postgresql");
 
-                String idLayer = dbConnectionString.getTable() + "_" + dbConnectionString.getDb();
-                sm.register(idLayer, newDbSource);
+                String idLayer = OwsContextUtils.generateSourceId(dbConnectionString);
 
                 ILayer newLayer = dm.createLayer(idLayer);
                 newLayer.setName(owsLayer.getTitle().get(0).getValue());
@@ -118,8 +113,28 @@ public class OWSContextImporterImpl implements OWSContextImporter {
     }
 
     @Override
-    public List<ILayer> extractDataSources(JAXBElement<OWSContextType> owsContext) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public List<DbConnectionString> extractUndefinedDataSources(JAXBElement<OWSContextType> owsContext) {
+        List<DbConnectionString> sources = null;
+        DataManager dm = Services.getService(DataManager.class);
+        SourceManager sm = dm.getSourceManager();
+        
+        sources = new ArrayList<DbConnectionString>();
+        // Extracts each ows layer and adds it to the local data model
+        Iterator<LayerType> itOwsLayers = owsContext.getValue().getResourceList().getLayer().iterator();
+        while (itOwsLayers.hasNext()) {
+            LayerType owsLayer = itOwsLayers.next();
+
+
+            DbConnectionString dbConnectionString =
+                    OwsContextUtils.extractDbConnectionString(owsLayer.getDataURL().getOnlineResource().getHref());
+
+            String idLayer = OwsContextUtils.generateSourceId(dbConnectionString);
+            if (sm.getSource(idLayer) == null) {
+                sources.add(dbConnectionString);
+            }
+        }
+        
+        return sources;
     }
 
 }

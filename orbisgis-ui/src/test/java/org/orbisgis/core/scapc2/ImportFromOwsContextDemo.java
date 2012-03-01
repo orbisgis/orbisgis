@@ -171,6 +171,7 @@ public class ImportFromOwsContextDemo {
     private static ILayer createLayerGroup(List<ILayer> layers) throws LayerException {
         ILayer layerGroup = getDataManager().createLayerCollection("my group");
         
+        
         for (ILayer layer : layers) {
             layerGroup.addLayer(layer);
         }

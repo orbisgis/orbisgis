@@ -479,4 +479,35 @@ public abstract class Names {
 			.getString("orbisgis.ui.popupmenu.table.removeField.option");
 	public static final String POPUP_TABLE_CLEAR_SELECTION = I18N
 			.getString("orbisgis.ui.popupmenu.table.clearSelection");
+        
+        
+        /* OWS Plugin */
+	public static final String BUTTON_IMPORT_OWC_TITLE = I18N
+			.getString("orbisgis.org.orbisgis.core.ui.plugins.ows.importOwsFile");
+	public static final String LABEL_OWS_HOST = I18N
+			.getString("orbisgis.org.orbisgis.core.ui.plugins.ows.host");
+	public static final String LABEL_OWS_DB = I18N
+			.getString("orbisgis.org.orbisgis.core.ui.plugins.ows.db");
+	public static final String LABEL_OWS_TABLE = I18N
+			.getString("orbisgis.org.orbisgis.core.ui.plugins.ows.table");
+	public static final String LABEL_OWS_USERNAME = I18N
+			.getString("orbisgis.org.orbisgis.core.ui.plugins.ows.username");
+	public static final String LABEL_OWS_PASSWORD = I18N
+			.getString("orbisgis.org.orbisgis.core.ui.plugins.ows.password");
+	public static final String BUTTON_OWS_VALIDATE = I18N
+			.getString("orbisgis.org.orbisgis.core.ui.plugins.ows.buttonValidate");
+	public static final String LABEL_ENTER_DATASOURCE_CREDENTIALS = I18N
+			.getString("orbisgis.org.orbisgis.core.ui.plugins.ows.enterDataSourceCredentials");
+	public static final String LABEL_USERNAME_OR_PASSWORD_INVALID = I18N
+			.getString("orbisgis.org.orbisgis.core.ui.plugins.ows.usernameOrPasswordInvalid");
+	public static final String LABEL_OWS_PROJECTS = I18N
+			.getString("orbisgis.org.orbisgis.core.ui.plugins.ows.owsProjects");
+	public static final String LABEL_OWS_IMPORT_PROJECT = I18N
+			.getString("orbisgis.org.orbisgis.core.ui.plugins.ows.importProjectTitle");
+	public static final String LABEL_OWS_IMPORT_BUTTON = I18N
+			.getString("orbisgis.org.orbisgis.core.ui.plugins.ows.buttonImport");
+	public static final String LABEL_OWS_EXTRACTING_CONTEXT_STATUS = I18N
+			.getString("orbisgis.org.orbisgis.core.ui.plugins.ows.extractingOWSContext");
+	public static final String LABEL_OWS_MUST_SELECT_FILE = I18N
+			.getString("orbisgis.org.orbisgis.core.ui.plugins.ows.mustSelectAFile");
 }
