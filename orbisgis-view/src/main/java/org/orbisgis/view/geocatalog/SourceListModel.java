@@ -47,7 +47,7 @@ import org.orbisgis.utils.I18N;
 import org.orbisgis.view.components.ContainerItemKey;
 import org.orbisgis.view.geocatalog.filters.IFilter;
 import org.orbisgis.view.geocatalog.filters.TableSystemFilter;
-
+import org.apache.commons.collections.ComparatorUtils;
 /**
  * @brief Manage entries of GeoCatalog according to a GDMS SourceManager
  * SourceListModel is a swing component that update the content of the geocatalog
@@ -147,15 +147,10 @@ public class SourceListModel extends AbstractListModel {
                 //System table are not shown, except if the user want to see them (through or filter)
                 tempSourceNames = filter(sourceManager, tempSourceNames, new DefaultFilter());
             }
-            Arrays.sort(tempSourceNames, new Comparator<String>() {
-
-                @Override
-                public int compare(String o1, String o2) {
-                        return o1.toLowerCase().compareTo(o2.toLowerCase());
-                }
-            });
+            //Sort source list
+            Arrays.sort(tempSourceNames,ComparatorUtils.NATURAL_COMPARATOR);
             this.sourceList = new ContainerItemKey[tempSourceNames.length];
-            //Set the label of elements from source names
+            //Set the label of elements from Data Source information
             for(int rowidSource=0;rowidSource<tempSourceNames.length;rowidSource++) {
                 //Try to read the parent schema and place it in the label
                 String schemaName = "";
@@ -193,7 +188,9 @@ public class SourceListModel extends AbstractListModel {
                     filteredNames.add(name);
                 }
             }
-            return filteredNames.toArray(new String[0]);
+            String[] newNames = new String[filteredNames.size()];
+            filteredNames.toArray(newNames);
+            return newNames;
 	}
         /**
          * 

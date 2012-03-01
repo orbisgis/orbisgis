@@ -33,7 +33,12 @@ import org.gdms.source.SourceManager;
  * Accept only system tables
  */
 public class TableSystemFilter implements IFilter {
-
+       /**
+        * Does this filter reject or accept this Source
+        * @param sm Source Manager instance
+        * @param sourceName Source name
+        * @return True if the Source should be shown
+        */
 	public boolean accepts(SourceManager sm, String sourceName) {
 		int type = sm.getSource(sourceName).getType();
 		return (type & SourceManager.SYSTEM_TABLE) == SourceManager.SYSTEM_TABLE;

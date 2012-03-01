@@ -34,12 +34,16 @@ import org.gdms.source.SourceManager;
  * Data Source is Not vectorial, raster, wms or a system table
  */
 public class AlphanumericFilter implements IFilter {
-
-	public boolean accepts(SourceManager sm, String sourceName) {
-		int type = sm.getSource(sourceName).getType();
-		int spatial = SourceManager.VECTORIAL | SourceManager.RASTER
-				| SourceManager.WMS | SourceManager.SYSTEM_TABLE;
-		return (type & spatial) == 0;
-	}
-
+    /**
+    * Does this filter reject or accept this Source
+    * @param sm Source Manager instance
+    * @param sourceName Source name
+    * @return True if the Source should be shown
+    */
+    public boolean accepts(SourceManager sm, String sourceName) {
+        int type = sm.getSource(sourceName).getType();
+        int spatial = SourceManager.VECTORIAL | SourceManager.RASTER
+                        | SourceManager.WMS | SourceManager.SYSTEM_TABLE;
+        return (type & spatial) == 0;
+    }
 }

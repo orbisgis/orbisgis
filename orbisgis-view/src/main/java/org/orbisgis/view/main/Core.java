@@ -185,16 +185,17 @@ public class Core {
         try{
             this.dispose();
         }
-        finally {             
-            SwingUtilities.invokeLater( new Runnable(){
-                /** If an error occuring while unload resources, java machine
-                * may continue to run. In this case, the following command
-                * would terminate the application.
-                */
-                public void run(){
-                        System.exit(0);
-                }
-            } );
-        }
+        finally {      
+            //While Plugins are not implemented do not close the VM in finally clause
+            //SwingUtilities.invokeLater( new Runnable(){
+            //   /** If an error occuring while unload resources, java machine
+            //    * may continue to run. In this case, the following command
+            //    * would terminate the application.
+            //    */
+            //    public void run(){
+            //            System.exit(0);
+            //    }
+            //} );
+        }        
     }
 }

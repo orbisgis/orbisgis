@@ -33,7 +33,12 @@ import org.gdms.source.SourceManager;
  * DataSource is vectorial, raster or wms
  */
 public class GeoFilter implements IFilter {
-
+       /**
+        * Does this filter reject or accept this Source
+        * @param sm Source Manager instance
+        * @param sourceName Source name
+        * @return True if the Source should be shown
+        */
 	public boolean accepts(SourceManager sm, String sourceName) {
 		int type = sm.getSource(sourceName).getType();
 		int spatial = SourceManager.VECTORIAL | SourceManager.RASTER
