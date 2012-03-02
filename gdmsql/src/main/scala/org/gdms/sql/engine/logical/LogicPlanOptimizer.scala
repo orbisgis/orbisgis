@@ -104,8 +104,21 @@ object LogicPlanOptimizer {
   }
   
   def replaceOperationFromBottom(o: Operation, c: Operation => Boolean, f: Operation => Operation): Unit = {
-    o.children foreach (replaceOperation(_, c, f))
+    o.children foreach (replaceOperationFromBottom(_, c, f))
     o.children = o.children map { ch => if (c(ch)) f(ch) else ch }
+  }
+  
+   def replaceOperationFromBottomAndStop(o: Operation, c: Operation => Boolean, f: Operation => Operation): Boolean = {
+    var r = false
+    
+    o.children = o.children map { ch => 
+      r = replaceOperationFromBottomAndStop(ch, c, f)
+      if (!r && c(ch)) {
+        r = true
+        f(ch)
+      } else ch
+    }
+    r
   }
   
   

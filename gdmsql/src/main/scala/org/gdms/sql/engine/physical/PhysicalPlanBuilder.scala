@@ -106,17 +106,17 @@ object PhysicalPlanBuilder {
       }, {ch =>
         
         // will hold table names
-        var tables: List[String] = Nil
+        var tables: List[Scan] = Nil
         
         // gets the table names from the scans
         LogicPlanOptimizer.matchOperationFromBottom(ch, {c =>
             c.isInstanceOf[Scan]
-          }, {c => tables = c.asInstanceOf[Scan].table :: tables
+          }, {c => tables = c.asInstanceOf[Scan] :: tables
           })
         
         // gets the sizes of the tables
         val sizes = tables map { t =>
-          val d = dsf.getDataSource(t)
+          val d = dsf.getDataSource(t.table)
           d.open
           val count = d.getRowCount
           d.close
@@ -130,8 +130,8 @@ object PhysicalPlanBuilder {
         }
         
         // replaces the Scan by an IndexQueryScan
-        LogicPlanOptimizer.replaceOperationFromBottom(ch,{c =>
-            c.isInstanceOf[Scan] && c.asInstanceOf[Scan].table == best._2
+        LogicPlanOptimizer.replaceOperationFromBottomAndStop(ch,{c =>
+            c.isInstanceOf[Scan] && (c eq best._2)
           }, {c => 
             val s = c.asInstanceOf[Scan]
             IndexQueryScan(s.table, s.alias, null)
