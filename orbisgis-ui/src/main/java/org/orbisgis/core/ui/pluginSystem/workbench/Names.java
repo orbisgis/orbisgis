@@ -484,6 +484,8 @@ public abstract class Names {
         /* OWS Plugin */
 	public static final String BUTTON_IMPORT_OWC_TITLE = I18N
 			.getString("orbisgis.org.orbisgis.core.ui.plugins.ows.importOwsFile");
+	public static final String BUTTON_EXPORT_OWC_TITLE = I18N
+			.getString("orbisgis.org.orbisgis.core.ui.plugins.ows.exportOwsFile");
 	public static final String LABEL_OWS_HOST = I18N
 			.getString("orbisgis.org.orbisgis.core.ui.plugins.ows.host");
 	public static final String LABEL_OWS_DB = I18N

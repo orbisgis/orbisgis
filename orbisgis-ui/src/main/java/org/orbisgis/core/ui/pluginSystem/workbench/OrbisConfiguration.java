@@ -126,6 +126,7 @@ import org.orbisgis.core.ui.plugins.orbisgisFrame.status.FreeDefaultWorkspacePlu
 import org.orbisgis.core.ui.plugins.orbisgisFrame.status.WorkspaceNamePlugin;
 import org.orbisgis.core.ui.plugins.orbisgisFrame.workspace.ChangeWorkspacePlugIn;
 import org.orbisgis.core.ui.plugins.orbisgisFrame.workspace.SaveWorkspacePlugIn;
+import org.orbisgis.core.ui.plugins.ows.OwsExportPlugin;
 import org.orbisgis.core.ui.plugins.sql.SQLFunctionsPlugIn;
 import org.orbisgis.core.ui.plugins.toc.CreateChoroplethPlugIn;
 import org.orbisgis.core.ui.plugins.toc.CreateGroupPlugIn;
@@ -278,6 +279,7 @@ public class OrbisConfiguration implements Setup {
         // Tool bar on map
         private ShowXYPlugIn showXYPlugIn = new ShowXYPlugIn();
         private OwsPlugIn owsPlugin = new OwsPlugIn();
+        private OwsExportPlugin owsExportPlugin = new OwsExportPlugin();
         // Scale panel plugin is a swing component to execute action on map editor
         // private ScalePlugIn scalePlugIn = new ScalePlugIn();
         // private CoordinateReferenceSystemPlugIn CRSPlugIn = new
@@ -501,6 +503,7 @@ public class OrbisConfiguration implements Setup {
                 rasterAlgebraPlugIn.initialize(plugInContext);
                 
                 owsPlugin.initialize(plugInContext);
+                owsExportPlugin.initialize(plugInContext);
         }
 
         /**
