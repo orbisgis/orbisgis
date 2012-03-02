@@ -20,13 +20,28 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import javax.swing.JFrame;
 import java.io.File;
+import java.io.StringWriter;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import net.opengis.ows._2.BoundingBoxType;
+import net.opengis.ows._2.KeywordsType;
+import net.opengis.ows._2.LanguageStringType;
+import net.opengis.ows_context.GeneralType;
+import net.opengis.ows_context.LayerType;
+import net.opengis.ows_context.MethodType;
 import net.opengis.ows_context.OWSContextType;
+import net.opengis.ows_context.ObjectFactory;
+import net.opengis.ows_context.OnlineResourceType;
+import net.opengis.ows_context.ResourceListType;
+import net.opengis.ows_context.URLType;
 import org.orbisgis.core.ui.plugins.ows.DbConnectionString;
 import org.orbisgis.core.ui.plugins.ows.OWSContextImporter;
 import org.orbisgis.core.ui.plugins.ows.OWSContextImporterImpl;
@@ -88,6 +103,85 @@ public class ImportFromOwsContextDemo {
         List<ILayer> layers = importer.extractLayers(owsContext);
         
         assertTrue(layers.size() == 1);
+    }
+    
+    private LanguageStringType createLanguageString(String value) {
+        net.opengis.ows._2.ObjectFactory factoryOws = new net.opengis.ows._2.ObjectFactory();
+        LanguageStringType langString = factoryOws.createLanguageStringType();
+        langString.setValue(value);
+
+        return langString;
+    }
+    
+    @Test
+    public void testCreateBasicOwsContextFile() throws JAXBException, ParserConfigurationException {
+        net.opengis.ows._2.ObjectFactory factoryOws = new net.opengis.ows._2.ObjectFactory();
+        ObjectFactory factoryOwsContext = new ObjectFactory();
+        
+        OWSContextType owsContext = factoryOwsContext.createOWSContextType();
+        JAXBElement<OWSContextType> owsContextElement = factoryOwsContext.createOWSContext(owsContext);
+        
+        GeneralType general = factoryOwsContext.createGeneralType();
+        
+        KeywordsType keywords = factoryOws.createKeywordsType();
+        keywords.getKeyword().add(createLanguageString("Switzerland"));
+        keywords.getKeyword().add(createLanguageString("France"));
+        
+        BoundingBoxType boundingBox = factoryOws.createBoundingBoxType();
+        JAXBElement<BoundingBoxType> boundingBoxElement = factoryOws.createBoundingBox(boundingBox);
+        boundingBox.setCrs("EPSG:21781");
+        boundingBox.getLowerCorner().add(new Double(485472));
+        boundingBox.getLowerCorner().add(new Double(75285));
+        boundingBox.getUpperCorner().add(new Double(833838));
+        boundingBox.getUpperCorner().add(new Double(295935));
+        
+        general.setBoundingBox(boundingBoxElement);
+        general.setKeywords(keywords);
+        general.setTitle(createLanguageString("This is a title"));
+        general.setAbstract(createLanguageString("This is an abstract"));
+        
+        
+        LayerType layer = factoryOwsContext.createLayerType();
+
+        URLType dataUrl = factoryOwsContext.createURLType();
+        OnlineResourceType onlineResource = factoryOwsContext.createOnlineResourceType();
+        onlineResource.setHref("pgsql://127.0.0.1:5432/scapdata/g4districts98");
+        dataUrl.setOnlineResource(onlineResource);
+        
+        layer.setHidden(Boolean.FALSE);
+        layer.getTitle().add(createLanguageString("Layer's title"));
+        layer.setDataURL(dataUrl);
+        
+        ResourceListType resourceList = factoryOwsContext.createResourceListType();
+        resourceList.getLayer().add(layer);
+        
+        owsContext.setResourceList(resourceList);
+        owsContext.setGeneral(general);
+        
+        
+        JAXBContext jc = JAXBContext.newInstance("net.opengis.ows_context:net.opengis.wms._2");
+        Marshaller marshaller = jc.createMarshaller();
+        marshaller.setProperty("jaxb.formatted.output", Boolean.TRUE);
+        marshaller.marshal(owsContextElement, System.out);
+        
+        
+        DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        Node nodeOwsContext = documentBuilder.newDocument();
+        marshaller.marshal(owsContextElement, nodeOwsContext);
+        
+        Unmarshaller unmarshaller = jc.createUnmarshaller();
+        JAXBElement<OWSContextType> owsContextImported = importer.unmarshallOwsContext(nodeOwsContext);
+
+        assertTrue(owsContextImported.getValue().getResourceList().getLayer().size() == 1);
+        assertTrue(owsContextImported.getValue().getGeneral().getTitle().getValue().equals("This is a title"));
+        assertTrue(owsContextImported.getValue().getGeneral().getAbstract().getValue().equals("This is an abstract"));
+        assertTrue(owsContextElement.getValue().getResourceList().getLayer().get(0).getDataURL().getOnlineResource().getHref().equals("pgsql://127.0.0.1:5432/scapdata/g4districts98"));
+        
+    }
+    
+    @Test
+    public void testExportOwsProject() {
+        
     }
     
     @Test
