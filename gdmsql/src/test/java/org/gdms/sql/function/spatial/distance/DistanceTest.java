@@ -37,7 +37,8 @@
 package org.gdms.sql.function.spatial.distance;
 
 import com.vividsolutions.jts.geom.Geometry;
-import org.gdms.sql.function.spatial.geometry.distance.ST_PointAlongLine;
+import com.vividsolutions.jts.geom.LineString;
+import org.gdms.sql.function.spatial.geometry.distance.ST_LocateAlong;
 import org.junit.Test;
 import com.vividsolutions.jts.geom.Polygon;
 import org.gdms.data.values.Value;
@@ -54,7 +55,7 @@ public class DistanceTest extends FunctionTest {
          */
         @Test
         public void testST_PointAlongLine() throws Exception {
-                ST_PointAlongLine sT_PointAlongLine = new ST_PointAlongLine();
+                ST_LocateAlong sT_PointAlongLine = new ST_LocateAlong();
                 Polygon geom = (Polygon) wktReader.read("POLYGON ((100 300, 300 300, 300 100, 100 100, 100 300))");
                 Value[] values = new Value[]{ValueFactory.createValue(geom), ValueFactory.createValue(0.5), ValueFactory.createValue(10)};
                 Value result = evaluate(sT_PointAlongLine, values);
@@ -69,7 +70,7 @@ public class DistanceTest extends FunctionTest {
          */
         @Test
         public void testNegativeOffSetST_PointAlongLine() throws Exception {
-                ST_PointAlongLine sT_PointAlongLine = new ST_PointAlongLine();
+                ST_LocateAlong sT_PointAlongLine = new ST_LocateAlong();
                 Polygon geom = (Polygon) wktReader.read("POLYGON ((100 300, 300 300, 300 100, 100 100, 100 300))");
                 Value[] values = new Value[]{ValueFactory.createValue(geom), ValueFactory.createValue(0.5), ValueFactory.createValue(-10)};
                 Value result = evaluate(sT_PointAlongLine, values);
@@ -80,12 +81,34 @@ public class DistanceTest extends FunctionTest {
 
         @Test
         public void testST_PointAlongLineWithHole() throws Exception {
-                ST_PointAlongLine sT_PointAlongLine = new ST_PointAlongLine();
+                ST_LocateAlong sT_PointAlongLine = new ST_LocateAlong();
                 Polygon geom = (Polygon) wktReader.read("POLYGON ((100 300, 300 300, 300 100, 100 100, 100 300), (150 240, 250 240, 250 160, 150 160, 150 240))");
                 Value[] values = new Value[]{ValueFactory.createValue(geom), ValueFactory.createValue(0.5), ValueFactory.createValue(10)};
                 Value result = evaluate(sT_PointAlongLine, values);
                 System.out.println(result.getAsGeometry());
                 Geometry input = wktReader.read("MULTIPOINT ((310 200), (90 200), (200 310), (200 90))");
+                assertTrue(result.getAsGeometry().equals(input));
+        }
+
+        @Test
+        public void testST_PointAlongLineWithLine() throws Exception {
+                ST_LocateAlong sT_PointAlongLine = new ST_LocateAlong();
+                LineString geom = (LineString) wktReader.read("LINESTRING (100 300, 300 300, 300 100)");
+                Value[] values = new Value[]{ValueFactory.createValue(geom), ValueFactory.createValue(0.5), ValueFactory.createValue(10)};
+                Value result = evaluate(sT_PointAlongLine, values);
+                System.out.println(result.getAsGeometry());
+                Geometry input = wktReader.read("MULTIPOINT ((310 200), (200 310))");
+                assertTrue(result.getAsGeometry().equals(input));
+        }
+
+        @Test
+        public void testST_PointAlongLineCollection() throws Exception {
+                ST_LocateAlong sT_PointAlongLine = new ST_LocateAlong();
+                Geometry geom = wktReader.read("GEOMETRYCOLLECTION (POLYGON ((100 300, 350 300, 350 100, 100 100, 100 300)), LINESTRING (100 350, 350 350), LINESTRING (50 300, 50 100))");
+                Value[] values = new Value[]{ValueFactory.createValue(geom), ValueFactory.createValue(0.5), ValueFactory.createValue(10)};
+                Value result = evaluate(sT_PointAlongLine, values);
+                System.out.println(result.getAsGeometry());
+                Geometry input = wktReader.read("MULTIPOINT ((225 310), (225 360), (90 200), (360 200), (60 200), (225 90))");
                 assertTrue(result.getAsGeometry().equals(input));
         }
 }

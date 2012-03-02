@@ -58,7 +58,7 @@ import org.gdms.sql.function.FunctionSignature;
 /**
  * Compute points along a line.
  */
-public final class ST_PointAlongLine extends AbstractScalarSpatialFunction {
+public final class ST_LocateAlong extends AbstractScalarSpatialFunction {
 
         GeometryFactory gf = new GeometryFactory();
 
@@ -135,17 +135,19 @@ public final class ST_PointAlongLine extends AbstractScalarSpatialFunction {
 
         @Override
         public String getName() {
-                return "ST_PointAlongLine";
+                return "ST_LocateAlong";
         }
 
         @Override
         public String getDescription() {
-                return "Compute points along a geometry.";
+                return "Return a collection of points along a line that match the specified segment length fraction and offset distance.\n"
+                        + "A positive offset will be to the left, and a negative one to the right.\n"
+                        + "Note : For surface elements only exterior ring are supported.";
         }
 
         @Override
         public String getSqlOrder() {
-                return "select ST_PointAlongLine(the_geom, segmentLengthFraction,  offsetDistance) from myTable;";
+                return "select ST_LocateAlong(the_geom, segmentLengthFraction,  offsetDistance) from myTable;";
         }
 
         @Override
