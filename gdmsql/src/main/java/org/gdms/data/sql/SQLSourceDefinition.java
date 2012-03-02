@@ -244,7 +244,7 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
                 if (obj instanceof SQLSourceDefinition) {
                         SQLSourceDefinition dsd = (SQLSourceDefinition) obj;
                         final String sql = getSQL();
-                        if (sql != null) {
+                        if (statement == null && sql != null) {
                                 return sql.equals(dsd.getSQL());
                         } else {
                                 return statement.equals(dsd.statement);
@@ -261,7 +261,7 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
 
         @Override
         public int hashCode() {
-                return 751 + getSQL().hashCode();
+                return 751 + (statement == null ? tempSQL.hashCode() : statement.hashCode());
         }
 
         /**
