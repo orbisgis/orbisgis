@@ -88,40 +88,25 @@ public final class ST_LocateAlong extends AbstractScalarSpatialFunction {
          */
         public Geometry computePointAlongOffSet(Geometry geom, double segmentLengthFraction, double offsetDistance) {
                 int numGeom = geom.getNumGeometries();
-                if (numGeom > 1) {
-                        HashSet<Coordinate> acc = new HashSet<Coordinate>();
-                        for (int i = 0; i < numGeom; i++) {
-                                //Dot not take into account hole.                                
-                                Geometry subGeom = geom.getGeometryN(i);
-                                if (GeometryTypeUtil.isPolygon(subGeom)) {
-                                        Polygon polygon = (Polygon) subGeom;
-                                        HashSet<Coordinate> result = compute(polygon.getExteriorRing().getCoordinates(), segmentLengthFraction, offsetDistance);
-                                        acc.addAll(result);
-                                } else if (GeometryTypeUtil.isLineString(subGeom)) {
-                                        HashSet<Coordinate> result = compute(subGeom.getCoordinates(), segmentLengthFraction, offsetDistance);
-                                        acc.addAll(result);
-                                }
-
-                        }
-                        return gf.createMultiPoint(acc.toArray(new Coordinate[acc.size()]));
-                } else {
-                        if (GeometryTypeUtil.isPolygon(geom)) {
-                                Polygon polygon = (Polygon) geom;
+                HashSet<Coordinate> acc = new HashSet<Coordinate>();
+                for (int i = 0; i < numGeom; i++) {                                                      
+                        Geometry subGeom = geom.getGeometryN(i);
+                        if (GeometryTypeUtil.isPolygon(subGeom)) {
+                                Polygon polygon = (Polygon) subGeom;
+                                //Dot not take into account hole.  
                                 HashSet<Coordinate> result = compute(polygon.getExteriorRing().getCoordinates(), segmentLengthFraction, offsetDistance);
-                                return gf.createMultiPoint(result.toArray(new Coordinate[result.size()]));
-                        } else if (GeometryTypeUtil.isLineString(geom)) {
-                                HashSet<Coordinate> result = compute(geom.getCoordinates(), segmentLengthFraction, offsetDistance);
-                                return gf.createMultiPoint(result.toArray(new Coordinate[result.size()]));
-                        } else {
-                                return null;
+                                acc.addAll(result);
+                        } else if (GeometryTypeUtil.isLineString(subGeom)) {
+                                HashSet<Coordinate> result = compute(subGeom.getCoordinates(), segmentLengthFraction, offsetDistance);
+                                acc.addAll(result);
                         }
 
                 }
+                return gf.createMultiPoint(acc.toArray(new Coordinate[acc.size()]));
         }
 
         private HashSet<Coordinate> compute(Coordinate[] coords, double segmentLengthFraction, double offsetDistance) {
                 HashSet<Coordinate> coordOffSet = new HashSet<Coordinate>();
-
                 for (int j = 0; j < coords.length - 1; j++) {
                         LineSegment seg = new LineSegment(coords[j], coords[j + 1]);
                         Coordinate coord = seg.pointAlongOffset(segmentLengthFraction, offsetDistance);
