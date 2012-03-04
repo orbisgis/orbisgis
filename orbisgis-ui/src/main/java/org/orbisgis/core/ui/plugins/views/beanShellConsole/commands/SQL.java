@@ -38,7 +38,6 @@
 package org.orbisgis.core.ui.plugins.views.beanShellConsole.commands;
 
 
-import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundManager;
 
@@ -48,7 +47,6 @@ import org.orbisgis.core.ui.plugins.views.sqlConsole.actions.ExecuteScriptProces
 
 public class SQL {
 
-	private static final Logger logger = Logger.getLogger(SQL.class);
 
 	/**
 	 * Implement the command action.

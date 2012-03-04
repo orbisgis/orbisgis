@@ -53,7 +53,6 @@ import java.awt.event.MouseListener;
 
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
-import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 
 public abstract class AbstractOutsideFrame extends JDialog implements
