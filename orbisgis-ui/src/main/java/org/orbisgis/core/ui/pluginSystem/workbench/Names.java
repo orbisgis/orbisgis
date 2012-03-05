@@ -500,6 +500,8 @@ public abstract class Names {
 			.getString("orbisgis.org.orbisgis.core.ui.plugins.ows.buttonValidate");
 	public static final String LABEL_ENTER_DATASOURCE_CREDENTIALS = I18N
 			.getString("orbisgis.org.orbisgis.core.ui.plugins.ows.enterDataSourceCredentials");
+	public static final String LABEL_EXPORT_OWS_PROJECT = I18N
+			.getString("orbisgis.org.orbisgis.core.ui.plugins.ows.exportOwsProjectTitle");
 	public static final String LABEL_USERNAME_OR_PASSWORD_INVALID = I18N
 			.getString("orbisgis.org.orbisgis.core.ui.plugins.ows.usernameOrPasswordInvalid");
 	public static final String LABEL_OWS_PROJECTS = I18N
@@ -512,4 +514,14 @@ public abstract class Names {
 			.getString("orbisgis.org.orbisgis.core.ui.plugins.ows.extractingOWSContext");
 	public static final String LABEL_OWS_MUST_SELECT_FILE = I18N
 			.getString("orbisgis.org.orbisgis.core.ui.plugins.ows.mustSelectAFile");
+	public static final String LABEL_OWS_TITLE = I18N
+			.getString("orbisgis.org.orbisgis.core.ui.plugins.ows.labelTitle");
+	public static final String LABEL_OWS_DESCRIPTION = I18N
+			.getString("orbisgis.org.orbisgis.core.ui.plugins.ows.labelDescription");
+	public static final String LABEL_OWS_CRS = I18N
+			.getString("orbisgis.org.orbisgis.core.ui.plugins.ows.labelCrs");
+	public static final String LABEL_OWS_EXPORT_BUTTON = I18N
+			.getString("orbisgis.org.orbisgis.core.ui.plugins.ows.buttonExport");
+	public static final String LABEL_OWS_EXPORT_AS_BUTTON = I18N
+			.getString("orbisgis.org.orbisgis.core.ui.plugins.ows.buttonExportAs");
 }
