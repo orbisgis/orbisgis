@@ -212,7 +212,7 @@ public abstract class LegendUICategorizePanel extends LegendUIComponent
             }
 
             if (i < categorize.getNumClasses() - 1) {
-                thresholds.add(new MetaRealThreshold(controller, this, categorize.getThresholdValue(i), i));
+                thresholds.add(new MetaRealThreshold(controller, this, categorize.getClassThreshold(i), i));
             }
         }
         literalChanged();
@@ -334,7 +334,7 @@ public abstract class LegendUICategorizePanel extends LegendUIComponent
         }
 
         //System.out.println("Add threshold: " + (i - 1));
-        thresholds.add(i - 1, new MetaRealThreshold(controller, this, categorize.getThresholdValue(i - 1), i));
+        thresholds.add(i - 1, new MetaRealThreshold(controller, this, categorize.getClassThreshold(i - 1), i));
 
         controller.structureChanged(this);
     }
@@ -374,7 +374,7 @@ public abstract class LegendUICategorizePanel extends LegendUIComponent
 
         // classes
         for (int i = 0; i < categorize.getNumClasses() - 1; i++) {
-            thresholds.add(new MetaRealThreshold(controller, this, categorize.getThresholdValue(i), i));
+            thresholds.add(new MetaRealThreshold(controller, this, categorize.getClassThreshold(i), i));
         }
         controller.structureChanged(this);
     }
@@ -487,14 +487,13 @@ public abstract class LegendUICategorizePanel extends LegendUIComponent
 
         public MetaRealThreshold(LegendUIController controller, LegendUIComponent parent, RealParameter value, int i) {
             super("Threshold", controller, parent, value, false);
-            //System.out.println("Threshold: " + value);
             this.i = i;
             init();
         }
 
         @Override
         public void realChanged(RealParameter newReal) {
-            categorize.setThresholdValue(i, (RealLiteral)newReal);
+            categorize.setClassThreshold(i, (RealLiteral)newReal);
             fireChange();
         }
 
