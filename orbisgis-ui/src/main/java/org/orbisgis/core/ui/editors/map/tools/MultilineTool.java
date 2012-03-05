@@ -94,7 +94,6 @@ public class MultilineTool extends AbstractMultilineTool {
 		DataSource sds = mc.getActiveLayer().getDataSource();
 		try {
 			Value[] row = new Value[sds.getMetadata().getFieldCount()];
-                        mls.setSRID(sds.getSRID());
 			row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(mls);
 			row = ToolUtilities.populateNotNullFields(sds, row);
 			sds.insertFilledRow(row);
