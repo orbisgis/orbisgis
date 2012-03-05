@@ -80,22 +80,9 @@ public class OWSContextImporterImpl implements OWSContextImporter {
                 // Set current layer's styles
                 List<StyleType> styles = owsLayer.getStyleList().getStyle();
                 for (StyleType style : styles) {
-
-                    // Todo: Use Adapter design pattern instead of this...
-                    net.opengis.se._2_0.core.StyleType st = new net.opengis.se._2_0.core.StyleType();
-                    st.setName(style.getSLD().getStyle().getName());
-                    st.setDescription(style.getSLD().getStyle().getDescription());
-                    st.setDataTypeName(style.getSLD().getStyle().getDataTypeName());
-                    st.setVersion(style.getSLD().getStyle().getVersion());
-
-                    st.getRule().clear();
-                    for (RuleType rule : style.getSLD().getStyle().getRule()) {
-                        st.getRule().add(rule);
-                    }
                     try {
-                        Style s = new Style(st, newLayer);
                         if (style.isCurrent()) {
-                            newLayer.setStyle(s);
+                            newLayer.setStyle(new Style(style.getSLD().getStyle(), newLayer));
 
                         }
                     } catch (InvalidStyle ex) {
