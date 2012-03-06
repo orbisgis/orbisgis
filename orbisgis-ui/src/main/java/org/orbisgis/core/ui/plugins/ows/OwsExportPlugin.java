@@ -36,7 +36,8 @@ public class OwsExportPlugin extends AbstractPlugIn {
     public boolean execute(PlugInContext context) throws Exception {
         UIPanel panel;
 
-        panel = new OwsExportPanel(context.getMapContext(), new OWSContextExporterImpl(), 
+        panel = new OwsExportPanel(context.getMapContext(), 
+                new OWSContextExporterImpl(new OwsServiceImpl()), 
                 new OwsFileExportListenerImpl());
 
 

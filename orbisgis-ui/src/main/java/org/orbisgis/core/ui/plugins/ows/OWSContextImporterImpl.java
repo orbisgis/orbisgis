@@ -16,7 +16,6 @@ import javax.xml.bind.Unmarshaller;
 import net.opengis.ows_context.LayerType;
 import net.opengis.ows_context.OWSContextType;
 import net.opengis.ows_context.StyleType;
-import net.opengis.se._2_0.core.RuleType;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
@@ -77,7 +76,8 @@ public class OWSContextImporterImpl implements OWSContextImporter {
                 newLayer.setName(owsLayer.getTitle().get(0).getValue());
 
 
-                // Set current layer's styles
+                // Set current layer's styles. WARNING, only the last style whose
+                // attribute 'current' is equals to 'true' is taken into account.
                 List<StyleType> styles = owsLayer.getStyleList().getStyle();
                 for (StyleType style : styles) {
                     try {

@@ -15,13 +15,15 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- *
+ * Proxy for the remote services.
  * @author CŽdric Le Glaunec <cedric.leglaunec@gmail.com>
  */
 public class OwsServiceImpl implements OwsService {
@@ -77,6 +79,15 @@ public class OwsServiceImpl implements OwsService {
         
         return node;
 
+    }
+
+    @Override
+    public void saveOwsFileAs(String data) {
+        String url = OwsContextUtils.getServiceExportOwsAsUrl();
+        List<NameValuePair> formparams = new ArrayList<NameValuePair>();
+        formparams.add(new BasicNameValuePair("owc", data));
+        
+        OwsContextUtils.callServicePost(url, formparams);
     }
 
     private class OwsSAXHandler extends DefaultHandler {

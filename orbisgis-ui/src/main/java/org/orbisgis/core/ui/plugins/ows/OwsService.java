@@ -8,7 +8,7 @@ import java.util.List;
 import org.w3c.dom.Node;
 
 /**
- *
+ * Proxy for the remote services.
  * @author CŽdric Le Glaunec <cedric.leglaunec@gmail.com>
  */
 public interface OwsService {
@@ -27,4 +27,11 @@ public interface OwsService {
      * if the result is intended to be unmarshalled by JAXB.
      */
     public Node getOwsFile(int id);
+    
+    /**
+     * Saves the project as a new ows context file in the repository.
+     * @param data The ows context file as text. Do not forget to add the prefix
+     * "owc=" before the actual ows context data.
+     */
+    public void saveOwsFileAs(String data);
 }

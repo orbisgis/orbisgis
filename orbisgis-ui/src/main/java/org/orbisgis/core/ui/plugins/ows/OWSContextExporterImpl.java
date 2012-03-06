@@ -5,6 +5,7 @@
 package org.orbisgis.core.ui.plugins.ows;
 
 import com.vividsolutions.jts.geom.Envelope;
+import java.io.StringWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.bind.JAXBContext;
@@ -24,9 +25,7 @@ import net.opengis.ows_context.SLDType;
 import net.opengis.ows_context.StyleListType;
 import net.opengis.ows_context.StyleType;
 import net.opengis.ows_context.URLType;
-import org.gdms.data.DataSource;
 import org.gdms.data.db.DBSource;
-import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 
 /**
@@ -35,6 +34,12 @@ import org.orbisgis.core.layerModel.ILayer;
  */
 public class OWSContextExporterImpl implements OWSContextExporter {
 
+    private final OwsService owsService;
+    
+    public OWSContextExporterImpl(OwsService owsService) {
+        this.owsService = owsService;
+    }
+    
     private LanguageStringType createLanguageString(String value) {
         net.opengis.ows._2.ObjectFactory factoryOws = new net.opengis.ows._2.ObjectFactory();
         LanguageStringType langString = factoryOws.createLanguageStringType();
@@ -77,34 +82,38 @@ public class OWSContextExporterImpl implements OWSContextExporter {
         ResourceListType resourceList = factoryOwsContext.createResourceListType();
         
         for (int i = 0; i < layers.length; i++) {
-            DBSource dbs = layers[i].getDataSource().getSource().getDBSource();
-
             
-            String href = String.format("%s://%s:%d/%s/%s", dbs.getPrefix(), dbs.getHost(), 
-                    dbs.getPort(), dbs.getDbName(), dbs.getTableName());
+            if (layers[i].isVisible()) {
+                DBSource dbs = layers[i].getDataSource().getSource().getDBSource();
 
-            LayerType layer = factoryOwsContext.createLayerType();
 
-            URLType dataUrl = factoryOwsContext.createURLType();
-            OnlineResourceType onlineResource = factoryOwsContext.createOnlineResourceType();
-            onlineResource.setHref(href);
-            dataUrl.setOnlineResource(onlineResource);
-            
-            StyleListType styleList = factoryOwsContext.createStyleListType();
-            StyleType styleSldWrap = factoryOwsContext.createStyleType();
-            SLDType sldType = factoryOwsContext.createSLDType();
-            
-            sldType.setStyle(layers[i].getStyle().getJAXBElement().getValue());
-            styleSldWrap.setSLD(sldType);
-            styleList.getStyle().add(styleSldWrap);
+                String href = String.format("%s://%s:%d/%s/%s", "pgsql", dbs.getHost(), 
+                        dbs.getPort(), dbs.getDbName(), dbs.getTableName());
 
-            layer.setHidden(Boolean.FALSE);
-            layer.getTitle().add(createLanguageString(layers[i].getName()));
-            layer.setDataURL(dataUrl);
-            layer.setStyleList(styleList);
+                LayerType layer = factoryOwsContext.createLayerType();
 
-            
-            resourceList.getLayer().add(layer);
+                URLType dataUrl = factoryOwsContext.createURLType();
+                OnlineResourceType onlineResource = factoryOwsContext.createOnlineResourceType();
+                onlineResource.setHref(href);
+                dataUrl.setOnlineResource(onlineResource);
+
+                StyleListType styleList = factoryOwsContext.createStyleListType();
+                StyleType styleSldWrap = factoryOwsContext.createStyleType();
+                SLDType sldType = factoryOwsContext.createSLDType();
+
+                sldType.setStyle(layers[i].getStyle().getJAXBElement().getValue());
+                styleSldWrap.setCurrent(Boolean.TRUE); // Note: The current model only supports 1 style per layer
+                styleSldWrap.setSLD(sldType);
+                styleList.getStyle().add(styleSldWrap);
+
+                layer.setHidden(Boolean.FALSE);
+                layer.getTitle().add(createLanguageString(layers[i].getName()));
+                layer.setDataURL(dataUrl);
+                layer.setStyleList(styleList);
+
+
+                resourceList.getLayer().add(layer);
+            }
         }
         
         owsContext.setResourceList(resourceList);
@@ -116,7 +125,12 @@ public class OWSContextExporterImpl implements OWSContextExporter {
             jc = JAXBContext.newInstance("net.opengis.ows_context:net.opengis.wms._2");
             Marshaller marshaller = jc.createMarshaller();
             marshaller.setProperty("jaxb.formatted.output", Boolean.TRUE);
-            marshaller.marshal(owsContextElement, System.out);
+            //marshaller.marshal(owsContextElement, System.out);
+            StringWriter sw = new StringWriter();
+            marshaller.marshal(owsContextElement, sw);
+            System.out.println(sw.toString()); // DEBUG
+            
+            owsService.saveOwsFileAs(sw.toString());
         } catch (JAXBException ex) {
             Logger.getLogger(OWSContextExporterImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
