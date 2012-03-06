@@ -156,12 +156,14 @@ public class OwsPlugIn extends AbstractPlugIn {
         public class OwsDataSourceCredentialsRequiredListenerImpl implements
                 OwsDataSourceCredentialsRequiredListener {
 
-
+            private boolean layersAlreadyAdded;
+            
             public OwsDataSourceCredentialsRequiredListenerImpl() {
             }
 
             @Override
             public void credentialsOk(DBSource source) {
+                layersAlreadyAdded = false;
                 OwsPlugIn.this.credentialsDialog.setVisible(false);
                 OwsFileImportListenerImpl.this.nbDataSourcesChecked++;
                 
@@ -213,14 +215,20 @@ public class OwsPlugIn extends AbstractPlugIn {
 
                         @Override
                         public void elementLoaded(IEditor editor, Component comp) {
-                            for (ILayer layer : layers) {
-                                try {
-                                    mapContext.getLayerModel().addLayer(layer);
+                            // WARNING: This is a trick to prevent layers from being
+                            // added more than one time to the layer model
+                            if (!layersAlreadyAdded) {
+                                for (ILayer layer : layers) {
+                                    try {
+                                        mapContext.getLayerModel().addLayer(layer);
 
-                                } catch (LayerException ex) {
-                                    Logger.getLogger(OwsPlugIn.class.getName()).log(Level.SEVERE, null, ex);
+                                    } catch (LayerException ex) {
+                                        Logger.getLogger(OwsPlugIn.class.getName()).log(Level.SEVERE, null, ex);
+                                    }
                                 }
+                                layersAlreadyAdded = true;
                             }
+
 
                             importOwsDialog.setVisible(false);
                         }
