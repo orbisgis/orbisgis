@@ -44,6 +44,7 @@ package org.gdms.data.values;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import org.gdms.data.types.Type;
+import org.jproj.CoordinateReferenceSystem;
 
 /**
  *
@@ -51,8 +52,8 @@ import org.gdms.data.types.Type;
  */
 public class DefaultGeometryCollectionValue extends DefaultGeometryValue implements GeometryCollectionValue {
 
-        public DefaultGeometryCollectionValue(GeometryCollection g) {
-                super(g);
+        public DefaultGeometryCollectionValue(GeometryCollection g, CoordinateReferenceSystem crs) {
+                super(g, crs);
         }
 
         @Override

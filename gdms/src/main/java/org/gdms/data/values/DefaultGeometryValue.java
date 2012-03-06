@@ -49,13 +49,16 @@ import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.ParseException;
 import java.util.Arrays;
 import org.gdms.geometryUtils.GeometryTypeUtil;
+import org.jproj.CoordinateReferenceSystem;
 
 abstract class DefaultGeometryValue extends AbstractValue implements GeometryValue {
 
         private Geometry geom;
+        private CoordinateReferenceSystem crs;
 
-        DefaultGeometryValue(Geometry g) {
+        DefaultGeometryValue(Geometry g, CoordinateReferenceSystem crs) {
                 this.geom = g;
+                this.crs = crs;
         }
 
         @Override
@@ -171,9 +174,9 @@ abstract class DefaultGeometryValue extends AbstractValue implements GeometryVal
                 }
         }
 
-        public static Value readBytes(byte[] buffer) {
+        public static Value readBytes(byte[] buffer, CoordinateReferenceSystem crs) {
                 try {
-                        return ValueFactory.createValue(WKBUtil.getWKBReaderInstance().read(buffer));
+                        return ValueFactory.createValue(WKBUtil.getWKBReaderInstance().read(buffer), crs);
                 } catch (ParseException e) {
                         throw new IllegalStateException(e);
                 }
@@ -184,10 +187,10 @@ abstract class DefaultGeometryValue extends AbstractValue implements GeometryVal
                 return geom;
         }
 
-        public static Value parseString(String text) throws ParseException {
+        public static Value parseString(String text, CoordinateReferenceSystem crs) throws ParseException {
                 Geometry readGeometry = WKBUtil.getWKTReaderInstance().read(text);
                 if (readGeometry != null) {
-                        return ValueFactory.createValue(readGeometry);
+                        return ValueFactory.createValue(readGeometry, crs);
                 } else {
                         throw new ParseException("Cannot parse geometry: " + text);
                 }
@@ -213,12 +216,12 @@ abstract class DefaultGeometryValue extends AbstractValue implements GeometryVal
                                         case Type.MULTILINESTRING:
                                         case Type.MULTIPOINT:
                                         case Type.MULTIPOLYGON:
-                                                return ValueFactory.createValue((GeometryCollection) geom);
+                                                return ValueFactory.createValue((GeometryCollection) geom, crs);
                                         case Type.POINT:
                                         case Type.LINESTRING:
                                         case Type.POLYGON:
                                                 return ValueFactory.createValue(
-                                                        geom.getFactory().createGeometryCollection(new Geometry[]{geom}));
+                                                        geom.getFactory().createGeometryCollection(new Geometry[]{geom}), crs);
                                         default:
                                                 return super.toType(typeCode);
                                 }
@@ -236,7 +239,7 @@ abstract class DefaultGeometryValue extends AbstractValue implements GeometryVal
                                                         return super.toType(typeCode);
                                                 }
                                         }
-                                        return ValueFactory.createValue(geom.getFactory().createMultiLineString(geoms));
+                                        return ValueFactory.createValue(geom.getFactory().createMultiLineString(geoms), crs);
                                 }
                         case Type.MULTIPOINT:
                                 if (myType == Type.GEOMETRYCOLLECTION || myType == Type.POINT) {
@@ -250,7 +253,7 @@ abstract class DefaultGeometryValue extends AbstractValue implements GeometryVal
                                                         return super.toType(typeCode);
                                                 }
                                         }
-                                        return ValueFactory.createValue(geom.getFactory().createMultiPoint(geoms));
+                                        return ValueFactory.createValue(geom.getFactory().createMultiPoint(geoms), crs);
                                 }
                         case Type.MULTIPOLYGON:
                                 if (myType == Type.GEOMETRYCOLLECTION || myType == Type.POLYGON) {
@@ -264,10 +267,16 @@ abstract class DefaultGeometryValue extends AbstractValue implements GeometryVal
                                                         return super.toType(typeCode);
                                                 }
                                         }
-                                        return ValueFactory.createValue(geom.getFactory().createMultiPolygon(geoms));
+                                        return ValueFactory.createValue(geom.getFactory().createMultiPolygon(geoms), crs);
                                 }
                         default:
                                 return super.toType(typeCode);
                 }
         }
+
+        @Override
+        public CoordinateReferenceSystem getCRS() {
+                return crs;
+        }
+        
 }

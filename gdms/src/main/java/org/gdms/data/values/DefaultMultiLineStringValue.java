@@ -45,6 +45,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.MultiLineString;
 import org.gdms.data.types.Type;
+import org.jproj.CoordinateReferenceSystem;
 
 /**
  *
@@ -52,8 +53,8 @@ import org.gdms.data.types.Type;
  */
 public class DefaultMultiLineStringValue extends DefaultGeometryCollectionValue implements MultiLineStringValue {
 
-        public DefaultMultiLineStringValue(MultiLineString g) {
-                super(g);
+        public DefaultMultiLineStringValue(MultiLineString g,  CoordinateReferenceSystem crs) {
+                super(g, crs);
         }
 
         @Override

@@ -44,6 +44,7 @@ package org.gdms.data.values;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
 import org.gdms.data.types.Type;
+import org.jproj.CoordinateReferenceSystem;
 
 /**
  *
@@ -51,8 +52,8 @@ import org.gdms.data.types.Type;
  */
 public class DefaultPolygonValue extends DefaultGeometryValue implements PolygonValue {
 
-        public DefaultPolygonValue(Polygon g) {
-                super(g);
+        public DefaultPolygonValue(Polygon g,  CoordinateReferenceSystem crs) {
+                super(g, crs);
         }
 
         @Override

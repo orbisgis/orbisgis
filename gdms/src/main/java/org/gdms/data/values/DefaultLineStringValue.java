@@ -44,6 +44,7 @@ package org.gdms.data.values;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import org.gdms.data.types.Type;
+import org.jproj.CoordinateReferenceSystem;
 
 /**
  *
@@ -51,8 +52,8 @@ import org.gdms.data.types.Type;
  */
 public class DefaultLineStringValue extends DefaultGeometryValue implements LineStringValue {
 
-        public DefaultLineStringValue(LineString g) {
-                super(g);
+        public DefaultLineStringValue(LineString g,  CoordinateReferenceSystem crs) {
+                super(g, crs);
         }
 
         @Override

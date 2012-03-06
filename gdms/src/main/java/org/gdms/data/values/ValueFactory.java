@@ -59,6 +59,7 @@ import java.util.Locale;
 import org.apache.log4j.Logger;
 import org.gdms.data.types.IncompatibleTypesException;
 import org.gdms.data.types.InvalidTypeException;
+import org.jproj.CoordinateReferenceSystem;
 
 /**
  * Factory to instantiate Value instances from basic types
@@ -279,7 +280,7 @@ public final class ValueFactory {
                         case Type.MULTIPOINT:
                         case Type.MULTIPOLYGON:
                                 try {
-                                        value = DefaultGeometryValue.parseString(text);
+                                        value = DefaultGeometryValue.parseString(text, null);
                                 } catch (com.vividsolutions.jts.io.ParseException e) {
                                         LOG.error("Error parsing geometry", e);
                                         throw new ParseException("Cannot parse geometry:" + e.getMessage(), -1);
@@ -574,24 +575,25 @@ public final class ValueFactory {
          * Creates a Value instance that contains the specified geometry value
          *
          * @param geom
+         * @param crs 
          * @return
          */
-        public static GeometryValue createValue(Geometry geom) {
+        public static GeometryValue createValue(Geometry geom, CoordinateReferenceSystem crs) {
                 if (geom != null) {
                         if (geom instanceof Point) {
-                                return createValue((Point) geom);
+                                return createValue((Point) geom, crs);
                         } else if (geom instanceof LineString) {
-                                return createValue((LineString) geom);
+                                return createValue((LineString) geom, crs);
                         } else if (geom instanceof Polygon) {
-                                return createValue((Polygon) geom);
+                                return createValue((Polygon) geom, crs);
                         } else if (geom instanceof MultiPoint) {
-                                return createValue((MultiPoint) geom);
+                                return createValue((MultiPoint) geom, crs);
                         } else if (geom instanceof MultiLineString) {
-                                return createValue((MultiLineString) geom);
+                                return createValue((MultiLineString) geom, crs);
                         } else if (geom instanceof MultiPolygon) {
-                                return createValue((MultiPolygon) geom);
+                                return createValue((MultiPolygon) geom, crs);
                         } else if (geom instanceof GeometryCollection) {
-                                return createValue((GeometryCollection) geom);
+                                return createValue((GeometryCollection) geom, crs);
                         } else {
                                 throw new InvalidTypeException("Unknown geometry type: " + geom.getGeometryType());
                         }
@@ -599,7 +601,32 @@ public final class ValueFactory {
                         return createNullValue();
                 }
         }
+        
+        /**
+         * Creates a Value instance that contains the specified geometry value
+         *
+         * @param geom
+         * @return
+         */
+        public static GeometryValue createValue(Geometry geom) {
+                return createValue(geom, null);
+        }
 
+        /**
+         * Creates a Value instance that contains the specified Point value
+         *
+         * @param geom
+         * @param crs 
+         * @return
+         */
+        public static PointValue createValue(Point geom, CoordinateReferenceSystem crs) {
+                if (geom != null) {
+                        return new DefaultPointValue(geom, crs);
+                } else {
+                        return createNullValue();
+                }
+        }
+        
         /**
          * Creates a Value instance that contains the specified Point value
          *
@@ -607,13 +634,24 @@ public final class ValueFactory {
          * @return
          */
         public static PointValue createValue(Point geom) {
+                return createValue(geom, null);
+        }
+
+        /**
+         * Creates a Value instance that contains the specified LineString value
+         *
+         * @param geom
+         * @param crs 
+         * @return
+         */
+        public static LineStringValue createValue(LineString geom, CoordinateReferenceSystem crs) {
                 if (geom != null) {
-                        return new DefaultPointValue(geom);
+                        return new DefaultLineStringValue(geom, crs);
                 } else {
                         return createNullValue();
                 }
         }
-
+        
         /**
          * Creates a Value instance that contains the specified LineString value
          *
@@ -621,13 +659,24 @@ public final class ValueFactory {
          * @return
          */
         public static LineStringValue createValue(LineString geom) {
+                return createValue(geom, null);
+        }
+
+        /**
+         * Creates a Value instance that contains the specified LineString value
+         *
+         * @param geom
+         * @param crs 
+         * @return
+         */
+        public static PolygonValue createValue(Polygon geom, CoordinateReferenceSystem crs) {
                 if (geom != null) {
-                        return new DefaultLineStringValue(geom);
+                        return new DefaultPolygonValue(geom, crs);
                 } else {
                         return createNullValue();
                 }
         }
-
+        
         /**
          * Creates a Value instance that contains the specified LineString value
          *
@@ -635,13 +684,24 @@ public final class ValueFactory {
          * @return
          */
         public static PolygonValue createValue(Polygon geom) {
+                return createValue(geom, null);
+        }
+
+        /**
+         * Creates a Value instance that contains the specified LineString value
+         *
+         * @param geom
+         * @param crs 
+         * @return
+         */
+        public static GeometryCollectionValue createValue(GeometryCollection geom, CoordinateReferenceSystem crs) {
                 if (geom != null) {
-                        return new DefaultPolygonValue(geom);
+                        return new DefaultGeometryCollectionValue(geom, crs);
                 } else {
                         return createNullValue();
                 }
         }
-
+        
         /**
          * Creates a Value instance that contains the specified LineString value
          *
@@ -649,13 +709,24 @@ public final class ValueFactory {
          * @return
          */
         public static GeometryCollectionValue createValue(GeometryCollection geom) {
+                return createValue(geom, null);
+        }
+
+        /**
+         * Creates a Value instance that contains the specified LineString value
+         *
+         * @param geom
+         * @param crs 
+         * @return
+         */
+        public static MultiPointValue createValue(MultiPoint geom, CoordinateReferenceSystem crs) {
                 if (geom != null) {
-                        return new DefaultGeometryCollectionValue(geom);
+                        return new DefaultMultiPointValue(geom, crs);
                 } else {
                         return createNullValue();
                 }
         }
-
+        
         /**
          * Creates a Value instance that contains the specified LineString value
          *
@@ -663,13 +734,24 @@ public final class ValueFactory {
          * @return
          */
         public static MultiPointValue createValue(MultiPoint geom) {
+                return createValue(geom, null);
+        }
+
+        /**
+         * Creates a Value instance that contains the specified LineString value
+         *
+         * @param geom
+         * @param crs 
+         * @return
+         */
+        public static MultiLineStringValue createValue(MultiLineString geom, CoordinateReferenceSystem crs) {
                 if (geom != null) {
-                        return new DefaultMultiPointValue(geom);
+                        return new DefaultMultiLineStringValue(geom, crs);
                 } else {
                         return createNullValue();
                 }
         }
-
+        
         /**
          * Creates a Value instance that contains the specified LineString value
          *
@@ -677,13 +759,24 @@ public final class ValueFactory {
          * @return
          */
         public static MultiLineStringValue createValue(MultiLineString geom) {
+                return createValue(geom, null);
+        }
+
+        /**
+         * Creates a Value instance that contains the specified LineString value
+         *
+         * @param geom
+         * @param crs 
+         * @return
+         */
+        public static MultiPolygonValue createValue(MultiPolygon geom, CoordinateReferenceSystem crs) {
                 if (geom != null) {
-                        return new DefaultMultiLineStringValue(geom);
+                        return new DefaultMultiPolygonValue(geom, crs);
                 } else {
                         return createNullValue();
                 }
         }
-
+        
         /**
          * Creates a Value instance that contains the specified LineString value
          *
@@ -691,11 +784,7 @@ public final class ValueFactory {
          * @return
          */
         public static MultiPolygonValue createValue(MultiPolygon geom) {
-                if (geom != null) {
-                        return new DefaultMultiPolygonValue(geom);
-                } else {
-                        return createNullValue();
-                }
+                return createValue(geom, null);
         }
 
         /**
@@ -750,7 +839,7 @@ public final class ValueFactory {
                         case Type.MULTILINESTRING:
                         case Type.MULTIPOINT:
                         case Type.MULTIPOLYGON:
-                                return DefaultGeometryValue.readBytes(buffer);
+                                return DefaultGeometryValue.readBytes(buffer, null);
                         case Type.INT:
                                 return DefaultIntValue.readBytes(buffer);
                         case Type.LONG:
@@ -771,7 +860,7 @@ public final class ValueFactory {
                                 throw new IllegalArgumentException("Wrong type: " + valueType);
                 }
         }
-        
+
         /**
          * <p>
          * Creates a value of the specified type in two steps. The first one builds

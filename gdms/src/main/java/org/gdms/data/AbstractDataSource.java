@@ -36,7 +36,6 @@
  */
 package org.gdms.data;
 
-import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -52,8 +51,8 @@ import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.AbstractDataSet;
-import org.gdms.driver.DriverUtilities;
 import org.grap.model.GeoRaster;
+import org.jproj.CoordinateReferenceSystem;
 
 /**
  * Contains the DataSource methods that are executed by calling other DataSource
@@ -375,9 +374,15 @@ public abstract class AbstractDataSource extends AbstractDataSet implements Data
         }
 
         @Override
+        public void setGeometry(long rowIndex, Geometry geom, CoordinateReferenceSystem crs)
+                throws DriverException {
+                setFieldValue(rowIndex, getSpatialFieldIndex(), ValueFactory.createValue(geom, crs));
+        }
+        
+        @Override
         public void setGeometry(long rowIndex, Geometry geom)
                 throws DriverException {
-                setFieldValue(rowIndex, getSpatialFieldIndex(), ValueFactory.createValue(geom));
+                setGeometry(rowIndex, geom, getCRS());
         }
 
         @Override

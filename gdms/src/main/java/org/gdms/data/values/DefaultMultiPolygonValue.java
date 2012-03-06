@@ -45,6 +45,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import org.gdms.data.types.Type;
+import org.jproj.CoordinateReferenceSystem;
 
 /**
  *
@@ -52,8 +53,8 @@ import org.gdms.data.types.Type;
  */
 public class DefaultMultiPolygonValue extends DefaultGeometryCollectionValue implements MultiPolygonValue {
 
-        public DefaultMultiPolygonValue(MultiPolygon g) {
-                super(g);
+        public DefaultMultiPolygonValue(MultiPolygon g,  CoordinateReferenceSystem crs) {
+                super(g, crs);
         }
 
         @Override

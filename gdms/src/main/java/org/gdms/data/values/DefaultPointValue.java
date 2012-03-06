@@ -44,6 +44,7 @@ package org.gdms.data.values;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 import org.gdms.data.types.Type;
+import org.jproj.CoordinateReferenceSystem;
 
 /**
  *
@@ -51,8 +52,8 @@ import org.gdms.data.types.Type;
  */
 public class DefaultPointValue extends DefaultGeometryValue implements PointValue {
 
-        public DefaultPointValue(Point g) {
-                super(g);
+        public DefaultPointValue(Point g,  CoordinateReferenceSystem crs) {
+                super(g, crs);
         }
 
         @Override

@@ -53,6 +53,7 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.IncompatibleTypesException;
 import org.gdms.data.types.TypeFactory;
 import org.grap.model.GeoRaster;
+import org.jproj.CoordinateReferenceSystem;
 
 /**
  * Represents a null value
@@ -365,6 +366,11 @@ final class NullValue extends AbstractValue implements BinaryValue, BooleanValue
         @Override
         public Value toType(int typeCode) {
                 return this;
+        }
+
+        @Override
+        public CoordinateReferenceSystem getCRS() {
+                return null;
         }
         
         

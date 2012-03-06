@@ -802,6 +802,17 @@ public interface DataSource extends DataSet {
          *
          * @param rowIndex
          * @param geom
+         * @param crs 
+         * @throws DriverException
+         */
+        void setGeometry(long rowIndex, Geometry geom, CoordinateReferenceSystem crs) throws DriverException;
+        
+        /**
+         * Sets the default geometry of the DataSource to a JTS geometry. The CRS of the default geometry field
+         * (if there is one) is used.
+         *
+         * @param rowIndex
+         * @param geom
          * @throws DriverException
          */
         void setGeometry(long rowIndex, Geometry geom) throws DriverException;

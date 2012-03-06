@@ -102,6 +102,7 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
         private DefaultMetadata metadata;
         private static final Logger LOG = Logger.getLogger(ShapefileDriver.class);
         private File file;
+        private CoordinateReferenceSystem crs;
 
         @Override
         public void close() throws DriverException {
@@ -190,7 +191,7 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
 
                         File prj = FileUtils.getFileWithExtension(file, "prj");
                         if (prj != null && prj.exists()) {
-                                CoordinateReferenceSystem crs = dataSourceFactory.getCrsFactory().createFromPrj(prj);
+                                crs = dataSourceFactory.getCrsFactory().createFromPrj(prj);
                                 if (crs != null) {
                                         CRSConstraint cc = new CRSConstraint(crs);
                                         constraints = new Constraint[]{dc, cc};
@@ -714,7 +715,7 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                         if (fieldId == 0) {
                                 int offset = shxFile.getOffset((int) rowIndex);
                                 Geometry shape = reader.geomAt(offset);
-                                return (null == shape) ? null : ValueFactory.createValue(shape);
+                                return (null == shape) ? null : ValueFactory.createValue(shape, crs);
                         } else {
                                 return driver.getFieldValue(rowIndex, fieldId - 1);
                         }

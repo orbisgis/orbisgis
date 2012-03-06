@@ -38,12 +38,9 @@ package org.gdms.data;
 
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
-import org.gdms.data.types.Constraint;
-import org.gdms.data.types.CRSConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.jproj.CoordinateReferenceSystem;
 
 /**
  * Base class with the common implementation for non-decorator DataSource
