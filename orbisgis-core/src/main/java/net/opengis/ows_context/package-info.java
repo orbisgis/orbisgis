@@ -5,5 +5,13 @@
 // Generated on: 2011.12.15 at 03:38:58 PM CET 
 //
 
-@javax.xml.bind.annotation.XmlSchema(namespace = "http://www.opengis.net/ows-context", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@javax.xml.bind.annotation.XmlSchema(
+        namespace = "http://www.opengis.net/ows-context", 
+        xmlns= {
+            @XmlNs(namespaceURI="http://www.opengis.net/ows-context", prefix="")
+        },
+        elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package net.opengis.ows_context;
+
+import javax.xml.bind.annotation.XmlNs;
+

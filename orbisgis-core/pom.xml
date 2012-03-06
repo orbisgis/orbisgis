@@ -90,5 +90,10 @@
             <artifactId>svg-salamander</artifactId>
             <version>1.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>2.2.5</version>
+        </dependency>
     </dependencies>
 </project>
