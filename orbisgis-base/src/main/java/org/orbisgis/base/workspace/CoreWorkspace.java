@@ -155,7 +155,9 @@ public class CoreWorkspace implements Serializable {
         propertySupport.firePropertyChange(PROP_WORKSPACEFOLDER, oldWorkspaceFolder, workspaceFolder);
     }
 
-    
+    /**
+     * bean constructor
+     */
     public CoreWorkspace() {
         propertySupport = new PropertyChangeSupport(this);
     }

@@ -30,8 +30,7 @@ package org.orbisgis.base.context.main;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SQLDataSourceFactory;
-import org.gdms.driver.driverManager.DriverManager;
-import org.gdms.source.SourceManager;
+import org.orbisgis.base.context.SourceContext.SourceContext;
 import org.orbisgis.base.workspace.CoreWorkspace;
 /**
  * @class MainContext
@@ -44,12 +43,14 @@ import org.orbisgis.base.workspace.CoreWorkspace;
 public class MainContext {
     private DataSourceFactory dataSourceFactory;
     private CoreWorkspace coreWorkspace;
+    private SourceContext sourceContext;
     /**
      * Constructor of the workspace
      */
     public MainContext() {
         coreWorkspace = new CoreWorkspace();
         dataSourceFactory = new SQLDataSourceFactory(coreWorkspace.getSourceFolder(), coreWorkspace.getTempFolder(), coreWorkspace.getPluginFolder());
+        sourceContext = new SourceContext(dataSourceFactory.getSourceManager());
     }
 
     /**
@@ -58,6 +59,14 @@ public class MainContext {
      */
     public CoreWorkspace getCoreWorkspace() {
         return coreWorkspace;
+    }
+
+    /**
+     * Return the SourceContext.
+     * @return SourceContext instance
+     */
+    public SourceContext getSourceContext() {
+        return sourceContext;
     }
 
     /**
