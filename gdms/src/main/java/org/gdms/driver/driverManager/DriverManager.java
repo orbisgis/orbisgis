@@ -40,6 +40,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import org.apache.log4j.Logger;
 import org.gdms.driver.Driver;
@@ -61,6 +62,7 @@ public final class DriverManager {
 
         private Map<String, Class<? extends Driver>> driverClasses = new HashMap<String, Class<? extends Driver>>();
         private static final Logger logger = Logger.getLogger(DriverManager.class);
+        private List<DriverManagerListener> listeners = new ArrayList<DriverManagerListener>();
 
         public static final String DEFAULT_SINGLE_TABLE_NAME = "main";
         private FileDriverRegister fdr = new FileDriverRegister();
@@ -161,6 +163,7 @@ public final class DriverManager {
                         try {
                                 driver = driverClass.newInstance();
                                 driverClasses.put(driver.getDriverId(), driverClass);
+                                fireDriverAdded(driver.getDriverId(), driverClass);
                         } catch (InstantiationException e) {
                                 throw new IllegalArgumentException(
                                         "The driver cannot be instantiated", e);
@@ -175,7 +178,10 @@ public final class DriverManager {
          * @param driverId the driver id (result of myDriver.getDriverId()) of the driver to remove
          */
         public void unregisterDriver(String driverId) {
-                driverClasses.remove(driverId);
+                Class<? extends Driver> r = driverClasses.remove(driverId);
+                if (r != null) {
+                        fireDriverRemoved(driverId, r);
+                }
         }
 
         /**
@@ -223,5 +229,39 @@ public final class DriverManager {
                 }
 
                 return drivers.toArray(new Driver[drivers.size()]);
+        }
+        
+        private void fireDriverAdded(String i, Class<? extends Driver> d) {
+                for (DriverManagerListener l : listeners) {
+                        l.driverAdded(i, d);
+                }
+        }
+        
+        private void fireDriverRemoved(String i, Class<? extends Driver> d) {
+                for (DriverManagerListener l : listeners) {
+                        l.driverRemoved(i, d);
+                }
+        }
+        
+        /**
+         * Registers a DriverManagerListener with this DriverManager.
+         * @param l a listener
+         * @throws NullPointerException if a null listener if given
+         */
+        public void registerListener(DriverManagerListener l) {
+                if (l != null) {
+                        listeners.add(l);
+                } else {
+                        throw new NullPointerException("listener cannot be null");
+                }
+        }
+        
+        /**
+         * Unregisters a DriverManagerListener from this DriverManager.
+         * @param l a listener
+         * @return true if the listener was actually removed
+         */
+        public boolean unregisterListener(DriverManagerListener l) {
+                return listeners.remove(l);
         }
 }
