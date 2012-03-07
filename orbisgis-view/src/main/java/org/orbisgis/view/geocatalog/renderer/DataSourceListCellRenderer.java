@@ -35,6 +35,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
+import org.orbisgis.view.geocatalog.CatalogSourceItem;
 import org.orbisgis.view.icons.OrbisGISIcon;
 
 /**
@@ -71,8 +72,11 @@ public class DataSourceListCellRenderer implements ListCellRenderer {
         sourcePanel.setLayout(fl);
         //The label show the Icon and Text of the DataSource Item
         JLabel sourceLabel = new JLabel();
-        sourceLabel.setIcon(OrbisGISIcon.getIcon("geofile"));
+        //Retrieve the item informations
+        CatalogSourceItem listItem = (CatalogSourceItem)value;
+        sourceLabel.setIcon(OrbisGISIcon.getIcon(listItem.getSourceIconName()));
         sourceLabel.setText(value.toString());
+        //Retrieve the registered name of geocatalog item
         sourceLabel.setVisible(true);
         //Change the item panel background color
         //and the label text color depending on the selection state

@@ -32,11 +32,11 @@ package org.orbisgis.view.geocatalog;
 import java.beans.EventHandler;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.AbstractListModel;
 import javax.swing.SwingUtilities;
+import org.apache.commons.collections.ComparatorUtils;
 import org.apache.log4j.Logger;
 import org.gdms.data.schema.Schema;
 import org.gdms.driver.DriverException;
@@ -47,7 +47,6 @@ import org.orbisgis.utils.I18N;
 import org.orbisgis.view.components.ContainerItemKey;
 import org.orbisgis.view.geocatalog.filters.IFilter;
 import org.orbisgis.view.geocatalog.filters.TableSystemFilter;
-import org.apache.commons.collections.ComparatorUtils;
 /**
  * @brief Manage entries of GeoCatalog according to a GDMS SourceManager
  * SourceListModel is a swing component that update the content of the geocatalog
@@ -133,6 +132,40 @@ public class SourceListModel extends AbstractListModel {
         public void dispose() {
             this.sourceManager.removeSourceListener(sourceListener);
         }
+        /**
+         * Find the icon corresponding to a data source
+         * @param src Source of DataSourceManager
+         * @return The source item icon name, in org.orbisgis.view.icons package
+         */
+        private String getIconName(Source src) {
+            if (src != null) {
+                if (src.isFileSource() && src.getFile() != null && !src.getFile().exists()) {
+                    return "remove";
+                }
+                int sourceType = src.getType();
+                if ((sourceType & SourceManager.VECTORIAL) == SourceManager.VECTORIAL) {
+                    return "geofile";
+                } else if ((sourceType & SourceManager.RASTER) == SourceManager.RASTER) {
+                    return "image";
+                } else if ((sourceType & SourceManager.WMS) == SourceManager.WMS) {
+                    return "server_connect";
+                } else if ((sourceType & SourceManager.FILE) == SourceManager.FILE) {
+                    return "flatfile";
+                } else if ((sourceType & SourceManager.DB) == SourceManager.DB) {
+                    return "database";
+                } else if ((sourceType & SourceManager.SYSTEM_TABLE) == SourceManager.SYSTEM_TABLE) {
+                    return "drive";
+                } else {
+                    return "information_geo"; //Unknown source type
+                }
+            }else{
+                return "information_geo"; //Unknown source type
+            }
+        }
+        /**
+         * Read the Data Source Manager content
+         * TODO manage fatal error on sourceManager.getSource
+         */
 	private void readDataManager() {
             String[] tempSourceNames = sourceManager.getSourceNames(); //Retrieve all sources names
 
@@ -154,8 +187,10 @@ public class SourceListModel extends AbstractListModel {
             for(int rowidSource=0;rowidSource<tempSourceNames.length;rowidSource++) {
                 //Try to read the parent schema and place it in the label
                 String schemaName = "";
+                Source source = null;
                 try {
-                    Schema dataSourceSchema = sourceManager.getSource(tempSourceNames[rowidSource]).getDataSourceDefinition().getSchema();
+                    source = sourceManager.getSource(tempSourceNames[rowidSource]);
+                    Schema dataSourceSchema = source.getDataSourceDefinition().getSchema();
                     if(dataSourceSchema!=null) {
                         Schema parentSchema=dataSourceSchema.getParentSchema();
                         if(parentSchema!=null) {
@@ -166,9 +201,10 @@ public class SourceListModel extends AbstractListModel {
                     //Log warning
                     LOGGER.warn(I18N.getString("orbisgis.view.geocatalog.CannotReadDataSourceSchema"),ex);
                 }
-                sourceList[rowidSource] = new ContainerItemKey(
+                sourceList[rowidSource] = new CatalogSourceItem(
                                                 tempSourceNames[rowidSource], //Source Name
-                                                schemaName+tempSourceNames[rowidSource]);//Source Label
+                                                schemaName+tempSourceNames[rowidSource],//Source Label
+                                                getIconName(source)); //Source name
             }
             fireIntervalRemoved(this, 0, this.sourceList.length);
             fireIntervalAdded(this, 0, this.sourceList.length);

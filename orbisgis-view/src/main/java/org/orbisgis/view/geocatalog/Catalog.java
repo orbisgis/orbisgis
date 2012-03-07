@@ -235,7 +235,7 @@ public class Catalog extends JPanel implements DockingPanel {
         //Clear catalog item added if the datasource manager is not empty
         if(!sourceListContent.isDataSourceManagerEmpty()) {
             JMenuItem clearCatalogItem = new JMenuItem(I18N.getString("orbisgis.view.geocatalog.clearGeoCatalogMenuItem"),
-                                                OrbisGISIcon.getIcon("trash"));
+                                                OrbisGISIcon.getIcon("bin_closed"));
             clearCatalogItem.addActionListener(EventHandler.create(ActionListener.class,
                                                                 this,
                                                                 "onMenuClearGeoCatalog"));
