@@ -41,7 +41,7 @@ import java.util.Map.Entry;
 import java.util.*;
 import javax.swing.*;
 import org.apache.log4j.Logger;
-import org.gdms.source.SourceManager;
+import org.orbisgis.base.context.SourceContext.SourceContext;
 import org.orbisgis.base.events.EventException;
 import org.orbisgis.base.events.ListenerContainer;
 import org.orbisgis.utils.CollectionUtils;
@@ -104,7 +104,7 @@ public class Catalog extends JPanel implements DockingPanel {
     /**
      * Default constructor
      */
-    public Catalog(SourceManager sourceManager) {
+    public Catalog(SourceContext sourceContext) {
             super(new BorderLayout());
             dockingParameters.setTitle(I18N.getString("orbisgis.org.orbisgis.Catalog.title"));
             dockingParameters.setTitleIcon(OrbisGISIcon.getIcon("geocatalog"));
@@ -112,7 +112,7 @@ public class Catalog extends JPanel implements DockingPanel {
             add(makeFilterPanel(), BorderLayout.NORTH);
             //Add the Source List in a Scroll Pane, 
             //then add the scroll pane in this panel
-            add(new JScrollPane(makeSourceList(sourceManager)), BorderLayout.CENTER);
+            add(new JScrollPane(makeSourceList(sourceContext)), BorderLayout.CENTER);
             registerFilterFactories();
     }
     
@@ -214,6 +214,15 @@ public class Catalog extends JPanel implements DockingPanel {
         }
     }
     /**
+     * The user click on the menu item called "Add/File"
+     * The user wants to open a file using the geocatalog.
+     * It will open a panel dedicated to the selection of the wanted files. This
+     * panel will then return the selected files.
+     */
+    public void onMenuAddFile() {
+        
+    }
+    /**
      * The user click on the menu item called "clear geocatalog"
      */
     public void onMenuClearGeoCatalog() {
@@ -233,7 +242,7 @@ public class Catalog extends JPanel implements DockingPanel {
     private JPopupMenu makePopupMenu() {
         JPopupMenu rootMenu = new JPopupMenu();
         //Clear catalog item added if the datasource manager is not empty
-        if(!sourceListContent.isDataSourceManagerEmpty()) {
+        if(!sourceListContent.getSourceContext().isDataSourceManagerEmpty()) {
             JMenuItem clearCatalogItem = new JMenuItem(I18N.getString("orbisgis.view.geocatalog.clearGeoCatalogMenuItem"),
                                                 OrbisGISIcon.getIcon("bin_closed"));
             clearCatalogItem.addActionListener(EventHandler.create(ActionListener.class,
@@ -463,7 +472,7 @@ public class Catalog extends JPanel implements DockingPanel {
     /**
      * Create the Source List ui compenent
      */
-    private JList makeSourceList(SourceManager sourceManager) {
+    private JList makeSourceList(SourceContext sourceContext) {
         sourceList = new JList();
         //Set the list content renderer
         sourceList.setCellRenderer(new DataSourceListCellRenderer()); 
@@ -473,7 +482,7 @@ public class Catalog extends JPanel implements DockingPanel {
                                     "onMouseActionOnSourceList",
                                     "")); //This method ask the event data as argument
         //Create the list content manager
-        sourceListContent = new SourceListModel(sourceManager); 
+        sourceListContent = new SourceListModel(sourceContext); 
         //Replace the default model by the GeoCatalog model
         sourceList.setModel(sourceListContent); 
         //Attach the content to the DataSource instance

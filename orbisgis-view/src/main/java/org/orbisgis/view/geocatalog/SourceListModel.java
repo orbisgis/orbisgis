@@ -43,6 +43,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.source.Source;
 import org.gdms.source.SourceListener;
 import org.gdms.source.SourceManager;
+import org.orbisgis.base.context.SourceContext.SourceContext;
 import org.orbisgis.utils.I18N;
 import org.orbisgis.view.components.ContainerItemKey;
 import org.orbisgis.view.geocatalog.filters.IFilter;
@@ -55,6 +56,7 @@ import org.orbisgis.view.geocatalog.filters.TableSystemFilter;
 public class SourceListModel extends AbstractListModel {
 
 	private static final Logger LOGGER = Logger.getLogger(SourceListModel.class);
+        private SourceContext sourceContext; /*!< The SourceContext instance*/
         private SourceManager sourceManager; /*!< The SourceManager instance*/
         private SourceListener sourceListener=null; /*!< The listener put in the sourceManager*/
 	private ContainerItemKey[] sourceList;/*!< Sources */
@@ -69,13 +71,23 @@ public class SourceListModel extends AbstractListModel {
 	public List<IFilter> getFilters() {
 		return filters;
 	}
+
+        /**
+         * Return the source context
+         * @return The source context
+         */
+        public SourceContext getSourceContext() {
+            return sourceContext;
+        }
+        
         /**
          * Constructor
          * @param sourceManager The sourceManager to listen
          * @note Do not forget to call dispose()
          */
-	public SourceListModel(SourceManager sourceManager) {
-                this.sourceManager=sourceManager;
+	public SourceListModel(SourceContext sourceContext) {
+                this.sourceManager=sourceContext.getSourceManager();
+                this.sourceContext=sourceContext;
                 //Install listeners
                 //Call readDataManager when a SourceManager fire an event         
 		readDataManager();
@@ -89,6 +101,7 @@ public class SourceListModel extends AbstractListModel {
                                                     "onDataManagerChange"
                                                     );
             this.sourceManager.addSourceListener(sourceListener);
+
         }
         /**
          * The DataManager fire a DataSourceEvent
@@ -253,18 +266,7 @@ public class SourceListModel extends AbstractListModel {
                 }
             }            
         }
-        /**
-        * Return true if the data source manager has only system tables
-        * @return 
-        */
-        public boolean isDataSourceManagerEmpty() {
-            for(String sourceName : sourceManager.getSourceNames()) {
-                if(!sourceManager.getSource(sourceName).isSystemTableSource()) {
-                    return false;
-                }
-            }
-            return true;
-        }
+        
         /**
          * Set the filter and refresh the Source list
          * according to the new filter

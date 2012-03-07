@@ -104,8 +104,8 @@ public class Core {
      * Create the GeoCatalog view
      */
     private void makeGeoCatalogPanel() {
-        //The geocatalog view content is read from SourceManager
-        geoCatalog = new Catalog(mainContext.getDataSourceFactory().getSourceManager());
+        //The geocatalog view content is read from the SourceContext
+        geoCatalog = new Catalog(mainContext.getSourceContext());
         //Add the view as a new Docking Panel
         dockManager.show(geoCatalog, dockManager.getScreen(), null);
     }
