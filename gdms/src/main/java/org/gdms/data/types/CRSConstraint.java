@@ -54,7 +54,7 @@ public class CRSConstraint extends AbstractConstraint {
 
         CRSConstraint(byte[] constraintBytes) {
                 CRSFactory f = new CRSFactory();
-                crs = f.createFromName(new String(constraintBytes));
+                crs = f.createFromParameters(null, new String(constraintBytes));
         }
         
         /**
