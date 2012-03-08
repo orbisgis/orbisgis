@@ -175,6 +175,9 @@ public class Core {
         geoCatalog.dispose();
         mainFrame.dispose();
         dockManager.dispose();
+        
+        //Free libraries resources
+        mainContext.dispose();
     }
     /**
     * Stops this application, closes the {@link MainFrame} and saves
