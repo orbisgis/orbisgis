@@ -30,11 +30,11 @@ package org.orbisgis.base.context.SourceContext;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.gdms.driver.Driver;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.driverManager.DriverManager;
+import org.gdms.driver.driverManager.DriverManagerListener;
 import org.gdms.source.SourceManager;
 
 
@@ -44,13 +44,35 @@ import org.gdms.source.SourceManager;
 public class SourceContext {
     private SourceManager sourceManager;
     private List<String> sourceFileExtensions = new ArrayList<String>();
+    private DriverManagerListener registeredListener = null;
+    
+    
+    /**
+     * Free resources
+     */
+    public void dispose() {
+        if(registeredListener!=null) {
+            sourceManager.getDriverManager().unregisterListener(registeredListener);
+            registeredListener=null;
+        }
+    }
     /**
      * Constructor
      * @param sourceManager Instance of source manager
      */
     public SourceContext(SourceManager sourceManager) {
         this.sourceManager = sourceManager;
-        readSupportedFileExtensions();        
+        readSupportedFileExtensions();
+        //Register driver listener, to update supported file extensions
+        registeredListener = new DriverManagerListener() {
+                public void driverAdded(String driverId, Class<? extends Driver> driverClass) {
+                    readSupportedFileExtensions();
+                }
+                public void driverRemoved(String driverId, Class<? extends Driver> driverClass) {
+                    readSupportedFileExtensions();
+                }
+            };
+        sourceManager.getDriverManager().registerListener(registeredListener);
     }
     /**
      * Read supported file extensions of all declared driver manager
@@ -91,16 +113,16 @@ public class SourceContext {
         }
     }
         
-        /**
-        * Return true if the data source manager has only system tables
-        * @return 
-        */
-        public boolean isDataSourceManagerEmpty() {
-            for(String sourceName : sourceManager.getSourceNames()) {
-                if(!sourceManager.getSource(sourceName).isSystemTableSource()) {
-                    return false;
-                }
+    /**
+     * Return true if the data source manager has only system tables
+     * @return 
+     */
+    public boolean isDataSourceManagerEmpty() {
+        for(String sourceName : sourceManager.getSourceNames()) {
+            if(!sourceManager.getSource(sourceName).isSystemTableSource()) {
+                return false;
             }
-            return true;
         }
+        return true;
+    }
 }

@@ -29,6 +29,7 @@
 package org.orbisgis.base.context.main;
 
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.DataSourceFinalizationException;
 import org.gdms.data.SQLDataSourceFactory;
 import org.orbisgis.base.context.SourceContext.SourceContext;
 import org.orbisgis.base.workspace.CoreWorkspace;
@@ -51,6 +52,18 @@ public class MainContext {
         coreWorkspace = new CoreWorkspace();
         dataSourceFactory = new SQLDataSourceFactory(coreWorkspace.getSourceFolder(), coreWorkspace.getTempFolder(), coreWorkspace.getPluginFolder());
         sourceContext = new SourceContext(dataSourceFactory.getSourceManager());
+    }
+    
+    /**
+     * Free resources
+     */
+    public void dispose() {
+        sourceContext.dispose();
+        try {
+            dataSourceFactory.freeResources();
+        } catch (DataSourceFinalizationException ex) {
+            //pass
+        }
     }
 
     /**
