@@ -106,7 +106,7 @@ public class ToolUtilities {
 
 	public static ArrayList<Coordinate> removeDuplicated(
 			ArrayList<Coordinate> points) {
-		if (points.size() == 0) {
+		if (points.isEmpty()) {
 			return points;
 		} else {
 			ArrayList<Coordinate> ret = new ArrayList<Coordinate>();
