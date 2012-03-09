@@ -28,6 +28,7 @@
  */
 package org.orbisgis.base.context.main;
 
+import org.apache.log4j.Logger;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.DataSourceFinalizationException;
 import org.gdms.data.SQLDataSourceFactory;
@@ -42,6 +43,7 @@ import org.orbisgis.base.workspace.CoreWorkspace;
 
 
 public class MainContext {
+    private static final Logger LOGGER = Logger.getLogger(MainContext.class);
     private DataSourceFactory dataSourceFactory;
     private CoreWorkspace coreWorkspace;
     private SourceContext sourceContext;
@@ -62,7 +64,7 @@ public class MainContext {
         try {
             dataSourceFactory.freeResources();
         } catch (DataSourceFinalizationException ex) {
-            //pass
+            LOGGER.error("Unable to free gdms resources, continue..", ex);
         }
     }
 
