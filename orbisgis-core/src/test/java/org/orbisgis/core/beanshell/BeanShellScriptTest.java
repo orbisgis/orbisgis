@@ -34,6 +34,7 @@ public class BeanShellScriptTest {
                 assertTrue(out.equals(BeanshellScript.getHelp()));
                 System.setOut(psbak);
         }
+
         @Test
         public void testWrongParameter() throws Exception {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -56,6 +57,12 @@ public class BeanShellScriptTest {
         public void testMapDisplayScript() throws Exception {
                 BeanshellScript.main(new String[]{"-f", "src/test/resources/beanshell/mapDisplayDatasource.bsh"});
                 Thread.sleep(3000);
+                assertTrue(true);
+        }
+
+        @Test
+        public void testMapToPng() throws Exception {
+                BeanshellScript.main(new String[]{"-f", "src/test/resources/beanshell/datatsourceTopng.bsh"});
                 assertTrue(true);
         }
 }
