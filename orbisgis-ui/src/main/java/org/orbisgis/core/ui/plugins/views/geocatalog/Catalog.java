@@ -53,6 +53,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -79,12 +80,18 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.gdms.data.SourceAlreadyExistsException;
 import org.gdms.source.SourceManager;
+import org.orbisgis.core.DataManager;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.sif.CRFlowLayout;
 import org.orbisgis.core.sif.UIFactory;
+import org.orbisgis.core.ui.components.file.FileDrop;
 import org.orbisgis.core.ui.components.jlist.OGList;
 import org.orbisgis.core.ui.components.sif.AskValue;
 import org.orbisgis.core.ui.components.text.JButtonTextField;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
+import org.orbisgis.core.ui.pluginSystem.workbench.OrbisConfiguration;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.AllExcludeSytemTableFilter;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.AlphanumericFilter;
@@ -100,6 +107,7 @@ import org.orbisgis.core.ui.plugins.views.geocatalog.filters.WMSFilter;
 import org.orbisgis.core.ui.plugins.views.geocatalog.newSourceWizards.SourceRenderer;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.utils.CollectionUtils;
+import org.orbisgis.utils.FileUtils;
 import org.orbisgis.utils.I18N;
 
 public class Catalog extends JPanel implements DragGestureListener,
@@ -159,73 +167,95 @@ public class Catalog extends JPanel implements DragGestureListener,
     }
 
 
-    public Catalog() {
-        menuTree = new org.orbisgis.core.ui.pluginSystem.menu.MenuTree();
-        lstSources = new OGList();
-        lstSources.addMouseListener(new MouseAdapter() {
+            public Catalog() {
+                menuTree = new org.orbisgis.core.ui.pluginSystem.menu.MenuTree();
+                lstSources = new OGList();
+                lstSources.addMouseListener(new MouseAdapter() {
 
-            @Override
-            public void mousePressed(MouseEvent e) {
-                showPopup(e);
-            }
-
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                showPopup(e);
-            }
-
-
-            private void showPopup(MouseEvent e) {
-                if (e.getButton() == MouseEvent.BUTTON3) {
-                    int path = -1;
-                    for (int i = 0; i < listModel.getSize(); i++) {
-                        if (lstSources.getCellBounds(i, i).contains(
-                                e.getPoint())) {
-                            path = i;
-                            break;
+                        @Override
+                        public void mousePressed(MouseEvent e) {
+                                showPopup(e);
                         }
-                    }
-                    int[] selectionPaths = lstSources.getSelectedIndices();
-                    if ((selectionPaths != null) && (path != -1)) {
-                        if (!CollectionUtils.contains(selectionPaths, path)) {
-                            if (e.isControlDown()) {
-                                lstSources.addSelectionInterval(path, path);
-                            } else {
-                                lstSources.setSelectionInterval(path, path);
-                            }
+
+                        @Override
+                        public void mouseReleased(MouseEvent e) {
+                                showPopup(e);
                         }
-                    } else if (path == -1) {
-                        lstSources.clearSelection();
-                    } else {
-                    }
-                }
-                if (e.isPopupTrigger()) {
-                    JPopupMenu popup = getPopup();
-                    if (popup != null) {
-                        popup.show(e.getComponent(), e.getX(), e.getY());
-                    }
-                }
-            }
+
+                        private void showPopup(MouseEvent e) {
+                                if (e.getButton() == MouseEvent.BUTTON3) {
+                                        int path = -1;
+                                        for (int i = 0; i < listModel.getSize(); i++) {
+                                                if (lstSources.getCellBounds(i, i).contains(
+                                                        e.getPoint())) {
+                                                        path = i;
+                                                        break;
+                                                }
+                                        }
+                                        int[] selectionPaths = lstSources.getSelectedIndices();
+                                        if ((selectionPaths != null) && (path != -1)) {
+                                                if (!CollectionUtils.contains(selectionPaths, path)) {
+                                                        if (e.isControlDown()) {
+                                                                lstSources.addSelectionInterval(path, path);
+                                                        } else {
+                                                                lstSources.setSelectionInterval(path, path);
+                                                        }
+                                                }
+                                        } else if (path == -1) {
+                                                lstSources.clearSelection();
+                                        } else {
+                                        }
+                                }
+                                if (e.isPopupTrigger()) {
+                                        JPopupMenu popup = getPopup();
+                                        if (popup != null) {
+                                                popup.show(e.getComponent(), e.getX(), e.getY());
+                                        }
+                                }
+                        }
+                });
+                listModel = new SourceListModel();
+                lstSources.setModel(listModel);
+
+                this.setLayout(new BorderLayout());
+                this.add(new JScrollPane(lstSources), BorderLayout.CENTER);
+                this.add(getNorthPanel(), BorderLayout.NORTH);
+                SourceListRenderer cellRenderer = new SourceListRenderer(this);
+                cellRenderer.setRenderers(new SourceRenderer[0]);
+                lstSources.setCellRenderer(cellRenderer);
+
+                dragSource = DragSource.getDefaultDragSource();
+                dragSource.createDefaultDragGestureRecognizer(lstSources,
+                        DnDConstants.ACTION_COPY_OR_MOVE, this);
+                editingSources = new HashMap<String, EditableSource>();
+
+                //Init the file drop system
+                FileDrop fileDrop = new FileDrop(this, new FileDrop.Listener() {
+
+                        @Override
+                        public void filesDropped(java.io.File[] files) {
+                                DataManager dm = (DataManager) Services.getService(DataManager.class);
+                                SourceManager sourceManager = dm.getSourceManager();
+                                for (File file : files) {
+                                        // For each file, we ensure that we have a driver
+                                        // that can be used to read it. If we don't, we don't
+                                        // open the file.
+                                        if (OrbisConfiguration.isFileEligible(file)) {
+                                                try {
+                                                        String name = sourceManager.getUniqueName(FileUtils.getFileNameWithoutExtensionU(file));
+                                                        sourceManager.register(name, file);
+                                                } catch (SourceAlreadyExistsException e) {
+                                                        ErrorMessages.error(ErrorMessages.SourceAlreadyRegistered
+                                                                + ": ", e);
+                                                }
+                                        }
+                                }
 
 
-        });
-        listModel = new SourceListModel();
-        lstSources.setModel(listModel);
+                        }
+                });
 
-        this.setLayout(new BorderLayout());
-        this.add(new JScrollPane(lstSources), BorderLayout.CENTER);
-        this.add(getNorthPanel(), BorderLayout.NORTH);
-        SourceListRenderer cellRenderer = new SourceListRenderer(this);
-        cellRenderer.setRenderers(new SourceRenderer[0]);
-        lstSources.setCellRenderer(cellRenderer);
-
-        dragSource = DragSource.getDefaultDragSource();
-        dragSource.createDefaultDragGestureRecognizer(lstSources,
-                                                      DnDConstants.ACTION_COPY_OR_MOVE, this);
-        editingSources = new HashMap<String, EditableSource>();
-
-    }
+        }
 
 
     private JPanel getNorthPanel() {
@@ -432,26 +462,24 @@ public class Catalog extends JPanel implements DragGestureListener,
                         doFilter();
                         btnDelTag.setEnabled(lstTags.getSelectedIndex() != -1);
                     }
-
-
                 });
-        lstTags.setVisibleRowCount(FILTER_VISIBLE_ROW_COUNT - 1);
-        JScrollPane scroll = new JScrollPane(lstTags);
-        ret.add(scroll, BorderLayout.CENTER);
-        JPanel pnlButtons = new JPanel();
-        JButton btnAdd = getTagManagementButton(OrbisGISIcon.ADD,
-                                                AC_BTN_ADD_TAG);
-        btnAdd.setBorderPainted(false);
-        btnAdd.setContentAreaFilled(false);
-        btnDelTag = getTagManagementButton(OrbisGISIcon.DEL, AC_BTN_DEL_TAG);
-        btnDelTag.setEnabled(false);
-        btnDelTag.setBorderPainted(false);
-        btnDelTag.setContentAreaFilled(false);
-        pnlButtons.add(btnAdd);
-        pnlButtons.add(btnDelTag);
-        ret.add(pnlButtons, BorderLayout.SOUTH);
-        return ret;
-    }
+                lstTags.setVisibleRowCount(FILTER_VISIBLE_ROW_COUNT - 1);
+                JScrollPane scroll = new JScrollPane(lstTags);
+                ret.add(scroll, BorderLayout.CENTER);
+                JPanel pnlButtons = new JPanel();
+                JButton btnAdd = getTagManagementButton(OrbisGISIcon.ADD,
+                        AC_BTN_ADD_TAG);
+                btnAdd.setBorderPainted(false);
+                btnAdd.setContentAreaFilled(false);
+                btnDelTag = getTagManagementButton(OrbisGISIcon.DEL, AC_BTN_DEL_TAG);
+                btnDelTag.setEnabled(false);
+                btnDelTag.setBorderPainted(false);
+                btnDelTag.setContentAreaFilled(false);
+                pnlButtons.add(btnAdd);
+                pnlButtons.add(btnDelTag);
+                ret.add(pnlButtons, BorderLayout.SOUTH);
+                return ret;
+        }
 
 
     private void refreshTagModel() {
@@ -779,6 +807,5 @@ public class Catalog extends JPanel implements DragGestureListener,
     public JList getListFilters() {
         return lstFilters;
     }
-
-
+    
 }
