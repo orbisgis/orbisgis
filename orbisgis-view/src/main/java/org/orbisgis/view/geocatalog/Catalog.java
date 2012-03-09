@@ -37,18 +37,24 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.util.Map.Entry;
 import java.util.*;
 import javax.swing.*;
 import org.apache.log4j.Logger;
+import org.gdms.data.SourceAlreadyExistsException;
 import org.orbisgis.base.context.SourceContext.SourceContext;
 import org.orbisgis.base.events.EventException;
 import org.orbisgis.base.events.ListenerContainer;
+import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.UIPanel;
 import org.orbisgis.utils.CollectionUtils;
+import org.orbisgis.utils.FileUtils;
 import org.orbisgis.utils.I18N;
 import org.orbisgis.view.components.ContainerItemKey;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
+import org.orbisgis.view.geocatalog.dialogs.OpenGdmsFilePanel;
 import org.orbisgis.view.geocatalog.filters.ActiveFilter;
 import org.orbisgis.view.geocatalog.filters.DataSourceFilterFactory;
 import org.orbisgis.view.geocatalog.filters.IFilter;
@@ -220,7 +226,32 @@ public class Catalog extends JPanel implements DockingPanel {
      * panel will then return the selected files.
      */
     public void onMenuAddFile() {
-        
+        SourceContext srcContext = sourceListContent.getSourceContext();
+        //Create the SIF panel
+        OpenGdmsFilePanel openDialog = new OpenGdmsFilePanel(I18N.getString("orbisgis.view.geocatalog.OpenGdmsFilePanelTitle"),
+        srcContext.getSourceManager().getDriverManager());
+
+        //Ask SIF to open the dialog
+        if (UIFactory.showDialog(new UIPanel[]{openDialog})) {
+            // We can retrieve the files that have been selected by the user
+            File[] files = openDialog.getSelectedFiles();
+            for (int i = 0; i < files.length; i++) {
+                File file = files[i];
+                //If there is a driver compatible with
+                //this file extensions
+                if(srcContext.isFileCanBeRegistered(file)) {
+                    //Try to add the data source
+                    try {
+                        String name = srcContext.getSourceManager().getUniqueName(FileUtils
+								.getFileNameWithoutExtensionU(file));
+			srcContext.getSourceManager().register(name, file);
+                        } catch (SourceAlreadyExistsException e) {
+                                LOGGER.error(I18N.getString("orbisgis.view.geocatalog.SourceAlreadyRegistered"),e);
+                        }
+                }
+            }
+        }
+    
     }
     /**
      * The user click on the menu item called "clear geocatalog"
@@ -241,7 +272,7 @@ public class Catalog extends JPanel implements DockingPanel {
      */
     private JPopupMenu makePopupMenu() {
         JPopupMenu rootMenu = new JPopupMenu();
-        //Clear catalog item added if the datasource manager is not empty
+        //Popup:ClearGeocatalog (added if the datasource manager is not empty)
         if(!sourceListContent.getSourceContext().isDataSourceManagerEmpty()) {
             JMenuItem clearCatalogItem = new JMenuItem(I18N.getString("orbisgis.view.geocatalog.clearGeoCatalogMenuItem"),
                                                 OrbisGISIcon.getIcon("bin_closed"));
@@ -250,6 +281,23 @@ public class Catalog extends JPanel implements DockingPanel {
                                                                 "onMenuClearGeoCatalog"));
             rootMenu.add(clearCatalogItem);
         }
+        //Popup:Add
+        JMenu addMenu = new JMenu(I18N.getString("orbisgis.view.geocatalog.addMenuItem"));
+        rootMenu.addSeparator();
+        rootMenu.add(addMenu);
+        //Popup:Add:File
+        JMenuItem addFileItem = new JMenuItem(
+                I18N.getString("orbisgis.view.geocatalog.addFileMenuItem"),
+                OrbisGISIcon.getIcon("page_white_add"));
+        addFileItem.addActionListener(EventHandler.create(ActionListener.class,
+                                                            this,
+                                                            "onMenuAddFile"));
+        addMenu.add(addFileItem);
+        
+        
+        
+        //////////////////////////////
+        //Plugins
         //Add additionnal extern data source functions
         try {
             eventSourceListPopupMenuCreating.callListeners(new MenuPopupEventData(rootMenu, this));

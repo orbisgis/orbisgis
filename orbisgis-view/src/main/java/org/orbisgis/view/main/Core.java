@@ -164,6 +164,7 @@ public class Core {
     private void initI18n() {
         // Init I18n
         I18N.addI18n("", "orbisgis", OrbisGISI18N.class);
+        I18N.addI18n("", "sif", org.orbisgis.sif.translation.SIFI18N.class);
     }
     /**
      * Free all resources allocated by this object

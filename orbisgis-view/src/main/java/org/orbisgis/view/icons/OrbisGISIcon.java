@@ -78,7 +78,8 @@ public final class OrbisGISIcon {
      * @return The ImageIcon requested, or an ImageIcon corresponding to a Missing Resource
      */
     public static ImageIcon getIcon(String iconName) {
-        if(!loadedIcons.containsKey(iconName)) {
+        ImageIcon foundIcon = loadedIcons.get(iconName);
+        if(foundIcon==null) {
             //This is the first request for this icon
             URL url = OrbisGISIcon.class.getResource(iconName+".png");
             if(url!=null) {
@@ -91,7 +92,7 @@ public final class OrbisGISIcon {
             }            
         } else {
             //Icon was already loaded, return its content
-            return loadedIcons.get(iconName);
+            return foundIcon;
         }
     }
 }

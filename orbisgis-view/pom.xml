@@ -43,5 +43,10 @@
       <version>3.2.1</version>
       <type>jar</type>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>orbisgis-sif</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 </project>

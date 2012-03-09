@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OrbisGis 4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-02-29 16:29+0100\n"
-"PO-Revision-Date: 2012-02-29 16:29+0100\n"
+"POT-Creation-Date: 2012-03-08 17:20+0100\n"
+"PO-Revision-Date: 2012-03-08 17:20+0100\n"
 "Last-Translator: Nicolas Fortin <nicolas.fortin@ec-nantes.fr>\n"
 "Language-Team: OrbisGis <info@orbisgis.org>\n"
 "Language: \n"
@@ -21,35 +21,51 @@ msgstr ""
 msgid "orbisgis.view.docking.stationTitle"
 msgstr "Docked Window"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:109
+#: java/org/orbisgis/view/geocatalog/Catalog.java:115
 msgid "orbisgis.org.orbisgis.Catalog.title"
 msgstr "GeoCatalog"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:222
+#: java/org/orbisgis/view/geocatalog/Catalog.java:231
+msgid "orbisgis.view.geocatalog.OpenGdmsFilePanelTitle"
+msgstr "Select the file to add"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:249
+msgid "orbisgis.view.geocatalog.SourceAlreadyRegistered"
+msgstr "This source was already registered"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:262
 msgid "orbisgis.view.geocatalog.validateClearMessage"
 msgstr "All data source of the GeoCatalog will be removed. Are you sure ?"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:223
+#: java/org/orbisgis/view/geocatalog/Catalog.java:263
 msgid "orbisgis.view.geocatalog.validateClearTitle"
 msgstr "Clear the GeoCatalog"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:237
+#: java/org/orbisgis/view/geocatalog/Catalog.java:277
 msgid "orbisgis.view.geocatalog.clearGeoCatalogMenuItem"
 msgstr "Clear the GeoCatalog"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:249
+#: java/org/orbisgis/view/geocatalog/Catalog.java:285
+msgid "orbisgis.view.geocatalog.addMenuItem"
+msgstr "Add"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:289
+msgid "orbisgis.view.geocatalog.addFileMenuItem"
+msgstr "File"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:305
 msgid "orbisgis.view.geocatalog.listenerMenuThrown"
 msgstr "An external code stop the creation of the PopUp menu"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:417
+#: java/org/orbisgis/view/geocatalog/Catalog.java:473
 msgid "orbisgis.view.geocatalog.removefilter"
 msgstr "Delete this filter"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:438
+#: java/org/orbisgis/view/geocatalog/Catalog.java:494
 msgid "orbisgis.view.geocatalog.addfilter"
 msgstr "Add a new filter"
 
-#: java/org/orbisgis/view/geocatalog/SourceListModel.java:172
+#: java/org/orbisgis/view/geocatalog/SourceListModel.java:215
 msgid "orbisgis.view.geocatalog.CannotReadDataSourceSchema"
 msgstr "Data source schema could not be read"
 
