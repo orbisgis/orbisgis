@@ -5,7 +5,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.HashSet;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ExternalGraphicType;
 import net.opengis.se._2_0.core.GraphicType;
