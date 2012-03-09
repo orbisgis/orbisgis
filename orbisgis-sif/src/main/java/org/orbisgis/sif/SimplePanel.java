@@ -118,13 +118,13 @@ public class SimplePanel extends JPanel {
                 } catch (DriverException e) {
                     logger.error(
                             I18N.getString(
-                            "orbisgis.org.orbisgis.sif.simplePanel.errorObtainingFavorites"),
+                            "sif.simplePanel.errorObtainingFavorites"),
                                  e); //$NON-NLS-1$
                     centerPanel = uiPanel;
                 } catch (DataSourceCreationException e) {
                     logger.error(
                             I18N.getString(
-                            "orbisgis.org.orbisgis.sif.simplePanel.errorObtainingFavorites"),
+                            "sif.simplePanel.errorObtainingFavorites"),
                                  e); //$NON-NLS-1$
                     centerPanel = uiPanel;
                 }
@@ -167,7 +167,7 @@ public class SimplePanel extends JPanel {
             err = panel.initialize();
         } catch (Exception e) {
             String msg = I18N.getString(
-                    "orbisgis.org.orbisgis.sif.simplePanel.cannotInitializeDialog"); //$NON-NLS-1$
+                    "sif.simplePanel.cannotInitializeDialog"); //$NON-NLS-1$
             logger.error(msg, e);
             err = msg + ": " + e.getMessage(); //$NON-NLS-1$
         }
@@ -186,10 +186,10 @@ public class SimplePanel extends JPanel {
         } catch (Exception e) {
             logger.error(
                     I18N.getString(
-                    "orbisgis.org.orbisgis.sif.simplePanel.errorValidatingUIPanel"),
+                    "sif.simplePanel.errorValidatingUIPanel"),
                          e); //$NON-NLS-1$
             err = I18N.getString(
-                    "orbisgis.org.orbisgis.sif.simplePanel.errorValidating") + e.
+                    "sif.simplePanel.errorValidating") + e.
                     getMessage(); //$NON-NLS-1$
         }
         if ((err == null) && (panel instanceof SQLUIPanel)) {
@@ -206,7 +206,7 @@ public class SimplePanel extends JPanel {
                             } catch (NumberFormatException e) {
                                 err = sqlPanel.getFieldNames()[i]
                                         + I18N.getString(
-                                        "orbisgis.org.orbisgis.sif.simplePanel.mustBeAnIntExpression"); //$NON-NLS-1$
+                                        "sif.simplePanel.mustBeAnIntExpression"); //$NON-NLS-1$
                             }
                             break;
                         case SQLUIPanel.DOUBLE:
@@ -215,7 +215,7 @@ public class SimplePanel extends JPanel {
                             } catch (NumberFormatException e) {
                                 err = sqlPanel.getFieldNames()[i]
                                         + I18N.getString(
-                                        "orbisgis.org.orbisgis.sif.simplePanel.mustBeAFloatExpression"); //$NON-NLS-1$
+                                        "sif.simplePanel.mustBeAFloatExpression"); //$NON-NLS-1$
                             }
                             break;
                     }
@@ -235,7 +235,7 @@ public class SimplePanel extends JPanel {
                                     + validationExpr[i] + " ;";
                             logger.debug(
                                     I18N.getString(
-                                    "orbisgis.org.orbisgis.sif.simplePanel.validatingInterface") + sql); //$NON-NLS-1$
+                                    "sif.simplePanel.validatingInterface") + sql); //$NON-NLS-1$
                             DataSource result = UIFactory.dsf.getDataSourceFromSQL(sql);
                             result.open();
                             long rowCount = result.getRowCount();
@@ -244,7 +244,7 @@ public class SimplePanel extends JPanel {
                                 err = errMsgs[i];
                                 if (err == null) {
                                     err = I18N.getString(
-                                            "orbisgis.org.orbisgis.sif.simplePanel.invalidInput"); //$NON-NLS-1$
+                                            "sif.simplePanel.invalidInput"); //$NON-NLS-1$
                                 }
                                 break;
                             }
@@ -253,50 +253,50 @@ public class SimplePanel extends JPanel {
                     } catch (DriverLoadException e) {
                         logger.error(
                                 I18N.getString(
-                                "orbisgis.org.orbisgis.sif.simplePanel.bugInSIF"),
+                                "sif.simplePanel.bugInSIF"),
                                      e); //$NON-NLS-1$
                         msgPanel.setError(I18N.getString(
-                                "orbisgis.org.orbisgis.sif.simplePanel.couldNotValidateDialog") //$NON-NLS-1$
+                                "sif.simplePanel.couldNotValidateDialog") //$NON-NLS-1$
                                 + e.getMessage());
                     } catch (DataSourceCreationException e) {
                         logger.error(
                                 I18N.getString(
-                                "orbisgis.org.orbisgis.sif.simplePanel.bugInSIF"),
+                                "sif.simplePanel.bugInSIF"),
                                      e); //$NON-NLS-1$
                         msgPanel.setError(I18N.getString(
-                                "orbisgis.org.orbisgis.sif.simplePanel.couldNotValidateDialog") //$NON-NLS-1$
+                                "sif.simplePanel.couldNotValidateDialog") //$NON-NLS-1$
                                 + e.getMessage());
                     } catch (DriverException e) {
                         logger.error(
                                 I18N.getString(
-                                "orbisgis.org.orbisgis.sif.simplePanel.bugInSIF"),
+                                "sif.simplePanel.bugInSIF"),
                                      e); //$NON-NLS-1$
                         msgPanel.setError(I18N.getString(
-                                "orbisgis.org.orbisgis.sif.simplePanel.couldNotValidateDialog") //$NON-NLS-1$
+                                "sif.simplePanel.couldNotValidateDialog") //$NON-NLS-1$
                                 + e.getMessage());
                     } catch (ParseException e) {
                         logger.error(
                                 I18N.getString(
-                                "orbisgis.org.orbisgis.sif.simplePanel.bugInSIF"),
+                                "sif.simplePanel.bugInSIF"),
                                      e); //$NON-NLS-1$
                         msgPanel.setError(I18N.getString(
-                                "orbisgis.org.orbisgis.sif.simplePanel.couldNotValidateDialog") //$NON-NLS-1$
+                                "sif.simplePanel.couldNotValidateDialog") //$NON-NLS-1$
                                 + e.getMessage());
                     } catch (SemanticException e) {
                         logger.error(
                                 I18N.getString(
-                                "orbisgis.org.orbisgis.sif.simplePanel.bugInSIF"),
+                                "sif.simplePanel.bugInSIF"),
                                      e); //$NON-NLS-1$
                         msgPanel.setError(I18N.getString(
-                                "orbisgis.org.orbisgis.sif.simplePanel.couldNotValidateDialog") //$NON-NLS-1$
+                                "sif.simplePanel.couldNotValidateDialog") //$NON-NLS-1$
                                 + e.getMessage());
                     } catch (NoSuchTableException e) {
                         logger.error(
                                 I18N.getString(
-                                "orbisgis.org.orbisgis.sif.simplePanel.bugInSIF"),
+                                "sif.simplePanel.bugInSIF"),
                                      e); //$NON-NLS-1$
                         msgPanel.setError(I18N.getString(
-                                "orbisgis.org.orbisgis.sif.simplePanel.couldNotValidateDialog") //$NON-NLS-1$
+                                "sif.simplePanel.couldNotValidateDialog") //$NON-NLS-1$
                                 + e.getMessage());
                     }
                 }
@@ -396,40 +396,40 @@ public class SimplePanel extends JPanel {
                     } catch (DriverException e) {
                         logger.error(
                                 I18N.getString(
-                                "orbisgis.org.orbisgis.sif.simplePanel.errorSavingSIFInput"),
+                                "sif.simplePanel.errorSavingSIFInput"),
                                      e); //$NON-NLS-1$
                         msgPanel.setError(
                                 I18N.getString(
-                                "orbisgis.org.orbisgis.sif.simplePanel.cannotSaveInput")); //$NON-NLS-1$
+                                "sif.simplePanel.cannotSaveInput")); //$NON-NLS-1$
                     } catch (NonEditableDataSourceException e) {
                         logger.error(
                                 I18N.getString(
-                                "orbisgis.org.orbisgis.sif.simplePanel.errorSavingSIFInput"),
+                                "sif.simplePanel.errorSavingSIFInput"),
                                      e); //$NON-NLS-1$
                         throw new RuntimeException(I18N.getString(
-                                "orbisgis.org.orbisgis.sif.simplePanel.bug"), e); //$NON-NLS-1$
+                                "sif.simplePanel.bug"), e); //$NON-NLS-1$
                     } catch (DriverLoadException e) {
                         logger.error(
                                 I18N.getString(
-                                "orbisgis.org.orbisgis.sif.simplePanel.errorSavingSIFInput"),
+                                "sif.simplePanel.errorSavingSIFInput"),
                                      e); //$NON-NLS-1$
                         throw new RuntimeException(I18N.getString(
-                                "orbisgis.org.orbisgis.sif.simplePanel.bug"), e); //$NON-NLS-1$
+                                "sif.simplePanel.bug"), e); //$NON-NLS-1$
                     } catch (NoSuchTableException e) {
                         logger.error(
                                 I18N.getString(
-                                "orbisgis.org.orbisgis.sif.simplePanel.errorSavingSIFInput"),
+                                "sif.simplePanel.errorSavingSIFInput"),
                                      e); //$NON-NLS-1$
                         throw new RuntimeException(I18N.getString(
-                                "orbisgis.org.orbisgis.sif.simplePanel.bug"), e); //$NON-NLS-1$
+                                "sif.simplePanel.bug"), e); //$NON-NLS-1$
                     } catch (DataSourceCreationException e) {
                         logger.error(
                                 I18N.getString(
-                                "orbisgis.org.orbisgis.sif.simplePanel.errorSavingSIFInput"),
+                                "sif.simplePanel.errorSavingSIFInput"),
                                      e); //$NON-NLS-1$
                         msgPanel.setError(
                                 I18N.getString(
-                                "orbisgis.org.orbisgis.sif.simplePanel.cannotSaveInput")); //$NON-NLS-1$
+                                "sif.simplePanel.cannotSaveInput")); //$NON-NLS-1$
                     }
                 }
             }
@@ -497,35 +497,35 @@ public class SimplePanel extends JPanel {
                         } catch (DriverException e) {
                             logger.error(
                                     I18N.getString(
-                                    "orbisgis.org.orbisgis.sif.simplePanel.errorRestoringSIFInput"),
+                                    "sif.simplePanel.errorRestoringSIFInput"),
                                          e); //$NON-NLS-1$
                             msgPanel.setError(
                                     I18N.getString(
-                                    "orbisgis.org.orbisgis.sif.simplePanel.cannotRestoreLastInput")); //$NON-NLS-1$
+                                    "sif.simplePanel.cannotRestoreLastInput")); //$NON-NLS-1$
                         } catch (DriverLoadException e) {
                             logger.error(
                                     I18N.getString(
-                                    "orbisgis.org.orbisgis.sif.simplePanel.errorRestoringSIFInput"),
+                                    "sif.simplePanel.errorRestoringSIFInput"),
                                          e); //$NON-NLS-1$
                             msgPanel.setError(
                                     I18N.getString(
-                                    "orbisgis.org.orbisgis.sif.simplePanel.cannotRestoreLastInput")); //$NON-NLS-1$
+                                    "sif.simplePanel.cannotRestoreLastInput")); //$NON-NLS-1$
                         } catch (NoSuchTableException e) {
                             logger.error(
                                     I18N.getString(
-                                    "orbisgis.org.orbisgis.sif.simplePanel.errorRestoringSIFInput"),
+                                    "sif.simplePanel.errorRestoringSIFInput"),
                                          e); //$NON-NLS-1$
                             msgPanel.setError(
                                     I18N.getString(
-                                    "orbisgis.org.orbisgis.sif.simplePanel.cannotRestoreLastInput")); //$NON-NLS-1$
+                                    "sif.simplePanel.cannotRestoreLastInput")); //$NON-NLS-1$
                         } catch (DataSourceCreationException e) {
                             logger.error(
                                     I18N.getString(
-                                    "orbisgis.org.orbisgis.sif.simplePanel.errorRestoringSIFInput"),
+                                    "sif.simplePanel.errorRestoringSIFInput"),
                                          e); //$NON-NLS-1$
                             msgPanel.setError(
                                     I18N.getString(
-                                    "orbisgis.org.orbisgis.sif.simplePanel.cannotRestoreLastInput")); //$NON-NLS-1$
+                                    "sif.simplePanel.cannotRestoreLastInput")); //$NON-NLS-1$
                         }
                     }
                 }

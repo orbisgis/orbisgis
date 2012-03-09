@@ -57,9 +57,9 @@ public class OpenFilePanel extends AbstractOpenPanel {
     public String validateInput() {
         File file = getSelectedFile();
         if (file == null) {
-            return I18N.getString("orbisgis.core.file.aFileMustSelected");
+            return I18N.getString("sif.file.aFileMustSelected");
         } else if (!file.exists()) {
-            return I18N.getString("orbisgis.core.file.aFileMustExists");
+            return I18N.getString("sif.file.aFileMustExists");
         } else {
             return null;
         }

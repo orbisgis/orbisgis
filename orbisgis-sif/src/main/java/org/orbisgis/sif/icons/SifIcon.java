@@ -86,7 +86,7 @@ public final class SifIcon {
                 loadedIcons.put(iconName, newIcon);
                 return newIcon;
             } else {
-                LOG.warn(I18N.getString("org.orbisgis.view.icons.OrbisGISIcon.icon_not_found")+" : "+iconName);
+                LOG.warn(I18N.getString("sif.icons.OrbisGISIcon.icon_not_found")+" : "+iconName);
                 return ORBISGIS_MISSING_ICON;
             }            
         } else {

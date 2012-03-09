@@ -29,13 +29,11 @@
 package org.orbisgis.sif;
 
 import java.io.File;
-
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.plaf.FileChooserUI;
 import javax.swing.plaf.basic.BasicFileChooserUI;
-
 import org.orbisgis.utils.I18N;
 
 public class SaveFilePanel extends OpenFilePanel {
@@ -79,13 +77,14 @@ public class SaveFilePanel extends OpenFilePanel {
 		}
 	}
 
+        @Override
 	public String validateInput() {
 		File file = getSelectedFile();
 		if (file == null) {
-			return I18N.getString("orbisgis.core.file.aFileMustSelected");
+			return I18N.getString("sif.file.aFileMustSelected");
 		} else if (fileMustNotExist) {
 			if (getSelectedFile().exists()) {
-				return I18N.getString("orbisgis.core.file.fileAlreadyExists");
+				return I18N.getString("sif.file.fileAlreadyExists");
 			} else {
 				return null;
 			}
@@ -107,9 +106,9 @@ public class SaveFilePanel extends OpenFilePanel {
 	public String postProcess() {
 		if (getSelectedFile().exists()) {
 			int ret = JOptionPane.showConfirmDialog(null, I18N
-					.getString("orbisgis.core.file.fileAlreadyExists")
-					+ " " + I18N.getString("orbisgis.core.file.overwrite"), I18N
-					.getString("orbisgis.core.file.existing"),
+					.getString("sif.file.fileAlreadyExists")
+					+ " " + I18N.getString("sif.file.overwrite"), I18N
+					.getString("sif.file.existing"),
 					JOptionPane.YES_NO_OPTION);
 			if (ret == JOptionPane.NO_OPTION || ret == JOptionPane.CLOSED_OPTION) {
 				// just do nothing...

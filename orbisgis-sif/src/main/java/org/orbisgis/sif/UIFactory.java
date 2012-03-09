@@ -114,7 +114,7 @@ public class UIFactory {
 		AbstractOutsideFrame dlg;
 		if (panels.length == 0) {
 			throw new IllegalArgumentException(
-					I18N.getString("orbisgis.org.orbisgis.sif.uIFactory.atLeastAPanelHasToBeSpecified")); //$NON-NLS-1$
+					I18N.getString("sif.uIFactory.atLeastAPanelHasToBeSpecified")); //$NON-NLS-1$
 		} else if (panels.length == 1) {
 			if (okCancel) {
 				dlg = getSimpleDialog(panels[0]);
@@ -146,14 +146,14 @@ public class UIFactory {
 
 	public static void setPersistencyDirectory(File baseDir) {
 		if (!baseDir.exists()) {
-			throw new IllegalArgumentException(baseDir + I18N.getString("orbisgis.org.orbisgis.sif.uIFactory.doesntExist")); //$NON-NLS-1$
+			throw new IllegalArgumentException(baseDir + I18N.getString("sif.uIFactory.doesntExist")); //$NON-NLS-1$
 		}
 		UIFactory.baseDir = baseDir;
 	}
 
 	public static void setTempDirectory(File tempDir) {
 		if (!tempDir.exists()) {
-			throw new IllegalArgumentException(tempDir + I18N.getString("orbisgis.org.orbisgis.sif.uIFactory.doesntExist")); //$NON-NLS-1$
+			throw new IllegalArgumentException(tempDir + I18N.getString("sif.uIFactory.doesntExist")); //$NON-NLS-1$
 		}
 		dsf.setTempDir(tempDir.getAbsolutePath());
 	}

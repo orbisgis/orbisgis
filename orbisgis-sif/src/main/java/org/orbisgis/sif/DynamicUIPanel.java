@@ -132,7 +132,7 @@ public class DynamicUIPanel implements SQLUIPanel {
 
 		if (index == -1) {
 			throw new IllegalArgumentException(
-					I18N.getString("orbisgis.org.orbisgis.sif.dynamicUIPanel.thereIsNoFieldWithName") + fieldName); //$NON-NLS-1$
+					I18N.getString("sif.dynamicUIPanel.thereIsNoFieldWithName") + fieldName); //$NON-NLS-1$
 		}
 
 		return txts[index].getText();
