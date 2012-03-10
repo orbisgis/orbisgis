@@ -47,8 +47,10 @@ import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
 
 import com.vividsolutions.jts.geom.Geometry;
+import org.gdms.data.values.GeometryValue;
 import org.gdms.sql.function.BasicFunctionSignature;
 import org.gdms.sql.function.FunctionSignature;
+import org.jproj.CoordinateReferenceSystem;
 
 /**
  * Re-project a geometry from a CRS to new CRS. Only EPSG code allowed.
@@ -56,29 +58,26 @@ import org.gdms.sql.function.FunctionSignature;
 public final class ST_Transform extends AbstractScalarSpatialFunction {
 
         private SpatialReferenceSystem spatialReferenceSystem;
+        private CoordinateReferenceSystem targetCRS;
 
         @Override
         public Value evaluate(SQLDataSourceFactory dsf, Value... values)
                 throws FunctionException {
-
-                Geometry geom = values[0].getAsGeometry();
-
-                int sourceCRS = values[1].getAsInt();
-
-                int targetCRS = values[2].getAsInt();
-
+                GeometryValue geomVal = (GeometryValue) values[0];
+                Geometry geom = geomVal.getAsGeometry();
                 if (spatialReferenceSystem == null) {
-                        spatialReferenceSystem = new SpatialReferenceSystem(dsf, sourceCRS,
+                        CoordinateReferenceSystem inputCRS = geomVal.getCRS();
+                        targetCRS = dsf.getCrsFactory().createFromName(values[1].getAsString());
+                        spatialReferenceSystem = new SpatialReferenceSystem(inputCRS,
                                 targetCRS);
                 }
                 final Geometry transformedGeom = spatialReferenceSystem.transform(geom);
-                transformedGeom.setSRID(targetCRS);
-                return ValueFactory.createValue(transformedGeom);
+                return ValueFactory.createValue(transformedGeom, targetCRS);
         }
 
         @Override
         public String getDescription() {
-                return "Re-project a geometry from a CRS to new CRS. Only EPSG code allowed.";
+                return "Re-project a geometry from a CRS to a new CRS.  EPSG, IGNF and ESRI code allowed.";
         }
 
         @Override
@@ -88,14 +87,14 @@ public final class ST_Transform extends AbstractScalarSpatialFunction {
 
         @Override
         public String getSqlOrder() {
-                return "SELECT ST_TRANSFORM(the_geom, sourceCRSCode, targetCRSCode) from myTable";
+                return "SELECT ST_TRANSFORM(the_geom, targetCRSCode) from myTable";
         }
 
         @Override
         public FunctionSignature[] getFunctionSignatures() {
                 return new FunctionSignature[]{
                                 new BasicFunctionSignature(getType(null), ScalarArgument.GEOMETRY,
-                                ScalarArgument.INT, ScalarArgument.INT)
+                                ScalarArgument.STRING)
                         };
         }
 }
