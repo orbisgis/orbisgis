@@ -136,30 +136,32 @@ public final class ST_CreateGrid extends AbstractTableFunction {
         private void createGrid(final DiskBufferDriver driver,
                 final Envelope env, final ProgressMonitor pm)
                 throws DriverException {
-            
+
                 final int nbX = (int) Math.ceil((env.getMaxX() - env.getMinX())
                         / deltaX);
                 pm.startTask("Creating grid", nbX);
                 int gridCellIndex = 0;
-                int i = 0;
-                for (double x = env.getMinX(); x < env.getMaxX(); x += deltaX) {
-
-                        if (i >= 100 && i % 100 == 0) {
+                int row = 0;
+                for (double y = env.getMaxY(); y > env.getMinY(); y -= deltaY) {
+                        if (row >= 100 && row % 100 == 0) {
                                 if (pm.isCancelled()) {
                                         break;
                                 } else {
-                                        pm.progressTo(i);
+                                        pm.progressTo(row);
                                 }
                         }
-                        for (double y = env.getMinY(); y < env.getMaxY(); y += deltaY) {
+                        row++;
+                        int col = 1;
+                        for (double x = env.getMinX(); x < env.getMaxX(); x += deltaX) {
                                 gridCellIndex++;
                                 final Coordinate[] summits = new Coordinate[5];
                                 summits[0] = invTranslateAndRotate(x, y);
                                 summits[1] = invTranslateAndRotate(x + deltaX, y);
-                                summits[2] = invTranslateAndRotate(x + deltaX, y + deltaY);
-                                summits[3] = invTranslateAndRotate(x, y + deltaY);
+                                summits[2] = invTranslateAndRotate(x + deltaX, y - deltaY);
+                                summits[3] = invTranslateAndRotate(x, y - deltaY);
                                 summits[4] = invTranslateAndRotate(x, y);
-                                createGridCell(driver, summits, gridCellIndex);
+                                createGridCell(driver, summits, gridCellIndex, col, row);
+                                col++;
                         }
                 }
                 driver.writingFinished();
@@ -230,19 +232,20 @@ public final class ST_CreateGrid extends AbstractTableFunction {
         }
 
         private void createGridCell(final DiskBufferDriver driver,
-                final Coordinate[] summits, final int gridCellIndex) throws DriverException {
+                final Coordinate[] summits, final int gridCellIndex, int col, int row) throws DriverException {
                 final LinearRing g = GF.createLinearRing(summits);
                 final Geometry gg = GF.createPolygon(g, null);
                 driver.addValues(new Value[]{ValueFactory.createValue(gg),
-                                ValueFactory.createValue(gridCellIndex)});
+                                ValueFactory.createValue(gridCellIndex),
+                                ValueFactory.createValue(col), ValueFactory.createValue(row)});
         }
 
         @Override
         public Metadata getMetadata(Metadata[] tables) throws DriverException {
                 return new DefaultMetadata(new Type[]{
                                 TypeFactory.createType(Type.POLYGON),
-                                TypeFactory.createType(Type.INT)}, new String[]{"the_geom",
-                                "gid"});
+                                TypeFactory.createType(Type.INT), TypeFactory.createType(Type.INT), TypeFactory.createType(Type.INT)}, new String[]{"the_geom",
+                                "id", "id_col", "id_row"});
         }
 
         @Override

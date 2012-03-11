@@ -169,7 +169,7 @@ public class CreateFunctionTest extends FunctionTest {
 
                 DataSet[] tables = new DataSet[]{driver1};
                 DataSet result = sT_CreateGrid.evaluate(dsf, tables, values, new NullProgressMonitor());
-                checkGrid(result, true);
+                checkGrid(result, false);
         }
 
         /**
@@ -192,21 +192,25 @@ public class CreateFunctionTest extends FunctionTest {
 
                 DataSet[] tables = new DataSet[]{driver1};
                 DataSet result = sT_CreateGrid.evaluate(dsf, tables, values, new NullProgressMonitor());
-                checkGrid(result, true);
+                checkGrid(result, false);
         }
 
         private void checkGrid(final DataSet dataSource, final boolean checkCentroid)
                 throws Exception {
                 final long rowCount = dataSource.getRowCount();
+                double minX = dataSource.getFullExtent().getMinX();
+                double maxY = dataSource.getFullExtent().getMaxY();
+                
                 for (long rowIndex = 0; rowIndex < rowCount; rowIndex++) {
                         final Value[] fields = dataSource.getRow(rowIndex);
                         final Geometry geom = fields[0].getAsGeometry();
-                        final int id = fields[1].getAsInt();
+                        final int id_col = fields[2].getAsInt();
+                        final int id_row = fields[3].getAsInt();
                         assertTrue(geom instanceof Polygon);
                         assertTrue(Math.abs(1 - geom.getArea()) < 0.000001);
-                        if (checkCentroid) {
-                                assertEquals(0.5 + (id - 1) / 2, geom.getCentroid().getCoordinate().x, 0);
-                                assertEquals(0.5 + (id - 1) % 2, geom.getCentroid().getCoordinate().y, 0);
+                        if (checkCentroid) {                                
+                                assertEquals((minX  + 0.5) +(id_col-1), geom.getCentroid().getCoordinate().x, 0);
+                                assertEquals((maxY - 0.5) - (id_row-1), geom.getCentroid().getCoordinate().y, 0);
                         }
 
                         System.out.println();
