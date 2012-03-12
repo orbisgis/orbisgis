@@ -28,12 +28,21 @@ public interface Tree<T> {
         boolean delete(T v, int rowIndex) throws IOException;
 
         /**
-         *
+         * Queries the tree for the given value.
          * @param value
-         * @return
+         * @return an array of row indexes for the given value
          * @throws IOException
          */
-        int[] getRow(T value) throws IOException;
+        int[] query(T value) throws IOException;
+        
+        /**
+         * Queries the tree for the given value, with the specified visitor.
+         * @param value
+         * @param visitor 
+         * @return an array of row indexes for the given value
+         * @throws IOException
+         */
+        int[] query(T value, IndexVisitor<T> visitor) throws IOException;
 
         /**
          * Gets all elements stored in this node

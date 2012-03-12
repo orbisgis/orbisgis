@@ -45,12 +45,14 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.TreeSet;
+
+import org.gdms.data.indexes.tree.IndexVisitor;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * @author Fernando Gonzalez Cortes
@@ -730,12 +732,35 @@ public class RTreeInteriorNode extends AbstractRTreeNode {
         }
 
         @Override
-        public int[] getRows(Envelope value) throws IOException {
+        public int[] query(Envelope value) throws IOException {
                 ArrayList<int[]> childrenResult = new ArrayList<int[]>();
                 int size = 0;
                 for (int i = 0; i < children.size(); i++) {
                         if (value.intersects(getEnvelope(i))) {
-                                int[] rows = getChild(i).getRows(value);
+                                int[] rows = getChild(i).query(value);
+                                size += rows.length;
+                                childrenResult.add(rows);
+                        }
+                }
+
+                int[] ret = new int[size];
+                int currentPos = 0;
+                for (int i = 0; i < childrenResult.size(); i++) {
+                        int[] childRows = childrenResult.get(i);
+                        System.arraycopy(childRows, 0, ret, currentPos, childRows.length);
+                        currentPos += childRows.length;
+                }
+
+                return ret;
+        }
+        
+        @Override
+        public int[] query(Envelope value, IndexVisitor<Envelope> v) throws IOException {
+                ArrayList<int[]> childrenResult = new ArrayList<int[]>();
+                int size = 0;
+                for (int i = 0; i < children.size(); i++) {
+                        if (value.intersects(getEnvelope(i))) {
+                                int[] rows = getChild(i).query(value, v);
                                 size += rows.length;
                                 childrenResult.add(rows);
                         }

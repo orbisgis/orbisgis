@@ -48,6 +48,7 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.indexes.btree.BTree;
 import org.gdms.data.indexes.btree.DiskBTree;
+import org.gdms.data.indexes.tree.IndexVisitor;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -91,7 +92,7 @@ public class BTreeTest {
                 assertEquals(tree.size(), tree.getAllValues().length);
                 Value[] keys = tree.getAllValues();
                 for (int i = 0; i < keys.length; i++) {
-                        int[] indexes = tree.getRow(keys[i]);
+                        int[] indexes = tree.query(keys[i]);
                         for (int index : indexes) {
                                 assertTrue("value: " + keys[i], v.get(index).equals(keys[i]).getAsBoolean());
                         }
@@ -202,7 +203,7 @@ public class BTreeTest {
                 throws IOException, DriverException {
                 Value[] allValues = tree.getAllValues();
                 for (Value value : allValues) {
-                        int[] rows = tree.getRow(value);
+                        int[] rows = tree.query(value);
                         for (int row : rows) {
                                 assertTrue(ds.getFieldValue(row, fieldIndex).equals(value).getAsBoolean());
                         }
@@ -254,7 +255,7 @@ public class BTreeTest {
                 tree.close();
                 tree.openIndex(indexFile);
                 assertEquals(tree.size(), 0);
-                assertEquals(tree.getRow(ValueFactory.createValue(0)).length, 0);
+                assertEquals(tree.query(ValueFactory.createValue(0)).length, 0);
         }
 
         @Test
@@ -318,9 +319,50 @@ public class BTreeTest {
                 tree.delete(ValueFactory.createValue(19257), 2834);
                 tree.delete(ValueFactory.createValue(0), 2834);
                 tree.checkTree();
-                assertEquals(tree.getRow(ValueFactory.createValue(2834)).length, 0);
+                assertEquals(tree.query(ValueFactory.createValue(2834)).length, 0);
                 String snapshot2 = tree.toString();
                 assertEquals(snapshot, snapshot2);
                 tree.close();
+        }
+
+        @Test
+        public void testIndexVisitor() throws IOException {
+                BTree tree = new DiskBTree(3, 256, false);
+                tree.newIndex(indexFile);
+                tree.insert(ValueFactory.createValue(0), 0);
+                tree.insert(ValueFactory.createValue(0), 1);
+                tree.insert(ValueFactory.createValue(1), 2);
+                tree.insert(ValueFactory.createValue(1), 3);
+                tree.insert(ValueFactory.createValue(1), 4);
+                tree.insert(ValueFactory.createValue(2), 5);
+                tree.insert(ValueFactory.createValue(2), 6);
+                tree.insert(ValueFactory.createValue(2), 7);
+                tree.insert(ValueFactory.createValue(3), 8);
+                tree.insert(ValueFactory.createValue(4), 9);
+                tree.checkTree();
+
+                final int[] t = new int[]{0, 0, 1, 1, 1, 2, 2, 2, 3, 4};
+                final IV iV = new IV(t);
+
+
+                tree.query(ValueFactory.createValue(2), iV);
+
+                assertTrue(iV.fired);
+        }
+
+        private static class IV implements IndexVisitor<Value> {
+
+                boolean fired = false;
+                int [] t;
+
+                public IV(int[] t) {
+                        this.t = t;
+                }
+                
+                @Override
+                public void visitElement(int row, Value env) {
+                        fired = true;
+                        assertEquals(t[row], env.getAsInt());
+                }
         }
 }

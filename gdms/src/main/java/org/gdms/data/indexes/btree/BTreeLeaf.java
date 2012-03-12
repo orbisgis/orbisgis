@@ -48,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.gdms.data.indexes.tree.IndexVisitor;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
@@ -298,8 +299,9 @@ public class BTreeLeaf extends AbstractBTreeNode {
         }
 
         @Override
-        public int[] getIndex(RangeComparator minComparator,
-                RangeComparator maxComparator) throws IOException {
+        public int[] query(RangeComparator[] comparators) throws IOException {
+                RangeComparator minComparator = comparators[0];
+                RangeComparator maxComparator = comparators[1];
                 if (values.isEmpty()) {
                         return new int[0];
                 } else {
@@ -313,6 +315,41 @@ public class BTreeLeaf extends AbstractBTreeNode {
                                                 && maxComparator.isInRange(values.get(i))) {
                                                 inRange = true;
                                                 thisNode[index] = rows.get(i);
+                                                index++;
+                                        } else {
+                                                if (inRange) {
+                                                        // We have finished our range
+                                                        break;
+                                                }
+                                        }
+                                }
+                        }
+
+                        int[] ret = new int[index];
+                        System.arraycopy(thisNode, 0, ret, 0, index);
+                        return ret;
+                }
+        }
+        
+        @Override
+        public int[] query(RangeComparator[] comparators, IndexVisitor<Value> visitor) throws IOException {
+                RangeComparator minComparator = comparators[0];
+                RangeComparator maxComparator = comparators[1];
+                if (values.isEmpty()) {
+                        return new int[0];
+                } else {
+                        int[] thisNode = new int[tree.getN()];
+                        int index = 0;
+                        Value lastValueInNode = values.get(values.size() - 1);
+                        if (minComparator.isInRange(lastValueInNode)) {
+                                boolean inRange = false;
+                                for (int i = 0; i < values.size(); i++) {
+                                        final Value v = values.get(i);
+                                        if (minComparator.isInRange(v)
+                                                && maxComparator.isInRange(v)) {
+                                                inRange = true;
+                                                thisNode[index] = rows.get(i);
+                                                visitor.visitElement(thisNode[index], v);
                                                 index++;
                                         } else {
                                                 if (inRange) {

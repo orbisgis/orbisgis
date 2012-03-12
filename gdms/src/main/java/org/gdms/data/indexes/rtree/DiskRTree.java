@@ -48,15 +48,16 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.gdms.data.indexes.tree.IndexVisitor;
+import org.gdms.data.indexes.tree.Tree;
 import org.gdms.driver.ReadWriteBufferManager;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.io.ParseException;
-import java.util.Map;
-import org.gdms.data.indexes.tree.Tree;
 
 public final class DiskRTree implements Tree<Envelope> {
 
@@ -499,7 +500,12 @@ public final class DiskRTree implements Tree<Envelope> {
         }
 
         @Override
-        public int[] getRow(Envelope value) throws IOException {
-                return root.getRows(value);
+        public int[] query(Envelope value) throws IOException {
+                return root.query(value);
+        }
+        
+        @Override
+        public int[] query(Envelope value, IndexVisitor<Envelope> visitor) throws IOException {
+                return root.query(value, visitor);
         }
 }

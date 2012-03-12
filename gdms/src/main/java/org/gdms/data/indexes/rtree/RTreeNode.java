@@ -44,7 +44,7 @@ import java.io.IOException;
 import com.vividsolutions.jts.geom.Envelope;
 import org.gdms.data.indexes.tree.TreeNode;
 
-public interface RTreeNode extends TreeNode<Envelope, RTreeNode> {
+public interface RTreeNode extends TreeNode<Envelope, RTreeNode, Envelope> {
 
         /**
          * Gets the envelope of all the geometries under this node
@@ -53,12 +53,4 @@ public interface RTreeNode extends TreeNode<Envelope, RTreeNode> {
          * @throws IOException
          */
         Envelope getEnvelope() throws IOException;
-
-        /**
-         *
-         * @param value
-         * @return 
-         * @throws IOException
-         */
-        int[] getRows(Envelope value) throws IOException;
 }

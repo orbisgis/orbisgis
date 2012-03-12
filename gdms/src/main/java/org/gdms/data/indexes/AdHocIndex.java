@@ -36,8 +36,10 @@
  */
 package org.gdms.data.indexes;
 
+import org.gdms.data.indexes.tree.IndexVisitor;
 
-public interface AdHocIndex {
+
+public interface AdHocIndex<T> {
 
 	/**
 	 * Gets an iterator that will iterate through the filtered rows in the
@@ -50,6 +52,21 @@ public interface AdHocIndex {
          * @throws IndexException 
 	 */
 	int[] getIterator(IndexQuery indexQuery)
+			throws IndexQueryException, IndexException;
+        
+        /**
+	 * Gets an iterator that will iterate through the filtered rows in the
+	 * DataSource that was used in the buildIndex method. The given IndexVisitor
+         * will be notified of the visiting of elements of the index.
+	 *
+	 *
+	 * @param indexQuery
+         * @param visitor 
+         * @return
+         * @throws IndexQueryException 
+         * @throws IndexException 
+	 */
+	int[] getIterator(IndexQuery indexQuery, IndexVisitor<T> visitor)
 			throws IndexQueryException, IndexException;
 
 }

@@ -44,7 +44,13 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
 import org.orbisgis.progress.ProgressMonitor;
 
-public interface DataSourceIndex extends AdHocIndex {
+/**
+ * An index over a DataSource.
+ * 
+ * @param <Q> 
+ * @author Antoine Gourlay
+ */
+public interface DataSourceIndex<Q> extends AdHocIndex<Q> {
 
         /**
          * Deletes a row from the index.

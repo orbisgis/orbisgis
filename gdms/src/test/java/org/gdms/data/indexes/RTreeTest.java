@@ -36,11 +36,8 @@
  */
 package org.gdms.data.indexes;
 
-import org.junit.Before;
-import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
-
 
 import org.gdms.TestBase;
 import org.gdms.data.DataSource;
@@ -48,13 +45,15 @@ import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.indexes.rtree.DiskRTree;
+import org.gdms.data.indexes.tree.IndexVisitor;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.source.SourceManager;
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
 
 import com.vividsolutions.jts.geom.Envelope;
-
-import static org.junit.Assert.*;
 
 public class RTreeTest {
 
@@ -67,7 +66,7 @@ public class RTreeTest {
                 assertEquals(tree.size(), tree.getAllValues().length);
                 Envelope[] keys = tree.getAllValues();
                 for (int i = 0; i < keys.length; i++) {
-                        int[] indexes = tree.getRow(keys[i]);
+                        int[] indexes = tree.query(keys[i]);
                         assertTrue(contains(indexes, ds, fieldIndex, keys[i]));
                 }
 
@@ -138,6 +137,47 @@ public class RTreeTest {
                 }
 
                 ds.close();
+        }
+
+        @Test
+        public void testIndexVisitor() throws Exception {
+                DiskRTree tree = new DiskRTree(16, 1024, false);
+                tree.newIndex(indexFile);
+                DataSource ds = dsf.getDataSource("points");
+                String fieldName = "the_geom";
+
+                ds.open();
+                int fieldIndex = ds.getFieldIndexByName(fieldName);
+                for (int i = 0; i < ds.getRowCount(); i++) {
+                        Envelope value = ds.getFieldValue(i, fieldIndex).getAsGeometry().getEnvelopeInternal();
+                        tree.insert(value, i);
+                }
+                Envelope e = ds.getGeometry((ds.getRowCount() - 1 )/ 2).getEnvelopeInternal();
+                
+                IV iV = new IV(ds);
+                tree.query(e,  iV);
+                
+                assertTrue(iV.fired);
+        }
+
+        private static class IV implements IndexVisitor<Envelope> {
+
+                boolean fired = false;
+                DataSource ds;
+
+                public IV(DataSource ds) {
+                        this.ds = ds;
+                }
+
+                @Override
+                public void visitElement(int row, Envelope env) {
+                        fired = true;
+                        try {
+                                assertTrue(env.contains(ds.getGeometry(row).getEnvelopeInternal()));
+                        } catch (DriverException ex) {
+                                fail();
+                        }
+                }
         }
 
         @Before

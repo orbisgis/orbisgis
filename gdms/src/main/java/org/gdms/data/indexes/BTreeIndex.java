@@ -42,13 +42,14 @@ import java.io.IOException;
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.indexes.btree.DiskBTree;
+import org.gdms.data.indexes.tree.IndexVisitor;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.DataSet;
 import org.orbisgis.progress.ProgressMonitor;
 
-public class BTreeIndex implements DataSourceIndex {
+public class BTreeIndex implements DataSourceIndex<Value> {
 
         private String fieldName;
         private DiskBTree index;
@@ -113,12 +114,18 @@ public class BTreeIndex implements DataSourceIndex {
         @Override
         public int[] getIterator(IndexQuery query)
                 throws IndexQueryException, IndexException {
+                return getIterator(query, null);
+        }
+
+        @Override
+        public int[] getIterator(IndexQuery query, IndexVisitor<Value> visitor)
+                throws IndexQueryException, IndexException {
                 if (!(query instanceof AlphaQuery)) {
                         throw new IllegalArgumentException("Wrong query type. BTreeIndex only supports AlphaQuery.");
                 }
                 AlphaQuery q = (AlphaQuery) query;
                 try {
-                        return index.getRow(q.getMin(), q.isMinIncluded(), q.getMax(), q.isMaxIncluded());
+                        return index.getRow(q.getMin(), q.isMinIncluded(), q.getMax(), q.isMaxIncluded(), visitor);
                 } catch (IOException e) {
                         throw new IndexException("Cannot access the index", e);
                 }

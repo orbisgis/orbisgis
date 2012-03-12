@@ -40,14 +40,15 @@ Thomas LEDUC, scientific researcher, Fernando GONZALEZ
 package org.gdms.data.indexes.btree;
 
 import java.io.IOException;
-import org.gdms.data.indexes.tree.Tree;
 
+import org.gdms.data.indexes.tree.IndexVisitor;
+import org.gdms.data.indexes.tree.Tree;
 import org.gdms.data.values.Value;
 
 public interface BTree extends Tree<Value> {
 
 	/**
-	 * Range query
+	 * Range query.
 	 *
 	 * @param min
 	 * @param minIncluded
@@ -58,5 +59,19 @@ public interface BTree extends Tree<Value> {
 	 */
 	int[] getRow(Value min, boolean minIncluded, Value max,
 			boolean maxIncluded) throws IOException;
+        
+        /**
+	 * Range query with an index visitor on elements that match.
+	 *
+	 * @param min
+	 * @param minIncluded
+	 * @param max
+	 * @param maxIncluded
+         * @param visitor 
+         * @return
+	 * @throws IOException
+	 */
+	int[] getRow(Value min, boolean minIncluded, Value max,
+			boolean maxIncluded, IndexVisitor<Value> visitor) throws IOException;
 
 }

@@ -52,6 +52,7 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.gdms.data.indexes.tree.IndexVisitor;
 import org.gdms.data.values.Value;
 import org.gdms.driver.ReadWriteBufferManager;
 
@@ -556,6 +557,12 @@ public final class DiskBTree implements BTree {
         @Override
         public int[] getRow(Value min, boolean minIncluded, Value max,
                 boolean maxIncluded) throws IOException {
+                return getRow(min, minIncluded, max, maxIncluded, null);
+        }
+        
+        @Override
+        public int[] getRow(Value min, boolean minIncluded, Value max,
+                boolean maxIncluded, IndexVisitor<Value> visitor) throws IOException {
                 RangeComparator minComparator = null;
                 RangeComparator maxComparator = null;
                 if (min.isNull()) {
@@ -573,12 +580,22 @@ public final class DiskBTree implements BTree {
                         maxComparator = new LessComparator(max);
                 }
 
-                return root.getIndex(minComparator, maxComparator);
+                if (visitor != null) {
+                        return root.query(new RangeComparator[]{minComparator, maxComparator}, visitor);
+                } else {
+                        return root.query(new RangeComparator[]{minComparator, maxComparator});
+                }
         }
 
         @Override
-        public int[] getRow(Value value) throws IOException {
-                return root.getIndex(new LessEqualComparator(value),
-                        new GreaterEqualComparator(value));
+        public int[] query(Value value) throws IOException {
+                return root.query(new RangeComparator[]{new LessEqualComparator(value),
+                                new GreaterEqualComparator(value)});
+        }
+        
+        @Override
+        public int[] query(Value value, IndexVisitor<Value> visitor) throws IOException {
+                return root.query(new RangeComparator[]{new LessEqualComparator(value),
+                                new GreaterEqualComparator(value)}, visitor);
         }
 }

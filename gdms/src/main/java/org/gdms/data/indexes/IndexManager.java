@@ -53,6 +53,7 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
+import org.gdms.data.indexes.tree.IndexVisitor;
 import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
@@ -70,8 +71,8 @@ import org.orbisgis.utils.FileUtils;
  * @author Antoine Gourlay
  */
 public class IndexManager {
-        private static final String TEMPINDEXPREFIX = "tempindex";
 
+        private static final String TEMPINDEXPREFIX = "tempindex";
         private static final Logger logger = Logger.getLogger(IndexManager.class);
         public static final String INDEX_PROPERTY_PREFIX = "org.gdms.index";
         public static final String RTREE_SPATIAL_INDEX = "org.gdms.rtree";
@@ -565,7 +566,34 @@ public class IndexManager {
                         return null;
                 }
         }
-        
+
+        /**
+         * Queries the index of the specified source, with the specified query and the specified visitor.
+         * 
+         * The visitor must have the correct type parameter (the type of the values being stored in the index).
+         *
+         * @param dsName the name of the source
+         * @param indexQuery a query to execute against the source
+         * @param visitor an index visitor
+         * @return The iterator or null if there is no index in the specified field
+         * @throws IndexException
+         * @throws NoSuchTableException
+         * @throws IndexQueryException 
+         */
+        public int[] queryIndex(String dsName, IndexQuery indexQuery, IndexVisitor<?> visitor)
+                throws IndexException, NoSuchTableException, IndexQueryException {
+                DataSourceIndex dsi;
+                dsi = getIndex(dsName, indexQuery.getFieldName());
+                if (dsi != null) {
+                        if (!dsi.isOpen()) {
+                                dsi.load();
+                        }
+                        return dsi.getIterator(indexQuery, visitor);
+                } else {
+                        return null;
+                }
+        }
+
         /**
          * Queries the specified source, using the specified query on an index if there is one.
          * Otherwise returns a full iterator of the source.
@@ -595,7 +623,7 @@ public class IndexManager {
                         throw new DriverException(e);
                 }
         }
-        
+
         /**
          * Queries the specified source, using the specified query on an index if there is one.
          * Otherwise returns a full iterator of the source.
@@ -611,7 +639,7 @@ public class IndexManager {
                         DataSource ds = (DataSource) src;
                         return iterateUsingIndexQuery(ds.getName(), indexQuery);
                 }
-                
+
                 try {
                         int[] ret = queryIndex(TEMPINDEXPREFIX + src.hashCode(), indexQuery);
 
@@ -641,6 +669,24 @@ public class IndexManager {
          */
         public int[] queryIndex(DataSet src, IndexQuery indexQuery)
                 throws IndexException, NoSuchTableException, IndexQueryException {
+                return queryIndex(src, indexQuery, null);
+        }
+
+        /**
+         * Queries the index of the specified source, with the specified query  and the specified visitor.
+         * 
+         * The visitor must have the correct type parameter (the type of the values being stored in the index).
+         *
+         * @param src  the source
+         * @param indexQuery a query to execute against the source
+         * @param visitor 
+         * @return The iterator or null if there is no index in the specified field
+         * @throws IndexException
+         * @throws NoSuchTableException
+         * @throws IndexQueryException 
+         */
+        public int[] queryIndex(DataSet src, IndexQuery indexQuery, IndexVisitor<?> visitor)
+                throws IndexException, NoSuchTableException, IndexQueryException {
                 DataSourceIndex dsi;
                 if (src instanceof DataSource) {
                         DataSource ds = (DataSource) src;
@@ -652,7 +698,7 @@ public class IndexManager {
                         if (!dsi.isOpen()) {
                                 dsi.load();
                         }
-                        return dsi.getIterator(indexQuery);
+                        return dsi.getIterator(indexQuery, visitor);
                 } else {
                         return null;
                 }
@@ -708,7 +754,7 @@ public class IndexManager {
                                 + dsName + " at field " + fieldName, e);
                 }
         }
-        
+
         /**
          * Removes the index for the source. All the current DataSource instances
          * are affected.

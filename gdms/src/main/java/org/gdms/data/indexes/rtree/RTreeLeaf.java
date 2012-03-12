@@ -45,16 +45,17 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeSet;
 
+import org.gdms.data.indexes.tree.IndexVisitor;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.io.ParseException;
-import java.util.List;
-import org.gdms.data.types.Type;
 
 public class RTreeLeaf extends AbstractRTreeNode {
 
@@ -409,12 +410,31 @@ public class RTreeLeaf extends AbstractRTreeNode {
         }
 
         @Override
-        public int[] getRows(Envelope value) {
+        public int[] query(Envelope value) {
                 int[] intersecting = new int[geometries.size()];
                 int index = 0;
                 for (int i = 0; i < geometries.size(); i++) {
                         if (geometries.get(i).intersects(value)) {
                                 intersecting[index] = rows.get(i);
+                                index++;
+                        }
+                }
+
+                int[] ret = new int[index];
+                System.arraycopy(intersecting, 0, ret, 0, index);
+
+                return ret;
+        }
+
+        @Override
+        public int[] query(Envelope value, IndexVisitor<Envelope> v) throws IOException {
+                int[] intersecting = new int[geometries.size()];
+                int index = 0;
+                for (int i = 0; i < geometries.size(); i++) {
+                        final Envelope env = geometries.get(i);
+                        if (env.intersects(value)) {
+                                intersecting[index] = rows.get(i);
+                                v.visitElement(intersecting[index], env);
                                 index++;
                         }
                 }

@@ -42,18 +42,19 @@ import java.io.IOException;
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.indexes.rtree.DiskRTree;
+import org.gdms.data.indexes.tree.IndexVisitor;
+import org.gdms.data.schema.MetadataUtilities;
+import org.gdms.data.types.IncompatibleTypesException;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
-import org.gdms.data.types.IncompatibleTypesException;
 import org.orbisgis.progress.ProgressMonitor;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
-import org.gdms.data.schema.MetadataUtilities;
-import org.gdms.driver.DataSet;
 
-public class RTreeIndex implements DataSourceIndex {
+public class RTreeIndex implements DataSourceIndex<Envelope> {
 
         private String fieldName;
         private DiskRTree index;
@@ -131,13 +132,19 @@ public class RTreeIndex implements DataSourceIndex {
         @Override
         public int[] getIterator(IndexQuery query)
                 throws IndexException, IndexQueryException {
+                return getIterator(query, null);
+        }
+        
+        @Override
+        public int[] getIterator(IndexQuery query, IndexVisitor<Envelope> visitor)
+                throws IndexException, IndexQueryException {
                 if (!(query instanceof SpatialIndexQuery)) {
                         throw new IllegalArgumentException("Wrong query type. RTreeIndex only supports SpatialIndexQuery.");
                 }
                 SpatialIndexQuery q = (SpatialIndexQuery) query;
                 try {
                         Envelope area = q.getArea();
-                        return index.getRow(area);
+                        return index.query(area, visitor);
                 } catch (IOException e) {
                         throw new IndexException("Cannot access the index", e);
                 } catch (IncompatibleTypesException e) {

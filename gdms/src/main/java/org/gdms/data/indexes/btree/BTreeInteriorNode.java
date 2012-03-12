@@ -48,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.gdms.data.indexes.tree.IndexVisitor;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.Value;
@@ -733,23 +734,57 @@ public class BTreeInteriorNode extends AbstractBTreeNode {
         }
 
         @Override
-        public int[] getIndex(RangeComparator minComparator,
-                RangeComparator maxComparator) throws IOException {
+        public int[] query(RangeComparator[] comparators) throws IOException {
+                RangeComparator minComparator = comparators[0];
+                RangeComparator maxComparator = comparators[1];
+                
                 int[] minChildRange = minComparator.getRange(this);
                 int[] maxChildRange = maxComparator.getRange(this);
 
                 int minChild = Math.max(minChildRange[0], maxChildRange[0]);
                 int maxChild = Math.min(minChildRange[1], maxChildRange[1]);
 
-                int[] childResult = getChild(minChild).getIndex(minComparator,
-                        maxComparator);
+                int[] childResult = getChild(minChild).query(comparators);
                 ArrayList<int[]> childrenResult = new ArrayList<int[]>();
                 int index = minChild + 1;
                 int numResults = 0;
                 while (index <= maxChild) {
                         numResults += childResult.length;
                         childrenResult.add(childResult);
-                        childResult = getChild(index).getIndex(minComparator, maxComparator);
+                        childResult = getChild(index).query(comparators);
+                        index++;
+                }
+                numResults += childResult.length;
+                childrenResult.add(childResult);
+                int[] ret = new int[numResults];
+                int acum = 0;
+                for (int[] is : childrenResult) {
+                        System.arraycopy(is, 0, ret, acum, is.length);
+                        acum += is.length;
+                }
+
+                return ret;
+        }
+        
+        @Override
+        public int[] query(RangeComparator[] comparators, IndexVisitor<Value> visitor) throws IOException {
+                RangeComparator minComparator = comparators[0];
+                RangeComparator maxComparator = comparators[1];
+                
+                int[] minChildRange = minComparator.getRange(this);
+                int[] maxChildRange = maxComparator.getRange(this);
+
+                int minChild = Math.max(minChildRange[0], maxChildRange[0]);
+                int maxChild = Math.min(minChildRange[1], maxChildRange[1]);
+
+                int[] childResult = getChild(minChild).query(comparators, visitor);
+                ArrayList<int[]> childrenResult = new ArrayList<int[]>();
+                int index = minChild + 1;
+                int numResults = 0;
+                while (index <= maxChild) {
+                        numResults += childResult.length;
+                        childrenResult.add(childResult);
+                        childResult = getChild(index).query(comparators, visitor);
                         index++;
                 }
                 numResults += childResult.length;
