@@ -36,6 +36,9 @@
  */
 package org.gdms.sql.function.spatial.convert;
 
+import org.gdms.driver.DataSet;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.data.types.Dimension3DConstraint;
 import org.junit.Test;
 import org.gdms.data.types.Constraint;
@@ -57,9 +60,11 @@ import org.gdms.data.types.IncompatibleTypesException;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import org.gdms.sql.function.spatial.geometry.convert.ST_EndPoint;
+import org.gdms.sql.function.spatial.geometry.convert.ST_Explode;
 import org.gdms.sql.function.spatial.geometry.convert.ST_Holes;
 import org.gdms.sql.function.spatial.geometry.convert.ST_StartPoint;
 
+import org.orbisgis.progress.NullProgressMonitor;
 import static org.junit.Assert.*;
 
 public class ConvertFunctionTest extends FunctionTest {
@@ -124,7 +129,7 @@ public class ConvertFunctionTest extends FunctionTest {
                 // Test normal input value and type
                 Value vg1 = ValueFactory.createValue(JTSMultiPolygon2D);
                 res = evaluate(function, vg1);
-                assertTrue((res.getType() & Type.GEOMETRY)!=0);
+                assertTrue((res.getType() & Type.GEOMETRY) != 0);
                 assertTrue(res.equals(vg1).getAsBoolean());
 
                 // Test too many parameters
@@ -190,7 +195,7 @@ public class ConvertFunctionTest extends FunctionTest {
                 }
 
                 // Test return type
-                Type type = TypeFactory.createType(Type.LINESTRING,new Dimension3DConstraint(3));
+                Type type = TypeFactory.createType(Type.LINESTRING, new Dimension3DConstraint(3));
                 type = evaluate(function, type);
                 assertEquals(type.getTypeCode(), Type.GEOMETRY);
         }
@@ -268,5 +273,29 @@ public class ConvertFunctionTest extends FunctionTest {
                 g = testSpatialFunction(new ST_Holes(),
                         g, 1).getAsGeometry();
                 assertEquals(g.getNumGeometries(), 2);
+        }
+
+        @Test
+        public void testST_Explode() throws Exception {
+                final MemoryDataSetDriver driver1 = new MemoryDataSetDriver(
+                        new String[]{"the_geom"},
+                        new Type[]{TypeFactory.createType(Type.GEOMETRY)});
+                // insert all filled rows...
+                driver1.addValues(new Value[]{ValueFactory.createValue(JTSGeometryCollection)});
+                ST_Explode sT_Explode = new ST_Explode();
+                DataSet result = sT_Explode.evaluate(dsf, new DataSet[]{driver1}, new Value[]{}, new NullProgressMonitor());
+                assertTrue(result.getRowCount() == JTSGeometryCollection.getNumGeometries());
+        }
+        
+        @Test
+        public void testST_Explode2() throws Exception {
+                final MemoryDataSetDriver driver1 = new MemoryDataSetDriver(
+                        new String[]{"the_geom"},
+                        new Type[]{TypeFactory.createType(Type.GEOMETRY)});
+                // insert all filled rows...
+                driver1.addValues(new Value[]{ValueFactory.createValue(JTSPoint2D)});
+                ST_Explode sT_Explode = new ST_Explode();
+                DataSet result = sT_Explode.evaluate(dsf, new DataSet[]{driver1}, new Value[]{}, new NullProgressMonitor());
+                assertTrue(result.getRowCount() == JTSPoint2D.getNumGeometries());
         }
 }

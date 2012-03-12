@@ -55,7 +55,6 @@ import org.orbisgis.progress.ProgressMonitor;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
-import org.apache.log4j.Logger;
 import org.gdms.driver.DataSet;
 import org.gdms.sql.function.table.AbstractTableFunction;
 import org.gdms.sql.function.table.TableArgument;
@@ -63,7 +62,6 @@ import org.gdms.sql.function.table.TableFunctionSignature;
 
 public final class ST_Explode extends AbstractTableFunction {
 
-        private static final Logger LOG = Logger.getLogger(ST_Explode.class);
         private DiskBufferDriver driver;
 
         @Override
@@ -84,7 +82,6 @@ public final class ST_Explode extends AbstractTableFunction {
         @Override
         public DataSet evaluate(SQLDataSourceFactory dsf, DataSet[] tables,
                 Value[] values, ProgressMonitor pm) throws FunctionException {
-                LOG.trace("Evaluating");
                 try {
                         int spatialFieldIndex;
                         final DataSet sds = tables[0];
@@ -98,12 +95,8 @@ public final class ST_Explode extends AbstractTableFunction {
 
                         long rowCount = sds.getRowCount();
                         pm.startTask("Exploding", rowCount);
-                        DefaultMetadata metadata = new DefaultMetadata(sds.getMetadata());
-                        String field = MetadataUtilities.getUniqueFieldName(metadata,
-                                "explod_id");
-                        metadata.addField(field, TypeFactory.createType(Type.INT));
 
-                        driver = new DiskBufferDriver(dsf, metadata);
+                        driver = new DiskBufferDriver(dsf, getMetadata(new Metadata[]{sds.getMetadata()}));
                         int gid = 1;
                         int fieldCount = sds.getMetadata().getFieldCount();
 
@@ -126,8 +119,8 @@ public final class ST_Explode extends AbstractTableFunction {
                                         fieldsValues.length);
                                 newValues[fieldsValues.length] = ValueFactory.createValue(gid++);
                                 final Geometry geometry = sds.getFieldValue(i, spatialFieldIndex).getAsGeometry();
-                                if (geometry!=null){
-                                explode(driver, newValues, geometry, spatialFieldIndex);
+                                if (geometry != null) {
+                                        explode(driver, newValues, geometry, spatialFieldIndex);
                                 }
                         }
                         pm.progressTo(rowCount);
@@ -167,13 +160,14 @@ public final class ST_Explode extends AbstractTableFunction {
                 final int fieldCount = metadata.getFieldCount();
                 final Type[] fieldsTypes = new Type[fieldCount + 1];
                 final String[] fieldsNames = new String[fieldCount + 1];
-
                 for (int fieldId = 0; fieldId < fieldCount; fieldId++) {
                         fieldsNames[fieldId] = metadata.getFieldName(fieldId);
                         final Type tmp = metadata.getFieldType(fieldId);
                         fieldsTypes[fieldId] = TypeFactory.createType(tmp.getTypeCode());
                 }
-                fieldsNames[fieldCount] = "explod_id";
+                String field = MetadataUtilities.getUniqueFieldName(metadata,
+                        "explod_id");
+                fieldsNames[fieldCount] = field;
                 fieldsTypes[fieldCount] = TypeFactory.createType(Type.INT);
                 return new DefaultMetadata(fieldsTypes, fieldsNames);
         }
