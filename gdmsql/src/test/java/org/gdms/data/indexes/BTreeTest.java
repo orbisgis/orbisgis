@@ -121,7 +121,7 @@ public class BTreeTest {
                 throws IOException, DriverException {
                 Value[] allValues = tree.getAllValues();
                 for (Value value : allValues) {
-                        int[] rows = tree.getRow(value);
+                        int[] rows = tree.query(value);
                         for (int row : rows) {
                                 assertTrue(ds.getFieldValue(row, fieldIndex).equals(value).getAsBoolean());
                         }
