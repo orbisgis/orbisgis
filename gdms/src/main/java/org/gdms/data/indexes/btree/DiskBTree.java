@@ -595,7 +595,11 @@ public final class DiskBTree implements BTree {
         
         @Override
         public int[] query(Value value, IndexVisitor<Value> visitor) throws IOException {
-                return root.query(new RangeComparator[]{new LessEqualComparator(value),
-                                new GreaterEqualComparator(value)}, visitor);
+                if (visitor != null) {
+                        return root.query(new RangeComparator[]{new LessEqualComparator(value),
+                                        new GreaterEqualComparator(value)}, visitor);
+                } else {
+                        return query(value);
+                }
         }
 }

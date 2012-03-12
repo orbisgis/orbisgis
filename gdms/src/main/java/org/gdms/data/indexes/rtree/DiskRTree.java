@@ -506,6 +506,10 @@ public final class DiskRTree implements Tree<Envelope> {
         
         @Override
         public int[] query(Envelope value, IndexVisitor<Envelope> visitor) throws IOException {
-                return root.query(value, visitor);
+                if (visitor != null) {
+                        return root.query(value, visitor);
+                } else {
+                        return query(value);
+                }
         }
 }
