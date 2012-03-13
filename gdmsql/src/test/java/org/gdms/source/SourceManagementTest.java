@@ -288,15 +288,17 @@ public class SourceManagementTest {
                 } catch (IOException e) {
                 }
                 testFile = new File(SQLBaseTest.internalData + "test.csv");
-                testDB = new DBSource(null, 0, SQLBaseTest.internalData
-                        + "backup/testhsqldb", "sa", "", "gisapps", "jdbc:hsqldb:file");
+                testDB = new DBSource(null, 0, SQLBaseTest.backupDir
+                        + "testhsqldb", "sa", "", "gisapps", "jdbc:hsqldb:file");
                 sm.remove(SOURCE);
                 sm.register(SOURCE, testFile);
         }
 
         private void instantiateDSF() {
-                dsf = new SQLDataSourceFactory(SQLBaseTest.internalData
-                        + "source-management");
+                dsf = new SQLDataSourceFactory(SQLBaseTest.backupDir
+                        + "../backupsource-management");
+                dsf.setTempDir(SQLBaseTest.backupDir.getAbsolutePath());
+                dsf.setResultDir(SQLBaseTest.backupDir);
                 sm = dsf.getSourceManager();
 
         }

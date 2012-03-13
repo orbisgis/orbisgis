@@ -260,8 +260,9 @@ public final class DefaultSourceManager implements SourceManager {
                 for (File file : files) {
                         if (file.getName().startsWith(".")) {
                                 continue;
-                        } if (!file.getName().equals("directory.xml") && !file.isDirectory()
-                                        && !file.delete()) {
+                        }
+                        if (!file.getName().equals("directory.xml") && !file.isDirectory()
+                                && !file.delete()) {
                                 throw new IOException(
                                         "Cannot delete file associated with property: "
                                         + file.getAbsolutePath());
@@ -341,7 +342,7 @@ public final class DefaultSourceManager implements SourceManager {
                 }
                 //We have a <File,Driver> association in the DriverManager, we must get rid of it.
                 File assoc = toRemove.getFile();
-                if(assoc != null){
+                if (assoc != null) {
                         dm.removeFile(assoc);
                 }
 
@@ -502,8 +503,7 @@ public final class DefaultSourceManager implements SourceManager {
                                         s = n;
                                 }
                         }
-                        s.addTable(l[l.length - 1],
-                                dsd.getSchema().getTableByName(l[l.length - 1]));
+                        s.addTable(l[l.length - 1], dsd.getSchema().getTableByName(l[l.length - 1]));
                 }
         }
 

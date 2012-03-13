@@ -57,7 +57,7 @@ public class SQLDataSourceFactory extends DataSourceFactory {
 
         private final List<DataSourceFactoryListener> listeners = new ArrayList<DataSourceFactoryListener>();
         private static final Logger LOG = Logger.getLogger(SQLDataSourceFactory.class);
-        private final SQLEngine sqlEngine = new SQLEngine(this);
+        private SQLEngine sqlEngine;
 
         /**
          * Creates a new {@code SQLDataSourceFactory} with a <tt>sourceInfoDir</tt>
@@ -321,6 +321,10 @@ public class SQLDataSourceFactory extends DataSourceFactory {
         }
 
         public final SQLEngine getSqlEngine() {
+                // this is called by the super constructor, there is no problem of synchronisation.
+                if (sqlEngine == null) {
+                        sqlEngine = new SQLEngine(this);
+                }
                 return sqlEngine;
         }
 }

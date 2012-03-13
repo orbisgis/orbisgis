@@ -99,6 +99,9 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
         private SQLSourceDefinition(String sql) {
                 LOG.trace("Constructor");
                 this.tempSQL = sql;
+                schema = new DefaultSchema("SQL" + sql.hashCode());
+                metadata = new DefaultMetadata();
+                schema.addTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME, metadata);
         }
 
         @Override
