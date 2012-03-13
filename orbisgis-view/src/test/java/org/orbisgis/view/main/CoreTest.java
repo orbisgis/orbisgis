@@ -73,9 +73,9 @@ public class CoreTest extends TestCase {
         SourceListModel UImodel = ((SourceListModel)geoCatalog.getSourceList().getModel());
         //Register a custom factory
         UnitTestFilterFactory unitTestFactory = new UnitTestFilterFactory();
-        geoCatalog.registerFilterFactory(unitTestFactory);
+        geoCatalog.getFilterFactoryManager().registerFilterFactory(unitTestFactory);
         //Add a new filter with this factory
-        geoCatalog.addFilter(unitTestFactory.getFactoryId(), "");
+        geoCatalog.getFilterFactoryManager().addFilter(unitTestFactory.getFactoryId(), "");
         //In the SourceListModel, search the generated IFilter
         List<IFilter> filters = UImodel.getFilters();
         boolean filterFounds=false;
@@ -87,7 +87,7 @@ public class CoreTest extends TestCase {
         }
         assertTrue(filterFounds);
         //Remove the filter
-        geoCatalog.removeFilters(unitTestFactory.getFactoryId());        
+        geoCatalog.getFilterFactoryManager().removeFilters(unitTestFactory.getFactoryId());        
     }
     
     

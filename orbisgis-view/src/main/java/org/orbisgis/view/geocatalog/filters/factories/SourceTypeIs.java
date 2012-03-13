@@ -38,12 +38,14 @@ import java.util.Map;
 import javax.swing.JComboBox;
 import org.orbisgis.utils.I18N;
 import org.orbisgis.view.components.ContainerItemKey;
+import org.orbisgis.view.components.filter.ActiveFilter;
+import org.orbisgis.view.components.filter.FilterFactory;
 import org.orbisgis.view.geocatalog.filters.*;
 
 /**
  * @brief Source Type filter factory
  */
-public class SourceTypeIs implements DataSourceFilterFactory {
+public class SourceTypeIs implements FilterFactory<IFilter> {
     private Map<String,IFilter> filters = new HashMap<String,IFilter>();
     private List<ContainerItemKey> filterLabelsId = new ArrayList<ContainerItemKey>();
     private final static String DEFAULT_FILTER = "geocatalog.filters.GeoFilter"; //Filter shown in the GUI by default

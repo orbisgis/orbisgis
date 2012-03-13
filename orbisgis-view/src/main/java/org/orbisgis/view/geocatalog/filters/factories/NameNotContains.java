@@ -32,8 +32,8 @@ import java.awt.Component;
 import javax.swing.JTextField;
 import org.gdms.source.SourceManager;
 import org.orbisgis.utils.I18N;
-import org.orbisgis.view.geocatalog.filters.ActiveFilter;
-import org.orbisgis.view.geocatalog.filters.DataSourceFilterFactory;
+import org.orbisgis.view.components.filter.ActiveFilter;
+import org.orbisgis.view.components.filter.FilterFactory;
 import org.orbisgis.view.geocatalog.filters.IFilter;
 import org.orbisgis.view.geocatalog.filters.TextFieldDocumentListener;
 
@@ -42,7 +42,7 @@ import org.orbisgis.view.geocatalog.filters.TextFieldDocumentListener;
  * This is the data source name contains x filter
  */
 
-public class NameNotContains implements DataSourceFilterFactory {
+public class NameNotContains implements FilterFactory<IFilter> {
     /**
      * The factory ID
      *

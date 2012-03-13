@@ -26,7 +26,7 @@
  * or contact directly:
  * info _at_ orbisgis.org
  */
-package org.orbisgis.view.geocatalog.filters;
+package org.orbisgis.view.components.filter;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;

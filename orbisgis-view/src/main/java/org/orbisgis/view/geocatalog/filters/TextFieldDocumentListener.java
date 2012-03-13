@@ -31,6 +31,7 @@ package org.orbisgis.view.geocatalog.filters;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import org.orbisgis.view.components.filter.ActiveFilter;
 
 /**
  * This listener update an ActiveLayer at each modification of a JTextField

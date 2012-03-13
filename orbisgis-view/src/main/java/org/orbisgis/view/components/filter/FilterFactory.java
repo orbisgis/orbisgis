@@ -26,14 +26,14 @@
  * or contact directly:
  * info _at_ orbisgis.org
  */
-package org.orbisgis.view.geocatalog.filters;
+package org.orbisgis.view.components.filter;
 
 import java.awt.Component;
 
 /**
  * Create a filter and the compo
  */
-public interface DataSourceFilterFactory {
+public interface FilterFactory<FilterInterface> {
 
     /**
      * The factory ID
@@ -55,7 +55,7 @@ public interface DataSourceFilterFactory {
      * @param filterValue The new value fired by PropertyChangeEvent
      * @return
      */
-    IFilter getFilter(String filterValue);
+    FilterInterface getFilter(String filterValue);
 
    
     /**
