@@ -63,6 +63,10 @@ import java.util.Map.Entry;
  * An other 50% of that number determines the number of element keys that are
  * remembered in <tt>A1out</tt>.
  * 
+ * WARNING: this buffer is not thread-safe! It must be synchronized externally.
+ * Any combination of operations, even concurrent calls to {@link #get(I ) } only will 
+ * cause undefined behavior.
+ * 
  * The following paper has been used as reference to implement this buffer:
  * T. Johnson and D. Shasha , "2Q: A Low Overhead High Performance Management Replacement Algorithm", Proceedings of 
  * the 20th VLDB Conference Santiago, Chile, pages 439-450, 1994
@@ -92,7 +96,7 @@ public abstract class TwoQueueBuffer<I, B> implements Iterable<DoubleQueueValue<
         /**
          * Gets the block associated with the id <tt>key</tt>.
          *
-         * If the block is not in memory, it is loaded from disk.
+         * If the block is not in memory, it is requested for loading using the {@link #reclaim(I } method.
          * @param key a block id
          * @return the loaded block.
          */
@@ -135,8 +139,17 @@ public abstract class TwoQueueBuffer<I, B> implements Iterable<DoubleQueueValue<
                 return b;
         }
 
+        /**
+         * This method is called when the Buffer needs the element with the specified id.
+         * @param id an identifier
+         * @return the element with this identifier
+         */
         protected abstract B reclaim(I id);
 
+        /**
+         * This method is called when the buffer needs to get rid of the element b.
+         * @param b an element
+         */
         protected abstract void unload(B b);
 
         private void put(I i, B b) {
@@ -175,6 +188,11 @@ public abstract class TwoQueueBuffer<I, B> implements Iterable<DoubleQueueValue<
                 return a1in.isEmpty() && am.isEmpty();
         }
 
+        /**
+         * Removes the element with the key {@code key }, if it has been loaded.
+         * @param key a key
+         * @return true if the element was found & unloaded, false if it was not loaded
+         */
         public boolean remove(I key) {
                 B b = am.remove(key);
                 if (b != null) {
@@ -191,6 +209,13 @@ public abstract class TwoQueueBuffer<I, B> implements Iterable<DoubleQueueValue<
                 }
         }
 
+        /**
+         * Gets an iterator over the key/value pairs of elements loaded in this buffer.
+         * 
+         * The method {@link Iterator#remove() } is supported and works as expected.
+         * 
+         * @return 
+         */
         @Override
         public Iterator<DoubleQueueValue<I, B>> iterator() {
                 return new TwoQueueIterator();
@@ -201,7 +226,7 @@ public abstract class TwoQueueBuffer<I, B> implements Iterable<DoubleQueueValue<
         private class TwoQueueIterator implements Iterator<DoubleQueueValue<I, B>> {
 
                 boolean changed = false;
-                Iterator<Entry<I, DoubleQueueValue<I, B>>> iam;
+                private Iterator<Entry<I, DoubleQueueValue<I, B>>> iam;
                 private DoubleQueueValue<I, B> next;
 
                 private TwoQueueIterator() {

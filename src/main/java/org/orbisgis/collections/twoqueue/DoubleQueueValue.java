@@ -38,9 +38,9 @@
 package org.orbisgis.collections.twoqueue;
 
 /**
- *
- * @param <I> 
- * @param <B> 
+ * Key/value pair for use by the {@link TwoQueueBuffer<I, B> } class.
+ * @param <I> the type of the key
+ * @param <B> the type of the element
  * @author Antoine Gourlay
  */
 public class DoubleQueueValue<I, B> {

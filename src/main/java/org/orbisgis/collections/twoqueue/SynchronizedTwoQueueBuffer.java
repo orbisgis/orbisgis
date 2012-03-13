@@ -43,11 +43,14 @@ package org.orbisgis.collections.twoqueue;
  * 
  * See {@link TwoQueueBuffer } for more information on the structure.
  * 
+ * It is required that users synchronized on the instance of this class itself when iterating over the elements
+ * of the buffer using {@link #iterator() }. If not the behavior is undefined and probably bad.
+ * 
+ * @param <I> the type of the keys
+ * @param <B> the type of the elements
  * @author Antoine Gourlay
  */
 public abstract class SynchronizedTwoQueueBuffer<I, B> extends TwoQueueBuffer<I, B> {
-
-        private final Object mutex = new Object();
 
         /**
          * Instantiate a new buffer that can hold up to <tt>maxSize</tt> items.
@@ -59,29 +62,36 @@ public abstract class SynchronizedTwoQueueBuffer<I, B> extends TwoQueueBuffer<I,
 
         @Override
         public void clear() {
-                synchronized (mutex) {
+                synchronized (this) {
                         super.clear();
                 }
         }
 
         @Override
         public B get(I key) {
-                synchronized (mutex) {
+                synchronized (this) {
                         return super.get(key);
                 }
         }
 
         @Override
         public boolean isEmpty() {
-                synchronized (mutex) {
+                synchronized (this) {
                         return super.isEmpty();
                 }
         }
 
         @Override
         public int size() {
-                synchronized (mutex) {
+                synchronized (this) {
                         return super.size();
+                }
+        }
+
+        @Override
+        public boolean remove(I key) {
+                synchronized (this) {
+                        return super.remove(key);
                 }
         }
 }
