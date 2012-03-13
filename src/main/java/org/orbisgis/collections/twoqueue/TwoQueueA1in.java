@@ -38,7 +38,9 @@
 package org.orbisgis.collections.twoqueue;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Special FIFO Linked Queue for use by {@link TwoQueueBuffer}.
@@ -46,11 +48,10 @@ import java.util.Map;
  * @since 2.0
  * @author Antoine Gourlay
  */
-final class TwoQueueA1in<I, B> {
+final class TwoQueueA1in<I, B> implements Iterable<Entry<I, DoubleQueueValue<I, B>>> {
 
-        private Map<I, QueueValue<I, B>> map = new HashMap<I, QueueValue<I, B>>();
-        private QueueValue<I, B> oldest;
-        private QueueValue<I, B> newest;
+        private Map<I, DoubleQueueValue<I, B>> map = new HashMap<I, DoubleQueueValue<I, B>>();
+        private DoubleQueueValue<I, B> newest;
         private int maxSize;
 
         TwoQueueA1in(int maxSize) {
@@ -79,7 +80,7 @@ final class TwoQueueA1in<I, B> {
          * @return the associated block, or null if it is not found
          */
         public B get(I key) {
-                final QueueValue<I, B> get = map.get(key);
+                final DoubleQueueValue<I, B> get = map.get(key);
                 return get == null ? null : get.val;
         }
 
@@ -89,33 +90,42 @@ final class TwoQueueA1in<I, B> {
          * @return the block that was removed to add this block, or null
          *      if no removal was necessary
          */
-        public QueueValue<I, B> put(I i, B b) {
-                final QueueValue<I, B> q = new QueueValue<I, B>(i, b);
+        public DoubleQueueValue<I, B> put(I i, B b) {
+                final DoubleQueueValue<I, B> q = new DoubleQueueValue<I, B>(i, b);
                 map.put(q.key, q);
-                return insert(q);
+                return insertAndTrim(q);
         }
 
-        private QueueValue<I, B> insert(QueueValue<I, B> v) {
-                QueueValue<I, B> removed = trimOldest();
-                if (newest != null) {
-                        newest.next = v;
-                        newest = v;
-                } else {
-                        oldest = v;
-                        newest = v;
-                        v.next = null;
-                }
+        private DoubleQueueValue<I, B> insertAndTrim(DoubleQueueValue<I, B> v) {
+                DoubleQueueValue<I, B> removed = trimOldest();
+                insertUpFront(v);
                 return removed;
         }
-
-        private QueueValue<I, B> trimOldest() {
-                if (map.size() == maxSize) {
-                        QueueValue<I, B> v = oldest;
-                        map.remove(v.key);
-                        oldest = oldest.next;
-                        return v;
+        
+        private void insertUpFront(DoubleQueueValue<I, B> v) {
+                if (newest != null) {
+                        v.previous = newest.previous;
+                        v.next = newest;
+                        newest.previous = v;
+                } else {
+                        v.next = v;
+                        v.previous = v;
+                        
                 }
-                return null;
+                
+                newest = v;
+        }
+
+        private DoubleQueueValue<I, B> trimOldest() {
+                if (map.size() == maxSize) {
+                        DoubleQueueValue<I, B> v = newest.previous;
+                        map.remove(v.key);
+                        newest.previous = v.previous;
+                        newest.previous.next = newest;
+                        return v;
+                } else {
+                        return null;
+                }
         }
 
         /**
@@ -123,8 +133,19 @@ final class TwoQueueA1in<I, B> {
          */
         public void clear() {
                 map.clear();
-                oldest = null;
                 newest = null;
+        }
+        
+        void remove(DoubleQueueValue<I, B> v) {
+                if (map.isEmpty()) {
+                        newest = null;
+                } else {
+                        v.next.previous = v.previous;
+                        v.previous.next = v.next;
+                        if (v == newest) {
+                                newest = v.next;
+                        }
+                }
         }
 
         /**
@@ -139,5 +160,20 @@ final class TwoQueueA1in<I, B> {
          */
         public void setMaxSize(int maxSize) {
                 this.maxSize = maxSize;
+        }
+
+        B remove(I key) {
+                DoubleQueueValue<I, B> v = map.remove(key);
+                if (v != null) {
+                        remove(v);
+                        return v.val;
+                } else {
+                        return null;
+                }
+        }
+
+        @Override
+        public Iterator<Entry<I, DoubleQueueValue<I, B>>> iterator() {
+                return map.entrySet().iterator();
         }
 }

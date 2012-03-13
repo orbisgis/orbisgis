@@ -43,7 +43,7 @@ package org.orbisgis.collections.twoqueue;
  * @param <B> 
  * @author Antoine Gourlay
  */
-class DoubleQueueValue<I, B> {
+public class DoubleQueueValue<I, B> {
 
         B val;
         I key;

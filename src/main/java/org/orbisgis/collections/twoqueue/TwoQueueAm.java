@@ -38,7 +38,9 @@
 package org.orbisgis.collections.twoqueue;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Special LRU Linked Queue for use by the {@link TwoQueueBuffer}.
@@ -48,7 +50,7 @@ import java.util.Map;
  * @since 2.0
  * @author Antoine Gourlay
  */
-final class TwoQueueAm<I, B> {
+final class TwoQueueAm<I, B> implements Iterable<Entry<I, DoubleQueueValue<I, B>>> {
 
         private Map<I, DoubleQueueValue<I, B>> map = new HashMap<I, DoubleQueueValue<I, B>>();
         private DoubleQueueValue<I, B> newest;
@@ -100,9 +102,9 @@ final class TwoQueueAm<I, B> {
                 } else {
                         v.next = v;
                         v.previous = v;
-                        
+
                 }
-                
+
                 newest = v;
         }
 
@@ -111,13 +113,15 @@ final class TwoQueueAm<I, B> {
                 insertUpFront(v);
         }
 
-        private void remove(DoubleQueueValue<I, B> v) {
+        void remove(DoubleQueueValue<I, B> v) {
                 if (map.isEmpty()) {
                         newest = null;
                 } else {
-                        newest = v.next;
-                        newest.previous = v.previous;
-                        newest.previous.next = newest;
+                        v.next.previous = v.previous;
+                        v.previous.next = v.next;
+                        if (v == newest) {
+                                newest = v.next;
+                        }
                 }
         }
 
@@ -128,10 +132,21 @@ final class TwoQueueAm<I, B> {
                         newest.previous = v.previous;
                         newest.previous.next = newest;
                         return v;
+                } else {
+                        return null;
                 }
-                return null;
         }
 
+        B remove(I key) {
+                DoubleQueueValue<I, B> v = map.remove(key);
+                if (v != null) {
+                        remove(v);
+                        return v.val;
+                } else {
+                        return null;
+                }
+        }
+        
         void clear() {
                 map.clear();
                 newest = null;
@@ -149,5 +164,10 @@ final class TwoQueueAm<I, B> {
          */
         void setMaxSize(int maxSize) {
                 this.maxSize = maxSize;
+        }
+
+        @Override
+        public Iterator<Entry<I, DoubleQueueValue<I, B>>> iterator() {
+                return map.entrySet().iterator();
         }
 }

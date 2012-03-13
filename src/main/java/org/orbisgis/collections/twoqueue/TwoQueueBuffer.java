@@ -41,6 +41,9 @@
  */
 package org.orbisgis.collections.twoqueue;
 
+import java.util.Iterator;
+import java.util.Map.Entry;
+
 /**
  * The TwoQueueBuffer is a queue-like structure based on the 2Q Replacement algorithm.
  * 
@@ -69,8 +72,8 @@ package org.orbisgis.collections.twoqueue;
  * @since 2.0
  * @author Antoine Gourlay
  */
-public abstract class TwoQueueBuffer<I, B> {
-        
+public abstract class TwoQueueBuffer<I, B> implements Iterable<DoubleQueueValue<I, B>> {
+
         private TwoQueueA1in<I, B> a1in;
         private TwoQueueA1out<I, B> a1out;
         private TwoQueueAm<I, B> am;
@@ -136,8 +139,8 @@ public abstract class TwoQueueBuffer<I, B> {
 
         protected abstract void unload(B b);
 
-        private void put(I i,B b) {
-                QueueValue<I, B> v = a1in.put(i, b);
+        private void put(I i, B b) {
+                DoubleQueueValue<I, B> v = a1in.put(i, b);
                 if (v != null) {
                         // save v out to disk
                         unload(b);
@@ -163,13 +166,76 @@ public abstract class TwoQueueBuffer<I, B> {
                 a1in.clear();
                 a1out.clear();
         }
-
+        
         /**
          * Checks if this buffer is empty.
          * @return true if there is no blocks in memory
          */
         public boolean isEmpty() {
-                return a1in.isEmpty();
+                return a1in.isEmpty() && am.isEmpty();
+        }
+
+        public boolean remove(I key) {
+                B b = am.remove(key);
+                if (b != null) {
+                        unload(b);
+                        return true;
+                } else {
+                        b = a1in.remove(key);
+                        if (b != null) {
+                                unload(b);
+                                return true;
+                        } else {
+                                return false;
+                        }
+                }
+        }
+
+        @Override
+        public Iterator<DoubleQueueValue<I, B>> iterator() {
+                return new TwoQueueIterator();
         }
         
+        
+
+        private class TwoQueueIterator implements Iterator<DoubleQueueValue<I, B>> {
+
+                boolean changed = false;
+                Iterator<Entry<I, DoubleQueueValue<I, B>>> iam;
+                private DoubleQueueValue<I, B> next;
+
+                private TwoQueueIterator() {
+                        iam = am.iterator();
+                }
+
+                @Override
+                public boolean hasNext() {
+                        if (iam.hasNext()) {
+                                return true;
+                        } else if (changed) {
+                                return false;
+                        } else {
+                                iam = a1in.iterator();
+                                changed = true;
+                                return iam.hasNext();
+
+                        }
+                }
+
+                @Override
+                public DoubleQueueValue<I, B> next() {
+                        next = iam.next().getValue();
+                        return next;
+                }
+
+                @Override
+                public void remove() {
+                        iam.remove();
+                        if (!changed) {
+                                am.remove(next);
+                        } else {
+                                a1in.remove(next);
+                        }
+                }
+        }
 }
