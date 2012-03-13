@@ -7,6 +7,7 @@ import org.gdms.data.DataSource;
 
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.io.WKTReader;
+import org.gdms.data.values.ValueFactory;
 import org.junit.Test;
 
 
@@ -39,7 +40,7 @@ public class SpatialReferenceSystemTest extends TestBase {
                         SpatialReferenceSystem spatialReferenceSystem = new SpatialReferenceSystem(
                                 dsf, sourceCodeCRS, targetCodeCRS);
 
-                        Point transformedGeom = (Point) spatialReferenceSystem.transform(wktReader.read(ds.getFieldValue(i, 1).getAsString()));
+                        Point transformedGeom = (Point) spatialReferenceSystem.transform(ValueFactory.createValue(wktReader.read(ds.getFieldValue(i, 1).getAsString()))).getAsGeometry();
 
                         Point targetGeom = (Point) wktReader.read(ds.getFieldValue(i, 3).getAsString());
 //                        System.out.println(spatialReferenceSystem.getCoordinateOperationSequence().getName()

@@ -44,6 +44,8 @@ import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 import com.vividsolutions.jts.geom.util.GeometryTransformer;
+import org.gdms.data.values.GeometryValue;
+import org.gdms.data.values.ValueFactory;
 import org.jproj.BasicCoordinateTransform;
 import org.jproj.CoordinateReferenceSystem;
 import org.jproj.CoordinateTransform;
@@ -57,11 +59,9 @@ import org.jproj.ProjCoordinate;
 public class SpatialReferenceSystem {
 
         private CoordinateTransform coordTransform;
-        private int targetSRID;
 
         public SpatialReferenceSystem(DataSourceFactory dsf, int sourceCRS, int targetCRS) {
                 init(dsf.getCrsFactory().createFromName("EPSG:" + sourceCRS), dsf.getCrsFactory().createFromName("EPSG:" + sourceCRS));
-                this.targetSRID = targetCRS;
         }
 
         public SpatialReferenceSystem(CoordinateReferenceSystem sourceCRS, CoordinateReferenceSystem targetCRS) {
@@ -81,10 +81,10 @@ public class SpatialReferenceSystem {
                 return coordTransform;
         }
 
-        public Geometry transform(Geometry geom) {
-                Geometry g = getGeometryTransformer().transform(geom);
-                g.setSRID(targetSRID);
-                return g;
+        public GeometryValue transform(GeometryValue geom) {
+                Geometry g = getGeometryTransformer().transform(geom.getAsGeometry());
+                
+                return ValueFactory.createValue(g);
         }
 
         public GeometryTransformer getGeometryTransformer() {

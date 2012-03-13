@@ -41,12 +41,10 @@ package org.gdms.sql.function.spatial.geometry.crs;
 import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.crs.SpatialReferenceSystem;
 import org.gdms.data.values.Value;
-import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.ScalarArgument;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
 
-import com.vividsolutions.jts.geom.Geometry;
 import org.gdms.data.values.GeometryValue;
 import org.gdms.sql.function.BasicFunctionSignature;
 import org.gdms.sql.function.FunctionSignature;
@@ -58,21 +56,16 @@ import org.jproj.CoordinateReferenceSystem;
 public final class ST_Transform extends AbstractScalarSpatialFunction {
 
         private SpatialReferenceSystem spatialReferenceSystem;
-        private CoordinateReferenceSystem targetCRS;
 
         @Override
-        public Value evaluate(SQLDataSourceFactory dsf, Value... values)
-                throws FunctionException {
+        public Value evaluate(SQLDataSourceFactory dsf, Value... values) throws FunctionException {
                 GeometryValue geomVal = (GeometryValue) values[0];
-                Geometry geom = geomVal.getAsGeometry();
                 if (spatialReferenceSystem == null) {
                         CoordinateReferenceSystem inputCRS = geomVal.getCRS();
-                        targetCRS = dsf.getCrsFactory().createFromName(values[1].getAsString());
-                        spatialReferenceSystem = new SpatialReferenceSystem(inputCRS,
-                                targetCRS);
+                        CoordinateReferenceSystem targetCRS = dsf.getCrsFactory().createFromName(values[1].getAsString());
+                        spatialReferenceSystem = new SpatialReferenceSystem(inputCRS, targetCRS);
                 }
-                final Geometry transformedGeom = spatialReferenceSystem.transform(geom);
-                return ValueFactory.createValue(transformedGeom, targetCRS);
+                return spatialReferenceSystem.transform(geomVal);
         }
 
         @Override
