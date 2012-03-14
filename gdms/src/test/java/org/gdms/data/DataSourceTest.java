@@ -36,6 +36,11 @@
  */
 package org.gdms.data;
 
+import java.util.Iterator;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
+import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.driver.AbstractDataSet;
 import org.junit.Test;
 import java.io.File;
@@ -193,6 +198,35 @@ public class DataSourceTest extends TestBase {
                 } catch (DriverException e) {
                         assertFalse(ds.isOpen());
                 }
+        }
+        
+        @Test
+        public void testIterator() throws DriverException {
+                 MemoryDataSetDriver omd = new MemoryDataSetDriver(
+				new String[] { "field" }, new Type[] { TypeFactory
+						.createType(Type.STRING) });
+                omd.addValues(ValueFactory.createValue("toto1"));
+                omd.addValues(ValueFactory.createValue("toto2"));
+                omd.addValues(ValueFactory.createValue("toto3"));
+                omd.addValues(ValueFactory.createValue("toto4"));
+                
+                DataSource ds = dsf.getDataSource(omd,"main", DataSourceFactory.EDITABLE);
+		ds.open();
+                Iterator<Value[]> i = ds.iterator();
+                assertTrue(i.hasNext());
+                Value[] v = i.next();
+                assertEquals(1, v.length);
+                assertEquals("toto1", v[0].getAsString());
+                v = i.next();
+                assertEquals("toto2", v[0].getAsString());
+                i.remove();
+                v = i.next();
+                assertEquals("toto3", v[0].getAsString());
+                i.next();
+                assertFalse(i.hasNext());
+                
+                assertEquals(3, ds.getRowCount());
+                assertEquals("toto3", ds.getString(1, 0));
         }
 
         private class NonEditableDriver extends AbstractDataSet implements MemoryDriver {

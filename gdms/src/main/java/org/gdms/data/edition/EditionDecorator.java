@@ -51,28 +51,28 @@ import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.edition.DeleteCommand.DeleteCommandInfo;
 import org.gdms.data.indexes.DataSourceIndex;
 import org.gdms.data.indexes.DefaultAlphaQuery;
+import org.gdms.data.indexes.FullIterator;
 import org.gdms.data.indexes.IndexEditionManager;
 import org.gdms.data.indexes.IndexException;
 import org.gdms.data.indexes.IndexManager;
 import org.gdms.data.indexes.IndexQuery;
+import org.gdms.data.indexes.IndexQueryException;
 import org.gdms.data.indexes.ResultIterator;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.Schema;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.driver.DriverException;
 import org.gdms.driver.DataSet;
+import org.gdms.driver.DriverException;
 import org.gdms.source.CommitListener;
+import org.gdms.source.SourceManager;
 import org.orbisgis.progress.NullProgressMonitor;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
-import org.gdms.data.indexes.FullIterator;
-import org.gdms.data.indexes.IndexQueryException;
-import org.gdms.data.types.TypeFactory;
-import org.gdms.source.SourceManager;
 
 /**
  * Adds edition capabilities to a DataSource.
@@ -83,7 +83,7 @@ import org.gdms.source.SourceManager;
 public final class EditionDecorator extends AbstractDataSourceDecorator implements
         CommitListener {
 
-        private List<PhysicalRowAddress> rowsDirections;
+        private List<PhysicalRowAddress> rowsAddresses;
         private EditionListenerSupport editionListenerSupport;
         private boolean dirty;
         private boolean undoRedo;
@@ -124,7 +124,7 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
         DeleteCommandInfo doDeleteRow(long rowId) throws DriverException {
                 dirty = true;
                 deleteInIndex((int) rowId);
-                PhysicalRowAddress dir = rowsDirections.remove((int) rowId);
+                PhysicalRowAddress dir = rowsAddresses.remove((int) rowId);
                 EditionInfo ei = editionActions.get((int) rowId);
                 DeleteEditionInfo dei = null;
                 if (ei instanceof OriginalEditionInfo) {
@@ -141,7 +141,7 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
 
         void undoDeleteRow(PhysicalRowAddress dir, long rowId,
                 DeleteEditionInfo dei, EditionInfo ei) throws DriverException {
-                rowsDirections.add((int) rowId, dir);
+                rowsAddresses.add((int) rowId, dir);
                 if (dei != null) {
                         deletedPKs.remove(dei);
                 }
@@ -319,7 +319,7 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
 
                 // Do modification
                 ModifyCommand.ModifyInfo ret;
-                PhysicalRowAddress dir = rowsDirections.get((int) row);
+                PhysicalRowAddress dir = rowsAddresses.get((int) row);
                 dirty = true;
                 setFieldValueInIndex((int) row, fieldId, getFieldValue(row, fieldId),
                         val);
@@ -327,13 +327,13 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
                         Value[] original = getOriginalRow(dir);
                         Value previousValue = original[fieldId];
                         original[fieldId] = val;
-                        PhysicalRowAddress newDirection = internalBuffer.insertRow(dir.getPK(), original);
-                        rowsDirections.set((int) row, newDirection);
+                        PhysicalRowAddress newAddress = internalBuffer.insertRow(dir.getPK(), original);
+                        rowsAddresses.set((int) row, newAddress);
                         UpdateEditionInfo info = new UpdateEditionInfo(dir.getPK(),
-                                rowsDirections.get((int) row));
+                                rowsAddresses.get((int) row));
                         EditionInfo ei = editionActions.set((int) row, info);
                         ret = new ModifyCommand.ModifyInfo((OriginalRowAddress) dir, ei,
-                                (InternalBufferRowAddress) newDirection, previousValue, row,
+                                (InternalBufferRowAddress) newAddress, previousValue, row,
                                 fieldId);
                 } else {
                         Value previousValue = dir.getFieldValue(fieldId);
@@ -358,7 +358,7 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
                 if (previousDir != null) {
                         setFieldValueInIndex((int) row, fieldId,
                                 getFieldValue(row, fieldId), previousValue);
-                        rowsDirections.set((int) row, previousDir);
+                        rowsAddresses.set((int) row, previousDir);
                         editionActions.set((int) row, previousInfo);
                 } else {
                         setFieldValueInIndex((int) row, fieldId,
@@ -424,7 +424,7 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
                 dirty = true;
                 insertInIndex(values, (int) rowIndex);
                 PhysicalRowAddress dir = internalBuffer.insertRow(null, values);
-                rowsDirections.add((int) rowIndex, dir);
+                rowsAddresses.add((int) rowIndex, dir);
                 InsertEditionInfo iei = new InsertEditionInfo(dir);
                 editionActions.add((int) rowIndex, iei);
                 cachedScope = null;
@@ -451,7 +451,7 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
 
         void undoInsertAt(long rowIndex) throws DriverException {
                 deleteInIndex((int) rowIndex);
-                rowsDirections.remove((int) rowIndex);
+                rowsAddresses.remove((int) rowIndex);
                 editionActions.remove((int) rowIndex);
                 cachedScope = null;
 
@@ -532,11 +532,11 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
                         }
 
                         // initialize directions
-                        rowsDirections = new ArrayList<PhysicalRowAddress>();
+                        rowsAddresses = new ArrayList<PhysicalRowAddress>();
                         for (int i = 0; i < rowCount; i++) {
                                 PhysicalRowAddress dir = new OriginalRowAddress(getDataSource(),
                                         i);
-                                rowsDirections.add(dir);
+                                rowsAddresses.add(dir);
                                 editionActions.add(new NoEditionInfo(getPK(i), i));
                         }
 
@@ -557,7 +557,7 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
         public Value getFieldValue(long rowIndex, int fieldId)
                 throws DriverException {
                 if (isModified()) {
-                        PhysicalRowAddress physicalAddress = rowsDirections.get((int) rowIndex);
+                        PhysicalRowAddress physicalAddress = rowsAddresses.get((int) rowIndex);
                         if (physicalAddress instanceof OriginalRowAddress) {
                                 int originalIndex = getFields().get(fieldId).getOriginalIndex();
                                 if (originalIndex == -1) {
@@ -576,7 +576,7 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
         @Override
         public long getRowCount() throws DriverException {
                 if (initialized) {
-                        return rowsDirections.size();
+                        return rowsAddresses.size();
                 } else {
                         return getDataSource().getRowCount();
                 }
@@ -594,8 +594,8 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
 
         private void freeResources() {
                 internalBuffer = null;
-                if (rowsDirections != null) {
-                        rowsDirections.clear();
+                if (rowsAddresses != null) {
+                        rowsAddresses.clear();
                         editionActions.clear();
                         deletedPKs.clear();
                 }
@@ -614,7 +614,7 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
                 if (commiter != null) {
                         SourceManager dsm = getDataSourceFactory().getSourceManager();
                         dsm.fireIsCommiting(getName(), this);
-                        boolean rebuildIndexes = commiter.commit(rowsDirections,
+                        boolean rebuildIndexes = commiter.commit(rowsAddresses,
                                 getFieldNames(), getSchemaActions(), editionActions,
                                 deletedPKs, this);
                         dsm.fireCommitDone(getName());
@@ -912,21 +912,21 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
                                 + "Another edition already in process");
                 }
         }
-        
-        private boolean checkGeometry(int valueType, int fieldType){
-                switch(fieldType){
-                        case Type.POINT :
-                        case Type.LINESTRING :
-                        case Type.POLYGON :
-                        case Type.MULTIPOINT :
-                        case Type.MULTILINESTRING :
-                        case Type.MULTIPOLYGON :
+
+        private boolean checkGeometry(int valueType, int fieldType) {
+                switch (fieldType) {
+                        case Type.POINT:
+                        case Type.LINESTRING:
+                        case Type.POLYGON:
+                        case Type.MULTIPOINT:
+                        case Type.MULTILINESTRING:
+                        case Type.MULTIPOLYGON:
                                 return valueType == fieldType || valueType == Type.NULL;
-                        case Type.GEOMETRYCOLLECTION :
-                                return (valueType & (fieldType ^ Type.GEOMETRY)) !=0;
-                        case Type.GEOMETRY :
+                        case Type.GEOMETRYCOLLECTION:
+                                return (valueType & (fieldType ^ Type.GEOMETRY)) != 0;
+                        case Type.GEOMETRY:
                                 return (valueType & fieldType) != 0;
-                        default :
+                        default:
                                 return false;
                 }
         }
@@ -945,23 +945,23 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
                 }
                 int fieldType = type.getTypeCode();
                 //Test geometry types.
-                if(TypeFactory.isVectorial(type.getTypeCode())){
+                if (TypeFactory.isVectorial(type.getTypeCode())) {
                         int valueType = value.getType();
-                        
-                        if(!checkGeometry(valueType, fieldType)){
-                                return "Can't put a "+TypeFactory.getTypeName(valueType)+" in a "
-                                        +TypeFactory.getTypeName(fieldType) +" column.";
+
+                        if (!checkGeometry(valueType, fieldType)) {
+                                return "Can't put a " + TypeFactory.getTypeName(valueType) + " in a "
+                                        + TypeFactory.getTypeName(fieldType) + " column.";
                         }
                 }
                 // Cast value
                 Value val = castValue(type, value);
                 int broadType = TypeFactory.getBroaderType(fieldType, val.getType());
-                if(val.getType() != broadType
-                     && val.getType() != Type.NULL
-                     && !checkGeometry(val.getType(), fieldType)
-                     && fieldType != Type.STRING){
-                        return "Can't cast a "+TypeFactory.getTypeName(value.getType())
-                                +" to a "+TypeFactory.getTypeName(fieldType);
+                if (val.getType() != broadType
+                        && val.getType() != Type.NULL
+                        && !checkGeometry(val.getType(), fieldType)
+                        && fieldType != Type.STRING) {
+                        return "Can't cast a " + TypeFactory.getTypeName(value.getType())
+                                + " to a " + TypeFactory.getTypeName(fieldType);
                 }
 
                 // Check constraints

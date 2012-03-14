@@ -36,12 +36,15 @@
  */
 package org.gdms.data.edition;
 
+import org.gdms.data.DataSourceIterator;
+import java.util.Iterator;
 import org.junit.Test;
 import java.io.File;
 
 import org.gdms.TestBase;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.file.FileSourceCreation;
@@ -613,4 +616,54 @@ public class EditionTests extends TestBase {
 		assertEquals(ds.getString(0, fieldIndex),bye);
 		ds.close();
 	}
+        
+        @Test
+        public void testIterator() throws DriverException {
+                MemoryDataSetDriver omd = new MemoryDataSetDriver(
+				new String[] { "field" }, new Type[] { TypeFactory
+						.createType(Type.STRING) });
+                omd.addValues(ValueFactory.createValue("toto1"));
+                omd.addValues(ValueFactory.createValue("toto2"));
+                omd.addValues(ValueFactory.createValue("toto3"));
+                omd.addValues(ValueFactory.createValue("toto4"));
+                
+                DataSource ds = dsf.getDataSource(omd,"main", DataSourceFactory.EDITABLE);
+		ds.open();
+                Iterator<Value[]> i = ds.iterator();
+                assertTrue(i.hasNext());
+                Value[] v = i.next();
+                assertEquals(1, v.length);
+                assertEquals("toto1", v[0].getAsString());
+                v = i.next();
+                assertEquals("toto2", v[0].getAsString());
+                i.remove();
+                v = i.next();
+                assertEquals("toto3", v[0].getAsString());
+                i.next();
+                assertFalse(i.hasNext());
+                
+                assertEquals(3, ds.getRowCount());
+                assertEquals("toto3", ds.getString(1, 0));
+        }
+        
+        @Test
+        public void testIteratorEdit() throws DriverException {
+                MemoryDataSetDriver omd = new MemoryDataSetDriver(
+				new String[] { "field" }, new Type[] { TypeFactory
+						.createType(Type.STRING) });
+                omd.addValues(ValueFactory.createValue("toto1"));
+                omd.addValues(ValueFactory.createValue("toto2"));
+                omd.addValues(ValueFactory.createValue("toto3"));
+                omd.addValues(ValueFactory.createValue("toto4"));
+                
+                DataSource ds = dsf.getDataSource(omd,"main", DataSourceFactory.EDITABLE);
+		ds.open();
+                DataSourceIterator i = ds.iterator();
+                
+                Value[] v = i.next();
+                v[0] = ValueFactory.createValue("toto5");
+                assertEquals("toto1", ds.getString(0, 0));
+                i.update(v);
+                assertEquals("toto5", ds.getString(0, 0));
+        }
 }

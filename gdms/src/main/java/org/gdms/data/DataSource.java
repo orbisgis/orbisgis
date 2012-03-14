@@ -37,7 +37,6 @@
  */
 package org.gdms.data;
 
-import com.vividsolutions.jts.geom.Geometry;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -48,16 +47,18 @@ import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
 import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.schema.Metadata;
+import org.gdms.data.types.IncompatibleTypesException;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
-import org.gdms.driver.DriverException;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.Driver;
+import org.gdms.driver.DriverException;
 import org.gdms.source.Source;
-import org.gdms.data.types.IncompatibleTypesException;
 import org.grap.model.GeoRaster;
 import org.jproj.CoordinateReferenceSystem;
+
+import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * Interface to access any data source
@@ -685,7 +686,6 @@ public interface DataSource extends DataSet {
          */
         boolean isEditable();
 
-        
         /**
          * Gets the number of fields of this DataSource
          * @return a integer >= 0
@@ -806,7 +806,7 @@ public interface DataSource extends DataSet {
          * @throws DriverException
          */
         void setGeometry(long rowIndex, Geometry geom, CoordinateReferenceSystem crs) throws DriverException;
-        
+
         /**
          * Sets the default geometry of the DataSource to a JTS geometry. The CRS of the default geometry field
          * (if there is one) is used.
@@ -832,4 +832,11 @@ public interface DataSource extends DataSet {
          * @throws DriverException
          */
         boolean isVectorial() throws DriverException;
+
+        /**
+         * Gets an iterator with edition capabilities.
+         * @return
+         */
+        @Override
+        DataSourceIterator iterator();
 }

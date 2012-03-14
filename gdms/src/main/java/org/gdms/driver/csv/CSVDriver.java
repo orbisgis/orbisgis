@@ -38,13 +38,23 @@ package org.gdms.driver.csv;
 
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.schema.DefaultMetadata;
+import org.gdms.data.schema.DefaultSchema;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.Schema;
 import org.gdms.data.types.DefaultTypeDefinition;
@@ -54,23 +64,15 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.data.values.ValueWriter;
+import org.gdms.driver.AbstractDataSet;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileReadWriteDriver;
-import org.gdms.driver.DataSet;
 import org.gdms.source.SourceManager;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 
 import com.vividsolutions.jts.geom.Geometry;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.List;
-import org.apache.log4j.Logger;
-import org.gdms.data.schema.DefaultMetadata;
-import org.gdms.data.schema.DefaultSchema;
-import org.gdms.driver.AbstractDataSet;
 
 /**
  * CSV file driver where the first row is used to define the field names
@@ -80,12 +82,12 @@ public final class CSVDriver extends AbstractDataSet implements FileReadWriteDri
 
         public static final String DRIVER_NAME = "csv";
         private static final char FIELD_SEPARATOR = ';';
-        private CSVReader reader;
+        private boolean open;
         private Schema schema;
         private DefaultMetadata metadata;
         private ValueWriter valueWriter = ValueWriter.internalValueWriter;
         private static final Logger LOG = Logger.getLogger(CSVDriver.class);
-        private List<String[]> rows = new ArrayList<String[]>();
+        private List<String[]> rows;
         private File file;
 
         @Override
@@ -93,50 +95,74 @@ public final class CSVDriver extends AbstractDataSet implements FileReadWriteDri
                 return DRIVER_NAME;
         }
 
-        private void loadRows() throws IOException {
-                if (reader != null) {
-                        String[] next = reader.readNext();
-                        while (next != null) {
-                                rows.add(next);
-                                next = reader.readNext();
+        private void loadRows() throws DriverException {
+                if (rows == null) {
+                        if (open) {
+                                CSVReader reader = null;
+                                try {
+                                        reader = getReader();
+                                        reader.readNext();
+                                        rows = new ArrayList<String[]>();
+                                        String[] next = reader.readNext();
+                                        while (next != null) {
+                                                rows.add(next);
+                                                next = reader.readNext();
+                                        }
+                                } catch (IOException ex) {
+                                        throw new DriverException(ex);
+                                } finally {
+                                        if (reader != null) {
+                                                try {
+                                                        reader.close();
+                                                } catch (IOException ex) {
+                                                        throw new DriverException(ex);
+                                                }
+                                        }
+                                }
+                        } else {
+                                throw new DriverException("The driver must be open to call this method.");
                         }
                 }
+        }
+
+        private CSVReader getReader() throws FileNotFoundException {
+                return new CSVReader(new BufferedReader(new FileReader(file)), FIELD_SEPARATOR);
         }
 
         @Override
         public void open() throws DriverException {
                 LOG.trace("Opening driver");
+                CSVReader reader = null;
+                String[] metadataContent;
                 try {
-                        reader = new CSVReader(new BufferedReader(new FileReader(file)), FIELD_SEPARATOR);
-
-                        String[] metadataContent = reader.readNext();
-
-                        TypeDefinition csvTypeDef = new DefaultTypeDefinition("STRING", Type.STRING);
-
-                        metadata.clear();
-                        for (int i = 0; i < metadataContent.length; i++) {
-                                metadata.addField(metadataContent[i], csvTypeDef.createType());
-                        }
-
-                        // finished building schema
-
-                        loadRows();
-
+                        reader = getReader();
+                        metadataContent = reader.readNext();
                         reader.close();
                 } catch (IOException e) {
                         throw new DriverException(e);
+                } finally {
+                        if (reader != null) {
+                                try {
+                                        reader.close();
+                                } catch (IOException ex) {
+                                        throw new DriverException(ex);
+                                }
+                        }
                 }
+
+                TypeDefinition csvTypeDef = new DefaultTypeDefinition("STRING", Type.STRING);
+
+                metadata.clear();
+                for (int i = 0; i < metadataContent.length; i++) {
+                        metadata.addField(metadataContent[i], csvTypeDef.createType());
+                }
+                open = true;
         }
 
         @Override
         public void close() throws DriverException {
-                try {
-                        reader.close();
-                } catch (IOException ex) {
-                        throw new DriverException(ex);
-                }
-                reader = null;
-                rows.clear();
+                open = false;
+                rows = null;
         }
 
         private String[] getHeaderRow(final Metadata metaData)
@@ -159,8 +185,8 @@ public final class CSVDriver extends AbstractDataSet implements FileReadWriteDri
                         final long rowCount = dataSource.getRowCount();
                         pm.startTask("Writing file", rowCount);
                         writer = new CSVWriter(new FileWriter(file), FIELD_SEPARATOR);
-                        Metadata metadata = dataSource.getMetadata();
-                        String[] row = getHeaderRow(metadata);
+                        Metadata dMetadata = dataSource.getMetadata();
+                        String[] row = getHeaderRow(dMetadata);
                         writer.writeNext(row);
                         for (int i = 0; i < rowCount; i++) {
                                 if (i >= 100 && i % 100 == 0) {
@@ -170,8 +196,8 @@ public final class CSVDriver extends AbstractDataSet implements FileReadWriteDri
                                                 pm.progressTo(i);
                                         }
                                 }
-                                row = new String[metadata.getFieldCount()];
-                                for (int j = 0; j < metadata.getFieldCount(); j++) {
+                                row = new String[dMetadata.getFieldCount()];
+                                for (int j = 0; j < dMetadata.getFieldCount(); j++) {
                                         if (dataSource.getFieldValue(i, j).isNull()) {
                                                 row[j] = "null";
                                         } else {
@@ -300,8 +326,8 @@ public final class CSVDriver extends AbstractDataSet implements FileReadWriteDri
                 return new TypeDefinition[]{new DefaultTypeDefinition("STRING",
                                 Type.STRING)};
         }
-        
-       @Override
+
+        @Override
         public int getSupportedType() {
                 return SourceManager.FILE;
         }
@@ -362,20 +388,26 @@ public final class CSVDriver extends AbstractDataSet implements FileReadWriteDri
 
         @Override
         public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
+                loadRows();
                 final String[] fields = rows.get((int) (rowIndex));
                 if (fieldId < fields.length) {
-                        if (fields[fieldId].equals("null")) {
-                                return ValueFactory.createNullValue();
-                        } else {
-                                return ValueFactory.createValue(fields[fieldId]);
-                        }
+                        return createValue(fields[fieldId]);
                 } else {
                         throw new IllegalArgumentException("fieldId: " + fieldId + ", fields: " + fields.length);
                 }
         }
 
+        private Value createValue(String val) {
+                if (val.equals("null")) {
+                        return ValueFactory.createNullValue();
+                } else {
+                        return ValueFactory.createValue(val);
+                }
+        }
+
         @Override
         public long getRowCount() throws DriverException {
+                loadRows();
                 return rows.size();
         }
 
@@ -391,6 +423,93 @@ public final class CSVDriver extends AbstractDataSet implements FileReadWriteDri
 
         @Override
         public boolean isOpen() {
-                return reader != null;
+                return open;
+        }
+
+        @Override
+        public Iterator<Value[]> iterator() {
+                if (rows == null) {
+                        try {
+                                return new CSVIterator();
+                        } catch (DriverException ex) {
+                                throw new IllegalStateException(ex);
+                        }
+                } else {
+                        return new Iterator<Value[]>() {
+
+                                private Iterator<String[]> it = rows.iterator();
+
+                                @Override
+                                public boolean hasNext() {
+                                        return it.hasNext();
+                                }
+
+                                @Override
+                                public Value[] next() {
+                                        String[] next = it.next();
+                                        Value[] v = new Value[next.length];
+                                        for (int i = 0; i < next.length; i++) {
+                                                v[i] = createValue(next[i]);
+                                        }
+                                        return v;
+                                }
+
+                                @Override
+                                public void remove() {
+                                        throw new UnsupportedOperationException();
+                                }
+                        };
+                }
+        }
+
+        private class CSVIterator implements Iterator<Value[]> {
+
+                private String[] next;
+                private boolean nextLoaded = false;
+                private CSVReader reader;
+
+                public CSVIterator() throws DriverException {
+                        try {
+                                reader = getReader();
+                                reader.readNext();
+                        } catch (IOException ex) {
+                                throw new DriverException(ex);
+                        }
+                }
+
+                @Override
+                public boolean hasNext() {
+                        try {
+                                next = reader.readNext();
+                        } catch (IOException ex) {
+                                LOG.error("Error accessing CSV file", ex);
+                                return false;
+                        }
+                        nextLoaded = true;
+                        return next == null;
+                }
+
+                @Override
+                public Value[] next() {
+                        if (!nextLoaded) {
+                                try {
+                                        next = reader.readNext();
+                                } catch (IOException ex) {
+                                        throw new IllegalStateException("Error accessing CSV file", ex);
+                                }
+                        } else {
+                                nextLoaded = false;
+                        }
+                        Value[] v = new Value[next.length];
+                        for (int i = 0; i < next.length; i++) {
+                                v[i] = createValue(next[i]);
+                        }
+                        return v;
+                }
+
+                @Override
+                public void remove() {
+                        throw new UnsupportedOperationException();
+                }
         }
 }

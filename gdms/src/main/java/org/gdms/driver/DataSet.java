@@ -54,7 +54,7 @@ import org.jproj.CoordinateReferenceSystem;
  * 
  * @author Fernando Gonzalez Cortes
  */
-public interface DataSet {
+public interface DataSet extends Iterable<Value[]> {
 
         int X = 0;
         int Y = 1;

@@ -41,12 +41,11 @@
  */
 package org.gdms.driver;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Iterator;
+
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.schema.MetadataUtilities;
@@ -55,6 +54,9 @@ import org.gdms.data.types.Constraint;
 import org.gdms.data.types.IncompatibleTypesException;
 import org.gdms.data.values.Value;
 import org.jproj.CoordinateReferenceSystem;
+
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * Abstract implementation of DataSet that implements the getRow method.
@@ -296,8 +298,26 @@ public abstract class AbstractDataSet implements DataSet {
                 }
                 return spatialFieldIndex;
         }
-        
+
         protected void setSpatialFieldIndex(int index) {
                 spatialFieldIndex = index;
+        }
+
+        /**
+         * Returns an iterator over the list of rows of this DataSet.
+         * 
+         * This iterator does not support the {@link Iterator#remove() } method. Calling it will throw
+         * an {@code UnsupportedOperationException }.
+         * 
+         * @return a new iterator
+         * @throws IllegalStateException if there is a problem with accessing the data set while iterating
+         */
+        @Override
+        public Iterator<Value[]> iterator() {
+                try {
+                        return new DataSetIterator(this);
+                } catch (DriverException ex) {
+                        throw new IllegalStateException(ex);
+                }
         }
 }

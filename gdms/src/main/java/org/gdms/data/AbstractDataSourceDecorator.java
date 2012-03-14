@@ -55,7 +55,7 @@ import org.jproj.CoordinateReferenceSystem;
  * This is the base class for any DataSourceDecorator.
  *
  */
-public class AbstractDataSourceDecorator extends AbstractDataSource {
+public abstract class AbstractDataSourceDecorator extends AbstractDataSource {
 
         private DataSource internalDataSource;
 
