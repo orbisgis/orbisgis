@@ -67,7 +67,6 @@ import org.gdms.sql.engine.SemanticException;
 
 import static org.junit.Assert.*;
 
-@Ignore
 public class SQLTest extends SQLBaseTest {
 
         public static DataSource d;
@@ -259,7 +258,7 @@ public class SQLTest extends SQLBaseTest {
         public void testExcept() throws Exception {
                 try {
                         dsf.getSourceManager().remove("temp");
-                        dsf.executeSQL("create table temp as select *{except type}  from "
+                        dsf.executeSQL("create table temp as select * except \"type\" from "
                                 + super.getSHPTABLE() + ";");
                         DataSource dsOut = dsf.getDataSource("temp");
                         dsOut.open();
@@ -276,7 +275,7 @@ public class SQLTest extends SQLBaseTest {
                         dsf.getSourceManager().register("landcover2000",
                                 new File(internalData + "landcover2000.shp"));
                         dsf.getSourceManager().remove("temp");
-                        dsf.executeSQL("create table temp as select * except (type, the_geom) from landcover2000");
+                        dsf.executeSQL("create table temp as select * except \"type\", the_geom from landcover2000");
                         DataSource dsOut = dsf.getDataSource("temp");
                         dsOut.open();
                         assertEquals(dsOut.getFieldIndexByName("type"), -1);
@@ -291,7 +290,7 @@ public class SQLTest extends SQLBaseTest {
         public void testExceptAlias() throws Exception {
                 try {
                         dsf.getSourceManager().remove("temp");
-                        dsf.executeSQL("create table temp as select a.* except the_geom  from "
+                        dsf.executeSQL("create table temp as select a.* except the_geom from "
                                 + super.getSHPTABLE() + " a;");
                         DataSource dsOut = dsf.getDataSource("temp");
                         dsOut.open();
@@ -1333,7 +1332,7 @@ public class SQLTest extends SQLBaseTest {
                 assertEquals(countRes, count);
                 ds.close();
         }
-
+        
         private void createSource(String name, String fieldName, int... values) {
                 MemoryDataSetDriver omd = new MemoryDataSetDriver(
                         new String[]{fieldName}, new Type[]{TypeFactory.createType(Type.INT)});
