@@ -434,7 +434,8 @@ select_list_first
         ;
 
 select_list_next
-        : COMMA ( expression_main ( T_AS? alias=LONG_ID )?
+        : COMMA ( select_column_star -> ^(T_COLUMN_ITEM select_column_star)
+        | expression_main ( T_AS? alias=LONG_ID )?
         -> ^(T_COLUMN_ITEM expression_main $alias? )
         | a=ASTERISK select_star_except? -> ^(T_COLUMN_ITEM ^(T_SELECT_COLUMN_STAR $a select_star_except? ))
         )
@@ -451,7 +452,9 @@ select_column_star
         ;
 
 select_star_except
-        : T_EXCEPT LONG_ID (COMMA LONG_ID)*
+        : T_EXCEPT (
+          LONG_ID
+        | LPAREN LONG_ID (COMMA LONG_ID)* RPAREN )
         -> ^(T_EXCEPT LONG_ID+ )
         ;
 
