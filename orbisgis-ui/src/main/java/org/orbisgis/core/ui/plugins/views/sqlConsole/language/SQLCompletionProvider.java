@@ -152,7 +152,7 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                 if (rootText != null) {
                         content = rootText + content;
                 }
-                
+
                 metManager.checkSourcesToLoad();
                 clear();
                 matcher.match(content);
@@ -337,6 +337,102 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
         }
 
         /**
+         * Add completions for all field names.
+         */
+        public void addFieldNamesCompletion() {
+                ArrayList<Completion> a = new ArrayList<Completion>();
+                HashMap<String, SQLFieldCompletion> nn = new HashMap<String, SQLFieldCompletion>();
+
+                // adds the source names
+                String[] s = metManager.getSourceNames();
+                for (int i = 0; i < s.length; i++) {
+                        ArrayList<String> ss = new ArrayList<String>();
+                        final String name = s[i];
+                        ss.add(name);
+                        try {
+                                Collections.addAll(ss, dataManager.getSourceManager().getAllNames(name));
+                        } catch (NoSuchTableException ex) {
+                        }
+                        for (int k = 0; k < ss.size(); k++) {
+                                final String alias = ss.get(k);
+                                if (!alias.startsWith("gdms")) {
+                                        // check for an existing completion
+                                        Completion compl = cachedCompletions.get(alias);
+                                        if (compl != null) {
+                                                List<Completion> cp = getFieldsCompletion(name);
+                                                for (int j = 0; j < cp.size(); j++) {
+                                                        final SQLFieldCompletion localCompl = (SQLFieldCompletion) cp.get(j);
+                                                        final String currCompl = localCompl.getName();
+                                                        if (nn.containsKey(currCompl)) {
+                                                                String def = nn.get(currCompl).getDefinedIn();
+                                                                def = def.replace("</b>", ", " + alias + "</b>");
+                                                                nn.get(currCompl).setDefinedIn(def);
+                                                        } else {
+                                                                nn.put(currCompl, localCompl);
+                                                        }
+                                                }
+
+                                                continue;
+                                        }
+
+                                        // no existing completion, let's built it
+
+                                        // adding fields
+
+                                        List<Completion> cp = getFieldsCompletion(name);
+                                        for (int j = 0; j < cp.size(); j++) {
+                                                final SQLFieldCompletion localCompl = (SQLFieldCompletion) cp.get(j);
+                                                final String currCompl = localCompl.getName();
+                                                if (nn.containsKey(currCompl)) {
+                                                        String def = nn.get(currCompl).getDefinedIn();
+                                                        def = def.replace("</b>", ", " + alias + "</b>");
+                                                        nn.get(currCompl).setDefinedIn(def);
+                                                } else {
+                                                        nn.put(currCompl, localCompl);
+                                                }
+                                        }
+
+
+                                        Metadata m = metManager.getMetadataFromCache(name);
+                                        if (m == null) {
+                                                m = metManager.getMetadata(name);
+                                                if (m == null) {
+                                                        // cannot mount the datasource
+                                                        continue;
+                                                }
+                                        }
+
+                                        VariableCompletion c = new VariableCompletion(this, alias, "TABLE");
+                                        StringBuilder str = new StringBuilder();
+                                        if (!name.equals(alias) && !name.startsWith("gdms")) {
+                                                str.append("<b>alias</b> for <i>");
+                                                str.append(name);
+                                                str.append("</i>.<br><br>");
+                                        }
+                                        str.append("Fields :<br>");
+                                        try {
+                                                for (int j = 0; j < m.getFieldCount(); j++) {
+                                                        str.append(m.getFieldName(j));
+                                                        str.append(" : ");
+                                                        str.append(TypeFactory.getTypeName(m.getFieldType(j).getTypeCode()).toUpperCase());
+                                                        str.append("<br>");
+                                                }
+                                        } catch (DriverException e) {
+                                        }
+                                        c.setShortDescription(str.toString());
+                                        // caching for reuse
+                                        cachedCompletions.put(alias, c);
+
+                                }
+                        }
+                }
+
+                // adding fields if needed
+                a.addAll(nn.values());
+                addCompletions(a);
+        }
+
+        /**
          * Adds to the CompletionProvider the field list of the current data source.
          * @param table the data source name
          */
@@ -498,7 +594,6 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                 return content;
         }
 
-        
         /**
          * Sets the rootText for the completion.
          * @param rootText the text

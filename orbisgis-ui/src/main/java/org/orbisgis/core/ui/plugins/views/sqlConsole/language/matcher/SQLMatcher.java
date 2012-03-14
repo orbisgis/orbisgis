@@ -120,6 +120,9 @@ public class SQLMatcher {
                         // SELECT table.field
                         addScalarFunctions();
                         addTables(true);
+                } else if ("EXCEPT".equalsIgnoreCase(a)) {
+                        // EXCEPT field, ...
+                        addAllFields();
                 } else if ("CREATE".equalsIgnoreCase(a)) {
                         // CREATE tata
                         addKeyWords("TABLE", "VIEW", "INDEX", "OR REPLACE VIEW");
@@ -163,8 +166,8 @@ public class SQLMatcher {
                 } else if ("LEFT".equalsIgnoreCase(a) || "RIGHT".equalsIgnoreCase(a)) {
                         // ORDER BY
                         addKeyWords("OUTER", "JOIN");
-                } else if ("INNER".equalsIgnoreCase(a) || "NATURAL".equalsIgnoreCase(a) ||
-                        "CROSS".equalsIgnoreCase(a) || "OUTER".equalsIgnoreCase(a)) {
+                } else if ("INNER".equalsIgnoreCase(a) || "NATURAL".equalsIgnoreCase(a)
+                        || "CROSS".equalsIgnoreCase(a) || "OUTER".equalsIgnoreCase(a)) {
                         // ORDER BY
                         addKeyWord("JOIN");
                 } else if ("ORDER".equalsIgnoreCase(a)) {
@@ -174,6 +177,8 @@ public class SQLMatcher {
                         // Operator = + - / ...
                         addScalarFunctions();
                         addTables(true);
+                } else if ("*".equals(a)) {
+                        matchAfterStar();
                 } else {
                         // anything else
                         matchAfterPossibleId();
@@ -222,7 +227,7 @@ public class SQLMatcher {
                                 }
                                 addKeyWords("DROP", "ADD", "RENAME");
                                 return;
-                        } else if ("CREATE".equalsIgnoreCase(b)) {
+                        } else if ("VIEW".equalsIgnoreCase(b)) {
                                 if (inside) {
                                         return;
                                 }
@@ -238,7 +243,7 @@ public class SQLMatcher {
                                 addOperators();
                                 return;
                         } else if ("HAVING".equalsIgnoreCase(b)) {
-                                        addKeyWords("UNION", "ORDER BY", "LIMIT", "OFFSET", "FETCH");
+                                addKeyWords("UNION", "ORDER BY", "LIMIT", "OFFSET", "FETCH");
                                 return;
                         } else if ("BY".equalsIgnoreCase(b)) {
                                 matchIdAfterBy();
@@ -255,7 +260,7 @@ public class SQLMatcher {
                                 addOperators();
                                 return;
                         } else if ("TABLE".equalsIgnoreCase(b)) {
-                                matchSourceNamesInDrop();
+                                matchAfterTableId();
                         }
 
                         if (b.contains(";")) {
@@ -282,6 +287,10 @@ public class SQLMatcher {
                                 addScalarFunctions();
                                 addTables(true);
                                 return;
+                        } else if ("EXCEPT".equalsIgnoreCase(a)) {
+                                // after EXCEPT
+                                addAllFields();
+                                return;
                         } else if ("VALUES".equalsIgnoreCase(a)) {
                                 // inside an insert, no completion
                                 return;
@@ -305,6 +314,17 @@ public class SQLMatcher {
 
                 if ("TABLE".equalsIgnoreCase(a) || "VIEW".equalsIgnoreCase(a)) {
                         addKeyWord("SELECT");
+                        return;
+                }
+
+                while (it.hasNext()) {
+                        a = it.next();
+                        if ("SELECT".equalsIgnoreCase(a)) {
+                                addKeyWord("FROM");
+                                return;
+                        } else if ("FROM".equalsIgnoreCase(a)) {
+                                return;
+                        }
                 }
         }
 
@@ -323,16 +343,33 @@ public class SQLMatcher {
                         addTables(false);
                 }
         }
-        
-        private void matchSourceNamesInDrop() {
+
+        private void matchAfterTableId() {
                 if (!it.hasNext()) {
                         return;
                 }
                 String a = it.next();
 
-                if ("DROP".equalsIgnoreCase(a)) {
+                if ("CREATE".equalsIgnoreCase(a)) {
+                        // CREATE TABLE toto (AS / ( )
+                        addKeyWords("AS SELECT", "(");
+                } else if ("DROP".equalsIgnoreCase(a)) {
                         // DROP TABLE toto PURGE
                         addKeyWord("PURGE");
+                }
+        }
+
+        private void matchAfterStar() {
+                if (!it.hasNext()) {
+                        return;
+                }
+                String a = it.next();
+
+                if ("SELECT".equals(a) || ",".equals(a)) {
+                        addKeyWords("EXCEPT", "FROM");
+                } else {
+                        addScalarFunctions();
+                        addTables(true);
                 }
         }
 
@@ -358,6 +395,10 @@ public class SQLMatcher {
                 pr.addSourceNamesCompletion(withFields);
         }
 
+        private void addAllFields() {
+                pr.addFieldNamesCompletion();
+        }
+
         private void addKeyWords(String... k) {
                 for (int i = 0; i < k.length; i++) {
                         addKeyWord(k[i]);
@@ -371,7 +412,7 @@ public class SQLMatcher {
         private boolean isOperator(String s) {
                 return Arrays.binarySearch(operators, s.charAt(s.length() - 1)) >= 0;
         }
-        
+
         private void addOperators() {
                 addKeyWords("IS NULL", "IS NOT NULL", "IS TRUE", "IS FALSE", "LIKE", "AND", "OR");
         }
