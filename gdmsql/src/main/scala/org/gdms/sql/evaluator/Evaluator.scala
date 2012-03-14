@@ -198,6 +198,20 @@ case class FieldEvaluator(name: String, table: Option[String] = None) extends Ev
   def doCopy = copy()
 }
 
+/**
+ * Evaluator for star fields. This placeholder is replaced during ProjectionCommand.prepare().
+ *
+ * @author Antoine Gourlay
+ * @since 0.1
+ */
+case class StarFieldEvaluator(except: Seq[String], table: Option[String]) extends Evaluator {
+  def eval = throw new UnsupportedOperationException
+  var sqlType = -1
+  var index: Int = -1
+  override def toString = "StarField(except=" + except + ")"
+  def doCopy = copy()
+}
+
 case class OidEvaluator() extends Evaluator {
   def eval = r => {
     if (r.rowId.isDefined) {

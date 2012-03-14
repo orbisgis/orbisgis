@@ -286,4 +286,8 @@ object Field {
   def apply(name: String, table: String) = {
     new Expression(FieldEvaluator(name, Some(table)))
   }
+  
+  def star(except: Seq[String], table: Option[String]) = {
+    new Expression(StarFieldEvaluator(except, table))
+  }
 }

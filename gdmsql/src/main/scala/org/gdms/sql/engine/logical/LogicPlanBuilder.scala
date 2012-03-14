@@ -620,6 +620,21 @@ object LogicPlanBuilder {
             Field(name, rev.tail.map(_.getText).reduceLeft(_ + "." + _))
           }
         }
+      case T_SELECT_COLUMN_STAR => {
+	  // AST:
+	  // ^(T_SELECT_COLUMN_STAR LONG_ID* ASTERISK select_star_except? )
+          var rev = l.reverse
+          var except: Seq[String] = List.empty
+          if (rev.head.getType == T_EXCEPT) {
+            except = getChilds(rev.head).map (_.getText.replace("\"", ""))
+            rev = rev.tail
+          }
+          if (rev.tail.isEmpty) {
+            Field.star(except, None)
+          } else {
+            Field.star(except, Some(rev.tail.map(_.getText).reduceLeft(_ + "." + _)))
+          }
+        }
         // all ISNULL, NOTNULL, IS NULL are encoded into the same expression
       case T_NULL_CHECK => Expression(IsNullEvaluator(left))
       case T_IN => {

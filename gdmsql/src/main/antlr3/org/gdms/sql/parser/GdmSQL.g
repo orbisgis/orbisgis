@@ -15,6 +15,7 @@ tokens {
     T_COLUMN_LIST = 't_column_list';
     T_COLUMN_ITEM = 't_column_item';
     T_SELECT_COLUMN = 't_select_column';
+    T_SELECT_COLUMN_STAR = 't_select_column_star';
     T_SELECT_PARAMS = 't_select_params';
     T_SELECT_LIMIT = 't_select_limit';
     T_SELECT_OFFSET = 't_select_offset';
@@ -51,6 +52,7 @@ tokens {
     T_DISTINCT = 'DISTINCT';
     T_DROP = 'DROP';
     T_ELSE = 'ELSE';
+    T_EXCEPT = 'EXCEPT';
     T_EXISTS = 'EXISTS';
     T_FALSE = 'FALSE';
     T_FOR = 'FOR';
@@ -428,13 +430,13 @@ select_list_first
         : select_column_star -> ^(T_COLUMN_ITEM select_column_star)
         | expression_main ( T_AS? alias=LONG_ID )?
         -> ^(T_COLUMN_ITEM expression_main $alias? )
-        | a=ASTERISK -> ^(T_COLUMN_ITEM ^(T_SELECT_COLUMN $a ))
+        | a=ASTERISK select_star_except? -> ^(T_COLUMN_ITEM ^(T_SELECT_COLUMN_STAR $a select_star_except? ))
         ;
 
 select_list_next
         : COMMA ( expression_main ( T_AS? alias=LONG_ID )?
         -> ^(T_COLUMN_ITEM expression_main $alias? )
-        | a=ASTERISK -> ^(T_COLUMN_ITEM ^(T_SELECT_COLUMN $a ))
+        | a=ASTERISK select_star_except? -> ^(T_COLUMN_ITEM ^(T_SELECT_COLUMN_STAR $a select_star_except? ))
         )
         ;
 
@@ -444,8 +446,13 @@ select_column
         ;
 
 select_column_star
-        : LONG_ID (DOT LONG_ID)* DOT ASTERISK
-        -> ^(T_SELECT_COLUMN LONG_ID+ ASTERISK )
+        : LONG_ID (DOT LONG_ID)* DOT ASTERISK select_star_except?
+        -> ^(T_SELECT_COLUMN_STAR LONG_ID+ ASTERISK select_star_except? )
+        ;
+
+select_star_except
+        : T_EXCEPT LONG_ID (COMMA LONG_ID)*
+        -> ^(T_EXCEPT LONG_ID+ )
         ;
 
 where_block

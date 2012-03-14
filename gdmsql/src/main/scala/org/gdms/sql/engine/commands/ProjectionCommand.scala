@@ -43,6 +43,7 @@ import org.gdms.sql.engine.GdmSQLPredef._
 import org.gdms.sql.evaluator.Expression
 import org.gdms.sql.evaluator.Field
 import org.gdms.sql.evaluator.FieldEvaluator
+import org.gdms.sql.evaluator.StarFieldEvaluator
 
 /**
  * Command for evaluating expressions for every rows of a data stream.
@@ -55,17 +56,18 @@ class ProjectionCommand(var expression: Array[(Expression, Option[String])]) ext
   override def doPrepare = {
     // replace STAR by fields
     val stars = expression.filter(_._1.evaluator match {
-        case FieldEvaluator("*", _) => true
+        case StarFieldEvaluator(_, _) => true
         case _ => false
       })
     
     val metadata = children map (_.getMetadata)
     
     stars foreach { s =>
-      val optName = s._1.evaluator.asInstanceOf[FieldEvaluator].table
+      val ev = s._1.evaluator.asInstanceOf[StarFieldEvaluator]
+      val optName = ev.table
       optName match {
         case None => {
-            metadata map (addAllFields(_, s._1))
+            metadata map (addAllFields(_, s._1, ev.except))
           }
         case Some(name) => {
             val name = optName.get
@@ -80,7 +82,7 @@ class ProjectionCommand(var expression: Array[(Expression, Option[String])]) ext
               }
               insertFields(s._1, newexp)
             } else {
-              addAllFields(m.get, s._1)
+              addAllFields(m.get, s._1, ev.except)
             }
           }
       }
@@ -90,9 +92,15 @@ class ProjectionCommand(var expression: Array[(Expression, Option[String])]) ext
     super.doPrepare
   }
   
-  private def addAllFields(m: SQLMetadata, s: Expression) {
+  private def addAllFields(m: SQLMetadata, s: Expression, except: Seq[String]) {
     // new fields
-    var newexp = m.getFieldNames map (n => (Field(n, m.table), None))
+    var newexp = m.getFieldNames flatMap {n => 
+      if (except.contains(n)) {
+        List.empty
+      } else {
+        (Field(n, m.table), None) :: List.empty
+      }
+    }
       
     insertFields(s, newexp)
   }
