@@ -2,6 +2,7 @@ package org.orbisgis.core.crs;
 
 import java.awt.BorderLayout;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -42,6 +43,7 @@ public class WKTTab extends JPanel implements ActionListener {
                 jTextArea.setText(NO_SRS_INFO);
                 jTextArea.setLineWrap(true);
                 JScrollPane scrollDriver = new JScrollPane(jTextArea);
+                scrollDriver.setPreferredSize(new Dimension(300, 70));
                 this.add(scrollDriver, BorderLayout.CENTER);
                 if (readPropertiesFile()) {
                         this.add(crsHistoryPanel, BorderLayout.SOUTH);

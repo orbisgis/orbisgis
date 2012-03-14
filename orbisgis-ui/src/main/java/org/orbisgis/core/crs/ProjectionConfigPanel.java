@@ -23,7 +23,7 @@ public final class ProjectionConfigPanel extends JDialog implements ActionListen
                 getContentPane().add(getProjectionPanel(dsf), BorderLayout.CENTER);
                 getContentPane().add(getButtonPanel(), BorderLayout.SOUTH);
                 setAlwaysOnTop(true);
-                setSize(300, 400);
+                setSize(300, 500);
                 setLocationRelativeTo(frame);
         }
 
