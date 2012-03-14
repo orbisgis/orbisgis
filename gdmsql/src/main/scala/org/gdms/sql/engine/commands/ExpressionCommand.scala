@@ -148,7 +148,7 @@ trait ExpressionCommand extends Command {
             // the table is direcly referenced...
             case Some(t) if m.table == t => m.getFieldIndex(f.name) match {
                 // ... but there is no such field in that table. Failure (unknown field).
-                case -1 => throw new SemanticException("There is no field '" + f.name + "' in table " + t + ".")
+                case -1 => throw new UnknownFieldException("There is no field '" + f.name + "' in table " + t + ".")
                 case i =>
                   // ... and there is a field with that name. Success.
                   f.index = i + offset

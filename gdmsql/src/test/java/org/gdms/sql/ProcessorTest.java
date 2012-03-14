@@ -57,6 +57,7 @@ import org.gdms.data.types.IncompatibleTypesException;
 import org.gdms.sql.engine.SQLEngine;
 import org.gdms.sql.engine.SemanticException;
 import org.gdms.sql.engine.SqlStatement;
+import org.gdms.sql.engine.UnknownFieldException;
 import org.gdms.sql.strategies.SumQuery;
 
 import static org.junit.Assert.*;
@@ -259,16 +260,16 @@ public class ProcessorTest {
                 failWithIncompatibleTypes("select avg('a string') from alltypes;");
                 failWithIncompatibleTypes("select avg(*) from alltypes;");
                 failWithIncompatibleTypes("select concatenate('string', StringtoInt('3')) from alltypes;");
-                getValidatedStatement("select avg(3) from alltypes;");
+                getFullyValidatedStatement("select avg(3) from alltypes;");
                 failWithIncompatibleTypes("select * from alltypes where concatenate('e')=3;");
                 failWithIncompatibleTypes("select * from alltypes where concatenate(4)='afs';");
                 failWithIncompatibleTypes("select * from alltypes where concatenate('string', StringtoInt('3')) = 'asd';");
-                getValidatedStatement("select * from alltypes where concatenate('asd', 'asd') = 'asdasd';");
+                getFullyValidatedStatement("select * from alltypes where concatenate('asd', 'asd') = 'asdasd';");
         }
 
         private void failWithIncompatibleTypes(String sql) throws Exception {
                 try {
-                        getValidatedStatement(sql);
+                        getFullyValidatedStatement(sql);
                         fail();
                 } catch (IncompatibleTypesException e) {
                 }
@@ -287,6 +288,10 @@ public class ProcessorTest {
                         getValidatedStatement(sql);
                         fail();
                 } catch (SemanticException e) {
+                } catch (ParseException p ) {
+                        if (!(p.getCause() instanceof SemanticException)) {
+                                fail();
+                        }
                 }
         }
 
@@ -295,6 +300,18 @@ public class ProcessorTest {
                         getFullyValidatedStatement(sql);
                         fail();
                 } catch (SemanticException e) {
+                } catch (ParseException p ) {
+                        if (!(p.getCause() instanceof SemanticException)) {
+                                fail();
+                        }
+                }
+        }
+        
+        private void failPreparedWithUnknownFieldException(String sql) throws Exception {
+                try {
+                        getFullyValidatedStatement(sql);
+                        fail();
+                } catch (UnknownFieldException e ) {
                 }
         }
 
@@ -341,13 +358,13 @@ public class ProcessorTest {
         @Test
         public void testNonExistingIds() throws Exception {
                 // non
-                failPreparedWithSemanticException("select non.\"integer\" from alltypes;");
+                failPreparedWithUnknownFieldException("select non.\"integer\" from alltypes;");
                 // ier
-                failPreparedWithSemanticException("select alltypes.ier from alltypes;");
-                failPreparedWithSemanticException("select * from alltypes where non.\"integer\"=3;");
+                failPreparedWithUnknownFieldException("select alltypes.ier from alltypes;");
+                failPreparedWithUnknownFieldException("select * from alltypes where non.\"integer\"=3;");
                 // idnteger
-                failPreparedWithSemanticException("select idnteger from alltypes;");
-                failPreparedWithSemanticException("select * from alltypes where idnteger = 2;");
+                failPreparedWithUnknownFieldException("select idnteger from alltypes;");
+                failPreparedWithUnknownFieldException("select * from alltypes where idnteger = 2;");
                 // notexist
                 failWithNoSuchTableException("select * from notexist t1;");
                 // thisfunctiondoes...
@@ -356,7 +373,7 @@ public class ProcessorTest {
                 failWithSemanticException("select * "
                         + "from alltypes where thisfunctiondoesnotexist(idnteger);");
                 // boolean case
-                failPreparedWithSemanticException("select max(booleaN) from alltypes;");
+                failPreparedWithUnknownFieldException("select max(booleaN) from alltypes;");
                 failPreparedWithIncompatibleTypes("select * from alltypes where avg(\"boolean\") = 2;");
         }
 

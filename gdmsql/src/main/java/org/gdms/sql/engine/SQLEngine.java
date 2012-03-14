@@ -181,7 +181,7 @@ public final class SQLEngine {
                 try {
                         graphs = ExecutionGraphBuilder.build(tree, properties);
                 } catch (SemanticException ex) {
-                        throw new ParseException("Semantic Error", ex);
+                        throw new ParseException(ex.getMessage(), ex);
                 }
                 final SqlStatement[] sts = new SqlStatement[graphs.length];
 
