@@ -256,5 +256,28 @@ public interface MapContext {
 	 * @param crs
 	 */
 	// void setCoordinateReferenceSystem(CoordinateReferenceSystem crs);
+        
+        
+        /**
+         * Sets an ows project's id
+         * @param id Set the -1 value if you want to unset the current project's id
+         */
+        void setOwsProjectId(int id);
+        
+        /**
+         * Gets the ows project id. It will typically be used for exporting
+         * a project which has already been imported from the same repository
+         * @return A project's id or -1 if none has been defined
+         */
+        int getOwsProjectId();
+        
+        void setOwsTitle(String title);
+        String getOwsTitle();
+        
+        void setOwsDescription(String description);
+        String getOwsDescription();
+        
+        void setOwsCrs(String owsCrs);
+        String getOwsCrs();
 
 }

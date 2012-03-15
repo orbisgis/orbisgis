@@ -36,7 +36,6 @@
  */
 package org.orbisgis.core.layerModel;
 
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -92,6 +91,10 @@ public class DefaultMapContext implements MapContext {
 	private Envelope boundingBox;
 	private long idTime;
 	private boolean selectionInducedRefresh = false;
+        private int owsProjectId;
+        private String owsTitle;
+        private String owsDescription;
+        private String owsCrs;
 
 	// private int srid = -1;
 
@@ -104,6 +107,7 @@ public class DefaultMapContext implements MapContext {
 		setRoot(dataManager.createLayerCollection("root")); //$NON-NLS-1$
 		this.jaxbMapContext = null;
 		idTime = System.currentTimeMillis();
+                owsProjectId = -1;
 	}
 
 	private void setRoot(ILayer newRoot) {
@@ -208,6 +212,46 @@ public class DefaultMapContext implements MapContext {
 	public void setSelectionInducedRefresh(boolean selectionInducedRefresh) {
 		this.selectionInducedRefresh = selectionInducedRefresh;
 	}
+
+    @Override
+    public void setOwsProjectId(int id) {
+        this.owsProjectId = id;
+    }
+
+    @Override
+    public int getOwsProjectId() {
+        return this.owsProjectId;
+    }
+
+    @Override
+    public void setOwsTitle(String title) {
+        this.owsTitle = title;
+    }
+
+    @Override
+    public String getOwsTitle() {
+        return this.owsTitle;
+    }
+
+    @Override
+    public void setOwsDescription(String description) {
+        this.owsDescription = description;
+    }
+
+    @Override
+    public String getOwsDescription() {
+        return this.owsDescription;
+    }
+
+    @Override
+    public void setOwsCrs(String owsCrs) {
+        this.owsCrs = owsCrs;
+    }
+
+    @Override
+    public String getOwsCrs() {
+        return this.owsCrs;
+    }
 
 	private final class OpenerListener extends LayerListenerAdapter implements
 			LayerListener {
