@@ -41,10 +41,12 @@ package org.gdms.data.values;
 import java.io.Serializable;
 import java.sql.Types;
 import java.text.ParseException;
+import java.util.regex.Pattern;
 
+import org.gdms.data.types.IncompatibleTypesException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
-import org.gdms.data.types.IncompatibleTypesException;
+import org.orbisgis.utils.TextUtils;
 
 /**
  * Wrapper for strings
@@ -274,17 +276,50 @@ class DefaultStringValue extends AbstractValue implements Serializable, StringVa
         }
 
         @Override
-        public BooleanValue like(Value value) {
+        public BooleanValue matches(Value value) {
                 if (value instanceof NullValue) {
                         return ValueFactory.createNullValue();
                 }
 
                 if (value instanceof StringValue) {
-                        String pattern = ((StringValue) value).getAsString().replaceAll("%",
-                                ".*");
-                        pattern = pattern.replaceAll("\\?", ".");
+                        String pattern = ((StringValue) value).getAsString();
 
-                        return new DefaultBooleanValue(this.value.matches(pattern));
+                        return matches(Pattern.compile(pattern));
+                } else {
+                        throw new IncompatibleTypesException();
+                }
+        }
+
+        @Override
+        public BooleanValue matches(Pattern value) {
+                return ValueFactory.createValue(value.matcher(this.value).matches());
+        }
+
+        @Override
+        public BooleanValue like(Value value, boolean caseInsensitive) {
+                if (value instanceof NullValue) {
+                        return ValueFactory.createNullValue();
+                }
+
+                if (value instanceof StringValue) {
+                        String pattern = ((StringValue) value).getAsString();
+
+                        return matches(TextUtils.buildLikePattern(pattern, caseInsensitive));
+                } else {
+                        throw new IncompatibleTypesException();
+                }
+        }
+        
+        @Override
+        public BooleanValue similarTo(Value value) {
+                if (value instanceof NullValue) {
+                        return ValueFactory.createNullValue();
+                }
+
+                if (value instanceof StringValue) {
+                        String pattern = ((StringValue) value).getAsString();
+
+                        return matches(TextUtils.buildSimilarToPattern(pattern));
                 } else {
                         throw new IncompatibleTypesException();
                 }

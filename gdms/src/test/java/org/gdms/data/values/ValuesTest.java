@@ -131,7 +131,7 @@ public class ValuesTest {
                 assertTrue((s.lessEqual(n)).isNull());
                 assertTrue((s.greater(n)).isNull());
                 assertTrue((s.greaterEqual(n)).isNull());
-                s.like(n);
+                s.matches(n);
 
                 Value d = ValueFactory.createValue(new Date());
                 assertTrue((d.equals(n)).isNull());
@@ -163,7 +163,7 @@ public class ValuesTest {
                 assertTrue((n.lessEqual(n)).isNull());
                 assertTrue((n.greater(n)).isNull());
                 assertTrue((n.greaterEqual(n)).isNull());
-                n.like(n);
+                n.matches(n);
 
         }
 
@@ -836,8 +836,8 @@ public class ValuesTest {
                 assertTrue(nullv.sum(numv).isNull());
                 assertTrue(numv.sum(nullv).isNull());
 
-                assertTrue(strv.like(nullv).isNull());
-                assertTrue(nullv.like(strv).isNull());
+                assertTrue(strv.matches(nullv).isNull());
+                assertTrue(nullv.matches(strv).isNull());
                 assertTrue(falsev.or(nullv).isNull());
                 assertTrue(nullv.or(falsev).isNull());
                 assertTrue(truev.and(nullv).isNull());

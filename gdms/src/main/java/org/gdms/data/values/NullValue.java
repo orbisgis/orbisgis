@@ -49,6 +49,7 @@ import com.vividsolutions.jts.geom.Polygon;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.regex.Pattern;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.IncompatibleTypesException;
 import org.gdms.data.types.TypeFactory;
@@ -122,7 +123,22 @@ final class NullValue extends AbstractValue implements BinaryValue, BooleanValue
         }
 
         @Override
-        public BooleanValue like(Value value) {
+        public BooleanValue matches(Value value) {
+                return ValueFactory.createNullValue();
+        }
+
+        @Override
+        public BooleanValue like(Value value, boolean caseInsensitive) {
+                return ValueFactory.createNullValue();
+        }
+
+        @Override
+        public BooleanValue matches(Pattern value) {
+                return ValueFactory.createNullValue();
+        }
+
+        @Override
+        public BooleanValue similarTo(Value value) {
                 return ValueFactory.createNullValue();
         }
 

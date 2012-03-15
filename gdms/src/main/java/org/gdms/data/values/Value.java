@@ -46,6 +46,7 @@ import org.gdms.data.types.IncompatibleTypesException;
 import org.grap.model.GeoRaster;
 
 import com.vividsolutions.jts.geom.Geometry;
+import java.util.regex.Pattern;
 
 /**
  * Base interface for values manipulated by Gdms.
@@ -178,12 +179,54 @@ public interface Value extends Comparable<Value> {
 
         /**
          * Gets a boolean value representing, using three-valued logic (3VL):
-         *  - true if this String-based value is like the given pattern.
+         *  - true if this String-based value matches the given pattern.
          *  - NULL in any other case.
+         * 
+         * The pattern matching is done using POSIX regular expressions as implemented in java.
+         * See {@link java.util.regex.Pattern }.
+         * 
          * @param value a value
          * @return a value containing either TRUE, FALSE or NULL (=UNKNOWN)
          */
-        BooleanValue like(Value value);
+        BooleanValue matches(Value value);
+        
+        /**
+         * Gets a boolean value representing, using three-valued logic (3VL):
+         *  - true if this String-based value matches the given pattern.
+         *  - NULL in any other case.
+         * 
+         * The pattern matching is done using POSIX regular expressions as implemented in java.
+         * See {@link java.util.regex.Pattern }.
+         * 
+         * @param value a value
+         * @return a value containing either TRUE, FALSE or NULL (=UNKNOWN)
+         */
+        BooleanValue matches(Pattern value);
+        
+        /**
+         * Gets a boolean value representing, using three-valued logic (3VL):
+         *  - true if this String-based value matches the given pattern.
+         *  - NULL in any other case.
+         * 
+         * The pattern matching is done using the standard SQL LIKE operator.
+         * 
+         * @param value a value
+         * @param caseInsensitive true if the operator should not care of case
+         * @return a value containing either TRUE, FALSE or NULL (=UNKNOWN)
+         */
+        BooleanValue like(Value value, boolean caseInsensitive);
+        
+        /**
+         * Gets a boolean value representing, using three-valued logic (3VL):
+         *  - true if this String-based value matches the given pattern.
+         *  - NULL in any other case.
+         * 
+         * The pattern matching is done using the standard SQL SIMILAR TO operator.
+         * 
+         * @param value a value
+         * @return a value containing either TRUE, FALSE or NULL (=UNKNOWN)
+         */
+        BooleanValue similarTo(Value value);
 
 	/**
 	 * Gets the string representation of the value as it is defined in the

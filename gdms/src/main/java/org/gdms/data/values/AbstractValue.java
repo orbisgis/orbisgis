@@ -42,6 +42,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import java.util.regex.Pattern;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.types.IncompatibleTypesException;
@@ -266,13 +267,26 @@ public abstract class AbstractValue implements Value {
                         + AND + this);
         }
 
-        /**
-         * @param value
-         * @return 
-         * @see org.gdms.data.values.Operations#like(org.gdms.data.values.Value)
-         */
         @Override
-        public BooleanValue like(Value value) {
+        public BooleanValue matches(Value value) {
+                throw new IncompatibleTypesException(COWITH + value
+                        + AND + this);
+        }
+
+        @Override
+        public BooleanValue matches(Pattern value) {
+                throw new IncompatibleTypesException(COWITH + "a String"
+                        + AND + this);
+        }
+
+        @Override
+        public BooleanValue like(Value value, boolean caseInsensitive) {
+                throw new IncompatibleTypesException(COWITH + value
+                        + AND + this);
+        }
+
+        @Override
+        public BooleanValue similarTo(Value value) {
                 throw new IncompatibleTypesException(COWITH + value
                         + AND + this);
         }
