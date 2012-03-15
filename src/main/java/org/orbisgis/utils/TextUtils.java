@@ -37,6 +37,8 @@
  */
 package org.orbisgis.utils;
 
+import java.util.regex.Pattern;
+
 /**
  * Utility class that provides useful functions for dealing with text.
  */
@@ -141,6 +143,190 @@ public final class TextUtils {
                 }
                 start += column;
                 return start;
+        }
+        
+        /**
+         * Creates a {@link Pattern } instance for a LIKE pattern.
+         * 
+         * A LIKE pattern matches always the complete string, and allows for the following special
+         * characters:
+         *  - '%' matches any sequence of zero or more characters
+         *  - '_' matches any single character
+         *  - '\' escapes the meaning of a special character (any of '\', '%', '_').
+         * 
+         * This implementation is not strict about the escape character: while the only way to match a '%'
+         * or a '_' character is to escape it, a '\' character followed by anything else than '%', '_' or '\'
+         * will not report any error and will just match a regular '\' character.
+         * This means that <code>str\\str</code> and <code>str\str</code> both only match the String literal
+         * <code>str\str</code>.
+         * 
+         * Note: this implementation is not entirely identical to the SQL standard's definition of the LIKE operator.
+         * The non-strict behavior describe in the paragraph above is not in the standard. Most implementation
+         * will reject non-properly-escaped pattern strings, so always escaping the backslash is the preferred
+         * option.
+         * 
+         * @param pattern a LIKE pattern string
+         * @param caseInsensitive 
+         * @return a standard pattern
+         */
+        public static Pattern buildLikePattern(String pattern) {
+                return buildLikePattern(pattern, false);
+        }
+
+        /**
+         * Creates a {@link Pattern } instance for a LIKE pattern.
+         * 
+         * A LIKE pattern matches always the complete string, and allows for the following special
+         * characters:
+         *  - '%' matches any sequence of zero or more characters
+         *  - '_' matches any single character
+         *  - '\' escapes the meaning of a special character (any of '\', '%', '_').
+         * 
+         * This implementation is not strict about the escape character: while the only way to match a '%'
+         * or a '_' character is to escape it, a '\' character followed by anything else than '%', '_' or '\'
+         * will not report any error and will just match a regular '\' character.
+         * This means that <code>str\\str</code> and <code>str\str</code> both only match the String literal
+         * <code>str\str</code>.
+         * 
+         * Note: this implementation is not entirely identical to the SQL standard's definition of the LIKE operator.
+         * The non-strict behavior describe in the paragraph above is not in the standard. Most implementation
+         * will reject non-properly-escaped pattern strings, so always escaping the backslash is the preferred
+         * option.
+         * 
+         * @param pattern a LIKE pattern string
+         * @param caseInsensitive true if the match has to be text insensitive
+         * @return a standard pattern
+         */
+        public static Pattern buildLikePattern(String pattern, boolean caseInsensitive) {
+                String[] s = splitLike.split(pattern);
+                StringBuilder b = new StringBuilder();
+                b.append("^");
+                if (s.length == 0) {
+                        for (int i = 0; i < pattern.length(); i++) {
+                                switch (pattern.charAt(i)) {
+                                        case '%':
+                                                b.append(".*");
+                                                break;
+                                        case '_':
+                                                b.append(".");
+                                                break;
+                                        default:
+                                }
+                        }
+                } else {
+                        int pos = 0;
+                        for (int i = 0; i < s.length; i++) {
+                                if (s[i].endsWith("\\")) {
+                                        pos++;
+                                        if (i + 1 < s.length) {
+                                                s[i + 1] = s[i].substring(0, s[i].length() - 1) + pattern.charAt(pos + s[i].length() - 1) + s[i + 1];
+                                                continue;
+                                        }
+                                }
+                                if (!s[i].isEmpty()) {
+                                        b.append(Pattern.quote(escape.matcher(s[i]).replaceAll("\\\\")));
+                                        pos += s[i].length();
+                                }
+                                if (pos < pattern.length()) {
+                                        switch (pattern.charAt(pos)) {
+                                                case '%':
+                                                        b.append(".*");
+                                                        pos++;
+                                                        break;
+                                                case '_':
+                                                        b.append(".");
+                                                        pos++;
+                                                        break;
+                                                default:
+                                        }
+                                }
+                        }
+                }
+                b.append("$");
+                if (caseInsensitive) {
+                        return Pattern.compile(b.toString(), Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+                } else {
+                        return Pattern.compile(b.toString());
+                }
+        }
+        private static final Pattern splitLike = Pattern.compile("%|_");
+        private static final Pattern escape = Pattern.compile("\\\\\\\\");
+        private static final Pattern dot = Pattern.compile("\\.");
+        
+        /**
+         * Creates a {@link Pattern } instance for a SIMILAR TO pattern.
+         * 
+         * A SIMILAR TO pattern matches always the complete string, and allows any POSIX special character
+         * EXCEPT that:
+         *  - '%' matches any sequence of zero or more characters
+         *  - '_' matches any single character (instead of '.' in POSIX)
+         *  - '\' escapes the meaning of a any character (POSIX and above).
+         * 
+         * This implementation is not strict about the escape character: while the only way to match a special
+         * character is to escape it, a '\' character followed by a regular character
+         * will not report any error and will just match a regular '\' character.
+         * This means that <code>str\\str</code> and <code>str\str</code> both only match the String literal
+         * <code>str\str</code>.
+         * 
+         * See {@link Pattern } for the list of supported POSIX special characters and features.
+         * 
+         * Note: this implementation is not entirely identical to the SQL standard's definition of a
+         * regular expression. It allows some POSIX special character, like '\r' (carriage-return) or '\s'
+         * (whitespace character), that are not allowed in the SQL definition.
+         * Furthermore, most implementation will reject non-properly-escaped pattern strings, so always
+         * escaping the backslash is the preferred option.
+         * 
+         * @param pattern
+         * @return 
+         */
+        public static Pattern buildSimilarToPattern(String pattern) {
+                String[] s = splitLike.split(pattern);
+                StringBuilder b = new StringBuilder();
+                b.append("^");
+                if (s.length == 0) {
+                        for (int i = 0; i < pattern.length(); i++) {
+                                switch (pattern.charAt(i)) {
+                                        case '%':
+                                                b.append(".*");
+                                                break;
+                                        case '_':
+                                                b.append(".");
+                                                break;
+                                        default:
+                                }
+                        }
+                } else {
+                        int pos = 0;
+                        for (int i = 0; i < s.length; i++) {
+                                if (s[i].endsWith("\\")) {
+                                        pos++;
+                                        if (i + 1 < s.length) {
+                                                s[i + 1] = s[i].substring(0, s[i].length() - 1) + pattern.charAt(pos + s[i].length() - 1) + s[i + 1];
+                                                continue;
+                                        }
+                                }
+                                if (!s[i].isEmpty()) {
+                                        String t = escape.matcher(s[i]).replaceAll("\\\\");
+                                        b.append(dot.matcher(t).replaceAll("\\\\."));
+                                        pos += s[i].length();
+                                }
+                                if (pos < pattern.length()) {
+                                        switch (pattern.charAt(pos)) {
+                                                case '%':
+                                                        b.append(".*");
+                                                        pos++;
+                                                        break;
+                                                case '_':
+                                                        b.append(".");
+                                                        pos++;
+                                                        break;
+                                                default:
+                                        }
+                                }
+                        }
+                }
+                b.append("$");
+                return Pattern.compile(b.toString());
         }
 
         private TextUtils() {
