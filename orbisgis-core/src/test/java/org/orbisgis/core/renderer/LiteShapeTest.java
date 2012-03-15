@@ -144,7 +144,7 @@ public class LiteShapeTest extends TestCase {
 
 	private void doTest(Geometry geometry) {
 		MapTransform mt = new MapTransform();
-		Shape ls = mt.getShape(geometry);
+		Shape ls = mt.getShape(geometry,false);
 		PathIterator pi = ls.getPathIterator(null);
 
 		iterate(pi);

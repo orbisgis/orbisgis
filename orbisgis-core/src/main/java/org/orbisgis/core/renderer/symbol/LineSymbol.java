@@ -61,7 +61,7 @@ public class LineSymbol extends AbstractLineSymbol {
 
 	public Envelope draw(Graphics2D g, Geometry geom, MapTransform mt,
 			RenderContext permission) throws DriverException {
-		Shape ls = mt.getShape(geom);
+		Shape ls = mt.getShape(geom, false);
 
 		drawingSize = lineWidth;
 		if (mapUnits) {

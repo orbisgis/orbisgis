@@ -58,7 +58,7 @@ public class PolygonSymbol extends AbstractPolygonSymbol {
 
 	public Envelope draw(Graphics2D g, Geometry geom, MapTransform mt,
 			RenderContext permission) throws DriverException {
-		Shape ls = mt.getShape(geom);
+		Shape ls = mt.getShape(geom,false);
 		if (fillColor != null) {
 			g.setPaint(fillColor);
 			g.fill(ls);

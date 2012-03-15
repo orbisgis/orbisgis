@@ -76,13 +76,13 @@ public class MapTransform implements PointTransformation {
 
                 RenderingHints screenHints = new RenderingHints(JAI.KEY_IMAGE_LAYOUT, layout);
                 screenHints.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                //screenHints.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-               // screenHints.put(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
-               // screenHints.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
-               // screenHints.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-                //screenHints.put(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
-                //screenHints.put(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_NORMALIZE);
-                //screenHints.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
+                screenHints.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+                screenHints.put(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+                screenHints.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+                screenHints.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+                screenHints.put(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
+                screenHints.put(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_NORMALIZE);
+                screenHints.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
 
                 screenContext = new RenderContext(AffineTransform.getTranslateInstance(0.0, 0.0), screenHints);
 
@@ -99,6 +99,7 @@ public class MapTransform implements PointTransformation {
 
                 draftContext = new RenderContext(AffineTransform.getTranslateInstance(0.0, 0.0), draftHints);
         }
+        private double MAXPIXEL_DISPLAY = 0;
 
         public MapTransform() {
                 adjustExtent = true;
@@ -430,8 +431,11 @@ public class MapTransform implements PointTransformation {
                 if (converter == null) {
                         converter = new ShapeWriter(this);
                         converter.setRemoveDuplicatePoints(true);
+                        MAXPIXEL_DISPLAY = 0.5 / (25.4 / getDpi());
                 }
-                converter.setDecimation(DECIMATION_DISTANCE / getScaleDenominator());
+                converter.setDecimation(MAXPIXEL_DISPLAY / getScaleDenominator());
+
+
                 return converter;
         }
 
@@ -439,14 +443,14 @@ public class MapTransform implements PointTransformation {
          * @param geom
          * @return
          */
-        public Shape getShape(Geometry geom) {
-                Rectangle2DDouble rectangle2dDouble = toPixel(geom.getEnvelopeInternal());
-
-                if ((rectangle2dDouble.getHeight() <= 2)
-                        && (rectangle2dDouble.getWidth() <= 2)) {
-                        return rectangle2dDouble;
+        public Shape getShape(Geometry geom, boolean generalize) {
+                if (generalize) {
+                        Rectangle2DDouble rectangle2dDouble = toPixel(geom.getEnvelopeInternal());
+                        if ((rectangle2dDouble.getHeight() <= MAXPIXEL_DISPLAY)
+                                && (rectangle2dDouble.getWidth() <= MAXPIXEL_DISPLAY)) {
+                                return rectangle2dDouble;
+                        }
                 }
-
                 return getShapeWriter().toShape(geom);
         }
 

@@ -99,7 +99,7 @@ public class ArrowSymbol extends AbstractPointSymbol implements
 	@Override
 	public Envelope draw(Graphics2D g, Geometry geom, MapTransform mt,
 			RenderContext permission) throws DriverException {
-		Shape ls = mt.getShape(geom);
+		Shape ls = mt.getShape(geom, false);
 		g.setStroke(new BasicStroke(lineWidth, BasicStroke.CAP_ROUND,
 				BasicStroke.JOIN_ROUND));
 		g.setPaint(null);

@@ -151,9 +151,11 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
      * @throws DriverException
      */
     public List<Shape> getShapes(DataSource sds, long fid,
-            MapTransform mt, Geometry theGeom) throws ParameterException, IOException, DriverException {
+            MapTransform mt, Geometry theGeom, boolean  generalize) throws ParameterException, IOException, DriverException {
 
         Geometry geom = getGeometry(sds, fid, theGeom);
+        
+        
 
         //geom = ShapeHelper.clipToExtent(geom, mt.getAdjustedExtent());
 
@@ -172,7 +174,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
                         geom2Process.add(geom.getGeometryN(i));
                     }
                 } else {
-                    Shape shape = mt.getShape(geom);
+                    Shape shape = mt.getShape(geom,generalize);
                     if (shape != null) {
                         shapes.add(shape);
                     }
@@ -222,7 +224,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
                 } else if (geom instanceof Polygon) {
                     // Separate exterior and interior holes
                     Polygon p = (Polygon) geom;
-                    Shape shape = mt.getShape(p.getExteriorRing());
+                    Shape shape = mt.getShape(p.getExteriorRing(), true);
                     if (shape != null) {
                         if (at != null) {
                             shape = at.createTransformedShape(shape);
@@ -233,7 +235,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
                     // Be aware of polygon holes !
                     int numRing = p.getNumInteriorRing();
                     for (i = 0; i < numRing; i++) {
-                        shape = mt.getShape(p.getInteriorRingN(i));
+                        shape = mt.getShape(p.getInteriorRingN(i),true);
                         if (shape != null) {
                             if (at != null) {
                                 shape = at.createTransformedShape(shape);
@@ -242,7 +244,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
                         }
                     }
                 } else {
-                    Shape shape = mt.getShape(geom);
+                    Shape shape = mt.getShape(geom,false);
 
                     if (shape != null) {
                         if (at != null) {

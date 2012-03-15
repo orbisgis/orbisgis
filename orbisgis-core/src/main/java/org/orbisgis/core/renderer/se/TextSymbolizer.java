@@ -170,7 +170,7 @@ public final class TextSymbolizer extends VectorSymbolizer {
             boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
             throws ParameterException, IOException, DriverException {
 
-        List<Shape> shapes = this.getShapes(sds, fid, mt, the_geom);
+        List<Shape> shapes = this.getShapes(sds, fid, mt, the_geom, false);
 
         if (shapes != null) {
             for (Shape shp : shapes) {

@@ -58,7 +58,6 @@ import java.util.List;
 import java.util.logging.Level;
 import javax.imageio.ImageIO;
 import org.gdms.data.DataSource;
-import org.gdms.data.NoSuchTableException;
 import org.gdms.data.indexes.*;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
@@ -89,597 +88,565 @@ import org.orbisgis.utils.I18N;
  */
 public abstract class Renderer {
 
-    static final double EXTRA_EXTENT_FACTOR = 0.01;
-    static final int ONE_HUNDRED_I = 100;
-    static final int BATCH_SIZE = 1000;
-    static final int EXECP_POS = 20;
-    private static OutputManager logger = Services.getOutputManager();
+        static final double EXTRA_EXTENT_FACTOR = 0.01;
+        static final int ONE_HUNDRED_I = 100;
+        static final int BATCH_SIZE = 1000;
+        static final int EXECP_POS = 20;
+        private static OutputManager logger = Services.getOutputManager();
 
-    /**
-     * This method shall returns a graphics2D for each symbolizers in the list.
-     * This is useful to make the diff bw pdf purpose and image purpose
-     * Is called just before a new layer is drawn
-     * @return
-     */
-    //public abstract HashMap<Symbolizer, Graphics2D> getGraphics2D(ArrayList<Symbolizer> symbs,
-    //        Graphics2D g2, MapTransform mt);
-    protected abstract void initGraphics2D(List<Symbolizer> symbs, Graphics2D g2,
-            MapTransform mt);
+        /**
+         * This method shall returns a graphics2D for each symbolizers in the list.
+         * This is useful to make the diff bw pdf purpose and image purpose
+         * Is called just before a new layer is drawn
+         * @return
+         */
+        //public abstract HashMap<Symbolizer, Graphics2D> getGraphics2D(ArrayList<Symbolizer> symbs,
+        //        Graphics2D g2, MapTransform mt);
+        protected abstract void initGraphics2D(List<Symbolizer> symbs, Graphics2D g2,
+                MapTransform mt);
 
-    protected abstract Graphics2D getGraphics2D(Symbolizer s);
+        protected abstract Graphics2D getGraphics2D(Symbolizer s);
 
-    protected abstract void releaseGraphics2D(Graphics2D g2);
+        protected abstract void releaseGraphics2D(Graphics2D g2);
 
-    /**
-     * Is called once the layer has been rendered
-     * @param g2 the graphics the layer has to be drawn on
-     */
-    protected abstract void disposeLayer(Graphics2D g2);
+        /**
+         * Is called once the layer has been rendered
+         * @param g2 the graphics the layer has to be drawn on
+         */
+        protected abstract void disposeLayer(Graphics2D g2);
 
-    /**
-     * Called before each feature
-     * @param name the name of the feature
-     */
-    protected abstract void beginFeature(long id, DataSource sds);
+        /**
+         * Called before each feature
+         * @param name the name of the feature
+         */
+        protected abstract void beginFeature(long id, DataSource sds);
 
-    /**
-     * Called after each feature
-     * @param name the name of the feature
-     */
-    protected abstract void endFeature(long id, DataSource sds);
+        /**
+         * Called after each feature
+         * @param name the name of the feature
+         */
+        protected abstract void endFeature(long id, DataSource sds);
 
-    /**
-     * Called before each layer
-     * @param name the name of the layer
-     */
-    protected abstract void beginLayer(String name);
+        /**
+         * Called before each layer
+         * @param name the name of the layer
+         */
+        protected abstract void beginLayer(String name);
 
-    /**
-     * Called after each layer
-     * @param name the name of the layer
-     */
-    protected abstract void endLayer(String name);
+        /**
+         * Called after each layer
+         * @param name the name of the layer
+         */
+        protected abstract void endLayer(String name);
 
-    /**
-     * Create a view which correspond to feature in MapContext adjusted extend
-     * @param mt
-     * @param sds
-     * @param pm
-     * @return
-     * @throws DriverException
-     */
-    public int[] featureInExtent(MapTransform mt,
-            DataSource sds, ProgressMonitor pm) throws DriverException {
-        Envelope extent = mt.getAdjustedExtent();
-        int sfi = sds.getSpatialFieldIndex();
-        String sfn = sds.getFieldName(sfi);
-        IndexManager im = sds.getDataSourceFactory().getIndexManager();
-        try {
-            if (im.getIndex(sds, sfn) == null) {
-                im.buildIndex(sds, sfn, new NullProgressMonitor());
-            }
-            double gap = mt.getScaleDenominator() * EXTRA_EXTENT_FACTOR;
-            Envelope envelope = new Envelope(extent.getMinX() - gap, extent.getMaxX() + gap,
-                    extent.getMinY() - gap, extent.getMaxY() + gap);
-            DefaultSpatialIndexQuery iq = new DefaultSpatialIndexQuery(envelope, sfn);
-            return im.queryIndex(sds, iq);
-        } catch (IndexException ie) {
-            throw new DriverException("Can't handle the index", ie);
-        } catch (NoSuchTableException nste) {
-            throw new DriverException("Are you sure the table actually exists ?", nste);
-        } catch (IndexQueryException iqe) {
-            throw new DriverException("Can't query the index properly", iqe);
-        }
-    }
+        /**
+         * Draws the content of the Vector Layer
+         *
+         * @param g2
+         *            Object to draw to
+         * @param width
+         *            Width of the generated image
+         * @param height
+         *            Height of the generated image
+         * @param extent
+         *            Extent of the data to draw
+         * @param layer
+         *            Source of information
+         * @param pm
+         *            Progress monitor to report the status of the drawing
+         * @return the number of rendered objects
+         */
+        public int drawVector(Graphics2D g2, MapTransform mt, ILayer layer,
+                ProgressMonitor pm, RenderContext perm) throws DriverException {
 
-    /**
-     * Draws the content of the Vector Layer
-     *
-     * @param g2
-     *            Object to draw to
-     * @param width
-     *            Width of the generated image
-     * @param height
-     *            Height of the generated image
-     * @param extent
-     *            Extent of the data to draw
-     * @param layer
-     *            Source of information
-     * @param pm
-     *            Progress monitor to report the status of the drawing
-     * @return the number of rendered objects
-     */
-    public int drawVector(Graphics2D g2, MapTransform mt, ILayer layer,
-            ProgressMonitor pm, RenderContext perm) throws DriverException {
+                // logger.println("Current DPI is " + mt.getDpi());
+                // logger.println("Current SCALE is 1: " + mt.getScaleDenominator());
+                Envelope extent = mt.getAdjustedExtent();
 
-        logger.println("Current DPI is " + mt.getDpi());
-        logger.println("Current SCALE is 1: " + mt.getScaleDenominator());
-        Envelope extent = mt.getAdjustedExtent();
+                int layerCount = 0;
+                DataSource sds = null;
+                try {
+                        // long tV1 = System.currentTimeMillis();
 
-        int layerCount = 0;
-        DataSource sds = null;
-        try {
-            long tV1 = System.currentTimeMillis();
+                        sds = layer.getDataSource();
+                        sds.open();
+                        long rowCount = sds.getRowCount();
 
-            sds = layer.getDataSource();
-            sds.open();
+                        // Extract into drawSeLayer method !
+                        Style style = layer.getStyle();
 
-            // Extract into drawSeLayer method !
-            Style style = layer.getStyle();
+                        ArrayList<Symbolizer> symbs = new ArrayList<Symbolizer>();
 
-            ArrayList<Symbolizer> symbs = new ArrayList<Symbolizer>();
+                        // i.e. TextSymbolizer are always drawn above all other layer !! Should now be handle wth symbolizer level
+                        //ArrayList<Symbolizer> overlays = new ArrayList<Symbolizer>();
 
-            // i.e. TextSymbolizer are always drawn above all other layer !! Should now be handle wth symbolizer level
-            //ArrayList<Symbolizer> overlays = new ArrayList<Symbolizer>();
+                        // Standard rules (with filter or no filter but not with elsefilter)
+                        ArrayList<Rule> rList = new ArrayList<Rule>();
 
-            // Standard rules (with filter or no filter but not with elsefilter)
-            ArrayList<Rule> rList = new ArrayList<Rule>();
+                        // Rule with ElseFilter
+                        ArrayList<Rule> fRList = new ArrayList<Rule>();
 
-            // Rule with ElseFilter
-            ArrayList<Rule> fRList = new ArrayList<Rule>();
-
-            // fetch symbolizers and rules
-            style.getSymbolizers(mt, symbs, rList, fRList);
+                        // fetch symbolizers and rules
+                        style.getSymbolizers(mt, symbs, rList, fRList);
 
 
-            long tV1b = System.currentTimeMillis();
+                        //long tV1b = System.currentTimeMillis();
 
-            logger.println("Initialisation:" + (tV1b - tV1));
+                        //logger.println("Initialisation:" + (tV1b - tV1));
 
-            // Create new dataSource with only feature in current extent
-            pm.startTask("Filtering (spatial)...", 100);
-            pm.progressTo(0);
+                        // Create new dataSource with only feature in current extent
+                        pm.startTask("Filtering (spatial)...", 100);
+                        pm.progressTo(0);
 
-            Iterator<Integer> it = new FullIterator(sds);
+                        Iterator<Integer> it = new FullIterator(sds);
 
-            //  int[] featureInExtent = featureInExtent(mt, sds, pm);
-            pm.progressTo(ONE_HUNDRED_I);
-            pm.endTask();
+                        //  int[] featureInExtent = featureInExtent(mt, sds, pm);
+                        pm.progressTo(ONE_HUNDRED_I);
+                        pm.endTask();
 
-            if (it.hasNext()) {
+                        if (it.hasNext()) {
 
-                HashSet<Integer> selected = new HashSet<Integer>();
-                for (long sFid : layer.getSelection()) {
-                    selected.add((int) sFid);
-                }
+                                HashSet<Integer> selected = new HashSet<Integer>();
+                                for (long sFid : layer.getSelection()) {
+                                        selected.add((int) sFid);
+                                }
 
-                pm.endTask();
-                long tV2 = System.currentTimeMillis();
-                logger.println("Filtering done in " + (tV2 - tV1) + "[ms]");
+                                pm.endTask();
+                                //long tV2 = System.currentTimeMillis();
+                                //  logger.println("Filtering done in " + (tV2 - tV1) + "[ms]");
 
-                // And now, features will be rendered
-                long sTimer = 0;
-                long sTimeFull = 0;
-                // Get a graphics for each symbolizer
-                initGraphics2D(symbs, g2, mt);
-                long rowCount = sds.getRowCount();
-                //Let's not come back to the beginning if we haven't found 
-                //a geometry that is contained in the area we want to draw...
-                boolean somethingReached = false;
-                for (Rule r : rList) {
-                    long tf1 = System.currentTimeMillis();
-                    beginLayer(r.getName());
-                    logger.println("Drawing rule " + r.getName());
-                    pm.startTask("Drawing " + layer.getName() + " (Rule " + r.getName() + ")", 100);
-                    int fieldID = -1;
+                                // And now, features will be rendered
+                                // long sTimer = 0;
+                                // long sTimeFull = 0;
+                                // Get a graphics for each symbolizer
+                                initGraphics2D(symbs, g2, mt);
+                                //long rowCount = sds.getRowCount();
+                                //Let's not come back to the beginning if we haven't found 
+                                //a geometry that is contained in the area we want to draw...
+                                boolean somethingReached = false;
+                                for (Rule r : rList) {
+                                        // long tf1 = System.currentTimeMillis();
+                                        beginLayer(r.getName());
+                                        //  logger.println("Drawing rule " + r.getName());
+                                        pm.startTask("Drawing " + layer.getName() + " (Rule " + r.getName() + ")", 100);
+                                        int fieldID = -1;
 
-                    try {
-                        fieldID = ShapeHelper.getGeometryFieldId(sds);
-                    } catch (ParameterException ex) {
-                    }
-                    long initFeats = 0;
+                                        try {
+                                                fieldID = ShapeHelper.getGeometryFieldId(sds);
+                                        } catch (ParameterException ex) {
+                                        }
+                                        ///  long initFeats = 0;
 
 
-                    int i = 0;
-                    //If we want all the rules to be displayed, we must come back, here,
-                    //to the beginning of the input DataSource. Indeed, we may have reached
-                    //its end if we are not rendering the first rule, we are at the end
-                    //of the file. And as we've tested that the Iterator is not empty...
-                    //It has sense to reinitialize it only if we are at the end.
-                    if (!it.hasNext() && somethingReached) {
-                        it = new FullIterator(sds);
-                    }
-                    while (it.hasNext()) {
-                        Integer originalIndex = it.next();
+                                        int i = 0;
+                                        //If we want all the rules to be displayed, we must come back, here,
+                                        //to the beginning of the input DataSource. Indeed, we may have reached
+                                        //its end if we are not rendering the first rule, we are at the end
+                                        //of the file. And as we've tested that the Iterator is not empty...
+                                        //It has sense to reinitialize it only if we are at the end.
+                                        if (!it.hasNext() && somethingReached) {
+                                                it = new FullIterator(sds);
+                                        }
+                                        while (it.hasNext()) {
+                                                Integer originalIndex = it.next();
 
-                        if (i / 1000 == i / 1000.0) {
-                            if (pm.isCancelled()) {
-                                break;
-                            } else {
-                                pm.progressTo((int) (100 * i / rowCount));
-                            }
+                                                if (i / 1000 == i / 1000.0) {
+                                                        if (pm.isCancelled()) {
+                                                                break;
+                                                        } else {
+                                                                pm.progressTo((int) (100 * i / rowCount));
+                                                        }
+                                                }
+                                                i++;
+
+                                                // initFeats -= System.currentTimeMillis();
+                                                if (layerCount % BATCH_SIZE == 0 && pm.isCancelled()) {
+                                                        return layerCount;
+                                                }
+
+                                                Geometry theGeom = null;
+
+                                                // If there is only one geometry, it is fetched now, otherwise, it up to symbolizers
+                                                // to retrieve the correct geometry (through the Geometry attribute)
+                                                if (fieldID >= 0) {
+                                                        theGeom = sds.getGeometry(originalIndex);
+                                                        //System.out.println ("TheGeom: " + the_geom);
+                                                }
+
+
+                                                Envelope geomEnvelope = theGeom.getEnvelopeInternal();
+
+                                                // Do not display the geometry when the envelope does'nt intersect the current mapcontext area.
+                                                if (geomEnvelope.intersects(extent)) {
+                                                        somethingReached = true;
+                                                        boolean emphasis = selected.contains((int) originalIndex);
+
+                                                        beginFeature(originalIndex, sds);
+                                                        //initFeats += System.currentTimeMillis();
+
+                                                        List<Symbolizer> sl = r.getCompositeSymbolizer().getSymbolizerList();
+                                                        for (Symbolizer s : sl) {
+                                                                //   sTimeFull -= System.currentTimeMillis();
+
+                                                                Graphics2D g2S;
+                                                                //if (s instanceof TextSymbolizer) {
+                                                                // TextSymbolizer always rendered on overlay
+                                                                //g2S = overlayImage.createGraphics();
+                                                                //} else {
+                                                                //g2S = g2Symbs.get(s);
+                                                                g2S = getGraphics2D(s);
+                                                                //}
+                                                                //      sTimer -= System.currentTimeMillis();
+                                                                s.draw(g2S, sds, originalIndex, emphasis, mt, theGeom, perm);
+                                                                //        sTimer += System.currentTimeMillis();
+                                                                releaseGraphics2D(g2S);
+                                                                //          sTimeFull += System.currentTimeMillis();
+                                                        }
+                                                        endFeature(originalIndex, sds);
+
+                                                }
+                                        }
+                                        //long tf2 = System.currentTimeMillis();
+                                        //logger.println("  -> Rule done in  " + (tf2 - tf1) + "[ms]   featInit" + initFeats + "[ms]");
+
+                                        pm.endTask();
+                                        endLayer(r.getName());
+                                }
+
+                                //long tV3 = System.currentTimeMillis();
+                                //logger.println("All Rules done in" + (tV3 - tV2) + "[ms] (" + layerCount + "objects)");
+                                //logger.println("Effective draw time: " + sTimer + " [ms]");
+                                //logger.println("Full Symb time:      " + sTimeFull + " [ms]");
+                                disposeLayer(g2);
+
+                                //long tV4 = System.currentTimeMillis();
+                                //logger.println("Images stacked :" + (tV4 - tV3) + "[ms]");
+
+                                //long tV5 = System.currentTimeMillis();
+                                //logger.println("Total Rendering Time:" + (tV5 - tV1) + "[ms]");
                         }
-                        i++;
 
-                        initFeats -= System.currentTimeMillis();
-                        if (layerCount % BATCH_SIZE == 0 && pm.isCancelled()) {
-                            return layerCount;
-                        }
-
-                        Geometry theGeom = null;
-
-                        // If there is only one geometry, it is fetched now, otherwise, it up to symbolizers
-                        // to retrieve the correct geometry (through the Geometry attribute)
-                        if (fieldID >= 0) {
-                            theGeom = sds.getGeometry(originalIndex);
-                            //System.out.println ("TheGeom: " + the_geom);
-                        }
-
-
-                        Envelope geomEnvelope = theGeom.getEnvelopeInternal();
-
-                        // Do not display the geometry when the envelope does'nt intersect the current mapcontext area.
-                        if (geomEnvelope.intersects(extent)) {
-                            somethingReached = true;
-                            boolean emphasis = selected.contains((int) originalIndex);
-
-                            beginFeature(originalIndex, sds);
-                            initFeats += System.currentTimeMillis();
-
-                            List<Symbolizer> sl = r.getCompositeSymbolizer().getSymbolizerList();
-                            for (Symbolizer s : sl) {
-                                sTimeFull -= System.currentTimeMillis();
-
-                                Graphics2D g2S;
-                                //if (s instanceof TextSymbolizer) {
-                                // TextSymbolizer always rendered on overlay
-                                //g2S = overlayImage.createGraphics();
-                                //} else {
-                                //g2S = g2Symbs.get(s);
-                                g2S = getGraphics2D(s);
-                                //}
-                                sTimer -= System.currentTimeMillis();
-                                s.draw(g2S, sds, originalIndex, emphasis, mt, theGeom, perm);
-                                sTimer += System.currentTimeMillis();
-                                releaseGraphics2D(g2S);
-                                sTimeFull += System.currentTimeMillis();
-                            }
-                            endFeature(originalIndex, sds);
-
-                        }
-                    }
-                    long tf2 = System.currentTimeMillis();
-                    logger.println("  -> Rule done in  " + (tf2 - tf1) + "[ms]   featInit" + initFeats + "[ms]");
-
-                    pm.endTask();
-                    endLayer(r.getName());
-                }
-
-                long tV3 = System.currentTimeMillis();
-                logger.println("All Rules done in" + (tV3 - tV2) + "[ms] (" + layerCount + "objects)");
-                logger.println("Effective draw time: " + sTimer + " [ms]");
-                logger.println("Full Symb time:      " + sTimeFull + " [ms]");
-                disposeLayer(g2);
-
-                long tV4 = System.currentTimeMillis();
-                logger.println("Images stacked :" + (tV4 - tV3) + "[ms]");
-
-                long tV5 = System.currentTimeMillis();
-                logger.println("Total Rendering Time:" + (tV5 - tV1) + "[ms]");
-            }
-
-        } catch (DriverLoadException ex) {
-            printEx(ex, layer, g2);
+                } catch (DriverLoadException ex) {
+                        printEx(ex, layer, g2);
 //        } catch (DataSourceCreationException ex) {
 //            printEx(ex, layer, g2);
-        } catch (DriverException ex) {
-            printEx(ex, layer, g2);
-        } catch (ParameterException ex) {
-            printEx(ex, layer, g2);
-        } catch (IOException ex) {
-            printEx(ex, layer, g2);
-        } finally {
-            if (sds != null && sds.isOpen()) {
-                sds.close();
-            }
+                } catch (DriverException ex) {
+                        printEx(ex, layer, g2);
+                } catch (ParameterException ex) {
+                        printEx(ex, layer, g2);
+                } catch (IOException ex) {
+                        printEx(ex, layer, g2);
+                } finally {
+                        if (sds != null && sds.isOpen()) {
+                                sds.close();
+                        }
+                }
+
+                return layerCount;
         }
 
-        return layerCount;
-    }
-
-    private static void printEx(Exception ex, ILayer layer, Graphics2D g2) {
-        java.util.logging.Logger.getLogger("Could not draw " + layer.getName()).log(Level.SEVERE, "Error while drawing " + layer.getName(), ex);
-        ex.printStackTrace(System.err);
-        g2.setColor(Color.red);
-        g2.drawString(ex.toString(), EXECP_POS, EXECP_POS);
-    }
-
-    public void draw(Graphics2D g2dMap, int width, int height,
-            Envelope extent, ILayer layer, ProgressMonitor pm) {
-        MapTransform mt = new MapTransform();
-        mt.resizeImage(width, height);
-        mt.setExtent(extent);
-
-        this.draw(mt, g2dMap, width, height, layer, pm);
-    }
-
-    /**
-     * Draws the content of the layer in the specified graphics
-     *
-     * @param g2
-     *            Object to draw to
-     * @param width
-     *            Width of the generated image
-     * @param height
-     *            Height of the generated image
-     * @param extent
-     *            Extent of the data to draw
-     * @param layer
-     *            Source of information
-     * @param pm
-     *            Progress monitor to report the status of the drawing
-     */
-    public void draw(MapTransform mt,
-            ILayer layer, ProgressMonitor pm) {
-
-        BufferedImage image = mt.getImage();
-        Graphics2D g2 = image.createGraphics();
-
-        this.draw(mt, g2, image.getWidth(), image.getHeight(), layer, pm);
-    }
-
-    /**
-     * Draws the content of the layer in the specified graphics
-     *
-     * @param g2
-     *            Object to draw to
-     * @param width
-     *            Width of the generated image
-     * @param height
-     *            Height of the generated image
-     * @param extent
-     *            Extent of the data to draw
-     * @param layer
-     *            Source of information
-     * @param pm
-     *            Progress monitor to report the status of the drawing
-     */
-    public void draw(MapTransform mt, Graphics2D g2, int width, int height,
-            ILayer lay, ProgressMonitor progressMonitor) {
-
-        ProgressMonitor pm;
-        if (progressMonitor == null) {
-            pm = new NullProgressMonitor();
-        } else {
-            pm = progressMonitor;
+        private static void printEx(Exception ex, ILayer layer, Graphics2D g2) {
+                java.util.logging.Logger.getLogger("Could not draw " + layer.getName()).log(Level.SEVERE, "Error while drawing " + layer.getName(), ex);
+                ex.printStackTrace(System.err);
+                g2.setColor(Color.red);
+                g2.drawString(ex.toString(), EXECP_POS, EXECP_POS);
         }
 
-        g2.setRenderingHints(mt.getRenderingHints());
+        public void draw(Graphics2D g2dMap, int width, int height,
+                Envelope extent, ILayer layer, ProgressMonitor pm) {
+                MapTransform mt = new MapTransform();
+                mt.resizeImage(width, height);
+                mt.setExtent(extent);
 
-        Envelope extent = mt.getAdjustedExtent();
-
-        int count = 0;
-
-        ILayer[] layers;
-
-        //ArrayList<Symbolizer> overlay = new ArrayList<Symbolizer>();
-
-        if (lay.acceptsChilds()) {
-            layers = lay.getLayersRecursively();
-        } else {
-            layers = new ILayer[]{lay};
+                this.draw(mt, g2dMap, width, height, layer, pm);
         }
 
-        long total1 = System.currentTimeMillis();
+        /**
+         * Draws the content of the layer in the specified graphics
+         *
+         * @param g2
+         *            Object to draw to
+         * @param width
+         *            Width of the generated image
+         * @param height
+         *            Height of the generated image
+         * @param extent
+         *            Extent of the data to draw
+         * @param layer
+         *            Source of information
+         * @param pm
+         *            Progress monitor to report the status of the drawing
+         */
+        public void draw(MapTransform mt,
+                ILayer layer, ProgressMonitor pm) {
 
-        Envelope graphicExtent = new Envelope(0, 0, mt.getWidth(), mt.getHeight());
-        DefaultRendererPermission perm = new DefaultRendererPermission(graphicExtent);
-        int numLayers = layers.length;
-        for (int i = numLayers - 1; i >= 0; i--) {
-            if (pm.isCancelled()) {
-                break;
-            } else {
-                ILayer layer = layers[i];
-                if (layer.isVisible() && extent.intersects(layer.getEnvelope())) {
-                    logger.println(I18N.getString("orbisgis-core.orbisgis.org.orbisgis.renderer.drawing") + layer.getName()); //$NON-NLS-1$
-                    long t1 = System.currentTimeMillis();
-                    if (layer.isWMS()) {
-                        System.out.println("   -> WMS Layer...");
-                        // Iterate over next layers to make only one call to the
-                        // WMS server
-                        WMSStatus status = (WMSStatus) layer.getWMSConnection().getStatus().clone();
-                        if (i > 0) {
-                            for (int j = i - 1; (j >= 0) && (layers[j].isWMS() || !layers[j].isVisible()); j--) {
-                                if (layers[j].isVisible()) {
-                                    i = j;
-                                    if (sameServer(layer, layers[j])) {
-                                        List<?> layerNames = layers[j].getWMSConnection().getStatus().getLayerNames();
-                                        for (Object layerName : layerNames) {
-                                            status.addLayerName(layerName.toString());
+                BufferedImage image = mt.getImage();
+                Graphics2D g2 = image.createGraphics();
+
+                this.draw(mt, g2, image.getWidth(), image.getHeight(), layer, pm);
+        }
+
+        /**
+         * Draws the content of the layer in the specified graphics
+         *
+         * @param g2
+         *            Object to draw to
+         * @param width
+         *            Width of the generated image
+         * @param height
+         *            Height of the generated image
+         * @param extent
+         *            Extent of the data to draw
+         * @param layer
+         *            Source of information
+         * @param pm
+         *            Progress monitor to report the status of the drawing
+         */
+        public void draw(MapTransform mt, Graphics2D g2, int width, int height,
+                ILayer lay, ProgressMonitor progressMonitor) {
+
+                ProgressMonitor pm;
+                if (progressMonitor == null) {
+                        pm = new NullProgressMonitor();
+                } else {
+                        pm = progressMonitor;
+                }
+
+                g2.setRenderingHints(mt.getRenderingHints());
+
+                Envelope extent = mt.getAdjustedExtent();
+                
+
+                ILayer[] layers;
+
+                //ArrayList<Symbolizer> overlay = new ArrayList<Symbolizer>();
+
+                if (lay.acceptsChilds()) {
+                        layers = lay.getLayersRecursively();
+                } else {
+                        layers = new ILayer[]{lay};
+                }
+
+                // long total1 = System.currentTimeMillis();
+
+                Envelope graphicExtent = new Envelope(0, 0, mt.getWidth(), mt.getHeight());
+                DefaultRendererPermission perm = new DefaultRendererPermission(graphicExtent);
+                int numLayers = layers.length;
+                for (int i = numLayers - 1; i >= 0; i--) {
+                        if (pm.isCancelled()) {
+                                break;
+                        } else {
+                                ILayer layer = layers[i];
+                                if (layer.isVisible() && extent.intersects(layer.getEnvelope())) {
+                                        //logger.println(I18N.getString("orbisgis-core.orbisgis.org.orbisgis.renderer.drawing") + layer.getName()); //$NON-NLS-1$
+                                        // long t1 = System.currentTimeMillis();
+                                        if (layer.isWMS()) {
+                                                System.out.println("   -> WMS Layer...");
+                                                // Iterate over next layers to make only one call to the
+                                                // WMS server
+                                                WMSStatus status = (WMSStatus) layer.getWMSConnection().getStatus().clone();
+                                                if (i > 0) {
+                                                        for (int j = i - 1; (j >= 0) && (layers[j].isWMS() || !layers[j].isVisible()); j--) {
+                                                                if (layers[j].isVisible()) {
+                                                                        i = j;
+                                                                        if (sameServer(layer, layers[j])) {
+                                                                                List<?> layerNames = layers[j].getWMSConnection().getStatus().getLayerNames();
+                                                                                for (Object layerName : layerNames) {
+                                                                                        status.addLayerName(layerName.toString());
+                                                                                }
+                                                                        }
+                                                                }
+                                                        }
+                                                }
+                                                WMSConnection conn = new WMSConnection(layer.getWMSConnection().getClient(), status);
+                                                drawWMS(
+                                                        g2, width, height, extent, conn);
+                                        } else {
+                                                DataSource sds = layer.getDataSource();
+                                                if (sds != null) {
+                                                        try {
+                                                                if (sds.isVectorial()) {
+                                                                   this.drawVector(g2, mt, layer, pm, perm);
+                                                                } else if (sds.isRaster()) {
+                                                                        logger.println("Raster Not Yet supported => Not drawn: " + layer.getName(), Color.red);
+                                                                } else {
+                                                                        logger.println(I18N.getString("orbisgis-core.orbisgis.org.orbisgis.renderer.notDraw") //$NON-NLS-1$
+                                                                                + layer.getName(), Color.RED);
+                                                                }
+                                                        } catch (DriverException e) {
+                                                                Services.getErrorManager().error(
+                                                                        I18N.getString("orbisgis-core.orbisgis.org.orbisgis.renderer.cannotDraw") + layer.getName(), e); //$NON-NLS-1$
+                                                        }
+                                                        pm.progressTo(ONE_HUNDRED_I
+                                                                - (ONE_HUNDRED_I * i) / layers.length);
+                                                }
                                         }
-                                    }
+                                        // long t2 = System.currentTimeMillis();
+                                        //logger.println(I18N.getString("orbisgis-core.orbisgis.org.orbisgis.renderer.renderingTime") + (t2 - t1)); //$NON-NLS-1$
                                 }
-                            }
                         }
-                        WMSConnection conn = new WMSConnection(layer.getWMSConnection().getClient(), status);
-                        drawWMS(
-                                g2, width, height, extent, conn);
-                    } else {
-                        DataSource sds = layer.getDataSource();
-                        if (sds != null) {
-                            try {
-                                if (sds.isVectorial()) {
-                                    count += this.drawVector(g2, mt, layer, pm, perm);
-                                } else if (sds.isRaster()) {
-                                    logger.println("Raster Not Yet supported => Not drawn: " + layer.getName(), Color.red);
-                                } else {
-                                    logger.println(I18N.getString("orbisgis-core.orbisgis.org.orbisgis.renderer.notDraw") //$NON-NLS-1$
-                                            + layer.getName(), Color.RED);
+                }
+
+                // long total2 = System.currentTimeMillis();
+                // logger.println(I18N.getString("orbisgis-core.orbisgis.org.orbisgis.renderer.totalRenderingTime") + (total2 - total1)); //$NON-NLS-1$
+
+
+
+        }
+
+        private boolean sameServer(ILayer layer, ILayer layer2) {
+                return layer.getWMSConnection().getClient().getHost().equals(
+                        layer2.getWMSConnection().getClient().getHost());
+        }
+
+        private void drawWMS(Graphics2D g2, int width, int height, Envelope extent,
+                WMSConnection connection) {
+                WMSStatus status = connection.getStatus();
+                status.setWidth(width);
+                status.setHeight(height);
+                status.setExtent(new Rectangle2D.Double(extent.getMinX(), extent.getMinY(), extent.getWidth(), extent.getHeight()));
+
+                try {
+                        File file = connection.getClient().getMap(status, null);
+                        BufferedImage image = ImageIO.read(file);
+                        g2.drawImage(image, 0, 0, null);
+                } catch (WMSException e) {
+                        Services.getService(ErrorManager.class).error(
+                                I18N.getString("orbisgis-core.orbisgis.org.orbisgis.renderer.cannotGetWMSImage"), e); //$NON-NLS-1$
+                } catch (ServerErrorException e) {
+                        Services.getService(ErrorManager.class).error(
+                                I18N.getString("orbisgis-core.orbisgis.org.orbisgis.renderer.cannotGetWMSImage"), e); //$NON-NLS-1$
+                } catch (IOException e) {
+                        Services.getService(ErrorManager.class).error(
+                                I18N.getString("orbisgis-core.orbisgis.org.orbisgis.renderer.cannotGetWMSImage"), e); //$NON-NLS-1$
+                }
+        }
+
+        /**
+         * Draws the content of the layer in the specified image.
+         *
+         * @param img
+         *            Image to draw the data
+         * @param extent
+         *            Extent of the data to draw in the image
+         * @param layer
+         *            Layer to get the information
+         * @param pm
+         *            Progress monitor to report the status of the drawing
+         */
+        public void draw(BufferedImage img, Envelope extent, ILayer layer,
+                ProgressMonitor pm) {
+                MapTransform mt = new MapTransform();
+                mt.setExtent(extent);
+                mt.setImage(img);
+                draw(mt, layer, pm);
+        }
+
+        public void draw(BufferedImage img, Envelope extent, ILayer layer) {
+                draw(img, extent, layer, new NullProgressMonitor());
+        }
+
+        private static class DefaultRendererPermission implements RenderContext {
+
+                private Quadtree quadtree;
+                private Envelope drawExtent;
+                //private Area extent;
+
+                public DefaultRendererPermission(Envelope drawExtent) {
+                        this.drawExtent = drawExtent;
+                        this.quadtree = new Quadtree();
+                        //this.extent = new Area(new Rectangle2D.Double(drawExtent.getMinX(), drawExtent.getMinY(), drawExtent.getWidth(), drawExtent.getHeight()));
+                }
+
+                @Override
+                public void addUsedArea(Envelope area) {
+                        quadtree.insert(area, area);
+                }
+
+                @Override
+                public boolean canDraw(Envelope area) {
+                        List<Envelope> list = quadtree.query(area);
+                        for (Envelope envelope : list) {
+                                if ((envelope.intersects(area)) || envelope.contains(area)) {
+                                        return false;
                                 }
-                            } catch (DriverException e) {
-                                Services.getErrorManager().error(
-                                        I18N.getString("orbisgis-core.orbisgis.org.orbisgis.renderer.cannotDraw") + layer.getName(), e); //$NON-NLS-1$
-                            }
-                            pm.progressTo(ONE_HUNDRED_I
-                                    - (ONE_HUNDRED_I * i) / layers.length);
                         }
-                    }
-                    long t2 = System.currentTimeMillis();
-                    logger.println(I18N.getString("orbisgis-core.orbisgis.org.orbisgis.renderer.renderingTime") + (t2 - t1)); //$NON-NLS-1$
+
+                        return true;
                 }
-            }
-        }
 
-        long total2 = System.currentTimeMillis();
-        logger.println(I18N.getString("orbisgis-core.orbisgis.org.orbisgis.renderer.totalRenderingTime") + (total2 - total1)); //$NON-NLS-1$
+                @Override
+                public Geometry getValidGeometry(Geometry geometry, double distance) {
+                        List<Envelope> list = quadtree.query(geometry.getEnvelopeInternal());
+                        GeometryFactory geometryFactory = new GeometryFactory();
+                        Geometry theGeom = geometry;
+                        for (Envelope envelope : list) {
+                                theGeom = theGeom.difference(geometryFactory.toGeometry(
+                                        envelope).buffer(distance, 1));
+                        }
+                        theGeom = theGeom.intersection(geometryFactory.toGeometry(drawExtent));
 
-
-
-    }
-
-    private boolean sameServer(ILayer layer, ILayer layer2) {
-        return layer.getWMSConnection().getClient().getHost().equals(
-                layer2.getWMSConnection().getClient().getHost());
-    }
-
-    private void drawWMS(Graphics2D g2, int width, int height, Envelope extent,
-            WMSConnection connection) {
-        WMSStatus status = connection.getStatus();
-        status.setWidth(width);
-        status.setHeight(height);
-        status.setExtent(new Rectangle2D.Double(extent.getMinX(), extent.getMinY(), extent.getWidth(), extent.getHeight()));
-
-        try {
-            File file = connection.getClient().getMap(status, null);
-            BufferedImage image = ImageIO.read(file);
-            g2.drawImage(image, 0, 0, null);
-        } catch (WMSException e) {
-            Services.getService(ErrorManager.class).error(
-                    I18N.getString("orbisgis-core.orbisgis.org.orbisgis.renderer.cannotGetWMSImage"), e); //$NON-NLS-1$
-        } catch (ServerErrorException e) {
-            Services.getService(ErrorManager.class).error(
-                    I18N.getString("orbisgis-core.orbisgis.org.orbisgis.renderer.cannotGetWMSImage"), e); //$NON-NLS-1$
-        } catch (IOException e) {
-            Services.getService(ErrorManager.class).error(
-                    I18N.getString("orbisgis-core.orbisgis.org.orbisgis.renderer.cannotGetWMSImage"), e); //$NON-NLS-1$
-        }
-    }
-
-    /**
-     * Draws the content of the layer in the specified image.
-     *
-     * @param img
-     *            Image to draw the data
-     * @param extent
-     *            Extent of the data to draw in the image
-     * @param layer
-     *            Layer to get the information
-     * @param pm
-     *            Progress monitor to report the status of the drawing
-     */
-    public void draw(BufferedImage img, Envelope extent, ILayer layer,
-            ProgressMonitor pm) {
-        MapTransform mt = new MapTransform();
-        mt.setExtent(extent);
-        mt.setImage(img);
-        draw(mt, layer, pm);
-    }
-
-    public void draw(BufferedImage img, Envelope extent, ILayer layer) {
-        draw(img, extent, layer, new NullProgressMonitor());
-    }
-
-    private static class DefaultRendererPermission implements RenderContext {
-
-        private Quadtree quadtree;
-        private Envelope drawExtent;
-        //private Area extent;
-
-        public DefaultRendererPermission(Envelope drawExtent) {
-            this.drawExtent = drawExtent;
-            this.quadtree = new Quadtree();
-            //this.extent = new Area(new Rectangle2D.Double(drawExtent.getMinX(), drawExtent.getMinY(), drawExtent.getWidth(), drawExtent.getHeight()));
-        }
-
-        @Override
-        public void addUsedArea(Envelope area) {
-            quadtree.insert(area, area);
-        }
-
-        @Override
-        public boolean canDraw(Envelope area) {
-            List<Envelope> list = quadtree.query(area);
-            for (Envelope envelope : list) {
-                if ((envelope.intersects(area)) || envelope.contains(area)) {
-                    return false;
+                        if (theGeom.isEmpty()) {
+                                return null;
+                        } else {
+                                return theGeom;
+                        }
                 }
-            }
-
-            return true;
         }
 
-        @Override
-        public Geometry getValidGeometry(Geometry geometry, double distance) {
-            List<Envelope> list = quadtree.query(geometry.getEnvelopeInternal());
-            GeometryFactory geometryFactory = new GeometryFactory();
-            Geometry theGeom = geometry;
-            for (Envelope envelope : list) {
-                theGeom = theGeom.difference(geometryFactory.toGeometry(
-                        envelope).buffer(distance, 1));
-            }
-            theGeom = theGeom.intersection(geometryFactory.toGeometry(drawExtent));
+        /**
+         * Method to change bands order only on the BufferedImage.
+         *
+         * @param bufferedImage
+         * @return new bufferedImage
+         */
+        public Image invertRGB(BufferedImage bufferedImage, String bands) {
 
-            if (theGeom.isEmpty()) {
-                return null;
-            } else {
-                return theGeom;
-            }
+                ColorModel colorModel = bufferedImage.getColorModel();
+
+                if (colorModel instanceof DirectColorModel) {
+                        DirectColorModel directColorModel = (DirectColorModel) colorModel;
+                        int red = directColorModel.getRedMask();
+                        int blue = directColorModel.getBlueMask();
+                        int green = directColorModel.getGreenMask();
+                        int alpha = directColorModel.getAlphaMask();
+
+                        int[] components = new int[3];
+                        String bds = bands.toLowerCase();
+                        components[0] = getComponent(bds.charAt(0), red, green, blue);
+                        components[1] = getComponent(bds.charAt(1), red, green, blue);
+                        components[2] = getComponent(bds.charAt(2), red, green, blue);
+
+                        directColorModel = new DirectColorModel(32, components[0],
+                                components[1], components[2], alpha);
+                        ColorProcessor colorProcessor = new ColorProcessor(bufferedImage);
+                        colorProcessor.setColorModel(directColorModel);
+
+                        return colorProcessor.createImage();
+                }
+                return bufferedImage;
         }
-    }
 
-    /**
-     * Method to change bands order only on the BufferedImage.
-     *
-     * @param bufferedImage
-     * @return new bufferedImage
-     */
-    public Image invertRGB(BufferedImage bufferedImage, String bands) {
-
-        ColorModel colorModel = bufferedImage.getColorModel();
-
-        if (colorModel instanceof DirectColorModel) {
-            DirectColorModel directColorModel = (DirectColorModel) colorModel;
-            int red = directColorModel.getRedMask();
-            int blue = directColorModel.getBlueMask();
-            int green = directColorModel.getGreenMask();
-            int alpha = directColorModel.getAlphaMask();
-
-            int[] components = new int[3];
-            String bds = bands.toLowerCase();
-            components[0] = getComponent(bds.charAt(0), red, green, blue);
-            components[1] = getComponent(bds.charAt(1), red, green, blue);
-            components[2] = getComponent(bds.charAt(2), red, green, blue);
-
-            directColorModel = new DirectColorModel(32, components[0],
-                    components[1], components[2], alpha);
-            ColorProcessor colorProcessor = new ColorProcessor(bufferedImage);
-            colorProcessor.setColorModel(directColorModel);
-
-            return colorProcessor.createImage();
+        /**
+         * Gets the component specified by the char between the int components
+         * passed as parameters in red, green blue
+         *
+         * @param rgbChar
+         * @param red
+         * @param green
+         * @param blue
+         * @return
+         */
+        private int getComponent(char rgbChar, int red, int green, int blue) {
+                if (rgbChar == 'r') {
+                        return red;
+                } else if (rgbChar == 'g') {
+                        return green;
+                } else if (rgbChar == 'b') {
+                        return blue;
+                } else {
+                        throw new IllegalArgumentException(
+                                I18N.getString("orbisgis-core.orbisgis.org.orbisgis.renderer.cannotCreatRGBCodes")); //$NON-NLS-1$
+                }
         }
-        return bufferedImage;
-    }
-
-    /**
-     * Gets the component specified by the char between the int components
-     * passed as parameters in red, green blue
-     *
-     * @param rgbChar
-     * @param red
-     * @param green
-     * @param blue
-     * @return
-     */
-    private int getComponent(char rgbChar, int red, int green, int blue) {
-        if (rgbChar == 'r') {
-            return red;
-        } else if (rgbChar == 'g') {
-            return green;
-        } else if (rgbChar == 'b') {
-            return blue;
-        } else {
-            throw new IllegalArgumentException(
-                    I18N.getString("orbisgis-core.orbisgis.org.orbisgis.renderer.cannotCreatRGBCodes")); //$NON-NLS-1$
-        }
-    }
 }

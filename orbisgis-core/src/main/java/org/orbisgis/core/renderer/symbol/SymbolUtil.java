@@ -101,14 +101,14 @@ public class SymbolUtil {
 	public static void flash(final Geometry geometry, Graphics2D graphics,
 			MapTransform mt, final int millisecondDelay) {
 
-		flash(mt.getShape(geometry), graphics, Color.red,
+		flash(mt.getShape(geometry,false), graphics, Color.red,
 				new BasicStroke(5, BasicStroke.CAP_ROUND,
 						BasicStroke.JOIN_ROUND), millisecondDelay);
 	}
 
 	public static void flash(final Geometry geometry, Graphics2D graphics,
 			MapTransform mt) {
-		flash(mt.getShape(geometry), graphics, Color.red,
+		flash(mt.getShape(geometry,false), graphics, Color.red,
 				new BasicStroke(5, BasicStroke.CAP_ROUND,
 						BasicStroke.JOIN_ROUND), 100);
 	}
