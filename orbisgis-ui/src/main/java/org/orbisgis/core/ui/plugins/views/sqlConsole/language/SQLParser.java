@@ -40,14 +40,11 @@ package org.orbisgis.core.ui.plugins.views.sqlConsole.language;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import javax.swing.text.BadLocationException;
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.Token;
-import org.antlr.runtime.tree.CommonTree;
 import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.parser.AbstractParser;
@@ -66,12 +63,9 @@ import org.gdms.sql.parser.GdmSQLParser;
 public class SQLParser extends AbstractParser {
 
         private RSyntaxTextArea textArea;
-        private SQLMetadataManager metManager;
-        private List<CommonTree> trees = new ArrayList<CommonTree>();
 
-        SQLParser(RSyntaxTextArea textArea, SQLMetadataManager metManager) {
+        SQLParser(RSyntaxTextArea textArea) {
                 this.textArea = textArea;
-                this.metManager = metManager;
         }
 
         @Override
@@ -136,6 +130,17 @@ public class SQLParser extends AbstractParser {
                         DefaultParserNotice not = new DefaultParserNotice(this, getErrorLocationText(location[0], location[1] + location[3]) + " "
                                 + getErrorString(e.token, e.getUnexpectedType(), -1), location[0], location[2], location[3]);
                         return not;
+                } catch (IllegalArgumentException ex) {
+                        if (ex.getCause() instanceof RecognitionException) {
+                                RecognitionException e = (RecognitionException) ex.getCause();
+                                int length = content.substring(e.charPositionInLine).indexOf(';');
+                                if (length == -1) {
+                                }
+                                int[] location = getErrorLocationAndLength(e, currPosition);
+                                DefaultParserNotice not = new DefaultParserNotice(this, getErrorLocationText(location[0], location[1] + location[3]) + " "
+                                        + getErrorString(e.token, e.getUnexpectedType(), -1), location[0], location[2], location[3]);
+                                return not;
+                        }
                 }
 
                 return null;

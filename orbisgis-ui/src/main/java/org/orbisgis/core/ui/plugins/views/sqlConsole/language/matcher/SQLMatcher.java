@@ -53,7 +53,8 @@ public class SQLMatcher {
         private SQLCompletionProvider pr;
         private SQLLexer lexer;
         private Iterator<String> it;
-        private static final char[] operators = new char[]{'=', '<', '>', '+', '-', '/', '^', '%'};
+        private static final char[] operators = new char[]{
+                '=', '<', '>', '+', '-', '/', '^', '%', '~', '*', '@', '!', '|'};
 
         static {
                 Arrays.sort(operators);
@@ -158,11 +159,10 @@ public class SQLMatcher {
                         addKeyWord("BY");
                 } else if ("TO".equalsIgnoreCase(a)) {
                         // RENAME TO
-                        return;
+                        matchAfterTo();
                 } else if ("BY".equalsIgnoreCase(a)) {
                         // ORDER/GROUP BY
                         addTables(true);
-                        return;
                 } else if ("LEFT".equalsIgnoreCase(a) || "RIGHT".equalsIgnoreCase(a)) {
                         // ORDER BY
                         addKeyWords("OUTER", "JOIN");
@@ -173,15 +173,29 @@ public class SQLMatcher {
                 } else if ("ORDER".equalsIgnoreCase(a)) {
                         // ORDER BY
                         addKeyWord("BY");
-                } else if (isOperator(a)) {
+                } else if ("*".equals(a)) {
+                        matchAfterStar();
+                } else if (isOperator(a) || "LIKE".equals(a) || "ILIKE".equals(a)) {
                         // Operator = + - / ...
                         addScalarFunctions();
                         addTables(true);
-                } else if ("*".equals(a)) {
-                        matchAfterStar();
+                } else if ("SIMILAR".equals(a)) {
+                        addKeyWord("TO");
                 } else {
                         // anything else
                         matchAfterPossibleId();
+                }
+        }
+        
+        private void matchAfterTo() {
+                if (!it.hasNext()) {
+                        return;
+                }
+                String a = it.next();
+                
+                if ("SIMILAR".equals(a)) {
+                        addScalarFunctions();
+                        addTables(true);
                 }
         }
 
@@ -414,6 +428,7 @@ public class SQLMatcher {
         }
 
         private void addOperators() {
-                addKeyWords("IS NULL", "IS NOT NULL", "IS TRUE", "IS FALSE", "LIKE", "AND", "OR");
+                addKeyWords("IS NULL", "IS NOT NULL", "IS TRUE", "IS FALSE", "LIKE", "AND", "OR", "ILIKE",
+                        "SIMILAR TO");
         }
 }

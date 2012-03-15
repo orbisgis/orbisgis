@@ -75,7 +75,7 @@ public class SQLLanguageSupport extends AbstractLanguageSupport {
                 installImpl(textArea, c);
                 
                 // install parser
-                parser = new SQLParser(textArea, metManager);
+                parser = new SQLParser(textArea);
                 textArea.putClientProperty(PROPERTY_LANGUAGE_PARSER, parser);
                 textArea.addParser(parser);
 
