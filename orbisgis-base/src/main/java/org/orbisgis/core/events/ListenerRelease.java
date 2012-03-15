@@ -6,7 +6,7 @@
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  * 
  *
- *
+ *null
  * This file is part of OrbisGIS.
  *
  * OrbisGIS is free software: you can redistribute it and/or modify it under the
@@ -26,37 +26,41 @@
  * or contact directly:
  * info _at_ orbisgis.org
  */
-package org.orbisgis.base.events;
-
-import java.util.EventObject;
-
 /**
- * @brief Event Data Sample for unit test
- * This is the event Data attached with an event (a call on listeners)
+ * @package org.orbisgis.view.events
+ * @brief Helper to quickly release Listeners from their target
  */
-public class EventObjectSample extends EventObject {
-    private String message;
+package org.orbisgis.core.events;
+
+import org.orbisgis.core.events.internals.ListenerContainers;
+/**
+ * @brief Release all listeners attached to a specific target in one call.
+ */
+public class ListenerRelease {
+
+    private ListenerContainers containers = new ListenerContainers();
+
     /**
-     * 
-     * @param message The secret message from the Event Source
-     * @param o The event source
+     * Add a container to manage with this class
+     * @param container The container instance
      */
-    public EventObjectSample(String message, Object o) {
-        super(o);
-        this.message = message;
+    public void addContainer(ListenerContainer container) {
+        containers.add(container);
     }
     /**
-     * 
-     * @return The message
+     * When a target is no longer used, the listeners created by it must be removed.
      */
-    public String getMessage() {
-        return message;
+    public void releaseListeners(Object target) {
+        for(ListenerContainer container : containers) {
+                container.removeListeners(target);
+        }
     }
     /**
-     * 
-     * @param message The message to send to the target
+     * Remove all listeners of all containers.
      */
-    public void setMessage(String message) {
-        this.message = message;
-    }    
+    public void clearListeners() {
+        for(ListenerContainer container : containers) {
+                container.clearListeners();
+        }        
+    }
 }

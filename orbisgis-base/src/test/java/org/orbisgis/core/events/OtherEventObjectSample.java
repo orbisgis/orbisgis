@@ -26,32 +26,18 @@
  * or contact directly:
  * info _at_ orbisgis.org
  */
-package org.orbisgis.base.events;
+package org.orbisgis.core.events;
+
+import java.util.EventObject;
 
 /**
- * @brief Throw when a listener try to stop the propagation of an event.
+ * @brief Event Data Sample for unit test
+ * This is the event Data attached with an event (a call on listeners)
  */
-public class EventException extends Exception {
+public class OtherEventObjectSample extends EventObject {
 
-    /**
-     * Creates a new instance of <code>EventException</code> without detail message.
-     */
-    public EventException() {
+    public OtherEventObjectSample(Object o) {
+        super(o);
     }
-
-    /**
-     * Constructs an instance of <code>EventException</code> with the specified detail message.
-     * @param msg the detail message.
-     */
-    public EventException(String msg) {
-        super(msg);
-    }
-    /**
-     * Constructs an instance of <code>EventException</code> with throw information.
-     * @param thr The throw informations
-     * @note Use this constructor when catch another Exception
-     */
-    public EventException(Throwable thr) {
-        super(thr);
-    }
+    
 }

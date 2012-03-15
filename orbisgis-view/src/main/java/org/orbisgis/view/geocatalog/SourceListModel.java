@@ -43,7 +43,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.source.Source;
 import org.gdms.source.SourceListener;
 import org.gdms.source.SourceManager;
-import org.orbisgis.base.context.SourceContext.SourceContext;
+import org.orbisgis.core.context.SourceContext.SourceContext;
 import org.orbisgis.utils.I18N;
 import org.orbisgis.view.components.ContainerItemKey;
 import org.orbisgis.view.geocatalog.filters.IFilter;

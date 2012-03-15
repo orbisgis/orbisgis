@@ -6,7 +6,7 @@
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  * 
  *
- *null
+ *
  * This file is part of OrbisGIS.
  *
  * OrbisGIS is free software: you can redistribute it and/or modify it under the
@@ -26,41 +26,18 @@
  * or contact directly:
  * info _at_ orbisgis.org
  */
+package org.orbisgis.core.events.internals;
+
+import java.util.ArrayList;
+import org.orbisgis.core.events.ListenerContainer;
 /**
- * @package org.orbisgis.view.events
- * @brief Helper to quickly release Listeners from their target
+ * @package org.orbisgis.base.events.internals
+ * @brief Internal class of event/listener system
  */
-package org.orbisgis.base.events;
 
-import org.orbisgis.base.events.internals.ListenerContainers;
 /**
- * @brief Release all listeners attached to a specific target in one call.
+ * @brief Declaration of an ArrayList<ListenerContainer>
  */
-public class ListenerRelease {
-
-    private ListenerContainers containers = new ListenerContainers();
-
-    /**
-     * Add a container to manage with this class
-     * @param container The container instance
-     */
-    public void addContainer(ListenerContainer container) {
-        containers.add(container);
-    }
-    /**
-     * When a target is no longer used, the listeners created by it must be removed.
-     */
-    public void releaseListeners(Object target) {
-        for(ListenerContainer container : containers) {
-                container.removeListeners(target);
-        }
-    }
-    /**
-     * Remove all listeners of all containers.
-     */
-    public void clearListeners() {
-        for(ListenerContainer container : containers) {
-                container.clearListeners();
-        }        
-    }
+public class ListenerContainers extends ArrayList<ListenerContainer> {
+    private static final long serialVersionUID = 1L;
 }

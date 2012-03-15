@@ -26,14 +26,14 @@
  * or contact directly:
  * info _at_ orbisgis.org
  */
-package org.orbisgis.base.context.main;
+package org.orbisgis.core.context.main;
 
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.DataSourceFinalizationException;
 import org.gdms.data.SQLDataSourceFactory;
-import org.orbisgis.base.context.SourceContext.SourceContext;
-import org.orbisgis.base.workspace.CoreWorkspace;
+import org.orbisgis.core.context.SourceContext.SourceContext;
+import org.orbisgis.core.workspace.CoreWorkspace;
 /**
  * @class MainContext
  * @brief The larger surrounding part of OrbisGis base 

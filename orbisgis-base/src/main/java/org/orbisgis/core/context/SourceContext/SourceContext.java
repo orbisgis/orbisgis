@@ -26,7 +26,7 @@
  * or contact directly:
  * info _at_ orbisgis.org
  */
-package org.orbisgis.base.context.SourceContext;
+package org.orbisgis.core.context.SourceContext;
 
 import java.io.File;
 import java.util.ArrayList;

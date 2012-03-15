@@ -30,31 +30,23 @@ package org.orbisgis.view.geocatalog;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
-import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.util.Map.Entry;
-import java.util.*;
 import javax.swing.*;
 import org.apache.log4j.Logger;
 import org.gdms.data.SourceAlreadyExistsException;
-import org.orbisgis.base.context.SourceContext.SourceContext;
-import org.orbisgis.base.events.EventException;
-import org.orbisgis.base.events.Listener;
-import org.orbisgis.base.events.ListenerContainer;
+import org.orbisgis.core.context.SourceContext.SourceContext;
+import org.orbisgis.core.events.EventException;
+import org.orbisgis.core.events.Listener;
+import org.orbisgis.core.events.ListenerContainer;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.utils.CollectionUtils;
 import org.orbisgis.utils.FileUtils;
 import org.orbisgis.utils.I18N;
-import org.orbisgis.view.components.ContainerItemKey;
-import org.orbisgis.view.components.filter.ActiveFilter;
-import org.orbisgis.view.components.filter.FilterFactory;
 import org.orbisgis.view.components.filter.FilterFactoryManager;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
@@ -303,6 +295,8 @@ public class Catalog extends JPanel implements DockingPanel {
      * free this instance
      */
     public void dispose() {
+        //Remove listeners linked with the source list content
+        filterFactoryManager.getEventFilterChange().clearListeners();
         sourceListContent.dispose();
     }
     /**

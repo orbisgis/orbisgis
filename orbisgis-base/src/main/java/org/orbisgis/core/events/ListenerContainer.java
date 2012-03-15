@@ -26,7 +26,7 @@
  * or contact directly:
  * info _at_ orbisgis.org
  */
-package org.orbisgis.base.events;
+package org.orbisgis.core.events;
 
 import java.lang.ref.WeakReference;
 import java.security.InvalidParameterException;

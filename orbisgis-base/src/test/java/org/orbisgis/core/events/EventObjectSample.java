@@ -26,7 +26,7 @@
  * or contact directly:
  * info _at_ orbisgis.org
  */
-package org.orbisgis.base.events;
+package org.orbisgis.core.events;
 
 import java.util.EventObject;
 
@@ -34,10 +34,29 @@ import java.util.EventObject;
  * @brief Event Data Sample for unit test
  * This is the event Data attached with an event (a call on listeners)
  */
-public class OtherEventObjectSample extends EventObject {
-
-    public OtherEventObjectSample(Object o) {
+public class EventObjectSample extends EventObject {
+    private String message;
+    /**
+     * 
+     * @param message The secret message from the Event Source
+     * @param o The event source
+     */
+    public EventObjectSample(String message, Object o) {
         super(o);
+        this.message = message;
     }
-    
+    /**
+     * 
+     * @return The message
+     */
+    public String getMessage() {
+        return message;
+    }
+    /**
+     * 
+     * @param message The message to send to the target
+     */
+    public void setMessage(String message) {
+        this.message = message;
+    }    
 }

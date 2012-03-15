@@ -26,12 +26,11 @@
  * or contact directly:
  * info _at_ orbisgis.org
  */
-package org.orbisgis.base.workspace;
+package org.orbisgis.core.workspace;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.io.File;
-import java.io.Serializable;
+import java.io.*;
 
 /**
  * Core Worskpace Folder information
@@ -43,19 +42,81 @@ import java.io.Serializable;
  */
 
 public class CoreWorkspace implements Serializable {
-    private static final long serialVersionUID = 4L; /*<! Update this integer while adding properties (1 for each new property)*/
+    private static final long serialVersionUID = 5L; /*<! Update this integer while adding properties (1 for each new property)*/
     private PropertyChangeSupport propertySupport;
     
+    private String applicationFolder = new File(System.getProperty("user.home")).getAbsolutePath() + File.separator + ".OrbisGIS";
+    public static final String PROP_APPLICATIONFOLDER = "applicationFolder";
     
-    private String workspaceFolder = new File(System.getProperty("user.home")).getAbsolutePath() + File.separator + "OrbisGIS";
+    private String workspaceFolder;
     public static final String PROP_WORKSPACEFOLDER = "workspaceFolder";
-    private String resultsFolder = workspaceFolder + File.separator + "results";
+    private String resultsFolder;
     public static final String PROP_RESULTSFOLDER = "resultsFolder";
-    private String sourceFolder = workspaceFolder + File.separator + "sources";
+    private String sourceFolder;
     public static final String PROP_SOURCEFOLDER = "sourceFolder";
     private String pluginFolder = new File("lib" + File.separator + "ext").getAbsolutePath();
     public static final String PROP_PLUGINFOLDER = "pluginFolder";
-    private String tempFolder = workspaceFolder + File.separator + "temp";
+    private String tempFolder;
+
+    
+    private static final String CURRENT_WORKSPACE_FILENAME = "currentWorkspace.txt";
+    private static final String ALL_WORKSPACE_FILENAME = "workspaces.txt";
+    /**
+     * bean constructor
+     */
+    public CoreWorkspace() {
+        propertySupport = new PropertyChangeSupport(this);
+        
+        //Read current defined workspace
+        loadCurrentWorkSpace();
+    }
+
+    /**
+     * At startup, load application configuration
+     */
+    private void loadCurrentWorkSpace() {
+        //Read text file 
+        
+        File currentWK = new File(applicationFolder + File.separator + CURRENT_WORKSPACE_FILENAME);
+        if(currentWK.exists()) {
+            try {
+                    BufferedReader fileReader = new BufferedReader(new FileReader(
+                                   currentWK));
+                    String currentDir = fileReader.readLine();
+                    workspaceFolder = currentDir;
+                    fileReader.close();
+            } catch (FileNotFoundException e) {
+                    throw new RuntimeException("Cannot find the workspace location", e);
+            } catch (IOException e) {
+                    throw new RuntimeException("Cannot read the workspace location", e);
+            }
+        } else {
+            //Load Default workspace Folder
+            workspaceFolder = new File(System.getProperty("user.home")).getAbsolutePath() + File.separator + "OrbisGIS";
+        }
+        resultsFolder = "results";
+        sourceFolder = "sources";
+        tempFolder = "temp";
+   }
+    /**
+     * Get the value of applicationFolder
+     *
+     * @return the value of applicationFolder
+     */
+    public String getApplicationFolder() {
+        return applicationFolder;
+    }
+
+    /**
+     * Set the value of applicationFolder
+     *
+     * @param applicationFolder new value of applicationFolder
+     */
+    public void setApplicationFolder(String applicationFolder) {
+        String oldApplicationFolder = this.applicationFolder;
+        this.applicationFolder = applicationFolder;
+        propertySupport.firePropertyChange(PROP_APPLICATIONFOLDER, oldApplicationFolder, applicationFolder);
+    }
 
     /**
      * Get the value of tempFolder
@@ -63,7 +124,7 @@ public class CoreWorkspace implements Serializable {
      * @return the value of tempFolder
      */
     public String getTempFolder() {
-        return tempFolder;
+        return workspaceFolder + File.separator + tempFolder;
     }
 
     /**
@@ -101,7 +162,7 @@ public class CoreWorkspace implements Serializable {
      * @return the value of sourceFolder
      */
     public String getSourceFolder() {
-        return sourceFolder;
+        return workspaceFolder + File.separator + sourceFolder;
     }
 
     /**
@@ -121,7 +182,7 @@ public class CoreWorkspace implements Serializable {
      * @return the value of resultsFolder
      */
     public String getResultsFolder() {
-        return resultsFolder;
+        return workspaceFolder + File.separator + resultsFolder;
     }
 
     /**
@@ -155,13 +216,6 @@ public class CoreWorkspace implements Serializable {
         propertySupport.firePropertyChange(PROP_WORKSPACEFOLDER, oldWorkspaceFolder, workspaceFolder);
     }
 
-    /**
-     * bean constructor
-     */
-    public CoreWorkspace() {
-        propertySupport = new PropertyChangeSupport(this);
-    }
-    
     
     /**
      * Add a property-change listener for all properties.

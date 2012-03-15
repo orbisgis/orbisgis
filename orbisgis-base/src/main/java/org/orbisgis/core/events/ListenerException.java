@@ -26,18 +26,31 @@
  * or contact directly:
  * info _at_ orbisgis.org
  */
-package org.orbisgis.base.events.internals;
-
-import java.util.ArrayList;
-import org.orbisgis.base.events.ListenerContainer;
-/**
- * @package org.orbisgis.base.events.internals
- * @brief Internal class of event/listener system
- */
+package org.orbisgis.core.events;
 
 /**
- * @brief Declaration of an ArrayList<ListenerContainer>
+ * @brief Exception raised by the OnEvent method of listeners
+ * This exception let other listener to manage the event if continueProcessing is True
  */
-public class ListenerContainers extends ArrayList<ListenerContainer> {
-    private static final long serialVersionUID = 1L;
+public class ListenerException extends Exception {
+    private boolean continueProcessing;
+    /**
+     * Creates a new instance of <code>ListenerException</code> without detail message.
+     */
+    public ListenerException(boolean continueProcessing) {
+        this.continueProcessing = continueProcessing;
+    }
+
+    /**
+     * Constructs an instance of <code>ListenerException</code> with the specified detail message.
+     * @param msg the detail message.
+     */
+    public ListenerException(boolean continueProcessing,String msg) {
+        super(msg);
+        this.continueProcessing = continueProcessing;
+    }
+    
+    boolean letContinueProcessing() {
+        return continueProcessing;
+    }
 }

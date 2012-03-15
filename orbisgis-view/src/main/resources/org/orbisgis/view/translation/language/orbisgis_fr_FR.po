@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: OrbisGis 4.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-03-08 17:19+0100\n"
-"PO-Revision-Date: 2012-03-08 17:20+0100\n"
+"PO-Revision-Date: 2012-03-15 11:34+0100\n"
 "Last-Translator: Nicolas Fortin <nicolas.fortin@ec-nantes.fr>\n"
 "Language-Team: OrbisGis <info@orbisgis.org>\n"
 "Language: fr\n"
@@ -38,7 +38,7 @@ msgstr "Cette source est déjà enregistrée"
 
 #: java/org/orbisgis/view/geocatalog/Catalog.java:262
 msgid "orbisgis.view.geocatalog.validateClearMessage"
-msgstr "Toutes les datasources seront supprimées. Voulez-vous continuer ?"
+msgstr "Fermer toute les sources de données ?"
 
 #: java/org/orbisgis/view/geocatalog/Catalog.java:263
 msgid "orbisgis.view.geocatalog.validateClearTitle"

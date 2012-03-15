@@ -32,7 +32,7 @@ import java.awt.Rectangle;
 import java.awt.event.WindowListener;
 import java.beans.EventHandler;
 import javax.swing.SwingUtilities;
-import org.orbisgis.base.context.main.MainContext;
+import org.orbisgis.core.context.main.MainContext;
 import org.orbisgis.utils.I18N;
 import org.orbisgis.view.docking.DockingManager;
 import org.orbisgis.view.geocatalog.Catalog;
