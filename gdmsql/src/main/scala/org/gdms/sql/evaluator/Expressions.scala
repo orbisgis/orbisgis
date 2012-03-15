@@ -156,8 +156,16 @@ sealed class Expression(var evaluator: Evaluator) extends Iterable[Expression] {
   
   def ||(e: Expression) = concatWith(e)
 
-  def like(e: Expression) = {
-    new Expression(LikeEvaluator(this,e))
+  def like(e: Expression, caseInsensitive: Boolean = false) = {
+    new Expression(LikeEvaluator(this,e, caseInsensitive))
+  }
+  
+  def ~(e: Expression, caseInsensitive: Boolean = false) = {
+    new Expression(POSIXEvaluator(this, e, caseInsensitive))
+  }
+  
+  def similarTo(e: Expression) = {
+    new Expression(SimilarToEvaluator(this,e))
   }
 
   def modulo(e: Expression) = {

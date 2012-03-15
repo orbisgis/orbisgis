@@ -595,8 +595,17 @@ object LogicPlanBuilder {
           Expression("Abs", List(left))
         }
 
-        // TODO: bitwize NOT (or drop it?)
-      case TILDE => throw new UnsupportedOperationException("Not yet implemented.")
+        
+      case TILDE => { if (l.tail.isEmpty) {
+            // TODO: bitwize NOT (or drop it?)
+            throw new UnsupportedOperationException("Not yet implemented.")
+          } else {
+            left ~ right
+          }
+        }
+      case ITILDE => left.~(right, true)
+      case NOTILDE => !(left ~ right)
+      case NOITILDE => !(left.~(right, true))
 
         // TODO: factorial operator
       case FACTORIAL_PREFIX => throw new UnsupportedOperationException("Not yet implemented.")
@@ -607,8 +616,12 @@ object LogicPlanBuilder {
         
       case T_CAST => left -> SQLValueFactory.getTypeCodeFromSqlIdentifier(l(1).getText)
 
-        // sql like operator. NOT FEATURE COMPLETE: limited by GDMS like operator.
+        // sql like operator.
       case T_LIKE => left like right
+        // sql like operator.
+      case T_ILIKE => left.like(right, true)
+        // sql imilar to operator.
+      case T_SIMILAR => left similarTo right
       case T_SELECT_COLUMN => {
 	  // AST:
 	  // ^(T_SELECT_COLUMN LONG_ID+ )

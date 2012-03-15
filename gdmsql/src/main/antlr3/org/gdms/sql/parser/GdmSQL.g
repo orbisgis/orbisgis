@@ -61,6 +61,7 @@ tokens {
     T_GROUP = 'GROUP';
     T_HAVING = 'HAVING';
     T_IF = 'IF';
+    T_ILIKE = 'ILIKE';
     T_IN = 'IN';
     T_INCREMENT = 'INCREMENT';
     T_INDEX = 'INDEX';
@@ -319,6 +320,7 @@ tokens {
     T_SEQUENTIAL = 'SEQUENTIAL';
     T_SETS = 'SETS';
     T_SINGLE = 'SINGLE';
+    T_SIMILAR = 'SIMILAR';
     T_THE = 'THE';
     T_UNBOUNDED = 'UNBOUNDED';
     T_UNDER_PATH = 'UNDER_PATH';
@@ -825,6 +827,13 @@ expression_cond
           -> ^(T_NOT ^(T_IN $expression_cond expression_expr_in_content))
         | T_LIKE s=expression_final -> ^(T_LIKE $expression_cond $s)
         | T_NOT T_LIKE s=expression_final -> ^(T_NOT ^(T_LIKE $expression_cond $s))
+        | T_ILIKE s=expression_final -> ^(T_ILIKE $expression_cond $s)
+        | T_NOT T_ILIKE s=expression_final -> ^(T_NOT ^(T_ILIKE $expression_cond $s))
+        | T_SIMILAR T_TO s=expression_final -> ^(T_SIMILAR $expression_cond $s)
+        | T_NOT T_SIMILAR T_TO s=expression_final -> ^(T_NOT ^(T_SIMILAR $expression_cond $s))
+        | (o=TILDE | o=ITILDE) s=expression_final -> ^($o $expression_cond $s )
+        | NOTILDE s=expression_final -> ^(NOTILDE $expression_cond $s )
+        | NOITILDE s=expression_final -> ^(NOITILDE $expression_cond $s )
         )?
         // nice hack to support more grammar without parenthesis
         (T_OR e2=expression_cond_and -> ^(T_OR $expression_cond $e2) )*
@@ -1009,6 +1018,19 @@ CASTCOLON
 TILDE
         :       '~'
         ;
+
+ITILDE
+        :       '~*'
+        ;
+
+NOTILDE
+        :       '!~'
+        ;
+
+NOITILDE
+        :       '!~*'
+        ;
+
 
 MODULO
 	:	'%'

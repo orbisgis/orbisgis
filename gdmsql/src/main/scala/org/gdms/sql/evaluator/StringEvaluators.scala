@@ -38,8 +38,10 @@
 
 package org.gdms.sql.evaluator
 
+import java.util.regex.Pattern
 import org.gdms.data.types.IncompatibleTypesException
 import org.gdms.data.types.Type
+import org.orbisgis.utils.TextUtils
 
 /**
  * Evaluator for concat operations of any values.
@@ -47,7 +49,7 @@ import org.gdms.data.types.Type
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class StringConcatEvaluator(e1: Expression, e2: Expression) extends Evaluator {
+case class StringConcatEvaluator(e1: Expression, e2: Expression) extends Evaluator { 
   val sqlType = Type.STRING
   def eval = s => e1.evaluate(s) concatWith e2.evaluate(s)
   override val childExpressions = e1 :: e2 :: List.empty
@@ -68,9 +70,105 @@ case class StringConcatEvaluator(e1: Expression, e2: Expression) extends Evaluat
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class LikeEvaluator(e1: Expression, e2: Expression) extends Evaluator {
+case class LikeEvaluator(e1: Expression, e2: Expression, caseInsensitive: Boolean) extends Evaluator {
   val sqlType = Type.BOOLEAN
-  def eval = s => e1.evaluate(s) like e2.evaluate(s)
+  private var pattern: Pattern = null
+  private var loaded = false
+  def eval = { s => 
+    if (!loaded){
+      if (e2.evaluator.isInstanceOf[StaticEvaluator]) {
+        if (caseInsensitive) {
+          pattern = TextUtils.buildLikePattern(e2.evaluate(null).getAsString, true)
+        } else {
+          pattern = TextUtils.buildLikePattern(e2.evaluate(null).getAsString)
+        }
+      }
+      loaded = true
+    }
+    
+    if (pattern == null) {
+      e1.evaluate(s).like(e2.evaluate(s), caseInsensitive)
+    } else {
+      e1.evaluate(s) matches pattern
+    }
+  } 
+  override val childExpressions = e1 :: e2 :: List.empty
+  override def doValidate = {
+    childExpressions map
+    {_.evaluator.sqlType == Type.STRING} reduceLeft (_ && _) match {
+      case true =>
+      case false => throw new IncompatibleTypesException
+    }
+  }
+  override def toString = "(" + e1 + " LIKE " + e2 + ")"
+  def doCopy = copy()
+}
+
+
+/**
+ * Evaluator for similar to operation on string values.
+ *
+ * @author Antoine Gourlay
+ * @since 0.1
+ */
+case class SimilarToEvaluator(e1: Expression, e2: Expression) extends Evaluator {
+  val sqlType = Type.BOOLEAN
+  private var pattern: Pattern = null
+  private var loaded = false
+  def eval = { s =>  
+    if (!loaded){
+      if (e2.evaluator.isInstanceOf[StaticEvaluator]) {
+        pattern = TextUtils.buildSimilarToPattern(e2.evaluate(null).getAsString)
+      }
+      loaded = true
+    }
+    
+    if (pattern == null) {
+      e1.evaluate(s) similarTo e2.evaluate(s)
+    } else {
+      e1.evaluate(s) matches pattern
+    }
+  } 
+  override val childExpressions = e1 :: e2 :: List.empty
+  override def doValidate = {
+    childExpressions map
+    {_.evaluator.sqlType == Type.STRING} reduceLeft (_ && _) match {
+      case true =>
+      case false => throw new IncompatibleTypesException
+    }
+  }
+  override def toString = "(" + e1 + " LIKE " + e2 + ")"
+  def doCopy = copy()
+}
+
+/**
+ * Evaluator for POSIX Regexp operation on string values.
+ *
+ * @author Antoine Gourlay
+ * @since 0.1
+ */
+case class POSIXEvaluator(e1: Expression, e2: Expression, caseInsensitive: Boolean) extends Evaluator {
+  val sqlType = Type.BOOLEAN
+  private var pattern: Pattern = null
+  private var loaded = false
+  def eval = { s =>  
+    if (!loaded){
+      if (e2.evaluator.isInstanceOf[StaticEvaluator]) {
+        if (caseInsensitive) {
+          pattern = Pattern.compile(e2.evaluate(null).getAsString, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE)
+        } else {
+          pattern = Pattern.compile(e2.evaluate(null).getAsString)
+        }
+      }
+      loaded = true
+    }
+    
+    if (pattern == null) {
+      e1.evaluate(s) matches e2.evaluate(s)
+    } else {
+      e1.evaluate(s) matches pattern
+    }
+  } 
   override val childExpressions = e1 :: e2 :: List.empty
   override def doValidate = {
     childExpressions map
