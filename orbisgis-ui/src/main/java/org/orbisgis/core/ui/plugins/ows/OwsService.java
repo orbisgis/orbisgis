@@ -34,4 +34,12 @@ public interface OwsService {
      * "owc=" before the actual ows context data.
      */
     public void saveOwsFileAs(String data);
+    
+    /**
+     * Saves the project.
+     * 
+     * @param data The ows context file as text.
+     * @param projectId The project's id
+     */
+    public void saveOwsFile(String data, int projectId);
 }

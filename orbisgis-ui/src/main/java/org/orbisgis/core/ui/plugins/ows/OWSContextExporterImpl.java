@@ -35,9 +35,16 @@ import org.orbisgis.core.layerModel.ILayer;
 public class OWSContextExporterImpl implements OWSContextExporter {
 
     private final OwsService owsService;
+    private JAXBContext jc;
     
     public OWSContextExporterImpl(OwsService owsService) {
         this.owsService = owsService;
+        try {
+            jc = JAXBContext.newInstance("net.opengis.ows_context:net.opengis.wms._2");
+        } catch (JAXBException ex) {
+            Logger.getLogger(OWSContextExporterImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+                
     }
     
     private LanguageStringType createLanguageString(String value) {
@@ -49,11 +56,42 @@ public class OWSContextExporterImpl implements OWSContextExporter {
     
     @Override
     public void exportProject(int id, String title, String description, String crs, Envelope boundingBox, ILayer[] layers) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        JAXBElement<OWSContextType> owsContextElement = generateOwsContext(title, description, crs, boundingBox, layers);
+        
+        try {
+            Marshaller marshaller = jc.createMarshaller();
+            marshaller.setProperty("jaxb.formatted.output", Boolean.TRUE);
+            //marshaller.marshal(owsContextElement, System.out);
+            StringWriter sw = new StringWriter();
+            marshaller.marshal(owsContextElement, sw);
+            
+            owsService.saveOwsFile(sw.toString(), id);
+        } catch (JAXBException ex) {
+            Logger.getLogger(OWSContextExporterImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override
     public void exportProjectAs(String title, String description, String crs, Envelope boundingBox, ILayer[] layers) {
+
+        JAXBElement<OWSContextType> owsContextElement = generateOwsContext(title, description, crs, boundingBox, layers);
+        
+        try {
+            Marshaller marshaller = jc.createMarshaller();
+            marshaller.setProperty("jaxb.formatted.output", Boolean.TRUE);
+            //marshaller.marshal(owsContextElement, System.out);
+            StringWriter sw = new StringWriter();
+            marshaller.marshal(owsContextElement, sw);
+            
+            owsService.saveOwsFileAs(sw.toString());
+        } catch (JAXBException ex) {
+            Logger.getLogger(OWSContextExporterImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+    
+    private JAXBElement<OWSContextType> generateOwsContext(String title, String description, 
+            String crs, Envelope boundingBox, ILayer[] layers) {
         net.opengis.ows._2.ObjectFactory factoryOws = new net.opengis.ows._2.ObjectFactory();
         ObjectFactory factoryOwsContext = new ObjectFactory();
         
@@ -119,22 +157,7 @@ public class OWSContextExporterImpl implements OWSContextExporter {
         owsContext.setResourceList(resourceList);
         owsContext.setGeneral(general);
         
+        return owsContextElement;
         
-        JAXBContext jc;
-        try {
-            jc = JAXBContext.newInstance("net.opengis.ows_context:net.opengis.wms._2");
-            Marshaller marshaller = jc.createMarshaller();
-            marshaller.setProperty("jaxb.formatted.output", Boolean.TRUE);
-            //marshaller.marshal(owsContextElement, System.out);
-            StringWriter sw = new StringWriter();
-            marshaller.marshal(owsContextElement, sw);
-            System.out.println(sw.toString()); // DEBUG
-            
-            owsService.saveOwsFileAs(sw.toString());
-        } catch (JAXBException ex) {
-            Logger.getLogger(OWSContextExporterImpl.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
     }
-    
 }

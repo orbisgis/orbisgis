@@ -178,7 +178,8 @@ public class OwsPlugIn extends AbstractPlugIn {
                     final List<ILayer> layers = OwsPlugIn.this.importer.extractLayers(OwsFileImportListenerImpl.this.owsContext);
                     Logger.getLogger(OwsPlugIn.class.getName()).log(Level.INFO, "{0} layer(s) imported.", layers.size());
 
-
+                    
+                    
                     getPlugInContext().getGeocognition().addGeocognitionListener(new GeocognitionListener() {
                         @Override
                         public boolean elementRemoving(Geocognition geocognition, GeocognitionElement element) {
@@ -228,6 +229,11 @@ public class OwsPlugIn extends AbstractPlugIn {
                                 }
                                 layersAlreadyAdded = true;
                             }
+                            
+                            mapContext.setOwsProjectId(Integer.parseInt(owsContext.getValue().getId()));
+                            mapContext.setOwsTitle(owsContext.getValue().getGeneral().getTitle().getValue());
+                            mapContext.setOwsDescription(owsContext.getValue().getGeneral().getAbstract().getValue());
+                            mapContext.setOwsCrs(owsContext.getValue().getGeneral().getBoundingBox().getValue().getCrs());
 
 
                             importOwsDialog.setVisible(false);

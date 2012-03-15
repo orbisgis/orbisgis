@@ -50,22 +50,19 @@ public class OwsExportPanel extends AbstractUIPanel {
         this.mapContext = mapContext;
         
         
-        txtTitle = new JTextField(15) {
-            {
-                setText("");
-            }
-        };
+        txtTitle = new JTextField(15);
         txtDescription = new JTextArea(5, 15) {
             {
-                setText("");
                 setBorder(txtTitle.getBorder());
             }
         };
-        txtCrs = new JTextField(10) {
-            {
-                setText("");
-            }
-        };
+        txtCrs = new JTextField(10);
+        
+        if (mapContext.getOwsProjectId() != -1) {
+            txtTitle.setText(mapContext.getOwsTitle());
+            txtDescription.setText(mapContext.getOwsDescription());
+            txtCrs.setText(mapContext.getOwsCrs());
+        }
         
         final JLabel lblTitle = new JLabel(Names.LABEL_OWS_TITLE + ": ") {
             {
@@ -111,7 +108,15 @@ public class OwsExportPanel extends AbstractUIPanel {
                 addActionListener(new ExportAsButtonActionListener());
             }
         };
-        final JButton cmdExport = new JButton(Names.LABEL_OWS_EXPORT_BUTTON);
+        final JButton cmdExport = new JButton(Names.LABEL_OWS_EXPORT_BUTTON) {
+            {
+                addActionListener(new ExportButtonActionListener());
+            }
+        };
+        
+        if (mapContext.getOwsProjectId() == -1) {
+            cmdExport.setEnabled(false);
+        }
         
         final JPanel pnlCommands = new JPanel() {
             {
@@ -149,6 +154,37 @@ public class OwsExportPanel extends AbstractUIPanel {
         return panel;
     }
     
+    private class ExportButtonActionListener implements ActionListener {
+
+        private BackgroundManager bm;
+        
+        private ExportButtonActionListener() {
+            this.bm = Services.getService(BackgroundManager.class);
+        }
+        
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            this.bm.backgroundOperation(new BackgroundJob() {
+
+                @Override
+                public void run(ProgressMonitor pm) {
+                    OwsExportPanel.this.owsFileExporter.exportProject(mapContext.getOwsProjectId(), 
+                            txtTitle.getText(), 
+                            txtDescription.getText(), txtCrs.getText(), 
+                            OwsExportPanel.this.mapContext.getBoundingBox(), 
+                            OwsExportPanel.this.mapContext.getLayers());
+                    
+                    OwsExportPanel.this.owsFileExportListener.fireOwsFileExported();
+                }
+
+                @Override
+                public String getTaskName() {
+                    return "Exporting project...";
+                }
+            });
+        }
+    }
+    
     private class ExportAsButtonActionListener implements ActionListener {
 
         private BackgroundManager bm;
@@ -173,7 +209,7 @@ public class OwsExportPanel extends AbstractUIPanel {
 
                 @Override
                 public String getTaskName() {
-                    return "Exporting project...";
+                    return "Exporting project as...";
                 }
             });
             
