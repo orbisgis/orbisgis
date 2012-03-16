@@ -104,6 +104,10 @@ public class SQLMatcher {
                         // comma; we have to look deeper to understand what to do.
                         matchAfterComma();
                         return;
+                } else if (a.endsWith("(")) {
+                        // comma; we have to look deeper to understand what to do.
+                        matchAfterOpenPar();
+                        return;
                 }
 
                 if ("AS".equalsIgnoreCase(a)) {
@@ -117,7 +121,7 @@ public class SQLMatcher {
                         // DROP TABLE and others ending in TABLE
                         matchSourceNames1();
                 } else if ("SELECT".equalsIgnoreCase(a) || "WHERE".equalsIgnoreCase(a) || "ON".equalsIgnoreCase(a)
-                        || "AND".equalsIgnoreCase(a) || "OR".equalsIgnoreCase(a)) {
+                        || "(SELECT".equalsIgnoreCase(a) ||"AND".equalsIgnoreCase(a) || "OR".equalsIgnoreCase(a)) {
                         // SELECT table.field
                         addScalarFunctions();
                         addTables(true);
@@ -186,13 +190,13 @@ public class SQLMatcher {
                         matchAfterPossibleId();
                 }
         }
-        
+
         private void matchAfterTo() {
                 if (!it.hasNext()) {
                         return;
                 }
                 String a = it.next();
-                
+
                 if ("SIMILAR".equals(a)) {
                         addScalarFunctions();
                         addTables(true);
@@ -222,29 +226,16 @@ public class SQLMatcher {
          * Decides what to do after a (probable) id has been matched.
          */
         private void matchAfterPossibleId() {
-                boolean inside = false;
                 while (it.hasNext()) {
                         String b = it.next();
-                        if (b.contains("(")) {
-                                inside = true;
-                        }
-                        if ("SELECT".equalsIgnoreCase(b)) {
-                                if (inside) {
-                                        return;
-                                }
+                        if ("SELECT".equalsIgnoreCase(b) || "(SELECT".equalsIgnoreCase(b)) {
                                 addKeyWord("FROM");
                                 addOperators();
                                 return;
                         } else if ("ALTER".equalsIgnoreCase(b)) {
-                                if (inside) {
-                                        return;
-                                }
                                 addKeyWords("DROP", "ADD", "RENAME");
                                 return;
                         } else if ("VIEW".equalsIgnoreCase(b)) {
-                                if (inside) {
-                                        return;
-                                }
                                 addKeyWord("AS");
                                 return;
                         } else if ("FROM".equalsIgnoreCase(b)) {
@@ -295,7 +286,7 @@ public class SQLMatcher {
                                 addTables(false);
                                 addTableFunctions();
                                 return;
-                        } else if ("SELECT".equalsIgnoreCase(a) || "WHERE".equalsIgnoreCase(a)
+                        } else if ("SELECT".equalsIgnoreCase(a) ||"(SELECT".equalsIgnoreCase(a) || "WHERE".equalsIgnoreCase(a)
                                 || "SET".equalsIgnoreCase(a) || "ON".equalsIgnoreCase(a)) {
                                 // after SELECT, WHERE or the sert part of an update
                                 addScalarFunctions();
@@ -333,7 +324,7 @@ public class SQLMatcher {
 
                 while (it.hasNext()) {
                         a = it.next();
-                        if ("SELECT".equalsIgnoreCase(a)) {
+                        if ("SELECT".equalsIgnoreCase(a) || "(SELECT".equalsIgnoreCase(a)) {
                                 addKeyWord("FROM");
                                 return;
                         } else if ("FROM".equalsIgnoreCase(a)) {
@@ -370,6 +361,9 @@ public class SQLMatcher {
                 } else if ("DROP".equalsIgnoreCase(a)) {
                         // DROP TABLE toto PURGE
                         addKeyWord("PURGE");
+                } else if ("ALTER".equalsIgnoreCase(a)) {
+                        addKeyWords("DROP", "ADD", "RENAME");
+                        return;
                 }
         }
 
@@ -379,11 +373,29 @@ public class SQLMatcher {
                 }
                 String a = it.next();
 
-                if ("SELECT".equals(a) || ",".equals(a)) {
+                if ("SELECT".equalsIgnoreCase(a) ||"(SELECT".equalsIgnoreCase(a) || ",".equalsIgnoreCase(a)) {
                         addKeyWords("EXCEPT", "FROM");
                 } else {
                         addScalarFunctions();
                         addTables(true);
+                }
+        }
+
+        private void matchAfterOpenPar() {
+                addKeyWord("SELECT");
+                while (it.hasNext()) {
+                        String b = it.next();
+                        if ("SELECT".equalsIgnoreCase(b) ||"(SELECT".equalsIgnoreCase(b) || "WHERE".equalsIgnoreCase(b) || "HAVING".equalsIgnoreCase(b)) {
+                                addScalarFunctions();
+                                addTables(true);
+                                return;
+                        } else if ("FROM".equalsIgnoreCase(b)) {
+                                addTables(false);
+                                return;
+                        }
+                        if (b.contains(";")) {
+                                return;
+                        }
                 }
         }
 
