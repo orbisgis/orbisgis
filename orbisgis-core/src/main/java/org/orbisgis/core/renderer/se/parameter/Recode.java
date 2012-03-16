@@ -158,11 +158,14 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
     /**
      * Get the value associated to the <code>key</code> given in argument, if any.
      * @param key
-     * @return 
+     * @return
+     * a {@code ToType} instance if something has been found in the map. {@code
+     * null} otherwise.
      */
     public ToType getMapItemValue(Literal key) {
         MapItem<ToType> item = new MapItem<ToType>(null, key);
-        return mapItems.get(mapItems.indexOf(item)).getValue();
+        int i = mapItems.indexOf(item);
+        return i<0 ? null : mapItems.get(i).getValue();
     }
 
     /**
@@ -215,13 +218,19 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
          * {@code fid}.
          * @param sds
          * @param fid
-         * @return 
+         * @return
+         * A {@code ToType} instance. If the feature found in {@code sds} at
+         * {@code fid} does not match anything in the underlying map, the {@code
+         * fallBackValue} is returned.</p>
+         * <p>If an error of any kind is catched, the {@code fallBackValue} is
+         * returned, and a message is print using the {@code OutputManager}.
          */
     public ToType getParameter(DataSource sds, long fid) {
         String key = "";
         try {
             key = lookupValue.getValue(sds, fid);
-            return getMapItemValue(new StringLiteral(key));
+            ToType ret = getMapItemValue(new StringLiteral(key));
+            return ret == null ? fallbackValue : ret;
         } catch (Exception e) {
             Services.getOutputManager().println("Fallback (" + key + "): " + e, Color.DARK_GRAY);
             return fallbackValue;

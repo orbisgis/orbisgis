@@ -57,7 +57,7 @@ public final class Recode2String extends Recode<StringParameter, StringLiteral> 
                         return getParameter(sds, fid).getValue(sds, fid);
                 } catch (ParameterException ex) {
                         Services.getOutputManager().println("Fallback:" + ex, Color.yellow);
-                        return this.getFallbackValue().getValue(sds, fid);
+                        return getFallbackValue().getValue(sds, fid);
                 }
         }
 
