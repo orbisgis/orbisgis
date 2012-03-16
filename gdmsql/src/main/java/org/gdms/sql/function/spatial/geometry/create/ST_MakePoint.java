@@ -97,8 +97,8 @@ public final class ST_MakePoint extends AbstractScalarSpatialFunction {
         @Override
         public FunctionSignature[] getFunctionSignatures() {
                 return new FunctionSignature[]{
-                                new BasicFunctionSignature(getType(null), ScalarArgument.LONG, ScalarArgument.LONG),
-                                new BasicFunctionSignature(getType(null), ScalarArgument.LONG, ScalarArgument.LONG, ScalarArgument.LONG)
+                                new BasicFunctionSignature(getType(null), ScalarArgument.DOUBLE, ScalarArgument.DOUBLE),
+                                new BasicFunctionSignature(getType(null), ScalarArgument.DOUBLE, ScalarArgument.DOUBLE, ScalarArgument.DOUBLE)
                         };
         }
 }
