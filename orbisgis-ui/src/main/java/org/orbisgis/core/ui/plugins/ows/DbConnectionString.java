@@ -5,7 +5,7 @@
 package org.orbisgis.core.ui.plugins.ows;
 
 /**
- *
+ * Value object aimed at defining a datasource's properties.
  * @author cleglaun
  */
 public class DbConnectionString {

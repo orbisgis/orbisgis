@@ -99,6 +99,13 @@ public class OWSContextImporterImpl implements OWSContextImporter {
         
     }
 
+    /**
+     * Extract every data source that has not been added to the geocognition
+     * from the ows context. We assume every "ows datasource" is named after
+     * its properties.
+     * @param owsContext The JAXB Ows context
+     * @return A list of data sources which don't exist in the geocognition
+     */
     @Override
     public List<DbConnectionString> extractUndefinedDataSources(JAXBElement<OWSContextType> owsContext) {
         List<DbConnectionString> sources = null;

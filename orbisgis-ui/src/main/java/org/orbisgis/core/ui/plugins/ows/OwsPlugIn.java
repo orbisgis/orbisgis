@@ -15,11 +15,8 @@ import javax.swing.JButton;
 import javax.xml.bind.JAXBElement;
 import javax.xml.parsers.ParserConfigurationException;
 import net.opengis.ows_context.OWSContextType;
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.db.DBSource;
-import org.gdms.driver.DriverException;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
@@ -96,6 +93,12 @@ public class OwsPlugIn extends AbstractPlugIn {
         return isEnabled;
     }
 
+    /**
+     * This listener is called when an ows context file has been
+     * unmarshalled by JAXB. It checks if we have access to every data source.
+     * If not, we prompt user in order that he can give credentials related
+     * to each data source.
+     */
     public class OwsFileImportListenerImpl implements OwsFileImportListener {
 
         private final DataSourceFactory dsf = new DataSourceFactory();
@@ -103,6 +106,7 @@ public class OwsPlugIn extends AbstractPlugIn {
         private JAXBElement<OWSContextType> owsContext;
         private int nbDatasourcesToCheck;
         private int nbDataSourcesChecked;
+        private boolean layersAlreadyAdded;
         
         public OwsFileImportListenerImpl() {
             unverifiedDbSources = new ArrayList<DBSource>();
@@ -113,8 +117,9 @@ public class OwsPlugIn extends AbstractPlugIn {
         /**
          * Checks whether the data sources can be opened and ask for 
          * credentials if they cannot.
+         * @param sources The data sources for whose we need credentials.
          */
-        private void checkDbSources(List<DbConnectionString> sources) {
+        private void askForDataSourcesCredentials(List<DbConnectionString> sources) {
             
             DataManager dm = Services.getService(DataManager.class);
             SourceManager sm = dm.getSourceManager();
@@ -123,25 +128,14 @@ public class OwsPlugIn extends AbstractPlugIn {
          
             for (DbConnectionString source : sources) {
                 DBSource newDbSource = new DBSource(source.getHost(), source.getPort(),
-                        source.getDb(), "postgress", "ieniiNg3", source.getTable(), "jdbc:postgresql");
+                        source.getDb(), "", "", source.getTable(), "jdbc:postgresql");
                 
-                String idLayer = OwsContextUtils.generateSourceId(source);
-                try {
-                    DataSource ds = dsf.getDataSource(newDbSource);
-                    ds.open();
-                    sm.register(idLayer, newDbSource);
-                } catch (DataSourceCreationException ex) {
-                    Logger.getLogger(OwsPlugIn.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (DriverException ex) {
-                    OwsDataSourceCredentialsPanel credentialsPanel = new OwsDataSourceCredentialsPanel(newDbSource);
-                    SIFDialog credentialsDialog = UIFactory.getSimpleDialog(credentialsPanel);
-                    credentialsPanel.setCredentialsListener(new OwsDataSourceCredentialsRequiredListenerImpl());
-                    credentialsDialog.pack();
-                    credentialsDialog.setVisible(true);
-                    credentialsDialogs.put(newDbSource, credentialsDialog);
-                    
-                    Logger.getLogger(OwsPlugIn.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                OwsDataSourceCredentialsPanel credentialsPanel = new OwsDataSourceCredentialsPanel(newDbSource);
+                SIFDialog credentialsDialog = UIFactory.getSimpleDialog(credentialsPanel);
+                credentialsPanel.setCredentialsListener(new OwsDataSourceCredentialsRequiredListenerImpl());
+                credentialsDialog.pack();
+                credentialsDialog.setVisible(true);
+                credentialsDialogs.put(newDbSource, credentialsDialog);
             }
         }
         
@@ -152,97 +146,108 @@ public class OwsPlugIn extends AbstractPlugIn {
             this.owsContext = owsContext;
             
             List<DbConnectionString> sources = importer.extractUndefinedDataSources(owsContext);
-            checkDbSources(sources);
+            if (sources.size() > 0) {
+                askForDataSourcesCredentials(sources);
+            }
+            else {
+                buildMapContext();
+            }
         }
         
+        /**
+         * Extracts layers from the ows context and add them to a new MapContext.
+         * WARNING: I'm not sure it's the most effective method to carry out
+         * this task.
+         */
+        private void buildMapContext() {
+            final List<ILayer> layers = OwsPlugIn.this.importer.extractLayers(OwsFileImportListenerImpl.this.owsContext);
+            Logger.getLogger(OwsPlugIn.class.getName()).log(Level.INFO, "{0} layer(s) imported.", layers.size());
+
+
+
+            getPlugInContext().getGeocognition().addGeocognitionListener(new GeocognitionListener() {
+                @Override
+                public boolean elementRemoving(Geocognition geocognition, GeocognitionElement element) {
+                    return true;
+                }
+
+                @Override
+                public void elementRemoved(Geocognition geocognition, GeocognitionElement element) {
+                }
+
+                @Override
+                public void elementAdded(Geocognition geocognition, GeocognitionElement parent, GeocognitionElement newElement) {
+                    mapContext = (MapContext) newElement.getObject();
+                }
+
+                @Override
+                public void elementMoved(Geocognition geocognition, GeocognitionElement element, GeocognitionElement oldParent) {
+                }
+            });
+
+            getPlugInContext().getEditorManager().addEditorListener(new EditorListener() {
+                @Override
+                public void activeEditorChanged(IEditor previous, IEditor current) {
+                }
+
+                @Override
+                public void activeEditorClosed(IEditor editor, String editorId) {
+                }
+
+                @Override
+                public boolean activeEditorClosing(IEditor editor, String editorId) {
+                    return true;
+                }
+
+                @Override
+                public void elementLoaded(IEditor editor, Component comp) {
+                    // WARNING: This is a trick to prevent layers from being
+                    // added more than one time to the layer model
+                    if (!layersAlreadyAdded) {
+                        for (ILayer layer : layers) {
+                            try {
+                                mapContext.getLayerModel().addLayer(layer);
+
+                            } catch (LayerException ex) {
+                                Logger.getLogger(OwsPlugIn.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
+                        layersAlreadyAdded = true;
+                    }
+
+                    mapContext.setOwsProjectId(Integer.parseInt(owsContext.getValue().getId()));
+                    mapContext.setOwsTitle(owsContext.getValue().getGeneral().getTitle().getValue());
+                    mapContext.setOwsDescription(owsContext.getValue().getGeneral().getAbstract().getValue());
+                    mapContext.setOwsCrs(owsContext.getValue().getGeneral().getBoundingBox().getValue().getCrs());
+
+
+                    importOwsDialog.setVisible(false);
+                }
+            });
+
+            getPlugInContext().executeGeocognitionElement(new NewMap());
+        }
+        
+        /**
+         * This class listens to a panel which allows user to give
+         * a data source's credentials (for example OwsDataSourceCredentialsPanel).
+         */
         public class OwsDataSourceCredentialsRequiredListenerImpl implements
                 OwsDataSourceCredentialsRequiredListener {
-
-            private boolean layersAlreadyAdded;
-            
-            public OwsDataSourceCredentialsRequiredListenerImpl() {
-            }
 
             @Override
             public void credentialsOk(DBSource source) {
                 layersAlreadyAdded = false;
                 credentialsDialogs.get(source).setVisible(false);
-                OwsFileImportListenerImpl.this.nbDataSourcesChecked++;
+                nbDataSourcesChecked++;
                 
                 DataManager dm = Services.getService(DataManager.class);
                 SourceManager sm = dm.getSourceManager();
 
                 sm.register(OwsContextUtils.generateSourceId(source), source);
                     
-                if (OwsFileImportListenerImpl.this.nbDataSourcesChecked == 
-                        OwsFileImportListenerImpl.this.nbDatasourcesToCheck) {
-                    
-                    final List<ILayer> layers = OwsPlugIn.this.importer.extractLayers(OwsFileImportListenerImpl.this.owsContext);
-                    Logger.getLogger(OwsPlugIn.class.getName()).log(Level.INFO, "{0} layer(s) imported.", layers.size());
-
-                    
-                    
-                    getPlugInContext().getGeocognition().addGeocognitionListener(new GeocognitionListener() {
-                        @Override
-                        public boolean elementRemoving(Geocognition geocognition, GeocognitionElement element) {
-                            return true;
-                        }
-
-                        @Override
-                        public void elementRemoved(Geocognition geocognition, GeocognitionElement element) {
-                        }
-
-                        @Override
-                        public void elementAdded(Geocognition geocognition, GeocognitionElement parent, GeocognitionElement newElement) {
-                            mapContext = (MapContext) newElement.getObject();
-                        }
-
-                        @Override
-                        public void elementMoved(Geocognition geocognition, GeocognitionElement element, GeocognitionElement oldParent) {
-                        }
-                    });
-
-                    getPlugInContext().getEditorManager().addEditorListener(new EditorListener() {
-                        @Override
-                        public void activeEditorChanged(IEditor previous, IEditor current) {
-                        }
-
-                        @Override
-                        public void activeEditorClosed(IEditor editor, String editorId) {
-                        }
-
-                        @Override
-                        public boolean activeEditorClosing(IEditor editor, String editorId) {
-                            return true;
-                        }
-
-                        @Override
-                        public void elementLoaded(IEditor editor, Component comp) {
-                            // WARNING: This is a trick to prevent layers from being
-                            // added more than one time to the layer model
-                            if (!layersAlreadyAdded) {
-                                for (ILayer layer : layers) {
-                                    try {
-                                        mapContext.getLayerModel().addLayer(layer);
-
-                                    } catch (LayerException ex) {
-                                        Logger.getLogger(OwsPlugIn.class.getName()).log(Level.SEVERE, null, ex);
-                                    }
-                                }
-                                layersAlreadyAdded = true;
-                            }
-                            
-                            mapContext.setOwsProjectId(Integer.parseInt(owsContext.getValue().getId()));
-                            mapContext.setOwsTitle(owsContext.getValue().getGeneral().getTitle().getValue());
-                            mapContext.setOwsDescription(owsContext.getValue().getGeneral().getAbstract().getValue());
-                            mapContext.setOwsCrs(owsContext.getValue().getGeneral().getBoundingBox().getValue().getCrs());
-
-
-                            importOwsDialog.setVisible(false);
-                        }
-                    });
-
-                    getPlugInContext().executeGeocognitionElement(new NewMap());
+                if (nbDataSourcesChecked == nbDatasourcesToCheck) {
+                    buildMapContext();
                 }
             }
         }
