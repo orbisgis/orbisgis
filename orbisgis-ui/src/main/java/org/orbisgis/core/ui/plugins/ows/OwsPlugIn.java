@@ -6,7 +6,9 @@ package org.orbisgis.core.ui.plugins.ows;
 
 import java.awt.Component;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
@@ -48,13 +50,14 @@ public class OwsPlugIn extends AbstractPlugIn {
     private JButton btn;
     private MapContext mapContext;
     private SIFDialog importOwsDialog;
-    private SIFDialog credentialsDialog;
+    private Map<DBSource, SIFDialog> credentialsDialogs;
     private OWSContextImporter importer;
 
     public OwsPlugIn() {
         
         this.importer = new OWSContextImporterImpl();
         this.btn = new JButton(Names.BUTTON_IMPORT_OWC_TITLE);
+        this.credentialsDialogs = new HashMap<DBSource, SIFDialog>();
     }
     
 
@@ -76,8 +79,6 @@ public class OwsPlugIn extends AbstractPlugIn {
             importOwsDialog = UIFactory.getSimpleDialog(panel);
             importOwsDialog.pack();
             importOwsDialog.setVisible(true);
-           
-
 
         } catch (ParserConfigurationException ex) {
             Logger.getLogger(OwsPlugIn.class.getName()).log(Level.SEVERE, null, ex);
@@ -111,7 +112,7 @@ public class OwsPlugIn extends AbstractPlugIn {
         
         /**
          * Checks whether the data sources can be opened and ask for 
-         * credentials if they cannot
+         * credentials if they cannot.
          */
         private void checkDbSources(List<DbConnectionString> sources) {
             
@@ -133,10 +134,11 @@ public class OwsPlugIn extends AbstractPlugIn {
                     Logger.getLogger(OwsPlugIn.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (DriverException ex) {
                     OwsDataSourceCredentialsPanel credentialsPanel = new OwsDataSourceCredentialsPanel(newDbSource);
-                    credentialsDialog = UIFactory.getSimpleDialog(credentialsPanel);
+                    SIFDialog credentialsDialog = UIFactory.getSimpleDialog(credentialsPanel);
                     credentialsPanel.setCredentialsListener(new OwsDataSourceCredentialsRequiredListenerImpl());
                     credentialsDialog.pack();
                     credentialsDialog.setVisible(true);
+                    credentialsDialogs.put(newDbSource, credentialsDialog);
                     
                     Logger.getLogger(OwsPlugIn.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -164,17 +166,17 @@ public class OwsPlugIn extends AbstractPlugIn {
             @Override
             public void credentialsOk(DBSource source) {
                 layersAlreadyAdded = false;
-                OwsPlugIn.this.credentialsDialog.setVisible(false);
+                credentialsDialogs.get(source).setVisible(false);
                 OwsFileImportListenerImpl.this.nbDataSourcesChecked++;
                 
+                DataManager dm = Services.getService(DataManager.class);
+                SourceManager sm = dm.getSourceManager();
+
+                sm.register(OwsContextUtils.generateSourceId(source), source);
+                    
                 if (OwsFileImportListenerImpl.this.nbDataSourcesChecked == 
                         OwsFileImportListenerImpl.this.nbDatasourcesToCheck) {
                     
-                    DataManager dm = Services.getService(DataManager.class);
-                    SourceManager sm = dm.getSourceManager();
-
-                    sm.register(OwsContextUtils.generateSourceId(source), source);
-
                     final List<ILayer> layers = OwsPlugIn.this.importer.extractLayers(OwsFileImportListenerImpl.this.owsContext);
                     Logger.getLogger(OwsPlugIn.class.getName()).log(Level.INFO, "{0} layer(s) imported.", layers.size());
 

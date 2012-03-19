@@ -4,7 +4,6 @@
  */
 package org.orbisgis.core.ui.plugins.ows;
 
-import com.sun.imageio.plugins.common.I18N;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -136,7 +135,7 @@ public class OwsDataSourceCredentialsPanel extends AbstractUIPanel {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         validateInputMessage = "";
-                        boolean credentialsAreOk = true;
+                        boolean currentDataSourceCredentialsAreOk = true;
                         
                         db.setUser(txtUsername.getText());
                         db.setPassword(new String(txtPassword.getPassword()));
@@ -150,12 +149,12 @@ public class OwsDataSourceCredentialsPanel extends AbstractUIPanel {
                         } catch (DataSourceCreationException ex) {
                             Logger.getLogger(OwsDataSourceCredentialsPanel.class.getName()).log(Level.SEVERE, null, ex);
                         } catch (DriverException ex) {
-                            credentialsAreOk = false;
+                            currentDataSourceCredentialsAreOk = false;
                             validateInputMessage = Names.LABEL_USERNAME_OR_PASSWORD_INVALID;
                             Logger.getLogger(OwsDataSourceCredentialsPanel.class.getName()).log(Level.SEVERE, null, ex);
                         }
                         
-                        if (credentialsAreOk) {
+                        if (currentDataSourceCredentialsAreOk) {
                             OwsDataSourceCredentialsPanel.this.credentialsListener.credentialsOk(db);
                         }
                     }

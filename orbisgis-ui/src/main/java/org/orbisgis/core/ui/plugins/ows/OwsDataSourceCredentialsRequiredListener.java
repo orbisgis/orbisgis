@@ -12,5 +12,10 @@ import org.gdms.data.db.DBSource;
  */
 public interface OwsDataSourceCredentialsRequiredListener {
     
+    /**
+     * Notifies listeners when the user entered valid source's credentials from
+     * a dialog box.
+     * @param source The data source whose credentials are ok.
+     */
     public void credentialsOk(DBSource source);
 }
