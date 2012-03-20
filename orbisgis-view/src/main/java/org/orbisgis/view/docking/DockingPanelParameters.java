@@ -46,15 +46,62 @@ import javax.swing.Icon;
  * @warning New properties must be linked with the current docking system {@link OrbisGISView} 
  */
 public class DockingPanelParameters implements Serializable {
-    private static final long serialVersionUID = 2L; /*<! Update this integer while adding properties (1 for each new property)*/
+    private static final long serialVersionUID = 4L; /*<! Update this integer while adding properties (1 for each new property)*/
     
     private PropertyChangeSupport propertySupport;
-   
+    private DockingAreaParameters dockingAreaParameters = null;
+    public static final String PROP_DOCKINGAREAPARAMETERS = "dockingAreaParameters";
+
+    /**
+     * Get the value of dockingAreaParameters
+     *
+     * @return the value of dockingAreaParameters
+     */
+    public DockingAreaParameters getDockingAreaParameters() {
+        return dockingAreaParameters;
+    }
+
+    /**
+     * Set the value of dockingAreaParameters
+     * @warning Only the instance of DockingManager should use this method
+     * This method is called when the Docking Area is alive and the panel is shown.
+     * @param dockingAreaParameters new value of dockingAreaParameters
+     */
+    public void setDockingAreaParameters(DockingAreaParameters dockingAreaParameters) {
+        DockingAreaParameters oldDockingAreaParameters = this.dockingAreaParameters;
+        this.dockingAreaParameters = dockingAreaParameters;
+        propertySupport.firePropertyChange(PROP_DOCKINGAREAPARAMETERS, oldDockingAreaParameters, dockingAreaParameters);
+    }
+
     private String title;
     public static final String PROP_TITLE = "title";
     
     private Icon titleIcon = null;
     public static final String PROP_TITLEICON = "titleIcon";
+    private String dockingArea = "";
+    public static final String PROP_DOCKINGAREA = "dockingArea";
+
+    /**
+     * Get the value of dockingArea
+     *
+     * @return the value of dockingArea
+     */
+    public String getDockingArea() {
+        return dockingArea;
+    }
+
+    /**
+     * Set the value of dockingArea
+     * When it is a non-empty string dockingArea will restrict the placement
+     * of the panel into a reserved area. This area will be shared only with
+     * other panels that have the same docking area name.
+     * @param dockingArea new value of dockingArea
+     */
+    public void setDockingArea(String dockingArea) {
+        String oldDockingArea = this.dockingArea;
+        this.dockingArea = dockingArea;
+        propertySupport.firePropertyChange(PROP_DOCKINGAREA, oldDockingArea, dockingArea);
+    }
 
     /**
      * Get the value of titleIcon

@@ -36,7 +36,10 @@ import org.orbisgis.core.context.main.MainContext;
 import org.orbisgis.utils.I18N;
 import org.orbisgis.view.docking.DockingManager;
 import org.orbisgis.view.geocatalog.Catalog;
+import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.main.frames.MainFrame;
+import org.orbisgis.view.map.MapEditor;
+import org.orbisgis.view.toc.Toc;
 import org.orbisgis.view.translation.OrbisGISI18N;
 
 /**
@@ -47,7 +50,10 @@ public class Core {
     /////////////////////
     //view package
     private MainFrame mainFrame = null;     /*!< The main window */
-    private Catalog geoCatalog= null;      /*!< The GeoCatalog */
+    private Catalog geoCatalog= null;      /*!< The GeoCatalog frame */
+    private Toc toc=null;                  /*!< The map layer list frame */
+    private MapEditor mapEditor=null;      /*!< The map editor-viewer frame */
+    
     private static final Rectangle MAIN_VIEW_POSITION_AND_SIZE = new Rectangle(20,20,800,600);/*!< Bounds of mainView, x,y and width height*/
     private DockingManager dockManager = null; /*!< The DockStation manager */
     
@@ -101,13 +107,24 @@ public class Core {
                 "windowClosing"));    //The listener method to use
     }
     /**
+     * Make the toc and map frames, place them in the main window
+     */
+    private void makeTocAndMap() {
+        toc = new Toc();
+        mapEditor = new MapEditor();
+        mapEditor.initListeners();
+        //Add the views as a new Docking Panel
+        dockManager.show(mapEditor);
+        dockManager.show(toc);
+    }
+    /**
      * Create the GeoCatalog view
      */
     private void makeGeoCatalogPanel() {
         //The geocatalog view content is read from the SourceContext
         geoCatalog = new Catalog(mainContext.getSourceContext());
         //Add the view as a new Docking Panel
-        dockManager.show(geoCatalog, dockManager.getScreen(), null);
+        dockManager.show(geoCatalog);
     }
     /**
      * The user want to close the main window
@@ -136,6 +153,9 @@ public class Core {
         
         //Load the GeoCatalog
         makeGeoCatalogPanel();
+        
+        //Load the Map And view panels
+        makeTocAndMap();
         
         // Show the application when Swing will be ready
         SwingUtilities.invokeLater( new ShowSwingApplication());
@@ -179,6 +199,9 @@ public class Core {
         
         //Free libraries resources
         mainContext.dispose();
+        
+        //Free icons
+        OrbisGISIcon.dispose();
     }
     /**
     * Stops this application, closes the {@link MainFrame} and saves

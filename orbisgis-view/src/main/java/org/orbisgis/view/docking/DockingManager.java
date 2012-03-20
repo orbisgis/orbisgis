@@ -36,11 +36,10 @@ import bibliothek.gui.DockController;
 import bibliothek.gui.DockFrontend;
 import bibliothek.gui.DockStation;
 import bibliothek.gui.Dockable;
-import bibliothek.gui.dock.FlapDockStation;
-import bibliothek.gui.dock.ScreenDockStation;
-import bibliothek.gui.dock.SplitDockStation;
+import bibliothek.gui.dock.*;
 import bibliothek.gui.dock.layout.DockableProperty;
 import bibliothek.gui.dock.station.flap.button.ButtonContent;
+import bibliothek.gui.dock.station.split.SplitDockProperty;
 import bibliothek.gui.dock.support.lookandfeel.ComponentCollector;
 import bibliothek.gui.dock.support.lookandfeel.LookAndFeelList;
 import bibliothek.gui.dock.themes.BasicTheme;
@@ -52,6 +51,8 @@ import java.util.*;
 import javax.swing.JFrame;
 import org.orbisgis.utils.I18N;
 import org.orbisgis.view.docking.internals.OrbisGISView;
+import org.orbisgis.view.docking.internals.ReservedDockStation;
+import org.orbisgis.view.docking.internals.UserStationRemoval;
 import org.orbisgis.view.icons.OrbisGISIcon;
 /**
  * @brief Manage left,right,down,center docking stations.
@@ -67,6 +68,13 @@ public final class DockingManager implements ComponentCollector {
         private LookAndFeelList lookAndFeels;    /*!< /*!< link to the docking-frames */
 
         private Map<DockingPanel,Dockable> views = new HashMap<DockingPanel,Dockable>();
+        
+        //Some docking panels must not be mixed with other panels,
+        //reservedDockStation is dedicated to this features
+        private Map<String,ReservedDockStation> reservedDockStations = new HashMap<String,ReservedDockStation>();
+        
+        /** the {@link StackDockStation} inserted in {@link split} */
+        private StackDockStation stackOfReservedDockStations;
 	/** the {@link DockStation} in the center of the {@link MainFrame} */
 	private SplitDockStation split;
 	/** the {@link DockStation} at the right side of the {@link MainFrame} */
@@ -128,7 +136,7 @@ public final class DockingManager implements ComponentCollector {
                 
 
                 final DockController controller = new DockController();
-
+                controller.setSingleParentRemover(new UserStationRemoval());
                 controller.setTheme( new BasicTheme() );
                 controller.getProperties().set( EclipseTheme.PAINT_ICONS_WHEN_DESELECTED, true );
                 controller.getProperties().set( EclipseTheme.TAB_PAINTER, RectGradientPainter.FACTORY );
@@ -152,15 +160,18 @@ public final class DockingManager implements ComponentCollector {
 		left = new FlapDockStation();
 		down = new FlapDockStation();
 		screen = new ScreenDockStation( owner );
-		
+                //StackDockStation will contain all instances of ReservedDockStation
+		stackOfReservedDockStations = new StackDockStation();
+                
 		frontend.addRoot( "screen", screen );
 		frontend.addRoot( "split", split );
 		frontend.addRoot( "right", right );
 		frontend.addRoot( "left", left );
 		frontend.addRoot( "down", down );
+                split.drop(stackOfReservedDockStations);
 
-		frontend.setDefaultStation( split );
-                
+		frontend.setDefaultStation( split );                
+
                 
                 Container content = owner.getContentPane();
 
@@ -170,7 +181,17 @@ public final class DockingManager implements ComponentCollector {
                 content.add( getDownDockStation().getComponent(), BorderLayout.SOUTH );
                 content.add( getRightDockStation().getComponent(), BorderLayout.EAST );
                 content.add( getLeftDockStation().getComponent(), BorderLayout.WEST );
+              
 	}
+        
+        
+	/**
+	 * Shows a view, read the view properties to decide where to show it
+         */
+        public void show( DockingPanel frame) {
+            show(frame,null,null);
+        }
+        
 	/**
 	 * Shows a view at the given location as child
 	 * of <code>root</code>.
@@ -180,18 +201,42 @@ public final class DockingManager implements ComponentCollector {
 	 * be <code>null</code>.
 	 */
 	public void show( DockingPanel frame, DockStation root, DockableProperty location ){
-		if( !views.containsKey( frame ) ) {
-                        Dockable dockItem = new OrbisGISView( frame );
-			if( root == null || location == null ){
-                            frontend.getDefaultStation().drop( dockItem );
-			} else {
-                            if( !root.drop( dockItem, location )){
-                                    frontend.getDefaultStation().drop( dockItem );
-                            }
-			}
-			views.put( frame, dockItem);
-		}
-		frontend.getController().setFocusedDockable( views.get(frame), false );
+            if( !views.containsKey( frame ) ) {
+                //Create the DockingFrame item
+                Dockable dockItem = new OrbisGISView( frame );
+                //Place the item in a dockstation
+                String restrictedAreaName = frame.getDockingParameters().getDockingArea();
+                if(!restrictedAreaName.isEmpty()) {
+                    //Find if this restricted area was already created
+                    ReservedDockStation reservedDockStation;
+                    if(reservedDockStations.containsKey(restrictedAreaName)) {
+                        reservedDockStation = reservedDockStations.get(restrictedAreaName);
+                    } else {
+                        //Create the restricted area
+                        reservedDockStation = new ReservedDockStation(restrictedAreaName);
+                        //Store the dockstation in the map, for future panels
+                        reservedDockStations.put(restrictedAreaName, reservedDockStation);
+                        //Set the dockstation in the stack
+                        stackOfReservedDockStations.drop(reservedDockStation);
+                        //Show the dock station
+                        frontend.show(reservedDockStation);
+                    }
+                    //Apply area parameters to panel parameters
+                    frame.getDockingParameters().setDockingAreaParameters(reservedDockStation.getDockingAreaParameters());
+                    root = reservedDockStation;
+                    location = new SplitDockProperty();    
+                }
+                if( root == null || location == null ){
+                    frontend.getDefaultStation().drop( dockItem );
+                } else {
+                    if( !root.drop( dockItem, location )){
+                        frontend.getDefaultStation().drop( dockItem );
+                    }
+                }
+                views.put( frame, dockItem);
+                frontend.show(dockItem);
+            }
+            frontend.getController().setFocusedDockable( views.get(frame), false );
 	}	
 	/**
 	 * Gets the {@link DockStation} that is on the right side of the {@link MainFrame}.
@@ -225,7 +270,7 @@ public final class DockingManager implements ComponentCollector {
 		return split;
 	}
 	
-	/**
+    /**
      * Gets the {@link DockStation} that is on the left side of the {@link MainFrame}.
      * @return the station in the left
      */

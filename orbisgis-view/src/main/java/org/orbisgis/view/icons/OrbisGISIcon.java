@@ -95,4 +95,10 @@ public final class OrbisGISIcon {
             return foundIcon;
         }
     }
+    /**
+     * Clear all cached icons
+     */
+    public static void dispose() {
+        loadedIcons.clear();
+    }
 }

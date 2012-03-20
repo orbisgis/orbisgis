@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OrbisGis 4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-08 17:19+0100\n"
-"PO-Revision-Date: 2012-03-15 11:34+0100\n"
+"POT-Creation-Date: 2012-03-20 09:02+0100\n"
+"PO-Revision-Date: 2012-03-20 09:02+0100\n"
 "Last-Translator: Nicolas Fortin <nicolas.fortin@ec-nantes.fr>\n"
 "Language-Team: OrbisGis <info@orbisgis.org>\n"
 "Language: fr\n"
@@ -20,53 +20,45 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-SearchPath-0: java\n"
 
-#: java/org/orbisgis/view/docking/DockingManager.java:147
+#: java/org/orbisgis/view/docking/DockingManager.java:155
 msgid "orbisgis.view.docking.stationTitle"
 msgstr "OrbisGis View"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:115
+#: java/org/orbisgis/view/geocatalog/Catalog.java:102
 msgid "orbisgis.org.orbisgis.Catalog.title"
 msgstr "GeoCatalog"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:231
+#: java/org/orbisgis/view/geocatalog/Catalog.java:190
 msgid "orbisgis.view.geocatalog.OpenGdmsFilePanelTitle"
 msgstr "Sélectionnez un fichier à ajouter"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:249
+#: java/org/orbisgis/view/geocatalog/Catalog.java:208
 msgid "orbisgis.view.geocatalog.SourceAlreadyRegistered"
 msgstr "Cette source est déjà enregistrée"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:262
+#: java/org/orbisgis/view/geocatalog/Catalog.java:221
 msgid "orbisgis.view.geocatalog.validateClearMessage"
 msgstr "Fermer toute les sources de données ?"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:263
+#: java/org/orbisgis/view/geocatalog/Catalog.java:222
 msgid "orbisgis.view.geocatalog.validateClearTitle"
 msgstr "Nettoyer le géocatalogue"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:277
+#: java/org/orbisgis/view/geocatalog/Catalog.java:236
 msgid "orbisgis.view.geocatalog.clearGeoCatalogMenuItem"
 msgstr "Nettoyer le géocatalogue"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:285
+#: java/org/orbisgis/view/geocatalog/Catalog.java:244
 msgid "orbisgis.view.geocatalog.addMenuItem"
 msgstr "Ajouter"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:289
+#: java/org/orbisgis/view/geocatalog/Catalog.java:249
 msgid "orbisgis.view.geocatalog.addFileMenuItem"
 msgstr "Fichier"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:305
+#: java/org/orbisgis/view/geocatalog/Catalog.java:265
 msgid "orbisgis.view.geocatalog.listenerMenuThrown"
 msgstr "The popup menu listener throw an error"
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:473
-msgid "orbisgis.view.geocatalog.removefilter"
-msgstr "Supprimer ce filtre"
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:494
-msgid "orbisgis.view.geocatalog.addfilter"
-msgstr "Ajouter un nouveau filtre"
 
 #: java/org/orbisgis/view/geocatalog/SourceListModel.java:215
 msgid "orbisgis.view.geocatalog.CannotReadDataSourceSchema"
@@ -76,39 +68,39 @@ msgstr "Ne peut pas lire le schema du Data Source"
 msgid "orbisgis.view.geocatalog.filters.factories.NameContainsLabel"
 msgstr "Nom contient"
 
-#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:66
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:68
 msgid "orbisgis.view.geocatalog.filters.AlphanumericFilter"
 msgstr "Alphanumerique"
 
-#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:69
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:71
 msgid "orbisgis.view.geocatalog.filters.DbsFilter"
 msgstr "Base de données"
 
-#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:73
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:75
 msgid "orbisgis.view.geocatalog.filters.FilesFilter"
 msgstr "Fichiers"
 
-#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:77
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:79
 msgid "orbisgis.view.geocatalog.filters.GeoFilter"
 msgstr "Géometrie"
 
-#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:81
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:83
 msgid "orbisgis.view.geocatalog.filters.RasterFilter"
 msgstr "Raster"
 
-#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:85
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:87
 msgid "orbisgis.view.geocatalog.filters.VectorialFilter"
 msgstr "Vectoriel"
 
-#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:89
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:91
 msgid "orbisgis.view.geocatalog.filters.WMSFilter"
 msgstr "Web Map Service"
 
-#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:93
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:95
 msgid "orbisgis.view.geocatalog.filters.TableSystemFilter"
 msgstr "Table système"
 
-#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:112
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:114
 msgid "orbisgis.view.geocatalog.filters.factories.TypeIsLabel"
 msgstr "De type"
 
@@ -116,9 +108,25 @@ msgstr "De type"
 msgid "orbisgis.view.geocatalog.filters.factories.NameNotContainsLabel"
 msgstr "Nom ne contient pas"
 
-#: java/org/orbisgis/view/icons/OrbisGISIcon.java:89
+#: java/org/orbisgis/view/icons/OrbisGISIcon.java:90
 msgid "orbisgis.view.icons.OrbisGISIcon.icon_not_found"
 msgstr "La ressource de l'icône n'a pas été trouvé"
+
+#: java/org/orbisgis/view/components/filter/FilterFactoryManager.java:326
+msgid "orbisgis.view.geocatalog.removefilter"
+msgstr "Supprimer ce filtre"
+
+#: java/org/orbisgis/view/components/filter/FilterFactoryManager.java:347
+msgid "orbisgis.view.geocatalog.addfilter"
+msgstr "Ajouter un nouveau filtre"
+
+#: java/org/orbisgis/view/map/MapEditor.java:53
+msgid "orbisgis.view.map.MapEditorTitle"
+msgstr "Carte"
+
+#: java/org/orbisgis/view/map/MapEditor.java:76
+msgid "orbisgis.view.map.TocAndMapAreaTitle"
+msgstr "Visualisation de carte"
 
 #: java/org/orbisgis/view/main/frames/MainFrame.java:49
 msgid "orbisgis.org.orbisgis.version"
@@ -127,4 +135,8 @@ msgstr "4.0 Beta"
 #: java/org/orbisgis/view/main/frames/MainFrame.java:49
 msgid "orbisgis.org.orbisgis.versionName"
 msgstr "La Rochelle"
+
+#: java/org/orbisgis/view/toc/Toc.java:52
+msgid "orbisgis.view.toc.TocTitle"
+msgstr "Toc"
 
