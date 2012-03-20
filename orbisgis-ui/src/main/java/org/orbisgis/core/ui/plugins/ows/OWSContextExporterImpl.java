@@ -13,7 +13,6 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import net.opengis.ows._2.BoundingBoxType;
-import net.opengis.ows._2.KeywordsType;
 import net.opengis.ows._2.LanguageStringType;
 import net.opengis.ows_context.GeneralType;
 import net.opengis.ows_context.LayerType;
@@ -36,6 +35,8 @@ public class OWSContextExporterImpl implements OWSContextExporter {
 
     private final OwsService owsService;
     private JAXBContext jc;
+    private net.opengis.ows._2.ObjectFactory factoryOws;
+    private ObjectFactory factoryOwsContext;
     
     public OWSContextExporterImpl(OwsService owsService) {
         this.owsService = owsService;
@@ -44,42 +45,95 @@ public class OWSContextExporterImpl implements OWSContextExporter {
         } catch (JAXBException ex) {
             Logger.getLogger(OWSContextExporterImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        factoryOws = new net.opengis.ows._2.ObjectFactory();
+        factoryOwsContext = new ObjectFactory();
                 
     }
     
     private LanguageStringType createLanguageString(String value) {
-        net.opengis.ows._2.ObjectFactory factoryOws = new net.opengis.ows._2.ObjectFactory();
         LanguageStringType langString = factoryOws.createLanguageStringType();
         langString.setValue(value);
         return langString;
     }
     
+    /**
+     * Merges the last imported ows context (JAXB tree) with the given parameters.
+     * WARNING, in this implementation, we recreate all children of
+     * {@link ResourceListType} node. Therefore, any layer is re-created, even
+     * if there has not had updates since the last import.
+     * 
+     * The destination depends on the {@link OwsService#saveOwsFileAs(java.lang.String) } implementation
+     * 
+     * @param owsContextElement The original ows context tree which was previously imported. (Null is not allowed)
+     * @param title Project's title
+     * @param description Project's description
+     * @param crs project's CRS
+     * @param boundingBox Bounding box
+     * @param layers A list of layers belonging to the project
+     * @throws NullPointerException If owsContext is null, you should consider
+     * calling exportProjectAs() method.
+     */
     @Override
-    public void exportProject(int id, String title, String description, String crs, Envelope boundingBox, ILayer[] layers) {
-        JAXBElement<OWSContextType> owsContextElement = generateOwsContext(title, description, crs, boundingBox, layers);
+    public void exportProject(JAXBElement<OWSContextType> owsContextElement, String title, 
+        String description, String crs, Envelope boundingBox, ILayer[] layers) 
+            throws NullPointerException {
+        
+        if (owsContextElement == null) {
+            throw new NullPointerException("OWS context cannot be null.");
+        }
+        
+        mergeJaxbWithOrbisModel(owsContextElement, title, description, crs, boundingBox, layers);
         
         try {
             Marshaller marshaller = jc.createMarshaller();
             marshaller.setProperty("jaxb.formatted.output", Boolean.TRUE);
-            //marshaller.marshal(owsContextElement, System.out);
             StringWriter sw = new StringWriter();
             marshaller.marshal(owsContextElement, sw);
             
-            owsService.saveOwsFile(sw.toString(), id);
+            owsService.saveOwsFile(sw.toString(), Integer.parseInt(owsContextElement.getValue().getId()));
         } catch (JAXBException ex) {
             Logger.getLogger(OWSContextExporterImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
+    /**
+     * If the given owsContextElementImported parameter is null, we simply build a new
+     * JAXB tree based on this method's parameters.
+     * 
+     * Otherwise, we merge the given parameter into the owsContextElementImported
+     * JAXB tree. WARNING, in this implementation, we recreate all children of
+     * {@link ResourceListType} node. Therefore, any layer is re-created, even
+     * if there has not had updates since the last import.
+     * 
+     * The destination depends on the {@link OwsService#saveOwsFileAs(java.lang.String) } implementation
+     * 
+     * @param owsContextElement The original ows context tree which was possibly imported. (Null allowed)
+     * @param title Project's title
+     * @param description Project's description
+     * @param crs project's CRS
+     * @param boundingBox Bounding box
+     * @param layers A list of layers belonging to the project
+     */
     @Override
-    public void exportProjectAs(String title, String description, String crs, Envelope boundingBox, ILayer[] layers) {
+    public void exportProjectAs(JAXBElement<OWSContextType> owsContextElementImported, 
+        String title, String description, String crs, Envelope boundingBox, ILayer[] layers) {
 
-        JAXBElement<OWSContextType> owsContextElement = generateOwsContext(title, description, crs, boundingBox, layers);
+        JAXBElement<OWSContextType> owsContextElement;
+                
+        if (owsContextElementImported != null) {
+            owsContextElement = owsContextElementImported;
+            mergeJaxbWithOrbisModel(owsContextElement, title, description, crs, boundingBox, layers);
+        }
+        else {
+            owsContextElement = buildNewOwsContext(title, description, crs, boundingBox, layers);
+        }
+        
+        
         
         try {
             Marshaller marshaller = jc.createMarshaller();
             marshaller.setProperty("jaxb.formatted.output", Boolean.TRUE);
-            //marshaller.marshal(owsContextElement, System.out);
             StringWriter sw = new StringWriter();
             marshaller.marshal(owsContextElement, sw);
             
@@ -90,35 +144,19 @@ public class OWSContextExporterImpl implements OWSContextExporter {
 
     }
     
-    private JAXBElement<OWSContextType> generateOwsContext(String title, String description, 
-            String crs, Envelope boundingBox, ILayer[] layers) {
-        net.opengis.ows._2.ObjectFactory factoryOws = new net.opengis.ows._2.ObjectFactory();
-        ObjectFactory factoryOwsContext = new ObjectFactory();
+    private void mergeJaxbWithOrbisModel(JAXBElement<OWSContextType> owsContextElement, 
+            String title, String description, String crs, Envelope boundingBox, ILayer[] layers) {
         
-        OWSContextType owsContext = factoryOwsContext.createOWSContextType();
-        JAXBElement<OWSContextType> owsContextElement = factoryOwsContext.createOWSContext(owsContext);
-        
-        GeneralType general = factoryOwsContext.createGeneralType();
-        
-        KeywordsType keywords = factoryOws.createKeywordsType();
-        keywords.getKeyword().add(createLanguageString("Keyword1"));
-        keywords.getKeyword().add(createLanguageString("Keyword2"));
-        
-        BoundingBoxType bbox = factoryOws.createBoundingBoxType();
-        JAXBElement<BoundingBoxType> boundingBoxElement = factoryOws.createBoundingBox(bbox);
-        bbox.setCrs(crs);
-        bbox.getLowerCorner().add(boundingBox.getMinX());
-        bbox.getLowerCorner().add(boundingBox.getMinY());
-        bbox.getUpperCorner().add(boundingBox.getMaxX());
-        bbox.getUpperCorner().add(boundingBox.getMaxY());
-        
-        general.setBoundingBox(boundingBoxElement);
-        general.setKeywords(keywords);
-        general.setTitle(createLanguageString(title));
-        general.setAbstract(createLanguageString(description));
+        owsContextElement.getValue().getGeneral().getTitle().setValue(title);
+        owsContextElement.getValue().getGeneral().getAbstract().setValue(description);
+        owsContextElement.getValue().getGeneral().setBoundingBox(buildBoundingBox(boundingBox, crs));
+        owsContextElement.getValue().setResourceList(buildResourceList(layers));
+    }
+    
+
+    private ResourceListType buildResourceList(ILayer[] layers) {
         
         ResourceListType resourceList = factoryOwsContext.createResourceListType();
-        
         for (int i = 0; i < layers.length; i++) {
             
             if (layers[i].isVisible()) {
@@ -153,8 +191,35 @@ public class OWSContextExporterImpl implements OWSContextExporter {
                 resourceList.getLayer().add(layer);
             }
         }
+        return resourceList;
+    }
+    
+    private JAXBElement<BoundingBoxType> buildBoundingBox(Envelope boundingBox, String crs) {
+        BoundingBoxType bbox = factoryOws.createBoundingBoxType();
+        JAXBElement<BoundingBoxType> boundingBoxElement = factoryOws.createBoundingBox(bbox);
+        bbox.setCrs(crs);
+        bbox.getLowerCorner().add(boundingBox.getMinX());
+        bbox.getLowerCorner().add(boundingBox.getMinY());
+        bbox.getUpperCorner().add(boundingBox.getMaxX());
+        bbox.getUpperCorner().add(boundingBox.getMaxY());
         
-        owsContext.setResourceList(resourceList);
+        return boundingBoxElement;
+    }
+    
+    private JAXBElement<OWSContextType> buildNewOwsContext(String title, String description, 
+            String crs, Envelope boundingBox, ILayer[] layers) {
+        
+        OWSContextType owsContext = factoryOwsContext.createOWSContextType();
+        JAXBElement<OWSContextType> owsContextElement = factoryOwsContext.createOWSContext(owsContext);
+        
+        GeneralType general = factoryOwsContext.createGeneralType();
+        
+        general.setBoundingBox(buildBoundingBox(boundingBox, crs));
+        general.setTitle(createLanguageString(title));
+        general.setAbstract(createLanguageString(description));
+        
+        
+        owsContext.setResourceList(buildResourceList(layers));
         owsContext.setGeneral(general);
         
         return owsContextElement;

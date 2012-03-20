@@ -49,12 +49,25 @@ public class OwsPlugIn extends AbstractPlugIn {
     private SIFDialog importOwsDialog;
     private Map<DBSource, SIFDialog> credentialsDialogs;
     private OWSContextImporter importer;
+    private static JAXBElement<OWSContextType> lastOwsContextImported;
 
     public OwsPlugIn() {
         
         this.importer = new OWSContextImporterImpl();
         this.btn = new JButton(Names.BUTTON_IMPORT_OWC_TITLE);
         this.credentialsDialogs = new HashMap<DBSource, SIFDialog>();
+    }
+    
+    /**
+     * Gets the JAXB tree representing the last ows context file that has
+     * been imported. It will typically be used by the export plugin to retrieve
+     * values that are not used by the orbis object model.
+     * 
+     * @return A JAXB ows context. Returns null if no ows context has been imported
+     * or if the map has been closed.
+     */
+    public static JAXBElement<OWSContextType> getLastOwsContextImported() {
+        return lastOwsContextImported;
     }
     
 
@@ -144,6 +157,7 @@ public class OwsPlugIn extends AbstractPlugIn {
 
             unverifiedDbSources.clear();
             this.owsContext = owsContext;
+            lastOwsContextImported = owsContext;
             
             List<DbConnectionString> sources = importer.extractUndefinedDataSources(owsContext);
             if (sources.size() > 0) {
@@ -192,6 +206,7 @@ public class OwsPlugIn extends AbstractPlugIn {
 
                 @Override
                 public void activeEditorClosed(IEditor editor, String editorId) {
+                    lastOwsContextImported = null;
                 }
 
                 @Override

@@ -58,11 +58,7 @@ public class OwsExportPanel extends AbstractUIPanel {
         };
         txtCrs = new JTextField(10);
         
-        if (mapContext.getOwsProjectId() != -1) {
-            txtTitle.setText(mapContext.getOwsTitle());
-            txtDescription.setText(mapContext.getOwsDescription());
-            txtCrs.setText(mapContext.getOwsCrs());
-        }
+
         
         final JLabel lblTitle = new JLabel(Names.LABEL_OWS_TITLE + ": ") {
             {
@@ -137,6 +133,15 @@ public class OwsExportPanel extends AbstractUIPanel {
         };
         
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+        
+        if (OwsPlugIn.getLastOwsContextImported() != null) {
+            txtTitle.setText(mapContext.getOwsTitle());
+            txtDescription.setText(mapContext.getOwsDescription());
+            txtCrs.setText(mapContext.getOwsCrs());
+        }
+        else {
+            cmdExport.setEnabled(false);
+        }
     }
     
     @Override
@@ -168,7 +173,7 @@ public class OwsExportPanel extends AbstractUIPanel {
 
                 @Override
                 public void run(ProgressMonitor pm) {
-                    OwsExportPanel.this.owsFileExporter.exportProject(mapContext.getOwsProjectId(), 
+                    OwsExportPanel.this.owsFileExporter.exportProject(OwsPlugIn.getLastOwsContextImported(), 
                             txtTitle.getText(), 
                             txtDescription.getText(), txtCrs.getText(), 
                             OwsExportPanel.this.mapContext.getBoundingBox(), 
@@ -199,7 +204,8 @@ public class OwsExportPanel extends AbstractUIPanel {
 
                 @Override
                 public void run(ProgressMonitor pm) {
-                    OwsExportPanel.this.owsFileExporter.exportProjectAs(txtTitle.getText(), 
+                    OwsExportPanel.this.owsFileExporter.exportProjectAs(
+                            OwsPlugIn.getLastOwsContextImported(), txtTitle.getText(), 
                             txtDescription.getText(), txtCrs.getText(), 
                             OwsExportPanel.this.mapContext.getBoundingBox(), 
                             OwsExportPanel.this.mapContext.getLayers());
