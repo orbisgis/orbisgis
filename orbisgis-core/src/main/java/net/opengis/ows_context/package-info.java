@@ -8,7 +8,16 @@
 @javax.xml.bind.annotation.XmlSchema(
         namespace = "http://www.opengis.net/ows-context", 
         xmlns= {
-            @XmlNs(namespaceURI="http://www.opengis.net/ows-context", prefix="")
+            @XmlNs(namespaceURI="http://www.opengis.net/ows-context", prefix=""),
+            @XmlNs(namespaceURI="http://www.w3.org/1999/xlink", prefix="xlink"),
+            @XmlNs(namespaceURI="http://www.opengis.net/ows/2.0", prefix="ows"),
+            @XmlNs(namespaceURI="http://www.opengis.net/sld/2.0", prefix="sld"),
+            @XmlNs(namespaceURI="http://www.opengis.net/se/2.0/core", prefix="se"),
+            @XmlNs(namespaceURI="http://www.opengis.net/wms/2.0", prefix="wms"),
+            @XmlNs(namespaceURI="http://www.opengis.net/fes/2.0", prefix="fes"),
+            @XmlNs(namespaceURI="http://www.opengis.net/se/2.0/raster", prefix="raster"),
+            @XmlNs(namespaceURI="http://www.opengis.net/gml", prefix="gml"),
+            @XmlNs(namespaceURI="http://www.opengis.net/se/2.0/thematic", prefix="sethematic")
         },
         elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package net.opengis.ows_context;
