@@ -51,5 +51,22 @@ public class CatalogSourceItem extends ContainerItemKey {
      */
     public String getSourceIconName() {
         return sourceIconName;
-    }    
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+    
 }

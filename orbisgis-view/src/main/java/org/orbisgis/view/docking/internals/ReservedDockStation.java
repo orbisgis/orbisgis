@@ -28,7 +28,9 @@
  */
 package org.orbisgis.view.docking.internals;
 
+import bibliothek.gui.DockStation;
 import bibliothek.gui.Dockable;
+import bibliothek.gui.dock.FlapDockStation;
 import bibliothek.gui.dock.SplitDockStation;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
@@ -83,7 +85,42 @@ public class ReservedDockStation extends SplitDockStation {
         }
     }  
     
+        
+    /**
+     * Tells whether <code>station</code> is an accepted parent for this 
+     * <code>Dockable</code> or not. The user is not able to drag a <code>Dockable</code> to a station
+     * which is not accepted.
+     * @param station a possible parent
+     * @return whether <code>station</code> could be a parent or not
+     */
+    @Override
+    public boolean accept( DockStation station ) {
+        if(station instanceof FlapDockStation) {
+            if(dockingAreaParameters.isAcceptParentFlap()) {
+                return true;
+            }else{
+                return false;
+            }
+        } else {
+            return super.accept(station);
+        }
+    }
     
+    /**
+     * Tells whether <code>base</code> could be the parent of a combination
+     * between this <code>Dockable</code> and <code>neighbor</code>. The user is not able
+     * to make a combination between this <code>Dockable</code> and <code>neighbor</code>
+     * if this method does not accept the operation.
+     * @param base the future parent of the combination
+     * @param neighbor a <code>Dockable</code> whose parent will be the same parent as
+     * the parent of this <code>Dockable</code>
+     * @return <code>true</code> if the combination is allowed, <code>false</code>
+     * otherwise
+     */
+    @Override
+    public boolean accept( DockStation base, Dockable neighbor ) {
+        return super.accept(base,neighbor);
+    }
     
     /**
      * Link DefaultDockable parameters with OrbisGis parameters

@@ -36,6 +36,10 @@ import javax.swing.JPanel;
  * @brief This is a dummy panel.
  */
 public class DummyViewPanel extends JPanel implements DockingPanel {
+    
+    //The UID must be incremented when the serialization is not compatible with the new version of this class
+    private static final long serialVersionUID = 1L; 
+    
     private DockingPanelParameters dockingParameters = new DockingPanelParameters();
     public static final String OLD_TITLE = "old dummy title";
     /**

@@ -39,7 +39,7 @@ import org.orbisgis.view.icons.OrbisGISIcon;
  * @warning New properties must be linked with the current docking system {@link ReservedDockStation} 
  */
 public class DockingAreaParameters implements Serializable {
-    private static final long serialVersionUID = 2L; /*<! Update this integer while adding properties (1 for each new property)*/
+    private static final long serialVersionUID = 3L; /*<! Update this integer while adding properties (1 for each new property)*/
     
 
     private PropertyChangeSupport propertySupport;
@@ -53,6 +53,29 @@ public class DockingAreaParameters implements Serializable {
 
     private Icon areaIcon = OrbisGISIcon.getIcon("orbisgis");
     public static final String PROP_AREAICON = "areaIcon";
+    private boolean acceptParentFlap = true;
+    public static final String PROP_ACCEPTPARENTFLAP = "acceptParentFlap";
+
+    /**
+     * Get the value of acceptParentFlap
+     *
+     * @return the value of acceptParentFlap
+     */
+    public boolean isAcceptParentFlap() {
+        return acceptParentFlap;
+    }
+
+    /**
+     * Set the value of acceptParentFlap
+     * If false, the Docking Area will refuse to be included
+     * into a FlapDockStation instance.
+     * @param acceptParentFlap new value of acceptParentFlap
+     */
+    public void setAcceptParentFlap(boolean acceptParentFlap) {
+        boolean oldAcceptParentFlap = this.acceptParentFlap;
+        this.acceptParentFlap = acceptParentFlap;
+        propertySupport.firePropertyChange(PROP_ACCEPTPARENTFLAP, oldAcceptParentFlap, acceptParentFlap);
+    }
 
     /**
      * Get the value of areaIcon

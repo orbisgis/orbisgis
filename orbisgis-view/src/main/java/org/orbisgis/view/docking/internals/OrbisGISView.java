@@ -32,6 +32,7 @@ package org.orbisgis.view.docking.internals;
 import bibliothek.gui.DockStation;
 import bibliothek.gui.Dockable;
 import bibliothek.gui.dock.DefaultDockable;
+import bibliothek.gui.dock.FlapDockStation;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import org.orbisgis.view.docking.DockingPanel;
@@ -99,15 +100,15 @@ public class OrbisGISView  extends DefaultDockable {
      */
     @Override
     public boolean accept( DockStation station ) {
-        if(dockableParameters.getDockingArea().isEmpty()) {
-            return super.accept(station);
-        }else{
-            if(station instanceof ReservedDockStation) {
-                return ((ReservedDockStation)station).getDockingAreaName().equals(dockableParameters.getDockingArea());
-            } else {
+        if(station instanceof ReservedDockStation) {
+            return ((ReservedDockStation)station).getDockingAreaName().equals(dockableParameters.getDockingArea());
+        } else if(station instanceof FlapDockStation) {
+            if(!dockableParameters.isAcceptParentFlap()) {
                 return false;
             }
         }
+        //Panel with docking area do not accept unknown DockStation
+        return dockableParameters.getDockingArea().isEmpty();
     }
     
     /**
@@ -126,7 +127,7 @@ public class OrbisGISView  extends DefaultDockable {
         if(dockableParameters.getDockingArea().isEmpty()) {
             return super.accept(base,neighbor);
         } else {
-            return this.accept(base);
+            return false;//The user cannot make a StackStation on ReservedDockStation
         }
     }
     

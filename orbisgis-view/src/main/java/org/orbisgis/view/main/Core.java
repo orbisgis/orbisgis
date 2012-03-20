@@ -112,7 +112,6 @@ public class Core {
     private void makeTocAndMap() {
         toc = new Toc();
         mapEditor = new MapEditor();
-        mapEditor.initListeners();
         //Add the views as a new Docking Panel
         dockManager.show(mapEditor);
         dockManager.show(toc);
@@ -156,6 +155,9 @@ public class Core {
         
         //Load the Map And view panels
         makeTocAndMap();
+        
+        //Debug create serialisation of panels
+        
         
         // Show the application when Swing will be ready
         SwingUtilities.invokeLater( new ShowSwingApplication());

@@ -219,7 +219,7 @@ public class FilterFactoryManager<FilterInterface> {
                 Component factoryAndFilter = ((BorderLayout)((JPanel)removeButtonFactoryFilter).getLayout()).getLayoutComponent(BorderLayout.CENTER);
                 if(factoryAndFilter!=null) {
                     Component factoryList = ((BorderLayout)((JPanel)factoryAndFilter).getLayout()).getLayoutComponent(BorderLayout.WEST);
-                    if(factoryList==null || !(factoryList instanceof JComboBox || factoryList instanceof JLabel)) {
+                    if(!(factoryList instanceof JComboBox || factoryList instanceof JLabel)) {
                         //Could not find Filter Factory list
                         //You must update onFilterChanged according to the change on Filter Factory ComboBox panel layout
                         LOGGER.debug("Error: Could not find Filter Factory list");

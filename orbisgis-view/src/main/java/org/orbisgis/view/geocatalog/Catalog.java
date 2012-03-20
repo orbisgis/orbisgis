@@ -68,6 +68,9 @@ import org.orbisgis.view.icons.OrbisGISIcon;
  * to add more items in the source list popup menu.
  */
 public class Catalog extends JPanel implements DockingPanel {
+    //The UID must be incremented when the serialization is not compatible with the new version of this class
+    private static final long serialVersionUID = 1L; 
+
     private static final Logger LOGGER = Logger.getLogger(Catalog.class);
     private DockingPanelParameters dockingParameters = new DockingPanelParameters(); /*!< GeoCatalog docked panel properties */
     private JList sourceList;

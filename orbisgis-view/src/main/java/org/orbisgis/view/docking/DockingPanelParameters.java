@@ -46,11 +46,35 @@ import javax.swing.Icon;
  * @warning New properties must be linked with the current docking system {@link OrbisGISView} 
  */
 public class DockingPanelParameters implements Serializable {
-    private static final long serialVersionUID = 4L; /*<! Update this integer while adding properties (1 for each new property)*/
+    private static final long serialVersionUID = 6L; /*<! Update this integer while adding properties (1 for each new property)*/
     
     private PropertyChangeSupport propertySupport;
     private DockingAreaParameters dockingAreaParameters = null;
     public static final String PROP_DOCKINGAREAPARAMETERS = "dockingAreaParameters";
+    private boolean acceptParentFlap = true;
+    public static final String PROP_ACCEPTPARENTFLAP = "acceptParentFlap";
+
+    /**
+     * Get the value of acceptParentFlap
+     *
+     * @return the value of acceptParentFlap
+     */
+    public boolean isAcceptParentFlap() {
+        return acceptParentFlap;
+    }
+
+    /**
+     * Set the value of acceptParentFlap
+     *
+     * If false, the Docking Panel will refuse to be included
+     * into a FlapDockStation instance.
+     * @param acceptParentFlap new value of acceptParentFlap
+     */
+    public void setAcceptParentFlap(boolean acceptParentFlap) {
+        boolean oldAcceptParentFlap = this.acceptParentFlap;
+        this.acceptParentFlap = acceptParentFlap;
+        propertySupport.firePropertyChange(PROP_ACCEPTPARENTFLAP, oldAcceptParentFlap, acceptParentFlap);
+    }
 
     /**
      * Get the value of dockingAreaParameters
@@ -59,6 +83,31 @@ public class DockingPanelParameters implements Serializable {
      */
     public DockingAreaParameters getDockingAreaParameters() {
         return dockingAreaParameters;
+    }
+    private String name = "";
+    public static final String PROP_NAME = "name";
+
+    /**
+     * Get the value of name
+     *
+     * @return the value of name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Set the value of name
+     * The internal name of the docking frames, this name
+     * is used to load/restore the view state of the frames.
+     * @warning When the name is not set, 
+     * the state of this window will be lost at application stop.
+     * @param name new value of name
+     */
+    public void setName(String name) {
+        String oldName = this.name;
+        this.name = name;
+        propertySupport.firePropertyChange(PROP_NAME, oldName, name);
     }
 
     /**

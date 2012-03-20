@@ -29,8 +29,6 @@
 package org.orbisgis.view.map;
 
 import java.awt.Component;
-import java.beans.EventHandler;
-import java.beans.PropertyChangeListener;
 import javax.swing.JPanel;
 import org.orbisgis.utils.I18N;
 import org.orbisgis.view.docking.DockingPanel;
@@ -41,28 +39,22 @@ import org.orbisgis.view.icons.OrbisGISIcon;
  * @brief The Map Editor Panel
  */
 public class MapEditor extends JPanel implements DockingPanel   {
-        DockingPanelParameters dockingPanelParameters;
+    
+    //The UID must be incremented when the serialization is not compatible with the new version of this class
+    private static final long serialVersionUID = 1L; 
+    
+    DockingPanelParameters dockingPanelParameters;
     
     /**
      * Constructor
      */
     public MapEditor() {
         dockingPanelParameters = new DockingPanelParameters();
-        dockingPanelParameters.setDockingArea("toc_map");
         dockingPanelParameters.setTitle(I18N.getString("orbisgis.view.map.MapEditorTitle"));
         dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("map"));
+        dockingPanelParameters.setAcceptParentFlap(false);
     }
-    /**
-     * Must be called after construction of mapeditor, 
-     * and before showing the element
-     */
-    public void initListeners() {
-        //Set a localized name and a specific icon to the toc_map docking area
-        dockingPanelParameters.addPropertyChangeListener(
-                DockingPanelParameters.PROP_DOCKINGAREAPARAMETERS,
-                EventHandler.create(PropertyChangeListener.class,this,
-                "onDockingAreaParametersAvaible"));        
-    }
+
     /**
      * Give information on the behaviour of this panel related to the current
      * docking system
@@ -72,14 +64,6 @@ public class MapEditor extends JPanel implements DockingPanel   {
         return dockingPanelParameters;
     }
 
-    /**
-     * When the docking area is ready, this method set the area title name
-     */
-    public void onDockingAreaParametersAvaible() {
-        dockingPanelParameters.getDockingAreaParameters().setAreaTitle(
-                I18N.getString("orbisgis.view.map.TocAndMapAreaTitle"));
-    }
-    
     /**
      * Return the content of the view.
      * @return An awt content to show in this panel

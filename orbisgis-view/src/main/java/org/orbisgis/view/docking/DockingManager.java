@@ -36,13 +36,17 @@ import bibliothek.gui.DockController;
 import bibliothek.gui.DockFrontend;
 import bibliothek.gui.DockStation;
 import bibliothek.gui.Dockable;
-import bibliothek.gui.dock.*;
+import bibliothek.gui.dock.FlapDockStation;
+import bibliothek.gui.dock.ScreenDockStation;
+import bibliothek.gui.dock.SplitDockStation;
+import bibliothek.gui.dock.StackDockStation;
 import bibliothek.gui.dock.layout.DockableProperty;
 import bibliothek.gui.dock.station.flap.button.ButtonContent;
 import bibliothek.gui.dock.station.split.SplitDockProperty;
 import bibliothek.gui.dock.support.lookandfeel.ComponentCollector;
 import bibliothek.gui.dock.support.lookandfeel.LookAndFeelList;
 import bibliothek.gui.dock.themes.BasicTheme;
+import bibliothek.gui.dock.themes.NoStackTheme;
 import bibliothek.gui.dock.util.PropertyKey;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -137,7 +141,7 @@ public final class DockingManager implements ComponentCollector {
 
                 final DockController controller = new DockController();
                 controller.setSingleParentRemover(new UserStationRemoval());
-                controller.setTheme( new BasicTheme() );
+                controller.setTheme( new NoStackTheme(new BasicTheme()) );
                 controller.getProperties().set( EclipseTheme.PAINT_ICONS_WHEN_DESELECTED, true );
                 controller.getProperties().set( EclipseTheme.TAB_PAINTER, RectGradientPainter.FACTORY );
                 controller.getProperties().set( FlapDockStation.BUTTON_CONTENT, ButtonContent.ICON_AND_TEXT_ONLY );

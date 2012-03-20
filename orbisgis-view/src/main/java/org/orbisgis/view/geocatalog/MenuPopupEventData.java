@@ -37,7 +37,8 @@ import javax.swing.JPopupMenu;
  * class manage item related functionality.
  */
 public class MenuPopupEventData extends EventObject {
-    JPopupMenu popupMenu;
+    private static final long serialVersionUID = 1L;
+    private JPopupMenu popupMenu;
     /**
      * Constructor, build by event source
      * @param popupMenu The menu popup to feed

@@ -41,6 +41,9 @@ import org.orbisgis.view.icons.OrbisGISIcon;
 
 
 public class Toc extends JPanel implements DockingPanel  {
+    //The UID must be incremented when the serialization is not compatible with the new version of this class
+    private static final long serialVersionUID = 1L; 
+    
     DockingPanelParameters dockingPanelParameters;
     
     /**
@@ -48,7 +51,8 @@ public class Toc extends JPanel implements DockingPanel  {
      */
     public Toc() {
         dockingPanelParameters = new DockingPanelParameters();
-        dockingPanelParameters.setDockingArea("toc_map");
+        dockingPanelParameters.setName("toc");
+        //dockingPanelParameters.setDockingArea("toc_map");
         dockingPanelParameters.setTitle(I18N.getString("orbisgis.view.toc.TocTitle"));
         dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("map"));
     }

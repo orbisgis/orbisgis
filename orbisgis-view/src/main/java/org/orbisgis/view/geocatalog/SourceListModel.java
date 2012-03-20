@@ -151,27 +151,26 @@ public class SourceListModel extends AbstractListModel {
          * @return The source item icon name, in org.orbisgis.view.icons package
          */
         private String getIconName(Source src) {
-            if (src != null) {
-                if (src.isFileSource() && src.getFile() != null && !src.getFile().exists()) {
-                    return "remove";
-                }
-                int sourceType = src.getType();
-                if ((sourceType & SourceManager.VECTORIAL) == SourceManager.VECTORIAL) {
-                    return "geofile";
-                } else if ((sourceType & SourceManager.RASTER) == SourceManager.RASTER) {
-                    return "image";
-                } else if ((sourceType & SourceManager.WMS) == SourceManager.WMS) {
-                    return "server_connect";
-                } else if ((sourceType & SourceManager.FILE) == SourceManager.FILE) {
-                    return "flatfile";
-                } else if ((sourceType & SourceManager.DB) == SourceManager.DB) {
-                    return "database";
-                } else if ((sourceType & SourceManager.SYSTEM_TABLE) == SourceManager.SYSTEM_TABLE) {
-                    return "drive";
-                } else {
-                    return "information_geo"; //Unknown source type
-                }
-            }else{
+            if (src == null) {
+                return "information_geo"; //Unknown source type
+            }
+            int sourceType = src.getType();
+            //This is a File Source Type, and the file not exists
+            if (src.isFileSource() && src.getFile() != null && !src.getFile().exists()) {
+                return "remove";
+            } else if ((sourceType & SourceManager.VECTORIAL) == SourceManager.VECTORIAL) {
+                return "geofile";
+            } else if ((sourceType & SourceManager.RASTER) == SourceManager.RASTER) {
+                return "image";
+            } else if ((sourceType & SourceManager.WMS) == SourceManager.WMS) {
+                return "server_connect";
+            } else if ((sourceType & SourceManager.FILE) == SourceManager.FILE) {
+                return "flatfile";
+            } else if ((sourceType & SourceManager.DB) == SourceManager.DB) {
+                return "database";
+            } else if ((sourceType & SourceManager.SYSTEM_TABLE) == SourceManager.SYSTEM_TABLE) {
+                return "drive";
+            } else {
                 return "information_geo"; //Unknown source type
             }
         }
