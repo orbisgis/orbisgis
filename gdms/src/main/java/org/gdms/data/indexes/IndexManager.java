@@ -690,7 +690,7 @@ public class IndexManager {
                 DataSourceIndex dsi;
                 if (src instanceof DataSource) {
                         DataSource ds = (DataSource) src;
-                        return queryIndex(ds.getName(), indexQuery);
+                        return queryIndex(ds.getName(), indexQuery, visitor);
                 }
 
                 dsi = getIndex(TEMPINDEXPREFIX + src.hashCode(), indexQuery.getFieldName());
