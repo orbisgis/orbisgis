@@ -39,36 +39,34 @@
 package org.gdms.data.types;
 
 public class DefaultTypeDefinition implements TypeDefinition {
-	private String typeName;
 
-	private int typeCode;
+        private String typeName;
+        private int typeCode;
+        private int[] constraints;
 
-	private int[] constraints;
+        public DefaultTypeDefinition(final String typeName, final int typeCode) {
+                this(typeName, typeCode, new int[0]);
+        }
 
-	public DefaultTypeDefinition(final String typeName, final int typeCode) {
-		this(typeName, typeCode, new int[0]);
-	}
+        public DefaultTypeDefinition(final String typeName, final int typeCode, int... constraints) {
+                this.constraints = constraints;
+                this.typeName = typeName;
+                this.typeCode = typeCode;
+        }
 
-	public DefaultTypeDefinition(final String typeName, final int typeCode,
-			final int[] constraints) {
-		this.constraints = constraints;
-		this.typeName = typeName;
-		this.typeCode = typeCode;
-	}
+        public String getTypeName() {
+                return typeName;
+        }
 
-	public String getTypeName() {
-		return typeName;
-	}
+        public int[] getValidConstraints() {
+                return constraints;
+        }
 
-	public int[] getValidConstraints() {
-		return constraints;
-	}
+        public Type createType() {
+                return new DefaultType(new Constraint[0], typeCode);
+        }
 
-	public Type createType() {
-		return new DefaultType(new Constraint[0], typeCode);
-	}
-
-	public Type createType(Constraint[] constraints) {
-		return new DefaultType(constraints, typeCode);
-	}
+        public Type createType(Constraint[] constraints) {
+                return new DefaultType(constraints, typeCode);
+        }
 }

@@ -228,8 +228,10 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
         @Override
         public TypeDefinition[] getTypesDefinitions() {
                 List<TypeDefinition> result = new LinkedList<TypeDefinition>(Arrays.asList(new DBFDriver().getTypesDefinitions()));
-                result.add(new DefaultTypeDefinition("Geometry", Type.GEOMETRY,
-                        new int[]{Constraint.DIMENSION_3D_GEOMETRY}));
+                result.add(new DefaultTypeDefinition("Point", Type.POINT, Constraint.DIMENSION_3D_GEOMETRY));
+                result.add(new DefaultTypeDefinition("MultiPoint", Type.MULTIPOINT, Constraint.DIMENSION_3D_GEOMETRY));
+                result.add(new DefaultTypeDefinition("MultiPolygon", Type.MULTIPOLYGON, Constraint.DIMENSION_3D_GEOMETRY));
+                result.add(new DefaultTypeDefinition("MultiLineString", Type.MULTILINESTRING, Constraint.DIMENSION_3D_GEOMETRY));
                 return result.toArray(new TypeDefinition[result.size()]);
         }
 
@@ -657,10 +659,12 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                                                 + " and "
                                                 + m.getFieldName(i) + " found";
                                 } else {
-
-                                        if ((typeCode & Type.LINESTRING) != 0) {
+                                        if (typeCode == Type.GEOMETRY) {
+                                                return "A generic geometry column is not allowed. It must be of a concrete geometry type "
+                                                        + "other than LineString of Polygon.";
+                                        } else if (typeCode == Type.LINESTRING) {
                                                 return "Linestrings are not allowed. Use Multilinestrings instead";
-                                        } else if ((typeCode & Type.POLYGON) != 0) {
+                                        } else if (typeCode == Type.POLYGON) {
                                                 return "Polygons are not allowed. Use Multipolygons instead";
                                         }
                                         Dimension3DConstraint dc = (Dimension3DConstraint) fieldType.getConstraint(Constraint.DIMENSION_3D_GEOMETRY);
