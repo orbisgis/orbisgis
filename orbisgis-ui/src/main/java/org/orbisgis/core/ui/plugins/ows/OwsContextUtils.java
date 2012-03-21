@@ -5,7 +5,6 @@
 package org.orbisgis.core.ui.plugins.ows;
 
 import java.io.BufferedInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -30,6 +29,11 @@ import org.gdms.data.db.DBSource;
  * @author CŽdric Le Glaunec <cedric.leglaunec@gmail.com>
  */
 public class OwsContextUtils {
+
+    /**
+     * Filename that contains services' configuration
+     */
+    public static String SERVICES_CONFIG = "services.properties";
 
     /**
      * Extracts connection string's fields such as host, port, db name and table.
@@ -108,53 +112,58 @@ public class OwsContextUtils {
         return instream;
     }
     
-    private static Properties readProperties(String filename) throws FileNotFoundException, IOException {
+    /**
+     * Reads the value of the given property from the file defined in {@link OwsContextUtils#SERVICES_CONFIG}.
+     * @param property A property name
+     * @return A string value or null if the file or the property name does not exist
+     */
+    private static String readProperty(String property) {
+        String value = null;
         Properties properties = new Properties();
-        InputStream in = OwsService.class.getResourceAsStream(filename);
-        properties.load(in);
-        return properties;
+        InputStream in = OwsService.class.getResourceAsStream(SERVICES_CONFIG);
+        try {
+            properties.load(in);
+            value = properties.getProperty(property);
+        } catch (IOException ex) {
+            Logger.getLogger(OwsContextUtils.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return value;
     }
     
+    /**
+     * Reads the property 'orb.orbisgis.core.ui.plugins.ows.service_url_getall' 
+     * from the config file ({@link OwsContextUtils#SERVICES_CONFIG})
+     * @return A service's url or null if the property does not exist
+     */
     public static String getServiceGetAllUrl() {
-        String url = "";
-        try {
-            Properties properties = readProperties("services.properties");
-            url = properties.getProperty("orb.orbisgis.core.ui.plugins.ows.service_url_getall");
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(OwsContextUtils.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(OwsContextUtils.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        return url;
+        return readProperty("orb.orbisgis.core.ui.plugins.ows.service_url_getall");
     }
     
+    /**
+     * Reads the property 'orb.orbisgis.core.ui.plugins.ows.service_url_getoneows' 
+     * from the config file ({@link OwsContextUtils#SERVICES_CONFIG})
+     * @return A service's url or null if the property does not exist
+     */
     public static String getServiceGetOneOwsUrl() {
-        String url = "";
-        try {
-            Properties properties = readProperties("services.properties");
-            url = properties.getProperty("orb.orbisgis.core.ui.plugins.ows.service_url_getoneows");
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(OwsContextUtils.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(OwsContextUtils.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        return url;
+        return readProperty("orb.orbisgis.core.ui.plugins.ows.service_url_getoneows");
     }
     
+    /**
+     * Reads the property 'orb.orbisgis.core.ui.plugins.ows.service_url_exportows' 
+     * from the config file ({@link OwsContextUtils#SERVICES_CONFIG})
+     * @return A service's url or null if the property does not exist
+     */
     public static String getServiceExportOwsAsUrl() {
-        String url = "";
-        try {
-            Properties properties = readProperties("services.properties");
-            url = properties.getProperty("orb.orbisgis.core.ui.plugins.ows.service_url_exportows");
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(OwsContextUtils.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(OwsContextUtils.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        return url;
+        return readProperty("orb.orbisgis.core.ui.plugins.ows.service_url_exportows");
+    }
+    
+    /**
+     * Reads the property 'orb.orbisgis.core.ui.plugins.ows.service_url_getworkspaces' 
+     * from the config file ({@link OwsContextUtils#SERVICES_CONFIG})
+     * @return A service's url or null if the property does not exist
+     */
+    public static String getServiceGetAllOwsWorkspace() {
+        return readProperty("orb.orbisgis.core.ui.plugins.ows.service_url_getworkspaces");
     }
     
     private static String generateSourceId(String table, String db, String host) {
