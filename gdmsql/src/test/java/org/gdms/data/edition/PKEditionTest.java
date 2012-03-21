@@ -47,7 +47,7 @@ import org.gdms.data.db.DBSource;
 import static org.junit.Assert.*;
 import static org.junit.Assume.*;
 
-public class PKEditionTest {
+public class PKEditionTest extends SQLBaseTest {
 
         @Test
         public void testUpdatePK() throws Exception {

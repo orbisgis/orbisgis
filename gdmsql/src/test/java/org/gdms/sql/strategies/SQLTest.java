@@ -117,7 +117,10 @@ public class SQLTest extends SQLBaseTest {
                 try {
                         dsf.executeSQL("alter table temp drop column \"type\";");
                         fail();
-                } catch (SemanticException e) {
+                } catch (DriverException e) {
+                        if (!(e.getCause() instanceof SemanticException)) {
+                                fail();
+                        }
                 } finally {
                         dsf.getSourceManager().remove("temp");
                 }
@@ -136,7 +139,7 @@ public class SQLTest extends SQLBaseTest {
                 int fieldIndex = ds.getFieldIndexByName("gid");
                 for (int i = 0; i < ds.getRowCount(); i++) {
                         int value = ds.getFieldValue(i, fieldIndex).getAsInt();
-                        assertTrue(value != 1);
+                        assertFalse(value == 1);
 
                 }
                 ds.close();
@@ -275,11 +278,11 @@ public class SQLTest extends SQLBaseTest {
                         dsf.getSourceManager().register("landcover2000",
                                 new File(internalData + "landcover2000.shp"));
                         dsf.getSourceManager().remove("temp");
-                        dsf.executeSQL("create table temp as select * except \"type\", the_geom from landcover2000");
+                        dsf.executeSQL("create table temp as select * except (\"type\", the_geom) from landcover2000");
                         DataSource dsOut = dsf.getDataSource("temp");
                         dsOut.open();
-                        assertEquals(dsOut.getFieldIndexByName("type"), -1);
-                        assertEquals(dsOut.getFieldIndexByName("the_geom"), -1);
+                        assertEquals(-1, dsOut.getFieldIndexByName("type"));
+                        assertEquals(-1, dsOut.getFieldIndexByName("the_geom"));
                         dsOut.close();
                 } finally {
                         dsf.getSourceManager().remove("temp");
@@ -592,7 +595,7 @@ public class SQLTest extends SQLBaseTest {
                 dsf.getSourceManager().remove("hedgerow");
                 dsf.getSourceManager().register("hedgerow",
                         new File(internalData + "hedgerow.shp"));
-                DataSource d = dsf.getDataSourceFromSQL("select distinct type from hedgerow ;");
+                DataSource d = dsf.getDataSourceFromSQL("select distinct \"type\" from hedgerow ;");
 
                 d.open();
                 int fieldIndex = d.getFieldIndexByName("type");
@@ -933,7 +936,7 @@ public class SQLTest extends SQLBaseTest {
         private void testLimitOffset(String sql) throws Exception {
                 String limitedSQL = sql + " limit 10 offset 10;";
                 DataSource ds = dsf.getDataSourceFromSQL(limitedSQL);
-                DataSource original = dsf.getDataSourceFromSQL(sql);
+                DataSource original = dsf.getDataSourceFromSQL(sql + ";");
                 ds.open();
                 original.open();
                 assertEquals(ds.getRowCount(), 10);
@@ -1232,7 +1235,7 @@ public class SQLTest extends SQLBaseTest {
                 dsf.getSourceManager().register("thetable", thetable);
                 DataSource ds = dsf.getDataSourceFromSQL("select * from thetable "
                         + "where dict_code in "
-                        + "(select code from dict where data = 'good');");
+                        + "(select code from dict where \"data\" = 'good');");
                 ds.open();
                 for (int i = 0; i < ds.getRowCount(); i++) {
                         assertEquals(ds.getInt(i, 0), 0);
@@ -1260,12 +1263,12 @@ public class SQLTest extends SQLBaseTest {
         @Test
         public void testUpdate() throws Exception {
                 createSource("source", "toto", 0, 1, 2, 3);
-                dsf.executeSQL("update source SET toto = toto + StringToInt('1');", null);
+                dsf.executeSQL("update source SET toto = toto + '1' :: int;", null);
                 DataSource ds = dsf.getDataSource("source");
                 ds.open();
                 assertEquals(ds.getRowCount(), 4);
                 for (int i = 0; i < ds.getRowCount(); i++) {
-                        assertEquals(ds.getInt(i, 0), i + 1);
+                        assertEquals(i + 1, ds.getInt(i, 0));
                 }
                 ds.close();
         }
@@ -1298,8 +1301,8 @@ public class SQLTest extends SQLBaseTest {
                 dsf.executeSQL("update source SET toto = 1 WHERE toto = 0;", null);
                 DataSource ds = dsf.getDataSource("source");
                 ds.open();
-                assertEquals(ds.getRowCount(), 4);
-                assertEquals(ds.getInt(0, 0), 1);
+                assertEquals(4, ds.getRowCount());
+                assertEquals(1, ds.getInt(0, 0));
                 ds.close();
         }
 

@@ -594,14 +594,14 @@ public class ProcessorTest {
                 getValidatedStatement("update gis set id = '3', "
                         + "gis = 'patatagis' where id='2';");
                 // Field not found in assignment
-                failWithSemanticException("update gis set Id = 'Id' + 1;");
+                failPreparedWithSemanticException("update gis set Id = 'Id' + 1;");
                 // Type miss match in assignment
-                failWithIncompatibleTypes("update gis set id = true;");
+                failPreparedWithIncompatibleTypes("update gis set id = true;");
                 // Field not found in where
-                failWithSemanticException("update gis set id = '1' "
+                failPreparedWithSemanticException("update gis set id = '1' "
                         + "where Id = '2';");
                 // Type miss match in where
-                failWithIncompatibleTypes("update gis set id = 'd' "
+                failPreparedWithIncompatibleTypes("update gis set id = 'd' "
                         + "where gis=false;");
                 // table not found
                 failWithNoSuchTableException("update Gis set id='d';");
@@ -616,10 +616,10 @@ public class ProcessorTest {
         @Test
         public void testAggregatedFunctions() throws Exception {
                 // id field not found
-                failWithSemanticException("select avg(id), avg(\"double\") "
+                failPreparedWithSemanticException("select avg(id), avg(\"double\") "
                         + "from alltypes group by \"boolean\";");
 
-                getValidatedStatement("select avg(int), avg(\"double\") "
+                getFullyValidatedStatement("select avg(\"int\"), avg(\"double\") "
                         + "from alltypes group by \"boolean\";");
 
                 // non custom query without from
@@ -666,11 +666,11 @@ public class ProcessorTest {
                 // wrong number of arguments
                 failWithIncompatibleTypes("select * from sumquery(select * from gis where id = '5', 3,6);");
                 // wrong type of arguments
-                failWithIncompatibleTypes("select sumquery(select * from gis where id = '5', 4);");
+                failWithIncompatibleTypes("select * from sumquery(select * from gis where id = '5', 4);");
                 // wrong number of tables
                 failWithSemanticException("select * from sumquery(gis, alltypes, 3);");
                 // type error in where
-                failWithIncompatibleTypes("select sumquery(select * from gis where id = 5, 4);");
+                failWithIncompatibleTypes("select * from sumquery(select * from gis where id = 5, 4);");
                 // type error in argument
                 failWithIncompatibleTypes("select * from sumquery(gis, 6+3*'e');");
         }
@@ -696,7 +696,9 @@ public class ProcessorTest {
                 p.prepare(dsf);
                 Metadata m1 = p.getResultMetadata();
                 p.cleanUp();
-                assertEquals(m1.getFieldName(0), "unknown0");
+                // default name if the name of the aggregate function
+                // incremented only if necessary
+                assertEquals("Count", m1.getFieldName(0));
         }
 
         @Test
@@ -710,9 +712,9 @@ public class ProcessorTest {
                 getValidatedStatement("create index on alltypes (\"int\");");
                 getValidatedStatement("drop index on alltypes (\"int\");");
                 failWithNoSuchTableException("create index on allTypes (\"int\");");
-                failWithSemanticException("create index on alltypes (\"rint\");");
+                failPreparedWithSemanticException("create index on alltypes (rint);");
                 failWithNoSuchTableException("drop index on allTypes (\"int\");");
-                failWithSemanticException("drop index on alltypes (rint);");
+                failPreparedWithSemanticException("drop index on alltypes (rint);");
         }
 
         private SqlStatement getValidatedStatement(String sql) throws Exception {
