@@ -42,31 +42,27 @@ import org.gdms.data.indexes.tree.IndexVisitor;
 public interface AdHocIndex<T> {
 
 	/**
-	 * Gets an iterator that will iterate through the filtered rows in the
-	 * DataSource that was used in the buildIndex method
+	 * Queries the rows of the DataSource that was used in the buildIndex method.
 	 *
-	 *
-	 * @param indexQuery
-         * @return
+	 * @param indexQuery an index query compatible with this index
+         * @return an array of row indexes that match the query
          * @throws IndexQueryException 
          * @throws IndexException 
 	 */
-	int[] getIterator(IndexQuery indexQuery)
+	int[] query(IndexQuery indexQuery)
 			throws IndexQueryException, IndexException;
         
         /**
-	 * Gets an iterator that will iterate through the filtered rows in the
-	 * DataSource that was used in the buildIndex method. The given IndexVisitor
-         * will be notified of the visiting of elements of the index.
+         * Queries the rows of the DataSource that was used in the buildIndex method.
+	 * The given IndexVisitor will be notified of the visiting of elements of the index that
+         * match the query.
 	 *
-	 *
-	 * @param indexQuery
-         * @param visitor 
-         * @return
+	 * @param indexQuery an index query compatible with this index
+         * @param visitor a visitor compatible with this index
          * @throws IndexQueryException 
          * @throws IndexException 
 	 */
-	int[] getIterator(IndexQuery indexQuery, IndexVisitor<T> visitor)
+	void query(IndexQuery indexQuery, IndexVisitor<T> visitor)
 			throws IndexQueryException, IndexException;
 
 }

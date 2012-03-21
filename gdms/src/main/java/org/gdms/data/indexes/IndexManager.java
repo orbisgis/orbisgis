@@ -561,7 +561,7 @@ public class IndexManager {
                         if (!dsi.isOpen()) {
                                 dsi.load();
                         }
-                        return dsi.getIterator(indexQuery);
+                        return dsi.query(indexQuery);
                 } else {
                         return null;
                 }
@@ -575,12 +575,11 @@ public class IndexManager {
          * @param dsName the name of the source
          * @param indexQuery a query to execute against the source
          * @param visitor an index visitor
-         * @return The iterator or null if there is no index in the specified field
          * @throws IndexException
          * @throws NoSuchTableException
          * @throws IndexQueryException 
          */
-        public int[] queryIndex(String dsName, IndexQuery indexQuery, IndexVisitor<?> visitor)
+        public void queryIndex(String dsName, IndexQuery indexQuery, IndexVisitor<?> visitor)
                 throws IndexException, NoSuchTableException, IndexQueryException {
                 DataSourceIndex dsi;
                 dsi = getIndex(dsName, indexQuery.getFieldName());
@@ -588,9 +587,7 @@ public class IndexManager {
                         if (!dsi.isOpen()) {
                                 dsi.load();
                         }
-                        return dsi.getIterator(indexQuery, visitor);
-                } else {
-                        return null;
+                        dsi.query(indexQuery, visitor);
                 }
         }
 
@@ -669,7 +666,21 @@ public class IndexManager {
          */
         public int[] queryIndex(DataSet src, IndexQuery indexQuery)
                 throws IndexException, NoSuchTableException, IndexQueryException {
-                return queryIndex(src, indexQuery, null);
+                DataSourceIndex dsi;
+                if (src instanceof DataSource) {
+                        DataSource ds = (DataSource) src;
+                        return queryIndex(ds.getName(), indexQuery);
+                }
+
+                dsi = getIndex(TEMPINDEXPREFIX + src.hashCode(), indexQuery.getFieldName());
+                if (dsi != null) {
+                        if (!dsi.isOpen()) {
+                                dsi.load();
+                        }
+                        return dsi.query(indexQuery);
+                } else {
+                        return null;
+                } 
         }
 
         /**
@@ -680,17 +691,16 @@ public class IndexManager {
          * @param src  the source
          * @param indexQuery a query to execute against the source
          * @param visitor 
-         * @return The iterator or null if there is no index in the specified field
          * @throws IndexException
          * @throws NoSuchTableException
          * @throws IndexQueryException 
          */
-        public int[] queryIndex(DataSet src, IndexQuery indexQuery, IndexVisitor<?> visitor)
+        public void queryIndex(DataSet src, IndexQuery indexQuery, IndexVisitor<?> visitor)
                 throws IndexException, NoSuchTableException, IndexQueryException {
                 DataSourceIndex dsi;
                 if (src instanceof DataSource) {
                         DataSource ds = (DataSource) src;
-                        return queryIndex(ds.getName(), indexQuery, visitor);
+                        queryIndex(ds.getName(), indexQuery, visitor);
                 }
 
                 dsi = getIndex(TEMPINDEXPREFIX + src.hashCode(), indexQuery.getFieldName());
@@ -698,9 +708,7 @@ public class IndexManager {
                         if (!dsi.isOpen()) {
                                 dsi.load();
                         }
-                        return dsi.getIterator(indexQuery, visitor);
-                } else {
-                        return null;
+                        dsi.query(indexQuery, visitor);
                 }
         }
 

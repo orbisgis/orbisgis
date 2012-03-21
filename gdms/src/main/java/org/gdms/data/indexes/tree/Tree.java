@@ -39,10 +39,9 @@ public interface Tree<T> {
          * Queries the tree for the given value, with the specified visitor.
          * @param value
          * @param visitor 
-         * @return an array of row indexes for the given value
          * @throws IOException
          */
-        int[] query(T value, IndexVisitor<T> visitor) throws IOException;
+        void query(T value, IndexVisitor<T> visitor) throws IOException;
 
         /**
          * Gets all elements stored in this node

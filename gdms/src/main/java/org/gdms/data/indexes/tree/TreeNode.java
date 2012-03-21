@@ -233,8 +233,7 @@ public interface TreeNode<T, A extends TreeNode<T, ?, Q>, Q> {
          * Queries this node with the specified query value, with the specified index visitor.
          * @param queryValue a value to query for
          * @param visitor a visitor
-         * @return an array of rows that match
          * @throws IOException 
          */
-        int[] query(Q queryValue, IndexVisitor<T> visitor) throws IOException;
+        void query(Q queryValue, IndexVisitor<T> visitor) throws IOException;
 }

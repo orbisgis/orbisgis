@@ -767,7 +767,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode {
         }
         
         @Override
-        public int[] query(RangeComparator[] comparators, IndexVisitor<Value> visitor) throws IOException {
+        public void query(RangeComparator[] comparators, IndexVisitor<Value> visitor) throws IOException {
                 RangeComparator minComparator = comparators[0];
                 RangeComparator maxComparator = comparators[1];
                 
@@ -777,26 +777,11 @@ public class BTreeInteriorNode extends AbstractBTreeNode {
                 int minChild = Math.max(minChildRange[0], maxChildRange[0]);
                 int maxChild = Math.min(minChildRange[1], maxChildRange[1]);
 
-                int[] childResult = getChild(minChild).query(comparators, visitor);
-                ArrayList<int[]> childrenResult = new ArrayList<int[]>();
-                int index = minChild + 1;
-                int numResults = 0;
+                int index = minChild;
                 while (index <= maxChild) {
-                        numResults += childResult.length;
-                        childrenResult.add(childResult);
-                        childResult = getChild(index).query(comparators, visitor);
+                        getChild(index).query(comparators, visitor);
                         index++;
                 }
-                numResults += childResult.length;
-                childrenResult.add(childResult);
-                int[] ret = new int[numResults];
-                int acum = 0;
-                for (int[] is : childrenResult) {
-                        System.arraycopy(is, 0, ret, acum, is.length);
-                        acum += is.length;
-                }
-
-                return ret;
         }
 
         @Override

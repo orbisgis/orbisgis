@@ -241,7 +241,7 @@ public class IndexEditionManager {
                 DataSourceIndex[] indexes = getDataSourceIndexes();
                 for (DataSourceIndex dataSourceIndex : indexes) {
                         if (dataSourceIndex.getFieldName().equals(indexQuery.getFieldName())) {
-                                return dataSourceIndex.getIterator(indexQuery);
+                                return dataSourceIndex.query(indexQuery);
                         }
                 }
 

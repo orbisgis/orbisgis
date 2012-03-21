@@ -332,14 +332,10 @@ public class BTreeLeaf extends AbstractBTreeNode {
         }
         
         @Override
-        public int[] query(RangeComparator[] comparators, IndexVisitor<Value> visitor) throws IOException {
+        public void query(RangeComparator[] comparators, IndexVisitor<Value> visitor) throws IOException {
                 RangeComparator minComparator = comparators[0];
                 RangeComparator maxComparator = comparators[1];
-                if (values.isEmpty()) {
-                        return new int[0];
-                } else {
-                        int[] thisNode = new int[tree.getN()];
-                        int index = 0;
+                if (!values.isEmpty()) {
                         Value lastValueInNode = values.get(values.size() - 1);
                         if (minComparator.isInRange(lastValueInNode)) {
                                 boolean inRange = false;
@@ -348,9 +344,7 @@ public class BTreeLeaf extends AbstractBTreeNode {
                                         if (minComparator.isInRange(v)
                                                 && maxComparator.isInRange(v)) {
                                                 inRange = true;
-                                                thisNode[index] = rows.get(i);
-                                                visitor.visitElement(thisNode[index], v);
-                                                index++;
+                                                visitor.visitElement(rows.get(i), v);
                                         } else {
                                                 if (inRange) {
                                                         // We have finished our range
@@ -359,10 +353,6 @@ public class BTreeLeaf extends AbstractBTreeNode {
                                         }
                                 }
                         }
-
-                        int[] ret = new int[index];
-                        System.arraycopy(thisNode, 0, ret, 0, index);
-                        return ret;
                 }
         }
 

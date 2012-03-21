@@ -112,20 +112,28 @@ public class BTreeIndex implements DataSourceIndex<Value> {
         }
 
         @Override
-        public int[] getIterator(IndexQuery query)
-                throws IndexQueryException, IndexException {
-                return getIterator(query, null);
-        }
-
-        @Override
-        public int[] getIterator(IndexQuery query, IndexVisitor<Value> visitor)
+        public int[] query(IndexQuery query)
                 throws IndexQueryException, IndexException {
                 if (!(query instanceof AlphaQuery)) {
                         throw new IllegalArgumentException("Wrong query type. BTreeIndex only supports AlphaQuery.");
                 }
                 AlphaQuery q = (AlphaQuery) query;
                 try {
-                        return index.getRow(q.getMin(), q.isMinIncluded(), q.getMax(), q.isMaxIncluded(), visitor);
+                        return index.rangeQuery(q.getMin(), q.isMinIncluded(), q.getMax(), q.isMaxIncluded());
+                } catch (IOException e) {
+                        throw new IndexException("Cannot access the index", e);
+                }
+        }
+
+        @Override
+        public void query(IndexQuery query, IndexVisitor<Value> visitor)
+                throws IndexQueryException, IndexException {
+                if (!(query instanceof AlphaQuery)) {
+                        throw new IllegalArgumentException("Wrong query type. BTreeIndex only supports AlphaQuery.");
+                }
+                AlphaQuery q = (AlphaQuery) query;
+                try {
+                        index.rangeQuery(q.getMin(), q.isMinIncluded(), q.getMax(), q.isMaxIncluded(), visitor);
                 } catch (IOException e) {
                         throw new IndexException("Cannot access the index", e);
                 }

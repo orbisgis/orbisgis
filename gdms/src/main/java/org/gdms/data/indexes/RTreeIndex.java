@@ -130,21 +130,31 @@ public class RTreeIndex implements DataSourceIndex<Envelope> {
         }
 
         @Override
-        public int[] getIterator(IndexQuery query)
-                throws IndexException, IndexQueryException {
-                return getIterator(query, null);
-        }
-        
-        @Override
-        public int[] getIterator(IndexQuery query, IndexVisitor<Envelope> visitor)
+        public int[] query(IndexQuery query)
                 throws IndexException, IndexQueryException {
                 if (!(query instanceof SpatialIndexQuery)) {
                         throw new IllegalArgumentException("Wrong query type. RTreeIndex only supports SpatialIndexQuery.");
                 }
                 SpatialIndexQuery q = (SpatialIndexQuery) query;
                 try {
-                        Envelope area = q.getArea();
-                        return index.query(area, visitor);
+                        return index.query(q.getArea());
+                } catch (IOException e) {
+                        throw new IndexException("Cannot access the index", e);
+                } catch (IncompatibleTypesException e) {
+                        throw new IndexException("Cannot compute the value to "
+                                + "query the index", e);
+                }
+        }
+        
+        @Override
+        public void query(IndexQuery query, IndexVisitor<Envelope> visitor)
+                throws IndexException, IndexQueryException {
+                if (!(query instanceof SpatialIndexQuery)) {
+                        throw new IllegalArgumentException("Wrong query type. RTreeIndex only supports SpatialIndexQuery.");
+                }
+                SpatialIndexQuery q = (SpatialIndexQuery) query;
+                try {
+                        index.query(q.getArea(), visitor);
                 } catch (IOException e) {
                         throw new IndexException("Cannot access the index", e);
                 } catch (IncompatibleTypesException e) {

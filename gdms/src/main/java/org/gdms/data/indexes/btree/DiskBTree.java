@@ -555,13 +555,30 @@ public final class DiskBTree implements BTree {
         }
 
         @Override
-        public int[] getRow(Value min, boolean minIncluded, Value max,
+        public int[] rangeQuery(Value min, boolean minIncluded, Value max,
                 boolean maxIncluded) throws IOException {
-                return getRow(min, minIncluded, max, maxIncluded, null);
+                RangeComparator minComparator = null;
+                RangeComparator maxComparator = null;
+                if (min.isNull()) {
+                        minComparator = new TrueComparator();
+                } else if (minIncluded) {
+                        minComparator = new GreaterEqualComparator(min);
+                } else {
+                        minComparator = new GreaterComparator(min);
+                }
+                if (max.isNull()) {
+                        maxComparator = new TrueComparator();
+                } else if (maxIncluded) {
+                        maxComparator = new LessEqualComparator(max);
+                } else {
+                        maxComparator = new LessComparator(max);
+                }
+
+                return root.query(new RangeComparator[]{minComparator, maxComparator});
         }
-        
+
         @Override
-        public int[] getRow(Value min, boolean minIncluded, Value max,
+        public void rangeQuery(Value min, boolean minIncluded, Value max,
                 boolean maxIncluded, IndexVisitor<Value> visitor) throws IOException {
                 RangeComparator minComparator = null;
                 RangeComparator maxComparator = null;
@@ -581,9 +598,7 @@ public final class DiskBTree implements BTree {
                 }
 
                 if (visitor != null) {
-                        return root.query(new RangeComparator[]{minComparator, maxComparator}, visitor);
-                } else {
-                        return root.query(new RangeComparator[]{minComparator, maxComparator});
+                        root.query(new RangeComparator[]{minComparator, maxComparator}, visitor);
                 }
         }
 
@@ -592,14 +607,12 @@ public final class DiskBTree implements BTree {
                 return root.query(new RangeComparator[]{new LessEqualComparator(value),
                                 new GreaterEqualComparator(value)});
         }
-        
+
         @Override
-        public int[] query(Value value, IndexVisitor<Value> visitor) throws IOException {
+        public void query(Value value, IndexVisitor<Value> visitor) throws IOException {
                 if (visitor != null) {
-                        return root.query(new RangeComparator[]{new LessEqualComparator(value),
+                        root.query(new RangeComparator[]{new LessEqualComparator(value),
                                         new GreaterEqualComparator(value)}, visitor);
-                } else {
-                        return query(value);
                 }
         }
 }

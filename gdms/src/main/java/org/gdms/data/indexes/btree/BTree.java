@@ -48,30 +48,29 @@ import org.gdms.data.values.Value;
 public interface BTree extends Tree<Value> {
 
 	/**
-	 * Range query.
+	 * Performs a range query.
 	 *
 	 * @param min
 	 * @param minIncluded
 	 * @param max
 	 * @param maxIncluded
-	 * @return
+	 * @return an array of row indexes that match the query
 	 * @throws IOException
 	 */
-	int[] getRow(Value min, boolean minIncluded, Value max,
+	int[] rangeQuery(Value min, boolean minIncluded, Value max,
 			boolean maxIncluded) throws IOException;
         
         /**
-	 * Range query with an index visitor on elements that match.
+	 * Performs a range query with an index visitor notified on elements that match.
 	 *
 	 * @param min
 	 * @param minIncluded
 	 * @param max
 	 * @param maxIncluded
          * @param visitor 
-         * @return
 	 * @throws IOException
 	 */
-	int[] getRow(Value min, boolean minIncluded, Value max,
+	void rangeQuery(Value min, boolean minIncluded, Value max,
 			boolean maxIncluded, IndexVisitor<Value> visitor) throws IOException;
 
 }

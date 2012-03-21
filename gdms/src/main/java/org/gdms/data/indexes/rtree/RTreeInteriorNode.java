@@ -755,26 +755,12 @@ public class RTreeInteriorNode extends AbstractRTreeNode {
         }
         
         @Override
-        public int[] query(Envelope value, IndexVisitor<Envelope> v) throws IOException {
-                ArrayList<int[]> childrenResult = new ArrayList<int[]>();
-                int size = 0;
+        public void query(Envelope value, IndexVisitor<Envelope> v) throws IOException {
                 for (int i = 0; i < children.size(); i++) {
                         if (value.intersects(getEnvelope(i))) {
-                                int[] rows = getChild(i).query(value, v);
-                                size += rows.length;
-                                childrenResult.add(rows);
+                                getChild(i).query(value, v);
                         }
                 }
-
-                int[] ret = new int[size];
-                int currentPos = 0;
-                for (int i = 0; i < childrenResult.size(); i++) {
-                        int[] childRows = childrenResult.get(i);
-                        System.arraycopy(childRows, 0, ret, currentPos, childRows.length);
-                        currentPos += childRows.length;
-                }
-
-                return ret;
         }
 
         @Override

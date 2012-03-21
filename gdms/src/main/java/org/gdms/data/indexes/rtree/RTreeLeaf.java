@@ -427,22 +427,13 @@ public class RTreeLeaf extends AbstractRTreeNode {
         }
 
         @Override
-        public int[] query(Envelope value, IndexVisitor<Envelope> v) throws IOException {
-                int[] intersecting = new int[geometries.size()];
-                int index = 0;
+        public void query(Envelope value, IndexVisitor<Envelope> v) throws IOException {
                 for (int i = 0; i < geometries.size(); i++) {
                         final Envelope env = geometries.get(i);
                         if (env.intersects(value)) {
-                                intersecting[index] = rows.get(i);
-                                v.visitElement(intersecting[index], env);
-                                index++;
+                                v.visitElement(rows.get(i), env);
                         }
                 }
-
-                int[] ret = new int[index];
-                System.arraycopy(intersecting, 0, ret, 0, index);
-
-                return ret;
         }
 
         @Override

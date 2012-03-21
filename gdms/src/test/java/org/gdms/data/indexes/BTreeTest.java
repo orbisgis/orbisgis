@@ -296,16 +296,16 @@ public class BTreeTest {
                 tree.insert(ValueFactory.createValue(3), 8);
                 tree.insert(ValueFactory.createValue(4), 9);
                 tree.checkTree();
-                assertEquals(tree.getRow(ValueFactory.createNullValue(), false,
+                assertEquals(tree.rangeQuery(ValueFactory.createNullValue(), false,
                         ValueFactory.createValue(1), true).length, 5);
-                assertEquals(tree.getRow(ValueFactory.createNullValue(), false,
+                assertEquals(tree.rangeQuery(ValueFactory.createNullValue(), false,
                         ValueFactory.createValue(1), false).length, 2);
-                assertEquals(tree.getRow(ValueFactory.createValue(3), true, ValueFactory.createValue(3), true).length, 1);
-                assertEquals(tree.getRow(ValueFactory.createValue(1), false, ValueFactory.createValue(4), false).length, 4);
-                assertEquals(tree.getRow(ValueFactory.createValue(1), false, ValueFactory.createNullValue(), false).length, 5);
-                assertEquals(tree.getRow(ValueFactory.createNullValue(), true,
+                assertEquals(tree.rangeQuery(ValueFactory.createValue(3), true, ValueFactory.createValue(3), true).length, 1);
+                assertEquals(tree.rangeQuery(ValueFactory.createValue(1), false, ValueFactory.createValue(4), false).length, 4);
+                assertEquals(tree.rangeQuery(ValueFactory.createValue(1), false, ValueFactory.createNullValue(), false).length, 5);
+                assertEquals(tree.rangeQuery(ValueFactory.createNullValue(), true,
                         ValueFactory.createNullValue(), false).length, 10);
-                assertEquals(tree.getRow(ValueFactory.createNullValue(), true,
+                assertEquals(tree.rangeQuery(ValueFactory.createNullValue(), true,
                         ValueFactory.createValue(0), false).length, 0);
         }
 
