@@ -102,6 +102,7 @@ public class Catalog extends JPanel implements DockingPanel {
      */
     public Catalog(SourceContext sourceContext) {
             super(new BorderLayout());
+            dockingParameters.setName("geocatalog");
             dockingParameters.setTitle(I18N.getString("orbisgis.org.orbisgis.Catalog.title"));
             dockingParameters.setTitleIcon(OrbisGISIcon.getIcon("geocatalog"));
             //Add the Source List in a Scroll Pane, 

@@ -28,7 +28,7 @@
  */
 package org.orbisgis.view.main;
 
-import bibliothek.gui.Dockable;
+import bibliothek.gui.dock.common.intern.DefaultCDockable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import javax.swing.SwingUtilities;
@@ -139,9 +139,9 @@ public class CoreTest extends TestCase {
         DummyViewPanel dummyPanel = new DummyViewPanel();
         
         //Show the panel has a new docking item
-        instance.getDockManager().show(dummyPanel, instance.getDockManager().getScreen(), null);
+        instance.getDockManager().show(dummyPanel);
         //Retrieve the DockingFrame dock instance for the dummy instance
-        Dockable dockedDummy = instance.getDockManager().getDockable(dummyPanel);
+        DefaultCDockable dockedDummy = instance.getDockManager().getDockable(dummyPanel);
         
         //Test if the original title is shown
         assertTrue(dockedDummy.getTitleText().equals(DummyViewPanel.OLD_TITLE));

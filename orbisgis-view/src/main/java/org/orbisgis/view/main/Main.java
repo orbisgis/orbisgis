@@ -45,11 +45,6 @@ final class Main
     public static void main( String[] args )
     {
         Core viewCore = new Core();
-        try {
-            viewCore.startup();
-        }
-        catch(RuntimeException exc) {
-            System.exit(0);
-        }
+        viewCore.startup();
     }
 }
