@@ -229,13 +229,7 @@ public class OwsPlugIn extends AbstractPlugIn {
                         }
                         layersAlreadyAdded = true;
                     }
-
-                    mapContext.setOwsProjectId(Integer.parseInt(owsContext.getValue().getId()));
-                    mapContext.setOwsTitle(owsContext.getValue().getGeneral().getTitle().getValue());
-                    mapContext.setOwsDescription(owsContext.getValue().getGeneral().getAbstract().getValue());
-                    mapContext.setOwsCrs(owsContext.getValue().getGeneral().getBoundingBox().getValue().getCrs());
-
-
+                    
                     importOwsDialog.setVisible(false);
                 }
             });

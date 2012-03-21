@@ -16,6 +16,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.xml.bind.JAXBElement;
+import net.opengis.ows_context.OWSContextType;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.background.BackgroundManager;
@@ -110,7 +112,7 @@ public class OwsExportPanel extends AbstractUIPanel {
             }
         };
         
-        if (mapContext.getOwsProjectId() == -1) {
+        if (OwsPlugIn.getLastOwsContextImported() == null) {
             cmdExport.setEnabled(false);
         }
         
@@ -135,9 +137,10 @@ public class OwsExportPanel extends AbstractUIPanel {
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
         
         if (OwsPlugIn.getLastOwsContextImported() != null) {
-            txtTitle.setText(mapContext.getOwsTitle());
-            txtDescription.setText(mapContext.getOwsDescription());
-            txtCrs.setText(mapContext.getOwsCrs());
+            JAXBElement<OWSContextType> owsContextElement = OwsPlugIn.getLastOwsContextImported();
+            txtTitle.setText(owsContextElement.getValue().getGeneral().getTitle().getValue());
+            txtDescription.setText(owsContextElement.getValue().getGeneral().getAbstract().getValue());
+            txtCrs.setText(owsContextElement.getValue().getGeneral().getBoundingBox().getValue().getCrs());
         }
         else {
             cmdExport.setEnabled(false);
