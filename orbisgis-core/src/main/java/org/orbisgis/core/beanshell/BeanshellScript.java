@@ -116,7 +116,7 @@ public class BeanshellScript {
                             printHelp();    
                         }
                         else if (!file.exists()) {
-                                System.out.println("The file doesn't exist.");
+                                System.out.println("The script file doesn't exist.");
                         } else {
                                 servicesRegister();
                                 Interpreter interpreter = new Interpreter();
@@ -145,6 +145,6 @@ public class BeanshellScript {
          * Get the help associated to this executable.
          */
         public static String getHelp() {
-                return "Beanshell script arguments. The first argument must be  a path to the script file.\n";
+                return "Usage : orbisshell <beanshell-script-file> [<argument-1> <argument-2> ...].\n";
         }
 }
