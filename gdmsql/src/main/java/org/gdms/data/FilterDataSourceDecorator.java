@@ -120,10 +120,10 @@ public class FilterDataSourceDecorator extends AbstractDataSourceDecorator {
 
         @Override
         public void open() throws DriverException {
+                getDataSource().open();
                 if (map == null) {
                         map = getMapDriver();
                 }
-                getDataSource().open();
         }
 
         @Override

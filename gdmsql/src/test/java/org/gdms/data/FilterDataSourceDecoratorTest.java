@@ -59,7 +59,7 @@ public class FilterDataSourceDecoratorTest extends SQLBaseTest {
                 DataSource original = dsf.getDataSource("hedgerow");
                 FilterDataSourceDecorator decorator = new FilterDataSourceDecorator(
                         original);
-                decorator.setFilter("type = 'talus'");
+                decorator.setFilter("\"type\" = 'talus'");
 
                 original.open();
                 decorator.open();
@@ -92,6 +92,8 @@ public class FilterDataSourceDecoratorTest extends SQLBaseTest {
 
                 decorator.close();
                 original.close();
+                
+                dsf.getSourceManager().remove("hedgerow");
         }
 
         @Test
@@ -124,6 +126,8 @@ public class FilterDataSourceDecoratorTest extends SQLBaseTest {
                 assertFalse(rowC == decorator.getRowCount());
                 assertEquals(rowC - 1, decorator.getRowCount());
                 rowC = decorator.getRowCount();
+                
+                dsf.getSourceManager().remove("hedgerow");
         }
 
         @Test
@@ -157,5 +161,6 @@ public class FilterDataSourceDecoratorTest extends SQLBaseTest {
                 filterDataSourceDecorator.close();
                 assertEquals(filterCount, waintingResult);
 
+                dsf.getSourceManager().remove("landcover2000");
         }
 }
