@@ -92,9 +92,6 @@ public class DefaultMapContext implements MapContext {
 	private long idTime;
 	private boolean selectionInducedRefresh = false;
         private int owsProjectId;
-        private String owsTitle;
-        private String owsDescription;
-        private String owsCrs;
 
 	// private int srid = -1;
 
@@ -213,45 +210,6 @@ public class DefaultMapContext implements MapContext {
 		this.selectionInducedRefresh = selectionInducedRefresh;
 	}
 
-    @Override
-    public void setOwsProjectId(int id) {
-        this.owsProjectId = id;
-    }
-
-    @Override
-    public int getOwsProjectId() {
-        return this.owsProjectId;
-    }
-
-    @Override
-    public void setOwsTitle(String title) {
-        this.owsTitle = title;
-    }
-
-    @Override
-    public String getOwsTitle() {
-        return this.owsTitle;
-    }
-
-    @Override
-    public void setOwsDescription(String description) {
-        this.owsDescription = description;
-    }
-
-    @Override
-    public String getOwsDescription() {
-        return this.owsDescription;
-    }
-
-    @Override
-    public void setOwsCrs(String owsCrs) {
-        this.owsCrs = owsCrs;
-    }
-
-    @Override
-    public String getOwsCrs() {
-        return this.owsCrs;
-    }
 
 	private final class OpenerListener extends LayerListenerAdapter implements
 			LayerListener {
