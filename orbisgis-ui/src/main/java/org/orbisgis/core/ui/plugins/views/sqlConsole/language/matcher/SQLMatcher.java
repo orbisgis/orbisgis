@@ -87,7 +87,7 @@ public class SQLMatcher {
                 // no text
                 if (!it.hasNext()) {
                         // no text
-                        addKeyWords("CREATE", "DROP", "SELECT", "INSERT", "UPDATE", "DELETE", "EXECUTE", "ALTER");
+                        addKeyWords("CREATE", "DROP", "SELECT", "INSERT INTO", "UPDATE", "DELETE", "EXECUTE", "ALTER");
                         return;
                 }
                 String a = it.next();
@@ -98,7 +98,7 @@ public class SQLMatcher {
                         return;
                 } else if (a.endsWith(";")) {
                         // end of query: start a new one
-                        addKeyWords("CREATE", "DROP", "SELECT", "INSERT", "UPDATE", "DELETE", "EXECUTE", "ALTER");
+                        addKeyWords("CREATE", "DROP", "SELECT", "INSERT INTO", "UPDATE", "DELETE", "EXECUTE", "ALTER");
                         return;
                 } else if (a.endsWith(",")) {
                         // comma; we have to look deeper to understand what to do.
@@ -125,6 +125,12 @@ public class SQLMatcher {
                         // SELECT table.field
                         addScalarFunctions();
                         addTables(true);
+                } else if ("INSERT".equalsIgnoreCase(a)) {
+                        // INSERT INTO toto
+                        addKeyWord("INTO");
+                } else if ("INTO".equalsIgnoreCase(a)) {
+                        // INSERT INTO toto
+                        addTables(false);
                 } else if ("EXCEPT".equalsIgnoreCase(a)) {
                         // EXCEPT field, ...
                         addAllFields();
@@ -266,6 +272,9 @@ public class SQLMatcher {
                                 return;
                         } else if ("TABLE".equalsIgnoreCase(b)) {
                                 matchAfterTableId();
+                        } else if ("INTO".equalsIgnoreCase(b)) {
+                                // INSERT INTO toto
+                                addKeyWord("VALUES");
                         }
 
                         if (b.contains(";")) {
@@ -296,7 +305,7 @@ public class SQLMatcher {
                                 // after EXCEPT
                                 addAllFields();
                                 return;
-                        } else if ("VALUES".equalsIgnoreCase(a)) {
+                        } else if ("VALUES".equalsIgnoreCase(a) || "INTO".equalsIgnoreCase(a)) {
                                 // inside an insert, no completion
                                 return;
                         } else if ("BY".equalsIgnoreCase(a)) {
