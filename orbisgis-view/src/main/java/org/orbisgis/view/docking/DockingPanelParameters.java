@@ -51,29 +51,50 @@ public class DockingPanelParameters implements Serializable {
     private PropertyChangeSupport propertySupport;
     private DockingAreaParameters dockingAreaParameters = null;
     public static final String PROP_DOCKINGAREAPARAMETERS = "dockingAreaParameters";
-    private boolean acceptParentFlap = true;
-    public static final String PROP_ACCEPTPARENTFLAP = "acceptParentFlap";
+
+    private boolean minimizable = true;
+    public static final String PROP_MINIMIZABLE = "minimizable";
+    private boolean externalizable = true;
+    public static final String PROP_EXTERNALIZABLE = "externalizable";
 
     /**
-     * Get the value of acceptParentFlap
+     * Get the value of externalizable
      *
-     * @return the value of acceptParentFlap
+     * @return the value of externalizable
      */
-    public boolean isAcceptParentFlap() {
-        return acceptParentFlap;
+    public boolean isExternalizable() {
+        return externalizable;
     }
 
     /**
-     * Set the value of acceptParentFlap
+     * Set the value of externalizable
      *
-     * If false, the Docking Panel will refuse to be included
-     * into a FlapDockStation instance.
-     * @param acceptParentFlap new value of acceptParentFlap
+     * @param externalizable new value of externalizable
      */
-    public void setAcceptParentFlap(boolean acceptParentFlap) {
-        boolean oldAcceptParentFlap = this.acceptParentFlap;
-        this.acceptParentFlap = acceptParentFlap;
-        propertySupport.firePropertyChange(PROP_ACCEPTPARENTFLAP, oldAcceptParentFlap, acceptParentFlap);
+    public void setExternalizable(boolean externalizable) {
+        boolean oldExternalizable = this.externalizable;
+        this.externalizable = externalizable;
+        propertySupport.firePropertyChange(PROP_EXTERNALIZABLE, oldExternalizable, externalizable);
+    }
+
+    /**
+     * Get the value of minimizable
+     *
+     * @return the value of minimizable
+     */
+    public boolean isMinimizable() {
+        return minimizable;
+    }
+
+    /**
+     * Set the value of minimizable
+     *
+     * @param minimizable new value of minimizable
+     */
+    public void setMinimizable(boolean minimizable) {
+        boolean oldMinimizable = this.minimizable;
+        this.minimizable = minimizable;
+        propertySupport.firePropertyChange(PROP_MINIMIZABLE, oldMinimizable, minimizable);
     }
 
     /**

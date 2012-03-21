@@ -53,7 +53,8 @@ public class MapEditor extends JPanel implements DockingPanel   {
         dockingPanelParameters.setName("map_editor");
         dockingPanelParameters.setTitle(I18N.getString("orbisgis.view.map.MapEditorTitle"));
         dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("map"));
-        dockingPanelParameters.setAcceptParentFlap(false);
+        dockingPanelParameters.setMinimizable(false);
+        dockingPanelParameters.setExternalizable(false);
     }
 
     /**
