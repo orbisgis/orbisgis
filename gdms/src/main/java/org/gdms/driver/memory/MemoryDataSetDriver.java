@@ -116,6 +116,8 @@ public class MemoryDataSetDriver extends GDMSModelDriver implements
                 dataSource.open();
                 write(dataSource, new NullProgressMonitor());
                 dataSource.close();
+                this.schema = new DefaultSchema(DRIVER_NAME + this.hashCode());
+                schema.addTable("main", new DefaultMetadata(columnsTypes, columnsNames));
         }
 
         public MemoryDataSetDriver(final DataSet set, boolean noCopy) throws DriverException {
