@@ -4,17 +4,13 @@
  */
 package org.orbisgis.core.ui.plugins.ows;
 
+import org.orbisgis.core.ui.plugins.ows.ui.OwsUpdateOwsFilesListCommand;
+import org.orbisgis.core.ui.plugins.ows.ui.OwsUpdateComboBoxWorkspacesCommand;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -22,7 +18,6 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.SwingWorker;
 import javax.xml.bind.JAXBElement;
 import net.opengis.ows_context.OWSContextType;
 import org.orbisgis.core.Services;
@@ -138,52 +133,14 @@ public class OwsImportPanel extends AbstractUIPanel {
      * @param workspace An existing workspace
      */
     private void updateOwsFilesListModel(OwsWorkspace workspace) {
-
-        GetAllOwsFilesWorker getAllOwsFilesWorker = new GetAllOwsFilesWorker(workspace);
-        getAllOwsFilesWorker.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                if (evt.getNewValue().equals(SwingWorker.StateValue.DONE)) {
-
-                    try {
-                        List<OwsFileBasic> owsFiles = ((GetAllOwsFilesWorker) evt.getSource()).get();
-                        owsProjectsModel.updateAllItems(owsFiles);
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(OwsImportPanel.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (ExecutionException ex) {
-                        Logger.getLogger(OwsImportPanel.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-            }
-        });
-        
-        getAllOwsFilesWorker.execute();
-
+        OwsUpdateOwsFilesListCommand.buildCommand(owsService, owsProjectsModel, workspace).doJob();
     }
     
     /**
      * Updates the workspaces combo box model.
      */
     private void updateOwsWorkspacesComboBoxModel() {
-        GetAllOwsWorkspacesWorker getAllOwsWorkspacesWorker = new GetAllOwsWorkspacesWorker();
-        getAllOwsWorkspacesWorker.addPropertyChangeListener(new PropertyChangeListener() {
-
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                if (evt.getNewValue().equals(SwingWorker.StateValue.DONE)) {
-                    try {
-                        List<OwsWorkspace> owsWorkspaces = ((GetAllOwsWorkspacesWorker) evt.getSource()).get();
-                        owsWorkspacesModel.updateAllItems(owsWorkspaces);
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(OwsImportPanel.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (ExecutionException ex) {
-                        Logger.getLogger(OwsImportPanel.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-            }
-        });
-        
-        getAllOwsWorkspacesWorker.execute();
+        OwsUpdateComboBoxWorkspacesCommand.buildCommand(owsService, owsWorkspacesModel).doJob();
     }
     
     private class ImportButtonActionListener implements ActionListener {
@@ -247,28 +204,6 @@ public class OwsImportPanel extends AbstractUIPanel {
             setText(owsFile.getId() + " - " + owsFile.getOwsTitle());
 
             return this;
-        }
-    }
-  
-    private class GetAllOwsFilesWorker extends SwingWorker<List<OwsFileBasic>, Object> {
-        
-        private final OwsWorkspace workspace;
-        
-        public GetAllOwsFilesWorker(OwsWorkspace workspace) {
-            this.workspace = workspace;
-        }
-        
-        @Override
-        protected List<OwsFileBasic> doInBackground() throws Exception {
-            return owsService.getAllOwsFiles(workspace);
-        }
-    }
-    
-    private class GetAllOwsWorkspacesWorker extends SwingWorker<List<OwsWorkspace>, Object> {
-        
-        @Override
-        protected List<OwsWorkspace> doInBackground() throws Exception {
-            return owsService.getAllOwsWorkspaces();
         }
     }
 }
