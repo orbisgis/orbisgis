@@ -28,7 +28,10 @@
  */
 package org.orbisgis.core.context.main;
 
+import java.io.IOException;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+import org.apache.log4j.RollingFileAppender;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.DataSourceFinalizationException;
 import org.gdms.data.SQLDataSourceFactory;
@@ -52,6 +55,7 @@ public class MainContext {
      */
     public MainContext() {
         coreWorkspace = new CoreWorkspace();
+        initLogger(coreWorkspace);
         dataSourceFactory = new SQLDataSourceFactory(coreWorkspace.getSourceFolder(), coreWorkspace.getTempFolder(), coreWorkspace.getPluginFolder());
         sourceContext = new SourceContext(dataSourceFactory.getSourceManager());
     }
@@ -90,5 +94,20 @@ public class MainContext {
      */
     public DataSourceFactory getDataSourceFactory() {
         return dataSourceFactory;
+    }
+    /**
+     * Initiate the loggin system, called by MainContext constructor
+     */
+    private void initLogger(CoreWorkspace workspace) {
+        PatternLayout l = new PatternLayout("%5p [%t] (%F:%L) - %m%n");
+        RollingFileAppender fa;
+        try {
+            fa = new RollingFileAppender(l,workspace.getLogPath());
+            fa.setMaxFileSize("256KB");
+            Logger.getRootLogger().addAppender(fa);
+        } catch (IOException e) {
+                System.err.println("Init logger failed!");
+                e.printStackTrace(System.err);
+        }
     }
 }

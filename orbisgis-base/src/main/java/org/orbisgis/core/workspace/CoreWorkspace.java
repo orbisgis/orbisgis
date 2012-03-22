@@ -42,7 +42,7 @@ import java.io.*;
  */
 
 public class CoreWorkspace implements Serializable {
-    private static final long serialVersionUID = 5L; /*<! Update this integer while adding properties (1 for each new property)*/
+    private static final long serialVersionUID = 6L; /*<! Update this integer while adding properties (1 for each new property)*/
     private PropertyChangeSupport propertySupport;
     
     private String applicationFolder = new File(System.getProperty("user.home")).getAbsolutePath() + File.separator + ".OrbisGIS";
@@ -69,6 +69,34 @@ public class CoreWorkspace implements Serializable {
         
         //Read current defined workspace
         loadCurrentWorkSpace();
+    }
+    private String logFile = "orbisgis.log";
+    public static final String PROP_LOGFILE = "logFile";
+
+    /**
+     * Get the value of logFile
+     *
+     * @return the value of logFile
+     */
+    public String getLogFile() {
+        return logFile;
+    }
+
+    /**
+     * @return The full path of the log file
+     */
+    public String getLogPath() {
+        return applicationFolder+File.separator+logFile;
+    }
+    /**
+     * Set the value of logFile
+     *
+     * @param logFile new value of logFile
+     */
+    public void setLogFile(String logFile) {
+        String oldLogFile = this.logFile;
+        this.logFile = logFile;
+        propertySupport.firePropertyChange(PROP_LOGFILE, oldLogFile, logFile);
     }
 
     /**
