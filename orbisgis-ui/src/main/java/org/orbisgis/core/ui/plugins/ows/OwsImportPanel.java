@@ -17,6 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -38,13 +39,18 @@ import org.w3c.dom.Node;
  */
 public class OwsImportPanel extends AbstractUIPanel {
 
+    private static final Dimension LABELS_DIMENSION = new Dimension(100, 20);
+    private static final OwsWorkspace DEFAULT_WORKSPACE = new OwsWorkspace("default");
+    
     private String validateInputMessage;
     private JButton cmdImportOwsContext;
     private JPanel panel;
     private OwsFileImportListener owsFileImportListener;
-    private OwsService owsService;
-    private JList list;
-    private OwsFileListModel listModel;
+    private final OwsService owsService;
+    private JList listOwsProjects;
+    private final JComboBox cmbWorkspaces;
+    private OwsFileListModel owsProjectsModel;
+    private OwsWorkspaceComboBoxModel owsWorkspacesModel;
     
     public OwsImportPanel(OwsFileImportListener owsFileImportListener, 
             OwsService owsService) {
@@ -56,26 +62,51 @@ public class OwsImportPanel extends AbstractUIPanel {
         this.cmdImportOwsContext = new JButton(Names.LABEL_OWS_IMPORT_BUTTON);
         this.cmdImportOwsContext.addActionListener(new ImportButtonActionListener());
         
-        this.listModel = new OwsFileListModelImpl();
-        this.list = new JList(this.listModel);
+        this.owsProjectsModel = new OwsFileListModelImpl();
+        this.listOwsProjects = new JList(this.owsProjectsModel);
 
-        this.list.setCellRenderer(new OwsFileBasicListRenderer());
+        this.listOwsProjects.setCellRenderer(new OwsFileBasicListRenderer());
 
-        JScrollPane listScroller = new JScrollPane(this.list);
+        JScrollPane listScroller = new JScrollPane(this.listOwsProjects);
         listScroller.setPreferredSize(new Dimension(200, 200));
         listScroller.setAlignmentX(Component.LEFT_ALIGNMENT);
         
-        JPanel panelTop = new JPanel();
-        panelTop.add(new JLabel(Names.LABEL_OWS_PROJECTS));
-        panelTop.add(listScroller);
+        this.owsWorkspacesModel = new OwsWorkspaceComboBoxModelImpl();
+        this.cmbWorkspaces = new JComboBox(owsWorkspacesModel);
+        this.cmbWorkspaces.addActionListener(new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                OwsWorkspace selectedWorkspace = (OwsWorkspace) cmbWorkspaces.getSelectedItem();
+                updateOwsFilesListModel(selectedWorkspace);
+            }
+        });
+        
+        JPanel panelTop = new JPanel() {
+            {
+                add(new JLabel(Names.LABEL_OWS_WORKSPACE + ": ") {
+                    {
+                        setPreferredSize(LABELS_DIMENSION);
+                    }
+                });
+                add(cmbWorkspaces);
+            }
+        };
+        
+        JPanel panelMiddle = new JPanel();
+        panelMiddle.add(new JLabel(Names.LABEL_OWS_PROJECTS));
+        panelMiddle.add(listScroller);
         
         JPanel panelBottom = new JPanel();
         panelBottom.add(this.cmdImportOwsContext);
         
-        this.panel.add(panelTop, BorderLayout.CENTER);
+     
+        this.panel.add(panelTop, BorderLayout.NORTH);
+        this.panel.add(panelMiddle, BorderLayout.CENTER);
         this.panel.add(this.cmdImportOwsContext, BorderLayout.SOUTH);
         
-        updateListModel();
+        updateOwsWorkspacesComboBoxModel();
+        updateOwsFilesListModel(DEFAULT_WORKSPACE);
     }
     
     @Override
@@ -101,17 +132,22 @@ public class OwsImportPanel extends AbstractUIPanel {
         this.owsFileImportListener = owsFileImportListener;
     }
     
-    private void updateListModel() {
+    /**
+     * Executes a swing asynchronous task that updates the ows contexts list
+     * belonging to the given workspace.
+     * @param workspace An existing workspace
+     */
+    private void updateOwsFilesListModel(OwsWorkspace workspace) {
 
-        GetAllOwsFilesWorker worker = new GetAllOwsFilesWorker();
-        worker.addPropertyChangeListener(new PropertyChangeListener() {
+        GetAllOwsFilesWorker getAllOwsFilesWorker = new GetAllOwsFilesWorker(workspace);
+        getAllOwsFilesWorker.addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 if (evt.getNewValue().equals(SwingWorker.StateValue.DONE)) {
 
                     try {
                         List<OwsFileBasic> owsFiles = ((GetAllOwsFilesWorker) evt.getSource()).get();
-                        listModel.updateAllItems(owsFiles);
+                        owsProjectsModel.updateAllItems(owsFiles);
                     } catch (InterruptedException ex) {
                         Logger.getLogger(OwsImportPanel.class.getName()).log(Level.SEVERE, null, ex);
                     } catch (ExecutionException ex) {
@@ -120,7 +156,34 @@ public class OwsImportPanel extends AbstractUIPanel {
                 }
             }
         });
-        worker.execute();
+        
+        getAllOwsFilesWorker.execute();
+
+    }
+    
+    /**
+     * Updates the workspaces combo box model.
+     */
+    private void updateOwsWorkspacesComboBoxModel() {
+        GetAllOwsWorkspacesWorker getAllOwsWorkspacesWorker = new GetAllOwsWorkspacesWorker();
+        getAllOwsWorkspacesWorker.addPropertyChangeListener(new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                if (evt.getNewValue().equals(SwingWorker.StateValue.DONE)) {
+                    try {
+                        List<OwsWorkspace> owsWorkspaces = ((GetAllOwsWorkspacesWorker) evt.getSource()).get();
+                        owsWorkspacesModel.updateAllItems(owsWorkspaces);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(OwsImportPanel.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (ExecutionException ex) {
+                        Logger.getLogger(OwsImportPanel.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+        });
+        
+        getAllOwsWorkspacesWorker.execute();
     }
     
     private class ImportButtonActionListener implements ActionListener {
@@ -133,16 +196,19 @@ public class OwsImportPanel extends AbstractUIPanel {
         @Override
         public void actionPerformed(ActionEvent ae) {
             validateInputMessage = "";
-            if (list.getSelectedIndex() > 0) {
-                
+            if (listOwsProjects.getSelectedIndex() >= 0) {
+
                 final OWSContextImporter importer = new OWSContextImporterImpl();
-                
+
                 this.bm.backgroundOperation(new BackgroundJob() {
 
                     @Override
                     public void run(ProgressMonitor pm) {
-                        Node owsContextNode = 
-                                OwsImportPanel.this.owsService.getOwsFile(((OwsFileBasic)list.getSelectedValue()).getId());
+                        
+                        OwsWorkspace selectedWorkspace = (OwsWorkspace) cmbWorkspaces.getSelectedItem();
+                        Node owsContextNode =
+                                OwsImportPanel.this.owsService.getOwsFile(selectedWorkspace,
+                                ((OwsFileBasic) listOwsProjects.getSelectedValue()).getId());
 
                         JAXBElement<OWSContextType> owsContext = importer.unmarshallOwsContext(owsContextNode);
                         OwsImportPanel.this.owsFileImportListener.fireOwsExtracted(owsContext);
@@ -155,14 +221,16 @@ public class OwsImportPanel extends AbstractUIPanel {
                     }
                 });
 
-            }
-            else {
+            } else {
                 validateInputMessage = Names.LABEL_OWS_MUST_SELECT_FILE;
                 OwsImportPanel.this.validateInput();
             }
         }
     } 
     
+    /**
+     * Item renderer for the list showing the ows context files.
+     */
     private class OwsFileBasicListRenderer extends DefaultListCellRenderer {
 
         public OwsFileBasicListRenderer() {
@@ -170,20 +238,37 @@ public class OwsImportPanel extends AbstractUIPanel {
         }
 
         @Override
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+        public Component getListCellRendererComponent(JList list, Object value,
+                int index, boolean isSelected, boolean cellHasFocus) {
             
+            super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
             OwsFileBasic owsFile = (OwsFileBasic) value;
             setText(owsFile.getId() + " - " + owsFile.getOwsTitle());
-            
+
             return this;
         }
     }
-    
+  
     private class GetAllOwsFilesWorker extends SwingWorker<List<OwsFileBasic>, Object> {
+        
+        private final OwsWorkspace workspace;
+        
+        public GetAllOwsFilesWorker(OwsWorkspace workspace) {
+            this.workspace = workspace;
+        }
+        
         @Override
         protected List<OwsFileBasic> doInBackground() throws Exception {
-            return owsService.getAllOwsFiles();
+            return owsService.getAllOwsFiles(workspace);
+        }
+    }
+    
+    private class GetAllOwsWorkspacesWorker extends SwingWorker<List<OwsWorkspace>, Object> {
+        
+        @Override
+        protected List<OwsWorkspace> doInBackground() throws Exception {
+            return owsService.getAllOwsWorkspaces();
         }
     }
 }

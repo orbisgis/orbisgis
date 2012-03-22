@@ -524,4 +524,6 @@ public abstract class Names {
 			.getString("orbisgis.org.orbisgis.core.ui.plugins.ows.buttonExport");
 	public static final String LABEL_OWS_EXPORT_AS_BUTTON = I18N
 			.getString("orbisgis.org.orbisgis.core.ui.plugins.ows.buttonExportAs");
+	public static final String LABEL_OWS_WORKSPACE = I18N
+			.getString("orbisgis.org.orbisgis.core.ui.plugins.ows.labelWorkspace");
 }

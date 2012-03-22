@@ -54,7 +54,13 @@ public class OwsContextUtils {
         return db;
     }
     
-    public static InputStream callService(String serviceUrl) {
+    /**
+     * Sends a GET request to the selected url.
+     * 
+     * @param serviceUrl The REST service's url to send an http request to
+     * @return Result of the GET request
+     */
+    public static InputStream callServiceGet(String serviceUrl) {
         InputStream instream = null;
         try {
             HttpClient httpClient = new DefaultHttpClient();
@@ -70,7 +76,7 @@ public class OwsContextUtils {
                 // When HttpClient instance is no longer needed,
                 // shut down the connection manager to ensure
                 // immediate deallocation of all system resources
-                //httpClient.getConnectionManager().shutdown();
+                httpClient.getConnectionManager().shutdown();
             }
         } catch (ClientProtocolException ex) {
             Logger.getLogger(OwsImportPanel.class.getName()).log(Level.SEVERE, null, ex);
@@ -81,7 +87,17 @@ public class OwsContextUtils {
         return instream;
     }
     
-    public static InputStream callServicePost(String serviceUrl, List<NameValuePair> formparams) {
+    /**
+     * Sends a POST request to the selected url.
+     * 
+     * @param serviceUrl The REST service's url to send an http request to
+     * @param formparams A list of post parameters
+     * @param connectionShutdown True to shutdown the connection once the data has been retrieved
+     * @return Result of the POST request
+     */
+    public static InputStream callServicePost(String serviceUrl, List<NameValuePair> formparams, 
+            boolean connectionShutdown) {
+        
         InputStream instream = null;
         try {
             HttpClient httpClient = new DefaultHttpClient();
@@ -101,7 +117,9 @@ public class OwsContextUtils {
                 // When HttpClient instance is no longer needed,
                 // shut down the connection manager to ensure
                 // immediate deallocation of all system resources
-                httpClient.getConnectionManager().shutdown();
+                if (connectionShutdown) {
+                    httpClient.getConnectionManager().shutdown();
+                }
             }
         } catch (ClientProtocolException ex) {
             Logger.getLogger(OwsImportPanel.class.getName()).log(Level.SEVERE, null, ex);

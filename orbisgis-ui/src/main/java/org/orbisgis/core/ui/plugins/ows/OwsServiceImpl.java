@@ -23,18 +23,21 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- * Proxy for the remote services.
+ * Proxy implementation for the remote services. The REST services urls
+ * are set within the helper class {@link OwsContextUtils}.
  * @author CŽdric Le Glaunec <cedric.leglaunec@gmail.com>
  */
 public class OwsServiceImpl implements OwsService {
 
     private SAXParser parser;
-    private final OwsSAXHandler owsSaxHandler;
+    private final OwsFilesSAXHandler owsFilesSaxHandler;
+    private final OwsWorkspacesSAXHandler owsWorkspacesSAXHandler;
     private DocumentBuilder builder;
 
     public OwsServiceImpl() throws ParserConfigurationException, SAXException {
         this.parser = SAXParserFactory.newInstance().newSAXParser();
-        this.owsSaxHandler = new OwsSAXHandler();
+        this.owsFilesSaxHandler = new OwsFilesSAXHandler();
+        this.owsWorkspacesSAXHandler = new OwsWorkspacesSAXHandler();
         
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         // In order to get a xerces implementation which takes namespaces
@@ -46,12 +49,17 @@ public class OwsServiceImpl implements OwsService {
     
 
     @Override
-    public List<OwsFileBasic> getAllOwsFiles() {
+    public List<OwsFileBasic> getAllOwsFiles(OwsWorkspace workspace) {
+        
         List<OwsFileBasic> owsFiles = new ArrayList<OwsFileBasic>();
-
+        List<NameValuePair> formparams = new ArrayList<NameValuePair>();
+        formparams.add(new BasicNameValuePair("workspace", workspace.getName()));
+        
         try {
-            this.parser.parse(OwsContextUtils.callService(OwsContextUtils.getServiceGetAllUrl()), this.owsSaxHandler);
-            owsFiles = this.owsSaxHandler.getFiles();
+            InputStream xml = OwsContextUtils.callServicePost(OwsContextUtils.getServiceGetAllUrl(), formparams, true);
+            this.parser.parse(xml, this.owsFilesSaxHandler);
+            xml.close();
+            owsFiles = this.owsFilesSaxHandler.getFiles();
         } catch (SAXException ex) {
             Logger.getLogger(OwsServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -62,9 +70,13 @@ public class OwsServiceImpl implements OwsService {
     }
     
     @Override
-    public Node getOwsFile(int id) {
+    public Node getOwsFile(OwsWorkspace workspace, int id) {
+        
+        List<NameValuePair> formparams = new ArrayList<NameValuePair>();
+        formparams.add(new BasicNameValuePair("workspace", workspace.getName()));
+        
         String url = OwsContextUtils.getServiceGetOneOwsUrl() + "/" + id;
-        InputStream owsInput = OwsContextUtils.callService(url);
+        InputStream owsInput = OwsContextUtils.callServicePost(url, formparams, false);
         Node node = null;
         
         try {
@@ -86,7 +98,7 @@ public class OwsServiceImpl implements OwsService {
         List<NameValuePair> formparams = new ArrayList<NameValuePair>();
         formparams.add(new BasicNameValuePair("owc", data));
         String url = OwsContextUtils.getServiceExportOwsAsUrl();
-        OwsContextUtils.callServicePost(url, formparams);
+        OwsContextUtils.callServicePost(url, formparams, true);
     }
 
     @Override
@@ -95,10 +107,68 @@ public class OwsServiceImpl implements OwsService {
         formparams.add(new BasicNameValuePair("owc", data));
         formparams.add(new BasicNameValuePair("id", Integer.toString(projectId)));
         String url = OwsContextUtils.getServiceExportOwsAsUrl();
-        OwsContextUtils.callServicePost(url, formparams);
+        OwsContextUtils.callServicePost(url, formparams, true);
     }
 
-    private class OwsSAXHandler extends DefaultHandler {
+    @Override
+    public List<OwsWorkspace> getAllOwsWorkspaces() {
+        List<OwsWorkspace> owsWorkspaces = new ArrayList<OwsWorkspace>();
+
+        try {
+            InputStream xml = OwsContextUtils.callServiceGet(OwsContextUtils.getServiceGetAllOwsWorkspace());
+            this.parser.parse(xml, this.owsWorkspacesSAXHandler);
+            xml.close();
+            owsWorkspaces = this.owsWorkspacesSAXHandler.getWorkspaces();
+        } catch (SAXException ex) {
+            Logger.getLogger(OwsServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(OwsServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return owsWorkspaces;
+    }
+    
+    /**
+     * SAX handler used for extracting a list of workspaces in the REST service.
+     */
+    private class OwsWorkspacesSAXHandler extends DefaultHandler {
+        private final List<OwsWorkspace> workspaces;
+
+        private String buffer;
+        
+        public OwsWorkspacesSAXHandler() {
+            this.workspaces = new ArrayList<OwsWorkspace>();
+        }
+
+        @Override
+        public void characters(char[] ch, int start, int length) throws SAXException {
+            this.buffer = new String(ch, start, length);
+        }
+
+        @Override
+        public void endElement(String uri, String localName, String qName) throws SAXException {
+            super.endElement(uri, localName, qName);
+            if (qName.equals("item")) {
+                workspaces.add(new OwsWorkspace(buffer));
+            }
+        }
+
+        @Override
+        public void startDocument() throws SAXException {
+            super.startDocument();
+            this.workspaces.clear();
+        }
+
+        public List<OwsWorkspace> getWorkspaces() {
+            return workspaces;
+        }
+    }
+
+    /**
+     * SAX handler used for extracting a list of ows context files 
+     * returned by the REST service.
+     */
+    private class OwsFilesSAXHandler extends DefaultHandler {
 
         private final List<OwsFileBasic> files;
         private int id;
@@ -106,7 +176,7 @@ public class OwsServiceImpl implements OwsService {
         private String owsAbstract;
         private String buffer;
 
-        public OwsSAXHandler() {
+        public OwsFilesSAXHandler() {
             this.files = new ArrayList<OwsFileBasic>();
         }
 

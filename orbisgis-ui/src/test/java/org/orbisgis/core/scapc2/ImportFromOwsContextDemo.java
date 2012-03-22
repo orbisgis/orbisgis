@@ -291,7 +291,7 @@ public class ImportFromOwsContextDemo {
     }
     
 //    private void runDemo() throws ParameterException {
-//        InputStream is = OwsContextUtils.callService(SERVICE_TEST_URL);
+//        InputStream is = OwsContextUtils.callServiceGet(SERVICE_TEST_URL);
 //        List<ILayer> layers = importer.extractLayers(is);
 //        showGraphics(layers);
 //    }
