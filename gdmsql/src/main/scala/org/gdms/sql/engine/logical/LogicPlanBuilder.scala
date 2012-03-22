@@ -111,6 +111,7 @@ object LogicPlanBuilder {
                   //      ^(T_TABLE_ITEM table_id alias?)
                   //    | ^(T_TABLE_QUERY select_statement alias)
                   //    | ^(T_TABLE_FUNCTION custom_query_call alias?)
+                  //    | ^(T_TABLE_VALUES multiple_insert_value_list  alias)
                   //    | ^(T_JOIN table_ref ^(INNER_JOIN/OUTER_JOIN ... )+)
                   //    )
                   val c = getChilds(t)
@@ -510,6 +511,23 @@ object LogicPlanBuilder {
           s.children = buildOperationTree(head.getChild(0)) :: Nil
           last.addChild(s)
           s
+        }
+    
+      case T_TABLE_VALUES => {
+          // AST:
+          // ^(T_TABLE_VALUES 
+          //   ^(T_VALUES ^(T_VALUES expression_main+ )+) <-- rows
+          //   alias
+          //  )
+          val alias = if (head.getChildCount == 1) None else Some(head.getChild(1).getText)
+          var e: List[List[Expression]] = Nil
+          val ch = getChilds(head.getChild(0))
+          ch foreach { g => e = (getChilds(g) map (parseExpression(_))) :: e }
+          e = e reverse
+                
+          val s = ValuesScan(e, alias, false)
+          last.addChild(s)
+          s
         }}
   }
 
@@ -534,6 +552,15 @@ object LogicPlanBuilder {
             val s = SubQuery("")
             s.children = buildOperationTree(i.getChild(0)) :: Nil
             Right(s) :: Nil
+          }
+        case T_TABLE_VALUES => {
+            val alias = if (i.getChildCount == 1) None else Some(i.getChild(1).getText)
+            var e: List[List[Expression]] = Nil
+            val ch = getChilds(i.getChild(0))
+            ch foreach { g => e = (getChilds(g) map (parseExpression(_))) :: e }
+            e = e reverse
+                
+            Right(ValuesScan(e, alias, false)) :: Nil
           }
         case _ => { // argument is a (constant) expression
             exp = parseExpression(i) :: exp

@@ -248,7 +248,7 @@ object PhysicalPlanBuilder {
               new ExpressionBasedLoopJoinCommand(ex, false, true)
             }
         }
-      case ValuesScan(ex, alias) => new ValuesScanCommand(ex, alias)
+      case ValuesScan(ex, alias, internal) => new ValuesScanCommand(ex, alias, internal)
       case Projection(exp) => new ProjectionCommand(exp toArray)
       case a @ Aggregate(exp) => {
           val grouping = a.children.head match {

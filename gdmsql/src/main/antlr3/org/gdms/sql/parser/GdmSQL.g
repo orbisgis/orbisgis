@@ -28,6 +28,7 @@ tokens {
     T_TABLE_ITEM = 't_table_item';
     T_TABLE_QUERY = 't_table_query';
     T_TABLE_FUNCTION = 't_table_function';
+    T_TABLE_VALUES = 't_table_values';
     T_INNER_JOIN = 't_inner_join';
     T_OUTER_JOIN = 't_outer_join';
     T_CREATE_TABLE = 't_create_table';
@@ -482,6 +483,8 @@ table_reference
          -> ^( T_TABLE_QUERY select_statement $alias )
         | custom_query_call ( T_AS? alias=LONG_ID )?
         -> ^( T_TABLE_FUNCTION custom_query_call $alias? )
+        | T_VALUES multiple_insert_value_list T_AS? alias=LONG_ID
+        -> ^(T_TABLE_VALUES multiple_insert_value_list $alias)
         ;
 
 subquery

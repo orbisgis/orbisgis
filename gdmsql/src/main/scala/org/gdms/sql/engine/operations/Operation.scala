@@ -142,8 +142,8 @@ case class IndexQueryScan(table: String, alias: Option[String] = None, query: In
  * @author Antoine Gourlay
  * @since 0.3
  */
-case class ValuesScan(exp: Seq[Seq[Expression]], alias: Option[String] = None) extends Operation {
-  override def toString = "ValuesScan of (" + exp + ") " + (if (alias.isDefined) alias else "")
+case class ValuesScan(exp: Seq[Seq[Expression]], alias: Option[String] = None, internal: Boolean = true) extends Operation {
+  override def toString = "ValuesScan" + (if (internal) "(internal)" else "") + " of (" + exp + ") " + (if (alias.isDefined) alias else "")
 }
   
 

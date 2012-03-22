@@ -43,8 +43,11 @@ package org.gdms.sql.engine.commands.scan
 
 
 import org.gdms.data.schema.DefaultMetadata
+import org.gdms.sql.engine.SemanticException
+import org.gdms.sql.engine.commands.SQLMetadata
 import org.gdms.sql.engine.commands._
 import org.gdms.sql.evaluator.Expression
+import org.gdms.data.types.TypeFactory
 import org.gdms.sql.engine.GdmSQLPredef._
 
 /**
@@ -59,24 +62,37 @@ import org.gdms.sql.engine.GdmSQLPredef._
  * @author Antoine Gourlay
  * @since 0.3
  */
-class ValuesScanCommand(exps: Seq[Seq[Expression]], alias: Option[String]) extends Command with ExpressionCommand {
+class ValuesScanCommand(exps: Seq[Seq[Expression]], alias: Option[String], internal: Boolean = true) extends Command {
   
   private val m: DefaultMetadata = new DefaultMetadata()
 
-  protected def exp = exps flatten
-  
   protected final def doWork(r: Iterator[RowStream]) = {
     exps.par map(evaluate) toIterator
   }
   
   override def doPrepare = {
-    super.doPrepare
     val types = exps.head map (_.evaluator.sqlType)
+    val s = types.size
+    exps.tail foreach {e =>
+      val tt = e map (_.evaluator.sqlType)
+      if (tt.size != s) {
+        throw new SemanticException("Rows must all have the same number of elements.")
+      }
+      types zip tt foreach {zz => 
+        if (!TypeFactory.canBeCastTo(zz._2, zz._1)) {
+          throw new SemanticException("Rows must all have the same types as the first row, or must have types that " +
+          "can be implicitly casted to the ones of the first row.")
+        }
+      }
+      
+    }
+    
     var k = -1;
     m.clear
+    val prefix = if (internal) "$exp" else "exp"
     types foreach {i =>
       k = k + 1
-      m.addField("$exp" + k, i)
+      m.addField(prefix + k, i)
     }
   }
   
