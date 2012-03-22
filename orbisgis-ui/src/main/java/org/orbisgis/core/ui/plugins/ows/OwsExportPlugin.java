@@ -38,7 +38,7 @@ public class OwsExportPlugin extends AbstractPlugIn {
 
         panel = new OwsExportPanel(context.getMapContext(), 
                 new OWSContextExporterImpl(new OwsServiceImpl()), 
-                new OwsFileExportListenerImpl());
+                new OwsFileExportListenerImpl(), new OwsServiceImpl());
 
 
         exportOwsDialog = UIFactory.getSimpleDialog(panel);

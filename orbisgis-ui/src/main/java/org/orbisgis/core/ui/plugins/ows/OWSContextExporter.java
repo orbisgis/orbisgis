@@ -19,6 +19,7 @@ public interface OWSContextExporter {
      * Exports a project to an ows context stream. The project with the specified
      * id (in owsContextElement) should be replaced by the new one in the data repository.
      * The destination is defined by the related implementation.
+     * @param workspace A valid workspace
      * @param owsContextElement The original ows context tree which was previously imported. (Null is not allowed)
      * @param title Project's title
      * @param description Project's description
@@ -28,13 +29,14 @@ public interface OWSContextExporter {
      * @throws NullPointerException If owsContext is null, you should consider
      * calling exportProjectAs() method.
      */
-    public void exportProject(JAXBElement<OWSContextType> owsContextElement, 
+    public void exportProject(OwsWorkspace workspace, JAXBElement<OWSContextType> owsContextElement, 
             String title, String description, String crs, Envelope boundingBox, 
             ILayer[] layers) throws NullPointerException;
 
     /**
      * Exports a new project to an ows context stream.
      * The destination is defined by the related implementation.
+     * @param workspace A valid workspace
      * @param owsContextElement The original ows context tree which was possibly imported. (Null allowed)
      * @param title Project's title
      * @param description Project's description
@@ -42,6 +44,6 @@ public interface OWSContextExporter {
      * @param boundingBox Bounding box
      * @param layers A list of layers belonging to the project
      */
-    public void exportProjectAs(JAXBElement<OWSContextType> owsContextElementImported, 
+    public void exportProjectAs(OwsWorkspace workspace, JAXBElement<OWSContextType> owsContextElementImported, 
             String title, String description, String crs, Envelope boundingBox, ILayer[] layers);
 }

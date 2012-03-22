@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -24,6 +25,7 @@ import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.sif.AbstractUIPanel;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
+import org.orbisgis.core.ui.plugins.ows.ui.OwsUpdateComboBoxWorkspacesCommand;
 import org.orbisgis.progress.ProgressMonitor;
 
 /**
@@ -37,31 +39,42 @@ public class OwsExportPanel extends AbstractUIPanel {
     private String validateInputMessage;
     private OwsFileExportListener owsFileExportListener;
     private OWSContextExporter owsFileExporter;
+    private OwsService owsService;
     private MapContext mapContext;
     
+    private final JComboBox cmbWorkspaces;
     private final JTextField txtTitle;
     private final JTextArea txtDescription;
     private final JTextField txtCrs;
     
+    private OwsWorkspaceComboBoxModel owsWorkspacesModel;
+    
     
     public OwsExportPanel(MapContext mapContext, OWSContextExporter owsFileExporter, 
-            OwsFileExportListener owsFileExportListener) {
+            OwsFileExportListener owsFileExportListener, OwsService owsService) {
         validateInputMessage = "";
         this.owsFileExportListener = owsFileExportListener;
+        this.owsService = owsService;
         this.owsFileExporter = owsFileExporter;
         this.mapContext = mapContext;
         
-        
+        this.owsWorkspacesModel = new OwsWorkspaceComboBoxModelImpl();
+        this.cmbWorkspaces = new JComboBox(owsWorkspacesModel);
         txtTitle = new JTextField(15);
         txtDescription = new JTextArea(5, 15) {
             {
                 setBorder(txtTitle.getBorder());
+                setLineWrap(true);
             }
         };
         txtCrs = new JTextField(10);
         
 
-        
+        final JLabel lblWorkspace = new JLabel(Names.LABEL_OWS_WORKSPACE + ": ") {
+            {
+                setPreferredSize(LABELS_DIMENSION);
+            }
+        };
         final JLabel lblTitle = new JLabel(Names.LABEL_OWS_TITLE + ": ") {
             {
                 setPreferredSize(LABELS_DIMENSION);
@@ -79,6 +92,13 @@ public class OwsExportPanel extends AbstractUIPanel {
         };
         
         
+        
+        final JPanel pnlWorkspace = new JPanel() {
+            {
+                add(lblWorkspace);
+                add(cmbWorkspaces);
+            }
+        };
         
         final JPanel pnlTitle = new JPanel() {
             {
@@ -127,6 +147,7 @@ public class OwsExportPanel extends AbstractUIPanel {
         
         panel = new JPanel() {
             {
+                add(pnlWorkspace);
                 add(pnlTitle);
                 add(pnlDescription);
                 add(pnlCrs);
@@ -145,6 +166,15 @@ public class OwsExportPanel extends AbstractUIPanel {
         else {
             cmdExport.setEnabled(false);
         }
+        
+        updateOwsWorkspacesComboBoxModel();
+    }
+    
+    /**
+     * Updates the workspaces combo box model.
+     */
+    private void updateOwsWorkspacesComboBoxModel() {
+        OwsUpdateComboBoxWorkspacesCommand.buildCommand(owsService, owsWorkspacesModel).doJob();
     }
     
     @Override
@@ -176,7 +206,9 @@ public class OwsExportPanel extends AbstractUIPanel {
 
                 @Override
                 public void run(ProgressMonitor pm) {
-                    OwsExportPanel.this.owsFileExporter.exportProject(OwsPlugIn.getLastOwsContextImported(), 
+                    OwsWorkspace selectedWorkspace = (OwsWorkspace) cmbWorkspaces.getSelectedItem();
+                    OwsExportPanel.this.owsFileExporter.exportProject(selectedWorkspace,
+                            OwsPlugIn.getLastOwsContextImported(), 
                             txtTitle.getText(), 
                             txtDescription.getText(), txtCrs.getText(), 
                             OwsExportPanel.this.mapContext.getBoundingBox(), 
@@ -207,7 +239,8 @@ public class OwsExportPanel extends AbstractUIPanel {
 
                 @Override
                 public void run(ProgressMonitor pm) {
-                    OwsExportPanel.this.owsFileExporter.exportProjectAs(
+                    OwsWorkspace selectedWorkspace = (OwsWorkspace) cmbWorkspaces.getSelectedItem();
+                    OwsExportPanel.this.owsFileExporter.exportProjectAs(selectedWorkspace,
                             OwsPlugIn.getLastOwsContextImported(), txtTitle.getText(), 
                             txtDescription.getText(), txtCrs.getText(), 
                             OwsExportPanel.this.mapContext.getBoundingBox(), 

@@ -34,18 +34,20 @@ public interface OwsService {
     
     /**
      * Saves the project as a new ows context file in the repository.
+     * @param workspace A valid workspace
      * @param data The ows context file as text. Do not forget to add the prefix
      * "owc=" before the actual ows context data.
      */
-    public void saveOwsFileAs(String data);
+    public void saveOwsFileAs(OwsWorkspace workspace, String data);
     
     /**
      * Saves the project.
      * 
+     * @param workspace A valid workspace
      * @param data The ows context file as text.
      * @param projectId The project's id
      */
-    public void saveOwsFile(String data, int projectId);
+    public void saveOwsFile(OwsWorkspace workspace, String data, int projectId);
     
 
     /**

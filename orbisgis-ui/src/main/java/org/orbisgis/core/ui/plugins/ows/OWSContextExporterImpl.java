@@ -65,6 +65,7 @@ public class OWSContextExporterImpl implements OWSContextExporter {
      * 
      * The destination depends on the {@link OwsService#saveOwsFileAs(java.lang.String) } implementation
      * 
+     * @param workspace A valid workspace
      * @param owsContextElement The original ows context tree which was previously imported. (Null is not allowed)
      * @param title Project's title
      * @param description Project's description
@@ -75,7 +76,7 @@ public class OWSContextExporterImpl implements OWSContextExporter {
      * calling exportProjectAs() method.
      */
     @Override
-    public void exportProject(JAXBElement<OWSContextType> owsContextElement, String title, 
+    public void exportProject(OwsWorkspace workspace, JAXBElement<OWSContextType> owsContextElement, String title, 
         String description, String crs, Envelope boundingBox, ILayer[] layers) 
             throws NullPointerException {
         
@@ -91,7 +92,8 @@ public class OWSContextExporterImpl implements OWSContextExporter {
             StringWriter sw = new StringWriter();
             marshaller.marshal(owsContextElement, sw);
             
-            owsService.saveOwsFile(sw.toString(), Integer.parseInt(owsContextElement.getValue().getId()));
+            owsService.saveOwsFile(workspace, sw.toString(), 
+                    Integer.parseInt(owsContextElement.getValue().getId()));
         } catch (JAXBException ex) {
             Logger.getLogger(OWSContextExporterImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -108,6 +110,7 @@ public class OWSContextExporterImpl implements OWSContextExporter {
      * 
      * The destination depends on the {@link OwsService#saveOwsFileAs(java.lang.String) } implementation
      * 
+     * @param workspace A valid workspace
      * @param owsContextElement The original ows context tree which was possibly imported. (Null allowed)
      * @param title Project's title
      * @param description Project's description
@@ -116,7 +119,7 @@ public class OWSContextExporterImpl implements OWSContextExporter {
      * @param layers A list of layers belonging to the project
      */
     @Override
-    public void exportProjectAs(JAXBElement<OWSContextType> owsContextElementImported, 
+    public void exportProjectAs(OwsWorkspace workspace, JAXBElement<OWSContextType> owsContextElementImported, 
         String title, String description, String crs, Envelope boundingBox, ILayer[] layers) {
 
         JAXBElement<OWSContextType> owsContextElement;
@@ -137,7 +140,7 @@ public class OWSContextExporterImpl implements OWSContextExporter {
             StringWriter sw = new StringWriter();
             marshaller.marshal(owsContextElement, sw);
             
-            owsService.saveOwsFileAs(sw.toString());
+            owsService.saveOwsFileAs(workspace, sw.toString());
         } catch (JAXBException ex) {
             Logger.getLogger(OWSContextExporterImpl.class.getName()).log(Level.SEVERE, null, ex);
         }

@@ -94,18 +94,20 @@ public class OwsServiceImpl implements OwsService {
     }
 
     @Override
-    public void saveOwsFileAs(String data) {
+    public void saveOwsFileAs(OwsWorkspace workspace, String data) {
         List<NameValuePair> formparams = new ArrayList<NameValuePair>();
         formparams.add(new BasicNameValuePair("owc", data));
+        formparams.add(new BasicNameValuePair("workspace", workspace.getName()));
         String url = OwsContextUtils.getServiceExportOwsAsUrl();
         OwsContextUtils.callServicePost(url, formparams, true);
     }
 
     @Override
-    public void saveOwsFile(String data, int projectId) {
+    public void saveOwsFile(OwsWorkspace workspace, String data, int projectId) {
         List<NameValuePair> formparams = new ArrayList<NameValuePair>();
         formparams.add(new BasicNameValuePair("owc", data));
         formparams.add(new BasicNameValuePair("id", Integer.toString(projectId)));
+        formparams.add(new BasicNameValuePair("workspace", workspace.getName()));
         String url = OwsContextUtils.getServiceExportOwsAsUrl();
         OwsContextUtils.callServicePost(url, formparams, true);
     }
