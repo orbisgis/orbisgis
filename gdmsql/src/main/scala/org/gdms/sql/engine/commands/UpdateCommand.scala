@@ -41,11 +41,13 @@ import org.gdms.sql.engine.commands.scan.ScanCommand
 import org.gdms.sql.evaluator.Expression
 import org.gdms.data.DataSource
 import org.gdms.data.schema.DefaultMetadata
+import org.gdms.data.types.IncompatibleTypesException
 import org.gdms.data.types.Type
 import org.gdms.data.types.TypeFactory
 import org.gdms.data.values.ValueFactory
 import org.gdms.driver.memory.MemoryDataSetDriver
 import org.gdms.sql.engine.GdmSQLPredef._
+import org.gdms.sql.evaluator.Field
 
 /**
  * Update command.
@@ -67,7 +69,8 @@ class UpdateCommand(e: Seq[(String, Expression)]) extends Command with Expressio
   var res: MemoryDataSetDriver = null
 
   // for ExpressionCommand to properly init the expressions
-  override val exp = e map( _._2 )
+  override def exp = expr
+  private var expr = e map( _._2 )
 
   protected def doWork(r: Iterator[RowStream]) = {
     val m = children.head.getMetadata
@@ -88,7 +91,9 @@ class UpdateCommand(e: Seq[(String, Expression)]) extends Command with Expressio
   }
 
   override def doPrepare = {
-    // this inits the ScanCommand
+    expr = expr ++ (e.map(r => Field(r._1)))
+    
+    // this inits the expressions
     super.doPrepare
 
     // then we find it and get the DataSource
@@ -100,6 +105,16 @@ class UpdateCommand(e: Seq[(String, Expression)]) extends Command with Expressio
     }
     val c = recfind(children).get.asInstanceOf[ScanCommand]
     ds = c.ds
+    
+    val m = c.getMetadata
+    e foreach {ee =>
+      val t = m.getFieldType(m.getFieldIndex(ee._1)).getTypeCode
+      val s = ee._2.evaluator.sqlType
+      if (!TypeFactory.canBeCastTo(s, t)) {
+        throw new IncompatibleTypesException("The field '" + ee._1 + "' cannot be assigned: the expression cannot be implicitly cast " +
+                                    "from type '" + TypeFactory.getTypeName(s) + "' to type '" + TypeFactory.getTypeName(t) + "'")
+      }
+    }
     
     res = new MemoryDataSetDriver(new DefaultMetadata(Array(TypeFactory.createType(Type.LONG)), Array("Updated")))
   }
