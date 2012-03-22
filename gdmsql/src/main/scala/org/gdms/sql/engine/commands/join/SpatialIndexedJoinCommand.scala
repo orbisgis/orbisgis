@@ -54,7 +54,11 @@ import org.gdms.sql.engine.commands.Command
 import org.gdms.sql.engine.commands.ExpressionCommand
 import org.gdms.sql.engine.commands.scan.IndexQueryScanCommand
 import org.gdms.sql.engine.commands.SQLMetadata
+import org.gdms.sql.evaluator.AndEvaluator
 import org.gdms.sql.evaluator.Expression
+import org.gdms.sql.evaluator.FieldEvaluator
+import org.gdms.sql.evaluator.FunctionEvaluator
+import org.gdms.sql.function.SpatialIndexedFunction
 
 /**
  * Performs a spatial indexed join between two spatial tables.
@@ -75,6 +79,9 @@ class SpatialIndexedJoinCommand(expr: Expression) extends Command with Expressio
   // fields to drop after the filter but before its gets upper in the tree
   // this should be refactored into something somewhat cleaner...
   var dropped: List[Int] = Nil
+  
+  var queryExpression: Expression = null
+  
   private val d = new DefaultMetadata()
   
   protected final def doWork(r: Iterator[RowStream]): RowStream = {
@@ -151,10 +158,44 @@ class SpatialIndexedJoinCommand(expr: Expression) extends Command with Expressio
                                            TypeFactory.getTypeName(i))
     }
     
+    findQueryExpression(expr)
+    if (queryExpression == null) {
+      throw new IllegalStateException("Internal error: Could not find any expression to query the index.")
+    }
+    
     children = Nil
     
     d.clear
     List(small, big) foreach { c => addAndRename(d, c.getMetadata) }
+  }
+  
+  private def findQueryExpression(e: Expression) {
+    var done = false
+    if (e.evaluator.isInstanceOf[FunctionEvaluator] &&
+        e.evaluator.asInstanceOf[FunctionEvaluator].f.isInstanceOf[SpatialIndexedFunction]) {
+      e foreach {el =>
+        if (!done && matchSmallSpatialField(el)) {
+          queryExpression = el
+          done = true
+        }
+      }
+    } else if (e.evaluator.isInstanceOf[AndEvaluator]) {
+      e map (findQueryExpression)
+    }
+  }
+  
+  private def matchSmallSpatialField(e: Expression): Boolean = {
+    if (e.evaluator.isInstanceOf[FieldEvaluator]) {
+      val f = e.evaluator.asInstanceOf[FieldEvaluator]
+      f.table match {
+        case Some(t) if t == small.getMetadata.table => {
+            f.name == small.getMetadata.getFieldName(smallSpatialField)
+          }
+        case _ => false
+      }
+    } else {
+      e.map(matchSmallSpatialField).fold(false)( _ || _)
+    }
   }
   
   override def preDoCleanUp = {
