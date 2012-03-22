@@ -30,18 +30,21 @@ package org.orbisgis.view.docking;
 
 import bibliothek.gui.DockStation;
 import bibliothek.gui.dock.FlapDockStation;
-import bibliothek.gui.dock.ScreenDockStation;
-import bibliothek.gui.dock.SplitDockStation;
 import bibliothek.gui.dock.StackDockStation;
 import bibliothek.gui.dock.common.CControl;
 import bibliothek.gui.dock.common.intern.DefaultCDockable;
 import bibliothek.gui.dock.layout.DockableProperty;
 import bibliothek.gui.dock.station.split.SplitDockProperty;
 import bibliothek.gui.dock.util.PropertyKey;
+import org.apache.log4j.Logger;
 import java.awt.Dimension;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import javax.swing.JFrame;
 import org.orbisgis.utils.I18N;
 import org.orbisgis.view.docking.internals.OrbisGISView;
@@ -53,9 +56,8 @@ import org.orbisgis.view.icons.OrbisGISIcon;
  * This manager can save and load emplacement of views in XML.
  */
 public final class DockingManager {
-
-        private JFrame owner;   /*<! The main frame */
-        
+        private static final Logger LOGGER = Logger.getLogger(DockingManager.class);
+        File dockingState=null;
         private CControl commonControl; /*!< link to the docking-frames */
 
         private Map<DockingPanel,OrbisGISView> views = new HashMap<DockingPanel,OrbisGISView>();
@@ -74,10 +76,48 @@ public final class DockingManager {
 	public Set<DockingPanel> getPanels() {
             return views.keySet();
         }
+        
         /**
-         * Free docking resources
+         * Load the docking layout 
+         */
+        private void loadLayout() {
+            if(dockingState!=null) {
+                if(dockingState.exists()) {
+                    try {
+                        commonControl.readXML(dockingState);
+                    } catch (IOException ex) {
+                        LOGGER.error(I18N.getString("Unable to save the docking layout."), ex);
+                    }
+                }
+            }            
+        }
+        /**
+         * Save the docking layout
+         */
+        public void saveLayout() {
+            if(dockingState!=null) {
+                try {
+                    commonControl.writeXML(dockingState);
+                } catch (IOException ex) {
+                    LOGGER.error(I18N.getString("Unable to save the docking layout."), ex);
+                }    
+            }
+        }
+        
+        /**
+         * The multiple instances panels can be shown at the next start of application
+         * if their factory is registered 
+         * before loading the layout {@link setDockingStateFile}
+         */
+        public void registerPanelFactory() {
+            
+        }
+        
+        /**
+         * Free docking resources and save the layout
          */
         public void dispose() {
+            saveLayout();
             commonControl.destroy();
         }
 
@@ -95,7 +135,6 @@ public final class DockingManager {
 	 */
 	public DockingManager( JFrame owner){
 		//this.frontend = new DockFrontend();
-		this.owner = owner;
                 commonControl = new CControl(owner);
                 //Set the default empty size of border docking, named flap
                 commonControl.putProperty(FlapDockStation.MINIMUM_SIZE,  new Dimension(4,4));
@@ -105,7 +144,7 @@ public final class DockingManager {
 		commonControl.getController().getProperties().set( PropertyKey.DOCK_STATION_ICON, OrbisGISIcon.getIcon("mini_orbisgis") );
 				
                 //StackDockStation will contain all instances of ReservedDockStation
-		stackOfReservedDockStations = new StackDockStation();
+		//stackOfReservedDockStations = new StackDockStation();
                 
 
                 owner.add(commonControl.getContentArea());
@@ -115,10 +154,23 @@ public final class DockingManager {
 
 	}
         
-        
-	/**
-	 * Shows a view, read the view properties to decide where to show it
+        /**
+         * DockingManager will load and save the panels layout
+         * in the specified file. Load the layout if the file exists.
+         * @param dockingState The filename
+         * @throws IOException 
          */
+        public void setDockingLayoutPersistanceFilePath(String dockingStateFilePath) {
+            LOGGER.debug("Loading Docking Frames Layout :\n"+dockingStateFilePath);
+            this.dockingState = new File(dockingStateFilePath);
+            loadLayout();
+        }
+
+	/**
+	 * Shows a view at the given location as child
+	 * of <code>root</code>.
+	 * @param frame the <code>DockingPanel</code> for which a view should be opened
+	 */
         public void show( DockingPanel frame) {
             show(frame,null,null);
         }
@@ -132,35 +184,25 @@ public final class DockingManager {
 	 * be <code>null</code>.
 	 */
 	public void show( DockingPanel frame, DockStation root, DockableProperty location ){
+            OrbisGISView dockItem;
             if( !views.containsKey( frame ) ) {
                 //Create the DockingFrame item
-                OrbisGISView dockItem = new OrbisGISView( frame );
+                if(frame.getDockingParameters().getName().isEmpty()) {
+                    //If the dev doesn't define a name on the panel
+                    //We set the name as the name of the class
+                    frame.getDockingParameters().setName(frame.getClass().getCanonicalName());
+                }
+                dockItem = new OrbisGISView( frame );
                 //Place the item in a dockstation
                 String restrictedAreaName = frame.getDockingParameters().getDockingArea();
                 if(!restrictedAreaName.isEmpty()) {
-                    //Find if this restricted area was already created
-                    ReservedDockStation reservedDockStation;
-                    if(reservedDockStations.containsKey(restrictedAreaName)) {
-                        reservedDockStation = reservedDockStations.get(restrictedAreaName);
-                    } else {
-                        //Create the restricted area
-                        reservedDockStation = new ReservedDockStation(restrictedAreaName);
-                        //Store the dockstation in the map, for future panels
-                        reservedDockStations.put(restrictedAreaName, reservedDockStation);
-                        //Set the dockstation in the stack
-                        stackOfReservedDockStations.drop(reservedDockStation);
-                        //Show the dock station
-                        //frontend.show(reservedDockStation);
-                    }
-                    //Apply area parameters to panel parameters
-                    frame.getDockingParameters().setDockingAreaParameters(reservedDockStation.getDockingAreaParameters());
-                    root = reservedDockStation;
-                    location = new SplitDockProperty();    
-                }
-                
+                    //TODO Create the restricted area feature    
+                }                
                 commonControl.addDockable(dockItem);
-                dockItem.setVisible(true);
                 views.put( frame, dockItem);
+            } else {
+                dockItem = views.get(frame);
             }
+            dockItem.setVisible(true);
 	}
 }

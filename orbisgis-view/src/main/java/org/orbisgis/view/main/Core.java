@@ -31,7 +31,9 @@ package org.orbisgis.view.main;
 import java.awt.Rectangle;
 import java.awt.event.WindowListener;
 import java.beans.EventHandler;
+import java.io.File;
 import javax.swing.SwingUtilities;
+import org.apache.log4j.Logger;
 import org.orbisgis.core.context.main.MainContext;
 import org.orbisgis.utils.I18N;
 import org.orbisgis.view.docking.DockingManager;
@@ -41,19 +43,24 @@ import org.orbisgis.view.main.frames.MainFrame;
 import org.orbisgis.view.map.MapEditor;
 import org.orbisgis.view.toc.Toc;
 import org.orbisgis.view.translation.OrbisGISI18N;
+import org.orbisgis.view.workspace.ViewWorkspace;
 
 /**
  * The core manage the view of the application
  * This is the main UIContext
  */
 public class Core {
+    private static final Logger LOGGER = Logger.getLogger(Core.class);
     /////////////////////
     //view package
     private MainFrame mainFrame = null;     /*!< The main window */
     private Catalog geoCatalog= null;      /*!< The GeoCatalog frame */
     private Toc toc=null;                  /*!< The map layer list frame */
     private MapEditor mapEditor=null;      /*!< The map editor-viewer frame */
-    
+    private ViewWorkspace viewWorkspace;
+            
+            
+            
     private static final Rectangle MAIN_VIEW_POSITION_AND_SIZE = new Rectangle(20,20,800,600);/*!< Bounds of mainView, x,y and width height*/
     private DockingManager dockManager = null; /*!< The DockStation manager */
     
@@ -67,6 +74,7 @@ public class Core {
      */
     public Core() {
         this.mainContext = new MainContext();
+        this.viewWorkspace = new ViewWorkspace(this.mainContext.getCoreWorkspace());
     }
     /**
      * For UnitTest purpose
@@ -158,7 +166,8 @@ public class Core {
         
         //Debug create serialisation of panels
         
-        
+        //Load the docking layout and editors opened in last OrbisGis instance
+        dockManager.setDockingLayoutPersistanceFilePath(viewWorkspace.getDockingLayoutPath());
         // Show the application when Swing will be ready
         SwingUtilities.invokeLater( new ShowSwingApplication());
     }
