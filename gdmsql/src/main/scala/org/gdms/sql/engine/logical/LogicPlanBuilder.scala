@@ -118,13 +118,16 @@ object LogicPlanBuilder {
                   
                   val (joins, normal) = c.partition(_.getType == T_JOIN)
                   
-                  if (c.size > 1) {
+                  val rootlast = last
+                  
+                  normal.tail foreach {n => 
                     val j = Join(Cross())
                     last.addChild(j)
                     last = j
+                    addTableRef(n, last)
                   }
                   
-                  normal foreach (addTableRef(_, last))
+                  addTableRef(normal.head, last)
                   
                   var ends: List[Operation] = Nil
                   joins foreach {join =>
@@ -140,7 +143,11 @@ object LogicPlanBuilder {
                     ends = lastJoin :: ends
                   }
                     
-                  ends foreach (last.addChild(_))
+                  ends foreach {n => 
+                    val j = Join(Cross())
+                    j.children = rootlast.children
+                    rootlast.children = j :: n :: Nil
+                  }
                       
                   
                 }

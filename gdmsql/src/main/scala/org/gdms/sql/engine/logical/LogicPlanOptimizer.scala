@@ -164,7 +164,9 @@ object LogicPlanOptimizer {
     matchOperationFromBottom(o, {ch =>
         // gets Join(Inner(_))
         ch.isInstanceOf[Join] && (ch.asInstanceOf[Join].joinType match {
-            case Inner(_, _, None) => true
+            case Inner(_, _, None) => {
+                ch.children.filter(_.isInstanceOf[Join]).isEmpty
+              }
             case _ => false
           })
       }, {ch =>

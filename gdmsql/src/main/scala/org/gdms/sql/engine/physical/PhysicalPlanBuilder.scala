@@ -99,7 +99,8 @@ object PhysicalPlanBuilder {
         ch.isInstanceOf[Join] && (ch.asInstanceOf[Join].joinType match {
             // find actual spatial joins
             case Inner(_, true, _) => {
-                ch.children.filter(_.isInstanceOf[ValuesScan]).isEmpty
+                ch.children.filter(_.isInstanceOf[ValuesScan]).isEmpty &&
+                ch.children.filter(_.isInstanceOf[Join]).isEmpty
               }
             case _ => false
           })
@@ -143,7 +144,9 @@ object PhysicalPlanBuilder {
     LogicPlanOptimizer.matchOperationFromBottom(op, {ch =>
         ch.isInstanceOf[Join] && (ch.asInstanceOf[Join].joinType match {
             // find actual alpha joins
-            case Inner(_, false, _) => true
+            case Inner(_, false, _) => {
+                ch.children.filter(_.isInstanceOf[Join]).isEmpty
+              }
             case _ => false
           })
       }, {ch =>
