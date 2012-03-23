@@ -45,6 +45,7 @@ import org.gdms.sql.engine.UnknownFieldException
 import org.gdms.sql.engine.commands.scan.CustomQueryScanCommand
 import org.gdms.sql.engine.commands.scan.IndexQueryScanCommand
 import org.gdms.sql.engine.commands.scan.ScanCommand
+import org.gdms.sql.engine.commands.scan.ValuesScanCommand
 import org.gdms.sql.evaluator.DsfEvaluator
 import org.gdms.sql.engine.GdmSQLPredef._
 
@@ -62,9 +63,10 @@ trait ExpressionCommand extends Command {
   protected def exp: Seq[Expression]
   
   private def getFieldMetadata(c: Command): Seq[SQLMetadata] = { c match {
-      case s: ScanCommand => s.getMetadata :: (s.children flatMap getFieldMetadata)
-      case s: IndexQueryScanCommand => s.getMetadata :: (s.children flatMap getFieldMetadata)
-      case s: CustomQueryScanCommand => s.getMetadata :: (s.children flatMap getFieldMetadata)
+      case s: ScanCommand => s.getMetadata :: Nil
+      case s: IndexQueryScanCommand => s.getMetadata :: Nil
+      case s: CustomQueryScanCommand => s.getMetadata :: Nil
+      case s: ValuesScanCommand => s.getMetadata :: Nil
       case a: AggregateCommand => a.getMetadata :: Nil
       case _ => c.children flatMap getFieldMetadata
     }
@@ -83,7 +85,7 @@ trait ExpressionCommand extends Command {
       // indexes are offseted so as to be the index in the row resulting of the concatenation
       // in order of the rows of the child metadata objects.
       var offset = 0
-      for (m <- children map (_.getMetadata)) {
+      for (m <- allM) {
         setFields(e, m, offset)
         offset = offset + m.getFieldCount
       }

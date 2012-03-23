@@ -145,8 +145,15 @@ extends Command with ExpressionCommand with JoinCommand {
   private def addAndRename(d: DefaultMetadata, m: SQLMetadata) {
     // fields are given an internal name 'field$table'
     // for reference by expressions upper in the query tree
-    m.getFieldNames.zipWithIndex foreach { n =>
-      d.addField(n._1 + "$" + m.table,m.getFieldType(n._2))
+    if (m.table != "") {
+      m.getFieldNames.zipWithIndex foreach { n =>
+        d.addField(n._1 + "$" + m.table,m.getFieldType(n._2))
+      }
+    } else {
+      m.getFieldNames.zipWithIndex foreach { n =>
+        d.addField(n._1,m.getFieldType(n._2))
+      }
     }
+    
   }
 }
