@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.orbisgis.core.ui.plugins.ows;
+package org.orbisgis.core.ui.plugins.ows.remote;
 
 /**
  * Intended to contain meta information related to an ows context file

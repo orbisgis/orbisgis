@@ -4,24 +4,13 @@
  */
 package org.orbisgis.core.ui.plugins.ows;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.MatchResult;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.gdms.data.db.DBSource;
 
 /**
@@ -34,6 +23,7 @@ public class OwsContextUtils {
      * Filename that contains services' configuration
      */
     public static String SERVICES_CONFIG = "services.properties";
+
 
     /**
      * Extracts connection string's fields such as host, port, db name and table.
@@ -55,82 +45,6 @@ public class OwsContextUtils {
     }
     
     /**
-     * Sends a GET request to the selected url.
-     * 
-     * @param serviceUrl The REST service's url to send an http request to
-     * @return Result of the GET request
-     */
-    public static InputStream callServiceGet(String serviceUrl) {
-        InputStream instream = null;
-        try {
-            HttpClient httpClient = new DefaultHttpClient();
-            HttpGet httpGet = new HttpGet(serviceUrl);
-            HttpResponse response = httpClient.execute(httpGet);
-            System.out.println(response.getStatusLine());
-
-            HttpEntity entity = response.getEntity();
-
-            if (entity != null) {
-                instream = new BufferedInputStream(entity.getContent());
-
-                // When HttpClient instance is no longer needed,
-                // shut down the connection manager to ensure
-                // immediate deallocation of all system resources
-                httpClient.getConnectionManager().shutdown();
-            }
-        } catch (ClientProtocolException ex) {
-            Logger.getLogger(OwsImportPanel.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(OwsImportPanel.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        return instream;
-    }
-    
-    /**
-     * Sends a POST request to the selected url.
-     * 
-     * @param serviceUrl The REST service's url to send an http request to
-     * @param formparams A list of post parameters
-     * @param connectionShutdown True to shutdown the connection once the data has been retrieved
-     * @return Result of the POST request
-     */
-    public static InputStream callServicePost(String serviceUrl, List<NameValuePair> formparams, 
-            boolean connectionShutdown) {
-        
-        InputStream instream = null;
-        try {
-            HttpClient httpClient = new DefaultHttpClient();
-            HttpPost httpPost = new HttpPost(serviceUrl);
-            
-            UrlEncodedFormEntity owcEntity = new UrlEncodedFormEntity(formparams, "UTF-8");
-            httpPost.setEntity(owcEntity);
-            
-            HttpResponse response = httpClient.execute(httpPost);
-            System.out.println(response.getStatusLine());
-
-            HttpEntity responseEntity = response.getEntity();
-
-            if (responseEntity != null) {
-                instream = new BufferedInputStream(responseEntity.getContent());
-
-                // When HttpClient instance is no longer needed,
-                // shut down the connection manager to ensure
-                // immediate deallocation of all system resources
-                if (connectionShutdown) {
-                    httpClient.getConnectionManager().shutdown();
-                }
-            }
-        } catch (ClientProtocolException ex) {
-            Logger.getLogger(OwsImportPanel.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(OwsImportPanel.class.getName()).log(Level.SEVERE, null, ex);
-        }
- 
-        return instream;
-    }
-    
-    /**
      * Reads the value of the given property from the file defined in {@link OwsContextUtils#SERVICES_CONFIG}.
      * @param property A property name
      * @return A string value or null if the file or the property name does not exist
@@ -138,7 +52,7 @@ public class OwsContextUtils {
     private static String readProperty(String property) {
         String value = null;
         Properties properties = new Properties();
-        InputStream in = OwsService.class.getResourceAsStream(SERVICES_CONFIG);
+        InputStream in = OwsContextUtils.class.getResourceAsStream(SERVICES_CONFIG);
         try {
             properties.load(in);
             value = properties.getProperty(property);

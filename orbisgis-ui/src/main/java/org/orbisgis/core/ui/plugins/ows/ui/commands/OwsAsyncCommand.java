@@ -1,4 +1,4 @@
-package org.orbisgis.core.ui.plugins.ows.ui;
+package org.orbisgis.core.ui.plugins.ows.ui.commands;
 
 /**
  * Stands for a UI asynchronous command.

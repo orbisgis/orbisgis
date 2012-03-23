@@ -4,6 +4,8 @@
  */
 package org.orbisgis.core.ui.plugins.ows;
 
+import org.orbisgis.core.ui.plugins.ows.remote.OwsWorkspace;
+import org.orbisgis.core.ui.plugins.ows.remote.OwsService;
 import com.vividsolutions.jts.geom.Envelope;
 import java.io.StringWriter;
 import java.util.logging.Level;

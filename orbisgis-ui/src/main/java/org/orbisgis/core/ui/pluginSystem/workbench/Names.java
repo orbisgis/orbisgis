@@ -512,6 +512,10 @@ public abstract class Names {
 			.getString("orbisgis.org.orbisgis.core.ui.plugins.ows.buttonImport");
 	public static final String LABEL_OWS_EXTRACTING_CONTEXT_STATUS = I18N
 			.getString("orbisgis.org.orbisgis.core.ui.plugins.ows.extractingOWSContext");
+	public static final String LABEL_OWS_EXPORTING_CONTEXT_STATUS = I18N
+			.getString("orbisgis.org.orbisgis.core.ui.plugins.ows.exportingOWSContext");
+	public static final String LABEL_OWS_EXPORTING_CONTEXT_AS_STATUS = I18N
+			.getString("orbisgis.org.orbisgis.core.ui.plugins.ows.exportingOWSContextAs");
 	public static final String LABEL_OWS_MUST_SELECT_FILE = I18N
 			.getString("orbisgis.org.orbisgis.core.ui.plugins.ows.mustSelectAFile");
 	public static final String LABEL_OWS_TITLE = I18N

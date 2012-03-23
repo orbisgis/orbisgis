@@ -2,10 +2,10 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.orbisgis.core.ui.plugins.ows;
+package org.orbisgis.core.ui.plugins.ows.ui;
 
-import org.orbisgis.core.ui.plugins.ows.ui.OwsUpdateOwsFilesListCommand;
-import org.orbisgis.core.ui.plugins.ows.ui.OwsUpdateComboBoxWorkspacesCommand;
+import org.orbisgis.core.ui.plugins.ows.ui.commands.OwsUpdateOwsFilesListCommand;
+import org.orbisgis.core.ui.plugins.ows.ui.commands.OwsUpdateComboBoxWorkspacesCommand;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -25,6 +25,13 @@ import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.sif.AbstractUIPanel;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
+import org.orbisgis.core.ui.plugins.ows.OWSContextImporter;
+import org.orbisgis.core.ui.plugins.ows.OWSContextImporterImpl;
+import org.orbisgis.core.ui.plugins.ows.remote.OwsFileBasic;
+import org.orbisgis.core.ui.plugins.ows.remote.OwsService;
+import org.orbisgis.core.ui.plugins.ows.remote.OwsWorkspace;
+import org.orbisgis.core.ui.plugins.ows.OwsWorkspaceComboBoxModel;
+import org.orbisgis.core.ui.plugins.ows.OwsWorkspaceComboBoxModelImpl;
 import org.orbisgis.progress.ProgressMonitor;
 import org.w3c.dom.Node;
 

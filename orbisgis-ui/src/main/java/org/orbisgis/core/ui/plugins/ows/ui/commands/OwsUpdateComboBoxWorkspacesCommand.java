@@ -1,4 +1,4 @@
-package org.orbisgis.core.ui.plugins.ows.ui;
+package org.orbisgis.core.ui.plugins.ows.ui.commands;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -7,10 +7,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.SwingWorker;
-import org.orbisgis.core.ui.plugins.ows.OwsImportPanel;
-import org.orbisgis.core.ui.plugins.ows.OwsService;
-import org.orbisgis.core.ui.plugins.ows.OwsWorkspace;
+import org.orbisgis.core.ui.plugins.ows.remote.OwsService;
+import org.orbisgis.core.ui.plugins.ows.remote.OwsWorkspace;
 import org.orbisgis.core.ui.plugins.ows.OwsWorkspaceComboBoxModel;
+import org.orbisgis.core.ui.plugins.ows.ui.OwsImportPanel;
 
 /**
  *

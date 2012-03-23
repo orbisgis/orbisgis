@@ -4,6 +4,7 @@
  */
 package org.orbisgis.core.ui.plugins.ows;
 
+import org.orbisgis.core.ui.plugins.ows.remote.OwsWorkspace;
 import java.util.List;
 import javax.swing.DefaultComboBoxModel;
 

@@ -4,6 +4,11 @@
  */
 package org.orbisgis.core.ui.plugins.ows;
 
+import org.orbisgis.core.ui.plugins.ows.ui.OwsDataSourceCredentialsRequiredListener;
+import org.orbisgis.core.ui.plugins.ows.ui.OwsFileImportListener;
+import org.orbisgis.core.ui.plugins.ows.remote.OwsServiceImpl;
+import org.orbisgis.core.ui.plugins.ows.ui.OwsDataSourceCredentialsPanel;
+import org.orbisgis.core.ui.plugins.ows.ui.OwsImportPanel;
 import java.awt.Component;
 import java.util.List;
 import java.util.logging.Level;

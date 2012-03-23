@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.orbisgis.core.ui.plugins.ows;
+package org.orbisgis.core.ui.plugins.ows.remote;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,6 +17,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.orbisgis.core.ui.plugins.ows.OwsContextUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
@@ -56,7 +57,7 @@ public class OwsServiceImpl implements OwsService {
         formparams.add(new BasicNameValuePair("workspace", workspace.getName()));
         
         try {
-            InputStream xml = OwsContextUtils.callServicePost(OwsContextUtils.getServiceGetAllUrl(), formparams, true);
+            InputStream xml = OwsServiceUtils.callServicePost(OwsContextUtils.getServiceGetAllUrl(), formparams, true);
             this.parser.parse(xml, this.owsFilesSaxHandler);
             xml.close();
             owsFiles = this.owsFilesSaxHandler.getFiles();
@@ -76,7 +77,7 @@ public class OwsServiceImpl implements OwsService {
         formparams.add(new BasicNameValuePair("workspace", workspace.getName()));
         
         String url = OwsContextUtils.getServiceGetOneOwsUrl() + "/" + id;
-        InputStream owsInput = OwsContextUtils.callServicePost(url, formparams, false);
+        InputStream owsInput = OwsServiceUtils.callServicePost(url, formparams, false);
         Node node = null;
         
         try {
@@ -99,7 +100,7 @@ public class OwsServiceImpl implements OwsService {
         formparams.add(new BasicNameValuePair("owc", data));
         formparams.add(new BasicNameValuePair("workspace", workspace.getName()));
         String url = OwsContextUtils.getServiceExportOwsAsUrl();
-        OwsContextUtils.callServicePost(url, formparams, true);
+        OwsServiceUtils.callServicePost(url, formparams, true);
     }
 
     @Override
@@ -109,7 +110,7 @@ public class OwsServiceImpl implements OwsService {
         formparams.add(new BasicNameValuePair("id", Integer.toString(projectId)));
         formparams.add(new BasicNameValuePair("workspace", workspace.getName()));
         String url = OwsContextUtils.getServiceExportOwsAsUrl();
-        OwsContextUtils.callServicePost(url, formparams, true);
+        OwsServiceUtils.callServicePost(url, formparams, true);
     }
 
     @Override
@@ -117,7 +118,7 @@ public class OwsServiceImpl implements OwsService {
         List<OwsWorkspace> owsWorkspaces = new ArrayList<OwsWorkspace>();
 
         try {
-            InputStream xml = OwsContextUtils.callServiceGet(OwsContextUtils.getServiceGetAllOwsWorkspace());
+            InputStream xml = OwsServiceUtils.callServiceGet(OwsContextUtils.getServiceGetAllOwsWorkspace());
             this.parser.parse(xml, this.owsWorkspacesSAXHandler);
             xml.close();
             owsWorkspaces = this.owsWorkspacesSAXHandler.getWorkspaces();

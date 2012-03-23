@@ -2,8 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.orbisgis.core.ui.plugins.ows;
+package org.orbisgis.core.ui.plugins.ows.ui;
 
+import org.orbisgis.core.ui.plugins.ows.ui.commands.OwsUpdateComboBoxWorkspacesCommand;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -25,11 +26,21 @@ import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.sif.AbstractUIPanel;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
-import org.orbisgis.core.ui.plugins.ows.ui.OwsUpdateComboBoxWorkspacesCommand;
+import org.orbisgis.core.ui.plugins.ows.OWSContextExporter;
+import org.orbisgis.core.ui.plugins.ows.OwsPlugIn;
+import org.orbisgis.core.ui.plugins.ows.remote.OwsService;
+import org.orbisgis.core.ui.plugins.ows.remote.OwsWorkspace;
+import org.orbisgis.core.ui.plugins.ows.OwsWorkspaceComboBoxModel;
+import org.orbisgis.core.ui.plugins.ows.OwsWorkspaceComboBoxModelImpl;
 import org.orbisgis.progress.ProgressMonitor;
 
 /**
- *
+ * Contains fields to give pieces of information about a project (ows context).
+ * The fields are:
+ * - Workspace (ComboBox)
+ * - Title
+ * - Description
+ * - CRS
  * @author cleglaun
  */
 public class OwsExportPanel extends AbstractUIPanel {
@@ -219,7 +230,7 @@ public class OwsExportPanel extends AbstractUIPanel {
 
                 @Override
                 public String getTaskName() {
-                    return "Exporting project...";
+                    return Names.LABEL_OWS_EXPORTING_CONTEXT_STATUS;
                 }
             });
         }
@@ -251,7 +262,7 @@ public class OwsExportPanel extends AbstractUIPanel {
 
                 @Override
                 public String getTaskName() {
-                    return "Exporting project as...";
+                    return Names.LABEL_OWS_EXPORTING_CONTEXT_AS_STATUS;
                 }
             });
             

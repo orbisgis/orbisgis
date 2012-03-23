@@ -4,6 +4,7 @@
  */
 package org.orbisgis.core.ui.plugins.ows;
 
+import org.orbisgis.core.ui.plugins.ows.remote.OwsWorkspace;
 import com.vividsolutions.jts.geom.Envelope;
 import javax.xml.bind.JAXBElement;
 import net.opengis.ows_context.OWSContextType;

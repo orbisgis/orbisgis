@@ -4,6 +4,9 @@
  */
 package org.orbisgis.core.ui.plugins.ows;
 
+import org.orbisgis.core.ui.plugins.ows.ui.OwsFileExportListener;
+import org.orbisgis.core.ui.plugins.ows.remote.OwsServiceImpl;
+import org.orbisgis.core.ui.plugins.ows.ui.OwsExportPanel;
 import javax.swing.JButton;
 import org.orbisgis.core.sif.SIFDialog;
 import org.orbisgis.core.sif.UIFactory;
