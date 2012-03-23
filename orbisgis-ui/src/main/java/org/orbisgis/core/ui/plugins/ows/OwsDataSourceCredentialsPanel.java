@@ -37,9 +37,14 @@ public class OwsDataSourceCredentialsPanel extends AbstractUIPanel {
     private final JPasswordField txtPassword;
     private String validateInputMessage;
     private OwsDataSourceCredentialsRequiredListener credentialsListener;
+    private final int currentSourceNumber;
+    private final int nbSourcesToCheck;
     
-    public OwsDataSourceCredentialsPanel(final DBSource db) {
+    public OwsDataSourceCredentialsPanel(final DBSource db, int currentSourceNumber, 
+            int nbSourcesToCheck) {
         this.validateInputMessage = "";
+        this.currentSourceNumber = currentSourceNumber;
+        this.nbSourcesToCheck = nbSourcesToCheck;
         
         txtUsername = new JTextField(15);
         txtPassword = new JPasswordField(15);
@@ -182,7 +187,8 @@ public class OwsDataSourceCredentialsPanel extends AbstractUIPanel {
 
     @Override
     public String getTitle() {
-        return Names.LABEL_ENTER_DATASOURCE_CREDENTIALS;
+        return Names.LABEL_ENTER_DATASOURCE_CREDENTIALS + " (" + currentSourceNumber + 
+                " / " + nbSourcesToCheck + ")";
     }
 
     @Override

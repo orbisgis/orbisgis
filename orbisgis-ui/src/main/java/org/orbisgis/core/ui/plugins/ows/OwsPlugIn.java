@@ -5,17 +5,13 @@
 package org.orbisgis.core.ui.plugins.ows;
 
 import java.awt.Component;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.xml.bind.JAXBElement;
 import javax.xml.parsers.ParserConfigurationException;
 import net.opengis.ows_context.OWSContextType;
-import org.gdms.data.DataSourceFactory;
 import org.gdms.data.db.DBSource;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
@@ -44,18 +40,17 @@ import org.xml.sax.SAXException;
  */
 public class OwsPlugIn extends AbstractPlugIn {
 
-    private JButton btn;
+    private JButton cmdImportOwsContext;
     private MapContext mapContext;
-    private SIFDialog importOwsDialog;
-    private Map<DBSource, SIFDialog> credentialsDialogs;
+    private SIFDialog dialogImportOws;
+    private SIFDialog dialogCurrentCredentials;
     private OWSContextImporter importer;
     private static JAXBElement<OWSContextType> lastOwsContextImported;
 
     public OwsPlugIn() {
         
         this.importer = new OWSContextImporterImpl();
-        this.btn = new JButton(Names.BUTTON_IMPORT_OWC_TITLE);
-        this.credentialsDialogs = new HashMap<DBSource, SIFDialog>();
+        this.cmdImportOwsContext = new JButton(Names.BUTTON_IMPORT_OWC_TITLE);
     }
     
     /**
@@ -74,7 +69,7 @@ public class OwsPlugIn extends AbstractPlugIn {
     @Override
     public void initialize(PlugInContext context) throws Exception {
         WorkbenchContext wbcontext = context.getWorkbenchContext();
-        wbcontext.getWorkbench().getFrame().getMainToolBar().addPlugIn(this, btn, context);
+        wbcontext.getWorkbench().getFrame().getMainToolBar().addPlugIn(this, cmdImportOwsContext, context);
     }
 
     @Override
@@ -86,9 +81,9 @@ public class OwsPlugIn extends AbstractPlugIn {
                     new OwsServiceImpl());
 
             
-            importOwsDialog = UIFactory.getSimpleDialog(panel);
-            importOwsDialog.pack();
-            importOwsDialog.setVisible(true);
+            dialogImportOws = UIFactory.getSimpleDialog(panel);
+            dialogImportOws.pack();
+            dialogImportOws.setVisible(true);
 
         } catch (ParserConfigurationException ex) {
             Logger.getLogger(OwsPlugIn.class.getName()).log(Level.SEVERE, null, ex);
@@ -102,7 +97,7 @@ public class OwsPlugIn extends AbstractPlugIn {
     @Override
     public boolean isEnabled() {
         boolean isEnabled = getPlugInContext().getMapContext() == null;
-        btn.setEnabled(isEnabled);
+        cmdImportOwsContext.setEnabled(isEnabled);
         return isEnabled;
     }
 
@@ -114,54 +109,71 @@ public class OwsPlugIn extends AbstractPlugIn {
      */
     public class OwsFileImportListenerImpl implements OwsFileImportListener {
 
-        private final DataSourceFactory dsf = new DataSourceFactory();
-        private final List<DBSource> unverifiedDbSources;
         private JAXBElement<OWSContextType> owsContext;
-        private int nbDatasourcesToCheck;
         private int nbDataSourcesChecked;
         private boolean layersAlreadyAdded;
+        private List<DbConnectionString> sourcesToCheck;
+        boolean userInteractionRequested;
         
         public OwsFileImportListenerImpl() {
-            unverifiedDbSources = new ArrayList<DBSource>();
-            nbDatasourcesToCheck = 0;
-            nbDataSourcesChecked = 0;
+        }
+        
+        private void createAndDisplayCredentialsDialog(DbConnectionString source) {
+            DBSource newDbSource = new DBSource(source.getHost(), source.getPort(),
+                    source.getDb(), "", "", source.getTable(), "jdbc:postgresql");
+                    
+            OwsDataSourceCredentialsPanel credentialsPanel = 
+                    new OwsDataSourceCredentialsPanel(newDbSource, nbDataSourcesChecked + 1, sourcesToCheck.size());
+            dialogCurrentCredentials = UIFactory.getSimpleDialog(credentialsPanel);
+            credentialsPanel.setCredentialsListener(new OwsDataSourceCredentialsRequiredListenerImpl());
+            dialogCurrentCredentials.pack();
+            dialogCurrentCredentials.setVisible(true);
         }
         
         /**
-         * Checks whether the data sources can be opened and ask for 
-         * credentials if they cannot.
-         * @param sources The data sources for whose we need credentials.
+         * Asks the user to enter a username and password for the next data source.
          */
-        private void askForDataSourcesCredentials(List<DbConnectionString> sources) {
+        private void askForNextDataSourceCredentials() {
             
             DataManager dm = Services.getService(DataManager.class);
             SourceManager sm = dm.getSourceManager();
             
-            nbDatasourcesToCheck = sources.size();
-         
-            for (DbConnectionString source : sources) {
-                DBSource newDbSource = new DBSource(source.getHost(), source.getPort(),
-                        source.getDb(), "", "", source.getTable(), "jdbc:postgresql");
+            while (!userInteractionRequested && (nbDataSourcesChecked < sourcesToCheck.size())) {
                 
-                OwsDataSourceCredentialsPanel credentialsPanel = new OwsDataSourceCredentialsPanel(newDbSource);
-                SIFDialog credentialsDialog = UIFactory.getSimpleDialog(credentialsPanel);
-                credentialsPanel.setCredentialsListener(new OwsDataSourceCredentialsRequiredListenerImpl());
-                credentialsDialog.pack();
-                credentialsDialog.setVisible(true);
-                credentialsDialogs.put(newDbSource, credentialsDialog);
+                DbConnectionString source = sourcesToCheck.get(nbDataSourcesChecked);
+                if (sm.getSource(OwsContextUtils.generateSourceId(source)) == null) {
+                    userInteractionRequested = true;
+                    createAndDisplayCredentialsDialog(source);
+                }
+                else {
+                    nbDataSourcesChecked++;
+                }
+            }
+            
+            if (nbDataSourcesChecked == sourcesToCheck.size()) {
+                buildMapContext();
             }
         }
         
+        /**
+         * Called when an ows context has been extracted. The JAXB tree is stored
+         * in {@link OwsPlugIn#lastOwsContextImported} so that it can be read
+         * when the user is ready to export the same project. It avoids losing
+         * pieces of information that are not persisted in the orbisgis data
+         * model.
+         * 
+         * @param owsContext The imported JAXB tree
+         */
         @Override
         public void fireOwsExtracted(final JAXBElement<OWSContextType> owsContext) {
 
-            unverifiedDbSources.clear();
             this.owsContext = owsContext;
             lastOwsContextImported = owsContext;
             
-            List<DbConnectionString> sources = importer.extractUndefinedDataSources(owsContext);
-            if (sources.size() > 0) {
-                askForDataSourcesCredentials(sources);
+            nbDataSourcesChecked = 0;
+            sourcesToCheck = importer.extractUndefinedDataSources(owsContext);
+            if (sourcesToCheck.size() > 0) {
+                askForNextDataSourceCredentials();
             }
             else {
                 buildMapContext();
@@ -176,8 +188,6 @@ public class OwsPlugIn extends AbstractPlugIn {
         private void buildMapContext() {
             final List<ILayer> layers = OwsPlugIn.this.importer.extractLayers(OwsFileImportListenerImpl.this.owsContext);
             Logger.getLogger(OwsPlugIn.class.getName()).log(Level.INFO, "{0} layer(s) imported.", layers.size());
-
-
 
             getPlugInContext().getGeocognition().addGeocognitionListener(new GeocognitionListener() {
                 @Override
@@ -230,7 +240,7 @@ public class OwsPlugIn extends AbstractPlugIn {
                         layersAlreadyAdded = true;
                     }
                     
-                    importOwsDialog.setVisible(false);
+                    dialogImportOws.setVisible(false);
                 }
             });
 
@@ -246,8 +256,10 @@ public class OwsPlugIn extends AbstractPlugIn {
 
             @Override
             public void credentialsOk(DBSource source) {
+                userInteractionRequested = false;
                 layersAlreadyAdded = false;
-                credentialsDialogs.get(source).setVisible(false);
+                dialogCurrentCredentials.setVisible(false);
+                dialogCurrentCredentials = null;
                 nbDataSourcesChecked++;
                 
                 DataManager dm = Services.getService(DataManager.class);
@@ -255,9 +267,7 @@ public class OwsPlugIn extends AbstractPlugIn {
 
                 sm.register(OwsContextUtils.generateSourceId(source), source);
                     
-                if (nbDataSourcesChecked == nbDatasourcesToCheck) {
-                    buildMapContext();
-                }
+                askForNextDataSourceCredentials();
             }
         }
     }
