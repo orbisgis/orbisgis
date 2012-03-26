@@ -18,9 +18,12 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 /**
- *
+ * Helpers methods that get remote content. This class is built on top of
+ * the apache http components framework.
+ * 
  * @author cleglaun
  */
 public class OwsServiceUtils {
@@ -43,6 +46,7 @@ public class OwsServiceUtils {
             HttpEntity entity = response.getEntity();
 
             if (entity != null) {
+                entity = new BufferedHttpEntity(entity);
                 instream = new BufferedInputStream(entity.getContent());
 
                 // When HttpClient instance is no longer needed,
@@ -84,6 +88,7 @@ public class OwsServiceUtils {
             HttpEntity responseEntity = response.getEntity();
 
             if (responseEntity != null) {
+                responseEntity = new BufferedHttpEntity(responseEntity);
                 instream = new BufferedInputStream(responseEntity.getContent());
 
                 // When HttpClient instance is no longer needed,
