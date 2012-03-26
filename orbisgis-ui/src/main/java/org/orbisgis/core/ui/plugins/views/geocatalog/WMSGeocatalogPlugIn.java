@@ -32,6 +32,7 @@ import java.util.Vector;
 
 import org.gdms.data.wms.WMSSource;
 import org.gdms.source.SourceManager;
+import org.gdms.source.stream.StreamSource;
 import org.gvsig.remoteClient.wms.WMSClient;
 import org.gvsig.remoteClient.wms.WMSLayer;
 import org.orbisgis.core.DataManager;
@@ -61,17 +62,19 @@ public class WMSGeocatalogPlugIn extends AbstractPlugIn {
 			WMSClient client = wmsConnection.getWMSClient();
 			String validImageFormat = getFirstImageFormat(client.getFormats());
 			if (validImageFormat == null) {
-				ErrorMessages
-						.error(I18N
-								.getString("orbisgis.errorMessages.wms.CannotFindImageFormat"));
+				ErrorMessages.error(I18N.getString("orbisgis.errorMessages.wms.CannotFindImageFormat"));
 			} else {
 				Object[] layers = layerConfiguration.getSelectedLayers();
 				for (Object layer : layers) {
 					String layerName = ((WMSLayer) layer).getName();
-					WMSSource source = new WMSSource(client.getHost(),
-							layerName, srsPanel.getSRS(), validImageFormat);
-					SourceManager sourceManager = Services.getService(
-							DataManager.class).getSourceManager();
+					//Old way to create stream source
+                                        //WMSSource source = new WMSSource(client.getHost(),layerName, srsPanel.getSRS(), validImageFormat);
+					//New way, we set SRS and image format later
+                                        StreamSource source = new StreamSource(client.getHost(), client.getPort(), client.getHost(), layerName, "wms");
+                                        source.setSRS(srsPanel.getSRS());
+                                        source.setImageFormat(validImageFormat);
+                                        
+                                        SourceManager sourceManager = Services.getService(DataManager.class).getSourceManager();
 					String uniqueName = sourceManager.getUniqueName(layerName);
 					sourceManager.register(uniqueName, source);
 				}
