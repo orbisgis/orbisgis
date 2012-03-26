@@ -83,7 +83,7 @@ public final class DriverUtilities {
         }
 
         /**
-         * Gets the first driver registered with the DriverManager that supports the
+         * Gets the first database driver registered with the DriverManager that supports the
          * specified prefix
          * @param dm
          * @param prefix
@@ -99,6 +99,31 @@ public final class DriverUtilities {
                                 for (String driverPrefix : prefixes) {
                                         if (driverPrefix.equalsIgnoreCase(prefix)) {
                                                 return dbDriver;
+                                        }
+                                }
+                        }
+                }
+
+                throw new DriverLoadException("No suitable driver for " + prefix);
+        }
+        
+        /**
+         * Gets the first stream driver registered with the DriverManager that supports the
+         * specified prefix
+         * @param dm
+         * @param prefix
+         * @return
+         */
+        public static StreamDriver getStreamDriver(DriverManager dm, String prefix) {
+                String[] names = dm.getDriverNames();
+                for (int i = 0; i < names.length; i++) {
+                        Driver driver = dm.getDriver(names[i]);
+                        if (driver instanceof StreamDriver) {
+                                StreamDriver streamDriver = (StreamDriver) driver;
+                                String[] prefixes = streamDriver.getPrefixes();
+                                for (String driverPrefix : prefixes) {
+                                        if (driverPrefix.equalsIgnoreCase(prefix)) {
+                                                return streamDriver;
                                         }
                                 }
                         }
