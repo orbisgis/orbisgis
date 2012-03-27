@@ -19,21 +19,21 @@ import org.orbisgis.progress.NullProgressMonitor;
  * 
  * @author Vincent Dépériers
  */
-public class StreamSourceAdapter extends DriverDataSource implements Commiter, CommitListener {
+public class StreamDataSourceAdapter extends DriverDataSource implements Commiter, CommitListener {
 
     private StreamDriver driver;
     private StreamSource def;
-    private static final Logger LOG = Logger.getLogger(StreamSourceAdapter.class);
+    private static final Logger LOG = Logger.getLogger(StreamDataSourceAdapter.class);
 
     /**
-     * Creates a new StreamSourceAdapter
+     * Creates a new StreamDataSourceAdapter
      *
      *
      * @param src
      * @param def
      * @param driver
      */
-    public StreamSourceAdapter(Source src, StreamSource def, StreamDriver driver) {
+    public StreamDataSourceAdapter(Source src, StreamSource def, StreamDriver driver) {
         super(src);
         this.def = def;
         this.driver = driver;
