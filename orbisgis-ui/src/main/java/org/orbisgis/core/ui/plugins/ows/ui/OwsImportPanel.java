@@ -37,7 +37,7 @@ import org.w3c.dom.Node;
 
 /**
  * Display a panel which allows the user to select an ows context file
- * @author CŽdric Le Glaunec <cedric.leglaunec@gmail.com>
+ * @author Cedric Le Glaunec <cedric.leglaunec@gmail.com>
  */
 public class OwsImportPanel extends AbstractUIPanel {
 

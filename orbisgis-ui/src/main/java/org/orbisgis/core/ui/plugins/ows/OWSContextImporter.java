@@ -13,7 +13,7 @@ import org.w3c.dom.Node;
 
 /**
  *
- * @author CŽdric Le Glaunec <cedric.leglaunec@gmail.com>
+ * @author Cedric Le Glaunec <cedric.leglaunec@gmail.com>
  */
 public interface OWSContextImporter {
     

@@ -9,7 +9,7 @@ import org.w3c.dom.Node;
 
 /**
  * Proxy for the remote services.
- * @author CŽdric Le Glaunec <cedric.leglaunec@gmail.com>
+ * @author Cedric Le Glaunec <cedric.leglaunec@gmail.com>
  */
 public interface OwsService {
     

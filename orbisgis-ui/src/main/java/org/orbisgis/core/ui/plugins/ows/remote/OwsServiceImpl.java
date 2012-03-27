@@ -26,7 +26,7 @@ import org.xml.sax.helpers.DefaultHandler;
 /**
  * Proxy implementation for the remote services. The REST services urls
  * are set within the helper class {@link OwsContextUtils}.
- * @author CŽdric Le Glaunec <cedric.leglaunec@gmail.com>
+ * @author Cedric Le Glaunec <cedric.leglaunec@gmail.com>
  */
 public class OwsServiceImpl implements OwsService {
 

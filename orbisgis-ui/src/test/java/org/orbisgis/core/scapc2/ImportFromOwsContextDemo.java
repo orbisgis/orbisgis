@@ -60,13 +60,14 @@ import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.ui.plugins.ows.remote.OwsWorkspace;
 import org.orbisgis.progress.DefaultProgressMonitor;
 import static org.junit.Assert.*;
 import org.xml.sax.SAXException;
 
 /**
  *
- * @author CŽdric Le Glaunec <cedric.leglaunec@gmail.com>
+ * @author Cedric Le Glaunec <cedric.leglaunec@gmail.com>
  */
 public class ImportFromOwsContextDemo {
 
@@ -95,7 +96,7 @@ public class ImportFromOwsContextDemo {
     
     @Test
     public void testUnmarshallingOwsContext() throws LayerException, JAXBException, DataSourceCreationException, DriverException, ParameterException {
-        Node owsContextNode = owsService.getOwsFile(10);
+        Node owsContextNode = owsService.getOwsFile(new OwsWorkspace("default"),10);
         JAXBElement<OWSContextType> owsContext = importer.unmarshallOwsContext(owsContextNode);
         List<ILayer> layers = importer.extractLayers(owsContext);
         
