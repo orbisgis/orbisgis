@@ -42,10 +42,6 @@ import org.gdms.sql.evaluator.Expression
 import org.gdms.sql.evaluator.FieldEvaluator
 import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.engine.UnknownFieldException
-import org.gdms.sql.engine.commands.scan.CustomQueryScanCommand
-import org.gdms.sql.engine.commands.scan.IndexQueryScanCommand
-import org.gdms.sql.engine.commands.scan.ScanCommand
-import org.gdms.sql.engine.commands.scan.ValuesScanCommand
 import org.gdms.sql.evaluator.DsfEvaluator
 import org.gdms.sql.engine.GdmSQLPredef._
 
@@ -62,24 +58,13 @@ trait ExpressionCommand extends Command {
 
   protected def exp: Seq[Expression]
   
-  private def getFieldMetadata(c: Command): Seq[SQLMetadata] = { c match {
-      case s: ScanCommand => s.getMetadata :: Nil
-      case s: IndexQueryScanCommand => s.getMetadata :: Nil
-      case s: CustomQueryScanCommand => s.getMetadata :: Nil
-      case s: ValuesScanCommand => s.getMetadata :: Nil
-      case a: AggregateCommand => a.getMetadata :: Nil
-      case _ => c.children flatMap getFieldMetadata
-    }
-  }
-
-  protected override def doPrepare = {
+ protected override def doPrepare = {
     // prevent ambiguous field names
     
-    val allM = children flatMap getFieldMetadata
+    val allM = children map (_.getMetadata)
     
     // set the index of every field in the expressions
     exp.foreach { e =>
-      testNoDuplicateFields(e, allM)
       setDsf(e)
       
       // indexes are offseted so as to be the index in the row resulting of the concatenation
@@ -95,24 +80,6 @@ trait ExpressionCommand extends Command {
     exp foreach (_ validate)
   }
   
-  /**
-   * Checks that there is no duplicated/ambiguous fields in the expression.
-   */
-  private def testNoDuplicateFields(e: Expression, m: Seq[SQLMetadata]): Unit = {
-    e.evaluator match {
-      case FieldEvaluator(name, None) => {
-          val found = m.filter (_.getFieldIndex(name) != -1)
-          found.size match {
-            case 1 =>
-            case 0 => throw new UnknownFieldException(name)
-            case _ =>
-              throw new SemanticException("Field name '" + name + "' is ambiguous.")
-          }
-        }
-      case a => a.childExpressions foreach (testNoDuplicateFields(_, m))
-    }
-  }
-
   /**
    * Resolves fields against metadata objects of child commands
    */
