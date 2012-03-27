@@ -43,6 +43,7 @@ import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.DefaultSchema;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.Schema;
+import org.gdms.data.stream.StreamSource;
 import org.gdms.data.types.TypeDefinition;
 import org.gdms.driver.*;
 import org.gdms.driver.geotif.AbstractRasterDriver;
@@ -52,7 +53,7 @@ import org.gdms.source.SourceManager;
  *
  * @author doriangoepp
  */
-public abstract class AbstractRasterStreamDriver extends AbstractDataSet implements StreamDriver {
+public abstract class AbstractRasterStreamDriver extends AbstractDataSet implements StreamReadWriteDriver {
 
         protected GeoRaster geoRaster;
         protected RasterMetadata metadata;
@@ -60,11 +61,10 @@ public abstract class AbstractRasterStreamDriver extends AbstractDataSet impleme
         private DefaultMetadata gdmsMetadata;
         private DataSourceFactory dsf;
         protected Envelope envelope;
-        private static final Logger LOG = Logger.getLogger(AbstractRasterDriver.class);
         protected String url;
 
         @Override
-        public void open() throws DriverException {
+        public void open(StreamSource streamSource) throws DriverException {
         }
 
         @Override
@@ -73,7 +73,7 @@ public abstract class AbstractRasterStreamDriver extends AbstractDataSet impleme
 
         @Override
         public void setURL(String url) throws DriverException {
-                this.url = new String(url);
+                this.url = url;
                 schema = new DefaultSchema(getTypeName() + url); // TODO : donner du sens
                 gdmsMetadata = new DefaultMetadata();
                 schema.addTable("main", gdmsMetadata);
@@ -82,11 +82,6 @@ public abstract class AbstractRasterStreamDriver extends AbstractDataSet impleme
         @Override
         public Schema getSchema() throws DriverException {
                 return schema;
-        }
-
-        @Override
-        public String[] getStreamExtensions() {
-                return null;
         }
 
         @Override

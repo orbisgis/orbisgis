@@ -1,5 +1,7 @@
 package org.gdms.driver;
 
+import org.gdms.data.stream.StreamSource;
+
 /**
  *
  * @author doriangoepp
@@ -13,7 +15,7 @@ public interface StreamDriver extends Driver {
      *
      * @throws DriverException
      */
-    void open() throws DriverException;
+    void open(StreamSource streamSource) throws DriverException;
 
     /**
      * Closes the stream being accessed
@@ -22,14 +24,6 @@ public interface StreamDriver extends Driver {
      * @throws DriverException
      */
     void close() throws DriverException;
-
-    /**
-     * Get the valid extension a file accessed by this driver can have Doit-on
-     * garder ou adapter cette méthode ?
-     *
-     * @return
-     */
-    String[] getStreamExtensions();
 
     /**
      * Sets the file associated with this driver. Faut-il créer un objet url qui
