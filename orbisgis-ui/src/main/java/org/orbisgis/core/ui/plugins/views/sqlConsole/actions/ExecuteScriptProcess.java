@@ -95,10 +95,9 @@ public class ExecuteScriptProcess implements BackgroundJob {
                         for (int i = 0; i < statements.length; i++) {
 
                                 SqlStatement st = statements[i];
-                                logger.debug("Preparing instruction: " + st.getSQL());
                                 boolean spatial = false;
                                 try {
-                                        st.prepare(dsf);
+                                        st.prepare(dsf, pm);
                                         Metadata metadata = st.getResultMetadata();
                                         if (metadata != null) {
                                                 spatial = MetadataUtilities.isSpatial(metadata);

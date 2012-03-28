@@ -61,126 +61,126 @@ import org.orbisgis.utils.I18N;
 
 public class ProgressBar extends JPanel {
 
-	private Job job;
-	private JProgressBar overallProgressBar;
-	private JLabel lblProgress;
-	private JLabel lblSubTask;
-	private JLabel lblTask;
-	private ProgressListener progressListener;
+        private Job job;
+        private JProgressBar overallProgressBar;
+        private JLabel lblProgress;
+        private JLabel lblSubTask;
+        private JLabel lblTask;
+        private ProgressListener progressListener;
 
-	public ProgressBar(Job job) {
-		this.job = job;
-		progressListener = new ProgressListener() {
+        public ProgressBar(Job job) {
+                this.job = job;
+                progressListener = new ProgressListener() {
 
-			public void subTaskStarted(Job job) {
-				changeSubTask();
-			}
+                        public void subTaskStarted(Job job) {
+                                changeSubTask();
+                        }
 
-			public void subTaskFinished(Job job) {
-				changeSubTask();
-			}
+                        public void subTaskFinished(Job job) {
+                                changeSubTask();
+                        }
 
-			public void progressChanged(Job job) {
-				changeProgress();
-			}
+                        public void progressChanged(Job job) {
+                                changeProgress();
+                        }
+                };
+                job.addProgressListener(progressListener);
+                this.setLayout(new BorderLayout());
+                this.setBackground(new Color(224, 224, 224));
+                this.add(getLabelPanel(), BorderLayout.NORTH);
+                overallProgressBar = new JProgressBar(0, 100);
+                overallProgressBar.setUI(new GradientProgressBarUI());
+                overallProgressBar.setBorderPainted(false);
+                overallProgressBar.setBackground(Color.white);
+                overallProgressBar.setForeground(Color.BLUE.darker());
+                int overallProgress = job.getOverallProgress();
+                this.add(overallProgressBar, BorderLayout.CENTER);
+                overallProgressBar.setValue(overallProgress);
+                lblProgress.setFont(new Font(lblProgress.getFont().getFontName(), lblProgress.getFont().getStyle(), 10));// change font size
+                lblProgress.setText(Integer.toString(overallProgress) + "%");
+                changeSubTask();
+                ImageIcon icon = OrbisGISIcon.REMOVE;
+                JButton btn = new J3DButton();
+                btn.setIcon(icon);
+                btn.setToolTipText(I18N.getString("orbisgis.org.orbisgis.core.progressBar.stop"));
+                btn.setPreferredSize(new Dimension(icon.getIconWidth() + 4, icon.getIconHeight() + 4));
+                this.add(btn, BorderLayout.EAST);
+                btn.addActionListener(new ActionListener() {
 
-		};
-		job.addProgressListener(progressListener);
-		this.setLayout(new BorderLayout());
-		this.setBackground(new Color(224, 224, 224));
-		this.add(getLabelPanel(), BorderLayout.NORTH);
-		overallProgressBar = new JProgressBar(0, 100);
-		overallProgressBar.setUI(new GradientProgressBarUI());
-		overallProgressBar.setBorderPainted(false);
-		overallProgressBar.setBackground(Color.white);
-		overallProgressBar.setForeground(Color.BLUE.darker());
-		int overallProgress = job.getOverallProgress();
-		this.add(overallProgressBar, BorderLayout.CENTER);
-		overallProgressBar.setValue(overallProgress);
-		lblProgress.setFont(new Font(lblProgress.getFont().getFontName(), lblProgress.getFont().getStyle(), 10));// change font size
-		lblProgress.setText(Integer.toString(overallProgress) + "%");
-		changeSubTask();
-		ImageIcon icon = OrbisGISIcon.REMOVE;
-		JButton btn = new J3DButton();
-		btn.setIcon(icon);
-		btn.setToolTipText(I18N.getString("orbisgis.org.orbisgis.core.progressBar.stop"));
-		btn.setPreferredSize(new Dimension(icon.getIconWidth() + 4, icon
-				.getIconHeight() + 4));
-		this.add(btn, BorderLayout.EAST);
-		btn.addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent e) {
+                                ProgressBar.this.job.cancel();
+                        }
+                });
 
-			public void actionPerformed(ActionEvent e) {
-				ProgressBar.this.job.cancel();
-			}
+                if (job.isCancelled()) {
+                        lblProgress.setEnabled(false);
+                        lblSubTask.setEnabled(false);
+                        lblTask.setEnabled(false);
+                        overallProgressBar.setEnabled(false);
+                        btn.setEnabled(false);
+                }
+        }
 
-		});
+        private JPanel getLabelPanel() {
+                JPanel ret = new JPanel();
+                ret.setLayout(new CRFlowLayout());
+                lblTask = new JLabel(job.getTaskName() + ": ");
+                ret.add(lblTask);
+                lblProgress = new JLabel("0%");
+                ret.add(lblProgress);
+                ret.add(new CarriageReturn());
+                lblSubTask = new JLabel("");
+                lblSubTask.setFont(new Font(lblProgress.getFont().getFontName(), lblProgress.getFont().getStyle(), 10));// change font size
+                lblTask.setFont(new Font(lblProgress.getFont().getFontName(), lblProgress.getFont().getStyle(), 10));// change font size
+                lblProgress.setFont(new Font(lblProgress.getFont().getFontName(), lblProgress.getFont().getStyle(), 10));// change font size
+                ret.add(lblSubTask);
+                return ret;
+        }
 
-		if (job.isCancelled()) {
-			lblProgress.setEnabled(false);
-			lblSubTask.setEnabled(false);
-			lblTask.setEnabled(false);
-			overallProgressBar.setEnabled(false);
-			btn.setEnabled(false);
-		}
-	}
+        public void setJob(Job job) {
+                this.job.removeProgressListener(progressListener);
+                this.job = job;
+                this.job.addProgressListener(progressListener);
+                changeSubTask();
+                changeProgress();
 
-	private JPanel getLabelPanel() {
-		JPanel ret = new JPanel();
-		ret.setLayout(new CRFlowLayout());
-		lblTask = new JLabel(job.getTaskName() + ": ");
-		ret.add(lblTask);
-		lblProgress = new JLabel("0%");
-		ret.add(lblProgress);
-		ret.add(new CarriageReturn());
-		lblSubTask = new JLabel("");
-		lblSubTask.setFont(new Font(lblProgress.getFont().getFontName(), lblProgress.getFont().getStyle(), 10));// change font size
-		lblTask.setFont(new Font(lblProgress.getFont().getFontName(), lblProgress.getFont().getStyle(), 10));// change font size
-		lblProgress.setFont(new Font(lblProgress.getFont().getFontName(), lblProgress.getFont().getStyle(), 10));// change font size
-		ret.add(lblSubTask);
-		return ret;
-	}
+        }
 
-	public void setJob(Job job) {
-		this.job.removeProgressListener(progressListener);
-		this.job = job;
-		this.job.addProgressListener(progressListener);
-		changeSubTask();
-		changeProgress();
+        private void changeSubTask() {
+                String currentTaskName = job.getCurrentTaskName();
+                if (currentTaskName != null) {
+                        String text = null;
+                        if (currentTaskName.length() > 20) {
+                                text = currentTaskName.substring(0, 20);
+                        } else {
+                                text = currentTaskName;
+                        }
+                        if (job.getCurrentProgress() == 0) {
+                                lblSubTask.setText(text + "...");
+                        } else {
+                                lblSubTask.setText(text + "... (" + job.getCurrentProgress() + "%)");
+                        }
+                } else if (job.isStarted()) {
+                        lblSubTask.setText(I18N.getString("orbisgis.org.orbisgis.core.progressBar.processing") + "..");
+                } else {
+                        lblSubTask.setText(I18N.getString("orbisgis.org.orbisgis.core.progressBar.waiting") + "..");
+                }
+        }
 
-	}
+        private void changeProgress() {
+                SwingUtilities.invokeLater(new Runnable() {
 
-	private void changeSubTask() {
-		String currentTaskName = job.getCurrentTaskName();
-		if (currentTaskName != null) {
-			if(currentTaskName.length()>20)
-				lblSubTask.setText(currentTaskName.substring(0,20) + "... (" + job.getCurrentProgress()
-						+ "%)");
-			else
-				lblSubTask.setText(currentTaskName + " (" + job.getCurrentProgress()
-						+ "%)");
-		} else if (job.isStarted()) {
-			lblSubTask.setText(I18N.getString("orbisgis.org.orbisgis.core.progressBar.processing")+"..");
-		} else {
-			lblSubTask.setText(I18N.getString("orbisgis.org.orbisgis.core.progressBar.waiting")+"..");
-		}
-	}
-
-	private void changeProgress() {
-		SwingUtilities.invokeLater(new Runnable() {
-
-			public void run() {
-				int overallProgress = ProgressBar.this.job.getOverallProgress();
-				int currentProgress = job.getCurrentProgress();
-				int progress = overallProgress == 0 ? currentProgress
-						: overallProgress;
-				overallProgressBar.setValue(progress);
-				lblProgress.setText(Integer.toString(progress) + "%");
-				changeSubTask();
-				overallProgressBar.setIndeterminate(progress == 0 ? true
-						: false);
-			}
-
-		});
-	}
-
+                        public void run() {
+                                int overallProgress = ProgressBar.this.job.getOverallProgress();
+                                int currentProgress = job.getCurrentProgress();
+                                int progress = overallProgress == 0 ? currentProgress
+                                        : overallProgress;
+                                overallProgressBar.setValue(progress);
+                                lblProgress.setText(Integer.toString(progress) + "%");
+                                changeSubTask();
+                                overallProgressBar.setIndeterminate(progress == 0 ? true
+                                        : false);
+                        }
+                });
+        }
 }
