@@ -262,10 +262,6 @@ case class Aggregate(exp: List[(Expression, Option[String])]) extends Operation 
 case class Filter(e: Expression) extends Operation {
   override def doValidate = {
     e.preValidate
-    if (e.evaluator.sqlType != Type.BOOLEAN) {
-      throw new IncompatibleTypesException("The WHERE expression must return a BOOLEAN. Its return type is: "
-                                           + TypeFactory.getTypeName(e.evaluator.sqlType))
-    }
   }
   override def toString = "Filter of(" + e + ") on(" + children + ")"
 }
