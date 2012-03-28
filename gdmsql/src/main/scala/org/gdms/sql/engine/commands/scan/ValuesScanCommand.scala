@@ -67,30 +67,14 @@ class ValuesScanCommand(exps: Seq[Seq[Expression]], alias: Option[String], inter
   private val m: DefaultMetadata = new DefaultMetadata()
 
   protected final def doWork(r: Iterator[RowStream]) = {
-    exps.par map(evaluate) toIterator
+    exps.par.view map(evaluate) toIterator
   }
   
   override def doPrepare = {
-    val types = exps.head map (_.evaluator.sqlType)
-    val s = types.size
-    exps.tail foreach {e =>
-      val tt = e map (_.evaluator.sqlType)
-      if (tt.size != s) {
-        throw new SemanticException("Rows must all have the same number of elements.")
-      }
-      types zip tt foreach {zz => 
-        if (!TypeFactory.canBeCastTo(zz._2, zz._1)) {
-          throw new SemanticException("Rows must all have the same types as the first row, or must have types that " +
-          "can be implicitly casted to the ones of the first row.")
-        }
-      }
-      
-    }
-    
     var k = -1;
     m.clear
     val prefix = if (internal) "$exp" else "exp"
-    types foreach {i =>
+    exps.head map (_.evaluator.sqlType) foreach {i =>
       k = k + 1
       m.addField(prefix + k, i)
     }
