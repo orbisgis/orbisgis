@@ -181,8 +181,7 @@ public class SQLDataSourceFactory extends DataSourceFactory {
                 if (pm == null) {
                         pm = new NullProgressMonitor();
                 }
-                SQLEngine engine = new SQLEngine(this);
-                SqlStatement[] statement = engine.parse(sql);
+                SqlStatement[] statement = getSqlEngine().parse(sql);
 
                 return getDataSource(statement[0], mode, pm);
         }
