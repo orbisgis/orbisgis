@@ -216,14 +216,14 @@ object LogicPlanBuilder {
           if (filter != null) {
             down = Filter(filter, down)
           }
-          if (!sort.isEmpty) {
-            down = Sort(sort, down)
-          }
           if (!group.isEmpty) {
             down = Grouping(group, down)
           }
           if (having != null) {
             down = Filter(having, down)
+          }
+          if (!sort.isEmpty) {
+            down = Sort(sort, down)
           }
           if (lim != -1 || off != 0) {
             down = LimitOffset(lim, off, down)
