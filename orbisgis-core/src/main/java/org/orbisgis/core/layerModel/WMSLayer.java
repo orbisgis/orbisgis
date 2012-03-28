@@ -47,6 +47,7 @@ import org.orbisgis.core.renderer.legend.WMSLegend;
 import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Envelope;
+import org.gdms.driver.stream.SimpleWMSDriver;
 
 public class WMSLayer extends GdmsLayer {
 
@@ -129,14 +130,23 @@ public class WMSLayer extends GdmsLayer {
 		super.open();
 		try {
 			ds.open();
-			String host = ds.getString(0, "host"); //$NON-NLS-1$
-			WMSClient client = WMSClientPool.getWMSClient(host);
+                        SimpleWMSDriver driver = (SimpleWMSDriver)ds.getDriver();
+                        /*
+                        String host = driver.getHost(); 
+                        
+                        
+                        
+			//String host = ds.getString(0, "host"); //$NON-NLS-1$
+                        System.out.println("Host : " + host);
+			
+                        
+                        WMSClient client = WMSClientPool.getWMSClient(host);
 			client.getCapabilities(null, false, null);
 			WMSStatus status = new WMSStatus();
 			wmslayerName = ds.getString(0, "layer"); //$NON-NLS-1$
 			status.addLayerName(wmslayerName);
 			status.setSrs(ds.getString(0, "srs")); //$NON-NLS-1$
-
+                        
 			BoundaryBox bbox = getLayerBoundingBox(wmslayerName, client
 					.getRootLayer(), status.getSrs());
 			status.setExtent(new Rectangle2D.Double(bbox.getXmin(), bbox
@@ -146,6 +156,14 @@ public class WMSLayer extends GdmsLayer {
 					.getYmin(), bbox.getYmax());
 			status.setFormat(ds.getString(0, "format")); //$NON-NLS-1$
 			connection = new WMSConnection(client, status);
+                        * 
+                        */
+                        
+                        //TODO A revoir une fois que le gdms gerera tout les clients
+                        WMSClient client = driver.getWMSClient();
+                        WMSClientPool.registerClient(client);
+                        connection = new WMSConnection(client, driver.getWMSStatus());
+                        envelope = driver.getEnvelope();
 			ds.close();
 		} catch (AlreadyClosedException e) {
 			throw new LayerException(I18N.getString("orbisgis-core.org.orbisgis.wMSLayer.bug"), e); //$NON-NLS-1$

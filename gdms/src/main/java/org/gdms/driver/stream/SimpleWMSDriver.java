@@ -1,5 +1,10 @@
 package org.gdms.driver.stream;
 
+import com.vividsolutions.jts.geom.Envelope;
+import java.awt.geom.Rectangle2D;
+import java.io.IOException;
+import java.net.ConnectException;
+import java.util.ArrayList;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.schema.DefaultMetadata;
@@ -19,6 +24,10 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.StreamReadWriteDriver;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.SourceManager;
+import org.gvsig.remoteClient.utils.BoundaryBox;
+import org.gvsig.remoteClient.wms.WMSClient;
+import org.gvsig.remoteClient.wms.WMSStatus;
+//import org.orbisgis.core.layerModel.WMSClientPool;
 import org.orbisgis.progress.ProgressMonitor;
 
 /**
@@ -34,7 +43,10 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamRead
     private Schema m_Schema;
     private boolean m_Commitable = true;
     private DataSourceFactory m_DataSourceFactory;
-
+    private WMSClient m_WMSClient;
+    private WMSStatus m_WMSStatus;
+    private Envelope m_Envelope;
+    
     public SimpleWMSDriver() throws DriverException {
         DefaultMetadata metadata = new DefaultMetadata();
         metadata.addField("host", Type.STRING);
@@ -60,24 +72,89 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamRead
     @Override
     public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
         //Pour le moment mais c'est a changer xD
-        
+
         if (rowIndex == 0) {
             switch (fieldId) {
                 case 0:
-                    System.out.println("getHost " + m_StreamSource.getHost());
                     return ValueFactory.createValue(m_StreamSource.getHost());
                 case 1:
-                    System.out.println("getLayerName " + m_StreamSource.getLayerName());
                     return ValueFactory.createValue(m_StreamSource.getLayerName());
                 case 2:
-                    System.out.println("getSRS " + m_StreamSource.getSRS());
                     return ValueFactory.createValue(m_StreamSource.getSRS());
                 case 3:
-                    System.out.println("getImageFormat " + m_StreamSource.getImageFormat());
                     return ValueFactory.createValue(m_StreamSource.getImageFormat());
             }
         }
         return null;
+    }
+
+    public WMSClient getWMSClient() throws ConnectException, IOException {
+
+        String host = m_StreamSource.getHost(); //$NON-NLS-1$
+        
+        //Ne marche pas car on doit mettre orbisgis-core ... alors on feinte ...
+        //m_WMSClient = WMSClientPool.getWMSClient(host);
+        m_WMSClient = new WMSClient(host);
+	m_WMSClient.getCapabilities(null, true, null);
+        //m_WMSClient.getCapabilities(null, false, null);
+        m_WMSStatus = new WMSStatus();
+        String wmslayerName = m_StreamSource.getLayerName(); //$NON-NLS-1$
+        m_WMSStatus.addLayerName(wmslayerName);
+        m_WMSStatus.setSrs(m_StreamSource.getSRS()); //$NON-NLS-1$
+
+        BoundaryBox bbox = getLayerBoundingBox(wmslayerName, m_WMSClient.getRootLayer(), m_WMSStatus.getSrs());
+        m_WMSStatus.setExtent(new Rectangle2D.Double(bbox.getXmin(), bbox.getYmin(), bbox.getXmax() - bbox.getXmin(), bbox.getYmax()
+                - bbox.getYmin()));
+        m_Envelope = new Envelope(bbox.getXmin(), bbox.getXmax(), bbox.getYmin(), bbox.getYmax());
+        m_WMSStatus.setFormat(m_StreamSource.getImageFormat()); //$NON-NLS-1$
+        
+        return m_WMSClient;
+    }
+    
+    public Envelope getEnvelope() {
+        return this.m_Envelope;
+    }
+    
+    public WMSStatus getWMSStatus(){
+        return this.m_WMSStatus;
+    }
+
+    private org.gvsig.remoteClient.wms.WMSLayer find(String layerName, org.gvsig.remoteClient.wms.WMSLayer layer) {
+        if (layerName.equals(layer.getName())) {
+            return layer;
+        } else {
+            ArrayList<?> children = layer.getChildren();
+            for (Object object : children) {
+                org.gvsig.remoteClient.wms.WMSLayer child = (org.gvsig.remoteClient.wms.WMSLayer) object;
+                org.gvsig.remoteClient.wms.WMSLayer ret = find(layerName, child);
+                if (ret != null) {
+                    return ret;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private BoundaryBox getLayerBoundingBox(String layerName, org.gvsig.remoteClient.wms.WMSLayer layer, String srs) {
+        org.gvsig.remoteClient.wms.WMSLayer wmsLayer = find(layerName, layer);
+        // Obtain the bbox at current level
+        BoundaryBox bbox = wmsLayer.getBbox(srs);
+        while ((bbox == null) && (wmsLayer.getParent() != null)) {
+            wmsLayer = wmsLayer.getParent();
+            bbox = wmsLayer.getBbox(srs);
+        }
+
+        // Some wrong bbox to not have null pointer exceptions
+        if (bbox == null) {
+            bbox = new BoundaryBox();
+            bbox.setXmin(0);
+            bbox.setYmin(0);
+            bbox.setXmax(100);
+            bbox.setYmax(100);
+            bbox.setSrs(srs);
+        }
+        return bbox;
     }
 
     @Override
@@ -145,7 +222,7 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamRead
 
     @Override
     public String getTypeName() {
-        return "WMSStreamDriver";
+        return "Stream WMS";
     }
 
     @Override

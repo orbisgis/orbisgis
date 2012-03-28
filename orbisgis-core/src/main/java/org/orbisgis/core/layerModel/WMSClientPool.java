@@ -49,5 +49,11 @@ public class WMSClientPool {
 		}
 		return client;
 	}
+        
+        public static void registerClient(WMSClient client) {
+            if(!clients.containsKey(client.getHost())) {
+                clients.put(client.getHost(), client);
+            }
+        }
 
 }
