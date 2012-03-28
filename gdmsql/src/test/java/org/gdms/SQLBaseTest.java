@@ -84,6 +84,7 @@ public abstract class SQLBaseTest extends SourceTest<Value, Geometry> {
                                 dsf = new SQLDataSourceFactory();
                                 dsf.setTempDir(SQLBaseTest.backupDir.getAbsolutePath());
                                 dsf.setResultDir(SQLBaseTest.backupDir);
+                                dsf.getSqlEngine().getProperties().put("output.explain", "true");
 
                                 toTest.add(new FileTestSource("hedgerow", internalData
                                         + "hedgerow.shp"));

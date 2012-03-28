@@ -200,7 +200,9 @@ object LogicPlanBuilder {
               case T_UNION => {
                   // AST:
                   // ^(T_UNION select_command)
-                  union = buildOperationTree(t.getChild(0))
+                  
+                  // we step over the output, getting the first child instead
+                  union = buildOperationTree(t.getChild(0)).children.head
                   
                 }
               case T_DISTINCT => {
@@ -233,6 +235,9 @@ object LogicPlanBuilder {
           }
           if (distinct) {
             down = Distinct(down)
+          }
+          if (union != null) {
+            down = Union(down, union)
           }
           
           end = Output(down)
