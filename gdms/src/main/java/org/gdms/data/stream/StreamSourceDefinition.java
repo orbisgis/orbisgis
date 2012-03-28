@@ -50,13 +50,13 @@ import org.gdms.source.directory.StreamDefinitionType;
 
 /**
  * Definition of stream source.
- * 
+ *
  * This is in a way the interface between the management of the data itself and
  * their integration into gdms.<br>
  * Here we will store the StreamSource to give it as a parameter when we create
  * the StreamDatasource, through the StreamDataSourceAdapter.
  * </p>
- * 
+ *
  * @author Vincent Dépériers
  */
 public class StreamSourceDefinition extends AbstractDataSourceDefinition {
@@ -69,6 +69,12 @@ public class StreamSourceDefinition extends AbstractDataSourceDefinition {
                 this.m_streamSource = streamSource;
         }
 
+        /**
+         *
+         * @param obj
+         * @return true if the object is an instance of StreamSourceDifinition
+         * having the same attributes values as the m_StreamSource
+         */
         @Override
         public boolean equals(Object obj) {
                 if (obj instanceof StreamSourceDefinition) {
@@ -79,8 +85,6 @@ public class StreamSourceDefinition extends AbstractDataSourceDefinition {
                                 && equals(ssd.m_streamSource.getPassword(), m_streamSource.getPassword())
                                 && (ssd.m_streamSource.getPort() == m_streamSource.getPort())
                                 && equals(ssd.m_streamSource.getUser(), m_streamSource.getUser())
-                                && equals(ssd.m_streamSource.getTarget(), m_streamSource.getTarget())
-                                && equals(ssd.m_streamSource.getSchemaName(), m_streamSource.getSchemaName())
                                 && equals(ssd.m_streamSource.getPrefix(), m_streamSource.getPrefix()));
                 } else {
                         return false;
@@ -95,14 +99,9 @@ public class StreamSourceDefinition extends AbstractDataSourceDefinition {
                 }
         }
 
-        /**
-         * Not supported yet...
-         *
-         * @return
-         */
         @Override
         public int hashCode() {
-                throw new UnsupportedOperationException("Not supported yet.");
+                return 48 + m_streamSource.hashCode();
         }
 
         @Override
@@ -135,11 +134,9 @@ public class StreamSourceDefinition extends AbstractDataSourceDefinition {
                 ret.setLayerName(m_streamSource.getLayerName());
                 ret.setHost(m_streamSource.getHost());
                 ret.setPort(Integer.toString(m_streamSource.getPort()));
-                ret.setTarget(m_streamSource.getTarget());
                 ret.setPassword(m_streamSource.getPassword());
                 ret.setUser(m_streamSource.getUser());
                 ret.setPrefix(m_streamSource.getPrefix());
-                ret.setSchemaName(m_streamSource.getSchemaName());
 
                 return ret;
         }
@@ -154,8 +151,8 @@ public class StreamSourceDefinition extends AbstractDataSourceDefinition {
         }
 
         public static DataSourceDefinition createFromXML(StreamDefinitionType definition) {
-                StreamSource streamSource = new StreamSource(definition.getHost(), Integer.parseInt(definition.getPort()), definition.getTarget(),
-                        definition.getLayerName(), definition.getUser(), definition.getPassword(), definition.getSchemaName(), definition.getPrefix());
+                StreamSource streamSource = new StreamSource(definition.getHost(), Integer.parseInt(definition.getPort()),
+                        definition.getLayerName(), definition.getUser(), definition.getPassword(), definition.getPrefix());
 
                 return new StreamSourceDefinition(streamSource);
         }
