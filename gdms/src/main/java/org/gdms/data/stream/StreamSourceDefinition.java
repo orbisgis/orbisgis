@@ -49,9 +49,14 @@ import org.gdms.source.directory.DefinitionType;
 import org.gdms.source.directory.StreamDefinitionType;
 
 /**
- *
- * Definition of stream source
- *
+ * Definition of stream source.
+ * 
+ * This is in a way the interface between the management of the data itself and
+ * their integration into gdms.<br>
+ * Here we will store the StreamSource to give it as a parameter when we create
+ * the StreamDatasource, through the StreamDataSourceAdapter.
+ * </p>
+ * 
  * @author Vincent Dépériers
  */
 public class StreamSourceDefinition extends AbstractDataSourceDefinition {
