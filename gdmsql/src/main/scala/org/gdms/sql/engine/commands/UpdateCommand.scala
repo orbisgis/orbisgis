@@ -37,6 +37,7 @@
  */
 package org.gdms.sql.engine.commands
 
+import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.engine.commands.scan.ScanCommand
 import org.gdms.sql.evaluator.Expression
 import org.gdms.data.DataSource
@@ -97,10 +98,7 @@ class UpdateCommand(e: Seq[(String, Expression)]) extends Command with Expressio
   override def doPrepare = {
     expr = expr ++ (e.map(r => Field(r._1)))
     
-    // this inits the expressions
-    super.doPrepare
-
-    // then we find it and get the DataSource
+    // we find the scan and get the DataSource
     def find(ch: Seq[Command]): Option[Command] = ch.filter {
       _.isInstanceOf[ScanCommand] }.headOption
     def recfind(ch: Seq[Command]): Option[Command] = find(ch) match {
@@ -110,7 +108,17 @@ class UpdateCommand(e: Seq[(String, Expression)]) extends Command with Expressio
     val c = recfind(children).get.asInstanceOf[ScanCommand]
     ds = c.ds
     
+    // checks for wrong field names on the left-hand side of the assignment
     val m = c.getMetadata
+    e foreach { ee =>
+      if (m.getFieldIndex(ee._1) == -1) {
+        throw new SemanticException("There is no field '" + ee._1 + "' in the table '" + m.table + "'.")
+      }
+    }
+    
+    // this inits the expressions
+    super.doPrepare
+    
     e foreach {ee =>
       val t = m.getFieldType(m.getFieldIndex(ee._1)).getTypeCode
       val s = ee._2.evaluator.sqlType
