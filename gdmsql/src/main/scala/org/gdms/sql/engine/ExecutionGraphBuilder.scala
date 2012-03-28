@@ -38,14 +38,14 @@
 
 package org.gdms.sql.engine
 
-import org.gdms.sql.engine.logical.LogicPlanBuilder
-import org.gdms.sql.engine.logical.LogicPlanOptimizer
-import org.gdms.sql.engine.operations._
-import org.gdms.sql.parser.GdmSQLParser._
+import org.gdms.sql.engine.GdmSQLPredef._
+import org.gdms.sql.engine.step.aggregate.AggregateStep
+import org.gdms.sql.engine.step.filters.FiltersStep
+import org.gdms.sql.engine.step.logicalJoin.LogicalJoinOptimStep
+import org.gdms.sql.engine.step.parsing.ParsingStep
+import org.gdms.sql.engine.step.validate.ValidationStep
 import java.util.Properties
 import org.antlr.runtime.tree.CommonTree
-import org.apache.log4j.Logger
-import org.gdms.sql.engine.commands._
 
 /**
  * Main entry point for the Scala SQL engine.
@@ -55,12 +55,6 @@ import org.gdms.sql.engine.commands._
  */
 object ExecutionGraphBuilder {
   
-  private val LOG: Logger = Logger.getLogger(ExecutionGraphBuilder.getClass)
-  
-  private val OPTIMIZEJOINS = "optimizer.optimiseJoins"
-  private val OPTIMIZEFILTERS = "optimizer.optimiseFilters"
-  private val EXPLAIN = "output.explain"
-
   /**
    * Buids an ExecutionGraph from an AST
    *
@@ -69,71 +63,18 @@ object ExecutionGraphBuilder {
    * @return an abstract execution graph
    */
   def build(tree: CommonTree, p: Properties): Array[ExecutionGraph] = {
-    if (isPropertyTurnedOn(p, EXPLAIN)) {
-      LOG.info("Parsed tree: ")
-      LOG.info(tree.toStringTree)
+    
+    implicit val pr = p
+    
+    val cs = tree >=: ParsingStep map
+    {_                       >=:
+     AggregateStep        >=:
+     LogicalJoinOptimStep >=:
+     FiltersStep          >=:
+     ValidationStep
     }
-    
-    
-    // parsing
-    val cs = parseStatement(tree, p)
-    
-    if (isPropertyTurnedOn(p, EXPLAIN)) {
-      LOG.info("Finised parsing logical execution tree.")
-    }
-    
-    // validating types & stuff that do not need a dsf
-    cs foreach (_.validate)
     
     // building ExecutionGraph objects
-    cs map (new ExecutionGraph(_, p))
-  }
-
-  private def parseStatement(tree: CommonTree, p: Properties): Array[Operation] = {
-    // building logic plan
-    val a = (0 until tree.getChildCount) map (tree.getChild) map (LogicPlanBuilder.buildLogicPlan) toArray;
-    if (isPropertyTurnedOn(p, EXPLAIN)) {
-      LOG.info("Parsed logical execution tree.")
-      a foreach (LOG.debug(_))
-    }
-    
-    // optimize joins
-    if (!isPropertyTurnedOff(p, OPTIMIZEJOINS)) {
-      if (isPropertyTurnedOn(p, EXPLAIN)) {
-        LOG.info("Optimizing joins.")
-      }
-      a foreach(LogicPlanOptimizer.optimizeCrossJoins)
-      a foreach(LogicPlanOptimizer.optimizeSpatialIndexedJoins)
-    }
-    
-    // optimize filter expressions
-    if (!isPropertyTurnedOff(p, OPTIMIZEFILTERS)) {
-      if (isPropertyTurnedOn(p, EXPLAIN)) {
-        LOG.info("Optimizing filters.")
-      }
-      a foreach(LogicPlanOptimizer.optimizeFilterExpressions)
-    }
-    
-    if (isPropertyTurnedOn(p, EXPLAIN)) {
-      LOG.info("Optimized logical execution tree.")
-      a foreach (LOG.debug(_))
-    }
-    
-    a
-  }
-  
-  private def isPropertyValue(p: Properties, name: String, value: String) = {
-    p != null && {p.getProperty(name) match {
-        case a if a == value => true
-        case _ => false
-      }}
-  }
-  
-  private def isPropertyTurnedOn(p: Properties, name: String) = {
-    isPropertyValue(p, name, "true")
-  }
-  
-  private def isPropertyTurnedOff(p: Properties, name: String) = {
-    isPropertyValue(p, name, "false")
+    cs map (new ExecutionGraph(_, p)) toArray
   }
 }

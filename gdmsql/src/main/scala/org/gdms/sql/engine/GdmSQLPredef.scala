@@ -38,6 +38,7 @@
 
 package org.gdms.sql.engine
 
+import java.util.Properties
 import org.gdms.data.schema.Metadata
 import scala.collection.mutable.ArrayOps
 import org.gdms.data.values.Value
@@ -60,6 +61,26 @@ object GdmSQLPredef extends GdmSQLPredefLow {
   // SQLMetadata
   implicit def meToSQLMe(m: Metadata)(implicit s: SQLMetadata) = SQLMetadata(s.table, m)
   implicit def sqlMeTome(s: SQLMetadata) = s.m
+  
+  // Engine flags
+  val Flags = EngineFlags
+  
+  // Engine flag utility methods
+  def isPropertyValue(name: String, value: String)(implicit p: Properties) = {
+    p != null && {p.getProperty(name) match {
+        case a if a == value => true
+        case _ => false
+      }}
+  }
+  
+  def isPropertyTurnedOn(name: String)(implicit p: Properties) = {
+    isPropertyValue(name, "true")
+  }
+  
+    
+  def isPropertyTurnedOff(name: String)(implicit p: Properties) = {
+    isPropertyValue(name, "false")
+  }
 }
 
 /**

@@ -166,6 +166,7 @@ object PhysicalPlanBuilder {
               }
             }
           }
+        case _ =>
       })
   }
   
@@ -257,7 +258,7 @@ object PhysicalPlanBuilder {
       case CreateIndex(t, c) => new CreateIndexCommand(t, c)
       case DropIndex(t, c) => new DropIndexCommand(t, c)
       case ExecutorCall(name, l) => new ExecutorCommand(name, l)
-      case NoOp => throw new IllegalStateException("Internal error: problem with the logic query plan.")
+      case a => throw new IllegalStateException("Internal error: problem with the logic query plan. Found :" + a)
     }
   }
 

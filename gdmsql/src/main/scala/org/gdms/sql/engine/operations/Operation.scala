@@ -54,12 +54,12 @@ import org.gdms.sql.function.FunctionManager
  * @author Antoine Gourlay
  * @since 0.1
  */
-abstract sealed class Operation(var children: List[Operation]) {
-  def addChild(c: Operation) = {
-    children = c :: children
-    this
-  }
-
+abstract sealed class Operation {
+  
+  def children: List[Operation]
+  
+  def children_=(o: List[Operation]) {}
+  
   /**
    * Returns all children and children of children, etc.
    */
@@ -79,7 +79,9 @@ abstract sealed class Operation(var children: List[Operation]) {
 
 }
 
-case object NoOp extends Operation(Nil)
+case object NoOp extends Operation {
+  val children = Nil
+}
 
 /**
  * Represents a table scan.
@@ -91,7 +93,8 @@ case object NoOp extends Operation(Nil)
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class Scan(table: String, alias: Option[String] = None, var edition: Boolean = false) extends Operation(Nil) {
+case class Scan(table: String, alias: Option[String] = None, var edition: Boolean = false) extends Operation {
+  val children = Nil
   override def toString = "Scan of(" + table + ") " + alias + (if (edition) " in edition" else "")
 }
 
@@ -105,197 +108,209 @@ case class Scan(table: String, alias: Option[String] = None, var edition: Boolea
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class CustomQueryScan(customQuery: String, exp: Seq[Expression],
-                           tables: Seq[Either[String, Operation]],
-                           alias: Option[String] = None) extends Operation(Nil) {
-  children = tables.flatMap(t => t.right.toOption).toList
+ case class CustomQueryScan(customQuery: String, exp: Seq[Expression],
+                            tables: Seq[Either[String, Operation]],
+                            alias: Option[String] = None) extends Operation {
+    val children = tables.flatMap(_.right.toOption).toList
   
-  override def toString = "TableFunction  called(" + customQuery + ") params(" + exp + tables + ")" + alias
-  val function = FunctionManager.getFunction(customQuery)
-  override def doValidate = {
-    if (function == null) throw new FunctionException("The function " + customQuery + " does not exist.")
-    if (!function.isTable) throw new FunctionException("The function " + customQuery + " does not return a table.")
-    exp foreach (_ preValidate)
-  }
-}
-
-
-/**
- * Represents a index query scan.
- * 
- * @param table the name of a registered table
- * @param alias an optional alias for this table
- * @param query the query to use
- * @author Antoine Gourlay
- * @since 0.3
- */
-case class IndexQueryScan(table: String, alias: Option[String] = None, query: IndexQuery = null) extends Operation(Nil) {
-  override def toString = "IndexQueryScan of(" + table + ") " + alias + {if (query != null) {
-      " on " + query.getFieldName + (if (query.isStrict) " strict" else "")
-    } else ""}
-}
-
-/**
- * Represents a 'constant table' on a list of expressions.
- * 
- * @param exp a list of rows (seq of expressions that do not reference fields)
- * @param alias an optional alias for this table
- * @author Antoine Gourlay
- * @since 0.3
- */
-case class ValuesScan(exp: Seq[Seq[Expression]], alias: Option[String] = None, internal: Boolean = true) extends Operation(Nil) {
-  override def toString = "ValuesScan" + (if (internal) "(internal)" else "") + " of (" + exp + ") " + (if (alias.isDefined) alias else "")
-  
-  override def doValidate {
-    // check for constant values
-    def check(e: Expression): Unit = e match {
-      case field(name,_) => throw new SemanticException("the expression cannot contain the field '" + name +
-                                                        "'. The expression must be constant.")
-      case _ => e.children map (check)
-    }
-      
-    exp foreach (_ foreach (check))
-      
-    // check for number & type or elements in rows
-    val types = exp.head map (_.evaluator.sqlType)
-    val s = types.size
-    exp.tail foreach {e =>
-      val tt = e map (_.evaluator.sqlType)
-      if (tt.size != s) {
-        throw new SemanticException("Rows must all have the same number of elements.")
-      }
-      types zip tt foreach {zz => 
-        if (!TypeFactory.canBeCastTo(zz._2, zz._1)) {
-          throw new SemanticException("Rows must all have the same types as the first row, or must have types that " +
-                                      "can be implicitly casted to the ones of the first row.")
-        }
-      }
-    }
-  }
-}
-  
-
-/**
- * Represents the output or end node of the Operation tree.
- * 
- * This operation is the top operation of any instruction.
- *
- * @author Antoine Gourlay
- * @since 0.1
- */
-case class Output(child: Operation) extends Operation(child :: Nil) {
-  
-  override def doValidate = {
-    val aliases = allChildren flatMap { _ match {
-        case Scan(_, a, _) => a
-        case CustomQueryScan(_, _, _, a) => a
-        case SubQuery(a, _) => a :: Nil
-        case ValuesScan(_, a, _) => a
-        case _ => Nil
-      }
-    }
-    if (hasDuplicates(aliases)) {
-      throw new SemanticException("Two tables cannot have the same alias!")
-    }
-  }
-
-  def hasDuplicates(seq: Seq[String]): Boolean = {
-    val h = collection.mutable.HashSet[String]()
-    var ret = false
-    breakable {
-      for (x <- seq) {
-        if (h(x)) {
-          ret = true; break
-        } else {
-          h+=x
-        }
-      }
-    }
-    ret
-  }
-  
-  override def toString = "Output(" + children +")"
-}
-
-/**
- * Represents the filtering of input row to remove duplicates.
- *
- * @author Antoine Gourlay
- * @since 0.3
- */
-case class Distinct(child: Operation) extends Operation(child :: Nil) {
-  children = child :: Nil
-  
-  override def toString = "Distinct on(" + children + ')'
-}
-
-/**
- * Reprensents the limiting of some input row to a specific limit and/or offset.
- *
- * @param limit an optional number of rows to limit the input
- * @param offset an optional offset of rows to skip before returning any
- * @author Antoine Gourlay
- * @since 0.1
- */
-case class LimitOffset(limit: Int = -1, offset:Int = 0, child: Operation) extends Operation(child :: Nil) {
-  children = child :: Nil
-  
-  override def toString = "LimitOffset lim=" + limit + " offset=" + offset + "of(" + children + ")"
-}
-
-/**
- * Reprensents a subquery. Its only child has to be an Output operation.
- *
- * @param alias reprensents a mandatory alias for the resulting 'table'
- * @author Antoine Gourlay
- * @since 0.1
- */
-case class SubQuery(alias: String, child: Operation) extends Operation(child :: Nil) {
-  "SubQuery called(" + alias + ") of(" + children + ")"
-}
-
-/**
- * Represents a projection with expression evaluation.
- * 
- * Then given expressions are evaluated for each input rows, with an optional alias.
- * 
- * @param exp list of expressions, with an optional alias name for the resulting 'column'
- * @author Antoine Gourlay
- * @since 0.1
- */
-case class Projection(exp: List[(Expression, Option[String])], child: Operation) extends Operation(child :: Nil) {
-  override def doValidate = exp foreach (_._1 preValidate)
-  override def toString = "Projection of(" + exp + ") on(" + children + ")"
-}
-
-/**
- * Represents an aggregation of rows.
- * 
- * The AggregateEvaluator objects are evaluated for every input row. Then they are replaced with their aggregate result
- * and the expressions are evaluated and returned as a single row.
- * 
- * @param exp list of expressions, with an optional alias name for the resulting 'column'
- * @author Antoine Gourlay
- * @since 0.1
- */
-case class Aggregate(exp: List[(Expression, Option[String])], child: Operation) extends Operation(child :: Nil) {
-  override def doValidate = exp foreach (_._1 preValidate)
-  override def toString = "Aggregate exp(" + exp + ") on(" + children + ")"
-}
-
-/**
- * Represents a filter operation.
- * 
- * For every input row, the given expression is evaluated and acts as the condition for keeping the current row.
- * 
- * @param e an expression whose result must be a SQL tri-state Boolean value.
- * @author Antoine Gourlay
- * @since 0.1
- */
- case class Filter(e: Expression, child: Operation) extends Operation(child :: Nil) {
+    override def toString = "TableFunction  called(" + customQuery + ") params(" + exp + tables + ")" + alias
+    val function = FunctionManager.getFunction(customQuery)
     override def doValidate = {
-      e.preValidate
+      if (function == null) throw new FunctionException("The function " + customQuery + " does not exist.")
+      if (!function.isTable) throw new FunctionException("The function " + customQuery + " does not return a table.")
+      exp foreach (_ preValidate)
     }
+  }
+
+
+ /**
+  * Represents a index query scan.
+  * 
+  * @param table the name of a registered table
+  * @param alias an optional alias for this table
+  * @param query the query to use
+  * @author Antoine Gourlay
+  * @since 0.3
+  */
+ case class IndexQueryScan(table: String, alias: Option[String] = None, query: IndexQuery = null) extends Operation {
+    val children = Nil
+    override def toString = "IndexQueryScan of(" + table + ") " + alias + {if (query != null) {
+        " on " + query.getFieldName + (if (query.isStrict) " strict" else "")
+      } else ""}
+  }
+
+ /**
+  * Represents a 'constant table' on a list of expressions.
+  * 
+  * @param exp a list of rows (seq of expressions that do not reference fields)
+  * @param alias an optional alias for this table
+  * @author Antoine Gourlay
+  * @since 0.3
+  */
+ case class ValuesScan(exp: Seq[Seq[Expression]], alias: Option[String] = None, internal: Boolean = true) extends Operation {
+    override def toString = "ValuesScan" + (if (internal) "(internal)" else "") + " of (" + exp + ") " + (if (alias.isDefined) alias else "")
+    val children = Nil
+    override def doValidate {
+      // check for constant values
+      def check(e: Expression): Unit = e match {
+        case field(name,_) => throw new SemanticException("the expression cannot contain the field '" + name +
+                                                          "'. The expression must be constant.")
+        case _ => e.children map (check)
+      }
+      
+      exp foreach (_ foreach (check))
+      
+      // check for number & type or elements in rows
+      val types = exp.head map (_.evaluator.sqlType)
+      val s = types.size
+      exp.tail foreach {e =>
+        val tt = e map (_.evaluator.sqlType)
+        if (tt.size != s) {
+          throw new SemanticException("Rows must all have the same number of elements.")
+        }
+        types zip tt foreach {zz => 
+          if (!TypeFactory.canBeCastTo(zz._2, zz._1)) {
+            throw new SemanticException("Rows must all have the same types as the first row, or must have types that " +
+                                        "can be implicitly casted to the ones of the first row.")
+          }
+        }
+      }
+    }
+  }
+  
+
+ /**
+  * Represents the output or end node of the Operation tree.
+  * 
+  * This operation is the top operation of any instruction.
+  *
+  * @author Antoine Gourlay
+  * @since 0.1
+  */
+ case class Output(var child: Operation) extends Operation {
+  
+    def children = List(child)
+    override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
+  
+    override def doValidate = {
+      val aliases = allChildren flatMap { _ match {
+          case Scan(_, a, _) => a
+          case CustomQueryScan(_, _, _, a) => a
+          case SubQuery(a, _) => a :: Nil
+          case ValuesScan(_, a, _) => a
+          case _ => Nil
+        }
+      }
+      if (hasDuplicates(aliases)) {
+        throw new SemanticException("Two tables cannot have the same alias!")
+      }
+    }
+
+    def hasDuplicates(seq: Seq[String]): Boolean = {
+      val h = collection.mutable.HashSet[String]()
+      var ret = false
+      breakable {
+        for (x <- seq) {
+          if (h(x)) {
+            ret = true; break
+          } else {
+            h+=x
+          }
+        }
+      }
+      ret
+    }
+  
+    override def toString = "Output(" + children +")"
+  }
+
+ /**
+  * Represents the filtering of input row to remove duplicates.
+  *
+  * @author Antoine Gourlay
+  * @since 0.3
+  */
+ case class Distinct(var child: Operation) extends Operation {
+    def children = List(child)
+    override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
+  
+    override def toString = "Distinct on(" + children + ')'
+  }
+
+ /**
+  * Reprensents the limiting of some input row to a specific limit and/or offset.
+  *
+  * @param limit an optional number of rows to limit the input
+  * @param offset an optional offset of rows to skip before returning any
+  * @author Antoine Gourlay
+  * @since 0.1
+  */
+ case class LimitOffset(limit: Int = -1, offset:Int = 0,var child: Operation) extends Operation {
+    def children = List(child)
+    override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
+    
+    override def toString = "LimitOffset lim=" + limit + " offset=" + offset + "of(" + children + ")"
+  }
+
+ /**
+  * Reprensents a subquery. Its only child has to be an Output operation.
+  *
+  * @param alias reprensents a mandatory alias for the resulting 'table'
+  * @author Antoine Gourlay
+  * @since 0.1
+  */
+ case class SubQuery(alias: String,var child: Operation) extends Operation {
+    def children = List(child)
+    override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
+    "SubQuery called(" + alias + ") of(" + children + ")"
+  }
+
+ /**
+  * Represents a projection with expression evaluation.
+  * 
+  * Then given expressions are evaluated for each input rows, with an optional alias.
+  * 
+  * @param exp list of expressions, with an optional alias name for the resulting 'column'
+  * @author Antoine Gourlay
+  * @since 0.1
+  */
+ case class Projection(exp: List[(Expression, Option[String])],var child: Operation) extends Operation {
+    def children = List(child)
+    override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
+    override def doValidate = exp foreach (_._1 preValidate)
+    override def toString = "Projection of(" + exp + ") on(" + children + ")"
+  }
+
+ /**
+  * Represents an aggregation of rows.
+  * 
+  * The AggregateEvaluator objects are evaluated for every input row. Then they are replaced with their aggregate result
+  * and the expressions are evaluated and returned as a single row.
+  * 
+  * @param exp list of expressions, with an optional alias name for the resulting 'column'
+  * @author Antoine Gourlay
+  * @since 0.1
+  */
+ case class Aggregate(exp: List[(Expression, Option[String])],var child: Operation) extends Operation {
+    def children = List(child)
+    override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
+    override def doValidate = exp foreach (_._1 preValidate)
+    override def toString = "Aggregate exp(" + exp + ") on(" + children + ")"
+  }
+
+ /**
+  * Represents a filter operation.
+  * 
+  * For every input row, the given expression is evaluated and acts as the condition for keeping the current row.
+  * 
+  * @param e an expression whose result must be a SQL tri-state Boolean value.
+  * @author Antoine Gourlay
+  * @since 0.1
+  */
+ case class Filter(e: Expression,var child: Operation) extends Operation {
+    def children = List(child)
+    override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
+    override def doValidate = e.preValidate
     override def toString = "Filter of(" + e + ") on(" + children + ")"
   }
 
@@ -311,7 +326,9 @@ case class Aggregate(exp: List[(Expression, Option[String])], child: Operation) 
   * @author Antoine Gourlay
   * @since 0.1
   */
- case class Sort(names: Seq[(Expression, Boolean)], child: Operation) extends Operation(child :: Nil) {
+ case class Sort(names: Seq[(Expression, Boolean)],var child: Operation) extends Operation {
+    def children = List(child)
+    override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
     override def doValidate = names foreach (_._1 preValidate)
     override def toString = "Sort fields(" + names + ") on(" + children + ")"
   }
@@ -327,7 +344,9 @@ case class Aggregate(exp: List[(Expression, Option[String])], child: Operation) 
   * @author Antoine Gourlay
   * @since 0.1
   */
- case class Grouping(exp: List[(Expression, Option[String])], child: Operation) extends Operation(child :: Nil) {
+ case class Grouping(exp: List[(Expression, Option[String])],var child: Operation) extends Operation {
+    def children = List(child)
+    override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
     override def doValidate = exp foreach (_._1 preValidate)
     override def toString = "Group over(" + exp + ") on(" + children + ")"
   }
@@ -339,7 +358,12 @@ case class Aggregate(exp: List[(Expression, Option[String])], child: Operation) 
   * @author Antoine Gourlay
   * @since 0.1
   */
- case class Join(var joinType: JoinType, left: Operation, right: Operation) extends Operation(List(left, right)) {
+ case class Join(var joinType: JoinType, var left: Operation,var right: Operation) extends Operation {
+    def children = List(left, right)
+    override def children_=(o: List[Operation]) = {o match {
+        case a :: b :: Nil => left = a; right = b;
+        case _ => throw new IllegalArgumentException("Needs two children extactly.")
+      }}
     override def toString = "Join type(" + joinType + ") on(" + children + ")"
   }
 
@@ -350,7 +374,12 @@ case class Aggregate(exp: List[(Expression, Option[String])], child: Operation) 
   * @author Antoine Gourlay
   * @since 0.3
   */
- case class Union(left: Operation, right: Operation) extends Operation(List(left, right)) {
+ case class Union(var left: Operation,var right: Operation) extends Operation {
+    def children = List(left, right)
+    override def children_=(o: List[Operation]) = {o match {
+        case a :: b :: Nil => left = a; right = b;
+        case _ => throw new IllegalArgumentException("Needs two children extactly.")
+      }}
     override def toString = "Union of (" + children + ")"
   }
 
@@ -363,7 +392,9 @@ case class Aggregate(exp: List[(Expression, Option[String])], child: Operation) 
   * @author Antoine Gourlay
   * @since 0.1
   */
- case class Update(exp: Seq[(String, Expression)], child: Operation) extends Operation(child :: Nil) {
+ case class Update(exp: Seq[(String, Expression)],var child: Operation) extends Operation {
+    def children = List(child)
+    override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
     override def doValidate = exp foreach (_._2 preValidate)
     override def toString = "Update exp(" + exp + ") on (" + children + ")"
   }
@@ -379,7 +410,8 @@ case class Aggregate(exp: List[(Expression, Option[String])], child: Operation) 
   * @author Antoine Gourlay
   * @since 0.1
   */
- case class StaticInsert(table: String, exps: Seq[Array[Expression]], fields: Option[Seq[String]]) extends Operation(Nil) {
+ case class StaticInsert(table: String, exps: Seq[Array[Expression]], fields: Option[Seq[String]]) extends Operation {
+    def children = Nil
     override def doValidate = {
       exps foreach (_ foreach (_ preValidate))
       if (fields.isDefined) {
@@ -409,7 +441,9 @@ case class Aggregate(exp: List[(Expression, Option[String])], child: Operation) 
   * @author Antoine Gourlay
   * @since 0.1
   */
- case class Delete(child: Operation) extends Operation(child :: Nil) {
+ case class Delete(var child: Operation) extends Operation {
+    def children = List(child)
+    override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
     override def toString = "Deletes on(" + children + ")"
   }
 
@@ -421,7 +455,9 @@ case class Aggregate(exp: List[(Expression, Option[String])], child: Operation) 
   * @author Antoine Gourlay
   * @since 0.1
   */
- case class CreateTableAs(name: String, child: Operation) extends Operation(child :: Nil) {
+ case class CreateTableAs(name: String,var child: Operation) extends Operation {
+    def children = List(child)
+    override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
     override def toString = "CreateTableAs name(" + name + ") as(" + children + ")"
   }
 
@@ -432,7 +468,9 @@ case class Aggregate(exp: List[(Expression, Option[String])], child: Operation) 
   * @author Antoine Gourlay
   * @since 0.1
   */
- case class CreateView(name: String, orReplace: Boolean, child: Operation) extends Operation(child :: Nil) {
+ case class CreateView(name: String, orReplace: Boolean,var child: Operation) extends Operation {
+    def children = List(child)
+    override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
     override def toString = "CreateViewAs name(" + name + ") as(" + children + ")" +
     (if (orReplace) " replace" else "")
   }
@@ -446,7 +484,8 @@ case class Aggregate(exp: List[(Expression, Option[String])], child: Operation) 
   * @author Antoine Gourlay
   * @since 0.1
   */
- case class CreateTable(name: String, cols: Seq[(String, String)]) extends Operation(Nil) {
+ case class CreateTable(name: String, cols: Seq[(String, String)]) extends Operation {
+    def children = Nil
     override def toString = "CreateTableAs name(" + name + ") as(" + cols + ")"
   }
 
@@ -458,7 +497,8 @@ case class Aggregate(exp: List[(Expression, Option[String])], child: Operation) 
   * @author Antoine Gourlay
   * @since 0.1
   */
- case class AlterTable(name: String, actions: Seq[AlterElement]) extends Operation(Nil) {
+ case class AlterTable(name: String, actions: Seq[AlterElement]) extends Operation {
+    def children = Nil
     override def toString = "AlterTable name(" + name + ") do(" + actions + ")"
   }
 
@@ -471,7 +511,8 @@ case class Aggregate(exp: List[(Expression, Option[String])], child: Operation) 
   * @author Antoine Gourlay
   * @since 0.1
   */
- case class RenameTable(name: String, newname: String) extends Operation(Nil) {
+ case class RenameTable(name: String, newname: String) extends Operation {
+    def children = Nil
     override def toString = "RenameTable name(" + name + ") newname(" + newname + ")"
   }
 
@@ -484,7 +525,8 @@ case class Aggregate(exp: List[(Expression, Option[String])], child: Operation) 
   * @author Antoine Gourlay
   * @since 0.1
   */
- case class DropTables(names: Seq[String], ifExists: Boolean, purge: Boolean) extends Operation(Nil) {
+ case class DropTables(names: Seq[String], ifExists: Boolean, purge: Boolean) extends Operation {
+    def children = Nil
     override def toString = "DropTables names(" + names + ") ifExists=" + ifExists + " purge=" + purge
   }
 
@@ -496,7 +538,8 @@ case class Aggregate(exp: List[(Expression, Option[String])], child: Operation) 
   * @author Antoine Gourlay
   * @since 0.1
   */
- case class DropViews(names: Seq[String], ifExists: Boolean) extends Operation(Nil) {
+ case class DropViews(names: Seq[String], ifExists: Boolean) extends Operation {
+    def children = Nil
     override def toString = "DropViews names(" + names + ") ifExists=" + ifExists
   }
 
@@ -508,7 +551,8 @@ case class Aggregate(exp: List[(Expression, Option[String])], child: Operation) 
   * @author Antoine Gourlay
   * @since 0.1
   */
- case class CreateIndex(table: String, column: String) extends Operation(Nil) {
+ case class CreateIndex(table: String, column: String) extends Operation {
+    def children = Nil
     override def toString = "CreateIndex on(" + table + ", " + column + ")"
   }
 
@@ -520,7 +564,8 @@ case class Aggregate(exp: List[(Expression, Option[String])], child: Operation) 
   * @author Antoine Gourlay
   * @since 0.1
   */
- case class DropIndex(table: String, column: String) extends Operation(Nil) {
+ case class DropIndex(table: String, column: String) extends Operation {
+    def children = Nil
     override def toString = "DropIndex on(" + table + ", " + column + ")"
   }
 
@@ -535,7 +580,8 @@ case class Aggregate(exp: List[(Expression, Option[String])], child: Operation) 
   * @author Antoine Gourlay
   * @since 0.1
   */
- case class ExecutorCall(name: String, params: List[Expression]) extends Operation(Nil) {
+ case class ExecutorCall(name: String, params: List[Expression]) extends Operation {
+    def children = Nil
     override def doValidate = params foreach (_ preValidate)
     override def toString = "ExecutorFunction name(" + name + ") " + " params(" + params + ")"
   }
