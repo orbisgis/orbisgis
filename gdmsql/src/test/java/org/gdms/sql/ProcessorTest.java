@@ -36,10 +36,12 @@
  */
 package org.gdms.sql;
 
+import java.util.Properties;
 import org.junit.Before;
 import org.junit.Test;
 import java.io.File;
 
+import org.apache.log4j.BasicConfigurator;
 import org.gdms.SQLBaseTest;
 import org.gdms.data.NoSuchTableException;
 
@@ -68,7 +70,7 @@ public class ProcessorTest {
         private Metadata allTypesMetadata;
         private static SQLDataSourceFactory dsf;
         private SQLEngine engine;
-
+        
         @Before
         public void setUp() throws Exception {
                 dsf = new SQLDataSourceFactory();
@@ -290,6 +292,7 @@ public class ProcessorTest {
                 } catch (SemanticException e) {
                 } catch (ParseException p ) {
                         if (!(p.getCause() instanceof SemanticException)) {
+                                p.printStackTrace();
                                 fail();
                         }
                 }
@@ -302,6 +305,7 @@ public class ProcessorTest {
                 } catch (SemanticException e) {
                 } catch (ParseException p ) {
                         if (!(p.getCause() instanceof SemanticException)) {
+                                p.printStackTrace();
                                 fail();
                         }
                 }
@@ -481,22 +485,22 @@ public class ProcessorTest {
                 failWithIncompatibleTypes("select \"int\" from alltypes "
                         + "group by \"int\" having \"int\" = 'e';");
                 // INT field not found in having
-                failWithSemanticException("select \"int\" from alltypes "
+                failPreparedWithSemanticException("select \"int\" from alltypes "
                         + "group by \"int\" having \"Int\" = 4;");
                 // select fields reference not grouped attributes
-                failWithSemanticException("select string from alltypes "
+                failPreparedWithSemanticException("select string from alltypes "
                         + "group by \"int\" having \"int\" = 4;");
                 // having references not grouped attributes
-                failWithSemanticException("select \"int\" from alltypes "
+                failPreparedWithSemanticException("select \"int\" from alltypes "
                         + "group by \"int\" having strign = 'e';");
                 // mixing aggregated and not aggregated
-                failWithSemanticException("select count(\"int\"), StringtoInt(string) from "
+                failPreparedWithSemanticException("select count(\"int\"), StringtoInt(string) from "
                         + "alltypes group by \"int\" having string = 'e';");
                 // non aggregated type
-                failWithSemanticException("select t1.\"int\" from alltypes t1, "
+                failPreparedWithSemanticException("select t1.\"int\" from alltypes t1, "
                         + "alltypes t2 group by t2.\"int\";");
                 // Selecting non grouped fields
-                failWithSemanticException("select * from alltypes group by \"int\";");
+                failPreparedWithSemanticException("select * from alltypes group by \"int\";");
 
                 getValidatedStatement("select t1.\"int\" as st1, sum(t2.\"int\") as st2 from "
                         + "alltypes t1, alltypes t2 group by t1.\"int\" having st1 = 3;");
@@ -539,9 +543,8 @@ public class ProcessorTest {
 
         @Test
         public void testOrderBy() throws Exception {
-                failWithSemanticException("select * from gis order by Id;");
-                failWithSemanticException("select * from gis order by Gis.id;");
-                failWithIncompatibleTypes("select * from alltypes order by \"boolean\";");
+                failPreparedWithSemanticException("select * from gis order by Id;");
+                failPreparedWithSemanticException("select * from gis order by Gis.id;");
                 getValidatedStatement("select * from gis, alltypes "
                         + "order by gis.id;");
                 getValidatedStatement("select * from gis g, alltypes "
@@ -554,7 +557,7 @@ public class ProcessorTest {
                         + "order by int;");
 
                 // order by field outside group
-                failWithSemanticException("select \"float\" as myfloat from alltypes "
+                failPreparedWithSemanticException("select \"float\" as myfloat from alltypes "
                         + "group by \"float\" order by int;");
                 getValidatedStatement("select \"float\" as myfloat from alltypes "
                         + "group by \"float\" order by \"float\";");
@@ -580,12 +583,8 @@ public class ProcessorTest {
 
         @Test
         public void testUnion() throws Exception {
-                failWithSemanticException("gis union alltypes;");
-                failWithSemanticException("(select * from gis) union alltypes;");
-                failWithSemanticException("alltypes union (select * from gis);");
-                failWithSemanticException("alltypes union (select * from gis);");
-                failWithSemanticException("alltypes union gis;");
-                getValidatedStatement("gis union gis;");
+                failPreparedWithSemanticException("select * from gis union select * from alltypes;");
+                getFullyValidatedStatement("select * from gis union gis;");
         }
 
         @Test

@@ -950,7 +950,7 @@ public class SQLTest extends SQLBaseTest {
         private void testLimit(String sql) throws Exception {
                 String limitedSQL = sql + " limit 10;";
                 DataSource ds = dsf.getDataSourceFromSQL(limitedSQL);
-                DataSource original = dsf.getDataSourceFromSQL(sql);
+                DataSource original = dsf.getDataSourceFromSQL(sql + ";");
                 ds.open();
                 original.open();
                 assertEquals(ds.getRowCount(), 10);
@@ -964,7 +964,7 @@ public class SQLTest extends SQLBaseTest {
         private void testOffset(String sql) throws Exception {
                 String limitedSQL = sql + " offset 10;";
                 DataSource ds = dsf.getDataSourceFromSQL(limitedSQL);
-                DataSource original = dsf.getDataSourceFromSQL(sql);
+                DataSource original = dsf.getDataSourceFromSQL(sql + ";");
                 ds.open();
                 original.open();
                 assertEquals(ds.getRowCount(), original.getRowCount() - 10);

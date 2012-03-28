@@ -104,9 +104,9 @@ public class GrammarTest {
         @Test
         public void testOrderBy() throws Exception {
                 parse("select * from gis where a=3 order by a;");
-                parse("select * from gis order by area(geom);");
-                parse("select * from gis order by area(geom) desc;");
-                parse("select * from gis where a=3 order by area(the_geom);");
+                parse("select * from gis order by ST_area(geom);");
+                parse("select * from gis order by ST_area(geom) desc;");
+                parse("select * from gis where a=3 order by ST_area(the_geom);");
         }
 
         @Test
@@ -248,7 +248,7 @@ public class GrammarTest {
         @Test
         public void testInsert() throws Exception {
                 notParse("insert into table1, table2 (field) values ('4');");
-                parse("insert into mytable (field) values (3 * abs(field));");
+                notParse("insert into mytable (field) values (3 * abs(field));");
                 parse("insert into mytable (field1, field2, field3) values (1, 2, 3);");
         }
 
