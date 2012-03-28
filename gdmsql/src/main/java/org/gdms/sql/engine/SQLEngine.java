@@ -114,6 +114,7 @@ public final class SQLEngine {
         public void execute(SqlStatement statement) throws DriverException {
                 statement.prepare(dsf);
                 statement.execute();
+                statement.cleanUp();
         }
 
         /**
