@@ -43,7 +43,7 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamRead
         metadata.addField("format", Type.STRING);
 
         this.m_Schema = new DefaultSchema(DRIVER_NAME + this.hashCode());
-        this.m_Schema.addTable("main", metadata);
+        this.m_Schema.addTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME, metadata);
     }
 
     @Override
@@ -92,7 +92,7 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamRead
 
     @Override
     public Metadata getMetadata() throws DriverException {
-        return this.m_Schema.getTableByName("main");
+        return this.m_Schema.getTableByName(DriverManager.DEFAULT_SINGLE_TABLE_NAME);
     }
 
     @Override
