@@ -64,4 +64,14 @@ public class CoordinatesUtilsTest {
                 Coordinate[] coords = CoordinateArrays.removeRepeatedPoints(geom.getCoordinates());
                 assertEquals(coords.length, 7);
         }
+
+        @Test
+        public void testFindFurthestPoint() throws Exception {
+                //Test remove with a linestring
+                Geometry geom = wKTReader.read("LINESTRING(0 1, 20 8, 20 0)");
+                Coordinate expectedCoord = new Coordinate(20, 8);
+                Coordinate[] coords = CoordinatesUtils.getFurthestCoordinate(new Coordinate(0, 0), geom.getCoordinates());
+                double expectedDistance = new Coordinate(0, 0).distance(expectedCoord);
+                assertEquals(expectedDistance, coords[0].distance(coords[1]), 10E-9);
+        }
 }

@@ -74,7 +74,7 @@ public final class CoordinatesUtils {
                         if (Double.isNaN(coord.z)) {
                                 return coordinate.equals(coord);
                         } else {
-                                 return coordinate.equals3D(coord);
+                                return coordinate.equals3D(coord);
                         }
                 }
                 return false;
@@ -153,9 +153,33 @@ public final class CoordinatesUtils {
 
                 result[0] = (zmin);
                 result[1] = (zmax);
-
-
                 return result;
+        }
+
+        /**
+         * Find the furthest coordinate in a geometry from a base coordinate
+         * @param base
+         * @param coords
+         * @return the base coordinate and the target coordinate
+         */
+        public static Coordinate[] getFurthestCoordinate(Coordinate base, Coordinate[] coords) {
+                try {
+                        double distanceMax = Double.MIN_VALUE;
+                        Coordinate farCoordinate = null;
+                        for (Coordinate coord : coords) {
+                                double distance = coord.distance(base);
+                                if (distance > distanceMax) {
+                                        distanceMax = distance;
+                                        farCoordinate = coord;
+                                }
+                        }
+
+                        if (farCoordinate != null) {
+                                return new Coordinate[]{base, farCoordinate};
+                        }
+                } catch (Exception e) {
+                }
+                return null;
         }
 
         /**
