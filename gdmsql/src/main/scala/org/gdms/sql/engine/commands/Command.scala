@@ -118,11 +118,14 @@ abstract class Command() {
    */
   def getMetadata: SQLMetadata = children.head.getMetadata
 
-  def addAsChildrenOf(c: Command) : Command = {
-    if (c == null) { this }
-    else { 
-      c.children = this :: c.children
-      c }
+  def withChild(c: Command) = {
+    children = c :: children
+    this
+  }
+  
+  def withChildren(cc: Seq[Command]) = {
+    cc foreach (c => children = c :: children)
+    this
   }
 
   override def toString = {

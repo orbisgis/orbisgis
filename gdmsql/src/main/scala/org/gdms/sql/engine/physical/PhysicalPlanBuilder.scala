@@ -56,7 +56,6 @@ import org.gdms.sql.engine.commands._
 import org.gdms.sql.engine.commands.scan._
 import org.gdms.sql.engine.commands.ddl._
 import org.gdms.sql.engine.commands.join._
-import org.gdms.sql.engine.logical.LogicPlanOptimizer
 import org.gdms.sql.engine.operations._
 import org.gdms.sql.evaluator._
 import org.gdms.sql.function.table.TableFunction
@@ -81,7 +80,7 @@ object PhysicalPlanBuilder {
     
     // optimize joins
     if (!isPropertyTurnedOff(p, OPTIMIZEJOINS)) {
-      optimizeSpatialJoins(dsf, op)
+      optimizeJoins(dsf, op)
       if (isPropertyTurnedOn(p, EXPLAIN)) {
         LOG.info("Optimized joins")
         LOG.info(op)
@@ -92,208 +91,164 @@ object PhysicalPlanBuilder {
     buildCommandTree(op)
   }
   
-  private def optimizeSpatialJoins(dsf: SQLDataSourceFactory ,op: Operation) {
-    LogicPlanOptimizer.matchOperationFromBottom(op, {ch =>
-        // gets Join(Inner(_))
-        ch.isInstanceOf[Join] && (ch.asInstanceOf[Join].joinType match {
-            // find actual spatial joins
-            case Inner(_, true, _) => {
-                ch.children.filter(_.isInstanceOf[ValuesScan]).isEmpty &&
-                ch.children.filter(_.isInstanceOf[Join]).isEmpty
+  private def optimizeJoins(dsf: SQLDataSourceFactory ,op: Operation) {
+    op.allChildren foreach ( _ match {
+        
+        // optimize spatial joins
+        case j @ Join(Inner(_, true, _), a @ Scan(t, al, _), b @ Scan(t2, al2, _)) => {
+            if (t == t2) {
+              j.children = IndexQueryScan(t, al) :: b :: Nil
+            } else {
+              // gets the sizes of the tables
+              val sizes = Seq(t, t2) map { table =>
+                val d = dsf.getDataSource(table)
+                d.open
+                val count = d.getRowCount
+                d.close
+                (count, table)
               }
-            case _ => false
-          })
-      }, {ch =>
-        
-        // will hold table names
-        var tables: List[Scan] = Nil
-        
-        // gets the table names from the scans
-        LogicPlanOptimizer.matchOperationFromBottom(ch, _.isInstanceOf[Scan], {c =>
-            tables = c.asInstanceOf[Scan] :: tables})
-        
-        // gets the sizes of the tables
-        val sizes = tables map { t =>
-          val d = dsf.getDataSource(t.table)
-          d.open
-          val count = d.getRowCount
-          d.close
-          (count, t)
-        }
-        
-        // gets the best candidate for index scan
-        // in this case the table with the most rows
-        val best = sizes.reduceLeft {(a, b) => 
-          if (a._1 >= b._1) a else b
-        }
-        
-        // replaces the Scan by an IndexQueryScan
-        LogicPlanOptimizer.replaceOperationFromBottomAndStop(ch,{c =>
-            c.isInstanceOf[Scan] && (c eq best._2)
-          }, {c => 
-            val s = c.asInstanceOf[Scan]
-            IndexQueryScan(s.table, s.alias, null)
-          })
+            
+              // gets the best candidate for index scan
+              // in this case the table with the most rows
+              val best = sizes.reduceLeft {(a, b) => 
+                if (a._1 >= b._1) a else b
+              }
+              
+              if (best._2 == t) {
+                j.children = IndexQueryScan(t, al) :: b :: Nil
+              } else {
+                j.children = a :: IndexQueryScan(t2, al2) :: Nil
+              }
+            }
+          }
+          
+          // optimize equi-joins
+        case j @ Join(jt @ Inner(field(fn1,ft1) & field(fn2,ft2), false, _), a @ Scan(t, al, _), b @ Scan(t2, al2, _)) => {
+            if (t == t2) {
+              j.children = IndexQueryScan(t, al) :: b :: Nil
+            } else {
+              // gets the sizes of the tables
+              val sizes = Seq(t, t2) map { table =>
+                val d = dsf.getDataSource(table)
+                d.open
+                val m = d.getMetadata
+                val count = d.getRowCount
+                d.close
+                (count, table, m)
+              }
+              
+            
+              // gets the best candidate for index scan
+              // in this case the table with the most rows
+              val best = sizes.reduceLeft {(a, b) => 
+                if (a._1 >= b._1) a else b
+              }
+              
+              // very basic limit for now:
+              // the biggest table (the one being indexed) must have > 500 rows
+              if (best._1 > 500) {
+                if (al.map( _ == best._2 ).getOrElse(t == best._2)) {
+                  jt.withIndexOn = Some(fn1)
+                } else if (al2.map( _ == best._2 ).getOrElse(t2 == best._2)) {
+                  
+                }
+              }
+              if (best._2 == t) {
+                if (ft1.map(_ == al.getOrElse(t)).getOrElse(best._3.getFieldIndex(fn1) != -1)) {
+                  jt.withIndexOn = Some(fn1)
+                  j.children = IndexQueryScan(t, al) :: b :: Nil
+                }
+              } else {
+                if (ft2.map(_ == al2.getOrElse(t2)).getOrElse(best._3.getFieldIndex(fn2) != -1)) {
+                  jt.withIndexOn = Some(fn2)
+                  j.children = a :: IndexQueryScan(t2, al2) :: Nil
+                }
+              }
+            }
+          }
       })
   }
   
-  private def optimizeAlphaJoins(dsf: SQLDataSourceFactory, op: Operation) {
-    LogicPlanOptimizer.matchOperationFromBottom(op, {ch =>
-        ch.isInstanceOf[Join] && (ch.asInstanceOf[Join].joinType match {
-            // find actual alpha joins
-            case Inner(_, false, _) => {
-                ch.children.filter(_.isInstanceOf[Join]).isEmpty
-              }
-            case _ => false
-          })
-      }, {ch =>
-        var j = ch.asInstanceOf[Join].joinType.asInstanceOf[Inner]
-        LogicPlanOptimizer.matchExpressionAndAny(j.cond, {e =>
-            e match {
-              case field(_,_) & field(_,_) => true
-              case _ => false
-            }
-          }, {e =>
-            // we may have an equijoin
-            //    WHERE toto.field = tata.otherField
-             
-            // will hold table names
-            var tables: List[String] = Nil
-        
-            // gets the table names from the scans
-            LogicPlanOptimizer.matchOperationAndStop(ch, {_.isInstanceOf[Scan]}, {c => 
-                tables = c.asInstanceOf[Scan].table :: tables
-              })
-        
-            // gets the sizes of the tables + fields
-            val sizes = tables map { t =>
-              val d = dsf.getDataSource(t)
-              d.open
-              val m = d.getMetadata
-              val count = d.getRowCount
-              d.close
-              (count, t, m)
-            }
-            
-            // gets the best candidate for index scan
-            // in this case the table with the most rows
-            val best = sizes.reduceLeft {(a, b) => 
-              if (a._1 >= b._1) a else b
-            }
-            
-            // very basic limit for now:
-            // the biggest table (the one being indexed) must have > 500 rows
-            if (best._1 > 500) {
-              // find field
-              val f = e map (e => e.asInstanceOf[FieldEvaluator])
-              val field: Option[String] = f.find(ev => ev.table.isDefined && ev.table.get == best._2 && best._3.getFieldIndex(ev.name) != -1).orElse(
-                f.find(ev => !ev.table.isDefined && best._3.getFieldIndex(ev.name) != -1)).map (_.name)
-              
-              if (field.isDefined) {
-                // replaces the Scan by an IndexQueryScan
-                LogicPlanOptimizer.replaceOperationAndStop(ch,{c =>
-                    c.isInstanceOf[Scan] && c.asInstanceOf[Scan].table == best._2
-                  }, {c => 
-                    val s = c.asInstanceOf[Scan]
-                    IndexQueryScan(s.table, s.alias, null)
-                  })
-                j.withIndexOn = field
-              }
-            }
-            
-          })
-      })
-  }
-
   /**
    * Builds a command tree from a operation tree.
    * This method chooses between the different available joins methods
    * index/full scans, etc.
    */
   private def buildCommandTree(op: Operation): Command = {
-    val c = op match {
-      case Output() => new QueryOutputCommand
-      case LimitOffset(l, o) => new LimitOffsetCommand(l, o)
-      case SubQuery(s) => {
-
+    // for readability
+    implicit val opToCo = buildCommandTree _
+    
+    op match {
+      case Output(ch) => new QueryOutputCommand withChild(ch)
+      case LimitOffset(l, o, ch) => new LimitOffsetCommand(l, o) withChild(ch)
+      case SubQuery(s, Output(ch)) => {
+          // jumping over Output in the subquery
           if (s != "") {
-            // jumping over Output in the subquery
-            op.children = op.children.head.children
             // renaming if there is an alias
-            new RenamingCommand(s)
+            new RenamingCommand(s) withChild(ch)
           } else {
             // unnamed call, in a customQuery for example
-            val l = buildCommandTree(op.children.head.children.head)
-            op.children = Nil
-            l
+            buildCommandTree(ch)
           }
         }
       case Scan(table, alias, edit) => new ScanCommand(table, alias, edit)
       case IndexQueryScan(table, alias, query) => new IndexQueryScanCommand(table, alias, query)
-      case Join(jType) => jType match {
-          case Cross() => {
-              new ExpressionBasedLoopJoinCommand(None)
-            }
-          case Inner(ex, false, None) => {
-              new ExpressionBasedLoopJoinCommand(Some(ex))
-            }
-          case Inner(ex, false, Some(field)) => {
-              new IndexedJoinCommand(ex, field)
-            }
-          case Inner(ex, true, _) => {
-              new SpatialIndexedJoinCommand(ex)
-            }
-          case Natural() => {
-              new ExpressionBasedLoopJoinCommand(None, true)
-            }
-          case OuterLeft(ex) => {
-              new ExpressionBasedLoopJoinCommand(ex, false, true)
-            }
-        }
+      case Join(jType, l, r) => (jType match {
+            case Cross() => {
+                new ExpressionBasedLoopJoinCommand(None)
+              }
+            case Inner(ex, false, None) => {
+                new ExpressionBasedLoopJoinCommand(Some(ex))
+              }
+            case Inner(ex, false, Some(field)) => {
+                new IndexedJoinCommand(ex, field)
+              }
+            case Inner(ex, true, _) => {
+                new SpatialIndexedJoinCommand(ex)
+              }
+            case Natural() => {
+                new ExpressionBasedLoopJoinCommand(None, true)
+              }
+            case OuterLeft(ex) => {
+                new ExpressionBasedLoopJoinCommand(ex, false, true)
+              }
+            case _ => throw new IllegalStateException("Internal error: problem building PQP for joins.")
+          })  withChildren(Seq(l, r))
       case ValuesScan(ex, alias, internal) => new ValuesScanCommand(ex, alias, internal)
-      case Projection(exp) => new ProjectionCommand(exp toArray)
-      case a @ Aggregate(exp) => {
-          val grouping = a.children.head match {
-            case g @ Grouping(e) => {
-                op.children = g.children
-                e}
-            case _ => Nil
-          }
-          new AggregateCommand(exp, grouping)
+      case Projection(exp, ch) => new ProjectionCommand(exp toArray) withChild(ch)
+      case Aggregate(exp, Grouping(e, ch)) => {
+          new AggregateCommand(exp, e) withChild(ch)
         }
-      
-      case Distinct() => new MemoryDistinctCommand()
-      case Grouping(e) =>  new AggregateCommand(Nil, e)
-      case Filter(exp) => new ExpressionFilterCommand(exp)
-      case Sort(exprs) => new MergeSortCommand(exprs)
-      case Union() => new UnionCommand()
-      case Update(e) => new UpdateCommand(e)
+      case Aggregate(exp, ch) => {
+          new AggregateCommand(exp, Nil) withChild(ch)
+        }
+      case Distinct(ch) => new MemoryDistinctCommand() withChild(ch)
+      case Grouping(e, ch) =>  new AggregateCommand(Nil, e) withChild(ch)
+      case Filter(exp, ch) => new ExpressionFilterCommand(exp) withChild(ch)
+      case Sort(exprs, ch) => new MergeSortCommand(exprs) withChild(ch)
+      case Union(a,b) => new UnionCommand() withChildren(Seq(a,b))
+      case Update(e, ch) => new UpdateCommand(e) withChild(ch)
       case StaticInsert(t, e, f) => new StaticInsertCommand(t, e, f)
-      case Delete() => new DeleteCommand()
+      case Delete(ch) => new DeleteCommand() withChild(ch)
       case a @ CustomQueryScan(_,e, t, alias) => {
-          var tables: Seq[Either[String, OutputCommand]] = Nil
-          tables = t map { _ match {
-              case Left(s) => Left(s)
-              case Right(o) => { 
-                  val ot = buildCommandTree(o)
-                  if (ot.isInstanceOf[OutputCommand]) {
-                    Right(ot.asInstanceOf[OutputCommand])
-                  } else {
-                    val out = new QueryOutputCommand()
-                    out.children = ot :: Nil
-                    Right(out)
+          var tables = t map { 
+            case Left(s) => Left(s)
+            case Right(o) => { 
+                val ot = buildCommandTree(o)
+                ot match {
+                  case out: OutputCommand => Right(out)
+                  case other => {
+                      val out = new QueryOutputCommand
+                      out withChild(other)
+                      Right(out)
                   }
                 }
-            }}
-          op.children = Nil
-          tables = tables.reverse
-          new CustomQueryScanCommand(e,tables, a.function.asInstanceOf[TableFunction], alias)
+              }
+          }
+          new CustomQueryScanCommand(e,tables.reverse, a.function.asInstanceOf[TableFunction], alias)
         }
-      case CreateTableAs(n) => new CreateTableCommand(n)
-      case a @ CreateView(n, o) => {
-          val s = a.children.head
-          a.children = Nil
-          new CreateViewCommand(n, s, o)}
+      case CreateTableAs(n, ch) => new CreateTableCommand(n) withChild(ch)
+      case a @ CreateView(n, o, ch) => new CreateViewCommand(n, ch, o)
       case CreateTable(n, cols) => new TableCreationCommand(n, cols)
       case DropTables(n, i ,p) => new DropTablesCommand(n, i, p)
       case DropViews(n, i) => new DropViewsCommand(n, i)
@@ -302,9 +257,8 @@ object PhysicalPlanBuilder {
       case CreateIndex(t, c) => new CreateIndexCommand(t, c)
       case DropIndex(t, c) => new DropIndexCommand(t, c)
       case ExecutorCall(name, l) => new ExecutorCommand(name, l)
+      case NoOp => throw new IllegalStateException("Internal error: problem with the logic query plan.")
     }
-    op.children foreach ( buildCommandTree(_) addAsChildrenOf c)
-    c
   }
 
   private def isPropertyValue(p: Properties, name: String, value: String) = {

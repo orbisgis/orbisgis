@@ -210,7 +210,7 @@ object LogicPlanOptimizer {
             val sc = f.children.head.asInstanceOf[Scan]
           
             // a spatial join on the filter expression
-            val j = Join(Inner(f.e, true))
+            val j = Join(Inner(f.e, true), NoOp, NoOp)
           
             // an index query scan on the table
             val isc = IndexQueryScan(sc.table, sc.alias)

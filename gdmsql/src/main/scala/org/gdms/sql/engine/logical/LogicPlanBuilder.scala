@@ -57,6 +57,8 @@ import org.gdms.sql.evaluator.Expression
 import org.gdms.sql.evaluator.Field
 import org.gdms.sql.evaluator.FieldEvaluator
 import org.gdms.sql.evaluator.IsNullEvaluator
+import org.gdms.sql.evaluator.agg
+import org.gdms.sql.evaluator.field
 import org.gdms.sql.function.FunctionManager
 import org.gdms.sql.function.ScalarFunction
 
@@ -78,7 +80,7 @@ object LogicPlanBuilder {
 
     node.getType match {
       case T_SELECT => {
-          val o = new Output()
+          val o = new Output(NoOp)
           var groupParent: Operation = null
           var last: Operation = o
           var lim: Int = -1
@@ -97,7 +99,7 @@ object LogicPlanBuilder {
                     (parseExpression(tr.getChild(0)), if (tr.getChildCount == 1) None else Some(tr.getChild(1).getText))
                   } ;
                   if (!exprs.isEmpty) {
-                    val f = Projection(exprs)
+                    val f = Projection(exprs, NoOp)
                     // Projection gets inserted just before Output (o)
                     f.children = o.children
                     o.children = f :: Nil
@@ -121,7 +123,7 @@ object LogicPlanBuilder {
                   val rootlast = last
                   
                   normal.tail foreach {n => 
-                    val j = Join(Cross())
+                    val j = Join(Cross(), NoOp, NoOp)
                     last.addChild(j)
                     last = j
                     addTableRef(n, last)
@@ -132,7 +134,7 @@ object LogicPlanBuilder {
                   var ends: List[Operation] = Nil
                   joins foreach {join =>
                     val childs = getChilds(join)
-                    val table = addTableRef(childs.head, Output())
+                    val table = addTableRef(childs.head, Output(NoOp))
                     val types = childs.tail
                     var lastJoin = doCrossJoin(table, types.head)
                       
@@ -144,7 +146,7 @@ object LogicPlanBuilder {
                   }
                     
                   ends foreach {n => 
-                    val j = Join(Cross())
+                    val j = Join(Cross(), NoOp, NoOp)
                     j.children = rootlast.children
                     rootlast.children = j :: n :: Nil
                   }
@@ -155,7 +157,7 @@ object LogicPlanBuilder {
               case T_WHERE => {
                   // AST:
                   // ^(T_WHERE expression_cond)
-                  val f = Filter(parseExpression(t.getChild(0)))
+                  val f = Filter(parseExpression(t.getChild(0)), NoOp)
 
                   // we get the parent of 'f': either a Projection, or Output
                   // if we cannot find a projection
@@ -194,7 +196,7 @@ object LogicPlanBuilder {
                       }
                     )
                   )
-                  val s = Sort(express)
+                  val s = Sort(express, NoOp)
                   // we get the parent of 'f': either a Projection, or Output
                   // if we cannot find a projection
                   val parent = (o.allChildren filter (_.isInstanceOf[Projection]) headOption) getOrElse(o)
@@ -206,7 +208,7 @@ object LogicPlanBuilder {
 		  // AST:
 		  // ^(T_GROUP expression_main+ )
                   val ex = getChilds(t) map (c => (parseExpression(c), None))
-                  val g = new Grouping(ex)
+                  val g = new Grouping(ex, NoOp)
                   val parent = (o.allChildren filter (_.isInstanceOf[Projection]) headOption) getOrElse(last)
                   g.children = parent.children
                   parent.children = g :: Nil
@@ -215,7 +217,7 @@ object LogicPlanBuilder {
               case T_HAVING => {
                   // AST:
                   // ^(T_HAVING expression_cond )
-                  val filter = new Filter(parseExpression(t.getChild(0)))
+                  val filter = new Filter(parseExpression(t.getChild(0)), NoOp)
                   if (groupParent != null) {
                     filter.children = o.children
                     o.children = filter :: Nil
@@ -226,7 +228,7 @@ object LogicPlanBuilder {
                   // AST:
                   // ^(T_UNION select_command)
                   val oo = buildOperationTree(t.getChild(0))
-                  val un = new Union()
+                  val un = new Union(NoOp, NoOp)
                   un.children = last :: oo.children.head :: Nil
                   o.children = un :: Nil
                   last = un
@@ -242,14 +244,14 @@ object LogicPlanBuilder {
           
           // add distinct
           if (distinct)  {
-            val l = Distinct()
+            val l = Distinct(NoOp)
             l.children = o.children
             o.children = l :: Nil
           }
           
           // add limit/offset
           if (lim != -1 || off != 0) {
-            val l = LimitOffset(lim, off)
+            val l = LimitOffset(lim, off, NoOp)
             l.children = o.children
             o.children = l :: Nil
           }
@@ -277,14 +279,14 @@ object LogicPlanBuilder {
 
                 }
               case T_WHERE => {
-                  val f = Filter(parseExpression(t.getChild(0)))
+                  val f = Filter(parseExpression(t.getChild(0)), NoOp)
 
                   f.children = last :: Nil
                   last = f
                 }
             }
           }
-          end = new Update(e)
+          end = new Update(e, NoOp)
           end.children = last :: Nil
         }
       case T_INSERT => {
@@ -319,10 +321,10 @@ object LogicPlanBuilder {
       case T_DELETE => {
 	  // AST:
 	  // ^(T_DELETE table_id ^(T_WHERE expression_cond)?)
-          end = Delete()
+          end = Delete(NoOp)
           val s = Scan(getFullTableName(node.getChild(0)), None, true)
           if (node.getChildCount() == 2) {
-            val filter = Filter(parseExpression(node.getChild(1).getChild(0)))
+            val filter = Filter(parseExpression(node.getChild(1).getChild(0)), NoOp)
             filter.children = s :: Nil
             
             end.children = filter :: Nil
@@ -337,7 +339,7 @@ object LogicPlanBuilder {
 	    // AST:
 	    // ^(T_CREATE_TABLE table_id select_statement)
             val o = buildOperationTree(node.getChild(1).asInstanceOf[CommonTree])
-            val cr = CreateTableAs(getFullTableName(node.getChild(0)))
+            val cr = CreateTableAs(getFullTableName(node.getChild(0)), NoOp)
             cr.children = o :: Nil
             end = cr 
           } else {
@@ -355,7 +357,7 @@ object LogicPlanBuilder {
 
           // building the select statement, resulting in an Output o
           val o = buildOperationTree(node.getChild(1).asInstanceOf[CommonTree])
-          val cr = CreateView(getFullTableName(node.getChild(0)), node.getChildCount == 3)
+          val cr = CreateView(getFullTableName(node.getChild(0)), node.getChildCount == 3, NoOp)
           cr.children = o :: Nil
           end = cr 
         }
@@ -446,14 +448,14 @@ object LogicPlanBuilder {
 
   private def doCrossJoin(left: Operation, content: Tree): Join = {
     val join = content.getType match {
-      case T_CROSS => Join(Cross())
+      case T_CROSS => Join(Cross(), NoOp, NoOp)
       case T_INNER_JOIN => {
           val inner = content.getChild(1).getType match {
             case T_CROSS => Cross()
             case T_NATURAL => Natural()
             case T_ON => Inner(parseExpression(content.getChild(1).getChild(0)), false)
           }
-          val j = Join(inner)
+          val j = Join(inner, NoOp, NoOp)
           j.addChild(left)
           addTableRef(content.getChild(0), j)
           j
@@ -473,7 +475,7 @@ object LogicPlanBuilder {
             case T_FULL => OuterFull(exp)
           }
           
-          val j = Join(outer)
+          val j = Join(outer, NoOp, NoOp)
           if (reverse) {
             addTableRef(content.getChild(0), j)
             j.addChild(left)
@@ -514,7 +516,7 @@ object LogicPlanBuilder {
       case T_TABLE_QUERY => {
           // AST:
           // ^( T_TABLE_QUERY select_statement )
-          val s = SubQuery(head.getChild(1).getText)
+          val s = SubQuery(head.getChild(1).getText, NoOp)
           s.children = buildOperationTree(head.getChild(0)) :: Nil
           last.addChild(s)
           s
@@ -556,7 +558,7 @@ object LogicPlanBuilder {
             Right(o) :: Nil
           }
         case T_TABLE_QUERY => {
-            val s = SubQuery("")
+            val s = SubQuery("", NoOp)
             s.children = buildOperationTree(i.getChild(0)) :: Nil
             Right(s) :: Nil
           }
@@ -739,13 +741,13 @@ object LogicPlanBuilder {
   }
 
   private def processOperationTree(op: Operation): Operation = {
-    op.allChildren foreach { case p: Projection =>
-        def findAggregateFunctions(e: (Expression, Option[String])): Seq[(Expression, Option[String])] = {
-          e._1.evaluator match {
-            case a: AggregateEvaluator => {
-                e._1.evaluator = FieldEvaluator(e._2.getOrElse(a.f.getName))
-                (Expression(a), if (e._2.isDefined) e._2 else Some(a.f.getName)) :: Nil}
-            case e => e.childExpressions flatMap (ex => findAggregateFunctions((ex, None)))
+    op.allChildren foreach { case p @ Projection(exp, _) =>
+        def replaceAggregateFunctions(e: (Expression, Option[String])): Seq[(Expression, Option[String])] = {
+          e._1 match {
+            case agg(f, li) => {
+                e._1.evaluator = FieldEvaluator(e._2.getOrElse(f.getName))
+                (Expression(e._1.evaluator), if (e._2.isDefined) e._2 else Some(f.getName)) :: Nil}
+            case e => e.children flatMap (ex => replaceAggregateFunctions((ex, None)))
           }
         }
         
@@ -765,27 +767,24 @@ object LogicPlanBuilder {
           val group = gr.get.asInstanceOf[Grouping]
           
           // directly referenced fields/aliases in GROUP BY
-          val groupFields: List[FieldEvaluator] = group.exp flatMap (_._1.evaluator match {
-              case a: FieldEvaluator => a :: Nil
-              case _ => Nil
+          val aliases = group.exp flatMap (_._1 match {
+              case field(name,_) => Some(name)
+              case _ => None
             })
           
           // selected items with aliases
-          val fieldsAl = p.exp filter (_._2.isDefined)
-          
-          // directly aliases/fields in GROUP BY
-          val aliases = groupFields map (_.name)
+          val fieldsAl = exp filter (_._2.isDefined)
                     
           // directly selected fields
-          val selFields = p.exp flatMap (_._1.evaluator match {
-              case a: FieldEvaluator => a :: Nil
-              case _ => Nil
+          val selFields = exp flatMap (_._1 match {
+              case field(name, _) => Some(name)
+              case _ => None
             })
           
           // check directly selected fields are referenced in GROUP BY clause
-          selFields foreach {f => 
-            if (!aliases.contains(f.name)) {
-              throw new SemanticException("field " + f.name + " cannot be selected because it is not present in the GROUP BY clause.")
+          selFields foreach {n => 
+            if (!aliases.contains(n)) {
+              throw new SemanticException("field " + n + " cannot be selected because it is not present in the GROUP BY clause.")
             }
           }
           
@@ -806,23 +805,23 @@ object LogicPlanBuilder {
           }
         }
         
-        // we get all projected fields. If they stayed this far, it means they are indeed referenced in the GROUP BY
-        // and they may need to be kept by the aggregate.
-        val selFields = p.exp flatMap { e => e._1.evaluator match {
-            case f: FieldEvaluator => e :: Nil
-            case _ => Nil
-          }
-        }
-        
-        val aggF = p.exp flatMap (findAggregateFunctions)
+        val aggF = p.exp flatMap (replaceAggregateFunctions)
         
         if (!aggF.isEmpty) {
           // special case of a Projection with Aggregated functions
           // an Aggregate is inserted afterwards, and the functions are
           // replaces with fields in the Projection
           // there is some AggregateEvaluator expressions
-          // 
-          val c = new Aggregate(aggF ++ selFields)
+          
+          // we get all projected fields. If they stayed this far, it means they are indeed referenced in the GROUP BY
+          // and they may need to be kept by the aggregate.
+          val selFields = p.exp flatMap { e => e._1.evaluator match {
+              case f: FieldEvaluator => Some(e)
+              case _ => None
+            }
+          }
+          
+          val c = new Aggregate(aggF ++ selFields, NoOp)
           c.children = parent.get.children
           parent.get.children = c :: Nil
         }
