@@ -108,7 +108,7 @@ object LogicPlanOptimizer {
     o.children = o.children map { ch => if (c(ch)) f(ch) else ch }
   }
   
-   def replaceOperationFromBottomAndStop(o: Operation, c: Operation => Boolean, f: Operation => Operation): Boolean = {
+  def replaceOperationFromBottomAndStop(o: Operation, c: Operation => Boolean, f: Operation => Operation): Boolean = {
     var r = false
     
     o.children = o.children map { ch => 
@@ -228,13 +228,14 @@ object LogicPlanOptimizer {
                 var inc = -1;
                 // we keep fields and replace the rest with new fields on constant expressions
                 val se: Seq[Evaluator] = e.childExpressions flatMap {c =>
-                  if (c.evaluator.isInstanceOf[FieldEvaluator]) {
-                    None
-                  } else {
-                    inc = inc + 1
-                    val oldeval = c.evaluator
-                    c.evaluator = FieldEvaluator("$exp" + inc, Some("$$"))
-                    Some(oldeval)
+                  c match {
+                    case field(_,_) => None
+                    case _ => {
+                        inc = inc + 1
+                        val oldeval = c.evaluator
+                        c.evaluator = FieldEvaluator("$exp" + inc, Some("$$"))
+                        Some(oldeval)
+                      }
                   }
                 } 
               

@@ -40,10 +40,7 @@ package org.gdms.sql.engine.commands
 
 import org.gdms.data.NoSuchTableException
 import org.gdms.sql.engine.GdmSQLPredef._
-import org.gdms.sql.evaluator.Expression
-import org.gdms.sql.evaluator.Field
-import org.gdms.sql.evaluator.FieldEvaluator
-import org.gdms.sql.evaluator.StarFieldEvaluator
+import org.gdms.sql.evaluator._
 
 /**
  * Command for evaluating expressions for every rows of a data stream.
@@ -55,8 +52,8 @@ class ProjectionCommand(var expression: Array[(Expression, Option[String])]) ext
 
   override def doPrepare = {
     // replace STAR by fields
-    val stars = expression.filter(_._1.evaluator match {
-        case StarFieldEvaluator(_, _) => true
+    val stars = expression.filter(_._1 match {
+        case star(_, _) => true
         case _ => false
       })
     

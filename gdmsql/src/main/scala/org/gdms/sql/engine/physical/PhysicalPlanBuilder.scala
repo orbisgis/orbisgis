@@ -52,7 +52,6 @@ package org.gdms.sql.engine.physical
 import java.util.Properties
 import org.apache.log4j.Logger
 import org.gdms.data.SQLDataSourceFactory
-import org.gdms.data.schema.Metadata
 import org.gdms.sql.engine.commands._
 import org.gdms.sql.engine.commands.scan._
 import org.gdms.sql.engine.commands.ddl._
@@ -110,10 +109,8 @@ object PhysicalPlanBuilder {
         var tables: List[Scan] = Nil
         
         // gets the table names from the scans
-        LogicPlanOptimizer.matchOperationFromBottom(ch, {c =>
-            c.isInstanceOf[Scan]
-          }, {c => tables = c.asInstanceOf[Scan] :: tables
-          })
+        LogicPlanOptimizer.matchOperationFromBottom(ch, _.isInstanceOf[Scan], {c =>
+            tables = c.asInstanceOf[Scan] :: tables})
         
         // gets the sizes of the tables
         val sizes = tables map { t =>
@@ -152,7 +149,10 @@ object PhysicalPlanBuilder {
       }, {ch =>
         var j = ch.asInstanceOf[Join].joinType.asInstanceOf[Inner]
         LogicPlanOptimizer.matchExpressionAndAny(j.cond, {e =>
-            e.isInstanceOf[EqualsEvaluator] && !e.childExpressions.exists(!_.evaluator.isInstanceOf[FieldEvaluator])
+            e match {
+              case field(_,_) & field(_,_) => true
+              case _ => false
+            }
           }, {e =>
             // we may have an equijoin
             //    WHERE toto.field = tata.otherField
@@ -161,9 +161,8 @@ object PhysicalPlanBuilder {
             var tables: List[String] = Nil
         
             // gets the table names from the scans
-            LogicPlanOptimizer.matchOperationAndStop(ch, {c =>
-                c.isInstanceOf[Scan]
-              }, {c => tables = c.asInstanceOf[Scan].table :: tables
+            LogicPlanOptimizer.matchOperationAndStop(ch, {_.isInstanceOf[Scan]}, {c => 
+                tables = c.asInstanceOf[Scan].table :: tables
               })
         
             // gets the sizes of the tables + fields

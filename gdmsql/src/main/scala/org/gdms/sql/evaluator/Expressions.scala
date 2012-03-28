@@ -203,6 +203,10 @@ sealed class Expression(var evaluator: Evaluator) extends Iterable[Expression] {
   override def toString = "Ex(" + evaluator.toString + ")"
   
   def prepared(r: Row) = new Expression(PreparedEvaluator(r, this))
+  
+  def duplicate = new Expression(evaluator.duplicate)
+  
+  def children = evaluator.childExpressions
 }
 
 object Expression {

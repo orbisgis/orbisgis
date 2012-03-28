@@ -44,6 +44,7 @@ import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.engine.UnknownFieldException
 import org.gdms.sql.evaluator.DsfEvaluator
 import org.gdms.sql.engine.GdmSQLPredef._
+import org.gdms.sql.evaluator._
 
 /**
  * This trait takes care of initializing the expressions a Command might handle.

@@ -54,10 +54,7 @@ import org.gdms.sql.engine.commands.Command
 import org.gdms.sql.engine.commands.ExpressionCommand
 import org.gdms.sql.engine.commands.scan.IndexQueryScanCommand
 import org.gdms.sql.engine.commands.SQLMetadata
-import org.gdms.sql.evaluator.AndEvaluator
-import org.gdms.sql.evaluator.Expression
-import org.gdms.sql.evaluator.FieldEvaluator
-import org.gdms.sql.evaluator.FunctionEvaluator
+import org.gdms.sql.evaluator._
 import org.gdms.sql.function.SpatialIndexedFunction
 
 /**
@@ -171,16 +168,17 @@ class SpatialIndexedJoinCommand(expr: Expression) extends Command with Expressio
   
   private def findQueryExpression(e: Expression) {
     var done = false
-    if (e.evaluator.isInstanceOf[FunctionEvaluator] &&
-        e.evaluator.asInstanceOf[FunctionEvaluator].f.isInstanceOf[SpatialIndexedFunction]) {
-      e foreach {el =>
-        if (!done && matchSmallSpatialField(el)) {
-          queryExpression = el
-          done = true
+    e match {
+      case func(f: SpatialIndexedFunction, li) => {
+          li foreach {el =>
+            if (!done && matchSmallSpatialField(el)) {
+              queryExpression = el
+              done = true
+            }
+          }
         }
-      }
-    } else if (e.evaluator.isInstanceOf[AndEvaluator]) {
-      e map (findQueryExpression)
+      case _ & _ => e map (findQueryExpression)
+      case _ =>
     }
   }
   

@@ -42,6 +42,7 @@ import org.gdms.sql.evaluator.Expression
 import org.gdms.sql.evaluator.AggregateEvaluator
 import org.gdms.data.values.Value
 import org.gdms.sql.engine.GdmSQLPredef._
+import org.gdms.sql.evaluator._
 import scala.collection.mutable.HashMap
 
 /**
@@ -75,9 +76,9 @@ class AggregateCommand(expression: Seq[(Expression, Option[String])], grouping: 
   
   private def doEvaluation(g: Seq[Value], i: RowStream) = {
     def findAggregateFunctions(e: Expression): Seq[Expression] = {
-      e.evaluator match {
-        case a: AggregateEvaluator => Expression(a.duplicate) :: Nil
-        case e => e.childExpressions flatMap (findAggregateFunctions)
+      e match {
+        case a @ agg(_, _) => a.duplicate :: Nil
+        case b => b.children flatMap (findAggregateFunctions)
       }
     }
     val expCopy = expression map (_._1) flatMap(findAggregateFunctions)
@@ -95,7 +96,7 @@ class AggregateCommand(expression: Seq[(Expression, Option[String])], grouping: 
   private def row(g: Seq[Value], exp: Seq[Expression]) = Row(g ++ exp.flatMap(mapAggregateToResults))
   
   private def mapAggregateToResults(e: Expression): Seq[Value] = {
-    e.evaluator match {
+   e.evaluator match {
       case a: AggregateEvaluator => a.finalValue() :: Nil
       case d => d.childExpressions flatMap(mapAggregateToResults)
     }
