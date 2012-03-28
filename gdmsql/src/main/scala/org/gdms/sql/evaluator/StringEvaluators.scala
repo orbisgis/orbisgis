@@ -64,6 +64,15 @@ case class StringConcatEvaluator(e1: Expression, e2: Expression) extends Evaluat
   def doCopy = copy()
 }
 
+object || {
+  def unapply(e: Expression) = {
+    e.evaluator match {
+      case a: StringConcatEvaluator => Some((a.e1, a.e2))
+      case _ => None
+    }
+  }
+}
+
 /**
  * Evaluator for like operation on string values.
  *
@@ -104,6 +113,15 @@ case class LikeEvaluator(e1: Expression, e2: Expression, caseInsensitive: Boolea
   def doCopy = copy()
 }
 
+object like {
+  def unapply(e: Expression) = {
+    e.evaluator match {
+      case a: LikeEvaluator => Some((a.e1, a.e2, a.caseInsensitive))
+      case _ => None
+    }
+  }
+}
+
 
 /**
  * Evaluator for similar to operation on string values.
@@ -139,6 +157,15 @@ case class SimilarToEvaluator(e1: Expression, e2: Expression) extends Evaluator 
   }
   override def toString = "(" + e1 + " LIKE " + e2 + ")"
   def doCopy = copy()
+}
+
+object similarTo {
+  def unapply(e: Expression) = {
+    e.evaluator match {
+      case a: SimilarToEvaluator => Some((a.e1, a.e2))
+      case _ => None
+    }
+  }
 }
 
 /**
@@ -179,4 +206,13 @@ case class POSIXEvaluator(e1: Expression, e2: Expression, caseInsensitive: Boole
   }
   override def toString = "(" + e1 + " LIKE " + e2 + ")"
   def doCopy = copy()
+}
+
+object matches {
+  def unapply(e: Expression) = {
+    e.evaluator match {
+      case a: POSIXEvaluator => Some((a.e1, a.e2, a.caseInsensitive))
+      case _ => None
+    }
+  }
 }

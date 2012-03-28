@@ -72,6 +72,15 @@ case class AddEvaluator(val e1: Expression,val e2: Expression) extends NumericEv
   def doCopy = copy()
 }
 
+object + {
+  def unapply(e: Expression) = {
+    e.evaluator match {
+      case a: AddEvaluator => Some((a.e1, a.e2))
+      case _ => None
+    }
+  }
+}
+
 /**
  * Evaluator for -value1.
  *
@@ -86,6 +95,15 @@ case class OppositeEvaluator(e1: Expression) extends Evaluator {
   def doCopy = copy()
 }
 
+object - {
+  def unapply(e: Expression) = {
+    e match {
+      case a + (b: OppositeEvaluator) => Some(a, b.e1)
+      case _ => None
+    }
+  }
+}
+
 /**
  * Evaluator for value1 * value2.
  *
@@ -96,6 +114,15 @@ case class MultiplyEvaluator(val e1: Expression,val e2: Expression) extends Nume
   def eval = s => e1.evaluate(s) multiply e2.evaluate(s)
   override def toString = "(" + e1 + " * " + e2 + ")"
   def doCopy = copy()
+}
+
+object x {
+  def unapply(e: Expression) = {
+    e.evaluator match {
+      case a: MultiplyEvaluator => Some((a.e1, a.e2))
+      case _ => None
+    }
+  }
 }
 
 /**
@@ -112,6 +139,15 @@ case class InverseEvaluator(e1: Expression) extends Evaluator {
   def doCopy = copy()
 }
 
+object inv {
+  def unapply(e: Expression) = {
+    e.evaluator match {
+      case a: InverseEvaluator => Some(a.e1)
+      case _ => None
+    }
+  }
+}
+
 /**
  * Evaluator for value1 / value2.
  */
@@ -124,6 +160,15 @@ case class DivideEvaluator(e1: Expression, e2: Expression) extends NumericEvalua
     if (t == Type.FLOAT) Type.DOUBLE else t
   }
   def doCopy = copy()
+}
+
+object / {
+  def unapply(e: Expression) = {
+    e.evaluator match {
+      case a: DivideEvaluator => Some((a.e1, a.e2))
+      case _ => None
+    }
+  }
 }
 
 /**
@@ -140,6 +185,15 @@ case class LessThanEvaluator(val e1: Expression,val e2: Expression) extends Nume
   def doCopy = copy()
 }
 
+object < {
+  def unapply(e: Expression) = {
+    e.evaluator match {
+      case a: LessThanEvaluator => Some((a.e1, a.e2))
+      case _ => None
+    }
+  }
+}
+
 /**
  * Evaluator for value1 <= value2.
  *
@@ -152,6 +206,15 @@ case class LessEqualThanEvaluator(val e1: Expression,val e2: Expression) extends
   override val childExpressions = List(e1,e2)
   override def toString = "(" + e1 + " <= " + e2 + ")"
   def doCopy = copy()
+}
+
+object <= {
+  def unapply(e: Expression) = {
+    e.evaluator match {
+      case a: LessEqualThanEvaluator => Some((a.e1, a.e2))
+      case _ => None
+    }
+  }
 }
 
 /**
@@ -168,6 +231,15 @@ case class GreaterThanEvaluator(val e1: Expression,val e2: Expression) extends N
   def doCopy = copy()
 }
 
+object > {
+  def unapply(e: Expression) = {
+    e.evaluator match {
+      case a: GreaterThanEvaluator => Some((a.e1, a.e2))
+      case _ => None
+    }
+  }
+}
+
 /**
  * Evaluator for value1 >= value2.
  *
@@ -182,6 +254,15 @@ case class GreaterEqualThanEvaluator(val e1: Expression,val e2: Expression) exte
   def doCopy = copy()
 }
 
+object >= {
+  def unapply(e: Expression) = {
+    e.evaluator match {
+      case a: GreaterEqualThanEvaluator => Some((a.e1, a.e2))
+      case _ => None
+    }
+  }
+}
+
 /**
  * Evaluator for value1 % value2.
  *
@@ -194,6 +275,15 @@ case class ModuloEvaluator(val e1: Expression,val e2: Expression) extends Numeri
   def doCopy = copy()
 }
 
+object % {
+  def unapply(e: Expression) = {
+    e.evaluator match {
+      case a: ModuloEvaluator => Some((a.e1, a.e2))
+      case _ => None
+    }
+  }
+}
+
 /**
  * Evaluator for value1 ^ value2.
  *
@@ -204,4 +294,13 @@ case class ExponentEvaluator(val e1: Expression,val e2: Expression) extends Nume
   def eval = s => e1.evaluate(s) pow e2.evaluate(s)
   override def toString = "(" + e1 + " ^ " + e2 + ")"
   def doCopy = copy()
+}
+
+object ^ {
+  def unapply(e: Expression) = {
+    e.evaluator match {
+      case a: ExponentEvaluator => Some((a.e1, a.e2))
+      case _ => None
+    }
+  }
 }

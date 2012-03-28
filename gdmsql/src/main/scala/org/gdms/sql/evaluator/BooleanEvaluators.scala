@@ -50,7 +50,7 @@ import org.gdms.data.values.ValueFactory
  * @author Antoine Gourlay
  * @since 0.1
  */
-abstract class BooleanEvaluator extends Evaluator {
+abstract sealed class BooleanEvaluator extends Evaluator {
   val sqlType = Type.BOOLEAN
   override def doValidate = {
     childExpressions map ( _.evaluator.sqlType ) find
@@ -74,6 +74,15 @@ case class AndEvaluator(e1: Expression, e2: Expression) extends BooleanEvaluator
   def doCopy = copy()
 }
 
+object & {
+  def unapply(e: Expression) = {
+    e.evaluator match {
+      case a: AndEvaluator => Some((a.e1, a.e2))
+      case _ => None
+    }
+  }
+}
+
 /**
  * Evaluator for value1 or value2.
  *
@@ -87,6 +96,15 @@ case class OrEvaluator(e1: Expression, e2: Expression) extends BooleanEvaluator 
   def doCopy = copy()
 }
 
+object | {
+  def unapply(e: Expression) = {
+    e.evaluator match {
+      case a: OrEvaluator => Some((a.e1, a.e2))
+      case _ => None
+    }
+  }
+}
+
 /**
  * Evaluator for "not value1".
  *
@@ -98,6 +116,15 @@ case class NotEvaluator(e1: Expression) extends BooleanEvaluator {
   override val childExpressions = e1 :: List.empty
   override def toString = "NOT (" + e1 + ")"
   def doCopy = copy()
+}
+
+object ! {
+  def unapply(e: Expression) = {
+    e.evaluator match {
+      case a: NotEvaluator => Some(a.e1)
+      case _ => None
+    }
+  }
 }
 
 /**
@@ -122,6 +149,15 @@ case class EqualsEvaluator(e1: Expression, e2: Expression) extends BooleanEvalua
   def doCopy = copy()
 }
 
+object == {
+  def unapply(e: Expression) = {
+    e.evaluator match {
+      case a: EqualsEvaluator => Some((a.e1, a.e2))
+      case _ => None
+    }
+  }
+}
+
 /**
  * Evaluator for value1 IS NULL.
  *
@@ -134,6 +170,15 @@ case class IsNullEvaluator(e1: Expression) extends BooleanEvaluator {
   override val doValidate = {}
   override def toString = "ISNULL (" + e1 + ")"
   def doCopy = copy()
+}
+
+object isNull {
+  def unapply(e: Expression) = {
+    e.evaluator match {
+      case a: IsNullEvaluator => Some(a.e1)
+      case _ => None
+    }
+  }
 }
 
 /**
@@ -161,4 +206,13 @@ case class InListEvaluator(e1: Expression, e2:Seq[Expression]) extends BooleanEv
   }
   override def toString = "(" + e1 + " IN (" + e2 + ")"
   def doCopy = copy()
+}
+
+object in {
+  def unapply(e: Expression) = {
+    e.evaluator match {
+      case a: InListEvaluator => Some((a.e1, a.e2))
+      case _ => None
+    }
+  }
 }
