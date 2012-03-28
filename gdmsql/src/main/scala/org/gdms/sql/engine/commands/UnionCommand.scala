@@ -42,9 +42,52 @@
 
 package org.gdms.sql.engine.commands
 
+import org.gdms.data.schema.DefaultMetadata
+import org.gdms.data.types.IncompatibleTypesException
+import org.gdms.data.types.TypeFactory
 import org.gdms.sql.engine.GdmSQLPredef._
+import org.gdms.sql.engine.SemanticException
 
 class UnionCommand extends Command {
 
   def doWork(r: Iterator[RowStream]) = r flatten
+  
+  private val metadata: DefaultMetadata = new DefaultMetadata
+  
+  override def doPrepare {
+    val me = children map(_.getMetadata)
+    
+    // validate field number
+    val c = me.head.getFieldCount
+    me.tail.find(_.getFieldCount != c) match {
+      case Some(m) => throw new SemanticException("Cannot create the union of two tables with a different number" +
+                                                  "of columns. One is " + c + " and an other is " + m.getFieldCount)
+      case None =>
+    }
+    
+    // validate field type compatibility
+    val types = (0 until c) map (i => me map(_.getFieldType(i).getTypeCode))
+    val finaltypes = types map {t =>
+      var wider = t.head
+      t.tail foreach { tt =>
+        if (!TypeFactory.canBeCastTo(tt, wider)) {
+          if (TypeFactory.canBeCastTo(wider, tt)) {
+            wider = tt
+          } else {
+            throw new IncompatibleTypesException("Cannot create the union of two columns with types '" +
+                                                 TypeFactory.getTypeName(wider) + "' and '" +
+                                                 TypeFactory.getTypeName(tt) + "'.")
+          }
+        }
+      }
+      wider
+    }
+    
+    metadata.clear
+    finaltypes.zipWithIndex foreach {t =>
+      metadata.addField(me.head.getFieldName(t._2), t._1)
+    }
+  }
+  
+  override def getMetadata = SQLMetadata("", metadata)
 }
