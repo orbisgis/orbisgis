@@ -55,6 +55,7 @@ import org.gdms.sql.engine.commands.ExpressionCommand
 import org.gdms.sql.engine.commands.scan.IndexQueryScanCommand
 import org.gdms.sql.engine.commands.SQLMetadata
 import org.gdms.sql.evaluator.Expression
+import org.orbisgis.progress.ProgressMonitor
 
 class IndexedJoinCommand(expr: Expression, field: String) extends Command with ExpressionCommand {
   
@@ -66,11 +67,11 @@ class IndexedJoinCommand(expr: Expression, field: String) extends Command with E
   
   private val d = new DefaultMetadata()
   
-  protected final def doWork(r: Iterator[RowStream]): RowStream = {
+  protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]): RowStream = {
     for (r <- small.execute ; s <- queryIndex(r); t <- filter(r ++ s)) yield t
   }
   
-  private def queryIndex(r: Row) = {
+  private def queryIndex(r: Row)(implicit pm: Option[ProgressMonitor]) = {
     big.query = new ExpressionBasedAlphaQuery(field, expr.prepared(r))
     
     big.execute

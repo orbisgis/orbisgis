@@ -50,6 +50,7 @@ import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.engine.commands._
 import org.gdms.sql.engine.operations._
 import org.gdms.sql.engine.GdmSQLPredef._
+import org.orbisgis.progress.ProgressMonitor
 
 /**
  * Command for altering the actual schema of a table (columns and types).
@@ -69,7 +70,7 @@ class AlterTableCommand(name: String, elems: Seq[AlterElement]) extends Command 
     TypeFactory.createType(SQLValueFactory.getTypeCodeFromSqlIdentifier(str))
   }
 
-  protected final def doWork(r: Iterator[RowStream]) = {
+  protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
     val ds = dsf.getDataSource(name, DataSourceFactory.EDITABLE)
     
     ds.open

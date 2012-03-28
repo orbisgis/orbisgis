@@ -39,6 +39,7 @@
 package org.gdms.sql.engine.commands
 
 import org.gdms.sql.engine.GdmSQLPredef._
+import org.orbisgis.progress.ProgressMonitor
 
 /**
  * This command only forwards its first child's content but with a different table name. This is use when
@@ -49,7 +50,7 @@ import org.gdms.sql.engine.GdmSQLPredef._
  */
 class RenamingCommand(val name: String) extends Command {
 
-  protected final def doWork(r: Iterator[RowStream]) = r.next
+  protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = r.next
 
   override def getMetadata = SQLMetadata(name, children.head.getMetadata)
 }

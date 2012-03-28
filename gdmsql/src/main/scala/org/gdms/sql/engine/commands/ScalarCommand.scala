@@ -39,6 +39,7 @@
 package org.gdms.sql.engine.commands
 
 import org.gdms.sql.engine.GdmSQLPredef._
+import org.orbisgis.progress.ProgressMonitor
 
 /**
  * Base class for all commands that need to process one row at a time.
@@ -47,7 +48,7 @@ import org.gdms.sql.engine.GdmSQLPredef._
  * @since 0.1
  */
 abstract class ScalarCommand  extends Command {
-  protected final def doWork(r: Iterator[RowStream]) = {
+  protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
     r.next map(scalarExecute)
   }
 

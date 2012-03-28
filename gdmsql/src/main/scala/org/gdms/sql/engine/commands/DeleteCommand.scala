@@ -51,6 +51,7 @@ import org.gdms.data.values.ValueFactory
 import org.gdms.driver.memory.MemoryDataSetDriver
 import org.gdms.sql.engine.GdmSQLPredef._
 import org.gdms.sql.engine.commands.scan.ScanCommand
+import org.orbisgis.progress.ProgressMonitor
 import scala.collection.JavaConversions._
 
 /**
@@ -73,7 +74,8 @@ class DeleteCommand extends Command with OutputCommand {
   
   var res: MemoryDataSetDriver = null
 
-  protected def doWork(r: Iterator[RowStream]) = {
+  protected def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
+    pm.map(_.startTask("Deleting", 0))
     val m = children.head.getMetadata
     
     r.next foreach (markRow)
@@ -83,6 +85,8 @@ class DeleteCommand extends Command with OutputCommand {
     
     res.addValues(ValueFactory.createValue(ro))
     ro = 0
+    
+    pm.map(_.endTask)
     null
   }
 

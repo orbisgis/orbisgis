@@ -41,6 +41,7 @@ import java.io.File
 import org.gdms.data.schema.DefaultMetadata
 import org.gdms.driver.DiskBufferDriver
 import org.gdms.sql.engine.GdmSQLPredef._
+import org.orbisgis.progress.ProgressMonitor
 
 /**
  * Output command that caches to disk the result and sets it available.
@@ -60,12 +61,15 @@ class QueryOutputCommand extends Command with OutputCommand {
     driver = new DiskBufferDriver(resultFile, getMetadata)
   }
 
-  protected def doWork(r: Iterator[RowStream]) = {    
+  protected def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {    
+    pm.map(_.startTask("Writing", 0))
     for (s <- r; a <- s) {
       driver.addValues(a.array:_*)
     }
     driver.writingFinished
     driver.start
+    
+    pm.map(_.endTask)
     null
   }
   

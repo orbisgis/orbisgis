@@ -39,6 +39,7 @@
 package org.gdms.sql.engine.commands
 
 import org.gdms.sql.engine.GdmSQLPredef._
+import org.orbisgis.progress.ProgressMonitor
 
 /**
  * Main command for artificially limiting/offseting some dataset.
@@ -48,7 +49,7 @@ import org.gdms.sql.engine.GdmSQLPredef._
  */
 class LimitOffsetCommand(lim: Int, off: Int) extends Command {
   
-  protected def doWork(r: Iterator[RowStream]) = {
+  protected def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
     r.next drop(off) take(lim)
   }
 }

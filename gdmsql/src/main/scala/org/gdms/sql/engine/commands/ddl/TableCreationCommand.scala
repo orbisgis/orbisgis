@@ -47,6 +47,7 @@ import org.gdms.data.schema.DefaultMetadata
 import org.gdms.data.values.SQLValueFactory
 import org.gdms.sql.engine.commands._
 import org.gdms.sql.engine.GdmSQLPredef._
+import org.orbisgis.progress.ProgressMonitor
 
 /**
  * Command for creating an empty table by specifying its column names and types.
@@ -56,7 +57,7 @@ import org.gdms.sql.engine.GdmSQLPredef._
  */
 class TableCreationCommand(name: String, cols: Seq[(String, String)]) extends Command with OutputCommand {
 
-  protected final def doWork(r: Iterator[RowStream]) = {
+  protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
     val m = new DefaultMetadata
     
     cols foreach {c =>

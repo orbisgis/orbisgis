@@ -47,10 +47,11 @@ import org.gdms.data.types.IncompatibleTypesException
 import org.gdms.data.types.TypeFactory
 import org.gdms.sql.engine.GdmSQLPredef._
 import org.gdms.sql.engine.SemanticException
+import org.orbisgis.progress.ProgressMonitor
 
 class UnionCommand extends Command {
 
-  def doWork(r: Iterator[RowStream]) = r flatten
+  def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = r flatten
   
   private val metadata: DefaultMetadata = new DefaultMetadata
   

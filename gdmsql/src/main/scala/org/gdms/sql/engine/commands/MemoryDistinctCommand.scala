@@ -43,6 +43,7 @@ package org.gdms.sql.engine.commands
 
 import java.util.HashSet
 import org.gdms.sql.engine.GdmSQLPredef._
+import org.orbisgis.progress.ProgressMonitor
 
 /**
  * Performs an in-memory distinct on the Rows.
@@ -52,7 +53,7 @@ import org.gdms.sql.engine.GdmSQLPredef._
  */
 class MemoryDistinctCommand extends Command {
 
-  protected final def doWork(r: Iterator[RowStream]) = {
+  protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
     r.next flatMap keepOrDrop
   }
   

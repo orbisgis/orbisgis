@@ -48,6 +48,7 @@ import org.gdms.sql.engine.commands.QueryOutputCommand
 import org.gdms.sql.engine.operations.Operation
 import org.gdms.sql.engine.operations.Scan
 import org.gdms.sql.engine.physical.PhysicalPlanBuilder
+import org.orbisgis.progress.ProgressMonitor
 
 /**
  * Represents a ready-to-execute execution graph.
@@ -75,6 +76,7 @@ class ExecutionGraph(op: Operation, p: Properties = null) {
   private var dsf: SQLDataSourceFactory = null
   private var start: OutputCommand = null
   private var opened: Boolean = false
+  private var pm: Option[ProgressMonitor] = None
   
   private val refs: Array[String] = { op match {
       case q: QueryOutputCommand =>op.allChildren flatMap {c => c match {
@@ -82,6 +84,14 @@ class ExecutionGraph(op: Operation, p: Properties = null) {
             case _ => Nil
           } } toArray   
       case _ => Array.empty
+    }
+  }
+  
+  def setProgressMonitor(p: ProgressMonitor) {
+    if (p != null) {
+      pm = Some(p)
+    } else {
+      pm = None
     }
   }
 
@@ -113,7 +123,7 @@ class ExecutionGraph(op: Operation, p: Properties = null) {
       throw new DriverException("ExecutionGraph is closed. Cannot execute a closed graph.")
     }
     try {
-      start.execute
+      start.execute(pm)
     } catch {
       case e: Exception => throw new DriverException(e)
     }

@@ -41,6 +41,7 @@ import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.schema.Metadata;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.DataSet;
+import org.orbisgis.progress.ProgressMonitor;
 
 /**
  * This class represents a SQL Statement to be executed.
@@ -79,6 +80,11 @@ public class SqlStatement {
          * @param dsf
          */
         public void prepare(SQLDataSourceFactory dsf) {
+                prepare(dsf, null);
+        }
+        
+        public void prepare(SQLDataSourceFactory dsf, ProgressMonitor pm) {
+                graph.setProgressMonitor(pm);
                 if (dsf != this.dsf) {
                         this.dsf = dsf;
                         graph.prepare(dsf);

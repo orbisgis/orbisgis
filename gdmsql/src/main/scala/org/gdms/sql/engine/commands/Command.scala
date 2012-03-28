@@ -39,6 +39,7 @@ package org.gdms.sql.engine.commands
 
 import org.gdms.data.SQLDataSourceFactory
 import org.gdms.sql.engine.GdmSQLPredef._
+import org.orbisgis.progress.ProgressMonitor
 
 /**
  * Base class for all commands
@@ -55,7 +56,7 @@ abstract class Command() {
 
   protected var dsf: SQLDataSourceFactory = null
 
-  final def execute(): RowStream = {
+  final def execute(implicit pm: Option[ProgressMonitor]): RowStream = {
     
     // start this one and return the promise of its result
     doWork ((for (c <- children.view) yield { c.execute }).toIterator)
@@ -64,7 +65,7 @@ abstract class Command() {
   /**
    * Main method that commands need to implement
    */
-  protected def doWork(r: Iterator[RowStream]) : RowStream
+  protected def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) : RowStream
 
   /**
    * Override this method to do something specific when the query has finished executing, after all children

@@ -48,6 +48,7 @@ import org.gdms.sql.function.FunctionValidator
 import org.gdms.sql.function.table.TableFunction
 import org.orbisgis.progress.NullProgressMonitor
 import org.gdms.sql.engine.GdmSQLPredef._
+import org.orbisgis.progress.ProgressMonitor
 
 /**
  * This class handles the "Scan" of the result of a custom query.
@@ -103,16 +104,20 @@ class CustomQueryScanCommand(e: Seq[Expression], tables: Seq[Either[String, Outp
     metadata = f.getMetadata(dss toArray)
   }
 
-  protected final def doWork(r: Iterator[RowStream]) = {
+  protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
+    pm.map(_.startTask("Running table function", 0))
     // evaluates the function
     ds = f.evaluate(dsf,
                     openedTables map (_ fold(identity, _.getResult)) toArray,
-                    e map { _ evaluate(null)} toArray, new NullProgressMonitor)
+                    e map { _ evaluate(null)} toArray, pm.getOrElse(new NullProgressMonitor))
 
     // gives the result
-    for (i <- (0l until ds.getRowCount).par.view.toIterator) yield {
+    val res = (for (i <- (0l until ds.getRowCount).par.view.toIterator) yield {
       Row(i, ds.getRow(i))
-    }
+    })
+  
+    pm.map(_.endTask)
+    res
   }
 
   override def doCleanUp = {

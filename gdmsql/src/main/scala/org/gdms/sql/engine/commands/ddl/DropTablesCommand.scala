@@ -45,6 +45,7 @@ package org.gdms.sql.engine.commands.ddl
 import org.gdms.data.NoSuchTableException
 import org.gdms.sql.engine.commands._
 import org.gdms.sql.engine.GdmSQLPredef._
+import org.orbisgis.progress.ProgressMonitor
 
 /**
  * Command for dropping one or several tables. If <code>purge</code> is specified, the actual resource behind
@@ -65,7 +66,7 @@ class DropTablesCommand(names: Seq[String], ifExists: Boolean, purge: Boolean) e
     }
   }
   
-  protected final def doWork(r: Iterator[RowStream]) = {
+  protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
     if (purge) {
       names foreach (dsf.getSourceManager.delete(_))}
     else {

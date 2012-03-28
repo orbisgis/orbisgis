@@ -54,6 +54,7 @@ import org.gdms.sql.engine.commands.Row
 import org.gdms.sql.engine.commands.SQLMetadata
 import org.gdms.sql.evaluator.Expression
 import org.gdms.sql.evaluator.Field
+import org.orbisgis.progress.ProgressMonitor
 
 class ExpressionBasedLoopJoinCommand(private var expr: Option[Expression], natural: Boolean = false, outerLeft: Boolean = false)
 extends Command with ExpressionCommand with JoinCommand {
@@ -119,7 +120,7 @@ extends Command with ExpressionCommand with JoinCommand {
     }
   }
   
-  protected final def doWork(r: Iterator[RowStream]): RowStream = {
+  protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]): RowStream = {
     if (expr.isDefined) {
       if (outerLeft) {
         // (LEFT) OUTER JOIN

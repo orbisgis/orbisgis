@@ -47,6 +47,7 @@ import org.gdms.source.SourceManager
 import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.engine.commands._
 import org.gdms.sql.engine.GdmSQLPredef._
+import org.orbisgis.progress.ProgressMonitor
 
 /**
  * Command for dropping one or several tables. If <code>purge</code> is specified, the actual resource behind
@@ -71,7 +72,7 @@ class DropViewsCommand(var names: Seq[String], ifExists: Boolean) extends Comman
     }
   }
   
-  protected final def doWork(r: Iterator[RowStream]) = {
+  protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
     names foreach (dsf.getSourceManager.delete)
     
     null

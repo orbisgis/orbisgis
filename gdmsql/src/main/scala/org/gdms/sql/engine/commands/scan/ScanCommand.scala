@@ -43,6 +43,7 @@ import org.gdms.data.DataSourceFactory
 import org.gdms.data.schema.Metadata
 import org.gdms.sql.engine.commands._
 import org.gdms.sql.engine.GdmSQLPredef._
+import org.orbisgis.progress.ProgressMonitor
 
 /**
  * Default table scan command.
@@ -67,7 +68,7 @@ class ScanCommand(table: String, alias: Option[String] = None, edition: Boolean 
     metadata = ds.getMetadata
   }
 
-  protected def doWork(r: Iterator[RowStream]) = {
+  protected def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
     // 1. iterate until ds.getRowCount
     // 2. iterate lazily
     // 4. return the (lazy) iterator for this collection

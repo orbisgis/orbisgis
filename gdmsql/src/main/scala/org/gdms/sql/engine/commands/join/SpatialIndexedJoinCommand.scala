@@ -56,6 +56,7 @@ import org.gdms.sql.engine.commands.scan.IndexQueryScanCommand
 import org.gdms.sql.engine.commands.SQLMetadata
 import org.gdms.sql.evaluator._
 import org.gdms.sql.function.SpatialIndexedFunction
+import org.orbisgis.progress.ProgressMonitor
 
 /**
  * Performs a spatial indexed join between two spatial tables.
@@ -81,7 +82,7 @@ class SpatialIndexedJoinCommand(expr: Expression) extends Command with Expressio
   
   private val d = new DefaultMetadata()
   
-  protected final def doWork(r: Iterator[RowStream]): RowStream = {
+  protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]): RowStream = {
     // if we need to drop somethink, lets drop it, else we do nothing
     val clean: (Row) => Row = if (dropped.isEmpty) identity _ else drop _
     
@@ -92,7 +93,7 @@ class SpatialIndexedJoinCommand(expr: Expression) extends Command with Expressio
     Row(r.indices filterNot(i => dropped.contains(i)) map(i => r(i)))
   }
   
-  private def queryIndex(r: Row) = {
+  private def queryIndex(r: Row)(implicit pm: Option[ProgressMonitor]) = {
     val env = r(smallSpatialField).getAsGeometry.getEnvelopeInternal
     big.query = new DefaultSpatialIndexQuery(env, bigSpatialFieldName)
     big.execute

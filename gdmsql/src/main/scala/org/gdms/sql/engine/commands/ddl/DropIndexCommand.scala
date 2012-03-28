@@ -45,6 +45,7 @@ package org.gdms.sql.engine.commands.ddl
 import org.gdms.data.NoSuchTableException
 import org.gdms.sql.engine.commands._
 import org.gdms.sql.engine.GdmSQLPredef._
+import org.orbisgis.progress.ProgressMonitor
 
 /**
  * Command for dropping an index on specific column of a table.
@@ -60,7 +61,7 @@ class DropIndexCommand(table: String, column: String) extends Command with Outpu
     }
   }
 
-  protected final def doWork(r: Iterator[RowStream]) = {
+  protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
     dsf.getIndexManager.deleteIndex(table, column)
 
     null

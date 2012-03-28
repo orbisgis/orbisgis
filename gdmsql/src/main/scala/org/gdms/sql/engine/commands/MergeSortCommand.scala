@@ -48,6 +48,7 @@ import org.gdms.data.types.TypeFactory
 import org.gdms.sql.engine.GdmSQLPredef._
 import collection.JavaConversions._
 import org.gdms.sql.evaluator.Expression
+import org.orbisgis.progress.ProgressMonitor
 
 /**
  * Command that implements a simple non-parallel merge sort.
@@ -74,7 +75,13 @@ class MergeSortCommand(names: Seq[(Expression, Boolean)]) extends Command with E
 
   // dumps into an array and sorts the array using the usual java modified mergesort
   // guaranteed O(n*log(n))
-  protected final def doWork(r: Iterator[RowStream]) = r.next.toList.sorted.toIterator
+  protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
+    pm.map(_.startTask("Sorting", 0))
+    val res = r.next.toList.sorted.toIterator
+    
+    pm.map(_.endTask)
+    res
+  }
   
   private implicit val order: Ordering[Row] = new Ordering[Row] {
     def compare(x: Row, y: Row): Int = {

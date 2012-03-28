@@ -49,6 +49,7 @@ import org.gdms.sql.function.FunctionValidator
 import org.gdms.sql.function.executor.ExecutorFunction
 import org.orbisgis.progress.NullProgressMonitor
 import org.gdms.sql.engine.GdmSQLPredef._
+import org.orbisgis.progress.ProgressMonitor
 
 /**
  * Command dedicated to running {@link ExecutorFunction} functions
@@ -83,12 +84,13 @@ class ExecutorCommand(name: String, params: List[Expression]) extends Command wi
     tables map (_.open)
   }
 
-  protected final def doWork(r: Iterator[RowStream]) = {
-    
+  protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
+    pm.map(_.startTask("Executing", 0))
     val dss = tables map (_.asInstanceOf[DataSet])
     
     function.evaluate(dsf, dss toArray, scalarParams map (_.evaluate(null)) toArray, new NullProgressMonitor)
 
+    pm.map(_.endTask)
     null
   }
   

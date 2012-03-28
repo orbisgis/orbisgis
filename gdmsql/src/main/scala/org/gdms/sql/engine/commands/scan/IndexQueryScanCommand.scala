@@ -49,6 +49,7 @@ import org.gdms.data.schema.Metadata
 import org.gdms.sql.engine.commands._
 import org.gdms.sql.engine.GdmSQLPredef._
 import org.orbisgis.progress.NullProgressMonitor
+import org.orbisgis.progress.ProgressMonitor
 
 class IndexQueryScanCommand(table: String, alias: Option[String] = None, var query: IndexQuery) extends Command {
   var ds: DataSource = null
@@ -66,10 +67,10 @@ class IndexQueryScanCommand(table: String, alias: Option[String] = None, var que
     metadata = ds.getMetadata    
   }
 
-  protected def doWork(r: Iterator[RowStream]) = {
+  protected def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
     if (query != null) {
       if (!dsf.getIndexManager.isIndexed(ds, query.getFieldName)) {
-        dsf.getIndexManager.buildIndex(ds, query.getFieldName, new NullProgressMonitor)
+        dsf.getIndexManager.buildIndex(ds, query.getFieldName, pm.getOrElse(new NullProgressMonitor))
       }
       
       val a = dsf.getIndexManager.queryIndex(ds, query)

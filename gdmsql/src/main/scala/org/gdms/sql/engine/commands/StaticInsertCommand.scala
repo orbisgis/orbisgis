@@ -49,6 +49,7 @@ import org.gdms.sql.evaluator.Expression
 import org.gdms.data.values.ValueFactory
 import org.gdms.driver.memory.MemoryDataSetDriver
 import org.gdms.sql.engine.GdmSQLPredef._
+import org.orbisgis.progress.ProgressMonitor
 
 /**
  * Main command for static multi-row insert of expressions.
@@ -116,13 +117,16 @@ extends Command with OutputCommand with ExpressionCommand {
     }
   }
 
-  protected final def doWork(r: Iterator[RowStream]) = {
+  protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
+    pm.map(_.startTask("Inserting", 0))
     // we eval each Array (= row) and give it to insertFilledRow
     exps foreach { e => ro = ro + 1
                   ds.insertFilledRow((order(e) map ( _.evaluate(Row.empty) ))) }
 
     res.addValues(ValueFactory.createValue(ro))
     ro = 0
+    
+    pm.map(_.endTask)
     null
   }
 

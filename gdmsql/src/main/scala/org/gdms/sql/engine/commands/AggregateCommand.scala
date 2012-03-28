@@ -43,6 +43,7 @@ import org.gdms.sql.evaluator.AggregateEvaluator
 import org.gdms.data.values.Value
 import org.gdms.sql.engine.GdmSQLPredef._
 import org.gdms.sql.evaluator._
+import org.orbisgis.progress.ProgressMonitor
 import scala.collection.mutable.HashMap
 
 /**
@@ -55,11 +56,17 @@ import scala.collection.mutable.HashMap
  * @since 0.1
  */
 class AggregateCommand(expression: Seq[(Expression, Option[String])], grouping: Seq[(Expression, Option[String])]) extends Command with ExpressionCommand {
-  protected def doWork(r: Iterator[RowStream]) = {
-    if (grouping.isEmpty) doEvaluation(Nil, r.next)
+  
+  protected def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
+    pm.map(_.startTask("Aggregating", 0))
+    val res = (if (grouping.isEmpty) {
+        doEvaluation(Nil, r.next)
+      }
     else {
       group(r.next) flatMap(p => doEvaluation(p._1, p._2))
-    }
+    })
+    pm.map(_.endTask)
+    res
   }
   
   private var groups = new HashMap[Seq[Value], List[Row]]

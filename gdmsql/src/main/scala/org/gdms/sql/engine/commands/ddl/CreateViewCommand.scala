@@ -50,6 +50,7 @@ import org.gdms.sql.engine.commands.Command
 import org.gdms.sql.engine.commands.OutputCommand
 import org.gdms.sql.engine.operations.Operation
 import org.gdms.sql.engine.GdmSQLPredef._
+import org.orbisgis.progress.ProgressMonitor
 
 class CreateViewCommand(table: String, op: Operation, orReplace: Boolean) extends Command with OutputCommand {
   
@@ -59,7 +60,7 @@ class CreateViewCommand(table: String, op: Operation, orReplace: Boolean) extend
     }
   }
 
-  protected final def doWork(r: Iterator[RowStream]) = {
+  protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
     val s = new SqlStatement(null, new ExecutionGraph(op))
     
     if (orReplace) {

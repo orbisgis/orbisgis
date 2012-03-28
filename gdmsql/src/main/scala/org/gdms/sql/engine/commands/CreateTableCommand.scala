@@ -42,6 +42,7 @@ import Row._
 import java.io.File
 import org.gdms.data.SourceAlreadyExistsException
 import org.gdms.sql.engine.GdmSQLPredef._
+import org.orbisgis.progress.ProgressMonitor
 
 /**
  * This command creates a table with the name <tt>name</tt> from the result
@@ -75,7 +76,7 @@ class CreateTableCommand(name: String) extends Command with OutputCommand {
     }
   }
   
-  protected final def doWork(r: Iterator[RowStream]) = {
+  protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
     dsf.getSourceManager.register(name, resultFile)
     val o = children.head.asInstanceOf[OutputCommand]
     o match {

@@ -48,6 +48,7 @@ import org.gdms.data.values.ValueFactory
 import org.gdms.driver.memory.MemoryDataSetDriver
 import org.gdms.sql.engine.GdmSQLPredef._
 import org.gdms.sql.evaluator.Field
+import org.orbisgis.progress.ProgressMonitor
 
 /**
  * Update command.
@@ -72,7 +73,8 @@ class UpdateCommand(e: Seq[(String, Expression)]) extends Command with Expressio
   override def exp = expr
   private var expr = e map( _._2 )
 
-  protected def doWork(r: Iterator[RowStream]) = {
+  protected def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
+    pm.map(_.startTask("Updating", 0))
     val m = children.head.getMetadata
     // function that will update a row
     val set = setRow(ds, e map { t => (m.getFieldIndex(t._1),t._2) }) _
@@ -82,6 +84,8 @@ class UpdateCommand(e: Seq[(String, Expression)]) extends Command with Expressio
     
     res.addValues(ValueFactory.createValue(ro))
     ro = 0
+    
+    pm.map(_.endTask)
     null
   }
 

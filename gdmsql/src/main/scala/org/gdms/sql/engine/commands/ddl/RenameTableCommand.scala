@@ -47,6 +47,7 @@ import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.engine.commands.Command
 import org.gdms.sql.engine.commands.OutputCommand
 import org.gdms.sql.engine.GdmSQLPredef._
+import org.orbisgis.progress.ProgressMonitor
 
 class RenameTableCommand(name: String, newname: String) extends Command with OutputCommand {
 
@@ -59,7 +60,7 @@ class RenameTableCommand(name: String, newname: String) extends Command with Out
     }
   }
   
-  protected final def doWork(r: Iterator[RowStream]) = {
+  protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
     
     dsf.getSourceManager.rename(name, newname)
     
