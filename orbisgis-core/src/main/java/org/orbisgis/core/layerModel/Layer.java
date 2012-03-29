@@ -137,7 +137,7 @@ public class Layer extends GdmsLayer {
 				result = dataSource.getFullExtent();
 			} catch (DriverException e) {
 				Services.getErrorManager().error(
-						I18N.getString("org.orbisgis.layerModel.layer.cannotGetTheExtentOfLayer") //$NON-NLS-1$
+						I18N.getString("org.orbisgis.layerModel.layer.cannotGetTheExtentOfLayer")
 								+ dataSource.getName(), e);
 			}
 		}
@@ -151,7 +151,7 @@ public class Layer extends GdmsLayer {
 			dataSource.removeEditionListener(editionListener);
 			dataSource.close();
 		} catch (AlreadyClosedException e) {
-			throw new LayerException(I18N.getString("org.orbisgis.layerModel.layer.bug"), e); //$NON-NLS-1$
+			throw new LayerException(I18N.getString("org.orbisgis.layerModel.layer.bug"), e);
 		} catch (DriverException e) {
 			throw new LayerException(e);
 		}
@@ -187,84 +187,24 @@ public class Layer extends GdmsLayer {
 			// Listen modifications to update selection
 			dataSource.addEditionListener(editionListener);
 		} catch (IOException e) {
-			throw new LayerException(I18N.getString("org.orbisgis.layerModel.layer.cannotSetLegend"), e); //$NON-NLS-1$
+			throw new LayerException(I18N.getString("org.orbisgis.layerModel.layer.cannotSetLegend"), e);
 		} catch (DriverException e) {
-			throw new LayerException(I18N.getString("org.orbisgis.layerModel.layer.cannotOpenLayer"), e); //$NON-NLS-1$
+			throw new LayerException(I18N.getString("org.orbisgis.layerModel.layer.cannotOpenLayer"), e);
 		}
-	}
-
-	/**
-	 * Sets the legend used to draw this layer
-	 *
-	 * @param legends
-	 * @throws DriverException
-	 *             If there is some problem accessing the contents of the layer
-	 */
-	public void setLegend(Legend... legends) throws DriverException {
-		String defaultFieldName = dataSource.getMetadata().getFieldName(
-				dataSource.getSpatialFieldIndex());
-		setLegend(defaultFieldName, legends);
-	}
-
-	public Legend[] getRenderingLegend() throws DriverException {
-		int sfi = dataSource.getSpatialFieldIndex();
-		String defaultFieldName = dataSource.getMetadata().getFieldName(sfi);
-		LegendDecorator[] legendDecorators = fieldLegend.get(defaultFieldName);
-		ArrayList<Legend> ret = new ArrayList<Legend>();
-		for (LegendDecorator legendDecorator : legendDecorators) {
-			if (legendDecorator.isValid()) {
-				ret.add(legendDecorator);
-			}
-		}
-		return ret.toArray(new Legend[ret.size()]);
-	}
-
-	public Legend[] getVectorLegend() throws DriverException {
-		int sfi = dataSource.getSpatialFieldIndex();
-		Metadata metadata = dataSource.getMetadata();
-		if (metadata.getFieldType(sfi).getTypeCode() == Type.RASTER) {
-			throw new UnsupportedOperationException(I18N.getString("org.orbisgis.layerModel.layer.the") //$NON-NLS-1$
-					+ I18N.getString("org.orbisgis.layerModel.layer.fieldIsRaster")); //$NON-NLS-1$
-		}
-		String defaultFieldName = metadata.getFieldName(sfi);
-		return getVectorLegend(defaultFieldName);
-	}
-
-	public RasterLegend[] getRasterLegend() throws DriverException {
-		int sfi = dataSource.getSpatialFieldIndex();
-		Metadata metadata = dataSource.getMetadata();
-		if ((metadata.getFieldType(sfi).getTypeCode() & Type.GEOMETRY) != 0) {
-			throw new UnsupportedOperationException(I18N.getString("org.orbisgis.layerModel.layer.the") //$NON-NLS-1$
-					+ I18N.getString("org.orbisgis.layerModel.layer.fieldIsVector")); //$NON-NLS-1$
-		}
-		String defaultFieldName = metadata.getFieldName(sfi);
-		return getRasterLegend(defaultFieldName);
-	}
-
-	public Legend[] getVectorLegend(String fieldName) throws DriverException {
-		int sfi = getFieldIndexForLegend(fieldName);
-		validateType(sfi, Type.GEOMETRY, I18N.getString("org.orbisgis.layerModel.layer.vector")); //$NON-NLS-1$
-		LegendDecorator[] legends = fieldLegend.get(fieldName);
-		Legend[] ret = new Legend[legends.length];
-		for (int i = 0; i < ret.length; i++) {
-			ret[i] = legends[i].getLegend();
-		}
-
-		return ret;
 	}
 
 	private void validateType(int sfi, int fieldType, String type)
 			throws DriverException {
 		Metadata metadata = dataSource.getMetadata();
 		if ((metadata.getFieldType(sfi).getTypeCode() & fieldType) ==0) {
-			throw new IllegalArgumentException(I18N.getString("org.orbisgis.layerModel.layer.the") + I18N.getString("org.orbisgis.layerModel.layer.fieldIsNot") + type); //$NON-NLS-1$ //$NON-NLS-2$
+			throw new IllegalArgumentException(I18N.getString("org.orbisgis.layerModel.layer.the") + I18N.getString("org.orbisgis.layerModel.layer.fieldIsNot") + type);
 		}
 	}
 
 	private int getFieldIndexForLegend(String fieldName) throws DriverException {
 		int sfi = dataSource.getFieldIndexByName(fieldName);
 		if (sfi == -1) {
-			throw new IllegalArgumentException(I18N.getString("org.orbisgis.layerModel.layer.fieldIsNotFound") + fieldName); //$NON-NLS-1$
+			throw new IllegalArgumentException(I18N.getString("org.orbisgis.layerModel.layer.fieldIsNotFound") + fieldName);
 		}
 		return sfi;
 	}
@@ -272,7 +212,7 @@ public class Layer extends GdmsLayer {
 	public RasterLegend[] getRasterLegend(String fieldName)
 			throws DriverException {
 		int sfi = getFieldIndexForLegend(fieldName);
-		validateType(sfi, Type.RASTER, I18N.getString("org.orbisgis.layerModel.layer.raster")); //$NON-NLS-1$
+		validateType(sfi, Type.RASTER, I18N.getString("org.orbisgis.layerModel.layer.raster"));
 		LegendDecorator[] legends = fieldLegend.get(fieldName);
 		RasterLegend[] ret = new RasterLegend[legends.length];
 		for (int i = 0; i < ret.length; i++) {
@@ -285,7 +225,7 @@ public class Layer extends GdmsLayer {
 	public void setLegend(String fieldName, Legend... legends)
 			throws DriverException {
 		if (dataSource.getFieldIndexByName(fieldName) == -1) {
-			throw new IllegalArgumentException(I18N.getString("org.orbisgis.layerModel.layer.fieldIsNotFound") + fieldName); //$NON-NLS-1$
+			throw new IllegalArgumentException(I18N.getString("org.orbisgis.layerModel.layer.fieldIsNotFound") + fieldName);
 		} else {
 			// Remove previous decorator listeners
 			LegendDecorator[] oldDecorators = fieldLegend.get(fieldName);
@@ -311,7 +251,7 @@ public class Layer extends GdmsLayer {
 				decorator.initialize(dataSource);
 			} catch (RenderException e) {
 				Services.getService(ErrorManager.class).warning(
-						I18N.getString("org.orbisgis.layerModel.layer.cannotInitializeLegend"), e); //$NON-NLS-1$
+						I18N.getString("org.orbisgis.layerModel.layer.cannotInitializeLegend"), e);
 			}
 			decorated[i] = decorator;
 		}
@@ -330,7 +270,7 @@ public class Layer extends GdmsLayer {
 	public GeoRaster getRaster() throws DriverException {
 		if (!isRaster()) {
 			throw new UnsupportedOperationException(
-					I18N.getString("org.orbisgis.layerModel.layer.isNotARasterLayer")); //$NON-NLS-1$
+					I18N.getString("org.orbisgis.layerModel.layer.isNotARasterLayer"));
 		}
 		return getDataSource().getRaster(0);
 	}
@@ -432,13 +372,13 @@ public class Layer extends GdmsLayer {
 
 				Legend legend = lm.getNewLegend(legendId);
 				if (legend == null) {
-					throw new LayerException(I18N.getString("org.orbisgis.layerModel.layer.unsupportedLegend") + legendId); //$NON-NLS-1$
+					throw new LayerException(I18N.getString("org.orbisgis.layerModel.layer.unsupportedLegend") + legendId);
 				}
 				try {
 					legend.setJAXBObject(simpleLegend.getAny());
 				} catch (Exception e) {
 					Services.getErrorManager().error(
-							I18N.getString("org.orbisgis.layerModel.layer.cannotRecoverLegendLost"), e); //$NON-NLS-1$
+							I18N.getString("org.orbisgis.layerModel.layer.cannotRecoverLegendLost"), e);
 				}
 				fieldLegends.add(legend);
 			}
@@ -446,7 +386,7 @@ public class Layer extends GdmsLayer {
 				setLegend(fieldName, fieldLegends
 						.toArray(new Legend[fieldLegends.size()]));
 			} catch (DriverException e) {
-				throw new LayerException(I18N.getString("org.orbisgis.layerModel.layer.cannotRestoreLegends"), e); //$NON-NLS-1$
+				throw new LayerException(I18N.getString("org.orbisgis.layerModel.layer.cannotRestoreLegends"), e);
 			}
 		}
 	}
@@ -476,11 +416,7 @@ public class Layer extends GdmsLayer {
 	@Override
 	public WMSConnection getWMSConnection()
 			throws UnsupportedOperationException {
-		throw new UnsupportedOperationException(I18N.getString("org.orbisgis.layerModel.layer.notAWmsLayer")); //$NON-NLS-1$
+		throw new UnsupportedOperationException(I18N.getString("org.orbisgis.layerModel.layer.notAWmsLayer"));
 	}
-
-	@Override
-	public WMSLegend getWMSLegend() {
-		throw new UnsupportedOperationException(I18N.getString("org.orbisgis.layerModel.layer.notAWmsLayer")); //$NON-NLS-1$
-	}
+        
 }

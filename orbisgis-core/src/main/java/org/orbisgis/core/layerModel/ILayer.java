@@ -44,9 +44,6 @@ import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
 import org.orbisgis.core.layerModel.persistence.LayerType;
-import org.orbisgis.core.renderer.legend.Legend;
-import org.orbisgis.core.renderer.legend.RasterLegend;
-import org.orbisgis.core.renderer.legend.WMSLegend;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Style;
 
@@ -181,8 +178,6 @@ public interface ILayer {
 	 */
 	ILayer[] getRasterLayers() throws DriverException;
 
-	WMSLegend getWMSLegend();
-
 	/**
 	 * Gets all the vectorial layers in the tree under this layer
 	 * 
@@ -227,81 +222,18 @@ public interface ILayer {
 	 */
 	DataSource getDataSource();
 
-    public Style getStyle();
+        /**
+         * Gets the SE style that is used to define the symbology associated to
+         * the current {@code ILayer}.
+         * @return
+         */
+        public Style getStyle();
 
-    public void setStyle(Style fts);
-
-	/**
-	 * Gets the legend used to draw the default spatial field in this layer if
-	 * it is of type raster.
-	 * 
-	 * @return
-	 * @throws DriverException
-	 *             If there is some problem accessing the default spatial field
-	 * @throws UnsupportedOperationException
-	 *             If the spatial field is not raster but vector
-	 */
-	RasterLegend[] getRasterLegend() throws DriverException,
-			UnsupportedOperationException;
-
-	/**
-	 * Gets the legends used to draw the default spatial field in this layer if
-	 * it is of type vector.
-	 * 
-	 * @return
-	 * @throws DriverException
-	 *             If there is some problem accessing the default spatial field
-	 * @throws UnsupportedOperationException
-	 *             If the spatial field is not vector but raster
-	 */
-	Legend[] getVectorLegend() throws DriverException,
-			UnsupportedOperationException;
-
-	/**
-	 * Sets the legend used to draw the default spatial field in this layer
-	 * 
-	 * @param legends
-	 * @throws DriverException
-	 *             If there is some problem accessing the contents of the layer
-	 */
-	void setLegend(Legend... legends) throws DriverException;
-
-	/**
-	 * Gets the legend used to draw the specified vector field in this layer
-	 * 
-	 * @return
-	 * @throws IllegalArgumentException
-	 *             If the specified name does not exist or it's not of type
-	 *             vector
-	 * @throws DriverException
-	 */
-	Legend[] getVectorLegend(String fieldName) throws IllegalArgumentException,
-			DriverException;
-
-	/**
-	 * Gets the legend used to draw the specified raster field in this layer
-	 * 
-	 * @return
-	 * @throws IllegalArgumentException
-	 *             If the specified name does not exist or it's not of type
-	 *             raster
-	 * @throws DriverException
-	 */
-	RasterLegend[] getRasterLegend(String fieldName)
-			throws IllegalArgumentException, DriverException;
-
-	/**
-	 * Sets the legend used to draw the specified spatial field in this layer
-	 * 
-	 * @param legends
-	 * @throws IllegalArgumentException
-	 *             If the specified name does not exist
-	 * @throws DriverException
-	 *             If there is some problem accessing the contents of the layer
-	 */
-	void setLegend(String fieldName, Legend... legends)
-			throws IllegalArgumentException, DriverException;
-
+        /**
+         *
+         * @param fts
+         */
+        public void setStyle(Style fts);
 
 	/**
 	 * We need an entry point for AbstractLayer.fireStyleChanged!
@@ -347,15 +279,12 @@ public interface ILayer {
 	 */
 	void setSelection(int[] newSelection) throws UnsupportedOperationException;
 
-	/**
-	 * Gets the legend to perform the rendering. The actual class of the
-	 * returned legends may not be the same of those set by setLegend methods
-	 * 
-	 * @return
-	 * @throws DriverException
-	 */
-	Legend[] getRenderingLegend() throws DriverException;
-
+        /**
+         * Gets the list of all the {@code Rule} embedded in the {@code Style}
+         * associated to this {@code ILayer}.
+         * @return
+         * @throws DriverException
+         */
 	List<Rule> getRenderingRule() throws DriverException;
 
 }

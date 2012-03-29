@@ -53,6 +53,7 @@ import org.orbisgis.core.renderer.legend.carto.LegendFactory;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.orbisgis.core.renderer.se.Style;
 
 @Deprecated
 public class LayerModelTest extends AbstractTest {
@@ -120,7 +121,7 @@ public class LayerModelTest extends AbstractTest {
 		assertTrue(listener.vc == 1);
 		vl.open();
 		int refsc = listener.sc;
-		vl.setLegend(LegendFactory.createUniqueSymbolLegend());
+		vl.setStyle(new Style(vl, "src/test/resources/org/orbisgis/core/renderer/se/colorRecode.se"));
 		assertTrue(listener.sc == refsc + 1);
 		lc.remove(vl1.getName());
 		assertTrue(listener.lr == 1);

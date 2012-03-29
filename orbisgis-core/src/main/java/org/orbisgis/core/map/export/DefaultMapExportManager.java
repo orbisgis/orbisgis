@@ -70,27 +70,27 @@ public class DefaultMapExportManager implements MapExportManager {
 
 		svgg.translate(0, svgHeight + 50);
 		int maxHeight = 0;
-		for (int i = 0; i < layers.length; i++) {
-			svgg.translate(0, maxHeight + 30);
-			maxHeight = 0;
-			AffineTransform original = svgg.getTransform();
-			if (layers[i].isVisible()) {
-				Legend[] legends = layers[i].getRenderingLegend();
-				java.awt.Font font = new java.awt.Font("arial", 0, 12);
-				svgg.setFont(font);
-				svgg.drawString(layers[i].getName(), 0, 0);
-				for (int j = 0; j < legends.length; j++) {
-					Legend vectorLegend = legends[j];
-					vectorLegend.drawImage(svgg);
-					int[] size = vectorLegend.getImageSize(svgg);
-					if (size[1] > maxHeight) {
-						maxHeight = size[1];
-					}
-					svgg.translate(size[0] + 30, 0);
-				}
-			}
-			svgg.setTransform(original);
-		}
+//		for (int i = 0; i < layers.length; i++) {
+//			svgg.translate(0, maxHeight + 30);
+//			maxHeight = 0;
+//			AffineTransform original = svgg.getTransform();
+//			if (layers[i].isVisible()) {
+//				Legend[] legends = layers[i].getRenderingLegend();
+//				java.awt.Font font = new java.awt.Font("arial", 0, 12);
+//				svgg.setFont(font);
+//				svgg.drawString(layers[i].getName(), 0, 0);
+//				for (int j = 0; j < legends.length; j++) {
+//					Legend vectorLegend = legends[j];
+//					vectorLegend.drawImage(svgg);
+//					int[] size = vectorLegend.getImageSize(svgg);
+//					if (size[1] > maxHeight) {
+//						maxHeight = size[1];
+//					}
+//					svgg.translate(size[0] + 30, 0);
+//				}
+//			}
+//			svgg.setTransform(original);
+//		}
 
 		// draw scale
 		if (scale != null) {

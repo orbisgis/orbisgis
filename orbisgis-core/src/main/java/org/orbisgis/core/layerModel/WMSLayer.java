@@ -48,36 +48,12 @@ public class WMSLayer extends GdmsLayer {
 		throw new UnsupportedOperationException(NOT_SUPPORTED);
 	}
 
-	@Override
-	public RasterLegend[] getRasterLegend() throws DriverException,
-			UnsupportedOperationException {
-		throw new UnsupportedOperationException(NOT_SUPPORTED);
-	}
-
-	@Override
-	public RasterLegend[] getRasterLegend(String fieldName)
-			throws IllegalArgumentException, DriverException {
-		throw new UnsupportedOperationException(NOT_SUPPORTED);
-	}
-
 	public Legend[] getRenderingLegend() throws DriverException {
 		return new Legend[] { getWMSLegend() };
 	}
 
 	@Override
 	public int[] getSelection() {
-		throw new UnsupportedOperationException(NOT_SUPPORTED);
-	}
-
-	@Override
-	public Legend[] getVectorLegend() throws DriverException,
-			UnsupportedOperationException {
-		throw new UnsupportedOperationException(NOT_SUPPORTED);
-	}
-
-	@Override
-	public Legend[] getVectorLegend(String fieldName)
-			throws IllegalArgumentException, DriverException {
 		throw new UnsupportedOperationException(NOT_SUPPORTED);
 	}
 
@@ -194,25 +170,14 @@ public class WMSLayer extends GdmsLayer {
 	}
 
 	@Override
-	public void setLegend(Legend... legends) throws DriverException {
-		throw new UnsupportedOperationException(NOT_SUPPORTED);
-	}
-
-	@Override
-	public void setLegend(String fieldName, Legend... legends)
-			throws IllegalArgumentException, DriverException {
-		throw new UnsupportedOperationException(NOT_SUPPORTED);
-	}
-
-	@Override
 	public void setSelection(int[] newSelection) {
 		throw new UnsupportedOperationException(NOT_SUPPORTED);
 	}
 
-    @Override
-    public Style getStyle(){
-        return null;
-    }
+        @Override
+        public Style getStyle(){
+                return null;
+        }
 
 	@Override
 	public ArrayList<Rule> getRenderingRule() throws DriverException {

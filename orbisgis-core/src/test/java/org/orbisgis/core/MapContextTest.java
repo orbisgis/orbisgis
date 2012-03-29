@@ -117,36 +117,36 @@ public class MapContextTest extends AbstractTest {
 		mc.close(null);
 	}
 
-        @Test
-	public void testSaveAndRecoverMapContext() throws Exception {
-		MapContext mc = new DefaultMapContext();
-		mc.open(null);
-		ILayer layer1 = getDataManager().createLayer(
-				new File("src/test/resources/data/linestring.shp"));
-		ILayer layer2 = getDataManager().createLayer(
-				new File("src/test/resources/data/bv_sap.shp"));
-		mc.getLayerModel().addLayer(layer1);
-		mc.getLayerModel().addLayer(layer2);
-		Symbol sym1 = layer1.getVectorLegend()[0].getSymbol(layer1
-				.getDataSource(), 0);
-		Symbol sym2 = layer2.getVectorLegend()[0].getSymbol(layer2
-				.getDataSource(), 0);
-		Object persistence = mc.getJAXBObject();
-		DefaultMapContext mc2 = new DefaultMapContext();
-		mc2.setJAXBObject(persistence);
-		mc2.open(null);
-		assertTrue(mc2.getLayers().length == 2);
-		Legend legend1 = mc2.getLayerModel().getLayer(0).getVectorLegend()[0];
-		assertTrue(legend1.getSymbol(layer1.getDataSource(), 0)
-				.getPersistentProperties().equals(
-						sym1.getPersistentProperties()));
-		Legend legend2 = mc2.getLayerModel().getLayer(1).getVectorLegend()[0];
-		assertTrue(legend2.getSymbol(layer2.getDataSource(), 0)
-				.getPersistentProperties().equals(
-						sym2.getPersistentProperties()));
-		mc.close(null);
-		mc2.close(null);
-	}
+//        @Test
+//	public void testSaveAndRecoverMapContext() throws Exception {
+//		MapContext mc = new DefaultMapContext();
+//		mc.open(null);
+//		ILayer layer1 = getDataManager().createLayer(
+//				new File("src/test/resources/data/linestring.shp"));
+//		ILayer layer2 = getDataManager().createLayer(
+//				new File("src/test/resources/data/bv_sap.shp"));
+//		mc.getLayerModel().addLayer(layer1);
+//		mc.getLayerModel().addLayer(layer2);
+//		Symbol sym1 = layer1.getVectorLegend()[0].getSymbol(layer1
+//				.getDataSource(), 0);
+//		Symbol sym2 = layer2.getVectorLegend()[0].getSymbol(layer2
+//				.getDataSource(), 0);
+//		Object persistence = mc.getJAXBObject();
+//		DefaultMapContext mc2 = new DefaultMapContext();
+//		mc2.setJAXBObject(persistence);
+//		mc2.open(null);
+//		assertTrue(mc2.getLayers().length == 2);
+//		Legend legend1 = mc2.getLayerModel().getLayer(0).getVectorLegend()[0];
+//		assertTrue(legend1.getSymbol(layer1.getDataSource(), 0)
+//				.getPersistentProperties().equals(
+//						sym1.getPersistentProperties()));
+//		Legend legend2 = mc2.getLayerModel().getLayer(1).getVectorLegend()[0];
+//		assertTrue(legend2.getSymbol(layer2.getDataSource(), 0)
+//				.getPersistentProperties().equals(
+//						sym2.getPersistentProperties()));
+//		mc.close(null);
+//		mc2.close(null);
+//	}
 
         @Test
 	public void testSaveAndRecoverTwoNestedCollections() throws Exception {
@@ -312,33 +312,33 @@ public class MapContextTest extends AbstractTest {
 		mc2.close(null);
 	}
 
-        @Test
-	public void testLegendPersistenceOpeningTwice() throws Exception {
-		MapContext mc = new DefaultMapContext();
-		mc.open(null);
-		ILayer layer = getDataManager().createLayer("bv_sap",
-				new File("src/test/resources/data/bv_sap.shp"));
-		mc.getLayerModel().addLayer(layer);
-		UniqueSymbolLegend legend = LegendFactory.createUniqueSymbolLegend();
-		Symbol symbol = SymbolFactory.createPolygonSymbol(Color.pink);
-		legend.setSymbol(symbol);
-		layer.setLegend(legend);
-		assertTrue(legend.getSymbol().getPersistentProperties().equals(
-				symbol.getPersistentProperties()));
-		mc.close(null);
-		MapContext mc2 = new DefaultMapContext();
-		mc2.setJAXBObject(mc.getJAXBObject());
-		mc2.open(null);
-		assertTrue(legend.getSymbol().getPersistentProperties().equals(
-				symbol.getPersistentProperties()));
-		mc2.close(null);
-		mc2.open(null);
-		layer = mc2.getLayerModel().getLayerByName("bv_sap");
-		legend = (UniqueSymbolLegend) layer.getVectorLegend()[0];
-		assertTrue(legend.getSymbol().getPersistentProperties().equals(
-				symbol.getPersistentProperties()));
-		mc2.close(null);
-	}
+//        @Test
+//	public void testLegendPersistenceOpeningTwice() throws Exception {
+//		MapContext mc = new DefaultMapContext();
+//		mc.open(null);
+//		ILayer layer = getDataManager().createLayer("bv_sap",
+//				new File("src/test/resources/data/bv_sap.shp"));
+//		mc.getLayerModel().addLayer(layer);
+//		UniqueSymbolLegend legend = LegendFactory.createUniqueSymbolLegend();
+//		Symbol symbol = SymbolFactory.createPolygonSymbol(Color.pink);
+//		legend.setSymbol(symbol);
+//		layer.setLegend(legend);
+//		assertTrue(legend.getSymbol().getPersistentProperties().equals(
+//				symbol.getPersistentProperties()));
+//		mc.close(null);
+//		MapContext mc2 = new DefaultMapContext();
+//		mc2.setJAXBObject(mc.getJAXBObject());
+//		mc2.open(null);
+//		assertTrue(legend.getSymbol().getPersistentProperties().equals(
+//				symbol.getPersistentProperties()));
+//		mc2.close(null);
+//		mc2.open(null);
+//		layer = mc2.getLayerModel().getLayerByName("bv_sap");
+//		legend = (UniqueSymbolLegend) layer.getVectorLegend()[0];
+//		assertTrue(legend.getSymbol().getPersistentProperties().equals(
+//				symbol.getPersistentProperties()));
+//		mc2.close(null);
+//	}
 
         @Test
 	public void testgetJAXBAfterSetModifyAndClose() throws Exception {
@@ -418,39 +418,39 @@ public class MapContextTest extends AbstractTest {
 		mc.close(null);
 	}
 
-        @Test
-	public void testRemoveFieldUsedInLegend() throws Exception {
-		File shp = new File("target/bv_sap.shp");
-		File dbf = new File("target/bv_sap.dbf");
-		File shx = new File("target/bv_sap.shx");
-		FileUtils.copy(new File("src/test/resources/data/bv_sap.shp"), shp);
-		FileUtils.copy(new File("src/test/resources/data/bv_sap.dbf"), dbf);
-		FileUtils.copy(new File("src/test/resources/data/bv_sap.shx"), shx);
-		MapContext mc = new DefaultMapContext();
-		mc.open(null);
-		ILayer layer = getDataManager().createLayer(shp);
-		mc.getLayerModel().addLayer(layer);
-		LabelLegend labelLegend = LegendFactory.createLabelLegend();
-		int legendFieldIndex = 1;
-		labelLegend.setClassificationField(layer.getDataSource().getFieldName(
-				legendFieldIndex));
-		layer.setLegend(labelLegend);
-		mc.close(null);
-		DataSource ds = getDataManager().getDataSourceFactory().getDataSource(
-				shp);
-		ds.open();
-		ds.removeField(legendFieldIndex);
-		ds.commit();
-		ds.close();
-
-		failErrorManager.setIgnoreWarnings(true);
-		mc.open(null);
-		failErrorManager.setIgnoreWarnings(false);
-		ILayer readLayer = mc.getLayerModel().getLayer(0);
-		assertTrue(readLayer.getVectorLegend().length == 1);
-		assertTrue(readLayer.getRenderingLegend().length == 0);
-		mc.close(null);
-	}
+//        @Test
+//	public void testRemoveFieldUsedInLegend() throws Exception {
+//		File shp = new File("target/bv_sap.shp");
+//		File dbf = new File("target/bv_sap.dbf");
+//		File shx = new File("target/bv_sap.shx");
+//		FileUtils.copy(new File("src/test/resources/data/bv_sap.shp"), shp);
+//		FileUtils.copy(new File("src/test/resources/data/bv_sap.dbf"), dbf);
+//		FileUtils.copy(new File("src/test/resources/data/bv_sap.shx"), shx);
+//		MapContext mc = new DefaultMapContext();
+//		mc.open(null);
+//		ILayer layer = getDataManager().createLayer(shp);
+//		mc.getLayerModel().addLayer(layer);
+//		LabelLegend labelLegend = LegendFactory.createLabelLegend();
+//		int legendFieldIndex = 1;
+//		labelLegend.setClassificationField(layer.getDataSource().getFieldName(
+//				legendFieldIndex));
+//		layer.setLegend(labelLegend);
+//		mc.close(null);
+//		DataSource ds = getDataManager().getDataSourceFactory().getDataSource(
+//				shp);
+//		ds.open();
+//		ds.removeField(legendFieldIndex);
+//		ds.commit();
+//		ds.close();
+//
+//		failErrorManager.setIgnoreWarnings(true);
+//		mc.open(null);
+//		failErrorManager.setIgnoreWarnings(false);
+//		ILayer readLayer = mc.getLayerModel().getLayer(0);
+//		assertTrue(readLayer.getVectorLegend().length == 1);
+//		assertTrue(readLayer.getRenderingLegend().length == 0);
+//		mc.close(null);
+//	}
 
         @Test
 	public void testExportSVG() throws Exception {
