@@ -42,6 +42,10 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Insets;
 
+/**
+ * 
+ * @author alexis, others...
+ */
 public class CRFlowLayout extends FlowLayout {
 
 	public CRFlowLayout(int alignment) {
@@ -168,6 +172,8 @@ public class CRFlowLayout extends FlowLayout {
 	 *            the beginning of the row
 	 * @param rowEnd
 	 *            the the ending of the row
+         * @param ltr
+         *            set to true if the elements must be oriented left to right.
 	 */
 	private void moveComponents(Container target, int x, int y, int width,
 			int height, int rowStart, int rowEnd, boolean ltr) {
