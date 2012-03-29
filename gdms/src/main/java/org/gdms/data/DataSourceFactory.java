@@ -54,10 +54,10 @@ import org.gdms.data.indexes.RTreeIndex;
 import org.gdms.data.memory.MemorySourceDefinition;
 import org.gdms.data.schema.Schema;
 import org.gdms.data.sql.SQLSourceDefinition;
+import org.gdms.data.stream.StreamSource;
+import org.gdms.data.stream.StreamSourceDefinition;
 import org.gdms.data.system.SystemSource;
 import org.gdms.data.system.SystemSourceDefinition;
-import org.gdms.data.wms.WMSSource;
-import org.gdms.data.wms.WMSSourceDefinition;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.MemoryDriver;
@@ -434,11 +434,11 @@ public final class DataSourceFactory {
                         new NullProgressMonitor());
         }
 
-        /**
-         * Gets a DataSource instance to access the wms source
+         /**
+         * Gets a DataSource instance to access the stream source.
          *
-         * @param wmsSource
-         * source to access
+         * @param streamSource
+         *            source to access
          * @param mode
          * To enable undo/redo operations UNDOABLE. NORMAL otherwise
          * @return
@@ -447,9 +447,9 @@ public final class DataSourceFactory {
          * If the instance creation fails
          * @throws DriverException
          */
-        public DataSource getDataSource(WMSSource wmsSource, int mode)
+        public DataSource getDataSource(StreamSource streamSource, int mode)
                 throws DataSourceCreationException, DriverException {
-                return getDataSource(new WMSSourceDefinition(wmsSource), mode,
+                return getDataSource(new StreamSourceDefinition(streamSource), mode,
                         new NullProgressMonitor());
         }
 
@@ -502,9 +502,9 @@ public final class DataSourceFactory {
          * If the instance creation fails
          * @throws DriverException
          */
-        public DataSource getDataSource(WMSSource wmsSource)
+        public DataSource getDataSource(StreamSource streamSource)
                 throws DataSourceCreationException, DriverException {
-                return getDataSource(new WMSSourceDefinition(wmsSource), DEFAULT,
+                return getDataSource(new StreamSourceDefinition(streamSource), DEFAULT,
                         new NullProgressMonitor());
         }
 

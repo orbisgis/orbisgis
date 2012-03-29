@@ -30,7 +30,6 @@ package org.orbisgis.core.ui.plugins.views.geocatalog;
 
 import java.util.Vector;
 
-import org.gdms.data.wms.WMSSource;
 import org.gdms.source.SourceManager;
 import org.gdms.source.stream.StreamSource;
 import org.gvsig.remoteClient.wms.WMSClient;

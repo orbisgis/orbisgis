@@ -42,8 +42,11 @@ import org.gdms.data.AbstractDataSourceDefinition;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceDefinition;
-import org.gdms.data.wms.WMSSourceDefinition;
-import org.gdms.driver.*;
+import org.gdms.driver.DataSet;
+import org.gdms.driver.Driver;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.DriverUtilities;
+import org.gdms.driver.StreamDriver;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.directory.DefinitionType;
 import org.gdms.source.directory.StreamDefinitionType;
@@ -62,7 +65,7 @@ import org.gdms.source.directory.StreamDefinitionType;
 public class StreamSourceDefinition extends AbstractDataSourceDefinition {
 
         private StreamSource m_streamSource;
-        private static final Logger LOG = Logger.getLogger(WMSSourceDefinition.class);
+        private static final Logger LOG = Logger.getLogger(StreamSourceDefinition.class);
 
         public StreamSourceDefinition(StreamSource streamSource) {
                 LOG.trace("Constructor");
@@ -104,6 +107,10 @@ public class StreamSourceDefinition extends AbstractDataSourceDefinition {
                 return 48 + m_streamSource.hashCode();
         }
 
+        public StreamSource getStreamSource() {
+                return this.m_streamSource;
+        }
+
         @Override
         protected Driver getDriverInstance() {
                 return DriverUtilities.getStreamDriver(getDataSourceFactory().getSourceManager().getDriverManager(), m_streamSource.getPrefix());
@@ -133,10 +140,8 @@ public class StreamSourceDefinition extends AbstractDataSourceDefinition {
                 StreamDefinitionType ret = new StreamDefinitionType();
                 ret.setLayerName(m_streamSource.getLayerName());
                 ret.setHost(m_streamSource.getHost());
-                ret.setPort(Integer.toString(m_streamSource.getPort()));
-                ret.setPassword(m_streamSource.getPassword());
-                ret.setUser(m_streamSource.getUser());
-                ret.setPrefix(m_streamSource.getPrefix());
+                ret.setImageFormat(m_streamSource.getImageFormat());
+                ret.setSRS(m_streamSource.getSRS());
 
                 return ret;
         }
@@ -151,9 +156,9 @@ public class StreamSourceDefinition extends AbstractDataSourceDefinition {
         }
 
         public static DataSourceDefinition createFromXML(StreamDefinitionType definition) {
-                StreamSource streamSource = new StreamSource(definition.getHost(), Integer.parseInt(definition.getPort()),
-                        definition.getLayerName(), definition.getUser(), definition.getPassword(), definition.getPrefix());
-
+                StreamSource streamSource = new StreamSource(definition.getHost(), 80,
+                        definition.getLayerName(), "", "", "wms",
+                        definition.getImageFormat(), definition.getSRS());
                 return new StreamSourceDefinition(streamSource);
         }
 

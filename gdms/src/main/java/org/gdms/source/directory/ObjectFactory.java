@@ -65,11 +65,11 @@ import javax.xml.namespace.QName;
 public class ObjectFactory {
 
     private static QName _ObjectDefinition_QNAME = new QName("", "object-definition");
-    private static QName _WmsDefinition_QNAME = new QName("", "wms-definition");
     private static QName _DbDefinition_QNAME = new QName("", "db-definition");
     private static QName _Definition_QNAME = new QName("", "definition");
     private static QName _FileDefinition_QNAME = new QName("", "file-definition");
     private static QName _SystemDefinition_QNAME = new QName("", "system-definition");
+    private static QName _StreamDefinition_QNAME = new QName("", "stream-definition");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: org.gdms.source.directory
@@ -94,12 +94,13 @@ public class ObjectFactory {
         return new FileProperty();
     }
 
-    /**
-     * Create an instance of {@link WmsDefinitionType }
+    
+     /**
+     * Create an instance of {@link StreamDefinitionType }
      * 
      */
-    public WmsDefinitionType createWmsDefinitionType() {
-        return new WmsDefinitionType();
+    public StreamDefinitionType createWmsDefinitionType() {
+        return new StreamDefinitionType();
     }
 
     /**
@@ -167,13 +168,14 @@ public class ObjectFactory {
         return new JAXBElement<ObjectDefinitionType>(_ObjectDefinition_QNAME, ObjectDefinitionType.class, null, value);
     }
 
+   
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link WmsDefinitionType }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link StreamDefinitionType }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "", name = "wms-definition")
-    public JAXBElement<WmsDefinitionType> createWmsDefinition(WmsDefinitionType value) {
-        return new JAXBElement<WmsDefinitionType>(_WmsDefinition_QNAME, WmsDefinitionType.class, null, value);
+    @XmlElementDecl(namespace = "", name = "stream-definition")
+    public JAXBElement<StreamDefinitionType> createWmsDefinition(StreamDefinitionType value) {
+        return new JAXBElement<StreamDefinitionType>(_StreamDefinition_QNAME, StreamDefinitionType.class, null, value);
     }
 
     /**

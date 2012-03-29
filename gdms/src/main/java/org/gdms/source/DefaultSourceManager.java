@@ -87,8 +87,6 @@ import org.gdms.data.stream.StreamSource;
 import org.gdms.data.stream.StreamSourceDefinition;
 import org.gdms.data.system.SystemSource;
 import org.gdms.data.system.SystemSourceDefinition;
-import org.gdms.data.wms.WMSSource;
-import org.gdms.data.wms.WMSSourceDefinition;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.MemoryDriver;
@@ -492,11 +490,6 @@ public final class DefaultSourceManager implements SourceManager {
         }
         
         @Override
-        public void register(String name, WMSSource wmsSource) {
-                register(name, new WMSSourceDefinition(wmsSource));
-        }
-
-        @Override
         public void register(String name, MemoryDriver driver) {
                 register(name, new MemorySourceCreation(driver));
         }
@@ -697,9 +690,9 @@ public final class DefaultSourceManager implements SourceManager {
         }
 
         @Override
-        public String nameAndRegister(WMSSource dbTable) {
+        public String nameAndRegister(StreamSource streamSource) {
                 String name = getUID();
-                register(name, false, new WMSSourceDefinition(dbTable));
+                register(name, false, new StreamSourceDefinition(streamSource));
                 return name;
         }
 
