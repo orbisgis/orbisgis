@@ -45,6 +45,9 @@ import org.gdms.sql.function.ScalarArgument;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
 
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
+
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.operation.distance.DistanceOp;
@@ -78,6 +81,11 @@ public final class ST_NearestPoints extends AbstractScalarSpatialFunction {
         @Override
         public String getSqlOrder() {
                 return "select ST_NearestPoints(the_geom1, the_geom2) from myTable;";
+        }
+
+        @Override
+        public Type getType(Type[] types) {
+                return TypeFactory.createType(Type.LINESTRING);
         }
 
         @Override
