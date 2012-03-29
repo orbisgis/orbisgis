@@ -44,7 +44,7 @@ import org.apache.log4j.Logger;
 import org.orbisgis.core.events.EventException;
 import org.orbisgis.core.events.ListenerContainer;
 import org.orbisgis.utils.I18N;
-import org.orbisgis.view.components.ContainerItemKey;
+import org.orbisgis.view.components.ContainerItemProperties;
 import org.orbisgis.view.icons.OrbisGISIcon;
 
 /**
@@ -66,7 +66,7 @@ public class FilterFactoryManager<FilterInterface> {
     private Map<String,FilterFactory<FilterInterface>> filterFactories = Collections.synchronizedMap(new HashMap<String,FilterFactory<FilterInterface>>());
     //Factory index, this retrieve the factory name from an integer in
     //all JComboBox filter factories
-    private List<ContainerItemKey> filterFactoriesComboLabels = new ArrayList<ContainerItemKey>();
+    private List<ContainerItemProperties> filterFactoriesComboLabels = new ArrayList<ContainerItemProperties>();
     //The factory shown when the user click on new factory button
     private String defaultFilterFactory="";
     
@@ -82,7 +82,7 @@ public class FilterFactoryManager<FilterInterface> {
         filterFactories.put(filterFactory.getFactoryId(), filterFactory);
         
         //Add filter factory label and id in a list (for all GUI ComboBox)
-        filterFactoriesComboLabels.add(new ContainerItemKey(filterFactory.getFactoryId(),filterFactory.getFilterLabel()));
+        filterFactoriesComboLabels.add(new ContainerItemProperties(filterFactory.getFactoryId(),filterFactory.getFilterLabel()));
         
         if(defaultFilterFactory.isEmpty()) {
             defaultFilterFactory = filterFactory.getFactoryId();
@@ -304,7 +304,7 @@ public class FilterFactoryManager<FilterInterface> {
         //Set a unique data model for all filterFactoriesCombo
         JComboBox filterFactoriesCombo = new JComboBox(this.filterFactoriesComboLabels.toArray());
         //Select the factory
-        filterFactoriesCombo.setSelectedItem(new ContainerItemKey(selectedFactory, ""));
+        filterFactoriesCombo.setSelectedItem(new ContainerItemProperties(selectedFactory, ""));
         //Add a listener to remove the filter
         filterFactoriesCombo.addActionListener(
                 EventHandler.create(ActionListener.class, this,

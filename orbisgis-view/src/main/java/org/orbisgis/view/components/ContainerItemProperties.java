@@ -28,18 +28,33 @@
  */
 package org.orbisgis.view.components;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.io.Serializable;
+
 /**
  * @brief Generic list item that store a key with the value shown
+ * 
+ * This class is created thanks to the NetBeans user interface.
+ * Use the "Add property" NetBeans function to add properties easily.
+ * See documentation related to java.beans management systems
+ * 
  */
-public class ContainerItemKey {
+public class ContainerItemProperties implements Serializable {
+    public static final long serialVersionUID = 2L; /*<! Update this integer while adding properties (1 for each new property)*/
+    private PropertyChangeSupport propertySupport;
+    
     private String label; //I18N label
-    private String key;   //Internal name of the item
+    public static final String PROP_LABEL = "label";
+    
+    private final String key;   //Internal name of the item
     /**
      * Constructor
      * @param label The I18N label of the Item, shown in the GUI
      * @param key The internal name of this item, retrieved by listeners for processing
      */
-    public ContainerItemKey(String key, String label) {
+    public ContainerItemProperties(String key, String label) {
+        propertySupport = new PropertyChangeSupport(this);
         this.label = label;
         this.key = key;
     }
@@ -50,13 +65,7 @@ public class ContainerItemKey {
     public String getKey() {
         return key;
     }
-    /**
-     * Set the internal name of this item
-     * @param key Internal name of this item
-     */
-    public void setKey(String key) {
-        this.key = key;
-    }
+
     /**
      * Get the I18N GUI label
      * @return the I18N GUI label
@@ -69,7 +78,9 @@ public class ContainerItemKey {
      * @param label the I18N GUI label
      */
     public void setLabel(String label) {
+        String oldLabel = this.label;
         this.label = label;
+        propertySupport.firePropertyChange(PROP_LABEL, oldLabel, label);
     }
 
     /**
@@ -94,7 +105,7 @@ public class ContainerItemKey {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final ContainerItemKey other = (ContainerItemKey) obj;
+        final ContainerItemProperties other = (ContainerItemProperties) obj;
         if ((this.key == null) ? (other.key != null) : !this.key.equals(other.key)) {
             return false;
         }
@@ -110,5 +121,43 @@ public class ContainerItemKey {
         int hash = 7;
         hash = 83 * hash + (this.key != null ? this.key.hashCode() : 0);
         return hash;
+    }
+    
+    
+    /**
+     * Add a property-change listener for all properties.
+     * The listener is called for all properties.
+     * @param listener The PropertyChangeListener instance
+     * @note Use EventHandler.create to build the PropertyChangeListener instance
+     */
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        propertySupport.addPropertyChangeListener(listener);
+    }
+    /**
+     * Add a property-change listener for a specific property.
+     * The listener is called only when there is a change to 
+     * the specified property.
+     * @param prop The static property name PROP_..
+     * @param listener The PropertyChangeListener instance
+     * @note Use EventHandler.create to build the PropertyChangeListener instance
+     */
+    public void addPropertyChangeListener(String prop,PropertyChangeListener listener) {
+        propertySupport.addPropertyChangeListener(prop, listener);
+    }
+    /**
+     * Remove the specified listener from the list
+     * @param listener The listener instance
+     */
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        propertySupport.removePropertyChangeListener(listener);
+    }
+    
+    /**
+     * Remove the specified listener for a specified property from the list
+     * @param prop The static property name PROP_..
+     * @param listener The listener instance
+     */
+    public void removePropertyChangeListener(String prop,PropertyChangeListener listener) {
+        propertySupport.removePropertyChangeListener(prop,listener);
     }
 }

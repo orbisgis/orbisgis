@@ -13,7 +13,7 @@
  * terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
- *
+ *I
  * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -34,18 +34,15 @@ import bibliothek.gui.dock.StackDockStation;
 import bibliothek.gui.dock.common.CControl;
 import bibliothek.gui.dock.common.intern.DefaultCDockable;
 import bibliothek.gui.dock.layout.DockableProperty;
-import bibliothek.gui.dock.station.split.SplitDockProperty;
 import bibliothek.gui.dock.util.PropertyKey;
-import org.apache.log4j.Logger;
 import java.awt.Dimension;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 import javax.swing.JFrame;
+import org.apache.log4j.Logger;
 import org.orbisgis.utils.I18N;
 import org.orbisgis.view.docking.internals.OrbisGISView;
 import org.orbisgis.view.docking.internals.ReservedDockStation;
@@ -86,7 +83,7 @@ public final class DockingManager {
                     try {
                         commonControl.readXML(dockingState);
                     } catch (IOException ex) {
-                        LOGGER.error(I18N.getString("Unable to save the docking layout."), ex);
+                        LOGGER.error(I18N.getString("orbisgis.view.DockingManager.layoutloadfailed"), ex);
                     }
                 }
             }            
@@ -99,7 +96,7 @@ public final class DockingManager {
                 try {
                     commonControl.writeXML(dockingState);
                 } catch (IOException ex) {
-                    LOGGER.error(I18N.getString("Unable to save the docking layout."), ex);
+                    LOGGER.error(I18N.getString("orbisgis.view.DockingManager.layoutsavefailes"), ex);
                 }    
             }
         }

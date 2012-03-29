@@ -26,47 +26,33 @@
  * or contact directly:
  * info _at_ orbisgis.org
  */
-package org.orbisgis.view.geocatalog;
+package org.orbisgis.view.components.menubar;
 
+import javax.swing.JMenu;
 import org.orbisgis.view.components.ContainerItemProperties;
 
 /**
- * Store view properties of data source
+ * The Menu container bean is used in persistant menu (not popup)
+ * This beans separate the final item key and the visible label of the item
+ * It will include optional additionnal functionalities like themes
+ * @note Do not use the Swing Mnemonic, the key shortcut would be set in
+ * the translated label. Use the prefix symbol & to set the shortcut,
+ * escape with two &&
  */
-public class CatalogSourceItem extends ContainerItemProperties {
-    private String sourceIconName;
-    /**
-     * Constructor
-     * @param key The datasource source name
-     * @param label The source GUI label
-     * @param sourceIconName The source icon
-     */
-    public CatalogSourceItem(String key, String label,String sourceIconName) {
-        super(key, label);
-        this.sourceIconName = sourceIconName;
+
+
+public class MenuProperties extends ContainerItemProperties {
+    private JMenu menu;
+    public MenuProperties(String key, JMenu menu) {
+        super(key, menu.getText());
+        this.menu = menu;
     }
     /**
      * 
-     * @return The icon name
+     * @return  The Menu instance
      */
-    public String getSourceIconName() {
-        return sourceIconName;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        return super.equals(obj);
-    }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode();
+    public JMenu getMenu() {
+        return menu;
     }
     
 }

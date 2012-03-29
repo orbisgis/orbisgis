@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.JComboBox;
 import org.orbisgis.utils.I18N;
-import org.orbisgis.view.components.ContainerItemKey;
+import org.orbisgis.view.components.ContainerItemProperties;
 import org.orbisgis.view.components.filter.ActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactory;
 import org.orbisgis.view.geocatalog.filters.*;
@@ -47,7 +47,7 @@ import org.orbisgis.view.geocatalog.filters.*;
  */
 public class SourceTypeIs implements FilterFactory<IFilter> {
     private Map<String,IFilter> filters = new HashMap<String,IFilter>();
-    private List<ContainerItemKey> filterLabelsId = new ArrayList<ContainerItemKey>();
+    private List<ContainerItemProperties> filterLabelsId = new ArrayList<ContainerItemProperties>();
     private final static String DEFAULT_FILTER = "geocatalog.filters.GeoFilter"; //Filter shown in the GUI by default
     
     /**
@@ -58,7 +58,7 @@ public class SourceTypeIs implements FilterFactory<IFilter> {
      */
     private void addFilter(String name,String label,IFilter filter) {
         filters.put(name,filter);
-        filterLabelsId.add(new ContainerItemKey(name,label));
+        filterLabelsId.add(new ContainerItemProperties(name,label));
     }
     /**
      * Init built-in source type filters
@@ -138,9 +138,9 @@ public class SourceTypeIs implements FilterFactory<IFilter> {
     public Component makeFilterField(ActiveFilter filterValue) {
         JComboBox filterField = new JComboBox(filterLabelsId.toArray());
         if(filters.containsKey(filterValue.getCurrentFilterValue())) {
-            filterField.setSelectedItem(new ContainerItemKey(filterValue.getCurrentFilterValue(), ""));
+            filterField.setSelectedItem(new ContainerItemProperties(filterValue.getCurrentFilterValue(), ""));
         } else {
-            filterField.setSelectedItem(new ContainerItemKey(DEFAULT_FILTER,""));
+            filterField.setSelectedItem(new ContainerItemProperties(DEFAULT_FILTER,""));
         }
         //Add listener to update the filterValue
         filterField.addActionListener(EventHandler.create(ActionListener.class,

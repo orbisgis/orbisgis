@@ -45,7 +45,7 @@ import org.gdms.source.SourceListener;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.context.SourceContext.SourceContext;
 import org.orbisgis.utils.I18N;
-import org.orbisgis.view.components.ContainerItemKey;
+import org.orbisgis.view.components.ContainerItemProperties;
 import org.orbisgis.view.geocatalog.filters.IFilter;
 import org.orbisgis.view.geocatalog.filters.TableSystemFilter;
 /**
@@ -59,7 +59,7 @@ public class SourceListModel extends AbstractListModel {
         private SourceContext sourceContext; /*!< The SourceContext instance*/
         private SourceManager sourceManager; /*!< The SourceManager instance*/
         private SourceListener sourceListener=null; /*!< The listener put in the sourceManager*/
-	private ContainerItemKey[] sourceList;/*!< Sources */
+	private ContainerItemProperties[] sourceList;/*!< Sources */
 	private List<IFilter> filters = new ArrayList<IFilter>(); /*!< Active filters */
         private AtomicBoolean awaitingRefresh=new AtomicBoolean(false); /*!< If true a swing runnable
          * is pending to refresh the content of SourceListModel*/
@@ -194,7 +194,7 @@ public class SourceListModel extends AbstractListModel {
             }
             //Sort source list
             Arrays.sort(tempSourceNames,ComparatorUtils.NATURAL_COMPARATOR);
-            this.sourceList = new ContainerItemKey[tempSourceNames.length];
+            this.sourceList = new ContainerItemProperties[tempSourceNames.length];
             //Set the label of elements from Data Source information
             for(int rowidSource=0;rowidSource<tempSourceNames.length;rowidSource++) {
                 //Try to read the parent schema and place it in the label
