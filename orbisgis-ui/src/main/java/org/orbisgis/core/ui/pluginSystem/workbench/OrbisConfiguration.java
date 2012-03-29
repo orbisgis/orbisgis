@@ -126,22 +126,7 @@ import org.orbisgis.core.ui.plugins.orbisgisFrame.status.WorkspaceNamePlugin;
 import org.orbisgis.core.ui.plugins.orbisgisFrame.workspace.ChangeWorkspacePlugIn;
 import org.orbisgis.core.ui.plugins.orbisgisFrame.workspace.SaveWorkspacePlugIn;
 import org.orbisgis.core.ui.plugins.sql.SQLFunctionsPlugIn;
-import org.orbisgis.core.ui.plugins.toc.CreateChoroplethPlugIn;
-import org.orbisgis.core.ui.plugins.toc.CreateGroupPlugIn;
-import org.orbisgis.core.ui.plugins.toc.EditSELegendPlugIn;
-import org.orbisgis.core.ui.plugins.toc.ExportFeatureTypeStylePlugIn;
-import org.orbisgis.core.ui.plugins.toc.GroupLayersPlugIn;
-import org.orbisgis.core.ui.plugins.toc.ImportFeatureTypeStylePlugIn;
-import org.orbisgis.core.ui.plugins.toc.RemoveLayerPlugIn;
-import org.orbisgis.core.ui.plugins.toc.RevertLayerPlugIn;
-import org.orbisgis.core.ui.plugins.toc.SaveInDataBasePlugIn;
-import org.orbisgis.core.ui.plugins.toc.SaveInFilePlugIn;
-import org.orbisgis.core.ui.plugins.toc.SaveLayerPlugIn;
-import org.orbisgis.core.ui.plugins.toc.SetActivePlugIn;
-import org.orbisgis.core.ui.plugins.toc.SetInactivePlugIn;
-import org.orbisgis.core.ui.plugins.toc.ShowInTablePlugIn;
-import org.orbisgis.core.ui.plugins.toc.SwitchToDraftPlugIn;
-import org.orbisgis.core.ui.plugins.toc.ZoomToLayerPlugIn;
+import org.orbisgis.core.ui.plugins.toc.*;
 import org.orbisgis.core.ui.plugins.toc.raster.nodata.SetnodataValuePlugIn;
 import org.orbisgis.core.ui.plugins.toc.raster.style.RasterDefaultStylePlugIn;
 import org.orbisgis.core.ui.plugins.toc.raster.threshold.RasterThresholdPlugIn;
@@ -194,7 +179,7 @@ public class OrbisConfiguration implements Setup {
         private ChangeWorkspacePlugIn changeWorkspacePlugIn = new ChangeWorkspacePlugIn();
 
         // TOC
-	//private EditLegendPlugIn editLegendPlugIn = new EditLegendPlugIn();
+	private EditLegendPlugIn editLegendPlugIn = new EditLegendPlugIn();
 	private EditSELegendPlugIn editFts = new EditSELegendPlugIn();
     private ImportFeatureTypeStylePlugIn importFTSPlugIn = new ImportFeatureTypeStylePlugIn();
     private ExportFeatureTypeStylePlugIn exportFTSPlugIn = new ExportFeatureTypeStylePlugIn();
@@ -339,7 +324,7 @@ public class OrbisConfiguration implements Setup {
         private void configurePopup(PlugInContext context) {
                 try {
                         // TOC popup
-			//editLegendPlugIn.initialize(context);
+			editLegendPlugIn.initialize(context);
             editFts.initialize(context);
             importFTSPlugIn.initialize(context);
             exportFTSPlugIn.initialize(context);

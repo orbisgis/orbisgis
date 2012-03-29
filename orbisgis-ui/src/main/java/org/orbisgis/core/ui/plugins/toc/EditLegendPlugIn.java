@@ -37,7 +37,11 @@
  */
 package org.orbisgis.core.ui.plugins.toc;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JOptionPane;
+import javax.xml.bind.JAXBElement;
+import net.opengis.se._2_0.core.StyleType;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
@@ -45,7 +49,10 @@ import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.classification.ClassificationMethodException;
-import org.orbisgis.core.renderer.legend.Legend;
+import org.orbisgis.core.renderer.se.Rule;
+import org.orbisgis.core.renderer.se.SeExceptions;
+import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendsPanel;
@@ -63,7 +70,15 @@ import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 import org.orbisgis.core.ui.plugins.views.mapEditor.MapEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.legend.Legend;
+import org.orbisgis.legend.thematic.factory.LegendFactory;
 
+/**
+ * If activated, this plugin will offer an entry in the menu that is shown when
+ * right clicking on a layer. If chosen, it tries to build an interface to edit
+ * the symbolization of the layer.
+ * @author alexis, others
+ */
 public class EditLegendPlugIn extends AbstractPlugIn {
 
         @Override
@@ -106,31 +121,51 @@ public class EditLegendPlugIn extends AbstractPlugIn {
 				JOptionPane.showMessageDialog(null,
 						Names.ERROR_EDIT_LEGEND_EDITOR);
 			}
-
-			Legend[] legend = layer.getVectorLegend();
-			Legend[] copies = new Legend[legend.length];
-			for (int i = 0; i < copies.length; i++) {
-				Object obj = legend[i].getJAXBObject();
-				Legend copy = legend[i].newInstance();
-				copy.setJAXBObject(obj);
-				copies[i] = copy;
-				copies[i].setVisible(legend[i].isVisible());
-			}
+                        Style style = layer.getStyle();
+                        //In order to be able to cancel all of our modifications,
+                        //we produce a copy of our style.
+                        JAXBElement<StyleType> jest = style.getJAXBElement();
+                        Style copy = new Style(jest, layer);
+                        //We retrieve the Rules
+                        List<Rule> rules = copy.getRules();
+                        //For each Rule, we try to produce a Legend analysis
+                        //using the new Legend API.
+                        List<Legend> leg = new ArrayList<Legend>();
+                        for(Rule r : rules){
+                                List<Symbolizer> sym = r.getCompositeSymbolizer().getSymbolizerList();
+                                for(Symbolizer s : sym){
+                                        leg.add(LegendFactory.getLegend(s));
+                                }
+                        }
+//			for (int i = 0; i < copies.length; i++) {
+//				Object obj = legend[i].getJAXBObject();
+//				Legend copy = legend[i].newInstance();
+//				copy.setJAXBObject(obj);
+//				copies[i] = copy;
+//				copies[i].setVisible(legend[i].isVisible());
+//			}
 			ILegendPanel[] legends = EPLegendHelper.getLegendPanels(pan);
 			ISymbolEditor[] symbolEditors = EPLegendHelper.getSymbolPanels();
-			pan.init(mt, typ, copies, legends, symbolEditors, layer);
+			pan.init(mt, typ, leg.toArray(new Legend[leg.size()]), legends, symbolEditors, layer);
 			if (UIFactory.showDialog(pan)) {
 				try {
-					layer.setLegend(pan.getLegends());
-				} catch (DriverException e) {
-					ErrorMessages.error(Names.ERROR_EDIT_LEGEND_DRIVER, e);
+                                        Legend[] ret = pan.getLegends();
+                                        Style t = new Style(layer, false);
+                                        Rule r = new Rule();
+                                        for(Legend l : ret){
+                                                r.getCompositeSymbolizer().addSymbolizer(l.getSymbolizer());
+                                        }
+                                        t.getRules().add(r);
+                                        layer.setStyle(t);
 				} catch (ClassificationMethodException e) {
 					ErrorMessages.error(e.getMessage());
 				}
 			}
 		} catch (DriverException e) {
 			ErrorMessages.error(Names.ERROR_EDIT_LEGEND_DRIVER, e);
-		}
+		} catch (SeExceptions.InvalidStyle is){
+			ErrorMessages.error(Names.ERROR_EDIT_LEGEND_DRIVER, is);
+                }
 	}
 
     @Override
