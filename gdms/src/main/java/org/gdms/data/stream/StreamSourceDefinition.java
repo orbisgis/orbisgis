@@ -154,11 +154,13 @@ public class StreamSourceDefinition extends AbstractDataSourceDefinition {
         public StreamSource getSourceDefinition() {
                 return this.m_streamSource;
         }
-
+        
         public static DataSourceDefinition createFromXML(StreamDefinitionType definition) {
-                StreamSource streamSource = new StreamSource(definition.getHost(), 80,
-                        definition.getLayerName(), "", "", "wms",
-                        definition.getImageFormat(), definition.getSRS());
+                StreamSource streamSource = new StreamSource(definition.getHost(), Integer.parseInt(definition.getPort()),
+                        definition.getLayerName(), definition.getPrefix(),
+                        definition.getImageFormat(), definition.getSRS(),
+                        definition.getUser(), definition.getPassword());
+
                 return new StreamSourceDefinition(streamSource);
         }
 

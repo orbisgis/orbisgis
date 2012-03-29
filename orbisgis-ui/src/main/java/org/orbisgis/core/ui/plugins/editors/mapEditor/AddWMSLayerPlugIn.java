@@ -141,7 +141,7 @@ public class AddWMSLayerPlugIn extends AbstractPlugIn {
                                         for (Object layer : layers) {
                                                 String layerName = ((WMSLayer) layer).getName();
                                                 StreamSource source = new StreamSource(client.getHost(), 80,
-                                                        layerName, "", "", "wms", srsPanel.getSRS(), validImageFormat);
+                                                        layerName, "wms", validImageFormat, srsPanel.getSRS());
                                                 DataManager dm = (DataManager) Services.getService(DataManager.class);
                                                 SourceManager sourceManager = dm.getSourceManager();
                                                 String uniqueName = sourceManager.getUniqueName(layerName);

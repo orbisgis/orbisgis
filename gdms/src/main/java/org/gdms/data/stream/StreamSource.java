@@ -53,27 +53,29 @@ public class StreamSource implements Serializable {
     private String m_prefix;
     private String m_srs;
     
+    
     public StreamSource(String host, int port, String layerName, String prefix) {
-        this(host, port, layerName, "", "", prefix);
+        this(host, port, layerName, prefix, "", "", "", "");
     }
     
-    public StreamSource(String host, int port, String layerName,
-            String user, String password, String prefix) {
+    public StreamSource(String host, int port, String layerName, String prefix,
+            String imageFormat, String srs) {
+        this(host, port, layerName, prefix, imageFormat, srs, "", "");
+    }
+    
+   public StreamSource(String host, int port, String layerName, String prefix,
+            String imageFormat, String srs,
+            String user, String password) {
         this.m_host = host;
         this.m_port = port;
         this.m_layerName = layerName;
         this.m_prefix = prefix;
+        this.m_imageFormat = imageFormat;
+        this.m_srs = srs;
         this.m_user = user;
         this.m_password = password;
     }
     
-   public StreamSource(String host, int port, String layerName,
-            String user, String password, String prefix, String imageFormat, String srs) {
-        this(host, port, layerName, user, password, prefix);
-        this.m_imageFormat = imageFormat;
-        this.m_srs = srs;
-    }
-
     public String getHost() {
         return this.m_host;
     }

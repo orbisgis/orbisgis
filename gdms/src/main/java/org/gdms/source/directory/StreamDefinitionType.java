@@ -6,7 +6,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
 import org.gdms.data.DataSourceDefinition;
-import org.gdms.source.directory.DefinitionType;
 import org.gdms.data.stream.StreamSourceDefinition;
 
 /**
@@ -29,7 +28,12 @@ public class StreamDefinitionType extends DefinitionType {
         @XmlAttribute(required = true)
         protected String password;
         @XmlAttribute(required = true)
-        protected String prefix;
+        protected String prefix;    
+        @XmlAttribute(required = true)
+        protected String format;
+        @XmlAttribute(required = true)
+        protected String srs;
+        
 
         /**
          * Gets the value of the host property.
@@ -174,7 +178,54 @@ public class StreamDefinitionType extends DefinitionType {
         public void setPrefix(String value) {
                 this.prefix = value;
         }
+        
+        /**
+         * Gets the value of the format property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getImageFormat() {
+                return format;
+        }
 
+        /**
+         * Sets the value of the format property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setImageFormat(String value) {
+                this.prefix = value;
+        }
+        
+        /**
+         * Gets the value of the srs property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getSRS() {
+                return srs;
+        }
+
+        /**
+         * Sets the value of the srs property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setSRS(String value) {
+                this.srs = value;
+        }
 
         @Override
         public DataSourceDefinition toDataSourceDefinition() {
