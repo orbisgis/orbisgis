@@ -54,7 +54,7 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.renderer.legend.Legend;
+import org.orbisgis.legend.Legend;
 import org.orbisgis.core.renderer.legend.carto.LegendFactory;
 import org.orbisgis.core.renderer.legend.carto.UniqueValueLegend;
 import org.orbisgis.core.renderer.symbol.Symbol;

@@ -57,7 +57,7 @@ import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.types.Type;
  
 import org.gdms.data.types.TypeFactory;
-import org.orbisgis.core.renderer.legend.Legend;
+import org.orbisgis.legend.Legend;
 import org.orbisgis.core.renderer.legend.carto.ClassifiedLegend;
 import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.renderer.symbol.SymbolFactory;
@@ -333,7 +333,8 @@ public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 		if (table.isEditing()) {
 			table.getCellEditor().stopCellEditing();
 		}
-		return legend;
+                return null;
+//		return legend;
 	}
 
         @Override

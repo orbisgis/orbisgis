@@ -46,15 +46,13 @@
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.legend;
 
 import java.awt.Component;
-
-import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendContext;
+import org.orbisgis.legend.Legend;
 
 /**
  * 
  * @author David Ortega
  */
-@Deprecated
 public interface ILegendPanel {
 	/**
 	 * This function will return the Component of the object (normally a

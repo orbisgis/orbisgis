@@ -48,7 +48,6 @@ import java.net.URL;
 
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
-import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.renderer.legend.carto.LegendFactory;
 import org.orbisgis.core.renderer.legend.carto.UniqueSymbolLegend;
 import org.orbisgis.core.renderer.symbol.Symbol;
@@ -59,6 +58,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendContext;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.SymbolBuilder;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.SymbolFilter;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
+import org.orbisgis.legend.Legend;
 
 /**
  * 
@@ -84,8 +84,8 @@ public class PnlUniqueSymbolLegend extends javax.swing.JPanel implements
 	public Legend getLegend() {
 		Symbol sym = symbolEditor.getSymbolComposite();
 		leg.setSymbol(sym);
-
-		return leg;
+                return null;
+//		return leg;
 	}
 
 	public Component getComponent() {

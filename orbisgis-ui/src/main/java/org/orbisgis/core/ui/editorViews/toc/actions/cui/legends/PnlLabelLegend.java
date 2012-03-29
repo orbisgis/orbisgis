@@ -59,7 +59,7 @@ import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.renderer.legend.Legend;
+import org.orbisgis.legend.Legend;
 import org.orbisgis.core.renderer.legend.carto.LabelLegend;
 import org.orbisgis.core.renderer.legend.carto.LegendFactory;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendContext;
@@ -144,7 +144,8 @@ public class PnlLabelLegend extends JPanel implements ILegendPanel {
 			legend.setFontSize(fontSize);
 		} catch (NumberFormatException e) {
 		}
-		return legend;
+                return null;
+//		return legend;
 	}
 
 	public ILegendPanel newInstance() {

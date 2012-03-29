@@ -70,7 +70,7 @@ import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.classification.ClassificationMethodException;
-import org.orbisgis.core.renderer.legend.Legend;
+import org.orbisgis.legend.Legend;
 import org.orbisgis.core.renderer.legend.RenderException;
 import org.orbisgis.core.renderer.legend.carto.LegendFactory;
 import org.orbisgis.core.renderer.legend.carto.ProportionalLegend;
@@ -353,7 +353,8 @@ public class PnlProportionalLineLegend extends JPanel implements ILegendPanel {
 
     @Override
 	public Legend getLegend() {
-		return legend;
+//		return legend;
+            return null;
 	}
 
     @Override

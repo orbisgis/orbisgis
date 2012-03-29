@@ -60,7 +60,7 @@ import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.renderer.classification.RangeMethod;
-import org.orbisgis.core.renderer.legend.Legend;
+import org.orbisgis.legend.Legend;
 import org.orbisgis.core.renderer.legend.carto.Interval;
 import org.orbisgis.core.renderer.legend.carto.IntervalLegend;
 import org.orbisgis.core.renderer.legend.carto.LegendFactory;

@@ -37,19 +37,12 @@
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.legend;
 
 import java.util.ArrayList;
-
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendContext;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.ArrowSymbolEditor;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.ImageSymbolEditor;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.PnlIntervalLegend;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.PnlLabelLegend;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.PnlProportionalLineLegend;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.PnlProportionalPointLegend;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.PnlUniqueSymbolLegend;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.PnlUniqueValueLegend;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.PnlUniqueLineSE;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.StandardSymbolEditor;
 
-@Deprecated
 public class EPLegendHelper {
 
 	/**
@@ -58,31 +51,9 @@ public class EPLegendHelper {
 	public static ILegendPanel[] getLegendPanels(LegendContext legendContext) {
 
 		ArrayList<ILegendPanel> legends = new ArrayList<ILegendPanel>();
-
-		ILegendPanel pnlUniqueSymbolLegend = new PnlUniqueSymbolLegend();
-		pnlUniqueSymbolLegend.initialize(legendContext);
-		legends.add(pnlUniqueSymbolLegend);
-
-		ILegendPanel pnlUniqueValueLegend = new PnlUniqueValueLegend();
-		pnlUniqueValueLegend.initialize(legendContext);
-		legends.add(pnlUniqueValueLegend);
-
-		ILegendPanel pnlIntervalLegend = new PnlIntervalLegend();
-		pnlIntervalLegend.initialize(legendContext);
-		legends.add(pnlIntervalLegend);
-
-		ILegendPanel pnlProportionalLegend = new PnlProportionalPointLegend();
-		pnlProportionalLegend.initialize(legendContext);
-		legends.add(pnlProportionalLegend);
-
-		ILegendPanel pnlProportionalLineLegend = new PnlProportionalLineLegend();
-		pnlProportionalLineLegend.initialize(legendContext);
-		legends.add(pnlProportionalLineLegend);
-
-		ILegendPanel pnlLabelLegend = new PnlLabelLegend();
-		pnlLabelLegend.initialize(legendContext);
-		legends.add(pnlLabelLegend);
-
+                ILegendPanel pnlUniqueLine = new PnlUniqueLineSE();
+                pnlUniqueLine.initialize(legendContext);
+                legends.add(pnlUniqueLine);
 		return legends.toArray(new ILegendPanel[legends.size()]);
 	}
 
