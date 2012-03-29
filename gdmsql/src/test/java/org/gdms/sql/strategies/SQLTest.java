@@ -80,6 +80,16 @@ public class SQLTest extends SQLBaseTest {
                         new MemoryDataSetDriver(metadata));
                 dsf.executeSQL("insert into source (f1) values (StringToInt('2'));");
         }
+        
+        @Test
+        public void testInsertWithSelect() throws Exception {
+
+                DefaultMetadata metadata = new DefaultMetadata();
+                metadata.addField("f1", Type.DOUBLE);
+                dsf.getSourceManager().register("source",
+                        new MemoryDataSetDriver(metadata));
+                dsf.executeSQL("insert into source (f1) select runoff_win from " + getSHPTABLE() + ";");
+        }
 
         @Test
         public void testCreateAsTableCustomQuery() throws Exception {

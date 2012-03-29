@@ -533,6 +533,22 @@ public class ProcessorTest {
                 // field references in values
                 failWithSemanticException("insert into gis values ('2', id);");
         }
+        
+        @Test
+        public void testInsertSelect() throws Exception {
+                getValidatedStatement("insert into alltypes (\"int\") select 1, 18 from toto;");
+
+                // field-value count mistmatch
+                failPreparedWithSemanticException("insert into gis select * from values ('2', '2', '2') toto;");
+                // table not found
+                failPreparedWithSemanticException("insert into alltypes select * from values (1) toto;");
+                // field not found
+                failPreparedWithSemanticException("insert into gis (id, Gis) select * from values ('a', 'a') toto;");
+                // Type mistmatch
+                failPreparedWithIncompatibleTypes("insert into gis (id, gis) select * from values ('a', 4) toto;");
+                // field references in values
+                failWithSemanticException("insert into gis select * from values ('2', id) toto;");
+        }
 
         @Test
         public void testIs() throws Exception {

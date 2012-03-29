@@ -285,18 +285,25 @@ object LogicPlanBuilder {
 		//   ^(T_VALUES ^(T_VALUES (expression_main | T_DEFAULT)+ )+) <-- rows
 		//   ^(T_COLUMN_LIST LONG_ID+)? <-- field names
 		//  )
-                var e: List[Array[Expression]] = Nil
+                var e: List[List[Expression]] = Nil
                 val ch = getChilds(c(1))
                 ch foreach { g => e = (getChilds(g) map { t => t.getType match {
-                        case T_DEFAULT => null
+                        case T_DEFAULT => Expression(ValueFactory.createNullValue[Value])
                         case _ => parseExpression(t)
                       }
-                    } toArray) :: e
+                    }) :: e
                 }
                 e = e reverse
                 
-                end = StaticInsert(getFullTableName(c(0)), e, fields)
+                val valscan = ValuesScan(e, None, false)
+                
+                end = Insert(getFullTableName(c(0)), fields, valscan)
               }
+            case T_SELECT => {
+                val s = buildOperationTree(c(1))
+                // step over the Output
+                end = Insert(getFullTableName(c(0)), fields, s.children.head)
+            }
           }
         }
       case T_DELETE => {

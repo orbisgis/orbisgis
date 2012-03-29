@@ -251,6 +251,12 @@ public class GrammarTest {
                 notParse("insert into mytable (field) values (3 * abs(field));");
                 parse("insert into mytable (field1, field2, field3) values (1, 2, 3);");
         }
+        
+        @Test
+        public void testInsertSelect() throws Exception {
+                notParse("insert into table1, table2 (field) select * from tutu;");
+                parse("insert into mytable (field1, field2, field3) select * from tata order by something;");
+        }
 
         @Test
         public void testColumnSelectionInInsert() throws Exception {

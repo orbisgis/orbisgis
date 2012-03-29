@@ -229,7 +229,7 @@ object PhysicalPlanBuilder {
       case Sort(exprs, ch) => new MergeSortCommand(exprs) withChild(ch)
       case Union(a,b) => new UnionCommand() withChildren(Seq(a,b))
       case Update(e, ch) => new UpdateCommand(e) withChild(ch)
-      case StaticInsert(t, e, f) => new StaticInsertCommand(t, e, f)
+      case Insert(t, f, ch) => new InsertCommand(t, f) withChild(ch)
       case Delete(ch) => new DeleteCommand() withChild(ch)
       case a @ CustomQueryScan(_,e, t, alias) => {
           var tables = t map { 

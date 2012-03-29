@@ -45,7 +45,7 @@ import org.gdms.data.types.TypeFactory
 import org.gdms.data.schema.DefaultMetadata
 import org.gdms.data.types.IncompatibleTypesException
 import org.gdms.sql.engine.SemanticException
-import org.gdms.sql.evaluator.Expression
+import org.gdms.data.values.Value
 import org.gdms.data.values.ValueFactory
 import org.gdms.driver.memory.MemoryDataSetDriver
 import org.gdms.sql.engine.GdmSQLPredef._
@@ -57,12 +57,9 @@ import org.orbisgis.progress.ProgressMonitor
  * @author Antoine Gourlay
  * @since 0.1
  */
-class StaticInsertCommand(table: String, exps: Seq[Array[Expression]], fields: Option[Seq[String]])
-extends Command with OutputCommand with ExpressionCommand {
+class InsertCommand(table: String, fields: Option[Seq[String]])
+extends Command with OutputCommand {
 
-  // expressions to init (ExpressionCommand)
-  protected def exp = exps flatten
-  
   private var rightOrder: Array[(Int, Int)] = null
   
   var ds: DataSource = null
@@ -86,17 +83,27 @@ extends Command with OutputCommand with ExpressionCommand {
           
           rightOrder = r.map(_._2).zipWithIndex toArray
         }
-      case None => {
-          val r = m.getFieldCount
-          exps foreach (a => if (a.length != r) {
-              throw new SemanticException("There are " + a.length + " fields specified. Expected " + r + "fields to insert.")
-            })
-        }
+      case _ =>
     }
     
     val types = (0 until m.getFieldCount) map (m.getFieldType(_).getTypeCode)
-    val exTypes = order(exps.head) map (_.evaluator.sqlType)
-    (types zip exTypes) foreach { _ match {
+    val chm = children.head.getMetadata
+    
+    val expCount = if (rightOrder == null) {
+      m.getFieldCount
+    } else {
+      rightOrder.length
+    }
+    if (chm.getFieldCount != expCount) {
+      throw new SemanticException("There are " + chm.getFieldCount + " fields specified. Expected " + expCount + "fields to insert.")
+    }
+    
+    val inTypes = if (rightOrder == null) {
+      (0 until chm.getFieldCount) map (chm.getFieldType(_).getTypeCode)
+    } else {
+      rightOrder map(r => chm.getFieldType(r._1).getTypeCode) toSeq
+    }
+    (types zip inTypes) foreach { _ match {
         case (a, b) if !TypeFactory.canBeCastTo(b, a) =>{
             ds.close
             throw new IncompatibleTypesException("type " + TypeFactory.getTypeName(b) + " cannot be cast to "
@@ -109,9 +116,9 @@ extends Command with OutputCommand with ExpressionCommand {
     res = new MemoryDataSetDriver(new DefaultMetadata(Array(TypeFactory.createType(Type.LONG)), Array("Inserted")))
   }
   
-  private def order(a: Array[Expression]): Array[Expression] = {
+  private def order(a: Array[Value]): Array[Value] = {
     if (rightOrder == null) a else {
-      val out = new Array[Expression](rightOrder.length)
+      val out = new Array[Value](rightOrder.length)
       rightOrder foreach (i => out(i._1) = a(i._2))
       out
     }
@@ -119,10 +126,12 @@ extends Command with OutputCommand with ExpressionCommand {
 
   protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
     pm.map(_.startTask("Inserting", 0))
-    // we eval each Array (= row) and give it to insertFilledRow
-    exps foreach { e => ro = ro + 1
-                  ds.insertFilledRow((order(e) map ( _.evaluate(Row.empty) ))) }
-
+    
+    r.next foreach { e =>
+      ro = ro + 1
+      ds.insertFilledRow(order(e))
+    }
+    
     res.addValues(ValueFactory.createValue(ro))
     ro = 0
     
