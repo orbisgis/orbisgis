@@ -61,32 +61,35 @@ public class RasterDefaultStylePlugIn extends AbstractPlugIn {
 	@Override
 	public boolean execute(PlugInContext context) throws Exception {
 
-		try {
+//		try {
 			MapContext mapContext = getPlugInContext().getMapContext();
 			ILayer[] selectedResources = mapContext.getSelectedLayers();
 			ILayer layer = selectedResources[0];
-			RasterLegend legend = (RasterLegend) layer.getRasterLegend()[0];
-			final RasterDefaultStyleUIPanel rasterDefaultStyleUIClass = new RasterDefaultStyleUIPanel(
-					legend, layer.getRaster().getDefaultColorModel());
+//			RasterLegend legend = (RasterLegend) layer.getRasterLegend()[0];
+//			final RasterDefaultStyleUIPanel rasterDefaultStyleUIClass = new RasterDefaultStyleUIPanel(
+//					legend, layer.getRaster().getDefaultColorModel());
+//
+//			if (UIFactory.showDialog(rasterDefaultStyleUIClass)) {
+//				ColorModel colorModel = rasterDefaultStyleUIClass
+//						.getColorModel();
+//				float opacity = rasterDefaultStyleUIClass.getOpacity();
+//				if (colorModel == null) {
+//					colorModel = legend.getColorModel();
+//				}
+//				RasterLegend newLegend = new RasterLegend(colorModel, opacity);
+//				layer.setLegend(newLegend);
+//			}
 
-			if (UIFactory.showDialog(rasterDefaultStyleUIClass)) {
-				ColorModel colorModel = rasterDefaultStyleUIClass
-						.getColorModel();
-				float opacity = rasterDefaultStyleUIClass.getOpacity();
-				if (colorModel == null) {
-					colorModel = legend.getColorModel();
-				}
-				RasterLegend newLegend = new RasterLegend(colorModel, opacity);
-				layer.setLegend(newLegend);
-			}
-
-		} catch (DriverException e) {
-			Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.ui.rasterDefaultStylePlugIn.cannotGetLegend"), e); //$NON-NLS-1$
-		} catch (IOException e) {
-			Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.ui.rasterDefaultStylePlugIn.cannotGetDefaultStyle"), e); //$NON-NLS-1$
-
-			Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.ui.rasterDefaultStylePlugIn.cannotGetDefaultStyle"), e); //$NON-NLS-1$
-		}
+//		} catch (DriverException e) {
+//			Services.getErrorManager().error(
+//                                I18N.getString("orbisgis.org.orbisgis.ui.rasterDefaultStylePlugIn.cannotGetLegend"), e);
+//		} catch (IOException e) {
+//			Services.getErrorManager().error(
+//                                I18N.getString("orbisgis.org.orbisgis.ui.rasterDefaultStylePlugIn.cannotGetDefaultStyle"), e);
+//
+//			Services.getErrorManager().error(
+//                                I18N.getString("orbisgis.org.orbisgis.ui.rasterDefaultStylePlugIn.cannotGetDefaultStyle"), e);
+//		}
 
 		return false;
 	}

@@ -36,12 +36,8 @@
  */
 package org.orbisgis.core.ui.editorViews.toc;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import java.awt.*;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -60,6 +56,9 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.renderer.se.Rule;
+import org.orbisgis.core.renderer.symbol.LineSymbol;
+import org.orbisgis.core.renderer.symbol.SymbolFactory;
+import org.orbisgis.core.renderer.symbol.SymbolUtil;
 import org.orbisgis.core.sif.CRFlowLayout;
 import org.orbisgis.utils.I18N;
 
@@ -104,13 +103,13 @@ public class TocRenderer extends TocAbstractRenderer implements
 					return ourJPanel.getJPanel();
 				}
 
-				else if (layer.isWMS()) {
-					WMSLegendRenderPanel ourJPanel = new WMSLegendRenderPanel();
-					ourJPanel.setNodeCosmetic(tree, layer,
-							ruleNode.getRuleIndex(), selected, expanded,
-							leaf, row, hasFocus);
-					return ourJPanel.getJPanel();
-				} 
+//				else if (layer.isWMS()) {
+//					WMSLegendRenderPanel ourJPanel = new WMSLegendRenderPanel();
+//					ourJPanel.setNodeCosmetic(tree, layer,
+//							ruleNode.getRuleIndex(), selected, expanded,
+//							leaf, row, hasFocus);
+//					return ourJPanel.getJPanel();
+//				}
 				
 				else {
 					RasterLegendRenderPanel ourJPanel = new RasterLegendRenderPanel();
@@ -317,24 +316,24 @@ public class TocRenderer extends TocAbstractRenderer implements
 		public void setNodeCosmetic(JTree tree, ILayer node, int legendIndex,
 				boolean selected, boolean expanded, boolean leaf, int row,
 				boolean hasFocus) {
-			try {
+//			try {
 				jpanel.setBackground(DESELECTED);
 				Graphics2D dummyGraphics = new BufferedImage(10, 10,
 						BufferedImage.TYPE_INT_ARGB).createGraphics();
-				Legend legend = node.getRenderingLegend()[legendIndex];
-				int[] imageSize = legend.getImageSize(dummyGraphics);
+//				Legend legend = node.getRenderingLegend()[legendIndex];
+				int[] imageSize = getImageSize(dummyGraphics);
 				if ((imageSize[0] != 0) && (imageSize[1] != 0)) {
 					BufferedImage legendImage = new BufferedImage(imageSize[0],
 							imageSize[1], BufferedImage.TYPE_INT_ARGB);
-					legend.drawImage(legendImage.createGraphics());
+					drawImage(legendImage.createGraphics());
 					ImageIcon imageIcon = new ImageIcon(legendImage);
 					lblLegend.setIcon(imageIcon);
 				}
-			} catch (DriverException e) {
-				Services.getErrorManager().error(
-						I18N.getString("orbisgis.org.orbisgis.ui.toc.tocRenderer.cannotAccessLegendsLayer") + node.getName(), //$NON-NLS-1$
-						e);
-			}
+//			} catch (DriverException e) {
+//				Services.getErrorManager().error(
+//                                        I18N.getString("orbisgis.org.orbisgis.ui.toc.tocRenderer.cannotAccessLegendsLayer")
+//                                        + node.getName(), e);
+//			}
 		}
 
 		public Component getJPanel() {
@@ -342,49 +341,64 @@ public class TocRenderer extends TocAbstractRenderer implements
 		}
 
 	}
+	public int[] getImageSize(Graphics g) {
+		FontMetrics fm = g.getFontMetrics();
+		Rectangle2D stringBounds = fm.getStringBounds("line", g);
+		int width = 35 + (int) stringBounds.getWidth();
 
-	public class WMSLegendRenderPanel {
-
-		private JLabel lblLegend;
-		private JPanel jpanel;
-
-		public WMSLegendRenderPanel() {
-			FlowLayout fl = new FlowLayout(FlowLayout.LEADING);
-			fl.setHgap(0);
-			jpanel = new JPanel();
-			jpanel.setLayout(fl);
-			lblLegend = new JLabel();
-			jpanel.add(lblLegend);
-		}
-
-		public void setNodeCosmetic(JTree tree, ILayer node, int legendIndex,
-				boolean selected, boolean expanded, boolean leaf, int row,
-				boolean hasFocus) {
-			try {
-				jpanel.setBackground(DESELECTED);
-				Graphics2D dummyGraphics = new BufferedImage(10, 10,
-						BufferedImage.TYPE_INT_ARGB).createGraphics();
-				Legend legend = node.getRenderingLegend()[legendIndex];
-				int[] imageSize = legend.getImageSize(dummyGraphics);
-				if ((imageSize[0] != 0) && (imageSize[1] != 0)) {
-					BufferedImage legendImage = new BufferedImage(imageSize[0],
-							imageSize[1], BufferedImage.TYPE_INT_ARGB);
-					legend.drawImage(legendImage.createGraphics());
-					ImageIcon imageIcon = new ImageIcon(legendImage);
-					lblLegend.setIcon(imageIcon);
-				}
-			} catch (DriverException e) {
-				Services.getErrorManager().error(
-						I18N.getString("orbisgis.org.orbisgis.ui.toc.tocRenderer.cannotAccessLegendsLayer") + node.getName(), //$NON-NLS-1$
-						e);
-			}
-		}
-
-		public Component getJPanel() {
-			return jpanel;
-		}
-
+		return new int[] { width, (int) Math.max(stringBounds.getHeight(), 20) };
 	}
+
+	public void drawImage(Graphics g) {
+		SymbolUtil.drawSymbolPreview((Graphics2D) g, SymbolFactory.createLineSymbol(new Color(50, 50, 50), 2), 30, 20, true);
+		g.setColor(Color.black);
+		FontMetrics fm = g.getFontMetrics();
+		Rectangle2D r = fm.getStringBounds("line", g);
+		g.drawString("line", 35, (int) (10 + r.getHeight() / 2));
+	}
+
+//	public class WMSLegendRenderPanel {
+//
+//		private JLabel lblLegend;
+//		private JPanel jpanel;
+//
+//		public WMSLegendRenderPanel() {
+//			FlowLayout fl = new FlowLayout(FlowLayout.LEADING);
+//			fl.setHgap(0);
+//			jpanel = new JPanel();
+//			jpanel.setLayout(fl);
+//			lblLegend = new JLabel();
+//			jpanel.add(lblLegend);
+//		}
+//
+//		public void setNodeCosmetic(JTree tree, ILayer node, int legendIndex,
+//				boolean selected, boolean expanded, boolean leaf, int row,
+//				boolean hasFocus) {
+//			try {
+//				jpanel.setBackground(DESELECTED);
+//				Graphics2D dummyGraphics = new BufferedImage(10, 10,
+//						BufferedImage.TYPE_INT_ARGB).createGraphics();
+//				Legend legend = node.getRenderingLegend()[legendIndex];
+//				int[] imageSize = legend.getImageSize(dummyGraphics);
+//				if ((imageSize[0] != 0) && (imageSize[1] != 0)) {
+//					BufferedImage legendImage = new BufferedImage(imageSize[0],
+//							imageSize[1], BufferedImage.TYPE_INT_ARGB);
+//					legend.drawImage(legendImage.createGraphics());
+//					ImageIcon imageIcon = new ImageIcon(legendImage);
+//					lblLegend.setIcon(imageIcon);
+//				}
+//			} catch (DriverException e) {
+//				Services.getErrorManager().error(
+//                                        I18N.getString("orbisgis.org.orbisgis.ui.toc.tocRenderer.cannotAccessLegendsLayer") +
+//                                        node.getName(), e);
+//			}
+//		}
+//
+//		public Component getJPanel() {
+//			return jpanel;
+//		}
+//
+//	}
 
 	
 

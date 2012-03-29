@@ -193,19 +193,19 @@ public class ExportMapAsPDFPlugIn extends AbstractPlugIn {
 				for (int i = 0; i < layers.length; i++) {
 					g2dLegend.translate(0, maxHeight + 10);
 					maxHeight = 0;
-					if (layers[i].isVisible()) {
-						Legend[] legends = layers[i].getRenderingLegend();
-						g2dLegend.drawString(layers[i].getName(), 0, 0);
-						for (int j = 0; j < legends.length; j++) {
-							Legend vectorLegend = legends[j];
-							vectorLegend.drawImage(g2dLegend);
-							int[] size = vectorLegend.getImageSize(g2dLegend);
-							if (size[1] > maxHeight) {
-								maxHeight = size[1];
-							}
-							g2dLegend.translate(0, 20);
-						}
-					}
+//					if (layers[i].isVisible()) {
+//						Legend[] legends = layers[i].getRenderingLegend();
+//						g2dLegend.drawString(layers[i].getName(), 0, 0);
+//						for (int j = 0; j < legends.length; j++) {
+//							Legend vectorLegend = legends[j];
+//							vectorLegend.drawImage(g2dLegend);
+//							int[] size = vectorLegend.getImageSize(g2dLegend);
+//							if (size[1] > maxHeight) {
+//								maxHeight = size[1];
+//							}
+//							g2dLegend.translate(0, 20);
+//						}
+//					}
 				}
 
 				g2dScale.translate(150, 0);

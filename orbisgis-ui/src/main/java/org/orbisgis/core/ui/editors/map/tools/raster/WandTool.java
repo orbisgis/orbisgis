@@ -150,7 +150,8 @@ public class WandTool extends AbstractPointTool {
 					.createLayer(buildWandDatasource(polygon));
 
 			vc.getLayerModel().insertLayer(wandLayer, 0);
-			wandLayer.setLegend(uniqueSymbolLegend);
+                        throw new UnsupportedOperationException();
+//			wandLayer.setLegend(uniqueSymbolLegend);
 		} catch (LayerException e) {
 			Services.getErrorManager().error(
 					I18N.getString("orbisgis.org.orbisgis.ui.tools.WandTool.cannotUseWandTool") + e.getMessage(), e); //$NON-NLS-1$

@@ -107,11 +107,12 @@ public class FencePolygonTool extends AbstractPolygonTool {
                         final Symbol polSym = SymbolFactory.createPolygonSymbol(
                                 Color.ORANGE, 4, null);
                         l.setSymbol(polSym);
-                        layer.setLegend(l);
+                        throw new UnsupportedOperationException();
+//                        layer.setLegend(l);
                 } catch (LayerException e) {
                         Services.getErrorManager().error(I18N.getString("orbisgis.core.ui.editors.map.tool.fence.use"), e);
-                } catch (DriverException e) {
-                        Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.ui.layer.legend.cannotApplyLegend"), e);
+//                } catch (DriverException e) {
+//                        Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.ui.layer.legend.cannotApplyLegend"), e);
                 }
         }
 
