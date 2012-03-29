@@ -51,19 +51,9 @@ import java.awt.event.ActionListener;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JToolBar;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
 import org.orbisgis.core.Services;
 import org.orbisgis.core.geocognition.Geocognition;
 import org.orbisgis.core.renderer.symbol.Symbol;
@@ -106,7 +96,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 		}
 
 		public Component getComponent() {
-			return new JLabel(I18N.getString("orbisgis.org.orbisgis.ui.toc.symbolBuilder.noSuitableEditor")); //$NON-NLS-1$
+			return new JLabel(I18N.getString("orbisgis.org.orbisgis.ui.toc.symbolBuilder.noSuitableEditor"));
 		}
 
 		public boolean accepts(Symbol symbol) {

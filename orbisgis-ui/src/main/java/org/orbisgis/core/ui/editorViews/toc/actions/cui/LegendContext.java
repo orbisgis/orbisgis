@@ -42,7 +42,6 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ISymbolEditor;
 
-@Deprecated
 public interface LegendContext {
 
 	/**

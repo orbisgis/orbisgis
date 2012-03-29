@@ -37,14 +37,12 @@
 package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 
 import java.awt.Component;
-
 import javax.swing.JLabel;
-
-import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
+import org.orbisgis.legend.Legend;
 import org.orbisgis.utils.I18N;
 
-@Deprecated
+
 public class NoPanel implements ILegendPanel {
 
 	private Legend legend;
@@ -53,34 +51,41 @@ public class NoPanel implements ILegendPanel {
 		this.legend = legend;
 	}
 
+	@Override
 	public boolean acceptsGeometryType(int geometryType) {
 		return true;
 	}
 
+	@Override
 	public Component getComponent() {
-		return new JLabel(I18N.getString("orbisgis.org.orbisgis.ui.toc.noPanel.noSuitableEditorLegend")); //$NON-NLS-1$
+		return new JLabel(I18N.getString("orbisgis.org.orbisgis.ui.toc.noPanel.noSuitableEditorLegend"));
 	}
 
+	@Override
 	public Legend getLegend() {
 		return legend;
 	}
 
 	public String getLegendTypeName() {
-		throw new RuntimeException(I18N.getString("orbisgis.org.orbisgis.ui.toc.noPanel.bug")); //$NON-NLS-1$
+		throw new RuntimeException(I18N.getString("orbisgis.org.orbisgis.ui.toc.noPanel.bug"));
 	}
 
+	@Override
 	public ILegendPanel newInstance() {
-		throw new RuntimeException(I18N.getString("orbisgis.org.orbisgis.ui.toc.noPanel.bug")); //$NON-NLS-1$
+		throw new RuntimeException(I18N.getString("orbisgis.org.orbisgis.ui.toc.noPanel.bug"));
 	}
 
+	@Override
 	public void setLegend(Legend legend) {
 		this.legend = legend;
 	}
 
+	@Override
 	public void initialize(LegendContext lc) {
 
 	}
 
+	@Override
 	public String validateInput() {
 		return null;
 	}
