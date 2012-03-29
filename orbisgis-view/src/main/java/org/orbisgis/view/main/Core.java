@@ -98,6 +98,7 @@ public class Core {
     public MainFrame getMainFrame() {
         return mainFrame;
     }
+    
     /**
      * Create the Instance of the main frame
      */
@@ -154,6 +155,7 @@ public class Core {
         
         //Initiate the docking management system
         dockManager = new DockingManager(mainFrame);
+        mainFrame.setDockingManager(dockManager);
         
         //Set the main frame position and size
 	mainFrame.setBounds(MAIN_VIEW_POSITION_AND_SIZE);

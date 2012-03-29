@@ -39,6 +39,7 @@ import javax.swing.JMenuItem;
  */
 
 public class MenuBarManager {
+    //This is a dev error, useless to translate
     private final static String PARENT_NOT_EXISTS = "Parent menu must be inserted before the sub-menus";
     private JMenuBar rootBar = new JMenuBar();
     //Store a flat version of menu containers
@@ -52,8 +53,10 @@ public class MenuBarManager {
         String menuLabel = menuItem.getText();
         if(menuLabel.contains("&")) {
             int charpos=menuLabel.indexOf("&");
-            if(menuLabel.length()>charpos+1 && !menuLabel.substring(charpos+1,charpos+2).equals("&")) {
-                menuItem.setMnemonic(menuLabel.substring(charpos+1,charpos+2).toCharArray()[0]);
+            if(menuLabel.length()>charpos+1) {
+                if(!menuLabel.substring(charpos+1,charpos+2).equals("&")) {
+                    menuItem.setMnemonic(menuLabel.substring(charpos+1,charpos+2).toCharArray()[0]);
+                }
                 menuItem.setText(menuLabel.replaceFirst("&",""));
             }
         }

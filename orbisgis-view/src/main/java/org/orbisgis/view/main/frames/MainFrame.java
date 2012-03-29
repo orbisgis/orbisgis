@@ -29,6 +29,8 @@
 
 package org.orbisgis.view.main.frames;
 
+import bibliothek.extension.gui.dock.preference.PreferenceTreeDialog;
+import bibliothek.extension.gui.dock.preference.PreferenceTreeModel;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.beans.EventHandler;
@@ -41,6 +43,7 @@ import org.orbisgis.utils.I18N;
 import org.orbisgis.view.components.menubar.MenuBarManager;
 import org.orbisgis.view.components.menubar.MenuItemProperties;
 import org.orbisgis.view.components.menubar.MenuProperties;
+import org.orbisgis.view.docking.DockingManager;
 import org.orbisgis.view.icons.OrbisGISIcon;
 
 /**
@@ -50,12 +53,17 @@ import org.orbisgis.view.icons.OrbisGISIcon;
 public class MainFrame extends JFrame {
         //Main menu keys
         public final static String MENU_FILE = "file";
-        public final static String MENU_FILE_EXIT = "exitapp";
+        public final static String MENU_EXIT = "exitapp";
         public final static String MENU_TOOLS = "tools";
+        public final static String MENU_CONFIGURE = "configure";
+        
+        //The main frame show panels state,theme, and properties
+        private DockingManager dockingManager=null;
         private MenuBarManager menuBar = new MenuBarManager();
         /**
 	 * Creates a new frame. The content of the frame is not created by
 	 * this constructor, clients must call {@link #setup(Core)}.
+         * @param dockingManager 
 	 */
 	public MainFrame(){
 		setTitle( "OrbisGIS "
@@ -65,7 +73,10 @@ public class MainFrame extends JFrame {
                 createMenu();
                 this.setJMenuBar(menuBar.getRootBar());
 	}
-        
+
+        public void setDockingManager(DockingManager dockingManager) {
+            this.dockingManager = dockingManager;            
+        }
         /**
          * Create the built-ins menu items
          */
@@ -75,9 +86,14 @@ public class MainFrame extends JFrame {
             //Add exit item
             JMenuItem exitMenu = new JMenuItem(I18N.getString("orbisgis.view.main.frames.menu.exitapp"),OrbisGISIcon.getIcon("exit"));
             exitMenu.addActionListener(EventHandler.create(ActionListener.class,this,"onMenuExitApplication"));
-            menuBar.addMenuItem(MENU_FILE,new MenuItemProperties(MENU_FILE_EXIT,exitMenu));
+            menuBar.addMenuItem(MENU_FILE,new MenuItemProperties(MENU_EXIT,exitMenu));
             //Add the tools menu
             menuBar.addMenu("", new MenuProperties(MENU_TOOLS, new JMenu(I18N.getString("orbisgis.view.main.frames.menu.tools"))));
+            //Add preferencies menu item
+            JMenuItem preferenciesMenu = new JMenuItem(I18N.getString("orbisgis.view.main.frames.menu.preferencies"),OrbisGISIcon.getIcon("preferences-system"));
+            preferenciesMenu.addActionListener(EventHandler.create(ActionListener.class,this,"onMenuShowPreferencies"));
+            menuBar.addMenuItem(MENU_TOOLS, new MenuItemProperties(MENU_TOOLS, preferenciesMenu));
+            
         }
         /**
          * 
@@ -86,7 +102,12 @@ public class MainFrame extends JFrame {
         public MenuBarManager getMenuBarManager() {
             return menuBar;
         }
-        
+        /**
+         * The user click on preferencies menu item
+         */
+        public void onMenuShowPreferencies() {
+            dockingManager.showPreferenceDialog();
+        }
         /**
          * The user click on exit application menu item
          */

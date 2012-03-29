@@ -28,6 +28,10 @@
  */
 package org.orbisgis.view.docking;
 
+import bibliothek.extension.gui.dock.DockingFramesPreference;
+import bibliothek.extension.gui.dock.preference.PreferenceModel;
+import bibliothek.extension.gui.dock.preference.PreferenceTreeDialog;
+import bibliothek.extension.gui.dock.preference.PreferenceTreeModel;
 import bibliothek.gui.DockStation;
 import bibliothek.gui.dock.FlapDockStation;
 import bibliothek.gui.dock.StackDockStation;
@@ -38,6 +42,7 @@ import bibliothek.gui.dock.util.PropertyKey;
 import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
+import java.security.acl.Owner;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -53,6 +58,7 @@ import org.orbisgis.view.icons.OrbisGISIcon;
  * This manager can save and load emplacement of views in XML.
  */
 public final class DockingManager {
+        private JFrame owner;
         private static final Logger LOGGER = Logger.getLogger(DockingManager.class);
         File dockingState=null;
         private CControl commonControl; /*!< link to the docking-frames */
@@ -66,6 +72,8 @@ public final class DockingManager {
         /** the {@link StackDockStation} inserted in {@link split} */
         private StackDockStation stackOfReservedDockStations;
 	
+	/** the available preferences */
+	private PreferenceTreeModel preferences;
         /**
          * Return the docked panels
          * @return The set of panels managed by this docking manager.
@@ -73,7 +81,13 @@ public final class DockingManager {
 	public Set<DockingPanel> getPanels() {
             return views.keySet();
         }
-        
+        /**
+         * 
+         * @return The preference model, for the preference panel
+         */
+        public PreferenceModel getDockingPreferenceModel() {
+            return commonControl.getPreferenceModel();
+        }
         /**
          * Load the docking layout 
          */
@@ -100,7 +114,13 @@ public final class DockingManager {
                 }    
             }
         }
-        
+        /**
+         * Show the preference dialog, on the owner,
+         * with at least the preference model of DockingFrames
+         */
+        public void showPreferenceDialog() {
+            PreferenceTreeDialog.openDialog( preferences , owner );
+        }
         /**
          * The multiple instances panels can be shown at the next start of application
          * if their factory is registered 
@@ -131,8 +151,12 @@ public final class DockingManager {
 	 * @param owner the window used as parent for all dialogs
 	 */
 	public DockingManager( JFrame owner){
+                this.owner = owner;
 		//this.frontend = new DockFrontend();
-                commonControl = new CControl(owner);
+                commonControl = new CControl(owner);                
+                //Retrieve the Docking Frames Preferencies
+                preferences = new DockingFramesPreference( commonControl.getController());
+                commonControl.setPreferenceModel(preferences);
                 //Set the default empty size of border docking, named flap
                 commonControl.putProperty(FlapDockStation.MINIMUM_SIZE,  new Dimension(4,4));
                 
@@ -148,6 +172,9 @@ public final class DockingManager {
 
                 //Reduce the default height of the TOP flap bar to 0 px
                 commonControl.getContentArea().getNorth().setMinimumSize(new Dimension(-1,0));
+
+                //Overide default preferencies by user preferenciers
+                //preferences.read();
 
 	}
         
