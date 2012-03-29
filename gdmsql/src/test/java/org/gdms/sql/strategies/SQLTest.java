@@ -835,8 +835,8 @@ public class SQLTest extends SQLBaseTest {
         @Test
         public void testCreateAsUnion() throws Exception {
                 dsf.getSourceManager().remove("newShape");
-                dsf.executeSQL("create table newShape as " + super.getSHPTABLE()
-                        + " union " + super.getSHPTABLE() + ";");
+                dsf.executeSQL("create table newShape as select * from " + super.getSHPTABLE()
+                        + " union select * from " + super.getSHPTABLE() + ";");
                 DataSource newDs = dsf.getDataSource("newShape");
                 DataSource sourceDs = dsf.getDataSource(super.getSHPTABLE());
                 newDs.open();
