@@ -66,11 +66,10 @@ public class GeometryEditTest {
                 assertTrue(Double.isNaN(result.getEndPoint().getCoordinate().z));
                 line = (LineString) wKTReader.read("LINESTRING(0 0 0, 5 0 , 10 0 10)");
                 result = GeometryEdit.linearZInterpolation(line);
-                assertTrue(result.getStartPoint().getCoordinate().z==0);
-                assertTrue(result.getEndPoint().getCoordinate().z==10);
-                assertTrue(result.getCoordinates()[1].z==5);
+                assertTrue(result.getStartPoint().getCoordinate().z == 0);
+                assertTrue(result.getEndPoint().getCoordinate().z == 10);
+                assertTrue(result.getCoordinates()[1].z == 5);
         }
-
 
         /**
          * Test to split a linestring according a point
@@ -260,6 +259,25 @@ public class GeometryEditTest {
                 cutter = (Polygon) wKTReader.read("POLYGON (( 2 -1.8153735632183903, 7.177873563218391 -1.8153735632183903, 7.177873563218391 7, 2 7, 2 -1.8153735632183903 ))");
                 result = GeometryEdit.cutPolygon(polygon, cutter);
                 assertEquals(result.get(0), wKTReader.read("POLYGON (( 2 0, 0 0, 0 10, 10 10, 10 0, 7.177873563218391 0, 7.177873563218391 7, 2 7, 2 0 ))"));
+        }
 
+        @Test
+        public void testST_RemoveHoles() throws Exception {
+                Polygon polygon = (Polygon) wKTReader.read("POLYGON (( 112 68, 112 307, 318 307, 318 68, 112 68 ), "
+                        + "( 184 169, 247 197, 242 247, 167 258, 184 169 ))");
+                Polygon expected = (Polygon) wKTReader.read("POLYGON (( 112 68, 112 307, 318 307, 318 68, 112 68 ))");
+                Geometry result = GeometryEdit.removeHole(polygon);
+                assertTrue(result.equals(expected));
+        }
+        
+        @Test
+        public void testST_Remove3Holes() throws Exception {
+                Polygon polygon = (Polygon) wKTReader.read("POLYGON (( 112 68, 112 307, 318 307, 318 68, 112 68 ), "
+                        + "( 184 169, 247 197, 242 247, 167 258, 184 169 ), "
+                        + "( 235 107, 277 120, 267 167, 221 161, 235 107 ), "
+                        + "( 277 280, 266 255, 281 249, 300 270, 277 280 ))");
+                Polygon expected = (Polygon) wKTReader.read("POLYGON (( 112 68, 112 307, 318 307, 318 68, 112 68 ))");
+                Geometry result = GeometryEdit.removeHole(polygon);
+                assertTrue(result.equals(expected));
         }
 }

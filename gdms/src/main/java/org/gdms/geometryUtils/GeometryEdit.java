@@ -427,7 +427,7 @@ public final class GeometryEdit {
                 Coordinate firstCoord = coords[0];
                 Coordinate lastCoord = coords[coords.length - 1];
                 Coordinate coordToSplit = pointToSplit.getCoordinate();
-                if ((coordToSplit.distance(firstCoord)<=PRECISION) || (coordToSplit.distance(lastCoord)<=PRECISION)) {
+                if ((coordToSplit.distance(firstCoord) <= PRECISION) || (coordToSplit.distance(lastCoord) <= PRECISION)) {
                         return new LineString[]{line};
                 } else {
                         ArrayList<Coordinate> firstLine = new ArrayList<Coordinate>();
@@ -934,7 +934,43 @@ public final class GeometryEdit {
                 }
 
                 return FACTORY.createMultiPolygon(polygons.toArray(new Polygon[polygons.size()]));
+        }
 
+        /**
+         * Remove holes in a polygon or multipolygon.
+         * @param geometry
+         * @return 
+         */
+        public static Geometry removeHole(Geometry geometry) {
+                if (GeometryTypeUtil.isPolygon(geometry)) {
+                        return removeHolePolygon((Polygon) geometry);
+                } else if (GeometryTypeUtil.isMultiPolygon(geometry)) {
+                        return removeHoleMultiPolygon((MultiPolygon) geometry);
+                }
+                return null;
+        }
+
+        /**
+         * Create a new multiPolygon without hole.
+         * @param polygon
+         * @return 
+         */
+        public static MultiPolygon removeHoleMultiPolygon(MultiPolygon multiPolygon) {
+                int num = multiPolygon.getNumGeometries();
+                Polygon[] polygons = new Polygon[num];
+                for (int i = 0; i < num; i++) {
+                        polygons[i] = removeHolePolygon((Polygon) multiPolygon.getGeometryN(i));
+                }
+                return multiPolygon.getFactory().createMultiPolygon(polygons);
+        }
+
+        /**
+         * Create a new polygon without hole.
+         * @param polygon
+         * @return 
+         */
+        public static Polygon removeHolePolygon(Polygon polygon) {
+                return new Polygon((LinearRing) polygon.getExteriorRing(), null, polygon.getFactory());
         }
 
         /**
