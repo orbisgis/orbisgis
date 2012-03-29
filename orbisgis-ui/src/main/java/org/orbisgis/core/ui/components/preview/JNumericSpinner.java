@@ -9,26 +9,25 @@ import java.awt.event.MouseEvent;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
-
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.Timer;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-
 import org.orbisgis.core.sif.CRFlowLayout;
 import org.orbisgis.core.sif.CarriageReturn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
-import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
 
 /**
- * Numeric spinner
+ * {@code JNumericSpinner} is a text field that can contain only numeric values.
+ * It is built with a {@code JTextField} that will let the user change the
+ * value directly, and with two buttons that can be used respectively to
+ * increase or decrease the numeric value.</p>
+ * <p>This panel can be configured with a maximum and minimum authorized values.
+ * It is also possible to set the value to be added or removed when using one of
+ * the two buttons.
  *
- * @author fergonco
+ * @author fergonco, alexis
  */
 public class JNumericSpinner extends JPanel {
 
@@ -40,6 +39,12 @@ public class JNumericSpinner extends JPanel {
 	private IncActionListener incActionListener;
 	private ArrayList<ChangeListener> listeners = new ArrayList<ChangeListener>();
 
+        /**
+         * Build a new {@code JNumericSpinner}. The {@code int} value given in
+         * argument can be used to set the number of characters the inner {@code
+         * JTextField} can contain.
+         * @param columns
+         */
 	public JNumericSpinner(int columns) {
 		numberFormat = NumberFormat.getInstance();
 		txt = new JTextField(columns);
@@ -79,6 +84,22 @@ public class JNumericSpinner extends JPanel {
 		pnlButtons.add(down);
 		this.add(pnlButtons, BorderLayout.EAST);
 	}
+
+        /**
+         * Build a new {@code JNumericSpinner}. The text field has width equals
+         * to {@code column}, the minimum value is {@code min}, the maximum
+         * value is {@code max} and the increment threshold is {@code inc}.
+         * @param columns
+         * @param min
+         * @param max
+         * @param inc
+         */
+        public JNumericSpinner(int columns, int min, int max, double inc){
+                this(columns);
+                setMax(max);
+                setMin(min);
+                setInc(inc);
+        }
 
 	private JButton createButton(Icon icon, final int sign) {
 		JButton button = new JButton(icon);
@@ -144,7 +165,7 @@ public class JNumericSpinner extends JPanel {
 	 *
 	 * @param inc
 	 */
-	public void setInc(double inc) {
+	public final void setInc(double inc) {
 		this.incActionListener.startingInc = inc;
 	}
 
@@ -198,7 +219,7 @@ public class JNumericSpinner extends JPanel {
 	 *
 	 * @param min
 	 */
-	public void setMin(int min) {
+	public final void setMin(int min) {
 		incActionListener.min = min;
 	}
 
@@ -207,7 +228,7 @@ public class JNumericSpinner extends JPanel {
 	 *
 	 * @param min
 	 */
-	public void setMax(int max) {
+	public final void setMax(int max) {
 		incActionListener.max = max;
 	}
 }
