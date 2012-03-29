@@ -60,6 +60,7 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.WMSConnection;
+import org.orbisgis.core.layerModel.WMSLayer;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.renderer.legend.RasterLegend;
@@ -80,6 +81,8 @@ import com.vividsolutions.jts.index.quadtree.Quadtree;
 import java.util.Vector;
 import org.gdms.data.DataSource;
 import org.gdms.data.indexes.FullIterator;
+import org.orbisgis.core.layerModel.LayerException;
+
 
 public class Renderer {
 
@@ -204,6 +207,25 @@ public class Renderer {
                 } catch (ServerErrorException e) {
                         Services.getService(ErrorManager.class).error(
                                 I18N.getString("orbisgis-core.org.orbisgis.renderer.cannotGetWMSImage"), e); //$NON-NLS-1$
+                } catch (IOException e) {
+                        Services.getService(ErrorManager.class).error(
+                                I18N.getString("orbisgis-core.org.orbisgis.renderer.cannotGetWMSImage"), e); //$NON-NLS-1$
+                }
+        }
+        private void drawStreamLayer(Graphics2D g2, int width, int height,WMSLayer layer) throws LayerException {
+                layer.open();
+                
+                
+                try {
+                        File file = layer.getDriver().getMap(width, height, null);
+                        BufferedImage image = ImageIO.read(file);
+                        g2.drawImage(image, 0, 0, null);
+                //} catch (WMSException e) {
+                       // Services.getService(ErrorManager.class).error(
+                              //  I18N.getString("orbisgis-core.org.orbisgis.renderer.cannotGetWMSImage"), e); //$NON-NLS-1$
+              //  } catch (ServerErrorException e) {
+                        //Services.getService(ErrorManager.class).error(
+                              //  I18N.getString("orbisgis-core.org.orbisgis.renderer.cannotGetWMSImage"), e); //$NON-NLS-1$
                 } catch (IOException e) {
                         Services.getService(ErrorManager.class).error(
                                 I18N.getString("orbisgis-core.org.orbisgis.renderer.cannotGetWMSImage"), e); //$NON-NLS-1$
