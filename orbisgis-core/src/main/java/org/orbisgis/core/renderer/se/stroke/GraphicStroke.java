@@ -226,11 +226,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
 
         double gWidth = getGraphicWidth(sds, fid, mt);
         for (Shape shp : shapes) {
-            //System.out.println("Process shape n°" + shapeCounter + "/" + shapes.size());
             double segLength = getNaturalLength(sds, fid, shp, mt);
-
-
-            //System.out.println("SegLength <-> gWidth: " + segLength + "<->" + gWidth);
             double lineLength = ShapeHelper.getLineLength(shp);
 
             if (segLength > lineLength){
@@ -246,7 +242,6 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
 
             if (this.isLengthRapport()) {
                 nbSegments = (int) ((lineLength / segLength) + 0.5);
-                //System.out.println("  Length Rapport : Split line in " + (int) nbSegments + " parts");
                 segments = ShapeHelper.splitLine(shp, (int) nbSegments);
                 //segLength = lineLength / nbSegments;
                 //nbToDraw = (int) nbSegments;
@@ -255,13 +250,6 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
                 if (nbSegments == 0 && getParent() instanceof StrokeElement) {
                     nbSegments = 1;
                 }
-
-//                System.out.println("  No linear rapport: NbSegement: " + nbSegments);
-                //segLength = lineLength / nbSegments;
-                //System.out.println("    BUGGY ? (new) SegLength (?): " + (lineLength / nbSegments));
-                // Effective number of graphic to draw (skip the last one if not space left...)
-                //nbToDraw = (int) nbSegments;
-                //if (nbToDraw > 0) {
                 if (nbSegments > 0) {
                     // TODO remove half of extra space at the beginning of the line
                     //shp = ShapeHelper.splitLine(shp, (nbSegments - nbToDraw)/2.0).get(1);
@@ -281,14 +269,9 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
 
                     for (Shape oSeg : oSegs) {
                         if (oSeg != null) {
-
-                            //System.out.println ("Going to plot a point:");
                             double realSegLength = ShapeHelper.getLineLength(oSeg);
-                            //System.out.println("oSeg Length: " + realSegLength + "/" + segLength);
-
                             // Is there enough space on the real segment ?  otherwise is the graphic part of a compound stroke ?
                             if (realSegLength > 0.9 * segLength || (getParent() instanceof StrokeElement && segLength == 0.0)) {
-                                //if (segLength >= 1) {
                                 Point2D.Double pt;
                                 double relativePos = 0.5;
 
@@ -317,8 +300,6 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
                                     }
 
                                     double theta = Math.atan2(ptB.y - ptA.y, ptB.x - ptA.x);
-                                    //System.out.println("(" + ptA.x + ";" + ptA.y + ")" + "(" + ptB.x + ";" + ptB.y + ")" + "   => Angle: " + (theta / 0.0175));
-
                                     switch (rOrient) {
                                         case LINE:
                                             theta += 0.5 * Math.PI;
@@ -329,8 +310,6 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
                                             }
                                             break;
                                     }
-                                    //System.out.println("  theta: " + theta);
-
                                     at.concatenate(AffineTransform.getRotateInstance(theta));
                                 }
 
@@ -341,7 +320,6 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
                 }
             }
         }
-        //}
     }
 
 

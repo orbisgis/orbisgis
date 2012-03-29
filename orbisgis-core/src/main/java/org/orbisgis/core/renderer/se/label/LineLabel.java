@@ -160,9 +160,7 @@ public class LineLabel extends Label {
         if (ptStart.x > ptStop.x){
             // invert line way
             way = -1;
-            //double tmp = startAt;
             startAt = stopAt;
-            //stopAt = tmp;
         }
 
         double currentPos = startAt;
@@ -178,8 +176,6 @@ public class LineLabel extends Label {
                 Rectangle2D gBounds = getLabel().getBounds(g2, glyph, sds, fid, mt);
 
                 glyphWidth = gBounds.getWidth()*way;
-
-                //System.out.println("Glyph : curPos:" + currentPos + " w: " + ri.getWidth());
                 Point2D.Double pAt = ShapeHelper.getPointAt(shp, currentPos);
                 Point2D.Double pAfter = ShapeHelper.getPointAt(shp, currentPos + glyphWidth);
 
@@ -190,8 +186,6 @@ public class LineLabel extends Label {
 
                 currentPos += glyphWidth;
                 outlines.add(getLabel().getOutline(g2, glyph, sds, fid, selected, mt, at, perm));
-
-                //g2.drawRenderedImage(ri , at);
             } else {
                 //System.out.println ("Space...");
                 //currentPos += emWidth*way;

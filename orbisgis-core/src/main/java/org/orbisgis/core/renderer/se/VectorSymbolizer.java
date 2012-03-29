@@ -154,11 +154,6 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
             MapTransform mt, Geometry theGeom, boolean  generalize) throws ParameterException, IOException, DriverException {
 
         Geometry geom = getGeometry(sds, fid, theGeom);
-        
-        
-
-        //geom = ShapeHelper.clipToExtent(geom, mt.getAdjustedExtent());
-
         ArrayList<Shape> shapes = new ArrayList<Shape>();
 
         ArrayList<Geometry> geom2Process = new ArrayList<Geometry>();
@@ -198,9 +193,6 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
             MapTransform mt, Geometry the_geom) throws ParameterException, IOException, DriverException {
 
         Geometry geom = getGeometry(sds, fid, the_geom);
-
-        //geom = ShapeHelper.clipToExtent(geom, mt.getAdjustedExtent());
-
         ArrayList<Shape> shapes = new ArrayList<Shape>();
 
         ArrayList<Geometry> geom2Process = new ArrayList<Geometry>();

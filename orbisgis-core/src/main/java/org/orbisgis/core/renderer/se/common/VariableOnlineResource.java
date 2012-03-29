@@ -80,23 +80,11 @@ import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 public class VariableOnlineResource implements ExternalGraphicSource, MarkGraphicSource {
 
     private StringParameter url;
-
-
     private PlanarImage rawImage;
-
-
     private SVGIcon svgIcon;
-
-
     private Double effectiveWidth;
-
-
     private Double effectiveHeight;
-
-
     private Double svgInitialWidth;
-
-
     private Double svgInitialHeight;
 
 
@@ -106,22 +94,19 @@ public class VariableOnlineResource implements ExternalGraphicSource, MarkGraphi
     public VariableOnlineResource() {
         url = null;
         svgIcon = null;
-        ////System.out.println ("VAR ONLINE RES: NULL NULL");
     }
 
 
     public VariableOnlineResource(StringParameter url) throws MalformedURLException {
         this.url = url;
         svgIcon = null;
-        //System.out.println ("VAR ONLINE RES: NEW  " + url);
     }
 
 
-    public VariableOnlineResource(VariableOnlineResourceType onlineResource) throws MalformedURLException, InvalidStyle {
-        //System.out.println ("ONLINRE RESOURCE HREF " + onlineResource.getHref());
+    public VariableOnlineResource(VariableOnlineResourceType onlineResource)
+            throws MalformedURLException, InvalidStyle {
         this.url = SeParameterFactory.createStringParameter(onlineResource.getHref());
         svgIcon = null;
-        //System.out.println ("VAR ONLINE RES: JAXB " + url);
     }
 
 
@@ -227,7 +212,8 @@ public class VariableOnlineResource implements ExternalGraphicSource, MarkGraphi
                 }
 
 
-                Point2D dim = viewBox.getDimensionInPixel(sds, fid, svgInitialWidth, svgInitialHeight, mt.getScaleDenominator(), mt.getDpi());
+                Point2D dim = viewBox.getDimensionInPixel(sds, fid, svgInitialWidth,
+                        svgInitialHeight, mt.getScaleDenominator(), mt.getDpi());
 
                 effectiveWidth = dim.getX();
                 effectiveHeight = dim.getY();
