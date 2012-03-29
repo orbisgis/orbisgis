@@ -924,13 +924,10 @@ public class SQLTest extends SQLBaseTest {
                 testOffset("select * from " + resource + " ");
                 testLimitOffset("select * from " + resource + " ");
 
-                String stringField = super.getStringFieldFor(resource);
-                testLimitOffset("select " + stringField + " from " + resource
-                        + " group by " + stringField + "");
-                testLimit("select " + stringField + " from " + resource + " group by "
-                        + stringField + "");
-                testOffset("select " + stringField + " from " + resource + " group by "
-                        + stringField + "");
+                String field = "runoff_win";
+                testLimitOffset("select " + field + " from " + resource + " order by " + field + "");
+                testLimit("select " + field + " from " + resource + " order by " + field + "");
+                testOffset("select " + field + " from " + resource + " order by " + field + "");
         }
 
         private void testLimitOffset(String sql) throws Exception {
@@ -1335,7 +1332,7 @@ public class SQLTest extends SQLBaseTest {
                 assertEquals(countRes, count);
                 ds.close();
         }
-        
+
         private void createSource(String name, String fieldName, int... values) {
                 MemoryDataSetDriver omd = new MemoryDataSetDriver(
                         new String[]{fieldName}, new Type[]{TypeFactory.createType(Type.INT)});

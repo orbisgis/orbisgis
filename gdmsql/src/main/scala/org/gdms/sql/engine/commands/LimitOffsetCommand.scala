@@ -50,6 +50,12 @@ import org.orbisgis.progress.ProgressMonitor
 class LimitOffsetCommand(lim: Int, off: Int) extends Command {
   
   protected def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
-    r.next drop(off) take(lim)
+    val res = r.next drop(off)
+    
+    if (lim != -1) {
+      res take(lim)
+    } else {
+      res
+    }
   }
 }
