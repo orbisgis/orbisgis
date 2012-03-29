@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OrbisGis 4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-29 09:33+0100\n"
-"PO-Revision-Date: 2012-03-29 09:35+0100\n"
+"POT-Creation-Date: 2012-03-29 12:04+0100\n"
+"PO-Revision-Date: 2012-03-29 12:05+0100\n"
 "Last-Translator: Nicolas Fortin <nicolas.fortin@ec-nantes.fr>\n"
 "Language-Team: OrbisGis <info@orbisgis.org>\n"
 "Language: fr\n"
@@ -20,15 +20,15 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-SearchPath-0: java\n"
 
-#: java/org/orbisgis/view/docking/DockingManager.java:86
+#: java/org/orbisgis/view/docking/DockingManager.java:100
 msgid "orbisgis.view.DockingManager.layoutloadfailed"
 msgstr "Impossible de charger l'espace de travail"
 
-#: java/org/orbisgis/view/docking/DockingManager.java:99
+#: java/org/orbisgis/view/docking/DockingManager.java:113
 msgid "orbisgis.view.DockingManager.layoutsavefailes"
 msgstr "Impossible de sauvegarder l'espace de travail"
 
-#: java/org/orbisgis/view/docking/DockingManager.java:140
+#: java/org/orbisgis/view/docking/DockingManager.java:164
 msgid "orbisgis.view.docking.stationTitle"
 msgstr "OrbisGis View"
 
@@ -132,25 +132,29 @@ msgstr "Ajouter un nouveau filtre"
 msgid "orbisgis.view.map.MapEditorTitle"
 msgstr "Carte"
 
-#: java/org/orbisgis/view/main/frames/MainFrame.java:62
+#: java/org/orbisgis/view/main/frames/MainFrame.java:70
 msgid "orbisgis.org.orbisgis.version"
 msgstr "4.0 Beta"
 
-#: java/org/orbisgis/view/main/frames/MainFrame.java:62
+#: java/org/orbisgis/view/main/frames/MainFrame.java:70
 msgid "orbisgis.org.orbisgis.versionName"
 msgstr "La Rochelle"
 
-#: java/org/orbisgis/view/main/frames/MainFrame.java:74
+#: java/org/orbisgis/view/main/frames/MainFrame.java:85
 msgid "orbisgis.view.main.frames.menu.file"
 msgstr "&Fichier"
 
-#: java/org/orbisgis/view/main/frames/MainFrame.java:76
+#: java/org/orbisgis/view/main/frames/MainFrame.java:87
 msgid "orbisgis.view.main.frames.menu.exitapp"
 msgstr "Quitter"
 
-#: java/org/orbisgis/view/main/frames/MainFrame.java:80
+#: java/org/orbisgis/view/main/frames/MainFrame.java:91
 msgid "orbisgis.view.main.frames.menu.tools"
 msgstr "&Outils"
+
+#: java/org/orbisgis/view/main/frames/MainFrame.java:93
+msgid "orbisgis.view.main.frames.menu.preferencies"
+msgstr "&Préférences"
 
 #: java/org/orbisgis/view/toc/Toc.java:56
 msgid "orbisgis.view.toc.TocTitle"

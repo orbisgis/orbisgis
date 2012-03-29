@@ -29,8 +29,6 @@
 
 package org.orbisgis.view.main.frames;
 
-import bibliothek.extension.gui.dock.preference.PreferenceTreeDialog;
-import bibliothek.extension.gui.dock.preference.PreferenceTreeModel;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.beans.EventHandler;
@@ -38,7 +36,6 @@ import java.util.Locale;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.SwingUtilities;
 import org.orbisgis.utils.I18N;
 import org.orbisgis.view.components.menubar.MenuBarManager;
 import org.orbisgis.view.components.menubar.MenuItemProperties;

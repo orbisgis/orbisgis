@@ -42,7 +42,6 @@ import bibliothek.gui.dock.util.PropertyKey;
 import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
-import java.security.acl.Owner;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;

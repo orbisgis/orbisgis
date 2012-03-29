@@ -31,7 +31,6 @@ package org.orbisgis.view.main;
 import java.awt.Rectangle;
 import java.awt.event.WindowListener;
 import java.beans.EventHandler;
-import java.io.File;
 import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.context.main.MainContext;
@@ -170,6 +169,7 @@ public class Core {
         
         //Load the docking layout and editors opened in last OrbisGis instance
         dockManager.setDockingLayoutPersistanceFilePath(viewWorkspace.getDockingLayoutPath());
+        
         // Show the application when Swing will be ready
         SwingUtilities.invokeLater( new ShowSwingApplication());
     }
