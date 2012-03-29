@@ -1,6 +1,9 @@
 package org.gdms.driver;
 
+import com.vividsolutions.jts.geom.Envelope;
+import java.awt.Image;
 import org.gdms.data.stream.StreamSource;
+import org.gvsig.remoteClient.wms.ICancellable;
 
 /**
  *
@@ -40,6 +43,19 @@ public interface StreamDriver extends Driver {
      * @return true if the file is open, false otherwise.
      */
     boolean isOpen();
+    
+    /**
+     * Get map from server
+     * 
+     * @param width
+     * @param height
+     * @param extent
+     * @param cancel
+     * @return
+     * @throws DriverException 
+     */
+    public Image getMap(int width, int height, Envelope extent, ICancellable cancel) throws DriverException;
+    
 
     /**
      * Gets the array of the prefixes accepted by this driver

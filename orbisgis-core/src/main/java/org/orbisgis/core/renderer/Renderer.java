@@ -83,7 +83,6 @@ import org.gdms.data.DataSource;
 import org.gdms.data.indexes.FullIterator;
 import org.orbisgis.core.layerModel.LayerException;
 
-
 public class Renderer {
 
         private static Logger logger = Logger.getLogger(Renderer.class.getName());
@@ -92,18 +91,12 @@ public class Renderer {
         /**
          * Draws the content of the layer in the specified graphics
          *
-         * @param g2
-         *            Object to draw to
-         * @param width
-         *            Width of the generated image
-         * @param height
-         *            Height of the generated image
-         * @param extent
-         *            Extent of the data to draw
-         * @param layer
-         *            Source of information
-         * @param pm
-         *            Progress monitor to report the status of the drawing
+         * @param g2 Object to draw to
+         * @param width Width of the generated image
+         * @param height Height of the generated image
+         * @param extent Extent of the data to draw
+         * @param layer Source of information
+         * @param pm Progress monitor to report the status of the drawing
          */
         public void draw(Graphics2D g2, int width, int height, Envelope extent,
                 ILayer layer, ProgressMonitor pm) {
@@ -130,25 +123,7 @@ public class Renderer {
                                         logger.debug(I18N.getString("orbisgis-core.org.orbisgis.renderer.drawing") + layer.getName()); //$NON-NLS-1$
                                         long t1 = System.currentTimeMillis();
                                         if (layer.isWMS()) {
-                                                // Iterate over next layers to make only one call to the
-                                                // WMS server
-                                                WMSStatus status = (WMSStatus) layer.getWMSConnection().getStatus().clone();
-                                                if (i > 0) {
-                                                        for (int j = i - 1; (j >= 0)
-                                                                && (layers[j].isWMS() || !layers[j].isVisible()); j--) {
-                                                                if (layers[j].isVisible()) {
-                                                                        i = j;
-                                                                        if (sameServer(layer, layers[j])) {
-                                                                                Vector<?> layerNames = layers[j].getWMSConnection().getStatus().getLayerNames();
-                                                                                for (Object layerName : layerNames) {
-                                                                                        status.addLayerName(layerName.toString());
-                                                                                }
-                                                                        }
-                                                                }
-                                                        }
-                                                }
-                                                WMSConnection conn = new WMSConnection(layer.getWMSConnection().getClient(), status);
-                                                drawWMS(g2, width, height, extent, conn);
+                                                drawStreamLayer(g2, layer, width, height, extent);
                                         } else {
                                                 DataSource sds = layer.getDataSource();
                                                 if (sds != null) {
@@ -212,37 +187,30 @@ public class Renderer {
                                 I18N.getString("orbisgis-core.org.orbisgis.renderer.cannotGetWMSImage"), e); //$NON-NLS-1$
                 }
         }
-        private void drawStreamLayer(Graphics2D g2, int width, int height,WMSLayer layer) throws LayerException {
-                layer.open();
-                
-                
+
+        private void drawStreamLayer(Graphics2D g2, ILayer layer, int width, int height, Envelope extent) {
                 try {
-                        File file = layer.getDriver().getMap(width, height, null);
-                        BufferedImage image = ImageIO.read(file);
-                        g2.drawImage(image, 0, 0, null);
-                //} catch (WMSException e) {
-                       // Services.getService(ErrorManager.class).error(
-                              //  I18N.getString("orbisgis-core.org.orbisgis.renderer.cannotGetWMSImage"), e); //$NON-NLS-1$
-              //  } catch (ServerErrorException e) {
-                        //Services.getService(ErrorManager.class).error(
-                              //  I18N.getString("orbisgis-core.org.orbisgis.renderer.cannotGetWMSImage"), e); //$NON-NLS-1$
-                } catch (IOException e) {
+                        layer.open();
+
+                        Image img = ((WMSLayer) layer).getDriver().getMap(width, height, extent, null);
+                        g2.drawImage(img, 0, 0, null);
+                } catch (DriverException e) {
+                        Services.getService(ErrorManager.class).error(
+                                I18N.getString("orbisgis-core.org.orbisgis.renderer.cannotGetWMSImage"), e); //$NON-NLS-1$
+                } catch (LayerException e) {
                         Services.getService(ErrorManager.class).error(
                                 I18N.getString("orbisgis-core.org.orbisgis.renderer.cannotGetWMSImage"), e); //$NON-NLS-1$
                 }
+
         }
 
         /**
          * Draws the content of the layer in the specified image.
          *
-         * @param img
-         *            Image to draw the data
-         * @param extent
-         *            Extent of the data to draw in the image
-         * @param layer
-         *            Layer to get the information
-         * @param pm
-         *            Progress monitor to report the status of the drawing
+         * @param img Image to draw the data
+         * @param extent Extent of the data to draw in the image
+         * @param layer Layer to get the information
+         * @param pm Progress monitor to report the status of the drawing
          */
         public void draw(BufferedImage img, Envelope extent, ILayer layer,
                 ProgressMonitor pm) {
