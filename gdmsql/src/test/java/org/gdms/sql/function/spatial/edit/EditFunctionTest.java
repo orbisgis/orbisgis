@@ -4,6 +4,7 @@
  */
 package org.gdms.sql.function.spatial.edit;
 
+import com.vividsolutions.jts.geom.Polygon;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.gdms.driver.DataSet;
 import org.gdms.data.types.TypeFactory;
@@ -21,6 +22,7 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.FunctionTest;
 import org.gdms.sql.function.spatial.geometry.edit.ST_AddZ;
 import org.gdms.sql.function.spatial.geometry.edit.ST_LinearInterpolation;
+import org.gdms.sql.function.spatial.geometry.edit.ST_RemoveHoles;
 import org.gdms.sql.function.spatial.geometry.edit.ST_SplitLine;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -246,5 +248,27 @@ public class EditFunctionTest extends FunctionTest {
                 Value[] values = new Value[]{ValueFactory.createValue(JTSLineString3D)};
                 Value res = sT_3DReverse.evaluate(dsf, values);
                 assertTrue(res.getAsGeometry().equalsExact(wktReader.read("LINESTRING (1 1 5, 1 2 4, 2 2 3, 2 1 2, 1 1 1)")));
+        }
+
+        @Test
+        public void testST_RemoveHoles() throws Exception {
+                Polygon polygon = (Polygon) wktReader.read("POLYGON (( 112 68, 112 307, 318 307, 318 68, 112 68 ), "
+                        + "( 184 169, 247 197, 242 247, 167 258, 184 169 ))");
+                Polygon expected = (Polygon) wktReader.read("POLYGON (( 112 68, 112 307, 318 307, 318 68, 112 68 ))");
+                ST_RemoveHoles sT_RemoveHoles = new ST_RemoveHoles();
+                Value result = sT_RemoveHoles.evaluate(dsf, new Value[]{ValueFactory.createValue(polygon)});
+                assertTrue(result.getAsGeometry().equals(expected));
+        }
+
+        @Test
+        public void testST_Remove3Holes() throws Exception {
+                Polygon polygon = (Polygon) wktReader.read("POLYGON (( 112 68, 112 307, 318 307, 318 68, 112 68 ), "
+                        + "( 184 169, 247 197, 242 247, 167 258, 184 169 ), "
+                        + "( 235 107, 277 120, 267 167, 221 161, 235 107 ), "
+                        + "( 277 280, 266 255, 281 249, 300 270, 277 280 ))");
+                Polygon expected = (Polygon) wktReader.read("POLYGON (( 112 68, 112 307, 318 307, 318 68, 112 68 ))");
+                ST_RemoveHoles sT_RemoveHoles = new ST_RemoveHoles();
+                Value result = sT_RemoveHoles.evaluate(dsf, new Value[]{ValueFactory.createValue(polygon)});
+                assertTrue(result.getAsGeometry().equals(expected));
         }
 }

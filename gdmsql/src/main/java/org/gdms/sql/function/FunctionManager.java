@@ -113,6 +113,7 @@ import org.gdms.sql.function.spatial.geometry.create.ST_OctogonalEnvelope;
 import org.gdms.sql.function.spatial.geometry.create.ST_RandomGeometry;
 import org.gdms.sql.function.spatial.geometry.create.ST_RemoveDuplicateCoordinate;
 import org.gdms.sql.function.spatial.geometry.crs.ST_Transform;
+import org.gdms.sql.function.spatial.geometry.distance.ST_FurthestPoint;
 import org.gdms.sql.function.spatial.geometry.distance.ST_NearestPoints;
 import org.gdms.sql.function.spatial.geometry.distance.ST_LocateAlong;
 import org.gdms.sql.function.spatial.geometry.edit.ST_3DReverse;
@@ -363,6 +364,7 @@ public final class FunctionManager {
                 addFunction(ST_SetZToExtremities.class);
                 addFunction(ST_MakeEllipse.class);
                 addFunction(ST_LocateAlong.class);
+                addFunction(ST_FurthestPoint.class);
         }
 
         /**

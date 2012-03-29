@@ -45,6 +45,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.FunctionTest;
 
+import org.gdms.sql.function.spatial.geometry.distance.ST_FurthestPoint;
 import static org.junit.Assert.*;
 
 public class DistanceTest extends FunctionTest {
@@ -59,7 +60,6 @@ public class DistanceTest extends FunctionTest {
                 Polygon geom = (Polygon) wktReader.read("POLYGON ((100 300, 300 300, 300 100, 100 100, 100 300))");
                 Value[] values = new Value[]{ValueFactory.createValue(geom), ValueFactory.createValue(0.5), ValueFactory.createValue(10)};
                 Value result = evaluate(sT_PointAlongLine, values);
-                System.out.println(result.getAsGeometry());
                 Geometry input = wktReader.read("MULTIPOINT ((310 200), (90 200), (200 310), (200 90))");
                 assertTrue(result.getAsGeometry().equals(input));
         }
@@ -74,7 +74,6 @@ public class DistanceTest extends FunctionTest {
                 Polygon geom = (Polygon) wktReader.read("POLYGON ((100 300, 300 300, 300 100, 100 100, 100 300))");
                 Value[] values = new Value[]{ValueFactory.createValue(geom), ValueFactory.createValue(0.5), ValueFactory.createValue(-10)};
                 Value result = evaluate(sT_PointAlongLine, values);
-                System.out.println(result.getAsGeometry());
                 Geometry input = wktReader.read("MULTIPOINT ((200 110), (290 200), (200 290), (110 200))");
                 assertTrue(result.getAsGeometry().equals(input));
         }
@@ -85,7 +84,6 @@ public class DistanceTest extends FunctionTest {
                 Polygon geom = (Polygon) wktReader.read("POLYGON ((100 300, 300 300, 300 100, 100 100, 100 300), (150 240, 250 240, 250 160, 150 160, 150 240))");
                 Value[] values = new Value[]{ValueFactory.createValue(geom), ValueFactory.createValue(0.5), ValueFactory.createValue(10)};
                 Value result = evaluate(sT_PointAlongLine, values);
-                System.out.println(result.getAsGeometry());
                 Geometry input = wktReader.read("MULTIPOINT ((310 200), (90 200), (200 310), (200 90))");
                 assertTrue(result.getAsGeometry().equals(input));
         }
@@ -96,7 +94,6 @@ public class DistanceTest extends FunctionTest {
                 LineString geom = (LineString) wktReader.read("LINESTRING (100 300, 300 300, 300 100)");
                 Value[] values = new Value[]{ValueFactory.createValue(geom), ValueFactory.createValue(0.5), ValueFactory.createValue(10)};
                 Value result = evaluate(sT_PointAlongLine, values);
-                System.out.println(result.getAsGeometry());
                 Geometry input = wktReader.read("MULTIPOINT ((310 200), (200 310))");
                 assertTrue(result.getAsGeometry().equals(input));
         }
@@ -107,8 +104,19 @@ public class DistanceTest extends FunctionTest {
                 Geometry geom = wktReader.read("GEOMETRYCOLLECTION (POLYGON ((100 300, 350 300, 350 100, 100 100, 100 300)), LINESTRING (100 350, 350 350), LINESTRING (50 300, 50 100))");
                 Value[] values = new Value[]{ValueFactory.createValue(geom), ValueFactory.createValue(0.5), ValueFactory.createValue(10)};
                 Value result = evaluate(sT_PointAlongLine, values);
-                System.out.println(result.getAsGeometry());
                 Geometry input = wktReader.read("MULTIPOINT ((225 310), (225 360), (90 200), (360 200), (60 200), (225 90))");
                 assertTrue(result.getAsGeometry().equals(input));
+        }
+
+        @Test
+        public void testST_FurthestPoint() throws Exception {
+                ST_FurthestPoint sT_FurthestPoint = new ST_FurthestPoint();
+                Geometry geom = wktReader.read("LINESTRING(0 1, 20 8, 20 0)");
+                Geometry base = wktReader.read("POINT(0 0)");
+                Geometry expectedGeom = wktReader.read("POINT(20 8)");
+                Value[] values = new Value[]{ValueFactory.createValue(base),
+                        ValueFactory.createValue(geom)};
+                Value result = evaluate(sT_FurthestPoint, values);
+                assertTrue(result.getAsGeometry().equals(expectedGeom));
         }
 }
