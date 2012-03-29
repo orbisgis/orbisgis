@@ -56,6 +56,7 @@ public class WMSLayer extends GdmsLayer {
 	private Envelope envelope;
 	private WMSConnection connection;
 	private String wmslayerName;
+        private SimpleWMSDriver driver;
 
 	public WMSLayer(String name, DataSource ds) {
 		super(name);
@@ -71,6 +72,11 @@ public class WMSLayer extends GdmsLayer {
 	public Envelope getEnvelope() {
 		return envelope;
 	}
+        
+        public SimpleWMSDriver getDriver() {
+		return driver;
+	}
+        
 
 	@Override
 	public GeoRaster getRaster() throws DriverException {
@@ -130,7 +136,7 @@ public class WMSLayer extends GdmsLayer {
 		super.open();
 		try {
 			ds.open();
-                        SimpleWMSDriver driver = (SimpleWMSDriver)ds.getDriver();
+                        driver = (SimpleWMSDriver)ds.getDriver();
                         /*
                         String host = driver.getHost(); 
                         
