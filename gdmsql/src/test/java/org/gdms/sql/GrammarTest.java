@@ -117,8 +117,7 @@ public class GrammarTest {
 
         @Test
         public void testScript() throws Exception {
-                parse("select * from gis;select * from alltypes "
-                        + "where exists (select * from gis);");
+                parse("select * from gis; select * from alltypes, (select * from gis) as tutu where false;");
         }
 
         @Test

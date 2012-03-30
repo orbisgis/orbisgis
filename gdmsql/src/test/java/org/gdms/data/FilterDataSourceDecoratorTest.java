@@ -92,7 +92,7 @@ public class FilterDataSourceDecoratorTest extends SQLBaseTest {
 
                 decorator.close();
                 original.close();
-                
+
                 dsf.getSourceManager().remove("hedgerow");
         }
 
@@ -103,9 +103,8 @@ public class FilterDataSourceDecoratorTest extends SQLBaseTest {
                 dsf.executeSQL("CREATE TABLE test AS SELECT * FROM hedgerow;");
                 DataSource original = dsf.getDataSource("test", DataSourceFactory.EDITABLE);
 
-                FilterDataSourceDecorator decorator = new FilterDataSourceDecorator(
-                        original);
-                decorator.setFilter("type = 'talus'");
+                FilterDataSourceDecorator decorator = new FilterDataSourceDecorator(original);
+                decorator.setFilter("\"type\" = 'talus'");
                 long rowC = decorator.getRowCount();
                 assertFalse(rowC == 0);
 
@@ -126,7 +125,7 @@ public class FilterDataSourceDecoratorTest extends SQLBaseTest {
                 assertFalse(rowC == decorator.getRowCount());
                 assertEquals(rowC - 1, decorator.getRowCount());
                 rowC = decorator.getRowCount();
-                
+
                 dsf.getSourceManager().remove("hedgerow");
         }
 
