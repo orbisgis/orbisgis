@@ -141,4 +141,14 @@ public class StreamDataSourceAdapter extends DriverDataSource implements Commite
     @Override
     public void isCommiting(String name, Object source) throws DriverException {
     }
+    
+    /**
+     * This method is used by the {@code Renderer} to know whether or not it is
+     * dealing with a stream datasource
+     * @return 
+     */
+    @Override
+    public boolean isStream() {
+        return true;
+    }
 }

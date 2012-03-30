@@ -394,6 +394,11 @@ public abstract class AbstractDataSource extends AbstractDataSet implements Data
                 Type fieldType = getMetadata().getFieldType(getSpatialFieldIndex());
                 return fieldType.getTypeCode() == Type.RASTER;
         }
+        
+        @Override
+        public boolean isStream() {
+                return false;
+        }
 
         @Override
         public DataSourceIterator iterator() {

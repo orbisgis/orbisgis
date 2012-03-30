@@ -522,7 +522,7 @@ public final class ExtendedSource implements org.gdms.source.Source {
 
         @Override
         public boolean isStreamSource() {
-                return (getType() & SourceManager.WMS) == SourceManager.WMS;
+                return (getType() & SourceManager.STREAM) == SourceManager.STREAM;
         }
 
         @Override

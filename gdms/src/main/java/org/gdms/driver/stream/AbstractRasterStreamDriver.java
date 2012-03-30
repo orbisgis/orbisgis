@@ -34,7 +34,6 @@
 package org.gdms.driver.stream;
 
 import com.vividsolutions.jts.geom.Envelope;
-import org.apache.log4j.Logger;
 import org.grap.model.GeoRaster;
 import org.grap.model.RasterMetadata;
 
@@ -46,7 +45,6 @@ import org.gdms.data.schema.Schema;
 import org.gdms.data.stream.StreamSource;
 import org.gdms.data.types.TypeDefinition;
 import org.gdms.driver.*;
-import org.gdms.driver.geotif.AbstractRasterDriver;
 import org.gdms.source.SourceManager;
 
 /**
@@ -96,7 +94,7 @@ public abstract class AbstractRasterStreamDriver extends AbstractDataSet impleme
 
         @Override
         public int getSupportedType() {
-                return SourceManager.WMS;
+                return SourceManager.STREAM;
         }
 
         /**
@@ -107,7 +105,7 @@ public abstract class AbstractRasterStreamDriver extends AbstractDataSet impleme
          */
         @Override
         public int getType() {
-                return SourceManager.WMS | SourceManager.RASTER;
+                return SourceManager.STREAM | SourceManager.RASTER;
         }
 
         @Override

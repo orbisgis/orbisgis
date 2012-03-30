@@ -96,7 +96,7 @@ public interface SourceManager {
         /**
          * The source contains the parameters of a WMS connection.
          */
-        int WMS = 64;
+        int STREAM = 64;
         /**
          * The source is a system table.
          */

@@ -341,7 +341,7 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamRead
      */
     @Override
     public int getType() {
-        return SourceManager.WMS;
+        return SourceManager.STREAM;
     }
 
     /**
