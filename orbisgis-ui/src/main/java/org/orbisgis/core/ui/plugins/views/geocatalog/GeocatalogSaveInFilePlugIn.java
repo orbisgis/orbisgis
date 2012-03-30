@@ -104,7 +104,7 @@ public class GeocatalogSaveInFilePlugIn extends AbstractPlugIn {
 					new CSVFileDriverFilter());
 		} else if ((type & SourceManager.RASTER) == sourceManager.RASTER) {
 			filter = new RasterDriverFilter();
-		} else if ((type & SourceManager.WMS) == sourceManager.WMS) {
+		} else if ((type & SourceManager.STREAM ) == sourceManager.STREAM) {
 			filter = new DriverFilter() {
 
 				@Override
