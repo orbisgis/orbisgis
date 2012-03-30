@@ -485,6 +485,10 @@ public class Layer extends GdmsLayer {
 	public boolean isWMS() {
 		return false;
 	}
+        
+        public boolean isStream() {
+                return false;
+        }
 
 	@Override
 	public WMSConnection getWMSConnection()

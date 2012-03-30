@@ -208,6 +208,13 @@ public interface ILayer {
 	 * @return
 	 */
 	boolean isWMS();
+        
+        /**
+	 * Returns true if this layer represents a stream source
+	 * 
+	 * @return
+	 */
+	boolean isStream();
 
 	/**
 	 * Returns a {@link DataSource} to access the source of this layer

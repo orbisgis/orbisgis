@@ -72,75 +72,64 @@ public class DefaultDataManager implements DataManager {
         }
 
         @Override
-        public ILayer createLayer(String sourceName) throws LayerException {
-                Source src = dsf.getSourceManager().getSource(sourceName);
-                if (src != null) {
-                        int type = src.getType();
-                        if ((type & (SourceManager.RASTER | SourceManager.SQL |
-                                SourceManager.VECTORIAL | SourceManager.WMS)) != 0) {
-                                try {
-                                        DataSource ds = dsf.getDataSource(sourceName);
-                                        return createLayer(ds);
-                                } catch (DriverLoadException e) {
-                                        throw new LayerException("Cannot instantiate layer", e);
-                                } catch (NoSuchTableException e) {
-                                        throw new LayerException("Cannot instantiate layer", e);
-                                } catch (DataSourceCreationException e) {
-                                        throw new LayerException("Cannot instantiate layer", e);
-                                }
-                        } else {
-                                throw new LayerException("There is no spatial information: "
-                                        + type);
-                        }
-                } else {
-                        throw new LayerException("There is no source "
-                                + "registered with the name: " + sourceName);
-                }
-        }
+	public ILayer createLayer(String sourceName) throws LayerException {
+		Source src = ((DataManager) Services.getService(DataManager.class))
+				.getDataSourceFactory().getSourceManager().getSource(sourceName);
+		if (src != null) {
+			int type = src.getType();
+			if ((type & (SourceManager.RASTER | SourceManager.VECTORIAL | SourceManager.STREAM)) != 0) {
+				try {
+					DataSource ds = ((DataManager) Services
+							.getService(DataManager.class)).getDataSourceFactory()
+							.getDataSource(sourceName);
+					return createLayer(ds);
+				} catch (DriverLoadException e) {
+					throw new LayerException("Cannot instantiate layer", e);
+				} catch (NoSuchTableException e) {
+					throw new LayerException("Cannot instantiate layer", e);
+				} catch (DataSourceCreationException e) {
+					throw new LayerException("Cannot instantiate layer", e);
+				}
+			} else {
+				throw new LayerException("There is no spatial information: "
+						+ type);
+			}
+		} else {
+			throw new LayerException("There is no source "
+					+ "registered with the name: " + sourceName);
+		}
+	}
 
         @Override
-        public ILayer createLayer(DataSource sds) throws LayerException {
-                int type = sds.getSource().getType();
-                if ((type & SourceManager.WMS) == SourceManager.WMS) {
-                        return new WMSLayer(sds.getName(), sds);
-                } else {
-                        boolean hasSpatialData = true;
-                        /*
-                         * Two special cases:
-                         *  - if there is no vectorial information (this should not happen except for SQL,
-                         *    but still...), we look for one, and for that we need to open the source to
-                         *    get the metadata.
-                         *  - if it is a SQL query, we do not do the above, we just go on. This implicitly
-                         *    implies that ExecuteScriptProcess knows what it is doing, which is usually
-                         *    ok.
-                         * 
-                         * Hopefully this will be removed if/when we get a SourceManager that keeps all
-                         * metadata referenced and accessible at all times.
-                         */
-                        if ((type & SourceManager.VECTORIAL) == 0 && 
-                                (type & SourceManager.SQL) != SourceManager.SQL) {
-                                int sfi;
-                                try {
-                                        sds.open();
-                                        sfi = sds.getSpatialFieldIndex();
-                                        try {
-                                                sds.close();
-                                        } catch (AlreadyClosedException e) {
-                                                // ignore
-                                                logger.debug("Cannot close", e);
-                                        }
-                                        hasSpatialData = (sfi != -1);
-                                } catch (DriverException e) {
-                                        throw new LayerException("Cannot check source contents", e);
-                                }
-                        }
-                        if (hasSpatialData) {
-                                return new Layer(sds.getName(), sds);
-                        } else {
-                                throw new LayerException("The source contains no spatial info");
-                        }
-                }
-        }
+	public ILayer createLayer(DataSource sds) throws LayerException {
+		int type = sds.getSource().getType();
+		if ((type & SourceManager.STREAM) == SourceManager.STREAM) {
+			return new WMSLayer(sds.getName(), sds);
+		} else {
+			boolean hasSpatialData = true;
+			if ((type & SourceManager.VECTORIAL) == SourceManager.VECTORIAL) {
+				int sfi;
+				try {
+					sds.open();
+					sfi = sds.getSpatialFieldIndex();
+					try {
+						sds.close();
+					} catch (AlreadyClosedException e) {
+						// ignore
+						logger.debug("Cannot close", e);
+					}
+					hasSpatialData = (sfi != -1);
+				} catch (DriverException e) {
+					throw new LayerException("Cannot check source contents", e);
+				}
+			}
+			if (hasSpatialData) {
+				return new Layer(sds.getName(), sds);
+			} else {
+				throw new LayerException("The source contains no spatial info");
+			}
+		}
+	}
 
         @Override
         public ILayer createLayerCollection(String layerName) {

@@ -454,6 +454,11 @@ public class LayerCollection extends AbstractLayer {
 	public boolean isWMS() {
 		return false;
 	}
+        
+        @Override
+	public boolean isStream() {
+		return false;
+	}
 
 	@Override
 	public WMSLegend getWMSLegend() {

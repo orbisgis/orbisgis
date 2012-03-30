@@ -78,7 +78,6 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
-import java.util.Vector;
 import org.gdms.data.DataSource;
 import org.gdms.data.indexes.FullIterator;
 import org.orbisgis.core.layerModel.LayerException;
@@ -122,7 +121,7 @@ public class Renderer {
                                 if (layer.isVisible() && extent.intersects(layer.getEnvelope())) {
                                         logger.debug(I18N.getString("orbisgis-core.org.orbisgis.renderer.drawing") + layer.getName()); //$NON-NLS-1$
                                         long t1 = System.currentTimeMillis();
-                                        if (layer.isWMS()) {
+                                        if (layer.isStream()) {
                                                 drawStreamLayer(g2, layer, width, height, extent);
                                         } else {
                                                 DataSource sds = layer.getDataSource();
