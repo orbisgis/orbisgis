@@ -53,6 +53,7 @@ public class MainFrame extends JFrame {
         public final static String MENU_EXIT = "exitapp";
         public final static String MENU_TOOLS = "tools";
         public final static String MENU_CONFIGURE = "configure";
+        public final static String MENU_LOOKANDFEEL = "lookAndFeel";
         
         //The main frame show panels state,theme, and properties
         private DockingManager dockingManager=null;
@@ -72,7 +73,9 @@ public class MainFrame extends JFrame {
 	}
 
         public void setDockingManager(DockingManager dockingManager) {
-            this.dockingManager = dockingManager;            
+            this.dockingManager = dockingManager;
+            //Add Look And Feel menu
+            menuBar.addMenu(MENU_TOOLS, new MenuProperties(MENU_LOOKANDFEEL, dockingManager.getLookAndFeelMenu()));      
         }
         /**
          * Create the built-ins menu items
@@ -90,7 +93,6 @@ public class MainFrame extends JFrame {
             JMenuItem preferenciesMenu = new JMenuItem(I18N.getString("orbisgis.view.main.frames.menu.preferencies"),OrbisGISIcon.getIcon("preferences-system"));
             preferenciesMenu.addActionListener(EventHandler.create(ActionListener.class,this,"onMenuShowPreferencies"));
             menuBar.addMenuItem(MENU_TOOLS, new MenuItemProperties(MENU_TOOLS, preferenciesMenu));
-            
         }
         /**
          * 

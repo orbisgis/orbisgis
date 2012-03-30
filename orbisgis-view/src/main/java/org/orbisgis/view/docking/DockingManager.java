@@ -28,17 +28,17 @@
  */
 package org.orbisgis.view.docking;
 
-import bibliothek.extension.gui.dock.DockingFramesPreference;
-import bibliothek.extension.gui.dock.preference.PreferenceModel;
 import bibliothek.extension.gui.dock.preference.PreferenceTreeDialog;
 import bibliothek.extension.gui.dock.preference.PreferenceTreeModel;
 import bibliothek.gui.DockStation;
 import bibliothek.gui.dock.FlapDockStation;
-import bibliothek.gui.dock.StackDockStation;
 import bibliothek.gui.dock.common.CControl;
 import bibliothek.gui.dock.common.intern.DefaultCDockable;
+import bibliothek.gui.dock.common.menu.CLookAndFeelMenuPiece;
+import bibliothek.gui.dock.facile.menu.RootMenuPiece;
 import bibliothek.gui.dock.layout.DockableProperty;
 import bibliothek.gui.dock.util.PropertyKey;
+import bibliothek.util.PathCombiner;
 import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
@@ -46,10 +46,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
 import org.apache.log4j.Logger;
 import org.orbisgis.utils.I18N;
 import org.orbisgis.view.docking.internals.OrbisGISView;
-import org.orbisgis.view.docking.internals.ReservedDockStation;
+import org.orbisgis.view.docking.preferences.OrbisGISPreferenceTreeModel;
 import org.orbisgis.view.icons.OrbisGISIcon;
 /**
  * @brief Manage left,right,down,center docking stations.
@@ -64,15 +65,8 @@ public final class DockingManager {
 
         private Map<DockingPanel,OrbisGISView> views = new HashMap<DockingPanel,OrbisGISView>();
         
-        //Some docking panels must not be mixed with other panels,
-        //reservedDockStation is dedicated to this features
-        private Map<String,ReservedDockStation> reservedDockStations = new HashMap<String,ReservedDockStation>();
-        
-        /** the {@link StackDockStation} inserted in {@link split} */
-        private StackDockStation stackOfReservedDockStations;
-	
-	/** the available preferences */
-	private PreferenceTreeModel preferences;
+	/** the available preferences for docking frames */
+        private PreferenceTreeModel preferences;
         /**
          * Return the docked panels
          * @return The set of panels managed by this docking manager.
@@ -80,12 +74,10 @@ public final class DockingManager {
 	public Set<DockingPanel> getPanels() {
             return views.keySet();
         }
-        /**
-         * 
-         * @return The preference model, for the preference panel
-         */
-        public PreferenceModel getDockingPreferenceModel() {
-            return commonControl.getPreferenceModel();
+ 
+        public JMenu getLookAndFeelMenu() {
+            RootMenuPiece laf = new RootMenuPiece(I18N.getString("orbisgis.view.docking.LookAndFeel"), false, new CLookAndFeelMenuPiece( commonControl ));
+            return laf.getMenu();
         }
         /**
          * Load the docking layout 
@@ -145,6 +137,12 @@ public final class DockingManager {
             return views.get(panel);
         }
         
+        /**
+         * Add a preference model to the main tree preference model
+         */
+        public PreferenceTreeModel getPreferenceTreeModel() {
+            return preferences;
+        }
 	/**
 	 * Creates the new manager
 	 * @param owner the window used as parent for all dialogs
@@ -154,7 +152,8 @@ public final class DockingManager {
 		//this.frontend = new DockFrontend();
                 commonControl = new CControl(owner);                
                 //Retrieve the Docking Frames Preferencies
-                preferences = new DockingFramesPreference( commonControl.getController());
+                //preferences = new MergedPreferenceModel
+                preferences = new OrbisGISPreferenceTreeModel( commonControl,PathCombiner.APPEND);
                 commonControl.setPreferenceModel(preferences);
                 //Set the default empty size of border docking, named flap
                 commonControl.putProperty(FlapDockStation.MINIMUM_SIZE,  new Dimension(4,4));
@@ -171,10 +170,7 @@ public final class DockingManager {
 
                 //Reduce the default height of the TOP flap bar to 0 px
                 commonControl.getContentArea().getNorth().setMinimumSize(new Dimension(-1,0));
-
-                //Overide default preferencies by user preferenciers
-                //preferences.read();
-
+ 
 	}
         
         /**
