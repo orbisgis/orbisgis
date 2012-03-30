@@ -31,7 +31,7 @@
  * or contact directly:
  * info@orbisgis.org
  */
-package org.gdms.driver.stream;
+package org.gdms.driver.wms;
 
 import java.awt.Image;
 
@@ -43,6 +43,7 @@ import org.gdms.data.schema.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.stream.AbstractRasterStreamDriver;
 
 /**
  * The concrete WMS managing driver.

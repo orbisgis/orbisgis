@@ -1,4 +1,4 @@
-package org.gdms.driver.stream;
+package org.gdms.driver.wms;
 
 import java.awt.Image;
 import java.awt.geom.Rectangle2D;
@@ -77,6 +77,27 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamRead
     public void open(StreamSource streamSource) throws DriverException {
         this.m_StreamSource = streamSource;
 
+        try {
+            String host = m_StreamSource.getHost();
+            
+            m_WMSClient = WMSClientPool.getWMSClient(host);
+            m_WMSClient.getCapabilities(null, true, null);
+
+            m_WMSStatus = new WMSStatus();
+            String wmslayerName = m_StreamSource.getLayerName();
+            m_WMSStatus.addLayerName(wmslayerName);
+            m_WMSStatus.setSrs(m_StreamSource.getSRS());
+
+            BoundaryBox bbox = getLayerBoundingBox(wmslayerName, m_WMSClient.getRootLayer(), m_WMSStatus.getSrs());
+            m_WMSStatus.setExtent(new Rectangle2D.Double(bbox.getXmin(), bbox.getYmin(), bbox.getXmax() - bbox.getXmin(), bbox.getYmax()
+                    - bbox.getYmin()));
+            m_Envelope = new Envelope(bbox.getXmin(), bbox.getXmax(), bbox.getYmin(), bbox.getYmax());
+            m_WMSStatus.setFormat(m_StreamSource.getImageFormat());
+        } catch (ConnectException e) {
+            throw new DriverException(e);
+        } catch (IOException e) {
+            throw new DriverException(e);
+        }
     }
 
     /**
@@ -86,7 +107,7 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamRead
      */
     @Override
     public void close() throws DriverException {
-        this.m_StreamSource = null;
+        //this.m_StreamSource = null;
     }
 
     /**
@@ -116,6 +137,10 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamRead
         return null;
     }
 
+    public Envelope getEnvelope() {
+        return this.m_Envelope;
+    }
+
     /**
      * With the host of the flux wms, creates a WMS client.
      *
@@ -126,34 +151,12 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamRead
     // c'est pas très claire cette méthode, il y a des choses dont on n'a pas besoin...
     public WMSClient getWMSClient() throws ConnectException, IOException {
 
-        String host = m_StreamSource.getHost(); //$NON-NLS-1$
+        String host = m_StreamSource.getHost();
 
-        //Ne marche pas car on doit mettre orbisgis-core ... alors on feinte ...
-        //m_WMSClient = WMSClientPool.getWMSClient(host);
-        m_WMSClient = new WMSClient(host);
-        m_WMSClient.getCapabilities(null, true, null);
-        //m_WMSClient.getCapabilities(null, false, null);
-        m_WMSStatus = new WMSStatus();
-        String wmslayerName = m_StreamSource.getLayerName(); //$NON-NLS-1$
-        m_WMSStatus.addLayerName(wmslayerName);
-        m_WMSStatus.setSrs(m_StreamSource.getSRS()); //$NON-NLS-1$
-
-        BoundaryBox bbox = getLayerBoundingBox(wmslayerName, m_WMSClient.getRootLayer(), m_WMSStatus.getSrs());
-        m_WMSStatus.setExtent(new Rectangle2D.Double(bbox.getXmin(), bbox.getYmin(), bbox.getXmax() - bbox.getXmin(), bbox.getYmax()
-                - bbox.getYmin()));
-        m_Envelope = new Envelope(bbox.getXmin(), bbox.getXmax(), bbox.getYmin(), bbox.getYmax());
-        m_WMSStatus.setFormat(m_StreamSource.getImageFormat()); //$NON-NLS-1$
+        m_WMSClient = WMSClientPool.getWMSClient(host);
+        m_WMSClient.getCapabilities(null, false, null);
 
         return m_WMSClient;
-    }
-
-    /**
-     * Gets the envelope of the flux.
-     *
-     * @return
-     */
-    public Envelope getEnvelope() {
-        return this.m_Envelope;
     }
 
     /**
@@ -168,10 +171,10 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamRead
     @Override
     public Image getMap(int width, int height, Envelope extent, ICancellable cancel) throws DriverException {
         try {
-            this.m_Envelope = extent;
+            m_Envelope = extent;
             m_WMSStatus.setWidth(width);
             m_WMSStatus.setHeight(height);
-            m_WMSStatus.setExtent(new Rectangle2D.Double(m_Envelope.getMinX(), m_Envelope.getMinY(), m_Envelope.getWidth(), m_Envelope.getHeight()));
+            m_WMSStatus.setExtent(new Rectangle2D.Double(extent.getMinX(), extent.getMinY(), extent.getWidth(), extent.getHeight()));
 
             return ImageIO.read(m_WMSClient.getMap(m_WMSStatus, cancel));
         } catch (WMSException e) {

@@ -61,7 +61,7 @@ import org.gvsig.remoteClient.wms.WMSClient;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.background.BackgroundManager;
-import org.orbisgis.core.layerModel.WMSClientPool;
+import org.gdms.driver.wms.WMSClientPool;
 import org.orbisgis.core.sif.CRFlowLayout;
 import org.orbisgis.core.sif.CarriageReturn;
 import org.orbisgis.core.sif.SQLUIPanel;

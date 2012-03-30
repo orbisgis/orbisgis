@@ -104,7 +104,7 @@ import org.gdms.driver.mifmid.MifMidDriver;
 import org.gdms.driver.png.PngDriver;
 import org.gdms.driver.postgresql.PostgreSQLDriver;
 import org.gdms.driver.shapefile.ShapefileDriver;
-import org.gdms.driver.stream.SimpleWMSDriver;
+import org.gdms.driver.wms.SimpleWMSDriver;
 import org.gdms.source.directory.Source;
 import org.gdms.source.directory.Sources;
 import org.gdms.sql.engine.Engine;
@@ -488,7 +488,7 @@ public final class DefaultSourceManager implements SourceManager {
         public void register(String name, StreamSource streamSource) {
                 register(name, new StreamSourceDefinition(streamSource));
         }
-        
+
         @Override
         public void register(String name, MemoryDriver driver) {
                 register(name, new MemorySourceCreation(driver));
@@ -868,7 +868,7 @@ public final class DefaultSourceManager implements SourceManager {
         public boolean isEmpty() {
                 return nameSource.isEmpty() && nameMapping.isEmpty();
         }
-        
+
         @Override
         public boolean isEmpty(boolean ignoreSystem) {
                 if (!ignoreSystem) {

@@ -33,9 +33,12 @@
  */
 package org.gdms.data.stream;
 
+import java.awt.Image;
 import java.util.List;
 
+import com.vividsolutions.jts.geom.Envelope;
 import org.apache.log4j.Logger;
+import org.gvsig.remoteClient.wms.ICancellable;
 import org.orbisgis.progress.NullProgressMonitor;
 
 import org.gdms.data.DataSource;
@@ -44,7 +47,11 @@ import org.gdms.data.edition.Commiter;
 import org.gdms.data.edition.DeleteEditionInfo;
 import org.gdms.data.edition.EditionInfo;
 import org.gdms.data.edition.PhysicalRowAddress;
-import org.gdms.driver.*;
+import org.gdms.driver.DataSet;
+import org.gdms.driver.Driver;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.StreamDriver;
+import org.gdms.driver.StreamReadWriteDriver;
 import org.gdms.source.CommitListener;
 import org.gdms.source.DefaultSourceManager;
 import org.gdms.source.Source;
@@ -93,6 +100,16 @@ public class StreamDataSourceAdapter extends DriverDataSource implements Commite
         DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory().getSourceManager();
         sm.removeCommitListener(this);
     }
+
+//    @Override
+//    public boolean isModified() {
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean isOpen() {
+//        return true;
+//    }
 
     @Override
     public void saveData(DataSet ds) throws DriverException {
@@ -151,4 +168,14 @@ public class StreamDataSourceAdapter extends DriverDataSource implements Commite
     public boolean isStream() {
         return true;
     }
+
+    public Image getMap(int width, int height, Envelope extent, ICancellable cancel) throws DriverException {
+        //this.m_Envelope = extent;
+        return driver.getMap(width, height, extent, cancel);
+    }
+
+//    @Override
+//    public Envelope getFullExtent() throws DriverException {
+//        return ((SimpleWMSDriver)getDriver()).getEnvelope();
+//    }
 }

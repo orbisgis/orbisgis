@@ -490,14 +490,9 @@ public class Layer extends GdmsLayer {
         fireSelectionChanged();
     }
 
-    @Override
-    public WMSConnection getWMSConnection()
-            throws UnsupportedOperationException {
-        throw new UnsupportedOperationException(I18N.getString("org.orbisgis.layerModel.layer.notAWmsLayer")); //$NON-NLS-1$
-    }
 
-    @Override
-    public WMSLegend getWMSLegend() {
-        throw new UnsupportedOperationException(I18N.getString("org.orbisgis.layerModel.layer.notAWmsLayer")); //$NON-NLS-1$
-    }
+//    @Override
+//    public WMSLegend getWMSLegend() {
+//        throw new UnsupportedOperationException(I18N.getString("org.orbisgis.layerModel.layer.notAWmsLayer")); //$NON-NLS-1$
+//    }
 }

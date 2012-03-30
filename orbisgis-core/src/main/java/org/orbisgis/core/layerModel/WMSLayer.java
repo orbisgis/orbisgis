@@ -38,8 +38,6 @@ import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
 import org.gvsig.remoteClient.utils.BoundaryBox;
-import org.gvsig.remoteClient.wms.WMSClient;
-import org.gvsig.remoteClient.wms.WMSStatus;
 import org.orbisgis.core.layerModel.persistence.LayerType;
 import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.renderer.legend.RasterLegend;
@@ -47,14 +45,13 @@ import org.orbisgis.core.renderer.legend.WMSLegend;
 import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Envelope;
-import org.gdms.driver.stream.SimpleWMSDriver;
+import org.gdms.driver.wms.SimpleWMSDriver;
+import org.orbisgis.core.Services;
 
 public class WMSLayer extends GdmsLayer {
 
     private static final String NOT_SUPPORTED = I18N.getString("orbisgis-core.org.orbisgis.wMSLayer.methodNotSupportedInWMSLayer"); //$NON-NLS-1$
     private DataSource ds;
-    private Envelope envelope;
-    private WMSConnection connection;
     private String wmslayerName;
     private SimpleWMSDriver driver;
 
@@ -70,7 +67,22 @@ public class WMSLayer extends GdmsLayer {
 
     @Override
     public Envelope getEnvelope() {
-        return envelope;
+        return getDriver().getEnvelope();
+        /*
+        Envelope result = new Envelope();
+
+        if (null != ds) {
+            try {
+                result = ds.getFullExtent();
+            } catch (DriverException e) {
+                Services.getErrorManager().error(
+                        I18N.getString("org.orbisgis.layerModel.layer.cannotGetTheExtentOfLayer") //$NON-NLS-1$
+                        + ds.getName(), e);
+            }
+        }
+        return result;
+        */
+        
     }
 
     public SimpleWMSDriver getDriver() {
@@ -94,8 +106,19 @@ public class WMSLayer extends GdmsLayer {
         throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
+    @Override
     public Legend[] getRenderingLegend() throws DriverException {
-        return new Legend[]{getWMSLegend()};
+        try {
+        return new Legend[]{
+            new WMSLegend(
+                ((SimpleWMSDriver)ds.getDriver()).getWMSClient(),
+                ((SimpleWMSDriver)ds.getDriver()).getWMSStatus(),
+                wmslayerName)};
+        } catch(ConnectException e) {
+            throw new DriverException(e);
+        } catch(IOException e) {
+            throw new DriverException(e);
+        }
     }
 
     @Override
@@ -115,10 +138,10 @@ public class WMSLayer extends GdmsLayer {
         throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
-    public WMSLegend getWMSLegend() {
-        return new WMSLegend(getWMSConnection(), wmslayerName);
-
-    }
+//    public WMSLegend getWMSLegend() {
+//        return new WMSLegend(getWMSConnection(), wmslayerName);
+//
+//    }
 
     @Override
     public boolean isRaster() throws DriverException {
@@ -162,19 +185,17 @@ public class WMSLayer extends GdmsLayer {
              */
 
             //TODO A revoir une fois que le gdms gerera tout les clients
-            WMSClient client = driver.getWMSClient();
-            WMSClientPool.registerClient(client);
-            connection = new WMSConnection(client, driver.getWMSStatus());
-            envelope = driver.getEnvelope();
+            //WMSClient client = driver.getWMSClient();
+            //connection = new WMSConnection(client, driver.getWMSStatus());
             ds.close();
         } catch (AlreadyClosedException e) {
             throw new LayerException(I18N.getString("orbisgis-core.org.orbisgis.wMSLayer.bug"), e); //$NON-NLS-1$
         } catch (DriverException e) {
             throw new LayerException(I18N.getString("orbisgis-core.org.orbisgis.wMSLayer.cannotOpenWMSDescription"), e); //$NON-NLS-1$
-        } catch (ConnectException e) {
-            throw new LayerException(I18N.getString("orbisgis-core.org.orbisgis.wMSLayer.cannotConnectToWmsServer"), e); //$NON-NLS-1$
-        } catch (IOException e) {
-            throw new LayerException(I18N.getString("orbisgis-core.org.orbisgis.wMSLayer.cannotRetrieveWMSServerContent"), e); //$NON-NLS-1$
+//        } catch (ConnectException e) {
+//            throw new LayerException(I18N.getString("orbisgis-core.org.orbisgis.wMSLayer.cannotConnectToWmsServer"), e); //$NON-NLS-1$
+//        } catch (IOException e) {
+//            throw new LayerException(I18N.getString("orbisgis-core.org.orbisgis.wMSLayer.cannotRetrieveWMSServerContent"), e); //$NON-NLS-1$
         }
     }
 
@@ -220,10 +241,6 @@ public class WMSLayer extends GdmsLayer {
 
     public boolean isWMS() {
         return true;
-    }
-
-    public WMSConnection getWMSConnection() {
-        return connection;
     }
 
     @Override
