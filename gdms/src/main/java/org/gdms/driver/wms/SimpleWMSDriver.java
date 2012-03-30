@@ -240,7 +240,18 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamRead
 
     @Override
     public Number[] getScope(int dimension) throws DriverException {
-        return null;
+        switch(dimension) {
+                case DataSet.X: {
+                        Number[] number = {m_Envelope.getMaxX(), m_Envelope.getMinX()};
+                        return number;
+                }
+                case DataSet.Y:{
+                        Number[] number = {m_Envelope.getMaxY(), m_Envelope.getMinY()};
+                        return number;
+                }
+                default:
+                        throw new DriverException("Unimplemented dimension");
+        }
     }
 
     /**

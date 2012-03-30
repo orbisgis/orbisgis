@@ -45,6 +45,7 @@ import org.orbisgis.core.renderer.legend.WMSLegend;
 import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Envelope;
+import org.gdms.data.stream.StreamDataSourceAdapter;
 import org.gdms.driver.wms.SimpleWMSDriver;
 import org.orbisgis.core.Services;
 
@@ -62,31 +63,28 @@ public class WMSLayer extends GdmsLayer {
 
     @Override
     public DataSource getDataSource() {
-        return null;
+        return ds;
     }
 
     @Override
     public Envelope getEnvelope() {
-        return getDriver().getEnvelope();
-        /*
-        Envelope result = new Envelope();
-
-        if (null != ds) {
-            try {
-                result = ds.getFullExtent();
-            } catch (DriverException e) {
-                Services.getErrorManager().error(
-                        I18N.getString("org.orbisgis.layerModel.layer.cannotGetTheExtentOfLayer") //$NON-NLS-1$
-                        + ds.getName(), e);
-            }
-        }
-        return result;
-        */
+            //Move Envelope in DataSource
+        return ((SimpleWMSDriver)ds.getDriver()).getEnvelope();
         
-    }
-
-    public SimpleWMSDriver getDriver() {
-        return driver;
+        
+//        Envelope result = new Envelope();
+//
+//        if (null != ds) {
+//            try {
+//                    //TODO LooRightValueDecoratork for other layer, driver etc for getScop.
+//                result = ds.getFullExtent();
+//            } catch (DriverException e) {
+//                Services.getErrorManager().error(
+//                        I18N.getString("org.orbisgis.layerModel.layer.cannotGetTheExtentOfLayer") //$NON-NLS-1$
+//                        + ds.getName(), e);
+//            }
+//        }
+//        return result;  
     }
 
     @Override
@@ -138,11 +136,6 @@ public class WMSLayer extends GdmsLayer {
         throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
-//    public WMSLegend getWMSLegend() {
-//        return new WMSLegend(getWMSConnection(), wmslayerName);
-//
-//    }
-
     @Override
     public boolean isRaster() throws DriverException {
         return false;
@@ -159,35 +152,9 @@ public class WMSLayer extends GdmsLayer {
         try {
             ds.open();
             driver = (SimpleWMSDriver) ds.getDriver();
-            /*
-             * String host = driver.getHost();              *
-             *
-             *
-             * //String host = ds.getString(0, "host"); //$NON-NLS-1$
-             * System.out.println("Host : " + host);
-             *
-             *
-             * WMSClient client = WMSClientPool.getWMSClient(host);
-             * client.getCapabilities(null, false, null); WMSStatus status = new
-             * WMSStatus(); wmslayerName = ds.getString(0, "layer");
-             * //$NON-NLS-1$ status.addLayerName(wmslayerName);
-             * status.setSrs(ds.getString(0, "srs")); //$NON-NLS-1$
-             *
-             * BoundaryBox bbox = getLayerBoundingBox(wmslayerName, client
-             * .getRootLayer(), status.getSrs()); status.setExtent(new
-             * Rectangle2D.Double(bbox.getXmin(), bbox .getYmin(),
-             * bbox.getXmax() - bbox.getXmin(), bbox.getYmax() -
-             * bbox.getYmin())); envelope = new Envelope(bbox.getXmin(),
-             * bbox.getXmax(), bbox .getYmin(), bbox.getYmax());
-             * status.setFormat(ds.getString(0, "format")); //$NON-NLS-1$
-             * connection = new WMSConnection(client, status);
-             *
-             */
-
-            //TODO A revoir une fois que le gdms gerera tout les clients
-            //WMSClient client = driver.getWMSClient();
-            //connection = new WMSConnection(client, driver.getWMSStatus());
-            ds.close();
+            
+            //If we close here, the datasource is never open again. We get an exception.
+            //ds.close();
         } catch (AlreadyClosedException e) {
             throw new LayerException(I18N.getString("orbisgis-core.org.orbisgis.wMSLayer.bug"), e); //$NON-NLS-1$
         } catch (DriverException e) {

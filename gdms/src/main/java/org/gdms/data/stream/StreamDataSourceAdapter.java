@@ -52,13 +52,14 @@ import org.gdms.driver.Driver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.StreamDriver;
 import org.gdms.driver.StreamReadWriteDriver;
+import org.gdms.driver.wms.SimpleWMSDriver;
 import org.gdms.source.CommitListener;
 import org.gdms.source.DefaultSourceManager;
 import org.gdms.source.Source;
 
 /**
  * Adapter to the DataSource interface for stream drivers
- * 
+ *
  * @author Vincent Dépériers
  */
 public class StreamDataSourceAdapter extends DriverDataSource implements Commiter, CommitListener {
@@ -85,7 +86,6 @@ public class StreamDataSourceAdapter extends DriverDataSource implements Commite
     @Override
     public void open() throws DriverException {
         LOG.trace("Opening");
-        //Il y aura des arguments pour open dont on aura la valeur grace à def :)
         driver.open(def);
         fireOpen(this);
         DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory().getSourceManager();
@@ -100,16 +100,6 @@ public class StreamDataSourceAdapter extends DriverDataSource implements Commite
         DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory().getSourceManager();
         sm.removeCommitListener(this);
     }
-
-//    @Override
-//    public boolean isModified() {
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean isOpen() {
-//        return true;
-//    }
 
     @Override
     public void saveData(DataSet ds) throws DriverException {
@@ -150,19 +140,19 @@ public class StreamDataSourceAdapter extends DriverDataSource implements Commite
         }
         driver.open(def);
 
-	fireCommit(this);
-        
+        fireCommit(this);
+
         return changed;
     }
 
     @Override
     public void isCommiting(String name, Object source) throws DriverException {
     }
-    
+
     /**
      * This method is used by the {@code Renderer} to know whether or not it is
      * dealing with a stream datasource
-     * @return 
+     * @return
      */
     @Override
     public boolean isStream() {
@@ -174,8 +164,8 @@ public class StreamDataSourceAdapter extends DriverDataSource implements Commite
         return driver.getMap(width, height, extent, cancel);
     }
 
-//    @Override
-//    public Envelope getFullExtent() throws DriverException {
-//        return ((SimpleWMSDriver)getDriver()).getEnvelope();
-//    }
+    @Override
+    public Envelope getFullExtent() throws DriverException {
+        return ((SimpleWMSDriver)getDriver()).getEnvelope();
+    }
 }
