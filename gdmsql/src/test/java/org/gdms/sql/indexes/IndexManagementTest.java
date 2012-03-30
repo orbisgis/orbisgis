@@ -36,18 +36,20 @@
  */
 package org.gdms.sql.indexes;
 
+import org.gdms.driver.DriverException;
+import org.gdms.data.indexes.RTreeIndex;
+import org.gdms.data.indexes.DataSourceIndex;
 import org.junit.Before;
 import org.junit.Test;
 import java.io.File;
 
 
 import org.gdms.SQLBaseTest;
+import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SQLDataSourceFactory;
+import org.gdms.data.indexes.BTreeIndex;
 import org.gdms.data.indexes.IndexManager;
 import org.gdms.source.SourceManager;
-import org.gdms.data.types.IncompatibleTypesException;
-import org.gdms.sql.engine.SQLEngine;
-import org.gdms.sql.engine.SemanticException;
 
 import static org.junit.Assert.*;
 
@@ -70,95 +72,55 @@ public class IndexManagementTest {
 
         @Test
         public void testDeleteIndex() throws Exception {
-                testBuildSpatialIndexOnFirstFieldByDefault();
-                String sql = "select DeleteIndex(the_geom) from source";
+                im.buildIndex("source", "the_geom", null);
+                String sql = "DROP INDEX ON source(the_geom);";
                 dsf.executeSQL(sql);
                 assertNull(im.getIndex("source", "the_geom"));
         }
 
         @Test
         public void testBuildSpatialIndexSpecifyingField() throws Exception {
-                testBuildIndexSpecifyingField("BuildSpatialIndex", "the_geom");
+                String sql = "CREATE INDEX ON source(the_geom);";
+                dsf.executeSQL(sql);
+                DataSourceIndex idx = im.getIndex("source", "the_geom");
+                assertNotNull(idx);
+                assertTrue(idx instanceof RTreeIndex);
         }
 
         @Test
         public void testBuildAlphaIndexSpecifyingField() throws Exception {
-                testBuildIndexSpecifyingField("BuildAlphaIndex", "gid");
-        }
-
-        @Test
-        public void testBuildSpatialIndexOnFirstFieldByDefault() throws Exception {
-                testBuildIndexOnFirstFieldByDefault("BuildSpatialIndex", "the_geom");
-        }
-
-        @Test
-        public void testSpatialWrongParameters() throws Exception {
-                testSpatialWrongParameters("BuildSpatialIndex", "the_geom", "gid");
-        }
-
-        @Test
-        public void testAlphaWrongParameters() throws Exception {
-                testWrongParameters("BuildAlphaIndex", "gid", "the_geom");
-        }
-
-        @Test
-        public void testDeleteWrongParameters() throws Exception {
-                testWrongParametersDelete("DeleteIndex", "gid");
-        }
-
-        private void testBuildIndexSpecifyingField(String indexCall, String field)
-                throws Exception {
-                String sql = "select " + indexCall + "(" + field + ") from source";
+                String sql = "CREATE INDEX ON source(gid);";
                 dsf.executeSQL(sql);
-                assertNotNull(im.getIndex("source", field));
+                DataSourceIndex idx = im.getIndex("source", "gid");
+                assertNotNull(idx);
+                assertTrue(idx instanceof BTreeIndex);
         }
 
-        private void testBuildIndexOnFirstFieldByDefault(String indexCall,
-                String field) throws Exception {
-                String sql = "select " + indexCall + "() from source";
+        @Test(expected = DriverException.class)
+        public void testWrongFieldName() throws Exception {
+                String sql = "CREATE INDEX ON source(gid2);";
                 dsf.executeSQL(sql);
-                assertNotNull(im.getIndex("source", field));
+                fail();
         }
 
-        private void testSpatialWrongParameters(String indexCall, String field,
-                String wrongField) throws Exception {
-                try {
-                        testWrongParametersInSQL("select " + indexCall + "(" + "'" + field
-                                + "'" + ") from source;");
-                        fail();
-                } catch (IncompatibleTypesException e) {
-                }
-                testWrongParameters(indexCall, field, wrongField);
+        @Test(expected = NoSuchTableException.class)
+        public void testWrongTableName() throws Exception {
+                String sql = "CREATE INDEX ON source2(gid);";
+                dsf.executeSQL(sql);
+                fail();
         }
 
-        private void testWrongParameters(String indexCall, String field,
-                String wrongField) throws Exception {
-                try {
-                        testWrongParametersInSQL("select " + indexCall + "(" + wrongField
-                                + ") from source;");
-                        fail();
-                } catch (IncompatibleTypesException e) {
-                }
-                testWrongParametersDelete(indexCall, field);
+        @Test(expected = DriverException.class)
+        public void testDropWrongFieldName() throws Exception {
+                String sql = "DROP INDEX ON source(gid2);";
+                dsf.executeSQL(sql);
+                fail();
         }
 
-        private void testWrongParametersDelete(String indexCall, String field)
-                throws Exception {
-                try {
-                        testWrongParametersInSQL("select " + indexCall + "(" + field
-                                + ") from source s1, source s2;");
-                        fail();
-                } catch (SemanticException e) {
-                }
-                try {
-                        testWrongParametersInSQL("select " + indexCall + "();");
-                        fail();
-                } catch (SemanticException e) {
-                }
-        }
-
-        private void testWrongParametersInSQL(String sql) throws Exception {
-                SQLEngine engine = new SQLEngine(dsf);
-                engine.execute(sql);
+        @Test(expected = NoSuchTableException.class)
+        public void testDropWrongTableName() throws Exception {
+                String sql = "DROP INDEX ON source2(gid);";
+                dsf.executeSQL(sql);
+                fail();
         }
 }
