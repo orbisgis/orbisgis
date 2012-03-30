@@ -19,14 +19,14 @@ public class StreamDefinitionType extends DefinitionType {
 
         @XmlAttribute(required = true)
         protected String host;
-        @XmlAttribute(required = true)
-        protected String port;
+        //@XmlAttribute(required = true)
+        //protected String port;
         @XmlAttribute(name = "layer-name", required = true)
         protected String layerName;
-        @XmlAttribute(required = true)
-        protected String user;
-        @XmlAttribute(required = true)
-        protected String password;
+//        @XmlAttribute(required = true)
+//        protected String user;
+//        @XmlAttribute(required = true)
+//        protected String password;
         @XmlAttribute(required = true)
         protected String prefix;    
         @XmlAttribute(required = true)
@@ -59,29 +59,29 @@ public class StreamDefinitionType extends DefinitionType {
                 this.host = value;
         }
 
-        /**
-         * Gets the value of the port property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getPort() {
-                return port;
-        }
-
-        /**
-         * Sets the value of the port property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setPort(String value) {
-                this.port = value;
-        }
+//        /**
+//         * Gets the value of the port property.
+//         * 
+//         * @return
+//         *     possible object is
+//         *     {@link String }
+//         *     
+//         */
+//        public String getPort() {
+//                return port;
+//        }
+//
+//        /**
+//         * Sets the value of the port property.
+//         * 
+//         * @param value
+//         *     allowed object is
+//         *     {@link String }
+//         *     
+//         */
+//        public void setPort(String value) {
+//                this.port = value;
+//        }
 
         /**
          * Gets the value of the tableName property.
@@ -107,53 +107,53 @@ public class StreamDefinitionType extends DefinitionType {
                 this.layerName = value;
         }
 
-        /**
-         * Gets the value of the user property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getUser() {
-                return user;
-        }
+//        /**
+//         * Gets the value of the user property.
+//         * 
+//         * @return
+//         *     possible object is
+//         *     {@link String }
+//         *     
+//         */
+//        public String getUser() {
+//                return user;
+//        }
+//
+//        /**
+//         * Sets the value of the user property.
+//         * 
+//         * @param value
+//         *     allowed object is
+//         *     {@link String }
+//         *     
+//         */
+//        public void setUser(String value) {
+//                this.user = value;
+//        }
 
-        /**
-         * Sets the value of the user property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setUser(String value) {
-                this.user = value;
-        }
-
-        /**
-         * Gets the value of the password property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getPassword() {
-                return password;
-        }
-
-        /**
-         * Sets the value of the password property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setPassword(String value) {
-                this.password = value;
-        }
+//        /**
+//         * Gets the value of the password property.
+//         * 
+//         * @return
+//         *     possible object is
+//         *     {@link String }
+//         *     
+//         */
+//        public String getPassword() {
+//                return password;
+//        }
+//
+//        /**
+//         * Sets the value of the password property.
+//         * 
+//         * @param value
+//         *     allowed object is
+//         *     {@link String }
+//         *     
+//         */
+//        public void setPassword(String value) {
+//                this.password = value;
+//        }
 
         /**
          * Gets the value of the prefix property.
