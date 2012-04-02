@@ -29,12 +29,7 @@
 package org.orbisgis.sif.icons;
 
 import java.awt.Image;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 import javax.swing.ImageIcon;
-import org.apache.log4j.Logger;
-import org.orbisgis.utils.I18N;
 
 /**
  * @package org.orbisgis.sif.icons
