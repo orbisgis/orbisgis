@@ -139,7 +139,7 @@ public class SQLMatcher {
                         addKeyWords("TABLE", "VIEW", "INDEX", "OR REPLACE VIEW");
                 } else if ("DROP".equalsIgnoreCase(a)) {
                         // DROP tata
-                        addKeyWords("TABLE", "VIEW", "INDEX");
+                        addKeyWords("TABLE", "VIEW", "INDEX", "SCHEMA");
                 } else if ("INDEX".equalsIgnoreCase(a)) {
                         // CREATE INDEX ON tutu(field)
                         addKeyWord("ON");
