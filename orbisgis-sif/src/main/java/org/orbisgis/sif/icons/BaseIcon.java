@@ -42,7 +42,7 @@ import org.orbisgis.utils.I18N;
  */
 
 /**
- * @class SifIcon
+ * @class BaseIcon
  * @brief Use this class to retrieve the data of an icon
  * This final class load icons only on request. This feature help to reduce
  * the loading time of OrbisGis. Moreover this class does not have to be updated
@@ -51,28 +51,46 @@ import org.orbisgis.utils.I18N;
  */
 
 
-public final class SifIcon {
-    private static BaseIcon iconManager = new BaseIcon();
-    /**
-     * This is a static class
-     */
-    private SifIcon() {
-        
-    }
+public class BaseIcon {
+    private Map<String,ImageIcon> loadedIcons=new HashMap<String,ImageIcon>();/*!< This map contain all loaded icons */
+    
+    private final ImageIcon ORBISGIS_MISSING_ICON = new ImageIcon(BaseIcon.class.getResource("remove.png")); /*!< Icon displayed when the requested icon is not found */
+    
+    private final Logger LOG = Logger.getLogger(BaseIcon.class); /*!< Logger of SifIcon */
+   
+    
     /**
      * Retrieve icon awt Image by its name
      * @param iconName The icon name, without extension. All icons are stored in the png format.
      * @return The Image content requested, or an Image corresponding to a Missing Resource
      */
-    public static Image getIconImage(String iconName) { 
-        return iconManager.getIconImage(SifIcon.class, iconName);
+    public Image getIconImage(Class<?> loader,String iconName) { 
+        return getIcon(loader,iconName).getImage();
     }
+    
+    
     /**
      * Retrieve icon by its name
      * @param iconName The icon name, without extension. All icons are stored in the png format.
      * @return The ImageIcon requested, or an ImageIcon corresponding to a Missing Resource
      */
-    public static ImageIcon getIcon(String iconName) {
-        return iconManager.getIcon(SifIcon.class, iconName);        
+    public ImageIcon getIcon(Class<?> loader,String iconName) {
+        if(!loadedIcons.containsKey(iconName)) {
+            //This is the first request for this icon
+            URL url = loader.getResource(iconName+".png");
+            if(url!=null) {
+                ImageIcon newIcon = new ImageIcon(url);
+                loadedIcons.put(iconName, newIcon);
+                return newIcon;
+            } else {
+                LOG.warn(I18N.getString("sif.icons.OrbisGISIcon.icon_not_found")+" : "+iconName);
+                //The next time, return directly the missing icon
+                loadedIcons.put(iconName, ORBISGIS_MISSING_ICON); 
+                return ORBISGIS_MISSING_ICON;
+            }            
+        } else {
+            //Icon was already loaded, return its content
+            return loadedIcons.get(iconName);
+        }
     }
 }
