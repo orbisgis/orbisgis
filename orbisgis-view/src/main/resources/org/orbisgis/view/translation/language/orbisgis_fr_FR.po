@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OrbisGis 4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-30 09:59+0100\n"
-"PO-Revision-Date: 2012-03-30 10:00+0100\n"
+"POT-Creation-Date: 2012-04-02 10:54+0100\n"
+"PO-Revision-Date: 2012-04-02 10:56+0100\n"
 "Last-Translator: Nicolas Fortin <nicolas.fortin@ec-nantes.fr>\n"
 "Language-Team: OrbisGis <info@orbisgis.org>\n"
 "Language: fr\n"
@@ -20,25 +20,50 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-SearchPath-0: java\n"
 
-#: java/org/orbisgis/view/docking/DockingManager.java:79
+#: java/org/orbisgis/view/docking/DockingManager.java:82
 msgid "orbisgis.view.docking.LookAndFeel"
 msgstr "&Aspect et convivialité"
 
-#: java/org/orbisgis/view/docking/DockingManager.java:91
+#: java/org/orbisgis/view/docking/DockingManager.java:94
 msgid "orbisgis.view.DockingManager.layoutloadfailed"
 msgstr "Impossible de charger l'espace de travail"
 
-#: java/org/orbisgis/view/docking/DockingManager.java:104
+#: java/org/orbisgis/view/docking/DockingManager.java:107
 msgid "orbisgis.view.DockingManager.layoutsavefailes"
 msgstr "Impossible de sauvegarder l'espace de travail"
 
-#: java/org/orbisgis/view/docking/DockingManager.java:162
+#: java/org/orbisgis/view/docking/DockingManager.java:159
 msgid "orbisgis.view.docking.stationTitle"
 msgstr "OrbisGis View"
 
-#: java/org/orbisgis/view/docking/preferences/OrbisGISPreferenceTreeModel.java:71
+#: java/org/orbisgis/view/docking/preferences/OrbisGISPreferenceTreeModel.java:72
 msgid "orbisgis.preferencies.window"
 msgstr "Affichage"
+
+#: java/org/orbisgis/view/docking/preferences/OrbisGISPreferenceTreeModel.java:79
+msgid "orbisgis.preferencies.web"
+msgstr "Configuration Internet"
+
+#: java/org/orbisgis/view/docking/preferences/OrbisGISPreferenceTreeModel.java:80
+msgid "orbisgis.preferencies.proxytreenode"
+msgstr "Proxy"
+
+#: java/org/orbisgis/view/docking/preferences/ProxyPreferenceModel.java:94
+msgid "orbisgis.preferencies.proxy.useproxylabel"
+msgstr "Utiliser un proxy"
+
+#: java/org/orbisgis/view/docking/preferences/ProxyPreferenceModel.java:98
+msgid "orbisgis.preferencies.proxy.proxyUrlLabel"
+msgstr "Adresse"
+
+#: java/org/orbisgis/view/docking/preferences/ProxyPreferenceModel.java:102
+msgid "orbisgis.preferencies.proxy.proxyPortLabel"
+msgstr "Port"
+
+#: java/org/orbisgis/view/docking/preferences/ProxyPreferenceModel.java:142
+#: java/org/orbisgis/view/docking/preferences/ProxyPreferenceModel.java:147
+msgid "orbisgis.preferencies.proxy.invalidPortNumber"
+msgstr "Le port saisi est invalide"
 
 #: java/org/orbisgis/view/geocatalog/Catalog.java:106
 msgid "orbisgis.org.orbisgis.Catalog.title"

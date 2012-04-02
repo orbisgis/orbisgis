@@ -38,6 +38,7 @@ import bibliothek.gui.dock.common.menu.CLookAndFeelMenuPiece;
 import bibliothek.gui.dock.facile.menu.RootMenuPiece;
 import bibliothek.gui.dock.layout.DockableProperty;
 import bibliothek.gui.dock.util.PropertyKey;
+import bibliothek.util.Path;
 import bibliothek.util.PathCombiner;
 import java.awt.Dimension;
 import java.io.File;
@@ -51,6 +52,7 @@ import org.apache.log4j.Logger;
 import org.orbisgis.utils.I18N;
 import org.orbisgis.view.docking.internals.OrbisGISView;
 import org.orbisgis.view.docking.preferences.OrbisGISPreferenceTreeModel;
+import org.orbisgis.view.docking.preferences.editors.UserInformationEditor;
 import org.orbisgis.view.icons.OrbisGISIcon;
 /**
  * @brief Manage left,right,down,center docking stations.
@@ -74,7 +76,10 @@ public final class DockingManager {
 	public Set<DockingPanel> getPanels() {
             return views.keySet();
         }
- 
+        /**
+         * 
+         * @return The look and feel menu
+         */
         public JMenu getLookAndFeelMenu() {
             RootMenuPiece laf = new RootMenuPiece(I18N.getString("orbisgis.view.docking.LookAndFeel"), false, new CLookAndFeelMenuPiece( commonControl ));
             return laf.getMenu();
@@ -110,7 +115,11 @@ public final class DockingManager {
          * with at least the preference model of DockingFrames
          */
         public void showPreferenceDialog() {
-            PreferenceTreeDialog.openDialog( preferences , owner );
+            PreferenceTreeDialog dialog = new PreferenceTreeDialog( preferences, true );
+            //Add custom editors
+            dialog.setEditorFactory(UserInformationEditor.TYPE_USER_INFO, UserInformationEditor.FACTORY);
+            //Show dialog
+            dialog.openDialog( owner, true );
         }
         /**
          * The multiple instances panels can be shown at the next start of application
@@ -137,12 +146,6 @@ public final class DockingManager {
             return views.get(panel);
         }
         
-        /**
-         * Add a preference model to the main tree preference model
-         */
-        public PreferenceTreeModel getPreferenceTreeModel() {
-            return preferences;
-        }
 	/**
 	 * Creates the new manager
 	 * @param owner the window used as parent for all dialogs
