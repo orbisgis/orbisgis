@@ -46,6 +46,8 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.FunctionTest;
 
 import org.gdms.sql.function.spatial.geometry.distance.ST_FurthestPoint;
+import org.gdms.sql.function.spatial.geometry.distance.ST_NearestPoint;
+import org.gdms.sql.function.spatial.geometry.distance.ST_ProjectTo;
 import static org.junit.Assert.*;
 
 public class DistanceTest extends FunctionTest {
@@ -119,4 +121,41 @@ public class DistanceTest extends FunctionTest {
                 Value result = evaluate(sT_FurthestPoint, values);
                 assertTrue(result.getAsGeometry().equals(expectedGeom));
         }
+
+        @Test
+        public void testST_NearestPoints() throws Exception {
+                ST_NearestPoint sT_NearestPoint = new ST_NearestPoint();
+                Geometry geom = wktReader.read("POLYGON ((150 420, 110 150, 305 148, 300 360, 150 420))");
+                Geometry base = wktReader.read("POINT (40 270)");
+                Geometry expectedGeom = wktReader.read("POINT (125.89261744966443 257.2751677852349)");
+                Value[] values = new Value[]{ValueFactory.createValue(base),
+                        ValueFactory.createValue(geom)};
+                Value result = evaluate(sT_NearestPoint, values);
+                assertTrue(result.getAsGeometry().equals(expectedGeom));
+        }
+
+        @Test
+        public void testST_ProjectTo() throws Exception {
+                ST_ProjectTo sT_ProjectTo = new ST_ProjectTo();
+                Geometry geom = wktReader.read("LINESTRING (-5 5, 11 5)");
+                Geometry base = wktReader.read("POINT(0 0)");
+                Geometry expectedGeom = wktReader.read("POINT (0 5)");
+                Value[] values = new Value[]{ValueFactory.createValue(base),
+                        ValueFactory.createValue(geom)};
+                Value result = evaluate(sT_ProjectTo, values);
+                assertTrue(result.getAsGeometry().equals(expectedGeom));
+        }
+
+        @Test
+        public void testST_ProjectTo1() throws Exception {
+                ST_ProjectTo sT_ProjectTo = new ST_ProjectTo();
+                Geometry geom = wktReader.read("MULTILINESTRING ((-5 5, 11 5), (-5 -2, 20 -2))");
+                Geometry base = wktReader.read("POINT(0 0)");
+                Geometry expectedGeom = wktReader.read("POINT (0 -2)");
+                Value[] values = new Value[]{ValueFactory.createValue(base),
+                        ValueFactory.createValue(geom)};
+                Value result = evaluate(sT_ProjectTo, values);
+                assertTrue(result.getAsGeometry().equals(expectedGeom));
+        }
+        
 }

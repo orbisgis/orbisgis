@@ -57,14 +57,14 @@ import org.gdms.sql.function.FunctionSignature;
 /**
  * Compute the nearest points of two geometries.
  */
-public final class ST_NearestPoints extends AbstractScalarSpatialFunction {
+public final class ST_NearestPoint extends AbstractScalarSpatialFunction {
 
         @Override
         public Value evaluate(SQLDataSourceFactory dsf, Value[] args) throws FunctionException {
                 final Geometry geomA = args[0].getAsGeometry();
                 final Geometry geomB = args[1].getAsGeometry();
                 Coordinate[] pts = DistanceOp.nearestPoints(geomA, geomB);
-                return ValueFactory.createValue(geomA.getFactory().createLineString(pts));
+                return ValueFactory.createValue(geomA.getFactory().createPoint(pts[1]));
 
         }
 
@@ -75,17 +75,17 @@ public final class ST_NearestPoints extends AbstractScalarSpatialFunction {
 
         @Override
         public String getDescription() {
-                return "Compute the nearest points of two geometries.";
+                return "Compute the nearest point of two geometries.";
         }
 
         @Override
         public String getSqlOrder() {
-                return "select ST_NearestPoints(the_geom1, the_geom2) from myTable;";
+                return "select ST_NearestPoint(the_geom1, the_geom2) from myTable;";
         }
 
         @Override
         public Type getType(Type[] types) {
-                return TypeFactory.createType(Type.LINESTRING);
+                return TypeFactory.createType(Type.POINT);
         }
 
         @Override
