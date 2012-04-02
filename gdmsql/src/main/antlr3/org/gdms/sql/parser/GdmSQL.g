@@ -91,7 +91,6 @@ tokens {
     T_OR = 'OR';
     T_ORDER = 'ORDER';
     T_PRIVILEGES = 'PRIVILEGES';
-    T_PUBLIC = 'PUBLIC';
     T_RAW = 'RAW';
     T_RENAME = 'RENAME';
     T_REPLACE = 'REPLACE';
@@ -407,6 +406,7 @@ statement
           | create_view_statement
           | alter_table_statement
           | drop_table_statement
+          | drop_schema_statement
           | drop_view_statement
           | create_index_statement
           | drop_index_statement
@@ -708,6 +708,13 @@ alter_action
 drop_table_statement
         : T_DROP T_TABLE (T_IF T_EXISTS)? table_id (COMMA table_id)* T_PURGE?
           -> ^(T_DROP ^(T_TABLE table_id+) T_IF? T_PURGE?)
+        ;
+
+// DROP SCHEMA
+
+drop_schema_statement
+        : T_DROP T_SCHEMA (T_IF T_EXISTS)? table_id (COMMA table_id)* T_PURGE?
+          -> ^(T_DROP ^(T_SCHEMA table_id+) T_IF? T_PURGE?)
         ;
 
 // CREATE VIEW

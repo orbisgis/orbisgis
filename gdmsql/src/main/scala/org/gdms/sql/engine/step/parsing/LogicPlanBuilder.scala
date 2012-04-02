@@ -394,6 +394,7 @@ object LogicPlanBuilder {
           node.getChild(0).getType match {
             case T_TABLE => end = DropTables(names, ifE, drop)
             case T_VIEW => end = DropViews(names, ifE)
+            case T_SCHEMA => end = DropSchemas(names, ifE, drop)
           }
         }
       case T_INDEX => {

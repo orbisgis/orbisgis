@@ -208,6 +208,17 @@ public class SQLTest extends SQLBaseTest {
                 dsf.executeSQL("alter table landcover2000 rename to erwan;");
                 assertTrue(dsf.getSourceManager().exists("erwan"));
         }
+        
+        @Test
+        public void testDropSchema() throws Exception {
+                dsf.getSourceManager().register("landcover2000",
+                        new File(internalData + "landcover2000.shp"));
+                dsf.getSourceManager().remove("erwan");
+                dsf.executeSQL("alter table landcover2000 rename to toto.erwan;");
+                dsf.executeSQL("drop schema toto;");
+                assertFalse(dsf.getSourceManager().exists("toto.erwan"));
+                assertFalse(dsf.getSourceManager().schemaExists("toto"));
+        }
 
         @Test
         public void testRenameColumn() throws Exception {

@@ -252,6 +252,7 @@ object PhysicalPlanBuilder {
       case a @ CreateView(n, o, ch) => new CreateViewCommand(n, ch, o)
       case CreateTable(n, cols) => new TableCreationCommand(n, cols)
       case DropTables(n, i ,p) => new DropTablesCommand(n, i, p)
+      case DropSchemas(n, i, p) => new DropSchemasCommand(n, i, p)
       case DropViews(n, i) => new DropViewsCommand(n, i)
       case AlterTable(n, elems) => new AlterTableCommand(n, elems)
       case RenameTable(n, nn) => new RenameTableCommand(n, nn)

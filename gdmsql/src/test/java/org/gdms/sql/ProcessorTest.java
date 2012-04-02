@@ -475,6 +475,13 @@ public class ProcessorTest {
                 failWithNoSuchTableException("drop table alltypes, Gis;");
                 getValidatedStatement("drop table alltypes, gis;");
         }
+        
+        @Test
+        public void testDropSchema() throws Exception {
+                failPreparedWithSemanticException("drop schema AllTypes;");
+                failPreparedWithSemanticException("drop schema PUBLIC, Gis;");
+                getValidatedStatement("drop schema PUBLIC;");
+        }
 
         @Test
         public void testGroupBy() throws Exception {

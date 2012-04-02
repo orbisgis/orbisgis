@@ -432,131 +432,145 @@ case class Delete(var child: Operation) extends Operation {
  * @author Antoine Gourlay
  * @since 0.1
  */
- case class CreateTableAs(name: String,var child: Operation) extends Operation {
-    def children = List(child)
-    override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
-    override def toString = "CreateTableAs name(" + name + ") as(" + children + ")"
-  }
+case class CreateTableAs(name: String,var child: Operation) extends Operation {
+  def children = List(child)
+  override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
+  override def toString = "CreateTableAs name(" + name + ") as(" + children + ")"
+}
 
- /**
-  * Represents the creation of a view from a query.
-  * 
-  * @param name the name of the resulting view
-  * @author Antoine Gourlay
-  * @since 0.1
-  */
- case class CreateView(name: String, orReplace: Boolean,var child: Operation) extends Operation {
-    def children = List(child)
-    override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
-    override def toString = "CreateViewAs name(" + name + ") as(" + children + ")" +
-    (if (orReplace) " replace" else "")
-  }
-
-
- /**
-  * Represents the creation of an empty table from some metadata.
-  * 
-  * @param name the name of the resulting table
-  * @param cols a list of column names and types
-  * @author Antoine Gourlay
-  * @since 0.1
-  */
- case class CreateTable(name: String, cols: Seq[(String, String)]) extends Operation {
-    def children = Nil
-    override def toString = "CreateTableAs name(" + name + ") as(" + cols + ")"
-  }
-
- /**
-  * Represents an alter instruction.
-  * 
-  * @param name the name of the table to alter.
-  * @param actions the list of actions to make on the table
-  * @author Antoine Gourlay
-  * @since 0.1
-  */
- case class AlterTable(name: String, actions: Seq[AlterElement]) extends Operation {
-    def children = Nil
-    override def toString = "AlterTable name(" + name + ") do(" + actions + ")"
-  }
+/**
+ * Represents the creation of a view from a query.
+ * 
+ * @param name the name of the resulting view
+ * @author Antoine Gourlay
+ * @since 0.1
+ */
+case class CreateView(name: String, orReplace: Boolean,var child: Operation) extends Operation {
+  def children = List(child)
+  override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
+  override def toString = "CreateViewAs name(" + name + ") as(" + children + ")" +
+  (if (orReplace) " replace" else "")
+}
 
 
- /**
-  * Represents an ALTER TABLE .. RENAME TO .. instruction.
-  * 
-  * @param name the name of the table to alter.
-  * @param newname the new name of the table
-  * @author Antoine Gourlay
-  * @since 0.1
-  */
- case class RenameTable(name: String, newname: String) extends Operation {
-    def children = Nil
-    override def toString = "RenameTable name(" + name + ") newname(" + newname + ")"
-  }
+/**
+ * Represents the creation of an empty table from some metadata.
+ * 
+ * @param name the name of the resulting table
+ * @param cols a list of column names and types
+ * @author Antoine Gourlay
+ * @since 0.1
+ */
+case class CreateTable(name: String, cols: Seq[(String, String)]) extends Operation {
+  def children = Nil
+  override def toString = "CreateTableAs name(" + name + ") as(" + cols + ")"
+}
 
- /**
-  * Represents a drop instruction, i.e. unregisters tables
-  * 
-  * @param names a list of names of tables to drop
-  * @param ifExists true if no error should be thrown in the case of a non-existent table
-  * @param purge true if the tables are to be physically deleted, not just unregistered
-  * @author Antoine Gourlay
-  * @since 0.1
-  */
- case class DropTables(names: Seq[String], ifExists: Boolean, purge: Boolean) extends Operation {
-    def children = Nil
-    override def toString = "DropTables names(" + names + ") ifExists=" + ifExists + " purge=" + purge
-  }
+/**
+ * Represents an alter instruction.
+ * 
+ * @param name the name of the table to alter.
+ * @param actions the list of actions to make on the table
+ * @author Antoine Gourlay
+ * @since 0.1
+ */
+case class AlterTable(name: String, actions: Seq[AlterElement]) extends Operation {
+  def children = Nil
+  override def toString = "AlterTable name(" + name + ") do(" + actions + ")"
+}
 
- /**
-  * Represents a drop view instruction, i.e. unregisters views
-  * 
-  * @param names a list of names of views to drop
-  * @param ifExists true if no error should be thrown in the case of a non-existent table
-  * @author Antoine Gourlay
-  * @since 0.1
-  */
- case class DropViews(names: Seq[String], ifExists: Boolean) extends Operation {
-    def children = Nil
-    override def toString = "DropViews names(" + names + ") ifExists=" + ifExists
-  }
 
- /**
-  * Represents an index-creation instruction.
-  * 
-  * @param table the name of the table to index
-  * @param column the name of the field to index
-  * @author Antoine Gourlay
-  * @since 0.1
-  */
- case class CreateIndex(table: String, column: String) extends Operation {
-    def children = Nil
-    override def toString = "CreateIndex on(" + table + ", " + column + ")"
-  }
+/**
+ * Represents an ALTER TABLE .. RENAME TO .. instruction.
+ * 
+ * @param name the name of the table to alter.
+ * @param newname the new name of the table
+ * @author Antoine Gourlay
+ * @since 0.1
+ */
+case class RenameTable(name: String, newname: String) extends Operation {
+  def children = Nil
+  override def toString = "RenameTable name(" + name + ") newname(" + newname + ")"
+}
 
- /**
-  * Represents an index-deletion instruction.
-  * 
-  * @param table the name of the table with an index
-  * @param column the name of the field whose index is to be removed
-  * @author Antoine Gourlay
-  * @since 0.1
-  */
- case class DropIndex(table: String, column: String) extends Operation {
-    def children = Nil
-    override def toString = "DropIndex on(" + table + ", " + column + ")"
-  }
+/**
+ * Represents a drop instruction, i.e. unregisters tables
+ * 
+ * @param names a list of names of tables to drop
+ * @param ifExists true if no error should be thrown in the case of a non-existent table
+ * @param purge true if the tables are to be physically deleted, not just unregistered
+ * @author Antoine Gourlay
+ * @since 0.1
+ */
+case class DropTables(names: Seq[String], ifExists: Boolean, purge: Boolean) extends Operation {
+  def children = Nil
+  override def toString = "DropTables names(" + names + ") ifExists=" + ifExists + " purge=" + purge
+}
+  
+/**
+ * Represents a drop instruction, i.e. unregisters whole schemas (with sub-tables)
+ * 
+ * @param names a list of names of tables to drop
+ * @param ifExists true if no error should be thrown in the case of a non-existent table
+ * @param purge true if the tables are to be physically deleted, not just unregistered
+ * @author Antoine Gourlay
+ * @since 0.1
+ */
+case class DropSchemas(names: Seq[String], ifExists: Boolean, purge: Boolean) extends Operation {
+  def children = Nil
+  override def toString = "DropSchemas names(" + names + ") ifExists=" + ifExists + " purge=" + purge
+}
 
- /**
-  * Represents a call to a non procedure or ExecutorFunction, i.e. a function that does not return anything.
-  * 
-  * Parameter expressions can only be constant expressions or operators applied on constant expressions and scalar
-  * function calls.
-  * 
-  * @param name the name of the procedure to call
-  * @param params the list of parameter expressions.
-  * @author Antoine Gourlay
-  * @since 0.1
-  */
+/**
+ * Represents a drop view instruction, i.e. unregisters views
+ * 
+ * @param names a list of names of views to drop
+ * @param ifExists true if no error should be thrown in the case of a non-existent table
+ * @author Antoine Gourlay
+ * @since 0.1
+ */
+case class DropViews(names: Seq[String], ifExists: Boolean) extends Operation {
+  def children = Nil
+  override def toString = "DropViews names(" + names + ") ifExists=" + ifExists
+}
+
+/**
+ * Represents an index-creation instruction.
+ * 
+ * @param table the name of the table to index
+ * @param column the name of the field to index
+ * @author Antoine Gourlay
+ * @since 0.1
+ */
+case class CreateIndex(table: String, column: String) extends Operation {
+  def children = Nil
+  override def toString = "CreateIndex on(" + table + ", " + column + ")"
+}
+
+/**
+ * Represents an index-deletion instruction.
+ * 
+ * @param table the name of the table with an index
+ * @param column the name of the field whose index is to be removed
+ * @author Antoine Gourlay
+ * @since 0.1
+ */
+case class DropIndex(table: String, column: String) extends Operation {
+  def children = Nil
+  override def toString = "DropIndex on(" + table + ", " + column + ")"
+}
+
+/**
+ * Represents a call to a non procedure or ExecutorFunction, i.e. a function that does not return anything.
+ * 
+ * Parameter expressions can only be constant expressions or operators applied on constant expressions and scalar
+ * function calls.
+ * 
+ * @param name the name of the procedure to call
+ * @param params the list of parameter expressions.
+ * @author Antoine Gourlay
+ * @since 0.1
+ */
  case class ExecutorCall(name: String, params: List[Expression]) extends Operation {
     def children = Nil
     override def doValidate = params foreach (_ preValidate)

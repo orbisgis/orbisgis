@@ -219,6 +219,14 @@ public class GrammarTest {
                 parse("drop table if exists table1, table2, table3;");
                 parse("drop table if exists table1 purge;");
         }
+        
+        @Test
+        public void testDropSchema() throws Exception {
+                parse("drop schema table1, table2, table3;");
+                parse("drop schema table1 purge;");
+                parse("drop schema if exists table1, table2, table3;");
+                parse("drop schema if exists table1 purge;");
+        }
 
         @Test
         public void testUpdateWithExpression() throws Exception {
