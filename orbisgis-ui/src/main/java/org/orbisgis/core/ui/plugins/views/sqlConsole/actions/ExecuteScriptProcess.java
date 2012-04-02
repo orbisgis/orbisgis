@@ -96,6 +96,7 @@ public class ExecuteScriptProcess implements BackgroundJob {
 
                                 SqlStatement st = statements[i];
                                 boolean spatial = false;
+                                logger.info("Running instruction " + (i+1) + " / " + statements.length + ".");
                                 try {
                                         st.prepare(dsf, pm);
                                         Metadata metadata = st.getResultMetadata();
