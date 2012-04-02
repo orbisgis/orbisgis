@@ -263,8 +263,11 @@ public abstract class Names {
 	// PopupMenu Geocatalog
 	public static final String POPUP_GEOCATALOG_ADD = I18N
 			.getString("orbisgis.ui.popupmenu.geocatalog.add");
-	// WMS
-	public static final String POPUP_GEOCATALOG_WMS = I18N
+	// Stream
+	public static final String POPUP_GEOCATALOG_Stream = I18N
+			.getString("orbisgis.ui.popupmenu.geocatalog.stream.path1");
+        // WMS
+        public static final String POPUP_GEOCATALOG_WMS = I18N
 			.getString("orbisgis.ui.popupmenu.geocatalog.wms.path1");
 	// Database
 	public static final String POPUP_GEOCATALOG_DB = I18N

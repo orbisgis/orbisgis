@@ -137,7 +137,10 @@ public class OrbisGISIcon {
 			.getIcon("builtincustomquerymaperror");
 
 	// PopupMenu Geocatalog
-	public static final ImageIcon GEOCATALOG_WMS = IconLoader
+//	public static final ImageIcon GEOCATALOG_Stream = IconLoader
+//			.getIcon("server_connect.png");
+        
+        public static final ImageIcon GEOCATALOG_WMS = IconLoader
 			.getIcon("server_connect.png");
 	// Database
 	public static final ImageIcon GEOCATALOG_DB = IconLoader

@@ -109,8 +109,16 @@ public class WMSGeocatalogPlugIn extends AbstractPlugIn {
 				frame,
 				this,
 				new String[] { Names.POPUP_GEOCATALOG_ADD,
+						Names.POPUP_GEOCATALOG_Stream },
+				Names.POPUP_GEOCATALOG_ADD, false, null,
+				wbContext);
+                //ajouter un popupMenu de WMS
+                context.getFeatureInstaller().addPopupMenuItem(
+				frame,
+				this,
+				new String[] { Names.POPUP_GEOCATALOG_Stream,
 						Names.POPUP_GEOCATALOG_WMS },
-				Names.POPUP_GEOCATALOG_ADD, false, OrbisGISIcon.GEOCATALOG_WMS,
+				Names.POPUP_GEOCATALOG_Stream, false, OrbisGISIcon.GEOCATALOG_WMS,
 				wbContext);
 	}
 
