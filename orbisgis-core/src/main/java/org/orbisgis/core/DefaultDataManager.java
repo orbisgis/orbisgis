@@ -5,9 +5,9 @@
  *
  * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
- *
+ * 
  * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
- *
+ * 
  * This file is part of OrbisGIS.
  *
  * OrbisGIS is free software: you can redistribute it and/or modify it under the
@@ -45,7 +45,6 @@ import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.Layer;
 import org.orbisgis.core.layerModel.LayerCollection;
 import org.orbisgis.core.layerModel.LayerException;
-import org.orbisgis.core.layerModel.WMSLayer;
 
 public class DefaultDataManager implements DataManager {
 
@@ -53,23 +52,23 @@ public class DefaultDataManager implements DataManager {
         private DataSourceFactory dsf;
 
         public DefaultDataManager(DataSourceFactory dsf) {
-                this.dsf = dsf;
-        }
+		this.dsf = dsf;
+	}
 
         @Override
         public DataSourceFactory getDataSourceFactory() {
-                return dsf;
-        }
+		return dsf;
+	}
 
         @Override
-        public IndexManager getIndexManager() {
-                return dsf.getIndexManager();
-        }
+	public IndexManager getIndexManager() {
+		return dsf.getIndexManager();
+	}
 
         @Override
-        public SourceManager getSourceManager() {
-                return dsf.getSourceManager();
-        }
+	public SourceManager getSourceManager() {
+		return dsf.getSourceManager();
+	}
 
         @Override
 	public ILayer createLayer(String sourceName) throws LayerException {
@@ -103,16 +102,17 @@ public class DefaultDataManager implements DataManager {
         @Override
 	public ILayer createLayer(DataSource sds) throws LayerException {
 		int type = sds.getSource().getType();
-		if ((type & SourceManager.STREAM) == SourceManager.STREAM) {
-                        try {
-                                sds.open();
-                                return new WMSLayer(sds.getName(), sds);
-                        } catch (DriverException e) {
-				throw new LayerException("Cannot check source contents", e);
-			}
-		} else {
+//		if ((type & SourceManager.STREAM) == SourceManager.STREAM) {
+//                        try {
+//                                sds.open();
+//                                return new WMSLayer(sds.getName(), sds);
+//                        } catch (DriverException e) {
+//				throw new LayerException("Cannot check source contents", e);
+//			}
+//		} else {
 			boolean hasSpatialData = true;
-			if ((type & SourceManager.VECTORIAL) == SourceManager.VECTORIAL) {
+			if ((type & SourceManager.VECTORIAL) == SourceManager.VECTORIAL
+                                || (type & SourceManager.STREAM) == SourceManager.STREAM) {
 				int sfi;
 				try {
 					sds.open();
@@ -133,42 +133,42 @@ public class DefaultDataManager implements DataManager {
 			} else {
 				throw new LayerException("The source contains no spatial info");
 			}
-		}
+//		}
 	}
 
         @Override
-        public ILayer createLayerCollection(String layerName) {
-                return new LayerCollection(layerName);
-        }
+	public ILayer createLayerCollection(String layerName) {
+		return new LayerCollection(layerName);
+	}
 
         @Override
-        public ILayer createLayer(String name, File file) throws LayerException {
-                dsf.getSourceManager().register(name, file);
-                try {
-                        DataSource dataSource = dsf.getDataSource(name);
-                        return createLayer(dataSource);
-                } catch (DriverLoadException e) {
-                        throw new LayerException("Cannot find a suitable driver for "
-                                + file.getAbsolutePath(), e);
-                } catch (NoSuchTableException e) {
-                        throw new LayerException("bug!", e);
-                } catch (DataSourceCreationException e) {
-                        throw new LayerException("Cannot instantiate layer", e);
-                }
-        }
+	public ILayer createLayer(String name, File file) throws LayerException {
+		dsf.getSourceManager().register(name, file);
+		try {
+			DataSource dataSource = dsf.getDataSource(name);
+			return createLayer(dataSource);
+		} catch (DriverLoadException e) {
+			throw new LayerException("Cannot find a suitable driver for "
+					+ file.getAbsolutePath(), e);
+		} catch (NoSuchTableException e) {
+			throw new LayerException("bug!", e);
+		} catch (DataSourceCreationException e) {
+			throw new LayerException("Cannot instantiate layer", e);
+		}
+	}
 
-        public ILayer createLayer(File file) throws LayerException {
-                String name = dsf.getSourceManager().nameAndRegister(file);
-                try {
-                        DataSource dataSource = dsf.getDataSource(name);
-                        return createLayer(dataSource);
-                } catch (DriverLoadException e) {
-                        throw new LayerException("Cannot find a suitable driver for "
-                                + file.getAbsolutePath(), e);
-                } catch (NoSuchTableException e) {
-                        throw new LayerException("bug!", e);
-                } catch (DataSourceCreationException e) {
-                        throw new LayerException("Cannot instantiate layer", e);
-                }
-        }
+	public ILayer createLayer(File file) throws LayerException {
+		String name = dsf.getSourceManager().nameAndRegister(file);
+		try {
+			DataSource dataSource = dsf.getDataSource(name);
+			return createLayer(dataSource);
+		} catch (DriverLoadException e) {
+			throw new LayerException("Cannot find a suitable driver for "
+					+ file.getAbsolutePath(), e);
+		} catch (NoSuchTableException e) {
+			throw new LayerException("bug!", e);
+		} catch (DataSourceCreationException e) {
+			throw new LayerException("Cannot instantiate layer", e);
+		}
+	}
 }

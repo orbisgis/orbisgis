@@ -51,7 +51,7 @@ public abstract class TocAbstractRenderer {
 		if (layer.acceptsChilds()) {
 			return OrbisGISIcon.LAYERS;
 		} else {
-			if (layer.isWMS()) {
+			if (layer.isStream()) {
 				return OrbisGISIcon.SERVER_CONNECT;
 			} else {
 				DataSource dataSource = layer.getDataSource();

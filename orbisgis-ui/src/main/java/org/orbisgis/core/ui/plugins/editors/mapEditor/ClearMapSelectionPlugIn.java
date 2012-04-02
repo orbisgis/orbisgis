@@ -59,7 +59,7 @@ public class ClearMapSelectionPlugIn extends AbstractPlugIn {
 		ILayer[] layers = mc.getLayerModel().getLayersRecursively();
 		EditableElement element = editor.getElement();
 		for (ILayer lyr : layers) {
-			if (!lyr.isWMS()) {
+			if (!lyr.isStream()) {
 				final Selection selection = new EditableLayer(element, lyr)
 						.getSelection();
 				if (!mc.isSelectionInducedRefresh()) {
@@ -85,7 +85,7 @@ public class ClearMapSelectionPlugIn extends AbstractPlugIn {
 			MapContext mc = (MapContext) mapEditor.getElement().getObject();
 			ILayer[] layers = mc.getLayerModel().getLayersRecursively();
 			for (ILayer lyr : layers) {
-				if (!lyr.isWMS()) {
+				if (!lyr.isStream()) {
 					lyr.getSelection();
 					if (lyr.getSelection().length > 0)
 						isEnabled = true;

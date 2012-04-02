@@ -202,19 +202,13 @@ public interface ILayer {
 	 */
 	boolean isVectorial() throws DriverException;
 
-	/**
-	 * Returns true if this layer represents a WMS source
-	 * 
-	 * @return
-	 */
-	boolean isWMS();
-        
+       
         /**
 	 * Returns true if this layer represents a stream source
 	 * 
 	 * @return
 	 */
-	boolean isStream();
+	boolean isStream() throws DriverException ;
 
 	/**
 	 * Returns a {@link DataSource} to access the source of this layer

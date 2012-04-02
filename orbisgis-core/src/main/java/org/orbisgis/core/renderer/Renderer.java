@@ -48,18 +48,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
-import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
-import org.gvsig.remoteClient.exceptions.ServerErrorException;
-import org.gvsig.remoteClient.exceptions.WMSException;
-import org.gvsig.remoteClient.wms.WMSStatus;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.layerModel.WMSLayer;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.renderer.legend.RasterLegend;
@@ -79,7 +74,6 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
 import org.gdms.data.DataSource;
 import org.gdms.data.indexes.FullIterator;
-import org.gdms.driver.StreamDriver;
 import org.gdms.driver.wms.SimpleWMSDriver;
 import org.orbisgis.core.layerModel.LayerException;
 
