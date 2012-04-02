@@ -66,7 +66,6 @@ abstract class AbstractEngineStep[I, O](name: String) extends EngineStep[I, O] {
   override def >=:(input: I)(implicit p: Properties): O = {
     if (isPropertyTurnedOn(Flags.EXPLAIN)) { 
       LOG.info("Starting task: " + name)
-      LOG.info("On: " + input)
     }
     val o = doOperation(input)
     if (isPropertyTurnedOn(Flags.EXPLAIN)) {

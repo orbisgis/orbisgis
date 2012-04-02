@@ -47,7 +47,8 @@ import org.gdms.sql.engine.commands.OutputCommand
 import org.gdms.sql.engine.commands.QueryOutputCommand
 import org.gdms.sql.engine.operations.Operation
 import org.gdms.sql.engine.operations.Scan
-import org.gdms.sql.engine.physical.PhysicalPlanBuilder
+import org.gdms.sql.engine.step.builder.BuilderStep
+import org.gdms.sql.engine.step.physicalJoin.PhysicalJoinOptimStep
 import org.orbisgis.progress.ProgressMonitor
 
 /**
@@ -103,7 +104,13 @@ class ExecutionGraph(op: Operation, p: Properties = null) {
   def prepare(dsf: SQLDataSourceFactory): Unit = {
     if (!opened || dsf != this.dsf) {
       if (start == null || dsf != this.dsf) {
-        start = PhysicalPlanBuilder.buildPhysicalPlan(dsf, op, p).asInstanceOf[OutputCommand]
+        // for readability
+        implicit val pp = p
+        
+        start = {            (op, dsf) >=: 
+                 PhysicalJoinOptimStep >=: 
+                 BuilderStep
+        }
       }
 
       this.dsf = dsf;
