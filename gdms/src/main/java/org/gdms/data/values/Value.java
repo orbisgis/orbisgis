@@ -38,6 +38,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.regex.Pattern;
 
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import org.grap.model.GeoRaster;
 import org.jproj.CoordinateReferenceSystem;
@@ -282,11 +283,11 @@ public interface Value extends Comparable<Value> {
 
         /**
          * Gets this value as a boolean value.
-         * 
+         *
          * This methods return <tt>true</tt> if the value is SQL TRUE,
          * <tt>false</tt> if the value is SQL FALSE, and <tt>null</tt> if
          * this value is SQL UNKNOWN.
-         * 
+         *
          * Note that is the latter case, we have <code>isNull() == true</code>.
          *
          * @return the value
@@ -318,6 +319,8 @@ public interface Value extends Comparable<Value> {
          * converted
          */
         GeoRaster getAsRaster();
+
+        Envelope getAsEnvelope();
 
         /**
          * @return this value if it is a numeric value or can implicitly be converted to it.
@@ -440,7 +443,7 @@ public interface Value extends Comparable<Value> {
          *
          * @param value
          * @return The remainder.
-         * @throws IncompatibleTypesException if the operation is not possible between 
+         * @throws IncompatibleTypesException if the operation is not possible between
          * these two products.
          */
         NumericValue remainder(Value value);
@@ -458,6 +461,7 @@ public interface Value extends Comparable<Value> {
 
         /**
          * Gets the CRS associated with this Value, if there is one.
+         *
          * @return a valid CRS or null if not present or not applicable
          */
         CoordinateReferenceSystem getCRS();

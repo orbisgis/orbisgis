@@ -38,6 +38,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.regex.Pattern;
 
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import org.grap.model.GeoRaster;
 import org.jproj.CoordinateReferenceSystem;
@@ -639,8 +640,17 @@ public abstract class AbstractValue implements Value {
                 throw new IncompatibleTypesException("Cannot compare " + this + " and " + o);
         }
 
-        @Override
+	@Override
         public CoordinateReferenceSystem getCRS() {
                 return null;
+        }
+
+        @Override
+        public Envelope getAsEnvelope() {
+               if (isNull()) {
+                return null;
+        }
+                throw new IncompatibleTypesException("This value is not envelope: "
+                        + toString() + "(" + TypeFactory.getTypeName(getType()) + ")");
         }
 }

@@ -40,6 +40,7 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.Locale;
 
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.LineString;
@@ -57,7 +58,7 @@ import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 
 /**
- * Factory to instantiate Value instances from basic types
+ * Factory to instantiate Value instances from basic types.
  * 
  */
 public final class ValueFactory {
@@ -795,7 +796,7 @@ public final class ValueFactory {
                         return createNullValue();
                 }
         }
-        
+
         /**
          * Creates a Value instance that contains the specified raster value
          *
@@ -900,5 +901,13 @@ public final class ValueFactory {
         }
 
         private ValueFactory() {
+        }
+        
+        public static EnvelopeValue createValue(Envelope envelope) {
+                if (envelope != null) {
+                        return new DefaultEnvelopeValue(envelope);
+                } else {
+                        return createNullValue();
+                }
         }
 }

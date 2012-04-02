@@ -68,23 +68,23 @@ public class WMSLayer extends GdmsLayer {
 
     @Override
     public Envelope getEnvelope() {
-            //Move Envelope in DataSource
-        return ((SimpleWMSDriver)ds.getDriver()).getEnvelope();
+        //Move Envelope in DataSource
+        //return ((SimpleWMSDriver)ds.getDriver()).getEnvelope();
         
         
-//        Envelope result = new Envelope();
-//
-//        if (null != ds) {
-//            try {
-//                    //TODO LooRightValueDecoratork for other layer, driver etc for getScop.
-//                result = ds.getFullExtent();
-//            } catch (DriverException e) {
-//                Services.getErrorManager().error(
-//                        I18N.getString("org.orbisgis.layerModel.layer.cannotGetTheExtentOfLayer") //$NON-NLS-1$
-//                        + ds.getName(), e);
-//            }
-//        }
-//        return result;  
+        Envelope result = new Envelope();
+
+        if (null != ds) {
+            try {
+                //TODO Look RightValueDecorator for other layer, driver etc for getScop.
+                result = ds.getFullExtent();
+            } catch (DriverException e) {
+                Services.getErrorManager().error(
+                        I18N.getString("org.orbisgis.layerModel.layer.cannotGetTheExtentOfLayer") //$NON-NLS-1$
+                        + ds.getName(), e);
+            }
+        }
+        return result;  
     }
 
     @Override

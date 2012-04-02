@@ -104,7 +104,12 @@ public class DefaultDataManager implements DataManager {
 	public ILayer createLayer(DataSource sds) throws LayerException {
 		int type = sds.getSource().getType();
 		if ((type & SourceManager.STREAM) == SourceManager.STREAM) {
-			return new WMSLayer(sds.getName(), sds);
+                        try {
+                                sds.open();
+                                return new WMSLayer(sds.getName(), sds);
+                        } catch (DriverException e) {
+				throw new LayerException("Cannot check source contents", e);
+			}
 		} else {
 			boolean hasSpatialData = true;
 			if ((type & SourceManager.VECTORIAL) == SourceManager.VECTORIAL) {

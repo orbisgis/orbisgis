@@ -62,6 +62,7 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamRead
         metadata.addField("layer", Type.STRING);
         metadata.addField("srs", Type.STRING);
         metadata.addField("format", Type.STRING);
+        metadata.addField("stream", Type.STREAM);
 
         this.m_Schema = new DefaultSchema(DRIVER_NAME + this.hashCode());
         this.m_Schema.addTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME, metadata);
@@ -120,7 +121,7 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamRead
      */
     @Override
     public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
-        //Pour le moment mais c'est a changer xD
+        //switch field index since we now there is only 1 row in stream metada.
 
         if (rowIndex == 0) {
             switch (fieldId) {
@@ -132,6 +133,8 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamRead
                     return ValueFactory.createValue(m_StreamSource.getSRS());
                 case 3:
                     return ValueFactory.createValue(m_StreamSource.getImageFormat());
+                case 4:
+                    return ValueFactory.createValue(m_Envelope);
             }
         }
         return null;
