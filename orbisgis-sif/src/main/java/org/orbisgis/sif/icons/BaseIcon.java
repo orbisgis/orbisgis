@@ -77,13 +77,14 @@ public class BaseIcon {
     public ImageIcon getIcon(Class<?> loader,String iconName) {
         if(!loadedIcons.containsKey(iconName)) {
             //This is the first request for this icon
-            URL url = loader.getResource(iconName+".png");
+            String resourceName = iconName+".png";
+            URL url = loader.getResource(resourceName);
             if(url!=null) {
                 ImageIcon newIcon = new ImageIcon(url);
                 loadedIcons.put(iconName, newIcon);
                 return newIcon;
             } else {
-                LOG.warn(I18N.getString("sif.icons.OrbisGISIcon.icon_not_found")+" : "+iconName);
+                LOG.warn(I18N.getString("sif.icons.OrbisGISIcon.icon_not_found")+" : "+resourceName);
                 //The next time, return directly the missing icon
                 loadedIcons.put(iconName, ORBISGIS_MISSING_ICON); 
                 return ORBISGIS_MISSING_ICON;
