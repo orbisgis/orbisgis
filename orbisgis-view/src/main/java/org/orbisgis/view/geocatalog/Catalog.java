@@ -288,7 +288,7 @@ public class Catalog extends JPanel implements DockingPanel {
                 //Add the database panel
                 addFileItem = new JMenuItem(
                         I18N.getString("orbisgis.view.geocatalog.addDataBaseMenuItem"),
-                        OrbisGISIcon.getIcon("database_add.png"));
+                        OrbisGISIcon.getIcon("database_add"));
                 addFileItem.addActionListener(EventHandler.create(ActionListener.class,
                         this,
                         "onMenuAddFromDataBase"));
