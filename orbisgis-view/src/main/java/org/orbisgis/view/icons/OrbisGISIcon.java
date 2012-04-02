@@ -29,12 +29,9 @@
 package org.orbisgis.view.icons;
 
 import java.awt.Image;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 import javax.swing.ImageIcon;
-import org.apache.log4j.Logger;
-import org.orbisgis.utils.I18N;
+import org.orbisgis.sif.icons.BaseIcon;
+import org.orbisgis.sif.icons.SifIcon;
 
 /**
  * @package org.orbisgis.view.icons
@@ -52,11 +49,7 @@ import org.orbisgis.utils.I18N;
 
 
 public final class OrbisGISIcon {
-    private static Map<String,ImageIcon> loadedIcons=new HashMap<String,ImageIcon>();/*!< This map contain all loaded icons */
-    
-    private static final ImageIcon ORBISGIS_MISSING_ICON = new ImageIcon(OrbisGISIcon.class.getResource("remove.png")); /*!< Icon displayed when the requested icon is not found */
-    
-    private static final Logger LOG = Logger.getLogger(OrbisGISIcon.class); /*!< Logger of OrbisGISIcon */
+    private static BaseIcon iconManager = new BaseIcon();
     
     /**
      * This is a static class
@@ -70,7 +63,7 @@ public final class OrbisGISIcon {
      * @return The Image content requested, or an Image corresponding to a Missing Resource
      */
     public static Image getIconImage(String iconName) { 
-        return getIcon(iconName).getImage();
+        return iconManager.getIconImage(OrbisGISIcon.class, iconName);
     }
     /**
      * Retrieve icon by its name
@@ -78,27 +71,6 @@ public final class OrbisGISIcon {
      * @return The ImageIcon requested, or an ImageIcon corresponding to a Missing Resource
      */
     public static ImageIcon getIcon(String iconName) {
-        ImageIcon foundIcon = loadedIcons.get(iconName);
-        if(foundIcon==null) {
-            //This is the first request for this icon
-            URL url = OrbisGISIcon.class.getResource(iconName+".png");
-            if(url!=null) {
-                ImageIcon newIcon = new ImageIcon(url);
-                loadedIcons.put(iconName, newIcon);
-                return newIcon;
-            } else {
-                LOG.warn(I18N.getString("orbisgis.view.icons.OrbisGISIcon.icon_not_found")+" : "+iconName);
-                return ORBISGIS_MISSING_ICON;
-            }            
-        } else {
-            //Icon was already loaded, return its content
-            return foundIcon;
-        }
-    }
-    /**
-     * Clear all cached icons
-     */
-    public static void dispose() {
-        loadedIcons.clear();
+        return iconManager.getIcon(OrbisGISIcon.class, iconName);        
     }
 }

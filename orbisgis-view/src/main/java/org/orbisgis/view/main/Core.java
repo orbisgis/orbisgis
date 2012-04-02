@@ -213,8 +213,6 @@ public class Core {
         //Free libraries resources
         mainContext.dispose();
         
-        //Free icons
-        OrbisGISIcon.dispose();
     }
     /**
     * Stops this application, closes the {@link MainFrame} and saves
