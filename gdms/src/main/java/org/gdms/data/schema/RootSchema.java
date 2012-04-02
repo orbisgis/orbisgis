@@ -48,7 +48,7 @@ package org.gdms.data.schema;
 public class RootSchema extends DefaultSchema {
 
         public RootSchema() {
-                super("public");
+                super("PUBLIC");
         }
 
         @Override
@@ -60,7 +60,9 @@ public class RootSchema extends DefaultSchema {
         public void setParentSchema(Schema s) {
                 throw new UnsupportedOperationException("The Gdms root schema cannot have a parent schema.");
         }
-        
-        
-        
+
+        @Override
+        public String getFullyQualifiedName() {
+                return getName();
+        }
 }

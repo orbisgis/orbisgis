@@ -61,6 +61,13 @@ public interface Schema {
          * @return the name of this Schema
          */
         String getName();
+        
+        /**
+         * Gets the fully-qualified name of this schema (names of all the parent schemas starting with the
+         * root PUBLIC schema & until this one included, separated by dots).
+         * @return the fully-qualified name
+         */
+        String getFullyQualifiedName();
 
         /**
          * The number of tables in this Schema. This method does not count

@@ -136,4 +136,9 @@ public class DefaultSchema implements Schema {
         public Schema getSubSchemaByName(String name) {
                 return schema.get(name);
         }
+
+        @Override
+        public String getFullyQualifiedName() {
+                return parent.getFullyQualifiedName() + "." + name;
+        }
 }

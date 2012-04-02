@@ -527,4 +527,19 @@ public interface SourceManager {
          * @return the global GDMS schema for this SourceManager
          */
         Schema getSchema();
+
+        /**
+         * Removes the specified schema (and sub-schemas) from this SourceManager.
+         * @param schemaName a fully-qualified schema name
+         * @param purge true if the sources in the schema must be purged
+         * @return true if any schema and/or source was actually removed
+         */
+        boolean removeSchema(String schemaName, boolean purge);
+
+        /**
+         * Gets if the specified schema exists in this SourceManager.
+         * @param name a fully-qualified schema name
+         * @return true if found
+         */
+        boolean schemaExists(String name);
 }

@@ -478,7 +478,7 @@ public final class DefaultSourceManager implements SourceManager {
 
         private void addToSchema(String name, ExtendedSource src) throws DriverException {
                 if (name.isEmpty()) {
-                        throw new IllegalArgumentException("name");
+                        throw new IllegalArgumentException("Empty table name!");
                 }
 
                 // split on the dots '.' into
@@ -500,8 +500,8 @@ public final class DefaultSourceManager implements SourceManager {
                                 if (n == null) {
                                         n = new DefaultSchema(l[i]);
                                         s.addSubSchema(n);
-                                        s = n;
                                 }
+                                        s = n;
                         }
                         s.addTable(l[l.length - 1], dsd.getSchema().getTableByName(l[l.length - 1]));
                 }
@@ -509,7 +509,7 @@ public final class DefaultSourceManager implements SourceManager {
 
         private void removeFromSchema(String name) {
                 if (name.isEmpty()) {
-                        throw new IllegalArgumentException("name");
+                        throw new IllegalArgumentException("Empty table name!");
                 }
 
                 // split on the dots '.' into
@@ -696,6 +696,13 @@ public final class DefaultSourceManager implements SourceManager {
                         nameSource.put(newName, value);
                         value.setName(newName);
 
+                        // update schema
+                        removeFromSchema(dsName);
+                        try {
+                                addToSchema(newName, value);
+                        } catch (DriverException ex) {
+                                LOG.error("Failed to add " + newName + " to Gdms schema.", ex);
+                        }
                         changeNameMapping(dsName, newName);
 
                 }
@@ -736,6 +743,9 @@ public final class DefaultSourceManager implements SourceManager {
 
         @Override
         public String getMainNameFor(String dsName) throws NoSuchTableException {
+                if (dsName.startsWith("PUBLIC.")) {
+                        dsName = dsName.substring(7);
+                }
                 if (nameMapping.containsKey(dsName)) {
                         return nameMapping.get(dsName);
                 } else if (nameSource.containsKey(dsName)) {
@@ -983,5 +993,89 @@ public final class DefaultSourceManager implements SourceManager {
         @Override
         public Schema getSchema() {
                 return schema;
+        }
+
+        @Override
+        public boolean removeSchema(String schemaName, boolean purge) {
+                if (schemaName.isEmpty()) {
+                        throw new IllegalArgumentException("Entpy schema name!");
+                }
+
+                String[] s = schemaName.split("\\.");
+                int i = 0;
+
+                // jump over root schema name
+                if (s[i].equals(schema.getName())) {
+                        i++;
+                }
+
+                Schema ss = schema;
+
+                // find subs-schemas
+                while (i < s.length) {
+                        ss = ss.getSubSchemaByName(s[i]);
+                        if (ss == null) {
+                                return false;
+                        }
+                        i++;
+                }
+
+                return removeSchema(ss, purge);
+        }
+
+        private boolean removeSchema(Schema s, boolean purge) {
+                boolean done = false;
+
+                // remove all sub-schemas
+                String[] sub = s.getSubSchemaNames();
+                for (int i = 0; i < sub.length; i++) {
+                        done |= removeSchema(s.getSubSchemaByName(sub[i]), purge);
+                }
+
+                // remove all tables
+                String[] t = s.getTableNames();
+                String fullname = s.getFullyQualifiedName();
+                for (int j = 0; j < t.length; j++) {
+                        done |= remove(fullname + "." + t[j], purge);
+                }
+
+                // disconnect from parent
+                // parent can be null iff
+                // - is the root schema
+                // - the remove() above disconnected the last table of the schema (no empty schema is ever kept)
+                Schema parent = s.getParentSchema();
+                if (parent != null) {
+                        parent.removeSubSchema(s.getName());
+                }
+
+                return done;
+        }
+
+        @Override
+        public boolean schemaExists(String name) {
+                if (name.isEmpty()) {
+                        throw new IllegalArgumentException("Entpy schema name!");
+                }
+
+                String[] s = name.split("\\.");
+                int i = 0;
+
+                // jump over root schema name
+                if (s[i].equals(schema.getName())) {
+                        i++;
+                }
+
+                Schema ss = schema;
+
+                // find subs-schemas
+                while (i < s.length) {
+                        ss = ss.getSubSchemaByName(s[i]);
+                        if (ss == null) {
+                                return false;
+                        }
+                        i++;
+                }
+
+                return true;
         }
 }
