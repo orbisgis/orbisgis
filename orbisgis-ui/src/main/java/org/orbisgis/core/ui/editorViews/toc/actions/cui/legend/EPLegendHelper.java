@@ -38,10 +38,7 @@ package org.orbisgis.core.ui.editorViews.toc.actions.cui.legend;
 
 import java.util.ArrayList;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendContext;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.ArrowSymbolEditor;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.ImageSymbolEditor;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.PnlUniqueLineSE;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.StandardSymbolEditor;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.*;
 
 public class EPLegendHelper {
 
@@ -51,9 +48,18 @@ public class EPLegendHelper {
 	public static ILegendPanel[] getLegendPanels(LegendContext legendContext) {
 
 		ArrayList<ILegendPanel> legends = new ArrayList<ILegendPanel>();
+                //UniqueLine
                 ILegendPanel pnlUniqueLine = new PnlUniqueLineSE();
                 pnlUniqueLine.initialize(legendContext);
                 legends.add(pnlUniqueLine);
+                //UniquePoint
+                ILegendPanel pnlUniquePoint = new PnlUniquePointSE();
+                pnlUniquePoint.initialize(legendContext);
+                legends.add(pnlUniquePoint);
+                //UniqueArea
+                ILegendPanel pnlUniqueArea = new PnlUniqueAreaSE();
+                pnlUniqueArea.initialize(legendContext);
+                legends.add(pnlUniqueArea);
 		return legends.toArray(new ILegendPanel[legends.size()]);
 	}
 

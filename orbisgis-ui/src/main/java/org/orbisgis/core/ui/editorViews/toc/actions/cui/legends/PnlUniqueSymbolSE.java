@@ -42,7 +42,7 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
 		BoxLayout boxLayout = new BoxLayout(jp, BoxLayout.PAGE_AXIS);
                 jp.setLayout(boxLayout);
                 UniqueSymbol us = (UniqueSymbol) getLegend();
-                List<USParameter> params = us.getParameters();
+                List<USParameter<?>> params = us.getParameters();
                 for(USParameter p : params){
                         JPanel cur = new JPanel();
                         JComponent c1 = buildText(p);
@@ -96,12 +96,12 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
         public JNumericSpinner getSpinner(int min, int max, double inc,
                         final USNumericParameter<Double> a){
                 final JNumericSpinner jns = new JNumericSpinner(4, min, max, inc);
-		jns.addChangeListener(new ChangeListener() {
-                        @Override
-                        public void stateChanged(ChangeEvent evt) {
-                                a.setValue(jns.getValue());
-			}
-		});
+                jns.addChangeListener(new ChangeListener() {
+                                @Override
+                                public void stateChanged(ChangeEvent evt) {
+                                        a.setValue(jns.getValue());
+                    }
+                });
                 jns.setValue(a.getValue());
                 jns.setMaximumSize(new Dimension(60,30));
                 jns.setPreferredSize(new Dimension(60,30));
