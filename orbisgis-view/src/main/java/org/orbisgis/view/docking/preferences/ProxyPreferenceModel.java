@@ -28,10 +28,10 @@
  */ 
 package org.orbisgis.view.docking.preferences;
 
+import bibliothek.extension.gui.dock.preference.DefaultPreference;
 import bibliothek.extension.gui.dock.preference.DefaultPreferenceModel;
 import bibliothek.extension.gui.dock.preference.Preference;
 import bibliothek.extension.gui.dock.preference.PreferenceListener;
-import bibliothek.extension.gui.dock.preference.PreferenceOperation;
 import bibliothek.extension.gui.dock.preference.preferences.DockPropertyPreference;
 import bibliothek.gui.DockController;
 import bibliothek.gui.dock.util.PropertyKey;
@@ -61,18 +61,14 @@ public class ProxyPreferenceModel extends DefaultPreferenceModel {
     private static final String PROXY_PORT_KEY = "web.proxy.proxyport";
     private static final String PROXY_LABEL_KEY = "web.proxy.proxylabel";
     
-    private String hostValue="";
-    private String portValue="";
     private String DEFAULT_PORT_VALUE = "8080";
-    DockPropertyPreference<String> proxyInfo;
-    DockPropertyPreference<Boolean> useProxy;
-    DockPropertyPreference<String> proxyUrl;
-    DockPropertyPreference<String> proxyPort;
-    //Proxy label
-    public static final PropertyKey<String> PROXY_LABEL = 
-        new PropertyKey<String>( PROXY_LABEL_KEY,
-        		new ConstantPropertyFactory<String>( " " ), true );
-        
+    private DefaultPreference<String> proxyInfo;
+    private String oldProxyPort = DEFAULT_PORT_VALUE;
+    private DockPropertyPreference<Boolean> useProxy;
+    private DockPropertyPreference<String> proxyUrl;
+    private DockPropertyPreference<String> proxyPort;
+    
+    private boolean skipEvent = false; //Skip event while update values
     //USE PROXY Key
     public static final PropertyKey<Boolean> USE_PROXY = 
         new PropertyKey<Boolean>( USE_PROXY_KEY,
@@ -88,10 +84,9 @@ public class ProxyPreferenceModel extends DefaultPreferenceModel {
     public ProxyPreferenceModel(DockController controller) {
         super(controller);
         //Message Label
-        proxyInfo = new DockPropertyPreference<String>(controller.getProperties(),PROXY_LABEL,UserInformationEditor.TYPE_USER_INFO, new Path(PROXY_LABEL_KEY));
-        proxyInfo.setLabel("");
+        proxyInfo = new UnsavedPreference<String>("",UserInformationEditor.TYPE_USER_INFO, new Path(PROXY_LABEL_KEY));
         proxyInfo.setDefaultValue("");
-        proxyInfo.setValueInfo(proxyInfo);
+        proxyInfo.setLabel("");
         this.add(proxyInfo);
         //Use Proxy Check Box
         useProxy = new DockPropertyPreference<Boolean>(controller.getProperties(),USE_PROXY, Path.TYPE_BOOLEAN_PATH, new Path(USE_PROXY_KEY));
@@ -109,13 +104,22 @@ public class ProxyPreferenceModel extends DefaultPreferenceModel {
         this.add(proxyPort);
         
     }
+    
+    
+    //Apply values
+    @Override
+    public void write() {
+        super.write();
+        if(useProxy.getValue()!=null) {
+            updateSystemSettings(useProxy.getValue());
+        }
+    }
     /**
      * Init listeners
      * @return 
      */
     public ProxyPreferenceModel initListeners() {
-        useProxy.addPreferenceListener(EventHandler.create(PreferenceListener.class, this,"onChangeUseProxy",""));        
-        proxyUrl.addPreferenceListener(EventHandler.create(PreferenceListener.class, this,"onUserSetProxyUrl",""));        
+        //useProxy.addPreferenceListener(EventHandler.create(PreferenceListener.class, this,"onChangeUseProxy",""));        
         proxyPort.addPreferenceListener(EventHandler.create(PreferenceListener.class, this,"onUserSetProxyPort",""));        
         return this;
     }
@@ -123,6 +127,8 @@ public class ProxyPreferenceModel extends DefaultPreferenceModel {
     
     private void updateSystemSettings(boolean activate) {
         Properties systemSettings = System.getProperties();
+        String hostValue = proxyUrl.getValue();
+        String portValue = proxyPort.getValue();
         //System properties is the 
         if(activate) {
             systemSettings.put(SYSTEM_HTTP_PROXY_HOST, hostValue);
@@ -140,31 +146,34 @@ public class ProxyPreferenceModel extends DefaultPreferenceModel {
             systemSettings.remove(SYSTEM_SOCKS_PROXY_PORT);
         }
     }
-    
+    /**
+     * User update the port value, verify that the port is correct
+     * @param preference Updated preference, the port input
+     */
     public void onUserSetProxyPort(Preference<String> preference) {
+        if(skipEvent) {
+            return;
+        }
         try {
             int p = Integer.parseInt(preference.getValue());
             if (p < 0 || p > 65535) {
+                skipEvent = true;
                 proxyInfo.setValue(I18N.getString("orbisgis.preferencies.proxy.invalidPortNumber"));
-                preference.setValue(portValue);
-                return;
+                preference.setValue(oldProxyPort);
             }
         } catch (NumberFormatException e) {
+            skipEvent = true;
             proxyInfo.setValue(I18N.getString("orbisgis.preferencies.proxy.invalidPortNumber"));
-            preference.setValue(portValue);
+            preference.setValue(oldProxyPort);
             return;
         }
-        portValue = preference.getValue();
+        finally { 
+            skipEvent = false;
+        }
+        proxyInfo.setValue("");
+        oldProxyPort = preference.getValue();
     }
     
-    /**
-     * The user change proxy url
-     * @param preference 
-     */
-    public void onUserSetProxyUrl(Preference<String> preference) {
-        hostValue = preference.getValue();
-        updateSystemSettings(useProxy.getValue());
-    }
     /**
      * Update the system properties
      * @param preference 
