@@ -844,6 +844,7 @@ expression_cond
         | (o=TILDE | o=ITILDE) s=expression_final -> ^($o $expression_cond $s )
         | NOTILDE s=expression_final -> ^(NOTILDE $expression_cond $s )
         | NOITILDE s=expression_final -> ^(NOITILDE $expression_cond $s )
+        | T_BETWEEN s1=expression_concat T_AND s2=expression_concat -> ^(T_BETWEEN $expression_cond $s1 $s2)
         )?
         // nice hack to support more grammar without parenthesis
         (T_OR e2=expression_cond_and -> ^(T_OR $expression_cond $e2) )*

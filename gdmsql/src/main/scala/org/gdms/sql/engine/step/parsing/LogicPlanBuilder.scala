@@ -662,6 +662,7 @@ object LogicPlanBuilder {
             case T_EXPR_LIST => left in getChilds(right).map (parseExpression)
           }
         }
+      case T_BETWEEN => (l(0) >= l(1)) & (l(0) <= l(2))
       case T_FUNCTION_CALL => {
 	  // AST:
 	  // ^( T_FUNCTION_CALL name ^(T_EXPR_LIST expression_main+ )? )
