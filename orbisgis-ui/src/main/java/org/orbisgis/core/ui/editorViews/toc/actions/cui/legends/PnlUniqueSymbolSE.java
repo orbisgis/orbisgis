@@ -13,14 +13,9 @@ import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.util.List;
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import org.orbisgis.core.sif.CRFlowLayout;
-import org.orbisgis.core.sif.CarriageReturn;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.sif.UIPanel;
 import org.orbisgis.core.ui.components.preview.JNumericSpinner;
@@ -42,53 +37,46 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
          */
         protected void initializeLegendFields(){
                 this.removeAll();
-		CRFlowLayout flowLayout = new CRFlowLayout();
-                this.setLayout(flowLayout);
+                JPanel jp = new JPanel();
+		BoxLayout boxLayout = new BoxLayout(jp, BoxLayout.PAGE_AXIS);
+                jp.setLayout(boxLayout);
                 UniqueSymbol us = (UniqueSymbol) getLegend();
                 List<USParameter> params = us.getParameters();
-                JPanel texts = buildTexts(params);
-                JPanel fields = buildFields(params);
-                this.add(texts);
-                this.add(fields);
+                for(USParameter p : params){
+                        JPanel cur = new JPanel();
+                        JComponent c1 = buildText(p);
+                        JComponent c2 = buildField(p);
+                        int dif = Math.abs(c1.getWidth() - c2.getWidth());
+                        cur.setLayout(new BoxLayout(cur, BoxLayout.LINE_AXIS));
+                        cur.add(c1);
+                        cur.add(Box.createHorizontalStrut(10+dif));
+                        cur.add(c2);
+                        cur.setAlignmentX(Component.CENTER_ALIGNMENT);
+                        jp.add(cur);
+                }
+                this.add(jp);
         }
 
-        private JPanel buildTexts(List<USParameter> list){
-		JPanel pnlTexts = new JPanel();
-		CRFlowLayout flowLayout = new CRFlowLayout();
-		pnlTexts.setLayout(flowLayout);
-                for(USParameter a : list){
-                        JLabel lab = new JLabel(a.getName());
-                        pnlTexts.add(lab);
-                        pnlTexts.add(new CarriageReturn());
-                }
-                return pnlTexts;
+        private JLabel buildText(USParameter param){
+                return new JLabel(param.getName());
         }
 
-        private JPanel buildFields(List<USParameter> list){
-		JPanel pnlFields = new JPanel();
-		CRFlowLayout flowLayout = new CRFlowLayout();
-                pnlFields.setLayout(flowLayout);
-                for(USParameter a : list){
-                        JPanel field = null;
-                        if(a instanceof USNumericParameter){
-                                //We prepare a spinner
-                                USNumericParameter usn = (USNumericParameter)a;
-                                field = getSpinner(
-                                        ((Double) usn.getMinValue()).intValue(),
-                                        ((Double) usn.getMaxValue()).intValue(), 
-                                        1.0,
-                                        usn);
-                        } else if(a.getValue() instanceof String){
-                                field = getTextField(a);
-                        } else if(a.getValue() instanceof Color){
-                                field = getColorField(a);
-                        }
-                        if(field != null){
-                                pnlFields.add(field);
-                                pnlFields.add(new CarriageReturn());
-                        }
+        private JComponent buildField(USParameter a){
+                JComponent field = null;
+                if(a instanceof USNumericParameter){
+                        //We prepare a spinner
+                        USNumericParameter usn = (USNumericParameter)a;
+                        field = getSpinner(
+                                ((Double) usn.getMinValue()).intValue(),
+                                ((Double) usn.getMaxValue()).intValue(), 
+                                1.0,
+                                usn);
+                } else if(a.getValue() instanceof String){
+                        field = getTextField(a);
+                } else if(a.getValue() instanceof Color){
+                        field = getColorField(a);
                 }
-                return pnlFields;
+                return field;
 
         }
 
@@ -114,6 +102,8 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
 			}
 		});
                 jns.setValue(a.getValue());
+                jns.setMaximumSize(new Dimension(60,30));
+                jns.setPreferredSize(new Dimension(60,30));
                 return jns;
         }
 
@@ -141,9 +131,7 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
          * @param c
          * @return
          */
-        public JPanel getColorField(final USParameter<Color> c){
-                JPanel cont = new JPanel();
-		cont.setLayout(new CRFlowLayout());
+        public JLabel getColorField(final USParameter<Color> c){
 		JLabel lblFill = new JLabel();
                 MouseListener ma = EventHandler.create(MouseListener.class,this,"chooseFillColor","","mouseClicked");
                 lblFill.addMouseListener(ma);
@@ -152,9 +140,9 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
                 lblFill.setBackground(c.getValue());
 		lblFill.setBorder(BorderFactory.createLineBorder(Color.black));
 		lblFill.setPreferredSize(new Dimension(40, 20));
+		lblFill.setMaximumSize(new Dimension(40, 20));
 		lblFill.setOpaque(true);
-                cont.add(lblFill);
-                return cont;
+                return lblFill;
         }
 
 	public void chooseFillColor(MouseEvent e) {
