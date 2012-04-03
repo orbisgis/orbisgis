@@ -38,7 +38,6 @@ import bibliothek.gui.dock.common.menu.CLookAndFeelMenuPiece;
 import bibliothek.gui.dock.facile.menu.RootMenuPiece;
 import bibliothek.gui.dock.layout.DockableProperty;
 import bibliothek.gui.dock.util.PropertyKey;
-import bibliothek.util.Path;
 import bibliothek.util.PathCombiner;
 import java.awt.Dimension;
 import java.io.File;
@@ -50,6 +49,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import org.apache.log4j.Logger;
 import org.orbisgis.utils.I18N;
+import org.orbisgis.view.docking.internals.DockingArea;
 import org.orbisgis.view.docking.internals.OrbisGISView;
 import org.orbisgis.view.docking.preferences.OrbisGISPreferenceTreeModel;
 import org.orbisgis.view.docking.preferences.editors.UserInformationEditor;
@@ -64,7 +64,8 @@ public final class DockingManager {
         private static final Logger LOGGER = Logger.getLogger(DockingManager.class);
         File dockingState=null;
         private CControl commonControl; /*!< link to the docking-frames */
-
+        //Docking Area (DockingFrames feature named WorkingArea)
+        private Map<String,DockingArea> dockingAreas = new HashMap<String,DockingArea>();
         private Map<DockingPanel,OrbisGISView> views = new HashMap<DockingPanel,OrbisGISView>();
         
 	/** the available preferences for docking frames */
@@ -183,7 +184,6 @@ public final class DockingManager {
          * @throws IOException 
          */
         public void setDockingLayoutPersistanceFilePath(String dockingStateFilePath) {
-            LOGGER.debug("Loading Docking Frames Layout :\n"+dockingStateFilePath);
             this.dockingState = new File(dockingStateFilePath);
             loadLayout();
         }
@@ -218,7 +218,13 @@ public final class DockingManager {
                 //Place the item in a dockstation
                 String restrictedAreaName = frame.getDockingParameters().getDockingArea();
                 if(!restrictedAreaName.isEmpty()) {
-                    //TODO Create the restricted area feature    
+                    //This item is restricted to an area
+                    DockingArea dockArea = dockingAreas.get(restrictedAreaName);
+                    if(dockArea==null) {
+                        dockArea = new DockingArea(commonControl.createWorkingArea(restrictedAreaName));
+                        dockingAreas.put(restrictedAreaName,dockArea);                        
+                    }
+                    dockItem.setWorkingArea(dockArea.getWorkingArea());  
                 }                
                 commonControl.addDockable(dockItem);
                 views.put( frame, dockItem);

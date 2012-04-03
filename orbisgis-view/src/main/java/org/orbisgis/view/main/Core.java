@@ -37,7 +37,6 @@ import org.orbisgis.core.context.main.MainContext;
 import org.orbisgis.utils.I18N;
 import org.orbisgis.view.docking.DockingManager;
 import org.orbisgis.view.geocatalog.Catalog;
-import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.main.frames.MainFrame;
 import org.orbisgis.view.map.MapEditor;
 import org.orbisgis.view.toc.Toc;
@@ -123,6 +122,14 @@ public class Core {
         //Add the views as a new Docking Panel
         dockManager.show(mapEditor);
         dockManager.show(toc);
+    }
+    
+    /**
+     * Create the logging panels
+     * All,Info,Warning,Error
+     */
+    private void makeLoggingPanels() {
+        
     }
     /**
      * Create the GeoCatalog view

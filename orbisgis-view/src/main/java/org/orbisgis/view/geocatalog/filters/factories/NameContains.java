@@ -80,7 +80,9 @@ public class NameContains implements FilterFactory<IFilter> {
      */
     public Component makeFilterField(ActiveFilter filterValue) {
         JTextField filterField = new JTextField(filterValue.getCurrentFilterValue());
-        //Update the field at each modification        
+        //Update the field at each modification   
+        //The lifetime of the listener has the same lifetime than the ActiveFilter,
+        //then this is useless to remove the listener.
         filterField.getDocument().addDocumentListener(new TextFieldDocumentListener(filterField,filterValue));
         return filterField;
     }

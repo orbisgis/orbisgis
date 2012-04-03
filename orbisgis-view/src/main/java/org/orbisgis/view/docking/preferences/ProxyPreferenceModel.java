@@ -179,7 +179,6 @@ public class ProxyPreferenceModel extends DefaultPreferenceModel {
      * @param preference 
      */
     public void onChangeUseProxy(Preference<Boolean> preference) {
-        updateSystemSettings(preference.getValue());
         if(preference.getValue()) {
             //Enable proxy properties
 
