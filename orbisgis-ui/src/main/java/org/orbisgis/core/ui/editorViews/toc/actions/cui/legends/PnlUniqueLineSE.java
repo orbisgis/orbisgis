@@ -4,27 +4,14 @@
  */
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.legends;
 
-import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.net.URL;
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
-import org.orbisgis.core.sif.CRFlowLayout;
-import org.orbisgis.core.sif.CarriageReturn;
 import org.orbisgis.core.sif.UIFactory;
-import org.orbisgis.core.ui.components.preview.JNumericSpinner;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.ConstraintSymbolFilter;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendContext;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.SymbolFilter;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.ColorPicker;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
@@ -57,19 +44,30 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         public void setLegend(Legend legend) {
                 if(legend instanceof UniqueSymbolLine){
                         uniqueLine = (UniqueSymbolLine) legend;
+                        this.initializeLegendFields();
                 } else {
                         throw new IllegalArgumentException("The given Legend is not"
                                 + "a UniqueSymbolLine");
                 }
         }
 
+	/**
+	 * Initialize the panel. This method is called just after the panel
+	 * creation.</p>
+         * <p>WARNING : the panel will be empty after calling this method. Indeed,
+         * there won't be any {@code Legend} instance associated to it. Use the
+         * {@code setLegend} method to achieve this goal.
+	 *
+	 * @param lc
+	 *            LegendContext is useful to get some information about the
+	 *            layer in edition.
+	 */
         @Override
         public void initialize(LegendContext lc) {
                 if(uniqueLine == null){
                         uniqueLine = new UniqueSymbolLine();
                 }
                 legendContext = lc;
-                this.initializeLegendFields();
         }
 
         @Override

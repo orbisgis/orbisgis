@@ -7,7 +7,9 @@ package org.orbisgis.core.ui.editorViews.toc.actions.cui.legends;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.event.*;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.util.List;
@@ -35,6 +37,7 @@ import org.orbisgis.legend.thematic.constant.UniqueSymbol;
 public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel, UIPanel {
 
         protected void initializeLegendFields(){
+                this.removeAll();
 		CRFlowLayout flowLayout = new CRFlowLayout();
                 this.setLayout(flowLayout);
                 UniqueSymbol us = (UniqueSymbol) getLegend();

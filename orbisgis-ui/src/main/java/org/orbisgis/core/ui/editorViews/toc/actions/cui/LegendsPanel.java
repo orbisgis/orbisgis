@@ -133,8 +133,10 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		initializeComponents();
 
 		for (Legend legend : legends) {
+                        //We get a panel for this legend, by finding one eligible
+                        // in the availabe ones. setLegend is called by getPanel,
+                        //so it's not necessary to do it here.
 			ILegendPanel panel = getPanel(legend);
-			panel.setLegend(legend);
 			LegendElement legendElement = new LegendElement(panel
 					.getComponent(), panel, getNewId());
 			addLegend(legendElement);
