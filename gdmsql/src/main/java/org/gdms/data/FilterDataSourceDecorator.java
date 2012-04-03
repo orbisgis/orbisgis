@@ -142,6 +142,12 @@ public class FilterDataSourceDecorator extends AbstractDataSourceDecorator {
                         throw new IllegalArgumentException("The filter condition cannot be null or empty.");
                 }
                 
+                boolean opened = false;
+                if (!getDataSource().isOpen()) {
+                     getDataSource().open();   
+                     opened = true;
+                }
+                
                 SourceManager sm = getDataSourceFactory().getSourceManager();
                 MemoryDataSetDriver d = new MemoryDataSetDriver(getDataSource(), true);
                 final String uID = sm.nameAndRegister(d, DriverManager.DEFAULT_SINGLE_TABLE_NAME);
@@ -163,6 +169,10 @@ public class FilterDataSourceDecorator extends AbstractDataSourceDecorator {
                 }
                 
                 s.cleanUp();
+                
+                if (opened) {
+                        getDataSource().close();
+                }
                 
                 sm.remove(uID);
                 

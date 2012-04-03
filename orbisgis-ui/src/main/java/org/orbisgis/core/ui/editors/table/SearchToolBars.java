@@ -385,10 +385,12 @@ public class SearchToolBars extends JPanel implements ActionListener {
                         FilterDataSourceDecorator filterDataSourceDecorator = new FilterDataSourceDecorator(
                                 tc.getDataSource());
                         filterDataSourceDecorator.setFilter(whereText);
+                        filterDataSourceDecorator.open();
 
                         long dsRowCount = filterDataSourceDecorator.getRowCount();
 
                         List<Integer> map = filterDataSourceDecorator.getIndexMap();
+                        filterDataSourceDecorator.close();
                         
                         int[] sel = new int[map.size()];
                         for (int i = 0; i < dsRowCount; i++) {

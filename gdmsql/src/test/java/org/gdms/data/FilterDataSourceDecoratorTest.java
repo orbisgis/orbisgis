@@ -105,6 +105,7 @@ public class FilterDataSourceDecoratorTest extends SQLBaseTest {
 
                 FilterDataSourceDecorator decorator = new FilterDataSourceDecorator(original);
                 decorator.setFilter("\"type\" = 'talus'");
+                decorator.open();
                 long rowC = decorator.getRowCount();
                 assertFalse(rowC == 0);
 
@@ -125,6 +126,7 @@ public class FilterDataSourceDecoratorTest extends SQLBaseTest {
                 assertFalse(rowC == decorator.getRowCount());
                 assertEquals(rowC - 1, decorator.getRowCount());
                 rowC = decorator.getRowCount();
+                decorator.close();
 
                 dsf.getSourceManager().remove("hedgerow");
         }
