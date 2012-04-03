@@ -8,6 +8,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
@@ -119,6 +120,8 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
                 final JTextField jrf = new JTextField(8);
                 ActionListener al = EventHandler.create(ActionListener.class, s, "setValue","source.text");
                 jrf.addActionListener(al);
+                FocusListener fl = EventHandler.create(FocusListener.class, s, "setValue","source.text","focusLost");
+                jrf.addFocusListener(fl);
                 jrf.setText(s.getValue());
                 cont.add(jrf);
                 return cont;
