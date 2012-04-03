@@ -785,16 +785,6 @@ expression_pow
         )*
         ;
 
-expression_is_null
-        : a=expression_concat  (
-          T_IS ( T_NULL -> ^(T_NULL_CHECK $a)
-               | T_NOT T_NULL -> ^(T_NOT ^(T_NULL_CHECK $a))
-               )
-        | T_ISNULL -> ^(T_NULL_CHECK $a)
-        | T_NOTNULL -> ^(T_NOT ^(T_NULL_CHECK $a))
-        )
-        ;
-
 expression_final
         : 
         ( function_call -> function_call
@@ -832,22 +822,6 @@ expression_list
 
 expression_cond
         : (expression_cond_or -> expression_cond_or)
-        ( T_IN LPAREN expression_expr_in_content RPAREN -> ^(T_IN $expression_cond expression_expr_in_content)
-        | T_NOT T_IN LPAREN expression_expr_in_content RPAREN
-          -> ^(T_NOT ^(T_IN $expression_cond expression_expr_in_content))
-        | T_LIKE s=expression_final -> ^(T_LIKE $expression_cond $s)
-        | T_NOT T_LIKE s=expression_final -> ^(T_NOT ^(T_LIKE $expression_cond $s))
-        | T_ILIKE s=expression_final -> ^(T_ILIKE $expression_cond $s)
-        | T_NOT T_ILIKE s=expression_final -> ^(T_NOT ^(T_ILIKE $expression_cond $s))
-        | T_SIMILAR T_TO s=expression_final -> ^(T_SIMILAR $expression_cond $s)
-        | T_NOT T_SIMILAR T_TO s=expression_final -> ^(T_NOT ^(T_SIMILAR $expression_cond $s))
-        | (o=TILDE | o=ITILDE) s=expression_final -> ^($o $expression_cond $s )
-        | NOTILDE s=expression_final -> ^(NOTILDE $expression_cond $s )
-        | NOITILDE s=expression_final -> ^(NOITILDE $expression_cond $s )
-        | T_BETWEEN s1=expression_concat T_AND s2=expression_concat -> ^(T_BETWEEN $expression_cond $s1 $s2)
-        )?
-        // nice hack to support more grammar without parenthesis
-        (T_OR e2=expression_cond_and -> ^(T_OR $expression_cond $e2) )*
         ;
 
 expression_expr_in_content
@@ -896,15 +870,29 @@ expression_cond_final
 
 expression_comp
         : (expression_concat -> expression_concat)
-          (comp_operator e2=expression_concat -> ^(comp_operator $expression_comp $e2) )?
-        
+          ( comp_operator e2=expression_concat -> ^(comp_operator $expression_comp $e2) 
+          | T_IN LPAREN expression_expr_in_content RPAREN -> ^(T_IN $expression_comp expression_expr_in_content)
+          | T_NOT T_IN LPAREN expression_expr_in_content RPAREN
+            -> ^(T_NOT ^(T_IN $expression_comp expression_expr_in_content))
+          | T_LIKE s=expression_concat -> ^(T_LIKE $expression_comp $s)
+          | T_NOT T_LIKE s=expression_concat -> ^(T_NOT ^(T_LIKE $expression_comp $s))
+          | T_ILIKE s=expression_concat -> ^(T_ILIKE $expression_comp $s)
+          | T_NOT T_ILIKE s=expression_concat -> ^(T_NOT ^(T_ILIKE $expression_comp $s))
+          | T_SIMILAR T_TO s=expression_concat -> ^(T_SIMILAR $expression_comp $s)
+          | T_NOT T_SIMILAR T_TO s=expression_concat -> ^(T_NOT ^(T_SIMILAR $expression_comp $s))
+          | (o=TILDE | o=ITILDE) s=expression_concat -> ^($o $expression_comp $s )
+          | NOTILDE s=expression_concat -> ^(NOTILDE $expression_comp $s )
+          | NOITILDE s=expression_concat -> ^(NOITILDE $expression_comp $s )
+          | T_BETWEEN s1=expression_concat T_AND s2=expression_concat -> ^(T_BETWEEN $expression_comp $s1 $s2)
+          | T_IS ( T_NULL -> ^(T_NULL_CHECK $expression_comp)
+                 | T_NOT T_NULL -> ^(T_NOT ^(T_NULL_CHECK $expression_comp))
+                 )
+          | T_ISNULL -> ^(T_NULL_CHECK $expression_comp)
+          | T_NOTNULL -> ^(T_NOT ^(T_NULL_CHECK $expression_comp))
+          )?
         ;
 
 // Operators
-
-bool_operator
-        : T_OR | T_AND
-        ;
 
 arithm_operator
         : PLUS | MINUS
