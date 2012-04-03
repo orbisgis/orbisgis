@@ -179,7 +179,7 @@ public class JNumericSpinner extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			incrementValue(currentInc);
-			currentInc = currentInc * 1.01;
+			currentInc = currentInc * 1.0;
 		}
 
 		public void init(int sign) {

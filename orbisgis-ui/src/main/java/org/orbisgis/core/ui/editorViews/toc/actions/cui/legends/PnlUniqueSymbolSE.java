@@ -31,11 +31,15 @@ import org.orbisgis.legend.thematic.constant.USParameter;
 import org.orbisgis.legend.thematic.constant.UniqueSymbol;
 
 /**
- *
+ * This class proposes some methods that will be common to all the panels built
+ * for unique symbols.
  * @author alexis
  */
 public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel, UIPanel {
 
+        /**
+         * Fill this {@code JPanel} with all the needed fields.
+         */
         protected void initializeLegendFields(){
                 this.removeAll();
 		CRFlowLayout flowLayout = new CRFlowLayout();
@@ -91,11 +95,17 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
         /**
          * Retrieve a spinner with the wanted listener.
          * @param min
+         *      The minimum value authorized in this spinner.
          * @param max
+         *      The maximum value authorized in this spinner.
          * @param inc
+         *      The value that will be added (or substracted) when using a
+         *      button of the spinner.
          * @return
+         *      The wanted {@code JNumericSpinner}.
          */
-        public JNumericSpinner getSpinner(int min, int max, double inc, final USNumericParameter<Double> a){
+        public JNumericSpinner getSpinner(int min, int max, double inc,
+                        final USNumericParameter<Double> a){
                 final JNumericSpinner jns = new JNumericSpinner(4, min, max, inc);
 		jns.addChangeListener(new ChangeListener() {
                         @Override
@@ -107,6 +117,13 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
                 return jns;
         }
 
+        /**
+         * Get a {@code TextField} instance linked to the given parameter.
+         * @param s
+         *      The parameter we want to configure with our panel
+         * @return
+         *      A {@code JTextField} embedded in a {@code JPanel}.
+         */
         public JPanel getTextField(final USParameter<String> s){
                 JPanel cont = new JPanel();
                 final JTextField jrf = new JTextField(8);
@@ -117,6 +134,13 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
                 return cont;
         }
 
+        /**
+         * Get a {@code JPanel} that contains a {@code JLabel}. If the {@code
+         * JLabel} is clicked, a dialog is open to let the user choose a color.
+         * This {@code JLabel} is linked to the given {@code USParameter}.
+         * @param c
+         * @return
+         */
         public JPanel getColorField(final USParameter<Color> c){
                 JPanel cont = new JPanel();
 		cont.setLayout(new CRFlowLayout());
