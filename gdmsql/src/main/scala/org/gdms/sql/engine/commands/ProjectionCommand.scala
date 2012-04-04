@@ -40,6 +40,7 @@ package org.gdms.sql.engine.commands
 
 import org.gdms.data.NoSuchTableException
 import org.gdms.sql.engine.GdmSQLPredef._
+import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.evaluator._
 
 /**
@@ -86,6 +87,12 @@ class ProjectionCommand(var expression: Array[(Expression, Option[String])]) ext
             }
           }
       }
+    }
+    
+    // added check to prevent creating 0-columned tables
+    // this can occur when using the STAR EXCEPT functionnality
+    if (expression.length == 0) {
+      throw new SemanticException("The resulting dataset has no column! There must be at least one.")
     }
     
     // expressions initialisation

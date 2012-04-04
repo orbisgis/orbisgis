@@ -36,12 +36,10 @@
  */
 package org.gdms.sql;
 
-import java.util.Properties;
 import org.junit.Before;
 import org.junit.Test;
 import java.io.File;
 
-import org.apache.log4j.BasicConfigurator;
 import org.gdms.SQLBaseTest;
 import org.gdms.data.NoSuchTableException;
 
@@ -345,6 +343,14 @@ public class ProcessorTest {
                 p.cleanUp();
                 assertFalse(m.getFieldName(0).equals("mydouble"));
                 assertTrue(m.getFieldName(1).equals("mySTR"));
+        }
+        
+        @Test
+        public void testEmptyProjection() throws Exception {
+                getFullyValidatedStatement("SELECT exp0 FROM VALUES('toto') test;");
+                
+                // projections that remove every fields are not allowed
+                failPreparedWithSemanticException("SELECT * EXCEPT exp0 FROM VALUES('toto') test;");
         }
 
         @Test
