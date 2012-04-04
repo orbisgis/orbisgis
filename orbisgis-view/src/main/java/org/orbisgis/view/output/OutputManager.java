@@ -47,6 +47,8 @@ import org.orbisgis.view.output.filters.AllFilter;
 public class OutputManager {
     public final static String LOG_INFO = "output_info";
     public final static String LOG_ALL = "output_all";
+    public final static String LOG_ERROR = "output_error";
+    
     private Map<String,PanelAppender> outputPanels = new HashMap<String,PanelAppender>();
     private MainOutputPanel mainPanel;
     private static final Logger ROOT_LOGGER = Logger.getRootLogger();
@@ -56,6 +58,7 @@ public class OutputManager {
         mainPanel = new MainOutputPanel();
         makeOutputAll();
         makeOutputInfo();
+        makeOutputError();
     }
     /**
      * Remove the link between LOG4J and Appenders
@@ -80,14 +83,35 @@ public class OutputManager {
         ROOT_LOGGER.addAppender(app);
         mainPanel.addSubPanel(I18N.getString("orbisgis.view.log_all_title"), app.getGuiPanel());
     }
+    
+    
+    
+    /**
+     * Make the Info Output panel
+     * This panel accept root.gui == Info      >
+     */
+    
+    private void makeOutputError() {
+        PanelAppender app = makePanel();
+        app.setLayout(loggingLayout);
+        LevelMatchFilter filter = new LevelMatchFilter();
+        filter.setLevelToMatch(Level.SEVERE.toString());
+        app.addFilter(filter);
+        app.addFilter(new DenyAllFilter());
+        outputPanels.put(LOG_ERROR,app);
+        ROOT_LOGGER.addAppender(app);
+        mainPanel.addSubPanel(I18N.getString("orbisgis.view.log_error_title"), app.getGuiPanel());
+    }
+    
     private PanelAppender makePanel() {
         PanelAppender app = new PanelAppender(new OutputPanel());
         return app;
     }
     /**
      * Make the Info Output panel
-     * This panel accept root.gui <= Info      >
+     * This panel accept root.gui == Info      >
      */
+    
     private void makeOutputInfo() {
         PanelAppender app = makePanel();
         app.setLayout(loggingLayout);
