@@ -41,6 +41,7 @@ import org.junit.Test;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateArrays;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.io.WKTReader;
 
 import static org.junit.Assert.*;
@@ -67,11 +68,65 @@ public class CoordinatesUtilsTest {
 
         @Test
         public void testFindFurthestPoint() throws Exception {
-                //Test remove with a linestring
                 Geometry geom = wKTReader.read("LINESTRING(0 1, 20 8, 20 0)");
                 Coordinate expectedCoord = new Coordinate(20, 8);
                 Coordinate[] coords = CoordinatesUtils.getFurthestCoordinate(new Coordinate(0, 0), geom.getCoordinates());
                 double expectedDistance = new Coordinate(0, 0).distance(expectedCoord);
                 assertEquals(expectedDistance, coords[0].distance(coords[1]), 10E-9);
+        }
+
+        @Test
+        public void testLength3D() throws Exception {
+                LineString geom = (LineString) wKTReader.read("LINESTRING(0 1 0, 5 1 0, 10 1 0)");
+                double length = CoordinatesUtils.length3D(geom.getCoordinateSequence());
+                double expectedLength = geom.getLength();
+                assertEquals(expectedLength, length, 10E-11);
+        }
+
+        @Test
+        public void testLength3DNaNZ() throws Exception {
+                LineString geom = (LineString) wKTReader.read("LINESTRING(0 1, 5 1 0, 10 1 0)");
+                double length = CoordinatesUtils.length3D(geom.getCoordinateSequence());
+                assertEquals(0.0, length, 10E-11);
+        }
+
+        @Test
+        public void testLength3D1() throws Exception {
+                LineString geom = (LineString) wKTReader.read("LINESTRING(0 1 10, 10 1 0)");
+                double length = CoordinatesUtils.length3D(geom.getCoordinateSequence());
+                double expectedLength = 14.1421356237309;
+                assertEquals(expectedLength, length, 10E-11);
+        }
+
+        @Test
+        public void testLength3D2() throws Exception {
+                Geometry geom = wKTReader.read("LINESTRING(0 1 10, 10 1 0)");
+                double length = CoordinatesUtils.length3D(geom);
+                double expectedLength = 14.1421356237309;
+                assertEquals(expectedLength, length, 10E-11);
+        }
+
+        @Test
+        public void testLength3D3() throws Exception {
+                Geometry geom = wKTReader.read("MULTILINESTRING((0 1 10, 10 1 0),(0 1 10, 10 1 0))");
+                double length = CoordinatesUtils.length3D(geom);
+                double expectedLength = 14.1421356237309;
+                assertEquals(expectedLength * 2, length, 10E-11);
+        }
+
+        @Test
+        public void testLength3D4() throws Exception {
+                Geometry geom = wKTReader.read("MULTILINESTRING((0 1 10, 10 1 0),(0 1 , 10 1 0))");
+                double length = CoordinatesUtils.length3D(geom);
+                double expectedLength = 14.1421356237309;
+                assertEquals(expectedLength, length, 10E-11);
+        }
+        
+        @Test
+        public void testLength3D5() throws Exception {
+                Geometry geom = wKTReader.read("GEOMETRYCOLLECTION(LINESTRING(0 1 10, 10 1 0),POINT(0 1))");
+                double length = CoordinatesUtils.length3D(geom);
+                double expectedLength = 14.1421356237309;
+                assertEquals(expectedLength, length, 10E-11);
         }
 }
