@@ -67,6 +67,7 @@ public class OrbisGISView  extends DefaultSingleCDockable {
         setPropertyListeners();
         setMinimizable(dockableParameters.isMinimizable());
         setExternalizable(dockableParameters.isExternalizable());
+        setCloseable(dockableParameters.isCloseable());
     }
     /**
      * Link DefaultDockable parameters with OrbisGis parameters
@@ -99,6 +100,13 @@ public class OrbisGISView  extends DefaultSingleCDockable {
                             EventHandler.create(PropertyChangeListener.class,
                                                 this,
                                                 "setExternalizable",
+                                                "newValue"));
+        //Link closeable state change
+        dockableParameters.addPropertyChangeListener(
+                            DockingPanelParameters.PROP_CLOSEABLE,
+                            EventHandler.create(PropertyChangeListener.class,
+                                                this,
+                                                "setCloseable",
                                                 "newValue"));
   
     }

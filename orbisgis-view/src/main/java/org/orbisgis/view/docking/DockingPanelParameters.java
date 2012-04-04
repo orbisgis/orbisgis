@@ -56,6 +56,28 @@ public class DockingPanelParameters implements Serializable {
     public static final String PROP_MINIMIZABLE = "minimizable";
     private boolean externalizable = true;
     public static final String PROP_EXTERNALIZABLE = "externalizable";
+    private boolean closeable = false;
+    public static final String PROP_CLOSEABLE = "closeable";
+
+    /**
+     * Get the value of closeable
+     *
+     * @return the value of closeable
+     */
+    public boolean isCloseable() {
+        return closeable;
+    }
+
+    /**
+     * Set the value of closeable
+     *
+     * @param closeable new value of closeable
+     */
+    public void setCloseable(boolean closeable) {
+        boolean oldCloseable = this.closeable;
+        this.closeable = closeable;
+        propertySupport.firePropertyChange(PROP_CLOSEABLE, oldCloseable, closeable);
+    }
 
     /**
      * Get the value of externalizable

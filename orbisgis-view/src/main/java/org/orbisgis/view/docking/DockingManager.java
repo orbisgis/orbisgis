@@ -35,6 +35,7 @@ import bibliothek.gui.dock.FlapDockStation;
 import bibliothek.gui.dock.common.CControl;
 import bibliothek.gui.dock.common.intern.DefaultCDockable;
 import bibliothek.gui.dock.common.menu.CLookAndFeelMenuPiece;
+import bibliothek.gui.dock.common.menu.SingleCDockableListMenuPiece;
 import bibliothek.gui.dock.facile.menu.RootMenuPiece;
 import bibliothek.gui.dock.layout.DockableProperty;
 import bibliothek.gui.dock.util.PropertyKey;
@@ -61,6 +62,7 @@ import org.orbisgis.view.icons.OrbisGISIcon;
  */
 public final class DockingManager {
         private JFrame owner;
+        private SingleCDockableListMenuPiece dockableMenuTracker;
         private static final Logger LOGGER = Logger.getLogger(DockingManager.class);
         File dockingState=null;
         private CControl commonControl; /*!< link to the docking-frames */
@@ -83,6 +85,14 @@ public final class DockingManager {
          */
         public JMenu getLookAndFeelMenu() {
             RootMenuPiece laf = new RootMenuPiece(I18N.getString("orbisgis.view.docking.LookAndFeel"), false, new CLookAndFeelMenuPiece( commonControl ));
+            return laf.getMenu();
+        }
+        /**
+         * 
+         * @return The menu that shows items declared in the docking
+         */
+        public JMenu getCloseableDockableMenu() {
+            RootMenuPiece laf = new RootMenuPiece(I18N.getString("orbisgis.view.docking.Windows"), false,dockableMenuTracker);
             return laf.getMenu();
         }
         /**
@@ -154,7 +164,8 @@ public final class DockingManager {
 	public DockingManager( JFrame owner){
                 this.owner = owner;
 		//this.frontend = new DockFrontend();
-                commonControl = new CControl(owner);                
+                commonControl = new CControl(owner);
+                dockableMenuTracker = new SingleCDockableListMenuPiece( commonControl);
                 //Retrieve the Docking Frames Preferencies
                 //preferences = new MergedPreferenceModel
                 preferences = new OrbisGISPreferenceTreeModel( commonControl,PathCombiner.APPEND);

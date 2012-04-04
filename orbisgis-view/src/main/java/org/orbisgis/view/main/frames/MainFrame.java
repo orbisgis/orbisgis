@@ -54,6 +54,7 @@ public class MainFrame extends JFrame {
         public final static String MENU_TOOLS = "tools";
         public final static String MENU_CONFIGURE = "configure";
         public final static String MENU_LOOKANDFEEL = "lookAndFeel";
+        public final static String MENU_WINDOWS = "windows";
         
         //The main frame show panels state,theme, and properties
         private DockingManager dockingManager=null;
@@ -76,6 +77,8 @@ public class MainFrame extends JFrame {
             this.dockingManager = dockingManager;
             //Add Look And Feel menu
             menuBar.addMenu(MENU_TOOLS, new MenuProperties(MENU_LOOKANDFEEL, dockingManager.getLookAndFeelMenu()));      
+            //Add the window menu
+            menuBar.addMenu("", new MenuProperties(MENU_WINDOWS,dockingManager.getCloseableDockableMenu()));
         }
         /**
          * Create the built-ins menu items

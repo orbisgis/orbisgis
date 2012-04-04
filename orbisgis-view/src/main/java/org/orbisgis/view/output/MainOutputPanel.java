@@ -50,7 +50,7 @@ public class MainOutputPanel extends JPanel implements DockingPanel {
         dockingParameters.setName("mainLog");
         dockingParameters.setTitle(I18N.getString("orbisgis.view.mainlog.title"));
         dockingParameters.setTitleIcon(OrbisGISIcon.getIcon("format-justify-fill"));
-                
+        dockingParameters.setCloseable(true);
         
         this.setLayout(new BorderLayout());
         tabbedPane = new JTabbedPane();

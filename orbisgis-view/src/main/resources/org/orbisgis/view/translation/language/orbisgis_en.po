@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OrbisGis 4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-04 16:00+0100\n"
-"PO-Revision-Date: 2012-04-04 16:01+0100\n"
+"POT-Creation-Date: 2012-04-04 17:59+0100\n"
+"PO-Revision-Date: 2012-04-04 17:59+0100\n"
 "Last-Translator: Nicolas Fortin <nicolas.fortin@ec-nantes.fr>\n"
 "Language-Team: OrbisGis <info@orbisgis.org>\n"
 "Language: \n"
@@ -17,19 +17,23 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-SearchPath-0: java\n"
 
-#: java/org/orbisgis/view/docking/DockingManager.java:85
+#: java/org/orbisgis/view/docking/DockingManager.java:87
 msgid "orbisgis.view.docking.LookAndFeel"
 msgstr "&Look And Feel"
 
-#: java/org/orbisgis/view/docking/DockingManager.java:97
+#: java/org/orbisgis/view/docking/DockingManager.java:95
+msgid "orbisgis.view.docking.Windows"
+msgstr "&Windows"
+
+#: java/org/orbisgis/view/docking/DockingManager.java:107
 msgid "orbisgis.view.DockingManager.layoutloadfailed"
 msgstr "Unable to save the docking layout."
 
-#: java/org/orbisgis/view/docking/DockingManager.java:110
+#: java/org/orbisgis/view/docking/DockingManager.java:120
 msgid "orbisgis.view.DockingManager.layoutsavefailes"
 msgstr "Unable to save the docking layout."
 
-#: java/org/orbisgis/view/docking/DockingManager.java:166
+#: java/org/orbisgis/view/docking/DockingManager.java:177
 msgid "orbisgis.view.docking.stationTitle"
 msgstr "Docked Window"
 
@@ -66,39 +70,39 @@ msgstr "The proxy port is invalid"
 msgid "orbisgis.org.orbisgis.Catalog.title"
 msgstr "GeoCatalog"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:203
+#: java/org/orbisgis/view/geocatalog/Catalog.java:204
 msgid "orbisgis.view.geocatalog.OpenGdmsFilePanelTitle"
 msgstr "Select the file to add"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:220
+#: java/org/orbisgis/view/geocatalog/Catalog.java:221
 msgid "orbisgis.view.geocatalog.SourceAlreadyRegistered"
 msgstr "This source was already registered"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:252
+#: java/org/orbisgis/view/geocatalog/Catalog.java:253
 msgid "orbisgis.view.geocatalog.validateClearMessage"
 msgstr "All data source of the GeoCatalog will be removed. Are you sure ?"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:253
+#: java/org/orbisgis/view/geocatalog/Catalog.java:254
 msgid "orbisgis.view.geocatalog.validateClearTitle"
 msgstr "Clear the GeoCatalog"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:268
+#: java/org/orbisgis/view/geocatalog/Catalog.java:269
 msgid "orbisgis.view.geocatalog.clearGeoCatalogMenuItem"
 msgstr "Clear the GeoCatalog"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:276
+#: java/org/orbisgis/view/geocatalog/Catalog.java:277
 msgid "orbisgis.view.geocatalog.addMenuItem"
 msgstr "Add"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:281
+#: java/org/orbisgis/view/geocatalog/Catalog.java:282
 msgid "orbisgis.view.geocatalog.addFileMenuItem"
 msgstr "File"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:290
+#: java/org/orbisgis/view/geocatalog/Catalog.java:291
 msgid "orbisgis.view.geocatalog.addDataBaseMenuItem"
 msgstr "DataBase"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:306
+#: java/org/orbisgis/view/geocatalog/Catalog.java:307
 msgid "orbisgis.view.geocatalog.listenerMenuThrown"
 msgstr "An external code stop the creation of the PopUp menu"
 
@@ -246,11 +250,15 @@ msgstr "DataBase"
 msgid "orbisgis.view.geocatalog.sourceWizards.db.cannotConnect"
 msgstr "Add"
 
-#: java/org/orbisgis/view/output/OutputManager.java:81
+#: java/org/orbisgis/view/output/OutputManager.java:84
 msgid "orbisgis.view.log_all_title"
 msgstr "All"
 
-#: java/org/orbisgis/view/output/OutputManager.java:100
+#: java/org/orbisgis/view/output/OutputManager.java:103
+msgid "orbisgis.view.log_error_title"
+msgstr "Error"
+
+#: java/org/orbisgis/view/output/OutputManager.java:124
 msgid "orbisgis.view.log_info_title"
 msgstr "Information"
 
@@ -282,27 +290,27 @@ msgstr "Add a new filter"
 msgid "orbisgis.view.map.MapEditorTitle"
 msgstr "Map"
 
-#: java/org/orbisgis/view/main/frames/MainFrame.java:68
+#: java/org/orbisgis/view/main/frames/MainFrame.java:69
 msgid "orbisgis.org.orbisgis.version"
 msgstr "4.0 Beta"
 
-#: java/org/orbisgis/view/main/frames/MainFrame.java:68
+#: java/org/orbisgis/view/main/frames/MainFrame.java:69
 msgid "orbisgis.org.orbisgis.versionName"
 msgstr "La Rochelle"
 
-#: java/org/orbisgis/view/main/frames/MainFrame.java:85
+#: java/org/orbisgis/view/main/frames/MainFrame.java:88
 msgid "orbisgis.view.main.frames.menu.file"
 msgstr "&File"
 
-#: java/org/orbisgis/view/main/frames/MainFrame.java:87
+#: java/org/orbisgis/view/main/frames/MainFrame.java:90
 msgid "orbisgis.view.main.frames.menu.exitapp"
 msgstr "Exit"
 
-#: java/org/orbisgis/view/main/frames/MainFrame.java:91
+#: java/org/orbisgis/view/main/frames/MainFrame.java:94
 msgid "orbisgis.view.main.frames.menu.tools"
 msgstr "&Tools"
 
-#: java/org/orbisgis/view/main/frames/MainFrame.java:93
+#: java/org/orbisgis/view/main/frames/MainFrame.java:96
 msgid "orbisgis.view.main.frames.menu.preferencies"
 msgstr "&Configuration"
 
