@@ -44,6 +44,7 @@ import org.gdms.data.types.TypeFactory
 import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.evaluator.Expression
 import org.gdms.sql.evaluator.FieldEvaluator
+import org.gdms.sql.evaluator.agg
 import org.gdms.sql.evaluator.field
 import org.gdms.sql.function.FunctionException
 import org.gdms.sql.function.FunctionManager
@@ -310,7 +311,20 @@ case class Aggregate(exp: List[(Expression, Option[String])],var child: Operatio
 case class Filter(e: Expression,var child: Operation) extends Operation {
   def children = List(child)
   override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
-  override def doValidate = e.preValidate
+  override def doValidate = {
+    
+    // no aggregate function is allowed in a WHERE / HAVING clause
+    def check (ex: Expression) {
+      ex match {
+        case agg(f,_) => throw new SemanticException("No aggregate function is allowed in a WHERE / HAVING clause."
+                                                     + " Found function '" + f.getName + "'.")
+        case _ => ex.children map (check)
+      }
+    }
+    
+    check(e)
+    e.preValidate
+  }
   override def toString = "Filter of(" + e + ") on(" + children + ")"
 }
 
@@ -571,8 +585,8 @@ case class DropIndex(table: String, column: String) extends Operation {
  * @author Antoine Gourlay
  * @since 0.1
  */
- case class ExecutorCall(name: String, params: List[Expression]) extends Operation {
-    def children = Nil
-    override def doValidate = params foreach (_ preValidate)
-    override def toString = "ExecutorFunction name(" + name + ") " + " params(" + params + ")"
-  }
+case class ExecutorCall(name: String, params: List[Expression]) extends Operation {
+  def children = Nil
+  override def doValidate = params foreach (_ preValidate)
+  override def toString = "ExecutorFunction name(" + name + ") " + " params(" + params + ")"
+}
