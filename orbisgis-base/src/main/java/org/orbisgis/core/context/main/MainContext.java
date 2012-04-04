@@ -29,9 +29,8 @@
 package org.orbisgis.core.context.main;
 
 import java.io.IOException;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-import org.apache.log4j.RollingFileAppender;
+import org.apache.log4j.*;
+import org.apache.log4j.varia.LevelRangeFilter;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.DataSourceFinalizationException;
 import org.gdms.data.SQLDataSourceFactory;
@@ -54,8 +53,10 @@ public class MainContext {
      * Constructor of the workspace
      */
     public MainContext() {
+        //Redirect root logging to console
+        initConsoleLogger();      
         coreWorkspace = new CoreWorkspace();
-        initLogger(coreWorkspace);
+        initFileLogger(coreWorkspace);
         dataSourceFactory = new SQLDataSourceFactory(coreWorkspace.getSourceFolder(), coreWorkspace.getTempFolder(), coreWorkspace.getPluginFolder());
         sourceContext = new SourceContext(dataSourceFactory.getSourceManager());
     }
@@ -95,15 +96,34 @@ public class MainContext {
     public DataSourceFactory getDataSourceFactory() {
         return dataSourceFactory;
     }
+    
     /**
-     * Initiate the loggin system, called by MainContext constructor
+     * Console output to info level min
      */
-    private void initLogger(CoreWorkspace workspace) {
+    private void initConsoleLogger() {
+        Logger root = Logger.getRootLogger();
+        ConsoleAppender appender = new ConsoleAppender(
+        new PatternLayout(PatternLayout.TTCC_CONVERSION_PATTERN));
+        LevelRangeFilter filter = new LevelRangeFilter();
+        filter.setLevelMax(Level.FATAL);
+        filter.setLevelMin(Level.INFO);
+        appender.addFilter(filter);
+        root.addAppender(appender);
+    }
+    /**
+     * Initiate the logging system, called by MainContext constructor
+     */
+    private void initFileLogger(CoreWorkspace workspace) {
+        //Init the file logging feature
         PatternLayout l = new PatternLayout("%5p [%t] (%F:%L) - %m%n");
         RollingFileAppender fa;
         try {
             fa = new RollingFileAppender(l,workspace.getLogPath());
             fa.setMaxFileSize("256KB");
+            LevelRangeFilter filter = new LevelRangeFilter();
+            filter.setLevelMax(Level.FATAL);
+            filter.setLevelMin(Level.INFO);
+            fa.addFilter(filter);
             Logger.getRootLogger().addAppender(fa);
         } catch (IOException e) {
                 System.err.println("Init logger failed!");
