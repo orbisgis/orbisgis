@@ -45,6 +45,7 @@ import org.jproj.CoordinateReferenceSystem;
 
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.MetadataUtilities;
+import org.gdms.data.stream.GeoStream;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
@@ -341,6 +342,17 @@ public abstract class AbstractDataSource extends AbstractDataSet implements Data
                         return null;
                 } else {
                         return fieldValue.getAsRaster();
+                }
+        }
+        
+        @Override
+        public GeoStream getStream(long rowIndex) throws DriverException {
+                Value fieldValue = getFieldValue(rowIndex,
+                        getSpatialFieldIndex());
+                if (fieldValue.isNull()) {
+                        return null;
+                } else {
+                        return fieldValue.getAsStream();
                 }
         }
 

@@ -23,6 +23,8 @@ import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.DefaultSchema;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.Schema;
+import org.gdms.data.stream.DefaultGeoStream;
+import org.gdms.data.stream.GeoStream;
 import org.gdms.data.stream.StreamSource;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
@@ -35,6 +37,14 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.StreamReadWriteDriver;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.SourceManager;
+import org.gvsig.remoteClient.exceptions.ServerErrorException;
+import org.gvsig.remoteClient.exceptions.WMSException;
+import org.gvsig.remoteClient.utils.BoundaryBox;
+import org.gvsig.remoteClient.wms.ICancellable;
+import org.gvsig.remoteClient.wms.WMSClient;
+import org.gvsig.remoteClient.wms.WMSLayer;
+import org.gvsig.remoteClient.wms.WMSStatus;
+import org.orbisgis.progress.ProgressMonitor;
 
 /**
  * The driver who gets the information about a flux WMS(host,srs,format,), it
@@ -47,21 +57,12 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamRead
 
     public static final String DRIVER_NAME = "Simple WMS driver";
     private static final Logger LOG = Logger.getLogger(SimpleWMSDriver.class);
-    private String m_url;
-    private StreamSource m_StreamSource;
     private Schema m_Schema;
-    private boolean m_Commitable = true;
-    private DataSourceFactory m_DataSourceFactory;
-    private WMSClient m_WMSClient;
-    private WMSStatus m_WMSStatus;
-    private Envelope m_Envelope;
+    private boolean m_Commitable = false;
+    private GeoStream m_GeoStream;
 
     public SimpleWMSDriver() throws DriverException {
         DefaultMetadata metadata = new DefaultMetadata();
-        metadata.addField("host", Type.STRING);
-        metadata.addField("layer", Type.STRING);
-        metadata.addField("srs", Type.STRING);
-        metadata.addField("format", Type.STRING);
         metadata.addField("stream", Type.STREAM);
 
         this.m_Schema = new DefaultSchema(DRIVER_NAME + this.hashCode());
@@ -76,24 +77,19 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamRead
      */
     @Override
     public void open(StreamSource streamSource) throws DriverException {
-        this.m_StreamSource = streamSource;
-
+            LOG.trace("Opening WMS Stream");
         try {
-            String host = m_StreamSource.getHost();
+            //Initialise the WMSClient and get the capabilities
+            WMSClient WMSClient = WMSClientPool.getWMSClient(streamSource.getHost());
+            WMSClient.getCapabilities(null, true, null);
             
-            m_WMSClient = WMSClientPool.getWMSClient(host);
-            m_WMSClient.getCapabilities(null, true, null);
+            //Get the layer largest boundingbox
+            BoundaryBox bbox = getLayerBoundingBox(streamSource.getLayerName(), WMSClient.getRootLayer(), streamSource.getSRS());  
+            Envelope envelope = new Envelope(bbox.getXmin(), bbox.getXmax(), bbox.getYmin(), bbox.getYmax());
 
-            m_WMSStatus = new WMSStatus();
-            String wmslayerName = m_StreamSource.getLayerName();
-            m_WMSStatus.addLayerName(wmslayerName);
-            m_WMSStatus.setSrs(m_StreamSource.getSRS());
-
-            BoundaryBox bbox = getLayerBoundingBox(wmslayerName, m_WMSClient.getRootLayer(), m_WMSStatus.getSrs());
-            m_WMSStatus.setExtent(new Rectangle2D.Double(bbox.getXmin(), bbox.getYmin(), bbox.getXmax() - bbox.getXmin(), bbox.getYmax()
-                    - bbox.getYmin()));
-            m_Envelope = new Envelope(bbox.getXmin(), bbox.getXmax(), bbox.getYmin(), bbox.getYmax());
-            m_WMSStatus.setFormat(m_StreamSource.getImageFormat());
+            //Create the GeoStream object
+            m_GeoStream = new DefaultGeoStream(this, streamSource);
+            m_GeoStream.setEnvelope(envelope);
         } catch (ConnectException e) {
             throw new DriverException(e);
         } catch (IOException e) {
@@ -108,6 +104,7 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamRead
      */
     @Override
     public void close() throws DriverException {
+            LOG.trace("Closing WMS Stream");
         //this.m_StreamSource = null;
     }
 
@@ -121,65 +118,43 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamRead
      */
     @Override
     public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
-        //switch field index since we now there is only 1 row in stream metada.
-
-        if (rowIndex == 0) {
-            switch (fieldId) {
-                case 0:
-                    return ValueFactory.createValue(m_StreamSource.getHost());
-                case 1:
-                    return ValueFactory.createValue(m_StreamSource.getLayerName());
-                case 2:
-                    return ValueFactory.createValue(m_StreamSource.getSRS());
-                case 3:
-                    return ValueFactory.createValue(m_StreamSource.getImageFormat());
-                case 4:
-                    return ValueFactory.createValue(m_Envelope);
-            }
-        }
+        if(fieldId == 0) {
+               return  ValueFactory.createValue(this.m_GeoStream);
+        } else {
         return null;
     }
-
-    public Envelope getEnvelope() {
-        return this.m_Envelope;
     }
 
     /**
-     * With the host of the flux wms, creates a WMS client.
-     *
+     * Get image from the WMS stream. We creat a WMSStatus 
+     * We get the StreamSource from the GeoStream then we can initialize the WMSStatus
+     * We get the WMSClient from the WMSClientPool. 
+     * We always get the client because the driver is open first
+     *      * 
+     * @param width
+     * @param height
+     * @param extent
+     * @param pm
      * @return
-     * @throws ConnectException
-     * @throws IOException
+     * @throws DriverException 
      */
-    // c'est pas très claire cette méthode, il y a des choses dont on n'a pas besoin...
-    public WMSClient getWMSClient() throws ConnectException, IOException {
-
-        String host = m_StreamSource.getHost();
-
-        m_WMSClient = WMSClientPool.getWMSClient(host);
-        m_WMSClient.getCapabilities(null, false, null);
-
-        return m_WMSClient;
-    }
-
-    /**
-     * Gets the status of the flux.
-     *
-     * @return
-     */
-    public WMSStatus getWMSStatus() {
-        return this.m_WMSStatus;
-    }
-
     @Override
-    public Image getMap(int width, int height, Envelope extent, ICancellable cancel) throws DriverException {
+    public Image getMap(int width, int height, Envelope extent, ProgressMonitor pm) throws DriverException {
         try {
-            m_Envelope = extent;
-            m_WMSStatus.setWidth(width);
-            m_WMSStatus.setHeight(height);
-            m_WMSStatus.setExtent(new Rectangle2D.Double(extent.getMinX(), extent.getMinY(), extent.getWidth(), extent.getHeight()));
+                m_GeoStream.setEnvelope(extent);
+                StreamSource streamSource = m_GeoStream.getStreamSource();
+            
+                //Create the WMSStatus object
+                WMSStatus WMSStatus = new WMSStatus();
+                WMSStatus.addLayerName(streamSource.getLayerName());
+                WMSStatus.setSrs(streamSource.getSRS());
+                WMSStatus.setFormat(streamSource.getImageFormat());
+                WMSStatus.setWidth(width);
+                WMSStatus.setHeight(height);
+                WMSStatus.setExtent(new Rectangle2D.Double(extent.getMinX(), extent.getMinY(), extent.getWidth(), extent.getHeight()));
 
-            return ImageIO.read(m_WMSClient.getMap(m_WMSStatus, cancel));
+                //Driver is always open first so a WMSClient is available in the WMSClientPool
+                return ImageIO.read(WMSClientPool.getWMSClient(streamSource.getHost()).getMap(WMSStatus, null));
         } catch (WMSException e) {
             throw new DriverException(e);
         } catch (ServerErrorException e) {
@@ -189,14 +164,14 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamRead
         }
     }
 
-    private org.gvsig.remoteClient.wms.WMSLayer find(String layerName, org.gvsig.remoteClient.wms.WMSLayer layer) {
+    private org.gvsig.remoteClient.wms.WMSLayer find(String layerName, WMSLayer layer) {
         if (layerName.equals(layer.getName())) {
             return layer;
         } else {
             ArrayList<?> children = layer.getChildren();
             for (Object object : children) {
-                org.gvsig.remoteClient.wms.WMSLayer child = (org.gvsig.remoteClient.wms.WMSLayer) object;
-                org.gvsig.remoteClient.wms.WMSLayer ret = find(layerName, child);
+                WMSLayer child = (WMSLayer) object;
+                WMSLayer ret = find(layerName, child);
                 if (ret != null) {
                     return ret;
                 }
@@ -215,8 +190,8 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamRead
      * @return
      */
     // cette méthode est plutôt setLayerBoundingBox?
-    private BoundaryBox getLayerBoundingBox(String layerName, org.gvsig.remoteClient.wms.WMSLayer layer, String srs) {
-        org.gvsig.remoteClient.wms.WMSLayer wmsLayer = find(layerName, layer);
+    private BoundaryBox getLayerBoundingBox(String layerName, WMSLayer layer, String srs) {
+        WMSLayer wmsLayer = find(layerName, layer);
         // Obtain the bbox at current level
         BoundaryBox bbox = wmsLayer.getBbox(srs);
         while ((bbox == null) && (wmsLayer.getParent() != null)) {
@@ -245,11 +220,11 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamRead
     public Number[] getScope(int dimension) throws DriverException {
         switch(dimension) {
                 case DataSet.X: {
-                        Number[] number = {m_Envelope.getMaxX(), m_Envelope.getMinX()};
+                        Number[] number = {m_GeoStream.getEnvelope().getMaxX(), m_GeoStream.getEnvelope().getMinX()};
                         return number;
                 }
                 case DataSet.Y:{
-                        Number[] number = {m_Envelope.getMaxY(), m_Envelope.getMinY()};
+                        Number[] number = {m_GeoStream.getEnvelope().getMaxY(), m_GeoStream.getEnvelope().getMinY()};
                         return number;
                 }
                 default:
@@ -271,17 +246,6 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamRead
     @Override
     public boolean write(DataSet dataSource, ProgressMonitor pm) throws DriverException {
         throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    /**
-     * Sets the adresse URL of the flux.
-     *
-     * @param url
-     * @throws DriverException
-     */
-    @Override
-    public void setURL(String url) throws DriverException {
-        this.m_url = url;
     }
 
     /**
@@ -336,7 +300,6 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamRead
      */
     @Override
     public void setDataSourceFactory(DataSourceFactory dsf) {
-        this.m_DataSourceFactory = dsf;
     }
 
     /**

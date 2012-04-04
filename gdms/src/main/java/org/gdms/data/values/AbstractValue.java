@@ -46,6 +46,7 @@ import org.jproj.CoordinateReferenceSystem;
 import org.gdms.data.types.IncompatibleTypesException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
+import org.gdms.data.stream.GeoStream;
 
 /**
  * Parent wrapper. This class provides very basic implementation of the
@@ -639,18 +640,18 @@ public abstract class AbstractValue implements Value {
         public int compareTo(Value o) {
                 throw new IncompatibleTypesException("Cannot compare " + this + " and " + o);
         }
-
-	@Override
+        
+        @Override
         public CoordinateReferenceSystem getCRS() {
                 return null;
         }
 
         @Override
-        public Envelope getAsEnvelope() {
+        public GeoStream getAsStream() {
                if (isNull()) {
-                return null;
-        }
-                throw new IncompatibleTypesException("This value is not envelope: "
+                        return null;
+                }
+                throw new IncompatibleTypesException("This value is not GeoStream: "
                         + toString() + "(" + TypeFactory.getTypeName(getType()) + ")");
         }
 }

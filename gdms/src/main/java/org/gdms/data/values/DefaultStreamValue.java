@@ -31,59 +31,61 @@
  * or contact directly:
  * info@orbisgis.org
  */
-package org.gdms.driver.wms;
-
-import java.awt.Image;
+package org.gdms.data.values;
 
 import com.vividsolutions.jts.geom.Envelope;
-import org.gvsig.remoteClient.wms.ICancellable;
-import org.orbisgis.progress.ProgressMonitor;
 
-import org.gdms.data.schema.Metadata;
-import org.gdms.data.values.Value;
-import org.gdms.driver.DataSet;
-import org.gdms.driver.DriverException;
-import org.gdms.driver.stream.AbstractRasterStreamDriver;
+import org.gdms.data.stream.GeoStream;
+import org.gdms.data.types.Type;
 
 /**
- * The concrete WMS managing driver.
  *
- * @author Dorian Goepp <dorian.goepp@centraliens-nantes.net>
+ * @author Vincent Dépériers
  */
-public class WMSDriver extends AbstractRasterStreamDriver {
+public class DefaultStreamValue extends AbstractValue implements StreamValue {
+
+        private GeoStream m_GeoStream;
+        
+        public DefaultStreamValue(GeoStream geoStream) {
+                this.m_GeoStream = geoStream;
+        }
+        
+        @Override
+        public BooleanValue equals(Value obj) {
+                if (obj instanceof StreamValue) {
+                        return ValueFactory.createValue(m_GeoStream.equals(((StreamValue) obj).getAsStream()));
+                } else {
+                        return ValueFactory.createValue(false);
+                }
+        }
 
         @Override
-        public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
+        public int hashCode() {
+                return this.m_GeoStream.hashCode();
+        }
+
+        @Override
+        public String getStringValue(ValueWriter writer) {
+                return "Envelope";
+        }
+
+        @Override
+        public int getType() {
+                return Type.STREAM;
+        }
+
+        @Override
+        public byte[] getBytes() {
                 throw new UnsupportedOperationException("Not supported yet.");
         }
 
         @Override
-        public long getRowCount() throws DriverException {
-                throw new UnsupportedOperationException("Not supported yet.");
+        public void setValue(GeoStream value) {
+                this.m_GeoStream = value;
         }
-
+        
         @Override
-        public Number[] getScope(int dimension) throws DriverException {
-                throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        @Override
-        public Metadata getMetadata() throws DriverException {
-                throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        @Override
-        public String[] getPrefixes() {
-                throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        @Override
-        public boolean write(DataSet dataSource, ProgressMonitor pm) throws DriverException {
-                throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        @Override
-        public Image getMap(int width, int height, Envelope extent, ICancellable cancel) throws DriverException {
-                throw new UnsupportedOperationException("Not supported yet.");
-        }
+        public GeoStream getAsStream() {
+                return this.m_GeoStream;
+        }      
 }

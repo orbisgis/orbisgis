@@ -7,7 +7,7 @@
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  * 
  * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
- * 
+ *
  * This file is part of OrbisGIS.
  *
  * OrbisGIS is free software: you can redistribute it and/or modify it under the
@@ -74,6 +74,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
 import org.gdms.data.DataSource;
 import org.gdms.data.indexes.FullIterator;
+import org.gdms.data.stream.GeoStream;
 import org.gdms.driver.wms.SimpleWMSDriver;
 import org.orbisgis.core.layerModel.LayerException;
 
@@ -116,9 +117,6 @@ public class Renderer {
                 if (layer.isVisible() && extent.intersects(layer.getEnvelope())) {
                     logger.debug(I18N.getString("orbisgis-core.org.orbisgis.renderer.drawing") + layer.getName()); //$NON-NLS-1$
                     long t1 = System.currentTimeMillis();
-                    if (layer.isStream()) {
-                        drawStreamLayer(g2, layer, width, height, extent);
-                    } else {
                         DataSource sds = layer.getDataSource();
                         if (sds != null) {
                             try {
@@ -134,6 +132,8 @@ public class Renderer {
                                                 I18N.getString("orbisgis-core.org.orbisgis.renderer.cannotDrawRaster") //$NON-NLS-1$
                                                 + layer.getName(), e);
                                     }
+                                } else if(sds.isStream()) {
+                                        drawStreamLayer(g2, layer, width, height, extent, pm);
                                 } else {
                                     logger.warn(I18N.getString("orbisgis-core.org.orbisgis.renderer.notDraw") //$NON-NLS-1$
                                             + layer.getName());
@@ -144,7 +144,6 @@ public class Renderer {
                             }
                             pm.progressTo(100 - (100 * i) / layers.length);
                         }
-                    }
                     long t2 = System.currentTimeMillis();
                     logger.info(I18N.getString("orbisgis-core.org.orbisgis.renderer.renderingTime") + (t2 - t1)); //$NON-NLS-1$
                 }
@@ -157,12 +156,16 @@ public class Renderer {
 
 
 
-    private void drawStreamLayer(Graphics2D g2, ILayer layer, int width, int height, Envelope extent) {
+    private void drawStreamLayer(Graphics2D g2, ILayer layer, int width, int height, Envelope extent, ProgressMonitor pm) {
         try {
             layer.open();
             
-            Image img = ((SimpleWMSDriver)layer.getDataSource().getDriver()).getMap(width, height, extent, null);
+            for(int i = 0 ; i < layer.getDataSource().getRowCount() ; i++) {
+                GeoStream geoStream = layer.getDataSource().getStream(i);
+                
+                Image img = geoStream.getMap(width, height, extent, pm);
             g2.drawImage(img, 0, 0, null);
+            }
         } catch (DriverException e) {
             Services.getService(ErrorManager.class).error(
                     I18N.getString("orbisgis-core.org.orbisgis.renderer.cannotGetWMSImage"), e); //$NON-NLS-1$

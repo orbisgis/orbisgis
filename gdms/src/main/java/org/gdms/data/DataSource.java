@@ -9,9 +9,9 @@
  *
  * Gdms is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
- *
+ * 
  * Copyright (C) 2007-2012 IRSTV FR CNRS 2488
- *
+ * 
  * This file is part of Gdms.
  *
  * Gdms is free software: you can redistribute it and/or modify it under the
@@ -55,6 +55,7 @@ import org.gdms.driver.DataSet;
 import org.gdms.driver.Driver;
 import org.gdms.driver.DriverException;
 import org.gdms.source.Source;
+import org.gdms.data.stream.GeoStream;
 
 /**
  * A data source currently registered in Gdms. A DataSource is the object needed to manipulate some data
@@ -67,7 +68,7 @@ import org.gdms.source.Source;
  * {@link DataSourceFactory#EDITABLE} fag. Just as reading, edition must be done after <tt>open()</tt> has
  * been called. A subsequent call to <tt>close()</tt> will discard any modification. To persist the changes
  * into the underlying source, the method {@link #commit()} must be called.
- *
+ * 
  */
 public interface DataSource extends DataSet {
 
@@ -91,7 +92,7 @@ public interface DataSource extends DataSet {
          * thrown.
          *
          * @throws DriverException
-         * if the operation fails
+         *             if the operation fails
          */
         void open() throws DriverException;
 
@@ -101,7 +102,7 @@ public interface DataSource extends DataSet {
          * ClosedDataSourceException. All the changes made will be lost.
          *
          * @throws DriverException
-         * If the operation fails
+         *             If the operation fails
          * @throws AlreadyClosedException
          */
         void close() throws DriverException;
@@ -124,7 +125,7 @@ public interface DataSource extends DataSet {
          * Sets the DataSourceFactory that created this DataSource.
          *
          * @param dsf
-         * DataSourceFactory
+         *            DataSourceFactory
          */
         void setDataSourceFactory(DataSourceFactory dsf);
 
@@ -143,7 +144,7 @@ public interface DataSource extends DataSet {
          * @return String[]
          *
          * @throws DriverException
-         * if the access fails
+         *             if the access fails
          */
         String[] getFieldNames() throws DriverException;
 
@@ -177,7 +178,7 @@ public interface DataSource extends DataSet {
          * Inserts a row at the end of the DataSource.
          *
          * @throws DriverException
-         * if the row could not be inserted
+         *             if the row could not be inserted
          */
         void insertEmptyRow() throws DriverException;
 
@@ -494,7 +495,7 @@ public interface DataSource extends DataSet {
          *
          * @throws DriverException
          * @throws IllegalStateException if there is no action to redo ({@link #canRedo()} returns
-         * false)
+         *             false)
          */
         void redo() throws DriverException;
 
@@ -503,7 +504,7 @@ public interface DataSource extends DataSet {
          *
          * @throws DriverException
          * @throws IllegalStateException if there is no action to undo ({@link #canUndo()} returns
-         * false)
+         *             false)
          */
         void undo() throws DriverException;
 
@@ -761,7 +762,16 @@ public interface DataSource extends DataSet {
         GeoRaster getRaster(long rowIndex) throws DriverException;
 
         /**
-         * Set the field name for the {@link #getGeometry(long) } method.
+         * Gets the stream at the given <code>rowIndex</code> row index.
+         * @param rowIndex a row index
+         * @return a stream object
+         * @throws DriverException
+         */
+        GeoStream getStream(long rowIndex) throws DriverException;
+        
+        
+        /**
+         * Set the field name for the {@link #getGeometry(long) method }.
          *
          * If this method is not called, the default geometry is the first spatial field found.
          *

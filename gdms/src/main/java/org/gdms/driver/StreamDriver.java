@@ -4,6 +4,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import java.awt.Image;
 import org.gdms.data.stream.StreamSource;
 import org.gvsig.remoteClient.wms.ICancellable;
+import org.orbisgis.progress.ProgressMonitor;
 
 /**
  *
@@ -29,15 +30,6 @@ public interface StreamDriver extends Driver {
     void close() throws DriverException;
 
     /**
-     * Sets the file associated with this driver. Faut-il créer un objet url qui
-     * s'assure de la validité et de l'accessibilité d'une url ?
-     *
-     * @param url a valid url.
-     * @throws DriverException
-     */
-    void setURL(String url) throws DriverException;
-
-    /**
      * Checks if the driver is currently open.
      *
      * @return true if the file is open, false otherwise.
@@ -54,7 +46,7 @@ public interface StreamDriver extends Driver {
      * @return
      * @throws DriverException 
      */
-    public Image getMap(int width, int height, Envelope extent, ICancellable cancel) throws DriverException;
+    public Image getMap(int width, int height, Envelope extent, ProgressMonitor pm) throws DriverException;
     
 
     /**

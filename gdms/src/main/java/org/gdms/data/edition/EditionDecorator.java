@@ -173,7 +173,7 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
                                         } else if (typeCode == Type.STREAM) {
                                                 Value v = getFieldValue(i, j);
                                                 if ((v != null) && (!v.isNull())) {
-                                                        r = v.getAsEnvelope();
+                                                        r = v.getAsStream().getEnvelope();
                                                 }
                                         }
                                         if (r != null) {

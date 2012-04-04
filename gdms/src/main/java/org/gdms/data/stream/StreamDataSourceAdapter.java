@@ -159,13 +159,8 @@ public class StreamDataSourceAdapter extends DriverDataSource implements Commite
         return true;
     }
 
-    public Image getMap(int width, int height, Envelope extent, ICancellable cancel) throws DriverException {
-        //this.m_Envelope = extent;
-        return driver.getMap(width, height, extent, cancel);
-    }
-
     @Override
     public Envelope getFullExtent() throws DriverException {
-        return ((SimpleWMSDriver)getDriver()).getEnvelope();
+        return getStream(0).getEnvelope();
     }
 }
