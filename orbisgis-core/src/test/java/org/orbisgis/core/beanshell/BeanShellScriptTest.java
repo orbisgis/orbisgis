@@ -3,6 +3,7 @@ package org.orbisgis.core.beanshell;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import static org.junit.Assert.assertTrue;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -53,7 +54,7 @@ public class BeanShellScriptTest {
                 assertTrue(true);
         }
 
-        @Test
+        @Ignore
         public void testMapDisplayScript() throws Exception {
                 BeanshellScript.main(new String[]{"src/test/resources/beanshell/mapDisplayDatasource.bsh"});
                 Thread.sleep(3000);
