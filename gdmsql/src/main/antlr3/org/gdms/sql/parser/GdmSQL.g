@@ -659,9 +659,7 @@ custom_query_expression_list
 custom_query_expression_main
         : table_reference
         | subquery
-        | NUMBER
-        | QUOTED_STRING
-        | bool_const
+        | expression_main
         ;
 
 // CREATE TABLE

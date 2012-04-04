@@ -120,6 +120,16 @@ case class CustomQueryScan(customQuery: String, exp: Seq[Expression],
     if (function == null) throw new FunctionException("The function " + customQuery + " does not exist.")
     if (!function.isTable) throw new FunctionException("The function " + customQuery + " does not return a table.")
     exp foreach (_ preValidate)
+    
+    def check(e: Expression) {
+      e match {
+        case field(n,_) => throw new SemanticException("No field is allowed in a table function: found '" + n + "'.")
+        case agg(f, _) => throw new SemanticException("No aggregate function is allowed in a table function: found '" + f.getName + "'.")
+        case _ => e.children map (check)
+      }
+    }
+    
+    exp map (check)
   }
 }
 

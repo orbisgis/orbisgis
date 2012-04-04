@@ -701,6 +701,8 @@ public class ProcessorTest {
                 failWithIncompatibleTypes("select * from sumquery(select * from gis where id = 5, 4);");
                 // type error in argument
                 failWithIncompatibleTypes("select * from sumquery(gis, 6+3*'e');");
+                // field in argument
+                failWithSemanticException("select * from sumquery(gis, 6+3*myField);");
         }
 
         @Test
