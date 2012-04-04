@@ -1331,16 +1331,16 @@ public class SQLTest extends SQLBaseTest {
                 dsf.getSourceManager().register("communes",
                         new File(internalData + "ile_de_nantes.shp"));
 
-                String subQuery = "select a.gid from communes b, landcover a where st_intersects(a.the_geom, b.the_geom);";
+                String subQuery = "select a.gid from communes b, landcover a where st_intersects(a.the_geom, b.the_geom)";
 
-                DataSource dsSubQuery = dsf.getDataSourceFromSQL(subQuery);
+                DataSource dsSubQuery = dsf.getDataSourceFromSQL(subQuery + ";");
                 dsSubQuery.open();
                 long count = dsSubQuery.getRowCount();
                 dsSubQuery.close();
 
                 dsf.executeSQL("create table landcoverUpdated as select * from landcover;");
 
-                dsf.executeSQL("update landcoverUpdated SET (gid= 9999) "
+                dsf.executeSQL("update landcoverUpdated SET gid = 9999 "
                         + "WHERE gid in (" + subQuery + ");", null);
 
                 DataSource dsResultQuery = dsf.getDataSourceFromSQL("select * from landcoverUpdated where gid =9999;");
