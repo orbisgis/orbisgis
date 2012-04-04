@@ -882,6 +882,7 @@ expression_comp
           | NOTILDE s=expression_concat -> ^(NOTILDE $expression_comp $s )
           | NOITILDE s=expression_concat -> ^(NOITILDE $expression_comp $s )
           | T_BETWEEN s1=expression_concat T_AND s2=expression_concat -> ^(T_BETWEEN $expression_comp $s1 $s2)
+          | T_NOT T_BETWEEN s1=expression_concat T_AND s2=expression_concat -> ^(T_NOT ^(T_BETWEEN $expression_comp $s1 $s2))
           | T_IS ( T_NULL -> ^(T_NULL_CHECK $expression_comp)
                  | T_NOT T_NULL -> ^(T_NOT ^(T_NULL_CHECK $expression_comp))
                  )

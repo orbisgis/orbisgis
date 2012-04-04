@@ -442,7 +442,7 @@ public class ProcessorTest {
 
         @Test
         public void testBetweenClauseTypes() throws Exception {
-                failWithIncompatibleTypes("select * from alltypes where \"int\" not between 3 and 'e';");
+                failPreparedWithIncompatibleTypes("select * from alltypes where \"int\" not between 3 and 'e';");
         }
 
         @Test
