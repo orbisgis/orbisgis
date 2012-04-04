@@ -147,6 +147,7 @@ import org.gdms.sql.function.spatial.geometry.predicates.ST_Overlaps;
 import org.gdms.sql.function.spatial.geometry.predicates.ST_Relate;
 import org.gdms.sql.function.spatial.geometry.predicates.ST_Covers;
 import org.gdms.sql.function.spatial.geometry.predicates.ST_Touches;
+import org.gdms.sql.function.spatial.geometry.properties.ST_3DLength;
 import org.gdms.sql.function.spatial.geometry.properties.ST_Area;
 import org.gdms.sql.function.spatial.geometry.properties.ST_CircleCompacity;
 import org.gdms.sql.function.spatial.geometry.properties.ST_ConvexHull;
@@ -205,11 +206,11 @@ import org.gdms.sql.function.system.RegisterFunction;
  * @author Antoine Gourlay
  */
 public final class FunctionManager {
-        
+
         private static Map<String, Class<? extends Function>> nameFunction = new HashMap<String, Class<? extends Function>>();
         private static List<FunctionManagerListener> listeners = new ArrayList<FunctionManagerListener>();
         private static final Logger LOG = Logger.getLogger(FunctionManager.class);
-        
+
         static {
                 addFunction(ConcatenateFunction.class);
                 addFunction(String2DateFunction.class);
@@ -341,7 +342,7 @@ public final class FunctionManager {
                 addFunction(ST_Force_2D.class);
                 addFunction(ST_MainDirections.class);
                 addFunction(ST_Holes.class);
-                
+
                 addFunction(ExportCall.class);
                 addFunction(RegisterCall.class);
                 addFunction(ST_Extrude.class);
@@ -365,6 +366,7 @@ public final class FunctionManager {
                 addFunction(ST_MakeEllipse.class);
                 addFunction(ST_LocateAlong.class);
                 addFunction(ST_FurthestPoint.class);
+                addFunction(ST_3DLength.class);
         }
 
         /**
@@ -414,12 +416,12 @@ public final class FunctionManager {
                         throw new IllegalArgumentException("Function " + functionName
                                 + " already exists");
                 }
-                
+
                 nameFunction.put(functionName, functionClass);
-                
+
                 fireFunctionAdded(functionName);
         }
-        
+
         private static void fireFunctionAdded(String functionName) {
                 for (FunctionManagerListener listener : listeners) {
                         listener.functionAdded(functionName);
@@ -437,7 +439,7 @@ public final class FunctionManager {
         public static Function getFunction(String name) {
                 LOG.trace("Getting function " + name);
                 Class<? extends Function> func = nameFunction.get(name.toLowerCase());
-                
+
                 if (func == null) {
                         return null;
                 } else {
@@ -484,13 +486,13 @@ public final class FunctionManager {
                         return null;
                 }
         }
-        
+
         private static void fireFunctionRemoved(String functionName) {
                 for (FunctionManagerListener listener : listeners) {
                         listener.functionRemoved(functionName);
                 }
         }
-        
+
         private FunctionManager() {
         }
 }
