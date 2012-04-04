@@ -96,7 +96,7 @@ public class ProcessorTest {
 
         @Test
         public void testNormalWithoutFrom() throws Exception {
-                failWithSemanticException("select toto;");
+                failWithParseException("select toto;");
         }
 
         @Test
@@ -651,7 +651,7 @@ public class ProcessorTest {
                         + "from alltypes group by \"boolean\";");
 
                 // non custom query without from
-                failWithSemanticException("select avg(id);");
+                failWithParseException("select avg(id);");
 
                 // aggregated in where
                 failWithSemanticException("select * from alltypes where avg(\"int\")=0;");
@@ -696,7 +696,7 @@ public class ProcessorTest {
                 // wrong type of arguments
                 failWithIncompatibleTypes("select * from sumquery(select * from gis where id = '5', 4);");
                 // wrong number of tables
-                failWithSemanticException("select * from sumquery(gis, alltypes, 3);");
+                failPreparedWithSemanticException("select * from sumquery(gis, alltypes, 3);");
                 // type error in where
                 failWithIncompatibleTypes("select * from sumquery(select * from gis where id = 5, 4);");
                 // type error in argument
