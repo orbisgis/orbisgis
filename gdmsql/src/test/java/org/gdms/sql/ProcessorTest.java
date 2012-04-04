@@ -384,7 +384,7 @@ public class ProcessorTest {
                         + "from alltypes where thisfunctiondoesnotexist(idnteger);");
                 // boolean case
                 failPreparedWithUnknownFieldException("select max(booleaN) from alltypes;");
-                failPreparedWithIncompatibleTypes("select * from alltypes where avg(\"boolean\") = 2;");
+                failWithSemanticException("select * from alltypes where avg(\"boolean\") = 2;");
         }
 
         @Test
