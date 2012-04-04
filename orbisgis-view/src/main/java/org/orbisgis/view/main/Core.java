@@ -39,6 +39,7 @@ import org.orbisgis.view.docking.DockingManager;
 import org.orbisgis.view.geocatalog.Catalog;
 import org.orbisgis.view.main.frames.MainFrame;
 import org.orbisgis.view.map.MapEditor;
+import org.orbisgis.view.output.OutputManager;
 import org.orbisgis.view.toc.Toc;
 import org.orbisgis.view.translation.OrbisGISI18N;
 import org.orbisgis.view.workspace.ViewWorkspace;
@@ -56,7 +57,7 @@ public class Core {
     private Toc toc=null;                  /*!< The map layer list frame */
     private MapEditor mapEditor=null;      /*!< The map editor-viewer frame */
     private ViewWorkspace viewWorkspace;
-            
+    private OutputManager loggerCollection;    /*!< Loggings panels */     
             
             
     private static final Rectangle MAIN_VIEW_POSITION_AND_SIZE = new Rectangle(20,20,800,600);/*!< Bounds of mainView, x,y and width height*/
@@ -129,7 +130,9 @@ public class Core {
      * All,Info,Warning,Error
      */
     private void makeLoggingPanels() {
-        
+        loggerCollection = new OutputManager();
+        //Show Panel
+        dockManager.show(loggerCollection.getPanel());
     }
     /**
      * Create the GeoCatalog view
@@ -165,6 +168,9 @@ public class Core {
         
         //Set the main frame position and size
 	mainFrame.setBounds(MAIN_VIEW_POSITION_AND_SIZE);
+        
+        //Load the log panels
+        makeLoggingPanels();
         
         //Load the GeoCatalog
         makeGeoCatalogPanel();
@@ -216,6 +222,7 @@ public class Core {
         geoCatalog.dispose();
         mainFrame.dispose();
         dockManager.dispose();
+        loggerCollection.dispose();
         
         //Free libraries resources
         mainContext.dispose();

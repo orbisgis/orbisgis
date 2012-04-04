@@ -51,7 +51,7 @@ public class DockingAreaParameters implements Serializable {
     private String areaTitle = "";
     public static final String PROP_AREATITLE = "areaTitle";
 
-    private Icon areaIcon = OrbisGISIcon.getIcon("orbisgis");
+    private Icon areaIcon = OrbisGISIcon.getIcon("mini_orbisgis");
     public static final String PROP_AREAICON = "areaIcon";
     private boolean acceptParentFlap = true;
     public static final String PROP_ACCEPTPARENTFLAP = "acceptParentFlap";

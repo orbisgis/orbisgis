@@ -31,7 +31,6 @@ package org.orbisgis.view.output;
 import java.awt.Color;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Level;
-import org.apache.log4j.Priority;
 import org.apache.log4j.spi.LoggingEvent;
 
 /**
@@ -39,12 +38,20 @@ import org.apache.log4j.spi.LoggingEvent;
  */
 public class PanelAppender extends AppenderSkeleton {
     private static final Color COLOR_ERROR = Color.RED;
-    private static final Color COLOR_WARNING = Color.ORANGE;
+    private static final Color COLOR_WARNING = Color.ORANGE.darker();
     private static final Color COLOR_DEBUG = Color.BLUE;
     private static final Color COLOR_INFO = Color.BLACK;
     private Level lastLevel = Level.INFO;
     private Color lastLevelColor = getLevelColor(lastLevel);
     private OutputPanel guiPanel;
+
+    /**
+     * 
+     * @return The linked GuiPanel
+     */
+    public OutputPanel getGuiPanel() {
+        return guiPanel;
+    }
     
     /**
      * Find the corresponding color depending on error level
@@ -76,19 +83,32 @@ public class PanelAppender extends AppenderSkeleton {
     @Override
     protected void append(LoggingEvent le) {
         //TODO use swing thread
+        
         //Update the color if the level change
         if(!le.getLevel().equals(lastLevel)) {
             lastLevel = le.getLevel();
             lastLevelColor = getLevelColor(lastLevel);
             guiPanel.setDefaultColor(lastLevelColor);
         }
-        guiPanel.println(le.getMessage().toString());
+        guiPanel.println(this.layout.format(le));
+        if(layout.ignoresThrowable()) {
+            String[] s = le.getThrowableStrRep();
+            if (s != null) {
+                int len = s.length;
+                for(int i = 0; i < len; i++) {
+                    guiPanel.println(s[i]);
+                }
+            }
+        }
     }
 
     public void close() {
         //Nothing to close
     }
-
+    /**
+     * This appender need a layout
+     * @return 
+     */
     public boolean requiresLayout() {
         return true;
     }    

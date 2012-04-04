@@ -31,26 +31,24 @@ package org.orbisgis.view.output;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import javax.swing.*;
 import javax.swing.text.*;
 import org.apache.log4j.Logger;
+import org.orbisgis.sif.common.menuCommonFunctions;
 import org.orbisgis.utils.I18N;
-import org.orbisgis.view.docking.DockingPanel;
-import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.geocatalog.Catalog;
-import org.orbisgis.view.icons.OrbisGISIcon;
 
-public class OutputPanel extends JPanel implements DockingPanel {
+public class OutputPanel extends JPanel {
         //Root logger, for gui logger error
         private static final Logger LOGGER = Logger.getLogger(Catalog.class);
         private static final long serialVersionUID = 1L;
-        private DockingPanelParameters dockingParameters = new DockingPanelParameters(); /*!< docked panel properties */
-        private final static int DEFAULT_MAX_CHARACTERS = 2048;
+        private final static int DEFAULT_MAX_CHARACTERS = 200000;
 	private int maxCharacters = DEFAULT_MAX_CHARACTERS;
-        private JTextArea jTextArea;
+        private JTextPane textPane;
         private Color defaultColor=Color.black;
         
         //Current text Attribute for insertion, change whith style update        
@@ -63,22 +61,45 @@ public class OutputPanel extends JPanel implements DockingPanel {
          * @param viewLabel
          * @param maxCharacters 
          */
-        public OutputPanel(String viewName,String viewLabel,int maxCharacters) {
-            this(viewName,viewLabel);
+        public OutputPanel(int maxCharacters) {
+            this();
             this.maxCharacters = maxCharacters;
         }
-	public OutputPanel(String viewName,String viewLabel) {
-                this.dockingParameters.setName(viewName);
-                this.dockingParameters.setTitle(viewLabel);
-                this.dockingParameters.setTitleIcon(OrbisGISIcon.getIcon("format-justify-fill"));
-                this.dockingParameters.setDockingArea("logs");
-                
-                changeAttribute(lastColor); //Init attribute
-		this.setLayout(new BorderLayout());
-		jTextArea = new JTextArea();
-		this.add(getButtonToolBar(), BorderLayout.NORTH);
-		this.add(new JScrollPane(jTextArea), BorderLayout.CENTER);
+	public OutputPanel() {
+            changeAttribute(lastColor); //Init attribute
+            this.setLayout(new BorderLayout());
+            textPane = new JTextPane();
+            textPane.setEditable(false);
+            textPane.setComponentPopupMenu(makePopupMenu());
+            this.add(new JScrollPane(textPane), BorderLayout.CENTER);
 	}
+
+        /**
+         * Create a popup menu
+         * @return A new popup menu
+         */
+        private JPopupMenu makePopupMenu() {
+            //Create the root menu
+            JPopupMenu rootMenu = new JPopupMenu();
+            //Menu->Copy
+            JMenuItem copyItem = new JMenuItem(I18N.getString("orbisgis.view.menu.copy"));
+            copyItem.addActionListener(EventHandler.create(ActionListener.class, this, "onMenuCopy"));
+            menuCommonFunctions.setMnemonic(copyItem);
+            rootMenu.add(copyItem);
+            //Menu->Clear
+            JMenuItem clearItem = new JMenuItem(I18N.getString("orbisgis.view.menu.clear"));
+            clearItem.addActionListener(EventHandler.create(ActionListener.class, this, "onMenuClear"));
+            menuCommonFunctions.setMnemonic(clearItem);
+            rootMenu.add(clearItem);
+            
+            return rootMenu;
+        }
+        /**
+         * The user click on copy menu item
+         */
+        public void onMenuCopy() {
+            textPane.copy();
+        }
         /**
          * Update the color used by print functions
          * @param defaultColor 
@@ -110,26 +131,9 @@ public class OutputPanel extends JPanel implements DockingPanel {
         /**
          * The user click on clear text button
          */
-        public void onClearTextArea() {
-            jTextArea.setText(null);
+        public void onMenuClear() {
+            textPane.setText(null);
         }
-        /**
-         * Make the ToolBar
-         * @return ToolBar instance
-         */
-	private JToolBar getButtonToolBar() {
-		JToolBar buttonsToolBar = new JToolBar();
-                buttonsToolBar.setBorderPainted(false);
-                buttonsToolBar.setFloatable(false);
-                buttonsToolBar.setOpaque(false);
-		JButton deleteBt = new JButton();
-		deleteBt.setIcon(OrbisGISIcon.getIcon("edit-clear"));
-		deleteBt.setToolTipText(I18N.getString("orbisgis.org.orbisgis.Clear"));
-		deleteBt.setBorderPainted(false);
-		deleteBt.addActionListener(EventHandler.create(ActionListener.class,this,"onClearTextArea"));
-		buttonsToolBar.add(deleteBt);
-		return buttonsToolBar;
-	}
 
         /**
          * Add the provided text with the default color to the GUI document
@@ -158,9 +162,11 @@ public class OutputPanel extends JPanel implements DockingPanel {
          * Remove characters that exceed the limitation maxCharacter
          */
         private void removeAdditionnalCharacters() throws BadLocationException {
-                int len = jTextArea.getDocument().getLength();
-                if (len > maxCharacters) 			{
-                        jTextArea.getDocument().remove(0, len - maxCharacters);
+                if(maxCharacters > 0) {
+                    int len = textPane.getDocument().getLength();
+                    if (len > maxCharacters) 			{
+                            textPane.getDocument().remove(0, len - maxCharacters);
+                    }                    
                 }
         }
         
@@ -179,22 +185,14 @@ public class OutputPanel extends JPanel implements DockingPanel {
                 if(!color.equals(lastColor)) {
                     changeAttribute(color);
                 }
-		int len = jTextArea.getDocument().getLength();
+		int len = textPane.getDocument().getLength();
 		try {
-			jTextArea.setCaretPosition(len);
-			jTextArea.getDocument().insertString(len, text, aset);
+			textPane.setCaretPosition(len);
+			textPane.getDocument().insertString(len, text, aset);
                         removeAdditionnalCharacters();
 		} catch (BadLocationException e) {
-			LOGGER.error("orbisgis.view.output.CannotShowLogMessage", e);
+			LOGGER.error(I18N.getString("orbisgis.view.output.CannotShowLogMessage"), e);
 		}
-		jTextArea.setCaretPosition(jTextArea.getDocument().getLength());
+		textPane.setCaretPosition(textPane.getDocument().getLength());
 	}
-
-    public DockingPanelParameters getDockingParameters() {
-        return dockingParameters;
-    }
-
-    public Component getComponent() {
-        return this;
-    }
 }

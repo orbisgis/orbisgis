@@ -222,9 +222,11 @@ public final class DockingManager {
                     DockingArea dockArea = dockingAreas.get(restrictedAreaName);
                     if(dockArea==null) {
                         dockArea = new DockingArea(commonControl.createWorkingArea(restrictedAreaName));
+                        dockArea.getWorkingArea().setVisible(true);
                         dockingAreas.put(restrictedAreaName,dockArea);                        
                     }
-                    dockItem.setWorkingArea(dockArea.getWorkingArea());  
+                    dockItem.setWorkingArea(dockArea.getWorkingArea());
+                    dockArea.getWorkingArea().add(dockItem);
                 }                
                 commonControl.addDockable(dockItem);
                 views.put( frame, dockItem);

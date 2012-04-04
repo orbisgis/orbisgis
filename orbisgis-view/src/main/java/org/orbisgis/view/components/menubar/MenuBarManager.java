@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import org.orbisgis.sif.common.menuCommonFunctions;
 
 /**
  * Persistant menu management in OrbisGIS. The final menu key is unique.
@@ -45,22 +46,7 @@ public class MenuBarManager {
     //Store a flat version of menu containers
     private Map<String,MenuProperties> menuContainers = new HashMap<String,MenuProperties>();
     //TODO Store Orphan MenuItems to add them when the menu container will be avaible
-    /**
-     * Translate the characted following & in the label by a mnemonic
-     * @param menuItem The menu item
-     */
-    private void setMnemonic(JMenuItem menuItem) {
-        String menuLabel = menuItem.getText();
-        if(menuLabel.contains("&")) {
-            int charpos=menuLabel.indexOf("&");
-            if(menuLabel.length()>charpos+1) {
-                if(!menuLabel.substring(charpos+1,charpos+2).equals("&")) {
-                    menuItem.setMnemonic(menuLabel.substring(charpos+1,charpos+2).toCharArray()[0]);
-                }
-                menuItem.setText(menuLabel.replaceFirst("&",""));
-            }
-        }
-    }
+
     /**
      * Add a menu container
      * @param parentKey The parent menu key, empty if directly on menu bar
@@ -72,7 +58,7 @@ public class MenuBarManager {
         if(menuContainers.containsKey(menu.getKey())) {
             throw new IllegalArgumentException("The menu key already exists.");
         }
-        setMnemonic(menu.getMenu());
+        menuCommonFunctions.setMnemonic(menu.getMenu());
         if(parentKey.isEmpty()) {
             rootBar.add(menu.getMenu());
         } else {
@@ -95,7 +81,7 @@ public class MenuBarManager {
         if(parentMenu==null) {
             throw new IllegalArgumentException(PARENT_NOT_EXISTS);
         }
-        setMnemonic(menuItem.getMenuItem());
+        menuCommonFunctions.setMnemonic(menuItem.getMenuItem());
         parentMenu.getMenu().add(menuItem.getMenuItem());
     }
 
