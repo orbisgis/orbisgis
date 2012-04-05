@@ -30,7 +30,7 @@ package org.orbisgis.view.output;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.varia.DenyAllFilter;
@@ -94,7 +94,7 @@ public class OutputManager {
                 PanelAppender app = makePanel();
                 app.setLayout(loggingLayout);
                 LevelMatchFilter filter = new LevelMatchFilter();
-                filter.setLevelToMatch(Level.SEVERE.toString());
+                filter.setLevelToMatch(Level.ERROR.toString());
                 app.addFilter(filter);
                 app.addFilter(new DenyAllFilter());
                 outputPanels.put(LOG_ERROR, app);
@@ -131,11 +131,11 @@ public class OutputManager {
                 PanelAppender app = makePanel();
                 app.setLayout(loggingLayout);
                 LevelMatchFilter filter = new LevelMatchFilter();
-                filter.setLevelToMatch(Level.WARNING.toString());
+                filter.setLevelToMatch(Level.WARN.toString());
                 app.addFilter(filter);
                 app.addFilter(new DenyAllFilter());
                 outputPanels.put(LOG_WARNING, app);
-                GUI_LOGGER.addAppender(app);
+                ROOT_LOGGER.addAppender(app);
                 mainPanel.addSubPanel(I18N.getString("orbisgis.view.log_warning_title"), app.getGuiPanel());
         }
 
