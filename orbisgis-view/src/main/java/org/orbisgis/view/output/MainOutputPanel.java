@@ -60,8 +60,31 @@ public class MainOutputPanel extends JPanel implements DockingPanel {
         //The following line enables to use scrolling tabs.
         tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
     }
-
-    
+    /**
+     * Found the tab id of the provided sub panel
+     * @param subPanel
+     * @return The tab id or -1 if not found
+     */
+    private int getSubPanel(OutputPanel subPanel) {
+        for(int tabId=0;tabId<tabbedPane.getTabCount();tabId++) {
+            Component tabComp = tabbedPane.getComponentAt(tabId);
+            if(tabComp!=null && tabComp.equals(subPanel)) {
+                return tabId;
+            }
+        }
+        return -1;        
+    }
+    /**
+     * Show the provided pannel
+     * @note the subPanel must be added before
+     * @param subPanel 
+     */
+    public void showSubPanel(OutputPanel subPanel) {
+        int tabid=getSubPanel(subPanel);
+        if(tabid>=0) {
+            tabbedPane.setSelectedIndex(tabid);
+        }
+    }
     
     public void addSubPanel(String tabLabel,OutputPanel subPanel) {
         tabbedPane.addTab(tabLabel, subPanel);
