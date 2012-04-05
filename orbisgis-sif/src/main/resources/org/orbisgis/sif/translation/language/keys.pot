@@ -1,28 +1,25 @@
-# Nicolas Fortin <nicolas.fortin@ec-nantes.fr>, 2012.
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: OrbisGis 4.0 SIF\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-05 15:23+0200\n"
-"PO-Revision-Date: 2012-04-05 15:27+0100\n"
-"Last-Translator: Nicolas Fortin <nicolas.fortin@ec-nantes.fr>\n"
-"Language-Team: OrbisGis <info@orbisgis.org>\n"
-"Language: fr\n"
+"POT-Creation-Date: 2012-04-05 15:33+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Virtaal 0.7.0\n"
-"X-Poedit-KeywordsList: I18N.getString\n"
-"X-Poedit-Basepath: ../../../../../..\n"
-"X-Poedit-Language: French\n"
-"X-Poedit-Country: FRANCE\n"
-"X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-SearchPath-0: java\n"
 
 #: org/orbisgis/sif/SaveFilePanel.java:84
 msgid "sif.file.aFileMustSelected"
-msgstr "Un fichier doit être choisi"
+msgstr ""
 
 #: org/orbisgis/sif/SaveFilePanel.java:87
 #: org/orbisgis/sif/SaveFilePanel.java:109
@@ -45,8 +42,7 @@ msgstr ""
 msgid "sif.icons.OrbisGISIcon.icon_not_found"
 msgstr ""
 
-#: org/orbisgis/sif/SimplePanel.java:121
-#: org/orbisgis/sif/SimplePanel.java:127
+#: org/orbisgis/sif/SimplePanel.java:121 org/orbisgis/sif/SimplePanel.java:127
 msgid "sif.simplePanel.errorObtainingFavorites"
 msgstr ""
 
@@ -78,64 +74,50 @@ msgstr ""
 msgid "sif.simplePanel.invalidInput"
 msgstr ""
 
-#: org/orbisgis/sif/SimplePanel.java:256
-#: org/orbisgis/sif/SimplePanel.java:264
-#: org/orbisgis/sif/SimplePanel.java:272
-#: org/orbisgis/sif/SimplePanel.java:280
-#: org/orbisgis/sif/SimplePanel.java:288
-#: org/orbisgis/sif/SimplePanel.java:296
+#: org/orbisgis/sif/SimplePanel.java:256 org/orbisgis/sif/SimplePanel.java:264
+#: org/orbisgis/sif/SimplePanel.java:272 org/orbisgis/sif/SimplePanel.java:280
+#: org/orbisgis/sif/SimplePanel.java:288 org/orbisgis/sif/SimplePanel.java:296
 msgid "sif.simplePanel.bugInSIF"
 msgstr ""
 
-#: org/orbisgis/sif/SimplePanel.java:259
-#: org/orbisgis/sif/SimplePanel.java:267
-#: org/orbisgis/sif/SimplePanel.java:275
-#: org/orbisgis/sif/SimplePanel.java:283
-#: org/orbisgis/sif/SimplePanel.java:291
-#: org/orbisgis/sif/SimplePanel.java:299
+#: org/orbisgis/sif/SimplePanel.java:259 org/orbisgis/sif/SimplePanel.java:267
+#: org/orbisgis/sif/SimplePanel.java:275 org/orbisgis/sif/SimplePanel.java:283
+#: org/orbisgis/sif/SimplePanel.java:291 org/orbisgis/sif/SimplePanel.java:299
 msgid "sif.simplePanel.couldNotValidateDialog"
 msgstr ""
 
-#: org/orbisgis/sif/SimplePanel.java:399
-#: org/orbisgis/sif/SimplePanel.java:407
-#: org/orbisgis/sif/SimplePanel.java:414
-#: org/orbisgis/sif/SimplePanel.java:421
+#: org/orbisgis/sif/SimplePanel.java:399 org/orbisgis/sif/SimplePanel.java:407
+#: org/orbisgis/sif/SimplePanel.java:414 org/orbisgis/sif/SimplePanel.java:421
 #: org/orbisgis/sif/SimplePanel.java:428
 msgid "sif.simplePanel.errorSavingSIFInput"
 msgstr ""
 
-#: org/orbisgis/sif/SimplePanel.java:403
-#: org/orbisgis/sif/SimplePanel.java:432
+#: org/orbisgis/sif/SimplePanel.java:403 org/orbisgis/sif/SimplePanel.java:432
 msgid "sif.simplePanel.cannotSaveInput"
 msgstr ""
 
-#: org/orbisgis/sif/SimplePanel.java:410
-#: org/orbisgis/sif/SimplePanel.java:417
+#: org/orbisgis/sif/SimplePanel.java:410 org/orbisgis/sif/SimplePanel.java:417
 #: org/orbisgis/sif/SimplePanel.java:424
 msgid "sif.simplePanel.bug"
 msgstr ""
 
-#: org/orbisgis/sif/SimplePanel.java:500
-#: org/orbisgis/sif/SimplePanel.java:508
-#: org/orbisgis/sif/SimplePanel.java:516
-#: org/orbisgis/sif/SimplePanel.java:524
+#: org/orbisgis/sif/SimplePanel.java:500 org/orbisgis/sif/SimplePanel.java:508
+#: org/orbisgis/sif/SimplePanel.java:516 org/orbisgis/sif/SimplePanel.java:524
 msgid "sif.simplePanel.errorRestoringSIFInput"
 msgstr ""
 
-#: org/orbisgis/sif/SimplePanel.java:504
-#: org/orbisgis/sif/SimplePanel.java:512
-#: org/orbisgis/sif/SimplePanel.java:520
-#: org/orbisgis/sif/SimplePanel.java:528
+#: org/orbisgis/sif/SimplePanel.java:504 org/orbisgis/sif/SimplePanel.java:512
+#: org/orbisgis/sif/SimplePanel.java:520 org/orbisgis/sif/SimplePanel.java:528
 msgid "sif.simplePanel.cannotRestoreLastInput"
 msgstr ""
 
 #: org/orbisgis/sif/OpenFilePanel.java:57
 msgid "A file must be selected"
-msgstr "Un fichier doit être sélectionné"
+msgstr ""
 
 #: org/orbisgis/sif/OpenFilePanel.java:59
 msgid "The file must exists"
-msgstr "Le fichier doit exister"
+msgstr ""
 
 #: org/orbisgis/sif/ControlPanel.java:107
 msgid "sif.ControlPanel.SaveFavorite"
@@ -155,7 +137,7 @@ msgstr ""
 
 #: org/orbisgis/sif/ControlPanel.java:175
 msgid "sif.ControlPanel.Favorites"
-msgstr "Favoris"
+msgstr ""
 
 #: org/orbisgis/sif/ControlPanel.java:181
 msgid "sif.ControlPanel.ExpandFavorites"
@@ -163,24 +145,23 @@ msgstr ""
 
 #: org/orbisgis/sif/SIFWizard.java:108
 msgid "sif.previous"
-msgstr "Précédent"
+msgstr ""
 
 #: org/orbisgis/sif/SIFWizard.java:126
 msgid "sif.next"
-msgstr "Suivant"
+msgstr ""
 
 #: org/orbisgis/sif/SIFWizard.java:157
 msgid "sif.finish"
-msgstr "Terminer"
+msgstr ""
 
-#: org/orbisgis/sif/SIFWizard.java:173
-#: org/orbisgis/sif/SIFDialog.java:73
+#: org/orbisgis/sif/SIFWizard.java:173 org/orbisgis/sif/SIFDialog.java:73
 msgid "sif.cancel"
-msgstr "Annuler"
+msgstr ""
 
 #: org/orbisgis/sif/OpenFolderPanel.java:65
 msgid "sif.folderMustBeSelected"
-msgstr "Un dossier doit être choisi"
+msgstr ""
 
 #: org/orbisgis/sif/OpenFolderPanel.java:67
 msgid "sif.folderMustExist"
@@ -192,14 +173,13 @@ msgstr ""
 
 #: org/orbisgis/sif/SIFDialog.java:62
 msgid "sif.ok"
-msgstr "Valider"
+msgstr ""
 
 #: org/orbisgis/sif/UIFactory.java:119
 msgid "sif.uIFactory.atLeastAPanelHasToBeSpecified"
 msgstr ""
 
-#: org/orbisgis/sif/UIFactory.java:151
-#: org/orbisgis/sif/UIFactory.java:158
+#: org/orbisgis/sif/UIFactory.java:151 org/orbisgis/sif/UIFactory.java:158
 msgid "sif.uIFactory.doesntExist"
 msgstr ""
 
@@ -210,18 +190,3 @@ msgstr ""
 #: org/orbisgis/sif/ColorPicker.java:103
 msgid "sif.ColorPicker.Title"
 msgstr ""
-
-#~ msgid "orbisgis.org.core.previous"
-#~ msgstr "Précédent"
-
-#~ msgid "orbisgis.org.core.next"
-#~ msgstr "Suivant"
-
-#~ msgid "orbisgis.org.core.finish"
-#~ msgstr "Fin"
-
-#~ msgid "orbisgis.org.core.cancel"
-#~ msgstr "Annuler"
-
-#~ msgid "orbisgis.org.core.ok"
-#~ msgstr "Valider"

@@ -32,6 +32,7 @@ import java.awt.Window;
 import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
+import javax.swing.ImageIcon;
 import org.gdms.data.SQLDataSourceFactory;
 
 import org.orbisgis.utils.I18N;
@@ -42,6 +43,7 @@ public class UIFactory {
 	static File baseDir = new File(System.getProperty("user.home") //$NON-NLS-1$
 			+ File.separator + ".sif"); //$NON-NLS-1$
 	private static URL defaultIconURL;
+        private static ImageIcon defaultIcon;
 	private static String okMessage;
 	private static Window mainFrame = null;
 	static final SQLDataSourceFactory dsf = new SQLDataSourceFactory();
@@ -162,8 +164,17 @@ public class UIFactory {
 		return defaultIconURL;
 	}
 
+
+	public static ImageIcon getDefaultImageIcon() {
+		return defaultIcon;
+	}
+        
 	public static void setDefaultIcon(URL iconURL) {
 		UIFactory.defaultIconURL = iconURL;
+	}
+
+	public static void setDefaultImageIcon(ImageIcon icon) {
+		UIFactory.defaultIcon = icon;
 	}
 
 	public static String getDefaultOkMessage() {

@@ -543,7 +543,7 @@ public class SimplePanel extends JPanel {
         if (iconURL != null) {
             return new ImageIcon(iconURL);
         } else {
-            return null;
+            return UIFactory.getDefaultImageIcon();
         }
     }
 
