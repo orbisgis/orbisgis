@@ -31,7 +31,9 @@ package org.orbisgis.core.context.SourceContext;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.log4j.Logger;
 import org.gdms.driver.Driver;
+import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.driverManager.DriverManagerListener;
@@ -45,12 +47,18 @@ public class SourceContext {
     private SourceManager sourceManager;
     private List<String> sourceFileExtensions = new ArrayList<String>();
     private DriverManagerListener registeredListener = null;
-    
+    private static final Logger LOGGER = Logger.getLogger(SourceContext.class);
     
     /**
      * Free resources
      */
     public void dispose() {
+        try {
+            sourceManager.saveStatus();
+        } catch (DriverException ex) {
+            //User can't see this error, then translation is useless
+            LOGGER.error("Unable to save the Source Status !", ex);
+        }
         if(registeredListener!=null) {
             sourceManager.getDriverManager().unregisterListener(registeredListener);
             registeredListener=null;
