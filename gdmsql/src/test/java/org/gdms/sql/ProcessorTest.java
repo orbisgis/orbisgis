@@ -615,7 +615,7 @@ public class ProcessorTest {
         @Test
         public void testUnion() throws Exception {
                 failPreparedWithSemanticException("select * from gis union select * from alltypes;");
-                getFullyValidatedStatement("select * from gis union gis;");
+                getFullyValidatedStatement("select * from gis union select * from gis;");
         }
 
         @Test
