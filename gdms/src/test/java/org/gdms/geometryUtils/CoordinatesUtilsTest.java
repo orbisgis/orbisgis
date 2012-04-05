@@ -129,4 +129,12 @@ public class CoordinatesUtilsTest {
                 double expectedLength = 14.1421356237309;
                 assertEquals(expectedLength, length, 10E-11);
         }
+        
+        @Test
+        public void testLength3D6() throws Exception {
+                Geometry geom = wKTReader.read("LINESTRING(0 0 10, 0 10 10)");
+                double length = CoordinatesUtils.length3D(geom);
+                double expectedLength = geom.getLength();
+                assertEquals(expectedLength, length, 10E-11);
+        }
 }
