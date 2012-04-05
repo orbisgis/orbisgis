@@ -3,9 +3,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OrbisGis 4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-04 17:58+0100\n"
-"PO-Revision-Date: 2012-04-04 17:59+0100\n"
-"Last-Translator: Nicolas Fortin <nicolas.fortin@ec-nantes.fr>\n"
+"POT-Creation-Date: 2012-04-05 08:36+0100\n"
+"PO-Revision-Date: 2012-04-05 08:37+0100\n"
+"Last-Translator: \n"
 "Language-Team: OrbisGis <info@orbisgis.org>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -19,6 +19,243 @@ msgstr ""
 "X-Poedit-Country: FRANCE\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-SearchPath-0: java\n"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:113
+msgid "orbisgis.org.orbisgis.Catalog.title"
+msgstr "GeoCatalog"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:204
+msgid "orbisgis.view.geocatalog.OpenGdmsFilePanelTitle"
+msgstr "Sélectionnez un fichier à ajouter"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:221
+msgid "orbisgis.view.geocatalog.SourceAlreadyRegistered"
+msgstr "Cette source est déjà enregistrée"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:253
+msgid "orbisgis.view.geocatalog.validateClearMessage"
+msgstr "Fermer toute les sources de données ?"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:254
+msgid "orbisgis.view.geocatalog.validateClearTitle"
+msgstr "Nettoyer le géocatalogue"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:272
+msgid "orbisgis.view.geocatalog.cannotRemoveSource"
+msgstr "Impossible de supprimer la source"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:287
+msgid "orbisgis.view.geocatalog.clearGeoCatalogMenuItem"
+msgstr "Nettoyer le géocatalogue"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:296
+msgid "orbisgis.view.geocatalog.removeSource"
+msgstr "Supprimer"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:304
+msgid "orbisgis.view.geocatalog.addMenuItem"
+msgstr "Ajouter"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:309
+msgid "orbisgis.view.geocatalog.addFileMenuItem"
+msgstr "Fichier"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:318
+msgid "orbisgis.view.geocatalog.addDataBaseMenuItem"
+msgstr "Base de données"
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:333
+msgid "orbisgis.view.geocatalog.listenerMenuThrown"
+msgstr "The popup menu listener throw an error"
+
+#: java/org/orbisgis/view/geocatalog/SourceListModel.java:214
+msgid "orbisgis.view.geocatalog.CannotReadDataSourceSchema"
+msgstr "Ne peut pas lire le schema du Data Source"
+
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:68
+msgid "orbisgis.view.geocatalog.filters.AlphanumericFilter"
+msgstr "Alphanumerique"
+
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:71
+msgid "orbisgis.view.geocatalog.filters.DbsFilter"
+msgstr "Base de données"
+
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:75
+msgid "orbisgis.view.geocatalog.filters.FilesFilter"
+msgstr "Fichiers"
+
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:79
+msgid "orbisgis.view.geocatalog.filters.GeoFilter"
+msgstr "Géometrie"
+
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:83
+msgid "orbisgis.view.geocatalog.filters.RasterFilter"
+msgstr "Raster"
+
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:87
+msgid "orbisgis.view.geocatalog.filters.VectorialFilter"
+msgstr "Vectoriel"
+
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:91
+msgid "orbisgis.view.geocatalog.filters.WMSFilter"
+msgstr "Web Map Service"
+
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:95
+msgid "orbisgis.view.geocatalog.filters.TableSystemFilter"
+msgstr "Table système"
+
+#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:114
+msgid "orbisgis.view.geocatalog.filters.factories.TypeIsLabel"
+msgstr "Type"
+
+#: java/org/orbisgis/view/geocatalog/filters/factories/NameNotContains.java:61
+msgid "orbisgis.view.geocatalog.filters.factories.NameNotContainsLabel"
+msgstr "Ne contient pas"
+
+#: java/org/orbisgis/view/geocatalog/filters/factories/NameContains.java:61
+msgid "orbisgis.view.geocatalog.filters.factories.NameContainsLabel"
+msgstr "Contient"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableSelectionPanel.java:78
+msgid "orbisgis.view.geocatalog.sourceWizards.db.selectTableOrView"
+msgstr "Sélectionner une table ou une vue"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableSelectionPanel.java:131
+msgid "orbisgis.view.geocatalog.sourceWizards.db.tables"
+msgstr "Tables"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableSelectionPanel.java:152
+msgid "orbisgis.view.geocatalog.sourceWizards.db.views"
+msgstr "Vues"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableSelectionPanel.java:175
+msgid "orbisgis.view.geocatalog.sourceWizards.db.selectAtLeastTableOrView"
+msgstr "Sélectionner une table ou une vue"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableSelectionPanel.java:207
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableSelectionPanel.java:210
+msgid "orbisgis.view.geocatalog.sourceWizards.db.cannotDisplayListOfTables"
+msgstr "Impossible d'afficher la liste des tables"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionPanel.java:62
+msgid "orbisgis.view.geocatalog.sourceWizards.db.connect"
+msgstr "Connexion"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionPanel.java:64
+msgid "orbisgis.view.geocatalog.sourceWizards.db.connectionParameters"
+msgstr "Paramètres de connexion"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionPanel.java:65
+msgid "orbisgis.view.geocatalog.sourceWizards.db.dbType"
+msgstr "Type de base"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionPanel.java:67
+msgid "orbisgis.view.geocatalog.sourceWizards.db.dbTypeChooser"
+msgstr "Sélection de la base"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionPanel.java:68
+msgid "orbisgis.view.geocatalog.sourceWizards.db.hostName"
+msgstr "URL"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionPanel.java:70
+msgid "orbisgis.view.geocatalog.sourceWizards.db.hostNameChooser"
+msgstr "Sélection de l'URL"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionPanel.java:71
+msgid "orbisgis.view.geocatalog.sourceWizards.db.portNumberDefault"
+msgstr "Port par défaut"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionPanel.java:75
+msgid "orbisgis.view.geocatalog.sourceWizards.db.portNumber"
+msgstr "Port"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionPanel.java:76
+msgid "orbisgis.view.geocatalog.sourceWizards.db.dbName"
+msgstr "Nom de la base"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionPanel.java:78
+msgid "orbisgis.view.geocatalog.sourceWizards.db.dbNameMandatory"
+msgstr "Nom de la base requit"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionPanel.java:79
+msgid "orbisgis.view.geocatalog.sourceWizards.db.userName"
+msgstr "Utilisateur"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionPanel.java:81
+msgid "orbisgis.view.geocatalog.sourceWizards.db.password"
+msgstr "Mot de passe"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionPanel.java:84
+msgid "orbisgis.view.geocatalog.sourceWizards.db.ssl"
+msgstr "SSL"
+
+#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionPanel.java:110
+msgid "orbisgis.view.geocatalog.sourceWizards.db.cannotConnect"
+msgstr "Impossible de se connecter"
+
+#: java/org/orbisgis/view/toc/Toc.java:56
+msgid "orbisgis.view.toc.TocTitle"
+msgstr "Toc"
+
+#: java/org/orbisgis/view/output/OutputManager.java:84
+msgid "orbisgis.view.log_all_title"
+msgstr "Tout"
+
+#: java/org/orbisgis/view/output/OutputManager.java:103
+msgid "orbisgis.view.log_error_title"
+msgstr "Erreur"
+
+#: java/org/orbisgis/view/output/OutputManager.java:124
+msgid "orbisgis.view.log_info_title"
+msgstr "Information"
+
+#: java/org/orbisgis/view/output/OutputPanel.java:85
+msgid "orbisgis.view.menu.copy"
+msgstr "&Copier"
+
+#: java/org/orbisgis/view/output/OutputPanel.java:90
+msgid "orbisgis.view.menu.clear"
+msgstr "&Effacer"
+
+#: java/org/orbisgis/view/output/OutputPanel.java:194
+msgid "orbisgis.view.output.CannotShowLogMessage"
+msgstr "Impossible d'afficher le message"
+
+#: java/org/orbisgis/view/output/MainOutputPanel.java:51
+msgid "orbisgis.view.mainlog.title"
+msgstr "Sortie"
+
+#: java/org/orbisgis/view/main/frames/MainFrame.java:69
+msgid "orbisgis.org.orbisgis.version"
+msgstr "4.0 Beta"
+
+#: java/org/orbisgis/view/main/frames/MainFrame.java:69
+msgid "orbisgis.org.orbisgis.versionName"
+msgstr "La Rochelle"
+
+#: java/org/orbisgis/view/main/frames/MainFrame.java:88
+msgid "orbisgis.view.main.frames.menu.file"
+msgstr "&Fichier"
+
+#: java/org/orbisgis/view/main/frames/MainFrame.java:90
+msgid "orbisgis.view.main.frames.menu.exitapp"
+msgstr "Quitter"
+
+#: java/org/orbisgis/view/main/frames/MainFrame.java:94
+msgid "orbisgis.view.main.frames.menu.tools"
+msgstr "&Outils"
+
+#: java/org/orbisgis/view/main/frames/MainFrame.java:96
+msgid "orbisgis.view.main.frames.menu.preferencies"
+msgstr "&Préférences"
+
+#: java/org/orbisgis/view/components/filter/FilterFactoryManager.java:326
+msgid "orbisgis.view.geocatalog.removefilter"
+msgstr "Supprimer ce filtre"
+
+#: java/org/orbisgis/view/components/filter/FilterFactoryManager.java:347
+msgid "orbisgis.view.geocatalog.addfilter"
+msgstr "Ajouter un nouveau filtre"
 
 #: java/org/orbisgis/view/docking/DockingManager.java:87
 msgid "orbisgis.view.docking.LookAndFeel"
@@ -69,257 +306,9 @@ msgstr "Port"
 msgid "orbisgis.preferencies.proxy.invalidPortNumber"
 msgstr "Le port saisi est invalide"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:113
-msgid "orbisgis.org.orbisgis.Catalog.title"
-msgstr "GeoCatalog"
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:204
-msgid "orbisgis.view.geocatalog.OpenGdmsFilePanelTitle"
-msgstr "Sélectionnez un fichier à ajouter"
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:221
-msgid "orbisgis.view.geocatalog.SourceAlreadyRegistered"
-msgstr "Cette source est déjà enregistrée"
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:253
-msgid "orbisgis.view.geocatalog.validateClearMessage"
-msgstr "Fermer toute les sources de données ?"
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:254
-msgid "orbisgis.view.geocatalog.validateClearTitle"
-msgstr "Nettoyer le géocatalogue"
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:269
-msgid "orbisgis.view.geocatalog.clearGeoCatalogMenuItem"
-msgstr "Nettoyer le géocatalogue"
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:277
-msgid "orbisgis.view.geocatalog.addMenuItem"
-msgstr "Ajouter"
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:282
-msgid "orbisgis.view.geocatalog.addFileMenuItem"
-msgstr "Fichier"
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:291
-msgid "orbisgis.view.geocatalog.addDataBaseMenuItem"
-msgstr "Base de données"
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:307
-msgid "orbisgis.view.geocatalog.listenerMenuThrown"
-msgstr "The popup menu listener throw an error"
-
-#: java/org/orbisgis/view/geocatalog/SourceListModel.java:214
-msgid "orbisgis.view.geocatalog.CannotReadDataSourceSchema"
-msgstr "Ne peut pas lire le schema du Data Source"
-
-#: java/org/orbisgis/view/geocatalog/filters/factories/NameContains.java:61
-msgid "orbisgis.view.geocatalog.filters.factories.NameContainsLabel"
-msgstr "Nom contient"
-
-#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:68
-msgid "orbisgis.view.geocatalog.filters.AlphanumericFilter"
-msgstr "Alphanumerique"
-
-#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:71
-msgid "orbisgis.view.geocatalog.filters.DbsFilter"
-msgstr "Base de données"
-
-#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:75
-msgid "orbisgis.view.geocatalog.filters.FilesFilter"
-msgstr "Fichiers"
-
-#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:79
-msgid "orbisgis.view.geocatalog.filters.GeoFilter"
-msgstr "Géometrie"
-
-#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:83
-msgid "orbisgis.view.geocatalog.filters.RasterFilter"
-msgstr "Raster"
-
-#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:87
-msgid "orbisgis.view.geocatalog.filters.VectorialFilter"
-msgstr "Vectoriel"
-
-#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:91
-msgid "orbisgis.view.geocatalog.filters.WMSFilter"
-msgstr "Web Map Service"
-
-#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:95
-msgid "orbisgis.view.geocatalog.filters.TableSystemFilter"
-msgstr "Table système"
-
-#: java/org/orbisgis/view/geocatalog/filters/factories/SourceTypeIs.java:114
-msgid "orbisgis.view.geocatalog.filters.factories.TypeIsLabel"
-msgstr "De type"
-
-#: java/org/orbisgis/view/geocatalog/filters/factories/NameNotContains.java:61
-msgid "orbisgis.view.geocatalog.filters.factories.NameNotContainsLabel"
-msgstr "Nom ne contient pas"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableSelectionPanel.java:78
-#, fuzzy
-msgid "orbisgis.view.geocatalog.sourceWizards.db.selectTableOrView"
-msgstr "Base de données"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableSelectionPanel.java:131
-#, fuzzy
-msgid "orbisgis.view.geocatalog.sourceWizards.db.tables"
-msgstr "Ajouter un nouveau filtre"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableSelectionPanel.java:152
-#, fuzzy
-msgid "orbisgis.view.geocatalog.sourceWizards.db.views"
-msgstr "Ajouter un nouveau filtre"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableSelectionPanel.java:175
-#, fuzzy
-msgid "orbisgis.view.geocatalog.sourceWizards.db.selectAtLeastTableOrView"
-msgstr "Cette source est déjà enregistrée"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableSelectionPanel.java:207
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableSelectionPanel.java:210
-#, fuzzy
-msgid "orbisgis.view.geocatalog.sourceWizards.db.cannotDisplayListOfTables"
-msgstr "Cette source est déjà enregistrée"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionPanel.java:62
-#, fuzzy
-msgid "orbisgis.view.geocatalog.sourceWizards.db.connect"
-msgstr "Ajouter"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionPanel.java:64
-#, fuzzy
-msgid "orbisgis.view.geocatalog.sourceWizards.db.connectionParameters"
-msgstr "Vectoriel"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionPanel.java:65
-#, fuzzy
-msgid "orbisgis.view.geocatalog.sourceWizards.db.dbType"
-msgstr "Cette source est déjà enregistrée"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionPanel.java:67
-#, fuzzy
-msgid "orbisgis.view.geocatalog.sourceWizards.db.dbTypeChooser"
-msgstr "Cette source est déjà enregistrée"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionPanel.java:68
-#, fuzzy
-msgid "orbisgis.view.geocatalog.sourceWizards.db.hostName"
-msgstr "Base de données"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionPanel.java:70
-#, fuzzy
-msgid "orbisgis.view.geocatalog.sourceWizards.db.hostNameChooser"
-msgstr "Base de données"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionPanel.java:71
-#, fuzzy
-msgid "orbisgis.view.geocatalog.sourceWizards.db.portNumberDefault"
-msgstr "Cette source est déjà enregistrée"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionPanel.java:75
-#, fuzzy
-msgid "orbisgis.view.geocatalog.sourceWizards.db.portNumber"
-msgstr "Ajouter un nouveau filtre"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionPanel.java:76
-#, fuzzy
-msgid "orbisgis.view.geocatalog.sourceWizards.db.dbName"
-msgstr "Cette source est déjà enregistrée"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionPanel.java:78
-#, fuzzy
-msgid "orbisgis.view.geocatalog.sourceWizards.db.dbNameMandatory"
-msgstr "Cette source est déjà enregistrée"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionPanel.java:79
-#, fuzzy
-msgid "orbisgis.view.geocatalog.sourceWizards.db.userName"
-msgstr "Cette source est déjà enregistrée"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionPanel.java:81
-#, fuzzy
-msgid "orbisgis.view.geocatalog.sourceWizards.db.password"
-msgstr "Cette source est déjà enregistrée"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionPanel.java:84
-#, fuzzy
-msgid "orbisgis.view.geocatalog.sourceWizards.db.ssl"
-msgstr "Base de données"
-
-#: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionPanel.java:110
-#, fuzzy
-msgid "orbisgis.view.geocatalog.sourceWizards.db.cannotConnect"
-msgstr "Ajouter"
-
-#: java/org/orbisgis/view/output/OutputManager.java:84
-msgid "orbisgis.view.log_all_title"
-msgstr "Tout"
-
-#: java/org/orbisgis/view/output/OutputManager.java:103
-msgid "orbisgis.view.log_error_title"
-msgstr "Erreur"
-
-#: java/org/orbisgis/view/output/OutputManager.java:124
-msgid "orbisgis.view.log_info_title"
-msgstr "Information"
-
-#: java/org/orbisgis/view/output/MainOutputPanel.java:51
-msgid "orbisgis.view.mainlog.title"
-msgstr "Sortie"
-
-#: java/org/orbisgis/view/output/OutputPanel.java:85
-msgid "orbisgis.view.menu.copy"
-msgstr "&Copier"
-
-#: java/org/orbisgis/view/output/OutputPanel.java:90
-msgid "orbisgis.view.menu.clear"
-msgstr "&Effacer"
-
-#: java/org/orbisgis/view/output/OutputPanel.java:194
-msgid "orbisgis.view.output.CannotShowLogMessage"
-msgstr "Impossible d'afficher le message"
-
-#: java/org/orbisgis/view/components/filter/FilterFactoryManager.java:326
-msgid "orbisgis.view.geocatalog.removefilter"
-msgstr "Supprimer ce filtre"
-
-#: java/org/orbisgis/view/components/filter/FilterFactoryManager.java:347
-msgid "orbisgis.view.geocatalog.addfilter"
-msgstr "Ajouter un nouveau filtre"
-
 #: java/org/orbisgis/view/map/MapEditor.java:54
 msgid "orbisgis.view.map.MapEditorTitle"
 msgstr "Carte"
-
-#: java/org/orbisgis/view/main/frames/MainFrame.java:69
-msgid "orbisgis.org.orbisgis.version"
-msgstr "4.0 Beta"
-
-#: java/org/orbisgis/view/main/frames/MainFrame.java:69
-msgid "orbisgis.org.orbisgis.versionName"
-msgstr "La Rochelle"
-
-#: java/org/orbisgis/view/main/frames/MainFrame.java:88
-msgid "orbisgis.view.main.frames.menu.file"
-msgstr "&Fichier"
-
-#: java/org/orbisgis/view/main/frames/MainFrame.java:90
-msgid "orbisgis.view.main.frames.menu.exitapp"
-msgstr "Quitter"
-
-#: java/org/orbisgis/view/main/frames/MainFrame.java:94
-msgid "orbisgis.view.main.frames.menu.tools"
-msgstr "&Outils"
-
-#: java/org/orbisgis/view/main/frames/MainFrame.java:96
-msgid "orbisgis.view.main.frames.menu.preferencies"
-msgstr "&Préférences"
-
-#: java/org/orbisgis/view/toc/Toc.java:56
-msgid "orbisgis.view.toc.TocTitle"
-msgstr "Toc"
 
 #~ msgid "orbisgis.org.orbisgis.Clear"
 #~ msgstr "Nettoyer"

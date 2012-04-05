@@ -259,6 +259,24 @@ public class Catalog extends JPanel implements DockingPanel {
         }
 
         /**
+         * The user can remove added source from the geocatalog
+         */
+        public void onMenuRemoveSource() {
+                SourceContext srcContext = sourceListContent.getSourceContext();
+                SourceManager sm = srcContext.getSourceManager();
+                String[] res = getSelectedSources();
+                for (String resource : res) {
+                        try {
+                                sm.remove(resource);
+                        } catch (IllegalStateException e) {
+                                LOGGER.error(I18N.getString("orbisgis.view.geocatalog.cannotRemoveSource") + ": "
+                                        + resource, e);
+
+                        }
+                }
+        }
+
+        /**
          * Create a popup menu corresponding to the current state of source selection
          * @return A new popup menu
          */
@@ -273,6 +291,15 @@ public class Catalog extends JPanel implements DockingPanel {
                                 "onMenuClearGeoCatalog"));
                         rootMenu.add(clearCatalogItem);
                 }
+                //Add function to remove a source
+                JMenuItem rootItem = new JMenuItem(
+                                  I18N.getString("orbisgis.view.geocatalog.removeSource"),
+                                  OrbisGISIcon.getIcon("remove"));
+                rootItem.addActionListener(EventHandler.create(ActionListener.class,
+                        this,
+                        "onMenuRemoveSource"));
+                rootMenu.add(rootItem);
+                
                 //Popup:Add
                 JMenu addMenu = new JMenu(I18N.getString("orbisgis.view.geocatalog.addMenuItem"));
                 rootMenu.addSeparator();
@@ -293,8 +320,7 @@ public class Catalog extends JPanel implements DockingPanel {
                 addFileItem.addActionListener(EventHandler.create(ActionListener.class,
                         this,
                         "onMenuAddFromDataBase"));
-                addMenu.add(addFileItem);
-
+                addMenu.add(addFileItem); 
 
 
                 //////////////////////////////
@@ -339,6 +365,19 @@ public class Catalog extends JPanel implements DockingPanel {
                 //Remove listeners linked with the source list content
                 filterFactoryManager.getEventFilterChange().clearListeners();
                 sourceListContent.dispose();
+        }
+
+        /**
+         * Return the names of the selected sources in the geocatalog.
+         * @return 
+         */
+        public String[] getSelectedSources() {
+                Object[] selectedValues = getSourceList().getSelectedValues();
+                String[] sources = new String[selectedValues.length];
+                for (int i = 0; i < sources.length; i++) {
+                        sources[i] = selectedValues[i].toString();
+                }
+                return sources;
         }
 
         /**
