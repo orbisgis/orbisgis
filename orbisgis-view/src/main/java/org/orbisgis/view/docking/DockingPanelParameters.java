@@ -56,7 +56,7 @@ public class DockingPanelParameters implements Serializable {
     public static final String PROP_MINIMIZABLE = "minimizable";
     private boolean externalizable = true;
     public static final String PROP_EXTERNALIZABLE = "externalizable";
-    private boolean closeable = false;
+    private boolean closeable = true;
     public static final String PROP_CLOSEABLE = "closeable";
 
     /**

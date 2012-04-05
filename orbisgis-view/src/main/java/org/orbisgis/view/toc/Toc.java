@@ -55,6 +55,7 @@ public class Toc extends JPanel implements DockingPanel  {
         //dockingPanelParameters.setDockingArea("toc_map");
         dockingPanelParameters.setTitle(I18N.getString("orbisgis.view.toc.TocTitle"));
         dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("map"));
+        dockingPanelParameters.setCloseable(false);
     }
     
     public DockingPanelParameters getDockingParameters() {

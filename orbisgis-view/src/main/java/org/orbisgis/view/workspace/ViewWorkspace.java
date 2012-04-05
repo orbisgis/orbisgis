@@ -46,9 +46,32 @@ public class ViewWorkspace {
     public ViewWorkspace(CoreWorkspace coreWorkspace) {
         propertySupport = new PropertyChangeSupport(this);
         this.coreWorkspace = coreWorkspace;
+        SIFPath = coreWorkspace.getWorkspaceFolder() + File.separator + "sif" ;
     }
     private String dockingLayoutFile = "docking_layout.xml";
     public static final String PROP_DOCKINGLAYOUTFILE = "dockingLayoutFile";
+    private String SIFPath = "";
+    public static final String PROP_SIFPATH = "SIFPath";
+
+    /**
+     * Get the value of SIFPath
+     *
+     * @return the value of SIFPath
+     */
+    public String getSIFPath() {
+        return SIFPath;
+    }
+
+    /**
+     * Set the value of SIFPath
+     *
+     * @param SIFPath new value of SIFPath
+     */
+    public void setSIFPath(String SIFPath) {
+        String oldSIFPath = this.SIFPath;
+        this.SIFPath = SIFPath;
+        propertySupport.firePropertyChange(PROP_SIFPATH, oldSIFPath, SIFPath);
+    }
 
     /**
      * Get the value of dockingLayoutFile
