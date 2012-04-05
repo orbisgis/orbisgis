@@ -291,6 +291,7 @@ public class Catalog extends JPanel implements DockingPanel {
                                 "onMenuClearGeoCatalog"));
                         rootMenu.add(clearCatalogItem);
                 }
+                
                 //Add function to remove a source
                 JMenuItem rootItem = new JMenuItem(
                                   I18N.getString("orbisgis.view.geocatalog.removeSource"),

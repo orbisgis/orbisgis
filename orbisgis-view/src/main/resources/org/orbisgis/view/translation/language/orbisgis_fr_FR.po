@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OrbisGis 4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-05 08:36+0100\n"
-"PO-Revision-Date: 2012-04-05 08:37+0100\n"
+"POT-Creation-Date: 2012-04-05 12:56+0100\n"
+"PO-Revision-Date: 2012-04-05 12:57+0100\n"
 "Last-Translator: \n"
 "Language-Team: OrbisGis <info@orbisgis.org>\n"
 "Language: fr\n"
@@ -48,23 +48,23 @@ msgstr "Impossible de supprimer la source"
 msgid "orbisgis.view.geocatalog.clearGeoCatalogMenuItem"
 msgstr "Nettoyer le géocatalogue"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:296
+#: java/org/orbisgis/view/geocatalog/Catalog.java:297
 msgid "orbisgis.view.geocatalog.removeSource"
 msgstr "Supprimer"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:304
+#: java/org/orbisgis/view/geocatalog/Catalog.java:305
 msgid "orbisgis.view.geocatalog.addMenuItem"
 msgstr "Ajouter"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:309
+#: java/org/orbisgis/view/geocatalog/Catalog.java:310
 msgid "orbisgis.view.geocatalog.addFileMenuItem"
 msgstr "Fichier"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:318
+#: java/org/orbisgis/view/geocatalog/Catalog.java:319
 msgid "orbisgis.view.geocatalog.addDataBaseMenuItem"
 msgstr "Base de données"
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:333
+#: java/org/orbisgis/view/geocatalog/Catalog.java:334
 msgid "orbisgis.view.geocatalog.listenerMenuThrown"
 msgstr "The popup menu listener throw an error"
 
@@ -197,17 +197,21 @@ msgstr "Impossible de se connecter"
 msgid "orbisgis.view.toc.TocTitle"
 msgstr "Toc"
 
-#: java/org/orbisgis/view/output/OutputManager.java:84
+#: java/org/orbisgis/view/output/OutputManager.java:86
 msgid "orbisgis.view.log_all_title"
 msgstr "Tout"
 
-#: java/org/orbisgis/view/output/OutputManager.java:103
+#: java/org/orbisgis/view/output/OutputManager.java:102
 msgid "orbisgis.view.log_error_title"
 msgstr "Erreur"
 
-#: java/org/orbisgis/view/output/OutputManager.java:124
+#: java/org/orbisgis/view/output/OutputManager.java:123
 msgid "orbisgis.view.log_info_title"
 msgstr "Information"
+
+#: java/org/orbisgis/view/output/OutputManager.java:139
+msgid "orbisgis.view.log_warning_title"
+msgstr "Warning"
 
 #: java/org/orbisgis/view/output/OutputPanel.java:85
 msgid "orbisgis.view.menu.copy"
