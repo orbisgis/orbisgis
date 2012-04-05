@@ -92,6 +92,7 @@ case object AggregateStep extends AbstractEngineStep[Operation, Operation]("Proc
           // directly selected fields
           val selFields = exp flatMap (_._1 match {
               case field(name, _) => Some(name)
+              case star(_,_) => throw new SemanticException("Selected alls field using the STAR '*' is not allowed with a GROUP BY clause.")
               case _ => None
             })
           

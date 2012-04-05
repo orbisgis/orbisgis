@@ -513,7 +513,9 @@ public class ProcessorTest {
                 failPreparedWithSemanticException("select t1.\"int\" from alltypes t1, "
                         + "alltypes t2 group by t2.\"int\";");
                 // Selecting non grouped fields
-                failPreparedWithSemanticException("select * from alltypes group by \"int\";");
+                failWithSemanticException("select string from alltypes group by \"int\";");
+                // Star select with group by
+                failWithSemanticException("select * from alltypes group by \"int\";");
 
                 getValidatedStatement("select t1.\"int\" as st1, sum(t2.\"int\") as st2 from "
                         + "alltypes t1, alltypes t2 group by t1.\"int\" having st1 = 3;");
