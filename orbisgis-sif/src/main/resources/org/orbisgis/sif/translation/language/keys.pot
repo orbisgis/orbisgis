@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-05 15:33+0200\n"
+"POT-Creation-Date: 2012-04-05 16:26+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -111,12 +111,12 @@ msgstr ""
 msgid "sif.simplePanel.cannotRestoreLastInput"
 msgstr ""
 
-#: org/orbisgis/sif/OpenFilePanel.java:57
-msgid "A file must be selected"
+#: org/orbisgis/sif/OpenFilePanel.java:58
+msgid "A file must be selected (open dialog)"
 msgstr ""
 
-#: org/orbisgis/sif/OpenFilePanel.java:59
-msgid "The file must exists"
+#: org/orbisgis/sif/OpenFilePanel.java:60
+msgid "The file must exists (open dialog)"
 msgstr ""
 
 #: org/orbisgis/sif/ControlPanel.java:107

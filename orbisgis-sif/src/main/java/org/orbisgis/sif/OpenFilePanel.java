@@ -30,6 +30,7 @@ package org.orbisgis.sif;
 
 import java.io.File;
 import javax.swing.filechooser.FileFilter;
+import org.orbisgis.sif.translation.I18N;
 
 /**
  * @class OpenFilePanel
@@ -54,9 +55,9 @@ public class OpenFilePanel extends AbstractOpenPanel {
     public String validateInput() {
         File file = getSelectedFile();
         if (file == null) {
-            return i18n.tr("A file must be selected");
+            return I18N.tr("A file must be selected (open dialog)");
         } else if (!file.exists()) {
-            return i18n.tr("The file must exists");
+            return I18N.tr("The file must exists (open dialog)");
         } else {
             return null;
         }
