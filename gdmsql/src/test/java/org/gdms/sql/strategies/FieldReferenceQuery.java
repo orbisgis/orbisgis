@@ -39,6 +39,8 @@ package org.gdms.sql.strategies;
 import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.Metadata;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.driver.AbstractDataSet;
 import org.gdms.driver.DriverException;
@@ -74,7 +76,7 @@ public class FieldReferenceQuery extends AbstractTableFunction {
 
                         @Override
                         public Metadata getMetadata() throws DriverException {
-                                return new DefaultMetadata();
+                                return FieldReferenceQuery.this.getMetadata(null);
                         }
                 };
         }
@@ -84,7 +86,7 @@ public class FieldReferenceQuery extends AbstractTableFunction {
         }
 
         public Metadata getMetadata(Metadata[] tables) throws DriverException {
-                return new DefaultMetadata();
+                return new DefaultMetadata(new Type[] { TypeFactory.createType(Type.INT)}, new String[] {"res"});
         }
 
         public String getName() {
@@ -101,6 +103,6 @@ public class FieldReferenceQuery extends AbstractTableFunction {
                                 new TableFunctionSignature(null, new TableArgument(TableDefinition.ANY),
                                 new TableArgument(TableDefinition.ANY), ScalarArgument.LONG),
                                 new TableFunctionSignature(null, new TableArgument(TableDefinition.ANY),
-                                new TableArgument(TableDefinition.ANY), ScalarArgument.LONG, ScalarArgument.GEOMETRY)};
+                                new TableArgument(TableDefinition.ANY), ScalarArgument.LONG, ScalarArgument.STRING)};
         }
 }

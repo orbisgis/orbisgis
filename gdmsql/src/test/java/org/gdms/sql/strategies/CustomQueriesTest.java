@@ -36,6 +36,7 @@
  */
 package org.gdms.sql.strategies;
 
+import org.junit.BeforeClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.gdms.data.types.IncompatibleTypesException;
@@ -65,7 +66,8 @@ public class CustomQueriesTest {
 
         private SQLDataSourceFactory dsf;
 
-        static {
+        @BeforeClass
+        public static void init() {
                 FunctionManager.addFunction(SumQuery.class);
                 FunctionManager.addFunction(FieldReferenceQuery.class);
                 FunctionManager.addFunction(GigaCustomQuery.class);
@@ -95,12 +97,12 @@ public class CustomQueriesTest {
                         "ds2",
                         new FileSourceCreation(new File(SQLBaseTest.internalData
                         + "multilinestring2d.shp"), null));
-                dsf.getDataSourceFromSQL("select * from fieldReferenceQuery(ds, ds2, 'gid',"
+                dsf.getDataSourceFromSQL("select * from fieldReferenceQuery(ds, ds2, 15,"
                         + " 'the_geom');");
 
                 try {
                         dsf.getDataSourceFromSQL("select * from fieldReferenceQuery(ds, ds2, 'the_geom',"
-                                + " 'the_geom') from ds, ds2 t2;");
+                                + " 'the_geom');");
                         fail();
                 } catch (IncompatibleTypesException e) {
                 }
