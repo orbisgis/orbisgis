@@ -68,6 +68,9 @@ public class CustomQueriesTest {
 
         @BeforeClass
         public static void init() {
+                FunctionManager.remove("SUMQUERY");
+                FunctionManager.remove("FieldReferenceQuery");
+                FunctionManager.remove("gigaquery");
                 FunctionManager.addFunction(SumQuery.class);
                 FunctionManager.addFunction(FieldReferenceQuery.class);
                 FunctionManager.addFunction(GigaCustomQuery.class);

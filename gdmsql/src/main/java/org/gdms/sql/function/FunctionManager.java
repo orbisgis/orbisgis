@@ -47,22 +47,14 @@ import org.gdms.data.InitializationException;
 
 import org.gdms.sql.function.alphanumeric.AutoNumeric;
 import org.gdms.sql.function.alphanumeric.Average;
-import org.gdms.sql.function.alphanumeric.ConcatenateFunction;
 import org.gdms.sql.function.alphanumeric.Count;
 import org.gdms.sql.function.alphanumeric.IsUID;
-import org.gdms.sql.function.alphanumeric.LongToDoubleFunction;
 import org.gdms.sql.function.alphanumeric.Max;
 import org.gdms.sql.function.alphanumeric.Min;
-import org.gdms.sql.function.alphanumeric.Pk;
 import org.gdms.sql.function.alphanumeric.ReplaceString;
 import org.gdms.sql.function.alphanumeric.StrLength;
-import org.gdms.sql.function.alphanumeric.String2BooleanFunction;
-import org.gdms.sql.function.alphanumeric.String2DateFunction;
-import org.gdms.sql.function.alphanumeric.String2DoubleFunction;
-import org.gdms.sql.function.alphanumeric.String2IntFunction;
 import org.gdms.sql.function.alphanumeric.SubString;
 import org.gdms.sql.function.alphanumeric.Sum;
-import org.gdms.sql.function.alphanumeric.ToStringFunction;
 import org.gdms.sql.function.cluster.ST_KMeans;
 import org.gdms.sql.function.math.ACos;
 import org.gdms.sql.function.math.ASin;
@@ -212,12 +204,6 @@ public final class FunctionManager {
         private static final Logger LOG = Logger.getLogger(FunctionManager.class);
 
         static {
-                addFunction(ConcatenateFunction.class);
-                addFunction(String2DateFunction.class);
-                addFunction(String2IntFunction.class);
-                addFunction(String2DoubleFunction.class);
-                addFunction(LongToDoubleFunction.class);
-                addFunction(String2BooleanFunction.class);
                 addFunction(Count.class);
                 addFunction(Sum.class);
                 addFunction(StrLength.class);
@@ -251,9 +237,7 @@ public final class FunctionManager {
                 addFunction(ST_ToMultiPoint.class);
                 addFunction(ST_ToMultiLine.class);
                 addFunction(ST_IsValid.class);
-                addFunction(ToStringFunction.class);
                 addFunction(AutoNumeric.class);
-                addFunction(Pk.class);
                 addFunction(ST_IsWithin.class);
                 addFunction(ST_IsWithinDistance.class);
                 addFunction(ST_Covers.class);
