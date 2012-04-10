@@ -259,12 +259,12 @@ public class ProcessorTest {
                 failWithIncompatibleTypes("select avg(4, 6) from alltypes;");
                 failWithIncompatibleTypes("select avg('a string') from alltypes;");
                 failWithIncompatibleTypes("select avg(*) from alltypes;");
-                failWithIncompatibleTypes("select concatenate('string', StringtoInt('3')) from alltypes;");
+                failWithIncompatibleTypes("select replace('string', '3' :: int, '') from alltypes;");
                 getFullyValidatedStatement("select avg(3) from alltypes;");
-                failWithIncompatibleTypes("select * from alltypes where concatenate('e')=3;");
-                failWithIncompatibleTypes("select * from alltypes where concatenate(4)='afs';");
-                failWithIncompatibleTypes("select * from alltypes where concatenate('string', StringtoInt('3')) = 'asd';");
-                getFullyValidatedStatement("select * from alltypes where concatenate('asd', 'asd') = 'asdasd';");
+                failWithIncompatibleTypes("select * from alltypes where replace('e', 'e', 'e')=3;");
+                failWithIncompatibleTypes("select * from alltypes where replace(4, 'e', 'f')='afs';");
+                failWithIncompatibleTypes("select * from alltypes where replace('string', '3' :: int, 22) = 'asd';");
+                getFullyValidatedStatement("select * from alltypes where replace('asd', 'asd', 'asdasd') = 'asdasd';");
         }
 
         private void failWithIncompatibleTypes(String sql) throws Exception {
@@ -470,7 +470,7 @@ public class ProcessorTest {
                 failPreparedWithSemanticException("delete from alltypes where \"Int\"=3;");
                 failPreparedWithSemanticException("delete from alltypes where AllTypes.\"int\"=3;");
                 failPreparedWithIncompatibleTypes("delete from alltypes where strlength(string)='3';");
-                getValidatedStatement("delete from alltypes where concatenate(string, 'd')='adadsd';");
+                getValidatedStatement("delete from alltypes where string || 'd' = 'adadsd';");
                 getValidatedStatement("delete from alltypes where \"int\"=3;");
                 getValidatedStatement("delete from alltypes where alltypes.\"int\"=3;");
         }
@@ -507,7 +507,7 @@ public class ProcessorTest {
                 failPreparedWithSemanticException("select \"int\" from alltypes "
                         + "group by \"int\" having strign = 'e';");
                 // mixing aggregated and not aggregated
-                failPreparedWithSemanticException("select count(\"int\"), StringtoInt(string) from "
+                failPreparedWithSemanticException("select count(\"int\"), string :: int from "
                         + "alltypes group by \"int\" having string = 'e';");
                 // non aggregated type
                 failPreparedWithSemanticException("select t1.\"int\" from alltypes t1, "
@@ -519,7 +519,7 @@ public class ProcessorTest {
 
                 getValidatedStatement("select t1.\"int\" as st1, sum(t2.\"int\") as st2 from "
                         + "alltypes t1, alltypes t2 group by t1.\"int\" having st1 = 3;");
-                getValidatedStatement("select sum(StringtoInt(string)) as st from "
+                getValidatedStatement("select sum(string :: int) as st from "
                         + "alltypes group by \"int\" having st = 3;");
                 getValidatedStatement("select sum(t1.\"int\") as st1, sum(t2.\"int\") as st2 from "
                         + "alltypes t1, alltypes t2 group by t2.\"int\" having st1 = 3;");

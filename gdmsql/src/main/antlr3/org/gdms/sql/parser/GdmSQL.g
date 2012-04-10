@@ -826,8 +826,13 @@ expression_in
         ;
 
 function_call
-        : name=LONG_ID LPAREN (expression_list? | ASTERISK ) RPAREN
-        -> ^( T_FUNCTION_CALL $name expression_list? )
+        : n=function_name LPAREN (expression_list? | ASTERISK ) RPAREN
+        -> ^( T_FUNCTION_CALL $n expression_list? )
+        ;
+
+function_name
+        : LONG_ID
+        | T_REPLACE
         ;
 
 expression_cast

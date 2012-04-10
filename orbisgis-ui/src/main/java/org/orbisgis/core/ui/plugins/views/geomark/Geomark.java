@@ -1,40 +1,36 @@
 package org.orbisgis.core.ui.plugins.views.geomark;
 
 import java.io.Serializable;
-
-import org.gdms.sql.function.alphanumeric.ToStringFunction;
-
 import com.vividsolutions.jts.geom.Envelope;
 
 public class Geomark implements Serializable {
 
-	private String name;
-	private Envelope envelope;
+        private String name;
+        private Envelope envelope;
 
-	public Geomark(String name, Envelope envelope) {
-		this.name = name;
-		this.envelope = envelope;
-	}
+        public Geomark(String name, Envelope envelope) {
+                this.name = name;
+                this.envelope = envelope;
+        }
 
-	public String getName() {
-		return name;
-	}
+        public String getName() {
+                return name;
+        }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+        public void setName(String name) {
+                this.name = name;
+        }
 
-	public Envelope getEnvelope() {
-		return envelope;
-	}
+        public Envelope getEnvelope() {
+                return envelope;
+        }
 
-	public void setEnvelope(Envelope envelope) {
-		this.envelope = envelope;
-	}
+        public void setEnvelope(Envelope envelope) {
+                this.envelope = envelope;
+        }
 
-	@Override
-	public String toString() {
-		return name + "  " + envelope.toString();
-	}
-
+        @Override
+        public String toString() {
+                return name + "  " + envelope.toString();
+        }
 }

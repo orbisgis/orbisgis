@@ -45,6 +45,7 @@ import java.io.File;
 import org.gdms.SQLBaseTest;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.types.Type;
@@ -121,10 +122,10 @@ public class CustomQueriesTest {
                 dsf.getDataSourceFromSQL("select * from fieldReferenceQuery(ds, ds2, 'gid',"
                         + " 'the_geom');");
 
-
                 try {
                         dsf.getDataSourceFromSQL("select * from fieldReferenceQuery(ds, ds2, ggidd);");
-                } catch (DriverException driverException) {
+                        fail();
+                } catch (Exception e) {
                 }
 
         }
@@ -168,14 +169,17 @@ public class CustomQueriesTest {
         @Test
         public void testRegisterValidation() throws Exception {
                 // from clause
-                executeSuccess("CALL register('', '');");
-                executeFail("CALL register('', '') from ds;");
+                String path = SQLBaseTest.internalData + "points.shp";
+                executeSuccess("CALL register('" + path + "', 'name');");
+                executeFail("CALL register('toto', '') from ds;");
 
                 // // parameters
                 executeFail("CALL register();");
-                executeSuccess("CALL register('a');");
-                executeSuccess("CALL register('as', 'file');");
-                executeSuccess("CALL register('as', 'file', '23' , 'file', 'as', 'file', 'as', 'file2');");
+                path = SQLBaseTest.internalData + "toto.shp";
+                executeSuccess("CALL register('" + path + "');");
+                dsf.getSourceManager().remove("toto");
+                executeSuccess("CALL register('" + path + "', 'file');");
+                executeSuccess("CALL register('postgresql', 'file', '23' , 'file', 'as', 'file', 'as', 'file2');");
                 executeFail("CALL register('as', 'file', 'as');");
                 executeFail("CALL register('as', 'file', 'as', 'as2');");
                 executeFail("CALL register('as', 'file', 'as', 'as', 'as3');");
@@ -185,7 +189,7 @@ public class CustomQueriesTest {
                 try {
                         dsf.executeSQL(string);
                         fail();
-                } catch (IncompatibleTypesException e) {
+                } catch (Exception e) {
                 }
         }
 

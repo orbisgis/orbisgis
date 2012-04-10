@@ -39,14 +39,21 @@
 package org.gdms.sql.function.math;
 
 import org.gdms.data.SQLDataSourceFactory;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.FunctionException;
+import org.gdms.sql.function.FunctionSignature;
+import org.gdms.sql.function.SameTypeFunctionSignature;
+import org.gdms.sql.function.ScalarArgument;
 
 /**
  * Return the absolute value of a numeric value.
  */
 public final class Abs extends AbstractScalarMathFunction {
+
+        private FunctionSignature[] signs;
 
         @Override
         public Value evaluate(SQLDataSourceFactory dsf, Value[] args) throws FunctionException {
@@ -74,5 +81,25 @@ public final class Abs extends AbstractScalarMathFunction {
         @Override
         public String getSqlOrder() {
                 return "select Abs(myNumericField) from myTable;";
+        }
+
+        @Override
+        public FunctionSignature[] getFunctionSignatures() {
+                if (signs == null) {
+                        signs = new FunctionSignature[]{
+                                new SameTypeFunctionSignature(ScalarArgument.BYTE),
+                                new SameTypeFunctionSignature(ScalarArgument.SHORT),
+                                new SameTypeFunctionSignature(ScalarArgument.INT),
+                                new SameTypeFunctionSignature(ScalarArgument.LONG),
+                                new SameTypeFunctionSignature(ScalarArgument.FLOAT),
+                                new SameTypeFunctionSignature(ScalarArgument.DOUBLE),
+                        };
+                }
+                return signs;
+        }
+
+        @Override
+        public Type getType(Type[] argsTypes) {
+                return argsTypes[0];
         }
 }

@@ -78,7 +78,7 @@ public class SQLTest extends SQLBaseTest {
                 metadata.addField("f1", Type.INT);
                 dsf.getSourceManager().register("source",
                         new MemoryDataSetDriver(metadata));
-                dsf.executeSQL("insert into source (f1) values (StringToInt('2'));");
+                dsf.executeSQL("insert into source (f1) values (abs('2' :: int));");
         }
 
         @Test
@@ -910,7 +910,7 @@ public class SQLTest extends SQLBaseTest {
                 assertEquals(ds.getRowCount(), 2);
                 ds.close();
 
-                ds = dsf.getDataSourceFromSQL("select Sum(StringToDouble(id)), Count(id), country, category"
+                ds = dsf.getDataSourceFromSQL("select Sum(id :: double), Count(id), country, category"
                         + " from groupcsv group by country, category order by country, category;");
                 ds.open();
                 assertEquals(ds.getRowCount(), 6);

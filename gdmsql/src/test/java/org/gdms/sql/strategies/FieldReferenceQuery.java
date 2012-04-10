@@ -101,8 +101,8 @@ public class FieldReferenceQuery extends AbstractTableFunction {
         public FunctionSignature[] getFunctionSignatures() {
                 return new FunctionSignature[]{
                                 new TableFunctionSignature(null, new TableArgument(TableDefinition.ANY),
-                                new TableArgument(TableDefinition.ANY), ScalarArgument.LONG),
+                                new TableArgument(TableDefinition.ANY), ScalarArgument.STRING),
                                 new TableFunctionSignature(null, new TableArgument(TableDefinition.ANY),
-                                new TableArgument(TableDefinition.ANY), ScalarArgument.LONG, ScalarArgument.STRING)};
+                                new TableArgument(TableDefinition.ANY), ScalarArgument.STRING, ScalarArgument.STRING)};
         }
 }
