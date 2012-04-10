@@ -94,6 +94,7 @@ tokens {
     T_RAW = 'RAW';
     T_RENAME = 'RENAME';
     T_REPLACE = 'REPLACE';
+    T_RESET = 'RESET';
     T_ROW = 'ROW';
     T_ROWID = 'ROWID';
     T_ROWLABEL = 'ROWLABEL';
@@ -103,6 +104,7 @@ tokens {
     T_SESSION = 'SESSION';
     T_SET = 'SET';
     T_SHARE = 'SHARE';
+    T_SHOW = 'SHOW';
     T_SIZE = 'SIZE';
     T_START = 'START';
     T_SUCCESSFUL = 'SUCCESSFUL';
@@ -411,6 +413,9 @@ statement
           | create_index_statement
           | drop_index_statement
           | call_statement
+          | set_statement
+          | reset_statement
+          | show_statement
           )
           SEMI!
         ;
@@ -748,6 +753,25 @@ drop_index_statement
 call_statement
         : (T_CALL | T_EXECUTE) function_call
         -> ^( T_EXECUTOR function_call)
+        ;
+
+// SET statement
+
+set_statement
+        : T_SET a=select_column (T_TO | EQ) (b=QUOTED_STRING | b=T_DEFAULT)
+        -> ^(T_SET $a $b )
+        ;
+
+// RESET statement
+
+reset_statement
+        : T_RESET ( a=T_ALL -> ^(T_RESET $a ) | b=select_column -> ^(T_RESET $b ) )
+        ;
+
+// SHOW statement
+
+show_statement
+        : T_SHOW ( a=T_ALL -> ^(T_SHOW $a ) | b=select_column -> ^(T_SHOW $b ) )
         ;
 
 // All expressions

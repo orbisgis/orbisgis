@@ -320,6 +320,31 @@ public class GrammarTest {
                 parse("select * from mytable where myfield in (3, 4);");
 
         }
+        
+        @Test
+        public void testSet() throws Exception {
+                parse("SET toto TO 'value';");
+                parse("SET toto = 'value';");
+                parse("SET toto.tata.tutu = '42';");
+                parse("SET toto TO DEFAULT;");
+                parse("SET toto = DEFAULT;");
+                
+                notParse("SET toto = value;");
+                notParse("SET toto = 18.2;");
+                notParse("SET toto TO 42;");
+        }
+        
+        @Test
+        public void testReset() throws Exception {
+                parse("RESET toto;");
+                parse("RESET tutu.toto;");
+        }
+        
+        @Test
+        public void testShow() throws Exception {
+                parse("SHOW toto;");
+                parse("SHOW tutu.toto;");
+        }
 
         private void notParse(String sql) {
                 SQLEngine se = new SQLEngine(new SQLDataSourceFactory());

@@ -423,6 +423,37 @@ object LogicPlanBuilder {
           val li = if (l.tail.isEmpty) (Nil) else (getChilds(l(1)).map (parseExpression))
           end = ExecutorCall(name, li)
         }
+      case T_SET => {
+          // AST:
+          // ^(T_SET ^(T_SELECT_COLUMN ...) (T_DEFAULT | QUOTED_STRING)
+          val p = getFullTableName(node.getChild(0))
+          val c = node.getChild(1)
+          val v = c.getType match {
+            case QUOTED_STRING => Some(c.getText.substring(1, c.getText.length - 1))
+            case T_DEFAULT => None
+          }
+          end = Set(Some(p), v)
+      }
+      case T_RESET => {
+          // AST:
+          // ^(T_RESET (^(T_SELECT_COLUMN ...) | T_ALL) )
+          val c = node.getChild(0)
+          val p = c.getType match {
+            case T_SELECT_COLUMN => Some(getFullTableName(c))
+            case T_ALL => None
+          }
+          end = Set(p, None)
+      }
+      case T_SHOW => {
+          // AST:
+          // ^(T_SHOW (^(T_SELECT_COLUMN ...) | T_ALL) )
+          val c = node.getChild(0)
+          val p = c.getType match {
+            case T_SELECT_COLUMN => Some(getFullTableName(c))
+            case T_ALL => None
+          }
+          end = Show(p)
+      }
       case a => throw new SemanticException(a.toString + "  node: " + node.getText)
     }
     end

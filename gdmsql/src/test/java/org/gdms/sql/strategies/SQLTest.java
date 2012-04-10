@@ -80,7 +80,7 @@ public class SQLTest extends SQLBaseTest {
                         new MemoryDataSetDriver(metadata));
                 dsf.executeSQL("insert into source (f1) values (StringToInt('2'));");
         }
-        
+
         @Test
         public void testInsertWithSelect() throws Exception {
 
@@ -208,7 +208,7 @@ public class SQLTest extends SQLBaseTest {
                 dsf.executeSQL("alter table landcover2000 rename to erwan;");
                 assertTrue(dsf.getSourceManager().exists("erwan"));
         }
-        
+
         @Test
         public void testDropSchema() throws Exception {
                 dsf.getSourceManager().register("landcover2000",
@@ -1352,6 +1352,34 @@ public class SQLTest extends SQLBaseTest {
                 ds.open();
                 assertEquals(countRes, count);
                 ds.close();
+        }
+
+        @Test
+        public void testSetResetShowProperty() throws Exception {
+                dsf.executeSQL("SET custom.myproperty TO 'some value';");
+                assertEquals("some value", dsf.getSqlEngine().getProperties().getProperty("custom.myproperty"));
+                
+                DataSource d = dsf.getDataSourceFromSQL("SHOW custom.myproperty;");
+                d.open();
+                assertEquals(1l, d.getRowCount());
+                assertEquals("custom.myproperty", d.getFieldValue(0, 0).getAsString());
+                assertEquals("some value", d.getFieldValue(0, 1).getAsString());
+                d.close();
+                
+                dsf.executeSQL("RESET custom.myproperty;");
+                assertFalse(dsf.getSqlEngine().getProperties().containsKey("custom.myproperty"));
+                
+                dsf.executeSQL("SET custom.myproperty TO 'some value';");
+                dsf.executeSQL("RESET ALL;");
+                
+                // put back explain to true (this is the right value for tests...
+                dsf.executeSQL("SET \"output.explain\" TO 'true';");
+                
+                assertFalse(dsf.getSqlEngine().getProperties().containsKey("custom.myproperty"));
+                
+                dsf.executeSQL("SET custom.myproperty TO 'some value';");
+                dsf.executeSQL("SET custom.myproperty TO DEFAULT;");
+                assertFalse(dsf.getSqlEngine().getProperties().containsKey("custom.myproperty"));
         }
 
         private void createSource(String name, String fieldName, int... values) {

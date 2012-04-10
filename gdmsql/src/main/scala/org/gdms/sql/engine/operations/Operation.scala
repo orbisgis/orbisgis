@@ -600,3 +600,28 @@ case class ExecutorCall(name: String, params: List[Expression]) extends Operatio
   override def doValidate = params foreach (_ preValidate)
   override def toString = "ExecutorFunction name(" + name + ") " + " params(" + params + ")"
 }
+
+/**
+ * Represents setting a runtime parameter of the Engine.
+ * 
+ * @param parameter name of the runtime parameter, or None for all values
+ * @param value the value, or None if to use the default value
+ * @author Antoine Gourlay
+ * @since 0.3
+ */
+case class Set(parameter: Option[String], value: Option[String]) extends Operation {
+  def children = Nil
+  override def toString = "Set '" + parameter + "' TO " + value
+}
+
+/**
+ * Represents showing a runtime parameter of the Engine.
+ * 
+ * @param parameter name of the runtime parameter, or None if all must be shown
+ * @author Antoine Gourlay
+ * @since 0.3
+ */
+case class Show(parameter: Option[String]) extends Operation {
+  def children = Nil
+  override def toString = "Show '" + parameter + "'"
+}
