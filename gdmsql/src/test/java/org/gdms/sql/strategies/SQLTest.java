@@ -225,9 +225,8 @@ public class SQLTest extends SQLBaseTest {
         public void testRenameColumn() throws Exception {
                 dsf.getSourceManager().register("hedgerow",
                         new File(internalData + "hedgerow.shp"));
-                dsf.executeSQL("create table diwall as select *  from hedgerow;"
-                        + super.getSHPTABLE());
-                dsf.executeSQL("alter table diwall rename column \"type\" to erwan");
+                dsf.executeSQL("create table diwall as select *  from hedgerow;");
+                dsf.executeSQL("alter table diwall rename column \"type\" to erwan;");
 
                 DataSource ds = dsf.getDataSource("diwall");
                 ds.open();

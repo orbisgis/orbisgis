@@ -86,7 +86,7 @@ public class InstructionTest {
 
         @Test
         public void testCommentsInTheMiddleOfTheScript() throws Exception {
-                String script = "/*description*/\nselect * from mytable;\n/*select * from mytable*/;";
+                String script = "/*description*/\nselect * from mytable;\n/*select * from mytable*/";
                 SQLEngine engine = new SQLEngine(dsf);
                 SqlStatement[] st = engine.parse(script);
                 assertEquals(st.length, 1);
