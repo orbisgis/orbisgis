@@ -42,6 +42,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.EventHandler;
 import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -86,13 +87,14 @@ public class LegendList extends JPanel {
 
 		list.setCellRenderer(legendListRenderer);
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		list.addListSelectionListener(new ListSelectionListener() {
-                        @Override
-			public void valueChanged(ListSelectionEvent evt) {
-				jList1ValueChanged(evt);
-				refresh();
-			}
-		});
+                ListSelectionListener lsl = EventHandler.create(ListSelectionListener.class, this, "jList1ValueChanged");
+                list.addListSelectionListener(lsl);
+//		list.addListSelectionListener(new ListSelectionListener() {
+//                        @Override
+//			public void valueChanged(ListSelectionEvent evt) {
+//				jList1ValueChanged();
+//			}
+//		});
 
 		list.addMouseListener(new MouseAdapter() {
                         @Override
@@ -197,11 +199,11 @@ public class LegendList extends JPanel {
 	}
 
 	/**
-	 * remove a selected values
+	 * Remove the currently selected values from the list.
 	 *
 	 * @param evt
 	 */
-	private void jButtonMenuDelActionPerformed(ActionEvent evt) {
+	public void removeSelectedLegends() {
 		int idx = list.getSelectedIndex();
 		int size = list.getModel().getSize();
 		if (list.getSelectedIndex() >= size - 1) {
@@ -211,11 +213,11 @@ public class LegendList extends JPanel {
 	}
 
 	/**
-	 * adds a new legend
-	 *
-	 * @param evt
+	 * Adds a new legend to the list. This method does not take parameters,
+         * as it will display a dialog in order to let the user choose which
+         * type of legend he will add.
 	 */
-	private void jButtonMenuAddActionPerformed(ActionEvent evt) {
+	public void addLegendToList() {
 		ArrayList<String> paneNames = new ArrayList<String>();
 		ArrayList<ILegendPanel> ids = new ArrayList<ILegendPanel>();
 		ILegendPanel[] legends = legendsPanel.getAvailableLegends();
@@ -238,22 +240,22 @@ public class LegendList extends JPanel {
 	}
 
 	/**
-	 * move down the selected legend
+	 * Move down the selected legend
 	 *
 	 * @param evt
 	 */
-	private void jButtonMenuDownActionPerformed(ActionEvent evt) {
+	public void moveSelectedLegendDown() {
 		int idx = list.getSelectedIndex();
 		list.setSelectedIndex(idx + 1);
 		legendsPanel.legendMovedDown(idx);
 	}
 
 	/**
-	 * moves up the selected legend
+	 * Moves up the selected legend
 	 *
 	 * @param evt
 	 */
-	private void jButtonMenuUpActionPerformed(ActionEvent evt) {
+	public void moveSelectedLegendUp() {
 		int idx = list.getSelectedIndex();
 		list.setSelectedIndex(idx - 1);
 		legendsPanel.legendMovedUp(idx);
@@ -263,10 +265,10 @@ public class LegendList extends JPanel {
 	 * selection of a new legend in the list. it will fire this event and will
 	 * open the appropriate panel for these legend.
 	 *
-	 * @param evt
 	 */
-	private void jList1ValueChanged(ListSelectionEvent evt) {
-		legendsPanel.legendSelected(list.getSelectedIndex());
+	public void jList1ValueChanged() {
+                legendsPanel.legendSelected(list.getSelectedIndex());
+                refresh();
 	}
 
 	/**
@@ -281,7 +283,7 @@ public class LegendList extends JPanel {
 	private class LegendModel extends AbstractListModel implements ListModel {
 
 		public Object getElementAt(int index) {
-			String legendName = legendsPanel.getLegendsNames()[index];
+			String legendName = legendsPanel.getLegendsNames().get(index);
 			if ((legendName == null) || legendName.trim().length() == 0) {
 				legendName = I18N.getString("orbisgis.org.orbisgis.ui.toc.legendList.noName");
 			}
@@ -293,7 +295,7 @@ public class LegendList extends JPanel {
 		}
 
 		public int getSize() {
-			return legendsPanel.getLegendsNames().length;
+			return legendsPanel.getLegendsNames().size();
 		}
 
 	}
@@ -308,10 +310,12 @@ public class LegendList extends JPanel {
 		jButtonMenuUp = new JButton();
 		jButtonMenuUp.setIcon(OrbisGISIcon.GO_UP);
 		jButtonMenuUp.setToolTipText(I18N.getString("orbisgis.org.orbisgis.ui.toc.legendList.up"));
+//                ActionListener alu = EventHandler.create(ActionListener.class, this, "moveSelectedLegendUp");
+//                jButtonMenuUp.addActionListener(alu);
 		jButtonMenuUp.addActionListener(new ActionListener() {
                         @Override
 			public void actionPerformed(ActionEvent evt) {
-				jButtonMenuUpActionPerformed(evt);
+				moveSelectedLegendUp();
 			}
 		});
 		toolBar.add(jButtonMenuUp);
@@ -319,10 +323,12 @@ public class LegendList extends JPanel {
 		jButtonMenuDown = new JButton();
 		jButtonMenuDown.setIcon(OrbisGISIcon.GO_DOWN);
 		jButtonMenuDown.setToolTipText(I18N.getString("orbisgis.org.orbisgis.ui.toc.legendList.down"));
+//                ActionListener ald = EventHandler.create(ActionListener.class, this, "moveSelectedLegendDown");
+//                jButtonMenuDown.addActionListener(ald);
 		jButtonMenuDown.addActionListener(new ActionListener() {
                         @Override
 			public void actionPerformed(ActionEvent evt) {
-				jButtonMenuDownActionPerformed(evt);
+				moveSelectedLegendDown();
 			}
 		});
 		toolBar.add(jButtonMenuDown);
@@ -330,23 +336,15 @@ public class LegendList extends JPanel {
 		jButtonMenuAdd = new JButton();
 		jButtonMenuAdd.setIcon(OrbisGISIcon.PICTURE_ADD);
 		jButtonMenuAdd.setToolTipText(I18N.getString("orbisgis.org.orbisgis.ui.toc.legendList.add"));
-		jButtonMenuAdd.addActionListener(new ActionListener() {
-                        @Override
-			public void actionPerformed(ActionEvent evt) {
-				jButtonMenuAddActionPerformed(evt);
-			}
-		});
+                ActionListener aladd = EventHandler.create(ActionListener.class, this, "addLegendToList");
+		jButtonMenuAdd.addActionListener(aladd);
 		toolBar.add(jButtonMenuAdd);
 
 		jButtonMenuDel = new JButton();
 		jButtonMenuDel.setIcon(OrbisGISIcon.PICTURE_DEL);
 		jButtonMenuDel.setToolTipText(I18N.getString("orbisgis.org.orbisgis.ui.toc.legendList.delete"));
-		jButtonMenuDel.addActionListener(new ActionListener() {
-                        @Override
-			public void actionPerformed(ActionEvent evt) {
-				jButtonMenuDelActionPerformed(evt);
-			}
-		});
+                ActionListener alrem = EventHandler.create(ActionListener.class, this, "removeSelectedLegends");
+		jButtonMenuDel.addActionListener(alrem);
 		toolBar.add(jButtonMenuDel);
 
 		jButtonMenuRename = new JButton();

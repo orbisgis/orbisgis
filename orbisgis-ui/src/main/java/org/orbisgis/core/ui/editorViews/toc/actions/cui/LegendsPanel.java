@@ -43,6 +43,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import javax.swing.*;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryTypeConstraint;
@@ -483,12 +484,11 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		return null;
 	}
 
-	public String[] getLegendsNames() {
-		String[] ret = new String[legends.size()];
-		for (int i = 0; i < ret.length; i++) {
-			ret[i] = legends.get(i).getLegend().getName();
+	public List<String> getLegendsNames() {
+		List<String> ret = new ArrayList<String>(legends.size());
+		for (LegendElement le : legends) {
+			ret.add(le.getLegend().getName());
 		}
-
 		return ret;
 	}
 
