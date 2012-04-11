@@ -65,7 +65,7 @@ public class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
         @Override
         public void initialize(LegendContext lc) {
                 if(uniqueArea == null){
-                        uniqueArea = new UniqueSymbolArea();
+                        setLegend(new UniqueSymbolArea());
                 }
                 legendContext = lc;
         }

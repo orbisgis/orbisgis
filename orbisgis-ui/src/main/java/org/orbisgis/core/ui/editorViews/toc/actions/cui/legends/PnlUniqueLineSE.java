@@ -65,7 +65,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         @Override
         public void initialize(LegendContext lc) {
                 if(uniqueLine == null){
-                        uniqueLine = new UniqueSymbolLine();
+                        setLegend(new UniqueSymbolLine());
                 }
                 legendContext = lc;
         }

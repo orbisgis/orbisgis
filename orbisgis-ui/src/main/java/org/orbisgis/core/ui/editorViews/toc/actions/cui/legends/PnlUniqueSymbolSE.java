@@ -7,6 +7,7 @@ package org.orbisgis.core.ui.editorViews.toc.actions.cui.legends;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
@@ -38,28 +39,25 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
          */
         protected void initializeLegendFields(){
                 this.removeAll();
-                JPanel jp = new JPanel();
-		BoxLayout boxLayout = new BoxLayout(jp, BoxLayout.PAGE_AXIS);
-                jp.setLayout(boxLayout);
                 UniqueSymbol us = (UniqueSymbol) getLegend();
                 List<USParameter<?>> params = us.getParameters();
+                JPanel jp = new JPanel();
+                GridLayout grid = new GridLayout(params.size(),2);
+                grid.setVgap(5);
+                jp.setLayout(grid);
                 for(USParameter p : params){
-                        JPanel cur = new JPanel();
                         JComponent c1 = buildText(p);
                         JComponent c2 = buildField(p);
-                        int dif = Math.abs(c1.getWidth() - c2.getWidth());
-                        cur.setLayout(new BoxLayout(cur, BoxLayout.LINE_AXIS));
-                        cur.add(c1);
-                        cur.add(Box.createHorizontalStrut(10+dif));
-                        cur.add(c2);
-                        cur.setAlignmentX(Component.CENTER_ALIGNMENT);
-                        jp.add(cur);
+                        jp.add(c1);
+                        jp.add(c2);
                 }
                 this.add(jp);
         }
 
         private JLabel buildText(USParameter param){
-                return new JLabel(param.getName());
+                JLabel c1 = new JLabel(param.getName());
+                c1.setAlignmentX(Component.LEFT_ALIGNMENT);
+                return c1;
         }
 
         private JComponent buildField(USParameter a){
@@ -77,6 +75,7 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
                 } else if(a.getValue() instanceof Color){
                         field = getColorField(a);
                 }
+                field.setAlignmentX(Component.CENTER_ALIGNMENT);
                 return field;
 
         }
@@ -97,9 +96,9 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
                         final USNumericParameter<Double> a){
                 final JNumericSpinner jns = new JNumericSpinner(4, min, max, inc);
                 jns.addChangeListener(new ChangeListener() {
-                                @Override
-                                public void stateChanged(ChangeEvent evt) {
-                                        a.setValue(jns.getValue());
+                        @Override
+                        public void stateChanged(ChangeEvent evt) {
+                                a.setValue(jns.getValue());
                     }
                 });
                 jns.setValue(a.getValue());
@@ -134,18 +133,20 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
          * @param c
          * @return
          */
-        public JLabel getColorField(final USParameter<Color> c){
-		JLabel lblFill = new JLabel();
+        public JPanel getColorField(final USParameter<Color> c){
+                JLabel lblFill = new JLabel();
                 MouseListener ma = EventHandler.create(MouseListener.class,this,"chooseFillColor","","mouseClicked");
                 lblFill.addMouseListener(ma);
                 PropertyChangeListener pcl = EventHandler.create(PropertyChangeListener.class, c, "setValue", "source.background" );
                 lblFill.addPropertyChangeListener("background", pcl);
                 lblFill.setBackground(c.getValue());
-		lblFill.setBorder(BorderFactory.createLineBorder(Color.black));
-		lblFill.setPreferredSize(new Dimension(40, 20));
-		lblFill.setMaximumSize(new Dimension(40, 20));
-		lblFill.setOpaque(true);
-                return lblFill;
+                lblFill.setBorder(BorderFactory.createLineBorder(Color.black));
+                lblFill.setPreferredSize(new Dimension(40, 20));
+                lblFill.setMaximumSize(new Dimension(40, 20));
+                lblFill.setOpaque(true);
+                JPanel jp = new JPanel();
+                jp.add(lblFill);
+                return jp;
         }
 
 	public void chooseFillColor(MouseEvent e) {

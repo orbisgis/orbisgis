@@ -378,7 +378,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 	private void addLegend(LegendElement le) {
 		legends.add(le);
 		pnlContainer.add(le.getComponent(), le.getId());
-		// le.getLegendPanel().initialize(this);
+		le.getLegendPanel().initialize(this);
 		refresh();
 	}
 
