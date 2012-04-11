@@ -63,7 +63,7 @@ public final class FunctionHelp extends AbstractTableFunction {
                                 } else if (fct.isExecutor()) {
                                         type = "Executor Function";
                                 }
-                                genericObjectDriver.addValues(ValueFactory.createValue(fct.getName()), ValueFactory.createValue(fct.getSqlOrder()), ValueFactory.createValue(fct.getDescription()), ValueFactory.createValue(type));
+                                genericObjectDriver.addValues(ValueFactory.createValue(function), ValueFactory.createValue(fct.getSqlOrder()), ValueFactory.createValue(fct.getDescription()), ValueFactory.createValue(type));
                         }
 
                         return genericObjectDriver;

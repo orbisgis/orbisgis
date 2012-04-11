@@ -39,9 +39,9 @@ package org.gdms.sql.function;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.apache.log4j.Logger;
 import org.gdms.data.InitializationException;
 
@@ -357,8 +357,7 @@ public final class FunctionManager {
          * Adds a listener.
          * @param listener a listener
          */
-        public static void addFunctionManagerListener(
-                FunctionManagerListener listener) {
+        public static void addFunctionManagerListener(FunctionManagerListener listener) {
                 listeners.add(listener);
         }
 
@@ -369,21 +368,21 @@ public final class FunctionManager {
          * @return true if the listener was successfully removed. False if the
          *         specified parameter was not a listener
          */
-        public static boolean removeFunctionManagerListener(
-                FunctionManagerListener listener) {
+        public static boolean removeFunctionManagerListener(FunctionManagerListener listener) {
                 return listeners.remove(listener);
         }
 
         /**
-         * Add a new function to the SQL engine
+         * Registers a function with its default name.
          *
-         * @param functionClass
+         * @param functionClass class object of the function
+         * @param replace true if any function with the same name must be silently replaced
          * @throws IllegalArgumentException
          *             If the class is not a valid function implementation with an
          *             empty constructor or there is already a function or custom
-         *             query with that name
+         *             query with that name (when replace if false)
          */
-        public static void addFunction(Class<? extends Function> functionClass) {
+        public static void addFunction(Class<? extends Function> functionClass, boolean replace) {
                 LOG.trace("Adding function " + functionClass.getName());
                 Function function;
                 try {
@@ -396,20 +395,78 @@ public final class FunctionManager {
                                 + functionClass, e);
                 }
                 String functionName = function.getName().toLowerCase();
-                if (nameFunction.get(functionName) != null) {
+                addFunction(functionName, functionClass, replace);
+        }
+
+        /**
+         * Registers a new function.
+         * 
+         * @param functionName name of the function
+         * @param functionClass class object of the function
+         * @param replace true if any function with the same name must be silently replaced
+         * @throws IllegalArgumentException if there is already a function or custom
+         *         query with that name (when replace if false)
+         * 
+         */
+        public static void addFunction(String functionName, Class<? extends Function> functionClass, boolean replace) {
+                if (!replace && nameFunction.containsKey(functionName)) {
                         throw new IllegalArgumentException("Function " + functionName
                                 + " already exists");
                 }
-
                 nameFunction.put(functionName, functionClass);
 
                 fireFunctionAdded(functionName);
+        }
+
+        /**
+         * Registers a new function with its default name.
+         * 
+         * @param functionClass
+         * @throws IllegalArgumentException
+         *             If the class is not a valid function implementation with an
+         *             empty constructor or there is already a function or custom
+         *             query with that name
+         */
+        public static void addFunction(Class<? extends Function> functionClass) {
+                addFunction(functionClass, false);
+        }
+
+        /**
+         * Registers a new function.
+         *
+         * @param name 
+         * @param functionClass
+         * @throws IllegalArgumentException
+         *             If the class is not a valid function implementation with an
+         *             empty constructor or there is already a function or custom
+         *             query with that name
+         */
+        public static void addFunction(String name, Class<? extends Function> functionClass) {
+                addFunction(name, functionClass, false);
         }
 
         private static void fireFunctionAdded(String functionName) {
                 for (FunctionManagerListener listener : listeners) {
                         listener.functionAdded(functionName);
                 }
+        }
+
+        /**
+         * Gets if the function with the given name is registered in this FunctionManager.
+         * @param name a function name
+         * @return true if registered
+         */
+        public static boolean contains(String name) {
+                return nameFunction.containsKey(name);
+        }
+
+        /**
+         * Gets if the given function class is registered in this FunctionManager.
+         * @param functionClass a function class
+         * @return true if registered
+         */
+        public static boolean contains(Class<? extends Function> functionClass) {
+                return nameFunction.containsValue(functionClass);
         }
 
         /**
@@ -445,12 +502,9 @@ public final class FunctionManager {
          */
         public static String[] getFunctionNames() {
                 LOG.trace("Getting all function names");
-                ArrayList<String> ret = new ArrayList<String>();
-                Iterator<String> it = nameFunction.keySet().iterator();
-                while (it.hasNext()) {
-                        ret.add(it.next());
-                }
-                return ret.toArray(new String[ret.size()]);
+                Set<String> k = nameFunction.keySet();
+
+                return k.toArray(new String[k.size()]);
         }
 
         /**

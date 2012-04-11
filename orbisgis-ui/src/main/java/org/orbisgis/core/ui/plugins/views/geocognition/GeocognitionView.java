@@ -56,8 +56,6 @@ import javax.swing.JToggleButton;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import org.gdms.sql.function.Function;
-import org.gdms.sql.function.FunctionManager;
 import org.orbisgis.core.OrbisGISPersitenceConfig;
 import org.orbisgis.core.PersistenceException;
 import org.orbisgis.core.Services;
