@@ -396,7 +396,7 @@ catch (RecognitionException ex) {
 // main rule
 
 start_rule
-	: statement+
+	: statement+ EOF
         -> ^(T_ROOT statement+ )
         ;
 

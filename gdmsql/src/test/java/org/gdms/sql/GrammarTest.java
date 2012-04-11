@@ -50,15 +50,12 @@ public class GrammarTest {
 
         @Test
         public void testScriptWithWrongCharacters() throws Exception {
-                SQLEngine engine = new SQLEngine(new SQLDataSourceFactory());
-                try {
-                        engine.execute("<!\nselect * from mytable;");
-                        fail();
-                } catch (Exception e) {
-                }
+                notParse("<!\nselect * from mytable;");
+                
+                notParse("select * from mytable; totootereazjzgj");
         }
-
-        @Test
+        
+       @Test
         public void testAddPrimaryKey() throws Exception {
                 parse("alter table toto add primary key (tata);");
                 notParse("alter table toto add primarykey (tata);");
