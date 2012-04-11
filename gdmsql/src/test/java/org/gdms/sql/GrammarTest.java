@@ -303,6 +303,18 @@ public class GrammarTest {
                 parse("create view view1 as  select * from st_CreateGrid(table1);");
                 parse("create view view2 as select * from table1;");
         }
+        
+        @Test
+        public void testCreateFunction() throws Exception {
+                parse("CREATE FUNCTION tata AS 'somestring' LANGUAGE 'java';");
+                parse("CREATE OR REPLACE FUNCTION tata AS 'somestring' LANGUAGE 'java';");
+                notParse("CREATE FUNCTION tata AS 'somestring' LANGUAGE 'toto';");
+                notParse("CREATE OR REPLACE FUNCTION tata AS 'somestring' LANGUAGE 'toto';");
+                notParse("CREATE FUNCTION tata LANGUAGE 'java';");
+                notParse("CREATE FUNCTION tata AS 'somestring';");
+                notParse("CREATE FUNCTION tata AS 'somestring' LANGUAGE 18;");
+                notParse("CREATE FUNCTION tata AS 42' LANGUAGE 'toto;");
+        }
 
         @Test
         public void testScriptWithComments() throws Exception {

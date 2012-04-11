@@ -65,6 +65,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.gdms.sql.engine.SemanticException;
 
+import org.gdms.sql.function.FunctionManager;
 import static org.junit.Assert.*;
 
 public class SQLTest extends SQLBaseTest {
@@ -878,6 +879,21 @@ public class SQLTest extends SQLBaseTest {
                 assertEquals(ds.getRowCount(), dsIn.getRowCount());
                 ds.close();
                 dsIn.close();
+        }
+        
+        @Test
+        public void testCreateDropFunction() throws Exception {
+                dsf.executeSQL("create function myfunct as 'org.gdms.sql.function.math.Sin' language 'java';");
+                assertTrue(FunctionManager.contains("myfunct"));
+                assertEquals("Sin", FunctionManager.getFunction("myfunct").getName());
+                
+                dsf.executeSQL("create or replace function myfunct as 'org.gdms.sql.function.math.Cos' language 'java';");
+                assertEquals("Cos", FunctionManager.getFunction("myfunct").getName());
+                
+                dsf.executeSQL("drop function myfunct;");
+                assertFalse(FunctionManager.contains("myfunct"));
+                
+                dsf.executeSQL("drop function if exists myfunct;");
         }
 
         @Test

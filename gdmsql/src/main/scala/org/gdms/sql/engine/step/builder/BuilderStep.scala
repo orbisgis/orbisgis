@@ -158,6 +158,8 @@ case object BuilderStep extends AbstractEngineStep[Operation, OutputCommand]("Co
       case ExecutorCall(name, l) => new ExecutorCommand(name, l)
       case Set(p, v) => new SetParamCommand(p, v)
       case Show(p) => new ShowParamCommand(p)
+      case CreateFunction(n, a, l, r) => new CreateFunctionCommand(n, a, l, r)
+      case DropFunction(n, i) => new DropFunctionCommand(n, i)
       case a => throw new IllegalStateException("Internal error: problem with the logic query plan. Found :" + a)
     }
   }

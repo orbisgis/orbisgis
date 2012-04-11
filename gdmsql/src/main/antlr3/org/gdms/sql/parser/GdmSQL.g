@@ -183,6 +183,7 @@ tokens {
     T_INITRANS = 'INITRANS';
     T_INSTANCE = 'INSTANCE';
     T_KEY = 'KEY';
+    T_LANGUAGE = 'LANGUAGE';
     T_LOCAL = 'LOCAL';
     T_LOCKED = 'LOCKED';
     T_MANAGE = 'MANAGE';
@@ -416,6 +417,8 @@ statement
           | set_statement
           | reset_statement
           | show_statement
+          | create_function
+          | drop_function
           )
           SEMI!
         ;
@@ -772,6 +775,18 @@ reset_statement
 
 show_statement
         : T_SHOW ( a=T_ALL -> ^(T_SHOW $a ) | b=select_column -> ^(T_SHOW $b ) )
+        ;
+
+// CREATE FUNCTION statement
+
+create_function
+        : T_CREATE (T_OR T_REPLACE)? T_FUNCTION a=LONG_ID T_AS b=QUOTED_STRING T_LANGUAGE c=QUOTED_STRING
+        -> ^(T_FUNCTION ^(T_CREATE $a $b $c T_OR?))
+        ;
+
+// DROP FUNCTION statement
+drop_function
+        : T_DROP T_FUNCTION (T_IF T_EXISTS)? a=LONG_ID -> ^(T_FUNCTION ^(T_DROP $a T_IF?))
         ;
 
 // All expressions

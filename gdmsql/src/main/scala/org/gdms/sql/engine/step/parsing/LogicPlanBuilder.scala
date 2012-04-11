@@ -454,6 +454,26 @@ object LogicPlanBuilder {
           }
           end = Show(p)
       }
+      case T_FUNCTION => {
+          // AST:
+          // ^(T_FUNCTION ^((T_CREATE | T_DROP) ...)
+          val c = node.getChild(0)
+          
+          def unquote(s: Tree) = s.getText.substring(1, s.getText.length - 1)
+          
+          c.getType match {
+            case T_CREATE => {
+                // AST:
+                // ^(T_CREATE name as language T_OR?)
+                end = CreateFunction(c.getChild(0).getText, unquote(c.getChild(1)), unquote(c.getChild(2)), c.getChildCount != 3)
+            }
+            case T_DROP => {
+                // AST:
+                // ^(T_DROP name T_IF?)
+                end = DropFunction(c.getChild(0).getText, c.getChildCount != 1)
+            }
+          }
+      }
       case a => throw new SemanticException(a.toString + "  node: " + node.getText)
     }
     end

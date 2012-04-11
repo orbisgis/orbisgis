@@ -625,3 +625,18 @@ case class Show(parameter: Option[String]) extends Operation {
   def children = Nil
   override def toString = "Show '" + parameter + "'"
 }
+
+case class CreateFunction(name: String, as: String, language: String, replace: Boolean) extends Operation {
+  def children = Nil
+  override def doValidate = {
+    if (language != "java") {
+      throw new SemanticException("Unknown language: '" + language + "'. The only supported language is 'java'.")
+    }
+  }
+  override def toString = "CreateFunction (" + name + ", " + as + ", " + language + ", replace=" + replace + ")"
+}
+
+case class DropFunction(name: String, ifExists: Boolean) extends Operation {
+  def children = Nil
+  override def toString = "DropFunction (" + name + ", ifExists=" + ifExists + ")"
+}
