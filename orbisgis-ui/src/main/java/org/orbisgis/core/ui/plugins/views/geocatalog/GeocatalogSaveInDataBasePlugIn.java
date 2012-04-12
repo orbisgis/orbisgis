@@ -96,8 +96,7 @@ public class GeocatalogSaveInDataBasePlugIn extends AbstractPlugIn {
 			BackgroundManager bm = Services.getService(BackgroundManager.class);
 			bm.backgroundOperation(new ExportInDatabaseOperation(dm
 					.getDataSourceFactory(), currentNode, layerName,
-					schemaName, firstPanel.getDBSource(), firstPanel
-							.getDBDriver()));
+					schemaName, firstPanel.getDBSource()));
 
 		}
 	}

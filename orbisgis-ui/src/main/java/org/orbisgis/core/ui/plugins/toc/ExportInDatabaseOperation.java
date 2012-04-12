@@ -41,7 +41,6 @@ import javax.swing.JOptionPane;
 
 import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.db.DBSource;
-import org.gdms.driver.DBDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.engine.ParseException;
 import org.orbisgis.core.background.BackgroundJob;
@@ -53,18 +52,16 @@ public class ExportInDatabaseOperation implements BackgroundJob {
 
 	private SQLDataSourceFactory dsf;
 	private DBSource dbSource;
-	private DBDriver dbDriver;
 	private String schemaName;
 	private String inSourceName;
 	private String outSourceName;
 
 	public ExportInDatabaseOperation(SQLDataSourceFactory dsf,
 			String inSourceName, String outSourceName, String schemaName,
-			DBSource dbSource, DBDriver dbDriver) {
+			DBSource dbSource) {
 		this.outSourceName = outSourceName;
 		this.inSourceName = inSourceName;
 		this.dbSource = dbSource;
-		this.dbDriver = dbDriver;
 		this.schemaName = schemaName;
 		this.dsf = dsf;
 	}
@@ -86,27 +83,21 @@ public class ExportInDatabaseOperation implements BackgroundJob {
 				changeName = true;
 			}
 
-			// register both sources
-			String registerDB = "select register('" + dbDriver.getDriverId() //$NON-NLS-1$
-					+ "' ,'" + dbSource.getHost() + "'," + " '" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-					+ dbSource.getPort() + "','" + dbSource.getDbName() + "','" //$NON-NLS-1$ //$NON-NLS-2$
-					+ dbSource.getUser() + "','" + dbSource.getPassword() //$NON-NLS-1$
-					+ "','" + schemaName + "','" + outSourceName + "','" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-					+ layerName + "');"; //$NON-NLS-1$
-
-			dsf.executeSQL(registerDB);
 			// Do the migration
-			String load = "create table " + layerName + " as select * " //$NON-NLS-1$ //$NON-NLS-2$
-					+ "from " + inSourceName + " ;"; //$NON-NLS-1$ //$NON-NLS-2$
-			dsf.executeSQL(load, pm);
+			String load = "CALL EXPORT('" + inSourceName + "', '" + dbSource.getPrefix()
+					+ "' ,'" + dbSource.getHost() + "', "
+					+ dbSource.getPort() + ",'" + dbSource.getDbName() + "','"
+					+ dbSource.getUser() + "','" + dbSource.getPassword()
+					+ "','" + schemaName + "','" + outSourceName + "');";
 
+			dsf.executeSQL(load);
+                        
+                        // register the result
+                        dsf.getSourceManager().register(layerName, dbSource);
+			
 			if (changeName) {
 				JOptionPane.showMessageDialog(null,
 						ErrorMessages.SourceAlreadyExists);
-			} else {
-				JOptionPane.showMessageDialog(null,
-						ErrorMessages.SourceAlreadyRegisteredWithName + " " //$NON-NLS-1$
-								+ layerName);
 			}
 
 		} catch (ParseException e) {

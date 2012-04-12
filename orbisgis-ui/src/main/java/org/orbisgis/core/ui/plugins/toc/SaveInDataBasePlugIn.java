@@ -73,8 +73,7 @@ public class SaveInDataBasePlugIn extends AbstractPlugIn {
 						.getService(BackgroundManager.class);
 				bm.backgroundOperation(new ExportInDatabaseOperation(dm
 						.getDataSourceFactory(), resource.getName(), layerName,
-						schemaName, firstPanel.getDBSource(), firstPanel
-								.getDBDriver()));
+						schemaName, firstPanel.getDBSource()));
 			}
 		}
 		return true;
