@@ -450,6 +450,6 @@ public class SQLMatcher {
 
         private void addOperators() {
                 addKeyWords("IS NULL", "IS NOT NULL", "IS TRUE", "IS FALSE", "LIKE", "AND", "OR", "ILIKE",
-                        "SIMILAR TO");
+                        "SIMILAR TO", "BETWEEN");
         }
 }
