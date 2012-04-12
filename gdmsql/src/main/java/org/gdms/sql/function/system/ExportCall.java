@@ -99,7 +99,7 @@ public final class ExportCall extends AbstractExecutorFunction {
                                 throw new FunctionException(ex);
                         }
 
-                        final String vendor = values[1].toString();
+                        String vendor = values[1].toString();
                         final String host = values[2].toString();
                         final int port = values[3].getAsInt();
                         final String dbName = values[4].toString();
@@ -114,10 +114,14 @@ public final class ExportCall extends AbstractExecutorFunction {
                                 schemaName = values[7].toString();
                                 tableName = values[8].toString();
                         }
+                        
+                        if (!vendor.startsWith("jdbc:")) {
+                                vendor = "jdbc:" + vendor;
+                        }
 
                         String destName = sourceManager.nameAndRegister(new DBTableSourceDefinition(
                                 new DBSource(host, port, dbName,
-                                user, password, schemaName, tableName, "jdbc:" + vendor)));
+                                user, password, schemaName, tableName, vendor)));
                         try {
                                 dsf.saveContents(destName, ds);
                         } catch (DriverException ex) {
@@ -143,9 +147,9 @@ public final class ExportCall extends AbstractExecutorFunction {
         @Override
         public String getSqlOrder() {
                 return "1) EXECUTE Export('myTable', '/home/myuser/myFile.shp')\n"
-                        + "2) EXECUTE Export('myTable', vendor', 'host', port, "
+                        + "2) EXECUTE Export('myTable', 'vendor', 'host', port, "
                         + "dbName, user, password, tableName);\n"
-                        + "3) EXECUTE Export('myTable', vendor', 'host', port, "
+                        + "3) EXECUTE Export('myTable', 'vendor', 'host', port, "
                         + "dbName, user, password, schema, tableName);\n";
         }
 

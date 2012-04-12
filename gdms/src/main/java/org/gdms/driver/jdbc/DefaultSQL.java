@@ -105,7 +105,7 @@ public abstract class DefaultSQL extends AbstractDataSet implements DBReadWriteD
                 if (tableName != null && tableName.length() != 0) {
                                 tableAndSchemaName = tableName;
                                 if (schemaName != null && schemaName.length() != 0) {
-                                        tableAndSchemaName = schemaName + "." + tableName;
+                                        tableAndSchemaName = schemaName + ".\"" + tableName + "\"";
                                 }
                 }
                 return tableAndSchemaName;
@@ -342,7 +342,7 @@ public abstract class DefaultSQL extends AbstractDataSet implements DBReadWriteD
                                 String separator = "";
 
                                 for (int i = 0; i < fc; i++) {
-                                        String fieldName = metadata.getFieldName(i);
+                                        String fieldName = "\"" + metadata.getFieldName(i) + "\"";
                                         Type fieldType = metadata.getFieldType(i);
                                         ConversionRule rule = getSuitableRule(fieldType);
                                         String fieldDefinition = rule.getSQL(fieldName, fieldType);

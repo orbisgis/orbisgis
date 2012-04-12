@@ -233,7 +233,7 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                 }
                 try {
                         res = st.executeQuery("select * from " + getTableAndSchemaName()
-                                + " where false");
+                                + " where false;");
                         ResultSetMetaData metadata = res.getMetaData();
                         if (!isPostGISTable) {
                                 for (int i = 0; i < metadata.getColumnCount(); i++) {
