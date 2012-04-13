@@ -62,7 +62,7 @@ import org.orbisgis.progress.ProgressMonitor
  * @since 0.3
  */
 class ValuesScanCommand(exps: Seq[Seq[Expression]], alias: Option[String], internal: Boolean = true) extends Command {
-  
+
   private val m: DefaultMetadata = new DefaultMetadata()
 
   protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
@@ -77,6 +77,8 @@ class ValuesScanCommand(exps: Seq[Seq[Expression]], alias: Option[String], inter
       k = k + 1
       m.addField(prefix + k, i)
     }
+    
+    exps foreach(_ foreach (_.validate))
   }
   
   private def evaluate(a: Seq[Expression]): Row = Row(a map (_.evaluate(null)))

@@ -59,7 +59,7 @@ trait ExpressionCommand extends Command {
 
   protected def exp: Seq[Expression]
   
- protected override def doPrepare = {
+  protected override def doPrepare = {
     // prevent ambiguous field names
     
     val allM = children map (_.getMetadata)
@@ -104,18 +104,23 @@ trait ExpressionCommand extends Command {
                           }
                         case 0 => // there is no field with that name, maybe it will be resolved later.
                           
-                        // there is too many fields with that name. Failure (ambiguous).
+                          // there is too many fields with that name. Failure (ambiguous).
                         case i => throw new SemanticException("Field name '" + f.name + "' is ambiguous.")
                       }
                     }
                   case i =>
-                    // the field is directly referenced, no problem. Success.
+                    // the field is directly referenced.
+                    if (f.index != -1) {
+                      // this was already intialized: ambiguous field!
+                      throw new SemanticException("Field name '" + f.name + "' is ambiguous.")
+                    }
+                    // Success
                     f.index = i + offset
                     f.sqlType = m.getFieldType(i).getTypeCode
                 }
               }
               
-            // the table is direcly referenced...
+              // the table is direcly referenced...
             case Some(t) if m.table == t => m.getFieldIndex(f.name) match {
                 // ... but there is no such field in that table. Failure (unknown field).
                 case -1 => throw new UnknownFieldException("There is no field '" + f.name + "' in table " + t + ".")
@@ -125,7 +130,7 @@ trait ExpressionCommand extends Command {
                   f.sqlType = m.getFieldType(i).getTypeCode
               }
               
-            // a table is referenced, but indirectly, we look for an internal field name for it
+              // a table is referenced, but indirectly, we look for an internal field name for it
             case Some(t) => m.getFieldIndex(f.name + "$" + t) match {
                 // there is none. Do nothing, it will be referenced later or will fail with validation.
                 case -1 => 
@@ -151,5 +156,21 @@ trait ExpressionCommand extends Command {
       case _ => // not a function, do nothing
     }
     e.foreach (setDsf)
+  }
+  
+  override def doCleanUp {
+    def clean(e: Expression) {
+      e.children map (clean)
+      e.evaluator match {
+        case f: FieldEvaluator => {
+            f.index = -1
+            f.sqlType = -1
+          }
+        case d: DsfEvaluator => d.dsf = null
+        case _ =>
+      }
+    }
+    
+    exp map clean
   }
 }

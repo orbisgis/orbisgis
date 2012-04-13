@@ -97,6 +97,8 @@ class ExecutorCommand(name: String, params: List[Expression]) extends Command wi
   override def doCleanUp {
     // close sources
     tables map (_.close)
+    
+    super.doCleanUp
   }
 
   val getResult = null

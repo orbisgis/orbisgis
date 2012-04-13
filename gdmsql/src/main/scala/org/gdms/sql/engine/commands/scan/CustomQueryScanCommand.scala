@@ -125,6 +125,8 @@ class CustomQueryScanCommand(e: Seq[Expression], tables: Seq[Either[String, Outp
     f.workFinished
     openedTables flatMap (_.left toSeq) foreach (_.close)
     openedTables = Nil
+    
+    super.doCleanUp
   }
 
   override def getMetadata = SQLMetadata("", metadata)

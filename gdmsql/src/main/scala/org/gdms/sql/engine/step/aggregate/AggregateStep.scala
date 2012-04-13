@@ -139,7 +139,7 @@ case object AggregateStep extends AbstractEngineStep[Operation, Operation]("Proc
             }
           }
           
-          val c = new Aggregate(aggF ++ projFields, gr.getOrElse(p.child))
+          val c = new Aggregate(aggF, gr.getOrElse(p.child))
           if (sr.isDefined) {
             sr.get.child = c
           } else {

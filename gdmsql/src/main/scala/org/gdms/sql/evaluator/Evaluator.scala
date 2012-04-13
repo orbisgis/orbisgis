@@ -73,16 +73,13 @@ abstract class Evaluator {
 
   final def validate: Unit = {
     childExpressions map (_ validate)
-    if (!canPreValidate) doPreValidate
     doValidate
   }
   
   final def preValidate: Unit = {
     childExpressions map (_ preValidate)
-    if (canPreValidate) doPreValidate
+    doPreValidate
   }
-  
-  private def canPreValidate: Boolean = childExpressions.find(_.evaluator.isInstanceOf[FieldEvaluator]) == None
   
   protected def doPreValidate: Unit = {}
 
