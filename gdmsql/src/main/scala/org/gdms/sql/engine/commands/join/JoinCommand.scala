@@ -54,12 +54,12 @@ import org.gdms.sql.engine.GdmSQLPredef._
  */
 trait JoinCommand extends Command {
   
-  def doCrossJoin(left: RowStream, right: RowStream): RowStream = {
+  def doCrossJoin(left: => RowStream, right: => RowStream): RowStream = {
     val r = right.toSeq
     for (p <- left; q <- r) yield p ++ q
   }
   
-  def doInnerJoin(left: RowStream, right: RowStream, exp: Expression): RowStream = {
+  def doInnerJoin(left: => RowStream, right: => RowStream, exp: Expression): RowStream = {
     val r = right.toSeq
     val doReduce = (i: Row, j: Row) => {
       val a = i ++ j
@@ -74,7 +74,7 @@ trait JoinCommand extends Command {
     for (p <- left; q <- r; s <- doReduce(p, q)) yield s
   }
   
-  def doLeftOuterJoin(left: RowStream, right: RowStream, exp: Expression): RowStream = {
+  def doLeftOuterJoin(left: => RowStream, right: => RowStream, exp: Expression): RowStream = {
     val r = right.toSeq
     val empty = nullArray(r.head.size)
     val doReduce = (i: Row, j: Row) => {

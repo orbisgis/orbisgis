@@ -56,7 +56,7 @@ abstract class Command() {
 
   protected var dsf: SQLDataSourceFactory = null
 
-  final def execute(implicit pm: Option[ProgressMonitor]): RowStream = {
+  def execute(implicit pm: Option[ProgressMonitor]): RowStream = {
     
     // start this one and return the promise of its result
     doWork ((for (c <- children.view) yield { c.execute }).toIterator)

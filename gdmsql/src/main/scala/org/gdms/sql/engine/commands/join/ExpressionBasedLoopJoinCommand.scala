@@ -118,20 +118,27 @@ extends Command with ExpressionCommand with JoinCommand {
     }
   }
   
-  protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]): RowStream = {
+  override def execute(implicit pm: Option[ProgressMonitor]) = {
+    def left = children.head.execute
+    def right = children.tail.head.execute
+    
     if (expr.isDefined) {
       if (outerLeft) {
         // (LEFT) OUTER JOIN
-        doLeftOuterJoin(r.next, r.next, expr.get)
+        doLeftOuterJoin(left, right, expr.get)
       } else {
         // INNER JOIN
-        doInnerJoin(r.next, r.next, expr.get)
+        doInnerJoin(left, right, expr.get)
+        
       }
     } else {
       // CROSS JOIN
-      doCrossJoin(r.next, r.next)
+      doCrossJoin(left, right)
     }
+    
   }
+  
+  protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]): RowStream = null
   
   def exp = expr.toSeq
   
