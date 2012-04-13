@@ -164,12 +164,12 @@ case object PhysicalJoinOptimStep extends AbstractEngineStep[(Operation, SQLData
               
                       if (best._2 == t) {
                         if (ft1.map(_ == al.getOrElse(t)).getOrElse(best._3.getFieldIndex(fn1) != -1)) {
-                          jt.withIndexOn = Some((fn1, Field(fn2, t2), false))
+                          jt.withIndexOn = Some((fn1, Field(fn2, al2.getOrElse(t2)), false))
                           j.children = IndexQueryScan(t, al) :: b :: Nil
                         }
                       } else {
                         if (ft2.map(_ == al2.getOrElse(t2)).getOrElse(best._3.getFieldIndex(fn2) != -1)) {
-                          jt.withIndexOn = Some((fn2, Field(fn1, t), false))
+                          jt.withIndexOn = Some((fn2, Field(fn1, al.getOrElse(t)), false))
                           j.children = a :: IndexQueryScan(t2, al2) :: Nil
                         }
                       }
