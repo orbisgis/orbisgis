@@ -177,8 +177,8 @@ case object PhysicalJoinOptimStep extends AbstractEngineStep[(Operation, SQLData
                     }
                   }
                 case a & b => {
-                    doMatch(a, b)
-                    doMatch(b ,a)
+                    doMatch(a, comp & b)
+                    doMatch(b ,comp & a)
                   }
                 case _ =>
               }
