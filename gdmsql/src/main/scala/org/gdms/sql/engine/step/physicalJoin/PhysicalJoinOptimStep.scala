@@ -101,7 +101,7 @@ case object PhysicalJoinOptimStep extends AbstractEngineStep[(Operation, SQLData
           }
           
           // optimize equi-joins
-        case j @ Join(jt @ Inner(field(fn1,ft1) & field(fn2,ft2), false, _), a @ Scan(t, al, _), b @ Scan(t2, al2, _)) => {
+        case j @ Join(jt @ Inner(field(fn1,ft1) === field(fn2,ft2), false, _), a @ Scan(t, al, _), b @ Scan(t2, al2, _)) => {
             if (t == t2) {
               j.children = IndexQueryScan(t, al) :: b :: Nil
             } else {
@@ -122,23 +122,14 @@ case object PhysicalJoinOptimStep extends AbstractEngineStep[(Operation, SQLData
                 if (a._1 >= b._1) a else b
               }
               
-              // very basic limit for now:
-              // the biggest table (the one being indexed) must have > 500 rows
-              if (best._1 > 500) {
-                if (al.map( _ == best._2 ).getOrElse(t == best._2)) {
-                  jt.withIndexOn = Some(fn1)
-                } else if (al2.map( _ == best._2 ).getOrElse(t2 == best._2)) {
-                  
-                }
-              }
               if (best._2 == t) {
                 if (ft1.map(_ == al.getOrElse(t)).getOrElse(best._3.getFieldIndex(fn1) != -1)) {
-                  jt.withIndexOn = Some(fn1)
+                  jt.withIndexOn = Some((fn1, Field(fn2, t2), true))
                   j.children = IndexQueryScan(t, al) :: b :: Nil
                 }
               } else {
                 if (ft2.map(_ == al2.getOrElse(t2)).getOrElse(best._3.getFieldIndex(fn2) != -1)) {
-                  jt.withIndexOn = Some(fn2)
+                  jt.withIndexOn = Some((fn2, Field(fn1, t), true))
                   j.children = a :: IndexQueryScan(t2, al2) :: Nil
                 }
               }

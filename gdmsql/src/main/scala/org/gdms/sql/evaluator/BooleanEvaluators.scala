@@ -149,7 +149,7 @@ case class EqualsEvaluator(e1: Expression, e2: Expression) extends BooleanEvalua
   def doCopy = copy()
 }
 
-object == {
+object === {
   def unapply(e: Expression) = {
     e.evaluator match {
       case a: EqualsEvaluator => Some((a.e1, a.e2))

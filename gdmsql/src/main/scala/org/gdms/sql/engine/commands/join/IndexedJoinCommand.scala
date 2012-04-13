@@ -44,7 +44,6 @@ package org.gdms.sql.engine.commands.join
 
 import org.gdms.data.indexes.ExpressionBasedAlphaQuery
 import org.gdms.data.schema.DefaultMetadata
-import org.gdms.data.schema.MetadataUtilities
 import org.gdms.data.types.Type
 import org.gdms.data.types.TypeFactory
 import org.gdms.sql.engine.GdmSQLPredef._
@@ -57,7 +56,7 @@ import org.gdms.sql.engine.commands.SQLMetadata
 import org.gdms.sql.evaluator.Expression
 import org.orbisgis.progress.ProgressMonitor
 
-class IndexedJoinCommand(expr: Expression, field: String) extends Command with ExpressionCommand {
+class IndexedJoinCommand(queryExpr: Expression, expr: Expression, field: String, strict: Boolean) extends Command with ExpressionCommand {
   
   // command that will be looped upon
   var small: Command = null
@@ -68,11 +67,15 @@ class IndexedJoinCommand(expr: Expression, field: String) extends Command with E
   private val d = new DefaultMetadata()
   
   protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]): RowStream = {
-    for (r <- small.execute ; s <- queryIndex(r); t <- filter(r ++ s)) yield t
+    if (!strict) {
+      for (r <- small.execute ; s <- queryIndex(r); t <- filter(r ++ s)) yield t
+    } else {
+      for (r <- small.execute ; s <- queryIndex(r)) yield r ++ s
+    }
   }
   
   private def queryIndex(r: Row)(implicit pm: Option[ProgressMonitor]) = {
-    big.query = new ExpressionBasedAlphaQuery(field, expr.prepared(r))
+    big.query = new ExpressionBasedAlphaQuery(field, queryExpr.prepared(r))
     
     big.execute
   }
@@ -86,7 +89,7 @@ class IndexedJoinCommand(expr: Expression, field: String) extends Command with E
     }
   }
   
-  val exp = expr :: Nil
+  val exp = queryExpr :: expr :: Nil
   
   override def getMetadata = {
     SQLMetadata("", d)

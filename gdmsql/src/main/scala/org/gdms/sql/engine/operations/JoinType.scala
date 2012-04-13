@@ -77,7 +77,7 @@ case class OuterFull(cond: Option[Expression]) extends JoinType {
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class Inner(cond: Expression, var spatial: Boolean = false, var withIndexOn: Option[String] = None) extends JoinType {
+case class Inner(cond: Expression, var spatial: Boolean = false, var withIndexOn: Option[(String, Expression, Boolean)] = None) extends JoinType {
   override def toString = "Inner on(" + cond + ") spatial=" + spatial + " withIndexOn=" + withIndexOn
 }
 

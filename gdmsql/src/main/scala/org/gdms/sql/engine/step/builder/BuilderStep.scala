@@ -98,8 +98,8 @@ case object BuilderStep extends AbstractEngineStep[Operation, OutputCommand]("Co
             case Inner(ex, false, None) => {
                 new ExpressionBasedLoopJoinCommand(Some(ex))
               }
-            case Inner(ex, false, Some(field)) => {
-                new IndexedJoinCommand(ex, field)
+            case Inner(ex, false, Some((field, expr, strict))) => {
+                new IndexedJoinCommand(expr, ex, field, strict)
               }
             case Inner(ex, true, _) => {
                 new SpatialIndexedJoinCommand(ex)
