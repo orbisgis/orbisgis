@@ -425,6 +425,10 @@ public final class ReadWriteBufferManager {
          */
         public void close() throws IOException {
                 flush();
+                
+                // this will prevent any new writes to the BufferManager
+                // after close() has been called (will throw a BufferUnderflowException).
+                buffer.limit(0);
                 channel.force(false);
         }
 
