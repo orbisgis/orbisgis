@@ -135,18 +135,17 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
                         Rule r = style.getRules().get(i);
                         List<Symbolizer> sym = r.getCompositeSymbolizer().getSymbolizerList();
                         List<ILegendPanel> ll = new LinkedList<ILegendPanel>();
-                        for (int j = 0; j<sym.size();j++) {
-                                for(Symbolizer s : sym){
-                                        Legend leg = LegendFactory.getLegend(s);
-                                        ILegendPanel ilp = getPanel(leg);
-                                        ilp.setId(getNewId());
-                                        ll.add(ilp);
-                                        pnlContainer.add(ilp.getComponent(), ilp.getId());
-                                }
+                        for (Symbolizer s : sym) {
+                                Legend leg = LegendFactory.getLegend(s);
+                                ILegendPanel ilp = getPanel(leg);
+                                ilp.setId(getNewId());
+                                ll.add(ilp);
+                                pnlContainer.add(ilp.getComponent(), ilp.getId());
                         }
                         RuleWrapper rw = new RuleWrapper(r, ll);
+                        rw.getPanel().setId(getNewId());
                         rw.getPanel().initialize(this);
-                        pnlContainer.add(rw.getPanel().getComponent(), rw.getId());
+                        pnlContainer.add(rw.getPanel().getComponent(), rw.getPanel().getId());
                         lrw.add(rw);
                 }
                 styleWrapper = new StyleWrapper(style, lrw);
@@ -234,7 +233,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		refreshLegendContainer();
 	}
 
-	private void refreshLegendContainer() {
+	void refreshLegendContainer() {
                 //We need to retrieve the currently selected legend in the tree,
                 //then find its id, and finally use it to show the panel.
                 IRulePanel selected = legendTree.getSelectedPanel();
@@ -245,15 +244,17 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		}
 	}
 
-	public void legendRemoved(int index) {
+	public void legendRemoved(IRulePanel panel) {
+                cardLayout.removeLayoutComponent(panel.getComponent());
 		refreshLegendContainer();
 	}
 
-	public void legendAdded(ILegendPanel panel) {
+	public void legendAdded(IRulePanel panel) {
                 //We can cast safely as we KNOW we are already dealing with a LegendPanel.
-		panel = (ILegendPanel)newInstance(panel);
+		panel.initialize(this);
                 panel.setId(getNewId());
-		addLegend(panel);
+                pnlContainer.add(panel.getComponent(), panel.getId());
+		refreshLegendContainer();
 	}
 
 	private IRulePanel newInstance(IRulePanel panel) {
@@ -263,24 +264,9 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		return ret;
 	}
 
-	private void addLegend(ILegendPanel le) {
-		pnlContainer.add(le.getComponent(), le.getId());
-		le.initialize(this);
-		refresh();
-	}
-
-	private Legend getLegend(ILegendPanel le) {
-		Legend ret = le.getLegend();
-//		if (ret instanceof LegendDecorator) {
-//			ret = ((LegendDecorator) ret).getLegend();
-//		}
-
-		return ret;
-	}
-
 	public void legendRenamed(int idx, String newName) {
 //		legends.get(idx).getLegend().setName(newName);
-		refresh();
+		refreshLegendContainer();
 	}
 
 	public void legendSelected() {

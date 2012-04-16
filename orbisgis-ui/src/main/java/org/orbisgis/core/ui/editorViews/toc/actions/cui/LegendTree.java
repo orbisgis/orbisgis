@@ -89,10 +89,14 @@ public class LegendTree extends JPanel {
                 if(select instanceof ILegendPanel){
                         RuleWrapper rw = (RuleWrapper) tp.getPath()[tp.getPath().length -2];
                         tm.removeElement(rw, select);
+                        //We refresh the icons
                         refreshIcons();
+                        //We refresh the legend container
+                        legendsPanel.refreshLegendContainer();
                 } else if(select instanceof RuleWrapper){
                         tm.removeElement(tm.getRoot(), select);
                         refreshIcons();
+                        legendsPanel.refreshLegendContainer();
                 }
         }
 
@@ -323,7 +327,8 @@ public class LegendTree extends JPanel {
                         //We retrieve the legend we want to add
                         ILegendPanel ilp = (ILegendPanel) legendPicker.getSelected();
                         Legend leg = ilp.copyLegend();
-                        ilp.setLegend(leg);
+                        ILegendPanel copy = (ILegendPanel)ilp.newInstance();
+                        copy.setLegend(leg);
 
                         //We retrieve the rw where we will add it.
                         RuleWrapper currentrw = getSelectedRule();
@@ -336,7 +341,8 @@ public class LegendTree extends JPanel {
                         //We retrieve the index where to put it.
                         ILegendPanel sl = getSelectedLegend();
                         LegendTreeModel tm = (LegendTreeModel) tree.getModel();
-                        tm.addElement(currentrw, ilp, sl);
+                        tm.addElement(currentrw, copy, sl);
+                        legendsPanel.legendAdded(copy);
                 }
         }
 
@@ -351,7 +357,9 @@ public class LegendTree extends JPanel {
                         String s = mip.getValues()[0];
                         RuleWrapper cur = getSelectedRule();
                         LegendTreeModel tm = (LegendTreeModel) tree.getModel();
-                        tm.addElement(tm.getRoot(), new RuleWrapper(s), cur);
+                        RuleWrapper nrw = new RuleWrapper(s);
+                        tm.addElement(tm.getRoot(), nrw, cur);
+                        legendsPanel.legendAdded(nrw.getPanel());
                 }
         }
 

@@ -106,6 +106,7 @@ public class PnlRule extends JPanel implements IRulePanel {
         @Override
         public void initialize(LegendContext lc) {
                 legendContext=lc;
+                getComponent();
         }
 
         @Override

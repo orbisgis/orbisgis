@@ -4,15 +4,12 @@
  */
 package org.orbisgis.core.ui.editorViews.toc.wrapper;
 
-import java.awt.Component;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Symbolizer;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendsPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.IRulePanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.PnlRule;
@@ -37,6 +34,7 @@ public class RuleWrapper {
         public RuleWrapper(){
                 legends = new ArrayList<ILegendPanel>();
                 rule = new Rule();
+                createRulePanel();
         }
 
         /**
@@ -48,6 +46,7 @@ public class RuleWrapper {
         public RuleWrapper(String name){
                 this();
                 rule.setName(name);
+                createRulePanel();
         }
 
         /**
@@ -74,6 +73,7 @@ public class RuleWrapper {
                                 }
                         }
                 }
+                createRulePanel();
         }
 
         /**
@@ -211,7 +211,6 @@ public class RuleWrapper {
         private void createRulePanel(){
                 panel = new PnlRule();
                 panel.setRule(rule);
-                panel.setId(LegendsPanel.getNewId());
         }
 
         List<String> validateInput() {
