@@ -111,6 +111,12 @@ trait ExpressionCommand extends Command {
           }
           processSubCommand(i.command, allM)
         }
+      case i: ExistsEvaluator => {
+          if (i.command == null) {
+            throw new IllegalStateException("Error: there cannot be a IN operator in this clause.")
+          }
+          processSubCommand(i.command, allM)
+        }
       case _ =>
     }
   }

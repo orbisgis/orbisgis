@@ -229,13 +229,28 @@ case class ExistsEvaluator(var o: Operation) extends BooleanEvaluator with DsfEv
   var pm: Option[ProgressMonitor] = None
   
   override val childExpressions = Nil
-  def eval = s => ValueFactory.createValue(!command.execute(pm).isEmpty)
+  
+  private def evalInner(s: Array[Value]) = {
+    evals foreach (_.setValue(s))
+    command.execute(pm)
+  }
+  
+  def eval = s => ValueFactory.createValue(!evalInner(s).isEmpty)
   override def doPreValidate = o.validate
   override def doValidate = {
-    if (command == null) {
-      throw new IllegalStateException("Error: there cannot be an EXISTS operator in this clause.")
-    }
     command.prepare(dsf)
+    
+    findOuterFieldEvals(command)
+  }
+  
+  private var evals: List[OuterFieldEvaluator]= Nil
+  
+  private def findOuterFieldEvals(c: Command) { 
+    c match {
+      case e: ExpressionCommand => evals = e.outerFieldEval ::: evals
+      case _ =>
+    }
+    c.children foreach (findOuterFieldEvals)
   }
   
   def doCopy = ExistsEvaluator(o)

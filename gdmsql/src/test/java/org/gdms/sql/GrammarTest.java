@@ -95,6 +95,15 @@ public class GrammarTest {
                 parse("select * except myfield from gis;");
                 parse("select a.* except field from gis a;");
         }
+        
+        @Test
+        public void testExists() throws Exception {
+                parse("SELECT * FROM toto WHERE EXISTS (SELECT * FROM tutu);");
+                parse("SELECT * FROM toot WHERE EXISTS (SELECT aa, oo FROM tutu WHERE toot.tt = tutu.tt)"
+                        + " AND myOtherField IS NOT NULL;");
+                notParse("SELECT * FROM toto WHERE EXISTS (tata);");
+                notParse("SELECT * FROM toto WHERE EXISTS SELECT * FROM tutu;");
+        }
 
         @Test
         public void testOrderBy() throws Exception {

@@ -899,8 +899,8 @@ expression_cond_is
         ;
 
 expression_exists
-        : T_EXISTS LPAREN subquery RPAREN
-        -> ^(T_EXISTS subquery)
+        : T_EXISTS LPAREN select_statement RPAREN
+        -> ^(T_EXISTS select_statement)
         ;
 
 expression_cond_final
