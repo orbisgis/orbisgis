@@ -95,6 +95,7 @@ import org.gdms.sql.function.spatial.geometry.create.ST_CreateGrid;
 import org.gdms.sql.function.spatial.geometry.create.ST_CreatePointsGrid;
 import org.gdms.sql.function.spatial.geometry.create.ST_CreateWebGrid;
 import org.gdms.sql.function.spatial.geometry.create.ST_Densify;
+import org.gdms.sql.function.spatial.geometry.create.ST_Expand;
 import org.gdms.sql.function.spatial.geometry.create.ST_Extrude;
 import org.gdms.sql.function.spatial.geometry.create.ST_MakeEllipse;
 import org.gdms.sql.function.spatial.geometry.create.ST_MakeLine;
@@ -351,6 +352,7 @@ public final class FunctionManager {
                 addFunction(ST_LocateAlong.class);
                 addFunction(ST_FurthestPoint.class);
                 addFunction(ST_3DLength.class);
+                addFunction(ST_Expand.class);
         }
 
         /**
