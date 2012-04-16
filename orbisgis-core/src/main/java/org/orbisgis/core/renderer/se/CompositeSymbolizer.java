@@ -145,6 +145,28 @@ public final class CompositeSymbolizer implements SymbolizerNode {
         }
 
         /**
+         * Adds a <code>Symbolizer</code> to the list contained in this
+         * <code>CompositeSymbolizer</code> at position i.
+         * @param s
+         */
+        public void addSymbolizer(int i, Symbolizer s) {
+                symbolizers.add(i, s);
+                s.setParent(this);
+                if (s.getLevel() < 0) {
+                        s.setLevel(symbolizers.size());
+                }
+        }
+
+        /**
+         * Sets the value of the ith {@code Symbolizer} to {@code s}.
+         * @param i
+         * @param s
+         */
+        public void setSymbolizer(int i, Symbolizer s){
+                symbolizers.set(i, s);
+        }
+
+        /**
          * @deprecated
          */
         public void moveSymbolizerDown(Symbolizer s) {

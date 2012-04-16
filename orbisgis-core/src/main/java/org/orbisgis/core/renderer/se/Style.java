@@ -347,6 +347,13 @@ public final class Style implements SymbolizerNode {
         }
     }
 
+    public void addRule(int index, Rule r) {
+        if (r != null) {
+            r.setParent(this);
+            rules.add(index, r);
+        }
+    }
+
     public boolean deleteRule(int i) {
         try {
             rules.remove(i);
@@ -356,6 +363,7 @@ public final class Style implements SymbolizerNode {
         }
     }
     
+    @Override
     public HashSet<String> dependsOnFeature() {
         HashSet<String> hs = new HashSet<String>();
         for(Rule r : rules){
