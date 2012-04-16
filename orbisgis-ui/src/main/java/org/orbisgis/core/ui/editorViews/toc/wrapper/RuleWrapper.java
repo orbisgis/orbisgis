@@ -33,6 +33,17 @@ public class RuleWrapper {
         }
 
         /**
+         * Build a {@code RuleWrapper} from scratch, with an empty list of
+         * {@code Legend} and an empty {@code Rule}.
+         * @param name
+         *      The name of the rule.
+         */
+        public RuleWrapper(String name){
+                this();
+                rule.setName(name);
+        }
+
+        /**
          * Build a new {@code RuleWrapper} using the given {@code Rule} and list
          * of {@code Legend}. If the symbolizers contained in {@code r} and in
          * {@code l} don't match, an exception is thrown.

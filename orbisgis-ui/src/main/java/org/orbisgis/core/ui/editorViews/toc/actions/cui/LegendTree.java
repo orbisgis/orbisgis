@@ -19,6 +19,8 @@ import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import org.orbisgis.core.sif.UIFactory;
+import org.orbisgis.core.sif.multiInputPanel.MultiInputPanel;
+import org.orbisgis.core.sif.multiInputPanel.StringType;
 import org.orbisgis.core.ui.components.sif.RadioButtonPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.LegendPicker;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
@@ -319,15 +321,21 @@ public class LegendTree extends JPanel {
                 //We must add it just after the currently selected Rule.
                 //Let's find which one it is. If there is none, we add it at the
                 //end of the list.
-                StyleWrapper sw = legendsPanel.getStyleWrapper();
-                RuleWrapper rw = getSelectedRule();
-                int pos;
-                if(rw != null){
-                        pos=sw.indexOf(rw)+1;
-                } else {
-                        pos=sw.getSize();
+                MultiInputPanel mip = new MultiInputPanel("LegendTreeMip", "Choose a name for your rule", false);
+                mip.addInput("RuleName", "Name of the Rule : ", new StringType(10));
+                mip.addValidationExpression("RuleName IS NOT NULL AND RuleName != ''", "Enter a name.");
+                if(UIFactory.showDialog(mip)){
+                        String s = mip.getValues()[0];
+                        StyleWrapper sw = legendsPanel.getStyleWrapper();
+                        RuleWrapper rw = getSelectedRule();
+                        int pos;
+                        if(rw != null){
+                                pos=sw.indexOf(rw)+1;
+                        } else {
+                                pos=sw.getSize();
+                        }
+                        sw.addRuleWrapper(pos, new RuleWrapper(s));
                 }
-                sw.addRuleWrapper(pos, new RuleWrapper());
         }
 
         /**
@@ -380,7 +388,11 @@ public class LegendTree extends JPanel {
                 }
 
                 private Component getComponent(RuleWrapper rw, boolean selected) {
-                        JLabel lab = new JLabel(rw.getRule().getName());
+                        String s = rw.getRule().getName();
+                        if(s == null || s.isEmpty()){
+                                s = "Unknown";
+                        }
+                        JLabel lab = new JLabel(s);
                         lab.setForeground(selected ? SELECTED : DESELECTED);
                         return lab;
                 }

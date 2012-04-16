@@ -50,14 +50,14 @@ import org.orbisgis.core.sif.SQLUIPanel;
  * 
  * 
  * Example :
- * 
+ * {@code
  * MultiInputPanel mip = new MultiInputPanel( "org.myPanel", "AddValue
- * initialization", false); mip.addInput("AddValue1", "Value1 to add", "1", new
- * IntType()); mip.addInput("AddValue2", "Value2 to add", "0", new IntType());
- * mip.addValidationExpression("AddValue1 > 0 or AddValue2 <12","Invalid input
- * values : Value1 > 0 and Value2 < 12 "); mip.group("Values", new
- * String[]{"AddValue1","AddValue2"});
- * 
+ * initialization", false);
+ * mip.addInput("AddValue1", "Value1 to add", "1", new IntType());
+ * mip.addInput("AddValue2", "Value2 to add", "0", new IntType());
+ * mip.addValidationExpression("AddValue1 > 0 or AddValue2 <12","Invalid input values : Value1 > 0 and Value2 < 12 ");
+ * mip.group("Values", new String[]{"AddValue1","AddValue2"});
+ * }
  */
 public class MultiInputPanel implements SQLUIPanel {
 
