@@ -33,7 +33,7 @@ import java.io.File;
 
 import javax.swing.filechooser.FileFilter;
 
-import org.orbisgis.utils.I18N;
+import org.orbisgis.sif.translation.I18N;
 
 /**
  * This class handles the panel used to import the content of a folder in the geocatalog
@@ -62,11 +62,11 @@ public class OpenFolderPanel extends AbstractOpenPanel {
 	public String validateInput() {
 		File file = getSelectedFile();
 		if (file == null) {
-			return I18N.getString("sif.folderMustBeSelected");
+			return I18N.tr("sif.folderMustBeSelected");
 		} else if (!file.exists()) {
-			return I18N.getString("sif.folderMustExist");
+			return I18N.tr("sif.folderMustExist");
 		} else if(!file.isDirectory()){
-			return I18N.getString("sif.folderMustBeDirectory");
+			return I18N.tr("sif.folderMustBeDirectory");
 		} else {
 			return null;
 		}

@@ -55,9 +55,9 @@ public class OpenFilePanel extends AbstractOpenPanel {
     public String validateInput() {
         File file = getSelectedFile();
         if (file == null) {
-            return I18N.tr("A file must be selected (open dialog)");
+            return I18N.tr("A file must be selected");
         } else if (!file.exists()) {
-            return I18N.tr("The file must exists (open dialog)");
+            return I18N.tr("The file must exists");
         } else {
             return null;
         }

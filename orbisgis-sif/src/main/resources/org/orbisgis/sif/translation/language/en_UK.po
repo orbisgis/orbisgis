@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OrbisGis 4.0 SIF\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-05 16:06+0200\n"
-"PO-Revision-Date: 2012-04-05 16:07+0100\n"
+"POT-Creation-Date: 2012-04-16 09:54+0100\n"
+"PO-Revision-Date: 2012-04-16 09:54+0100\n"
 "Last-Translator: Nicolas Fortin <nicolas.fortin@ec-nantes.fr>\n"
 "Language-Team: OrbisGis <info _at_ orbisgis.org>\n"
 "Language: \n"
@@ -17,196 +17,199 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-SearchPath-0: java\n"
 
-#: org/orbisgis/sif/SaveFilePanel.java:84
-msgid "sif.file.aFileMustSelected"
-msgstr "A file must be selected"
+#: java/org/orbisgis/sif/SaveFilePanel.java:84
+#: java/org/orbisgis/sif/OpenFilePanel.java:58
+msgid "A file must be selected"
+msgstr "A file must be selected !"
 
-#: org/orbisgis/sif/SaveFilePanel.java:87
-#: org/orbisgis/sif/SaveFilePanel.java:109
+#: java/org/orbisgis/sif/SaveFilePanel.java:87
+msgid "The file already exists"
+msgstr "The file already exists"
+
+#: java/org/orbisgis/sif/SaveFilePanel.java:109
 msgid "sif.file.fileAlreadyExists"
 msgstr "The file already exists"
 
-#: org/orbisgis/sif/SaveFilePanel.java:110
+#: java/org/orbisgis/sif/SaveFilePanel.java:110
 msgid "sif.file.overwrite"
 msgstr "Overwrite ?"
 
-#: org/orbisgis/sif/SaveFilePanel.java:111
+#: java/org/orbisgis/sif/SaveFilePanel.java:111
 msgid "sif.file.existing"
 msgstr "Existing file"
 
-#: org/orbisgis/sif/DynamicUIPanel.java:135
+#: java/org/orbisgis/sif/DynamicUIPanel.java:135
 msgid "sif.dynamicUIPanel.thereIsNoFieldWithName"
 msgstr "There is no field with the name : "
 
-#: org/orbisgis/sif/icons/BaseIcon.java:87
-msgid "sif.icons.OrbisGISIcon.icon_not_found"
-msgstr ""
-
-#: org/orbisgis/sif/SimplePanel.java:121
-#: org/orbisgis/sif/SimplePanel.java:127
+#: java/org/orbisgis/sif/SimplePanel.java:121
+#: java/org/orbisgis/sif/SimplePanel.java:127
 msgid "sif.simplePanel.errorObtainingFavorites"
 msgstr "Error obtaining favorites"
 
-#: org/orbisgis/sif/SimplePanel.java:170
+#: java/org/orbisgis/sif/SimplePanel.java:170
 msgid "sif.simplePanel.cannotInitializeDialog"
 msgstr "Cannot initialize dialog"
 
-#: org/orbisgis/sif/SimplePanel.java:189
+#: java/org/orbisgis/sif/SimplePanel.java:189
 msgid "sif.simplePanel.errorValidatingUIPanel"
 msgstr "Error while validating UIPanel"
 
-#: org/orbisgis/sif/SimplePanel.java:192
+#: java/org/orbisgis/sif/SimplePanel.java:192
 msgid "sif.simplePanel.errorValidating"
 msgstr "Error validating :"
 
-#: org/orbisgis/sif/SimplePanel.java:209
+#: java/org/orbisgis/sif/SimplePanel.java:209
 msgid "sif.simplePanel.mustBeAnIntExpression"
 msgstr " must be an int expression"
 
-#: org/orbisgis/sif/SimplePanel.java:218
+#: java/org/orbisgis/sif/SimplePanel.java:218
 msgid "sif.simplePanel.mustBeAFloatExpression"
 msgstr " must be a floating point expression"
 
-#: org/orbisgis/sif/SimplePanel.java:238
+#: java/org/orbisgis/sif/SimplePanel.java:238
 msgid "sif.simplePanel.validatingInterface"
 msgstr "Validating interface :"
 
-#: org/orbisgis/sif/SimplePanel.java:247
+#: java/org/orbisgis/sif/SimplePanel.java:247
 msgid "sif.simplePanel.invalidInput"
 msgstr "Invalid input"
 
-#: org/orbisgis/sif/SimplePanel.java:256
-#: org/orbisgis/sif/SimplePanel.java:264
-#: org/orbisgis/sif/SimplePanel.java:272
-#: org/orbisgis/sif/SimplePanel.java:280
-#: org/orbisgis/sif/SimplePanel.java:288
-#: org/orbisgis/sif/SimplePanel.java:296
+#: java/org/orbisgis/sif/SimplePanel.java:256
+#: java/org/orbisgis/sif/SimplePanel.java:264
+#: java/org/orbisgis/sif/SimplePanel.java:272
+#: java/org/orbisgis/sif/SimplePanel.java:280
+#: java/org/orbisgis/sif/SimplePanel.java:288
+#: java/org/orbisgis/sif/SimplePanel.java:296
 msgid "sif.simplePanel.bugInSIF"
 msgstr "Bug in SIF"
 
-#: org/orbisgis/sif/SimplePanel.java:259
-#: org/orbisgis/sif/SimplePanel.java:267
-#: org/orbisgis/sif/SimplePanel.java:275
-#: org/orbisgis/sif/SimplePanel.java:283
-#: org/orbisgis/sif/SimplePanel.java:291
-#: org/orbisgis/sif/SimplePanel.java:299
+#: java/org/orbisgis/sif/SimplePanel.java:259
+#: java/org/orbisgis/sif/SimplePanel.java:267
+#: java/org/orbisgis/sif/SimplePanel.java:275
+#: java/org/orbisgis/sif/SimplePanel.java:283
+#: java/org/orbisgis/sif/SimplePanel.java:291
+#: java/org/orbisgis/sif/SimplePanel.java:299
 msgid "sif.simplePanel.couldNotValidateDialog"
 msgstr "Could not validate dialog ! : "
 
-#: org/orbisgis/sif/SimplePanel.java:399
-#: org/orbisgis/sif/SimplePanel.java:407
-#: org/orbisgis/sif/SimplePanel.java:414
-#: org/orbisgis/sif/SimplePanel.java:421
-#: org/orbisgis/sif/SimplePanel.java:428
+#: java/org/orbisgis/sif/SimplePanel.java:399
+#: java/org/orbisgis/sif/SimplePanel.java:407
+#: java/org/orbisgis/sif/SimplePanel.java:414
+#: java/org/orbisgis/sif/SimplePanel.java:421
+#: java/org/orbisgis/sif/SimplePanel.java:428
 msgid "sif.simplePanel.errorSavingSIFInput"
 msgstr ""
 
-#: org/orbisgis/sif/SimplePanel.java:403
-#: org/orbisgis/sif/SimplePanel.java:432
+#: java/org/orbisgis/sif/SimplePanel.java:403
+#: java/org/orbisgis/sif/SimplePanel.java:432
 msgid "sif.simplePanel.cannotSaveInput"
 msgstr ""
 
-#: org/orbisgis/sif/SimplePanel.java:410
-#: org/orbisgis/sif/SimplePanel.java:417
-#: org/orbisgis/sif/SimplePanel.java:424
+#: java/org/orbisgis/sif/SimplePanel.java:410
+#: java/org/orbisgis/sif/SimplePanel.java:417
+#: java/org/orbisgis/sif/SimplePanel.java:424
 msgid "sif.simplePanel.bug"
 msgstr ""
 
-#: org/orbisgis/sif/SimplePanel.java:500
-#: org/orbisgis/sif/SimplePanel.java:508
-#: org/orbisgis/sif/SimplePanel.java:516
-#: org/orbisgis/sif/SimplePanel.java:524
+#: java/org/orbisgis/sif/SimplePanel.java:500
+#: java/org/orbisgis/sif/SimplePanel.java:508
+#: java/org/orbisgis/sif/SimplePanel.java:516
+#: java/org/orbisgis/sif/SimplePanel.java:524
 msgid "sif.simplePanel.errorRestoringSIFInput"
 msgstr ""
 
-#: org/orbisgis/sif/SimplePanel.java:504
-#: org/orbisgis/sif/SimplePanel.java:512
-#: org/orbisgis/sif/SimplePanel.java:520
-#: org/orbisgis/sif/SimplePanel.java:528
+#: java/org/orbisgis/sif/SimplePanel.java:504
+#: java/org/orbisgis/sif/SimplePanel.java:512
+#: java/org/orbisgis/sif/SimplePanel.java:520
+#: java/org/orbisgis/sif/SimplePanel.java:528
 msgid "sif.simplePanel.cannotRestoreLastInput"
 msgstr ""
 
-#: org/orbisgis/sif/OpenFilePanel.java:58
-msgid "A file must be selected (open dialog)"
-msgstr "A file must be selected !"
-
-#: org/orbisgis/sif/OpenFilePanel.java:60
-msgid "The file must exists (open dialog)"
+#: java/org/orbisgis/sif/OpenFilePanel.java:60
+msgid "The file must exists"
 msgstr "The File must exists !"
 
-#: org/orbisgis/sif/ControlPanel.java:107
+#: java/org/orbisgis/sif/ControlPanel.java:107
 msgid "sif.ControlPanel.SaveFavorite"
 msgstr ""
 
-#: org/orbisgis/sif/ControlPanel.java:125
+#: java/org/orbisgis/sif/ControlPanel.java:125
 msgid "sif.ControlPanel.DeleteFavorite"
 msgstr ""
 
-#: org/orbisgis/sif/ControlPanel.java:139
+#: java/org/orbisgis/sif/ControlPanel.java:139
 msgid "sif.ControlPanel.LoadFavorite"
 msgstr ""
 
-#: org/orbisgis/sif/ControlPanel.java:153
+#: java/org/orbisgis/sif/ControlPanel.java:153
 msgid "sif.ControlPanel.CollapseFavorites"
 msgstr ""
 
-#: org/orbisgis/sif/ControlPanel.java:175
+#: java/org/orbisgis/sif/ControlPanel.java:175
 msgid "sif.ControlPanel.Favorites"
 msgstr "Favorites"
 
-#: org/orbisgis/sif/ControlPanel.java:181
+#: java/org/orbisgis/sif/ControlPanel.java:181
 msgid "sif.ControlPanel.ExpandFavorites"
 msgstr ""
 
-#: org/orbisgis/sif/SIFWizard.java:108
+#: java/org/orbisgis/sif/SIFWizard.java:108
 msgid "sif.previous"
 msgstr ""
 
-#: org/orbisgis/sif/SIFWizard.java:126
+#: java/org/orbisgis/sif/SIFWizard.java:126
 msgid "sif.next"
 msgstr ""
 
-#: org/orbisgis/sif/SIFWizard.java:157
+#: java/org/orbisgis/sif/SIFWizard.java:157
 msgid "sif.finish"
 msgstr ""
 
-#: org/orbisgis/sif/SIFWizard.java:173
-#: org/orbisgis/sif/SIFDialog.java:73
+#: java/org/orbisgis/sif/SIFWizard.java:173
+#: java/org/orbisgis/sif/SIFDialog.java:73
 msgid "sif.cancel"
 msgstr ""
 
-#: org/orbisgis/sif/OpenFolderPanel.java:65
+#: java/org/orbisgis/sif/OpenFolderPanel.java:65
 msgid "sif.folderMustBeSelected"
 msgstr ""
 
-#: org/orbisgis/sif/OpenFolderPanel.java:67
+#: java/org/orbisgis/sif/OpenFolderPanel.java:67
 msgid "sif.folderMustExist"
 msgstr ""
 
-#: org/orbisgis/sif/OpenFolderPanel.java:69
+#: java/org/orbisgis/sif/OpenFolderPanel.java:69
 msgid "sif.folderMustBeDirectory"
 msgstr ""
 
-#: org/orbisgis/sif/SIFDialog.java:62
+#: java/org/orbisgis/sif/SIFDialog.java:62
 msgid "sif.ok"
 msgstr ""
 
-#: org/orbisgis/sif/UIFactory.java:119
+#: java/org/orbisgis/sif/UIFactory.java:119
 msgid "sif.uIFactory.atLeastAPanelHasToBeSpecified"
 msgstr ""
 
-#: org/orbisgis/sif/UIFactory.java:151
-#: org/orbisgis/sif/UIFactory.java:158
+#: java/org/orbisgis/sif/UIFactory.java:151
+#: java/org/orbisgis/sif/UIFactory.java:158
 msgid "sif.uIFactory.doesntExist"
 msgstr ""
 
-#: org/orbisgis/sif/ColorPicker.java:99
+#: java/org/orbisgis/sif/ColorPicker.java:99
 msgid "sif.ColorPicker.InfoText"
 msgstr ""
 
-#: org/orbisgis/sif/ColorPicker.java:103
+#: java/org/orbisgis/sif/ColorPicker.java:103
 msgid "sif.ColorPicker.Title"
 msgstr ""
+
+#: java/org/orbisgis/sif/icons/BaseIcon.java:87
+msgid "sif.icons.OrbisGISIcon.icon_not_found"
+msgstr ""
+
+#~ msgid "sif.file.aFileMustSelected"
+#~ msgstr "A file must be selected"
 
 #~ msgid "orbisgis.org.core.previous"
 #~ msgstr "Previous"

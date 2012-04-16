@@ -40,7 +40,7 @@ import java.util.HashMap;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-import org.orbisgis.utils.I18N;
+import org.orbisgis.sif.translation.I18N;
 
 public class SIFWizard extends AbstractOutsideFrame {
 
@@ -105,7 +105,7 @@ public class SIFWizard extends AbstractOutsideFrame {
 
 	public JButton getBtnPrevious() {
 		if (btnPrevious == null) {
-			btnPrevious = new JButton(I18N.getString("sif.previous"));
+			btnPrevious = new JButton(I18N.tr("sif.previous"));
 			btnPrevious.setBorderPainted(false);
 			btnPrevious.setEnabled(false);
 			btnPrevious.addActionListener(new ActionListener() {
@@ -123,7 +123,7 @@ public class SIFWizard extends AbstractOutsideFrame {
 
 	public JButton getBtnNext() {
 		if (btnNext == null) {
-			btnNext = new JButton(I18N.getString("sif.next"));
+			btnNext = new JButton(I18N.tr("sif.next"));
 			btnNext.setBorderPainted(false);
 			btnNext.addActionListener(new ActionListener() {
 
@@ -154,7 +154,7 @@ public class SIFWizard extends AbstractOutsideFrame {
 
 	public JButton getBtnFinish() {
 		if (btnFinish == null) {
-			btnFinish = new JButton(I18N.getString("sif.finish"));
+			btnFinish = new JButton(I18N.tr("sif.finish"));
 			btnFinish.setBorderPainted(false);
 			btnFinish.addActionListener(new ActionListener() {
 
@@ -170,7 +170,7 @@ public class SIFWizard extends AbstractOutsideFrame {
 
 	public JButton getBtnCancel() {
 		if (btnCancel == null) {
-			btnCancel = new JButton(I18N.getString("sif.cancel"));
+			btnCancel = new JButton(I18N.tr("sif.cancel"));
 			btnCancel.setBorderPainted(false);
 			btnCancel.addActionListener(new ActionListener() {
 

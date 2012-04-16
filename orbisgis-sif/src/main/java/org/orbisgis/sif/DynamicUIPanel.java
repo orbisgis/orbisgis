@@ -35,7 +35,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.orbisgis.utils.I18N;
+import org.orbisgis.sif.translation.I18N;
 
 public class DynamicUIPanel implements SQLUIPanel {
 
@@ -132,7 +132,7 @@ public class DynamicUIPanel implements SQLUIPanel {
 
 		if (index == -1) {
 			throw new IllegalArgumentException(
-					I18N.getString("sif.dynamicUIPanel.thereIsNoFieldWithName") + fieldName); //$NON-NLS-1$
+					I18N.tr("sif.dynamicUIPanel.thereIsNoFieldWithName") + fieldName); //$NON-NLS-1$
 		}
 
 		return txts[index].getText();

@@ -59,7 +59,7 @@ import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.sql.engine.ParseException;
 import org.gdms.sql.engine.SemanticException;
-import org.orbisgis.utils.I18N;
+import org.orbisgis.sif.translation.I18N;
 
 public class SimplePanel extends JPanel {
 
@@ -117,13 +117,13 @@ public class SimplePanel extends JPanel {
                     centerPanel = split;
                 } catch (DriverException e) {
                     logger.error(
-                            I18N.getString(
+                            I18N.tr(
                             "sif.simplePanel.errorObtainingFavorites"),
                                  e); //$NON-NLS-1$
                     centerPanel = uiPanel;
                 } catch (DataSourceCreationException e) {
                     logger.error(
-                            I18N.getString(
+                            I18N.tr(
                             "sif.simplePanel.errorObtainingFavorites"),
                                  e); //$NON-NLS-1$
                     centerPanel = uiPanel;
@@ -166,7 +166,7 @@ public class SimplePanel extends JPanel {
         try {
             err = panel.initialize();
         } catch (Exception e) {
-            String msg = I18N.getString(
+            String msg = I18N.tr(
                     "sif.simplePanel.cannotInitializeDialog"); //$NON-NLS-1$
             logger.error(msg, e);
             err = msg + ": " + e.getMessage(); //$NON-NLS-1$
@@ -185,10 +185,10 @@ public class SimplePanel extends JPanel {
             err = panel.validateInput();
         } catch (Exception e) {
             logger.error(
-                    I18N.getString(
+                    I18N.tr(
                     "sif.simplePanel.errorValidatingUIPanel"),
                          e); //$NON-NLS-1$
-            err = I18N.getString(
+            err = I18N.tr(
                     "sif.simplePanel.errorValidating") + e.
                     getMessage(); //$NON-NLS-1$
         }
@@ -205,7 +205,7 @@ public class SimplePanel extends JPanel {
                                 Integer.parseInt(values[i]);
                             } catch (NumberFormatException e) {
                                 err = sqlPanel.getFieldNames()[i]
-                                        + I18N.getString(
+                                        + I18N.tr(
                                         "sif.simplePanel.mustBeAnIntExpression"); //$NON-NLS-1$
                             }
                             break;
@@ -214,7 +214,7 @@ public class SimplePanel extends JPanel {
                                 Double.parseDouble(values[i]);
                             } catch (NumberFormatException e) {
                                 err = sqlPanel.getFieldNames()[i]
-                                        + I18N.getString(
+                                        + I18N.tr(
                                         "sif.simplePanel.mustBeAFloatExpression"); //$NON-NLS-1$
                             }
                             break;
@@ -234,7 +234,7 @@ public class SimplePanel extends JPanel {
                             String sql = "select * from source where " //$NON-NLS-1$
                                     + validationExpr[i] + " ;";
                             logger.debug(
-                                    I18N.getString(
+                                    I18N.tr(
                                     "sif.simplePanel.validatingInterface") + sql); //$NON-NLS-1$
                             DataSource result = UIFactory.dsf.getDataSourceFromSQL(sql);
                             result.open();
@@ -243,7 +243,7 @@ public class SimplePanel extends JPanel {
                             if (rowCount == 0) {
                                 err = errMsgs[i];
                                 if (err == null) {
-                                    err = I18N.getString(
+                                    err = I18N.tr(
                                             "sif.simplePanel.invalidInput"); //$NON-NLS-1$
                                 }
                                 break;
@@ -252,50 +252,50 @@ public class SimplePanel extends JPanel {
                         }
                     } catch (DriverLoadException e) {
                         logger.error(
-                                I18N.getString(
+                                I18N.tr(
                                 "sif.simplePanel.bugInSIF"),
                                      e); //$NON-NLS-1$
-                        msgPanel.setError(I18N.getString(
+                        msgPanel.setError(I18N.tr(
                                 "sif.simplePanel.couldNotValidateDialog") //$NON-NLS-1$
                                 + e.getMessage());
                     } catch (DataSourceCreationException e) {
                         logger.error(
-                                I18N.getString(
+                                I18N.tr(
                                 "sif.simplePanel.bugInSIF"),
                                      e); //$NON-NLS-1$
-                        msgPanel.setError(I18N.getString(
+                        msgPanel.setError(I18N.tr(
                                 "sif.simplePanel.couldNotValidateDialog") //$NON-NLS-1$
                                 + e.getMessage());
                     } catch (DriverException e) {
                         logger.error(
-                                I18N.getString(
+                                I18N.tr(
                                 "sif.simplePanel.bugInSIF"),
                                      e); //$NON-NLS-1$
-                        msgPanel.setError(I18N.getString(
+                        msgPanel.setError(I18N.tr(
                                 "sif.simplePanel.couldNotValidateDialog") //$NON-NLS-1$
                                 + e.getMessage());
                     } catch (ParseException e) {
                         logger.error(
-                                I18N.getString(
+                                I18N.tr(
                                 "sif.simplePanel.bugInSIF"),
                                      e); //$NON-NLS-1$
-                        msgPanel.setError(I18N.getString(
+                        msgPanel.setError(I18N.tr(
                                 "sif.simplePanel.couldNotValidateDialog") //$NON-NLS-1$
                                 + e.getMessage());
                     } catch (SemanticException e) {
                         logger.error(
-                                I18N.getString(
+                                I18N.tr(
                                 "sif.simplePanel.bugInSIF"),
                                      e); //$NON-NLS-1$
-                        msgPanel.setError(I18N.getString(
+                        msgPanel.setError(I18N.tr(
                                 "sif.simplePanel.couldNotValidateDialog") //$NON-NLS-1$
                                 + e.getMessage());
                     } catch (NoSuchTableException e) {
                         logger.error(
-                                I18N.getString(
+                                I18N.tr(
                                 "sif.simplePanel.bugInSIF"),
                                      e); //$NON-NLS-1$
-                        msgPanel.setError(I18N.getString(
+                        msgPanel.setError(I18N.tr(
                                 "sif.simplePanel.couldNotValidateDialog") //$NON-NLS-1$
                                 + e.getMessage());
                     }
@@ -395,40 +395,40 @@ public class SimplePanel extends JPanel {
                         ds.close();
                     } catch (DriverException e) {
                         logger.error(
-                                I18N.getString(
+                                I18N.tr(
                                 "sif.simplePanel.errorSavingSIFInput"),
                                      e); //$NON-NLS-1$
                         msgPanel.setError(
-                                I18N.getString(
+                                I18N.tr(
                                 "sif.simplePanel.cannotSaveInput")); //$NON-NLS-1$
                     } catch (NonEditableDataSourceException e) {
                         logger.error(
-                                I18N.getString(
+                                I18N.tr(
                                 "sif.simplePanel.errorSavingSIFInput"),
                                      e); //$NON-NLS-1$
-                        throw new RuntimeException(I18N.getString(
+                        throw new RuntimeException(I18N.tr(
                                 "sif.simplePanel.bug"), e); //$NON-NLS-1$
                     } catch (DriverLoadException e) {
                         logger.error(
-                                I18N.getString(
+                                I18N.tr(
                                 "sif.simplePanel.errorSavingSIFInput"),
                                      e); //$NON-NLS-1$
-                        throw new RuntimeException(I18N.getString(
+                        throw new RuntimeException(I18N.tr(
                                 "sif.simplePanel.bug"), e); //$NON-NLS-1$
                     } catch (NoSuchTableException e) {
                         logger.error(
-                                I18N.getString(
+                                I18N.tr(
                                 "sif.simplePanel.errorSavingSIFInput"),
                                      e); //$NON-NLS-1$
-                        throw new RuntimeException(I18N.getString(
+                        throw new RuntimeException(I18N.tr(
                                 "sif.simplePanel.bug"), e); //$NON-NLS-1$
                     } catch (DataSourceCreationException e) {
                         logger.error(
-                                I18N.getString(
+                                I18N.tr(
                                 "sif.simplePanel.errorSavingSIFInput"),
                                      e); //$NON-NLS-1$
                         msgPanel.setError(
-                                I18N.getString(
+                                I18N.tr(
                                 "sif.simplePanel.cannotSaveInput")); //$NON-NLS-1$
                     }
                 }
@@ -496,35 +496,35 @@ public class SimplePanel extends JPanel {
                             ds.close();
                         } catch (DriverException e) {
                             logger.error(
-                                    I18N.getString(
+                                    I18N.tr(
                                     "sif.simplePanel.errorRestoringSIFInput"),
                                          e); //$NON-NLS-1$
                             msgPanel.setError(
-                                    I18N.getString(
+                                    I18N.tr(
                                     "sif.simplePanel.cannotRestoreLastInput")); //$NON-NLS-1$
                         } catch (DriverLoadException e) {
                             logger.error(
-                                    I18N.getString(
+                                    I18N.tr(
                                     "sif.simplePanel.errorRestoringSIFInput"),
                                          e); //$NON-NLS-1$
                             msgPanel.setError(
-                                    I18N.getString(
+                                    I18N.tr(
                                     "sif.simplePanel.cannotRestoreLastInput")); //$NON-NLS-1$
                         } catch (NoSuchTableException e) {
                             logger.error(
-                                    I18N.getString(
+                                    I18N.tr(
                                     "sif.simplePanel.errorRestoringSIFInput"),
                                          e); //$NON-NLS-1$
                             msgPanel.setError(
-                                    I18N.getString(
+                                    I18N.tr(
                                     "sif.simplePanel.cannotRestoreLastInput")); //$NON-NLS-1$
                         } catch (DataSourceCreationException e) {
                             logger.error(
-                                    I18N.getString(
+                                    I18N.tr(
                                     "sif.simplePanel.errorRestoringSIFInput"),
                                          e); //$NON-NLS-1$
                             msgPanel.setError(
-                                    I18N.getString(
+                                    I18N.tr(
                                     "sif.simplePanel.cannotRestoreLastInput")); //$NON-NLS-1$
                         }
                     }

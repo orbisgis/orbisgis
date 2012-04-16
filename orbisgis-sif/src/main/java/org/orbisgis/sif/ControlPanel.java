@@ -52,7 +52,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.driver.DriverException;
-import org.orbisgis.utils.I18N;
+import org.orbisgis.sif.translation.I18N;
 import org.orbisgis.sif.icons.SifIcon;
 
 public class ControlPanel extends JPanel {
@@ -104,7 +104,7 @@ public class ControlPanel extends JPanel {
 		btnSave.setVisible(false);
 		btnSave.setIcon(SifIcon.getIcon("disk"));
 		btnSave.setToolTipText(I18N
-				.getString("sif.ControlPanel.SaveFavorite"));
+				.tr("sif.ControlPanel.SaveFavorite"));
 
 		btnSave.addActionListener(new ActionListener() {
 
@@ -122,7 +122,7 @@ public class ControlPanel extends JPanel {
 		btnDelete = new JButton();
 		btnDelete.setIcon(SifIcon.getIcon("cancel"));
 		btnDelete.setToolTipText(I18N
-				.getString("sif.ControlPanel.DeleteFavorite"));
+				.tr("sif.ControlPanel.DeleteFavorite"));
 		btnDelete.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -136,7 +136,7 @@ public class ControlPanel extends JPanel {
 		btnLoad = new JButton();
 		btnLoad.setIcon(SifIcon.getIcon("folder_user"));
 		btnLoad.setToolTipText(I18N
-				.getString("sif.ControlPanel.LoadFavorite"));
+				.tr("sif.ControlPanel.LoadFavorite"));
 		btnLoad.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -150,7 +150,7 @@ public class ControlPanel extends JPanel {
 		JButton btnCollapse = new JButton();
 		btnCollapse.setIcon(SifIcon.getIcon("go-previous"));
 		btnCollapse.setToolTipText(I18N
-				.getString("sif.ControlPanel.CollapseFavorites"));
+				.tr("sif.ControlPanel.CollapseFavorites"));
 		btnCollapse.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -172,13 +172,13 @@ public class ControlPanel extends JPanel {
 		this.setMinimumSize(new Dimension(100, 40));
 
 		collapsed = new JLabel(getVertical(I18N
-				.getString("sif.ControlPanel.Favorites")),
+				.tr("sif.ControlPanel.Favorites")),
                         SifIcon.getIcon("go-next"), JLabel.CENTER);
 		collapsed.setIconTextGap(20);
 		collapsed.setVerticalTextPosition(JLabel.BOTTOM);
 		collapsed.setHorizontalTextPosition(JLabel.CENTER);
 		collapsed.setToolTipText(I18N
-				.getString("sif.ControlPanel.ExpandFavorites"));
+				.tr("sif.ControlPanel.ExpandFavorites"));
 
 		this.add(collapsed, BorderLayout.WEST);
 		collapsed.addMouseListener(new MouseAdapter() {
