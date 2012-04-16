@@ -18,6 +18,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.sif.multiInputPanel.MultiInputPanel;
 import org.orbisgis.core.sif.multiInputPanel.StringType;
@@ -54,14 +55,19 @@ public class LegendTree extends JPanel {
                 StyleWrapper style = legendsPanel.getStyleWrapper();
                 //We create our tree
                 tree = new JTree();
+                //We don't want to display the root.
                 tree.setRootVisible(false);
+                //We have a custom model to provide...
                 LegendTreeModel ltm = new LegendTreeModel(tree, style);
                 tree.setModel(ltm);
+                //...and a custom TreeCellRenderer.
                 LegendCellRenderer lcr = new LegendCellRenderer();
                 tree.setCellRenderer(lcr);
+                //We refresh icons when the selection changes.
                 TreeSelectionListener tsl = EventHandler.create(TreeSelectionListener.class, this, "refreshIcons");
                 tree.addTreeSelectionListener(tsl);
-                initToolBar();
+                //We want to select only one element at a time.
+                tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
                 initButtons();
                 this.setLayout(new BorderLayout());
                 this.add(toolBar, BorderLayout.PAGE_START);
@@ -177,6 +183,10 @@ public class LegendTree extends JPanel {
                 return null;
         }
 
+        /**
+         * Refreshes the state of the icons contained in the toolbar of this
+         * panel.
+         */
         public void refreshIcons(){
                 //We must retrieve the index of the currently selected item in its
                 //parent to decide if we display the buttons or not.
@@ -220,16 +230,13 @@ public class LegendTree extends JPanel {
                 refreshModel();
         }
 
-        private void initToolBar(){
-                toolBar = new JToolBar();
-                toolBar.setFloatable(false);
-        }
-
         /**
          * Initialize all the buttons that can be used to manage the tree
          * content.
          */
         private void initButtons(){
+                toolBar = new JToolBar();
+                toolBar.setFloatable(false);
 
 		jButtonMenuUp = new JButton();
 		jButtonMenuUp.setIcon(OrbisGISIcon.GO_UP);
