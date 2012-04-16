@@ -36,33 +36,21 @@
  */
 package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 
-import java.awt.Component;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.legend.Legend;
 
 public class LegendElement {
 
-	private Component component;
 	private ILegendPanel legendPanel;
 	private String id;
 
-	public LegendElement(Component component, ILegendPanel legendPanel,
-			String id) {
-		this.component = component;
+	public LegendElement(ILegendPanel legendPanel, String id) {
 		this.legendPanel = legendPanel;
 		this.id = id;
 	}
 
 	public Legend getLegend() {
 		return legendPanel.getLegend();
-	}
-
-	public Component getComponent() {
-		return component;
-	}
-
-	public void setComponent(Component component) {
-		this.component = component;
 	}
 
 	public ILegendPanel getLegendPanel() {

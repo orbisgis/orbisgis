@@ -34,33 +34,16 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-/*
- * IPanelUI.java
- *
- * Created on 22 de febrero de 2008, 8:19
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
 
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.legend;
 
-import java.awt.Component;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendContext;
 import org.orbisgis.legend.Legend;
 
 /**
  * 
  * @author David Ortega
  */
-public interface ILegendPanel {
-	/**
-	 * This function will return the Component of the object (normally a
-	 * JPanel).
-	 * 
-	 * @return Component
-	 */
-	public Component getComponent();
+public interface ILegendPanel  extends IRulePanel {
 
 	/**
 	 * It will return the Legend created by all the variables in the panel.
@@ -77,16 +60,6 @@ public interface ILegendPanel {
 	public void setLegend(Legend legend);
 
 	/**
-	 * Initialize the legend. This method is called just after the legend
-	 * creation.
-	 * 
-	 * @param lc
-	 *            LegendContext is useful to get some information about the
-	 *            layer in edition.
-	 */
-	public void initialize(LegendContext lc);
-
-	/**
 	 * Returns true if this legend can be applied to the specified geometry
 	 * type.
 	 * 
@@ -98,14 +71,7 @@ public interface ILegendPanel {
 	public boolean acceptsGeometryType(int geometryType);
 
 	/**
-	 * Creates a new empty instance
-	 * 
-	 * @return
-	 */
-	public ILegendPanel newInstance();
-
-	/**
-	 * @return Null if the status of the edited legend is ok. An error message
+	 * @return {@code null} if the status of the edited legend is ok. An error message
 	 *         if the legend cannot be created
 	 */
 	public String validateInput();
