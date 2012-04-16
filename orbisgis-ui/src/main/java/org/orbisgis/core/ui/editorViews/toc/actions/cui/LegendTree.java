@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.*;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
@@ -56,7 +57,8 @@ public class LegendTree extends JPanel {
                 tree.setModel(ltm);
                 LegendCellRenderer lcr = new LegendCellRenderer();
                 tree.setCellRenderer(lcr);
-
+                TreeSelectionListener tsl = EventHandler.create(TreeSelectionListener.class, this, "refreshIcons");
+                tree.addTreeSelectionListener(tsl);
                 initToolBar();
                 initButtons();
                 this.setLayout(new BorderLayout());
@@ -75,12 +77,12 @@ public class LegendTree extends JPanel {
                         Legend leg = (Legend) select;
                         RuleWrapper rw = (RuleWrapper) tp.getPath()[tp.getPath().length -2];
                         rw.remove(leg);
-                        refreshModel();
+                        refresh();
                 } else if(select instanceof RuleWrapper){
                         RuleWrapper rw = (RuleWrapper) select;
                         StyleWrapper sw = (StyleWrapper) tp.getPath()[tp.getPath().length -2];
                         sw.remove(rw);
-                        refreshModel();
+                        refresh();
                 }
         }
 
@@ -103,7 +105,7 @@ public class LegendTree extends JPanel {
                                 addLegend();
                         }
                 }
-                refreshModel();
+                refresh();
         }
 
         /**
@@ -119,13 +121,13 @@ public class LegendTree extends JPanel {
                         StyleWrapper sw = legendsPanel.getStyleWrapper();
                         int i = sw.indexOf(rw);
                         sw.moveRuleWrapperUp(i);
-                        refreshModel();
+                        refresh();
                 } else if(select instanceof Legend){
                         RuleWrapper rw = (RuleWrapper) tp.getPath()[tp.getPath().length -2];
                         Legend leg = (Legend) select;
                         int i = rw.indexOf(leg);
                         rw.moveLegendUp(i);
-                        refreshModel();
+                        refresh();
                 }
         }
 
@@ -143,13 +145,13 @@ public class LegendTree extends JPanel {
                         StyleWrapper sw = legendsPanel.getStyleWrapper();
                         int i = tm.getIndexOfChild(sw, rw);
                         sw.moveRuleWrapperDown(i);
-                        refreshModel();
+                        refresh();
                 } else if(select instanceof Legend){
                         RuleWrapper rw = (RuleWrapper) tp.getPath()[tp.getPath().length -2];
                         Legend leg = (Legend) select;
                         int i = rw.indexOf(leg);
                         rw.moveLegendDown(i);
-                        refreshModel();
+                        refresh();
                 }
         }
 
@@ -173,13 +175,52 @@ public class LegendTree extends JPanel {
                 return null;
         }
 
-        private void initToolBar(){
-                toolBar = new JToolBar();
-                toolBar.setFloatable(false);
+        public void refreshIcons(){
+                //We must retrieve the index of the currently selected item in its
+                //parent to decide if we display the buttons or not.
+                TreePath tp = tree.getSelectionPath();
+                if(tp == null){
+                        jButtonMenuDel.setEnabled(false);
+                        jButtonMenuRename.setEnabled(false);
+                        jButtonMenuDown.setEnabled(false);
+                        jButtonMenuUp.setEnabled(false);
+                } else {
+                        jButtonMenuDel.setEnabled(true);
+                        jButtonMenuRename.setEnabled(true);
+                        Object last = tp.getLastPathComponent();
+                        int index=-1;
+                        int max=-1;
+                        if(last instanceof RuleWrapper){
+                                StyleWrapper sw = legendsPanel.getStyleWrapper();
+                                index = sw.indexOf((RuleWrapper) last);
+                                max = sw.getSize()-1;
+                        } else if(last instanceof Legend){
+                                RuleWrapper rw = getSelectedRule();
+                                index = rw.indexOf((Legend) last);
+                                max = rw.getSize()-1;
+                        }
+                        if(index ==0){
+                                jButtonMenuUp.setEnabled(false);
+                        } else {
+                                jButtonMenuUp.setEnabled(true);
+                        }
+                        if(index < max){
+                                jButtonMenuDown.setEnabled(true);
+                        } else {
+                                jButtonMenuDown.setEnabled(false);
+                        }
+
+                }
         }
 
         void refresh() {
+                refreshIcons();
                 refreshModel();
+        }
+
+        private void initToolBar(){
+                toolBar = new JToolBar();
+                toolBar.setFloatable(false);
         }
 
         /**
