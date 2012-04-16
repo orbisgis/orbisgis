@@ -34,11 +34,12 @@ import java.net.URL;
 import java.util.HashMap;
 import javax.swing.ImageIcon;
 import org.gdms.data.SQLDataSourceFactory;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
-import org.orbisgis.sif.translation.I18N;
 
 public class UIFactory {
-
+        protected final static I18n i18n = I18nFactory.getI18n(UIFactory.class);
 	private static HashMap<String, String> inputs = new HashMap<String, String>();
 	static File baseDir = new File(System.getProperty("user.home") //$NON-NLS-1$
 			+ File.separator + ".sif"); //$NON-NLS-1$
@@ -116,7 +117,7 @@ public class UIFactory {
 		AbstractOutsideFrame dlg;
 		if (panels.length == 0) {
 			throw new IllegalArgumentException(
-					I18N.tr("sif.uIFactory.atLeastAPanelHasToBeSpecified")); //$NON-NLS-1$
+					i18n.tr("sif.uIFactory.atLeastAPanelHasToBeSpecified")); //$NON-NLS-1$
 		} else if (panels.length == 1) {
 			if (okCancel) {
 				dlg = getSimpleDialog(panels[0]);
@@ -148,14 +149,14 @@ public class UIFactory {
 
 	public static void setPersistencyDirectory(File baseDir) {
 		if (!baseDir.exists()) {
-			throw new IllegalArgumentException(baseDir + I18N.tr("sif.uIFactory.doesntExist")); //$NON-NLS-1$
+			throw new IllegalArgumentException(baseDir + i18n.tr("sif.uIFactory.doesntExist")); //$NON-NLS-1$
 		}
 		UIFactory.baseDir = baseDir;
 	}
 
 	public static void setTempDirectory(File tempDir) {
 		if (!tempDir.exists()) {
-			throw new IllegalArgumentException(tempDir + I18N.tr("sif.uIFactory.doesntExist")); //$NON-NLS-1$
+			throw new IllegalArgumentException(tempDir + i18n.tr("sif.uIFactory.doesntExist")); //$NON-NLS-1$
 		}
 		dsf.setTempDir(tempDir.getAbsolutePath());
 	}

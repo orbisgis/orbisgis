@@ -35,11 +35,13 @@ import java.awt.event.*;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.event.ChangeEvent;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 public abstract class AbstractOutsideFrame extends JDialog implements
 		OutsideFrame, ContainerListener, KeyListener, MouseListener,
 		ActionListener, FocusListener {
-
+        protected final static I18n i18n = I18nFactory.getI18n(AbstractOutsideFrame.class);
 	private boolean accepted = false;
 
 	public AbstractOutsideFrame(Window owner) {

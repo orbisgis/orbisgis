@@ -34,7 +34,9 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.ImageIcon;
 import org.apache.log4j.Logger;
-import org.orbisgis.sif.translation.I18N;
+import org.orbisgis.sif.ColorPicker;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * @package org.orbisgis.sif.icons
@@ -52,6 +54,7 @@ import org.orbisgis.sif.translation.I18N;
 
 
 public class BaseIcon {
+    private final static I18n i18n = I18nFactory.getI18n(BaseIcon.class);
     private Map<String,ImageIcon> loadedIcons=new HashMap<String,ImageIcon>();/*!< This map contain all loaded icons */
     
     private final ImageIcon ORBISGIS_MISSING_ICON = new ImageIcon(BaseIcon.class.getResource("remove.png")); /*!< Icon displayed when the requested icon is not found */
@@ -84,7 +87,7 @@ public class BaseIcon {
                 loadedIcons.put(iconName, newIcon);
                 return newIcon;
             } else {
-                LOG.warn(I18N.tr("sif.icons.OrbisGISIcon.icon_not_found")+" : "+resourceName);
+                LOG.warn(i18n.tr("The following icon is not found : {0}",resourceName));
                 //The next time, return directly the missing icon
                 loadedIcons.put(iconName, ORBISGIS_MISSING_ICON); 
                 return ORBISGIS_MISSING_ICON;

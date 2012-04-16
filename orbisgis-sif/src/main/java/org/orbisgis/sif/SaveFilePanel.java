@@ -34,7 +34,6 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.plaf.FileChooserUI;
 import javax.swing.plaf.basic.BasicFileChooserUI;
-import org.orbisgis.sif.translation.I18N;
 
 public class SaveFilePanel extends OpenFilePanel {
 
@@ -81,10 +80,10 @@ public class SaveFilePanel extends OpenFilePanel {
 	public String validateInput() {
 		File file = getSelectedFile();
 		if (file == null) {
-			return I18N.tr("A file must be selected");
+			return i18n.tr("A file must be selected");
 		} else if (fileMustNotExist) {
 			if (getSelectedFile().exists()) {
-				return I18N.tr("The file already exists");
+				return i18n.tr("The file already exists");
 			} else {
 				return null;
 			}
@@ -105,9 +104,9 @@ public class SaveFilePanel extends OpenFilePanel {
 	@Override
 	public String postProcess() {
 		if (getSelectedFile().exists()) {
-			int ret = JOptionPane.showConfirmDialog(null, I18N
+			int ret = JOptionPane.showConfirmDialog(null, i18n
 					.tr("sif.file.fileAlreadyExists")
-					+ " " + I18N.tr("sif.file.overwrite"), I18N
+					+ " " + i18n.tr("sif.file.overwrite"), i18n
 					.tr("sif.file.existing"),
 					JOptionPane.YES_NO_OPTION);
 			if (ret == JOptionPane.NO_OPTION || ret == JOptionPane.CLOSED_OPTION) {

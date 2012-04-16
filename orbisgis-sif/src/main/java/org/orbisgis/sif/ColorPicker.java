@@ -31,7 +31,8 @@ package org.orbisgis.sif;
 import java.awt.Color;
 import java.awt.Component;
 import java.net.URL;
-import org.orbisgis.sif.translation.I18N;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * ColorPicker.java
@@ -41,7 +42,7 @@ import org.orbisgis.sif.translation.I18N;
  * @author david
  */
 public class ColorPicker extends javax.swing.JPanel implements UIPanel {
-
+        private final static I18n i18n = I18nFactory.getI18n(ColorPicker.class);
 	/** Creates new form ColorPicker */
 	public ColorPicker() {
 		initComponents();
@@ -96,11 +97,11 @@ public class ColorPicker extends javax.swing.JPanel implements UIPanel {
 	}
 
 	public String getInfoText() {
-		return I18N.tr("sif.ColorPicker.InfoText");
+		return i18n.tr("sif.ColorPicker.InfoText");
 	}
 
 	public String getTitle() {
-		return I18N.tr("sif.ColorPicker.Title");
+		return i18n.tr("sif.ColorPicker.Title");
 	}
 
 	public String initialize() {

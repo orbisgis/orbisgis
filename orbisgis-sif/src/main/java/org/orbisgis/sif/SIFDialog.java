@@ -39,7 +39,6 @@ import java.util.HashMap;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-import org.orbisgis.sif.translation.I18N;
 
 public class SIFDialog extends AbstractOutsideFrame {
 
@@ -59,7 +58,7 @@ public class SIFDialog extends AbstractOutsideFrame {
 	private void init(boolean okCancel) {
 		this.setLayout(new BorderLayout());
 
-		btnOk = new JButton(I18N.tr("sif.ok"));
+		btnOk = new JButton(i18n.tr("sif.ok"));
 		btnOk.setBorderPainted(false);
 		btnOk.addActionListener(new ActionListener() {
 
@@ -70,7 +69,7 @@ public class SIFDialog extends AbstractOutsideFrame {
 
 		});
 		getRootPane().setDefaultButton(btnOk);
-		btnCancel = new JButton(I18N.tr("sif.cancel"));
+		btnCancel = new JButton(i18n.tr("sif.cancel"));
 		btnCancel.setBorderPainted(false);
 		btnCancel.addActionListener(new ActionListener() {
 

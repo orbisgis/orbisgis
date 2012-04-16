@@ -34,11 +34,12 @@ import java.net.URL;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
-import org.orbisgis.sif.translation.I18N;
 
 public class DynamicUIPanel implements SQLUIPanel {
-
+        protected final static I18n i18n = I18nFactory.getI18n(DynamicUIPanel.class);
 	private String[] errorMsgs;
 	private String[] expressions;
 	private int[] types;
@@ -132,7 +133,7 @@ public class DynamicUIPanel implements SQLUIPanel {
 
 		if (index == -1) {
 			throw new IllegalArgumentException(
-					I18N.tr("sif.dynamicUIPanel.thereIsNoFieldWithName") + fieldName); //$NON-NLS-1$
+					i18n.tr("sif.dynamicUIPanel.thereIsNoFieldWithName") + fieldName); //$NON-NLS-1$
 		}
 
 		return txts[index].getText();

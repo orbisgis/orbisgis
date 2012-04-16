@@ -29,9 +29,11 @@
 package org.orbisgis.sif;
 
 import java.net.URL;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 public abstract class AbstractUIPanel implements UIPanel {
-
+        protected final static I18n i18n = I18nFactory.getI18n(AbstractUIPanel.class);
 	@Override
 	public URL getIconURL() {
 		return UIFactory.getDefaultIcon();
