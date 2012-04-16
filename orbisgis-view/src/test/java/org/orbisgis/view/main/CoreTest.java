@@ -29,10 +29,10 @@
 package org.orbisgis.view.main;
 
 import bibliothek.gui.dock.common.intern.DefaultCDockable;
+import java.awt.GraphicsEnvironment;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import javax.swing.SwingUtilities;
-import junit.framework.TestCase;
 import org.gdms.driver.MemoryDriver;
 import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.source.SourceManager;
@@ -44,30 +44,34 @@ import org.orbisgis.view.geocatalog.Catalog;
 import org.orbisgis.view.geocatalog.SourceListModel;
 import org.orbisgis.view.geocatalog.filters.IFilter;
 import org.orbisgis.view.main.geocatalog.filters.UnitTestFilterFactory;
+        
 /**
  * Unit Test of org.orbisgis.view.main.Core
  */
-public class CoreTest extends TestCase {
+public class CoreTest {
     Core instance;
-    public CoreTest(String testName) {
-        super(testName);
+    public CoreTest() {
         
     }   
 
     /**
      * Test of startup method, of class Core.
      */
-    @Before@Override
+    @Before
     public void setUp() {
+        org.junit.Assume.assumeTrue(!GraphicsEnvironment.isHeadless()); 
         System.out.println("startup");
         instance = new Core();
         instance.startup();
     }
+    
+    
     /**
      * Test adding custom filter factory to the GeoCatalog
      */
     @Test
     public void testGeoCatalogSuppliedFilter() {
+        org.junit.Assume.assumeTrue(!GraphicsEnvironment.isHeadless()); 
          //Retrieve instance of View And Gdms managers
         Catalog geoCatalog = instance.getGeoCatalog();
         SourceListModel UImodel = ((SourceListModel)geoCatalog.getSourceList().getModel());
@@ -85,7 +89,7 @@ public class CoreTest extends TestCase {
                 break;
             }
         }
-        assertTrue(filterFounds);
+        org.junit.Assert.assertTrue(filterFounds);
         //Remove the filter
         geoCatalog.getFilterFactoryManager().removeFilters(unitTestFactory.getFactoryId());        
     }
@@ -96,6 +100,7 @@ public class CoreTest extends TestCase {
      */
     @Test
     public void testGeoCatalogLinkWithDataSourceManager() throws InterruptedException, InvocationTargetException {
+        org.junit.Assume.assumeTrue(!GraphicsEnvironment.isHeadless()); 
         //Retrieve instance of View And Gdms managers
         Catalog geoCatalog = instance.getGeoCatalog();
         SourceManager gdmsSourceManager = instance.getMainContext().getDataSourceFactory().getSourceManager();
@@ -112,13 +117,13 @@ public class CoreTest extends TestCase {
         //Wait
         SwingUtilities.invokeAndWait(new DummyThread());
         //Test if the GeoCatalog has successfully listen to the event
-        assertTrue(nbsource==geoCatalog.getSourceList().getModel().getSize()-1);
+        org.junit.Assert.assertTrue(nbsource==geoCatalog.getSourceList().getModel().getSize()-1);
         //Remove the source
         gdmsSourceManager.remove(nameoftable);
         //Wait
         SwingUtilities.invokeAndWait(new DummyThread());
         //Test if the GeoCatalog has successfully listen to the event
-        assertTrue(nbsource==geoCatalog.getSourceList().getModel().getSize());
+        org.junit.Assert.assertTrue(nbsource==geoCatalog.getSourceList().getModel().getSize());
         //Set back the filters
         UImodel.setFilters(filters);
     }
@@ -134,6 +139,7 @@ public class CoreTest extends TestCase {
      */
     @Test
     public void testDockingParameterChange() {
+        org.junit.Assume.assumeTrue(!GraphicsEnvironment.isHeadless()); 
         String newTitle = "new dummy name";
         //Create the instance of the panel
         DummyViewPanel dummyPanel = new DummyViewPanel();
@@ -144,20 +150,21 @@ public class CoreTest extends TestCase {
         DefaultCDockable dockedDummy = instance.getDockManager().getDockable(dummyPanel);
         
         //Test if the original title is shown
-        assertTrue(dockedDummy.getTitleText().equals(DummyViewPanel.OLD_TITLE));
+        org.junit.Assert.assertTrue(dockedDummy.getTitleText().equals(DummyViewPanel.OLD_TITLE));
         
         //Change the docking title from the panel
         dummyPanel.setTitle(newTitle);
         
         //Test if the new title is shown on the DockingFrames
-        assertTrue(dockedDummy.getTitleText().equals(newTitle));
+        org.junit.Assert.assertTrue(dockedDummy.getTitleText().equals(newTitle));
         
     }
     /**
      * Test of shutdown method, of class Core.
      */
-    @After@Override
+    @After
     public void tearDown() {
+        org.junit.Assume.assumeTrue(!GraphicsEnvironment.isHeadless()); 
         System.out.println("dispose");
         instance.dispose();
     }
