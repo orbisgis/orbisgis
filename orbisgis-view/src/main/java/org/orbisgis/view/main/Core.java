@@ -32,6 +32,7 @@ import java.awt.Rectangle;
 import java.awt.event.WindowListener;
 import java.beans.EventHandler;
 import java.io.File;
+import java.util.Locale;
 import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.context.main.MainContext;

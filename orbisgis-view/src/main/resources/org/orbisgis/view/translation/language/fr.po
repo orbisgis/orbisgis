@@ -1,4 +1,3 @@
-# Nicolas Fortin <nicolas.fortin@ec-nantes.fr>, 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: OrbisGis 4.0\n"
