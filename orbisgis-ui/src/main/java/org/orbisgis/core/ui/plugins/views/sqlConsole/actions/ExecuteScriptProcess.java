@@ -173,6 +173,11 @@ public class ExecuteScriptProcess implements BackgroundJob {
                                                 + st.getSQL(), e);
                                         break;
                                 }
+                                
+                                // DO NOT REMOVE
+                                // lets the GC remove a statement while the following ones are executed,
+                                // since we have no use for it now.
+                                statements[i] = null;
 
                                 pm.progressTo(100 * i / statements.length);
                         }
