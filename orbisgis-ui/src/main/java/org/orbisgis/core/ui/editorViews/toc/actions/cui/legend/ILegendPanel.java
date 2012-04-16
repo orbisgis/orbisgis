@@ -70,12 +70,6 @@ public interface ILegendPanel  extends IRulePanel {
 	 */
 	public boolean acceptsGeometryType(int geometryType);
 
-	/**
-	 * @return {@code null} if the status of the edited legend is ok. An error message
-	 *         if the legend cannot be created
-	 */
-	public String validateInput();
-
         /**
          * Copy the {@code Legend} instance associated to this 
          * {@code ILegendPanel}. It is faster than copying the whole panel.

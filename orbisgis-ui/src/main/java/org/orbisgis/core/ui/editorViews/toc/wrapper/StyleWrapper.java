@@ -5,6 +5,7 @@
 package org.orbisgis.core.ui.editorViews.toc.wrapper;
 
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import org.orbisgis.core.renderer.se.Style;
 
@@ -138,6 +139,14 @@ public class StyleWrapper {
                         }
                 }
                 return false;
+        }
+
+        public List<String> validateInput() {
+                LinkedList<String> ll= new LinkedList<String>();
+                for(RuleWrapper rw :ruleWrappers){
+                      ll.addAll(rw.validateInput());
+                }
+                return ll;
         }
 
 }

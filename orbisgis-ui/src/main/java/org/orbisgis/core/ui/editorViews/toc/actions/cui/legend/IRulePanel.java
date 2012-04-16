@@ -51,4 +51,10 @@ public interface IRulePanel {
          */
         public void setId(String newId);
 
+	/**
+	 * @return {@code null} if the status of the edited legend is ok. An error message
+	 *         if the legend cannot be created
+	 */
+	public String validateInput();
+
 }

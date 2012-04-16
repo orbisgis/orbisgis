@@ -159,4 +159,36 @@ public class PnlRule extends JPanel implements IRulePanel {
                 }
         }
 
+        @Override
+        public String validateInput() {
+		String minScale = txtMinScale.getText();
+		String maxScale = txtMaxScale.getText();
+                StringBuilder stringBuilder = new StringBuilder();
+
+		if (minScale.trim().length() != 0) {
+			try {
+				Integer.parseInt(minScale);
+			} catch (NumberFormatException e) {
+                                stringBuilder.append(
+                                        I18N.getString("orbisgis.org.orbisgis.ui.toc.legendsPanel.minScaleIsNotAValidNumber"));
+
+			}
+		}
+		if (maxScale.trim().length() != 0) {
+			try {
+				Integer.parseInt(maxScale);
+			} catch (NumberFormatException e) {
+                                stringBuilder.append("\n");
+                                stringBuilder.append(
+                                        I18N.getString("orbisgis.org.orbisgis.ui.toc.legendsPanel.maxScaleIsNotAValidNumber"));
+			}
+		}
+                String res = stringBuilder.toString();
+                if(res != null && !res.isEmpty()){
+                        return res;
+                } else {
+                        return null;
+                }
+        }
+
 }

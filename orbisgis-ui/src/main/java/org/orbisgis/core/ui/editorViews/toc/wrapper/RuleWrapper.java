@@ -6,7 +6,9 @@ package org.orbisgis.core.ui.editorViews.toc.wrapper;
 
 import java.awt.Component;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Symbolizer;
@@ -210,6 +212,21 @@ public class RuleWrapper {
                 panel = new PnlRule();
                 panel.setRule(rule);
                 panel.setId(LegendsPanel.getNewId());
+        }
+
+        List<String> validateInput() {
+                LinkedList<String> ll = new LinkedList<String>();
+                String ps = panel.validateInput();
+                if(ps != null && !ps.isEmpty()){
+                        ll.add(ps);
+                }
+                for(ILegendPanel ilp : legends){
+                        String s = ilp.validateInput();
+                        if(s!= null && !s.isEmpty()){
+                                ll.add(s);
+                        }
+                }
+                return ll;
         }
 
 }

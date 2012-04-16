@@ -41,12 +41,10 @@ import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryTypeConstraint;
@@ -92,8 +90,6 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 
 	private static final String NO_LEGEND_ID = "no-legend"; 
 	private int geometryType;
-	private ArrayList<ILegendPanel> legends = new ArrayList<ILegendPanel>();
-//	private LegendList legendList;
         private LegendTree legendTree;
 	private ILegendPanel[] availableLegends;
 	private JPanel pnlContainer;
@@ -209,14 +205,6 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		return new NoPanel(legend);
 	}
 
-	public Legend[] getLegends() {
-		Legend[] ret = new Legend[legends.size()];
-		for (int i = 0; i < ret.length; i++) {
-			ret[i] = legends.get(i).getLegend();
-		}
-		return ret;
-	}
-
 	public ILegendPanel[] getAvailableLegends() {
 		return availableLegends;
 	}
@@ -258,8 +246,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 	}
 
 	public void legendRemoved(int index) {
-		legends.remove(index);
-		refresh();
+		refreshLegendContainer();
 	}
 
 	public void legendAdded(ILegendPanel panel) {
@@ -277,7 +264,6 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 	}
 
 	private void addLegend(ILegendPanel le) {
-		legends.add(le);
 		pnlContainer.add(le.getComponent(), le.getId());
 		le.initialize(this);
 		refresh();
@@ -293,26 +279,12 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 	}
 
 	public void legendRenamed(int idx, String newName) {
-		legends.get(idx).getLegend().setName(newName);
+//		legends.get(idx).getLegend().setName(newName);
 		refresh();
-	}
-
-	public void legendMovedDown(int idx) {
-//		LegendElement aux = legends.get(idx);
-//		legends.set(idx, legends.get(idx + 1));
-//		legends.set(idx + 1, aux);
-//		refresh();
 	}
 
 	public void legendSelected() {
 		refreshLegendContainer();
-	}
-
-	public void legendMovedUp(int idx) {
-//		LegendElement aux = legends.get(idx);
-//		legends.set(idx, legends.get(idx - 1));
-//		legends.set(idx - 1, aux);
-//		refresh();
 	}
 
         @Override
@@ -350,46 +322,19 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		if (!legendTree.hasLegend()) {
 			return I18N.getString("orbisgis.org.orbisgis.ui.toc.legendsPanel.mustCreateAlmostOneLegend"); 
 		}
-
-		for (ILegendPanel legendElement : legends) {
-			String panelError = legendElement.validateInput();
-			if (panelError != null) {
-				return panelError;
-			}
-		}
-
-//		String error = validateScale(txtMinScale);
-//		if (error != null) {
-//			return error;
-//		}
-//
-//		error = validateScale(txtMaxScale);
-//		if (error != null) {
-//			return error;
-//		}
-
+                List<String> errors = styleWrapper.validateInput();
+                StringBuilder sb = new StringBuilder();
+                for(String s : errors){
+                        if(s!=null && !s.isEmpty()){
+                                sb.append(s);
+                                sb.append("\n");
+                        }
+                }
+                String err = sb.toString();
+                if(err != null && !err.isEmpty()){
+                        return err;
+                }
 		return null;
-	}
-
-	private String validateScale(JTextField txt) {
-		String minScale = txt.getText();
-		if (minScale.trim().length() != 0) {
-			try {
-				Integer.parseInt(minScale);
-			} catch (NumberFormatException e) {
-				return I18N.getString("orbisgis.org.orbisgis.ui.toc.legendsPanel.minScaleIsNotAValidNumber"); 
-			}
-		}
-
-		return null;
-	}
-
-	public List<String> getLegendsNames() {
-		List<String> ret = new ArrayList<String>(legends.size());
-		for (ILegendPanel le : legends) {
-			ret.add(le.getLegend().getName());
-		}
-		return ret;
 	}
 
         @Override
