@@ -126,4 +126,18 @@ public class StyleWrapper {
                 return style;
         }
 
+        /**
+         * Checks that the tree under this {@code StyleWrapper} contains at
+         * least one {@code Legend}.
+         * @return
+         */
+        public boolean hasLegend() {
+                for(RuleWrapper rw : ruleWrappers){
+                        if(rw.hasLegend()){
+                                return true;
+                        }
+                }
+                return false;
+        }
+
 }

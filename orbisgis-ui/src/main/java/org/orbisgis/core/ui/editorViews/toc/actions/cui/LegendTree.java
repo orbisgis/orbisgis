@@ -63,11 +63,14 @@ public class LegendTree extends JPanel {
                 //...and a custom TreeCellRenderer.
                 LegendCellRenderer lcr = new LegendCellRenderer();
                 tree.setCellRenderer(lcr);
+                //We want to select only one element at a time.
+                tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
                 //We refresh icons when the selection changes.
                 TreeSelectionListener tsl = EventHandler.create(TreeSelectionListener.class, this, "refreshIcons");
                 tree.addTreeSelectionListener(tsl);
-                //We want to select only one element at a time.
-                tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+                //We refresh the CardLayout of the associated LegendsPanel
+                TreeSelectionListener tslb = EventHandler.create(TreeSelectionListener.class,legendsPanel,"legendSelected");
+                tree.addTreeSelectionListener(tslb);
                 initButtons();
                 this.setLayout(new BorderLayout());
                 this.add(toolBar, BorderLayout.PAGE_START);
@@ -82,7 +85,7 @@ public class LegendTree extends JPanel {
                 TreePath tp = tree.getSelectionPath();
                 Object select = tp.getLastPathComponent();
                 LegendTreeModel tm = (LegendTreeModel) tree.getModel();
-                if(select instanceof Legend){
+                if(select instanceof ILegendPanel){
                         RuleWrapper rw = (RuleWrapper) tp.getPath()[tp.getPath().length -2];
                         tm.removeElement(rw, select);
                         refreshIcons();
@@ -124,7 +127,7 @@ public class LegendTree extends JPanel {
                         LegendTreeModel tm = (LegendTreeModel) tree.getModel();
                         tm.moveElementUp(tm.getRoot(), select);
                         refreshIcons();
-                } else if(select instanceof Legend){
+                } else if(select instanceof ILegendPanel){
                         RuleWrapper rw = (RuleWrapper) tp.getPath()[tp.getPath().length -2];
                         LegendTreeModel tm = (LegendTreeModel) tree.getModel();
                         tm.moveElementUp(rw, select);
@@ -142,7 +145,7 @@ public class LegendTree extends JPanel {
                         LegendTreeModel tm = (LegendTreeModel) tree.getModel();
                         tm.moveElementDown(tm.getRoot(), select);
                         refreshIcons();
-                } else if(select instanceof Legend){
+                } else if(select instanceof ILegendPanel){
                         RuleWrapper rw = (RuleWrapper) tp.getPath()[tp.getPath().length -2];
                         LegendTreeModel tm = (LegendTreeModel) tree.getModel();
                         tm.moveElementDown(rw, select);
@@ -159,12 +162,12 @@ public class LegendTree extends JPanel {
          * Otherwise, we return null.
          * @return
          */
-        public Legend getSelectedLegend(){
+        public ILegendPanel getSelectedLegend(){
                 TreePath tp = tree.getSelectionPath();
                 if(tp!=null){
                         Object last = tp.getLastPathComponent();
-                        if(last instanceof Legend){
-                                return (Legend) last;
+                        if(last instanceof ILegendPanel){
+                                return (ILegendPanel) last;
                         }
                 }
                 return null;
@@ -193,9 +196,9 @@ public class LegendTree extends JPanel {
                                 StyleWrapper sw = legendsPanel.getStyleWrapper();
                                 index = sw.indexOf((RuleWrapper) last);
                                 max = sw.getSize()-1;
-                        } else if(last instanceof Legend){
+                        } else if(last instanceof ILegendPanel){
                                 RuleWrapper rw = getSelectedRule();
-                                index = rw.indexOf((Legend) last);
+                                index = rw.indexOf((ILegendPanel) last);
                                 max = rw.getSize()-1;
                         }
                         if(index ==0){
@@ -210,6 +213,15 @@ public class LegendTree extends JPanel {
                         }
 
                 }
+        }
+
+        /**
+         * Tests if we have a legend in our tree.
+         * @return
+         */
+        public boolean hasLegend() {
+                LegendTreeModel ltm = (LegendTreeModel)tree.getModel();
+                return ltm.hasLegend();
         }
 
         void refresh() {
@@ -289,7 +301,10 @@ public class LegendTree extends JPanel {
 
 		if (UIFactory.showDialog(legendPicker)) {
                         //We retrieve the legend we want to add
-                        Legend leg = ((ILegendPanel) legendPicker.getSelected()).copyLegend();
+                        ILegendPanel ilp = (ILegendPanel) legendPicker.getSelected();
+                        Legend leg = ilp.copyLegend();
+                        ilp.setLegend(leg);
+
                         //We retrieve the rw where we will add it.
                         RuleWrapper currentrw = getSelectedRule();
                         if(currentrw == null ){
@@ -299,9 +314,9 @@ public class LegendTree extends JPanel {
                                 currentrw = sw.getRuleWrapper(sw.getSize()-1);
                         }
                         //We retrieve the index where to put it.
-                        Legend sl = getSelectedLegend();
+                        ILegendPanel sl = getSelectedLegend();
                         LegendTreeModel tm = (LegendTreeModel) tree.getModel();
-                        tm.addElement(currentrw, leg, sl);
+                        tm.addElement(currentrw, ilp, sl);
                 }
         }
 
@@ -357,14 +372,14 @@ public class LegendTree extends JPanel {
                                 boolean expanded, boolean leaf, int row, boolean hasFocus) {
                         if(value instanceof RuleWrapper){
                                 return getComponent((RuleWrapper) value, selected);
-                        } else if(value instanceof Legend){
-                                return getComponent((Legend) value, selected);
+                        } else if(value instanceof ILegendPanel){
+                                return getComponent((ILegendPanel) value, selected);
                         }
                         return new JLabel("root");
                 }
 
-                private Component getComponent(Legend legend, boolean selected) {
-                        JLabel lab = new JLabel(legend.getName());
+                private Component getComponent(ILegendPanel legend, boolean selected) {
+                        JLabel lab = new JLabel(legend.getLegend().getName());
                         lab.setForeground(selected ? SELECTED : DESELECTED);
                         lab.setBackground(Color.blue);
                         return lab;

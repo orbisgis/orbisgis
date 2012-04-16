@@ -10,7 +10,6 @@ import javax.swing.tree.TreePath;
 import org.orbisgis.core.ui.components.resourceTree.AbstractTreeModel;
 import org.orbisgis.core.ui.editorViews.toc.wrapper.RuleWrapper;
 import org.orbisgis.core.ui.editorViews.toc.wrapper.StyleWrapper;
-import org.orbisgis.legend.Legend;
 
 /**
  * This tree model is used in the legend edition panel. Its depth is only 2 :
@@ -64,7 +63,7 @@ public class LegendTreeModel extends  AbstractTreeModel {
 
         @Override
         public boolean isLeaf(Object node) {
-                return node instanceof Legend;
+                return node instanceof ILegendPanel;
         }
 
         @Override
@@ -75,8 +74,8 @@ public class LegendTreeModel extends  AbstractTreeModel {
         public int getIndexOfChild(Object parent, Object child) {
                 if(parent instanceof StyleWrapper && child instanceof RuleWrapper){
                         return getIndexOfChild((StyleWrapper) parent, (RuleWrapper) child);
-                } else if(parent instanceof RuleWrapper && child instanceof Legend){
-                        return getIndexOfChild((RuleWrapper) parent, (Legend) child);
+                } else if(parent instanceof RuleWrapper && child instanceof ILegendPanel){
+                        return getIndexOfChild((RuleWrapper) parent, (ILegendPanel) child);
                 } else {
                         return -1;
                 }
@@ -95,11 +94,11 @@ public class LegendTreeModel extends  AbstractTreeModel {
          *      newElt.
          */
         public void addElement(Object parent, Object newElt, Object current){
-                if(parent instanceof RuleWrapper && newElt instanceof Legend){
-                        if(current instanceof Legend){
-                                addElement((RuleWrapper) parent, (Legend) newElt, (Legend) current);
+                if(parent instanceof RuleWrapper && newElt instanceof ILegendPanel){
+                        if(current instanceof ILegendPanel){
+                                addElement((RuleWrapper) parent, (ILegendPanel) newElt, (ILegendPanel) current);
                         } else {
-                                addElement((RuleWrapper) parent, (Legend) newElt, null);
+                                addElement((RuleWrapper) parent, (ILegendPanel) newElt, null);
                         }
                 } else if(parent instanceof StyleWrapper && newElt instanceof RuleWrapper){
                         if(current instanceof RuleWrapper){
@@ -119,14 +118,14 @@ public class LegendTreeModel extends  AbstractTreeModel {
          *      is a {@code RuleWrapper}, must be a {@code Legend}.
          */
         public void removeElement(Object parent, Object oldElt){
-                if(parent instanceof RuleWrapper && oldElt instanceof Legend){
-                        removeElement((RuleWrapper) parent, (Legend) oldElt);
+                if(parent instanceof RuleWrapper && oldElt instanceof ILegendPanel){
+                        removeElement((RuleWrapper) parent, (ILegendPanel) oldElt);
                 } else if(parent instanceof StyleWrapper && oldElt instanceof RuleWrapper){
                         removeElement((RuleWrapper) oldElt);
                 }
         }
 
-        private void removeElement(RuleWrapper rw, Legend old){
+        private void removeElement(RuleWrapper rw, ILegendPanel old){
                 int pos = rw.indexOf(old);
                 if(pos >=0){
                         rw.remove(old);
@@ -163,8 +162,8 @@ public class LegendTreeModel extends  AbstractTreeModel {
          *      is a {@code RuleWrapper}, must be a {@code Legend}.
          */
         public void moveElementDown(Object parent, Object elt){
-                if(parent instanceof RuleWrapper && elt instanceof Legend){
-                        moveElementDown((RuleWrapper) parent, (Legend) elt);
+                if(parent instanceof RuleWrapper && elt instanceof ILegendPanel){
+                        moveElementDown((RuleWrapper) parent, (ILegendPanel) elt);
                 } else if(parent instanceof StyleWrapper && elt instanceof RuleWrapper){
                         moveElementDown((RuleWrapper) elt);
                 }
@@ -181,11 +180,20 @@ public class LegendTreeModel extends  AbstractTreeModel {
          *      is a {@code RuleWrapper}, must be a {@code Legend}.
          */
         public void moveElementUp(Object parent, Object elt){
-                if(parent instanceof RuleWrapper && elt instanceof Legend){
-                        moveElementUp((RuleWrapper) parent, (Legend) elt);
+                if(parent instanceof RuleWrapper && elt instanceof ILegendPanel){
+                        moveElementUp((RuleWrapper) parent, (ILegendPanel) elt);
                 } else if(parent instanceof StyleWrapper && elt instanceof RuleWrapper){
                         moveElementUp((RuleWrapper) elt);
                 }
+        }
+
+        /**
+         * Checks that there is at least one {@code Legend} under this {@code
+         * TreeModel}.
+         * @return
+         */
+        public boolean hasLegend(){
+                return root.hasLegend();
         }
 
         private void addElement(RuleWrapper newElt, RuleWrapper current){
@@ -205,7 +213,7 @@ public class LegendTreeModel extends  AbstractTreeModel {
                 fireNodeInserted(tme);
         }
 
-        private void addElement(RuleWrapper parent, Legend newElt, Legend current){
+        private void addElement(RuleWrapper parent, ILegendPanel newElt, ILegendPanel current){
                 int pos;
                 if(current == null){
                         pos = parent.getSize();
@@ -227,7 +235,7 @@ public class LegendTreeModel extends  AbstractTreeModel {
          * @param rw
          * @param l
          */
-        private void moveElementDown(RuleWrapper rw, Legend l){
+        private void moveElementDown(RuleWrapper rw, ILegendPanel l){
                 int i = rw.indexOf(l);
                 rw.moveLegendDown(i);
                 TreeModelEvent tme = new TreeModelEvent(
@@ -249,7 +257,7 @@ public class LegendTreeModel extends  AbstractTreeModel {
                 fireStructureChanged(tme);
         }
 
-        private void moveElementUp(RuleWrapper rw, Legend l){
+        private void moveElementUp(RuleWrapper rw, ILegendPanel l){
                 int i = rw.indexOf(l);
                 rw.moveLegendUp(i);
                 TreeModelEvent tme = new TreeModelEvent(
@@ -274,7 +282,7 @@ public class LegendTreeModel extends  AbstractTreeModel {
                 return null;
         }
 
-        private Legend getChild(RuleWrapper r, int i){
+        private ILegendPanel getChild(RuleWrapper r, int i){
                 if(i>=0 && i<r.getSize()){
                         return r.getLegend(i);
                 }
@@ -285,7 +293,7 @@ public class LegendTreeModel extends  AbstractTreeModel {
                 return sw.indexOf(rw);
         }
 
-        private int getIndexOfChild(RuleWrapper rw, Legend leg){
+        private int getIndexOfChild(RuleWrapper rw, ILegendPanel leg){
                 return rw.indexOf(leg);
         }
 

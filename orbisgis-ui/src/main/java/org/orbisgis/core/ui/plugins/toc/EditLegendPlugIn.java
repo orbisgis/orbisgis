@@ -126,24 +126,9 @@ public class EditLegendPlugIn extends AbstractPlugIn {
                         //we produce a copy of our style.
                         JAXBElement<StyleType> jest = style.getJAXBElement();
                         Style copy = new Style(jest, layer);
-                        //We retrieve the Rules
-                        List<Rule> rules = copy.getRules();
-                        //For each Rule, we try to produce a Legend analysis
-                        //using the new Legend API.
-                        List<RuleWrapper> listRW=new LinkedList<RuleWrapper>();
-                        for(Rule r : rules){
-                                List<Symbolizer> sym = r.getCompositeSymbolizer().getSymbolizerList();
-                                List<Legend> ll = new LinkedList<Legend>();
-                                for(Symbolizer s : sym){
-                                        ll.add(LegendFactory.getLegend(s));
-                                }
-                                RuleWrapper rw = new RuleWrapper(r, ll);
-                                listRW.add(rw);
-                        }
-                        StyleWrapper sw = new StyleWrapper(copy, listRW);
 			ILegendPanel[] legends = EPLegendHelper.getLegendPanels(pan);
 			ISymbolEditor[] symbolEditors = EPLegendHelper.getSymbolPanels();
-			pan.init(mt, typ, sw, legends, symbolEditors, layer);
+			pan.init(mt, typ, copy, legends, symbolEditors, layer);
 			if (UIFactory.showDialog(pan)) {
 				try {
                                         layer.setStyle(pan.getStyleWrapper().getStyle());

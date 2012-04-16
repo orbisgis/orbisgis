@@ -267,7 +267,7 @@ public class LegendList extends JPanel {
 	 *
 	 */
 	public void jList1ValueChanged() {
-                legendsPanel.legendSelected(list.getSelectedIndex());
+                legendsPanel.legendSelected();
                 refresh();
 	}
 

@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.legend.Legend;
 
 /**
@@ -21,14 +22,14 @@ import org.orbisgis.legend.Legend;
 public class RuleWrapper {
 
         private Rule rule;
-        private List<Legend> legends;
+        private List<ILegendPanel> legends;
 
         /**
          * Build a {@code RuleWrapper} from scratch, with an empty list of 
          * {@code Legend} and an empty {@code Rule}.
          */
         public RuleWrapper(){
-                legends = new ArrayList<Legend>();
+                legends = new ArrayList<ILegendPanel>();
                 rule = new Rule();
         }
 
@@ -52,7 +53,7 @@ public class RuleWrapper {
          * @throws IllegalArgumentException if the symbolizers contained in the
          * {@code Legend} instances and in the {@code Rule} mismatch.
          */
-        public RuleWrapper(Rule r, List<Legend> l){
+        public RuleWrapper(Rule r, List<ILegendPanel> l){
                 rule = r;
                 legends = l;
                 List<Symbolizer> ls = r.getCompositeSymbolizer().getSymbolizerList();
@@ -61,7 +62,7 @@ public class RuleWrapper {
                                 + "and of symbolizers mismatch");
                 } else {
                         for(int i = 0; i<l.size(); i++){
-                                if(l.get(i).getSymbolizer() != ls.get(i)){
+                                if(l.get(i).getLegend().getSymbolizer() != ls.get(i)){
                                         throw new IllegalArgumentException("Symbolizers registered"
                                                 + "in the rule and in the legend mismatch.");
                                 }
@@ -92,7 +93,7 @@ public class RuleWrapper {
          * @return
          * @throws IndexOutOfBoundsException if {@code i<0 && i>= getSize()}.
          */
-        public Legend getLegend(int i){
+        public ILegendPanel getLegend(int i){
                 return legends.get(i);
         }
 
@@ -103,7 +104,7 @@ public class RuleWrapper {
          * The index of the legend if it is emebedded in this wrapper, or -1
          * otherwise.
          */
-        public int indexOf(Legend leg){
+        public int indexOf(ILegendPanel leg){
                 return legends.indexOf(leg);
         }
 
@@ -113,18 +114,18 @@ public class RuleWrapper {
          * @param leg
          * @throws IndexOutOfBoundsException if {@code i<0 || i>getSize() -1}.
          */
-        public void setLegend(int i, Legend leg){
+        public void setLegend(int i, ILegendPanel leg){
                 legends.set(i, leg);
-                rule.getCompositeSymbolizer().setSymbolizer(i, leg.getSymbolizer());
+                rule.getCompositeSymbolizer().setSymbolizer(i, leg.getLegend().getSymbolizer());
         }
 
         /**
          * Removes leg from this {@code RuleWrapper};
          * @param leg
          */
-        public void remove(Legend leg) {
+        public void remove(ILegendPanel leg) {
                 legends.remove(leg);
-                rule.getCompositeSymbolizer().removeSymbolizer(leg.getSymbolizer());
+                rule.getCompositeSymbolizer().removeSymbolizer(leg.getLegend().getSymbolizer());
         }
 
         /**
@@ -133,7 +134,7 @@ public class RuleWrapper {
          */
         public void moveLegendUp(int i){
                 if(i>0 && i<legends.size()){
-                        rule.getCompositeSymbolizer().moveSymbolizerUp(legends.get(i).getSymbolizer());
+                        rule.getCompositeSymbolizer().moveSymbolizerUp(legends.get(i).getLegend().getSymbolizer());
                         Collections.swap(legends, i, i-1);
                 }
         }
@@ -144,7 +145,7 @@ public class RuleWrapper {
          */
         public void moveLegendDown(int i){
                 if(i>=0 && i<legends.size()-1){
-                        rule.getCompositeSymbolizer().moveSymbolizerDown(legends.get(i).getSymbolizer());
+                        rule.getCompositeSymbolizer().moveSymbolizerDown(legends.get(i).getLegend().getSymbolizer());
                         Collections.swap(legends, i, i+1);
                 }
         }
@@ -153,8 +154,8 @@ public class RuleWrapper {
          * Adds {@code leg} at the end of the list of {@code Legend}s.
          * @param leg
          */
-        public void addLegend(Legend leg){
-                rule.getCompositeSymbolizer().addSymbolizer(leg.getSymbolizer());
+        public void addLegend(ILegendPanel leg){
+                rule.getCompositeSymbolizer().addSymbolizer(leg.getLegend().getSymbolizer());
                 legends.add(leg);
         }
 
@@ -163,9 +164,23 @@ public class RuleWrapper {
          * {@code Legend}s.
          * @param leg
          */
-        public void addLegend(int i, Legend leg){
+        public void addLegend(int i, ILegendPanel leg){
                 legends.add(i, leg);
-                rule.getCompositeSymbolizer().addSymbolizer(i, leg.getSymbolizer());
+                rule.getCompositeSymbolizer().addSymbolizer(i, leg.getLegend().getSymbolizer());
+        }
+
+        /**
+         * Checks that this {@code RuleWrapper} contains at least one {@code
+         * Legend}.
+         * @return
+         */
+        public boolean hasLegend() {
+                for(ILegendPanel ilp : legends){
+                        if(ilp.getLegend() != null){
+                                return true;
+                        }
+                }
+                return false;
         }
 
 }
