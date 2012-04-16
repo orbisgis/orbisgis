@@ -101,29 +101,39 @@ public final class GeometryConvert {
                 return null;
         }
 
+        /**
+         * Converts from Envelope to a polygon geometry.
+         * @param envelope
+         * @param factory
+         * @return 
+         */
+        public static Geometry toGeometry(Envelope envelope, GeometryFactory factory) {
+                if ((envelope.getWidth() == 0) && (envelope.getHeight() == 0)) {
+                        return factory.createPoint(new Coordinate(envelope.getMinX(),
+                                envelope.getMinY()));
+                }
+
+                if ((envelope.getWidth() == 0) || (envelope.getHeight() == 0)) {
+                        return factory.createLineString(new Coordinate[]{
+                                        new Coordinate(envelope.getMinX(), envelope.getMinY()),
+                                        new Coordinate(envelope.getMaxX(), envelope.getMaxY())});
+                }
+
+                return factory.createPolygon(factory.createLinearRing(new Coordinate[]{
+                                new Coordinate(envelope.getMinX(), envelope.getMinY()),
+                                new Coordinate(envelope.getMinX(), envelope.getMaxY()),
+                                new Coordinate(envelope.getMaxX(), envelope.getMaxY()),
+                                new Coordinate(envelope.getMaxX(), envelope.getMinY()),
+                                new Coordinate(envelope.getMinX(), envelope.getMinY())}), null);
+        }
+
         /**  
          * Converts from Envelope to a polygon geometry.
          * @param envelope  
          * @return  
          */
         public static Geometry toGeometry(Envelope envelope) {
-                if ((envelope.getWidth() == 0) && (envelope.getHeight() == 0)) {
-                        return FACTORY.createPoint(new Coordinate(envelope.getMinX(),
-                                envelope.getMinY()));
-                }
-
-                if ((envelope.getWidth() == 0) || (envelope.getHeight() == 0)) {
-                        return FACTORY.createLineString(new Coordinate[]{
-                                        new Coordinate(envelope.getMinX(), envelope.getMinY()),
-                                        new Coordinate(envelope.getMaxX(), envelope.getMaxY())});
-                }
-
-                return FACTORY.createPolygon(FACTORY.createLinearRing(new Coordinate[]{
-                                new Coordinate(envelope.getMinX(), envelope.getMinY()),
-                                new Coordinate(envelope.getMinX(), envelope.getMaxY()),
-                                new Coordinate(envelope.getMaxX(), envelope.getMaxY()),
-                                new Coordinate(envelope.getMaxX(), envelope.getMinY()),
-                                new Coordinate(envelope.getMinX(), envelope.getMinY())}), null);
+                return toGeometry(envelope, FACTORY);
         }
 
         /**
