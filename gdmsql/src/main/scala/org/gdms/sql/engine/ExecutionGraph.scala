@@ -102,8 +102,7 @@ class ExecutionGraph(op: Operation, p: Properties = null) {
    *       will be executed.
    */
   def prepare(dsf: SQLDataSourceFactory): Unit = {
-    if (!opened || dsf != this.dsf) {
-      if (start == null || dsf != this.dsf) {
+    if (!opened) {
         // for readability
         implicit val pp = p
         
@@ -111,7 +110,6 @@ class ExecutionGraph(op: Operation, p: Properties = null) {
                  PhysicalJoinOptimStep >=: 
                  BuilderStep
         }
-      }
 
       this.dsf = dsf;
       opened = true
@@ -143,7 +141,11 @@ class ExecutionGraph(op: Operation, p: Properties = null) {
   def cleanUp() = {
     if (opened) {
       start.cleanUp
+      
+      // IMPORTANT: this lets the GC do its work
       r = null
+      start = null
+      
       opened = false
     }
   }
