@@ -47,6 +47,9 @@ import org.gdms.sql.engine.GdmSQLPredef._
 import org.gdms.sql.engine.AbstractEngineStep
 import org.gdms.sql.engine.logical.LogicPlanOptimizer
 import org.gdms.sql.engine.operations._
+import org.gdms.sql.engine.step.aggregate.AggregateStep
+import org.gdms.sql.engine.step.logicalJoin.LogicalJoinOptimStep
+import org.gdms.sql.engine.step.validate.ValidationStep
 import org.gdms.sql.evaluator._
 import org.gdms.sql.function.SpatialIndexedFunction
 
@@ -66,7 +69,38 @@ case object FiltersStep extends AbstractEngineStep[Operation, Operation]("filter
       }
       optimizeSpatialIndexedFilterExpressions(op)
     }
+    
+    processSubQueries(op)
+    
     op
+  }
+  
+  def processSubQueries(o: Operation)(implicit p: Properties) {
+    o.children foreach processSubQueries
+    
+    o match {
+      case Filter(f, _) => processExp(f)
+      case Projection(f,_) => f foreach (e => processExp(e._1))
+      case Join(Inner(f,_,_),_,_) => processExp(f)
+      case _ =>
+    }
+  }
+  
+  private def processExp(f: Expression)(implicit p: Properties) {
+    (f :: f.allChildren) foreach { e => e.evaluator match {
+        case e @ ExistsEvaluator(op) => e.o = processOp(op)
+        case e @ InEvaluator(_, op) => e.o = processOp(op)
+        case _ =>
+      }
+    }
+  }
+  
+  private def processOp(o: Operation)(implicit p: Properties) = {
+    o                    >=:
+    AggregateStep        >=:
+    LogicalJoinOptimStep >=:
+    FiltersStep          >=:
+    ValidationStep
   }
   
   /**
@@ -79,7 +113,7 @@ case object FiltersStep extends AbstractEngineStep[Operation, Operation]("filter
    *    This enables Spatial Join optimization when working on a single table and a constant.
    */
   def optimizeSpatialIndexedFilterExpressions(o: Operation) {
-    o.children map (optimizeSpatialIndexedFilterExpressions)
+    o.children foreach optimizeSpatialIndexedFilterExpressions
     
     o match {
       case f @ Filter(e, sc @ Scan(_,_,_)) => {

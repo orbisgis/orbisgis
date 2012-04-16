@@ -166,6 +166,14 @@ trait ExpressionCommand extends Command {
             f.index = -1
             f.sqlType = -1
           }
+        case ex: ExistsEvaluator => {
+            ex.command.cleanUp
+            ex.dsf = null
+          }
+        case in: InEvaluator => {
+            in.command.cleanUp
+            in.dsf = null
+          }
         case d: DsfEvaluator => d.dsf = null
         case _ =>
       }

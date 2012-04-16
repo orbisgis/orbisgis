@@ -44,12 +44,17 @@ package org.gdms.sql.engine.step.builder
 
 import java.util.Properties
 import org.gdms.sql.engine.GdmSQLPredef._
+import org.gdms.data.SQLDataSourceFactory
 import org.gdms.sql.engine.AbstractEngineStep
 import org.gdms.sql.engine.commands._
 import org.gdms.sql.engine.commands.ddl._
 import org.gdms.sql.engine.commands.join._
 import org.gdms.sql.engine.commands.scan._
 import org.gdms.sql.engine.operations._
+import org.gdms.sql.engine.step.physicalJoin.PhysicalJoinOptimStep
+import org.gdms.sql.evaluator.ExistsEvaluator
+import org.gdms.sql.evaluator.Expression
+import org.gdms.sql.evaluator.InEvaluator
 import org.gdms.sql.function.table.TableFunction
 
 /**
@@ -57,14 +62,14 @@ import org.gdms.sql.function.table.TableFunction
  * 
  * The final Operation tree is converted into the actual commands that will execute the query.
  */
-case object BuilderStep extends AbstractEngineStep[Operation, OutputCommand]("Command Tree Building") {
+case object BuilderStep extends AbstractEngineStep[(Operation, SQLDataSourceFactory), OutputCommand]("Command Tree Building") {
   
-  def doOperation(op: Operation)(implicit p: Properties): OutputCommand = {
+  def doOperation(op: (Operation, SQLDataSourceFactory))(implicit p: Properties): OutputCommand = {
     if (isPropertyTurnedOn(Flags.EXPLAIN)) {
       LOG.info("Building command tree.")
     }
     
-    buildCommandTree(op).asInstanceOf[OutputCommand]
+    buildCommandTree(op._1)(op._2, p).asInstanceOf[OutputCommand]
   }
   
   /**
@@ -72,7 +77,7 @@ case object BuilderStep extends AbstractEngineStep[Operation, OutputCommand]("Co
    * This method chooses between the different available joins methods
    * index/full scans, etc.
    */
-  private def buildCommandTree(op: Operation): Command = {
+  private def buildCommandTree(op: Operation)(implicit dsf: SQLDataSourceFactory, p: Properties): Command = {
     // for readability
     implicit val opToCo = buildCommandTree _
     
@@ -96,12 +101,15 @@ case object BuilderStep extends AbstractEngineStep[Operation, OutputCommand]("Co
                 new ExpressionBasedLoopJoinCommand(None)
               }
             case Inner(ex, false, None) => {
+                processExp(ex)
                 new ExpressionBasedLoopJoinCommand(Some(ex))
               }
             case Inner(ex, false, Some((field, expr, strict))) => {
+                processExp(ex)
                 new IndexedJoinCommand(expr, ex, field, strict)
               }
             case Inner(ex, true, _) => {
+                processExp(ex)
                 new SpatialIndexedJoinCommand(ex)
               }
             case Natural() => {
@@ -113,7 +121,10 @@ case object BuilderStep extends AbstractEngineStep[Operation, OutputCommand]("Co
             case _ => throw new IllegalStateException("Internal error: problem building PQP for joins.")
           })  withChildren(Seq(l, r))
       case ValuesScan(ex, alias, internal) => new ValuesScanCommand(ex, alias, internal)
-      case Projection(exp, ch) => new ProjectionCommand(exp toArray) withChild(ch)
+      case Projection(exp, ch) => {
+          exp foreach (a => processExp(a._1))
+          new ProjectionCommand(exp toArray) withChild(ch)
+        }
       case Aggregate(exp, Grouping(e, ch)) => {
           new AggregateCommand(exp, e) withChild(ch)
         }
@@ -122,7 +133,10 @@ case object BuilderStep extends AbstractEngineStep[Operation, OutputCommand]("Co
         }
       case Distinct(ch) => new MemoryDistinctCommand() withChild(ch)
       case Grouping(e, ch) =>  new AggregateCommand(Nil, e) withChild(ch)
-      case Filter(exp, ch) => new ExpressionFilterCommand(exp) withChild(ch)
+      case Filter(exp, ch) => {
+          processExp(exp)
+          new ExpressionFilterCommand(exp) withChild(ch)
+        }
       case Sort(exprs, ch) => new MergeSortCommand(exprs) withChild(ch)
       case Union(a,b) => new UnionCommand() withChildren(Seq(a,b))
       case Update(e, ch) => new UpdateCommand(e) withChild(ch)
@@ -162,5 +176,23 @@ case object BuilderStep extends AbstractEngineStep[Operation, OutputCommand]("Co
       case DropFunction(n, i) => new DropFunctionCommand(n, i)
       case a => throw new IllegalStateException("Internal error: problem with the logic query plan. Found :" + a)
     }
+  }
+  
+  private def processExp(f: Expression)(implicit dsf: SQLDataSourceFactory, p: Properties) {
+    (f :: f.allChildren) foreach { e => e.evaluator match {
+        case e @ ExistsEvaluator(op) => e.command = processOp(op)
+        case e @ InEvaluator(_, op) => e.command = processOp(op)
+        case _ =>
+      }
+    }
+  }
+  
+  private def processOp(o: Operation)(implicit dsf: SQLDataSourceFactory, p: Properties) = {
+    val c = (o, dsf) >=: 
+    PhysicalJoinOptimStep >=: 
+    BuilderStep
+    
+    // jump over Output (no materialization)
+    c.children.head
   }
 }

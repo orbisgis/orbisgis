@@ -718,11 +718,12 @@ object LogicPlanBuilder {
       case T_NULL_CHECK => Expression(IsNullEvaluator(left))
       case T_IN => {
           right.getType match {
-            // TODO: converting IN with subquery into special joins
-            case T_SELECT => throw new UnsupportedOperationException("Not yet implemented.")
+              // AST:
+              // ^(T_IN expression_main ^(T_SELECT ... ))
+            case T_SELECT => left in buildOperationTree(right)
 
               // AST:
-              // ^(T_IN expression_cond ^(T_EXPR_LIST expression_main+ ))
+              // ^(T_IN expression_main ^(T_EXPR_LIST expression_main+ ))
             case T_EXPR_LIST => left in getChilds(right).map (parseExpression)
           }
         }
@@ -736,7 +737,7 @@ object LogicPlanBuilder {
         }
         
       case T_EXISTS => {
-          throw new UnsupportedOperationException("Not yet implemented.")
+          Expression(ExistsEvaluator(buildOperationTree(left)))
         }
         // constant values are built from String by SQLValueFactory
       case a => Expression(SQLValueFactory.createValue(tree.getText, a))

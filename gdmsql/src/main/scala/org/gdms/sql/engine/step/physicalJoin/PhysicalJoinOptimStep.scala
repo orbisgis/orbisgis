@@ -55,9 +55,9 @@ import org.gdms.sql.evaluator._
  * - Joins tagged as spatials are looked at and a table is chosen for index scan.
  * - Equi-joins are found, and a table is chosen for index scan.
  */
-case object PhysicalJoinOptimStep extends AbstractEngineStep[(Operation, SQLDataSourceFactory), Operation]("DSF-aware join optimisations") {
+case object PhysicalJoinOptimStep extends AbstractEngineStep[(Operation, SQLDataSourceFactory), (Operation, SQLDataSourceFactory)]("DSF-aware join optimisations") {
 
-  def doOperation(op: (Operation, SQLDataSourceFactory))(implicit p: Properties): Operation = {
+  def doOperation(op: (Operation, SQLDataSourceFactory))(implicit p: Properties): (Operation, SQLDataSourceFactory) = {
     // optimize joins
     if (!isPropertyTurnedOff(Flags.OPTIMIZEJOINS)) {
       if (isPropertyTurnedOn(Flags.EXPLAIN)) {
@@ -66,7 +66,7 @@ case object PhysicalJoinOptimStep extends AbstractEngineStep[(Operation, SQLData
       }
       optimizeJoins(op._2, op._1)
     }
-    op._1
+    op
   }
   
   private def optimizeJoins(dsf: SQLDataSourceFactory ,op: Operation) {

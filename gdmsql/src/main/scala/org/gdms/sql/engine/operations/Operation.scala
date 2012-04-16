@@ -43,7 +43,6 @@ import org.gdms.data.indexes.IndexQuery
 import org.gdms.data.types.TypeFactory
 import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.evaluator.Expression
-import org.gdms.sql.evaluator.FieldEvaluator
 import org.gdms.sql.evaluator.agg
 import org.gdms.sql.evaluator.field
 import org.gdms.sql.function.FunctionException

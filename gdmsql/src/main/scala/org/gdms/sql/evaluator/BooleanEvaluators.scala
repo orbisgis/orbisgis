@@ -43,6 +43,11 @@ import org.gdms.data.types.Type
 import org.gdms.data.types.TypeFactory
 import org.gdms.data.values.Value
 import org.gdms.data.values.ValueFactory
+import org.gdms.sql.engine.GdmSQLPredef._
+import org.gdms.sql.engine.SemanticException
+import org.gdms.sql.engine.commands.Command
+import org.gdms.sql.engine.operations.Operation
+import org.orbisgis.progress.ProgressMonitor
 
 /**
  * Base evaluator for boolean comparisons.
@@ -208,10 +213,85 @@ case class InListEvaluator(e1: Expression, e2:Seq[Expression]) extends BooleanEv
   def doCopy = copy()
 }
 
-object in {
+object inList {
   def unapply(e: Expression) = {
     e.evaluator match {
       case a: InListEvaluator => Some((a.e1, a.e2))
+      case _ => None
+    }
+  }
+}
+
+case class ExistsEvaluator(var o: Operation) extends BooleanEvaluator with DsfEvaluator {
+  
+  var command: Command = null
+  var pm: Option[ProgressMonitor] = None
+  
+  override val childExpressions = Nil
+  def eval = s => ValueFactory.createValue(!command.execute(pm).isEmpty)
+  override def doPreValidate = o.validate
+  override def doValidate = {
+    if (command == null) {
+      throw new IllegalStateException("Error: there cannot be an EXISTS operator in this clause.")
+    }
+    command.prepare(dsf)
+  }
+  
+  def doCopy = ExistsEvaluator(o)
+}
+
+object exists {
+  def unapply(e: Expression) = {
+    e.evaluator match {
+      case a: ExistsEvaluator => Some(a.o)
+      case _ => None
+    }
+  }
+}
+
+case class InEvaluator(e: Expression, var o: Operation) extends BooleanEvaluator with DsfEvaluator {
+  var command: Command = null
+  var pm: Option[ProgressMonitor] = None
+  
+  override val childExpressions = e :: Nil
+  def eval = s => {
+    val b = e.evaluate(s)
+    val ex = command.execute(pm)
+    var ret: Value = ValueFactory.createValue(false)
+    var break: Boolean = false
+    
+    while (!break && ex.hasNext) {
+      var next = ex.next.array(0).equals(b).getAsBoolean
+      if (next == null) {
+        ret = ValueFactory.createNullValue[Value]
+        break = true
+      } else if (next) {
+        ret = ValueFactory.createValue(true)
+        break = true
+      }
+    }
+    
+    ret
+  }
+  override def doPreValidate = o.validate
+  override def doValidate = {
+    if (command == null) {
+      throw new IllegalStateException("Error: there cannot be a IN operator in this clause.")
+    }
+    command.prepare(dsf)
+    
+    if (command.getMetadata.getFieldCount > 1) {
+      throw new SemanticException("There can only be one selected field in an IN subquery.")
+    }
+  }
+  
+  def doCopy = InEvaluator(e, o)
+}
+
+object in {
+  def unapply(e: Expression) = {
+    e.evaluator match {
+      case InEvaluator(ex, o) => Some((ex, o))
       case _ => None
     }
   }

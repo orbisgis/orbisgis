@@ -42,6 +42,7 @@ import org.gdms.data.schema.DefaultMetadata
 import org.gdms.data.schema.Metadata
 import org.gdms.data.values.Value
 import org.gdms.sql.engine.SemanticException
+import org.gdms.sql.engine.operations.Operation
 import org.gdms.sql.function.AggregateFunction
 import org.gdms.sql.function.FunctionManager
 import org.gdms.sql.function.ScalarFunction
@@ -188,6 +189,10 @@ sealed class Expression(var evaluator: Evaluator) extends Iterable[Expression] {
     new Expression(InListEvaluator(this,e))
   }
   
+  def in(o: Operation) = {
+    new Expression(InEvaluator(this, o))
+  }
+  
   def toType(t: Int) = {
     new Expression(CastEvaluator(this, t))
   }
@@ -207,6 +212,10 @@ sealed class Expression(var evaluator: Evaluator) extends Iterable[Expression] {
   def duplicate = new Expression(evaluator.duplicate)
   
   def children = evaluator.childExpressions
+  
+  def allChildren: List[Expression] = {
+    children.toList flatMap(e => e :: e.allChildren)
+  }
 }
 
 object Expression {

@@ -317,14 +317,13 @@ public class GrammarTest {
                 parse("select * from mytable;/* com\nment\n*/select * from mytable;");
         }
 
-        /**
-         * Add subquery in SQL grammar
-         * 
-         * @throws Exception
-         */
         @Test
         public void testInSubQuery() throws Exception {
                 parse("select * from mytable where myfield in (3, 4);");
+                
+                parse("SELECT * FROM myTable WHERE myField in (SELECT toto FROM tata);");
+                parse("UPDATE toto SET va = 17 WHERE vert IN (SELECT tt FROM tutu);");
+                notParse("SELECT * FROM myTable WHERE myField in (UPDATE toto SET tata = 1);");
 
         }
         
