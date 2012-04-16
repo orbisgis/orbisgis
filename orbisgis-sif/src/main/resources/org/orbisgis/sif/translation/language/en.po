@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: OrbisGis 4.0 SIF\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-04-16 09:54+0100\n"
-"PO-Revision-Date: 2012-04-16 09:54+0100\n"
+"PO-Revision-Date: 2012-04-16 14:53+0100\n"
 "Last-Translator: Nicolas Fortin <nicolas.fortin _at_ ec-nantes.fr>\n"
 "Language-Team: OrbisGis <info _at_ orbisgis.org>\n"
 "Language: en\n"
@@ -14,6 +14,7 @@ msgstr ""
 "X-Poedit-Basepath: ../../../../../..\n"
 "X-Poedit-Language: English\n"
 "X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Country: UNITED STATES\n"
 "X-Poedit-SearchPath-0: java\n"
 
 #: java/org/orbisgis/sif/SaveFilePanel.java:84
@@ -155,20 +156,20 @@ msgstr ""
 
 #: java/org/orbisgis/sif/SIFWizard.java:108
 msgid "sif.previous"
-msgstr ""
+msgstr "Previous"
 
 #: java/org/orbisgis/sif/SIFWizard.java:126
 msgid "sif.next"
-msgstr ""
+msgstr "Next"
 
 #: java/org/orbisgis/sif/SIFWizard.java:157
 msgid "sif.finish"
-msgstr ""
+msgstr "Finish"
 
 #: java/org/orbisgis/sif/SIFWizard.java:173
 #: java/org/orbisgis/sif/SIFDialog.java:73
 msgid "sif.cancel"
-msgstr ""
+msgstr "Cancel"
 
 #: java/org/orbisgis/sif/OpenFolderPanel.java:65
 msgid "sif.folderMustBeSelected"
@@ -184,7 +185,7 @@ msgstr ""
 
 #: java/org/orbisgis/sif/SIFDialog.java:62
 msgid "sif.ok"
-msgstr ""
+msgstr "Ok"
 
 #: java/org/orbisgis/sif/UIFactory.java:119
 msgid "sif.uIFactory.atLeastAPanelHasToBeSpecified"
