@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: OrbisGis 4.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-04-16 09:14+0100\n"
-"PO-Revision-Date: 2012-04-16 09:14+0100\n"
+"PO-Revision-Date: 2012-04-16 12:07+0100\n"
 "Last-Translator: Nicolas Fortin <nicolas.fortin _at_ ec-nantes.fr>\n"
 "Language-Team: OrbisGis <info _at_ orbisgis.org>\n"
 "Language: fr\n"
@@ -255,7 +255,7 @@ msgstr "Information"
 
 #: java/org/orbisgis/view/output/OutputManager.java:139
 msgid "orbisgis.view.log_warning_title"
-msgstr "Warning"
+msgstr "Avertissement"
 
 #: java/org/orbisgis/view/output/MainOutputPanel.java:51
 msgid "orbisgis.view.mainlog.title"
