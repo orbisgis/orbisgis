@@ -5,6 +5,8 @@
 package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
@@ -12,6 +14,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.*;
+import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import org.orbisgis.core.sif.UIFactory;
@@ -51,6 +54,8 @@ public class LegendTree extends JPanel {
                 tree.setRootVisible(false);
                 LegendTreeModel ltm = new LegendTreeModel(tree, style);
                 tree.setModel(ltm);
+                LegendCellRenderer lcr = new LegendCellRenderer();
+                tree.setCellRenderer(lcr);
 
                 initToolBar();
                 initButtons();
@@ -301,5 +306,41 @@ public class LegendTree extends JPanel {
 
         private void refreshModel(){
                 ((LegendTreeModel)tree.getModel()).refresh();
+        }
+
+        /**
+         * A TreeCellRenderer dedicated to our tree. Paints text in red if the
+         * cell is selected, in black otherwise.
+         */
+        private static class LegendCellRenderer implements TreeCellRenderer{
+
+                private static final Color DESELECTED = Color.black;
+
+                private static final Color SELECTED = Color.red;
+                
+                @Override
+                public Component getTreeCellRendererComponent(
+                                JTree tree, Object value,  boolean selected,
+                                boolean expanded, boolean leaf, int row, boolean hasFocus) {
+                        if(value instanceof RuleWrapper){
+                                return getComponent((RuleWrapper) value, selected);
+                        } else if(value instanceof Legend){
+                                return getComponent((Legend) value, selected);
+                        }
+                        return new JLabel("root");
+                }
+
+                private Component getComponent(Legend legend, boolean selected) {
+                        JLabel lab = new JLabel(legend.getName());
+                        lab.setForeground(selected ? SELECTED : DESELECTED);
+                        return lab;
+                }
+
+                private Component getComponent(RuleWrapper rw, boolean selected) {
+                        JLabel lab = new JLabel(rw.getRule().getName());
+                        lab.setForeground(selected ? SELECTED : DESELECTED);
+                        return lab;
+                }
+
         }
 }
