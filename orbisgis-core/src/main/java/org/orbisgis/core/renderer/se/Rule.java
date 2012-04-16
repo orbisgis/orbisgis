@@ -189,6 +189,8 @@ public final class Rule implements SymbolizerNode {
 
         if (rt.getSymbolizer() != null) {
             this.setCompositeSymbolizer(new CompositeSymbolizer(rt.getSymbolizer()));
+        } else {
+                setCompositeSymbolizer(new CompositeSymbolizer());
         }
 
         /*
@@ -349,23 +351,6 @@ public final class Rule implements SymbolizerNode {
         return "";
     }
 
-    /**
-     * Return a Spatial data source, according to rule filter and specified extent
-     * @return
-     * @throws DriverLoadException
-     * @throws DataSourceCreationException
-     * @throws DriverException
-     * @throws ParseException
-     * @throws SemanticException
-     */
-    /*
-    public FilterDataSourceDecorator getFilteredDataSource() throws DriverLoadException, DataSourceCreationException, DriverException, ParseException, SemanticException {
-    FeatureTypeStyle ft = (FeatureTypeStyle) fts;
-    
-    ILayer layer = ft.getLayer();
-    DataSource sds = layer.getDataSource();
-    return this.getFilteredDataSource(sds);
-    }*/
     /**
      * Checks if this <code>Rule</code> is a fallback one or not, ie if the
      * <code>where</code> associated to this <code>Rule</code> was included 
