@@ -100,15 +100,10 @@ object LogicPlanBuilder {
                   // AST:
                   // ^(T_COLUMN_LIST ^(T_COLUMN_ITEM ...) ^(T_COLUMN_ITEM ...) ...)
                   
-                  // we remove the STAR column (*) from the children (no need to project anything
-                  // in this case).
-                  // and we parse what's left into a list of expressions
                   val exprs = getChilds(t).map { tr =>
                     (parseExpression(tr.getChild(0)), if (tr.getChildCount == 1) None else Some(tr.getChild(1).getText))
                   } ;
-                  if (!exprs.isEmpty) {
                     projexpr = exprs
-                  }
                 }
                 // everything inside the FROM clause, including joins
               case T_FROM => {
@@ -214,6 +209,24 @@ object LogicPlanBuilder {
             }
           }
           
+          if (projexpr.isEmpty) {
+            // the parser does not allow empty projection. This should never happen.
+            throw new SemanticException("Internal Error: empty projection. This should never happen.")
+          }
+          
+          // Special case of "SELECT select_list ;" (without FROM clause)
+          // converted into "SELECT ... FROM VALUES (...);""
+          if (upperjoin == null) {
+            var newproj: List[(Expression, Option[String])] = Nil
+            var vals: List[Expression] = Nil
+            projexpr.zipWithIndex foreach { z =>
+              newproj = (Field("exp" + z._2), z._1._2) :: newproj
+              vals = z._1._1 :: vals
+            }
+            projexpr = newproj.reverse
+            upperjoin = ValuesScan(vals.reverse :: Nil, None, false)
+          }
+          
           var down: Operation = upperjoin
           if (filter != null) {
             down = Filter(filter, down)
@@ -230,9 +243,9 @@ object LogicPlanBuilder {
           if (lim != -1 || off != 0) {
             down = LimitOffset(lim, off, down)
           }
-          if (!projexpr.isEmpty) {
-            down = Projection(projexpr, down)
-          }
+          
+          down = Projection(projexpr, down)
+          
           if (distinct) {
             down = Distinct(down)
           }

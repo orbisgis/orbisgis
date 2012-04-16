@@ -37,14 +37,12 @@
  */
 package org.gdms.sql;
 
-import org.junit.Test;
-
 import org.gdms.data.SQLDataSourceFactory;
+import org.gdms.sql.engine.ParseException;
 import org.gdms.sql.engine.SQLEngine;
 import org.gdms.sql.engine.SemanticException;
-import org.gdms.sql.engine.ParseException;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 
 public class GrammarTest {
 
@@ -353,6 +351,14 @@ public class GrammarTest {
         public void testShow() throws Exception {
                 parse("SHOW toto;");
                 parse("SHOW tutu.toto;");
+        }
+        
+        @Test
+        public void testSelectAlone() throws Exception {
+                parse("SELECT 18, 'toto', abs(-18);");
+                notParse("SELECT myField, 'eerr'");
+                notParse("SELECT 18, 'aa' ORDER BY toto");
+                notParse("SELECT 18, 'aa' LIMIT 1");
         }
 
         private void notParse(String sql) {

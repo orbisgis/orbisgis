@@ -37,19 +37,17 @@
  */
 package org.gdms.sql.strategies;
 
-import org.junit.Ignore;
-import org.gdms.driver.DriverException;
-import org.junit.Before;
-import org.junit.Test;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.gdms.Geometries;
 import org.gdms.SQLBaseTest;
 import org.gdms.data.DataSource;
-import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.DigestUtilities;
+import org.gdms.data.SQLDataSourceFactory;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Type;
@@ -57,15 +55,17 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.data.values.ValueWriter;
+import org.gdms.driver.DriverException;
 import org.gdms.driver.memory.MemoryDataSetDriver;
+import org.gdms.sql.engine.SemanticException;
+import org.gdms.sql.function.FunctionManager;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.io.WKTReader;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.gdms.sql.engine.SemanticException;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 
-import org.gdms.sql.function.FunctionManager;
 import static org.junit.Assert.*;
 
 public class SQLTest extends SQLBaseTest {
@@ -1395,6 +1395,21 @@ public class SQLTest extends SQLBaseTest {
                 dsf.executeSQL("SET custom.myproperty TO 'some value';");
                 dsf.executeSQL("SET custom.myproperty TO DEFAULT;");
                 assertFalse(dsf.getSqlEngine().getProperties().containsKey("custom.myproperty"));
+        }
+        
+        @Test
+        public void testSelectAlone() throws Exception {
+                DataSource d = dsf.getDataSourceFromSQL("SELECT 18 as myIntField, 'toto', abs(-42);");
+                d.open();
+                assertEquals(1, d.getRowCount());
+                assertEquals("myIntField", d.getFieldName(0));
+                assertEquals("exp1", d.getFieldName(1));
+                assertEquals("exp2", d.getFieldName(2));
+                
+                assertEquals(18, d.getInt(0, 0));
+                assertEquals("toto", d.getString(0, 1));
+                assertEquals(42, d.getInt(0, 2));
+                d.close();
         }
 
         private void createSource(String name, String fieldName, int... values) {
