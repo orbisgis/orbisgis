@@ -98,7 +98,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 	private ILegendPanel[] availableLegends;
 	private JPanel pnlContainer;
 	private CardLayout cardLayout;
-	private String lastUID = ""; 
+	private static String lastUID = "";
 	private Type gc;
 	private ILayer layer;
 	private MapTransform mt;
@@ -149,6 +149,8 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
                                 }
                         }
                         RuleWrapper rw = new RuleWrapper(r, ll);
+                        rw.getPanel().initialize(this);
+                        pnlContainer.add(rw.getPanel().getComponent(), rw.getId());
                         lrw.add(rw);
                 }
                 styleWrapper = new StyleWrapper(style, lrw);
@@ -157,13 +159,11 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		refreshLegendContainer();
 	}
 
-	private String getNewId() {
+	public static String getNewId() {
 		String name = "gdms" + System.currentTimeMillis();
-
 		while (name.equals(lastUID)) {
 			name = "" + System.currentTimeMillis();
 		}
-
 		lastUID = name;
 		return name;
 	}
@@ -249,7 +249,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 	private void refreshLegendContainer() {
                 //We need to retrieve the currently selected legend in the tree,
                 //then find its id, and finally use it to show the panel.
-                ILegendPanel selected = legendTree.getSelectedLegend();
+                IRulePanel selected = legendTree.getSelectedPanel();
 		if (selected != null) {
 			cardLayout.show(pnlContainer, selected.getId());
 		} else {

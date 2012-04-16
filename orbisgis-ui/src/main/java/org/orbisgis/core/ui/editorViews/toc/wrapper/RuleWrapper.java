@@ -4,13 +4,16 @@
  */
 package org.orbisgis.core.ui.editorViews.toc.wrapper;
 
+import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendsPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
-import org.orbisgis.legend.Legend;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.IRulePanel;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.PnlRule;
 
 /**
  * A Rule can be associated to a list of {@code Legend} instances. If
@@ -23,6 +26,7 @@ public class RuleWrapper {
 
         private Rule rule;
         private List<ILegendPanel> legends;
+        private PnlRule panel;
 
         /**
          * Build a {@code RuleWrapper} from scratch, with an empty list of 
@@ -181,6 +185,31 @@ public class RuleWrapper {
                         }
                 }
                 return false;
+        }
+
+        /**
+         * Get the panel that can be used to configure the {@code Rule}.
+         * @return
+         */
+        public IRulePanel getPanel(){
+                if(panel == null){
+                        createRulePanel();
+                }
+                return panel;
+        }
+
+        /**
+         * Gets the Id associated to the panel used to configure the inner
+         * {@code Rule}.
+         */
+        public String getId(){
+                return panel.getId();
+        }
+
+        private void createRulePanel(){
+                panel = new PnlRule();
+                panel.setRule(rule);
+                panel.setId(LegendsPanel.getNewId());
         }
 
 }

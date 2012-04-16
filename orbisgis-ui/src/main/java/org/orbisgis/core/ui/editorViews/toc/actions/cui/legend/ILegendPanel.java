@@ -77,19 +77,6 @@ public interface ILegendPanel  extends IRulePanel {
 	public String validateInput();
 
         /**
-         * Gets the identifier of this panel.
-         * @return
-         */
-        public String getId();
-
-        /**
-         * Associates an identifier to this panel. Particularly useful if we 
-         * want to put this panel in a {@code CardLayout}.
-         * @param newId 
-         */
-        public void setId(String newId);
-
-        /**
          * Copy the {@code Legend} instance associated to this 
          * {@code ILegendPanel}. It is faster than copying the whole panel.
          * @return 

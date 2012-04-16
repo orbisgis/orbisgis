@@ -32,13 +32,14 @@ public class PnlRule extends JPanel implements IRulePanel {
 	private JTextField txtMaxScale;
         private Rule rule;
         private LegendContext legendContext;
+        private String id;
 
         /**
          * Sets the Rule associated to this panel.
          * @param r
          */
         public void setRule(Rule r){
-                r = rule;
+                rule = r;
         }
 
         /**
@@ -110,6 +111,16 @@ public class PnlRule extends JPanel implements IRulePanel {
         @Override
         public IRulePanel newInstance() {
                 return new PnlRule();
+        }
+
+        @Override
+        public String getId(){
+                return id;
+        }
+
+        @Override
+        public void setId(String id){
+                this.id = id;
         }
 
         /**

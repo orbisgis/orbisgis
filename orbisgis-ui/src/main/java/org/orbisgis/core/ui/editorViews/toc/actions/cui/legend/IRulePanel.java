@@ -37,4 +37,18 @@ public interface IRulePanel {
 	 * @return
 	 */
 	public IRulePanel newInstance();
+
+        /**
+         * Gets the identifier of this panel.
+         * @return
+         */
+        public String getId();
+
+        /**
+         * Associates an identifier to this panel. Particularly useful if we
+         * want to put this panel in a {@code CardLayout}.
+         * @param newId
+         */
+        public void setId(String newId);
+
 }

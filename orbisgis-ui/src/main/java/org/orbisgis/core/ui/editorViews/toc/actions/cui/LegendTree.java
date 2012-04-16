@@ -24,6 +24,7 @@ import org.orbisgis.core.sif.multiInputPanel.StringType;
 import org.orbisgis.core.ui.components.sif.RadioButtonPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.LegendPicker;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.IRulePanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.LegendTreeModel;
 import org.orbisgis.core.ui.editorViews.toc.wrapper.RuleWrapper;
 import org.orbisgis.core.ui.editorViews.toc.wrapper.StyleWrapper;
@@ -171,6 +172,25 @@ public class LegendTree extends JPanel {
                         }
                 }
                 return null;
+        }
+
+        /**
+         * Gets the {@code IRulePanel} that is associated to the currently
+         * selected element in the tree.
+         * @return
+         */
+        public IRulePanel getSelectedPanel(){
+                TreePath tp = tree.getSelectionPath();
+                if(tp!=null){
+                        Object last = tp.getLastPathComponent();
+                        if(last instanceof ILegendPanel){
+                                return (ILegendPanel) last;
+                        } else if(last instanceof RuleWrapper){
+                                return (IRulePanel)((RuleWrapper)last).getPanel();
+                        }
+                }
+                return null;
+
         }
 
         /**
