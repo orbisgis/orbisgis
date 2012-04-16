@@ -74,6 +74,7 @@ public class PnlLabelLegend extends JPanel implements ILegendPanel {
 	private JTextField txtSymbolSize;
 	private JCheckBox chkIntelligentLabelPlacing;
 	private boolean syncing = false;
+        private String id;
 
 	private void init() {
 
@@ -222,5 +223,15 @@ public class PnlLabelLegend extends JPanel implements ILegendPanel {
 
 		return null;
 	}
+
+        @Override
+        public String getId(){
+                return id;
+        }
+
+        @Override
+        public void setId(String id){
+                this.id = id;
+        }
 
 }

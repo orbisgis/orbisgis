@@ -69,6 +69,7 @@ import org.orbisgis.legend.Legend;
 public class PnlUniqueSymbolLegend extends javax.swing.JPanel implements
 		ILegendPanel, UIPanel {
 
+        private String id;
 	private UniqueSymbolLegend leg = null;
 	private SymbolBuilder symbolEditor;
 	private LegendContext legendContext;
@@ -141,5 +142,15 @@ public class PnlUniqueSymbolLegend extends javax.swing.JPanel implements
 		this.setLayout(new BorderLayout());
 		this.add(symbolEditor, BorderLayout.CENTER);
 	}
+
+        @Override
+        public String getId(){
+                return id;
+        }
+
+        @Override
+        public void setId(String id){
+                this.id = id;
+        }
 
 }

@@ -105,6 +105,7 @@ public class PnlProportionalLineLegend extends JPanel implements ILegendPanel {
 	private BufferedImage previewImage;
 	private JComponent legendPreview;
 	private JCheckBox chkMapUnits;
+        private String id;
 
 	private void init() {
 
@@ -451,5 +452,15 @@ public class PnlProportionalLineLegend extends JPanel implements ILegendPanel {
 
 		return null;
 	}
+
+        @Override
+        public String getId(){
+                return id;
+        }
+
+        @Override
+        public void setId(String id){
+                this.id = id;
+        }
 
 }

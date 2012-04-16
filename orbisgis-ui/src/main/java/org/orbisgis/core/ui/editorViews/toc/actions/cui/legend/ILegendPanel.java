@@ -75,4 +75,17 @@ public interface ILegendPanel  extends IRulePanel {
 	 *         if the legend cannot be created
 	 */
 	public String validateInput();
+
+        /**
+         * Gets the identifier of this panel.
+         * @return
+         */
+        public String getId();
+
+        /**
+         * Associates an identifier to this panel. Particularly useful if we 
+         * want to put this panel in a {@code CardLayout}.
+         * @param newId 
+         */
+        public void setId(String newId);
 }

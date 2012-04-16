@@ -34,6 +34,8 @@ import org.orbisgis.legend.thematic.constant.UniqueSymbol;
  */
 public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel, UIPanel {
 
+        private String id;
+
         /**
          * Fill this {@code JPanel} with all the needed fields.
          */
@@ -157,4 +159,14 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
                         source.setBackground(color);
 		}
 	}
+
+        @Override
+        public String getId(){
+                return id;
+        }
+
+        @Override
+        public void setId(String id){
+                this.id = id;
+        }
 }

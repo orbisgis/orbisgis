@@ -90,4 +90,12 @@ public class NoPanel implements ILegendPanel {
 		return null;
 	}
 
+        @Override
+        public String getId(){
+                return "NoPanel";
+        }
+        @Override
+        public void setId(String id){
+        }
+
 }

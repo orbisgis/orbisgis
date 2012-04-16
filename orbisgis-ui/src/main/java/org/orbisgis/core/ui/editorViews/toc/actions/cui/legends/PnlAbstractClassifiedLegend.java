@@ -82,6 +82,7 @@ public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 	private ClassifiedLegend legend;
 	protected LegendContext legendContext;
 	protected ClassifiedLegendTableModel tableModel;
+        private String id;
 
 	public PnlAbstractClassifiedLegend(ClassifiedLegendTableModel tableModel,
 			ClassifiedLegend initialLegend) {
@@ -368,4 +369,14 @@ public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 		}
 		return null;
 	}
+
+        @Override
+        public String getId(){
+                return id;
+        }
+
+        @Override
+        public void setId(String id){
+                this.id = id;
+        }
 }
