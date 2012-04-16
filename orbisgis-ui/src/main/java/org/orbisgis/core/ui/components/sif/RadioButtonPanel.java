@@ -6,10 +6,9 @@ package org.orbisgis.core.ui.components.sif;
 
 import java.awt.Component;
 import java.awt.FlowLayout;
+import java.util.Enumeration;
 import java.util.List;
-import javax.swing.ButtonGroup;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
+import javax.swing.*;
 import org.orbisgis.core.sif.AbstractUIPanel;
 
 /**
@@ -58,6 +57,7 @@ public class RadioButtonPanel extends AbstractUIPanel{
                 for(String s: choices){
                         JRadioButton jrb = new JRadioButton(s);
                         bg.add(jrb);
+                        pane.add(jrb);
                 }
                 return pane;
         }
@@ -67,6 +67,13 @@ public class RadioButtonPanel extends AbstractUIPanel{
          * @return
          */
         public String getSelectedText(){
-                return bg.getSelection().toString();
+                Enumeration<AbstractButton> en = bg.getElements();
+                while(en.hasMoreElements()){
+                        JRadioButton jrb = (JRadioButton)en.nextElement();
+                        if(jrb.isSelected()){
+                                return jrb.getText();
+                        }
+                }
+                return null;
         }
 }
