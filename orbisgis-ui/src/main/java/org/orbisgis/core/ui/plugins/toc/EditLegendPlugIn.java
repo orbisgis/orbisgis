@@ -38,6 +38,7 @@
 package org.orbisgis.core.ui.plugins.toc;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.xml.bind.JAXBElement;
@@ -59,6 +60,8 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendsPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.EPLegendHelper;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ISymbolEditor;
+import org.orbisgis.core.ui.editorViews.toc.wrapper.RuleWrapper;
+import org.orbisgis.core.ui.editorViews.toc.wrapper.StyleWrapper;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext.LayerAvailability;
@@ -130,23 +133,20 @@ public class EditLegendPlugIn extends AbstractPlugIn {
                         List<Rule> rules = copy.getRules();
                         //For each Rule, we try to produce a Legend analysis
                         //using the new Legend API.
-                        List<Legend> leg = new ArrayList<Legend>();
+                        List<RuleWrapper> listRW=new LinkedList<RuleWrapper>();
                         for(Rule r : rules){
                                 List<Symbolizer> sym = r.getCompositeSymbolizer().getSymbolizerList();
+                                List<Legend> ll = new LinkedList<Legend>();
                                 for(Symbolizer s : sym){
-                                        leg.add(LegendFactory.getLegend(s));
+                                        ll.add(LegendFactory.getLegend(s));
                                 }
+                                RuleWrapper rw = new RuleWrapper(r, ll);
+                                listRW.add(rw);
                         }
-//			for (int i = 0; i < copies.length; i++) {
-//				Object obj = legend[i].getJAXBObject();
-//				Legend copy = legend[i].newInstance();
-//				copy.setJAXBObject(obj);
-//				copies[i] = copy;
-//				copies[i].setVisible(legend[i].isVisible());
-//			}
+                        StyleWrapper sw = new StyleWrapper(copy, listRW);
 			ILegendPanel[] legends = EPLegendHelper.getLegendPanels(pan);
 			ISymbolEditor[] symbolEditors = EPLegendHelper.getSymbolPanels();
-			pan.init(mt, typ, leg.toArray(new Legend[leg.size()]), legends, symbolEditors, layer);
+			pan.init(mt, typ, sw, legends, symbolEditors, layer);
 			if (UIFactory.showDialog(pan)) {
 				try {
                                         Legend[] ret = pan.getLegends();

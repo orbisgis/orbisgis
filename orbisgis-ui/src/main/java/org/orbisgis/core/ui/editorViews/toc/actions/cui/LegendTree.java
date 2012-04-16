@@ -4,16 +4,14 @@
  */
 package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JToolBar;
-import javax.swing.JTree;
+import javax.swing.*;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import org.orbisgis.core.sif.UIFactory;
@@ -56,6 +54,9 @@ public class LegendTree extends JPanel {
 
                 initToolBar();
                 initButtons();
+                this.setLayout(new BorderLayout());
+                this.add(toolBar, BorderLayout.PAGE_START);
+                this.add(new JScrollPane(tree), BorderLayout.CENTER);
         }
 
         /**
@@ -151,9 +152,29 @@ public class LegendTree extends JPanel {
                 throw new UnsupportedOperationException();
         }
 
+        /**
+         * Get the currently selected Legend, if any. If we find it, we return it.
+         * Otherwise, we return null.
+         * @return
+         */
+        public Legend getSelectedLegend(){
+                TreePath tp = tree.getSelectionPath();
+                if(tp!=null){
+                        Object last = tp.getLastPathComponent();
+                        if(last instanceof Legend){
+                                return (Legend) last;
+                        }
+                }
+                return null;
+        }
+
         private void initToolBar(){
                 toolBar = new JToolBar();
                 toolBar.setFloatable(false);
+        }
+
+        void refresh() {
+                refreshModel();
         }
 
         /**
@@ -244,7 +265,7 @@ public class LegendTree extends JPanel {
                         } else {
                                 pos = currentrw.getSize();
                         }
-                        currentrw.addRuleWrapper(pos, leg);
+                        currentrw.addLegend(pos, leg);
                 }
         }
 
@@ -276,21 +297,6 @@ public class LegendTree extends JPanel {
                         }
                 }
                 return null;
-        }
-
-
-        /**
-         * Get the currently selected Legend, if any. If we find it, we return it.
-         * Otherwise, we return null.
-         */
-        private Legend getSelectedLegend(){
-                TreePath tp = tree.getSelectionPath();
-                Object last = tp.getLastPathComponent();
-                if(last instanceof Legend){
-                        return (Legend) last;
-                } else {
-                        return null;
-                }
         }
 
         private void refreshModel(){

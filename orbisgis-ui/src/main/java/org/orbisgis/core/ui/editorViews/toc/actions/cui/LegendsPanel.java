@@ -58,6 +58,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.IRulePanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ISymbolEditor;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
+import org.orbisgis.core.ui.editorViews.toc.wrapper.RuleWrapper;
 import org.orbisgis.core.ui.editorViews.toc.wrapper.StyleWrapper;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.utils.I18N;
@@ -86,8 +87,9 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 
 	private static final String NO_LEGEND_ID = "no-legend"; 
 	private int geometryType;
-	private ArrayList<LegendElement> legends = new ArrayList<LegendElement>();
-	private LegendList legendList;
+	private ArrayList<ILegendPanel> legends = new ArrayList<ILegendPanel>();
+//	private LegendList legendList;
+        private LegendTree legendTree;
 	private ILegendPanel[] availableLegends;
 	private JPanel pnlContainer;
 	private CardLayout cardLayout;
@@ -97,9 +99,9 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 	private MapTransform mt;
         private StyleWrapper style;
 
-	public void init(MapTransform mt, Type gc, Legend[] legends,
-			ILegendPanel[] availableLegends, ISymbolEditor[] availableEditors,
-			ILayer layer) {
+	public void init(MapTransform mt, Type gc, StyleWrapper sw, ILegendPanel[] availableLegends,
+                        ISymbolEditor[] availableEditors, ILayer layer) {
+                style = sw;
 		this.mt = mt;
 		this.gc = gc;
 		this.layer = layer;
@@ -129,15 +131,18 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		this.availableLegends = availableLegends;
 		initializeComponents();
 
-		for (Legend legend : legends) {
-                        //We get a panel for this legend, by finding one eligible
-                        // in the availabe ones. setLegend is called by getPanel,
-                        //so it's not necessary to do it here.
-			ILegendPanel panel = getPanel(legend);
-			LegendElement legendElement =
-                                new LegendElement(panel, getNewId());
-			addLegend(legendElement);
-		}
+                for (int i = 0; i<style.getSize(); i++){
+                        RuleWrapper r = style.getRuleWrapper(i);
+                        for (int j = 0; j<r.getSize();j++) {
+                                //We get a panel for this legend, by finding one eligible
+                                // in the availabe ones. setLegend is called by getPanel,
+                                //so it's not necessary to do it here.
+                                Legend legend = r.getLegend(j);
+                                ILegendPanel panel = getPanel(legend);
+                                panel.setId(getNewId());
+                                addLegend(panel);
+                        }
+                }
 
 		refreshLegendContainer();
 	}
@@ -156,8 +161,8 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 	private void initializeComponents() {
 		this.setLayout(new BorderLayout());
 		this.add(getLegendToolBar(), BorderLayout.NORTH);
-		legendList = new LegendList(this);
-		this.add(legendList, BorderLayout.WEST);
+		legendTree = new LegendTree(this);
+		this.add(legendTree, BorderLayout.WEST);
 		JPanel right = new JPanel();
 		right.setLayout(new BorderLayout());
 		right.add(getLegendContainer(), BorderLayout.CENTER);
@@ -199,7 +204,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 	public Legend[] getLegends() {
 		Legend[] ret = new Legend[legends.size()];
 		for (int i = 0; i < ret.length; i++) {
-			ret[i] = legends.get(i).getLegendPanel().getLegend();
+			ret[i] = legends.get(i).getLegend();
 		}
 		return ret;
 	}
@@ -229,14 +234,16 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 	}
 
 	private void refresh() {
-		legendList.refresh();
+		legendTree.refresh();
 		refreshLegendContainer();
 	}
 
 	private void refreshLegendContainer() {
-		int index = legendList.getSelectedIndex();
-		if ((index >= 0) && (index <= legends.size() - 1)) {
-			cardLayout.show(pnlContainer, legends.get(index).getId());
+                //We need to retrieve the currently selected legend in the tree,
+                //then find its id, and finally use it to show the panel.
+                Legend selected = legendTree.getSelectedLegend();
+		if (selected != null) {
+			cardLayout.show(pnlContainer, legends.get(0).getId());
 		} else {
 			cardLayout.show(pnlContainer, NO_LEGEND_ID);
 		}
@@ -250,8 +257,8 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 	public void legendAdded(ILegendPanel panel) {
                 //We can cast safely as we KNOW we are already dealing with a LegendPanel.
 		panel = (ILegendPanel)newInstance(panel);
-		LegendElement le = new LegendElement(panel,getNewId());
-		addLegend(le);
+                panel.setId(getNewId());
+		addLegend(panel);
 	}
 
 	private IRulePanel newInstance(IRulePanel panel) {
@@ -261,14 +268,14 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		return ret;
 	}
 
-	private void addLegend(LegendElement le) {
+	private void addLegend(ILegendPanel le) {
 		legends.add(le);
-		pnlContainer.add(le.getLegendPanel().getComponent(), le.getId());
-		le.getLegendPanel().initialize(this);
+		pnlContainer.add(le.getComponent(), le.getId());
+		le.initialize(this);
 		refresh();
 	}
 
-	private Legend getLegend(LegendElement le) {
+	private Legend getLegend(ILegendPanel le) {
 		Legend ret = le.getLegend();
 //		if (ret instanceof LegendDecorator) {
 //			ret = ((LegendDecorator) ret).getLegend();
@@ -283,10 +290,10 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 	}
 
 	public void legendMovedDown(int idx) {
-		LegendElement aux = legends.get(idx);
-		legends.set(idx, legends.get(idx + 1));
-		legends.set(idx + 1, aux);
-		refresh();
+//		LegendElement aux = legends.get(idx);
+//		legends.set(idx, legends.get(idx + 1));
+//		legends.set(idx + 1, aux);
+//		refresh();
 	}
 
 	public void legendSelected(int selectedIndex) {
@@ -294,10 +301,10 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 	}
 
 	public void legendMovedUp(int idx) {
-		LegendElement aux = legends.get(idx);
-		legends.set(idx, legends.get(idx - 1));
-		legends.set(idx - 1, aux);
-		refresh();
+//		LegendElement aux = legends.get(idx);
+//		legends.set(idx, legends.get(idx - 1));
+//		legends.set(idx - 1, aux);
+//		refresh();
 	}
 
         @Override
@@ -336,8 +343,8 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 			return I18N.getString("orbisgis.org.orbisgis.ui.toc.legendsPanel.mustCreateAlmostOneLegend"); 
 		}
 
-		for (LegendElement legendElement : legends) {
-			String panelError = legendElement.getLegendPanel().validateInput();
+		for (ILegendPanel legendElement : legends) {
+			String panelError = legendElement.validateInput();
 			if (panelError != null) {
 				return panelError;
 			}
@@ -371,7 +378,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 
 	public List<String> getLegendsNames() {
 		List<String> ret = new ArrayList<String>(legends.size());
-		for (LegendElement le : legends) {
+		for (ILegendPanel le : legends) {
 			ret.add(le.getLegend().getName());
 		}
 		return ret;

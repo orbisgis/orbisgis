@@ -139,20 +139,20 @@ public class RuleWrapper {
         }
 
         /**
-         * Adds {@code rw} at the end of the list of {@code RuleWrapper}s.
+         * Adds {@code leg} at the end of the list of {@code Legend}s.
          * @param leg
          */
-        public void addRuleWrapper(Legend leg){
+        public void addLegend(Legend leg){
                 rule.getCompositeSymbolizer().addSymbolizer(leg.getSymbolizer());
                 legends.add(leg);
         }
 
         /**
-         * Adds {@code rw} at the ith position in the list of
-         * {@code RuleWrapper}s.
+         * Adds {@code leg} at the ith position in the list of
+         * {@code Legend}s.
          * @param leg
          */
-        public void addRuleWrapper(int i, Legend leg){
+        public void addLegend(int i, Legend leg){
                 legends.add(i, leg);
                 rule.getCompositeSymbolizer().addSymbolizer(i, leg.getSymbolizer());
         }
