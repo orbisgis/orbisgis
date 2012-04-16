@@ -35,7 +35,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.varia.DenyAllFilter;
 import org.apache.log4j.varia.LevelMatchFilter;
-import org.orbisgis.utils.I18N;
+import org.orbisgis.view.translation.I18N;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.output.filters.AllFilter;
 
@@ -83,7 +83,7 @@ public class OutputManager {
                 app.addFilter(new AllFilter());
                 outputPanels.put(LOG_ALL, app);
                 ROOT_LOGGER.addAppender(app);
-                mainPanel.addSubPanel(I18N.getString("orbisgis.view.log_all_title"), app.getGuiPanel());
+                mainPanel.addSubPanel(I18N.tr("orbisgis.view.log_all_title"), app.getGuiPanel());
         }
 
         /**
@@ -99,7 +99,7 @@ public class OutputManager {
                 app.addFilter(new DenyAllFilter());
                 outputPanels.put(LOG_ERROR, app);
                 ROOT_LOGGER.addAppender(app);
-                mainPanel.addSubPanel(I18N.getString("orbisgis.view.log_error_title"), app.getGuiPanel());
+                mainPanel.addSubPanel(I18N.tr("orbisgis.view.log_error_title"), app.getGuiPanel());
         }
 
         private PanelAppender makePanel() {
@@ -120,7 +120,7 @@ public class OutputManager {
                 app.addFilter(new DenyAllFilter());
                 outputPanels.put(LOG_INFO, app);
                 GUI_LOGGER.addAppender(app);
-                mainPanel.addSubPanel(I18N.getString("orbisgis.view.log_info_title"), app.getGuiPanel());
+                mainPanel.addSubPanel(I18N.tr("orbisgis.view.log_info_title"), app.getGuiPanel());
         }
 
         /**
@@ -136,7 +136,7 @@ public class OutputManager {
                 app.addFilter(new DenyAllFilter());
                 outputPanels.put(LOG_WARNING, app);
                 ROOT_LOGGER.addAppender(app);
-                mainPanel.addSubPanel(I18N.getString("orbisgis.view.log_warning_title"), app.getGuiPanel());
+                mainPanel.addSubPanel(I18N.tr("orbisgis.view.log_warning_title"), app.getGuiPanel());
         }
 
         /**

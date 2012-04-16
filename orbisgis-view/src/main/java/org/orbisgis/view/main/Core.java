@@ -31,17 +31,18 @@ package org.orbisgis.view.main;
 import java.awt.Rectangle;
 import java.awt.event.WindowListener;
 import java.beans.EventHandler;
+import java.io.File;
 import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.context.main.MainContext;
-import org.orbisgis.utils.I18N;
+import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.docking.DockingManager;
 import org.orbisgis.view.geocatalog.Catalog;
+import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.main.frames.MainFrame;
 import org.orbisgis.view.map.MapEditor;
 import org.orbisgis.view.output.OutputManager;
 import org.orbisgis.view.toc.Toc;
-import org.orbisgis.view.translation.OrbisGISI18N;
 import org.orbisgis.view.workspace.ViewWorkspace;
 
 /**
@@ -74,6 +75,7 @@ public class Core {
     public Core() {
         this.mainContext = new MainContext();
         this.viewWorkspace = new ViewWorkspace(this.mainContext.getCoreWorkspace());
+        initSIF();
     }
     /**
      * For UnitTest purpose
@@ -82,7 +84,14 @@ public class Core {
     public Catalog getGeoCatalog() {
         return geoCatalog;
     }
-    
+    /**
+     * Init the SIF ui factory
+     */
+    private void initSIF() {
+        UIFactory.setPersistencyDirectory(new File(viewWorkspace.getSIFPath()));
+        UIFactory.setTempDirectory(new File(mainContext.getCoreWorkspace().getTempFolder()));
+        UIFactory.setDefaultImageIcon(OrbisGISIcon.getIcon("mini_orbisgis"));
+    }
     /**
      * 
      * @return Instance of main context
@@ -113,6 +122,7 @@ public class Core {
                 "onMainWindowClosing",//The event target method to call
                 null,                 //the event parameter to pass(none)
                 "windowClosing"));    //The listener method to use
+        UIFactory.setMainFrame(mainFrame);
     }
     /**
      * Make the toc and map frames, place them in the main window
@@ -209,8 +219,6 @@ public class Core {
      */
     private void initI18n() {
         // Init I18n
-        I18N.addI18n("", "orbisgis", OrbisGISI18N.class);
-        I18N.addI18n("", "sif", org.orbisgis.sif.translation.SIFI18N.class);
     }
     /**
      * Free all resources allocated by this object

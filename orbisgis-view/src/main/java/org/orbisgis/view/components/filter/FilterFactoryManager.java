@@ -43,7 +43,7 @@ import javax.swing.JPanel;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.events.EventException;
 import org.orbisgis.core.events.ListenerContainer;
-import org.orbisgis.utils.I18N;
+import org.orbisgis.view.translation.I18N;
 import org.orbisgis.view.components.ContainerItemProperties;
 import org.orbisgis.view.icons.OrbisGISIcon;
 
@@ -323,7 +323,7 @@ public class FilterFactoryManager<FilterInterface> {
     private JButton makeRemoveFilterButton() {
         //Create a compact button
         JButton removeFilterButton = new JButton(OrbisGISIcon.getIcon("delete"));
-        removeFilterButton.setToolTipText(I18N.getString("orbisgis.view.geocatalog.removefilter"));
+        removeFilterButton.setToolTipText(I18N.tr("orbisgis.view.geocatalog.removefilter"));
         removeFilterButton.setMargin(new Insets(0, 0, 0, 0));
         removeFilterButton.setBorderPainted(false);
         removeFilterButton.setContentAreaFilled(false);
@@ -344,7 +344,7 @@ public class FilterFactoryManager<FilterInterface> {
         addFilterButton.setContentAreaFilled(false);
         buttonAlignement.add(addFilterButton,BorderLayout.NORTH);
         //Toottip
-        addFilterButton.setToolTipText(I18N.getString("orbisgis.view.geocatalog.addfilter"));
+        addFilterButton.setToolTipText(I18N.tr("orbisgis.view.geocatalog.addfilter"));
         //Apply action listener
         addFilterButton.addActionListener( 
                 EventHandler.create(ActionListener.class, this, "onAddFilter")                

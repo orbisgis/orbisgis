@@ -1,4 +1,4 @@
-/*
+ /*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information. OrbisGIS is
@@ -26,44 +26,42 @@
  * or contact directly:
  * info _at_ orbisgis.org
  */
-package org.orbisgis.view.toc;
+package org.orbisgis.view.translation;
 
-import java.awt.Component;
-import javax.swing.JPanel;
-import org.orbisgis.view.translation.I18N;
-import org.orbisgis.view.docking.DockingPanel;
-import org.orbisgis.view.docking.DockingPanelParameters;
-import org.orbisgis.view.icons.OrbisGISIcon;
+import java.util.Locale;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
- * @brief The Toc Panel component
+ * I18N of OrbisGIS gui Project
  */
 
+public class I18N {
+    private static I18n i18n = I18nFactory.getI18n(I18N.class);
 
-public class Toc extends JPanel implements DockingPanel  {
-    //The UID must be incremented when the serialization is not compatible with the new version of this class
-    private static final long serialVersionUID = 1L; 
-    
-    DockingPanelParameters dockingPanelParameters;
-    
     /**
-     * Constructor
+     * Change the default locale to another
+     * @param appLocale New locale
      */
-    public Toc() {
-        dockingPanelParameters = new DockingPanelParameters();
-        dockingPanelParameters.setName("toc");
-        //dockingPanelParameters.setDockingArea("toc_map");
-        dockingPanelParameters.setTitle(I18N.tr("orbisgis.view.toc.TocTitle"));
-        dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("map"));
-        dockingPanelParameters.setCloseable(false);
+    public static void configure(Locale appLocale) {
+        i18n = I18nFactory.getI18n(I18N.class, appLocale);
     }
-    
-    public DockingPanelParameters getDockingParameters() {
-        return dockingPanelParameters;
+    /**
+     * 
+     * @return The locale of the current i18n
+     */
+    public static String getLoc() {
+        return i18n.getLocale().toString();
     }
-
-    public Component getComponent() {
-        return this;
+    /**
+     * Translate the message passed as argument
+     * @param key A message in english
+     * @warning If a message may not be spelled correctly, do not change this
+     * message but fix it with the english .PO .
+     * This way the link between key and messages is not broken
+     * @return The translated version of this key 
+     */
+    public static String tr(String key) {
+        return i18n.tr(key);
     }
-    
 }

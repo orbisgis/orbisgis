@@ -39,7 +39,7 @@ import javax.swing.*;
 import javax.swing.text.*;
 import org.apache.log4j.Logger;
 import org.orbisgis.sif.common.menuCommonFunctions;
-import org.orbisgis.utils.I18N;
+import org.orbisgis.view.translation.I18N;
 import org.orbisgis.view.geocatalog.Catalog;
 
 public class OutputPanel extends JPanel {
@@ -82,12 +82,12 @@ public class OutputPanel extends JPanel {
             //Create the root menu
             JPopupMenu rootMenu = new JPopupMenu();
             //Menu->Copy
-            JMenuItem copyItem = new JMenuItem(I18N.getString("orbisgis.view.menu.copy"));
+            JMenuItem copyItem = new JMenuItem(I18N.tr("orbisgis.view.menu.copy"));
             copyItem.addActionListener(EventHandler.create(ActionListener.class, this, "onMenuCopy"));
             menuCommonFunctions.setMnemonic(copyItem);
             rootMenu.add(copyItem);
             //Menu->Clear
-            JMenuItem clearItem = new JMenuItem(I18N.getString("orbisgis.view.menu.clear"));
+            JMenuItem clearItem = new JMenuItem(I18N.tr("orbisgis.view.menu.clear"));
             clearItem.addActionListener(EventHandler.create(ActionListener.class, this, "onMenuClear"));
             menuCommonFunctions.setMnemonic(clearItem);
             rootMenu.add(clearItem);
@@ -191,7 +191,7 @@ public class OutputPanel extends JPanel {
 			textPane.getDocument().insertString(len, text, aset);
                         removeAdditionnalCharacters();
 		} catch (BadLocationException e) {
-			LOGGER.error(I18N.getString("orbisgis.view.output.CannotShowLogMessage"), e);
+			LOGGER.error(I18N.tr("orbisgis.view.output.CannotShowLogMessage"), e);
 		}
 		textPane.setCaretPosition(textPane.getDocument().getLength());
 	}

@@ -31,7 +31,7 @@ package org.orbisgis.view.geocatalog.filters.factories;
 import java.awt.Component;
 import javax.swing.JTextField;
 import org.gdms.source.SourceManager;
-import org.orbisgis.utils.I18N;
+import org.orbisgis.view.translation.I18N;
 import org.orbisgis.view.components.filter.ActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactory;
 import org.orbisgis.view.geocatalog.filters.IFilter;
@@ -58,7 +58,7 @@ public class NameNotContains implements FilterFactory<IFilter> {
      * @return
      */
     public String getFilterLabel() {
-        return I18N.getString("orbisgis.view.geocatalog.filters.factories.NameNotContainsLabel");
+        return I18N.tr("orbisgis.view.geocatalog.filters.factories.NameNotContainsLabel");
     }
 
     /**

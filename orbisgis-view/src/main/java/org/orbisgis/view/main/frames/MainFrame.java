@@ -36,7 +36,7 @@ import java.util.Locale;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import org.orbisgis.utils.I18N;
+import org.orbisgis.view.translation.I18N;
 import org.orbisgis.view.components.menubar.MenuBarManager;
 import org.orbisgis.view.components.menubar.MenuItemProperties;
 import org.orbisgis.view.components.menubar.MenuProperties;
@@ -66,7 +66,7 @@ public class MainFrame extends JFrame {
 	 */
 	public MainFrame(){
 		setTitle( "OrbisGIS "
-                        + I18N.getString("orbisgis.org.orbisgis.version") + " - " + I18N.getString("orbisgis.org.orbisgis.versionName") + " - " + Locale.getDefault().getCountry() );
+                        + I18N.tr("orbisgis.org.orbisgis.version") + " - " + I18N.tr("orbisgis.org.orbisgis.versionName") + " - " + Locale.getDefault().getCountry() );
                 setDefaultCloseOperation( DO_NOTHING_ON_CLOSE );
 		setIconImage(OrbisGISIcon.getIconImage("mini_orbisgis")); 
                 createMenu();
@@ -85,15 +85,15 @@ public class MainFrame extends JFrame {
          */
         private void createMenu() {
             //File menu
-            menuBar.addMenu("", new MenuProperties(MENU_FILE, new JMenu(I18N.getString("orbisgis.view.main.frames.menu.file"))));
+            menuBar.addMenu("", new MenuProperties(MENU_FILE, new JMenu(I18N.tr("orbisgis.view.main.frames.menu.file"))));
             //Add exit item
-            JMenuItem exitMenu = new JMenuItem(I18N.getString("orbisgis.view.main.frames.menu.exitapp"),OrbisGISIcon.getIcon("exit"));
+            JMenuItem exitMenu = new JMenuItem(I18N.tr("orbisgis.view.main.frames.menu.exitapp"),OrbisGISIcon.getIcon("exit"));
             exitMenu.addActionListener(EventHandler.create(ActionListener.class,this,"onMenuExitApplication"));
             menuBar.addMenuItem(MENU_FILE,new MenuItemProperties(MENU_EXIT,exitMenu));
             //Add the tools menu
-            menuBar.addMenu("", new MenuProperties(MENU_TOOLS, new JMenu(I18N.getString("orbisgis.view.main.frames.menu.tools"))));
+            menuBar.addMenu("", new MenuProperties(MENU_TOOLS, new JMenu(I18N.tr("orbisgis.view.main.frames.menu.tools"))));
             //Add preferencies menu item
-            JMenuItem preferenciesMenu = new JMenuItem(I18N.getString("orbisgis.view.main.frames.menu.preferencies"),OrbisGISIcon.getIcon("preferences-system"));
+            JMenuItem preferenciesMenu = new JMenuItem(I18N.tr("orbisgis.view.main.frames.menu.preferencies"),OrbisGISIcon.getIcon("preferences-system"));
             preferenciesMenu.addActionListener(EventHandler.create(ActionListener.class,this,"onMenuShowPreferencies"));
             menuBar.addMenuItem(MENU_TOOLS, new MenuItemProperties(MENU_TOOLS, preferenciesMenu));
         }

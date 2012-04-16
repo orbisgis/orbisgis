@@ -44,7 +44,7 @@ import org.gdms.source.Source;
 import org.gdms.source.SourceListener;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.context.SourceContext.SourceContext;
-import org.orbisgis.utils.I18N;
+import org.orbisgis.view.translation.I18N;
 import org.orbisgis.view.components.ContainerItemProperties;
 import org.orbisgis.view.geocatalog.filters.IFilter;
 import org.orbisgis.view.geocatalog.filters.TableSystemFilter;
@@ -211,7 +211,7 @@ public class SourceListModel extends AbstractListModel {
                     }
                 } catch(DriverException ex) {
                     //Log warning
-                    LOGGER.warn(I18N.getString("orbisgis.view.geocatalog.CannotReadDataSourceSchema"),ex);
+                    LOGGER.warn(I18N.tr("orbisgis.view.geocatalog.CannotReadDataSourceSchema"),ex);
                 }
                 sourceList[rowidSource] = new CatalogSourceItem(
                                                 tempSourceNames[rowidSource], //Source Name

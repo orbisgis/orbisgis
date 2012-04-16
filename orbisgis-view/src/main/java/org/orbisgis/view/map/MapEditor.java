@@ -30,7 +30,7 @@ package org.orbisgis.view.map;
 
 import java.awt.Component;
 import javax.swing.JPanel;
-import org.orbisgis.utils.I18N;
+import org.orbisgis.view.translation.I18N;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.icons.OrbisGISIcon;
@@ -51,7 +51,7 @@ public class MapEditor extends JPanel implements DockingPanel   {
     public MapEditor() {
         dockingPanelParameters = new DockingPanelParameters();
         dockingPanelParameters.setName("map_editor");
-        dockingPanelParameters.setTitle(I18N.getString("orbisgis.view.map.MapEditorTitle"));
+        dockingPanelParameters.setTitle(I18N.tr("orbisgis.view.map.MapEditorTitle"));
         dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("map"));
         dockingPanelParameters.setMinimizable(false);
         dockingPanelParameters.setExternalizable(false);
