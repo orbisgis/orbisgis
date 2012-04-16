@@ -88,4 +88,11 @@ public interface ILegendPanel  extends IRulePanel {
          * @param newId 
          */
         public void setId(String newId);
+
+        /**
+         * Copy the {@code Legend} instance associated to this 
+         * {@code ILegendPanel}. It is faster than copying the whole panel.
+         * @return 
+         */
+        public Legend copyLegend();
 }

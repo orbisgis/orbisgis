@@ -4,6 +4,7 @@
  */
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.legends;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.net.URL;
 import org.gdms.data.types.Type;
@@ -114,5 +115,11 @@ public class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
 		return new ConstraintSymbolFilter(new Type[]{TypeFactory.createType(Type.GEOMETRY)});
 	}
 
-        
+
+        @Override
+        public Legend copyLegend() {
+                UniqueSymbolArea ret = new UniqueSymbolArea();
+                ret.setFillColor(uniqueArea.getFillColor());
+                return ret;
+        }
 }

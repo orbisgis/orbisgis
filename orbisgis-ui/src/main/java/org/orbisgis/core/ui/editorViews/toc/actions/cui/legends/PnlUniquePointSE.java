@@ -26,7 +26,7 @@ public class PnlUniquePointSE extends PnlUniqueSymbolSE {
          * Here we can put all the Legend instances we want... but they have to
          * be unique symbol (ie constant) Legends.
          */
-        private UniqueSymbolPoint uniqueLine;
+        private UniqueSymbolPoint uniquePoint;
         private LegendContext legendContext ;
         
 
@@ -37,13 +37,13 @@ public class PnlUniquePointSE extends PnlUniqueSymbolSE {
 
         @Override
         public Legend getLegend() {
-                return uniqueLine;
+                return uniquePoint;
         }
 
         @Override
         public void setLegend(Legend legend) {
                 if(legend instanceof UniqueSymbolPoint){
-                        uniqueLine = (UniqueSymbolPoint) legend;
+                        uniquePoint = (UniqueSymbolPoint) legend;
                         this.initializeLegendFields();
                 } else {
                         throw new IllegalArgumentException("The given Legend is not"
@@ -64,7 +64,7 @@ public class PnlUniquePointSE extends PnlUniqueSymbolSE {
 	 */
         @Override
         public void initialize(LegendContext lc) {
-                if(uniqueLine == null){
+                if(uniquePoint == null){
                         setLegend(new UniqueSymbolPoint());
                 }
                 legendContext = lc;
@@ -113,6 +113,12 @@ public class PnlUniquePointSE extends PnlUniqueSymbolSE {
 	private SymbolFilter getSymbolFilter() {
 		return new ConstraintSymbolFilter(new Type[]{TypeFactory.createType(Type.GEOMETRY)});
 	}
+
+        @Override
+        public Legend copyLegend() {
+                UniqueSymbolPoint usp = new UniqueSymbolPoint();
+                return usp;
+        }
 
         
 }

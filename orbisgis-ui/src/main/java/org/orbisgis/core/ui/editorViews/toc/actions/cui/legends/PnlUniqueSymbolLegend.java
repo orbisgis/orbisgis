@@ -153,4 +153,8 @@ public class PnlUniqueSymbolLegend extends javax.swing.JPanel implements
                 this.id = id;
         }
 
+        @Override
+        public Legend copyLegend() {
+                return null;
+        }
 }

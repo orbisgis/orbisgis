@@ -60,6 +60,36 @@ public abstract class AbstractTreeModel implements TreeModel {
 		treeModelListeners.add(l);
 	}
 
+        protected void fireStructureChanged(TreeModelEvent e){
+		TreePath[] selection = tree.getSelectionPaths();
+		for (TreeModelListener tml : treeModelListeners){
+			tml.treeStructureChanged(e);
+		}
+		if (selection != null) {
+			tree.addSelectionPaths(selection);
+		}
+        }
+
+        protected void fireNodeInserted(TreeModelEvent e){
+		TreePath[] selection = tree.getSelectionPaths();
+		for (TreeModelListener tml : treeModelListeners){
+			tml.treeNodesInserted(e);
+		}
+		if (selection != null) {
+			tree.addSelectionPaths(selection);
+		}
+        }
+
+        protected void fireNodeRemoved(TreeModelEvent e){
+		TreePath[] selection = tree.getSelectionPaths();
+		for (TreeModelListener tml : treeModelListeners){
+			tml.treeNodesRemoved(e);
+		}
+		if (selection != null) {
+			tree.addSelectionPaths(selection);
+		}
+        }
+
 	protected void fireEvent(TreePath treePath) {
 		//PYF : Thread de recalcul du JTree
 		//est lançé en même temps que l'ajout d'éléments 
@@ -81,7 +111,7 @@ public abstract class AbstractTreeModel implements TreeModel {
 	private void fireEvent() {
 		TreePath root = new TreePath(getRoot());
 		Enumeration<TreePath> paths = tree.getExpandedDescendants(root);
-		TreePath[] selection = tree.getSelectionPaths();		
+		TreePath[] selection = tree.getSelectionPaths();
 		TreeModelEvent e = new TreeModelEvent(this, root);
 		for (TreeModelListener tml : treeModelListeners){
 			tml.treeStructureChanged(e);

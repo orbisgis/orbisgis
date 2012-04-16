@@ -234,4 +234,8 @@ public class PnlLabelLegend extends JPanel implements ILegendPanel {
                 this.id = id;
         }
 
+        @Override
+        public Legend copyLegend() {
+                return null;
+        }
 }

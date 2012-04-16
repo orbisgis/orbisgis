@@ -98,4 +98,9 @@ public class NoPanel implements ILegendPanel {
         public void setId(String id){
         }
 
+        @Override
+        public Legend copyLegend() {
+                return null;
+        }
+
 }

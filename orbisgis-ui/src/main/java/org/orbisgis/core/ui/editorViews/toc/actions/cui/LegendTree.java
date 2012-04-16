@@ -16,7 +16,6 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreeCellRenderer;
-import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import org.orbisgis.core.sif.UIFactory;
@@ -57,7 +56,8 @@ public class LegendTree extends JPanel {
                 tree = new JTree();
                 //We don't want to display the root.
                 tree.setRootVisible(false);
-                //We have a custom model to provide...
+                //We have a custom model to provide... Listeners on the TreeModel
+                //are added by the tree when calling setModel.
                 LegendTreeModel ltm = new LegendTreeModel(tree, style);
                 tree.setModel(ltm);
                 //...and a custom TreeCellRenderer.
@@ -81,16 +81,14 @@ public class LegendTree extends JPanel {
         public void removeSelectedElement(){
                 TreePath tp = tree.getSelectionPath();
                 Object select = tp.getLastPathComponent();
+                LegendTreeModel tm = (LegendTreeModel) tree.getModel();
                 if(select instanceof Legend){
-                        Legend leg = (Legend) select;
                         RuleWrapper rw = (RuleWrapper) tp.getPath()[tp.getPath().length -2];
-                        rw.remove(leg);
-                        refresh();
+                        tm.removeElement(rw, select);
+                        refreshIcons();
                 } else if(select instanceof RuleWrapper){
-                        RuleWrapper rw = (RuleWrapper) select;
-                        StyleWrapper sw = (StyleWrapper) tp.getPath()[tp.getPath().length -2];
-                        sw.remove(rw);
-                        refresh();
+                        tm.removeElement(tm.getRoot(), select);
+                        refreshIcons();
                 }
         }
 
@@ -113,53 +111,42 @@ public class LegendTree extends JPanel {
                                 addLegend();
                         }
                 }
-                refresh();
+                refreshIcons();
         }
 
         /**
-         * Move the currently selected element (if any) up in its structure. If
-         * it is a legend, it is moved in the underlying RuleWrapper. If it is
-         * a RuleWrapper, it is moved in the underlying StyleWrapper.
+         * Move the currently selected element (if any) up in the model.
          */
         public void moveSelectedElementUp(){
                 TreePath tp = tree.getSelectionPath();
                 Object select = tp.getLastPathComponent();
                 if(select instanceof RuleWrapper){
-                        RuleWrapper rw = (RuleWrapper) select;
-                        StyleWrapper sw = legendsPanel.getStyleWrapper();
-                        int i = sw.indexOf(rw);
-                        sw.moveRuleWrapperUp(i);
-                        refresh();
+                        LegendTreeModel tm = (LegendTreeModel) tree.getModel();
+                        tm.moveElementUp(tm.getRoot(), select);
+                        refreshIcons();
                 } else if(select instanceof Legend){
                         RuleWrapper rw = (RuleWrapper) tp.getPath()[tp.getPath().length -2];
-                        Legend leg = (Legend) select;
-                        int i = rw.indexOf(leg);
-                        rw.moveLegendUp(i);
-                        refresh();
+                        LegendTreeModel tm = (LegendTreeModel) tree.getModel();
+                        tm.moveElementUp(rw, select);
+                        refreshIcons();
                 }
         }
 
         /**
-         * Move the currently selected element (if any) down in its structure. If
-         * it is a legend, it is moved in the underlying RuleWrapper. If it is
-         * a RuleWrapper, it is moved in the underlying StyleWrapper.
+         * Move the currently selected element (if any) down in its structure.
          */
         public void moveSelectedElementDown(){
                 TreePath tp = tree.getSelectionPath();
                 Object select = tp.getLastPathComponent();
                 if(select instanceof RuleWrapper){
-                        RuleWrapper rw = (RuleWrapper) select;
-                        TreeModel tm = tree.getModel();
-                        StyleWrapper sw = legendsPanel.getStyleWrapper();
-                        int i = tm.getIndexOfChild(sw, rw);
-                        sw.moveRuleWrapperDown(i);
-                        refresh();
+                        LegendTreeModel tm = (LegendTreeModel) tree.getModel();
+                        tm.moveElementDown(tm.getRoot(), select);
+                        refreshIcons();
                 } else if(select instanceof Legend){
                         RuleWrapper rw = (RuleWrapper) tp.getPath()[tp.getPath().length -2];
-                        Legend leg = (Legend) select;
-                        int i = rw.indexOf(leg);
-                        rw.moveLegendDown(i);
-                        refresh();
+                        LegendTreeModel tm = (LegendTreeModel) tree.getModel();
+                        tm.moveElementDown(rw, select);
+                        refreshIcons();
                 }
         }
 
@@ -302,7 +289,7 @@ public class LegendTree extends JPanel {
 
 		if (UIFactory.showDialog(legendPicker)) {
                         //We retrieve the legend we want to add
-                        Legend leg = ((ILegendPanel) legendPicker.getSelected()).getLegend();
+                        Legend leg = ((ILegendPanel) legendPicker.getSelected()).copyLegend();
                         //We retrieve the rw where we will add it.
                         RuleWrapper currentrw = getSelectedRule();
                         if(currentrw == null ){
@@ -313,14 +300,8 @@ public class LegendTree extends JPanel {
                         }
                         //We retrieve the index where to put it.
                         Legend sl = getSelectedLegend();
-                        int pos;
-                        if(sl != null){
-                                //We want to insert it after the currently selected Legend.
-                                pos = currentrw.indexOf(sl)+1;
-                        } else {
-                                pos = currentrw.getSize();
-                        }
-                        currentrw.addLegend(pos, leg);
+                        LegendTreeModel tm = (LegendTreeModel) tree.getModel();
+                        tm.addElement(currentrw, leg, sl);
                 }
         }
 
@@ -333,15 +314,9 @@ public class LegendTree extends JPanel {
                 mip.addValidationExpression("RuleName IS NOT NULL AND RuleName != ''", "Enter a name.");
                 if(UIFactory.showDialog(mip)){
                         String s = mip.getValues()[0];
-                        StyleWrapper sw = legendsPanel.getStyleWrapper();
-                        RuleWrapper rw = getSelectedRule();
-                        int pos;
-                        if(rw != null){
-                                pos=sw.indexOf(rw)+1;
-                        } else {
-                                pos=sw.getSize();
-                        }
-                        sw.addRuleWrapper(pos, new RuleWrapper(s));
+                        RuleWrapper cur = getSelectedRule();
+                        LegendTreeModel tm = (LegendTreeModel) tree.getModel();
+                        tm.addElement(tm.getRoot(), new RuleWrapper(s), cur);
                 }
         }
 
@@ -391,6 +366,7 @@ public class LegendTree extends JPanel {
                 private Component getComponent(Legend legend, boolean selected) {
                         JLabel lab = new JLabel(legend.getName());
                         lab.setForeground(selected ? SELECTED : DESELECTED);
+                        lab.setBackground(Color.blue);
                         return lab;
                 }
 
@@ -401,6 +377,7 @@ public class LegendTree extends JPanel {
                         }
                         JLabel lab = new JLabel(s);
                         lab.setForeground(selected ? SELECTED : DESELECTED);
+                        lab.setBackground(Color.blue);
                         return lab;
                 }
 

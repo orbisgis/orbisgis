@@ -4,6 +4,7 @@
  */
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.legends;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.net.URL;
 import org.gdms.data.types.Type;
@@ -113,6 +114,15 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
 	private SymbolFilter getSymbolFilter() {
 		return new ConstraintSymbolFilter(new Type[]{TypeFactory.createType(Type.GEOMETRY)});
 	}
+
+        @Override
+        public Legend copyLegend() {
+                UniqueSymbolLine usl = new UniqueSymbolLine();
+                usl.setDashArray(uniqueLine.getDashArray());
+                usl.setLineWidth(uniqueLine.getLineWidth());
+                usl.setLineColor(uniqueLine.getLineColor());
+                return usl;
+        }
 
         
 }

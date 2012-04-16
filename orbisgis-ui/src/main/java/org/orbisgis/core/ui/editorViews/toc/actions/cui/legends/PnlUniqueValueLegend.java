@@ -246,4 +246,8 @@ public class PnlUniqueValueLegend extends PnlAbstractClassifiedLegend {
 			cmbFields.setSelectedIndex(0);
 		}
 	}
+        @Override
+        public Legend copyLegend() {
+                return null;
+        }
 }

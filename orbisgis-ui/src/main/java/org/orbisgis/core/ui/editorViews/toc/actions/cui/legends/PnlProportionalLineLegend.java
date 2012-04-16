@@ -462,5 +462,9 @@ public class PnlProportionalLineLegend extends JPanel implements ILegendPanel {
         public void setId(String id){
                 this.id = id;
         }
+        @Override
+        public Legend copyLegend() {
+                return null;
+        }
 
 }

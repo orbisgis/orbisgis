@@ -422,4 +422,9 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 		return cmbFieldNames.getSelectedIndex() != -1;
 	}
 
+        @Override
+        public Legend copyLegend() {
+                return null;
+        }
+
 }
