@@ -54,10 +54,11 @@ import org.gdms.sql.evaluator._
 import org.gdms.sql.function.SpatialIndexedFunction
 
 /**
- * Step 4: Filter expression optimizations.
+ * Step 4: Filter expression handling.
  * 
- * Filter expressions on spatial indexed function (that are not joins) are converted into joins with a constant
+ * - Filter expressions on spatial indexed function (that are not joins) are converted into joins with a constant
  * table, to make use later of indexed-based joins.
+ * - Processes subqueries all the way to validation (included).
  */
 case object FiltersStep extends AbstractEngineStep[Operation, Operation]("filter expression optimization")
                            with LogicPlanOptimizer {

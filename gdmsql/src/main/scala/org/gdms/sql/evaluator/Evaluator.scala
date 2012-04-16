@@ -231,6 +231,12 @@ object field {
   }
 }
   
+/**
+ * Evaluator for field referenced from an outer level (in a subquery).
+ * 
+ * @author Antoine Gourlay
+ * @since 0.3
+ */
 case class OuterFieldEvaluator(name: String, table: Option[String]) extends Evaluator {
   def setValue(r: Array[Value]) {value = r(index)}
   private var value: Value = null
@@ -282,6 +288,12 @@ object star {
   }
 }
 
+/**
+ * Evaluator for Oid special field.
+ * 
+ * @author Antoine Gourlay
+ * @since 0.1
+ */
 case class OidEvaluator() extends Evaluator {
   def eval = r => {
     if (r.rowId.isDefined) {
@@ -303,6 +315,12 @@ object oid {
   }
 }
 
+/**
+ * Evaluator for "e :: type" or "CAST (e AS type)".
+ * 
+ * @author Antoine Gourlay
+ * @since 0.3
+ */
 case class CastEvaluator(e: Expression, sqlType: Int) extends Evaluator {
   override val childExpressions = e :: Nil
   def eval = s => e.evaluate(s).toType(sqlType)
@@ -318,6 +336,12 @@ object castTo {
   }
 }
 
+/**
+ * Special Evaluator for pre-computed but not constant expressions.
+ * 
+ * @author Antoine Gourlay
+ * @since 0.3
+ */
 case class PreparedEvaluator(r: Row, e: Expression) extends Evaluator {
   override val childExpressions = e :: Nil
   def eval = _ => e.evaluate(r)

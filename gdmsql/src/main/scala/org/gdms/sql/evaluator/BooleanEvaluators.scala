@@ -223,6 +223,12 @@ object inList {
   }
 }
 
+/**
+ * Evaluator for WHERE EXISTS (SELECT ...).
+ * 
+ * @author Antoine Gourlay
+ * @since 0.3
+ */
 case class ExistsEvaluator(var o: Operation) extends BooleanEvaluator with DsfEvaluator {
   
   var command: Command = null
@@ -265,6 +271,12 @@ object exists {
   }
 }
 
+/**
+ * Evaluator for "value IN (SELECT ...)".
+ * 
+ * @author Antoine Gourlay
+ * @since 0.3
+ */
 case class InEvaluator(e: Expression, var o: Operation) extends BooleanEvaluator with DsfEvaluator {
   var command: Command = null
   var pm: Option[ProgressMonitor] = None

@@ -372,29 +372,20 @@ public class SQLTest extends SQLBaseTest {
                 }
         }
 
-        private void testInClause(String ds) throws Exception {
-                String numericField = super.getNumericFieldNameFor(ds);
-                double low = super.getMinimumValueFor(ds, numericField);
-                double high = super.getMaximumValueFor(ds, numericField);
-                DataSource d = dsf.getDataSourceFromSQL("select * from " + ds + " where StringToDouble(ToString("
-                        + numericField + ")) in (" + low + ", " + high + ");");
-
-                d.open();
-                for (int i = 0; i < d.getRowCount(); i++) {
-                        double fieldValue = d.getDouble(i, numericField);
-                        assertTrue((low == fieldValue) || (fieldValue == high));
-                }
-                d.close();
-        }
-
         @Test
         public void testInClause() throws Exception {
-                String[] resources = super.getResourcesWithNumericField();
-                for (String resource : resources) {
-                        if (!super.getTestData(resource).isDB()) {
-                                testInClause(resource);
-                        }
-                }
+                dsf.executeSQL("CREATE TABLE testIn AS SELECT * FROM VALUES (1), (3), (5) as toto;");
+                dsf.executeSQL("CREATE TABLE testIn2 AS SELECT * FROM VALUES (1), (2), (3), (4), (5) as toto;");
+                DataSource d = dsf.getDataSourceFromSQL("SELECT * FROM testIn2 WHERE testIn2.exp0 IN (SELECT * FROM testIn);");
+                d.open();
+                assertEquals(3, d.getRowCount());
+                assertEquals(1, d.getInt(0, 0));
+                assertEquals(3, d.getInt(1, 0));
+                assertEquals(5, d.getInt(2, 0));
+                d.close();
+                
+                dsf.getSourceManager().delete("testIn");
+                dsf.getSourceManager().delete("testIn2");
         }
 
         private void testAggregate(String ds) throws Exception {

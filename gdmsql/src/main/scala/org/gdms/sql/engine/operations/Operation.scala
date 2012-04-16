@@ -625,6 +625,16 @@ case class Show(parameter: Option[String]) extends Operation {
   override def toString = "Show '" + parameter + "'"
 }
 
+/**
+ * Adds a function to the Gdms funtion manager.
+ * 
+ * @param name name of the function
+ * @param as language specific string describing the function
+ * @param language language name
+ * @param replace true if any existing function must be silently replaced
+ * @author Antoine Gourlay
+ * @since 0.3
+ */
 case class CreateFunction(name: String, as: String, language: String, replace: Boolean) extends Operation {
   def children = Nil
   override def doValidate = {
@@ -635,6 +645,14 @@ case class CreateFunction(name: String, as: String, language: String, replace: B
   override def toString = "CreateFunction (" + name + ", " + as + ", " + language + ", replace=" + replace + ")"
 }
 
+/**
+ * Removes as function from the Gdms function manager.
+ * 
+ * @param name name of the function
+ * @param ifExists true if no error should be thrown when there is no function with that name
+ * @author Antoine Gourlay
+ * @since 0.3
+ */
 case class DropFunction(name: String, ifExists: Boolean) extends Operation {
   def children = Nil
   override def toString = "DropFunction (" + name + ", ifExists=" + ifExists + ")"
