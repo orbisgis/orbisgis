@@ -1249,7 +1249,7 @@ public class SQLTest extends SQLBaseTest {
         }
 
         @Test
-        public void testSelectWhereInSubquery() throws Exception {
+        public void testNestedSelectWhereInSubquery() throws Exception {
                 Type intType = TypeFactory.createType(Type.INT);
                 Type stringType = TypeFactory.createType(Type.STRING);
                 MemoryDataSetDriver dict = new MemoryDataSetDriver(new String[]{
@@ -1266,12 +1266,41 @@ public class SQLTest extends SQLBaseTest {
                 thetable.addValues(ValueFactory.createValue(0));
                 dsf.getSourceManager().register("dict", dict);
                 dsf.getSourceManager().register("thetable", thetable);
-                DataSource ds = dsf.getDataSourceFromSQL("select * from thetable "
-                        + "where dict_code in "
+                DataSource ds = dsf.getDataSourceFromSQL("select * from thetable where dict_code in "
                         + "(select code from dict where \"data\" = 'good');");
                 ds.open();
                 for (int i = 0; i < ds.getRowCount(); i++) {
                         assertEquals(ds.getInt(i, 0), 0);
+                }
+                ds.close();
+        }
+        
+        @Test
+        public void testCorrelatedSelectWhereInSubquery() throws Exception {
+                Type intType = TypeFactory.createType(Type.INT);
+                Type stringType = TypeFactory.createType(Type.STRING);
+                MemoryDataSetDriver dict = new MemoryDataSetDriver(new String[]{
+                                "code", "data"}, new Type[]{intType, stringType});
+                dict.addValues(ValueFactory.createValue(0), ValueFactory.createValue("good"));
+                dict.addValues(ValueFactory.createValue(1), ValueFactory.createValue("bad"));
+                MemoryDataSetDriver thetable = new MemoryDataSetDriver(
+                        new String[]{"dict_code", "data"}, new Type[]{intType, stringType});
+                thetable.addValues(ValueFactory.createValue(0), ValueFactory.createValue("good"));
+                thetable.addValues(ValueFactory.createValue(1), ValueFactory.createValue("good"));
+                thetable.addValues(ValueFactory.createValue(0), ValueFactory.createValue("bad"));
+                thetable.addValues(ValueFactory.createValue(1), ValueFactory.createValue("bad"));
+                thetable.addValues(ValueFactory.createValue(1), ValueFactory.createValue("bad"));
+                thetable.addValues(ValueFactory.createValue(0), ValueFactory.createValue("good"));
+                dsf.getSourceManager().register("dict", dict);
+                dsf.getSourceManager().register("thetable", thetable);
+                DataSource ds = dsf.getDataSourceFromSQL("select * from thetable where dict_code in "
+                        + "(select code from dict where dict.\"data\" = thetable.\"data\");");
+                ds.open();
+                assertEquals(4l, ds.getRowCount());
+                for (int i = 0; i < ds.getRowCount(); i++) {
+                        assertTrue((ds.getInt(i, 0) == 0 && "good".equals(ds.getString(i, 1)))
+                                || (ds.getInt(i, 0) == 1 && "bad".equals(ds.getString(i, 1)))
+                                );
                 }
                 ds.close();
         }

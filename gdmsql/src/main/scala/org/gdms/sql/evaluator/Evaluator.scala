@@ -166,133 +166,161 @@ object func {
  * @author Antoine Gourlay
  * @since 0.1
  */
- case class AggregateEvaluator(f: AggregateFunction, l: List[Expression]) extends Evaluator with DsfEvaluator {
-    def eval = s => {
-      f.evaluate(dsf, l map ( _.evaluate(s)): _*)
+case class AggregateEvaluator(f: AggregateFunction, l: List[Expression]) extends Evaluator with DsfEvaluator {
+  def eval = s => {
+    f.evaluate(dsf, l map ( _.evaluate(s)): _*)
+    ValueFactory.createNullValue[Value]
+  }
+  val finalValue = () => f.getAggregateResult
+  def sqlType = f.getType(l.map { e => TypeFactory.createType(e.evaluator.sqlType) } toArray).getTypeCode
+  override val childExpressions = l
+  override def doPreValidate = {
+    if (f == null) throw new FunctionException("The function does not exist.")
+  }
+  override def doValidate = {
+    FunctionValidator.failIfTypesDoNotMatchSignature(
+      l.map { e => TypeFactory.createType(e.evaluator.sqlType) } toArray,
+      f.getFunctionSignatures)
+  }
+  override def toString = f.getName + "(" + l + ")"
+  
+  def doCopy = {
+    AggregateEvaluator(FunctionManager.getFunction(f.getName).asInstanceOf[AggregateFunction], l)
+  }
+}
+
+object agg {
+  def unapply(e: Expression) = {
+    e.evaluator match {
+      case a: AggregateEvaluator => Some((a.f, a.l))
+      case _ => None
+    }
+  }
+}
+
+/**
+ * Evaluator for fields. The index is initialized by the Projection or WhereFilter Command.
+ *
+ * @author Antoine Gourlay
+ * @since 0.1
+ */
+case class FieldEvaluator(name: String, table: Option[String] = None) extends Evaluator {
+  def eval = _(index)
+  var sqlType = -1
+  var index: Int = -1
+  override def doValidate = index match {
+    case -1 => throw new UnknownFieldException(name)
+    case _ =>
+  }
+  override def toString = "Field(" + (if (table.isDefined) table.get + "." else "") + name + ")"
+  
+  override def postDuplicate(n: Evaluator) = {
+    val f = n.asInstanceOf[FieldEvaluator]
+    f.sqlType = sqlType
+    f.index = index
+  }
+  def doCopy = copy()
+}
+ 
+object field {
+  def unapply(e: Expression) = {
+    e.evaluator match {
+      case a: FieldEvaluator => Some((a.name, a.table))
+      case _ => None
+    }
+  }
+}
+  
+case class OuterFieldEvaluator(name: String, table: Option[String]) extends Evaluator {
+  def setValue(r: Array[Value]) {value = r(index)}
+  private var value: Value = null
+  def eval = s => value
+  var sqlType = -1
+  var index: Int = -1
+  override def doValidate = index match {
+    case -1 => throw new UnknownFieldException(name)
+    case _ =>
+  }
+  def doCopy = copy()
+  override def postDuplicate(n: Evaluator) = {
+    val f = n.asInstanceOf[FieldEvaluator]
+    f.sqlType = sqlType
+    f.index = index
+  }
+  override def toString = "OuterField(" + (if (table.isDefined) table.get + "." else "") + name + ")"
+}
+
+object outerField {
+  def unapply(e: Expression) = {
+    e.evaluator match {
+      case OuterFieldEvaluator(n, t) => Some((n, t))
+      case _ => None
+    }
+  }
+}
+
+/**
+ * Evaluator for star fields. This placeholder is replaced during ProjectionCommand.prepare().
+ *
+ * @author Antoine Gourlay
+ * @since 0.1
+ */
+case class StarFieldEvaluator(except: Seq[String], table: Option[String]) extends Evaluator {
+  def eval = throw new UnsupportedOperationException
+  var sqlType = -1
+  var index: Int = -1
+  override def toString = "StarField(except=" + except + ")"
+  def doCopy = copy()
+}
+  
+object star {
+  def unapply(e: Expression) = {
+    e.evaluator match {
+      case a: StarFieldEvaluator => Some((a.except, a.table))
+      case _ => None
+    }
+  }
+}
+
+case class OidEvaluator() extends Evaluator {
+  def eval = r => {
+    if (r.rowId.isDefined) {
+      ValueFactory.createValue(r.rowId.get)
+    } else {
       ValueFactory.createNullValue[Value]
     }
-    val finalValue = () => f.getAggregateResult
-    def sqlType = f.getType(l.map { e => TypeFactory.createType(e.evaluator.sqlType) } toArray).getTypeCode
-    override val childExpressions = l
-    override def doPreValidate = {
-      if (f == null) throw new FunctionException("The function does not exist.")
-    }
-    override def doValidate = {
-      FunctionValidator.failIfTypesDoNotMatchSignature(
-        l.map { e => TypeFactory.createType(e.evaluator.sqlType) } toArray,
-        f.getFunctionSignatures)
-    }
-    override def toString = f.getName + "(" + l + ")"
+  }
+  val sqlType = Type.LONG
+  def doCopy = new OidEvaluator
+}
   
-    def doCopy = {
-      AggregateEvaluator(FunctionManager.getFunction(f.getName).asInstanceOf[AggregateFunction], l)
+object oid {
+  def unapply(e: Expression) = {
+    e.evaluator match {
+      case a: OidEvaluator => true
+      case _ => false
     }
   }
+}
 
- object agg {
-    def unapply(e: Expression) = {
-      e.evaluator match {
-        case a: AggregateEvaluator => Some((a.f, a.l))
-        case _ => None
-      }
+case class CastEvaluator(e: Expression, sqlType: Int) extends Evaluator {
+  override val childExpressions = e :: Nil
+  def eval = s => e.evaluate(s).toType(sqlType)
+  def doCopy = copy()
+}
+  
+object castTo {
+  def unapply(e: Expression) = {
+    e.evaluator match {
+      case a: CastEvaluator => Some((a.e, a.sqlType))
+      case _ => None
     }
   }
+}
 
- /**
-  * Evaluator for fields. The index is initialized by the Projection or WhereFilter Command.
-  *
-  * @author Antoine Gourlay
-  * @since 0.1
-  */
- case class FieldEvaluator(name: String, table: Option[String] = None) extends Evaluator {
-    def eval = _(index)
-    var sqlType = -1
-    var index: Int = -1
-    override def doValidate = index match {
-      case -1 => throw new UnknownFieldException(name)
-      case _ =>
-    }
-    override def toString = "Field(" + (if (table.isDefined) table.get + "." else "") + name + ")"
-  
-    override def postDuplicate(n: Evaluator) = {
-      val f = n.asInstanceOf[FieldEvaluator]
-      f.sqlType = sqlType
-      f.index = index
-    }
-    def doCopy = copy()
-  }
- 
- object field {
-    def unapply(e: Expression) = {
-      e.evaluator match {
-        case a: FieldEvaluator => Some((a.name, a.table))
-        case _ => None
-      }
-    }
-  }
-
- /**
-  * Evaluator for star fields. This placeholder is replaced during ProjectionCommand.prepare().
-  *
-  * @author Antoine Gourlay
-  * @since 0.1
-  */
-  case class StarFieldEvaluator(except: Seq[String], table: Option[String]) extends Evaluator {
-      def eval = throw new UnsupportedOperationException
-      var sqlType = -1
-      var index: Int = -1
-      override def toString = "StarField(except=" + except + ")"
-      def doCopy = copy()
-    }
-  
-  object star {
-      def unapply(e: Expression) = {
-        e.evaluator match {
-          case a: StarFieldEvaluator => Some((a.except, a.table))
-          case _ => None
-        }
-      }
-    }
-
-  case class OidEvaluator() extends Evaluator {
-      def eval = r => {
-        if (r.rowId.isDefined) {
-          ValueFactory.createValue(r.rowId.get)
-        } else {
-          ValueFactory.createNullValue[Value]
-        }
-      }
-      val sqlType = Type.LONG
-      def doCopy = new OidEvaluator
-    }
-  
-  object oid {
-      def unapply(e: Expression) = {
-        e.evaluator match {
-          case a: OidEvaluator => true
-          case _ => false
-        }
-      }
-    }
-
-  case class CastEvaluator(e: Expression, sqlType: Int) extends Evaluator {
-      override val childExpressions = e :: Nil
-      def eval = s => e.evaluate(s).toType(sqlType)
-      def doCopy = copy()
-    }
-  
-  object castTo {
-      def unapply(e: Expression) = {
-        e.evaluator match {
-          case a: CastEvaluator => Some((a.e, a.sqlType))
-          case _ => None
-        }
-      }
-    }
-
-  case class PreparedEvaluator(r: Row, e: Expression) extends Evaluator {
-      override val childExpressions = e :: Nil
-      def eval = _ => e.evaluate(r)
-      def doCopy = copy()
-      def sqlType = e.evaluator.sqlType
-    }
+case class PreparedEvaluator(r: Row, e: Expression) extends Evaluator {
+  override val childExpressions = e :: Nil
+  def eval = _ => e.evaluate(r)
+  def doCopy = copy()
+  def sqlType = e.evaluator.sqlType
+}

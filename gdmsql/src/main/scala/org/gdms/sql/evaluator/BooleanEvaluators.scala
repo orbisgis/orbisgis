@@ -46,6 +46,7 @@ import org.gdms.data.values.ValueFactory
 import org.gdms.sql.engine.GdmSQLPredef._
 import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.engine.commands.Command
+import org.gdms.sql.engine.commands.ExpressionCommand
 import org.gdms.sql.engine.operations.Operation
 import org.orbisgis.progress.ProgressMonitor
 
@@ -254,35 +255,50 @@ case class InEvaluator(e: Expression, var o: Operation) extends BooleanEvaluator
   var pm: Option[ProgressMonitor] = None
   
   override val childExpressions = e :: Nil
+  
+  private def evalInner(s: Array[Value]) = {
+    evals foreach (_.setValue(s))
+    command.execute(pm)
+  }
+  
   def eval = s => {
     val b = e.evaluate(s)
-    val ex = command.execute(pm)
-    var ret: Value = ValueFactory.createValue(false)
+    val ex = evalInner(s)
+    var ret: Value = ValueFactory.FALSE
     var break: Boolean = false
-    
+   
     while (!break && ex.hasNext) {
-      var next = ex.next.array(0).equals(b).getAsBoolean
-      if (next == null) {
+      var next = ex.next.array(0).equals(b)
+      if (next.isNull) {
         ret = ValueFactory.createNullValue[Value]
         break = true
-      } else if (next) {
-        ret = ValueFactory.createValue(true)
+      } else if (next.getAsBoolean) {
+        ret = ValueFactory.TRUE
         break = true
       }
     }
-    
+   
     ret
   }
   override def doPreValidate = o.validate
   override def doValidate = {
-    if (command == null) {
-      throw new IllegalStateException("Error: there cannot be a IN operator in this clause.")
-    }
     command.prepare(dsf)
     
     if (command.getMetadata.getFieldCount > 1) {
       throw new SemanticException("There can only be one selected field in an IN subquery.")
     }
+    
+    findOuterFieldEvals(command)
+  }
+  
+  private var evals: List[OuterFieldEvaluator]= Nil
+  
+  private def findOuterFieldEvals(c: Command) { 
+    c match {
+      case e: ExpressionCommand => evals = e.outerFieldEval ::: evals
+      case _ =>
+    }
+    c.children foreach (findOuterFieldEvals)
   }
   
   def doCopy = InEvaluator(e, o)
