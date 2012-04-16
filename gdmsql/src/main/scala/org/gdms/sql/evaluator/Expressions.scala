@@ -272,7 +272,12 @@ object Expression {
         name = e._1._2.getOrElse(
           e._1._1.evaluator match {
             case ag: AggregateEvaluator => ag.f.getName
-            case fi: FieldEvaluator => fi.name
+            case fi: FieldEvaluator => {
+                fi.table match {
+                  case None => fi.name
+                  case Some(t) => fi.name + '$' + t
+                }
+              }
             case _ => "exp" + e._2
           }
         )
