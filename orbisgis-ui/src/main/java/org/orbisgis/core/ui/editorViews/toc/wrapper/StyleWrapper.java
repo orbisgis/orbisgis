@@ -94,8 +94,10 @@ public class StyleWrapper {
          * @param rw
          * @return
          */
-        public boolean remove(RuleWrapper rw) {
-                return ruleWrappers.remove(rw);
+        public void remove(RuleWrapper rw) {
+                int i = indexOf(rw);
+                style.deleteRule(i);
+                ruleWrappers.remove(rw);
         }
 
         /**
