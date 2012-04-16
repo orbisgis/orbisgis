@@ -44,12 +44,15 @@ import org.orbisgis.view.map.MapEditor;
 import org.orbisgis.view.output.OutputManager;
 import org.orbisgis.view.toc.Toc;
 import org.orbisgis.view.workspace.ViewWorkspace;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * The core manage the view of the application
  * This is the main UIContext
  */
 public class Core {
+    protected final static I18n i18n = I18nFactory.getI18n(Core.class);        
     private static final Logger LOGGER = Logger.getLogger(Core.class);
     /////////////////////
     //view package

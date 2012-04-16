@@ -31,11 +31,12 @@ package org.orbisgis.view.geocatalog.filters.factories;
 import java.awt.Component;
 import javax.swing.JTextField;
 import org.gdms.source.SourceManager;
-import org.orbisgis.view.translation.I18N;
 import org.orbisgis.view.components.filter.ActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactory;
 import org.orbisgis.view.geocatalog.filters.IFilter;
 import org.orbisgis.view.geocatalog.filters.TextFieldDocumentListener;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * @brief Name contains DataSourceFilterFactory
@@ -43,6 +44,7 @@ import org.orbisgis.view.geocatalog.filters.TextFieldDocumentListener;
  */
 
 public class NameNotContains implements FilterFactory<IFilter> {
+    protected final static I18n i18n = I18nFactory.getI18n(NameNotContains.class);
     /**
      * The factory ID
      *
@@ -58,7 +60,7 @@ public class NameNotContains implements FilterFactory<IFilter> {
      * @return
      */
     public String getFilterLabel() {
-        return I18N.tr("orbisgis.view.geocatalog.filters.factories.NameNotContainsLabel");
+        return i18n.tr("orbisgis.view.geocatalog.filters.factories.NameNotContainsLabel");
     }
 
     /**

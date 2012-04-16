@@ -43,9 +43,10 @@ import javax.swing.JPanel;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.events.EventException;
 import org.orbisgis.core.events.ListenerContainer;
-import org.orbisgis.view.translation.I18N;
 import org.orbisgis.view.components.ContainerItemProperties;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Filter GUI and functionality is a generic concept of OrbisGIS GUI
@@ -58,6 +59,7 @@ import org.orbisgis.view.icons.OrbisGISIcon;
  */
 
 public class FilterFactoryManager<FilterInterface> {
+    protected final static I18n i18n = I18nFactory.getI18n(FilterFactoryManager.class);
     private static final Logger LOGGER = Logger.getLogger(FilterFactoryManager.class);
     private JPanel filterListPanel;/*!< This panel contain the set of filters */
         //List of active filters
@@ -323,7 +325,7 @@ public class FilterFactoryManager<FilterInterface> {
     private JButton makeRemoveFilterButton() {
         //Create a compact button
         JButton removeFilterButton = new JButton(OrbisGISIcon.getIcon("delete"));
-        removeFilterButton.setToolTipText(I18N.tr("orbisgis.view.geocatalog.removefilter"));
+        removeFilterButton.setToolTipText(i18n.tr("orbisgis.view.geocatalog.removefilter"));
         removeFilterButton.setMargin(new Insets(0, 0, 0, 0));
         removeFilterButton.setBorderPainted(false);
         removeFilterButton.setContentAreaFilled(false);
@@ -344,7 +346,7 @@ public class FilterFactoryManager<FilterInterface> {
         addFilterButton.setContentAreaFilled(false);
         buttonAlignement.add(addFilterButton,BorderLayout.NORTH);
         //Toottip
-        addFilterButton.setToolTipText(I18N.tr("orbisgis.view.geocatalog.addfilter"));
+        addFilterButton.setToolTipText(i18n.tr("orbisgis.view.geocatalog.addfilter"));
         //Apply action listener
         addFilterButton.addActionListener( 
                 EventHandler.create(ActionListener.class, this, "onAddFilter")                

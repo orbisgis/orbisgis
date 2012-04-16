@@ -30,10 +30,11 @@ package org.orbisgis.view.toc;
 
 import java.awt.Component;
 import javax.swing.JPanel;
-import org.orbisgis.view.translation.I18N;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * @brief The Toc Panel component
@@ -43,7 +44,7 @@ import org.orbisgis.view.icons.OrbisGISIcon;
 public class Toc extends JPanel implements DockingPanel  {
     //The UID must be incremented when the serialization is not compatible with the new version of this class
     private static final long serialVersionUID = 1L; 
-    
+    protected final static I18n i18n = I18nFactory.getI18n(Toc.class);
     DockingPanelParameters dockingPanelParameters;
     
     /**
@@ -53,7 +54,7 @@ public class Toc extends JPanel implements DockingPanel  {
         dockingPanelParameters = new DockingPanelParameters();
         dockingPanelParameters.setName("toc");
         //dockingPanelParameters.setDockingArea("toc_map");
-        dockingPanelParameters.setTitle(I18N.tr("orbisgis.view.toc.TocTitle"));
+        dockingPanelParameters.setTitle(i18n.tr("orbisgis.view.toc.TocTitle"));
         dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("map"));
         dockingPanelParameters.setCloseable(false);
     }

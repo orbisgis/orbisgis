@@ -33,10 +33,11 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-import org.orbisgis.view.translation.I18N;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 
 
@@ -44,11 +45,12 @@ import org.orbisgis.view.icons.OrbisGISIcon;
  * This panel includes all Output Type panel
  */
 public class MainOutputPanel extends JPanel implements DockingPanel {
+    protected final static I18n i18n = I18nFactory.getI18n(MainOutputPanel.class);
     private DockingPanelParameters dockingParameters = new DockingPanelParameters(); /*!< docked panel properties */
     private JTabbedPane tabbedPane;
     public MainOutputPanel() {
         dockingParameters.setName("mainLog");
-        dockingParameters.setTitle(I18N.tr("orbisgis.view.mainlog.title"));
+        dockingParameters.setTitle(i18n.tr("orbisgis.view.mainlog.title"));
         dockingParameters.setTitleIcon(OrbisGISIcon.getIcon("format-justify-fill"));
         dockingParameters.setCloseable(true);
         

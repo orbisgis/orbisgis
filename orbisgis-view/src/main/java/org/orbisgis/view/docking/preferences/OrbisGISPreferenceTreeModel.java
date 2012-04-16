@@ -39,12 +39,14 @@ import bibliothek.gui.dock.common.preference.CKeyStrokePreferenceModel;
 import bibliothek.gui.dock.common.preference.CLayoutPreferenceModel;
 import bibliothek.util.Path;
 import bibliothek.util.PathCombiner;
-import org.orbisgis.view.translation.I18N;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
- * Specific OrbisGIS preferencies
+ * Specific OrbisGIS preferences
  */
 public class OrbisGISPreferenceTreeModel extends PreferenceTreeModel {
+    protected final static I18n i18n = I18nFactory.getI18n(OrbisGISPreferenceTreeModel.class);
         /**
      * Creates a new model. This constructor sets the behavior of how to
      * create paths for preferences to {@link PathCombiner#SECOND}. This
@@ -67,17 +69,17 @@ public class OrbisGISPreferenceTreeModel extends PreferenceTreeModel {
     public OrbisGISPreferenceTreeModel( CControl control, PathCombiner combiner ){
         super( combiner, control.getController() );
         DockController controller = control.intern().getController();
-        //Linked, we use the DockingFrames I18N
+        //Linked, we use the DockingFrames i18n
         //Taken from CPreferenceModel, but with a specific root node
-        putNode(new Path( "windows"),I18N.tr("orbisgis.preferencies.window"));
+        putNode(new Path( "windows"),i18n.tr("orbisgis.preferencies.window"));
         putLinked( new Path( "windows.shortcuts" ), "preference.shortcuts", new CKeyStrokePreferenceModel( controller.getProperties() ) );
         putLinked( new Path( "windows.buttonContent" ), "preference.buttonContent", new ButtonContentPreferenceModel( controller ) );
         putLinked( new Path( "windows.layout" ), "preference.layout", new CLayoutPreferenceModel( control ));
         putLinked( new Path( "windows.layout.BubbleTheme" ), "theme.bubble", new BubbleThemePreferenceModel( controller.getProperties() ));
         putLinked( new Path( "windows.layout.EclipseTheme" ), "theme.eclipse", new EclipseThemePreferenceModel( controller.getProperties() ));
         //Custom properties
-        putNode(new Path( "web"),I18N.tr("orbisgis.preferencies.web"));
-        put(new Path( "web.proxy" ),I18N.tr("orbisgis.preferencies.proxytreenode"),new ProxyPreferenceModel(controller).initListeners());
+        putNode(new Path( "web"),i18n.tr("orbisgis.preferencies.web"));
+        put(new Path( "web.proxy" ),i18n.tr("orbisgis.preferencies.proxytreenode"),new ProxyPreferenceModel(controller).initListeners());
         
     }
 }

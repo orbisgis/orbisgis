@@ -36,16 +36,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JComboBox;
-import org.orbisgis.view.translation.I18N;
 import org.orbisgis.view.components.ContainerItemProperties;
 import org.orbisgis.view.components.filter.ActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactory;
 import org.orbisgis.view.geocatalog.filters.*;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * @brief Source Type filter factory
  */
 public class SourceTypeIs implements FilterFactory<IFilter> {
+    protected final static I18n i18n = I18nFactory.getI18n(SourceTypeIs.class);
     private Map<String,IFilter> filters = new HashMap<String,IFilter>();
     private List<ContainerItemProperties> filterLabelsId = new ArrayList<ContainerItemProperties>();
     private final static String DEFAULT_FILTER = "geocatalog.filters.GeoFilter"; //Filter shown in the GUI by default
@@ -65,34 +67,34 @@ public class SourceTypeIs implements FilterFactory<IFilter> {
      */
     public SourceTypeIs() {
         addFilter("geocatalog.filters.AlphanumericFilter",
-                I18N.tr("orbisgis.view.geocatalog.filters.AlphanumericFilter"),
+                i18n.tr("orbisgis.view.geocatalog.filters.AlphanumericFilter"),
                 new AlphanumericFilter());
         addFilter("geocatalog.filters.DbsFilter",
-                I18N.tr("orbisgis.view.geocatalog.filters.DbsFilter"),
+                i18n.tr("orbisgis.view.geocatalog.filters.DbsFilter"),
                 new DBsFilter());
         
         addFilter("geocatalog.filters.FilesFilter",
-                I18N.tr("orbisgis.view.geocatalog.filters.FilesFilter"),
+                i18n.tr("orbisgis.view.geocatalog.filters.FilesFilter"),
                 new FilesFilter());
         
         addFilter("geocatalog.filters.GeoFilter",
-                I18N.tr("orbisgis.view.geocatalog.filters.GeoFilter"),
+                i18n.tr("orbisgis.view.geocatalog.filters.GeoFilter"),
                 new GeoFilter());
 
         addFilter("geocatalog.filters.RasterFilter",
-                I18N.tr("orbisgis.view.geocatalog.filters.RasterFilter"),
+                i18n.tr("orbisgis.view.geocatalog.filters.RasterFilter"),
                 new RasterFilter());
 
         addFilter("geocatalog.filters.VectorialFilter",
-                I18N.tr("orbisgis.view.geocatalog.filters.VectorialFilter"),
+                i18n.tr("orbisgis.view.geocatalog.filters.VectorialFilter"),
                 new VectorialFilter());
         
         addFilter("geocatalog.filters.WMSFilter",
-                I18N.tr("orbisgis.view.geocatalog.filters.WMSFilter"),
+                i18n.tr("orbisgis.view.geocatalog.filters.WMSFilter"),
                 new WMSFilter());
         
         addFilter("geocatalog.filters.TableSystemFilter",
-                I18N.tr("orbisgis.view.geocatalog.filters.TableSystemFilter"),
+                i18n.tr("orbisgis.view.geocatalog.filters.TableSystemFilter"),
                 new TableSystemFilter());
     }
     
@@ -111,7 +113,7 @@ public class SourceTypeIs implements FilterFactory<IFilter> {
      * @return
      */
     public String getFilterLabel() {
-        return I18N.tr("orbisgis.view.geocatalog.filters.factories.TypeIsLabel");
+        return i18n.tr("orbisgis.view.geocatalog.filters.factories.TypeIsLabel");
     }
 
     /**

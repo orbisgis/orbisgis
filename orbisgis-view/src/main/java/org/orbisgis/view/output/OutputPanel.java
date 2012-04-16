@@ -30,21 +30,19 @@ package org.orbisgis.view.output;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import javax.swing.*;
 import javax.swing.text.*;
 import org.apache.log4j.Logger;
 import org.orbisgis.sif.common.menuCommonFunctions;
-import org.orbisgis.view.translation.I18N;
-import org.orbisgis.view.geocatalog.Catalog;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 public class OutputPanel extends JPanel {
         //Root logger, for gui logger error
-        private static final Logger LOGGER = Logger.getLogger(Catalog.class);
+        private static final Logger LOGGER = Logger.getLogger(OutputPanel.class);
+        protected final static I18n i18n = I18nFactory.getI18n(OutputPanel.class);
         private static final long serialVersionUID = 1L;
         private final static int DEFAULT_MAX_CHARACTERS = 200000;
 	private int maxCharacters = DEFAULT_MAX_CHARACTERS;
@@ -82,12 +80,12 @@ public class OutputPanel extends JPanel {
             //Create the root menu
             JPopupMenu rootMenu = new JPopupMenu();
             //Menu->Copy
-            JMenuItem copyItem = new JMenuItem(I18N.tr("orbisgis.view.menu.copy"));
+            JMenuItem copyItem = new JMenuItem(i18n.tr("orbisgis.view.menu.copy"));
             copyItem.addActionListener(EventHandler.create(ActionListener.class, this, "onMenuCopy"));
             menuCommonFunctions.setMnemonic(copyItem);
             rootMenu.add(copyItem);
             //Menu->Clear
-            JMenuItem clearItem = new JMenuItem(I18N.tr("orbisgis.view.menu.clear"));
+            JMenuItem clearItem = new JMenuItem(i18n.tr("orbisgis.view.menu.clear"));
             clearItem.addActionListener(EventHandler.create(ActionListener.class, this, "onMenuClear"));
             menuCommonFunctions.setMnemonic(clearItem);
             rootMenu.add(clearItem);
@@ -191,7 +189,7 @@ public class OutputPanel extends JPanel {
 			textPane.getDocument().insertString(len, text, aset);
                         removeAdditionnalCharacters();
 		} catch (BadLocationException e) {
-			LOGGER.error(I18N.tr("orbisgis.view.output.CannotShowLogMessage"), e);
+			LOGGER.error(i18n.tr("orbisgis.view.output.CannotShowLogMessage"), e);
 		}
 		textPane.setCaretPosition(textPane.getDocument().getLength());
 	}

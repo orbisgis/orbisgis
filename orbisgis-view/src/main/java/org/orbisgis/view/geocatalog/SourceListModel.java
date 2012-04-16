@@ -44,17 +44,18 @@ import org.gdms.source.Source;
 import org.gdms.source.SourceListener;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.context.SourceContext.SourceContext;
-import org.orbisgis.view.translation.I18N;
 import org.orbisgis.view.components.ContainerItemProperties;
 import org.orbisgis.view.geocatalog.filters.IFilter;
 import org.orbisgis.view.geocatalog.filters.TableSystemFilter;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 /**
  * @brief Manage entries of GeoCatalog according to a GDMS SourceManager
  * SourceListModel is a swing component that update the content of the geocatalog
  * according to the SourceManager content and the filter loaded.
  */
 public class SourceListModel extends AbstractListModel {
-
+        protected final static I18n i18n = I18nFactory.getI18n(SourceListModel.class);
 	private static final Logger LOGGER = Logger.getLogger(SourceListModel.class);
         private SourceContext sourceContext; /*!< The SourceContext instance*/
         private SourceManager sourceManager; /*!< The SourceManager instance*/
@@ -211,7 +212,7 @@ public class SourceListModel extends AbstractListModel {
                     }
                 } catch(DriverException ex) {
                     //Log warning
-                    LOGGER.warn(I18N.tr("orbisgis.view.geocatalog.CannotReadDataSourceSchema"),ex);
+                    LOGGER.warn(i18n.tr("orbisgis.view.geocatalog.CannotReadDataSourceSchema"),ex);
                 }
                 sourceList[rowidSource] = new CatalogSourceItem(
                                                 tempSourceNames[rowidSource], //Source Name

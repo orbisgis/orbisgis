@@ -30,15 +30,17 @@ package org.orbisgis.view.map;
 
 import java.awt.Component;
 import javax.swing.JPanel;
-import org.orbisgis.view.translation.I18N;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * @brief The Map Editor Panel
  */
 public class MapEditor extends JPanel implements DockingPanel   {
+    protected final static I18n i18n = I18nFactory.getI18n(MapEditor.class);
     
     //The UID must be incremented when the serialization is not compatible with the new version of this class
     private static final long serialVersionUID = 1L; 
@@ -51,7 +53,7 @@ public class MapEditor extends JPanel implements DockingPanel   {
     public MapEditor() {
         dockingPanelParameters = new DockingPanelParameters();
         dockingPanelParameters.setName("map_editor");
-        dockingPanelParameters.setTitle(I18N.tr("orbisgis.view.map.MapEditorTitle"));
+        dockingPanelParameters.setTitle(i18n.tr("orbisgis.view.map.MapEditorTitle"));
         dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("map"));
         dockingPanelParameters.setMinimizable(false);
         dockingPanelParameters.setExternalizable(false);

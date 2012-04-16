@@ -49,12 +49,13 @@ import java.util.Set;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import org.apache.log4j.Logger;
-import org.orbisgis.view.translation.I18N;
 import org.orbisgis.view.docking.internals.DockingArea;
 import org.orbisgis.view.docking.internals.OrbisGISView;
 import org.orbisgis.view.docking.preferences.OrbisGISPreferenceTreeModel;
 import org.orbisgis.view.docking.preferences.editors.UserInformationEditor;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 /**
  * @brief Manage left,right,down,center docking stations.
  * 
@@ -63,6 +64,7 @@ import org.orbisgis.view.icons.OrbisGISIcon;
 public final class DockingManager {
         private JFrame owner;
         private SingleCDockableListMenuPiece dockableMenuTracker;
+        protected final static I18n i18n = I18nFactory.getI18n(DockingManager.class);
         private static final Logger LOGGER = Logger.getLogger(DockingManager.class);
         File dockingState=null;
         private CControl commonControl; /*!< link to the docking-frames */
@@ -84,7 +86,7 @@ public final class DockingManager {
          * @return The look and feel menu
          */
         public JMenu getLookAndFeelMenu() {
-            RootMenuPiece laf = new RootMenuPiece(I18N.tr("orbisgis.view.docking.LookAndFeel"), false, new CLookAndFeelMenuPiece( commonControl ));
+            RootMenuPiece laf = new RootMenuPiece(i18n.tr("orbisgis.view.docking.LookAndFeel"), false, new CLookAndFeelMenuPiece( commonControl ));
             return laf.getMenu();
         }
         /**
@@ -92,7 +94,7 @@ public final class DockingManager {
          * @return The menu that shows items declared in the docking
          */
         public JMenu getCloseableDockableMenu() {
-            RootMenuPiece laf = new RootMenuPiece(I18N.tr("orbisgis.view.docking.Windows"), false,dockableMenuTracker);
+            RootMenuPiece laf = new RootMenuPiece(i18n.tr("orbisgis.view.docking.Windows"), false,dockableMenuTracker);
             return laf.getMenu();
         }
         /**
@@ -104,7 +106,7 @@ public final class DockingManager {
                     try {
                         commonControl.readXML(dockingState);
                     } catch (IOException ex) {
-                        LOGGER.error(I18N.tr("orbisgis.view.DockingManager.layoutloadfailed"), ex);
+                        LOGGER.error(i18n.tr("orbisgis.view.DockingManager.layoutloadfailed"), ex);
                     }
                 }
             }            
@@ -117,7 +119,7 @@ public final class DockingManager {
                 try {
                     commonControl.writeXML(dockingState);
                 } catch (IOException ex) {
-                    LOGGER.error(I18N.tr("orbisgis.view.DockingManager.layoutsavefailes"), ex);
+                    LOGGER.error(i18n.tr("orbisgis.view.DockingManager.layoutsavefailes"), ex);
                 }    
             }
         }
@@ -174,7 +176,7 @@ public final class DockingManager {
                 commonControl.putProperty(FlapDockStation.MINIMUM_SIZE,  new Dimension(4,4));
                 
                 //DEFAULT property of a view
-		commonControl.getController().getProperties().set( PropertyKey.DOCK_STATION_TITLE, I18N.tr("orbisgis.view.docking.stationTitle") );
+		commonControl.getController().getProperties().set( PropertyKey.DOCK_STATION_TITLE, i18n.tr("orbisgis.view.docking.stationTitle") );
 		commonControl.getController().getProperties().set( PropertyKey.DOCK_STATION_ICON, OrbisGISIcon.getIcon("mini_orbisgis") );
 				
                 //StackDockStation will contain all instances of ReservedDockStation
