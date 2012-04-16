@@ -120,4 +120,8 @@ public class StyleWrapper {
                 }
         }
 
+        public Style getStyle() {
+                return style;
+        }
+
 }

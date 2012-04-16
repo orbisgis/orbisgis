@@ -50,10 +50,7 @@ import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.classification.ClassificationMethodException;
-import org.orbisgis.core.renderer.se.Rule;
-import org.orbisgis.core.renderer.se.SeExceptions;
-import org.orbisgis.core.renderer.se.Style;
-import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.core.renderer.se.*;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendsPanel;
@@ -149,14 +146,7 @@ public class EditLegendPlugIn extends AbstractPlugIn {
 			pan.init(mt, typ, sw, legends, symbolEditors, layer);
 			if (UIFactory.showDialog(pan)) {
 				try {
-                                        Legend[] ret = pan.getLegends();
-                                        Style t = new Style(layer, false);
-                                        Rule r = new Rule();
-                                        for(Legend l : ret){
-                                                r.getCompositeSymbolizer().addSymbolizer(l.getSymbolizer());
-                                        }
-                                        t.getRules().add(r);
-                                        layer.setStyle(t);
+                                        layer.setStyle(pan.getStyleWrapper().getStyle());
 				} catch (ClassificationMethodException e) {
 					ErrorMessages.error(e.getMessage());
 				}

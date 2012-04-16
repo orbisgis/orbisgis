@@ -404,7 +404,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		return null;
 	}
 
-        public StyleWrapper getStyle() {
+        public StyleWrapper getStyleWrapper() {
                 return style;
         }
 

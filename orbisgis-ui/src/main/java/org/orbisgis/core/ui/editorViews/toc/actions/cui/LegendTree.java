@@ -48,7 +48,7 @@ public class LegendTree extends JPanel {
         public LegendTree(final LegendsPanel legendsPan){
                 legendsPanel = legendsPan;
 
-                StyleWrapper style = legendsPanel.getStyle();
+                StyleWrapper style = legendsPanel.getStyleWrapper();
                 //We create our tree
                 tree = new JTree();
                 tree.setRootVisible(false);
@@ -103,7 +103,7 @@ public class LegendTree extends JPanel {
                                 addLegend();
                         }
                 }
-                        refreshModel();
+                refreshModel();
         }
 
         /**
@@ -116,7 +116,7 @@ public class LegendTree extends JPanel {
                 Object select = tp.getLastPathComponent();
                 if(select instanceof RuleWrapper){
                         RuleWrapper rw = (RuleWrapper) select;
-                        StyleWrapper sw = legendsPanel.getStyle();
+                        StyleWrapper sw = legendsPanel.getStyleWrapper();
                         int i = sw.indexOf(rw);
                         sw.moveRuleWrapperUp(i);
                         refreshModel();
@@ -140,7 +140,7 @@ public class LegendTree extends JPanel {
                 if(select instanceof RuleWrapper){
                         RuleWrapper rw = (RuleWrapper) select;
                         TreeModel tm = tree.getModel();
-                        StyleWrapper sw = legendsPanel.getStyle();
+                        StyleWrapper sw = legendsPanel.getStyleWrapper();
                         int i = tm.getIndexOfChild(sw, rw);
                         sw.moveRuleWrapperDown(i);
                         refreshModel();
@@ -234,7 +234,7 @@ public class LegendTree extends JPanel {
          * will be added in the case there is none.
          */
         private void addLegend(){
-                StyleWrapper sw = legendsPanel.getStyle();
+                StyleWrapper sw = legendsPanel.getStyleWrapper();
 		ArrayList<String> paneNames = new ArrayList<String>();
 		ArrayList<ILegendPanel> ids = new ArrayList<ILegendPanel>();
 		ILegendPanel[] legends = legendsPanel.getAvailableLegends();
@@ -276,9 +276,9 @@ public class LegendTree extends JPanel {
 
         private void addRule(){
                 //We must add it just after the currently selected Rule.
-                //Let's find each one it is. If there is none, we add it at the
+                //Let's find which one it is. If there is none, we add it at the
                 //end of the list.
-                StyleWrapper sw = legendsPanel.getStyle();
+                StyleWrapper sw = legendsPanel.getStyleWrapper();
                 RuleWrapper rw = getSelectedRule();
                 int pos;
                 if(rw != null){
@@ -286,7 +286,7 @@ public class LegendTree extends JPanel {
                 } else {
                         pos=sw.getSize();
                 }
-                sw.addRuleWrapper(pos, rw);
+                sw.addRuleWrapper(pos, new RuleWrapper());
         }
 
         /**
@@ -295,10 +295,12 @@ public class LegendTree extends JPanel {
          */
         private RuleWrapper getSelectedRule(){
                 TreePath tp = tree.getSelectionPath();
-                Object[] path = tp.getPath();
-                for(int i=path.length-1; i>=0; i--){
-                        if(path[i] instanceof RuleWrapper){
-                                return (RuleWrapper) path[i];
+                if(tp != null){
+                        Object[] path = tp.getPath();
+                        for(int i=path.length-1; i>=0; i--){
+                                if(path[i] instanceof RuleWrapper){
+                                        return (RuleWrapper) path[i];
+                                }
                         }
                 }
                 return null;
