@@ -39,7 +39,6 @@ package org.orbisgis.core.ui.components.resourceTree;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
-
 import javax.swing.JTree;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
@@ -56,6 +55,7 @@ public abstract class AbstractTreeModel implements TreeModel {
 		this.tree = tree;
 	}
 
+        @Override
 	public void addTreeModelListener(TreeModelListener l) {
 		treeModelListeners.add(l);
 	}
@@ -96,6 +96,7 @@ public abstract class AbstractTreeModel implements TreeModel {
 		}
 	}
 
+        @Override
 	public void removeTreeModelListener(TreeModelListener l) {
 		treeModelListeners.remove(l);
 	}

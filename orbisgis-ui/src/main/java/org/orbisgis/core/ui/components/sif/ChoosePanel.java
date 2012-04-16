@@ -75,8 +75,7 @@ public class ChoosePanel extends AbstractUIPanel {
 		this.multiple = multiple;
 		pnlButtons.setVisible(multiple);
 		if (multiple) {
-			lst
-					.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+			lst.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		} else {
 			lst.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		}

@@ -45,7 +45,6 @@ import java.awt.event.MouseEvent;
 import java.beans.EventHandler;
 import java.util.ArrayList;
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.components.sif.AskValue;
@@ -229,8 +228,9 @@ public class LegendList extends JPanel {
 				ids.add(legendPanelUI);
 			}
 		}
-		LegendPicker legendPicker = new LegendPicker(paneNames.toArray(new String[paneNames.size()]),
-                ids.toArray(new ILegendPanel[ids.size()]));
+		LegendPicker legendPicker = new LegendPicker(
+                        paneNames.toArray(new String[paneNames.size()]),
+                        ids.toArray(new ILegendPanel[ids.size()]));
 
 		if (UIFactory.showDialog(legendPicker)) {
 			ILegendPanel panel = (ILegendPanel) legendPicker.getSelected();
