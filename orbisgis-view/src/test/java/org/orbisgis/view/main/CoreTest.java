@@ -49,7 +49,7 @@ import org.orbisgis.view.main.geocatalog.filters.UnitTestFilterFactory;
  * Unit Test of org.orbisgis.view.main.Core
  */
 public class CoreTest {
-    Core instance;
+    private static Core instance;
     public CoreTest() {
         
     }   
@@ -58,7 +58,7 @@ public class CoreTest {
      * Test of startup method, of class Core.
      */
     @BeforeClass
-    public void setUp() {
+    public static void setUp() {
         org.junit.Assume.assumeTrue(!GraphicsEnvironment.isHeadless()); 
         System.out.println("startup");
         if(!GraphicsEnvironment.isHeadless()) {
@@ -173,11 +173,12 @@ public class CoreTest {
      * Test of shutdown method, of class Core.
      */
     @AfterClass
-    public void tearDown() {
+    public static void tearDown() {
         org.junit.Assume.assumeTrue(!GraphicsEnvironment.isHeadless()); 
         if(!GraphicsEnvironment.isHeadless()) {
             System.out.println("dispose");
             instance.dispose();
+            instance = null;
         }
     }
 }
