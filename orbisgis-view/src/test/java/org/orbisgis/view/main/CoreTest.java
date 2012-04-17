@@ -61,8 +61,10 @@ public class CoreTest {
     public void setUp() {
         org.junit.Assume.assumeTrue(!GraphicsEnvironment.isHeadless()); 
         System.out.println("startup");
-        instance = new Core();
-        instance.startup();
+        if(!GraphicsEnvironment.isHeadless()) {
+            instance = new Core();
+            instance.startup();
+        }
     }
     
     
@@ -72,26 +74,28 @@ public class CoreTest {
     @Test
     public void testGeoCatalogSuppliedFilter() {
         org.junit.Assume.assumeTrue(!GraphicsEnvironment.isHeadless()); 
-         //Retrieve instance of View And Gdms managers
-        Catalog geoCatalog = instance.getGeoCatalog();
-        SourceListModel UImodel = ((SourceListModel)geoCatalog.getSourceList().getModel());
-        //Register a custom factory
-        UnitTestFilterFactory unitTestFactory = new UnitTestFilterFactory();
-        geoCatalog.getFilterFactoryManager().registerFilterFactory(unitTestFactory);
-        //Add a new filter with this factory
-        geoCatalog.getFilterFactoryManager().addFilter(unitTestFactory.getFactoryId(), "");
-        //In the SourceListModel, search the generated IFilter
-        List<IFilter> filters = UImodel.getFilters();
-        boolean filterFounds=false;
-        for(IFilter filter : filters) {
-            if(filter instanceof UnitTestFilterFactory.UnitTestFilter) {
-                filterFounds=true;
-                break;
+        if(!GraphicsEnvironment.isHeadless()) {
+            //Retrieve instance of View And Gdms managers
+            Catalog geoCatalog = instance.getGeoCatalog();
+            SourceListModel UImodel = ((SourceListModel)geoCatalog.getSourceList().getModel());
+            //Register a custom factory
+            UnitTestFilterFactory unitTestFactory = new UnitTestFilterFactory();
+            geoCatalog.getFilterFactoryManager().registerFilterFactory(unitTestFactory);
+            //Add a new filter with this factory
+            geoCatalog.getFilterFactoryManager().addFilter(unitTestFactory.getFactoryId(), "");
+            //In the SourceListModel, search the generated IFilter
+            List<IFilter> filters = UImodel.getFilters();
+            boolean filterFounds=false;
+            for(IFilter filter : filters) {
+                if(filter instanceof UnitTestFilterFactory.UnitTestFilter) {
+                    filterFounds=true;
+                    break;
+                }
             }
+            org.junit.Assert.assertTrue(filterFounds);
+            //Remove the filter
+            geoCatalog.getFilterFactoryManager().removeFilters(unitTestFactory.getFactoryId());        
         }
-        org.junit.Assert.assertTrue(filterFounds);
-        //Remove the filter
-        geoCatalog.getFilterFactoryManager().removeFilters(unitTestFactory.getFactoryId());        
     }
     
     
@@ -101,31 +105,34 @@ public class CoreTest {
     @Test
     public void testGeoCatalogLinkWithDataSourceManager() throws InterruptedException, InvocationTargetException {
         org.junit.Assume.assumeTrue(!GraphicsEnvironment.isHeadless()); 
-        //Retrieve instance of View And Gdms managers
-        Catalog geoCatalog = instance.getGeoCatalog();
-        SourceManager gdmsSourceManager = instance.getMainContext().getDataSourceFactory().getSourceManager();
-        SourceListModel UImodel = ((SourceListModel)geoCatalog.getSourceList().getModel());
-        //Retrieve and clear filters, this must done to this unit test
-        List<IFilter> filters = UImodel.getFilters();
-        UImodel.clearFilters();
-        //Retrieve the number of DataSource shown in the list before insertion
-        int nbsource = geoCatalog.getSourceList().getModel().getSize();
-        //Add a memory driver source in the gdms source manager
-        MemoryDriver testDataSource = new MemoryDataSetDriver();        
-        String nameoftable = gdmsSourceManager.getUniqueName("unit_test_table");
-        gdmsSourceManager.register(nameoftable, testDataSource);
-        //Wait
-        SwingUtilities.invokeAndWait(new DummyThread());
-        //Test if the GeoCatalog has successfully listen to the event
-        org.junit.Assert.assertTrue(nbsource==geoCatalog.getSourceList().getModel().getSize()-1);
-        //Remove the source
-        gdmsSourceManager.remove(nameoftable);
-        //Wait
-        SwingUtilities.invokeAndWait(new DummyThread());
-        //Test if the GeoCatalog has successfully listen to the event
-        org.junit.Assert.assertTrue(nbsource==geoCatalog.getSourceList().getModel().getSize());
-        //Set back the filters
-        UImodel.setFilters(filters);
+        
+        if(!GraphicsEnvironment.isHeadless()) {
+            //Retrieve instance of View And Gdms managers
+            Catalog geoCatalog = instance.getGeoCatalog();
+            SourceManager gdmsSourceManager = instance.getMainContext().getDataSourceFactory().getSourceManager();
+            SourceListModel UImodel = ((SourceListModel)geoCatalog.getSourceList().getModel());
+            //Retrieve and clear filters, this must done to this unit test
+            List<IFilter> filters = UImodel.getFilters();
+            UImodel.clearFilters();
+            //Retrieve the number of DataSource shown in the list before insertion
+            int nbsource = geoCatalog.getSourceList().getModel().getSize();
+            //Add a memory driver source in the gdms source manager
+            MemoryDriver testDataSource = new MemoryDataSetDriver();        
+            String nameoftable = gdmsSourceManager.getUniqueName("unit_test_table");
+            gdmsSourceManager.register(nameoftable, testDataSource);
+            //Wait
+            SwingUtilities.invokeAndWait(new DummyThread());
+            //Test if the GeoCatalog has successfully listen to the event
+            org.junit.Assert.assertTrue(nbsource==geoCatalog.getSourceList().getModel().getSize()-1);
+            //Remove the source
+            gdmsSourceManager.remove(nameoftable);
+            //Wait
+            SwingUtilities.invokeAndWait(new DummyThread());
+            //Test if the GeoCatalog has successfully listen to the event
+            org.junit.Assert.assertTrue(nbsource==geoCatalog.getSourceList().getModel().getSize());
+            //Set back the filters
+            UImodel.setFilters(filters);
+        }
     }
    /**
     * This runnable is just to wait the execution of other runnables
@@ -140,24 +147,27 @@ public class CoreTest {
     @Test
     public void testDockingParameterChange() {
         org.junit.Assume.assumeTrue(!GraphicsEnvironment.isHeadless()); 
-        String newTitle = "new dummy name";
-        //Create the instance of the panel
-        DummyViewPanel dummyPanel = new DummyViewPanel();
         
-        //Show the panel has a new docking item
-        instance.getDockManager().show(dummyPanel);
-        //Retrieve the DockingFrame dock instance for the dummy instance
-        DefaultCDockable dockedDummy = instance.getDockManager().getDockable(dummyPanel);
+        if(!GraphicsEnvironment.isHeadless()) {
+            String newTitle = "new dummy name";
+            //Create the instance of the panel
+            DummyViewPanel dummyPanel = new DummyViewPanel();
+
+            //Show the panel has a new docking item
+            instance.getDockManager().show(dummyPanel);
+            //Retrieve the DockingFrame dock instance for the dummy instance
+            DefaultCDockable dockedDummy = instance.getDockManager().getDockable(dummyPanel);
+
+            //Test if the original title is shown
+            org.junit.Assert.assertTrue(dockedDummy.getTitleText().equals(DummyViewPanel.OLD_TITLE));
+
+            //Change the docking title from the panel
+            dummyPanel.setTitle(newTitle);
+
+            //Test if the new title is shown on the DockingFrames
+            org.junit.Assert.assertTrue(dockedDummy.getTitleText().equals(newTitle));
         
-        //Test if the original title is shown
-        org.junit.Assert.assertTrue(dockedDummy.getTitleText().equals(DummyViewPanel.OLD_TITLE));
-        
-        //Change the docking title from the panel
-        dummyPanel.setTitle(newTitle);
-        
-        //Test if the new title is shown on the DockingFrames
-        org.junit.Assert.assertTrue(dockedDummy.getTitleText().equals(newTitle));
-        
+        }
     }
     /**
      * Test of shutdown method, of class Core.
@@ -165,7 +175,9 @@ public class CoreTest {
     @AfterClass
     public void tearDown() {
         org.junit.Assume.assumeTrue(!GraphicsEnvironment.isHeadless()); 
-        System.out.println("dispose");
-        instance.dispose();
+        if(!GraphicsEnvironment.isHeadless()) {
+            System.out.println("dispose");
+            instance.dispose();
+        }
     }
 }
