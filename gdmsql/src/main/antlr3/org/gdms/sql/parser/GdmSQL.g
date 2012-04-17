@@ -340,7 +340,6 @@ tokens {
     T_ERRORS = 'ERRORS';
     T_FIRST = 'FIRST';
     T_LIMIT = 'LIMIT';
-    T_LOG = 'LOG';
     T_REJECT = 'REJECT';
     T_RETURN = 'RETURN';
     T_RETURNING = 'RETURNING';
