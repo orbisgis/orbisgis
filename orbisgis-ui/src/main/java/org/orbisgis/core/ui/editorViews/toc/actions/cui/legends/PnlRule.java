@@ -64,16 +64,22 @@ public class PnlRule extends JPanel implements IRulePanel {
 		pnlLabels.add(new CarriageReturn());
 		pnlLabels.add(new JLabel(I18N.getString("orbisgis.org.orbisgis.ui.toc.legendsPanel.maxScale")));
 		this.add(pnlLabels);
-
-		KeyListener keyAdapter = getKeyListener();
+                //We need the fields now...
 		JPanel pnlTexts = new JPanel();
 		pnlTexts.setLayout(new CRFlowLayout());
+                //Scale management.
+		KeyListener keyAdapter = getKeyListener();
+                //Min
 		txtMinScale = new JTextField(10);
 		txtMinScale.addKeyListener(keyAdapter);
+                txtMinScale.setText(getMinscale());
+                //Max
 		txtMaxScale = new JTextField(10);
 		txtMaxScale.addKeyListener(keyAdapter);
-		pnlTexts.add(txtMinScale);
+                txtMaxScale.setText(getMaxscale());
+                //We need the map transform to use the buttons
                 final MapTransform mt = legendContext.getCurrentMapTransform();
+                //Button for min
 		btnCurrentScaleToMin = new JButton(I18N.getString("orbisgis.org.orbisgis.ui.toc.legendsPanel.currentScale"));
 		btnCurrentScaleToMin.addActionListener(new ActionListener() {
                         @Override
@@ -82,9 +88,7 @@ public class PnlRule extends JPanel implements IRulePanel {
 			}
 
 		});
-		pnlTexts.add(btnCurrentScaleToMin);
-		pnlTexts.add(new CarriageReturn());
-		pnlTexts.add(txtMaxScale);
+                //Button for max
 		btnCurrentScaleToMax = new JButton(I18N.getString("orbisgis.org.orbisgis.ui.toc.legendsPanel.currentScale"));
 		btnCurrentScaleToMax.addActionListener(new ActionListener() {
 
@@ -94,6 +98,11 @@ public class PnlRule extends JPanel implements IRulePanel {
 			}
 
 		});
+                //We add all our text fields.
+		pnlTexts.add(txtMinScale);
+		pnlTexts.add(btnCurrentScaleToMin);
+		pnlTexts.add(new CarriageReturn());
+		pnlTexts.add(txtMaxScale);
 		pnlTexts.add(btnCurrentScaleToMax);
 		this.add(pnlTexts);
 
@@ -189,6 +198,26 @@ public class PnlRule extends JPanel implements IRulePanel {
                         return res;
                 } else {
                         return null;
+                }
+        }
+
+        private String getMinscale() {
+                if(rule.getMinScaleDenom() != null && rule.getMinScaleDenom()>Double.NEGATIVE_INFINITY){
+                        Double d = rule.getMinScaleDenom();
+                        Integer i = d.intValue();
+                        return i.toString();
+                } else {
+                        return "";
+                }
+        }
+
+        private String getMaxscale() {
+                if(rule.getMaxScaleDenom() != null && rule.getMaxScaleDenom()<Double.POSITIVE_INFINITY){
+                        Double d = rule.getMaxScaleDenom();
+                        Integer i = d.intValue();
+                        return i.toString();
+                } else {
+                        return "";
                 }
         }
 
