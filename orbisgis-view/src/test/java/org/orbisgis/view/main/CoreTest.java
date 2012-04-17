@@ -36,8 +36,8 @@ import javax.swing.SwingUtilities;
 import org.gdms.driver.MemoryDriver;
 import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.source.SourceManager;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.orbisgis.view.docking.DummyViewPanel;
 import org.orbisgis.view.geocatalog.Catalog;
@@ -57,7 +57,7 @@ public class CoreTest {
     /**
      * Test of startup method, of class Core.
      */
-    @Before
+    @BeforeClass
     public void setUp() {
         org.junit.Assume.assumeTrue(!GraphicsEnvironment.isHeadless()); 
         System.out.println("startup");
@@ -162,7 +162,7 @@ public class CoreTest {
     /**
      * Test of shutdown method, of class Core.
      */
-    @After
+    @AfterClass
     public void tearDown() {
         org.junit.Assume.assumeTrue(!GraphicsEnvironment.isHeadless()); 
         System.out.println("dispose");
