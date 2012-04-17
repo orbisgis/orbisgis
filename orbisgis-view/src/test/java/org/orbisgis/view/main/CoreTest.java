@@ -59,7 +59,6 @@ public class CoreTest {
      */
     @BeforeClass
     public static void setUp() {
-        org.junit.Assume.assumeTrue(!GraphicsEnvironment.isHeadless()); 
         System.out.println("startup");
         if(!GraphicsEnvironment.isHeadless()) {
             instance = new Core();
@@ -174,7 +173,6 @@ public class CoreTest {
      */
     @AfterClass
     public static void tearDown() {
-        org.junit.Assume.assumeTrue(!GraphicsEnvironment.isHeadless()); 
         if(!GraphicsEnvironment.isHeadless()) {
             System.out.println("dispose");
             instance.dispose();
