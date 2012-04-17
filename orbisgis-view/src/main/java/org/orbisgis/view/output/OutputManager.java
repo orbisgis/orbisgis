@@ -35,6 +35,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.varia.DenyAllFilter;
 import org.apache.log4j.varia.LevelMatchFilter;
+import org.apache.log4j.varia.LevelRangeFilter;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.output.filters.AllFilter;
 import org.xnap.commons.i18n.I18n;
@@ -94,8 +95,10 @@ public class OutputManager {
         private void makeOutputError() {
                 PanelAppender app = makePanel();
                 app.setLayout(loggingLayout);
-                LevelMatchFilter filter = new LevelMatchFilter();
-                filter.setLevelToMatch(Level.ERROR.toString());
+                LevelRangeFilter filter = new LevelRangeFilter();
+                filter.setLevelMax(Level.FATAL);
+                filter.setLevelMin(Level.ERROR);
+                filter.setAcceptOnMatch(true);
                 app.addFilter(filter);
                 app.addFilter(new DenyAllFilter());
                 outputPanels.put(LOG_ERROR, app);

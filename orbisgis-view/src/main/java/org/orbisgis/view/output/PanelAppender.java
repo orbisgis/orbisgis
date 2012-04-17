@@ -29,6 +29,11 @@
 package org.orbisgis.view.output;
 
 import java.awt.Color;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Stack;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.swing.SwingUtilities;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
@@ -37,6 +42,8 @@ import org.apache.log4j.spi.LoggingEvent;
  * A LOG4J Appender connected with the LogPanel
  */
 public class PanelAppender extends AppenderSkeleton {
+    //New duplicata message is ignored if the time interval is greater than this constant.
+    private static final int SAME_MESSAGE_IGNORE_INTERVAL = 500; //ms
     private static final Color COLOR_ERROR = Color.RED;
     private static final Color COLOR_WARNING = Color.ORANGE.darker();
     private static final Color COLOR_DEBUG = Color.BLUE;
@@ -44,7 +51,12 @@ public class PanelAppender extends AppenderSkeleton {
     private Level lastLevel = Level.INFO;
     private Color lastLevelColor = getLevelColor(lastLevel);
     private OutputPanel guiPanel;
-
+    private int lastMessageHash = 0;
+    private Long lastMessageTime = 0L;
+    
+    //Messages are stored here before being pushed in the gui
+    private Queue<LoggingEvent> leQueue = new LinkedList<LoggingEvent>();
+    private AtomicBoolean processingQueue=new AtomicBoolean(false); /*!< If true a swing runnable
     /**
      * 
      * @return The linked GuiPanel
@@ -68,6 +80,8 @@ public class PanelAppender extends AppenderSkeleton {
                 return COLOR_DEBUG;
             case Level.ERROR_INT:
                 return COLOR_ERROR;
+            case Level.FATAL_INT:
+                return COLOR_ERROR;
             default:
                 return COLOR_INFO;
         }
@@ -82,24 +96,13 @@ public class PanelAppender extends AppenderSkeleton {
      */
     @Override
     protected void append(LoggingEvent le) {
+        leQueue.add(le);
+        // Show the application when Swing will be ready
+        if(!processingQueue.getAndSet(true)) {
+            SwingUtilities.invokeLater( new ShowMessage());
+        }
         //TODO use swing thread
-        
-        //Update the color if the level change
-        if(!le.getLevel().equals(lastLevel)) {
-            lastLevel = le.getLevel();
-            lastLevelColor = getLevelColor(lastLevel);
-            guiPanel.setDefaultColor(lastLevelColor);
-        }
-        guiPanel.println(this.layout.format(le));
-        if(layout.ignoresThrowable()) {
-            String[] s = le.getThrowableStrRep();
-            if (s != null) {
-                int len = s.length;
-                for(int i = 0; i < len; i++) {
-                    guiPanel.println(s[i]);
-                }
-            }
-        }
+ 
     }
 
     public void close() {
@@ -111,5 +114,44 @@ public class PanelAppender extends AppenderSkeleton {
      */
     public boolean requiresLayout() {
         return true;
-    }    
+    }
+   /**
+    * Push awaiting messages to the gui
+    */ 
+   private class ShowMessage implements Runnable {
+        /**
+        * Change the state of the main frame in the swing thread
+        */
+        public void run(){
+            try {
+                while(!leQueue.isEmpty()) {
+                    LoggingEvent le = leQueue.poll();
+                    int messageHash = le.getMessage().hashCode();
+                    if(messageHash!=lastMessageHash ||
+                        le.getTimeStamp()-lastMessageTime>SAME_MESSAGE_IGNORE_INTERVAL) {
+                        lastMessageHash = messageHash;
+                        lastMessageTime = le.getTimeStamp();
+                        //Update the color if the level change
+                        if(!le.getLevel().equals(lastLevel)) {
+                            lastLevel = le.getLevel();
+                            lastLevelColor = getLevelColor(lastLevel);
+                            guiPanel.setDefaultColor(lastLevelColor);
+                        }
+                        guiPanel.print(layout.format(le));
+                        if(layout.ignoresThrowable()) {
+                            String[] s = le.getThrowableStrRep();
+                            if (s != null) {
+                                int len = s.length;
+                                for(int i = 0; i < len; i++) {
+                                    guiPanel.println(s[i]);
+                                }
+                            }
+                        }
+                    }
+                }
+            } finally {
+                processingQueue.set(false);                
+            }
+        }
+    }
 }
