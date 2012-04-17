@@ -263,7 +263,7 @@ object LogicPlanBuilder {
           var last: Operation = new Scan(getFullTableName(c.head), None, true)
 
           // gets all the expressions to update
-          var e: Seq[(String, Expression)] = Nil
+          var e: List[(String, Expression)] = Nil
           c.tail.foreach { t => t.getType match {
               case T_UPDATE_SET => {
 		  // AST:
@@ -273,7 +273,7 @@ object LogicPlanBuilder {
                   val col = getChilds(t.getChild(0)) map (_.getChild(0).getText.replace("\"", ""))
                   val expr = getChilds(t.getChild(1)) map (parseExpression)
 
-                  e = col zip expr
+                  e = (col zip expr) ::: e
 
                 }
               case T_WHERE => {
@@ -281,7 +281,7 @@ object LogicPlanBuilder {
                 }
             }
           }
-          end = Update(e, last)
+          end = Update(e reverse, last)
         }
       case T_INSERT => {
           val c = getChilds(node)
