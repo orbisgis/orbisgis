@@ -9,6 +9,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyListener;
 import java.beans.EventHandler;
 import javax.swing.*;
@@ -30,6 +31,8 @@ public class PnlRule extends JPanel implements IRulePanel {
 	private JButton btnCurrentScaleToMax;
 	private JTextField txtMinScale;
 	private JTextField txtMaxScale;
+        private JTextField txtName;
+        private JTextArea txtDescription;
         private Rule rule;
         private LegendContext legendContext;
         private String id;
@@ -60,6 +63,11 @@ public class PnlRule extends JPanel implements IRulePanel {
 		CRFlowLayout flowLayout = new CRFlowLayout();
 		flowLayout.setVgap(14);
 		pnlLabels.setLayout(flowLayout);
+                //The labels used to define the text fields.
+                pnlLabels.add(new JLabel("Title : "));
+		pnlLabels.add(new CarriageReturn());
+                pnlLabels.add(new JLabel("Description : "));
+		pnlLabels.add(new CarriageReturn());
 		pnlLabels.add(new JLabel(I18N.getString("orbisgis.org.orbisgis.ui.toc.legendsPanel.minScale")));
 		pnlLabels.add(new CarriageReturn());
 		pnlLabels.add(new JLabel(I18N.getString("orbisgis.org.orbisgis.ui.toc.legendsPanel.maxScale")));
@@ -67,8 +75,18 @@ public class PnlRule extends JPanel implements IRulePanel {
                 //We need the fields now...
 		JPanel pnlTexts = new JPanel();
 		pnlTexts.setLayout(new CRFlowLayout());
+                //Title management
+                txtName = new JTextField(rule.getName(),10);
+                txtName.addFocusListener(EventHandler.create(FocusListener.class, this, "setTitle","source.text","focusLost"));
+                //Description management
+                txtDescription = new JTextArea(rule.getDescription());
+                txtDescription.setColumns(40);
+                txtDescription.setRows(6);
+                txtDescription.setLineWrap(true);
+                txtDescription.addFocusListener(EventHandler.create(
+                        FocusListener.class, this, "setDescription","source.text","focusLost"));
                 //Scale management.
-		KeyListener keyAdapter = getKeyListener();
+		KeyListener keyAdapter = EventHandler.create(KeyListener.class, this, "applyScales");
                 //Min
 		txtMinScale = new JTextField(10);
 		txtMinScale.addKeyListener(keyAdapter);
@@ -99,6 +117,10 @@ public class PnlRule extends JPanel implements IRulePanel {
 
 		});
                 //We add all our text fields.
+                pnlTexts.add(txtName);
+		pnlTexts.add(new CarriageReturn());
+                pnlTexts.add(txtDescription);
+		pnlTexts.add(new CarriageReturn());
 		pnlTexts.add(txtMinScale);
 		pnlTexts.add(btnCurrentScaleToMin);
 		pnlTexts.add(new CarriageReturn());
@@ -134,12 +156,19 @@ public class PnlRule extends JPanel implements IRulePanel {
         }
 
         /**
-         * Get a KeyListener that will apply the given scales to the underlying
-         * Rule each time a key is released.
-         * @return
+         * Apply to the Rule's name the text contained in the editor used to
+         * manage it.
          */
-        private KeyListener getKeyListener(){
-                return EventHandler.create(KeyListener.class, this, "applyScales");
+        public void setTitle(String s){
+                rule.setName(s);
+        }
+
+        /**
+         * Apply to the Rule's description the text contained in the editor used
+         * to manage it.
+         */
+        public void setDescription(String s){
+                rule.setDescription(s);
         }
 
         /**

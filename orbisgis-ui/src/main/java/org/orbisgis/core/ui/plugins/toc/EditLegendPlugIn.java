@@ -37,9 +37,6 @@
  */
 package org.orbisgis.core.ui.plugins.toc;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 import javax.swing.JOptionPane;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.StyleType;
@@ -57,8 +54,6 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendsPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.EPLegendHelper;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ISymbolEditor;
-import org.orbisgis.core.ui.editorViews.toc.wrapper.RuleWrapper;
-import org.orbisgis.core.ui.editorViews.toc.wrapper.StyleWrapper;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext.LayerAvailability;
@@ -70,8 +65,6 @@ import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 import org.orbisgis.core.ui.plugins.views.mapEditor.MapEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
-import org.orbisgis.legend.Legend;
-import org.orbisgis.legend.thematic.factory.LegendFactory;
 
 /**
  * If activated, this plugin will offer an entry in the menu that is shown when
