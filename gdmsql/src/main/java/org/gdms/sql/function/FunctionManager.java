@@ -68,6 +68,7 @@ import org.gdms.sql.function.math.Floor;
 import org.gdms.sql.function.math.Ln;
 import org.gdms.sql.function.math.Log;
 import org.gdms.sql.function.math.Pi;
+import org.gdms.sql.function.math.Power;
 import org.gdms.sql.function.math.Random;
 import org.gdms.sql.function.math.Sin;
 import org.gdms.sql.function.math.Sqrt;
@@ -316,6 +317,7 @@ public final class FunctionManager {
                 addFunction(Sin.class);
                 addFunction(ASin.class);
                 addFunction(Exp.class);
+                addFunction(Power.class);
                 addFunction(Floor.class);
                 addFunction(Abs.class);
                 addFunction(Ceil.class);
