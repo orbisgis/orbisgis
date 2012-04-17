@@ -1,38 +1,41 @@
 /*
- * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
+ * The GDMS library (Generic Datasources Management System)
+ * is a middleware dedicated to the management of various kinds of
+ * data-sources such as spatial vectorial data or alphanumeric. Based
+ * on the JTS library and conform to the OGC simple feature access
+ * specifications, it provides a complete and robust API to manipulate
+ * in a SQL way remote DBMS (PostgreSQL, H2...) or flat files (.shp,
+ * .csv...). It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
- *
- *
+ * 
+ * 
  * Team leader : Erwan BOCHER, scientific researcher,
- *
+ * 
  * User support leader : Gwendall Petit, geomatic engineer.
- *
+ * 
  * Previous computer developer : Pierre-Yves FADET, computer engineer, Thomas LEDUC, 
  * scientific researcher, Fernando GONZALEZ CORTES, computer engineer.
- *
+ * 
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
+ * 
  * Copyright (C) 2010 Erwan BOCHER, Alexis GUEGANNO, Maxence LAURENT, Antoine GOURLAY
- *
- * This file is part of OrbisGIS.
- *
- * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * 
+ * This file is part of Gdms.
+ * 
+ * Gdms is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
- *
- * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * 
+ * Gdms is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with
- * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
- *
+ * Gdms. If not, see <http://www.gnu.org/licenses/>.
+ * 
  * For more information, please consult: <http://www.orbisgis.org/>
- *
+ * 
  * or contact directly:
  * info@orbisgis.org
  */
@@ -44,32 +47,35 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.FunctionException;
 
 /**
- * Returns the base 10 logarithm of a double  value.
+ * Computes the natural logarithm (base e) of a double value.
+ * 
+ * @author Antoine Gourlay
+ * @since 2.0
  */
-public final class Log extends AbstractScalarMathFunction {
+public class Ln extends AbstractScalarMathFunction {
 
         @Override
 	public Value evaluate(SQLDataSourceFactory dsf, Value... args) throws FunctionException {
 		if (args[0].isNull()) {
 			return ValueFactory.createNullValue();
 		} else {
-			return ValueFactory.createValue(Math.log10(args[0].getAsDouble()));
+			return ValueFactory.createValue(Math.log(args[0].getAsDouble()));
 		}
 	}
 
         @Override
 	public String getName() {
-		return "log";
+		return "ln";
 	}
 
         @Override
 	public String getDescription() {
-		return "Returns the base 10 logarithm of a double  value.";
+		return "Returns the natural logarithm (base e) of a double value.";
 	}
 
         @Override
 	public String getSqlOrder() {
-		return "select log(myNumericField) from myTable;";
+		return "select ln(myNumericField) from myTable;";
 	}
 
 }
