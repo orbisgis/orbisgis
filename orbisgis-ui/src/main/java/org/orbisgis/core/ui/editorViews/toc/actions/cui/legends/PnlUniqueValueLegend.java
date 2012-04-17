@@ -88,10 +88,10 @@ public class PnlUniqueValueLegend extends PnlAbstractClassifiedLegend {
 
 			HashSet<Value> added = new HashSet<Value>();
 			for (int i = 0; i < rowCount; i++) {
-				if (added.size() == 32) {
+				if (added.size() == 64) {
 					JOptionPane.showMessageDialog(this,
-							"More than 32 differnt values "
-									+ "found. Showing only 32");
+							"More than 64 different values "
+									+ "found. Showing only 64");
 					break;
 				}
 
