@@ -44,6 +44,7 @@ import javax.swing.JOptionPane;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
@@ -73,7 +74,7 @@ public class GeocatalogClearPlugIn extends AbstractPlugIn {
 	public void execute(SourceManager sourceManager) {
 		int option = JOptionPane
 				.showConfirmDialog(
-						null,
+						UIFactory.getMainFrame(),
 						I18N
 								.getString("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.clearAction"),
 						I18N

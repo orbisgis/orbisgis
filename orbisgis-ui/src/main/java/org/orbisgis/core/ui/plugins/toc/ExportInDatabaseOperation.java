@@ -44,6 +44,7 @@ import org.gdms.data.db.DBSource;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.engine.ParseException;
 import org.orbisgis.core.background.BackgroundJob;
+import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.I18N;
@@ -96,7 +97,7 @@ public class ExportInDatabaseOperation implements BackgroundJob {
                         dsf.getSourceManager().register(layerName, dbSource);
 			
 			if (changeName) {
-				JOptionPane.showMessageDialog(null,
+				JOptionPane.showMessageDialog(UIFactory.getMainFrame(),
 						ErrorMessages.SourceAlreadyExists);
 			}
 

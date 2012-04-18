@@ -49,6 +49,7 @@ import org.orbisgis.core.renderer.legend.carto.ClassifiedLegend;
 import org.orbisgis.core.renderer.legend.carto.LegendFactory;
 import org.orbisgis.core.renderer.legend.carto.UniqueValueLegend;
 import org.orbisgis.core.renderer.symbol.Symbol;
+import org.orbisgis.core.sif.UIFactory;
 
 public class UniqueValueLegendTableModel extends ClassifiedLegendTableModel
 		implements TableModel {
@@ -140,7 +141,7 @@ public class UniqueValueLegendTableModel extends ClassifiedLegendTableModel
 				legend.setDefaultSymbol((Symbol) value);
 				break;
 			case 1:
-				JOptionPane.showMessageDialog(null, "Cannot modify "
+				JOptionPane.showMessageDialog(UIFactory.getMainFrame(), "Cannot modify "
 						+ "'rest of values'", "Wrong input value",
 						JOptionPane.ERROR_MESSAGE);
 				break;

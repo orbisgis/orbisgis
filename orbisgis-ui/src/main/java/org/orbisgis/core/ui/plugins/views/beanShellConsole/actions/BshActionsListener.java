@@ -57,7 +57,7 @@ public class BshActionsListener implements ActionListener, DocumentListener {
                                 break;
                         case BshConsoleAction.CLEAR:
                                 if (consolePanel.getText().trim().length() > 0) {
-                                        int answer = JOptionPane.showConfirmDialog(null,
+                                        int answer = JOptionPane.showConfirmDialog(consolePanel,
                                                 I18N.getString("orbisgis.org.orbisgis.ui.bshActionsListener.clearTheConsole"), //$NON-NLS-1$
                                                 I18N.getString("orbisgis.org.orbisgis.ui.bshActionsListener.clearScript"), JOptionPane.YES_NO_OPTION); //$NON-NLS-1$
                                         if (answer == JOptionPane.YES_OPTION) {
@@ -72,7 +72,7 @@ public class BshActionsListener implements ActionListener, DocumentListener {
                                                 int answer = JOptionPane.NO_OPTION;
                                                 if (consolePanel.getText().trim().length() > 0) {
                                                         answer = JOptionPane.showConfirmDialog(
-                                                                null,
+                                                                consolePanel,
                                                                 I18N.getString("orbisgis.org.orbisgis.ui.bshActionsListener.clearAllBeforeOpenFile"), //$NON-NLS-1$
                                                                 I18N.getString("orbisgis.org.orbisgis.ui.bshActionsListener.openFile"), //$NON-NLS-1$
                                                                 JOptionPane.YES_NO_CANCEL_OPTION);

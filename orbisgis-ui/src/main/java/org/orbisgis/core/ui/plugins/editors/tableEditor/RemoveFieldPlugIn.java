@@ -40,6 +40,7 @@ package org.orbisgis.core.ui.plugins.editors.tableEditor;
 
 import javax.swing.JOptionPane;
 
+import org.orbisgis.core.sif.UIFactory;
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.ui.editor.IEditor;
@@ -60,7 +61,7 @@ public class RemoveFieldPlugIn extends AbstractPlugIn {
 				.getElement();
 		try {
 			DataSource dataSource = element.getDataSource();
-			int option = JOptionPane.showConfirmDialog(null,
+			int option = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
 					Names.POPUP_TABLE_DELETEFIELD_OPTION
 							+ dataSource.getFieldName(getSelectedColumn())
 							+ "?", Names.POPUP_TABLE_REMOVEFIELD_OPTION,

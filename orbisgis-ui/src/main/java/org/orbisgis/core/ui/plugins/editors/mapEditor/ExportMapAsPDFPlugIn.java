@@ -242,7 +242,7 @@ public class ExportMapAsPDFPlugIn extends AbstractPlugIn {
 				cb.addTemplate(templateLegend, 0, 0);
 				cb.addTemplate(templateScale, 0, 0);
 
-				JOptionPane.showMessageDialog(null, I18N
+				JOptionPane.showMessageDialog(UIFactory.getMainFrame(), I18N
 						.getString("orbisgis.core.file.fileSaved")); //$NON-NLS-1$
 			}
 

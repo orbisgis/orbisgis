@@ -43,6 +43,7 @@ import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext.LayerAvailability;
@@ -87,7 +88,7 @@ public class SaveLayerPlugIn extends AbstractPlugIn {
 			ErrorMessages.error(ErrorMessages.CannotExportInSelectedFormat, e);
 			return;
 		}
-		JOptionPane.showMessageDialog(null, I18N
+		JOptionPane.showMessageDialog(UIFactory.getMainFrame(), I18N
 				.getString("orbisgis.org.orbisgis.layerSaved"));
 	}
 

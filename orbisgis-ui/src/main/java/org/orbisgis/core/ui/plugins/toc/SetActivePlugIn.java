@@ -42,6 +42,7 @@ import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext.LayerAvailability;
@@ -63,7 +64,7 @@ public class SetActivePlugIn extends AbstractPlugIn {
                 //Test if one layer is already in edition
                 if ((activeLayer != null) && (activeLayer != layerToBeActivated)) {
                         if (activeLayer.getDataSource().isModified()) {
-                                int option = JOptionPane.showConfirmDialog(null, I18N.getString("orbisgis.org.orbisgis.edit.saveChange"), I18N.getString("orbisgis.org.orbisgis.edit.stopEdition"),
+                                int option = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(), I18N.getString("orbisgis.org.orbisgis.edit.saveChange"), I18N.getString("orbisgis.org.orbisgis.edit.stopEdition"),
                                         JOptionPane.YES_NO_CANCEL_OPTION);
                                 if (option == JOptionPane.YES_OPTION) {
                                         try {

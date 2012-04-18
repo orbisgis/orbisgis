@@ -43,6 +43,7 @@ import java.util.Map;
 
 import javax.swing.JFrame;
 
+import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.window.IWindow;
 
 public class ErrorFrame extends JFrame implements IWindow {
@@ -58,7 +59,7 @@ public class ErrorFrame extends JFrame implements IWindow {
 		int height = frameSize.height;
 		this.setMinimumSize(new Dimension(400, 200));
 		this.setMaximumSize(new Dimension(width / 2, height / 2));
-		this.setLocationRelativeTo(null);
+		this.setLocationRelativeTo(UIFactory.getMainFrame());
 	}
 
 	public void showWindow() {

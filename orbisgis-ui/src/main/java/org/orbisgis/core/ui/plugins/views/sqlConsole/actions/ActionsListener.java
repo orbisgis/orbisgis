@@ -56,7 +56,7 @@ public class ActionsListener implements ActionListener, DocumentListener {
                                 break;
                         case ConsoleAction.CLEAR:
                                 if (consolePanel.getScriptPanel().getText().trim().length() > 0) {
-                                        int answer = JOptionPane.showConfirmDialog(null,
+                                        int answer = JOptionPane.showConfirmDialog(consolePanel,
                                                 "Do you want to clear the contents of the console?",
                                                 "Clear script", JOptionPane.YES_NO_OPTION);
                                         if (answer == JOptionPane.YES_OPTION) {
@@ -71,7 +71,7 @@ public class ActionsListener implements ActionListener, DocumentListener {
                                                 int answer = JOptionPane.NO_OPTION;
                                                 if (consolePanel.getText().trim().length() > 0) {
                                                         answer = JOptionPane.showConfirmDialog(
-                                                                null,
+                                                                consolePanel,
                                                                 "Do you want to clear all before loadding the file ?",
                                                                 "Open file",
                                                                 JOptionPane.YES_NO_CANCEL_OPTION);

@@ -50,6 +50,7 @@ import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.background.BackgroundJob;
+import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.views.geocatalog.Catalog;
@@ -92,7 +93,7 @@ public class ExportInFileOperation implements BackgroundJob {
 		sourceManager.register(fileName, def);
 		try {
 			dsf.saveContents(fileName, dsf.getDataSource(sourceName), pm);
-			JOptionPane.showMessageDialog(null,
+			JOptionPane.showMessageDialog(UIFactory.getMainFrame(),
 					I18N.getString("orbisgis.org.orbisgis.exportInFile.geocatalog"));
 		} catch (DriverException e) {
 			ErrorMessages.error(ErrorMessages.CannotCreateDataSource, e);

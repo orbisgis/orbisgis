@@ -47,6 +47,7 @@ import javax.swing.table.TableModel;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.legend.carto.ClassifiedLegend;
 import org.orbisgis.core.renderer.legend.carto.LegendFactory;
+import org.orbisgis.core.sif.UIFactory;
 
 public abstract class ClassifiedLegendTableModel extends AbstractTableModel
         implements TableModel {
@@ -64,7 +65,7 @@ public abstract class ClassifiedLegendTableModel extends AbstractTableModel
                                 row = getValueIndex(row);
                         }
                         if (row == classifiedLegend.getClassificationCount()) {
-                                JOptionPane.showMessageDialog(null,
+                                JOptionPane.showMessageDialog(UIFactory.getMainFrame(),
                                         "Cannot delete 'Rest of values'", "Error",
                                         JOptionPane.ERROR_MESSAGE);
                         } else {

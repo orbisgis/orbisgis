@@ -151,7 +151,7 @@ public class OrbisGISWorkspace implements WorkspaceListener {
 
 			int exit = JOptionPane
 					.showConfirmDialog(
-							null,
+							UIFactory.getMainFrame(),
 							"The following resources are stored "
 									+ "in memory and its content may be lost: \n"
 									+ resourceList

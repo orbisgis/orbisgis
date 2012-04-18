@@ -50,6 +50,7 @@ import org.orbisgis.core.renderer.legend.carto.Interval;
 import org.orbisgis.core.renderer.legend.carto.IntervalLegend;
 import org.orbisgis.core.renderer.legend.carto.LegendFactory;
 import org.orbisgis.core.renderer.symbol.Symbol;
+import org.orbisgis.core.sif.UIFactory;
 
 public class IntervalLegendTableModel extends ClassifiedLegendTableModel
 		implements TableModel {
@@ -156,7 +157,7 @@ public class IntervalLegendTableModel extends ClassifiedLegendTableModel
 				break;
 			case 1:
 			case 2:
-				JOptionPane.showMessageDialog(null, "Cannot modify "
+				JOptionPane.showMessageDialog(UIFactory.getMainFrame(), "Cannot modify "
 						+ "'rest of values'", "Wrong input value",
 						JOptionPane.ERROR_MESSAGE);
 				break;
@@ -207,10 +208,10 @@ public class IntervalLegendTableModel extends ClassifiedLegendTableModel
 					break;
 				}
 			} catch (NumberFormatException e) {
-				JOptionPane.showMessageDialog(null, txt + " is not valid.",
+				JOptionPane.showMessageDialog(UIFactory.getMainFrame(), txt + " is not valid.",
 						"Wrong input value", JOptionPane.ERROR_MESSAGE);
 			} catch (ParseException e) {
-				JOptionPane.showMessageDialog(null, txt + " is not valid. "
+				JOptionPane.showMessageDialog(UIFactory.getMainFrame(), txt + " is not valid. "
 						+ e.getMessage(), "Wrong input value",
 						JOptionPane.ERROR_MESSAGE);
 			}

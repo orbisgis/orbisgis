@@ -104,7 +104,7 @@ public class EditLegendPlugIn extends AbstractPlugIn {
 			IEditor editor = em.getEditors(Names.EDITOR_MAP_ID, mapContext)[0];
 			mt = ((MapEditorPlugIn) editor).getMapTransform();
 			if (mt == null) {
-				JOptionPane.showMessageDialog(null,
+				JOptionPane.showMessageDialog(UIFactory.getMainFrame(),
 						Names.ERROR_EDIT_LEGEND_EDITOR);
 			}
 

@@ -114,7 +114,7 @@ public class SaveFilePanel extends OpenFilePanel {
 	@Override
 	public String postProcess() {
 		if (getSelectedFile().exists()) {
-			int ret = JOptionPane.showConfirmDialog(null, I18N
+			int ret = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(), I18N
 					.getString("orbisgis.core.file.fileAlreadyExists")
 					+ " " + I18N.getString("orbisgis.core.file.overwrite"), I18N
 					.getString("orbisgis.core.file.existing"),

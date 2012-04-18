@@ -102,7 +102,7 @@ public class ExportMapAsImagePlugIn extends AbstractPlugIn {
 			try {
 				ImageIO.write(subImg, "png", savedFile);
 
-				JOptionPane.showMessageDialog(null, I18N
+				JOptionPane.showMessageDialog(UIFactory.getMainFrame(), I18N
 						.getString("orbisgis.core.file.fileSaved"));
 
 			} catch (IOException e) {
