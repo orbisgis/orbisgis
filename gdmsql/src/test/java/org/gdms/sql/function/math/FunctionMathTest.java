@@ -109,4 +109,61 @@ public class FunctionMathTest {
                 assertTrue(d.getFieldValue(0, 0).isNull());
                 d.close();
         }
+        
+        @Test
+        public void testAbs() throws Exception {
+                DataSource d = dsf.getDataSourceFromSQL("SELECT abs(-2.0);");
+                d.open();
+                assertEquals(Math.abs(-2.0), d.getDouble(0, 0), 10E-15);
+                d.close();
+                
+                d = dsf.getDataSourceFromSQL("SELECT abs(2.0);");
+                d.open();
+                assertEquals(2.0, d.getDouble(0, 0), 10E-15);
+                d.close();
+
+                d = dsf.getDataSourceFromSQL("SELECT abs(NULL);");
+                d.open();
+                assertTrue(d.getFieldValue(0, 0).isNull());
+                d.close();
+        }
+        
+        @Test
+        public void testPi() throws Exception {
+                DataSource d = dsf.getDataSourceFromSQL("SELECT pi();");
+                d.open();
+                assertEquals(Math.PI, d.getDouble(0, 0), 10E-15);
+                d.close();
+        }
+        
+        @Test
+        public void testExp() throws Exception {
+                DataSource d = dsf.getDataSourceFromSQL("SELECT exp(-2.0);");
+                d.open();
+                assertEquals(Math.exp(-2.0), d.getDouble(0, 0), 10E-15);
+                d.close();
+                
+                d = dsf.getDataSourceFromSQL("SELECT exp(NULL);");
+                d.open();
+                assertTrue(d.getFieldValue(0, 0).isNull());
+                d.close();
+        }
+        
+        @Test
+        public void testSqrt() throws Exception {
+                DataSource d = dsf.getDataSourceFromSQL("SELECT sqrt(2.0);");
+                d.open();
+                assertEquals(Math.sqrt(2.0), d.getDouble(0, 0), 10E-15);
+                d.close();
+                
+                d = dsf.getDataSourceFromSQL("SELECT sqrt(-2.0);");
+                d.open();
+                assertEquals(Double.NaN, d.getDouble(0, 0), 10E-15);
+                d.close();
+                
+                d = dsf.getDataSourceFromSQL("SELECT sqrt(NULL);");
+                d.open();
+                assertTrue(d.getFieldValue(0, 0).isNull());
+                d.close();
+        }
 }
