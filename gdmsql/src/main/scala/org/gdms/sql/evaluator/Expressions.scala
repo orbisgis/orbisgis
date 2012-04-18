@@ -281,10 +281,10 @@ object Expression {
             case _ => "exp" + e._2
           }
         )
-        var i = -1
-        var newName = name
-        while (m.getFieldIndex(newName) != -1) { i = i+1; newName = name + i }
-        m.addField(newName , e._1._1.evaluator.sqlType)} }
+        if (m.getFieldIndex(name) != -1) {
+          throw new SemanticException("There already is a field or alias '" + name + "'.")
+        }
+        m.addField(name , e._1._1.evaluator.sqlType)} }
     m
   }
 }

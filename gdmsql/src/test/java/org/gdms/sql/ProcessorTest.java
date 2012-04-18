@@ -748,6 +748,16 @@ public class ProcessorTest {
                 failWithNoSuchTableException("drop index on allTypes (\"int\");");
                 failPreparedWithSemanticException("drop index on alltypes (rint);");
         }
+        
+        @Test
+        public void regressionTest690() throws Exception {
+                // regression test for #690
+                dsf.executeSQL("CREATE TABLE toto (field1 INT, field2 TEXT);");
+                failPreparedWithSemanticException("SELECT *, 42 AS field1 FROM toto;");
+                getFullyValidatedStatement("SELECT *, 42 AS field3 FROM toto;");
+                
+                dsf.getSourceManager().delete("toto");
+        }
 
         private SqlStatement getValidatedStatement(String sql) throws Exception {
                 return engine.parse(sql)[0];

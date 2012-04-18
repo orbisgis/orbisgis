@@ -41,6 +41,7 @@ import java.io.File
 import org.gdms.data.schema.DefaultMetadata
 import org.gdms.driver.DiskBufferDriver
 import org.gdms.sql.engine.GdmSQLPredef._
+import org.gdms.sql.engine.SemanticException
 import org.orbisgis.progress.ProgressMonitor
 
 /**
@@ -82,6 +83,8 @@ class QueryOutputCommand extends Command with OutputCommand {
       val f = m.getFieldName(i).takeWhile(_ != '$')
       if (d.getFieldIndex(f) == -1) {
         d.addField(f, m.getFieldType(i).getTypeCode)
+      } else {
+        throw new SemanticException("There already is a field or alias '" + f + "'.")
       }
     }
     
