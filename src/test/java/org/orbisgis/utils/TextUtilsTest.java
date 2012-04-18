@@ -38,14 +38,16 @@
 package org.orbisgis.utils;
 
 import java.util.regex.Pattern;
+
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 /**
  *
  * @author Antoine Gourlay
  */
-public class TestUtilsTest {
+public class TextUtilsTest {
 
         @Test
         public void testLikePattern() {
@@ -134,19 +136,20 @@ public class TestUtilsTest {
                 notMatch(p, "\\\\");
                 notMatch(p, "s\\");
                 notMatch(p, "\\sse");
+                
+                p = TextUtils.buildLikePattern("ab\\_");
+                match(p, "ab_");
+                notMatch(p, "aba");
+                notMatch(p, "ab_b");
 
         }
         
         @Test
         public void testSimilarToPattern() {
-                Pattern p = TextUtils.buildSimilarToPattern("st[ra].+");
-                System.out.println(p.pattern());
-//                match(p, "str%aa8");
-//                match(p, "str%ab8");
-//                notMatch(p, "stra8");
-//                notMatch(p, "straa8");
-//                notMatch(p, "strazertyaj8");
-//                notMatch(p, "1straaa8");
+                Pattern p = TextUtils.buildSimilarToPattern("st[ra]_+8");
+                match(p, "str%aa8");
+                match(p, "str%ab8");
+                notMatch(p, "sta8");
         }
 
         private void match(Pattern p, String s) {

@@ -1,16 +1,16 @@
-/** OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+/**
+ * OrbisGIS is a GIS application dedicated to scientific spatial simulation. This cross-platform GIS is developed at
+ * French IRSTV institute and is able to manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of the IRSTV Institute
+ * <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
  *
  * Team leader : #name, scientific researcher,
  *
  * User support leader : Gwendall Petit, geomatic engineer.
  *
- * Previous computer developer : Pierre-Yves FADET, computer engineer, Thomas LEDUC,
- * scientific researcher, Fernando GONZALEZ CORTES, computer engineer.
+ * Previous computer developer : Pierre-Yves FADET, computer engineer, Thomas LEDUC, scientific researcher, Fernando
+ * GONZALEZ CORTES, computer engineer.
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
@@ -18,22 +18,18 @@
  *
  * This file is part of OrbisGIS.
  *
- * OrbisGIS is free software: you can redistribute it and/or modify it under the
- * terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License, or (at your option) any later
- * version.
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  *
- * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
- * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with OrbisGIS. If not, see
+ * <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
  *
- * or contact directly:
- * info@orbisgis.org
+ * or contact directly: info@orbisgis.org
  */
 package org.orbisgis.utils;
 
@@ -112,21 +108,16 @@ public final class TextUtils {
         }
 
         /**
-         * Return the absolute start and end position of the specified positions in
-         * a text composed by the specified lines
+         * Return the absolute start and end position of the specified positions in a text composed by the specified
+         * lines
          *
-         * @param bl
-         *            start position line
-         * @param bc
-         *            start position column
-         * @param el
-         *            end position line
-         * @param ec
-         *            end position column
-         * @param lines
-         *            lines representing the multi-line text
-         * @return An array of two elements. The first one is the start position
-         *         (inclusive) and the second is the end position (exclusive)
+         * @param bl start position line
+         * @param bc start position column
+         * @param el end position line
+         * @param ec end position column
+         * @param lines lines representing the multi-line text
+         * @return An array of two elements. The first one is the start position (inclusive) and the second is the end
+         * position (exclusive)
          */
         public static int[] getLocation(int bl, int bc, int el, int ec,
                 String[] lines) {
@@ -144,29 +135,26 @@ public final class TextUtils {
                 start += column;
                 return start;
         }
-        
+
         /**
          * Creates a {@link Pattern } instance for a LIKE pattern.
-         * 
-         * A LIKE pattern matches always the complete string, and allows for the following special
-         * characters:
-         *  - '%' matches any sequence of zero or more characters
-         *  - '_' matches any single character
-         *  - '\' escapes the meaning of a special character (any of '\', '%', '_').
-         * 
-         * This implementation is not strict about the escape character: while the only way to match a '%'
-         * or a '_' character is to escape it, a '\' character followed by anything else than '%', '_' or '\'
-         * will not report any error and will just match a regular '\' character.
-         * This means that <code>str\\str</code> and <code>str\str</code> both only match the String literal
+         *
+         * A LIKE pattern matches always the complete string, and allows for the following special characters: - '%'
+         * matches any sequence of zero or more characters - '_' matches any single character - '\' escapes the meaning
+         * of a special character (any of '\', '%', '_').
+         *
+         * This implementation is not strict about the escape character: while the only way to match a '%' or a '_'
+         * character is to escape it, a '\' character followed by anything else than '%', '_' or '\' will not report any
+         * error and will just match a regular '\' character. This means that
+         * <code>str\\str</code> and
+         * <code>str\str</code> both only match the String literal
          * <code>str\str</code>.
-         * 
+         *
          * Note: this implementation is not entirely identical to the SQL standard's definition of the LIKE operator.
-         * The non-strict behavior describe in the paragraph above is not in the standard. Most implementation
-         * will reject non-properly-escaped pattern strings, so always escaping the backslash is the preferred
-         * option.
-         * 
+         * The non-strict behavior describe in the paragraph above is not in the standard. Most implementation will
+         * reject non-properly-escaped pattern strings, so always escaping the backslash is the preferred option.
+         *
          * @param pattern a LIKE pattern string
-         * @param caseInsensitive 
          * @return a standard pattern
          */
         public static Pattern buildLikePattern(String pattern) {
@@ -175,24 +163,22 @@ public final class TextUtils {
 
         /**
          * Creates a {@link Pattern } instance for a LIKE pattern.
-         * 
-         * A LIKE pattern matches always the complete string, and allows for the following special
-         * characters:
-         *  - '%' matches any sequence of zero or more characters
-         *  - '_' matches any single character
-         *  - '\' escapes the meaning of a special character (any of '\', '%', '_').
-         * 
-         * This implementation is not strict about the escape character: while the only way to match a '%'
-         * or a '_' character is to escape it, a '\' character followed by anything else than '%', '_' or '\'
-         * will not report any error and will just match a regular '\' character.
-         * This means that <code>str\\str</code> and <code>str\str</code> both only match the String literal
+         *
+         * A LIKE pattern matches always the complete string, and allows for the following special characters: - '%'
+         * matches any sequence of zero or more characters - '_' matches any single character - '\' escapes the meaning
+         * of a special character (any of '\', '%', '_').
+         *
+         * This implementation is not strict about the escape character: while the only way to match a '%' or a '_'
+         * character is to escape it, a '\' character followed by anything else than '%', '_' or '\' will not report any
+         * error and will just match a regular '\' character. This means that
+         * <code>str\\str</code> and
+         * <code>str\str</code> both only match the String literal
          * <code>str\str</code>.
-         * 
+         *
          * Note: this implementation is not entirely identical to the SQL standard's definition of the LIKE operator.
-         * The non-strict behavior describe in the paragraph above is not in the standard. Most implementation
-         * will reject non-properly-escaped pattern strings, so always escaping the backslash is the preferred
-         * option.
-         * 
+         * The non-strict behavior describe in the paragraph above is not in the standard. Most implementation will
+         * reject non-properly-escaped pattern strings, so always escaping the backslash is the preferred option.
+         *
          * @param pattern a LIKE pattern string
          * @param caseInsensitive true if the match has to be text insensitive
          * @return a standard pattern
@@ -216,11 +202,15 @@ public final class TextUtils {
                 } else {
                         int pos = 0;
                         for (int i = 0; i < s.length; i++) {
+                                boolean esc = false;
                                 if (s[i].endsWith("\\")) {
                                         pos++;
                                         if (i + 1 < s.length) {
                                                 s[i + 1] = s[i].substring(0, s[i].length() - 1) + pattern.charAt(pos + s[i].length() - 1) + s[i + 1];
                                                 continue;
+                                        } else {
+                                                s[i] = s[i].substring(0, s[i].length() - 1);
+                                                esc = true;
                                         }
                                 }
                                 if (!s[i].isEmpty()) {
@@ -230,18 +220,40 @@ public final class TextUtils {
                                 if (pos < pattern.length()) {
                                         switch (pattern.charAt(pos)) {
                                                 case '%':
-                                                        b.append(".*");
+                                                        if (esc) {
+                                                                b.append("%");
+                                                        } else {
+                                                                b.append(".*");
+                                                        }
                                                         pos++;
                                                         break;
                                                 case '_':
-                                                        b.append(".");
+                                                        if (esc) {
+                                                                b.append("_");
+                                                        } else {
+                                                                b.append(".");
+                                                        }
                                                         pos++;
                                                         break;
                                                 default:
                                         }
                                 }
                         }
+                        while (pos < pattern.length()) {
+                                switch (pattern.charAt(pos)) {
+                                        case '%':
+                                                b.append(".*");
+                                                pos++;
+                                                break;
+                                        case '_':
+                                                b.append(".");
+                                                pos++;
+                                                break;
+                                        default:
+                                }
+                        }
                 }
+
                 b.append("$");
                 if (caseInsensitive) {
                         return Pattern.compile(b.toString(), Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
@@ -252,32 +264,30 @@ public final class TextUtils {
         private static final Pattern splitLike = Pattern.compile("%|_");
         private static final Pattern escape = Pattern.compile("\\\\\\\\");
         private static final Pattern dot = Pattern.compile("\\.");
-        
+
         /**
          * Creates a {@link Pattern } instance for a SIMILAR TO pattern.
-         * 
-         * A SIMILAR TO pattern matches always the complete string, and allows any POSIX special character
-         * EXCEPT that:
-         *  - '%' matches any sequence of zero or more characters
-         *  - '_' matches any single character (instead of '.' in POSIX)
-         *  - '\' escapes the meaning of a any character (POSIX and above).
-         * 
-         * This implementation is not strict about the escape character: while the only way to match a special
-         * character is to escape it, a '\' character followed by a regular character
-         * will not report any error and will just match a regular '\' character.
-         * This means that <code>str\\str</code> and <code>str\str</code> both only match the String literal
+         *
+         * A SIMILAR TO pattern matches always the complete string, and allows any POSIX special character EXCEPT that:
+         * - '%' matches any sequence of zero or more characters - '_' matches any single character (instead of '.' in
+         * POSIX) - '\' escapes the meaning of a any character (POSIX and above).
+         *
+         * This implementation is not strict about the escape character: while the only way to match a special character
+         * is to escape it, a '\' character followed by a regular character will not report any error and will just
+         * match a regular '\' character. This means that
+         * <code>str\\str</code> and
+         * <code>str\str</code> both only match the String literal
          * <code>str\str</code>.
-         * 
+         *
          * See {@link Pattern } for the list of supported POSIX special characters and features.
-         * 
-         * Note: this implementation is not entirely identical to the SQL standard's definition of a
-         * regular expression. It allows some POSIX special character, like '\r' (carriage-return) or '\s'
-         * (whitespace character), that are not allowed in the SQL definition.
-         * Furthermore, most implementation will reject non-properly-escaped pattern strings, so always
-         * escaping the backslash is the preferred option.
-         * 
+         *
+         * Note: this implementation is not entirely identical to the SQL standard's definition of a regular expression.
+         * It allows some POSIX special character, like '\r' (carriage-return) or '\s' (whitespace character), that are
+         * not allowed in the SQL definition. Furthermore, most implementation will reject non-properly-escaped pattern
+         * strings, so always escaping the backslash is the preferred option.
+         *
          * @param pattern
-         * @return 
+         * @return
          */
         public static Pattern buildSimilarToPattern(String pattern) {
                 String[] s = splitLike.split(pattern);
@@ -298,11 +308,15 @@ public final class TextUtils {
                 } else {
                         int pos = 0;
                         for (int i = 0; i < s.length; i++) {
+                                boolean esc = false;
                                 if (s[i].endsWith("\\")) {
                                         pos++;
                                         if (i + 1 < s.length) {
                                                 s[i + 1] = s[i].substring(0, s[i].length() - 1) + pattern.charAt(pos + s[i].length() - 1) + s[i + 1];
                                                 continue;
+                                        } else {
+                                                s[i] = s[i].substring(0, s[i].length() - 1);
+                                                esc = true;
                                         }
                                 }
                                 if (!s[i].isEmpty()) {
@@ -313,15 +327,36 @@ public final class TextUtils {
                                 if (pos < pattern.length()) {
                                         switch (pattern.charAt(pos)) {
                                                 case '%':
-                                                        b.append(".*");
+                                                        if (esc) {
+                                                                b.append("%");
+                                                        } else {
+                                                                b.append(".*");
+                                                        }
                                                         pos++;
                                                         break;
                                                 case '_':
-                                                        b.append(".");
+                                                        if (esc) {
+                                                                b.append("_");
+                                                        } else {
+                                                                b.append(".");
+                                                        }
                                                         pos++;
                                                         break;
                                                 default:
                                         }
+                                }
+                        }
+                        while (pos < pattern.length()) {
+                                switch (pattern.charAt(pos)) {
+                                        case '%':
+                                                b.append(".*");
+                                                pos++;
+                                                break;
+                                        case '_':
+                                                b.append(".");
+                                                pos++;
+                                                break;
+                                        default:
                                 }
                         }
                 }
