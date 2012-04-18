@@ -61,6 +61,7 @@ import org.gdms.sql.function.math.ACos;
 import org.gdms.sql.function.math.ASin;
 import org.gdms.sql.function.math.ATan;
 import org.gdms.sql.function.math.Abs;
+import org.gdms.sql.function.math.Cbrt;
 import org.gdms.sql.function.math.Ceil;
 import org.gdms.sql.function.math.Cos;
 import org.gdms.sql.function.math.Exp;
@@ -315,6 +316,7 @@ public final class FunctionManager {
                 addFunction(ACos.class);
                 addFunction(Cos.class);
                 addFunction(Sin.class);
+                addFunction(Cbrt.class);
                 addFunction(ASin.class);
                 addFunction(Exp.class);
                 addFunction(Power.class);

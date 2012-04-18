@@ -41,29 +41,72 @@
  */
 package org.gdms.sql.function.math;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
-import org.gdms.data.values.ValueFactory;
+import org.gdms.SQLBaseTest;
+import org.gdms.data.DataSource;
+import org.gdms.data.SQLDataSourceFactory;
 
 /**
  *
  * @author Antoine Gourlay
  */
 public class FunctionMathTest {
+
+        private static SQLDataSourceFactory dsf;
+        
+        @Before
+        public void setUp() throws Exception {
+                dsf = new SQLDataSourceFactory();
+                dsf.setTempDir(SQLBaseTest.backupDir.getAbsolutePath());
+                dsf.setResultDir(SQLBaseTest.backupDir);
+        }
+
+        @After
+        public void tearDown() throws Exception {
+                dsf.freeResources();
+        }
+
         @Test
         public void testLn() throws Exception {
-                Ln l = new Ln();
-                
-                assertEquals(Math.log(2.0), l.evaluate(null, ValueFactory.createValue(2.0)).getAsDouble(), 10E-15);
-                assertTrue(l.evaluate(null, ValueFactory.createNullValue()).isNull());
+                DataSource d = dsf.getDataSourceFromSQL("SELECT ln(2.0);");
+                d.open();
+                assertEquals(Math.log(2.0), d.getDouble(0, 0), 10E-15);
+                d.close();
+
+                d = dsf.getDataSourceFromSQL("SELECT ln(NULL);");
+                d.open();
+                assertTrue(d.getFieldValue(0, 0).isNull());
+                d.close();
         }
-        
+
         @Test
         public void testLog() throws Exception {
-                Log l = new Log();
-                
-                assertEquals(Math.log10(2.0), l.evaluate(null, ValueFactory.createValue(2.0)).getAsDouble(), 10E-15);
-                assertTrue(l.evaluate(null, ValueFactory.createNullValue()).isNull());
+                DataSource d = dsf.getDataSourceFromSQL("SELECT log(2.0);");
+                d.open();
+                assertEquals(Math.log10(2.0), d.getDouble(0, 0), 10E-15);
+                d.close();
+
+                d = dsf.getDataSourceFromSQL("SELECT ln(NULL);");
+                d.open();
+                assertTrue(d.getFieldValue(0, 0).isNull());
+                d.close();
+        }
+
+        @Test
+        public void testCbrt() throws Exception {
+                DataSource d = dsf.getDataSourceFromSQL("SELECT cbrt(2.0);");
+                d.open();
+                assertEquals(Math.cbrt(2.0), d.getDouble(0, 0), 10E-15);
+                d.close();
+
+                d = dsf.getDataSourceFromSQL("SELECT cbrt(NULL);");
+                d.open();
+                assertTrue(d.getFieldValue(0, 0).isNull());
+                d.close();
         }
 }

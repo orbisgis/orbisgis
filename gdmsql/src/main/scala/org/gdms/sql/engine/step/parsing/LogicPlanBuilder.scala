@@ -654,8 +654,7 @@ object LogicPlanBuilder {
           Expression("Sqrt", List(left))
         }
 
-        // TODO: cube root operator
-      case CBRT => throw new UnsupportedOperationException("Not yet implemented.")
+      case CBRT => Expression("cbrt", List(left))
       case AT_SIGN => {
           // converting ABS operator into the corresponding function
           Expression("Abs", List(left))
