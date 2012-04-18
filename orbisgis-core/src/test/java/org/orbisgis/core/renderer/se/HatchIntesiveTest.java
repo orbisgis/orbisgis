@@ -79,7 +79,7 @@ public class HatchIntesiveTest extends AbstractTest {
             ILayer layer = new Layer("swiss", ds);
 
             Style style = new Style(layer, stylePath);
-            layer.setStyle(style);
+            layer.setStyle(0,style);
 
             Renderer renderer = new ImageRenderer();
             BufferedImage image = mt.getImage();

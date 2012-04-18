@@ -68,8 +68,7 @@ public class CreateChoroplethPlugIn extends AbstractPlugIn {
 				Rule r = pan.getRule();
 				if (r != null) {
 					// Add the rule in the current featureTypeStyle
-					layer.getStyle().clear();
-					layer.getStyle().addRule(r);
+					layer.getStyle(0).addRule(r);
 					// And finally redraw the map
 					layer.fireStyleChangedPublic();
 				}

@@ -158,52 +158,47 @@ public abstract class Renderer {
          */
         public int drawVector(Graphics2D g2, MapTransform mt, ILayer layer,
                 ProgressMonitor pm, RenderContext perm) throws DriverException {
-
-                // logger.println("Current DPI is " + mt.getDpi());
-                // logger.println("Current SCALE is 1: " + mt.getScaleDenominator());
                 Envelope extent = mt.getAdjustedExtent();
-
+                DataSource sds;
                 int layerCount = 0;
-                DataSource sds = null;
                 try {
                         // long tV1 = System.currentTimeMillis();
-
                         sds = layer.getDataSource();
                         sds.open();
                         long rowCount = sds.getRowCount();
-
                         // Extract into drawSeLayer method !
-                        Style style = layer.getStyle();
+                        List<Style> styles = layer.getStyles();
+                        for(Style style : styles){
+                                layerCount +=drawStyle(style, sds, g2, mt, layer, pm, perm, rowCount, extent);
+                        }
+                } catch (DriverLoadException ex) {
+                        printEx(ex, layer, g2);
+                } catch (DriverException ex) {
+                        printEx(ex, layer, g2);
+                }
 
-                        ArrayList<Symbolizer> symbs = new ArrayList<Symbolizer>();
+                return layerCount;
+        }
 
-                        // i.e. TextSymbolizer are always drawn above all other layer !! Should now be handle wth symbolizer level
-                        //ArrayList<Symbolizer> overlays = new ArrayList<Symbolizer>();
-
+        private int drawStyle(Style style, DataSource sds,Graphics2D g2,MapTransform mt, ILayer layer,
+                        ProgressMonitor pm, RenderContext perm, long rowCount, Envelope extent) throws DriverException {
+                int layerCount = 0;
+                ArrayList<Symbolizer> symbs = new ArrayList<Symbolizer>();
+                try {
+                        // i.e. TextSymbolizer are always drawn above all other layer !! Should now be handle with symbolizer level
                         // Standard rules (with filter or no filter but not with elsefilter)
                         ArrayList<Rule> rList = new ArrayList<Rule>();
-
                         // Rule with ElseFilter
                         ArrayList<Rule> fRList = new ArrayList<Rule>();
-
                         // fetch symbolizers and rules
                         style.getSymbolizers(mt, symbs, rList, fRList);
-
-
-                        //long tV1b = System.currentTimeMillis();
-
-                        //logger.println("Initialisation:" + (tV1b - tV1));
-
                         // Create new dataSource with only feature in current extent
                         pm.startTask("Filtering (spatial)...", 100);
                         pm.progressTo(0);
-
                         Iterator<Integer> it = new FullIterator(sds);
-
                         //  int[] featureInExtent = featureInExtent(mt, sds, pm);
                         pm.progressTo(ONE_HUNDRED_I);
                         pm.endTask();
-
                         if (it.hasNext()) {
 
                                 HashSet<Integer> selected = new HashSet<Integer>();
@@ -220,14 +215,11 @@ public abstract class Renderer {
                                 // long sTimeFull = 0;
                                 // Get a graphics for each symbolizer
                                 initGraphics2D(symbs, g2, mt);
-                                //long rowCount = sds.getRowCount();
-                                //Let's not come back to the beginning if we haven't found 
+                                //Let's not come back to the beginning if we haven't found
                                 //a geometry that is contained in the area we want to draw...
                                 boolean somethingReached = false;
                                 for (Rule r : rList) {
-                                        // long tf1 = System.currentTimeMillis();
                                         beginLayer(r.getName());
-                                        //  logger.println("Drawing rule " + r.getName());
                                         pm.startTask("Drawing " + layer.getName() + " (Rule " + r.getName() + ")", 100);
                                         int fieldID = -1;
 
@@ -235,7 +227,6 @@ public abstract class Renderer {
                                                 fieldID = ShapeHelper.getGeometryFieldId(sds);
                                         } catch (ParameterException ex) {
                                         }
-                                        ///  long initFeats = 0;
 
 
                                         int i = 0;
@@ -258,90 +249,52 @@ public abstract class Renderer {
                                                         }
                                                 }
                                                 i++;
-
-                                                // initFeats -= System.currentTimeMillis();
                                                 if (layerCount % BATCH_SIZE == 0 && pm.isCancelled()) {
                                                         return layerCount;
                                                 }
-
                                                 Geometry theGeom = null;
-
                                                 // If there is only one geometry, it is fetched now, otherwise, it up to symbolizers
                                                 // to retrieve the correct geometry (through the Geometry attribute)
                                                 if (fieldID >= 0) {
                                                         theGeom = sds.getGeometry(originalIndex);
-                                                        //System.out.println ("TheGeom: " + the_geom);
                                                 }
-
-
                                                 Envelope geomEnvelope = theGeom.getEnvelopeInternal();
-
-                                                // Do not display the geometry when the envelope does'nt intersect the current mapcontext area.
+                                                // Do not display the geometry when the envelope
+                                                //does'nt intersect the current mapcontext area.
                                                 if (geomEnvelope.intersects(extent)) {
                                                         somethingReached = true;
                                                         boolean emphasis = selected.contains((int) originalIndex);
 
                                                         beginFeature(originalIndex, sds);
-                                                        //initFeats += System.currentTimeMillis();
 
                                                         List<Symbolizer> sl = r.getCompositeSymbolizer().getSymbolizerList();
                                                         for (Symbolizer s : sl) {
-                                                                //   sTimeFull -= System.currentTimeMillis();
-
                                                                 Graphics2D g2S;
-                                                                //if (s instanceof TextSymbolizer) {
-                                                                // TextSymbolizer always rendered on overlay
-                                                                //g2S = overlayImage.createGraphics();
-                                                                //} else {
-                                                                //g2S = g2Symbs.get(s);
                                                                 g2S = getGraphics2D(s);
-                                                                //}
-                                                                //      sTimer -= System.currentTimeMillis();
                                                                 s.draw(g2S, sds, originalIndex, emphasis, mt, theGeom, perm);
-                                                                //        sTimer += System.currentTimeMillis();
                                                                 releaseGraphics2D(g2S);
-                                                                //          sTimeFull += System.currentTimeMillis();
                                                         }
                                                         endFeature(originalIndex, sds);
-
                                                 }
                                         }
-                                        //long tf2 = System.currentTimeMillis();
-                                        //logger.println("  -> Rule done in  " + (tf2 - tf1) + "[ms]   featInit" + initFeats + "[ms]");
-
                                         pm.endTask();
                                         endLayer(r.getName());
                                 }
-
-                                //long tV3 = System.currentTimeMillis();
-                                //logger.println("All Rules done in" + (tV3 - tV2) + "[ms] (" + layerCount + "objects)");
-                                //logger.println("Effective draw time: " + sTimer + " [ms]");
-                                //logger.println("Full Symb time:      " + sTimeFull + " [ms]");
                                 disposeLayer(g2);
-
-                                //long tV4 = System.currentTimeMillis();
-                                //logger.println("Images stacked :" + (tV4 - tV3) + "[ms]");
-
-                                //long tV5 = System.currentTimeMillis();
-                                //logger.println("Total Rendering Time:" + (tV5 - tV1) + "[ms]");
                         }
-
-                } catch (DriverLoadException ex) {
-                        printEx(ex, layer, g2);
-//        } catch (DataSourceCreationException ex) {
-//            printEx(ex, layer, g2);
-                } catch (DriverException ex) {
-                        printEx(ex, layer, g2);
                 } catch (ParameterException ex) {
                         printEx(ex, layer, g2);
                 } catch (IOException ex) {
+                        printEx(ex, layer, g2);
+                } catch (DriverLoadException ex) {
+                        printEx(ex, layer, g2);
+                } catch (DriverException ex) {
                         printEx(ex, layer, g2);
                 } finally {
                         if (sds != null && sds.isOpen()) {
                                 sds.close();
                         }
                 }
-
                 return layerCount;
         }
 

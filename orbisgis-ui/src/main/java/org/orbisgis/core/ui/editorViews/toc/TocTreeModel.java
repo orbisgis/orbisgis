@@ -41,9 +41,8 @@ import java.util.logging.Logger;
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 import org.gdms.driver.DriverException;
-
 import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.renderer.se.Rule;
+import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.ui.components.resourceTree.AbstractTreeModel;
 
 public class TocTreeModel extends AbstractTreeModel {
@@ -65,7 +64,7 @@ public class TocTreeModel extends AbstractTreeModel {
 		if (l.acceptsChilds()) {
 			return l.getChildren()[index];
 		} else {
-			return new RuleNode(l, index);
+			return l.getStyle(index);
 		}
 	}
 
@@ -76,17 +75,18 @@ public class TocTreeModel extends AbstractTreeModel {
 			if (layer.acceptsChilds()) {
 				return layer.getChildren().length;
 			} else {
-				return layer.getStyle().getRules().size();
+				return layer.getStyles().size();
 			}
 		} else {
 			return 0;
 		}
 	}
 
+        @Override
 	public int getIndexOfChild(Object parent, Object child) {
 		if (parent instanceof ILayer) {
-			if (child instanceof RuleNode) {
-				return ((RuleNode) child).getRuleIndex();
+			if (child instanceof Style) {
+				return ((ILayer) parent).indexOf((Style)child);
 			} else {
 				return ((ILayer) parent).getIndex((ILayer) child);
 			}
@@ -95,10 +95,12 @@ public class TocTreeModel extends AbstractTreeModel {
 		}
 	}
 
+        @Override
 	public Object getRoot() {
 		return root;
 	}
 
+        @Override
 	public boolean isLeaf(Object node) {
 		if (node instanceof ILayer) {
 			ILayer layer = (ILayer) node;
@@ -108,35 +110,8 @@ public class TocTreeModel extends AbstractTreeModel {
 		}
 	}
 
+        @Override
 	public void valueForPathChanged(TreePath path, Object newValue) {
 	}
 
-	class RuleNode {
-
-		private ILayer layer;
-		private int ruleIndex;
-		private Rule rule;
-
-		public RuleNode(ILayer layer, int ruleIndex) {
-			this.layer = layer;
-			this.ruleIndex = ruleIndex;
-			try {
-				rule = layer.getRenderingRule().get(ruleIndex);
-			} catch (DriverException ex) {
-				Logger.getLogger(TocTreeModel.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		}
-
-		public ILayer getLayer() {
-			return layer;
-		}
-
-		public int getRuleIndex() {
-			return ruleIndex;
-		}
-
-		public Rule getRule(){
-			return rule;
-                }
-        }
 }

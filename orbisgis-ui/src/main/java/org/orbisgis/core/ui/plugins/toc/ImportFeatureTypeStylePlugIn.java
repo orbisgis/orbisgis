@@ -100,7 +100,7 @@ public class ImportFeatureTypeStylePlugIn extends AbstractPlugIn {
 			if (UIFactory.showDialog(inputXMLPanel)) {
 				String seFile = inputXMLPanel.getSelectedFile().getAbsolutePath();
 				try {
-					layer.setStyle(new Style(layer, seFile));
+					layer.addStyle(new Style(layer, seFile));
 				} catch (SeExceptions.InvalidStyle ex) {
 			        Services.getErrorManager().error(ex.getLocalizedMessage());
                     String msg = ex.getMessage().replace("<", "\n    - ").replace(',', ' ').replace(": ", "\n - ");

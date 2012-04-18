@@ -5,6 +5,7 @@ import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.sif.SaveFilePanel;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
@@ -21,12 +22,12 @@ public class ExportFeatureTypeStylePlugIn extends AbstractPlugIn {
 	@Override
 	public boolean execute(PlugInContext context) {
 		MapContext mapContext = getPlugInContext().getMapContext();
-		ILayer[] selectedResources = mapContext.getSelectedLayers();
+		Style[] selectedResources = mapContext.getSelectedStyles();
 
 		if (selectedResources.length == 0) {
 			execute(mapContext, null);
 		} else {
-			for (ILayer resource : selectedResources) {
+			for (Style resource : selectedResources) {
 				execute(mapContext, resource);
 			}
 		}
@@ -44,25 +45,18 @@ public class ExportFeatureTypeStylePlugIn extends AbstractPlugIn {
 				OrbisGISIcon.EDIT_LEGEND, wbContext);
 	}
 
-	public void execute(MapContext mapContext, ILayer layer) {
-		try {
-			Type typ = layer.getDataSource().getMetadata().getFieldType(
-					layer.getDataSource().getSpatialFieldIndex());
+	public void execute(MapContext mapContext, Style style) {
 
-            final SaveFilePanel outputXMLPanel = new SaveFilePanel(
-					"org.orbisgis.core.ui.editorViews.toc.actions.ImportStyle",
-					"Choose a location");
+                final SaveFilePanel outputXMLPanel = new SaveFilePanel(
+                                "org.orbisgis.core.ui.editorViews.toc.actions.ImportStyle",
+                                "Choose a location");
 
-            outputXMLPanel.addFilter("se", "Symbology Encoding FeatureTypeStyle");
+                outputXMLPanel.addFilter("se", "Symbology Encoding FeatureTypeStyle");
 
-			if (UIFactory.showDialog(outputXMLPanel)) {
-				String seFile = outputXMLPanel.getSelectedFile().getAbsolutePath();
-				layer.getStyle().export(seFile);
-			}
-
-		} catch (DriverException e) {
-			Services.getErrorManager().error(Names.ERROR_EDIT_LEGEND_LAYER, e);
-		}
+                if (UIFactory.showDialog(outputXMLPanel)) {
+                        String seFile = outputXMLPanel.getSelectedFile().getAbsolutePath();
+                        style.export(seFile);
+                }
 	}
 
 	@Override

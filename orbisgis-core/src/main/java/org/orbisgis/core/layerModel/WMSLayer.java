@@ -5,6 +5,7 @@ import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.util.ArrayList;
+import java.util.List;
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
@@ -175,7 +176,12 @@ public class WMSLayer extends GdmsLayer {
 	}
 
         @Override
-        public Style getStyle(){
+        public List<Style> getStyles(){
+                return null;
+        }
+
+        @Override
+        public Style getStyle(int i){
                 return null;
         }
 

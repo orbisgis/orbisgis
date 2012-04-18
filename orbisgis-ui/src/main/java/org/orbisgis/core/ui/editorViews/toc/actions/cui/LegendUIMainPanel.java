@@ -45,6 +45,8 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.BorderFactory;
@@ -209,7 +211,9 @@ public final class LegendUIMainPanel extends JPanel  implements UIPanel  {
 			try {
 				Style eFts = controller.getEditedFeatureTypeStyle();
 				Style fts = new Style(eFts.getJAXBElement(), eFts.getLayer());
-				eFts.getLayer().setStyle(fts);
+                                List<Style> styles = new ArrayList<Style>();
+                                styles.add(fts);
+				eFts.getLayer().setStyles(styles);
 			} catch (InvalidStyle ex) {
 				Logger.getLogger(LegendUIMainPanel.class.getName()).log(Level.SEVERE, null, ex);
 			}

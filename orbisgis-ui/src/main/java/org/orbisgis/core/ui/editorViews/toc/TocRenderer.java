@@ -40,23 +40,13 @@ import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-
-import javax.swing.BoxLayout;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTree;
+import javax.swing.*;
 import javax.swing.tree.TreeCellRenderer;
-
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.renderer.legend.Legend;
-import org.orbisgis.core.renderer.se.Rule;
-import org.orbisgis.core.renderer.symbol.LineSymbol;
+import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.symbol.SymbolFactory;
 import org.orbisgis.core.renderer.symbol.SymbolUtil;
 import org.orbisgis.core.sif.CRFlowLayout;
@@ -91,15 +81,15 @@ public class TocRenderer extends TocAbstractRenderer implements
 
 			return ourJPanel.getJPanel();
 		} else {
-			TocTreeModel.RuleNode ruleNode = (TocTreeModel.RuleNode) value;
-			ILayer layer = ruleNode.getLayer();
+			Style styleNode = (Style) value;
+			ILayer layer = styleNode.getLayer();
 
 			try {
 				if (layer.isVectorial()) {
-					ourJPanel = new RuleRenderPanel();
-					ourJPanel.setNodeCosmetic(tree, layer, ruleNode
-							.getRuleIndex(), selected, expanded, leaf, row,
-							hasFocus);
+					ourJPanel = new StyleRenderPanel();
+					ourJPanel.setNodeCosmetic(
+                                                tree, layer, styleNode,
+                                                selected, expanded, leaf, row, hasFocus);
 					return ourJPanel.getJPanel();
 				}
 
@@ -113,8 +103,8 @@ public class TocRenderer extends TocAbstractRenderer implements
 				
 				else {
 					RasterLegendRenderPanel ourJPanel = new RasterLegendRenderPanel();
-					ourJPanel.setNodeCosmetic(tree, ruleNode.getLayer(),
-							ruleNode.getRuleIndex(), selected, expanded,
+					ourJPanel.setNodeCosmetic(tree, layer,
+							styleNode, selected, expanded,
 							leaf, row, hasFocus);
 					return ourJPanel.getJPanel();
 				}
@@ -188,6 +178,7 @@ public class TocRenderer extends TocAbstractRenderer implements
 			}
 		}
 
+                @Override
 		public Rectangle getCheckBoxBounds() {
 			return check.getBounds();
 		}
@@ -199,14 +190,14 @@ public class TocRenderer extends TocAbstractRenderer implements
 		}
 
 		@Override
-		public void setNodeCosmetic(JTree tree, ILayer layer, int legendIndex,
+		public void setNodeCosmetic(JTree tree, ILayer layer, Style s,
 				boolean selected, boolean expanded, boolean leaf, int row,
 				boolean hasFocus) {
 		}
 
 	}
 
-	public class RuleRenderPanel implements TOCRenderPanel {
+	public class StyleRenderPanel implements TOCRenderPanel {
 
 		private JCheckBox check;
 
@@ -216,7 +207,7 @@ public class TocRenderer extends TocAbstractRenderer implements
 
 		private JPanel pane;
 
-		public RuleRenderPanel() {
+		public StyleRenderPanel() {
 			jpanel = new JPanel();
 			check = new JCheckBox();
 			check.setAlignmentY(Component.TOP_ALIGNMENT);
@@ -232,20 +223,18 @@ public class TocRenderer extends TocAbstractRenderer implements
 		}
 
 		@Override
-		public void setNodeCosmetic(JTree tree, ILayer node, int ruleIndex,
+		public void setNodeCosmetic(JTree tree, ILayer node, Style style,
 				boolean selected, boolean expanded, boolean leaf, int row,
 				boolean hasFocus) {
 
 			check.setVisible(true);
 
 			try {
-				check.setSelected(node.getRenderingRule().get(ruleIndex).isVisible());
+				check.setSelected(style.isVisible());
 				jpanel.setBackground(DESELECTED);
 
 				Graphics2D dummyGraphics = new BufferedImage(10, 10,
 						BufferedImage.TYPE_INT_ARGB).createGraphics();
-
-				Rule rule = node.getRenderingRule().get(ruleIndex);
 
 
 				if (selected) {
@@ -260,7 +249,7 @@ public class TocRenderer extends TocAbstractRenderer implements
 					label.setForeground(DESELECTED_FONT);
 				}
 
-				label.setText(rule.getName());
+				label.setText(style.getName());
 				label.setVisible(true);
 
 				// What's the best size to represent this legend ?
@@ -276,8 +265,9 @@ public class TocRenderer extends TocAbstractRenderer implements
 
 			} catch (Exception e) {
 				Services.getErrorManager().error(
-						I18N.getString("orbisgis.org.orbisgis.ui.toc.tocRenderer.cannotAccessLegendsLayer") + node.getName(), //$NON-NLS-1$
-						e);
+                                        I18N.getString("orbisgis.org.orbisgis.ui.toc.tocRenderer.cannotAccessLegendsLayer")
+                                        + node.getName(),
+                                        e);
 			}
 		}
 
@@ -313,7 +303,7 @@ public class TocRenderer extends TocAbstractRenderer implements
 			jpanel.add(lblLegend);
 		}
 
-		public void setNodeCosmetic(JTree tree, ILayer node, int legendIndex,
+		public void setNodeCosmetic(JTree tree, ILayer node, Style style,
 				boolean selected, boolean expanded, boolean leaf, int row,
 				boolean hasFocus) {
 //			try {

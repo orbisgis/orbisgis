@@ -55,6 +55,7 @@ import net.opengis.sld._2.UserStyle;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.sif.SaveFilePanel;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.sif.multiInputPanel.InputType;
@@ -97,12 +98,13 @@ public class ExportMapAsSLDRequestPlugIn extends AbstractPlugIn {
                 if (layer.isVisible() && envelope.intersects(layer.getEnvelope())) {
                     Layer sldLayer = of.createLayer();
                     sldLayer.setName(layer.getName());
-                    UserStyle userStyle = of.createUserStyle();
-                    userStyle.setAbstractStyle(layer.getStyle().getJAXBElement());
-
+                    List<Style> styles = layer.getStyles();
                     List<JAXBElement<? extends net.opengis.sld._2.StyleType>> style = sldLayer.getStyle();
-                    style.add(of.createUserStyle(userStyle));
-
+                    for(Style s : styles){
+                        UserStyle userStyle = of.createUserStyle();
+                        userStyle.setAbstractStyle(s.getJAXBElement());
+                        style.add(of.createUserStyle(userStyle));
+                    }
                     sldLayers.add(sldLayer);
                 }
             }

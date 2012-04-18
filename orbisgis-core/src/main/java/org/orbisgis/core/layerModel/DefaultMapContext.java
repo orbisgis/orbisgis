@@ -55,7 +55,7 @@ import org.orbisgis.core.layerModel.persistence.*;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.ImageRenderer;
 import org.orbisgis.core.renderer.Renderer;
-import org.orbisgis.core.renderer.se.Rule;
+import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.I18N;
@@ -70,7 +70,7 @@ public class DefaultMapContext implements MapContext {
 
 	private ILayer root;
 	private ILayer[] selectedLayers = new ILayer[0];
-	private Rule[] selectedRules = new Rule[0];
+	private Style[] selectedStyles = new Style[0];
 
 	private ArrayList<MapContextListener> listeners = new ArrayList<MapContextListener>();
 	private OpenerListener openerListener;
@@ -145,9 +145,9 @@ public class DefaultMapContext implements MapContext {
 	}
 
 	@Override
-	public Rule[] getSelectedRules() {
+	public Style[] getSelectedStyles() {
 		checkIsOpen();
-		return selectedRules;
+		return selectedStyles;
 	}
 
 
@@ -158,9 +158,9 @@ public class DefaultMapContext implements MapContext {
 	}
 
 	@Override
-	public void setSelectedRules(ArrayList<Rule> selectedRules) {
+	public void setSelectedStyles(ArrayList<Style> selectedRules) {
 		checkIsOpen();
-		this.selectedRules = selectedRules.toArray(new Rule[0]);
+		this.selectedStyles = selectedRules.toArray(new Style[0]);
 
 		for (MapContextListener listener : listeners) {
 			listener.layerSelectionChanged(this);

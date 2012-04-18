@@ -44,7 +44,6 @@ public final class Rule implements SymbolizerNode {
     public static final String DEFAULT_NAME = "Default Rule";
     private String name = "";
     private String description = "";
-    private boolean visible = true;
     private SymbolizerNode fts;
     private String where;
     private boolean fallbackRule = false;
@@ -424,23 +423,6 @@ public final class Rule implements SymbolizerNode {
         } else {
             this.minScaleDenom = null;
         }
-    }
-
-    /**
-     * 
-     * @return 
-     * True if the Rule is visible
-     */
-    public boolean isVisible() {
-        return visible;
-    }
-
-    /**
-     * If set to true, the rule is visible.
-     * @param visible 
-     */
-    public void setVisible(boolean visible) {
-        this.visible = visible;
     }
 
     /**

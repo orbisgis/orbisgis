@@ -114,7 +114,7 @@ public class EditLegendPlugIn extends AbstractPlugIn {
 				JOptionPane.showMessageDialog(null,
 						Names.ERROR_EDIT_LEGEND_EDITOR);
 			}
-                        Style style = layer.getStyle();
+                        Style style = layer.getStyle(0);
                         //In order to be able to cancel all of our modifications,
                         //we produce a copy of our style.
                         JAXBElement<StyleType> jest = style.getJAXBElement();
@@ -124,7 +124,7 @@ public class EditLegendPlugIn extends AbstractPlugIn {
 			pan.init(mt, typ, copy, legends, symbolEditors, layer);
 			if (UIFactory.showDialog(pan)) {
 				try {
-                                        layer.setStyle(pan.getStyleWrapper().getStyle());
+                                        layer.setStyle(0,pan.getStyleWrapper().getStyle());
 				} catch (ClassificationMethodException e) {
 					ErrorMessages.error(e.getMessage());
 				}

@@ -38,6 +38,8 @@
 package org.orbisgis.core.layerModel;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
@@ -121,8 +123,15 @@ public class LayerModelTest extends AbstractTest {
 		assertTrue(listener.vc == 1);
 		vl.open();
 		int refsc = listener.sc;
-		vl.setStyle(new Style(vl, "src/test/resources/org/orbisgis/core/renderer/se/colorRecode.se"));
+		vl.addStyle(new Style(vl, "src/test/resources/org/orbisgis/core/renderer/se/colorRecode.se"));
 		assertTrue(listener.sc == refsc + 1);
+		vl.setStyle(0,new Style(vl, "src/test/resources/org/orbisgis/core/renderer/se/colorRecode.se"));
+		assertTrue(listener.sc == refsc + 2);
+                List<Style> styles = new ArrayList<Style>();
+		vl.setStyles(styles);
+		assertTrue(listener.sc == refsc + 3);
+		vl.addStyle(0,new Style(vl, "src/test/resources/org/orbisgis/core/renderer/se/colorRecode.se"));
+		assertTrue(listener.sc == refsc + 4);
 		lc.remove(vl1.getName());
 		assertTrue(listener.lr == 1);
 		assertTrue(listener.lring == 1);

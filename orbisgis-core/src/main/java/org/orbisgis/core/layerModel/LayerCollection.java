@@ -49,8 +49,6 @@ import org.grap.model.GeoRaster;
 import org.orbisgis.core.layerModel.persistence.LayerCollectionType;
 import org.orbisgis.core.layerModel.persistence.LayerType;
 import org.orbisgis.core.renderer.legend.Legend;
-import org.orbisgis.core.renderer.legend.RasterLegend;
-import org.orbisgis.core.renderer.legend.WMSLegend;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.utils.I18N;
@@ -179,7 +177,7 @@ public class LayerCollection extends AbstractLayer {
 	}
 
     @Override
-    public void setStyle(Style fts) {
+    public void setStyle(int i, Style fts) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -446,11 +444,21 @@ public class LayerCollection extends AbstractLayer {
 		return false;
 	}
     
-    @Override
-    public Style getStyle(){
-        throw new UnsupportedOperationException("Cannot set "
-				+ "a legend on a layer collection");
-    }
+        @Override
+        public Style getStyle(int i){
+                throw new UnsupportedOperationException("Cannot set "
+                                        + "a legend on a layer collection");
+        }
+        @Override
+        public List<Style> getStyles(){
+                throw new UnsupportedOperationException("Cannot set "
+                                        + "a legend on a layer collection");
+        }
+        @Override
+        public void setStyles(List<Style> s){
+                throw new UnsupportedOperationException("Cannot set "
+                                        + "a legend on a layer collection");
+        }
         
         ///////////Static methods///////////////////////////////
 
@@ -535,6 +543,21 @@ public class LayerCollection extends AbstractLayer {
 		allLayersNames.add(tmpName);
 		return tmpName;
 	}
+
+        @Override
+        public void addStyle(Style style) {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void addStyle(int i, Style style) {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public int indexOf(Style s) {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
         
         //////////Private classes//////////////////////////
 

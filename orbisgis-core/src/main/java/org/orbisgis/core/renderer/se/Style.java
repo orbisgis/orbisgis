@@ -62,13 +62,16 @@ import org.orbisgis.core.renderer.se.common.Uom;
  */
 public final class Style implements SymbolizerNode {
 
+    private static final String DEFAULT_NAME = "Unnamed Style";
     private String name;
     private ArrayList<Rule> rules;
     private ILayer layer;
+    private boolean visible = true;
     
     public Style(ILayer layer, boolean addDefaultRule) {
         rules = new ArrayList<Rule>();
         this.layer = layer;
+        name = DEFAULT_NAME;
         if (addDefaultRule) {
             this.addRule(new Rule(layer));
         }
@@ -141,6 +144,8 @@ public final class Style implements SymbolizerNode {
     private void setFromJAXBType(StyleType fts) throws InvalidStyle {
         if (fts.getName() != null) {
             this.name = fts.getName();
+        } else {
+            name = DEFAULT_NAME;
         }
 
         if (fts.getRule() != null) {
@@ -239,25 +244,26 @@ public final class Style implements SymbolizerNode {
             //ArrayList<Symbolizer> overlaySymbolizers,
             List<Rule> rules,
             List<Rule> fallbackRules) {
-
-        for (Rule r : this.rules) {
+        if(visible){
+            for (Rule r : this.rules) {
             // Only process visible rules with valid domain
-            if (r.isVisible() && r.isDomainAllowed(mt)) {
-                // Split standard rules and elseFilter rules
-                if (!r.isFallbackRule()) {
-                    rules.add(r);
-                } else {
-                    fallbackRules.add(r);
-                }
+                if (r.isDomainAllowed(mt)) {
+                    // Split standard rules and elseFilter rules
+                    if (!r.isFallbackRule()) {
+                        rules.add(r);
+                    } else {
+                        fallbackRules.add(r);
+                    }
 
-                for (Symbolizer s : r.getCompositeSymbolizer().getSymbolizerList()) {
-                    // Extract TextSymbolizer into specific set =>
-                    // Label are always drawn on top
-                    //if (s instanceof TextSymbolizer) {
-                    //overlaySymbolizers.add(s);
-                    //} else {
-                    layerSymbolizers.add(s);
-                    //}
+                    for (Symbolizer s : r.getCompositeSymbolizer().getSymbolizerList()) {
+                        // Extract TextSymbolizer into specific set =>
+                        // Label are always drawn on top
+                        //if (s instanceof TextSymbolizer) {
+                        //overlaySymbolizers.add(s);
+                        //} else {
+                        layerSymbolizers.add(s);
+                        //}
+                    }
                 }
             }
         }
@@ -370,5 +376,22 @@ public final class Style implements SymbolizerNode {
             hs.addAll(r.dependsOnFeature());
         }
         return hs;
+    }
+
+    /**
+     *
+     * @return
+     * True if the Rule is visible
+     */
+    public boolean isVisible() {
+        return visible;
+    }
+
+    /**
+     * If set to true, the rule is visible.
+     * @param visible
+     */
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 }

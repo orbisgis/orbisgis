@@ -65,6 +65,7 @@ import org.orbisgis.core.renderer.legend.carto.LegendFactory;
 import org.orbisgis.core.renderer.legend.carto.LegendManager;
 import org.orbisgis.core.renderer.legend.carto.UniqueSymbolLegend;
 import org.orbisgis.core.renderer.se.Rule;
+import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.renderer.symbol.SymbolFactory;
 import org.orbisgis.utils.I18N;
@@ -277,7 +278,14 @@ public class Layer extends GdmsLayer {
 
 	@Override
 	public List<Rule> getRenderingRule() throws DriverException {
-		return this.getStyle().getRules();
+                List<Style> styles = getStyles();
+                ArrayList<Rule> ret = new ArrayList<Rule>();
+                for(Style s : styles){
+                        if(s!=null){
+                                ret.addAll(s.getRules());
+                        }
+                }
+		return ret;
 	}
 
 	private class RefreshSelectionEditionListener implements EditionListener {

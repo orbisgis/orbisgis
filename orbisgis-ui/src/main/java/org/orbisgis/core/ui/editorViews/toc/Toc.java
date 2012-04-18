@@ -56,7 +56,6 @@ import org.gdms.data.DataSourceListener;
 import org.gdms.data.edition.EditionEvent;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MultipleEditionEvent;
-import org.gdms.driver.DriverException;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
@@ -70,11 +69,10 @@ import org.orbisgis.core.layerModel.LayerListenerEvent;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.layerModel.MapContextListener;
 import org.orbisgis.core.layerModel.SelectionEvent;
-import org.orbisgis.core.renderer.se.Rule;
+import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.ui.components.resourceTree.MyTreeUI;
 import org.orbisgis.core.ui.components.resourceTree.ResourceTree;
 import org.orbisgis.core.ui.editor.IEditor;
-import org.orbisgis.core.ui.editorViews.toc.TocTreeModel.RuleNode;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 import org.orbisgis.core.ui.plugins.views.geocatalog.TransferableSource;
@@ -106,6 +104,7 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 
 	private org.orbisgis.core.ui.pluginSystem.menu.MenuTree menuTree;
 
+        @Override
 	public org.orbisgis.core.ui.pluginSystem.menu.MenuTree getMenuTreePopup() {
 		return menuTree;
 	}
@@ -152,9 +151,9 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 							} catch (LayerException e1) {
 							}
 						}
-					} else if (path.getLastPathComponent() instanceof RuleNode) {
+					} else if (path.getLastPathComponent() instanceof Style) {
 
-						RuleNode ruleNode = (RuleNode) path.getLastPathComponent();
+						Style style = (Style) path.getLastPathComponent();
 						Rectangle checkBoxBounds = tocRenderer.getCheckBoxBounds();
 						checkBoxBounds.translate(
 								(int) layerNodeLocation.getX(),
@@ -163,22 +162,17 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 								&& (MouseEvent.BUTTON1 == mouseButton)
 								&& (1 == e.getClickCount())) {
 							try {
-								Rule rule;
-								rule = ruleNode.getLayer().getRenderingRule().
-                                                                        get(ruleNode.getRuleIndex());
-								if (!rule.isVisible()) {
-									rule.setVisible(true);
+								if (!style.isVisible()) {
+									style.setVisible(true);
 								} else {
-									rule.setVisible(false);
+									style.setVisible(false);
 								}
-								ILayer layer = ruleNode.getLayer();
-								if (layer.isVisible()) {
+								ILayer layer = style.getLayer();
+								if (!layer.isVisible()) {
 									layer.setVisible(true);
 								}
 								tree.repaint();
 
-							} catch (DriverException ex) {
-								ex.printStackTrace();
 							} catch (LayerException e1) {
 								e1.printStackTrace();
 							}
@@ -202,9 +196,9 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 							TreePath[] selectedPaths = Toc.this.getSelection();
 
 
-							ArrayList<Rule> rules = getSelectedRules(selectedPaths);
-							mapContext.setSelectedRules(rules);
-							if (rules.size() > 0) {
+							ArrayList<Style> styles = getSelectedStyles(selectedPaths);
+							mapContext.setSelectedStyles(styles);
+							if (styles.size() > 0) {
 								mapContext.setSelectedLayers(new ILayer[0]);
 							} else {
 
@@ -230,13 +224,13 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 		return layers;
 	}
 
-	private ArrayList<Rule> getSelectedRules(TreePath[] selectedPaths) {
-		ArrayList<Rule> rules = new ArrayList<Rule>();
+	private ArrayList<Style> getSelectedStyles(TreePath[] selectedPaths) {
+		ArrayList<Style> rules = new ArrayList<Style>();
 		for (int i = 0; i < selectedPaths.length; i++) {
 			Object lastPathComponent = selectedPaths[i].getLastPathComponent();
 			System.out.println("Selection : " + lastPathComponent.toString());
-			if (lastPathComponent instanceof RuleNode) {
-				rules.add(((RuleNode) lastPathComponent).getRule());
+			if (lastPathComponent instanceof Style) {
+				rules.add(((Style) lastPathComponent));
 			}
 		}
 		return rules;
@@ -262,8 +256,8 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 
 		ILayer dropNode;
 
-		if (node instanceof TocTreeModel.RuleNode) {
-			dropNode = ((TocTreeModel.RuleNode) node).getLayer();
+		if (node instanceof Style) {
+			dropNode = ((Style) node).getLayer();
 		} else {
 			dropNode = (ILayer) node;
 		}

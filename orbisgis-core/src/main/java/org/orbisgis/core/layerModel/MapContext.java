@@ -42,7 +42,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import java.util.ArrayList;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.se.Rule;
+import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.progress.ProgressMonitor;
 
 /**
@@ -86,7 +86,7 @@ public interface MapContext {
 	 * @throws IllegalStateException
 	 *             If the map is closed
 	 */
-	public Rule[] getSelectedRules() throws IllegalStateException;
+	public Style[] getSelectedStyles() throws IllegalStateException;
 
 
 	/**
@@ -133,7 +133,7 @@ public interface MapContext {
 	 * @throws IllegalStateException
 	 *             If the map is closed
 	 */
-	public void setSelectedRules(ArrayList<Rule> selectedRules)
+	public void setSelectedStyles(ArrayList<Style> selectedStyles)
 			throws IllegalStateException;
 
 	/**

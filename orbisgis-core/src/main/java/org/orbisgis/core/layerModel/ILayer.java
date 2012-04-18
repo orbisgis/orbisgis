@@ -223,22 +223,60 @@ public interface ILayer {
 	DataSource getDataSource();
 
         /**
-         * Gets the SE style that is used to define the symbology associated to
-         * the current {@code ILayer}.
+         * Gets the {@code List} of SE styles that are used to define the
+         * symbologies associated to the current {@code ILayer}.
          * @return
          */
-        public Style getStyle();
+        List<Style> getStyles();
 
         /**
-         *
+         *Sets the {@code List} of SE styles that are used to define the
+         * symbologies associated to the current {@code ILayer}.
          * @param fts
          */
-        public void setStyle(Style fts);
+        void setStyles(List<Style> fts);
 
 	/**
 	 * We need an entry point for AbstractLayer.fireStyleChanged!
 	 */
 	void fireStyleChangedPublic();
+
+        /**
+         * Gets the {@code i}th {@code Style} that is used to define the
+         * symbology associated to the current {@code ILayer}.
+         * @return
+         */
+        Style getStyle(int i);
+
+        /**
+         * Sets the {@code i}th {@code Style} that is used to define the
+         * symbology associated to the current {@code ILayer}.
+         * @param i
+         * @param s
+         */
+        void setStyle(int i, Style s);
+
+        /**
+         * Adds a {@code Style} instance at the end of the list of associated
+         * {@code Style}s.
+         * @param style
+         */
+        public void addStyle(Style style);
+
+        /**
+         * Adds a {@code Style} instance at the ith position of the list of
+         * associated {@code Style}s.
+         * @param style
+         */
+        public void addStyle(int i, Style style);
+
+        /**
+         * Gets the index of {@code s} in this {@code ILayer}, or {@code -1} if
+         * {@code s} is not associated to this.
+         * @param s
+         * @return
+         */
+        public int indexOf(Style s);
 
 	/**
 	 * If isRaster is true returns the first raster in the layer DataSource.

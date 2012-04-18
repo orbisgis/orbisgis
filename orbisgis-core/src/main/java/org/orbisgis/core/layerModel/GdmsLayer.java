@@ -37,6 +37,8 @@
  */
 package org.orbisgis.core.layerModel;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SourceAlreadyExistsException;
 import org.gdms.driver.DriverException;
@@ -55,7 +57,7 @@ public abstract class GdmsLayer extends AbstractLayer {
 
     private String mainName;
     private SourceListener listener = new NameSourceListener();
-    private Style fts;
+    private List<Style> styleList;
 
 
     public GdmsLayer(String name) {
@@ -248,18 +250,55 @@ public abstract class GdmsLayer extends AbstractLayer {
 
 
     @Override
-    public Style getStyle() {
-        if (fts == null){
-            fts = new Style(this, true);
+    public List<Style> getStyles() {
+        if (styleList == null){
+            styleList = new ArrayList<Style>();
+            styleList.add(new Style(this, true));
         }
-        return fts;
+        return styleList;
     }
 
     @Override
-    public void setStyle(Style fts) {
-        this.fts = fts;
+    public void setStyles(List<Style> fts) {
+        this.styleList = fts;
         this.fireStyleChanged();
     }
 
+    @Override
+    public Style getStyle(int i){
+            return styleList.get(i);
+    }
+
+    @Override
+    public void setStyle(int i, Style s){
+        if (styleList == null){
+            styleList = new ArrayList<Style>();
+        }
+        styleList.set(i, s);
+        this.fireStyleChanged();
+    }
+
+    @Override
+    public void addStyle(Style s){
+        if (styleList == null){
+            styleList = new ArrayList<Style>();
+        }
+        styleList.add(s);
+        this.fireStyleChanged();
+    }
+
+    @Override
+    public void addStyle(int i, Style s){
+        if (styleList == null){
+            styleList = new ArrayList<Style>();
+        }
+        styleList.add(i, s);
+        this.fireStyleChanged();
+    }
+
+    @Override
+    public int indexOf(Style s){
+            return styleList == null ? -1 : styleList.indexOf(s);
+    }
 
 }
