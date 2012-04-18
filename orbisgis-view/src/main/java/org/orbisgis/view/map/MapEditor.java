@@ -28,6 +28,7 @@
  */
 package org.orbisgis.view.map;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import javax.swing.JPanel;
 import org.orbisgis.view.docking.DockingPanel;
@@ -40,24 +41,28 @@ import org.xnap.commons.i18n.I18nFactory;
  * @brief The Map Editor Panel
  */
 public class MapEditor extends JPanel implements DockingPanel   {
-    protected final static I18n i18n = I18nFactory.getI18n(MapEditor.class);
+    protected final static I18n I18N = I18nFactory.getI18n(MapEditor.class);
     
     //The UID must be incremented when the serialization is not compatible with the new version of this class
     private static final long serialVersionUID = 1L; 
-    
+    private MapControl mapControl;
     DockingPanelParameters dockingPanelParameters;
     
     /**
      * Constructor
      */
     public MapEditor() {
+        super(new BorderLayout());
         dockingPanelParameters = new DockingPanelParameters();
         dockingPanelParameters.setName("map_editor");
-        dockingPanelParameters.setTitle(i18n.tr("orbisgis.view.map.MapEditorTitle"));
+        dockingPanelParameters.setTitle(I18N.tr("orbisgis.view.map.MapEditorTitle"));
         dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("map"));
         dockingPanelParameters.setMinimizable(false);
         dockingPanelParameters.setExternalizable(false);
         dockingPanelParameters.setCloseable(false);
+        
+        mapControl = new MapControl();
+        this.add(mapControl, BorderLayout.CENTER);
     }
 
     /**

@@ -125,6 +125,7 @@ public class OutputManager {
                 outputPanels.put(LOG_INFO, app);
                 GUI_LOGGER.addAppender(app);
                 mainPanel.addSubPanel(i18n.tr("orbisgis.view.log_info_title"), app.getGuiPanel());
+                mainPanel.showSubPanel(app.getGuiPanel()); //Select this panel by default
         }
 
         /**

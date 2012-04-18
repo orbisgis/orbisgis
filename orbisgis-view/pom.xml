@@ -80,6 +80,11 @@
       <artifactId>orbisgis-sif</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>orbisgis-core-se</artifactId>
+      <version>3.2</version>
+    </dependency>
   </dependencies>
   <pluginRepositories>
     <pluginRepository>

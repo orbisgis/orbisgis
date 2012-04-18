@@ -31,7 +31,6 @@ package org.orbisgis.view.output;
 import java.awt.Color;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.Stack;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.SwingUtilities;
 import org.apache.log4j.AppenderSkeleton;
@@ -42,7 +41,7 @@ import org.apache.log4j.spi.LoggingEvent;
  * A LOG4J Appender connected with the LogPanel
  */
 public class PanelAppender extends AppenderSkeleton {
-    //New duplicata message is ignored if the time interval is greater than this constant.
+    //New duplicata message is ignored if the time interval is lower than this constant value.
     private static final int SAME_MESSAGE_IGNORE_INTERVAL = 500; //ms
     private static final Color COLOR_ERROR = Color.RED;
     private static final Color COLOR_WARNING = Color.ORANGE.darker();
@@ -101,8 +100,6 @@ public class PanelAppender extends AppenderSkeleton {
         if(!processingQueue.getAndSet(true)) {
             SwingUtilities.invokeLater( new ShowMessage());
         }
-        //TODO use swing thread
- 
     }
 
     public void close() {
@@ -119,8 +116,8 @@ public class PanelAppender extends AppenderSkeleton {
     * Push awaiting messages to the gui
     */ 
    private class ShowMessage implements Runnable {
-        /**
-        * Change the state of the main frame in the swing thread
+       /**
+        * Push awaiting messages to the gui
         */
         public void run(){
             try {
