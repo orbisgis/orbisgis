@@ -43,8 +43,8 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
          */
         protected void initializeLegendFields(){
                 this.removeAll();
-                this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
                 JPanel glob = new JPanel();
+                glob.setLayout(new BoxLayout(glob, BoxLayout.Y_AXIS));
                 UniqueSymbol us = (UniqueSymbol) getLegend();
                 preview= new Canvas(us.getSymbolizer());
                 List<USParameter<?>> params = us.getParameters();
@@ -59,9 +59,9 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
                         jp.add(c2);
                 }
                 glob.add(jp);
-                this.add(glob);
                 //We add a canvas to display a preview.
-                this.add(preview);
+                glob.add(preview);
+                this.add(glob);
         }
 
         private JLabel buildText(USParameter param){
