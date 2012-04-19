@@ -98,7 +98,7 @@ public class PnlProportionalLineLegend extends JPanel implements ILegendPanel {
 	private LegendContext legendContext;
 	private JComboBox cmbField;
 	private JTextField txtMaxSize;
-	private Canvas canvas;
+//	private Canvas canvas;
 	private JComboBox cmbMethod;
 	private JButton btnPreview;
 
@@ -200,18 +200,18 @@ public class PnlProportionalLineLegend extends JPanel implements ILegendPanel {
 		});
 		inputPanel.add(txtMaxSize);
 		inputPanel.add(new CarriageReturn());
-		canvas = new Canvas();
-		canvas.addMouseListener(new MouseAdapter() {
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				editSymbol();
-				refreshPreviewButton();
-			}
-
-		});
-		canvas.setPreferredSize(new Dimension(50, 50));
-		inputPanel.add(canvas);
+//		canvas = new Canvas();
+//		canvas.addMouseListener(new MouseAdapter() {
+//
+//			@Override
+//			public void mouseClicked(MouseEvent e) {
+//				editSymbol();
+//				refreshPreviewButton();
+//			}
+//
+//		});
+//		canvas.setPreferredSize(new Dimension(50, 50));
+//		inputPanel.add(canvas);
 		chkMapUnits = new JCheckBox("Map units");
 		chkMapUnits.addActionListener(new ActionListener() {
 
@@ -324,7 +324,7 @@ public class PnlProportionalLineLegend extends JPanel implements ILegendPanel {
 			}
 
 		});
-		editor.setSymbol(canvas.getSymbol());
+//		editor.setSymbol(canvas.getSymbol());
 		if (UIFactory.showDialog(editor)) {
 			legend.setSampleSymbol((StandardLineSymbol) editor
 					.getSymbolComposite().getSymbol(0));
@@ -408,7 +408,7 @@ public class PnlProportionalLineLegend extends JPanel implements ILegendPanel {
 			chkMapUnits.setSelected(sampleSymbol.isMapUnits());
 
 			// symbol
-			canvas.setSymbol(legend.getSampleSymbol());
+//			canvas.setSymbol(legend.getSampleSymbol());
 
 			// method
 			switch (legend.getMethod()) {

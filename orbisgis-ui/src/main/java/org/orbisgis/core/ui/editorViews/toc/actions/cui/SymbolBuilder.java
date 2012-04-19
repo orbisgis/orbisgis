@@ -104,7 +104,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 		}
 	}
 
-	private Canvas canvas = new Canvas();
+//	private Canvas canvas = new Canvas();
 	private boolean showCollection = false;
 	private LegendContext legendContext;
 	private SymbolFilter symbolFilter;
@@ -126,7 +126,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 		if (!showCollection) {
 			btnToCollection.setVisible(false);
 		}
-		canvas.setSymbol(getSymbolComposite());
+//		canvas.setSymbol(getSymbolComposite());
 
 		int[] idxs = lstSymbols.getSelectedIndices();
 		int maximum = lstSymbols.getModel().getSize() - 1;
@@ -223,7 +223,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 		jButtonSymbolRename = new JButton();
 		jPanelPreview = new JPanel();
 		canvasPreview = new JPanel();
-		canvasPreview.add(canvas);
+//		canvasPreview.add(canvas);
 		jPanelButtonsCollection = new JPanel();
 		btnToCollection = new JButton();
 		btnFromCollection = new JButton();
@@ -598,7 +598,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 	}
 
 	public void symbolChanged() {
-		canvas.setSymbol(getSymbolComposite());
+//		canvas.setSymbol(getSymbolComposite());
 	}
 
 	public void setValidation(SymbolEditionValidation symbolEditionValidation) {

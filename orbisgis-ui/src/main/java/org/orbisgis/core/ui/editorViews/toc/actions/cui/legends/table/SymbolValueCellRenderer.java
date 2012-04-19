@@ -50,11 +50,12 @@ public class SymbolValueCellRenderer implements TableCellRenderer {
 	public Component getTableCellRendererComponent(JTable table, Object value,
 			boolean isSelected, boolean hasFocus, int row, int column) {
 
-		Canvas canvas = new Canvas();
-
-		canvas.setSymbol((Symbol) value);
-
-		return canvas;
+//		Canvas canvas = new Canvas();
+//
+//		canvas.setSymbol((Symbol) value);
+//
+//		return canvas;
+                return null;
 	}
 
 }

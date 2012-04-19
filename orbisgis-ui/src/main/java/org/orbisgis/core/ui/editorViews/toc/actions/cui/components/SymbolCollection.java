@@ -92,7 +92,7 @@ public class SymbolCollection extends javax.swing.JPanel implements UIPanel {
 		for (int i = 0; i < symbols.length; i++) {
 			SelectableCanvas can = new SelectableCanvas(symbols[i].getId());
 
-			can.setSymbol(((Symbol) symbols[i].getObject()).cloneSymbol());
+//			can.setSymbol(((Symbol) symbols[i].getObject()).cloneSymbol());
 			can.setPreferredSize(new Dimension(126, 70));
 
 			can.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -163,7 +163,7 @@ public class SymbolCollection extends javax.swing.JPanel implements UIPanel {
 	}
 
 	public Symbol getSelectedSymbol() {
-		return selection.get(0).getSymbol().cloneSymbol();
+                return null;
 	}
 
 	private SelectableCanvas getSelectedCanvas() {
@@ -210,13 +210,13 @@ public class SymbolCollection extends javax.swing.JPanel implements UIPanel {
 			return "A symbol must be selected";
 		} else if (selection.size() > 1) {
 			return "Only one symbol should be selected";
-		} else {
-			Symbol symbol = getSelectedCanvas().getSymbol();
-			String ret = acceptsGeometry(symbol);
-			if (ret != null) {
-				return ret;
-			}
-		}
+		} //else {
+//			Symbol symbol = getSelectedCanvas().getSymbol();
+//			String ret = acceptsGeometry(symbol);
+//			if (ret != null) {
+//				return ret;
+//			}
+//		}
 
 		return null;
 	}

@@ -21,6 +21,7 @@ import javax.swing.event.ChangeListener;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.sif.UIPanel;
 import org.orbisgis.core.ui.components.preview.JNumericSpinner;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.Canvas;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.ColorPicker;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.legend.thematic.constant.USNumericParameter;
@@ -35,13 +36,17 @@ import org.orbisgis.legend.thematic.constant.UniqueSymbol;
 public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel, UIPanel {
 
         private String id;
+        private Canvas preview;
 
         /**
          * Fill this {@code JPanel} with all the needed fields.
          */
         protected void initializeLegendFields(){
                 this.removeAll();
+                this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+                JPanel glob = new JPanel();
                 UniqueSymbol us = (UniqueSymbol) getLegend();
+                preview= new Canvas(us.getSymbolizer());
                 List<USParameter<?>> params = us.getParameters();
                 JPanel jp = new JPanel();
                 GridLayout grid = new GridLayout(params.size(),2);
@@ -53,7 +58,10 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
                         jp.add(c1);
                         jp.add(c2);
                 }
-                this.add(jp);
+                glob.add(jp);
+                this.add(glob);
+                //We add a canvas to display a preview.
+                this.add(preview);
         }
 
         private JLabel buildText(USParameter param){
@@ -106,6 +114,8 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
                 jns.setValue(a.getValue());
                 jns.setMaximumSize(new Dimension(60,30));
                 jns.setPreferredSize(new Dimension(60,30));
+                ChangeListener cl = EventHandler.create(ChangeListener.class, preview, "repaint");
+                jns.addChangeListener(cl);
                 return jns;
         }
 
@@ -140,7 +150,9 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
                 MouseListener ma = EventHandler.create(MouseListener.class,this,"chooseFillColor","","mouseClicked");
                 lblFill.addMouseListener(ma);
                 PropertyChangeListener pcl = EventHandler.create(PropertyChangeListener.class, c, "setValue", "source.background" );
+                PropertyChangeListener pcl2 = EventHandler.create(PropertyChangeListener.class, preview, "repaint");
                 lblFill.addPropertyChangeListener("background", pcl);
+                lblFill.addPropertyChangeListener("background", pcl2);
                 lblFill.setBackground(c.getValue());
                 lblFill.setBorder(BorderFactory.createLineBorder(Color.black));
                 lblFill.setPreferredSize(new Dimension(40, 20));
