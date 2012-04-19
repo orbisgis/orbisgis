@@ -14,6 +14,7 @@
 	<modules>
 		<module>orbisgis-core</module>
 		<module>orbisgis-ui</module>
+		<module>legend</module>
 	</modules>
 	<scm>
 		<connection>
