@@ -130,7 +130,7 @@ public class ST_SplitLine extends AbstractTableFunction {
                                 }
                         }
                         diskBufferDriver.writingFinished();
-                        diskBufferDriver.start();
+                        diskBufferDriver.open();
                         return diskBufferDriver;
                 } catch (DriverException ex) {
                         throw new FunctionException("Cannot index the dataset", ex);
@@ -144,7 +144,7 @@ public class ST_SplitLine extends AbstractTableFunction {
         @Override
         public void workFinished() throws DriverException {
                 if (diskBufferDriver != null ) {
-                        diskBufferDriver.stop();
+                        diskBufferDriver.close();
                 }
         }
 

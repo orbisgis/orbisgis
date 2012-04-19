@@ -187,10 +187,10 @@ public class AllTypesObjectDriver extends AbstractDataSet implements MemoryDrive
                 throw new RuntimeException();
         }
 
-        public void start() throws DriverException {
+        public void open() throws DriverException {
         }
 
-        public void stop() throws DriverException {
+        public void close() throws DriverException {
         }
 
         public TypeDefinition[] getTypesDefinitions() {

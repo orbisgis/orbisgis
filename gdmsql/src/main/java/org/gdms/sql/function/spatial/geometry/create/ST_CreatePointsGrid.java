@@ -94,7 +94,7 @@ public final class ST_CreatePointsGrid extends AbstractTableFunction {
                                 createPointsInsidePolygon(driver, inSds, values[2].getAsBoolean(), pm);
                         }
                         driver.writingFinished();
-                        driver.start();
+                        driver.open();
                         return driver;
                 } catch (DriverLoadException e) {
                         throw new FunctionException(e);
@@ -106,7 +106,7 @@ public final class ST_CreatePointsGrid extends AbstractTableFunction {
         @Override
         public void workFinished() throws DriverException {
                 if (driver != null) {
-                        driver.stop();
+                        driver.close();
                 }
         }
 

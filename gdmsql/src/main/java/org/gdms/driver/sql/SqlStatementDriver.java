@@ -78,7 +78,7 @@ public class SqlStatementDriver extends AbstractDataSet implements MemoryDriver 
         }
 
         @Override
-        public void start() throws DriverException {
+        public void open() throws DriverException {
                 sql.prepare(dsf);
                 set = sql.execute();
                 metadata.clear();
@@ -86,7 +86,7 @@ public class SqlStatementDriver extends AbstractDataSet implements MemoryDriver 
         }
 
         @Override
-        public void stop() throws DriverException {
+        public void close() throws DriverException {
                 sql.cleanUp();
         }
 

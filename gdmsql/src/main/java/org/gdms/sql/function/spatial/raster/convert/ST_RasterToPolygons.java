@@ -157,7 +157,7 @@ public final class ST_RasterToPolygons extends AbstractTableFunction {
                                 pm.progressTo(nrows);
                                 pm.endTask();
                         }
-                        driver.start();
+                        driver.open();
                         return driver;
                 } catch (DriverException e) {
                         throw new FunctionException(e);
@@ -171,7 +171,7 @@ public final class ST_RasterToPolygons extends AbstractTableFunction {
         @Override
         public void workFinished() throws DriverException {
                 if (driver != null) {
-                        driver.stop();
+                        driver.close();
                 }
         }
 

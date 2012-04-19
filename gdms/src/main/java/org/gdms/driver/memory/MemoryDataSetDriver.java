@@ -191,16 +191,16 @@ public class MemoryDataSetDriver extends GDMSModelDriver implements
         }
 
         @Override
-        public void start() throws DriverException {
+        public void open() throws DriverException {
                 if (realSource instanceof MemoryDriver) {
-                        ((MemoryDriver) realSource).start();
+                        ((MemoryDriver) realSource).open();
                 }
         }
 
         @Override
-        public void stop() throws DriverException {
+        public void close() throws DriverException {
                 if (realSource instanceof MemoryDriver) {
-                        ((MemoryDriver) realSource).stop();
+                        ((MemoryDriver) realSource).close();
                 }
         }
 

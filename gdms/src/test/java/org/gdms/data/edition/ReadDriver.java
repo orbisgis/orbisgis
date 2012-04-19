@@ -135,16 +135,17 @@ public class ReadDriver extends DefaultDBDriver implements MemoryDriver,
                 return Type.STRING;
         }
 
-        public void start() throws DriverException {
+        public void open() throws DriverException {
                 final Type[] fieldsTypes = new Type[]{
                         TypeFactory.createType(Type.GEOMETRY),
                         TypeFactory.createType(Type.STRING)};
                 final String[] fieldsNames = new String[]{"geom", "alpha"};
                 this.schema.addTable("main", new DefaultMetadata(fieldsTypes, fieldsNames));
                 open();
+                open = true;
         }
 
-        public void stop() throws DriverException {
+        public void close() throws DriverException {
                 schema.removeTable("main");
                 close(null);
         }
@@ -239,10 +240,6 @@ public class ReadDriver extends DefaultDBDriver implements MemoryDriver,
                 }
         }
 
-        public void open() throws DriverException {
-                open = true;
-        }
-
         public void createSource(String path, Metadata dsm,
                 DataSourceFactory dataSourceFactory) throws DriverException {
         }
@@ -253,10 +250,6 @@ public class ReadDriver extends DefaultDBDriver implements MemoryDriver,
                         throw new DriverException();
                 }
                 newValues = getContent(dataSource);
-        }
-
-        public void close() throws DriverException {
-                close(null);
         }
 
         public String getReferenceInSQL(String fieldName) {

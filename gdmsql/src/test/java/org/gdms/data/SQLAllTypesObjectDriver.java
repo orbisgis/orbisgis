@@ -187,10 +187,10 @@ public class SQLAllTypesObjectDriver extends AbstractDataSet implements MemoryDr
                 throw new RuntimeException();
         }
 
-        public void start() throws DriverException {
+        public void open() throws DriverException {
         }
 
-        public void stop() throws DriverException {
+        public void close() throws DriverException {
         }
 
         public TypeDefinition[] getTypesDefinitions() {

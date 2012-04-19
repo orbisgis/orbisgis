@@ -219,7 +219,7 @@ public class ConvertFunctionTest extends FunctionTest {
         }
 
         /**  
-         * Test start and end point functions.  
+         * Test open and end point functions.  
          * @throws Exception  
          */
         public final void testStartEndPoint() throws Exception {

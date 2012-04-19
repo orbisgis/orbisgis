@@ -78,7 +78,7 @@ public class MemoryDataSourceAdapter extends DriverDataSource implements
         @Override
         public void open() throws DriverException {
                 LOG.trace("Opening");
-                driver.start();
+                driver.open();
                 fireOpen(this);
 
                 SourceManager sm = getDataSourceFactory().getSourceManager();
@@ -88,7 +88,7 @@ public class MemoryDataSourceAdapter extends DriverDataSource implements
         @Override
         public void close() throws DriverException {
                 LOG.trace("Closing");
-                driver.stop();
+                driver.close();
                 fireCancel(this);
 
                 SourceManager sm = getDataSourceFactory().getSourceManager();
@@ -121,7 +121,7 @@ public class MemoryDataSourceAdapter extends DriverDataSource implements
                 LOG.trace("Commiting");
                 boolean rowChanged = ((EditableMemoryDriver) driver).write(modifiedSource,
                         new NullProgressMonitor());
-                driver.stop();
+                driver.close();
                 fireCommit(this);
 
                 return rowChanged;
@@ -138,8 +138,8 @@ public class MemoryDataSourceAdapter extends DriverDataSource implements
         }
 
         private void sync() throws DriverException {
-                driver.start();
-                driver.stop();
+                driver.open();
+                driver.close();
         }
 
         @Override

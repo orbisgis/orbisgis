@@ -68,7 +68,7 @@ class QueryOutputCommand extends Command with OutputCommand {
       driver.addValues(a.array:_*)
     }
     driver.writingFinished
-    driver.start
+    driver.open
     
     pm.map(_.endTask)
     null
@@ -93,7 +93,7 @@ class QueryOutputCommand extends Command with OutputCommand {
   
   protected override def doCleanUp = {
     if (driver.isOpen) {
-      driver.stop
+      driver.close
     }
     driver = null
   }

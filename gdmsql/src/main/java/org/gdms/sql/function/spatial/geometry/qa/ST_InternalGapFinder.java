@@ -97,7 +97,7 @@ public final class ST_InternalGapFinder extends AbstractTableFunction {
         @Override
         public void workFinished() throws DriverException {
                 if (diskBufferDriver != null) {
-                        diskBufferDriver.stop();
+                        diskBufferDriver.close();
                 }
         }
 

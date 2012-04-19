@@ -101,7 +101,7 @@ public class DiskBufferDriver extends AbstractDataSet implements MemoryDriver {
         }
 
         @Override
-        public void start() throws DriverException {
+        public void open() throws DriverException {
                 try {
                         // Open file
                         reader = new GdmsReader(file);
@@ -149,7 +149,7 @@ public class DiskBufferDriver extends AbstractDataSet implements MemoryDriver {
         }
 
         @Override
-        public void stop() throws DriverException {
+        public void close() throws DriverException {
                 if (isOpen()) {
                         try {
                                 reader.close();

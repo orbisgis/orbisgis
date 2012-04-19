@@ -48,13 +48,13 @@ public interface MemoryDriver extends Driver, DataSet {
 	 * 
 	 * @throws DriverException
 	 */
-	void start() throws DriverException;
+	void open() throws DriverException;
 
 	/**
 	 * Method to finalize the access
 	 * 
 	 * @throws DriverException
 	 */
-	void stop() throws DriverException;
+	void close() throws DriverException;
 
 }

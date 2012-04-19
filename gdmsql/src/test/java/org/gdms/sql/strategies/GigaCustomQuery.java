@@ -30,7 +30,7 @@ public class GigaCustomQuery extends AbstractTableFunction {
 						.createValue("this is row " + i) });
 			}
                         dbd.writingFinished();
-			dbd.start();
+			dbd.open();
 			return dbd.getTable("main");
 		} catch (DriverException e) {
 			throw new FunctionException("Cannot generate the gigasource", e);

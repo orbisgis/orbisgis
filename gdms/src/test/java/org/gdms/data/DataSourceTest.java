@@ -241,11 +241,11 @@ public class DataSourceTest extends TestBase {
                 }
 
                 @Override
-                public void stop() throws DriverException {
+                public void close() throws DriverException {
                 }
 
                 @Override
-                public void start() throws DriverException {
+                public void open() throws DriverException {
                 }
 
                 @Override

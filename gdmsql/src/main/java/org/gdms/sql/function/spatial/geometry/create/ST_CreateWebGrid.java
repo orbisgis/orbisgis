@@ -87,7 +87,7 @@ public final class ST_CreateWebGrid extends AbstractTableFunction {
                         final Envelope envelope = DriverUtilities.getFullExtent(inSds);
                         createGrid(driver, envelope, deltaR, deltaT, pm);
                         driver.writingFinished();
-                        driver.start();
+                        driver.open();
                         return driver;
                 } catch (AlreadyClosedException e) {
                         throw new FunctionException(e);
@@ -101,7 +101,7 @@ public final class ST_CreateWebGrid extends AbstractTableFunction {
         @Override
         public void workFinished() throws DriverException {
                 if (driver != null) {
-                        driver.stop();
+                        driver.close();
                 }
         }
 

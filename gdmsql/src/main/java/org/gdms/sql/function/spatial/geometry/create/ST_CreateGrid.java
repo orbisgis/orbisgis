@@ -114,7 +114,7 @@ public final class ST_CreateGrid extends AbstractTableFunction {
         @Override
         public void workFinished() throws DriverException {
                 if (driver != null) {
-                        driver.stop();
+                        driver.close();
                 }
         }
 
@@ -165,7 +165,7 @@ public final class ST_CreateGrid extends AbstractTableFunction {
                         }
                 }
                 driver.writingFinished();
-                driver.start();
+                driver.open();
                 pm.progressTo(nbX);
                 pm.endTask();
         }

@@ -152,7 +152,7 @@ public final class InternalGapFinder {
 
                 }
                 driver.writingFinished();
-                driver.start();
+                driver.open();
                 pm.endTask();
         }
 
