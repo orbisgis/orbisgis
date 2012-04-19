@@ -56,11 +56,13 @@ import org.gdms.sql.evaluator._
 case object AggregateStep extends AbstractEngineStep[Operation, Operation]("Processing aggregates & groups") {
   def doOperation(op: Operation)(implicit p: Properties): Operation = {
     op.allChildren foreach { case p @ Projection(exp, ch) =>
+        var i = -2
         def replaceAggregateFunctions(e: (Expression, Option[String])): Seq[(Expression, Option[String])] = {
           e._1 match {
             case agg(f, li) => {
                 val func = e._1.evaluator
-                val name = e._2.getOrElse(f.getName)
+                i = i + 1
+                val name = e._2.getOrElse(f.getName + (if (i == -1) "" else i))
                 e._1.evaluator = FieldEvaluator("$" + name)
                 (Expression(func), Some(name)) :: Nil}
             case e => e.children flatMap (ex => replaceAggregateFunctions((ex, None)))

@@ -40,6 +40,7 @@ import org.junit.Before;
 import org.junit.Test;
 import java.io.File;
 
+import org.apache.log4j.BasicConfigurator;
 import org.gdms.SQLBaseTest;
 import org.gdms.data.NoSuchTableException;
 
@@ -71,6 +72,7 @@ public class ProcessorTest {
         
         @Before
         public void setUp() throws Exception {
+                BasicConfigurator.configure();
                 dsf = new SQLDataSourceFactory();
                 dsf.setTempDir(SQLBaseTest.backupDir.getAbsolutePath());
                 dsf.setResultDir(SQLBaseTest.backupDir);
@@ -92,6 +94,7 @@ public class ProcessorTest {
                 }
 
                 engine = new SQLEngine(dsf);
+                engine.getProperties().setProperty("output.explain", "true");
         }
 
         @Test

@@ -268,8 +268,7 @@ object Expression {
   def metadataFor(a: Seq[(Expression, Option[String])]): Metadata = {
     val m = new DefaultMetadata()
     a.zipWithIndex foreach { e => {
-        var name: String = ""
-        name = e._1._2.getOrElse(
+        val name = e._1._2.getOrElse(
           e._1._1.evaluator match {
             case ag: AggregateEvaluator => ag.f.getName
             case fi: FieldEvaluator => {
