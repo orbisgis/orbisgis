@@ -37,10 +37,8 @@
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.components;
 
 import com.vividsolutions.jts.geom.*;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.io.IOException;
 import java.util.Iterator;
 import javax.swing.JPanel;
@@ -94,14 +92,18 @@ public class Canvas extends JPanel {
 
 	@Override
 	public void paintComponent(Graphics g) {
-		g.setColor(Color.white);
-		g.fillRect(0, 0, getWidth(), getHeight());
+                Graphics2D g2 = (Graphics2D) g;
+                Object old = g2.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(Color.white);
+                g2.fillRect(0, 0, getWidth(), getHeight());
                 try {
-                        s.draw((Graphics2D) g, new InnerDS(), 0, false, mt, geom, null);
+                        s.draw(g2, new InnerDS(), 0, false, mt, geom, null);
                 } catch (DriverException de){
                 } catch (ParameterException de){
                 } catch (IOException de){
                 }
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, old);
 	}
 
 	public void setSymbol(Symbolizer sym) {

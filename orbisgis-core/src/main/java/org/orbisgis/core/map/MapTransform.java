@@ -433,9 +433,8 @@ public class MapTransform implements PointTransformation {
                         converter.setRemoveDuplicatePoints(true);
                         MAXPIXEL_DISPLAY = 0.5 / (25.4 / getDpi());
                 }
-                converter.setDecimation(MAXPIXEL_DISPLAY / getScaleDenominator());
-
-
+                Double dec = adjustedExtent == null ? 0 : MAXPIXEL_DISPLAY / getScaleDenominator();
+                converter.setDecimation(dec);
                 return converter;
         }
 

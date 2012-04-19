@@ -133,6 +133,8 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
                 jrf.addActionListener(al);
                 FocusListener fl = EventHandler.create(FocusListener.class, s, "setValue","source.text","focusLost");
                 jrf.addFocusListener(fl);
+                FocusListener prev = EventHandler.create(FocusListener.class, preview, "repaint");
+                jrf.addFocusListener(prev);
                 jrf.setText(s.getValue());
                 cont.add(jrf);
                 return cont;
