@@ -141,7 +141,6 @@ public class ReadDriver extends DefaultDBDriver implements MemoryDriver,
                         TypeFactory.createType(Type.STRING)};
                 final String[] fieldsNames = new String[]{"geom", "alpha"};
                 this.schema.addTable("main", new DefaultMetadata(fieldsTypes, fieldsNames));
-                open();
                 open = true;
         }
 
