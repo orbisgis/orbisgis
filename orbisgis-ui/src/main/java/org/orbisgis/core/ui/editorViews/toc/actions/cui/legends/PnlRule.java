@@ -68,6 +68,7 @@ public class PnlRule extends JPanel implements IRulePanel {
                 gbc = new GridBagConstraints();
                 gbc.gridx = 1;
                 gbc.gridy = 0;
+                gbc.anchor = GridBagConstraints.LINE_START;
                 txtName = new JTextField(rule.getName(),10);
                 txtName.addFocusListener(EventHandler.create(FocusListener.class, this, "setTitle","source.text","focusLost"));
                 panel.add(txtName, gbc);
@@ -82,14 +83,17 @@ public class PnlRule extends JPanel implements IRulePanel {
                 gbc = new GridBagConstraints();
                 gbc.gridx = 1;
                 gbc.gridy = 1;
-                gbc.insets = new Insets(5 , 0, 5, 0);
+                gbc.insets = new Insets(5 , 5, 5, 5);
+                gbc.anchor = GridBagConstraints.LINE_START;
                 txtDescription = new JTextArea(rule.getDescription());
                 txtDescription.setColumns(40);
                 txtDescription.setRows(6);
                 txtDescription.setLineWrap(true);
                 txtDescription.addFocusListener(EventHandler.create(
                         FocusListener.class, this, "setDescription","source.text","focusLost"));
-                panel.add(txtDescription, gbc);
+                JScrollPane jsp = new JScrollPane(txtDescription);
+                jsp.setPreferredSize(txtDescription.getPreferredSize());
+                panel.add(jsp, gbc);
                 //We display the minScale
 		KeyListener keyAdapter = EventHandler.create(KeyListener.class, this, "applyScales");
                 //Text
@@ -122,6 +126,7 @@ public class PnlRule extends JPanel implements IRulePanel {
                 gbc = new GridBagConstraints();
                 gbc.gridx = 1;
                 gbc.gridy = 2;
+                gbc.anchor = GridBagConstraints.LINE_START;
                 panel.add(min,gbc);
                 //We display the maxScale
                 //Text
@@ -156,6 +161,7 @@ public class PnlRule extends JPanel implements IRulePanel {
                 gbc = new GridBagConstraints();
                 gbc.gridx = 1;
                 gbc.gridy = 3;
+                gbc.anchor = GridBagConstraints.LINE_START;
                 panel.add(max,gbc);
 		this.add(panel);
 		this.setPreferredSize(new Dimension(200, 100));
