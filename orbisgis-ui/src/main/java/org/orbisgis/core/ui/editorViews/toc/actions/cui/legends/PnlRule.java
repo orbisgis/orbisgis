@@ -4,9 +4,7 @@
  */
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.legends;
 
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusListener;
@@ -15,8 +13,6 @@ import java.beans.EventHandler;
 import javax.swing.*;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Rule;
-import org.orbisgis.core.sif.CRFlowLayout;
-import org.orbisgis.core.sif.CarriageReturn;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendContext;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.IRulePanel;
 import org.orbisgis.utils.I18N;
@@ -59,45 +55,60 @@ public class PnlRule extends JPanel implements IRulePanel {
 		FlowLayout fl = new FlowLayout();
 		fl.setVgap(0);
 		this.setLayout(fl);
-		JPanel pnlLabels = new JPanel();
-		CRFlowLayout flowLayout = new CRFlowLayout();
-		flowLayout.setVgap(14);
-		pnlLabels.setLayout(flowLayout);
-                //The labels used to define the text fields.
-                pnlLabels.add(new JLabel("Title : "));
-		pnlLabels.add(new CarriageReturn());
-                pnlLabels.add(new JLabel("Description : "));
-		pnlLabels.add(new CarriageReturn());
-		pnlLabels.add(new JLabel(I18N.getString("orbisgis.org.orbisgis.ui.toc.legendsPanel.minScale")));
-		pnlLabels.add(new CarriageReturn());
-		pnlLabels.add(new JLabel(I18N.getString("orbisgis.org.orbisgis.ui.toc.legendsPanel.maxScale")));
-		this.add(pnlLabels);
-                //We need the fields now...
-		JPanel pnlTexts = new JPanel();
-		pnlTexts.setLayout(new CRFlowLayout());
-                //Title management
+                //We need the map transform to use the buttons
+                final MapTransform mt = legendContext.getCurrentMapTransform();
+                JPanel panel = new JPanel();
+                panel.setLayout(new GridBagLayout());
+                GridBagConstraints gbc = new GridBagConstraints();
+                //We display the title
+                gbc.gridx = 0;
+                gbc.gridy = 0;
+                gbc.anchor = GridBagConstraints.LINE_START;
+                panel.add(new JLabel("Title : "), gbc);
+                gbc = new GridBagConstraints();
+                gbc.gridx = 1;
+                gbc.gridy = 0;
                 txtName = new JTextField(rule.getName(),10);
                 txtName.addFocusListener(EventHandler.create(FocusListener.class, this, "setTitle","source.text","focusLost"));
-                //Description management
+                panel.add(txtName, gbc);
+                //We display the description
+                //Label
+                gbc = new GridBagConstraints();
+                gbc.gridx = 0;
+                gbc.gridy = 1;
+                gbc.anchor = GridBagConstraints.LINE_START;
+                panel.add(new JLabel("Description : "), gbc);
+                //Text field
+                gbc = new GridBagConstraints();
+                gbc.gridx = 1;
+                gbc.gridy = 1;
+                gbc.insets = new Insets(5 , 0, 5, 0);
                 txtDescription = new JTextArea(rule.getDescription());
                 txtDescription.setColumns(40);
                 txtDescription.setRows(6);
                 txtDescription.setLineWrap(true);
                 txtDescription.addFocusListener(EventHandler.create(
                         FocusListener.class, this, "setDescription","source.text","focusLost"));
-                //Scale management.
+                panel.add(txtDescription, gbc);
+                //We display the minScale
 		KeyListener keyAdapter = EventHandler.create(KeyListener.class, this, "applyScales");
-                //Min
+                //Text
+                //We put the text field and the button in a single panel in order to
+                JPanel min = new JPanel();
+                FlowLayout flowMin = new FlowLayout();
+                flowMin.setHgap(5);
+                min.setLayout(flowMin);
+                gbc = new GridBagConstraints();
+                gbc.gridx = 0;
+                gbc.gridy = 2;
+                gbc.anchor = GridBagConstraints.LINE_START;
+                panel.add(new JLabel(I18N.getString("orbisgis.org.orbisgis.ui.toc.legendsPanel.minScale")),gbc);
+                //Text field
 		txtMinScale = new JTextField(10);
 		txtMinScale.addKeyListener(keyAdapter);
                 txtMinScale.setText(getMinscale());
-                //Max
-		txtMaxScale = new JTextField(10);
-		txtMaxScale.addKeyListener(keyAdapter);
-                txtMaxScale.setText(getMaxscale());
-                //We need the map transform to use the buttons
-                final MapTransform mt = legendContext.getCurrentMapTransform();
-                //Button for min
+                min.add(txtMinScale);
+                //Button
 		btnCurrentScaleToMin = new JButton(I18N.getString("orbisgis.org.orbisgis.ui.toc.legendsPanel.currentScale"));
 		btnCurrentScaleToMin.addActionListener(new ActionListener() {
                         @Override
@@ -106,7 +117,31 @@ public class PnlRule extends JPanel implements IRulePanel {
 			}
 
 		});
-                //Button for max
+                min.add(btnCurrentScaleToMin);
+                //We add this dedicated panel to our GridBagLayout.
+                gbc = new GridBagConstraints();
+                gbc.gridx = 1;
+                gbc.gridy = 2;
+                panel.add(min,gbc);
+                //We display the maxScale
+                //Text
+                gbc = new GridBagConstraints();
+                gbc.gridx = 0;
+                gbc.gridy = 3;
+                gbc.anchor = GridBagConstraints.LINE_START;
+                panel.add(new JLabel(I18N.getString("orbisgis.org.orbisgis.ui.toc.legendsPanel.maxScale")),gbc);
+                //We put the text field and the button in a single panel in order to
+                //improve the UI.
+                //Text field
+                JPanel max = new JPanel();
+                FlowLayout flowMax = new FlowLayout();
+                flowMax.setHgap(5);
+                max.setLayout(flowMax);
+		txtMaxScale = new JTextField(10);
+		txtMaxScale.addKeyListener(keyAdapter);
+                txtMaxScale.setText(getMaxscale());
+                max.add(txtMaxScale,gbc);
+                //Button
 		btnCurrentScaleToMax = new JButton(I18N.getString("orbisgis.org.orbisgis.ui.toc.legendsPanel.currentScale"));
 		btnCurrentScaleToMax.addActionListener(new ActionListener() {
 
@@ -116,18 +151,13 @@ public class PnlRule extends JPanel implements IRulePanel {
 			}
 
 		});
-                //We add all our text fields.
-                pnlTexts.add(txtName);
-		pnlTexts.add(new CarriageReturn());
-                pnlTexts.add(txtDescription);
-		pnlTexts.add(new CarriageReturn());
-		pnlTexts.add(txtMinScale);
-		pnlTexts.add(btnCurrentScaleToMin);
-		pnlTexts.add(new CarriageReturn());
-		pnlTexts.add(txtMaxScale);
-		pnlTexts.add(btnCurrentScaleToMax);
-		this.add(pnlTexts);
-
+                max.add(btnCurrentScaleToMax);
+                //We add this dedicated panel to our GridBagLayout.
+                gbc = new GridBagConstraints();
+                gbc.gridx = 1;
+                gbc.gridy = 3;
+                panel.add(max,gbc);
+		this.add(panel);
 		this.setPreferredSize(new Dimension(200, 100));
 		this.setBorder(BorderFactory.createTitledBorder(
 			I18N.getString("orbisgis.org.orbisgis.ui.toc.legendsPanel.scale")));
