@@ -48,7 +48,6 @@ public class SelectableCanvas extends Canvas {
 	private String id;
 
 	public SelectableCanvas(String id) {
-                super(null);
 		this.id = id;
 	}
 

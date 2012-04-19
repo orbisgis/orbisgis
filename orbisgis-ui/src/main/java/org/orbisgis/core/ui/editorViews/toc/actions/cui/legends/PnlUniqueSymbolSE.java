@@ -21,7 +21,7 @@ import javax.swing.event.ChangeListener;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.sif.UIPanel;
 import org.orbisgis.core.ui.components.preview.JNumericSpinner;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.Canvas;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.ColorPicker;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.legend.thematic.constant.USNumericParameter;
@@ -36,7 +36,7 @@ import org.orbisgis.legend.thematic.constant.UniqueSymbol;
 public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel, UIPanel {
 
         private String id;
-        private Canvas preview;
+        private CanvasSE preview;
 
         /**
          * Fill this {@code JPanel} with all the needed fields.
@@ -46,7 +46,7 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
                 JPanel glob = new JPanel();
                 glob.setLayout(new BoxLayout(glob, BoxLayout.Y_AXIS));
                 UniqueSymbol us = (UniqueSymbol) getLegend();
-                preview= new Canvas(us.getSymbolizer());
+                preview= new CanvasSE(us.getSymbolizer());
                 List<USParameter<?>> params = us.getParameters();
                 JPanel jp = new JPanel();
                 GridLayout grid = new GridLayout(params.size(),2);
