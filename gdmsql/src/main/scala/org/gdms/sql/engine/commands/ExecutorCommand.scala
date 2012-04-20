@@ -88,7 +88,7 @@ class ExecutorCommand(name: String, params: List[Expression]) extends Command wi
     pm.map(_.startTask("Executing", 0))
     val dss = tables map (_.asInstanceOf[DataSet])
     
-    function.evaluate(dsf, dss toArray, scalarParams map (_.evaluate(null)) toArray, new NullProgressMonitor)
+    function.evaluate(dsf, dss toArray, scalarParams map (_.evaluate(emptyRow)) toArray, new NullProgressMonitor)
 
     pm.map(_.endTask)
     null

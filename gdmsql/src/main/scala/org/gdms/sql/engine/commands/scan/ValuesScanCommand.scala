@@ -43,9 +43,11 @@ package org.gdms.sql.engine.commands.scan
 
 
 import org.gdms.data.schema.DefaultMetadata
+import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.engine.commands.SQLMetadata
 import org.gdms.sql.engine.commands._
 import org.gdms.sql.evaluator.Expression
+import org.gdms.data.types.TypeFactory
 import org.gdms.sql.engine.GdmSQLPredef._
 import org.orbisgis.progress.ProgressMonitor
 
@@ -61,15 +63,32 @@ import org.orbisgis.progress.ProgressMonitor
  * @author Antoine Gourlay
  * @since 0.3
  */
-class ValuesScanCommand(exps: Seq[Seq[Expression]], alias: Option[String], internal: Boolean = true) extends Command {
+class ValuesScanCommand(exps: Seq[Seq[Expression]], alias: Option[String], internal: Boolean = true) 
+extends Command with ExpressionCommand {
 
   private val m: DefaultMetadata = new DefaultMetadata()
+  
+  protected val exp = exps flatten
 
   protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
     exps.par.view map(evaluate) toIterator
   }
   
   override def doPrepare = {
+    super.doPrepare
+    
+    // check for type of elements in rows
+    val types = exps.head map (_.evaluator.sqlType)
+    exps.tail foreach {e =>
+      val tt = e map (_.evaluator.sqlType)
+      types zip tt foreach {zz => 
+        if (!TypeFactory.canBeCastTo(zz._2, zz._1)) {
+          throw new SemanticException("Rows must all have the same types as the first row, or must have types that " +
+                                      "can be implicitly casted to the ones of the first row.")
+        }
+      }
+    }
+    
     var k = -1;
     m.clear
     val prefix = if (internal) "$exp" else "exp"
@@ -77,11 +96,9 @@ class ValuesScanCommand(exps: Seq[Seq[Expression]], alias: Option[String], inter
       k = k + 1
       m.addField(prefix + k, i)
     }
-    
-    exps foreach(_ foreach (_.validate))
   }
   
-  private def evaluate(a: Seq[Expression]): Row = Row(a map (_.evaluate(null)))
+  private def evaluate(a: Seq[Expression]): Row = Row(a map (_.evaluate(emptyRow)))
   
   override lazy val getMetadata = SQLMetadata(alias.getOrElse(""), m)
   

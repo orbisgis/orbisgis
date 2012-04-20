@@ -41,6 +41,7 @@ package org.gdms.sql.evaluator
 import java.util.regex.Pattern
 import org.gdms.data.types.IncompatibleTypesException
 import org.gdms.data.types.Type
+import org.gdms.sql.engine.GdmSQLPredef._
 import org.orbisgis.utils.TextUtils
 
 /**
@@ -87,9 +88,9 @@ case class LikeEvaluator(e1: Expression, e2: Expression, caseInsensitive: Boolea
     if (!loaded){
       if (e2.evaluator.isInstanceOf[StaticEvaluator]) {
         if (caseInsensitive) {
-          pattern = TextUtils.buildLikePattern(e2.evaluate(null).getAsString, true)
+          pattern = TextUtils.buildLikePattern(e2.evaluate(emptyRow).getAsString, true)
         } else {
-          pattern = TextUtils.buildLikePattern(e2.evaluate(null).getAsString)
+          pattern = TextUtils.buildLikePattern(e2.evaluate(emptyRow).getAsString)
         }
       }
       loaded = true
@@ -136,7 +137,7 @@ case class SimilarToEvaluator(e1: Expression, e2: Expression) extends Evaluator 
   def eval = { s =>  
     if (!loaded){
       if (e2.evaluator.isInstanceOf[StaticEvaluator]) {
-        pattern = TextUtils.buildSimilarToPattern(e2.evaluate(null).getAsString)
+        pattern = TextUtils.buildSimilarToPattern(e2.evaluate(emptyRow).getAsString)
       }
       loaded = true
     }
@@ -182,9 +183,9 @@ case class POSIXEvaluator(e1: Expression, e2: Expression, caseInsensitive: Boole
     if (!loaded){
       if (e2.evaluator.isInstanceOf[StaticEvaluator]) {
         if (caseInsensitive) {
-          pattern = Pattern.compile(e2.evaluate(null).getAsString, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE)
+          pattern = Pattern.compile(e2.evaluate(emptyRow).getAsString, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE)
         } else {
-          pattern = Pattern.compile(e2.evaluate(null).getAsString)
+          pattern = Pattern.compile(e2.evaluate(emptyRow).getAsString)
         }
       }
       loaded = true

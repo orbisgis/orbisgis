@@ -57,6 +57,7 @@ object GdmSQLPredef extends GdmSQLPredefLow {
 
   // Rows
   implicit def rowToInnerArray(row: Row): Array[Value] = row.array
+  val emptyRow = Row(Array.empty[Value])
 
   // SQLMetadata
   implicit def meToSQLMe(m: Metadata)(implicit s: SQLMetadata) = SQLMetadata(s.table, m)

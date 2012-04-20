@@ -387,6 +387,26 @@ public class SQLTest extends SQLBaseTest {
                 dsf.getSourceManager().delete("testIn");
                 dsf.getSourceManager().delete("testIn2");
         }
+        
+        @Test
+        public void testInClauseWithNull() throws Exception {
+                dsf.executeSQL("CREATE TABLE testIn AS SELECT NULL :: int AS toto, 42 AS tutu;");
+                DataSource d = dsf.getDataSourceFromSQL("SELECT 1 IN (SELECT toto FROM testIn);");
+                d.open();
+                assertEquals(1,d.getRowCount());
+                assertTrue(d.getFieldValue(0, 0).isNull());
+                d.close();
+                
+                dsf.executeSQL("UPDATE testIn SET toto = 1;");
+                
+                d = dsf.getDataSourceFromSQL("SELECT 1 IN (SELECT toto FROM testIn);");
+                d.open();
+                assertEquals(1,d.getRowCount());
+                assertTrue(d.getBoolean(0, 0));
+                d.close();
+                
+                dsf.getSourceManager().delete("testIn");
+        }
 
         private void testAggregate(String ds) throws Exception {
                 String numericField = super.getNumericFieldNameFor(ds);

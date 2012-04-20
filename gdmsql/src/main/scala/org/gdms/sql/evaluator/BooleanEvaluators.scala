@@ -290,21 +290,23 @@ case class InEvaluator(e: Expression, var o: Operation) extends BooleanEvaluator
   
   def eval = s => {
     val b = e.evaluate(s)
-    val ex = evalInner(s)
     var ret: Value = ValueFactory.FALSE
-    var break: Boolean = false
-   
-    while (!break && ex.hasNext) {
-      var next = ex.next.array(0).equals(b)
-      if (next.isNull) {
-        ret = ValueFactory.createNullValue[Value]
-        break = true
-      } else if (next.getAsBoolean) {
-        ret = ValueFactory.TRUE
-        break = true
+    
+    if (b.isNull) {
+      ret = b
+    } else {
+      var break: Boolean = false
+      val ex = evalInner(s)
+      while (!break && ex.hasNext) {
+        val next = ex.next.array(0).equals(b)
+        if (next.isNull) {
+          ret = ValueFactory.createNullValue[Value]
+        } else if (next.getAsBoolean) {
+          ret = ValueFactory.TRUE
+          break = true
+        }
       }
     }
-   
     ret
   }
   override def doPreValidate = o.validate

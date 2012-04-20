@@ -51,6 +51,7 @@ import org.gdms.sql.engine.commands.ddl._
 import org.gdms.sql.engine.commands.join._
 import org.gdms.sql.engine.commands.scan._
 import org.gdms.sql.engine.operations._
+import org.gdms.sql.engine.step.aggregate.AggregateStep
 import org.gdms.sql.engine.step.physicalJoin.PhysicalJoinOptimStep
 import org.gdms.sql.evaluator.ExistsEvaluator
 import org.gdms.sql.evaluator.Expression
@@ -120,7 +121,10 @@ case object BuilderStep extends AbstractEngineStep[(Operation, SQLDataSourceFact
               }
             case _ => throw new IllegalStateException("Internal error: problem building PQP for joins.")
           })  withChildren(Seq(l, r))
-      case ValuesScan(ex, alias, internal) => new ValuesScanCommand(ex, alias, internal)
+      case ValuesScan(ex, alias, internal) => {
+          ex foreach (_ foreach processExp)
+          new ValuesScanCommand(ex, alias, internal)
+        }
       case Projection(exp, ch) => {
           exp foreach (a => processExp(a._1))
           new ProjectionCommand(exp toArray) withChild(ch)

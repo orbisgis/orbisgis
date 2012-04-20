@@ -109,7 +109,7 @@ class CustomQueryScanCommand(e: Seq[Expression], tables: Seq[Either[String, Outp
     // evaluates the function
     ds = f.evaluate(dsf,
                     openedTables map (_ fold(identity, _.getResult)) toArray,
-                    e map { _ evaluate(null)} toArray, pm.getOrElse(new NullProgressMonitor))
+                    e map { _ evaluate(emptyRow)} toArray, pm.getOrElse(new NullProgressMonitor))
 
     // gives the result
     val res = (for (i <- (0l until ds.getRowCount).par.view.toIterator) yield {

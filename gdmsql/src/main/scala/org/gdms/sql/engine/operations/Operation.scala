@@ -170,19 +170,11 @@ case class ValuesScan(exp: Seq[Seq[Expression]], alias: Option[String] = None, i
       
     exp foreach (_ foreach (check))
       
-    // check for number & type or elements in rows
-    val types = exp.head map (_.evaluator.sqlType)
-    val s = types.size
+    // check for number of elements in rows
+    val s = exp.head.size
     exp.tail foreach {e =>
-      val tt = e map (_.evaluator.sqlType)
-      if (tt.size != s) {
+      if (e.size != s) {
         throw new SemanticException("Rows must all have the same number of elements.")
-      }
-      types zip tt foreach {zz => 
-        if (!TypeFactory.canBeCastTo(zz._2, zz._1)) {
-          throw new SemanticException("Rows must all have the same types as the first row, or must have types that " +
-                                      "can be implicitly casted to the ones of the first row.")
-        }
       }
     }
   }
