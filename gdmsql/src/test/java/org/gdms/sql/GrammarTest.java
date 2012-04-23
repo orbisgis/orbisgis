@@ -49,11 +49,11 @@ public class GrammarTest {
         @Test
         public void testScriptWithWrongCharacters() throws Exception {
                 notParse("<!\nselect * from mytable;");
-                
+
                 notParse("select * from mytable; totootereazjzgj");
         }
-        
-       @Test
+
+        @Test
         public void testAddPrimaryKey() throws Exception {
                 parse("alter table toto add primary key (tata);");
                 notParse("alter table toto add primarykey (tata);");
@@ -95,7 +95,7 @@ public class GrammarTest {
                 parse("select * except myfield from gis;");
                 parse("select a.* except field from gis a;");
         }
-        
+
         @Test
         public void testExists() throws Exception {
                 parse("SELECT * FROM toto WHERE EXISTS (SELECT * FROM tutu);");
@@ -223,7 +223,7 @@ public class GrammarTest {
                 parse("drop table if exists table1, table2, table3;");
                 parse("drop table if exists table1 purge;");
         }
-        
+
         @Test
         public void testDropSchema() throws Exception {
                 parse("drop schema table1, table2, table3;");
@@ -262,7 +262,7 @@ public class GrammarTest {
                 notParse("insert into mytable (field) values (3 * abs(field));");
                 parse("insert into mytable (field1, field2, field3) values (1, 2, 3);");
         }
-        
+
         @Test
         public void testInsertSelect() throws Exception {
                 notParse("insert into table1, table2 (field) select * from tutu;");
@@ -297,6 +297,16 @@ public class GrammarTest {
         }
 
         @Test
+        public void testCreateTable() throws Exception {
+                parse("CREATE TABLE toto (tata int, tutu double);");
+                notParse("CREATE TABLE toto;");
+                notParse("CREATE TABLE toto ();");
+                parse("CREATE TABLE toto (tata int not null);");
+                parse("CREATE TABLE toto (tata int unique);");
+                parse("CREATE TABLE toto (tata int primary key);");
+        }
+
+        @Test
         public void testCreateTableAs() throws Exception {
                 parse("create table table2 as select * from st_CreateGrid(table1);");
                 parse("create table table2 as select * from table1;");
@@ -307,7 +317,7 @@ public class GrammarTest {
                 parse("create view view1 as  select * from st_CreateGrid(table1);");
                 parse("create view view2 as select * from table1;");
         }
-        
+
         @Test
         public void testCreateFunction() throws Exception {
                 parse("CREATE FUNCTION tata AS 'somestring' LANGUAGE 'java';");
@@ -329,13 +339,13 @@ public class GrammarTest {
         @Test
         public void testInSubQuery() throws Exception {
                 parse("select * from mytable where myfield in (3, 4);");
-                
+
                 parse("SELECT * FROM myTable WHERE myField in (SELECT toto FROM tata);");
                 parse("UPDATE toto SET va = 17 WHERE vert IN (SELECT tt FROM tutu);");
                 notParse("SELECT * FROM myTable WHERE myField in (UPDATE toto SET tata = 1);");
 
         }
-        
+
         @Test
         public void testSet() throws Exception {
                 parse("SET toto TO 'value';");
@@ -343,24 +353,24 @@ public class GrammarTest {
                 parse("SET toto.tata.tutu = '42';");
                 parse("SET toto TO DEFAULT;");
                 parse("SET toto = DEFAULT;");
-                
+
                 notParse("SET toto = value;");
                 notParse("SET toto = 18.2;");
                 notParse("SET toto TO 42;");
         }
-        
+
         @Test
         public void testReset() throws Exception {
                 parse("RESET toto;");
                 parse("RESET tutu.toto;");
         }
-        
+
         @Test
         public void testShow() throws Exception {
                 parse("SHOW toto;");
                 parse("SHOW tutu.toto;");
         }
-        
+
         @Test
         public void testSelectAlone() throws Exception {
                 parse("SELECT 18, 'toto', abs(-18);");

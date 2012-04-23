@@ -69,7 +69,7 @@ public class ProcessorTest {
         private Metadata allTypesMetadata;
         private static SQLDataSourceFactory dsf;
         private SQLEngine engine;
-        
+
         @Before
         public void setUp() throws Exception {
                 BasicConfigurator.configure();
@@ -291,7 +291,7 @@ public class ProcessorTest {
                         getValidatedStatement(sql);
                         fail();
                 } catch (SemanticException e) {
-                } catch (ParseException p ) {
+                } catch (ParseException p) {
                         if (!(p.getCause() instanceof SemanticException)) {
                                 p.printStackTrace();
                                 fail();
@@ -304,19 +304,19 @@ public class ProcessorTest {
                         getFullyValidatedStatement(sql);
                         fail();
                 } catch (SemanticException e) {
-                } catch (ParseException p ) {
+                } catch (ParseException p) {
                         if (!(p.getCause() instanceof SemanticException)) {
                                 p.printStackTrace();
                                 fail();
                         }
                 }
         }
-        
+
         private void failPreparedWithUnknownFieldException(String sql) throws Exception {
                 try {
                         getFullyValidatedStatement(sql);
                         fail();
-                } catch (UnknownFieldException e ) {
+                } catch (UnknownFieldException e) {
                 }
         }
 
@@ -347,11 +347,11 @@ public class ProcessorTest {
                 assertFalse(m.getFieldName(0).equals("mydouble"));
                 assertTrue(m.getFieldName(1).equals("mySTR"));
         }
-        
+
         @Test
         public void testEmptyProjection() throws Exception {
                 getFullyValidatedStatement("SELECT exp0 FROM VALUES('toto') test;");
-                
+
                 // projections that remove every fields are not allowed
                 failPreparedWithSemanticException("SELECT * EXCEPT exp0 FROM VALUES('toto') test;");
         }
@@ -484,7 +484,7 @@ public class ProcessorTest {
                 failWithNoSuchTableException("drop table alltypes, Gis;");
                 getValidatedStatement("drop table alltypes, gis;");
         }
-        
+
         @Test
         public void testDropSchema() throws Exception {
                 failPreparedWithSemanticException("drop schema AllTypes;");
@@ -551,7 +551,7 @@ public class ProcessorTest {
                 // field references in values
                 failWithSemanticException("insert into gis values ('2', id);");
         }
-        
+
         @Test
         public void testInsertSelect() throws Exception {
                 getValidatedStatement("insert into alltypes (\"int\") select 1, 18 from toto;");
@@ -641,9 +641,19 @@ public class ProcessorTest {
         }
 
         @Test
-        public void testCreate() throws Exception {
+        public void testCreateAs() throws Exception {
                 getValidatedStatement("create table table2 as select * from gis;");
                 failWithNoSuchTableException("create table gis2 as select * from Gis;");
+        }
+
+        @Test
+        public void testCreateTable() throws Exception {
+                getFullyValidatedStatement("CREATE TABLE toto (ff int, gg double);");
+                failPreparedWithSemanticException("CREATE TABLE toto (ff tutu);");
+                
+                getValidatedStatement("CREATE TABLE toto (ff int not null);");
+                getValidatedStatement("CREATE TABLE toto (ff int primary key);");
+                getValidatedStatement("CREATE TABLE toto (ff int unique);");
         }
 
         @Test
@@ -751,14 +761,14 @@ public class ProcessorTest {
                 failWithNoSuchTableException("drop index on allTypes (\"int\");");
                 failPreparedWithSemanticException("drop index on alltypes (rint);");
         }
-        
+
         @Test
         public void regressionTest690() throws Exception {
                 // regression test for #690
                 dsf.executeSQL("CREATE TABLE toto (field1 INT, field2 TEXT);");
                 failPreparedWithSemanticException("SELECT *, 42 AS field1 FROM toto;");
                 getFullyValidatedStatement("SELECT *, 42 AS field3 FROM toto;");
-                
+
                 dsf.getSourceManager().delete("toto");
         }
 

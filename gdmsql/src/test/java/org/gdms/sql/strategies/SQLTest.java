@@ -68,6 +68,8 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+import org.gdms.data.types.Constraint;
+
 public class SQLTest extends SQLBaseTest {
 
         public static DataSource d;
@@ -845,6 +847,21 @@ public class SQLTest extends SQLBaseTest {
                         + ";");
 
                 assertEquals(dsf, d2.getDataSourceFactory());
+        }
+        
+        @Test
+        public void testCreateTable() throws Exception {
+                dsf.getSourceManager().remove("temptable");
+                dsf.executeSQL("create table temptable (toto int primary key, tutu string unique);");
+                DataSource ds = dsf.getDataSource("temptable");
+                ds.open();
+                assertEquals(Type.INT, ds.getFieldType(0).getTypeCode());
+                assertEquals(Type.STRING, ds.getFieldType(1).getTypeCode());
+                assertEquals(1, ds.getFieldType(0).getConstraints().length);
+                assertEquals(1, ds.getFieldType(1).getConstraints().length);
+                assertEquals(Constraint.PK, ds.getFieldType(0).getConstraints()[0].getConstraintCode());
+                assertEquals(Constraint.UNIQUE, ds.getFieldType(1).getConstraints()[0].getConstraintCode());
+                ds.close();
         }
 
         @Test

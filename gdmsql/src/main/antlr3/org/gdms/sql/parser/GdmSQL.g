@@ -29,6 +29,7 @@ tokens {
     T_TABLE_QUERY = 't_table_query';
     T_TABLE_FUNCTION = 't_table_function';
     T_TABLE_VALUES = 't_table_values';
+    T_TABLE_CONSTRAINT = 't_table_constraint';
     T_INNER_JOIN = 't_inner_join';
     T_OUTER_JOIN = 't_outer_join';
     T_CREATE_TABLE = 't_create_table';
@@ -684,8 +685,14 @@ create_table_params
         ;
 
 column_def
-        : name=LONG_ID type=LONG_ID
-        -> ^(T_TABLE_ITEM $name $type)
+        : name=LONG_ID type=LONG_ID column_constraint*
+        -> ^(T_TABLE_ITEM $name $type column_constraint*)
+        ;
+
+column_constraint
+        : T_NOT? T_NULL -> ^(T_TABLE_CONSTRAINT T_NULL T_NOT? )
+        | T_UNIQUE -> ^(T_TABLE_CONSTRAINT T_UNIQUE )
+        | T_PRIMARY T_KEY -> ^(T_TABLE_CONSTRAINT T_PRIMARY )
         ;
 
 // ALTER TABLE

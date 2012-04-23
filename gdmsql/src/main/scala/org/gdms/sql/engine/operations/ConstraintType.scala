@@ -40,64 +40,25 @@
  * info@orbisgis.org
  */
 
-package org.gdms.sql.engine.commands.ddl
+package org.gdms.sql.engine.operations
 
-import org.gdms.data.file.FileSourceCreation
-import org.gdms.data.schema.DefaultMetadata
-import org.gdms.data.values.SQLValueFactory
-import org.gdms.sql.engine.SemanticException
-import org.gdms.sql.engine.commands._
-import org.gdms.sql.engine.GdmSQLPredef._
-import org.gdms.sql.engine.operations.ConstraintType
-import org.orbisgis.progress.ProgressMonitor
+import org.gdms.data.types.Constraint
+import org.gdms.data.types.NotNullConstraint
+import org.gdms.data.types.PrimaryKeyConstraint
+import org.gdms.data.types.UniqueConstraint
 
-/**
- * Command for creating an empty table by specifying its column names and types.
- * 
- * @author Antoine Gourlay
- * @since 0.1
- */
-class TableCreationCommand(name: String, cols: Seq[(String, String, Seq[ConstraintType])]) extends Command with OutputCommand {
+sealed abstract class ConstraintType {
+  def constraint: Constraint
+}
 
-  var initcols : Seq[(String, Int, Seq[ConstraintType])] = Nil
-  
-  override def doPrepare {
-    initcols = cols map (c =>
-      (c._1,
-       try {
-          SQLValueFactory.getTypeCodeFromSqlIdentifier(c._2)
-        } catch {
-          case i: IllegalArgumentException => throw new SemanticException("Unknown type: '" +
-                                                                          c._2 + "'.")
-        }
-       , c._3))
-    
-  }
-  
-  protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
-    val m = new DefaultMetadata
-    
-    initcols foreach {c =>
-      if (c._3.isEmpty) {
-        m.addField(c._1, c._2)
-      } else {
-        m.addField(c._1, c._2, c._3.map(_.constraint).toArray: _*)
-      }
-    }
-    
-    val f = new FileSourceCreation(dsf.getResultFile, m)
-    val dsd = dsf.createDataSource(f)
-    dsf.getSourceManager.register(name, dsd)
+case object NotNull extends ConstraintType {
+  def constraint = new NotNullConstraint
+}
 
-    null
-  }
-  
-  override def doCleanUp = {
-    initcols = Nil
-  }
-  
-  val getResult = null
+case object Unique extends ConstraintType {
+  def constraint = new UniqueConstraint
+}
 
-  // no result
-  override val getMetadata = null
+case object PrimaryKey extends ConstraintType {
+  def constraint = new PrimaryKeyConstraint
 }

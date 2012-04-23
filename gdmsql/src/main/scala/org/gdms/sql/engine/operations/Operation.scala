@@ -476,7 +476,7 @@ case class CreateView(name: String, orReplace: Boolean,var child: Operation) ext
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class CreateTable(name: String, cols: Seq[(String, String)]) extends Operation {
+case class CreateTable(name: String, cols: Seq[(String, String, Seq[ConstraintType])]) extends Operation {
   def children = Nil
   override def toString = "CreateTableAs name(" + name + ") as(" + cols + ")"
 }

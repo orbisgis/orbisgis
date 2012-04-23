@@ -46,7 +46,7 @@ import org.gdms.sql.evaluator.Expression
  * @author Antoine Gourlay
  * @since 0.1
  */
-abstract class JoinType
+sealed abstract class JoinType
 
 /**
  * Represents an outer left join on some expression.

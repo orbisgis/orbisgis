@@ -103,7 +103,7 @@ object LogicPlanBuilder {
                   val exprs = getChilds(t).map { tr =>
                     (parseExpression(tr.getChild(0)), if (tr.getChildCount == 1) None else Some(tr.getChild(1).getText))
                   } ;
-                    projexpr = exprs
+                  projexpr = exprs
                 }
                 // everything inside the FROM clause, including joins
               case T_FROM => {
@@ -205,7 +205,7 @@ object LogicPlanBuilder {
                   distinct = true
                 }
               case a => throw new IllegalStateException("Internal error: parsing found" + a.toString + 
-                                                             "  node: " + node.getText)
+                                                        "  node: " + node.getText)
             }
           }
           
@@ -316,7 +316,7 @@ object LogicPlanBuilder {
                 val s = buildOperationTree(c(1))
                 // step over the Output
                 end = Insert(getFullTableName(c(0)), fields, s.children.head)
-            }
+              }
           }
         }
       case T_DELETE => {
@@ -340,9 +340,22 @@ object LogicPlanBuilder {
             end = CreateTableAs(getFullTableName(node.getChild(0)), o)
           } else {
 	    // AST:
-	    // ^(T_CREATE_TABLE table_id ^(T_CREATE_TABLE ^(T_TABLE_ITEM name type)*))
+	    // ^(T_CREATE_TABLE table_id ^(T_CREATE_TABLE ^(T_TABLE_ITEM name type 
+            // ^(T_TABLE_CONSTRAINT cons)*
+            // )*))
             val ch = getChilds(node.getChild(1))
-            val cols = ch map (c => (c.getChild(0).getText.replace("\"", ""), c.getChild(1).getText))
+            val cols = ch map {c => (c.getChild(0).getText.replace("\"", ""), c.getChild(1).getText,
+                                     if (c.getChildCount ==2) { Nil } else {
+                  val cch = getChilds(c).drop(2)
+                  cch flatMap {el => el.getChild(0).getType match {
+                      case T_NULL => if (el.getChildCount == 2) {
+                          Seq(NotNull)
+                        } else Nil
+                      case T_UNIQUE => Seq(Unique)
+                      case T_PRIMARY => Seq(PrimaryKey)
+                    }} : Seq[ConstraintType]
+                }
+              )}
             val cr = CreateTable(getFullTableName(node.getChild(0)), cols)
             end = cr 
           }
@@ -446,7 +459,7 @@ object LogicPlanBuilder {
             case T_DEFAULT => None
           }
           end = Set(Some(p), v)
-      }
+        }
       case T_RESET => {
           // AST:
           // ^(T_RESET (^(T_SELECT_COLUMN ...) | T_ALL) )
@@ -456,7 +469,7 @@ object LogicPlanBuilder {
             case T_ALL => None
           }
           end = Set(p, None)
-      }
+        }
       case T_SHOW => {
           // AST:
           // ^(T_SHOW (^(T_SELECT_COLUMN ...) | T_ALL) )
@@ -466,7 +479,7 @@ object LogicPlanBuilder {
             case T_ALL => None
           }
           end = Show(p)
-      }
+        }
       case T_FUNCTION => {
           // AST:
           // ^(T_FUNCTION ^((T_CREATE | T_DROP) ...)
@@ -479,14 +492,14 @@ object LogicPlanBuilder {
                 // AST:
                 // ^(T_CREATE name as language T_OR?)
                 end = CreateFunction(c.getChild(0).getText, unquote(c.getChild(1)), unquote(c.getChild(2)), c.getChildCount != 3)
-            }
+              }
             case T_DROP => {
                 // AST:
                 // ^(T_DROP name T_IF?)
                 end = DropFunction(c.getChild(0).getText, c.getChildCount != 1)
-            }
+              }
           }
-      }
+        }
       case a => throw new SemanticException(a.toString + "  node: " + node.getText)
     }
     end
@@ -717,8 +730,8 @@ object LogicPlanBuilder {
       case T_NULL_CHECK => Expression(IsNullEvaluator(left))
       case T_IN => {
           right.getType match {
-              // AST:
-              // ^(T_IN expression_main ^(T_SELECT ... ))
+            // AST:
+            // ^(T_IN expression_main ^(T_SELECT ... ))
             case T_SELECT => left in buildOperationTree(right)
 
               // AST:
