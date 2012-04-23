@@ -20,7 +20,7 @@
                 <module>orbisgis-core</module>
                 <module>orbisgis-ui</module>
         </modules>
-	<properties>
+        <properties>
                 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
                 <netbeans.hint.license>OrbisGIS</netbeans.hint.license>
         </properties>
@@ -80,5 +80,12 @@
                                 </configuration>
                         </plugin>
                 </plugins>
+                <extensions>
+                        <extension>
+                                <groupId>org.apache.maven.wagon</groupId> 
+                                <artifactId>wagon-ssh</artifactId> 
+                                <version>2.2</version> 
+                        </extension> 
+                </extensions>
         </build>
 </project>
