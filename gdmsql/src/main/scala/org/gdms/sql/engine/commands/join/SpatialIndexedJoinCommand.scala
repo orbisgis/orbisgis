@@ -170,7 +170,7 @@ class SpatialIndexedJoinCommand(expr: Expression) extends Command with Expressio
   private def findQueryExpression(e: Expression) {
     var done = false
     e match {
-      case func(f: SpatialIndexedFunction, li) => {
+      case func(_, f: SpatialIndexedFunction, li) => {
           li foreach {el =>
             if (!done && matchSmallSpatialField(el)) {
               queryExpression = el

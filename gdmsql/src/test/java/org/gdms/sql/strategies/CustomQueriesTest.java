@@ -36,7 +36,6 @@
  */
 package org.gdms.sql.strategies;
 
-import org.junit.BeforeClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.gdms.data.types.IncompatibleTypesException;
@@ -53,7 +52,6 @@ import org.gdms.driver.DataSet;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.system.RegisterCall;
-import org.gdms.sql.function.FunctionManager;
 import org.gdms.sql.function.ScalarFunction;
 import org.gdms.sql.function.executor.ExecutorFunction;
 import org.gdms.sql.function.spatial.geometry.operators.ST_Buffer;
@@ -64,16 +62,6 @@ import static org.junit.Assert.*;
 public class CustomQueriesTest {
 
         private SQLDataSourceFactory dsf;
-
-        @BeforeClass
-        public static void init() {
-                FunctionManager.remove("SUMQUERY");
-                FunctionManager.remove("FieldReferenceQuery");
-                FunctionManager.remove("gigaquery");
-                FunctionManager.addFunction(SumQuery.class);
-                FunctionManager.addFunction(FieldReferenceQuery.class);
-                FunctionManager.addFunction(GigaCustomQuery.class);
-        }
 
         @Test
         public void testCustomQuery() throws Exception {
@@ -200,7 +188,7 @@ public class CustomQueriesTest {
                 final ST_Buffer buffer = new ST_Buffer();
                 final RegisterCall register = new RegisterCall();
                 try {
-                        FunctionManager.addFunction(new ExecutorFunction() {
+                        dsf.getFunctionManager().addFunction(new ExecutorFunction() {
 
                                 @Override
                                 public String getName() {
@@ -252,7 +240,7 @@ public class CustomQueriesTest {
                 } catch (Exception e) {
                 }
                 try {
-                        FunctionManager.addFunction(new ScalarFunction() {
+                        dsf.getFunctionManager().addFunction(new ScalarFunction() {
 
                                 @Override
                                 public String getName() {
@@ -326,7 +314,7 @@ public class CustomQueriesTest {
 
         @Test
         public void testFunctionRegister() throws Exception {
-                dsf.executeSQL("CALL FunctionRegister('org.gdms.sql.strategies.SumQuery2');");
+                dsf.executeSQL("CREATE FUNCTION sumquery2 AS 'org.gdms.sql.strategies.SumQuery2' LANGUAGE 'java'; ");
                 DataSource d = dsf.getDataSourceFromSQL("select * from sumquery2(ds, 'gid');");
                 d.open();
                 d.close();
@@ -340,5 +328,11 @@ public class CustomQueriesTest {
                         "ds",
                         new FileSourceCreation(new File(SQLBaseTest.internalData
                         + "landcover2000.shp"), null));
+                dsf.getFunctionManager().remove("SUMQUERY");
+                dsf.getFunctionManager().remove("FieldReferenceQuery");
+                dsf.getFunctionManager().remove("gigaquery");
+                dsf.getFunctionManager().addFunction(SumQuery.class);
+                dsf.getFunctionManager().addFunction(FieldReferenceQuery.class);
+                dsf.getFunctionManager().addFunction(GigaCustomQuery.class);
         }
 }

@@ -41,12 +41,15 @@ package org.gdms.sql.engine.commands
 import org.gdms.data.DataSource
 import org.gdms.data.types.TypeFactory
 import org.gdms.driver.DataSet
+import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.evaluator.Expression
 import org.gdms.sql.evaluator.FieldEvaluator
+import org.gdms.sql.function.AggregateFunction
 import org.gdms.sql.function.FunctionException
-import org.gdms.sql.function.FunctionManager
 import org.gdms.sql.function.FunctionValidator
+import org.gdms.sql.function.ScalarFunction
 import org.gdms.sql.function.executor.ExecutorFunction
+import org.gdms.sql.function.table.TableFunction
 import org.orbisgis.progress.NullProgressMonitor
 import org.gdms.sql.engine.GdmSQLPredef._
 import org.orbisgis.progress.ProgressMonitor
@@ -66,13 +69,20 @@ class ExecutorCommand(name: String, params: List[Expression]) extends Command wi
 
   override def doPrepare = {
     // check is the function exists and is of correct type
-    val f = FunctionManager.getFunction(name)
+    val f = dsf.getFunctionManager.getFunction(name)
     if (f == null) {
-      throw new FunctionException("The function does not exist.")
-    } else if (!f.isExecutor) {
-      throw new FunctionException("This function cannot be called with CALL or EXECUTE.")
+      throw new FunctionException("The function " + name + " does not exist.")
+    } else {
+      f  match {
+            case _: ScalarFunction | _: AggregateFunction => throw new SemanticException("The function '" + name + "' cannot be used here. Syntax is:" +
+                                                                                         " SELECT " + name + "(...) FROM myTable;")
+            case e: ExecutorFunction => function = e
+            case t: TableFunction => throw new SemanticException("The function '" + name
+                                                                    + "' cannot be used here. Syntax is: SELECT * FROM " +
+                                                                    name + "(...);")
+            case _ => throw new SemanticException("Unknown function: '" + name + "'.")
+          }
     }
-    function = f.asInstanceOf[ExecutorFunction]
     
     // validates params
     FunctionValidator.failIfTypesDoNotMatchSignature(

@@ -40,6 +40,7 @@ import java.io.IOException;
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
 
+import org.orbisgis.core.DataManager;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionManager;
 import org.orbisgis.core.Services;
@@ -145,7 +146,7 @@ public class SQLConsoleViewPlugIn extends ViewPlugIn {
                                         try {
                                                 GeocognitionElement[] elems = (GeocognitionElement[]) t.getTransferData(geocogFlavor);
                                                 if (elems.length == 1) {
-                                                        Function f = FunctionManager.getFunction(elems[0].getId());
+                                                        Function f = Services.getService(DataManager.class).getDataSourceFactory().getFunctionManager().getFunction(elems[0].getId());
                                                         if (f != null) {
                                                                 return f.getSqlOrder();
                                                         }

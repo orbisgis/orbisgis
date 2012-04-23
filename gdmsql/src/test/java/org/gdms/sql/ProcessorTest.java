@@ -89,8 +89,8 @@ public class ProcessorTest {
                 }
 
                 ZeroArgsFunction fnc = new ZeroArgsFunction();
-                if (FunctionManager.getFunction(fnc.getName()) == null) {
-                        FunctionManager.addFunction(ZeroArgsFunction.class);
+                if (dsf.getFunctionManager().getFunction(fnc.getName()) == null) {
+                        dsf.getFunctionManager().addFunction(ZeroArgsFunction.class);
                 }
 
                 engine = new SQLEngine(dsf);
@@ -381,13 +381,13 @@ public class ProcessorTest {
                 // notexist
                 failWithNoSuchTableException("select * from notexist t1;");
                 // thisfunctiondoes...
-                failWithSemanticException("select max(thisfunctiondoesntexist"
+                failPreparedWithSemanticException("select max(thisfunctiondoesntexist"
                         + "(idnteger)) from alltypes;");
-                failWithSemanticException("select * "
+                failPreparedWithSemanticException("select * "
                         + "from alltypes where thisfunctiondoesnotexist(idnteger);");
                 // boolean case
                 failPreparedWithUnknownFieldException("select max(booleaN) from alltypes;");
-                failWithSemanticException("select * from alltypes where avg(\"boolean\") = 2;");
+                failPreparedWithSemanticException("select * from alltypes where avg(\"boolean\") = 2;");
         }
 
         @Test
@@ -495,7 +495,7 @@ public class ProcessorTest {
         @Test
         public void testGroupBy() throws Exception {
                 // INT field not found in group by
-                failWithSemanticException("select \"int\" from alltypes "
+                failPreparedWithSemanticException("select \"int\" from alltypes "
                         + "group by \"Int\";");
                 // int='e' type mistmatch
                 failWithIncompatibleTypes("select \"int\" from alltypes "
@@ -516,21 +516,21 @@ public class ProcessorTest {
                 failPreparedWithSemanticException("select t1.\"int\" from alltypes t1, "
                         + "alltypes t2 group by t2.\"int\";");
                 // Selecting non grouped fields
-                failWithSemanticException("select string from alltypes group by \"int\";");
+                failPreparedWithSemanticException("select string from alltypes group by \"int\";");
                 // Star select with group by
-                failWithSemanticException("select * from alltypes group by \"int\";");
+                failPreparedWithSemanticException("select * from alltypes group by \"int\";");
 
-                getValidatedStatement("select t1.\"int\" as st1, sum(t2.\"int\") as st2 from "
-                        + "alltypes t1, alltypes t2 group by t1.\"int\" having st1 = 3;");
-                getValidatedStatement("select sum(string :: int) as st from "
+                getFullyValidatedStatement("select t1.\"int\" as st1, sum(t2.\"int\") as st2 from "
+                        + "alltypes t1, alltypes t2 group by st1 having st1 = 3;");
+                getFullyValidatedStatement("select sum(string :: int) as st from "
                         + "alltypes group by \"int\" having st = 3;");
-                getValidatedStatement("select sum(t1.\"int\") as st1, sum(t2.\"int\") as st2 from "
+                getFullyValidatedStatement("select sum(t1.\"int\") as st1, sum(t2.\"int\") as st2 from "
                         + "alltypes t1, alltypes t2 group by t2.\"int\" having st1 = 3;");
-                getValidatedStatement("select \"int\" from alltypes "
+                getFullyValidatedStatement("select \"int\" from alltypes "
                         + "group by \"int\" having \"int\"=5;");
-                getValidatedStatement("select \"int\" from alltypes t"
+                getFullyValidatedStatement("select \"int\" from alltypes t"
                         + " group by t.\"int\";");
-                getValidatedStatement("select 2*\"int\" from alltypes "
+                getFullyValidatedStatement("select 2*\"int\" from alltypes "
                         + "group by \"int\" having \"int\"=5;");
         }
 
@@ -669,9 +669,9 @@ public class ProcessorTest {
                 failWithParseException("select avg(id);");
 
                 // aggregated in where
-                failWithSemanticException("select * from alltypes where avg(\"int\")=0;");
+                failPreparedWithSemanticException("select * from alltypes where avg(\"int\")=0;");
 
-                getValidatedStatement("select \"int\", string, avg(\"double\") from"
+                getFullyValidatedStatement("select \"int\", string, avg(\"double\") from"
                         + " alltypes where \"boolean\" group by \"int\", string having \"int\"=3;");
 
         }
@@ -679,27 +679,27 @@ public class ProcessorTest {
         @Test
         public void testFunctions() throws Exception {
                 // Non existing function in where clause
-                failWithSemanticException("select * "
+                failPreparedWithSemanticException("select * "
                         + "from alltypes where notexists(\"int\");");
 
                 // Non existing function in selection
-                failWithSemanticException("select notexists(\"int\") from alltypes;");
+                failPreparedWithSemanticException("select notexists(\"int\") from alltypes;");
 
                 // Custom query in where clause
-                failWithSemanticException("select * "
+                failPreparedWithSemanticException("select * "
                         + "from alltypes where st_explode(alltypes,geometry);");
 
-                getValidatedStatement("select * "
+                getFullyValidatedStatement("select * "
                         + "from alltypes where strlength(string) > 0;");
-                getValidatedStatement("select strlength(string) " + "from alltypes;");
+                getFullyValidatedStatement("select strlength(string) " + "from alltypes;");
 
         }
 
         @Test
         public void testValidateCustomQueries() throws Exception {
                 SumQuery query = new SumQuery();
-                if (FunctionManager.getFunction(query.getName()) == null) {
-                        FunctionManager.addFunction(SumQuery.class);
+                if (dsf.getFunctionManager().getFunction(query.getName()) == null) {
+                        dsf.getFunctionManager().addFunction(SumQuery.class);
                 }
                 getValidatedStatement("CALL register('file', 'filename');");
                 getValidatedStatement("select * from sumquery(gis);");

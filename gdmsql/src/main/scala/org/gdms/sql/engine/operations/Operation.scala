@@ -38,6 +38,7 @@
 
 package org.gdms.sql.engine.operations
 
+import org.gdms.sql.function.table.TableFunction
 import util.control.Breaks._
 import org.gdms.data.indexes.IndexQuery
 import org.gdms.data.types.TypeFactory
@@ -46,7 +47,6 @@ import org.gdms.sql.evaluator.Expression
 import org.gdms.sql.evaluator.agg
 import org.gdms.sql.evaluator.field
 import org.gdms.sql.function.FunctionException
-import org.gdms.sql.function.FunctionManager
 
 /**
  * Abstract query operation.
@@ -77,6 +77,28 @@ abstract sealed class Operation {
    */
   override def toString = super.toString ++ " " ++ children.toString
 
+}
+
+object Operation {
+  def unapply(op: Operation) = {
+    op.children match {
+      case Nil => None
+      case a => Some(a)
+    }
+  }
+}
+
+trait ExpressionOperation extends Operation {
+  def expr: Seq[Expression]
+}
+
+object ExpressionOperation {
+  def unapply(o: Operation) = {
+    o match {
+      case t: ExpressionOperation => Some(t.expr)
+      case _ => None
+    }
+  }
 }
 
 case object NoOp extends Operation {
@@ -110,26 +132,24 @@ case class Scan(table: String, alias: Option[String] = None, var edition: Boolea
  */
 case class CustomQueryScan(customQuery: String, exp: Seq[Expression],
                            tables: Seq[Either[String, Operation]],
-                           alias: Option[String] = None) extends Operation {
+                           alias: Option[String] = None) extends Operation with ExpressionOperation {
   val children = tables.flatMap(_.right.toOption).toList
   
   override def toString = "TableFunction  called(" + customQuery + ") params(" + exp + tables + ")" + alias
-  val function = FunctionManager.getFunction(customQuery)
+  var function: TableFunction = null
   override def doValidate = {
-    if (function == null) throw new FunctionException("The function " + customQuery + " does not exist.")
-    if (!function.isTable) throw new FunctionException("The function " + customQuery + " does not return a table.")
     exp foreach (_ preValidate)
     
     def check(e: Expression) {
       e match {
         case field(n,_) => throw new SemanticException("No field is allowed in a table function: found '" + n + "'.")
-        case agg(f, _) => throw new SemanticException("No aggregate function is allowed in a table function: found '" + f.getName + "'.")
         case _ => e.children map (check)
       }
     }
     
     exp map (check)
   }
+  def expr = exp
 }
 
 
@@ -157,7 +177,8 @@ case class IndexQueryScan(table: String, alias: Option[String] = None, query: In
  * @author Antoine Gourlay
  * @since 0.3
  */
-case class ValuesScan(exp: Seq[Seq[Expression]], alias: Option[String] = None, internal: Boolean = true) extends Operation {
+case class ValuesScan(exp: Seq[Seq[Expression]], alias: Option[String] = None, internal: Boolean = true) 
+extends Operation with ExpressionOperation {
   override def toString = "ValuesScan" + (if (internal) "(internal)" else "") + " of (" + exp + ") " + (if (alias.isDefined) alias else "")
   val children = Nil
   override def doValidate {
@@ -178,6 +199,7 @@ case class ValuesScan(exp: Seq[Seq[Expression]], alias: Option[String] = None, i
       }
     }
   }
+  def expr = exp flatten
 }
   
 
@@ -276,11 +298,13 @@ case class SubQuery(alias: String,var child: Operation) extends Operation {
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class Projection(exp: List[(Expression, Option[String])],var child: Operation) extends Operation {
+case class Projection(exp: List[(Expression, Option[String])],var child: Operation) 
+extends Operation with ExpressionOperation {
   def children = List(child)
   override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
   override def doValidate = exp foreach (_._1 preValidate)
   override def toString = "Projection of(" + exp + ") on(" + children + ")"
+  def expr = exp map (_._1)
 }
 
 /**
@@ -293,11 +317,13 @@ case class Projection(exp: List[(Expression, Option[String])],var child: Operati
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class Aggregate(exp: List[(Expression, Option[String])],var child: Operation) extends Operation {
+case class Aggregate(exp: List[(Expression, Option[String])],var child: Operation) 
+extends Operation with ExpressionOperation {
   def children = List(child)
   override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
   override def doValidate = exp foreach (_._1 preValidate)
   override def toString = "Aggregate exp(" + exp + ") on(" + children + ")"
+  def expr = exp map (_._1)
 }
 
 /**
@@ -309,24 +335,12 @@ case class Aggregate(exp: List[(Expression, Option[String])],var child: Operatio
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class Filter(e: Expression,var child: Operation) extends Operation {
+case class Filter(e: Expression,var child: Operation, having: Boolean = false) extends Operation with ExpressionOperation {
   def children = List(child)
   override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
-  override def doValidate = {
-    
-    // no aggregate function is allowed in a WHERE / HAVING clause
-    def check (ex: Expression) {
-      ex match {
-        case agg(f,_) => throw new SemanticException("No aggregate function is allowed in a WHERE / HAVING clause."
-                                                     + " Found function '" + f.getName + "'.")
-        case _ => ex.children map (check)
-      }
-    }
-    
-    check(e)
-    e.preValidate
-  }
+  override def doValidate = e.preValidate
   override def toString = "Filter of(" + e + ") on(" + children + ")"
+  def expr = Seq(e)
 }
 
 /**
@@ -341,11 +355,12 @@ case class Filter(e: Expression,var child: Operation) extends Operation {
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class Sort(names: Seq[(Expression, Boolean)],var child: Operation) extends Operation {
+case class Sort(names: Seq[(Expression, Boolean)],var child: Operation) extends Operation with ExpressionOperation {
   def children = List(child)
   override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
   override def doValidate = names foreach (_._1 preValidate)
   override def toString = "Sort fields(" + names + ") on(" + children + ")"
+  def expr = names map (_._1)
 }
 
 /**
@@ -359,11 +374,12 @@ case class Sort(names: Seq[(Expression, Boolean)],var child: Operation) extends 
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class Grouping(exp: List[(Expression, Option[String])],var child: Operation) extends Operation {
+case class Grouping(var exp: List[(Expression, Option[String])],var child: Operation) extends Operation with ExpressionOperation {
   def children = List(child)
   override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
   override def doValidate = exp foreach (_._1 preValidate)
   override def toString = "Group over(" + exp + ") on(" + children + ")"
+  def expr = exp map (_._1)
 }
 
 /**
@@ -373,13 +389,22 @@ case class Grouping(exp: List[(Expression, Option[String])],var child: Operation
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class Join(var joinType: JoinType, var left: Operation,var right: Operation) extends Operation {
+case class Join(var joinType: JoinType, var left: Operation,var right: Operation) extends Operation
+with ExpressionOperation {
   def children = List(left, right)
   override def children_=(o: List[Operation]) = {o match {
       case a :: b :: Nil => left = a; right = b;
       case _ => throw new IllegalArgumentException("Needs two children extactly.")
     }}
   override def toString = "Join type(" + joinType + ") on(" + children + ")"
+  def expr = {
+    joinType match {
+      case OuterLeft(c) => c.toSeq
+      case OuterFull(c) => c.toSeq
+      case Inner(c,_,_) => Seq(c)
+      case _ => Nil
+    }
+  }
 }
 
 
@@ -407,11 +432,12 @@ case class Union(var left: Operation,var right: Operation) extends Operation {
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class Update(exp: Seq[(String, Expression)],var child: Operation) extends Operation {
+case class Update(exp: Seq[(String, Expression)],var child: Operation) extends Operation with ExpressionOperation {
   def children = List(child)
   override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
   override def doValidate = exp foreach (_._2 preValidate)
   override def toString = "Update exp(" + exp + ") on (" + children + ")"
+  def expr = exp map (_._2)
 }
 
 /**
@@ -586,10 +612,11 @@ case class DropIndex(table: String, column: String) extends Operation {
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class ExecutorCall(name: String, params: List[Expression]) extends Operation {
+case class ExecutorCall(name: String, params: List[Expression]) extends Operation with ExpressionOperation {
   def children = Nil
   override def doValidate = params foreach (_ preValidate)
   override def toString = "ExecutorFunction name(" + name + ") " + " params(" + params + ")"
+  def expr = params
 }
 
 /**

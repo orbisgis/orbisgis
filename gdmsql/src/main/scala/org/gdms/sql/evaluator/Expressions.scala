@@ -236,20 +236,7 @@ object Expression {
    * @param f a GDMS function
    * @param a list of expression as parameters
    */
-  def apply(name: String, l: List[Expression]) = {
-    
-    FunctionManager.getFunction(name) match {
-      case s: ScalarFunction => new Expression(FunctionEvaluator(s, l))
-      case a: AggregateFunction => new Expression(AggregateEvaluator(a, l))
-      case e: ExecutorFunction => throw new SemanticException("The function '" + name
-                                                              + "' cannot be used here. Syntax is: EXECUTE " +
-                                                              name + "(...);")
-      case t: TableFunction => throw new SemanticException("The function '" + name + "' cannot be used here." +
-                                                           "Syntax is: SELECT ... FROM " + name + "(...);")
-      case _ => throw new SemanticException("Unknown function: '" + name + "'.")
-    }
-    
-  }
+  def apply(name: String, l: List[Expression]) = new Expression(FunctionEvaluator(name, l))
 
   /**
    * Builds an expression backed by the given operator

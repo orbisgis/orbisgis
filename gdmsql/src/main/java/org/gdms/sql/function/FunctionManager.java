@@ -195,7 +195,6 @@ import org.gdms.sql.function.spatial.raster.properties.ST_Count;
 import org.gdms.sql.function.system.ExportCall;
 import org.gdms.sql.function.system.FunctionHelp;
 import org.gdms.sql.function.system.RegisterCall;
-import org.gdms.sql.function.system.RegisterFunction;
 
 /**
  * This class manages all Functions registered for use with all the
@@ -204,11 +203,11 @@ import org.gdms.sql.function.system.RegisterFunction;
  */
 public final class FunctionManager {
 
-        private static Map<String, Class<? extends Function>> nameFunction = new HashMap<String, Class<? extends Function>>();
-        private static List<FunctionManagerListener> listeners = new ArrayList<FunctionManagerListener>();
+        private final Map<String, Class<? extends Function>> nameFunction = new HashMap<String, Class<? extends Function>>();
+        private final List<FunctionManagerListener> listeners = new ArrayList<FunctionManagerListener>();
         private static final Logger LOG = Logger.getLogger(FunctionManager.class);
 
-        static {
+        public FunctionManager() {
                 addFunction(Count.class);
                 addFunction(Sum.class);
                 addFunction(StrLength.class);
@@ -338,7 +337,6 @@ public final class FunctionManager {
                 addFunction(ExportCall.class);
                 addFunction(RegisterCall.class);
                 addFunction(ST_Extrude.class);
-                addFunction(RegisterFunction.class);
                 addFunction(ST_Explode.class);
                 addFunction(FunctionHelp.class);
                 addFunction(ST_CreateGrid.class);
@@ -366,7 +364,7 @@ public final class FunctionManager {
          * Adds a listener.
          * @param listener a listener
          */
-        public static void addFunctionManagerListener(FunctionManagerListener listener) {
+        public void addFunctionManagerListener(FunctionManagerListener listener) {
                 listeners.add(listener);
         }
 
@@ -377,7 +375,7 @@ public final class FunctionManager {
          * @return true if the listener was successfully removed. False if the
          *         specified parameter was not a listener
          */
-        public static boolean removeFunctionManagerListener(FunctionManagerListener listener) {
+        public boolean removeFunctionManagerListener(FunctionManagerListener listener) {
                 return listeners.remove(listener);
         }
 
@@ -391,7 +389,7 @@ public final class FunctionManager {
          *             empty constructor or there is already a function or custom
          *             query with that name (when replace if false)
          */
-        public static void addFunction(Class<? extends Function> functionClass, boolean replace) {
+        public void addFunction(Class<? extends Function> functionClass, boolean replace) {
                 LOG.trace("Adding function " + functionClass.getName());
                 Function function;
                 try {
@@ -417,7 +415,7 @@ public final class FunctionManager {
          *         query with that name (when replace if false)
          * 
          */
-        public static void addFunction(String functionName, Class<? extends Function> functionClass, boolean replace) {
+        public void addFunction(String functionName, Class<? extends Function> functionClass, boolean replace) {
                 if (!replace && nameFunction.containsKey(functionName)) {
                         throw new IllegalArgumentException("Function " + functionName
                                 + " already exists");
@@ -436,7 +434,7 @@ public final class FunctionManager {
          *             empty constructor or there is already a function or custom
          *             query with that name
          */
-        public static void addFunction(Class<? extends Function> functionClass) {
+        public void addFunction(Class<? extends Function> functionClass) {
                 addFunction(functionClass, false);
         }
 
@@ -450,11 +448,11 @@ public final class FunctionManager {
          *             empty constructor or there is already a function or custom
          *             query with that name
          */
-        public static void addFunction(String name, Class<? extends Function> functionClass) {
+        public void addFunction(String name, Class<? extends Function> functionClass) {
                 addFunction(name, functionClass, false);
         }
 
-        private static void fireFunctionAdded(String functionName) {
+        private void fireFunctionAdded(String functionName) {
                 for (FunctionManagerListener listener : listeners) {
                         listener.functionAdded(functionName);
                 }
@@ -465,7 +463,7 @@ public final class FunctionManager {
          * @param name a function name
          * @return true if registered
          */
-        public static boolean contains(String name) {
+        public boolean contains(String name) {
                 return nameFunction.containsKey(name);
         }
 
@@ -474,7 +472,7 @@ public final class FunctionManager {
          * @param functionClass a function class
          * @return true if registered
          */
-        public static boolean contains(Class<? extends Function> functionClass) {
+        public boolean contains(Class<? extends Function> functionClass) {
                 return nameFunction.containsValue(functionClass);
         }
 
@@ -486,7 +484,7 @@ public final class FunctionManager {
          * @return a new function instance or null if there is no function with that
          *         name
          */
-        public static Function getFunction(String name) {
+        public Function getFunction(String name) {
                 LOG.trace("Getting function " + name);
                 Class<? extends Function> func = nameFunction.get(name.toLowerCase());
 
@@ -509,7 +507,7 @@ public final class FunctionManager {
          * Gets all registered function names
          * @return an array of names
          */
-        public static String[] getFunctionNames() {
+        public String[] getFunctionNames() {
                 LOG.trace("Getting all function names");
                 Set<String> k = nameFunction.keySet();
 
@@ -521,7 +519,7 @@ public final class FunctionManager {
          * @param functionName the name of a function
          * @return the function Class if found, null if not found
          */
-        public static Class<? extends Function> remove(String functionName) {
+        public Class<? extends Function> remove(String functionName) {
                 LOG.trace("Removing function");
                 if (functionName != null) {
                         Class<? extends Function> ret = nameFunction.remove(functionName.toLowerCase());
@@ -534,12 +532,9 @@ public final class FunctionManager {
                 }
         }
 
-        private static void fireFunctionRemoved(String functionName) {
+        private void fireFunctionRemoved(String functionName) {
                 for (FunctionManagerListener listener : listeners) {
                         listener.functionRemoved(functionName);
                 }
-        }
-
-        private FunctionManager() {
         }
 }

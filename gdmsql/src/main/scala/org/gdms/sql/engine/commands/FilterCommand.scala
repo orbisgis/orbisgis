@@ -43,6 +43,7 @@ import org.gdms.sql.evaluator.Expression
 import org.gdms.data.types.Type
 import org.gdms.data.types.TypeFactory
 import org.gdms.sql.engine.GdmSQLPredef._
+import org.gdms.sql.evaluator.agg
 import org.orbisgis.progress.ProgressMonitor
 
 /**
@@ -73,6 +74,18 @@ class ExpressionFilterCommand(e: Expression) extends FilterCommand with Expressi
   protected def filterExecute: Row => Boolean = { r => e.evaluate(r).getAsBoolean.booleanValue }
   
   override def doPrepare {
+    // no aggregate function is allowed in a WHERE / HAVING clause
+    // this check cannot be done in Filter Operation because aggregates are resolved later.
+    def check (ex: Expression) {
+      ex match {
+        case agg(f,_) => throw new SemanticException("No aggregate function is allowed in a WHERE / HAVING clause."
+                                                     + " Found function '" + f.getName + "'.")
+        case _ => ex.children map (check)
+      }
+    }
+    
+    check(e)
+    
     super.doPrepare
     
     e.evaluator.sqlType match {

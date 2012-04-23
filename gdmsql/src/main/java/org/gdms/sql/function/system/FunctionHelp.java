@@ -1,25 +1,26 @@
 package org.gdms.sql.function.system;
 
 import org.apache.log4j.Logger;
+
+import org.orbisgis.progress.ProgressMonitor;
+
 import org.gdms.data.InitializationException;
 import org.gdms.data.SQLDataSourceFactory;
-import org.gdms.sql.function.FunctionException;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.driver.DriverException;
 import org.gdms.driver.DataSet;
+import org.gdms.driver.DriverException;
 import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.sql.function.Function;
+import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionSignature;
-import org.gdms.sql.function.table.TableDefinition;
-import org.gdms.sql.function.FunctionManager;
 import org.gdms.sql.function.table.AbstractTableFunction;
+import org.gdms.sql.function.table.TableDefinition;
 import org.gdms.sql.function.table.TableFunctionSignature;
-import org.orbisgis.progress.ProgressMonitor;
 
 public final class FunctionHelp extends AbstractTableFunction {
 
@@ -45,14 +46,14 @@ public final class FunctionHelp extends AbstractTableFunction {
                 Value[] values, ProgressMonitor pm) throws FunctionException {
                 LOG.trace("Evaluating");
 
-                String[] functions = FunctionManager.getFunctionNames();
+                String[] functions = dsf.getFunctionManager().getFunctionNames();
 
                 try {
                         MemoryDataSetDriver genericObjectDriver = new MemoryDataSetDriver(
                                 metadata);
                         for (String function : functions) {
 
-                                Function fct = FunctionManager.getFunction(function);
+                                Function fct = dsf.getFunctionManager().getFunction(function);
                                 String type = null;
                                 if (fct.isScalar()) {
                                         type = "Scalar Function";

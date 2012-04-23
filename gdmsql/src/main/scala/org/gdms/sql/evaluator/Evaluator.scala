@@ -132,29 +132,28 @@ object cons {
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class FunctionEvaluator(f: ScalarFunction, l: List[Expression]) extends Evaluator with DsfEvaluator {
+case class FunctionEvaluator(name: String, l: List[Expression]) extends Evaluator with DsfEvaluator {
+  var f: ScalarFunction = null
   def eval = s => f.evaluate(dsf, l map ( _.evaluate(s)): _*)
   def sqlType = f.getType(l.map { e => TypeFactory.createType(e.evaluator.sqlType) } toArray).getTypeCode
   override val childExpressions = l
-  override def doPreValidate = {
-    if (f == null) throw new FunctionException("The function does not exist.")
-  }
   override def doValidate = {
+    if (f == null) throw new FunctionException("Internal error: failed to initialized function for '" + name + "'.")
     FunctionValidator.failIfTypesDoNotMatchSignature(
       l.map { e => TypeFactory.createType(e.evaluator.sqlType) } toArray,
       f.getFunctionSignatures)
   }
-  override def toString = f.getName + "(" + l + ")"
+  override def toString = if (f == null) name else f.getName + "(" + l + ")"
   
   def doCopy = {
-    FunctionEvaluator(FunctionManager.getFunction(f.getName).asInstanceOf[ScalarFunction], l)
+    FunctionEvaluator(name, l)
   }
 }
 
 object func {
   def unapply(e: Expression) = {
     e.evaluator match {
-      case a: FunctionEvaluator => Some((a.f, a.l))
+      case a: FunctionEvaluator => Some((a.name, a.f, a.l))
       case _ => None
     }
   }
@@ -185,7 +184,7 @@ case class AggregateEvaluator(f: AggregateFunction, l: List[Expression]) extends
   override def toString = f.getName + "(" + l + ")"
   
   def doCopy = {
-    AggregateEvaluator(FunctionManager.getFunction(f.getName).asInstanceOf[AggregateFunction], l)
+    AggregateEvaluator(dsf.getFunctionManager.getFunction(f.getName).asInstanceOf[AggregateFunction], l)
   }
 }
 

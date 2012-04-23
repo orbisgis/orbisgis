@@ -50,13 +50,13 @@ import org.orbisgis.progress.ProgressMonitor
 
 class DropFunctionCommand(name: String, ifExists: Boolean) extends Command with OutputCommand {
   override def doPrepare = {
-    if (!ifExists && !FunctionManager.contains(name)) {
+    if (!ifExists && !dsf.getFunctionManager.contains(name)) {
       throw new SemanticException("The function '" + name + "' does not exist.")
     }
   }
 
   protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
-    FunctionManager.remove(name)
+    dsf.getFunctionManager.remove(name)
     
     null
   }

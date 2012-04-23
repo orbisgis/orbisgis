@@ -42,20 +42,76 @@
 package org.gdms.sql.engine.step.aggregate
 
 import java.util.Properties
+import org.gdms.data.SQLDataSourceFactory
 import org.gdms.sql.engine.AbstractEngineStep
 import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.engine.operations._
 import org.gdms.sql.evaluator._
+import org.gdms.sql.function.AggregateFunction
+import org.gdms.sql.function.ScalarFunction
+import org.gdms.sql.function.executor.ExecutorFunction
+import org.gdms.sql.function.table.TableFunction
 
 /**
- * Step 2: Aggregation & Grouping.
+ * Step P0: Aggregation & Grouping.
  * 
  * The projections are processed to convert aggregation and grouping into the corresponding query elements.
  * This validates than selected fields are referenced in the GROUP BY clause (if there is one).
  */
-case object AggregateStep extends AbstractEngineStep[Operation, Operation]("Processing aggregates & groups") {
-  def doOperation(op: Operation)(implicit p: Properties): Operation = {
+case object AggregateStep extends AbstractEngineStep[(Operation, SQLDataSourceFactory), (Operation, SQLDataSourceFactory)]("Processing aggregates & groups") {
+  def doOperation(op: (Operation, SQLDataSourceFactory))  (implicit p: Properties): (Operation, SQLDataSourceFactory) = {
+    
+    markAggregateFunctions(op._1, op._2)
+    processAggregates(op._1)
+    
+    op
+  }
+  
+  def markAggregateFunctions(op: Operation, dsf: SQLDataSourceFactory) {
+    op.allChildren foreach { 
+      case c @ CustomQueryScan(name, exp, _, _) => {
+          val f = dsf.getFunctionManager.getFunction(name)
+          f  match {
+            case _: ScalarFunction | _: AggregateFunction => throw new SemanticException("The function '" + name + "' cannot be used here. Syntax is:" +
+                                                                                         " SELECT " + name + "(...) FROM myTable;")
+            case e: ExecutorFunction => throw new SemanticException("The function '" + name
+                                                                    + "' cannot be used here. Syntax is: EXECUTE " +
+                                                                    name + "(...);")
+            case t: TableFunction => c.function = t
+            case _ => throw new SemanticException("Unknown function: '" + name + "'.")
+          }
+        }
+        exp foreach (markAggregateFunctions(_, dsf))
+      case ExpressionOperation(exp) =>
+        exp foreach (markAggregateFunctions(_, dsf))
+      case _ =>
+    }
+  }
+  
+  def markAggregateFunctions(e: Expression, dsf: SQLDataSourceFactory) {
+    e.evaluator match {
+      case fe @ FunctionEvaluator(name, l) => {
+          val f = dsf.getFunctionManager.getFunction(name)
+          f  match {
+            case s: ScalarFunction => fe.f = s
+            case a: AggregateFunction => e.evaluator = AggregateEvaluator(a, l)
+            case e: ExecutorFunction => throw new SemanticException("The function '" + name
+                                                                    + "' cannot be used here. Syntax is: EXECUTE " +
+                                                                    name + "(...);")
+            case t: TableFunction => throw new SemanticException("The function '" + name + "' cannot be used here." +
+                                                                 "Syntax is: SELECT ... FROM " + name + "(...);")
+            case _ => throw new SemanticException("Unknown function: '" + name + "'.")
+          }
+        }
+      case _ => 
+    }
+    
+    e foreach (markAggregateFunctions(_, dsf))
+  }
+  
+  def processAggregates(op: Operation) {
     op.allChildren foreach { case p @ Projection(exp, ch) =>
+        // replaces aggregate functions by fields and returns the aggregates
         var i = -2
         def replaceAggregateFunctions(e: (Expression, Option[String])): Seq[(Expression, Option[String])] = {
           e._1 match {
@@ -70,14 +126,21 @@ case object AggregateStep extends AbstractEngineStep[Operation, Operation]("Proc
         }
         
         var gr: Option[Grouping] = None
-        var sr: Option[Sort] = None
+        var top: Operation = p
         
-        ch match {
-          case a @ Grouping(_,_) => gr = Some(a)
-          case s @ Sort(_, a @ Grouping(_, _)) => gr = Some(a); sr = Some(s);
-          case _ =>
+        // finds a grouping and its parent
+        def find(ch: Operation) {
+          ch match {
+            case a @ Grouping(_,_) => gr = Some(a)
+            case l: LimitOffset => top = l; find(l.child)
+            case s: Sort => top = s; find(s.child)
+            case fl @ Filter(_, f, true) => top = fl; find(f)
+            case _ => top = p
+          }
         }
+        find(ch)
         
+        // process grouping
         if (gr.isDefined) {
           // there is a Grouping
           val group = gr.get
@@ -91,6 +154,23 @@ case object AggregateStep extends AbstractEngineStep[Operation, Operation]("Proc
           // selected items with aliases
           val fieldsAl = exp filter (_._2.isDefined)
                     
+          // converts SELECT toto + 12 as titi FROM ... GROUP BY titi
+          // into something like (pseudo-SQL): SELECT titi FROM ... GROUP BY toto + 12 as titi
+          fieldsAl foreach {f =>
+            val al = f._2.get
+            if (aliases.contains(al)) {
+              val t = f._1.evaluator
+              // we replace the evaluator with a FieldEvaluator with the alias name
+              f._1.evaluator = FieldEvaluator(al)
+              
+              // we replace the Field in the GROUP BY clause by the actual expression
+              group.exp = group.exp map {g => g._1 match {
+                  case field(name,_) if name == al => (Expression(t), Some(al))
+                  case _ => g
+                }}
+            }
+          }
+          
           // directly selected fields
           val selFields = exp flatMap (_._1 match {
               case field(name, _) => Some(name)
@@ -102,22 +182,6 @@ case object AggregateStep extends AbstractEngineStep[Operation, Operation]("Proc
           selFields foreach {n => 
             if (!aliases.contains(n)) {
               throw new SemanticException("field " + n + " cannot be selected because it is not present in the GROUP BY clause.")
-            }
-          }
-          
-          // converts SELECT toto + 12 as titi FROM ... GROUP BY titi
-          // into something like (pseudo-SQL): SELECT titi FROM ... GROUP BY toto + 12 as titi
-          fieldsAl foreach {f =>
-            if (aliases.contains(f._2.get)) {
-              val t = f._1.evaluator
-              // we replace the evaluator with a FieldEvaluator with the alias name
-              f._1.evaluator = FieldEvaluator(f._2.get)
-              
-              // we replace the Field in the GROUP BY clause by the actual expression
-              group.exp.find(g => g._1.evaluator match {
-                  case a: FieldEvaluator => f._2.get == a.name
-                  case _ => false
-                }).get._1.evaluator = t
             }
           }
         }
@@ -142,15 +206,11 @@ case object AggregateStep extends AbstractEngineStep[Operation, Operation]("Proc
           }
           
           val c = new Aggregate(aggF, gr.getOrElse(p.child))
-          if (sr.isDefined) {
-            sr.get.child = c
-          } else {
-            p.child = c
-          }
+          
+          top.children = List(c)
         }
       case _ =>
         
     }
-    op
   }
 }

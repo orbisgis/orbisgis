@@ -235,7 +235,7 @@ object LogicPlanBuilder {
             down = Grouping(group, down)
           }
           if (having != null) {
-            down = Filter(having, down)
+            down = Filter(having, down, true)
           }
           if (!sort.isEmpty) {
             down = Sort(sort, down)

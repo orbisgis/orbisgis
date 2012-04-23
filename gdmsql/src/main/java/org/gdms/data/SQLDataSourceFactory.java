@@ -39,15 +39,19 @@ package org.gdms.data;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.log4j.Logger;
+
+import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
+
 import org.gdms.data.sql.SQLEvent;
 import org.gdms.data.sql.SQLSourceDefinition;
 import org.gdms.driver.DriverException;
+import org.gdms.sql.engine.ParseException;
 import org.gdms.sql.engine.SQLEngine;
 import org.gdms.sql.engine.SqlStatement;
-import org.gdms.sql.engine.ParseException;
-import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.progress.NullProgressMonitor;
+import org.gdms.sql.function.FunctionManager;
 
 /**
  * Main entry point for Gdmsql.
@@ -58,6 +62,7 @@ public class SQLDataSourceFactory extends DataSourceFactory {
         private final List<DataSourceFactoryListener> listeners = new ArrayList<DataSourceFactoryListener>();
         private static final Logger LOG = Logger.getLogger(SQLDataSourceFactory.class);
         private SQLEngine sqlEngine;
+        private FunctionManager functionManager = new FunctionManager();
 
         /**
          * Creates a new {@code SQLDataSourceFactory} with a <tt>sourceInfoDir</tt>
@@ -325,5 +330,9 @@ public class SQLDataSourceFactory extends DataSourceFactory {
                         sqlEngine = new SQLEngine(this);
                 }
                 return sqlEngine;
+        }
+        
+        public final FunctionManager getFunctionManager() {
+                return functionManager;
         }
 }

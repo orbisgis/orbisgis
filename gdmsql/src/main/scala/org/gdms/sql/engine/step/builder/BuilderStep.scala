@@ -51,11 +51,11 @@ import org.gdms.sql.engine.commands.ddl._
 import org.gdms.sql.engine.commands.join._
 import org.gdms.sql.engine.commands.scan._
 import org.gdms.sql.engine.operations._
+import org.gdms.sql.engine.step.aggregate.AggregateStep
 import org.gdms.sql.engine.step.physicalJoin.PhysicalJoinOptimStep
 import org.gdms.sql.evaluator.ExistsEvaluator
 import org.gdms.sql.evaluator.Expression
 import org.gdms.sql.evaluator.InEvaluator
-import org.gdms.sql.function.table.TableFunction
 
 /**
  * Step P2: Building of the command tree
@@ -136,7 +136,7 @@ case object BuilderStep extends AbstractEngineStep[(Operation, SQLDataSourceFact
         }
       case Distinct(ch) => new MemoryDistinctCommand() withChild(ch)
       case Grouping(e, ch) =>  new AggregateCommand(Nil, e) withChild(ch)
-      case Filter(exp, ch) => {
+      case Filter(exp, ch, _) => {
           processExp(exp)
           new ExpressionFilterCommand(exp) withChild(ch)
         }
@@ -160,7 +160,7 @@ case object BuilderStep extends AbstractEngineStep[(Operation, SQLDataSourceFact
                 }
               }
           }
-          new CustomQueryScanCommand(e,tables.reverse, a.function.asInstanceOf[TableFunction], alias)
+          new CustomQueryScanCommand(e,tables.reverse, a.function, alias)
         }
       case CreateTableAs(n, ch) => new CreateTableCommand(n) withChild(ch)
       case a @ CreateView(n, o, ch) => new CreateViewCommand(n, ch, o)
@@ -192,6 +192,7 @@ case object BuilderStep extends AbstractEngineStep[(Operation, SQLDataSourceFact
   
   private def processOp(o: Operation)(implicit dsf: SQLDataSourceFactory, p: Properties) = {
     val c = (o, dsf) >=: 
+    AggregateStep >=:
     PhysicalJoinOptimStep >=: 
     BuilderStep
     

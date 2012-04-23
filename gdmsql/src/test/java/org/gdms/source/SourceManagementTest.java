@@ -91,8 +91,8 @@ public class SourceManagementTest {
                 sm.removeAll();
                 sm.register("db", testDB);
                 sm.register("file", testFile);
-                String sql = "select 2*StringToInt(file.id) from db, file "
-                        + "where StringToInt(file.id) <> 234;";
+                String sql = "select 2*(file.id :: int) from db, file "
+                        + "where (file.id :: int) <> 234;";
                 dsf.register("sql", sql);
                 DataSource ds = dsf.getDataSource("sql");
                 assertTrue(setIs(ds.getReferencedSources(),
@@ -261,8 +261,8 @@ public class SourceManagementTest {
         @Test
         public void testCustomQueryDependences() throws Exception {
                 SumQuery sq = new SumQuery();
-                if (FunctionManager.getFunction(sq.getName()) == null) {
-                        FunctionManager.addFunction(SumQuery.class);
+                if (dsf.getFunctionManager().getFunction(sq.getName()) == null) {
+                        dsf.getFunctionManager().addFunction(SumQuery.class);
                 }
                 dsf.register("sum", "select * from sumquery(" + SOURCE + ", 'id');");
                 String[] deps = sm.getSource("sum").getReferencedSources();

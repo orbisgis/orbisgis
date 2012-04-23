@@ -53,7 +53,7 @@ extends Command with OutputCommand {
   private var cc: Class[_ <: org.gdms.sql.function.Function] = null
   
   override def doPrepare = {
-    if (!replace && FunctionManager.contains(name)) {
+    if (!replace && dsf.getFunctionManager.contains(name)) {
       throw new SemanticException("There already is a function named '" + name + "' registered.")
     }
     
@@ -67,7 +67,7 @@ extends Command with OutputCommand {
   }
   
   protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
-    FunctionManager.addFunction(name, cc, replace)
+    dsf.getFunctionManager.addFunction(name, cc, replace)
     null
   }
   

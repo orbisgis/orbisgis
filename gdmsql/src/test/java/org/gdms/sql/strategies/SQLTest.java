@@ -58,7 +58,6 @@ import org.gdms.data.values.ValueWriter;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.sql.engine.SemanticException;
-import org.gdms.sql.function.FunctionManager;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.io.WKTReader;
@@ -911,14 +910,14 @@ public class SQLTest extends SQLBaseTest {
         @Test
         public void testCreateDropFunction() throws Exception {
                 dsf.executeSQL("create function myfunct as 'org.gdms.sql.function.math.Sin' language 'java';");
-                assertTrue(FunctionManager.contains("myfunct"));
-                assertEquals("Sin", FunctionManager.getFunction("myfunct").getName());
+                assertTrue(dsf.getFunctionManager().contains("myfunct"));
+                assertEquals("Sin", dsf.getFunctionManager().getFunction("myfunct").getName());
                 
                 dsf.executeSQL("create or replace function myfunct as 'org.gdms.sql.function.math.Cos' language 'java';");
-                assertEquals("Cos", FunctionManager.getFunction("myfunct").getName());
+                assertEquals("Cos", dsf.getFunctionManager().getFunction("myfunct").getName());
                 
                 dsf.executeSQL("drop function myfunct;");
-                assertFalse(FunctionManager.contains("myfunct"));
+                assertFalse(dsf.getFunctionManager().contains("myfunct"));
                 
                 dsf.executeSQL("drop function if exists myfunct;");
         }

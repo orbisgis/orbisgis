@@ -47,7 +47,6 @@ import org.gdms.sql.engine.GdmSQLPredef._
 import org.gdms.sql.engine.AbstractEngineStep
 import org.gdms.sql.engine.logical.LogicPlanOptimizer
 import org.gdms.sql.engine.operations._
-import org.gdms.sql.engine.step.aggregate.AggregateStep
 import org.gdms.sql.engine.step.logicalJoin.LogicalJoinOptimStep
 import org.gdms.sql.engine.step.validate.ValidationStep
 import org.gdms.sql.evaluator._
@@ -80,7 +79,7 @@ case object FiltersStep extends AbstractEngineStep[Operation, Operation]("filter
     o.children foreach processSubQueries
     
     o match {
-      case Filter(f, _) => processExp(f)
+      case Filter(f, _, _) => processExp(f)
       case Projection(f,_) => f foreach (e => processExp(e._1))
       case Join(Inner(f,_,_),_,_) => processExp(f)
       case _ =>
@@ -98,7 +97,6 @@ case object FiltersStep extends AbstractEngineStep[Operation, Operation]("filter
   
   private def processOp(o: Operation)(implicit p: Properties) = {
     o                    >=:
-    AggregateStep        >=:
     LogicalJoinOptimStep >=:
     FiltersStep          >=:
     ValidationStep
@@ -117,10 +115,10 @@ case object FiltersStep extends AbstractEngineStep[Operation, Operation]("filter
     o.children foreach optimizeSpatialIndexedFilterExpressions
     
     o match {
-      case f @ Filter(e, sc @ Scan(_,_,_)) => {
+      case f @ Filter(e, sc @ Scan(_,_,_), false) => {
           var ok = false
           matchExpressionAndAny(e, {ex => ex match {
-                case func(_: SpatialIndexedFunction,_) => true
+                case func(_, _: SpatialIndexedFunction,_) => true
                 case _ => false
               }}, {e => ok = true})
           if (ok) {
@@ -129,7 +127,7 @@ case object FiltersStep extends AbstractEngineStep[Operation, Operation]("filter
             var va: ValuesScan = null
             
             replaceEvaluatorAndAny(f.e, {ex => ex match {
-                  case func(_: SpatialIndexedFunction,_) => true
+                  case func(_, _: SpatialIndexedFunction,_) => true
                   case _ => false
                 }}, {ex=>
                 // we have a spatial indexed filter that is not a join

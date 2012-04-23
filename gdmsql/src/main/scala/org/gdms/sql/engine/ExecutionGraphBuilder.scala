@@ -68,7 +68,6 @@ object ExecutionGraphBuilder {
     
     val cs = tree >=: ParsingStep map
     {_                       >=:
-     AggregateStep        >=:
      LogicalJoinOptimStep >=:
      FiltersStep          >=:
      ValidationStep
