@@ -72,6 +72,7 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.core.renderer.se.VectorSymbolizer;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.ui.plugins.views.output.OutputManager;
@@ -210,12 +211,7 @@ public abstract class Renderer {
                                 }
 
                                 pm.endTask();
-                                //long tV2 = System.currentTimeMillis();
-                                //  logger.println("Filtering done in " + (tV2 - tV1) + "[ms]");
-
                                 // And now, features will be rendered
-                                // long sTimer = 0;
-                                // long sTimeFull = 0;
                                 // Get a graphics for each symbolizer
                                 initGraphics2D(symbs, g2, mt);
                                 //Let's not come back to the beginning if we haven't found
@@ -261,10 +257,10 @@ public abstract class Renderer {
                                                 if (fieldID >= 0) {
                                                         theGeom = sds.getGeometry(originalIndex);
                                                 }
-                                                Envelope geomEnvelope = theGeom.getEnvelopeInternal();
                                                 // Do not display the geometry when the envelope
-                                                //does'nt intersect the current mapcontext area.
-                                                if (geomEnvelope.intersects(extent)) {
+                                                //doesn't intersect the current mapcontext area.
+                                                if (theGeom == null || (theGeom != null &&
+                                                            theGeom.getEnvelopeInternal().intersects(extent))) {
                                                         somethingReached = true;
                                                         boolean emphasis = selected.contains((int) originalIndex);
 
@@ -272,10 +268,9 @@ public abstract class Renderer {
 
                                                         List<Symbolizer> sl = r.getCompositeSymbolizer().getSymbolizerList();
                                                         for (Symbolizer s : sl) {
-                                                                Graphics2D g2S;
-                                                                g2S = getGraphics2D(s);
-                                                                s.draw(g2S, sds, originalIndex, emphasis, mt, theGeom, perm);
-                                                                releaseGraphics2D(g2S);
+                                                                boolean res = drawFeature(s, theGeom, sds, originalIndex,
+                                                                        extent, emphasis, mt, perm);
+                                                                somethingReached = somethingReached || res;
                                                         }
                                                         endFeature(originalIndex, sds);
                                                 }
@@ -297,8 +292,36 @@ public abstract class Renderer {
                 return layerCount;
         }
 
+        private boolean drawFeature(Symbolizer s, Geometry geom, DataSource sds,
+                        Integer originalIndex, Envelope extent, boolean emphasis,
+                        MapTransform mt, RenderContext perm) throws ParameterException,
+                        IOException, DriverException{
+                Geometry theGeom = geom;
+                boolean somethingReached = false;
+                if(theGeom == null){
+                        //We try to retrieve a geometry. If we fail, an
+                        //exception will be thrown by the call to draw,
+                        //and a message will be shown to the user...
+                        VectorSymbolizer vs = (VectorSymbolizer)s;
+                        theGeom = vs.getGeometry(sds, originalIndex.longValue());
+                        if(theGeom.getEnvelopeInternal().intersects(extent)){
+                                somethingReached = true;
+                        }
+                }
+                if(somethingReached || theGeom != null){
+                        Graphics2D g2S;
+                        g2S = getGraphics2D(s);
+                        s.draw(g2S, sds, originalIndex, emphasis, mt, theGeom, perm);
+                        releaseGraphics2D(g2S);
+                        return true;
+                }else {
+                        return false;
+                }
+        }
+
         private static void printEx(Exception ex, ILayer layer, Graphics2D g2) {
-                java.util.logging.Logger.getLogger("Could not draw " + layer.getName()).log(Level.SEVERE, "Error while drawing " + layer.getName(), ex);
+                java.util.logging.Logger.getLogger("Could not draw " +
+                        layer.getName()).log(Level.SEVERE, "Error while drawing " + layer.getName(), ex);
                 ex.printStackTrace(System.err);
                 g2.setColor(Color.red);
                 g2.drawString(ex.toString(), EXECP_POS, EXECP_POS);
