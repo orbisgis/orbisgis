@@ -19,6 +19,7 @@ import org.gdms.data.DataSource;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.common.RelativeOrientation;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
@@ -28,6 +29,8 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  * @todo implements
  */
 public class LineLabel extends Label {
+
+    private RelativeOrientation orientation;
 
     /**
          * Build a new default {@code LineLabel}, using the defaults in 
@@ -48,6 +51,9 @@ public class LineLabel extends Label {
      */
     public LineLabel(LineLabelType t) throws InvalidStyle {
         super(t);
+        if(t.getRelativeOrientation() != null){
+            setOrientation(RelativeOrientation.readFromToken(t.getRelativeOrientation()));
+        }
     }
 
     /**
@@ -57,6 +63,21 @@ public class LineLabel extends Label {
      */
     public LineLabel(JAXBElement<LineLabelType> l) throws InvalidStyle {
         this(l.getValue());
+    }
+
+    /**
+     * Gets the orientation of the characters along the line.
+     */
+    public final RelativeOrientation getOrientation() {
+        return orientation;
+    }
+
+    /**
+     * Sets the orientation of the characters along the line.
+     * @param orientation
+     */
+    public final void setOrientation(RelativeOrientation orientation) {
+        this.orientation = orientation;
     }
 
     /**
@@ -96,7 +117,6 @@ public class LineLabel extends Label {
          *  /                    \
          * |_____________________/
          *
-
          */
 
         VerticalAlignment vA = getVerticalAlign();
@@ -105,57 +125,40 @@ public class LineLabel extends Label {
         if (vA == null) {
             vA = VerticalAlignment.TOP;
             // TODO implement !
+            //The four important lines, here, according to the SE norm, are the
+            //middle line, the baseline, the ascent line and the descent line.
         }
-
         if (hA == null) {
             hA = HorizontalAlignment.CENTER;
         }
-
-        System.out.println ("hA: " + hA);
-        
         double lineLength = ShapeHelper.getLineLength(shp);
-
-        System.out.println ("Label/Line : "+ totalWidth + "/" + lineLength);
-        
-        
         double startAt;
         double stopAt;
-
         switch (hA) {
             case RIGHT:
                 startAt = lineLength - totalWidth;
                 stopAt = lineLength;
-        
-                System.out.println ("RIGHT: " + startAt + ";" + stopAt);
                 break;
             case LEFT:
                 startAt = 0.0;
                 stopAt = totalWidth;
-                System.out.println ("LEFT: " + startAt + ";" + stopAt);
                 break;
             default:
             case CENTER:
                 startAt = (lineLength - totalWidth) / 2.0;
                 stopAt = (lineLength + totalWidth) / 2.0;
-                System.out.println ("CENTER: " + startAt + ";" + stopAt);
                 break;
 
         }
-
         if (startAt < 0.0) {
             startAt = 0.0;
         }
         if (stopAt > lineLength){
             stopAt = lineLength;
         }
-
-
-
         Point2D.Double ptStart = ShapeHelper.getPointAt(shp, startAt);
         Point2D.Double ptStop = ShapeHelper.getPointAt(shp, stopAt);
-
         int way = 1;
-
         // Do not laid out the label upside-down !
         if (ptStart.x > ptStop.x){
             // invert line way
@@ -178,14 +181,14 @@ public class LineLabel extends Label {
                 glyphWidth = gBounds.getWidth()*way;
                 Point2D.Double pAt = ShapeHelper.getPointAt(shp, currentPos);
                 Point2D.Double pAfter = ShapeHelper.getPointAt(shp, currentPos + glyphWidth);
-
+                //We compute the angle we must use to rotate our glyph.
                 double theta = Math.atan2(pAfter.y - pAt.y, pAfter.x - pAt.x);
-
+                //We compute the place where we will draw the chatacter, and
+                //the orientation it must have.
                 AffineTransform at = AffineTransform.getTranslateInstance(pAt.x, pAt.y);
                 at.concatenate(AffineTransform.getRotateInstance(theta));
-
                 currentPos += glyphWidth;
-                outlines.add(getLabel().getOutline(g2, glyph, sds, fid, selected, mt, at, perm));
+                outlines.add(getLabel().getOutline(g2, glyph, sds, fid, mt, at, perm, vA));
             } else {
                 //System.out.println ("Space...");
                 //currentPos += emWidth*way;

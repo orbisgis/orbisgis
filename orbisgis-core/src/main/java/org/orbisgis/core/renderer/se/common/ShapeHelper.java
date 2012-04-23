@@ -667,35 +667,24 @@ public final class ShapeHelper {
      * @return list of corresponding offseted vertex
      */
     private static List<Vertex> createOffsetVertexes(List<Vertex> vertexes, double offset, boolean closed) {
-
         int i;
-
         ArrayList<Vertex> offseted = new ArrayList<Vertex>();
-
         double absOffset = Math.abs(offset);
-
         double gamma;
         double theta = Math.PI / 2;
-
         for (i = 0; i < vertexes.size(); i++) {
             if (i == 0 && !closed) {
-                // First point (unclosed path case
+                // First point (unclosed path case)
                 Vertex v = vertexes.get(i);
                 Vertex vP1 = vertexes.get(i + 1);
-
                 gamma = Math.atan2(vP1.y - v.y, vP1.x - v.x) + theta;
-
                 Vertex ov = new Vertex(v.x - Math.cos(gamma) * offset, v.y - Math.sin(gamma) * offset);
                 offseted.add(ov);
-
             } else if (i == vertexes.size() - 1 && !closed) {
                 // Last point (unclosed path case)
-
                 Vertex v = vertexes.get(i);
                 Vertex vM1 = vertexes.get(i - 1);
-
                 gamma = Math.atan2(v.y - vM1.y, v.x - vM1.x) + theta;
-
                 offseted.add(new Vertex(v.x - Math.cos(gamma) * offset, v.y - Math.sin(gamma) * offset));
             } else {
 
@@ -1132,13 +1121,6 @@ public final class ShapeHelper {
 
         List<ArrayList<Vertex>> shapes = getVertexes(shp);
         ArrayList<Shape> rawShapes = new ArrayList<Shape>();
-
-        //Rectangle2D bounds2D = shp.getBounds2D();
-
-        //if (Math.min(bounds2D.getWidth(), bounds2D.getHeight()) < Math.abs(offset)){
-        //    return rawShapes;
-        //}
-
         for (List<Vertex> vertexes : shapes) {
             boolean closed = isClosed(vertexes);
             removeUselessVertex(vertexes);

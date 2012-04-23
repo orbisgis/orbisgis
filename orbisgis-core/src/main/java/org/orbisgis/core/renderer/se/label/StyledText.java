@@ -391,8 +391,7 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
             MapTransform mt) throws ParameterException, IOException {
 
         Font font = getFont(sds, fid, mt);
-        FontMetrics metrics = new FontMetrics(font) {
-        };
+        FontMetrics metrics = g2.getFontMetrics(font);
         return metrics.getStringBounds(text, null);
     }
 
@@ -414,34 +413,113 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
         draw(g2, txt, sds, fid, selected, mt, at, perm);
     }
 
-    public Shape getOutline(Graphics2D g2, String text, DataSource sds, long fid,
-            boolean selected, MapTransform mt, AffineTransform at, RenderContext perm) throws ParameterException, IOException {
+    /**
+     * Gets the outline of the given {@code String} as a shape. This shapes is
+     * made of the boundary(ies) of the text, that will have to be stroked and
+     * fill, with the default vertical alignment
+     * ({@code VerticalAlignment.TOP}).
+     * @param g2
+     * The {@code Graphics2D} instance used to render the map we are drawing.
+     * @param text
+     * The text we want to compute the ouline of.
+     * @param ds
+     * The {@code DataSource} where we'll retrieve all the needed parameters to
+     * build this {@code Styled} instance.
+     * @param fid
+     * The index of the feature we are rendering.
+     * @param mt
+     * Used to compute the font's size.
+     * @param at
+     * The AffineTransform that we must apply to the shape before returning it.
+     * @param perm
+     * @return
+     * @throws ParameterException
+     * @throws IOException
+     */
+    public Shape getOutline(Graphics2D g2, String text, DataSource ds, long fid,
+            MapTransform mt, AffineTransform at, RenderContext perm)
+            throws ParameterException, IOException {
+        return getOutline(g2, text, ds, fid, mt, at, perm, Label.VerticalAlignment.TOP);
+    }
 
+    /**
+     * Gets the outline of the given {@code String} as a shape. This shapes is
+     * made of the boundary(ies) of the text, that will have to be stroked and
+     * fill.
+     * @param g2
+     * The {@code Graphics2D} instance used to render the map we are drawing.
+     * @param text
+     * The text we want to compute the ouline of.
+     * @param sds
+     * The {@code DataSource} where we'll retrieve all the needed parameters to
+     * build this {@code Styled} instance.
+     * @param fid
+     * The index of the feature we are rendering.
+     * @param mt
+     * Used to compute the font's size.
+     * @param at
+     * The AffineTransform that we must apply to the shape before returning it.
+     * @param perm
+     * @param va
+     * The {@code Label.VerticalAlignment} we must use to determine where to put
+     * the baseline of {@code text}.
+     * @return
+     * @throws ParameterException
+     * If we fail to retrieve a parameter used to configure this {@code
+     * StyledText}.
+     * @throws IOException
+     * If an error occurred while retrieving the {@code Font}.
+     */
+    public Shape getOutline(Graphics2D g2, String text, DataSource sds, long fid,
+            MapTransform mt, AffineTransform at, RenderContext perm, Label.VerticalAlignment va)
+            throws ParameterException, IOException {
         Font font = getFont(sds, fid, mt);
         TextLayout tl = new TextLayout(text, font, g2.getFontRenderContext());
-
-        FontMetrics metrics = new FontMetrics(font) {
-        };
-        Rectangle2D bounds = metrics.getStringBounds(text, null);
-
-        double ty = -bounds.getMaxY() + bounds.getHeight() / 2.0;
-
+        FontMetrics metrics = g2.getFontMetrics(font);
+        double dy=0;
+        switch(va){
+            case BASELINE:
+                break;
+            case BOTTOM:
+                dy = metrics.getAscent();
+                break;
+            case TOP:
+                dy = -metrics.getDescent();
+                break;
+            case MIDDLE:
+            default:
+                dy = (metrics.getAscent() - metrics.getDescent()) / 2.0;
+        }
         AffineTransform rat;
         if (at != null) {
             rat = new AffineTransform(at);
         } else {
             rat = new AffineTransform();
         }
-        rat.concatenate(AffineTransform.getTranslateInstance(-bounds.getCenterX(), ty));
-
+        //We apply the translation used to manage the height of the text on the
+        //line BEFORE to apply at : we use concatenate.
+        rat.concatenate(AffineTransform.getTranslateInstance(0, dy));
         Shape outline = tl.getOutline(rat);
-
         return outline;
     }
 
+    /**
+     * Draw the list of given "outlines", that is the list of characters already
+     * transformed to {@code Shape} instances. We'll use for that, of course,
+     * the inner {@code Fill}, {@code Halo} and {@code Stroke} instances. If
+     * they are not set, a simple default {@code SolidFill} will be used.
+     *
+     * @param g2
+     * @param outlines
+     * @param sds
+     * @param fid
+     * @param selected
+     * @param mt
+     * @throws ParameterException
+     * @throws IOException
+     */
     public void drawOutlines(Graphics2D g2, ArrayList<Shape> outlines, DataSource sds, long fid,
             boolean selected, MapTransform mt) throws ParameterException, IOException {
-
         if (halo != null) {
             for (Shape outline : outlines) {
                 //halo.draw(rg, sds, fid, selected, outline.getBounds(), mt, false);
@@ -449,7 +527,6 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
                 halo.draw(g2, sds, fid, selected, outline, mt, true);
             }
         }
-
         for (Shape outline : outlines) {
             /**
              * No fill and no stroke : apply default solidfill !
@@ -459,11 +536,9 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
                 sf.setParent(this);
                 sf.draw(g2, sds, fid, outline, selected, mt);
             }
-
             if (fill != null) {
                 fill.draw(g2, sds, fid, outline, selected, mt);
             }
-
             if (stroke != null) {
                 stroke.draw(g2, sds, fid, outline, selected, mt, 0.0);
             }
@@ -487,7 +562,7 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
             boolean selected, MapTransform mt, AffineTransform at, RenderContext perm) throws ParameterException, IOException {
 
         ArrayList<Shape> outlines = new ArrayList<Shape>();
-        outlines.add(getOutline(g2, text, sds, fid, selected, mt, at, perm));
+        outlines.add(getOutline(g2, text, sds, fid, mt, at, perm));
         drawOutlines(g2, outlines, sds, fid, selected, mt);
     }
 
