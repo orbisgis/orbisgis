@@ -1,1 +1,1 @@
-start "OrbisGIS" "javaw -Xmx1024M -jar orbisgis-ui-4.0-SNAPSHOT-jar-with-dependencies.jar" %*
+start "OrbisGIS" "javaw" -Xmx1024M -jar orbisgis-ui-4.0-alpha-2-jar-with-dependencies.jar %*
