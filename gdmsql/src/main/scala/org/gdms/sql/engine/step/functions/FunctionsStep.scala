@@ -39,7 +39,7 @@
  * or contact directly:
  * info@orbisgis.org
  */
-package org.gdms.sql.engine.step.aggregate
+package org.gdms.sql.engine.step.functions
 
 import java.util.Properties
 import org.gdms.data.SQLDataSourceFactory
@@ -53,21 +53,24 @@ import org.gdms.sql.function.executor.ExecutorFunction
 import org.gdms.sql.function.table.TableFunction
 
 /**
- * Step P0: Aggregation & Grouping.
+ * Step P0: Function processing.
+ * 
+ * The function names are converted into the actual function instances.
+ * This validates than scalar, aggregate and table functions exist and are in the right place.
  * 
  * The projections are processed to convert aggregation and grouping into the corresponding query elements.
  * This validates than selected fields are referenced in the GROUP BY clause (if there is one).
  */
-case object AggregateStep extends AbstractEngineStep[(Operation, SQLDataSourceFactory), (Operation, SQLDataSourceFactory)]("Processing aggregates & groups") {
+case object FunctionsStep extends AbstractEngineStep[(Operation, SQLDataSourceFactory), (Operation, SQLDataSourceFactory)]("Processing aggregates & groups") {
   def doOperation(op: (Operation, SQLDataSourceFactory))  (implicit p: Properties): (Operation, SQLDataSourceFactory) = {
     
-    markAggregateFunctions(op._1, op._2)
+    markFunctions(op._1, op._2)
     processAggregates(op._1)
     
     op
   }
   
-  def markAggregateFunctions(op: Operation, dsf: SQLDataSourceFactory) {
+  def markFunctions(op: Operation, dsf: SQLDataSourceFactory) {
     op.allChildren foreach { 
       case c @ CustomQueryScan(name, exp, _, _) => {
           val f = dsf.getFunctionManager.getFunction(name)
@@ -81,14 +84,14 @@ case object AggregateStep extends AbstractEngineStep[(Operation, SQLDataSourceFa
             case _ => throw new SemanticException("Unknown function: '" + name + "'.")
           }
         }
-        exp foreach (markAggregateFunctions(_, dsf))
+        exp foreach (markFunctions(_, dsf))
       case ExpressionOperation(exp) =>
-        exp foreach (markAggregateFunctions(_, dsf))
+        exp foreach (markFunctions(_, dsf))
       case _ =>
     }
   }
   
-  def markAggregateFunctions(e: Expression, dsf: SQLDataSourceFactory) {
+  def markFunctions(e: Expression, dsf: SQLDataSourceFactory) {
     e.evaluator match {
       case fe @ FunctionEvaluator(name, l) => {
           val f = dsf.getFunctionManager.getFunction(name)
@@ -106,7 +109,7 @@ case object AggregateStep extends AbstractEngineStep[(Operation, SQLDataSourceFa
       case _ => 
     }
     
-    e foreach (markAggregateFunctions(_, dsf))
+    e foreach (markFunctions(_, dsf))
   }
   
   def processAggregates(op: Operation) {

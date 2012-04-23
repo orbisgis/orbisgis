@@ -39,7 +39,6 @@
 package org.gdms.sql.engine
 
 import org.gdms.sql.engine.GdmSQLPredef._
-import org.gdms.sql.engine.step.aggregate.AggregateStep
 import org.gdms.sql.engine.step.filters.FiltersStep
 import org.gdms.sql.engine.step.logicalJoin.LogicalJoinOptimStep
 import org.gdms.sql.engine.step.parsing.ParsingStep

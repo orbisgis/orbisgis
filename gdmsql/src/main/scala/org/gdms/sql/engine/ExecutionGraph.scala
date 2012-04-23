@@ -47,7 +47,7 @@ import org.gdms.sql.engine.commands.OutputCommand
 import org.gdms.sql.engine.commands.QueryOutputCommand
 import org.gdms.sql.engine.operations.Operation
 import org.gdms.sql.engine.operations.Scan
-import org.gdms.sql.engine.step.aggregate.AggregateStep
+import org.gdms.sql.engine.step.functions.FunctionsStep
 import org.gdms.sql.engine.step.builder.BuilderStep
 import org.gdms.sql.engine.step.physicalJoin.PhysicalJoinOptimStep
 import org.orbisgis.progress.ProgressMonitor
@@ -108,7 +108,7 @@ class ExecutionGraph(op: Operation, p: Properties = null) {
         implicit val pp = p
         
         start = {            (op, dsf) >=:
-                 AggregateStep >=:
+                 FunctionsStep >=:
                  PhysicalJoinOptimStep >=: 
                  BuilderStep
         }
