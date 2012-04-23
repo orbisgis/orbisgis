@@ -159,7 +159,7 @@ public abstract class Renderer {
         public int drawVector(Graphics2D g2, MapTransform mt, ILayer layer,
                 ProgressMonitor pm, RenderContext perm) throws DriverException {
                 Envelope extent = mt.getAdjustedExtent();
-                DataSource sds;
+                DataSource sds = null;
                 int layerCount = 0;
                 try {
                         // long tV1 = System.currentTimeMillis();
@@ -175,8 +175,11 @@ public abstract class Renderer {
                         printEx(ex, layer, g2);
                 } catch (DriverException ex) {
                         printEx(ex, layer, g2);
+                } finally {
+                        if (sds != null && sds.isOpen()) {
+                                sds.close();
+                        }
                 }
-
                 return layerCount;
         }
 
@@ -290,10 +293,6 @@ public abstract class Renderer {
                         printEx(ex, layer, g2);
                 } catch (DriverException ex) {
                         printEx(ex, layer, g2);
-                } finally {
-                        if (sds != null && sds.isOpen()) {
-                                sds.close();
-                        }
                 }
                 return layerCount;
         }
