@@ -106,12 +106,20 @@ public class CanvasSE extends JPanel {
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, old);
 	}
 
+        /**
+         * Set the symbolizer used to draw geometries with this canvas.
+         * @param sym
+         */
 	public void setSymbol(Symbolizer sym) {
 		this.s = sym;
                 geom = getSampleGeometry();
 		this.repaint();
 	}
 
+        /**
+         * Gets the {@code Symbolizer} used to draw geometries in this {@code Canvas}.
+         * @return
+         */
 	public Symbolizer getSymbol() {
 		return s;
 	}
