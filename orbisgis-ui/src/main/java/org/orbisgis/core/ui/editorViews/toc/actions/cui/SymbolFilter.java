@@ -43,5 +43,5 @@ import org.orbisgis.core.renderer.symbol.Symbol;
 
 @Deprecated
 public interface SymbolFilter {
-	public boolean accept(Symbol symbol);
+	boolean accept(Symbol symbol);
 }

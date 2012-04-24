@@ -19,7 +19,7 @@ public interface IRulePanel {
 	 * 
 	 * @return Component
 	 */
-	public Component getComponent();
+	Component getComponent();
 
 	/**
 	 * Initialize the legend. This method is called just after the legend
@@ -29,32 +29,32 @@ public interface IRulePanel {
 	 *            LegendContext is useful to get some information about the
 	 *            layer in edition.
 	 */
-	public void initialize(LegendContext lc);
+	void initialize(LegendContext lc);
 
 	/**
 	 * Creates a new empty instance of this panel.
 	 *
 	 * @return
 	 */
-	public IRulePanel newInstance();
+	IRulePanel newInstance();
 
         /**
          * Gets the identifier of this panel.
          * @return
          */
-        public String getId();
+        String getId();
 
         /**
          * Associates an identifier to this panel. Particularly useful if we
          * want to put this panel in a {@code CardLayout}.
          * @param newId
          */
-        public void setId(String newId);
+        void setId(String newId);
 
 	/**
 	 * @return {@code null} if the status of the edited legend is ok. An error message
 	 *         if the legend cannot be created
 	 */
-	public String validateInput();
+	String validateInput();
 
 }

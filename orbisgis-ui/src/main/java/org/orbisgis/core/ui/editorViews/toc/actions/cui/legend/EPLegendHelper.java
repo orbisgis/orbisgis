@@ -42,6 +42,8 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.*;
 
 public class EPLegendHelper {
 
+    private EPLegendHelper(){}
+
 	/**
 	 * Create an arraylist with all legend panels used by the edit legend plugin. 
 	 */

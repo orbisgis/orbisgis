@@ -42,12 +42,11 @@ public class LegendTree extends JPanel {
         private JTree tree;
         private LegendsPanel legendsPanel;
 
-	private JToolBar toolBar;
-	private JButton jButtonMenuAdd;
-	private JButton jButtonMenuDel;
-	private JButton jButtonMenuDown;
-	private JButton jButtonMenuRename;
-	private JButton jButtonMenuUp;
+        private JToolBar toolBar;
+        private JButton jButtonMenuDel;
+        private JButton jButtonMenuDown;
+        private JButton jButtonMenuRename;
+        private JButton jButtonMenuUp;
 
         public LegendTree(final LegendsPanel legendsPan){
                 legendsPanel = legendsPan;
@@ -158,7 +157,7 @@ public class LegendTree extends JPanel {
                 }
         }
 
-        public void renameElement(ActionEvent evt){
+        public final void renameElement(ActionEvent evt){
                 throw new UnsupportedOperationException();
         }
 
@@ -275,7 +274,7 @@ public class LegendTree extends JPanel {
                 jButtonMenuDown.addActionListener(ald);
 		toolBar.add(jButtonMenuDown);
 
-		jButtonMenuAdd = new JButton();
+		JButton jButtonMenuAdd = new JButton();
 		jButtonMenuAdd.setIcon(OrbisGISIcon.PICTURE_ADD);
 		jButtonMenuAdd.setToolTipText(I18N.getString("orbisgis.org.orbisgis.ui.toc.legendList.add"));
                 ActionListener aladd = EventHandler.create(ActionListener.class, this, "addElement");

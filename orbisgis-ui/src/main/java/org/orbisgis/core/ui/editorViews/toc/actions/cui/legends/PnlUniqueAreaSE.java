@@ -4,7 +4,6 @@
  */
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.legends;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.net.URL;
 import org.gdms.data.types.Type;
@@ -28,7 +27,6 @@ public class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
          * be unique symbol (ie constant) Legends.
          */
         private UniqueSymbolArea uniqueArea;
-        private LegendContext legendContext ;
         
 
         @Override
@@ -68,7 +66,6 @@ public class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
                 if(uniqueArea == null){
                         setLegend(new UniqueSymbolArea());
                 }
-                legendContext = lc;
         }
 
         @Override

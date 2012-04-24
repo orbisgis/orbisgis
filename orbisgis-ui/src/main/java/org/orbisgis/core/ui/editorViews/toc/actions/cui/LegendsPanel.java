@@ -41,6 +41,7 @@ import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.JLabel;
@@ -128,7 +129,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 			}
 		}
 
-		this.availableLegends = availableLegends;
+		this.availableLegends = Arrays.copyOf(availableLegends, availableLegends.length);
 		initializeComponents();
                 List<RuleWrapper> lrw = new LinkedList<RuleWrapper>();
                 for (int i = 0; i<style.getRules().size(); i++){
@@ -226,11 +227,6 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
         @Override
 	public boolean isPolygon() {
 		return (geometryType & GeometryProperties.POLYGON) > 0;
-	}
-
-	private void refresh() {
-		legendTree.refresh();
-		refreshLegendContainer();
 	}
 
 	void refreshLegendContainer() {
@@ -340,7 +336,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 
         @Override
 	public ISymbolEditor[] getAvailableSymbolEditors() {
-		return null;
+		return new ISymbolEditor[0];
 	}
 
         public StyleWrapper getStyleWrapper() {

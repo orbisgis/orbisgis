@@ -50,14 +50,14 @@ public interface ILegendPanel  extends IRulePanel {
 	 * 
 	 * @return Legend
 	 */
-	public Legend getLegend();
+	Legend getLegend();
 
 	/**
 	 * Sets the legend to be edited by this component
 	 * 
 	 * @param legend
 	 */
-	public void setLegend(Legend legend);
+	void setLegend(Legend legend);
 
 	/**
 	 * Returns true if this legend can be applied to the specified geometry
@@ -68,12 +68,12 @@ public interface ILegendPanel  extends IRulePanel {
 	 *            POINT, LINE and POLYGON.
 	 * @return
 	 */
-	public boolean acceptsGeometryType(int geometryType);
+	boolean acceptsGeometryType(int geometryType);
 
         /**
          * Copy the {@code Legend} instance associated to this 
          * {@code ILegendPanel}. It is faster than copying the whole panel.
          * @return 
          */
-        public Legend copyLegend();
+        Legend copyLegend();
 }

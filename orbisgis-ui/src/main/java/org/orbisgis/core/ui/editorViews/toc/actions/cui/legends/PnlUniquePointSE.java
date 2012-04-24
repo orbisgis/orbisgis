@@ -27,7 +27,6 @@ public class PnlUniquePointSE extends PnlUniqueSymbolSE {
          * be unique symbol (ie constant) Legends.
          */
         private UniqueSymbolPoint uniquePoint;
-        private LegendContext legendContext ;
         
 
         @Override
@@ -67,7 +66,6 @@ public class PnlUniquePointSE extends PnlUniqueSymbolSE {
                 if(uniquePoint == null){
                         setLegend(new UniqueSymbolPoint());
                 }
-                legendContext = lc;
         }
 
         @Override
@@ -116,8 +114,7 @@ public class PnlUniquePointSE extends PnlUniqueSymbolSE {
 
         @Override
         public Legend copyLegend() {
-                UniqueSymbolPoint usp = new UniqueSymbolPoint();
-                return usp;
+                return new UniqueSymbolPoint();
         }
 
         
