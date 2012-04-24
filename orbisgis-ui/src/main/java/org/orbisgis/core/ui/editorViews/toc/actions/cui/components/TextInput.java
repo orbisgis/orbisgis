@@ -136,5 +136,9 @@ public abstract class TextInput extends JPanel {
 		this.input.setEnabled(enabled);
 	}
 
+    protected JTextField getInputField(){
+        return input;
+    }
+
 	protected abstract void valueChanged(String s);
 }

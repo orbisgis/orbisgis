@@ -41,10 +41,10 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.beans.EventHandler;
 import java.util.ArrayList;
-import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real.LegendUIRealComponent;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.color.LegendUIColorComponent;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -58,13 +58,16 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.Recode2Real;
 import org.orbisgis.core.renderer.se.parameter.string.Recode2String;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
+import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.TextInput;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.color.LegendUIColorComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.color.LegendUIColorLiteralPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.color.LegendUIMetaColorPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real.LegendUIMetaRealPanel;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real.LegendUIRealComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real.LegendUIRealLiteralPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.string.LegendUIMetaStringPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.string.LegendUIStringComponent;
@@ -160,12 +163,11 @@ public abstract class LegendUIRecodePanel extends LegendUIComponent
 				int index = -1;
 
 				if (classValue instanceof RealParameter) {
-					index = recode.addMapItem(new StringLiteral("new key"), new RealLiteral(1.0));
+					index = recode.addMapItem("new key", new RealLiteral(1.0));
 				} else if (classValue instanceof ColorParameter) {
-					index = recode.addMapItem(new StringLiteral("new key"), new ColorLiteral());
+					index = recode.addMapItem("new key", new ColorLiteral());
 				} else if (classValue instanceof StringParameter) {
-					index = recode.addMapItem(new StringLiteral("new key"), new StringLiteral("value"));
-					//categorize.addClass(new RealLiteral(1000.0), new StringLiteral(""));
+					index = recode.addMapItem("new key", new StringLiteral("value"));
 				}
 
 				if (index >= 0) {
@@ -284,20 +286,36 @@ public abstract class LegendUIRecodePanel extends LegendUIComponent
 	private class KeyInput extends TextInput {
 
 		private int index;
+        private String temp;
 
 		public KeyInput(int index, String name, String initialValue, int size) {
 			super(name, initialValue, size, false);
 			this.index = index;
+            getInputField().addFocusListener(new FocusListener() {
+
+                @Override
+                public void focusGained(FocusEvent e) {
+                }
+
+                @Override
+                public void focusLost(FocusEvent e) {
+                    fireRecodeValueChanged(temp);
+                }
+            });
 		}
 
 		@Override
 		protected void valueChanged(String s) {
-			LegendUIRecodePanel.this.recode.getMapItem(index).setKey(new StringLiteral(s));
+            temp = s;
 		}
 
 		public void setIndex(int index) {
 			this.index = index;
 		}
+
+        public void fireRecodeValueChanged(String text){
+			LegendUIRecodePanel.this.recode.setKey(index,temp);
+        }
 	}
 
 	private interface Reindexable {

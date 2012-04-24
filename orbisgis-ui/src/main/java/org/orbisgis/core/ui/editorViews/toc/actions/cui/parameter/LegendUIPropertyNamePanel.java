@@ -70,12 +70,13 @@ public abstract class LegendUIPropertyNamePanel extends LegendUIComponent
 	private ComboBoxInput fieldList;
 	private ValueReference p;
 
-	public LegendUIPropertyNamePanel(String name, LegendUIController controller, LegendUIComponent parent, ValueReference val, boolean isNullable) {
+	public LegendUIPropertyNamePanel(String name, LegendUIController controller,
+            LegendUIComponent parent, ValueReference val, boolean isNullable) {
 		super(name, controller, parent, 0, isNullable);
-                if(val == null){
-                        throw new IllegalArgumentException("This ValueReference should not be null !");
-                }
-                this.p = val;
+        if(val == null){
+                throw new IllegalArgumentException("This ValueReference should not be null !");
+        }
+        this.p = val;
 
 
 		Metadata meta;
@@ -105,7 +106,7 @@ public abstract class LegendUIPropertyNamePanel extends LegendUIComponent
 			for (int i = 0; i < meta.getFieldCount(); i++) {
 				if ((meta.getFieldType(i).getTypeCode() & mask) > 0) {
 					possibilities.add(meta.getFieldName(i));
-                                        if(p.getColumnName().equals("")){
+                                        if(p.getColumnName() == null || p.getColumnName().equals("")){
                                                 p.setColumnName(meta.getFieldName(i));
                                         }
 					if (p.getColumnName().equalsIgnoreCase(meta.getFieldName(i))) {

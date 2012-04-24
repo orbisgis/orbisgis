@@ -113,4 +113,16 @@ public class ColorLiteral extends Literal implements ColorParameter{
                 + String.format("%02X", color.getGreen())
                 + String.format("%02X", color.getBlue());
     }
+
+    @Override
+    public int compareTo(Object o) {
+        Color col = (Color) o;
+        if(col.getRGB() > color.getRGB()){
+            return -1;
+        } else if (col.getRGB() == color.getRGB()){
+            return 0;
+        } else {
+            return 1;
+        }
+    }
 }

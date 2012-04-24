@@ -98,7 +98,7 @@ public class SymbolizerTest extends AbstractTest {
         SolidFill fill = (SolidFill) as.getFill();
         StringAttribute sa = new StringAttribute("PTOT99");
         Recode2Color rc = new Recode2Color(new ColorLiteral("#887766"), sa);
-        rc.addMapItem(new StringLiteral("bonjour"), new ColorLiteral("#546576"));
+        rc.addMapItem("bonjour", new ColorLiteral("#546576"));
         fill.setColor(rc);
         feat = fts.dependsOnFeature();
         assertTrue(feat.size() == 1);

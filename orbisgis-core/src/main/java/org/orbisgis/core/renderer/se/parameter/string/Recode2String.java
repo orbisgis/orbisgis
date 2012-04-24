@@ -7,7 +7,6 @@ import net.opengis.se._2_0.core.RecodeType;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.parameter.Literal;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.Recode;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
@@ -46,7 +45,7 @@ public final class Recode2String extends Recode<StringParameter, StringLiteral> 
                 this.setLookupValue(SeParameterFactory.createStringParameter(t.getLookupValue()));
 
                 for (MapItemType mi : t.getMapItem()) {
-                        this.addMapItem(new StringLiteral(mi.getKey().getContent().get(0).toString()),
+                        this.addMapItem(mi.getKey().getContent().get(0).toString(),
                                 SeParameterFactory.createStringParameter(mi.getValue()));
                 }
         }
@@ -62,7 +61,7 @@ public final class Recode2String extends Recode<StringParameter, StringLiteral> 
         }
 
         @Override
-        public int addMapItem(Literal key, StringParameter value) {
+        public int addMapItem(String key, StringParameter value) {
                 value.setRestrictionTo(restriction);
                 return super.addMapItem(key, value);
         }

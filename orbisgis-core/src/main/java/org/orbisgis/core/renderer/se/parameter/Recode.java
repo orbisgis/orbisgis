@@ -40,9 +40,7 @@
 package org.orbisgis.core.renderer.se.parameter;
 
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.LiteralType;
 import net.opengis.se._2_0.core.MapItemType;
@@ -51,7 +49,6 @@ import net.opengis.se._2_0.core.ParameterValueType;
 import net.opengis.se._2_0.core.RecodeType;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 
 /**
@@ -67,24 +64,24 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
 
     private FallbackType fallbackValue;
     private StringParameter lookupValue;
-    private ArrayList<MapItem<ToType>> mapItems; // TODO switch to hash table <k: String, v: ToType>
-    
+    private LinkedHashMap<String, ToType> mapItems;
+
     /**
      * Build a new instance of Recode with an empty map of items.
      */
     protected Recode(){
-        mapItems = new ArrayList<MapItem<ToType>>();
+        mapItems = new LinkedHashMap<String, ToType>();
     }
 
     /**
-     * 
+     *
      * @param fallbackValue
-     * @param lookupValue 
+     * @param lookupValue
      */
     public Recode(FallbackType fallbackValue, StringParameter lookupValue) {
         this.fallbackValue = fallbackValue;
         this.lookupValue = lookupValue;
-        mapItems = new ArrayList<MapItem<ToType>>();
+        mapItems = new LinkedHashMap<String, ToType>();
     }
 
     @Override
@@ -98,7 +95,7 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
 
     /**
      * Set the value that will be used if a data can't be processed well.
-     * @param fallbackValue 
+     * @param fallbackValue
      */
     public void setFallbackValue(FallbackType fallbackValue) {
         this.fallbackValue = fallbackValue;
@@ -106,7 +103,7 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
 
     /**
      * Get the value that will be used if a data can't be processed well.
-     * @param fallbackValue 
+     * @param fallbackValue
      */
     public FallbackType getFallbackValue() {
         return fallbackValue;
@@ -114,7 +111,7 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
 
     /**
      * Set the value that will be used to retrieve data to be processed.
-     * @param lookupValue 
+     * @param lookupValue
      */
     // TODO  On doit pouvoir récuperer des string ou des couleurs
     public void setLookupValue(StringParameter lookupValue) {
@@ -123,7 +120,7 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
 
     /**
      * Get the value that will be used to retrieve data to be processed.
-     * @param lookupValue 
+     * @param lookupValue
      */
     public StringParameter getLookupValue() {
         return lookupValue;
@@ -143,13 +140,12 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
      * @param value
      * @return index of new map item or -1 when key already exists
      */
-    public int addMapItem(Literal key, ToType value) {
-        MapItem<ToType> item = new MapItem<ToType>(value, key);
+    public int addMapItem(String key, ToType value) {
 
-        if (mapItems.contains(item)) {
+        if (mapItems.containsKey(key)) {
 			return -1;
         } else {
-            mapItems.add(item);
+            mapItems.put(key, value);
         }
 
 		return mapItems.size() - 1;
@@ -162,55 +158,61 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
      * a {@code ToType} instance if something has been found in the map. {@code
      * null} otherwise.
      */
-    public ToType getMapItemValue(Literal key) {
-        MapItem<ToType> item = new MapItem<ToType>(null, key);
-        int i = mapItems.indexOf(item);
-        return i<0 ? null : mapItems.get(i).getValue();
+    public ToType getMapItemValue(String key) {
+        return mapItems.get(key);
     }
 
     /**
      * Get the ith <code>MapItem</code> in this <code>Recode</code> instance
      * @param i
-     * @return 
+     * @return
      */
-    public MapItem<ToType> getMapItem(int i){
-        return mapItems.get(i);
+    public Map.Entry<String, ToType> getMapItem(int i){
+        Set<Map.Entry<String, ToType>> entries = mapItems.entrySet();
+        Iterator<Map.Entry<String, ToType>> it = entries.iterator();
+        int index=0;
+        while(it.hasNext()){
+            Map.Entry<String, ToType> cur = it.next();
+            if(index == i){
+                return cur;
+            }
+            index++;
+        }
+        return null;
     }
 
     /**
      * Get the value stored in the ith <code>MapItem</code> in this <code>Recode</code> instance.
      * @param i
-     * @return 
+     * @return
      */
     public ToType getMapItemValue(int i) {
-        return mapItems.get(i).getValue();
+        return getMapItem(i).getValue();
     }
 
     /**
      * Get the key stored in the ith <code>MapItem</code> in this <code>Recode</code> instance.
      * @param i
-     * @return 
+     * @return
      */
-    public Literal getMapItemKey(int i) {
-        return mapItems.get(i).getKey();
+    public String getMapItemKey(int i) {
+        return getMapItem(i).getKey();
     }
 
     /**
      * Remove the <code>MapItem</code> whose key is <code>key</code>
-     * @param key 
+     * @param key
      */
-    public void removeMapItem(Literal key) {
-        MapItem<ToType> item = new MapItem<ToType>(null, key);
-        mapItems.remove(item);
+    public void removeMapItem(String key) {
+        mapItems.remove(key);
     }
     /**
      * Remove the ith <code>MapItem</code>
-     * @param key 
+     * @param key
      */
 	public void removeMapItem(int i){
-		if (i >= 0 && i < mapItems.size()){
-			mapItems.remove(i);
-		}
+        String key = getMapItemKey(i);
+        removeMapItem(key);
 	}
 
         /**
@@ -229,7 +231,7 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
         String key = "";
         try {
             key = lookupValue.getValue(sds, fid);
-            ToType ret = getMapItemValue(new StringLiteral(key));
+            ToType ret = getMapItemValue(key);
             return ret == null ? fallbackValue : ret;
         } catch (Exception e) {
             Services.getOutputManager().println("Fallback (" + key + "): " + e, Color.DARK_GRAY);
@@ -237,6 +239,32 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
         }
     }
 
+    /**
+     * Set the ith key of the underlying {@code LinkedHashMap} to key. As we
+     * don't want to modify the order of the associated {@code LinkedList}, we
+     * are forced to re-create the {@code LinkedHashMap}. It is really, really,
+     * inefficient.
+     * @param index
+     * @param key
+     */
+    public void setKey(int index, String key){
+        Set<Map.Entry<String, ToType>> entries = mapItems.entrySet();
+        Iterator<Map.Entry<String, ToType>> it = entries.iterator();
+        LinkedHashMap lhm = new LinkedHashMap(mapItems.size());
+        int i = 0;
+        while(it.hasNext()){
+            Map.Entry<String, ToType> cur = it.next();
+            String k = cur.getKey();
+            ToType tt = cur.getValue();
+            if(index == i){
+                lhm.put(key, tt);
+            } else {
+                lhm.put(k, tt);
+            }
+            i++;
+        }
+        mapItems = lhm;
+    }
 
     @Override
     public ParameterValueType getJAXBParameterValueType()
@@ -258,11 +286,15 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
         }
 
         List<MapItemType> mi = r.getMapItem();
-
-        for (MapItem<ToType> m : mapItems) {
+        Iterator<Map.Entry<String, ToType>> it = mapItems.entrySet().iterator();
+        net.opengis.fes._2.ObjectFactory off = new net.opengis.fes._2.ObjectFactory();
+        while(it.hasNext()) {
+            Map.Entry<String, ToType> m = it.next();
             MapItemType mt = new MapItemType();
             mt.setValue(m.getValue().getJAXBParameterValueType());
-            mt.setKey((LiteralType)(m.getKey().getJAXBExpressionType().getValue()));
+            LiteralType lt = off.createLiteralType();
+            lt.getContent().add(m.getKey());
+            mt.setKey(lt);
             mi.add(mt);
         }
         ObjectFactory of = new ObjectFactory();

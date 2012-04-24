@@ -78,4 +78,10 @@ public class StringLiteral extends Literal implements StringParameter{
                 return hash;
         }
 
+    @Override
+    public int compareTo(Object o) {
+        StringLiteral st = (StringLiteral) o;
+        return this.v.compareTo(st.v);
+    }
+
 }

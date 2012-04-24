@@ -20,7 +20,7 @@ import net.opengis.se._2_0.core.ParameterValueType;
  * simplify the propagation of changes that could occur in it.
  * @author maxence
  */
-public abstract class Literal implements SeParameter {
+public abstract class Literal implements SeParameter, Comparable {
 
         private List<LiteralListener> listeners;
 

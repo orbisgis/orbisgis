@@ -41,11 +41,9 @@ import net.opengis.se._2_0.core.MapItemType;
 import net.opengis.se._2_0.core.RecodeType;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.parameter.Literal;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.Recode;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 
 /**
@@ -83,7 +81,7 @@ public class Recode2Real extends Recode<RealParameter, RealLiteral> implements R
                 this.setLookupValue(SeParameterFactory.createStringParameter(expr.getLookupValue()));
 
                 for (MapItemType mi : expr.getMapItem()) {
-                        this.addMapItem(new StringLiteral(mi.getKey().getContent().get(0).toString()),
+                        this.addMapItem(mi.getKey().getContent().get(0).toString(),
                                 SeParameterFactory.createRealParameter(mi.getValue()));
                 }
         }
@@ -98,7 +96,7 @@ public class Recode2Real extends Recode<RealParameter, RealLiteral> implements R
         }
 
         @Override
-        public final int addMapItem(Literal key, RealParameter p) {
+        public final int addMapItem(String key, RealParameter p) {
                 p.setContext(ctx);
                 return super.addMapItem(key, p);
         }

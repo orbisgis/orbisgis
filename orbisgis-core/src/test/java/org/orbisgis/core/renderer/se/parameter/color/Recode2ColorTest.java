@@ -8,19 +8,14 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import net.opengis.se._2_0.core.LineSymbolizerType;
-import net.opengis.se._2_0.core.PenStrokeType;
-import net.opengis.se._2_0.core.RecodeType;
-import net.opengis.se._2_0.core.RuleType;
-import net.opengis.se._2_0.core.SolidFillType;
-import net.opengis.se._2_0.core.StyleType;
+import net.opengis.se._2_0.core.*;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
+import org.junit.Test;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
-import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -70,27 +65,37 @@ public class Recode2ColorTest {
     @Test
     public void testAddMapItems(){
         try {
-            recode.addMapItem(new StringLiteral(key1), c1);
+            recode.addMapItem(key1, c1);
             assertTrue(recode.getNumMapItem() == 1);
-            assertTrue(recode.getMapItemKey(0).equals(new StringLiteral("k1")));
+            assertTrue(recode.getMapItemKey(0).equals("k1"));
             assertTrue(recode.getMapItemValue(0).getColor(null, -1) == c1.getColor(null, -1));
-            assertTrue(recode.getMapItemValue(new StringLiteral("k1")).getColor(null, -1) == c1.getColor(null, -1));
-            recode.addMapItem(new StringLiteral(key2), c2);
+            assertTrue(recode.getMapItemValue("k1").getColor(null, -1) == c1.getColor(null, -1));
+            recode.addMapItem(key2, c2);
             assertTrue(recode.getNumMapItem() == 2);
-            assertTrue(recode.getMapItemKey(0).equals(new StringLiteral("k1")));
-            assertTrue(recode.getMapItemKey(1).equals(new StringLiteral("k2")));
+            assertTrue(recode.getMapItemKey(0).equals("k1"));
+            assertTrue(recode.getMapItemKey(1).equals("k2"));
             assertTrue(recode.getMapItemValue(1).getColor(null, -1) == c2.getColor(null, -1));
-            assertTrue(recode.getMapItemValue(new StringLiteral("k2")).getColor(null, -1) == c2.getColor(null, -1));
-            recode.addMapItem(new StringLiteral(key3), c3);
+            assertTrue(recode.getMapItemValue("k2").getColor(null, -1) == c2.getColor(null, -1));
+            recode.addMapItem(key3, c3);
             assertTrue(recode.getNumMapItem() == 3);
-            assertTrue(recode.getMapItemKey(0).equals(new StringLiteral("k1")));
-            assertTrue(recode.getMapItemKey(1).equals(new StringLiteral("k2")));
-            assertTrue(recode.getMapItemKey(2).equals(new StringLiteral("k3")));
+            assertTrue(recode.getMapItemKey(0).equals("k1"));
+            assertTrue(recode.getMapItemKey(1).equals("k2"));
+            assertTrue(recode.getMapItemKey(2).equals("k3"));
             assertTrue(recode.getMapItemValue(2).getColor(null, -1) == c3.getColor(null, -1));
-            assertTrue(recode.getMapItemValue(new StringLiteral("k3")).getColor(null, -1) == c3.getColor(null, -1));
+            assertTrue(recode.getMapItemValue("k3").getColor(null, -1) == c3.getColor(null, -1));
         } catch (ParameterException ex) {
             Logger.getLogger(Recode2ColorTest.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    @Test
+    public void testSetMapKey(){
+            recode.addMapItem(key1, c1);
+            recode.addMapItem(key2, c2);
+            recode.addMapItem(key3, c3);
+            recode.setKey(1, "youhou");
+            assertTrue(recode.getMapItemKey(1).equals("youhou"));
+        
     }
 
     @Test
@@ -114,14 +119,11 @@ public class Recode2ColorTest {
     public void testRemoveMapItem(){
         testAddMapItems();
         assertTrue(recode.getNumMapItem() == 3);
-        recode.removeMapItem(new StringLiteral("k2"));
-
+        recode.removeMapItem("k2");
         assertTrue(recode.getNumMapItem() == 2);
-        recode.removeMapItem(new StringLiteral("k1"));
-
+        recode.removeMapItem("k1");
         assertTrue(recode.getNumMapItem() == 1);
-
-        recode.removeMapItem(new StringLiteral("k3"));
+        recode.removeMapItem("k3");
         assertTrue(recode.getNumMapItem() == 0);
     }
 
