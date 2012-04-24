@@ -121,15 +121,18 @@ public class LineLabel extends Label {
 
         VerticalAlignment vA = getVerticalAlign();
         HorizontalAlignment hA = getHorizontalAlign();
+        RelativeOrientation ra = getOrientation();
 
         if (vA == null) {
             vA = VerticalAlignment.TOP;
-            // TODO implement !
             //The four important lines, here, according to the SE norm, are the
             //middle line, the baseline, the ascent line and the descent line.
         }
         if (hA == null) {
             hA = HorizontalAlignment.CENTER;
+        }
+        if(ra == null) {
+            ra= RelativeOrientation.NORMAL_UP;
         }
         double lineLength = ShapeHelper.getLineLength(shp);
         double startAt;
@@ -160,11 +163,11 @@ public class LineLabel extends Label {
         Point2D.Double ptStop = ShapeHelper.getPointAt(shp, stopAt);
         int way = 1;
         // Do not laid out the label upside-down !
-        if (ptStart.x > ptStop.x){
-            // invert line way
-            way = -1;
-            startAt = stopAt;
-        }
+                if (ptStart.x > ptStop.x){
+                // invert line way
+                way = -1;
+                startAt = stopAt;
+                }
 
         double currentPos = startAt;
         double glyphWidth;
