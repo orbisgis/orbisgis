@@ -1,21 +1,46 @@
-/*
- * Library offering read and write capabilities for MifMid format
- * Copyright (C) 2009 Micha�l MICHAUD
- * michael.michaud@free.fr
+/**
+ * The GDMS library (Generic Datasource Management System)
+ * is a middleware dedicated to the management of various kinds of
+ * data-sources such as spatial vectorial data or alphanumeric. Based
+ * on the JTS library and conform to the OGC simple feature access
+ * specifications, it provides a complete and robust API to manipulate
+ * in a SQL way remote DBMS (PostgreSQL, H2...) or flat files (.shp,
+ * .csv...). It is produced by the "Atelier SIG" team of
+ * the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * Team leader : Erwan BOCHER, scientific researcher,
  *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * User support leader : Gwendall Petit, geomatic engineer.
+ *
+ * Previous computer developer : Pierre-Yves FADET, computer engineer, Thomas LEDUC,
+ * scientific researcher, Fernando GONZALEZ CORTES, computer engineer, Maxence LAURENT,
+ * computer engineer.
+ *
+ * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ *
+ * Copyright (C) 2010 Erwan BOCHER, Alexis GUEGANNO, Maxence LAURENT, Antoine GOURLAY
+ *
+ * Copyright (C) 2012 Erwan BOCHER, Antoine GOURLAY
+ *
+ * This file is part of Gdms.
+ *
+ * Gdms is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * Gdms is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * Gdms. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ *
+ * or contact directly:
+ * info@orbisgis.org
  */
 package org.gdms.driver.mifmid;
 
@@ -24,8 +49,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
@@ -35,11 +62,6 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.gdms.data.types.Type;
-import org.gdms.data.values.Value;
-import org.gdms.data.values.ValueFactory;
-import org.gdms.driver.memory.MemoryDataSetDriver;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateList;
@@ -53,10 +75,13 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.util.GeometricShapeFactory;
-import java.text.ParseException;
-import java.util.List;
+
 import org.gdms.data.schema.SchemaMetadata;
+import org.gdms.data.types.Type;
+import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 
 /**
  * Classe permettant de lire et d'�crire un fichier mif et un fichier mid. Cette

@@ -26,15 +26,15 @@ package org.gdms.driver.dxf;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import org.gdms.data.values.Value;
-import org.gdms.data.values.ValueFactory;
-import org.gdms.driver.DriverException;
-import org.gdms.driver.memory.MemoryDataSetDriver;
-
 import com.vividsolutions.jts.geom.CoordinateList;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
+
+import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 
 /**
  * POLYLINE DXF entity. This class has a static method reading a DXF POLYLINE

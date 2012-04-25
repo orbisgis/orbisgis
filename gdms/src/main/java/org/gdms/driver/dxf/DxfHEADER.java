@@ -24,13 +24,13 @@
 
 package org.gdms.driver.dxf;
 
-import java.io.RandomAccessFile;
 import java.io.IOException;
-import java.util.Map;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A DXF HEADER section.

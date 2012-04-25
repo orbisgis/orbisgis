@@ -24,10 +24,10 @@
 
 package org.gdms.driver.dxf;
 
-import java.io.RandomAccessFile;
 import java.io.IOException;
-import java.util.Map;
+import java.io.RandomAccessFile;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * The APPID item in the TABLES section

@@ -26,13 +26,13 @@ package org.gdms.driver.dxf;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Point;
+
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.memory.MemoryDataSetDriver;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Point;
 
 /**
  * A TEXT and its static readEntity method to read a TEXT in a DXF file.

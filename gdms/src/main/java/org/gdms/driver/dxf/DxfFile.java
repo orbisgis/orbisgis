@@ -28,7 +28,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
