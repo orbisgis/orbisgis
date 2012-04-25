@@ -190,7 +190,7 @@ public final class ExtendedSource implements org.gdms.source.Source {
                 LOG.trace("Creating file for property : " + propertyName);
                 FileProperty fp = getFilePropertyObject(propertyName);
                 if (fp != null) {
-                        return new File(fp.getFile());
+                        return new File(baseDir + "/" + fp.getFile());
                 } else {
                         String sourceName = "gdms" + System.currentTimeMillis();
                         while (new File(baseDir + "/" + sourceName).exists()) {
