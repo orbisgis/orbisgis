@@ -45,7 +45,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.SQLDataSourceFactory;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -74,7 +74,7 @@ import static org.junit.Assert.*;
 
 public class LegendTest extends AbstractTest {
 
-        private SQLDataSourceFactory dsf;
+        private DataSourceFactory dsf;
         private DataSource ds;
         private String fieldName;
         private LegendManager lm;
@@ -402,7 +402,7 @@ public class LegendTest extends AbstractTest {
         @Before
         public void setUp() throws Exception {
                 super.setUp();
-                dsf = new SQLDataSourceFactory("target", "target");
+                dsf = new DataSourceFactory("target", "target");
                 ds = dsf.getDataSource(new MemoryDataSetDriver(new String[]{"long"},
                         new Type[]{TypeFactory.createType(Type.INT)}), DriverManager.DEFAULT_SINGLE_TABLE_NAME);
                 ds.open();

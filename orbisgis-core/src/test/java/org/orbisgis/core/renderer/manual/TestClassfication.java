@@ -66,14 +66,14 @@ import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.renderer.symbol.SymbolFactory;
 
 import com.vividsolutions.jts.geom.Envelope;
-import org.gdms.data.SQLDataSourceFactory;
+import org.gdms.data.DataSourceFactory;
 import org.junit.Ignore;
 
 @Ignore
 public class TestClassfication {
 
 	private static Range[] ranges;
-	static SQLDataSourceFactory dsf = new SQLDataSourceFactory();
+	static DataSourceFactory dsf = new DataSourceFactory();
 
 	public static void main(String[] args) throws Exception {
 

@@ -45,7 +45,7 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
-import org.gdms.data.SQLDataSourceFactory;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.indexes.IndexManager;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
@@ -60,14 +60,14 @@ import org.orbisgis.core.layerModel.WMSLayer;
 public class DefaultDataManager implements DataManager {
 
         private static final Logger logger = Logger.getLogger(DefaultDataManager.class);
-        private SQLDataSourceFactory dsf;
+        private DataSourceFactory dsf;
 
-        public DefaultDataManager(SQLDataSourceFactory dsf) {
+        public DefaultDataManager(DataSourceFactory dsf) {
                 this.dsf = dsf;
         }
 
         @Override
-        public SQLDataSourceFactory getDataSourceFactory() {
+        public DataSourceFactory getDataSourceFactory() {
                 return dsf;
         }
 

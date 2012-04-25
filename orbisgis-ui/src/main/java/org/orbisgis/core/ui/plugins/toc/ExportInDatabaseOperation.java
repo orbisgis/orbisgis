@@ -39,7 +39,7 @@ package org.orbisgis.core.ui.plugins.toc;
 
 import javax.swing.JOptionPane;
 
-import org.gdms.data.SQLDataSourceFactory;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.db.DBSource;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.engine.ParseException;
@@ -51,13 +51,13 @@ import org.orbisgis.utils.I18N;
 
 public class ExportInDatabaseOperation implements BackgroundJob {
 
-	private SQLDataSourceFactory dsf;
+	private DataSourceFactory dsf;
 	private DBSource dbSource;
 	private String schemaName;
 	private String inSourceName;
 	private String outSourceName;
 
-	public ExportInDatabaseOperation(SQLDataSourceFactory dsf,
+	public ExportInDatabaseOperation(DataSourceFactory dsf,
 			String inSourceName, String outSourceName, String schemaName,
 			DBSource dbSource) {
 		this.outSourceName = outSourceName;

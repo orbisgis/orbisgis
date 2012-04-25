@@ -35,7 +35,7 @@
  */
 package org.orbisgis.core.ui.plugins.sql;
 
-import org.gdms.data.SQLDataSourceFactory;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -57,7 +57,7 @@ import org.orbisgis.core.ui.editors.map.MapContextManager;
 public class MapContext_BBox extends AbstractScalarFunction {
 
         @Override
-        public Value evaluate(SQLDataSourceFactory dsf, Value... args) throws FunctionException {
+        public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
 
                 MapContext mc = ((MapContextManager) Services.getService(MapContextManager.class)).getActiveMapContext();
 

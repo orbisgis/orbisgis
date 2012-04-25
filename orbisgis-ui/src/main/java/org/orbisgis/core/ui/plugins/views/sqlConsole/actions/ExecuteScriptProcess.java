@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.SQLDataSourceFactory;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.driver.DriverException;
@@ -73,7 +73,7 @@ public class ExecuteScriptProcess implements BackgroundJob {
         public void run(ProgressMonitor pm) {
 
                 DataManager dataManager = (DataManager) Services.getService(DataManager.class);
-                SQLDataSourceFactory dsf = dataManager.getDataSourceFactory();
+                DataSourceFactory dsf = dataManager.getDataSourceFactory();
                 SQLEngine engine = dsf.getSqlEngine();
                 SqlStatement[] statements = null;
 

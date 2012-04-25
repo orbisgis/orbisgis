@@ -15,7 +15,6 @@
                 <module>commons</module>
                 <module>gdms</module>
                 <module>gdmstest</module>
-                <module>gdmsql</module>
                 <module>grap</module>
                 <module>orbisgis-core</module>
                 <module>orbisgis-ui</module>

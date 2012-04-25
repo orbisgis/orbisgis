@@ -9,7 +9,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import org.gdms.data.SQLDataSourceFactory;
+import org.gdms.data.DataSourceFactory;
 
 public final class ProjectionConfigPanel extends JDialog implements ActionListener {
 
@@ -18,7 +18,7 @@ public final class ProjectionConfigPanel extends JDialog implements ActionListen
         private JButton yesButton = null;
         private JButton noButton = null;
 
-        public ProjectionConfigPanel(SQLDataSourceFactory dsf, JFrame frame, boolean modal) {
+        public ProjectionConfigPanel(DataSourceFactory dsf, JFrame frame, boolean modal) {
                 super(frame, modal);
                 getContentPane().add(getProjectionPanel(dsf), BorderLayout.CENTER);
                 getContentPane().add(getButtonPanel(), BorderLayout.SOUTH);
@@ -40,7 +40,7 @@ public final class ProjectionConfigPanel extends JDialog implements ActionListen
                 return buttonPanel;
         }
 
-        public JPanel getProjectionPanel(SQLDataSourceFactory dsf) {
+        public JPanel getProjectionPanel(DataSourceFactory dsf) {
                 if (projectionTab == null) {
                         projectionTab = new ProjectionTable(dsf);
                 }
@@ -61,7 +61,7 @@ public final class ProjectionConfigPanel extends JDialog implements ActionListen
         }
 
         public static void main(String[] args) {
-                new ProjectionConfigPanel(new SQLDataSourceFactory(), null, true).setVisible(true);
+                new ProjectionConfigPanel(new DataSourceFactory(), null, true).setVisible(true);
 
         }
 }

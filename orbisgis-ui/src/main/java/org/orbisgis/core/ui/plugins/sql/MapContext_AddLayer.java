@@ -27,7 +27,7 @@
  */
 package org.orbisgis.core.ui.plugins.sql;
 
-import org.gdms.data.SQLDataSourceFactory;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
 import org.gdms.sql.function.FunctionException;
@@ -50,7 +50,7 @@ import org.orbisgis.progress.ProgressMonitor;
 public class MapContext_AddLayer extends AbstractExecutorFunction {
 
         @Override
-        public void evaluate(SQLDataSourceFactory dsf, DataSet[] tables, Value[] values, ProgressMonitor pm) throws FunctionException {
+        public void evaluate(DataSourceFactory dsf, DataSet[] tables, Value[] values, ProgressMonitor pm) throws FunctionException {
                 MapContext mc = ((MapContextManager) Services.getService(MapContextManager.class)).getActiveMapContext();
                 if (mc != null) {
                         try {

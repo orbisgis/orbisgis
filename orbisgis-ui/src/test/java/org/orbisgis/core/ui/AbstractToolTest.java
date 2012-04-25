@@ -53,7 +53,7 @@ import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tools.SelectionTool;
 
 import com.vividsolutions.jts.geom.Envelope;
-import org.gdms.data.SQLDataSourceFactory;
+import org.gdms.data.DataSourceFactory;
 import org.junit.Before;
 import org.orbisgis.progress.NullProgressMonitor;
 
@@ -68,7 +68,7 @@ public abstract class AbstractToolTest {
         @Before
         public void setUp() throws Exception {
 
-                SQLDataSourceFactory dsf = new SQLDataSourceFactory(
+                DataSourceFactory dsf = new DataSourceFactory(
                         "src/test/resources/backup", "src/test/resources/backup");
 
                 dataManager = new DefaultDataManager(dsf);

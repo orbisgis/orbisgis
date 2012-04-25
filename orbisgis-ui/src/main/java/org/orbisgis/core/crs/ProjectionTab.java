@@ -17,7 +17,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-import org.gdms.data.SQLDataSourceFactory;
+import org.gdms.data.DataSourceFactory;
 import org.jproj.Registry;
 import org.orbisgis.core.ui.components.text.JTextFilter;
 
@@ -27,12 +27,12 @@ public class ProjectionTab extends JPanel {
         private JTextFilter txtFilter;
         private JList lstSRS;
         private JScrollPane scrollPane;
-        private final SQLDataSourceFactory dsf;
+        private final DataSourceFactory dsf;
         String DEFAULT_REGISTER = "EPSG";
         private JTable crsTable;
         private TableRowSorter<TableModel> sorter;
 
-        public ProjectionTab(SQLDataSourceFactory dsf) {
+        public ProjectionTab(DataSourceFactory dsf) {
                 this.dsf = dsf;
                 initUI();
         }
@@ -106,7 +106,7 @@ public class ProjectionTab extends JPanel {
                 return crsTable.getValueAt(crsTable.getSelectedRow(), 0).toString();
         }
 
-        public SQLDataSourceFactory getDsf() {
+        public DataSourceFactory getDsf() {
                 return dsf;
         }
 }

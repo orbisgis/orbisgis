@@ -28,7 +28,7 @@
 package org.orbisgis.core.ui.plugins.sql;
 
 import com.vividsolutions.jts.geom.Envelope;
-import org.gdms.data.SQLDataSourceFactory;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
@@ -51,7 +51,7 @@ import org.orbisgis.progress.ProgressMonitor;
 public class MapContext_ZoomTo extends AbstractExecutorFunction {
 
         @Override
-        public void evaluate(SQLDataSourceFactory dsf, DataSet[] tables, Value[] values, ProgressMonitor pm) throws FunctionException {
+        public void evaluate(DataSourceFactory dsf, DataSet[] tables, Value[] values, ProgressMonitor pm) throws FunctionException {
                 try {
                         IEditor editor = Services.getService(EditorManager.class).getActiveEditor();
                         if (editor != null && editor instanceof MapEditorPlugIn) {
