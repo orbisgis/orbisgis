@@ -49,30 +49,23 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 import org.gdms.TestBase;
+import org.gdms.TestResourceHandler;
 
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.db.DBSource;
 import org.gdms.source.SourceManager;
 
-public abstract class AbstractDBTest {
-
-        protected DataSourceFactory dsf;
-        protected SourceManager sm;
+public abstract class AbstractDBTest extends TestBase {
 
         @Before
         public void setUp() throws Exception {
-                dsf = new DataSourceFactory();
-                dsf.setTempDir(TestBase.backupDir.getAbsolutePath());
-                dsf.setResultDir(TestBase.backupDir);
-                sm = dsf.getSourceManager();
-                sm.removeAll();
+                super.setUpTestsWithoutEdition();
         }
 
         protected void executeScript(DBSource dbSource, String statement)
                 throws Exception {
                 Class.forName("org.postgresql.Driver").newInstance();
-                Class.forName("org.h2.Driver").newInstance();
                 Class.forName("org.hsqldb.jdbcDriver").newInstance();
                 String connectionString = dbSource.getPrefix() + ":";
                 if (dbSource.getHost() != null) {
@@ -100,7 +93,7 @@ public abstract class AbstractDBTest {
         }
 
         protected DBSource getHSQLDBSource(String tableName) {
-                return new DBSource(null, -1, TestBase.backupDir + tableName,
+                return new DBSource(null, -1, TestResourceHandler.OTHERRESOURCES + tableName,
                         "sa", "", tableName, "jdbc:hsqldb:file");
         }
 

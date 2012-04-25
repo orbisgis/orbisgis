@@ -67,7 +67,7 @@ import org.junit.Before;
 
 import static org.junit.Assert.*;
 
-public abstract class FunctionTest {
+public abstract class FunctionTest extends TestBase {
 
         protected Geometry JTSMultiPolygon2D;
         protected Geometry JTSMultiLineString2D;
@@ -80,11 +80,11 @@ public abstract class FunctionTest {
         protected Geometry JTSLineString3D;
         protected Geometry JTSPolygonWith2Holes;
         protected GeometryCollection JTS3DCollection;
-        public static DataSourceFactory dsf = new DataSourceFactory(TestBase.backupDir.getAbsolutePath(), TestBase.backupDir.getAbsolutePath());
         protected WKTReader wktReader;
 
         @Before
         public void setUp() throws Exception {
+                super.setUpTestsWithoutEdition();
                 wktReader = new WKTReader();
                 JTSMultiPolygon2D = wktReader.read("MULTIPOLYGON (((0 0, 1 1, 0 1, 0 0)))");
                 JTSMultiLineString2D = wktReader.read("MULTILINESTRING ((0 0, 1 1, 0 1, 0 0))");
@@ -122,9 +122,7 @@ public abstract class FunctionTest {
                                 ValueFactory.createValue(JTSPolygon2D)});
                 // and register this new driver...
 
-                if (!dsf.exists("ds1")) {
-                        dsf.getSourceManager().register("ds1", driver1);
-                }
+                dsf.getSourceManager().register("ds1", driver1);
 
                 // second datasource
                 final MemoryDataSetDriver driver2 = new MemoryDataSetDriver(
@@ -136,11 +134,9 @@ public abstract class FunctionTest {
                 driver1.addValues(new Value[]{ValueFactory.createValue(1),
                                 ValueFactory.createValue(JTSMultiPolygon2D)});
                 // and register this new driver...
-                if (!dsf.exists("ds1")) {
-                        dsf.getSourceManager().register("ds2", driver2);
-                }
+                dsf.getSourceManager().register("ds2", driver2);
+
         }
-        
 
         protected Value evaluate(Function function, ColumnValue... args)
                 throws FunctionException {

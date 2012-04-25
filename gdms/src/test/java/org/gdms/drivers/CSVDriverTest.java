@@ -60,24 +60,18 @@ import org.gdms.data.values.ValueFactory;
 
 import static org.junit.Assert.*;
 
-public class CSVDriverTest {
+public class CSVDriverTest extends TestBase {
 
         private File file;
-        private DataSourceFactory dsf;
-
+        
         @Before
         public void setUp() throws Exception {
-                File file1 = new File(TestBase.backupDir, "csvdrivertest.csv");
-                if (file1.exists()) {
-                        if (!file1.delete()) {
-                                throw new IOException("Cannot delete file " + file1);
-                        }
-                }
+                super.setUpTestsWithEdition(false);
+                File file1 = File.createTempFile("csvdrivertest", ".csv");
+                file1.delete();
+                file1.deleteOnExit();
                 file = file1;
 
-                dsf = new DataSourceFactory();
-                dsf.setTempDir(TestBase.backupDir.getAbsolutePath());
-                dsf.setResultDir(TestBase.backupDir);
                 DefaultMetadata metadata = new DefaultMetadata();
                 metadata.addField("f1", Type.STRING);
                 metadata.addField("f2", Type.STRING);

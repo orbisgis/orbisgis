@@ -54,6 +54,8 @@ import org.gdms.driver.shapefile.ShapefileDriver;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import org.gdms.TestResourceHandler;
+
 /**
  * Tests for the FileDriverRegister.
  * @author alexis
@@ -63,16 +65,14 @@ import static org.junit.Assert.*;
 public class FileDriverRegisterTest extends TestBase {
         
         @Before
-        @Override
         public void setUp() throws Exception {
-                super.setUp();
-                setWritingTests(true);
+                super.setUpTestsWithoutEdition();
         }
         
         @Test
         public void testAddNull(){
                 //Our source is a single, simple, ShapeFile
-                File shape = new File(TestBase.internalData + "landcover2000.shp");
+                File shape = super.getAnySpatialResource();
                 FileDriverRegister fdr = new FileDriverRegister();
                 try{
                         fdr.addFile(shape, null);
@@ -85,7 +85,7 @@ public class FileDriverRegisterTest extends TestBase {
         
         @Test
         public void testAdd() throws Exception{
-                File shape = new File(TestBase.internalData + "landcover2000.shp");
+                File shape = super.getAnySpatialResource();
                 FileDriver d = new ShapefileDriver();
                 FileDriverRegister fdr = new FileDriverRegister();
                 fdr.addFile(shape, d);
@@ -95,7 +95,7 @@ public class FileDriverRegisterTest extends TestBase {
         
         @Test
         public void testAddTwice() throws Exception{
-                File shape = new File(TestBase.internalData + "landcover2000.shp");
+                File shape = super.getAnySpatialResource();
                 FileDriver d = new ShapefileDriver();
                 FileDriverRegister fdr = new FileDriverRegister();
                 fdr.addFile(shape, d);
@@ -110,7 +110,7 @@ public class FileDriverRegisterTest extends TestBase {
         
         @Test
         public void testRemove() throws Exception{
-                File shape = new File(TestBase.internalData + "landcover2000.shp");
+                File shape = super.getAnySpatialResource();
                 FileDriver d = new ShapefileDriver();
                 FileDriverRegister fdr = new FileDriverRegister();
                 fdr.addFile(shape, d);

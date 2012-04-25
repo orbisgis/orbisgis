@@ -47,7 +47,6 @@ package org.gdms.data.edition;
 import org.junit.Test;
 import org.junit.Before;
 import java.io.File;
-import org.gdms.FileTestSource;
 
 import org.gdms.TestBase;
 import org.gdms.data.DataSource;
@@ -65,13 +64,13 @@ import org.gdms.driver.DriverException;
 
 import static org.junit.Assert.*;
 
+import org.gdms.TestResourceHandler;
+
 public class MetadataTest extends TestBase {
 
         @Before
-        @Override
         public void setUp() throws Exception {
-                super.setUp();
-                setWritingTests(true);
+                super.setUpTestsWithoutEdition();
         }
 
         @Test
@@ -125,8 +124,7 @@ public class MetadataTest extends TestBase {
         @Test
         public void testFieldIndexDataSource() throws Exception {
 
-                DataSource ds = dsf.getDataSource(new File(internalData
-                        + "hedgerow.shp"));
+                DataSource ds = dsf.getDataSource(super.getAnyNonSpatialResource());
                 ds.open();
                 assertEquals(ds.getMetadata().getFieldIndex(ds.getMetadata().getFieldName(1)), ds.getFieldIndexByName(ds.getFieldName(1)));
                 ds.close();
@@ -178,18 +176,14 @@ public class MetadataTest extends TestBase {
 
         @Test
         public void testAddField() throws Exception {
-                dsf.getSourceManager().remove("landcover");
-                FileTestSource fts = new FileTestSource("landcover",TestBase.internalData+ "landcover2000.shp");
-                fts.backup();
-                dsf.getSourceManager().remove("landcover");
-                dsf.getSourceManager().register(
-                        "landcover",
-                        new FileSourceCreation(fts.getBackupFile(), null));
+                sm.register("landcover", getTempCopyOf(new File(TestResourceHandler.TESTRESOURCES, "landcover2000.shp")));
                 testAddField("landcover", TypeFactory.createType(Type.STRING, "String"));
         }
 
-        private void testDeleteField(String dsName) throws Exception {
-                DataSource d = dsf.getDataSource(dsName);
+        @Test
+        public void testDeleteField() throws Exception {
+                sm.register("big", getTempCopyOf(new File(TestResourceHandler.TESTRESOURCES, "landcover2000.shp")));
+                DataSource d = dsf.getDataSource("big");
 
                 d.open();
                 Metadata m = d.getMetadata();
@@ -200,23 +194,13 @@ public class MetadataTest extends TestBase {
                 d.open();
                 assertEquals(fc - 1, m.getFieldCount());
                 d.close();
+
         }
 
         @Test
-        public void testDeleteField() throws Exception {
-                dsf.getSourceManager().remove("big");
-                FileTestSource fts = new FileTestSource("big",TestBase.internalData+ "landcover2000.shp");
-                fts.backup();
-                dsf.getSourceManager().remove("big");
-                dsf.getSourceManager().register(
-                        "big",
-                        new FileSourceCreation(fts.getBackupFile(), null));
-                testDeleteField("big");
-
-        }
-
-        private void testModifyField(String dsName) throws Exception {
-                DataSource d = dsf.getDataSource(dsName);
+        public void testModifyField() throws Exception {
+                sm.register("big", getTempCopyOf(getAnyNonSpatialResource()));
+                DataSource d = dsf.getDataSource("big");
 
                 d.open();
                 d.getMetadata();
@@ -226,14 +210,6 @@ public class MetadataTest extends TestBase {
                 d.open();
                 assertEquals(d.getMetadata().getFieldName(1), "nuevo");
                 d.close();
-        }
-
-        @Test
-        public void testModifyField() throws Exception {
-                String[] resources = super.getNonDBSmallResources();
-                for (String resource : resources) {
-                        testModifyField(resource);
-                }
         }
 
         private void testMetadataEditionListenerTest(String dsName, Type type)
@@ -257,18 +233,16 @@ public class MetadataTest extends TestBase {
         public void testMetadataEditionListenerTest() throws Exception {
                 dsf.getSourceManager().remove("big");
                 dsf.getSourceManager().register(
-                        "big",
-                        new FileSourceCreation(new File(TestBase.internalData
-                        + "hedgerow.shp"), null));
-                testMetadataEditionListenerTest("big",
-                        TypeFactory.createType(Type.STRING, "STRING"));
+                        "big", new FileSourceCreation(super.getAnyNonSpatialResource(), null));
+                testMetadataEditionListenerTest("big", TypeFactory.createType(Type.STRING, "STRING"));
         }
 
-        private void testEditionWithFieldAdded(String dsName, Type type)
-                throws Exception {
-                DataSource d = dsf.getDataSource(dsName, DataSourceFactory.EDITABLE);
+        @Test
+        public void testEditionWithFieldAdded() throws Exception {
+                sm.register("toto", getTempCopyOf(super.getAnyNonSpatialResource()));
+                DataSource d = dsf.getDataSource("toto", DataSourceFactory.EDITABLE);
                 d.open();
-                d.addField("extra", type);
+                d.addField("extra", TypeFactory.createType(Type.STRING));
                 int fi = d.getFieldIndexByName("extra");
                 new UndoRedoTests().testAlphanumericEditionUndoRedo(d);
                 Value newValue = ValueFactory.createValue("hi");
@@ -283,12 +257,9 @@ public class MetadataTest extends TestBase {
         }
 
         @Test
-        public void testEditionWithFieldAdded() throws Exception {
-                testEditionWithFieldAdded(super.getResourcesWithoutNumericField()[0], TypeFactory.createType(Type.STRING, "STRING"));
-        }
-
-        private void testEditionWithFieldRemoved(String dsName) throws Exception {
-                DataSource d = dsf.getDataSource(dsName, DataSourceFactory.EDITABLE);
+        public void testEditionWithFieldRemoved() throws Exception {
+                sm.register("ile", getTempCopyOf(super.getAnyNonSpatialResource()));
+                DataSource d = dsf.getDataSource("ile", DataSourceFactory.EDITABLE);
                 d.open();
                 String fieldName = d.getFieldName(1);
                 Value testValue = d.getFieldValue(0, 2);
@@ -304,49 +275,9 @@ public class MetadataTest extends TestBase {
         }
 
         @Test
-        public void testEditionWithFieldRemoved() throws Exception {
-                dsf.getSourceManager().remove("ile");
-                FileTestSource fts = new FileTestSource("ile",TestBase.internalData+ "landcover2000.shp");
-                fts.backup();
-                dsf.getSourceManager().remove("ile");
-                dsf.getSourceManager().register(
-                        "land",
-                        new FileSourceCreation(fts.getBackupFile(), null));
-                testEditionWithFieldRemoved("land");
-        }
-
-        private void testRemovePK(String dsName) throws Exception {
-                DataSource d = dsf.getDataSource(dsName);
-                d.open();
-                int pkIndex = d.getFieldIndexByName(super.getPKFieldFor(dsName));
-                try {
-                        d.removeField(pkIndex);
-                        fail();
-                } catch (DriverException e) {
-                }
-                try {
-                        d.setFieldName(pkIndex, "s1234d");
-                        d.commit();
-                        d.close();
-                        d.open();
-                        assertFalse(d.getFieldIndexByName("s1234d") == -1);
-                        d.close();
-                } catch (DriverException e) {
-                }
-        }
-
-        @Test
-        public void testRemovePK() throws Exception {
-                String[] resources = super.getNonDBResourcesWithPK();
-                for (String resource : resources) {
-                        testRemovePK(resource);
-                }
-
-        }
-
-        private void testFieldDeletionEditionWhileEdition(String dsName)
-                throws Exception {
-                DataSource d = dsf.getDataSource(dsName);
+        public void testFieldDeletionEditionWhileEdition() throws Exception {
+                sm.register("toto", super.getAnyNonSpatialResource());
+                DataSource d = dsf.getDataSource("toto");
                 d.open();
                 Value[][] content = super.getDataSourceContents(d);
                 d.deleteRow(0);
@@ -359,18 +290,9 @@ public class MetadataTest extends TestBase {
         }
 
         @Test
-        public void testFieldDeletionEditionWhileEdition() throws Exception {
-                dsf.getSourceManager().remove("big");
-                dsf.getSourceManager().register(
-                        "big",
-                        new FileSourceCreation(new File(TestBase.internalData
-                        + "landcover2000.shp"), null));
-                testFieldDeletionEditionWhileEdition("big");
-        }
-
-        private void testFieldInsertionEditionWhileEdition(String dsName, Type type)
-                throws Exception {
-                DataSource d = dsf.getDataSource(dsName);
+        public void testFieldInsertionEditionWhileEdition() throws Exception {
+                sm.register("toto", getTempCopyOf(super.getAnyNonSpatialResource()));
+                DataSource d = dsf.getDataSource("toto");
                 d.open();
                 String nouveau = "nouveau";
                 Value newValue = ValueFactory.createValue(nouveau);
@@ -378,7 +300,7 @@ public class MetadataTest extends TestBase {
                 int lastField = d.getMetadata().getFieldCount();
                 d.deleteRow(0);
                 d.setFieldValue(0, 1, d.getFieldValue(1, 1));
-                d.addField(nouveau, type);
+                d.addField(nouveau, TypeFactory.createType(Type.STRING));
                 d.setFieldValue(0, lastField, newValue);
                 assertTrue(equals(d.getFieldValue(0, lastField), newValue));
                 d.commit();
@@ -392,12 +314,9 @@ public class MetadataTest extends TestBase {
         }
 
         @Test
-        public void testFieldInsertionEditionWhileEdition() throws Exception {
-                testFieldInsertionEditionWhileEdition(super.getNonDBSmallResources()[0],
-                        TypeFactory.createType(Type.STRING, "String"));
-        }
-
-        private void testTypeInAddField(String dsName) throws Exception {
+        public void testTypeInAddField() throws Exception {
+                String dsName = "toto";
+                sm.register(dsName, getTempCopyOf(super.getAnyNonSpatialResource()));
                 DataSource d = dsf.getDataSource(dsName);
 
                 d.open();
@@ -413,13 +332,5 @@ public class MetadataTest extends TestBase {
                 assertEquals(d.getMetadata().getFieldCount(), fc + 1);
                 assertEquals(d.getMetadata().getFieldType(fc).getTypeCode(), type.getTypeCode());
                 d.close();
-        }
-
-        @Test
-        public void testTypeInAddField() throws Exception {
-                String[] resources = super.getNonDBSmallResources();
-                for (String resource : resources) {
-                        testTypeInAddField(resource);
-                }
         }
 }

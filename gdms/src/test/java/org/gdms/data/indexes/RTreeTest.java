@@ -63,11 +63,12 @@ import org.junit.Test;
 
 import com.vividsolutions.jts.geom.Envelope;
 
-public class RTreeTest {
+import org.gdms.TestResourceHandler;
+
+public class RTreeTest extends TestBase {
 
         private File indexFile;
-        private DataSourceFactory dsf;
-
+        
         private void checkLookUp(DiskRTree tree, DataSource ds, int fieldIndex)
                 throws Exception {
                 tree.checkTree();
@@ -160,11 +161,11 @@ public class RTreeTest {
                         Envelope value = ds.getFieldValue(i, fieldIndex).getAsGeometry().getEnvelopeInternal();
                         tree.insert(value, i);
                 }
-                Envelope e = ds.getGeometry((ds.getRowCount() - 1 )/ 2).getEnvelopeInternal();
-                
+                Envelope e = ds.getGeometry((ds.getRowCount() - 1) / 2).getEnvelopeInternal();
+
                 IV iV = new IV(ds);
-                tree.query(e,  iV);
-                
+                tree.query(e, iV);
+
                 assertTrue(iV.fired);
         }
 
@@ -190,22 +191,14 @@ public class RTreeTest {
 
         @Before
         public void setUp() throws Exception {
-                indexFile = new File(TestBase.backupDir, "rtreetest.idx");
-                if (indexFile.exists()) {
-                        if (!indexFile.delete()) {
-                                throw new IOException("Cannot delete the index file");
-                        }
-                }
+                indexFile = File.createTempFile("idx-", ".idx");
+                indexFile.delete();
+                indexFile.deleteOnExit();
 
-                dsf = new DataSourceFactory();
-                dsf.setTempDir(TestBase.backupDir.getAbsolutePath());
-                dsf.setResultDir(TestBase.backupDir);
+                super.setUpTestsWithoutEdition();
 
-                SourceManager sm = dsf.getSourceManager();
-                sm.register("points", new File(TestBase.internalData, "points.shp"));
-                sm.register("lines", new File(TestBase.internalData
-                        + "hedgerow.shp"));
-                sm.register("pols", new File(TestBase.internalData
-                        + "landcover2000.shp"));
+                sm.register("points", new File(TestResourceHandler.TESTRESOURCES, "points.shp"));
+                sm.register("lines", new File(TestResourceHandler.TESTRESOURCES, "hedgerow.shp"));
+                sm.register("pols", new File(TestResourceHandler.TESTRESOURCES, "landcover2000.shp"));
         }
 }

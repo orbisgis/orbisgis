@@ -51,13 +51,10 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.memory.MemorySourceDefinition;
 import org.gdms.driver.driverManager.DriverManager;
-import org.gdms.source.SourceManager;
 
 import static org.junit.Assert.*;
 
 public class IsEditableTests extends TestBase {
-
-	private DataSourceFactory dsf;
 
 	@Test
         public void testObject() throws Exception {
@@ -93,25 +90,24 @@ public class IsEditableTests extends TestBase {
 	public void setUp() throws Exception {
 		ReadDriver.initialize();
 
-		dsf = new DataSourceFactory();
-                dsf.setTempDir(TestBase.backupDir.getAbsolutePath());
-                dsf.setResultDir(TestBase.backupDir);
-		DriverManager dm = new DriverManager();
+		super.setUpTestsWithoutEdition();
+                
+                DriverManager dm = new DriverManager();
 		dm.registerDriver(ReadDriver.class);
-		SourceManager sourceManager = dsf.getSourceManager();
-		sourceManager.setDriverManager(dm);
+		
+                sm.setDriverManager(dm);
 
-		sourceManager.register("readObject", new MemorySourceDefinition(
+		sm.register("readObject", new MemorySourceDefinition(
 				new ReadDriver(),"main"));
-		sourceManager.register("readWriteObject", new MemorySourceDefinition(
+		sm.register("readWriteObject", new MemorySourceDefinition(
 				new ReadAndWriteDriver(),"main"));
-		sourceManager.register("readFile", new FakeFileSourceDefinition(
+		sm.register("readFile", new FakeFileSourceDefinition(
 				new ReadDriver()));
-		sourceManager.register("readWriteFile", new FakeFileSourceDefinition(
+		sm.register("readWriteFile", new FakeFileSourceDefinition(
 				new ReadAndWriteDriver()));
-		sourceManager.register("readDB", new FakeDBTableSourceDefinition(
+		sm.register("readDB", new FakeDBTableSourceDefinition(
 				new ReadDriver(), "jdbc:executefailing"));
-		sourceManager.register("readWriteDB", new FakeDBTableSourceDefinition(
+		sm.register("readWriteDB", new FakeDBTableSourceDefinition(
 				new ReadAndWriteDriver(), "jdbc:closefailing"));
 	}
 }

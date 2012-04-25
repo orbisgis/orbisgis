@@ -58,20 +58,11 @@ import org.gdms.data.DataSourceFactory;
  *
  * @author Antoine Gourlay
  */
-public class FunctionMathTest {
+public class FunctionMathTest extends TestBase {
 
-        private static DataSourceFactory dsf;
-        
         @Before
         public void setUp() throws Exception {
-                dsf = new DataSourceFactory();
-                dsf.setTempDir(TestBase.backupDir.getAbsolutePath());
-                dsf.setResultDir(TestBase.backupDir);
-        }
-
-        @After
-        public void tearDown() throws Exception {
-                dsf.freeResources();
+                super.setUpTestsWithoutEdition();
         }
 
         @Test

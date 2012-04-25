@@ -61,22 +61,15 @@ import org.orbisgis.progress.NullProgressMonitor;
 
 import static org.junit.Assert.*;
 
-public class InstructionTest {
+public class InstructionTest extends TestBase {
 
-        private DataSourceFactory dsf;
-        private File resultDir;
-        private CancelledPM cancelPM;
+        private CancelledPM cancelPM = new CancelledPM();
 
         @Before
         public void setUp() throws Exception {
-                dsf = new DataSourceFactory();
-                dsf.setTempDir(TestBase.backupDir.getAbsolutePath());
-                dsf.setResultDir(TestBase.backupDir);
-                SourceManager sm = dsf.getSourceManager();
+                super.setUpTestsWithoutEdition();
                 AllTypesObjectDriver omd = new AllTypesObjectDriver();
                 sm.register("alltypes", omd);
-
-                cancelPM = new CancelledPM();
         }
 
         @Test

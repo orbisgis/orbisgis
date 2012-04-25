@@ -44,6 +44,7 @@
  */
 package org.gdms.drivers;
 
+import java.io.File;
 import org.junit.Test;
 import org.junit.Before;
 import org.gdms.data.DataSource;
@@ -63,13 +64,15 @@ import org.gdms.sql.engine.SQLEngine;
 import static org.junit.Assert.*;
 import static org.junit.Assume.*;
 
+import org.gdms.TestResourceHandler;
+
 public class ExportTest extends AbstractDBTest {
 
         @Before
         @Override
         public void setUp() throws Exception {
                 super.setUp();
-                if (TestBase.postGisAvailable) {
+                if (postGisAvailable) {
                         deleteTable(getPostgreSQLSource("pglandcoverfromshp"));
                 }
         }
@@ -77,8 +80,8 @@ public class ExportTest extends AbstractDBTest {
         @Test
         public void testSHP2H22PostgreSQL2SHP_2D() throws Exception {
                 assumeTrue(TestBase.postGisAvailable);
-                sm.remove("landcover2000");
-                testSHP2H22PostgreSQL2SHP("CALL register('" + TestBase.internalData + "p3d.shp', "
+                testSHP2H22PostgreSQL2SHP("CALL register('" 
+                        + new File(TestResourceHandler.TESTRESOURCES,"p3d.shp").getAbsolutePath() + "', "
                         + "'landcover2000');", "gid", 2);
         }
 
@@ -87,14 +90,14 @@ public class ExportTest extends AbstractDBTest {
                 assumeTrue(TestBase.postGisAvailable);
                 sm.remove("landcover2000");
                 testSHP2H22PostgreSQL2SHP(
-                        "CALL register('" + TestBase.internalData + "p3d.shp', "
+                        "CALL register('" + TestResourceHandler.TESTRESOURCES + "p3d.shp', "
                         + "'landcover2000');", "gid", 3);
         }
 
         private void testSHP2H22PostgreSQL2SHP(String script, String orderField,
                 int dim) throws Exception {
                 script += "CALL register('h2','', '0', '"
-                        + TestBase.internalData + "backup/h2landcoverfromshp',"
+                        + TestResourceHandler.TESTRESOURCES + "backup/h2landcoverfromshp',"
                         + "'sa','','h2landcoverfromshp', 'h2landcoverfromshp');";
                 script += "create table h2landcoverfromshp as select * from landcover2000;";
 
@@ -108,7 +111,7 @@ public class ExportTest extends AbstractDBTest {
                                 + "select constraint3d(the_geom), gid from h2landcoverfromshp;";
                 }
 
-                script += "CALL register('" + TestBase.internalData + "backup/landcoverfrompg.shp', 'res');";
+                script += "CALL register('" + TestResourceHandler.TESTRESOURCES + "backup/landcoverfrompg.shp', 'res');";
                 script += "create table res as select * from pglandcoverfromshp;";
                 check(script, orderField);
         }
@@ -156,7 +159,7 @@ public class ExportTest extends AbstractDBTest {
                 assumeTrue(TestBase.postGisAvailable);
                 sm.remove("landcover2000");
                 testSHP2PostgreSQL2H22SHP(
-                        "CALL register('" + TestBase.internalData + "p3d.shp', "
+                        "CALL register('" + TestResourceHandler.TESTRESOURCES + "p3d.shp', "
                         + "'landcover2000');", "gid", 3);
         }
 
@@ -167,11 +170,11 @@ public class ExportTest extends AbstractDBTest {
                 script += "create table pglandcoverfromshp as select * from landcover2000;";
 
                 script += "CALL register('h2','', '0', "
-                        + "'" + TestBase.internalData + "backup/h2landcoverfromshp',"
+                        + "'" + TestResourceHandler.TESTRESOURCES + "backup/h2landcoverfromshp',"
                         + "'sa','','h2landcoverfromshp', 'h2landcoverfromshp');";
                 script += "create table h2landcoverfromshp as select * from pglandcoverfromshp;";
 
-                script += "CALL register('" + TestBase.internalData + "backup/landcoverfrompg.shp', 'res');";
+                script += "CALL register('" + TestResourceHandler.TESTRESOURCES + "backup/landcoverfrompg.shp', 'res');";
                 if (dim == 2) {
                         script += "create table res as "
                                 + "select * from h2landcoverfromshp;";

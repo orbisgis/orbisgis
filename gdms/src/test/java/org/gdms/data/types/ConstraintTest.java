@@ -67,9 +67,8 @@ import java.util.*;
 
 import static org.junit.Assert.*;
 
-public class ConstraintTest {
+public class ConstraintTest extends TestBase {
 
-        private DataSourceFactory dsf;
         private Type type;
         private Value[] validValues = new Value[0];
         private Value[] invalidValues = new Value[0];
@@ -98,9 +97,7 @@ public class ConstraintTest {
 
         @Before
         public void setUp() throws Exception {
-                dsf = new DataSourceFactory();
-                dsf.setTempDir(TestBase.backupDir.getAbsolutePath());
-                dsf.setResultDir(TestBase.backupDir);
+                super.setUpTestsWithoutEdition();
         }
 
         @Test

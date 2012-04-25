@@ -64,15 +64,9 @@ import static org.junit.Assert.*;
  */
 public class MemoryDataSetTest {
 
-        private WKTReader wktReader;
-
-        @Before
-        public void setUp() throws Exception {
-                wktReader = new WKTReader();
-        }
-
         @Test
         public void testFullExtent() throws Exception {
+                WKTReader wktReader = new WKTReader();
                 Polygon polygon = (Polygon) wktReader.read("POLYGON((0 0, 1 0, 1 0, 2 10, 0 0 ))");
 
                 // first datasource
@@ -87,6 +81,7 @@ public class MemoryDataSetTest {
 
         @Test
         public void testFullExtent2() throws Exception {
+                WKTReader wktReader = new WKTReader();
                 Polygon polygon = (Polygon) wktReader.read("POLYGON((0 0, 1 0, 1 0, 2 10, 0 0 ))");
 
                 // first datasource

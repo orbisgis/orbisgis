@@ -44,19 +44,17 @@
  */
 package org.gdms.data;
 
-import org.gdms.TestBase;
-import org.gdms.SourceTest;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
+
+import org.gdms.TestBase;
 import org.gdms.data.memory.MemorySourceDefinition;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DataSet;
 
-import static org.junit.Assert.*;
-
-public class GettersTest {
-
-        private DataSourceFactory dsf;
+public class GettersTest extends TestBase {
 
         @Test
         public void testAllGeters() throws Exception {
@@ -151,9 +149,7 @@ public class GettersTest {
 
         @Before
         public void setUp() throws Exception {
-                dsf = new DataSourceFactory();
-                dsf.setTempDir(TestBase.backupDir.getAbsolutePath());
-                dsf.setResultDir(TestBase.backupDir);
+                super.setUpTestsWithoutEdition();
                 dsf.getSourceManager().register("alltypes",
                         new MemorySourceDefinition(new AllTypesObjectDriver(), "main"));
         }

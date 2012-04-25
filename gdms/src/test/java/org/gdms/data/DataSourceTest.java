@@ -44,35 +44,43 @@
  */
 package org.gdms.data;
 
-import java.util.Iterator;
-import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
-import org.gdms.data.values.ValueFactory;
-import org.gdms.driver.memory.MemoryDataSetDriver;
-import org.gdms.driver.AbstractDataSet;
-import org.junit.Test;
 import java.io.File;
+import java.util.Iterator;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 import org.gdms.TestBase;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.DefaultSchema;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.Schema;
+import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.AbstractDataSet;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.MemoryDriver;
-import org.gdms.driver.DataSet;
-import org.orbisgis.utils.FileUtils;
-
-import static org.junit.Assert.*;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 
 public class DataSourceTest extends TestBase {
+        
+        @Before
+        public void setUp() throws Exception {
+               super.setUpTestsWithEdition(false);
+               sm.register("test", super.getAnyNonSpatialResource());
+        }
 
         @Test
         public void testReadWriteAccessInDataSourceOutOfTransaction()
                 throws Exception {
-                DataSource ds = dsf.getDataSource(super.getAnyNonSpatialResource());
+                
+                DataSource ds = dsf.getDataSource("test");
 
                 try {
                         ds.getFieldValue(0, 0);
@@ -153,7 +161,7 @@ public class DataSourceTest extends TestBase {
 
         @Test
         public void testSaveDataWithOpenDataSource() throws Exception {
-                DataSource ds = dsf.getDataSource(super.getNonDBSmallResources()[0]);
+                DataSource ds = dsf.getDataSource("test");
 
                 ds.open();
                 try {
@@ -166,15 +174,14 @@ public class DataSourceTest extends TestBase {
 
         @Test
         public void testRemovedDataSource() throws Exception {
-                String dsName = super.getNonDBSmallResources()[0];
-                DataSource ds = dsf.getDataSource(dsName);
+                DataSource ds = dsf.getDataSource("test");
 
                 ds.open();
                 ds.close();
                 dsf.getSourceManager().remove(ds.getName());
 
                 try {
-                        dsf.getDataSource(dsName);
+                        dsf.getDataSource("test");
                         fail();
                 } catch (NoSuchTableException e) {
                 }
@@ -185,7 +192,7 @@ public class DataSourceTest extends TestBase {
 
         @Test(expected = AlreadyClosedException.class)
         public void testAlreadyClosed() throws Exception {
-                DataSource ds = dsf.getDataSource(super.getNonDBSmallResources()[0]);
+                DataSource ds = dsf.getDataSource("test");
 
                 ds.open();
                 ds.close();
@@ -196,10 +203,9 @@ public class DataSourceTest extends TestBase {
 
         @Test
         public void testFailedOpenClosedDataSource() throws Exception {
-                File volatileCsv = new File("target/test.csv");
-                FileUtils.copy(new File(internalData + "test.csv"), volatileCsv);
-                DataSource ds = dsf.getDataSource(volatileCsv);
-                volatileCsv.delete();
+                File volatileFile = getTempCopyOf(super.getAnyNonSpatialResource());
+                DataSource ds = dsf.getDataSource(volatileFile);
+                volatileFile.delete();
                 try {
                         ds.open();
                         fail();

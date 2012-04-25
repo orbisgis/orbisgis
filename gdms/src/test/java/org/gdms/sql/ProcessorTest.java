@@ -71,38 +71,28 @@ import org.gdms.sql.strategies.SumQuery;
 
 import static org.junit.Assert.*;
 
-public class ProcessorTest {
+import org.gdms.TestResourceHandler;
 
-        private String dbFile;
+public class ProcessorTest extends TestBase {
+
         private Metadata allTypesMetadata;
-        private static DataSourceFactory dsf;
         private SQLEngine engine;
 
         @Before
         public void setUp() throws Exception {
-                BasicConfigurator.configure();
-                dsf = new DataSourceFactory();
-                dsf.setTempDir(TestBase.backupDir.getAbsolutePath());
-                dsf.setResultDir(TestBase.backupDir);
-                SourceManager sm = dsf.getSourceManager();
+                super.setUpTestsWithoutEdition();
+
                 AllTypesObjectDriver omd = new AllTypesObjectDriver();
                 allTypesMetadata = omd.getTable("main").getMetadata();
                 sm.register("alltypes", omd);
-                sm.register("gis", new File(TestBase.internalData, "test.csv"));
-                dbFile = TestBase.internalData + "backup/processortest";
-//		sm.register("hsqldb", new DBSource(null, 0, dbFile, "", "", "alltypes",
-//				"jdbc:h2"));
-                if (!new File(dbFile + ".data.db").exists()) {
-                        dsf.executeSQL("create table hsqldb as select * from alltypes;");
-                }
+                sm.register("gis", new File(TestResourceHandler.OTHERRESOURCES, "test.csv"));
 
-                ZeroArgsFunction fnc = new ZeroArgsFunction();
-                if (dsf.getFunctionManager().getFunction(fnc.getName()) == null) {
-                        dsf.getFunctionManager().addFunction(ZeroArgsFunction.class);
-                }
+                omd = new AllTypesObjectDriver();
+                sm.register("hsqldb", omd);
 
-                engine = new SQLEngine(dsf);
-                engine.getProperties().setProperty("output.explain", "true");
+                dsf.getFunctionManager().addFunction(ZeroArgsFunction.class);
+
+                engine = dsf.getSqlEngine();
         }
 
         @Test
@@ -658,7 +648,7 @@ public class ProcessorTest {
         public void testCreateTable() throws Exception {
                 getFullyValidatedStatement("CREATE TABLE toto (ff int, gg double);");
                 failPreparedWithSemanticException("CREATE TABLE toto (ff tutu);");
-                
+
                 getValidatedStatement("CREATE TABLE toto (ff int not null);");
                 getValidatedStatement("CREATE TABLE toto (ff int primary key);");
                 getValidatedStatement("CREATE TABLE toto (ff int unique);");

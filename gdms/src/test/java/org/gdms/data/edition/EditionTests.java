@@ -44,15 +44,19 @@
  */
 package org.gdms.data.edition;
 
-import org.gdms.data.DataSourceIterator;
-import java.util.Iterator;
-import org.junit.Test;
 import java.io.File;
+import java.util.Iterator;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 import org.gdms.TestBase;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.DataSourceIterator;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.file.FileSourceCreation;
@@ -60,7 +64,6 @@ import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.MetadataUtilities;
-import org.gdms.data.types.Constraint;
 import org.gdms.data.types.DefaultTypeDefinition;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
@@ -72,14 +75,17 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.memory.MemoryDataSetDriver;
 
-import static org.junit.Assert.*;
-
 /**
- * DOCUMENT ME!
+ * 
  * 
  * @author Fernando Gonzalez Cortes
  */
 public class EditionTests extends TestBase {
+        
+        @Before
+        public void setUp() throws Exception {
+                super.setUpTestsWithEdition(false);
+        }
 
         @Test
 	public void testNoMemoryUntilEdition() throws Exception {
@@ -96,17 +102,15 @@ public class EditionTests extends TestBase {
 		ds.close();
 	}
 
-	/**
-	 * Test the deletion of a row
-	 */
-	private void testDelete(String dsName) throws Exception {
-		DataSource d = dsf.getDataSource(dsName);
+	@Test
+	public void testDelete() throws Exception {
+		DataSource d = dsf.getDataSource(getTempCopyOf(getAnyNonSpatialResource()));
 
 		d.open();
 
 		Value[] sampleRow = d.getRow(1);
 
-		int noPkFieldId = d.getFieldIndexByName(super.getNoPKFieldFor(dsName));
+		int noPkFieldId = 0;
 		for (int i = 0; i < sampleRow.length; i++) {
 			if (MetadataUtilities.isWritable(d.getMetadata().getFieldType(i))) {
 				d.setFieldValue(2, i, sampleRow[i]);
@@ -122,34 +126,19 @@ public class EditionTests extends TestBase {
 		d.commit();
 		d.close();
 
-		d = dsf.getDataSource(dsName);
+		d = dsf.getDataSource(d.getName());
 		d.open();
 		assertTrue(equals(d.getRow(0), sampleRow, d.getMetadata()));
 		d.close();
 	}
 
 	@Test
-	public void testDelete() throws Exception {
-		String[] resources = super.getNonDBSmallResources();
-		for (String ds : resources) {
-			testDelete(ds);
-		}
-	}
-
-	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @param mode
-	 * 
-	 * @throws Exception
-	 *             DOCUMENT ME!
-	 */
-	private void testSetDeletedRow(String dsName) throws Exception {
-		DataSource d = dsf.getDataSource(dsName);
+	public void testSetDeletedRow() throws Exception {
+                DataSource d = dsf.getDataSource(getTempCopyOf(getAnyNonSpatialResource()));
 
 		d.open();
 
-		int fieldId = d.getFieldIndexByName(super.getNoPKFieldFor(dsName));
+		int fieldId = 0;
 		Value firstRow = d.getFieldValue(0, fieldId);
 		Value secondRow = d.getFieldValue(1, fieldId);
 
@@ -160,34 +149,19 @@ public class EditionTests extends TestBase {
 		d.commit();
 		d.close();
 
-		d = dsf.getDataSource(dsName);
+		d = dsf.getDataSource(d.getName());
 		d.open();
 		assertTrue(equals(d.getFieldValue(0, fieldId), secondRow));
 		d.close();
 	}
 
 	@Test
-	public void testSetDeletedRow() throws Exception {
-		String[] resources = super.getNonDBSmallResources();
-		for (String ds : resources) {
-			testSetDeletedRow(ds);
-		}
-	}
-
-	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @param mode
-	 * 
-	 * @throws Exception
-	 *             DOCUMENT ME!
-	 */
-	private void testSetAfterDeletedPreviousRow(String dsName) throws Exception {
-		DataSource d = dsf.getDataSource(dsName);
+	public void testSetAfterDeletedPreviousRow() throws Exception {
+                DataSource d = dsf.getDataSource(getTempCopyOf(getAnyNonSpatialResource()));
 
 		d.open();
 
-		int fieldId = d.getFieldIndexByName(super.getNoPKFieldFor(dsName));
+		int fieldId = 0;
 		Value firstRow = d.getFieldValue(0, fieldId);
 
 		d.deleteRow(0); // 0
@@ -196,33 +170,20 @@ public class EditionTests extends TestBase {
 		d.commit();
 		d.close();
 
-		d = dsf.getDataSource(dsName);
+		d = dsf.getDataSource(d.getName());
 		d.open();
 		assertTrue(equals(d.getFieldValue(0, fieldId), firstRow));
 		d.close();
 	}
 
-	@Test
-	public void testSetAfterDeletedPreviousRow() throws Exception {
-		String[] resources = super.getNonDBSmallResources();
-		for (String ds : resources) {
-			testSetAfterDeletedPreviousRow(ds);
-		}
-	}
-
-	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @throws Exception
-	 *             DOCUMENT ME!
-	 */
-	private void testUpdate(String dsName) throws Exception {
-		DataSource d = dsf.getDataSource(dsName);
+        @Test
+	public void testUpdate() throws Exception {
+                DataSource d = dsf.getDataSource(getTempCopyOf(getAnyNonSpatialResource()));
 
 		d.open();
 
 		int last = (int) (d.getRowCount() - 1);
-		int fieldIndex = d.getFieldIndexByName(super.getNoPKFieldFor(dsName));
+		int fieldIndex = 0;
 
 		Value[] firstRow = d.getRow(0);
 		Value[] secondRow = d.getRow(1);
@@ -236,7 +197,7 @@ public class EditionTests extends TestBase {
 		d.commit();
 		d.close();
 
-		d = dsf.getDataSource(dsName);
+		d = dsf.getDataSource(d.getName());
 		d.open();
 		Value[] rowToTest;
 		rowToTest = firstRow.clone();
@@ -253,19 +214,12 @@ public class EditionTests extends TestBase {
 	}
 
 	@Test
-	public void testUpdate() throws Exception {
-		String[] resources = super.getNonDBSmallResources();
-		for (String ds : resources) {
-			testUpdate(ds);
-		}
-	}
-
-	private void testValuesDuringTransaction(String dsName) throws Exception {
-		DataSource d = dsf.getDataSource(dsName);
+        public void testValuesDuringEdition() throws Exception {
+                DataSource d = dsf.getDataSource(getTempCopyOf(getAnyNonSpatialResource()));
 
 		d.open();
 
-		int fieldId = d.getFieldIndexByName(super.getNoPKFieldFor(dsName));
+		int fieldId = 0;
 
 		Value[] firstRow = d.getRow(0);
 
@@ -277,24 +231,11 @@ public class EditionTests extends TestBase {
 	}
 
 	@Test
-        public void testValuesDuringEdition() throws Exception {
-		String[] resources = super.getNonDBSmallResources();
-		for (String ds : resources) {
-			testValuesDuringTransaction(ds);
-		}
-	}
-
-	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @throws Exception
-	 *             DOCUMENT ME!
-	 */
-	private void testAdd(String dsName) throws Exception {
-		DataSource d = dsf.getDataSource(dsName);
+        public void testAdd() throws Exception {
+                DataSource d = dsf.getDataSource(getTempCopyOf(getAnyNonSpatialResource()));
 
 		d.open();
-		int fieldIndex = d.getFieldIndexByName(super.getNoPKFieldFor(dsName));
+		int fieldIndex = 0;
 
 		Value[][] ds = new Value[(int) d.getRowCount() + 1][d.getMetadata()
 				.getFieldCount()];
@@ -314,7 +255,7 @@ public class EditionTests extends TestBase {
 		d.commit();
 		d.close();
 
-		d = dsf.getDataSource(dsName);
+		d = dsf.getDataSource(d.getName());
 		d.open();
 		assertTrue(equals(d.getFieldValue(ds.length - 1, fieldIndex),
 				ds[0][fieldIndex]));
@@ -322,104 +263,8 @@ public class EditionTests extends TestBase {
 	}
 
 	@Test
-        public void testAdd() throws Exception {
-		String[] resources = super.getNonDBSmallResources();
-		for (String ds : resources) {
-			testAdd(ds);
-		}
-	}
-
-	private void testSQLInjection(String dsName) throws Exception {
-		DataSource d = dsf.getDataSource(dsName);
-
-		Value value = ValueFactory.createValue("aa'aa");
-
-		d.open();
-		int fieldIndex = d.getFieldIndexByName(super.getStringFieldFor(dsName));
-		d.setFieldValue(0, fieldIndex, value);
-		d.commit();
-		d.close();
-
-		d.open();
-		assertTrue(equals(d.getFieldValue(0, fieldIndex), value));
-		d.close();
-	}
-
-	@Test
-        public void testSQLInjection() throws Exception {
-		String[] resources = super.getDBResources();
-		for (String ds : resources) {
-			testSQLInjection(ds);
-		}
-	}
-
-	private void testInsertFilledRow(String dsName) throws Exception {
-		DataSource d = dsf.getDataSource(dsName);
-
-		d.open();
-		Value[] row = d.getRow(0);
-		int pkField = d.getFieldIndexByName(super.getPKFieldFor(dsName));
-		if (d.getFieldType(pkField).getBooleanConstraint(
-				Constraint.AUTO_INCREMENT)) {
-			row[pkField] = ValueFactory.createNullValue();
-		} else {
-			row[pkField] = super.getNewPKFor(dsName);
-		}
-		int lastRow = (int) (d.getRowCount() - 1);
-		d.insertFilledRow(row);
-		d.commit();
-		d.close();
-
-		d.open();
-		Value[] newRow = d.getRow(lastRow + 1);
-		for (int i = 0; i < newRow.length; i++) {
-			if (i != pkField) {
-				assertTrue(equals(newRow[i], row[i]));
-			}
-		}
-		d.close();
-	}
-
-	@Test
-        public void testInsertFilled() throws Exception {
-		String[] resources = super.getResourcesWithPK();
-		for (String ds : resources) {
-			testInsertFilledRow(ds);
-		}
-	}
-
-	private void testEditingNullValues(String dsName) throws Exception {
-		DataSource d = dsf.getDataSource(dsName);
-		d.open();
-                
-		Value[] row = d.getRow(0);
-		int noPKIndex = d.getFieldIndexByName(super.getNoPKFieldFor(dsName));
-		row[noPKIndex] = ValueFactory.createNullValue();
-		int lastRow = (int) (d.getRowCount() - 1);
-		String pkField = super.getPKFieldFor(dsName);
-		row[d.getFieldIndexByName(pkField)] = ValueFactory.createNullValue();
-
-		d.insertFilledRow(row);
-		d.setFieldValue(0, noPKIndex, ValueFactory.createNullValue());
-		d.commit();
-		d.close();
-
-		d.open();
-		assertTrue(d.isNull(0, noPKIndex));
-		assertTrue(d.isNull(lastRow + 1, noPKIndex));
-		d.close();
-	}
-
-	@Test
-        public void testEditingNullValues() throws Exception {
-		String[] resources = super.getResourcesWithPK();
-		for (String ds : resources) {
-			testEditingNullValues(ds);
-		}
-	}
-
-	private void testRowCount(String dsName) throws Exception {
-		DataSource d = dsf.getDataSource(dsName);
+        public void testRowCount() throws Exception {
+                DataSource d = dsf.getDataSource(getAnyNonSpatialResource());
 
 		d.open();
 
@@ -430,23 +275,11 @@ public class EditionTests extends TestBase {
 	}
 
 	@Test
-        public void testRowCount() throws Exception {
-		String[] resources = super.getNonDBSmallResources();
-		for (String ds : resources) {
-			testRowCount(ds);
-		}
-	}
-
-	private void testInsertAt(String dsName) throws Exception {
-		DataSource d = dsf.getDataSource(dsName);
+        public void testInsertAt() throws Exception {
+                DataSource d = dsf.getDataSource(getTempCopyOf(getAnyNonSpatialResource()));
 
 		d.open();
 		Value[] row = d.getRow(1);
-		String pkField = super.getPKFieldFor(dsName);
-		if (pkField != null) {
-			row[d.getFieldIndexByName(pkField)] = ValueFactory
-					.createNullValue();
-		}
 		Value[] firstRow = d.getRow(0);
 		d.insertFilledRowAt(0, row);
 		assertTrue(equals(d.getRow(0), row));
@@ -455,18 +288,10 @@ public class EditionTests extends TestBase {
 		d.close();
 	}
 
-	@Test
-        public void testInsertAt() throws Exception {
-		String[] resources = super.getNonDBSmallResources();
-		for (String ds : resources) {
-			testInsertAt(ds);
-		}
-	}
-
 	public void testFileCreation() throws Exception {
 
-		String path = "src/test/resources/backup/persona.csv";
-		new File(path).delete();
+		String path = "persona.csv";
+                File file = new File(currentWorkspace, path);
 
 		final int fc = 2;
 		final Type[] fieldsTypes = new Type[fc];
@@ -479,9 +304,9 @@ public class EditionTests extends TestBase {
 		fieldsTypes[1] = csvTypeDef.createType(null);
 
 		Metadata ddm = new DefaultMetadata(fieldsTypes, fieldsNames);
-		dsf.createDataSource(new FileSourceCreation(new File(path), ddm));
+		dsf.createDataSource(new FileSourceCreation(file, ddm));
 		dsf.getSourceManager().register("persona_created",
-				new FileSourceDefinition(path, DriverManager.DEFAULT_SINGLE_TABLE_NAME));
+				new FileSourceDefinition(file, DriverManager.DEFAULT_SINGLE_TABLE_NAME));
 
 		Value v1 = ValueFactory.createValue("Fernando");
 		Value v2 = ValueFactory.createValue("Gonzalez");
@@ -503,8 +328,8 @@ public class EditionTests extends TestBase {
 
 	@Test
         public void testCancelEdition() throws Exception {
-		String dsName = super.getAnySpatialResource();
-		DataSource ds = dsf.getDataSource(dsName);
+		File ff = super.getAnySpatialResource();
+		DataSource ds = dsf.getDataSource(ff);
 		ds.open();
 		String beforeEdition = ds.getAsString();
 		long rc = ds.getRowCount();
@@ -525,8 +350,8 @@ public class EditionTests extends TestBase {
 	private void twoCommitClose(boolean openTwice) throws Exception,
 			NoSuchTableException, DataSourceCreationException, DriverException,
 			NonEditableDataSourceException {
-		String dsName = super.getNonDBSmallResources()[0];
-		DataSource ds = dsf.getDataSource(dsName);
+		File ff = getTempCopyOf(super.getAnyNonSpatialResource());
+		DataSource ds = dsf.getDataSource(ff);
 		ds.open();
 		if (openTwice) {
 			ds.open();
@@ -551,7 +376,8 @@ public class EditionTests extends TestBase {
 
 	@Test
         public void testSecondDSIsUpdated() throws Exception {
-		String dsName = super.getNonDBSmallResources()[1];
+		String dsName = "test";
+                sm.register(dsName, getTempCopyOf(super.getAnyNonSpatialResource()));
 		DataSource ds1 = dsf.getDataSource(dsName);
 		DataSource ds2 = dsf.getDataSource(dsName);
 		ds1.open();
@@ -575,7 +401,8 @@ public class EditionTests extends TestBase {
 
 	@Test
         public void testSyncWithSource() throws Exception {
-		String dsName = super.getNonDBSmallResources()[0];
+                String dsName = "test";
+                sm.register(dsName, getTempCopyOf(super.getAnyNonSpatialResource()));
 		DataSource ds = dsf.getDataSource(dsName);
 		ds.open();
 		long rc = ds.getRowCount();

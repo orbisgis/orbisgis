@@ -89,6 +89,8 @@ import static org.junit.Assume.*;
 import org.junit.Before;
 import org.orbisgis.utils.FileUtils;
 
+import org.gdms.TestResourceHandler;
+
 public class DBDriverTest extends TestBase {
 
         private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -122,51 +124,40 @@ public class DBDriverTest extends TestBase {
                         e.printStackTrace();
                 }
         }
-//	private DBSource postgreSQLDBSource = new DBSource("127.0.0.1", 5432,
-//			 "gdms", "postgres", "postgres", "alltypes", "jdbc:postgresql");
-        private DBSource postgreSQLDBSource = new DBSource("127.0.0.1", 5432,
+	private DBSource postgreSQLDBSource = new DBSource("127.0.0.1", 5432,
                 "GeographicalDataBase", "claudeau", "claudeau", "alltypes", "jdbc:postgresql");
         private DBTestSource postgreSQLSrc = new DBTestSource("source",
-                "org.postgresql.Driver", TestBase.internalData
+                "org.postgresql.Driver", TestResourceHandler.OTHERRESOURCES
                 + "postgresAllTypes.sql", postgreSQLDBSource);
         private DBSource hsqldbDBSource = new DBSource(null, 0,
-                TestBase.backupDir + File.separator + "hsqldbAllTypes", "sa",
+                TestResourceHandler.OTHERRESOURCES + "hsqldbAllTypes", "sa",
                 null, "alltypes", "jdbc:hsqldb:file");
         private DBTestSource hsqldbSrc;
         private DBSource schemaPostgreSQLDBSource = new DBSource("127.0.0.1", 5432,
                 "gisdb", "gis", "gis", "gis_schema", "schema_test", "jdbc:postgresql");
         private DBTestSource schemaPostgreSQLSrc = new DBTestSource("source",
-                "org.postgresql.Driver", TestBase.internalData
+                "org.postgresql.Driver", TestResourceHandler.OTHERRESOURCES
                 + "postgresSchemaTest.sql", schemaPostgreSQLDBSource);
         private DBSource schemaHsqldbDBSource = new DBSource(null, 0,
-                TestBase.backupDir + File.separator + "hsqldbSchemaTest", "sa",
+                TestResourceHandler.OTHERRESOURCES + "hsqldbSchemaTest", "sa",
                 null, "gis_schema", "schema_test", "jdbc:hsqldb:file");
         private DBTestSource schemaHsqldbSrc;
 
         @Before
-        @Override
         public void setUp() throws Exception{
-                super.setUp();
-                FileUtils.copyFileToDirectory(new File(internalData+"hsqldbSchemaTest.sql"), backupDir);
-                schemaHsqldbSrc = new DBTestSource("source",
-                        "org.hsqldb.jdbcDriver", TestBase.backupDir+File.separator
-                        + "hsqldbSchemaTest.sql", schemaHsqldbDBSource);
-                FileUtils.copyFileToDirectory(new File(internalData+"hsqldbAllTypes.sql"), backupDir);
-                hsqldbSrc = new DBTestSource("source",
-                        "org.hsqldb.jdbcDriver", TestBase.backupDir+File.separator
-                        + "hsqldbAllTypes.sql", hsqldbDBSource);
+                super.setUpTestsWithEdition(false);
         }
 
         private void testReadAllTypes(DBSource dbSource, DBTestSource src)
                 throws Exception {
-                src.backup();
+                src.create(dsf);
                 readAllTypes();
         }
 
         private void readAllTypes() throws NoSuchTableException,
                 DataSourceCreationException, DriverException,
                 NonEditableDataSourceException {
-                DataSource ds = TestBase.dsf.getDataSource("source");
+                DataSource ds = dsf.getDataSource("source");
 
                 ds.open();
                 Metadata m = ds.getMetadata();
@@ -195,23 +186,25 @@ public class DBDriverTest extends TestBase {
 
         @Test
         public void testReadSchemaPostgreSQL() throws Exception {
-                assumeTrue(TestBase.postGisAvailable);
+                assumeTrue(postGisAvailable);
                 testReadAllTypes(schemaPostgreSQLDBSource, schemaPostgreSQLSrc);
         }
 
         @Test
         public void testReadSchemaHSQLDB() throws Exception {
+                assumeTrue(hsqlDbAvailable);
                 testReadAllTypes(schemaHsqldbDBSource, schemaHsqldbSrc);
         }
 
         @Test
         public void testReadAllTypesPostgreSQL() throws Exception {
-                assumeTrue(TestBase.postGisAvailable);
+                assumeTrue(postGisAvailable);
                 testReadAllTypes(postgreSQLDBSource, postgreSQLSrc);
         }
 
         @Test
         public void testReadAllTypesHSQLDB() throws Exception {
+                assumeTrue(hsqlDbAvailable);
                 testReadAllTypes(hsqldbDBSource, hsqldbSrc);
         }
 
@@ -268,9 +261,8 @@ public class DBDriverTest extends TestBase {
         public void testCreateAllTypesHSQLDB() throws Exception {
                 assumeTrue(TestBase.hsqlDbAvailable);
                 DBTestSource src = new DBTestSource("source", "org.hsqldb.jdbcDriver",
-                        TestBase.internalData + "removeAllTypes.sql", hsqldbDBSource);
-                TestBase.dsf.getSourceManager().removeAll();
-                src.backup();
+                        TestResourceHandler.TESTRESOURCES + "removeAllTypes.sql", hsqldbDBSource);
+                src.create(dsf);
                 testCreateAllTypes(hsqldbDBSource, true, true);
         }
 
@@ -278,10 +270,9 @@ public class DBDriverTest extends TestBase {
         public void testCreateAllTypesPostgreSQL() throws Exception {
                 assumeTrue(TestBase.postGisAvailable);
                 DBTestSource src = new DBTestSource("source", "org.postgresql.Driver",
-                        TestBase.internalData + "removeAllTypes.sql",
+                        TestResourceHandler.TESTRESOURCES + "removeAllTypes.sql",
                         postgreSQLDBSource);
-                TestBase.dsf.getSourceManager().removeAll();
-                src.backup();
+                src.create(dsf);
                 testCreateAllTypes(postgreSQLDBSource, false, true);
         }
 
@@ -311,12 +302,11 @@ public class DBDriverTest extends TestBase {
         public void testPostgreSQLGeometryConstraint() throws Exception {
                 assumeTrue(TestBase.postGisAvailable);
                 DBTestSource src = new DBTestSource("source", "org.postgresql.Driver",
-                        TestBase.internalData + "removeAllTypes.sql",
+                        TestResourceHandler.TESTRESOURCES + "removeAllTypes.sql",
                         postgreSQLDBSource);
                 for (int i = 0; i < geometryConstraints.length; i++) {
                         for (int dim = 2; dim <= 3; dim++) {
-                                TestBase.dsf.getSourceManager().removeAll();
-                                src.backup();
+                                src.create(dsf);
                                 testSQLGeometryConstraint(postgreSQLDBSource, geometryConstraints[i], dim);
                         }
                 }
@@ -326,9 +316,8 @@ public class DBDriverTest extends TestBase {
         public void testPostgreSQLRemoveColumnAddColumnSameName() throws Exception {
                 assumeTrue(TestBase.postGisAvailable);
                 DBTestSource src = postgreSQLSrc;
-                TestBase.dsf.getSourceManager().removeAll();
-                src.backup();
-                DataSource ds = TestBase.dsf.getDataSource(postgreSQLDBSource);
+                src.create(dsf);
+                DataSource ds = dsf.getDataSource(postgreSQLDBSource);
                 ds.open();
                 ds.addField("the_geom", TypeFactory.createType(Type.GEOMETRY));
                 ds.commit();
@@ -347,10 +336,9 @@ public class DBDriverTest extends TestBase {
         public void testPostgreSQLReadWriteAllGeometryTypes() throws Exception {
                 assumeTrue(TestBase.postGisAvailable);
                 DBTestSource src = new DBTestSource("source", "org.postgresql.Driver",
-                        TestBase.internalData + "removeAllTypes.sql",
+                        TestResourceHandler.TESTRESOURCES + "removeAllTypes.sql",
                         postgreSQLDBSource);
-                TestBase.dsf.getSourceManager().removeAll();
-                src.backup();
+                src.create(dsf);
 
                 DefaultMetadata metadata = new DefaultMetadata();
                 metadata.addField("f1", Type.GEOMETRY);
@@ -398,10 +386,6 @@ public class DBDriverTest extends TestBase {
         @Test
         public void testShapefile2PostgreSQL() throws Exception {
                 assumeTrue(TestBase.postGisAvailable);
-                // Delete the table if exists
-                // DBSource dbSource = new DBSource("127.0.0.1", 5432, "gdms",
-                // "postgres",
-                // "postgres", "testShapefile2PostgreSQL", "jdbc:postgresql");
                 DBSource dbSource = new DBSource("127.0.0.1", 5432,
                         "gisdb", "gis", "gis",
                         "testShapefile2PostgreSQL", "jdbc:postgresql");
@@ -417,8 +401,9 @@ public class DBDriverTest extends TestBase {
                         + dbSource.getDbName() + "','" + dbSource.getUser() + "','"
                         + dbSource.getPassword() + "'," + "'" + dbSource.getTableName()
                         + "','bati');";
-                String registerFile = "CALL register('" + internalData
-                        + "landcover2000.shp','parcels');";
+                String registerFile = "CALL register('" 
+                        + new File(TestResourceHandler.TESTRESOURCES, "landcover2000.shp").getAbsolutePath()
+                        + "','parcels');";
                 dsf.executeSQL(registerDB);
                 dsf.executeSQL(registerFile);
 
@@ -446,7 +431,7 @@ public class DBDriverTest extends TestBase {
                         "gisdb", "gis", "gis", "gis_schema",
                         "administratif", "jdbc:postgresql");
 
-                dsf.getSourceManager().register("data_source", dbSource);
+                sm.register("data_source", dbSource);
 
                 dsf.executeSQL("select * from data_source ; ");
         }
@@ -458,14 +443,14 @@ public class DBDriverTest extends TestBase {
                         "gisdb", "gis", "gis",
                         "landcover2000", "jdbc:postgresql");
 
-                String publicSchemaSourceName = dsf.getSourceManager().getUniqueName(publicSchemaDbSource.getTableName());
-                dsf.getSourceManager().register(publicSchemaSourceName, publicSchemaDbSource);
+                String publicSchemaSourceName = sm.getUniqueName(publicSchemaDbSource.getTableName());
+                sm.register(publicSchemaSourceName, publicSchemaDbSource);
 
                 DBSource otherSchemaDbSource = new DBSource("localhost", 5432,
                         "gisdb", "gis", "gis", "gis_schema",
                         "parcels", "jdbc:postgresql");
-                String otherSchemaSourceName = dsf.getSourceManager().getUniqueName(otherSchemaDbSource.getTableName());
-                dsf.getSourceManager().register(otherSchemaSourceName, otherSchemaDbSource);
+                String otherSchemaSourceName = sm.getUniqueName(otherSchemaDbSource.getTableName());
+                sm.register(otherSchemaSourceName, otherSchemaDbSource);
 
                 DataSource sds = dsf.getDataSource(otherSchemaDbSource);
                 sds.open();
@@ -489,7 +474,7 @@ public class DBDriverTest extends TestBase {
                         // ignore, something else will fail
                 }
                 dsf.createDataSource(new DBSourceCreation(dbSource, metadata));
-                dsf.getSourceManager().register("tototable", dbSource);
+                sm.register("tototable", dbSource);
                 DataSource ds = dsf.getDataSource(dbSource);
                 ds.open();
                 Value[] row = new Value[metadata.getFieldCount()];

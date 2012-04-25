@@ -44,63 +44,33 @@
  */
 package org.gdms.source;
 
-import org.junit.Before;
-import org.junit.Test;
 import java.io.File;
 
-
-import org.gdms.DBTestSource;
-import org.gdms.FileTestSource;
-import org.gdms.TestBase;
-import org.gdms.data.DataSource;
-import org.gdms.data.db.DBSource;
+import org.junit.Before;
+import org.junit.Test;
 
 import static org.junit.Assert.*;
-import org.orbisgis.utils.FileUtils;
 
-import org.gdms.SQLTestSource;
-import org.gdms.data.DataSourceFactory;
+import org.gdms.TestBase;
+import org.gdms.TestResourceHandler;
+import org.gdms.data.DataSource;
 
-public class ChecksumTest {
-
-        private DataSourceFactory dsf;
-        private SourceManager sm;
+public class ChecksumTest extends TestBase {
 
         @Test
         public void testModifyingSourceOutsideFactory() throws Exception {
-                File testFile = new File(TestBase.internalData + "test.csv");
+                File testFile = getTempCopyOf(new File(TestResourceHandler.OTHERRESOURCES,  "test.csv"));
                 String name = "file";
-                FileTestSource fts = new FileTestSource(name, testFile.getAbsolutePath());
-                fts.backup();
-                sm.register(name, fts.getBackupFile());
+                sm.register(name, testFile);
                 testModifyingSourceOutsideFactory(name, false);
-
-                name = "db";
-                FileUtils.copyFileToDirectory(new File(TestBase.internalData + "testhsqldb.sql"), TestBase.backupDir);
-                DBSource testDB = new DBSource(null, 0, TestBase.backupDir
-                        + "testhsqldb", "sa", "", "gisapps", "jdbc:hsqldb:file");
-                DBTestSource dbTestSource = new DBTestSource(name,
-                        "org.hsqldb.jdbcDriver", TestBase.backupDir
-                        + "/testhsqldb.sql", testDB);
-                dbTestSource.backup();
-                sm.register(name, testDB);
-                testModifyingSourceOutsideFactory(name, false);
-                
-                name = "sql";
-                String sql = "select count(id) from file;";
-                SQLTestSource sts = new SQLTestSource(name, sql);
-                sts.backup();
-                dsf.register(name, sql);
-                testModifyingSourceOutsideFactory(name, true);
         }
 
-        private synchronized void testModifyingSourceOutsideFactory(String name,
-                boolean upToDateValue) throws Exception {
+        private synchronized void testModifyingSourceOutsideFactory(String name, boolean upToDateValue) throws Exception {
                 assertFalse(sm.getSource(name).isUpToDate());
                 sm.saveStatus();
                 assertTrue(sm.getSource(name).isUpToDate());
 
-                DataSource ds = TestBase.dsf.getDataSource(name);
+                DataSource ds = dsf.getDataSource(name);
                 ds.open();
                 ds.deleteRow(0);
                 if (upToDateValue) {
@@ -112,25 +82,21 @@ public class ChecksumTest {
                         ds.close();
                 }
 
-                instantiateDSF();
                 assertEquals(sm.getSource(name).isUpToDate(), upToDateValue);
         }
 
         @Test
         public void testUpdateOnSave() throws Exception {
-                File testFile = new File(TestBase.internalData + "test.csv");
+                File testFile = getTempCopyOf(new File(TestResourceHandler.OTHERRESOURCES,  "test.csv"));
                 String name = "file";
-                FileTestSource fts = new FileTestSource(name, testFile.getAbsolutePath());
-                fts.backup();
-                sm.register(name, fts.getBackupFile());
+                sm.register(name, testFile);
                 sm.saveStatus();
 
-                modificationWithOtherFactory(fts.getBackupFile());
+                modificationWithOtherFactory(testFile);
 
-                instantiateDSF();
                 assertFalse(sm.getSource(name).isUpToDate());
                 sm.saveStatus();
-                instantiateDSF();
+                
                 assertTrue(sm.getSource(name).isUpToDate());
         }
 
@@ -147,14 +113,6 @@ public class ChecksumTest {
 
         @Before
         public void setUp() throws Exception {
-                TestBase.dsf.getSourceManager().removeAll();
-                instantiateDSF();
-                sm.removeAll();
-        }
-
-        private void instantiateDSF() {
-                dsf = new DataSourceFactory(TestBase.backupDir
-                        + "source-management");
-                sm = dsf.getSourceManager();
+                super.setUpTestsWithoutEdition();
         }
 }

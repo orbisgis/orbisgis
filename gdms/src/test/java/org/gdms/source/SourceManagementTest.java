@@ -52,6 +52,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -59,6 +60,7 @@ import static org.junit.Assert.*;
 
 import org.gdms.DBTestSource;
 import org.gdms.TestBase;
+import org.gdms.TestResourceHandler;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SourceAlreadyExistsException;
@@ -78,12 +80,10 @@ import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.sql.strategies.SumQuery;
 
-public class SourceManagementTest {
+public class SourceManagementTest extends TestBase {
 
         private static final String SOURCE = "source";
         private static final String SOURCEMOD = "sourcd";
-        private SourceManager sm;
-        private DataSourceFactory dsf;
         private File testFile;
         private DBSource testDB;
         private WMSSource testWMS;
@@ -92,10 +92,9 @@ public class SourceManagementTest {
 
         @Test
         public void testRegisterTwice() throws Exception {
-                sm.remove(SOURCE);
-                sm.register(SOURCE, new File("b.shp"));
+                sm.register(SOURCE, getTempFile(".shp"));
                 try {
-                        sm.register(SOURCE, new File("a.shp"));
+                        sm.register(SOURCE, getTempFile(".shp"));
                         fail();
                 } catch (SourceAlreadyExistsException e) {
                         // we check that the failed registration has broken nothing
@@ -109,8 +108,7 @@ public class SourceManagementTest {
 
         @Test
         public void testRegisterAndRemove() throws Exception {
-                sm.remove(SOURCE);
-                File file = new File("b.shp");
+                File file = getTempFile(".shp");
                 sm.register(SOURCE, file);
                 sm.remove(SOURCE);
                 FileDriverRegister fdr = sm.getDriverManager().getFileDriverRegister();
@@ -119,11 +117,14 @@ public class SourceManagementTest {
 
         @Test
         public void testRemoveAll() throws Exception {
+                sm.register(SOURCE, testFile);
+
                 Source src = sm.getSource(SOURCE);
                 associateFile(src, "statisticsFile");
                 associateString(src, "statistics");
+
                 sm.removeAll();
-                setUp();
+                sm.register(SOURCE, testFile);
                 src = sm.getSource(SOURCE);
                 assertEquals(src.getStringPropertyNames().length, 0);
                 assertEquals(src.getFilePropertyNames().length, 0);
@@ -131,6 +132,7 @@ public class SourceManagementTest {
 
         @Test
         public void testRemoveFileProperty() throws Exception {
+                sm.register(SOURCE, testFile);
                 Source source = sm.getSource(SOURCE);
                 String fileProp = "testFileProp";
                 associateFile(source, fileProp);
@@ -150,6 +152,7 @@ public class SourceManagementTest {
 
         @Test
         public void testOverrideFileProperty() throws Exception {
+                sm.register(SOURCE, testFile);
                 Source source = sm.getSource(SOURCE);
                 String fileProp = "testFileProp";
                 associateFile(source, fileProp);
@@ -174,6 +177,7 @@ public class SourceManagementTest {
 
         @Test
         public void testRemoveStringProperty() throws Exception {
+                sm.register(SOURCE, testFile);
                 Source source = sm.getSource(SOURCE);
                 String stringProp = "testFileProp";
                 associateString(source, stringProp);
@@ -185,6 +189,7 @@ public class SourceManagementTest {
 
         @Test
         public void testAssociateFile() throws Exception {
+                sm.register(SOURCE, testFile);
                 String statistics = "statistics";
                 Source source = sm.getSource(SOURCE);
                 String rcStr = associateFile(source, statistics);
@@ -192,7 +197,9 @@ public class SourceManagementTest {
                 assertEquals(sm.getSource(SOURCE).getFilePropertyNames().length, 1);
 
                 sm.saveStatus();
-                instantiateDSF();
+
+                sm.removeAll();
+                sm.register(SOURCE, testFile);
 
                 assertEquals(sm.getSource(SOURCE).getFilePropertyNames().length, 1);
 
@@ -227,6 +234,7 @@ public class SourceManagementTest {
 
         @Test
         public void testAssociateStringProperty() throws Exception {
+                sm.register(SOURCE, testFile);
                 Source source = sm.getSource(SOURCE);
                 String statistics = "statistics";
                 String rcStr = associateString(source, statistics);
@@ -234,7 +242,9 @@ public class SourceManagementTest {
                 assertEquals(sm.getSource(SOURCE).getStringPropertyNames().length, 1);
 
                 sm.saveStatus();
-                instantiateDSF();
+
+                sm.removeAll();
+                sm.register(SOURCE, testFile);
 
                 assertEquals(sm.getSource(SOURCE).getStringPropertyNames().length, 1);
 
@@ -256,6 +266,7 @@ public class SourceManagementTest {
 
         @Test
         public void testKeepPropertiesAfterRenaming() throws Exception {
+                sm.register(SOURCE, testFile);
                 Source source = sm.getSource(SOURCE);
 
                 associateString(source, "test");
@@ -275,6 +286,7 @@ public class SourceManagementTest {
 
         @Test
         public void testReturnNullWhenNoProperty() throws Exception {
+                sm.register(SOURCE, testFile);
                 Source source = sm.getSource(SOURCE);
                 assertNull(source.getFileProperty("skjbnskb"));
                 assertNull(source.getProperty("skjbnskb"));
@@ -282,17 +294,16 @@ public class SourceManagementTest {
 
         @Test
         public void testMoveAndChangeSourceDirectory() throws Exception {
+                sm.register(SOURCE, testFile);
+
                 String statistics = "statistics";
                 Source source = sm.getSource(SOURCE);
                 associateFile(source, statistics);
                 associateString(source, statistics);
                 String memento = sm.getMemento();
 
-                String newSourceInfoDir = TestBase.backupDir
-                        + "source-management2";
+                String newSourceInfoDir = TestResourceHandler.getNewSandBox(false).getAbsolutePath();
                 sm.setSourceInfoDirectory(newSourceInfoDir);
-
-                instantiateDSF();
 
                 memento = sm.getMemento();
                 sm.changeSourceInfoDirectory(newSourceInfoDir);
@@ -301,6 +312,8 @@ public class SourceManagementTest {
 
         @Test
         public void testSameSourceSameDSInstance() throws Exception {
+                sm.register(SOURCE, testFile);
+
                 DataSource ds1 = dsf.getDataSource(SOURCE, DataSourceFactory.NORMAL);
                 DataSource ds2 = dsf.getDataSource(SOURCE, DataSourceFactory.NORMAL);
                 ds1.open();
@@ -310,38 +323,34 @@ public class SourceManagementTest {
 
         @Test
         public void testPersistence() throws Exception {
-                sm.removeAll();
-
-                DBTestSource dbTestSource = new DBTestSource("testhsqldb",
-                        "org.hsqldb.jdbcDriver", TestBase.internalData
-                        + "testhsqldb.sql", testDB);
-
                 sm.register("myfile", testFile);
-                sm.register("db", testDB);
+                if (hsqlDbAvailable) {
+                        sm.register("db", testDB);
+                }
                 sm.register("wms", testWMS);
                 sm.register("obj", obj);
 
                 String fileContent = getContent("myfile");
-                String dbContent = getContent("db");
+                String dbContent = hsqlDbAvailable ? getContent("db") : null;
                 String wmsContent = getContent("wms");
                 String objContent = getContent("obj");
 
                 sm.saveStatus();
-                instantiateDSF();
 
                 assertEquals(fileContent, getContent("myfile"));
-                assertEquals(dbContent, getContent("db"));
+                if (hsqlDbAvailable) {
+                        assertEquals(dbContent, getContent("db"));
+                }
                 assertEquals(wmsContent, getContent("wms"));
                 assertEquals(objContent, getContent("obj"));
 
                 sm.removeAll();
-                sm.register("myfile", new File(TestBase.internalData, "landcover2000.shp"));
+                sm.register("myfile", super.getAnyNonSpatialResource());
                 dsf.register("sql", sql);
 
                 String sqlContent = getContent("sql");
 
                 sm.saveStatus();
-                instantiateDSF();
 
                 assertEquals(sqlContent, getContent("sql"));
         }
@@ -357,7 +366,8 @@ public class SourceManagementTest {
 
         @Test
         public void testSelectDependencies() throws Exception {
-                sm.removeAll();
+                Assume.assumeTrue(hsqlDbAvailable);
+
                 sm.register("db", testDB);
                 sm.register("file", testFile);
                 String sql = "select 2*(file.id :: int) from db, file "
@@ -415,27 +425,29 @@ public class SourceManagementTest {
 
         @Test
         public void testGetAlreadyRegisteredSourceAnonimously() throws Exception {
-                sm.removeAll();
-
                 sm.register("myfile", testFile);
-                sm.register("myDB", testDB);
+                if (hsqlDbAvailable) {
+                        sm.register("myDB", testDB);
+                }
                 sm.register("myWMS", testWMS);
                 sm.register("myObj", obj);
 
                 DataSource ds = dsf.getDataSource(testFile);
                 assertEquals(ds.getName(), "myfile");
 
-                ds = dsf.getDataSource(testDB);
-                assertEquals(ds.getName(), "myDB");
+                if (hsqlDbAvailable) {
+                        ds = dsf.getDataSource(testDB);
+                        assertEquals(ds.getName(), "myDB");
+                }
 
                 ds = dsf.getDataSource(testWMS);
                 assertEquals(ds.getName(), "myWMS");
 
                 ds = dsf.getDataSource(obj, "main");
                 assertEquals(ds.getName(), "myObj");
-                
+
                 sm.removeAll();
-                sm.register("myfile", new File(TestBase.internalData, "landcover2000.shp"));
+                sm.register("myfile", super.getAnySpatialResource());
                 dsf.register("mySQL", sql);
 
 
@@ -445,7 +457,8 @@ public class SourceManagementTest {
 
         @Test
         public void testCannotDeleteDependedSource() throws Exception {
-                sm.removeAll();
+                Assume.assumeTrue(hsqlDbAvailable);
+                
                 sm.register("db", testDB);
                 sm.register("file", testFile);
                 String sql = "select 2*StringToInt(file.id) from db, file "
@@ -475,7 +488,8 @@ public class SourceManagementTest {
 
         @Test
         public void testCanDeleteIfDependentSourceIsNotWellKnown() throws Exception {
-                sm.removeAll();
+                Assume.assumeTrue(hsqlDbAvailable);
+                
                 sm.register("db", testDB);
                 sm.register("file", testFile);
                 dsf.executeSQL("select 2*StringToInt(file.id) from db, file "
@@ -486,6 +500,8 @@ public class SourceManagementTest {
 
         @Test
         public void testDependentDependingSync() throws Exception {
+                Assume.assumeTrue(hsqlDbAvailable);
+                
                 sm.removeAll();
                 sm.register("db", testDB);
                 sm.register("file", testFile);
@@ -540,6 +556,8 @@ public class SourceManagementTest {
 
         @Test
         public void testCannotRegisterTwice() throws Exception {
+                Assume.assumeTrue(hsqlDbAvailable);
+                
                 sm.removeAll();
 
                 sm.register("myfile", testFile);
@@ -587,9 +605,9 @@ public class SourceManagementTest {
                         fail();
                 } catch (SourceAlreadyExistsException e) {
                 }
-                
+
                 sm.removeAll();
-                sm.register("myfile", new File(TestBase.internalData, "landcover2000.shp"));
+                sm.register("myfile", super.getAnySpatialResource());
                 dsf.register("mySQL", sql);
 
                 try {
@@ -604,15 +622,17 @@ public class SourceManagementTest {
                 } catch (SourceAlreadyExistsException e) {
                 }
         }
-        
+
         @Test
         public void testSQLSourceType() throws Exception {
+                sm.register(SOURCE, testFile);
                 dsf.register("alphasql", "select * from " + SOURCE + ";");
                 assertEquals((sm.getSource("alphasql").getType() & SourceManager.SQL), SourceManager.SQL);
         }
-        
+
         @Test
         public void testCustomQueryDependences() throws Exception {
+                sm.register(SOURCE, testFile);
                 SumQuery sq = new SumQuery();
                 if (dsf.getFunctionManager().getFunction(sq.getName()) == null) {
                         dsf.getFunctionManager().addFunction(SumQuery.class);
@@ -622,9 +642,10 @@ public class SourceManagementTest {
                 assertEquals(deps.length, 1);
                 assertEquals(deps[0], SOURCE);
         }
-        
+
         @Test
         public void testDependingNotWellKnownSourcesRemoved() throws Exception {
+                sm.register(SOURCE, testFile);
                 DataSource ds = dsf.getDataSourceFromSQL("select * from " + SOURCE + ";");
                 assertEquals(ds.getReferencedSources().length, 1);
 
@@ -635,7 +656,8 @@ public class SourceManagementTest {
 
         @Test
         public void testSaveWithAnOpenHSQLDBDataSource() throws Exception {
-                sm.remove("db");
+                Assume.assumeTrue(hsqlDbAvailable);
+                
                 sm.register("db", testDB);
                 DataSource ds = dsf.getDataSource("db");
                 ds.open();
@@ -657,16 +679,13 @@ public class SourceManagementTest {
         public void testListenCommits() throws Exception {
                 DriverManager dm = new DriverManager();
                 dm.registerDriver(ReadAndWriteDriver.class);
-                sm.remove("object");
-                sm.remove("file");
-                sm.remove("db");
-                SourceManager sourceManager = dsf.getSourceManager();
-                sourceManager.setDriverManager(dm);
-                sourceManager.register("object", new MemorySourceDefinition(
+                
+                sm.setDriverManager(dm);
+                sm.register("object", new MemorySourceDefinition(
                         new ReadAndWriteDriver(), "main"));
-                sourceManager.register("file", new FakeFileSourceDefinition(
+                sm.register("file", new FakeFileSourceDefinition(
                         new ReadAndWriteDriver()));
-                sourceManager.register("db", new FakeDBTableSourceDefinition(
+                sm.register("db", new FakeDBTableSourceDefinition(
                         new ReadAndWriteDriver(), "jdbc:closefailing"));
 
                 testListenCommits(dsf.getDataSource("object"));
@@ -682,25 +701,13 @@ public class SourceManagementTest {
 
         @Before
         public void setUp() throws Exception {
-                instantiateDSF();
-                try {
-                        sm.removeAll();
-                } catch (IOException e) {
-                }
-                testFile = new File(TestBase.internalData + "test.csv");
-                testDB = new DBSource(null, 0, TestBase.backupDir
+                super.setUpTestsWithEdition(false);
+
+                testFile = new File(TestResourceHandler.OTHERRESOURCES, "test.csv");
+                testDB = new DBSource(null, 0, TestResourceHandler.OTHERRESOURCES
                         + "testhsqldb", "sa", "", "gisapps", "jdbc:hsqldb:file");
                 testWMS = new WMSSource("127.0.0.1", "cantons", "EPSG:1234",
                         "format/pig");
                 obj = new MemoryDataSetDriver();
-                sm.remove(SOURCE);
-                sm.register(SOURCE, testFile);
-        }
-
-        private void instantiateDSF() {
-                dsf = new DataSourceFactory(TestBase.backupDir
-                        + "source-management");
-                sm = dsf.getSourceManager();
-
         }
 }

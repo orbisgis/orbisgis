@@ -44,7 +44,6 @@
  */
 package org.gdms;
 
-
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -53,9 +52,10 @@ import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+
 import org.gdms.data.types.Type;
 
-public class Geometries {
+public final class Geometries {
 
 	private static GeometryFactory gf = new GeometryFactory();
 
@@ -151,4 +151,7 @@ public class Geometries {
 						getMultiPoint3D(), getMultilineString3D(),
 						getMultiPolygon2D() });
 	}
+
+        private Geometries() {
+        }
 }

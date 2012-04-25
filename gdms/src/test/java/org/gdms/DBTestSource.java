@@ -55,18 +55,19 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
 
-public class DBTestSource extends TestSource {
+public class DBTestSource {
 
 	private String sqlScriptFile;
 	private String jdbcDriver;
 	private DBSource dbSource;
+        protected String name;
 
 	public DBTestSource(String name, String jdbcDriver, String sqlScriptFile,
 			DBSource dbSource) {
-		super(name);
 		this.jdbcDriver = jdbcDriver;
 		this.sqlScriptFile = sqlScriptFile;
 		this.dbSource = dbSource;
@@ -98,8 +99,7 @@ public class DBTestSource extends TestSource {
                 return true;
         }
 
-	@Override
-	public void backup() throws Exception {
+	public void create(DataSourceFactory dsf) throws Exception {
 		FileInputStream fis = new FileInputStream(sqlScriptFile);
 		DataInputStream dis = new DataInputStream(fis);
 		byte[] buffer = new byte[(int) fis.getChannel().size()];
@@ -137,8 +137,8 @@ public class DBTestSource extends TestSource {
 		c.close();
 
 		DBTableSourceDefinition def = new DBTableSourceDefinition(dbSource);
-                TestBase.dsf.getSourceManager().remove(name);
-		TestBase.dsf.getSourceManager().register(name, def);
+                dsf.getSourceManager().remove(name);
+		dsf.getSourceManager().register(name, def);
 	}
 
 }

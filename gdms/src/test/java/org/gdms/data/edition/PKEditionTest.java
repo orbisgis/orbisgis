@@ -44,7 +44,7 @@
  */
 package org.gdms.data.edition;
 
-
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.gdms.DBTestSource;
@@ -55,17 +55,20 @@ import org.gdms.data.db.DBSource;
 import static org.junit.Assert.*;
 import static org.junit.Assume.*;
 
+import org.gdms.TestResourceHandler;
+
 public class PKEditionTest extends TestBase {
 
         @Test
         public void testUpdatePK() throws Exception {
-                assumeTrue(TestBase.postGisAvailable);
+                assumeTrue(postGisAvailable);
+
                 DBSource dbSource = new DBSource("127.0.0.1", 5432, "gdms", "postgres",
                         "postgres", "gisapps", "jdbc:postgresql");
                 DBTestSource src = new DBTestSource("source", "org.postgresql.Driver",
-                        TestBase.internalData + "postgresEditablePK.sql", dbSource);
-                src.backup();
-                DataSource d = TestBase.dsf.getDataSource("source");
+                        TestResourceHandler.OTHERRESOURCES + "postgresEditablePK.sql", dbSource);
+                src.create(dsf);
+                DataSource d = dsf.getDataSource("source");
 
                 d.open();
                 d.setInt(0, "id", 7);
@@ -73,8 +76,7 @@ public class PKEditionTest extends TestBase {
                 d.commit();
                 d.close();
 
-                d = TestBase.dsf.getDataSourceFromSQL(
-                        "select * from source where id = 7;");
+                d = dsf.getDataSourceFromSQL("select * from source where id = 7;");
                 d.open();
                 assertEquals(d.getRowCount(), 1);
                 assertEquals(d.getInt(0, "id"), 7);
@@ -84,13 +86,13 @@ public class PKEditionTest extends TestBase {
 
         @Test
         public void testDeleteUpdatedPK() throws Exception {
-                assumeTrue(TestBase.postGisAvailable);
+                assumeTrue(postGisAvailable);
                 DBSource dbSource = new DBSource("127.0.0.1", 5432, "gdms", "postgres",
                         "postgres", "gisapps", "jdbc:postgresql");
                 DBTestSource src = new DBTestSource("source", "org.postgresql.Driver",
-                        TestBase.internalData + "postgresEditablePK.sql", dbSource);
-                src.backup();
-                DataSource d = TestBase.dsf.getDataSource("source");
+                        TestResourceHandler.OTHERRESOURCES + "postgresEditablePK.sql", dbSource);
+                src.create(dsf);
+                DataSource d = dsf.getDataSource("source");
 
                 d.open();
                 d.setInt(2, "id", 9);
@@ -98,8 +100,7 @@ public class PKEditionTest extends TestBase {
                 d.commit();
                 d.close();
 
-                d = TestBase.dsf.getDataSourceFromSQL(
-                        "select * from source where id = 9;");
+                d = dsf.getDataSourceFromSQL("select * from source where id = 9;");
                 d.open();
                 assertEquals(0, d.getRowCount());
                 d.close();
@@ -107,6 +108,6 @@ public class PKEditionTest extends TestBase {
 
         @Before
         public void setUp() throws Exception {
-                TestBase.dsf.getSourceManager().removeAll();
+                super.setUpTestsWithoutEdition();
         }
 }

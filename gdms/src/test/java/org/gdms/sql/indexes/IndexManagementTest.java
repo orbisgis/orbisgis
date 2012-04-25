@@ -61,20 +61,16 @@ import org.gdms.source.SourceManager;
 
 import static org.junit.Assert.*;
 
-public class IndexManagementTest {
+import org.gdms.TestResourceHandler;
 
-        private DataSourceFactory dsf;
+public class IndexManagementTest extends TestBase {
+
         private IndexManager im;
 
         @Before
         public void setUp() throws Exception {
-                dsf = new DataSourceFactory();
-                dsf.setTempDir(TestBase.backupDir.getAbsolutePath());
-                dsf.setResultDir(TestBase.backupDir);
-                SourceManager sm = dsf.getSourceManager();
-                sm.removeAll();
-                sm.register("source", new File(TestBase.internalData,
-                        "hedgerow.shp"));
+                super.setUpTestsWithoutEdition();
+                sm.register("source", new File(TestResourceHandler.TESTRESOURCES, "hedgerow.shp"));
                 im = dsf.getIndexManager();
         }
 

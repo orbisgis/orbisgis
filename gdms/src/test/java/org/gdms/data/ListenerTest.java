@@ -44,11 +44,14 @@
  */
 package org.gdms.data;
 
-import org.gdms.TestBase;
-import org.junit.Before;
-import org.junit.Test;
 import java.io.File;
 
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
+import org.gdms.TestBase;
 import org.gdms.data.edition.FakeDBTableSourceDefinition;
 import org.gdms.data.edition.FakeFileSourceDefinition;
 import org.gdms.data.edition.ReadAndWriteDriver;
@@ -57,15 +60,11 @@ import org.gdms.data.memory.MemorySourceDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverManager;
-import org.gdms.source.SourceManager;
 
-import static org.junit.Assert.*;
+public class ListenerTest extends TestBase {
 
-public class ListenerTest {
-
-        public ListenerCounter listener = new ListenerCounter();
-        private DataSourceFactory dsf;
-
+        private ListenerCounter listener;
+        
         private void editDataSource(DataSource d) throws DriverException {
                 d.deleteRow(0);
                 d.insertEmptyRow();
@@ -301,21 +300,20 @@ public class ListenerTest {
                 ReadDriver.isEditable = true;
                 ReadDriver.pk = false;
 
-                dsf = new DataSourceFactory();
-                dsf.setTempDir(TestBase.backupDir.getAbsolutePath());
-                dsf.setResultDir(TestBase.backupDir);
                 DriverManager dm = new DriverManager();
                 dm.registerDriver(ReadAndWriteDriver.class);
+                
+                super.setUpTestsWithoutEdition();
 
-                SourceManager sourceManager = dsf.getSourceManager();
-                sourceManager.setDriverManager(dm);
-                sourceManager.register("object", new MemorySourceDefinition(
+                sm.setDriverManager(dm);
+                sm.register("object", new MemorySourceDefinition(
                         new ReadAndWriteDriver(), "main"));
                 final ReadAndWriteDriver fileReadAndWriteDriver = new ReadAndWriteDriver();
                 fileReadAndWriteDriver.setFile(new File("."));
-                sourceManager.register("file", new FakeFileSourceDefinition(
+                sm.register("file", new FakeFileSourceDefinition(
                         fileReadAndWriteDriver));
-                sourceManager.register("db", new FakeDBTableSourceDefinition(
+                sm.register("db", new FakeDBTableSourceDefinition(
                         new ReadAndWriteDriver(), "jdbc:closefailing"));
+                listener = new ListenerCounter();
         }
 }

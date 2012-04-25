@@ -67,9 +67,9 @@ import org.orbisgis.progress.ProgressMonitor;
 
 import static org.junit.Assert.*;
 
-public class CustomQueriesTest {
+import org.gdms.TestResourceHandler;
 
-        private DataSourceFactory dsf;
+public class CustomQueriesTest extends TestBase {
 
         @Test
         public void testCustomQuery() throws Exception {
@@ -91,12 +91,9 @@ public class CustomQueriesTest {
 
         @Test
         public void testFieldTypesAndValues() throws Exception {
-                dsf.getSourceManager().register(
-                        "ds2",
-                        new FileSourceCreation(new File(TestBase.internalData
-                        + "multilinestring2d.shp"), null));
-                dsf.getDataSourceFromSQL("select * from fieldReferenceQuery(ds, ds2, 15,"
-                        + " 'the_geom');");
+                dsf.getSourceManager().register("ds2", new File(TestResourceHandler.TESTRESOURCES,
+                        "multilinestring2d.shp"));
+                dsf.getDataSourceFromSQL("select * from fieldReferenceQuery(ds, ds2, 15, 'the_geom');");
 
                 try {
                         dsf.getDataSourceFromSQL("select * from fieldReferenceQuery(ds, ds2, 'the_geom',"
@@ -108,10 +105,8 @@ public class CustomQueriesTest {
 
         @Test
         public void testFieldReferences() throws Exception {
-                dsf.getSourceManager().register(
-                        "ds2",
-                        new FileSourceCreation(new File(TestBase.internalData
-                        + "multilinestring2d.shp"), null));
+                dsf.getSourceManager().register("ds2", new File(TestResourceHandler.TESTRESOURCES,
+                        "multilinestring2d.shp"));
                 dsf.getDataSourceFromSQL("select * from fieldReferenceQuery(ds, ds2, 'gid');");
                 dsf.getDataSourceFromSQL("select * from fieldReferenceQuery(ds, ds2, 'gid',"
                         + " 'the_geom');");
@@ -127,7 +122,7 @@ public class CustomQueriesTest {
         @Test
         public void testRegister() throws Exception {
                 dsf.getSourceManager().remove("ds");
-                String path = TestBase.internalData + "points.shp";
+                String path = TestResourceHandler.TESTRESOURCES.getAbsolutePath() + "points.shp";
                 dsf.executeSQL("CALL register ('" + path + "', 'myshape');");
                 DataSource ret = dsf.getDataSource("myshape");
                 assertTrue(ret != null);
@@ -163,14 +158,14 @@ public class CustomQueriesTest {
         @Test
         public void testRegisterValidation() throws Exception {
                 // from clause
-                String path = TestBase.internalData + "points.shp";
+                String path = TestResourceHandler.TESTRESOURCES + "points.shp";
                 executeSuccess("CALL register('" + path + "', 'name');");
                 executeFail("CALL register('toto', '') from ds;");
 
                 // // parameters
                 executeFail("CALL register();");
-                path = TestBase.internalData + "toto.shp";
-                executeSuccess("CALL register('" + path + "');");
+                path = TestResourceHandler.TESTRESOURCES + "toto.shp";
+                executeFail("CALL register('" + path + "');");
                 dsf.getSourceManager().remove("toto");
                 executeSuccess("CALL register('" + path + "', 'file');");
                 executeSuccess("CALL register('postgresql', 'file', '23' , 'file', 'as', 'file', 'as', 'file2');");
@@ -311,13 +306,10 @@ public class CustomQueriesTest {
                 DataSource ds = dsf.getDataSourceFromSQL(sql, DataSourceFactory.NORMAL);
                 ds.open();
                 ds.close();
-                ds = null;
-
                 dsf.executeSQL("create table toto as select * from gigaquery();");
                 ds = dsf.getDataSource("toto", DataSourceFactory.NORMAL);
                 ds.open();
                 ds.close();
-                ds = null;
         }
 
         @Test
@@ -330,15 +322,8 @@ public class CustomQueriesTest {
 
         @Before
         public void setUp() throws Exception {
-                dsf = new DataSourceFactory(TestBase.internalData + "backup",
-                        TestBase.internalData + "backup");
-                dsf.getSourceManager().register(
-                        "ds",
-                        new FileSourceCreation(new File(TestBase.internalData
-                        + "landcover2000.shp"), null));
-                dsf.getFunctionManager().remove("SUMQUERY");
-                dsf.getFunctionManager().remove("FieldReferenceQuery");
-                dsf.getFunctionManager().remove("gigaquery");
+                super.setUpTestsWithEdition(false);
+                dsf.getSourceManager().register("ds", getTempCopyOf(new File(TestResourceHandler.TESTRESOURCES, "landcover2000.shp")));
                 dsf.getFunctionManager().addFunction(SumQuery.class);
                 dsf.getFunctionManager().addFunction(FieldReferenceQuery.class);
                 dsf.getFunctionManager().addFunction(GigaCustomQuery.class);

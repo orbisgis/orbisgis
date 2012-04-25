@@ -69,9 +69,9 @@ import com.vividsolutions.jts.geom.Envelope;
 
 import static org.junit.Assert.*;
 
-public class RasterTest {
+import org.gdms.TestResourceHandler;
 
-        private DataSourceFactory dsf;
+public class RasterTest extends TestBase {
 
         @Test
         public void testProducedRasterEnvelope() throws Exception {
@@ -85,47 +85,45 @@ public class RasterTest {
 
         @Test
         public void testSQLResultSourceType() throws Exception {
-                int type = dsf.getSourceManager().getSource("raster").getType();
+                int type = sm.getSource("raster").getType();
                 assertTrue((type & SourceManager.RASTER) > 0);
         }
 
         @Before
         public void setUp() throws Exception {
+                super.setUpTestsWithoutEdition();
                 byte[] rasterData = new byte[4];
                 RasterMetadata rasterMetadata = new RasterMetadata(0, 0, 1, 1, 2, 2);
                 GeoRaster gr = GeoRasterFactory.createGeoRaster(rasterData,
                         rasterMetadata);
 
-                dsf = new DataSourceFactory();
-                dsf.setTempDir(TestBase.backupDir.getAbsolutePath());
-                dsf.setResultDir(TestBase.backupDir);
                 DefaultMetadata metadata = new DefaultMetadata(new Type[]{TypeFactory.createType(Type.RASTER)}, new String[]{"raster"});
                 MemoryDataSetDriver omd = new MemoryDataSetDriver(metadata);
                 omd.addValues(new Value[]{ValueFactory.createValue(gr)});
-                dsf.getSourceManager().register("raster", omd);
+                sm.register("raster", omd);
         }
 
         @Test
         public void testOpenJPG() throws Exception {
-                File file = new File(TestBase.internalData, "sample.jpg");
+                File file = new File(TestResourceHandler.OTHERRESOURCES, "sample.jpg");
                 testOpen(file);
         }
 
         @Test
         public void testOpenPNG() throws Exception {
-                File file = new File(TestBase.internalData, "sample.png");
+                File file = new File(TestResourceHandler.TESTRESOURCES, "sample.png");
                 testOpen(file);
         }
 
         @Test
         public void testOpenASC() throws Exception {
-                File file = new File(TestBase.internalData + "sample.asc");
+                File file = new File(TestResourceHandler.OTHERRESOURCES, "sample.asc");
                 testOpen(file);
         }
 
         @Test
         public void testOpenTIFF() throws Exception {
-                File file = new File(TestBase.internalData + "littlelehavre.tif");
+                File file = new File(TestResourceHandler.TESTRESOURCES, "littlelehavre.tif");
                 testOpen(file);
         }
 

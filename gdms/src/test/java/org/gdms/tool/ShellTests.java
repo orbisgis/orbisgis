@@ -44,13 +44,17 @@
  */
 package org.gdms.tool;
 
+import java.io.File;
 import org.gdms.TestBase;
 import org.junit.Test;
+
+import org.gdms.TestResourceHandler;
 
 public class ShellTests extends TestBase {
 
         @Test
         public void testSimpleScript() throws Exception {
-                Shell.main(new String[]{internalData + "simpleScript.sql"});
+                Shell.main(new String[]{new File(TestResourceHandler.OTHERRESOURCES, 
+                        "simpleScript.sql").getAbsolutePath()});
         }
 }

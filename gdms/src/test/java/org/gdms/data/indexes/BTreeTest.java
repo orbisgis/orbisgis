@@ -54,9 +54,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import org.gdms.TestBase;
+import org.gdms.TestResourceHandler;
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceFactory;
-import org.gdms.data.DataSourceFactory;
 import org.gdms.data.indexes.btree.BTree;
 import org.gdms.data.indexes.btree.DiskBTree;
 import org.gdms.data.indexes.tree.IndexVisitor;
@@ -64,13 +63,14 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 
-public class BTreeTest {
+public class BTreeTest extends TestBase {
 
         private ArrayList<Value> v;
         private File indexFile;
 
         @Before
         public void setUp() throws Exception {
+                super.setUpTestsWithoutEdition();
                 v = new ArrayList<Value>();
                 v.add(ValueFactory.createValue(23));
                 v.add(ValueFactory.createValue(29));
@@ -88,12 +88,9 @@ public class BTreeTest {
                 v.add(ValueFactory.createValue(43));
                 v.add(ValueFactory.createValue(47));
 
-                indexFile = new File(TestBase.backupDir, "btreetest.idx");
-                if (indexFile.exists()) {
-                        if (!indexFile.delete()) {
-                                throw new IOException("Cannot delete the index file");
-                        }
-                }
+                indexFile = File.createTempFile("idx-", ".idx");
+                indexFile.delete();
+                indexFile.deleteOnExit();
         }
 
         private void checkLookUp(BTree tree) throws IOException {
@@ -161,10 +158,7 @@ public class BTreeTest {
 
         @Test
         public void testIndexRealData() throws Exception {
-                DataSourceFactory dsf = new DataSourceFactory();
-                dsf.setTempDir(TestBase.backupDir.getAbsolutePath());
-                dsf.setResultDir(TestBase.backupDir);
-                File file = new File(TestBase.internalData + "hedgerow.shp");
+                File file = new File(TestResourceHandler.TESTRESOURCES, "hedgerow.shp");
                 dsf.getSourceManager().register("hedges", file);
                 testIndexRealData(new DiskBTree(3, 64, false), dsf.getDataSource(file), "type", 100.0);
                 setUp();
@@ -173,10 +167,7 @@ public class BTreeTest {
         
         @Test
         public void testIndexRealDataFromSQL() throws Exception {
-                DataSourceFactory dsf = new DataSourceFactory();
-                dsf.setTempDir(TestBase.backupDir.getAbsolutePath());
-                dsf.setResultDir(TestBase.backupDir);
-                File file = new File(TestBase.internalData, "hedgerow.shp");
+                File file = new File(TestResourceHandler.TESTRESOURCES, "hedgerow.shp");
                 dsf.getSourceManager().register("hedges", file);
                 DataSource ds = dsf.getDataSourceFromSQL("select * from hedges order by \"type\" ;");
                 setUp();

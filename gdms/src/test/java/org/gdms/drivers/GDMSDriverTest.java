@@ -98,35 +98,35 @@ import org.gdms.source.SourceManager;
 
 import static org.junit.Assert.*;
 
-public class GDMSDriverTest {
+import org.gdms.TestResourceHandler;
 
-        private DataSourceFactory dsf;
+public class GDMSDriverTest extends TestBase {
 
         @Before
         public void setUp() throws Exception {
-                dsf = new DataSourceFactory(new File(TestBase.backupDir, "/sources/").getAbsolutePath(),
-                        TestBase.backupDir.getAbsolutePath());
+                super.setUpTestsWithEdition(false);
         }
 
         @Test
         public void testSaveASGDMS() throws Exception {
-                File source = new File(TestBase.internalData + "landcover2000.shp");
+                File source = super.getAnySpatialResource();
                 saveAs(source);
         }
 
-        private void saveAs(File source) throws DataSourceCreationException,
-                DriverException {
-                File gdmsFile = new File(TestBase.backupDir, "saveAsGDMS.gdms");
-                dsf.getSourceManager().register("gdms", gdmsFile);
+        private void saveAs(File source) throws Exception {
+                File gdmsFile = getTempFile(".gdms");
+                sm.register("gdms", gdmsFile);
                 DataSource ds = dsf.getDataSource(source);
                 ds.open();
                 dsf.saveContents("gdms", ds);
+                Value[][] c1 = getDataSourceContents(ds);
                 ds.close();
+                DataSource ds2 = dsf.getDataSource(gdmsFile);
+                ds2.open();
+                Value[][] c2 = getDataSourceContents(ds2);
+                ds2.close();
 
-                ds = dsf.getDataSource(gdmsFile);
-                ds.open();
-                ds.getAsString();
-                ds.close();
+                assertTrue(equals(c1, c2));
         }
 
         @Test
@@ -148,7 +148,7 @@ public class GDMSDriverTest {
                 metadata.addField("time", TypeFactory.createType(Type.TIME));
                 metadata.addField("timestamp", TypeFactory.createType(Type.TIMESTAMP));
 
-                File file = new File(TestBase.backupDir, "allgdms.gdms");
+                File file = getTempFile("toto.gdms");
                 DataSourceCreation dsc = new FileSourceCreation(file, metadata);
                 file.delete();
                 dsf.createDataSource(dsc);
@@ -166,7 +166,7 @@ public class GDMSDriverTest {
                 ds.setFieldValue(0, 7, ValueFactory.createValue(new GeometryFactory().createPoint(new Coordinate(3, 3))));
                 ds.setInt(0, 8, 4);
                 ds.setLong(0, 9, 5L);
-                GeoRaster gr = GeoRasterFactory.createGeoRaster(new File(TestBase.internalData, "sample.png").getAbsolutePath());
+                GeoRaster gr = GeoRasterFactory.createGeoRaster(new File(TestResourceHandler.TESTRESOURCES, "sample.png").getAbsolutePath());
                 Value grValue = ValueFactory.createValue(gr);
                 ds.setFieldValue(0, 10, grValue);
                 ds.setShort(0, 11, (short) 34);
@@ -218,7 +218,7 @@ public class GDMSDriverTest {
                         metadata.addField("field" + i, types[i]);
                 }
 
-                File file = new File(TestBase.backupDir, "allgdms.gdms");
+                File file = getTempFile(".gdms");
                 DataSourceCreation dsc = new FileSourceCreation(file, metadata);
                 file.delete();
                 dsf.createDataSource(dsc);
@@ -245,7 +245,7 @@ public class GDMSDriverTest {
 
         @Test
         public void testRemoveRasterField() throws Exception {
-                File file = new File(TestBase.internalData, "sample.png");
+                File file = new File(TestResourceHandler.TESTRESOURCES, "sample.png");
                 DataSource ds = dsf.getDataSource(file);
                 ds.open();
                 String digest = DigestUtilities.getBase64Digest(ds);
@@ -257,21 +257,17 @@ public class GDMSDriverTest {
 
         @Test
         public void testKeepFullExtent() throws Exception {
-                File vectFile = new File(TestBase.backupDir,
-                        "fullExtentVectGDMS.gdms");
+                File vectFile = getTempFile(".gdms");
                 vectFile.delete();
-                testFullExtent(vectFile, new File(TestBase.internalData
-                        + "landcover2000.shp"));
-                File rasterFile = new File(TestBase.backupDir,
-                        "fullExtentRasterGDMS.gdms");
+                testFullExtent(vectFile, new File(TestResourceHandler.TESTRESOURCES, "landcover2000.shp"));
+                File rasterFile = getTempFile(".gdms");
                 rasterFile.delete();
-                testFullExtent(rasterFile, new File(TestBase.internalData
-                        + "sample.png"));
+                testFullExtent(rasterFile, new File(TestResourceHandler.TESTRESOURCES, "sample.png"));
         }
 
         private void testFullExtent(File gdmsFile, File original)
                 throws DataSourceCreationException, DriverException {
-                String name = dsf.getSourceManager().nameAndRegister(gdmsFile);
+                String name = sm.nameAndRegister(gdmsFile);
                 DataSource ds = dsf.getDataSource(original);
                 ds.open();
                 Envelope fe = ds.getFullExtent();
@@ -286,13 +282,13 @@ public class GDMSDriverTest {
 
         @Test
         public void testDifferentValueTypeAndFieldType() throws Exception {
-                File source = new File(TestBase.internalData + "points.shp");
+                File source = new File(TestResourceHandler.TESTRESOURCES, "points.shp");
                 saveAs(source);
         }
 
         @Test
         public void testKeepNoDataValue() throws Exception {
-                DataSource ds = dsf.getDataSource(new File(TestBase.internalData+"/tif440606.gdms"));
+                DataSource ds = dsf.getDataSource(new File(TestResourceHandler.OTHERRESOURCES, "tif440606.gdms"));
                 ds.open();
                 GeoRaster gr = ds.getRaster(0);
                 gr.setNodataValue(345);
@@ -368,7 +364,7 @@ public class GDMSDriverTest {
         private Object testRasterMetadataPixelArrayInconsistency(GeoRaster gr)
                 throws Exception {
                 // Create the source
-                File out = new File(dsf.getTempFile(".gdms"));
+                File out = getTempFile(".gdms");
                 DefaultMetadata dm = new DefaultMetadata(new Type[]{TypeFactory.createType(Type.RASTER)}, new String[]{"raster"});
                 FileSourceCreation fsc = new FileSourceCreation(out, dm);
                 dsf.createDataSource(fsc);
@@ -388,8 +384,7 @@ public class GDMSDriverTest {
 
         @Test
         public void testCompatibleWith2_0() throws Exception {
-                DataSource ds = dsf.getDataSource(new File(TestBase.internalData,
-                        "version2.gdms"));
+                DataSource ds = dsf.getDataSource(new File(TestResourceHandler.OTHERRESOURCES, "version2.gdms"));
                 ds.open();
                 ds.getAsString();
                 ds.close();
@@ -397,7 +392,7 @@ public class GDMSDriverTest {
 
         @Test
         public void testOpenBadFile() throws Exception {
-                GdmsReader reader = new GdmsReader(new File(TestBase.internalData, "badgdms.gdms"));
+                GdmsReader reader = new GdmsReader(new File(TestResourceHandler.OTHERRESOURCES, "badgdms.gdms"));
                 try {
                         reader.open();
                         reader.readMetadata();
@@ -407,10 +402,10 @@ public class GDMSDriverTest {
                         reader.close();
                 }
         }
-        
+
         @Test
-        public void testGetType() throws Exception{
-                DataSource ds = dsf.getDataSource(new File(TestBase.internalData,"version2.gdms"));
+        public void testGetType() throws Exception {
+                DataSource ds = dsf.getDataSource(new File(TestResourceHandler.OTHERRESOURCES, "version2.gdms"));
                 ds.open();
                 Driver d = ds.getDriver();
                 assertEquals(d.getSupportedType(), SourceManager.FILE | SourceManager.RASTER | SourceManager.VECTORIAL);

@@ -66,14 +66,8 @@ public class SpatialDriverMetadataTest extends TestBase {
 
         @Test
         public void testHasSpatialField() throws Exception {
-                String[] resources = super.getSpatialResources();
-                for (String resource : resources) {
-                        testHasSpatialField(resource);
-                }
-        }
-
-        private void testHasSpatialField(String dsName) throws Exception {
-                DataSource sds = dsf.getDataSource(dsName);
+                sm.register("test", super.getAnySpatialResource());
+                DataSource sds = dsf.getDataSource("test");
                 sds.open();
                 Metadata sdm = sds.getMetadata();
                 boolean has = false;
@@ -105,9 +99,7 @@ public class SpatialDriverMetadataTest extends TestBase {
         }
 
         @Before
-        @Override
         public void setUp() throws Exception {
-                this.setWritingTests(false);
-                super.setUp();
+                super.setUpTestsWithoutEdition();
         }
 }

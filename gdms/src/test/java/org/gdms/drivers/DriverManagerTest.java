@@ -63,10 +63,8 @@ import static org.junit.Assert.*;
 public class DriverManagerTest extends TestBase {
 
         @Before
-        @Override
         public void setUp() throws Exception {
-                super.setUp();
-                setWritingTests(true);
+                super.setUpTestsWithoutEdition();
         }
 
         /**
@@ -77,7 +75,7 @@ public class DriverManagerTest extends TestBase {
         @Test
         public void testDriverUnicity() {
                 //Our source is a single, simple, ShapeFile
-                File shape = new File(TestBase.internalData + "landcover2000.shp");
+                File shape = super.getAnySpatialResource();
                 //Our start point is FileSourceDefinition
                 FileSourceDefinition fsd = new FileSourceDefinition(shape, "landcover");
                 fsd.setDataSourceFactory(dsf);
@@ -99,7 +97,7 @@ public class DriverManagerTest extends TestBase {
          */
         @Test
         public void testListenerAddedRemoved() {
-                final DriverManager dm = dsf.getSourceManager().getDriverManager();
+                final DriverManager dm = sm.getDriverManager();
 
                 TestDML l = new TestDML(dm);
 

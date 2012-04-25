@@ -69,10 +69,10 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import static org.junit.Assert.*;
 
-public class IndexesTest {
+import org.gdms.TestResourceHandler;
 
-        private DataSourceFactory dsf;
-        private SourceManager sm;
+public class IndexesTest extends TestBase {
+
         private IndexManager im;
 
         @Test
@@ -80,7 +80,6 @@ public class IndexesTest {
                 im.buildIndex("source", "gid", IndexManager.BTREE_ALPHANUMERIC_INDEX,
                         null);
                 sm.saveStatus();
-                instantiateDSF();
                 DataSource ds = dsf.getDataSource("source");
                 ds.open();
                 ds.queryIndex(new DefaultAlphaQuery("gid", null, true, ValueFactory.createValue(10), false));
@@ -92,7 +91,6 @@ public class IndexesTest {
                 im.buildIndex("source", "gid", IndexManager.BTREE_ALPHANUMERIC_INDEX,
                         null);
                 sm.saveStatus();
-                instantiateDSF();
                 Source src = sm.getSource("source");
                 String propertyName = IndexManager.INDEX_PROPERTY_PREFIX + "-gid-"
                         + IndexManager.BTREE_ALPHANUMERIC_INDEX;
@@ -310,7 +308,6 @@ public class IndexesTest {
                 checkReplacedIndex(ds);
                 ds.close();
                 checkReplacedIndex(ds);
-                instantiateDSF();
                 checkReplacedIndex(dsf.getDataSource("source"));
         }
 
@@ -443,28 +440,10 @@ public class IndexesTest {
 
         @Before
         public void setUp() throws Exception {
-                instantiateDSF();
-
-                sm.removeAll();
-                File parent = new File(TestBase.internalData);
-                File backup = TestBase.backupDir;
-                File destshp = new File(backup, "hedgerow.shp");
-                File destdbf = new File(backup, "hedgerow.dbf");
-                File destshx = new File(backup, "hedgerow.shx");
-                destshp.delete();
-                destdbf.delete();
-                destshx.delete();
-                FileUtils.copy(new File(parent, "hedgerow.shp"), destshp);
-                FileUtils.copy(new File(parent, "hedgerow.dbf"), destdbf);
-                FileUtils.copy(new File(parent, "hedgerow.shx"), destshx);
-                sm.register("source", destshp);
-        }
-
-        private void instantiateDSF() {
-                dsf = new DataSourceFactory();
-                dsf.setTempDir(TestBase.backupDir.getAbsolutePath());
-                dsf.setResultDir(TestBase.backupDir);
-                sm = dsf.getSourceManager();
+                super.setUpTestsWithEdition(false);
                 im = dsf.getIndexManager();
+                sm.removeAll();
+                File destshp = getTempCopyOf(new File(TestResourceHandler.TESTRESOURCES, "hedgerow.shp"));
+                sm.register("source", destshp);
         }
 }

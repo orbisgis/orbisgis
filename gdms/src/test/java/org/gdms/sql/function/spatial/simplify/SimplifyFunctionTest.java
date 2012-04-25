@@ -42,10 +42,6 @@
  * or contact directly:
  * info@orbisgis.org
  */
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.gdms.sql.function.spatial.simplify;
 
 import org.junit.Test;
