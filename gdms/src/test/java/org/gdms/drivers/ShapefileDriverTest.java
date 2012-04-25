@@ -486,4 +486,29 @@ public class ShapefileDriverTest {
                 ds.close();
                 assertNull(date);
         }
+        
+        @Test
+        public void testSaveSQL() throws Exception {
+                dsf.getSourceManager().register(
+                        "shape",
+                        new FileSourceCreation(new File(TestBase.internalData
+                        + "landcover2000.shp"), null));
+
+                DataSource sql = dsf.getDataSourceFromSQL(
+                        "select st_Buffer(the_geom, 20) from shape;",
+                        DataSourceFactory.DEFAULT);
+                DataSourceCreation target = new FileSourceCreation(new File(
+                        TestBase.backupDir, "outputtestSaveSQL.shp"), null);
+                dsf.getSourceManager().register("buffer", target);
+                sql.open();
+                dsf.saveContents("buffer", sql);
+                sql.close();
+
+                DataSource ds = dsf.getDataSource("buffer");
+                ds.open();
+                sql.open();
+                assertEquals(ds.getRowCount(), sql.getRowCount());
+                sql.close();
+                ds.close();
+        }
 }

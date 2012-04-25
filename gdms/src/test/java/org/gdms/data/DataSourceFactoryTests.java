@@ -109,6 +109,39 @@ public class DataSourceFactoryTests extends TestBase {
                 sm.removeAll();
                 assertTrue(dsf.getSourceManager().isEmpty());
         }
+        
+        @Test
+        public void testOperationDataSourceName() throws Throwable {
+                dsf.getSourceManager().remove("big");
+                dsf.getSourceManager().register(
+                        "big",
+                        new FileSourceCreation(new File(TestBase.internalData
+                        + "hedgerow.shp"), null));
+                DataSource d = dsf.getDataSourceFromSQL("select * from big;");
+                assertNotNull(dsf.getDataSource(d.getName()));
+        }
+
+        @Test
+        public void testSeveralNames() throws Exception {
+                String dsName = super.getNonDBSmallResources()[0];
+                testSeveralNames(dsName);
+                testSeveralNames(dsf.getDataSourceFromSQL("select * from " + dsName + ";").getName());
+        }
+
+        private void testSeveralNames(String dsName) throws
+                SourceAlreadyExistsException, DriverLoadException,
+                DataSourceCreationException, DriverException,
+                AlreadyClosedException, NoSuchTableException {
+                String secondName = "secondName" + System.currentTimeMillis();
+                sm.addName(dsName, secondName);
+                checkNames(dsName, secondName);
+                try {
+                        sm.addName("e" + System.currentTimeMillis(), "qosgsdq");
+                        fail();
+                } catch (NoSuchTableException ex) {
+                }
+
+        }
 
         private void checkNames(String dsName, String secondName)
                 throws DriverLoadException, NoSuchTableException,
@@ -123,6 +156,30 @@ public class DataSourceFactoryTests extends TestBase {
                         getDataSourceContents(ds2)));
                 ds1.close();
                 ds2.close();
+        }
+        
+        @Test
+        public void testChangeNameOnExistingDataSources() throws Exception {
+                DataSourceFactory dsf = new DataSourceFactory();
+                dsf.setTempDir(TestBase.backupDir.getAbsolutePath());
+                dsf.setResultDir(TestBase.backupDir);
+                dsf.getSourceManager().removeAll();
+                dsf.getSourceManager().register("file",
+                        new File(TestBase.internalData, "test.csv"));
+                DataSource ds = dsf.getDataSourceFromSQL("select * from file;");
+                dsf.getSourceManager().rename(ds.getName(), "sql");
+                DataSource ds2 = dsf.getDataSource("sql");
+                assertEquals(ds.getName(), ds2.getName());
+        }
+
+        @Test
+        public void testSQLSources() throws Exception {
+                dsf.getSourceManager().register("testH", new File(TestBase.internalData, "hedgerow.shp"));
+                dsf.register("sql",
+                        "select * from testH;");
+                DataSource ds = dsf.getDataSource("sql");
+                assertEquals((ds.getSource().getType() & SourceManager.SQL), SourceManager.SQL);
+                assertFalse(ds.isEditable());
         }
 
         @Test(expected = SourceAlreadyExistsException.class)

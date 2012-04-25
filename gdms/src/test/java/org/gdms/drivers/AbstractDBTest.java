@@ -92,7 +92,7 @@ public abstract class AbstractDBTest {
         }
 
         protected DBSource getHSQLDBSource(String tableName) {
-                return new DBSource(null, -1, "src/test/resources/backup/" + tableName,
+                return new DBSource(null, -1, TestBase.backupDir + tableName,
                         "sa", "", tableName, "jdbc:hsqldb:file");
         }
 

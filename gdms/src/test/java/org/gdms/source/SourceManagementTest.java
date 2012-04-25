@@ -36,15 +36,18 @@
  */
 package org.gdms.source;
 
-import org.junit.Before;
-import org.junit.Test;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.ArrayList;
 
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 import org.gdms.DBTestSource;
 import org.gdms.TestBase;
@@ -65,8 +68,7 @@ import org.gdms.driver.FileDriverRegister;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.memory.MemoryDataSetDriver;
-
-import static org.junit.Assert.*;
+import org.gdms.sql.strategies.SumQuery;
 
 public class SourceManagementTest {
 
@@ -78,6 +80,7 @@ public class SourceManagementTest {
         private DBSource testDB;
         private WMSSource testWMS;
         private MemoryDataSetDriver obj;
+        private String sql = "select count(the_geom) from myfile;";
 
         @Test
         public void testRegisterTwice() throws Exception {
@@ -95,7 +98,7 @@ public class SourceManagementTest {
                         ds.close();
                 }
         }
-        
+
         @Test
         public void testRegisterAndRemove() throws Exception {
                 sm.remove(SOURCE);
@@ -323,6 +326,16 @@ public class SourceManagementTest {
                 assertEquals(wmsContent, getContent("wms"));
                 assertEquals(objContent, getContent("obj"));
 
+                sm.removeAll();
+                sm.register("myfile", new File(TestBase.internalData, "landcover2000.shp"));
+                dsf.register("sql", sql);
+
+                String sqlContent = getContent("sql");
+
+                sm.saveStatus();
+                instantiateDSF();
+
+                assertEquals(sqlContent, getContent("sql"));
         }
 
         private String getContent(String name) throws Exception {
@@ -332,6 +345,47 @@ public class SourceManagementTest {
                 ds.close();
 
                 return ret;
+        }
+
+        @Test
+        public void testSelectDependencies() throws Exception {
+                sm.removeAll();
+                sm.register("db", testDB);
+                sm.register("file", testFile);
+                String sql = "select 2*(file.id :: int) from db, file "
+                        + "where (file.id :: int) <> 234;";
+                dsf.register("sql", sql);
+                DataSource ds = dsf.getDataSource("sql");
+                assertTrue(setIs(ds.getReferencedSources(),
+                        new String[]{"db", "file"}));
+                ds = dsf.getDataSourceFromSQL(sql);
+                assertTrue(setIs(ds.getReferencedSources(),
+                        new String[]{"db", "file"}));
+                sql = "file union file;";
+                dsf.register("sql2", sql);
+                ds = dsf.getDataSource("sql2");
+                assertTrue(setIs(ds.getReferencedSources(), new String[]{"file"}));
+                ds = dsf.getDataSourceFromSQL(sql);
+                assertTrue(setIs(ds.getReferencedSources(), new String[]{"file"}));
+
+                String[] srcDeps = dsf.getDataSource("file").getReferencedSources();
+                assertEquals(srcDeps.length, 0);
+        }
+
+        private boolean setIs(String[] referencingSources, String[] test) {
+                if (referencingSources.length != test.length) {
+                        return false;
+                } else {
+                        ArrayList<String> set = new ArrayList<String>();
+                        for (String string : referencingSources) {
+                                set.add(string);
+                        }
+                        for (String string : test) {
+                                set.remove(string);
+                        }
+
+                        return set.isEmpty();
+                }
         }
 
         @Test
@@ -371,6 +425,109 @@ public class SourceManagementTest {
 
                 ds = dsf.getDataSource(obj, "main");
                 assertEquals(ds.getName(), "myObj");
+                
+                sm.removeAll();
+                sm.register("myfile", new File(TestBase.internalData, "landcover2000.shp"));
+                dsf.register("mySQL", sql);
+
+
+                ds = dsf.getDataSourceFromSQL(sql);
+                assertEquals(ds.getName(), "mySQL");
+        }
+
+        @Test
+        public void testCannotDeleteDependedSource() throws Exception {
+                sm.removeAll();
+                sm.register("db", testDB);
+                sm.register("file", testFile);
+                String sql = "select 2*StringToInt(file.id) from db, file "
+                        + "where file.id <> '234';";
+                sm.remove("file");
+                sm.remove("db");
+
+                sm.register("db", testDB);
+                sm.register("file", testFile);
+                dsf.register("sql", sql);
+
+                try {
+                        sm.remove("file");
+                        fail();
+                } catch (IllegalStateException e) {
+                }
+                try {
+                        sm.remove("db");
+                        fail();
+                } catch (IllegalStateException e) {
+                }
+
+                sm.remove("sql");
+                sm.remove("file");
+                sm.remove("db");
+        }
+
+        @Test
+        public void testCanDeleteIfDependentSourceIsNotWellKnown() throws Exception {
+                sm.removeAll();
+                sm.register("db", testDB);
+                sm.register("file", testFile);
+                dsf.executeSQL("select 2*StringToInt(file.id) from db, file "
+                        + "where file.id <> '234';");
+                sm.remove("file");
+                sm.remove("db");
+        }
+
+        @Test
+        public void testDependentDependingSync() throws Exception {
+                sm.removeAll();
+                sm.register("db", testDB);
+                sm.register("file", testFile);
+                String sql = "select 2*StringToInt(file.id) from db, file "
+                        + "where file.id <> '234';";
+                dsf.register("sql", sql);
+                sql = "select * from sql, file;";
+                dsf.register("sql2", sql);
+                // Anonimous ds should not been taken into account for dependencies
+                dsf.executeSQL(sql);
+                Source src = sm.getSource("db");
+                assertTrue(setIs(src.getReferencingSources(), new String[]{"sql",
+                                "sql2"}));
+                assertTrue(setIs(src.getReferencedSources(), new String[]{}));
+                src = sm.getSource("file");
+                assertTrue(setIs(src.getReferencingSources(), new String[]{"sql",
+                                "sql2"}));
+                assertTrue(setIs(src.getReferencedSources(), new String[]{}));
+                src = sm.getSource("sql");
+                assertTrue(setIs(src.getReferencingSources(), new String[]{"sql2"}));
+                assertTrue(setIs(src.getReferencedSources(), new String[]{"file",
+                                "db"}));
+                src = sm.getSource("sql2");
+                assertTrue(setIs(src.getReferencingSources(), new String[]{}));
+                assertTrue(setIs(src.getReferencedSources(), new String[]{"file",
+                                "db", "sql"}));
+
+                sm.remove("sql2");
+                src = sm.getSource("db");
+                assertTrue(setIs(src.getReferencingSources(), new String[]{"sql"}));
+                assertTrue(setIs(src.getReferencedSources(), new String[]{}));
+                src = sm.getSource("file");
+                assertTrue(setIs(src.getReferencingSources(), new String[]{"sql"}));
+                assertTrue(setIs(src.getReferencedSources(), new String[]{}));
+                src = sm.getSource("sql");
+                assertTrue(setIs(src.getReferencingSources(), new String[]{}));
+                assertTrue(setIs(src.getReferencedSources(), new String[]{"file",
+                                "db"}));
+                src = sm.getSource("sql2");
+                assertNull(src);
+
+                sm.remove("sql");
+                src = sm.getSource("db");
+                assertTrue(setIs(src.getReferencingSources(), new String[]{}));
+                assertTrue(setIs(src.getReferencedSources(), new String[]{}));
+                src = sm.getSource("file");
+                assertTrue(setIs(src.getReferencingSources(), new String[]{}));
+                assertTrue(setIs(src.getReferencedSources(), new String[]{}));
+                src = sm.getSource("sql");
+                assertNull(src);
         }
 
         @Test
@@ -422,6 +579,50 @@ public class SourceManagementTest {
                         fail();
                 } catch (SourceAlreadyExistsException e) {
                 }
+                
+                sm.removeAll();
+                sm.register("myfile", new File(TestBase.internalData, "landcover2000.shp"));
+                dsf.register("mySQL", sql);
+
+                try {
+                        dsf.register("d", sql);
+                        fail();
+                } catch (SourceAlreadyExistsException e) {
+                }
+
+                try {
+                        dsf.nameAndRegister(sql);
+                        fail();
+                } catch (SourceAlreadyExistsException e) {
+                }
+        }
+        
+        @Test
+        public void testSQLSourceType() throws Exception {
+                dsf.register("alphasql", "select * from " + SOURCE + ";");
+                assertEquals((sm.getSource("alphasql").getType() & SourceManager.SQL), SourceManager.SQL);
+        }
+        
+        @Test
+        public void testCustomQueryDependences() throws Exception {
+                SumQuery sq = new SumQuery();
+                if (dsf.getFunctionManager().getFunction(sq.getName()) == null) {
+                        dsf.getFunctionManager().addFunction(SumQuery.class);
+                }
+                dsf.register("sum", "select * from sumquery(" + SOURCE + ", 'id');");
+                String[] deps = sm.getSource("sum").getReferencedSources();
+                assertEquals(deps.length, 1);
+                assertEquals(deps[0], SOURCE);
+        }
+        
+        @Test
+        public void testDependingNotWellKnownSourcesRemoved() throws Exception {
+                DataSource ds = dsf.getDataSourceFromSQL("select * from " + SOURCE + ";");
+                assertEquals(ds.getReferencedSources().length, 1);
+
+                String nwkn = ds.getName();
+                dsf.getSourceManager().remove(SOURCE);
+                assertFalse(dsf.getSourceManager().exists(nwkn));
         }
 
         @Test

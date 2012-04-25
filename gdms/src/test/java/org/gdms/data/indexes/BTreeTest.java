@@ -36,15 +36,18 @@
  */
 package org.gdms.data.indexes;
 
-import org.junit.Test;
-import org.junit.Before;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 import org.gdms.TestBase;
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.indexes.btree.BTree;
 import org.gdms.data.indexes.btree.DiskBTree;
@@ -52,8 +55,6 @@ import org.gdms.data.indexes.tree.IndexVisitor;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-
-import static org.junit.Assert.*;
 
 public class BTreeTest {
 
@@ -160,6 +161,20 @@ public class BTreeTest {
                 testIndexRealData(new DiskBTree(3, 64, false), dsf.getDataSource(file), "type", 100.0);
                 setUp();
                 testIndexRealData(new DiskBTree(32, 64, false), dsf.getDataSource(file), "type", 100.0);
+        }
+        
+        @Test
+        public void testIndexRealDataFromSQL() throws Exception {
+                DataSourceFactory dsf = new DataSourceFactory();
+                dsf.setTempDir(TestBase.backupDir.getAbsolutePath());
+                dsf.setResultDir(TestBase.backupDir);
+                File file = new File(TestBase.internalData, "hedgerow.shp");
+                dsf.getSourceManager().register("hedges", file);
+                DataSource ds = dsf.getDataSourceFromSQL("select * from hedges order by \"type\" ;");
+                setUp();
+                testIndexRealData(new DiskBTree(255, 512, false), ds, "type", 100.0);
+                setUp();
+                testIndexRealData(new DiskBTree(3, 256, false), ds, "type", 1000.0);
         }
 
         private void testIndexRealData(BTree tree, DataSource ds, String fieldName,

@@ -40,6 +40,8 @@ package org.gdms.data;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.log4j.Logger;
 
 import org.gdms.data.db.DBSource;
@@ -67,6 +69,13 @@ import org.jproj.CRSFactory;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.utils.I18N;
+
+import org.gdms.data.sql.SQLEvent;
+import org.gdms.data.sql.SQLSourceDefinition;
+import org.gdms.sql.engine.ParseException;
+import org.gdms.sql.engine.SQLEngine;
+import org.gdms.sql.engine.SqlStatement;
+import org.gdms.sql.function.FunctionManager;
 
 /**
  * Factory of DataSource implementations. It has method to register
@@ -106,6 +115,9 @@ public class DataSourceFactory {
         private PlugInManager plugInManager;
         private CRSFactory crsFactory;
         private static final Logger LOG = Logger.getLogger(DataSourceFactory.class);
+        protected FunctionManager functionManager = new FunctionManager();
+        protected final List<DataSourceFactoryListener> listeners = new ArrayList<DataSourceFactoryListener>();
+        protected SQLEngine sqlEngine;
 
         /**
          * Creates a new {@code DataSourceFactory} with a <tt>sourceInfoDir</tt>
@@ -572,6 +584,222 @@ public class DataSourceFactory {
                 if (!success) {
                         LOG.warn("Error deleting files: not all resources were freed.");
                 }
+        }
+
+        /**
+         * Adds a DataSourceFactoryListener to this DataSourceFactory
+         * @param e a DataSourceFactoryListener
+         * @return true if the add succeeded
+         */
+        public final boolean addDataSourceFactoryListener(DataSourceFactoryListener e) {
+                return listeners.add(e);
+        }
+
+        /**
+         * Executes a SQL statement
+         *
+         * @param sql
+         * @throws ParseException
+         * @throws DriverException
+         * @throws SemanticException if something wrong happens during query validation
+         */
+        public final void executeSQL(String sql) throws ParseException, DriverException {
+                executeSQL(sql, new NullProgressMonitor(), DEFAULT);
+        }
+
+        /**
+         * Executes a SQL statement
+         *
+         * @param sql
+         * @param pm
+         * @throws ParseException
+         * @throws DriverException
+         */
+        public final void executeSQL(String sql, ProgressMonitor pm) throws ParseException, DriverException {
+                executeSQL(sql, pm, DEFAULT);
+        }
+
+        /**
+         * Executes a SQL statement
+         *
+         * @param sql
+         *            sql statement
+         * @param pm
+         *
+         * @param mode
+         * @throws ParseException
+         *             If the sql is not well formed
+         * @throws DriverException
+         *             If there is a problem accessing the sources
+         */
+        public final void executeSQL(String sql, ProgressMonitor pm, int mode) throws ParseException, DriverException {
+                LOG.trace("Execute SQL Statement" + '\n' + sql);
+                if (!sql.trim().endsWith(";")) {
+                        sql += ";";
+                }
+                fireInstructionExecuted(sql);
+                SQLEngine engine = getSqlEngine();
+                engine.execute(sql);
+        }
+
+        public final void fireInstructionExecuted(String sql) {
+                for (DataSourceFactoryListener listener : listeners) {
+                        listener.sqlExecuted(new SQLEvent(sql, this));
+                }
+        }
+
+        /**
+         * Gets a DataSource instance to access the result of the instruction
+         *
+         * @param instruction
+         *            Instruction to evaluate.
+         * @param mode
+         *            The DataSource mode {@link #EDITABLE} {@link #STATUS_CHECK}
+         *            {@link #NORMAL} {@link #DEFAULT}
+         * @param pm
+         *            To monitor progress and cancel
+         *
+         * @return
+         * @throws DataSourceCreationException
+         */
+        public final DataSource getDataSource(SqlStatement instruction, int mode, ProgressMonitor pm) throws DataSourceCreationException {
+                return getDataSource(new SQLSourceDefinition(instruction), mode, pm);
+        }
+
+        /**
+         * Gets a DataSource instance to access the result of a query
+         *
+         * @param sql the SQL query to execute
+         * @return a DataSource mapped to the result of the query
+         *
+         * @throws DriverLoadException
+         *             If there isn't a suitable driver for such a file
+         * @throws DataSourceCreationException
+         *             If the instance creation fails
+         * @throws DriverException
+         * @throws ParseException
+         * @throws NoSuchTableException
+         */
+        public final DataSource getDataSourceFromSQL(String sql) throws DataSourceCreationException, DriverException, ParseException, NoSuchTableException {
+                return getDataSourceFromSQL(sql, DEFAULT, new NullProgressMonitor());
+        }
+
+        /**
+         * Gets a DataSource instance to access the file with the default mode
+         *
+         * @param sql the SQL query to execute
+         * @param pm
+         *            Instance that monitors the process. Can be null
+         * @return
+         *
+         * @throws DriverLoadException
+         *             If there isn't a suitable driver for such a file
+         * @throws DataSourceCreationException
+         *             If the instance creation fails
+         * @throws DriverException
+         * @throws ParseException
+         */
+        public final DataSource getDataSourceFromSQL(String sql, ProgressMonitor pm) throws DataSourceCreationException, DriverException, ParseException {
+                return getDataSourceFromSQL(sql, DEFAULT, pm);
+        }
+
+        /**
+         * Gets a DataSource instance to access the result of a query
+         *
+         * @param sql the SQL query to execute
+         * @return a DataSource mapped to the result of the query
+         * @param mode
+         *            To enable undo/redo operations UNDOABLE. NORMAL otherwise
+         * @throws DriverLoadException
+         *             If there isn't a suitable driver for such a file
+         * @throws DataSourceCreationException
+         *             If the instance creation fails
+         * @throws DriverException
+         * @throws ParseException
+         */
+        public final DataSource getDataSourceFromSQL(String sql, int mode) throws DataSourceCreationException, DriverException, ParseException {
+                return getDataSourceFromSQL(sql, mode, new NullProgressMonitor());
+        }
+
+        /**
+         * Gets a DataSource instance to access the result of the SQL
+         *
+         * @param sql the SQL query to execute
+         * @param mode
+         *            To enable undo/redo operations UNDOABLE. NORMAL otherwise
+         * @param pm
+         *            Instance that monitors the process. Can be null
+         * @return The result of the instruction or null if the execution was
+         *         canceled
+         *
+         * @throws DriverLoadException
+         *             If there isn't a suitable driver for such a file
+         * @throws DataSourceCreationException
+         *             If the instance creation fails
+         * @throws DriverException
+         * @throws ParseException
+         */
+        public final DataSource getDataSourceFromSQL(String sql, int mode, ProgressMonitor pm) throws DataSourceCreationException, DriverException, ParseException {
+                LOG.trace("Getting datasource from SQL :\n" + sql);
+                if (pm == null) {
+                        pm = new NullProgressMonitor();
+                }
+                SqlStatement[] statement = getSqlEngine().parse(sql);
+                return getDataSource(statement[0], mode, pm);
+        }
+
+        public final FunctionManager getFunctionManager() {
+                return functionManager;
+        }
+
+        /**
+         * Gets all listeners associated with this Factory.
+         * @return a (possibly empty) list of listeners
+         */
+        public final List<DataSourceFactoryListener> getListeners() {
+                return listeners;
+        }
+
+        public final SQLEngine getSqlEngine() {
+                // this is called by the super constructor, there is no problem of synchronisation.
+                if (sqlEngine == null) {
+                        sqlEngine = new SQLEngine(this);
+                }
+                return sqlEngine;
+        }
+
+        /**
+         * @param sql
+         * @return
+         * @throws DriverException
+         * @throws ParseException
+         */
+        public final String nameAndRegister(String sql) throws ParseException, DriverException {
+                SQLEngine engine = getSqlEngine();
+                SqlStatement[] instruction = engine.parse(sql);
+                return getSourceManager().nameAndRegister(new SQLSourceDefinition(instruction[0]));
+        }
+
+        /**
+         * @param name
+         * @param sql
+         * @throws DriverException
+         * @throws SourceAlreadyExistsException
+         * @throws ParseException
+         */
+        public final void register(String name, String sql) throws ParseException, DriverException {
+                SQLEngine engine = getSqlEngine();
+                SqlStatement[] instruction = engine.parse(sql);
+                getSourceManager().register(name, new SQLSourceDefinition(instruction[0]));
+        }
+
+        /**
+         * Removes a DataSourceFactoryListener from this DataSourceFactory
+         * @param o a DataSourceFactoryListener
+         * @return true if the removal succeeded
+         */
+        public final boolean removeDataSourceFactoryListener(DataSourceFactoryListener o) {
+                return listeners.remove(o);
         }
 
         private static class GdmsFileFilter implements FileFilter {

@@ -40,6 +40,7 @@
 package org.gdms;
 
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -64,11 +65,10 @@ public class DBTestSource extends TestSource {
 	}
 
         public boolean isConnected() throws Exception {
-                FileInputStream fis = new FileInputStream(sqlScriptFile);
-		DataInputStream dis = new DataInputStream(fis);
-		byte[] buffer = new byte[(int) fis.getChannel().size()];
-		dis.readFully(buffer);
-		String script = new String(buffer);
+                File f = new File(sqlScriptFile);
+                if (!f.exists()) {
+                        return false;
+                }
 
 		Class.forName(jdbcDriver);
 		String connectionString = dbSource.getPrefix() + ":";

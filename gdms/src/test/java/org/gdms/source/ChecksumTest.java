@@ -45,11 +45,13 @@ import org.gdms.DBTestSource;
 import org.gdms.FileTestSource;
 import org.gdms.TestBase;
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceFactory;
 import org.gdms.data.db.DBSource;
 
 import static org.junit.Assert.*;
 import org.orbisgis.utils.FileUtils;
+
+import org.gdms.SQLTestSource;
+import org.gdms.data.DataSourceFactory;
 
 public class ChecksumTest {
 
@@ -75,6 +77,13 @@ public class ChecksumTest {
                 dbTestSource.backup();
                 sm.register(name, testDB);
                 testModifyingSourceOutsideFactory(name, false);
+                
+                name = "sql";
+                String sql = "select count(id) from file;";
+                SQLTestSource sts = new SQLTestSource(name, sql);
+                sts.backup();
+                dsf.register(name, sql);
+                testModifyingSourceOutsideFactory(name, true);
         }
 
         private synchronized void testModifyingSourceOutsideFactory(String name,

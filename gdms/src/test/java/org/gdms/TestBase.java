@@ -79,9 +79,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.orbisgis.utils.FileUtils;
 
+import org.gdms.data.DataSourceFactory;
+
 public abstract class TestBase extends SourceTest<Value, Geometry> {
 
-        public static DataSourceFactory dsf = new DataSourceFactory(backupDir.getAbsolutePath());
+        public static DataSourceFactory dsf;
         private static boolean loaded = false;
         private static String fname = "name";
         private static String frowCount = "rowCount";
@@ -149,6 +151,8 @@ public abstract class TestBase extends SourceTest<Value, Geometry> {
                                 toTest.add(new FileTestSource("testcsv", internalData
                                         + "test.csv"));
                                 toTest.add(new FileTestSource("repeatedRows", internalData
+                                        + "repeatedRows.csv"));
+                                toTest.add(new SQLTestSource("select_source", internalData
                                         + "repeatedRows.csv"));
 
                                 FileUtils.copyFileToDirectory(new File(internalData + "hedgerow.sql"), backupDir);
@@ -218,6 +222,7 @@ public abstract class TestBase extends SourceTest<Value, Geometry> {
                 dsf = new DataSourceFactory();
                 dsf.setTempDir(backupDir.getAbsolutePath());
                 dsf.setResultDir(backupDir);
+                dsf.getSqlEngine().getProperties().put("output.explain", "true");
                 dsf.getSourceManager().removeAll();
         }
 
@@ -238,6 +243,7 @@ public abstract class TestBase extends SourceTest<Value, Geometry> {
                 }
                 sources.add(new TestSourceData("testcsv", null, false));
                 sources.add(new TestSourceData("repeatedRows", null, true));
+                sources.add(new TestSourceData("select_source", null, false));
                 if (postGisAvailable) {
                         sources.add(new TestSourceData("postgres", null, false));
                         sources.add(new TestSourceData("pghedgerow", null, false));

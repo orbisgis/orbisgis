@@ -386,6 +386,91 @@ public class DBDriverTest extends TestBase {
                         new String[]{"field1"});
                 testCommitTwice(dbSource, metadata);
         }
+        
+        @Test
+        public void testShapefile2PostgreSQL() throws Exception {
+                assumeTrue(TestBase.postGisAvailable);
+                // Delete the table if exists
+                // DBSource dbSource = new DBSource("127.0.0.1", 5432, "gdms",
+                // "postgres",
+                // "postgres", "testShapefile2PostgreSQL", "jdbc:postgresql");
+                DBSource dbSource = new DBSource("127.0.0.1", 5432,
+                        "gisdb", "gis", "gis",
+                        "testShapefile2PostgreSQL", "jdbc:postgresql");
+                try {
+                        execute(dbSource, "DROP TABLE testShapefile2PostgreSQL;");
+                } catch (SQLException e) {
+                        e.printStackTrace();
+                }
+
+                // register both sources
+                String registerDB = "CALL register('postgresql','"
+                        + dbSource.getHost() + "'," + " '" + dbSource.getPort() + "','"
+                        + dbSource.getDbName() + "','" + dbSource.getUser() + "','"
+                        + dbSource.getPassword() + "'," + "'" + dbSource.getTableName()
+                        + "','bati');";
+                String registerFile = "CALL register('" + internalData
+                        + "landcover2000.shp','parcels');";
+                dsf.executeSQL(registerDB);
+                dsf.executeSQL(registerFile);
+
+                // Do the migration
+                String load = "create table lands as select * " + "from parcels;";
+                dsf.executeSQL(load);
+
+                // Get each value
+                DataSource db = dsf.getDataSource("lands");
+                DataSource file = dsf.getDataSource("parcels");
+                db.open();
+                file.open();
+                assertEquals(db.getRowCount(),file.getRowCount());
+                for (int i = 0; i < db.getRowCount(); i++) {
+                        assertTrue(db.getGeometry(i).equalsExact(file.getGeometry(i)));
+                }
+                db.close();
+                file.close();
+        }
+
+        @Test
+        public void testReadSchemaPostGreSQL() throws Exception {
+                assumeTrue(TestBase.postGisAvailable);
+                DBSource dbSource = new DBSource("127.0.0.1", 5432,
+                        "gisdb", "gis", "gis", "gis_schema",
+                        "administratif", "jdbc:postgresql");
+
+                dsf.getSourceManager().register("data_source", dbSource);
+
+                dsf.executeSQL("select * from data_source ; ");
+        }
+
+        @Test
+        public void testReadMultiSchemasPostGreSQL() throws Exception {
+                assumeTrue(TestBase.postGisAvailable);
+                DBSource publicSchemaDbSource = new DBSource("localhost", 5432,
+                        "gisdb", "gis", "gis",
+                        "landcover2000", "jdbc:postgresql");
+
+                String publicSchemaSourceName = dsf.getSourceManager().getUniqueName(publicSchemaDbSource.getTableName());
+                dsf.getSourceManager().register(publicSchemaSourceName, publicSchemaDbSource);
+
+                DBSource otherSchemaDbSource = new DBSource("localhost", 5432,
+                        "gisdb", "gis", "gis", "gis_schema",
+                        "parcels", "jdbc:postgresql");
+                String otherSchemaSourceName = dsf.getSourceManager().getUniqueName(otherSchemaDbSource.getTableName());
+                dsf.getSourceManager().register(otherSchemaSourceName, otherSchemaDbSource);
+
+                DataSource sds = dsf.getDataSource(otherSchemaDbSource);
+                sds.open();
+                sds.isVectorial();
+                sds.close();
+
+                assertFalse(otherSchemaSourceName.equals(publicSchemaSourceName));
+
+                dsf.executeSQL("select * from " + publicSchemaSourceName + " ;");
+
+                dsf.executeSQL("select * from " + otherSchemaSourceName + " ;");
+
+        }
 
         private void testCommitTwice(DBSource dbSource, Metadata metadata)
                 throws Exception, DataSourceCreationException,
