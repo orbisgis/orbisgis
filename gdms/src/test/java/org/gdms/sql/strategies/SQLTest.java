@@ -50,13 +50,23 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.io.WKTReader;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
 import org.gdms.Geometries;
 import org.gdms.TestBase;
+import org.gdms.TestResourceHandler;
 import org.gdms.data.DataSource;
-import org.gdms.data.DigestUtilities;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.DigestUtilities;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.Metadata;
+import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -66,24 +76,12 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.sql.engine.SemanticException;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.io.WKTReader;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
-
-import org.gdms.TestResourceHandler;
-import org.gdms.data.types.Constraint;
-
 public class SQLTest extends TestBase {
 
         private static final String SHPTABLE = "landcover2000";
 
         @Test
         public void testInsertWithFunction() throws Exception {
-
                 DefaultMetadata metadata = new DefaultMetadata();
                 metadata.addField("f1", Type.INT);
                 dsf.getSourceManager().register("source",
@@ -534,12 +532,12 @@ public class SQLTest extends TestBase {
 
         @Test
         public void testDistinct() throws Exception {
-                Set<String> resources = TestResourceHandler.getFilesWithRepeatedRows();
-                for (String resource : resources) {
-                        String name = sm.nameAndRegister(new File(TestResourceHandler.TESTRESOURCES, resource));
-                        testDistinct(name);
-                        sm.delete(name);
-                }
+                String resource = TestResourceHandler.getFilesWithRepeatedRows().iterator().next();
+
+                String name = sm.nameAndRegister(new File(TestResourceHandler.TESTRESOURCES, resource));
+                testDistinct(name);
+                sm.delete(name);
+
         }
 
         @Test
@@ -578,12 +576,10 @@ public class SQLTest extends TestBase {
 
         @Test
         public void testDistinctManyFields() throws Exception {
-                Set<String> resources = TestResourceHandler.getFilesWithRepeatedRows();
-                for (String resource : resources) {
-                        String name = sm.nameAndRegister(new File(TestResourceHandler.TESTRESOURCES, resource));
-                        testDistinctManyFields(name);
-                        sm.delete(name);
-                }
+                String resource = TestResourceHandler.getFilesWithRepeatedRows().iterator().next();
+                String name = sm.nameAndRegister(new File(TestResourceHandler.TESTRESOURCES, resource));
+                testDistinctManyFields(name);
+                sm.delete(name);
         }
 
         private void testDistinctAllFields(String ds) throws Exception {
@@ -603,12 +599,10 @@ public class SQLTest extends TestBase {
 
         @Test
         public void testDistinctAllFields() throws Exception {
-                Set<String> resources = TestResourceHandler.getFilesWithRepeatedRows();
-                for (String resource : resources) {
-                        String name = sm.nameAndRegister(new File(TestResourceHandler.TESTRESOURCES, resource));
-                        testDistinctAllFields(name);
-                        sm.delete(name);
-                }
+                String resource = TestResourceHandler.getFilesWithRepeatedRows().iterator().next();
+                String name = sm.nameAndRegister(new File(TestResourceHandler.TESTRESOURCES, resource));
+                testDistinctAllFields(name);
+                sm.delete(name);
         }
 
         @Test
@@ -636,32 +630,32 @@ public class SQLTest extends TestBase {
                 d.open();
                 DataSource originalDS = dsf.getDataSource(ds);
                 originalDS.open();
-                for (int i = 0; i < originalDS.getRowCount(); i++) {
-                        String[] fieldNames = d.getFieldNames();
-                        Value[] row = d.getRow(0);
-                        String sql = "select * from " + d.getName() + " where ";
-                        String separator = "";
-                        for (int j = 0; j < row.length; j++) {
-                                sql += separator + " \"" + fieldNames[j] + "\"";
-                                if (row[j].isNull()) {
-                                        sql += " is "
-                                                + row[j].getStringValue(ValueWriter.internalValueWriter);
-                                } else {
-                                        sql += "="
-                                                + row[j].getStringValue(ValueWriter.internalValueWriter);
-                                }
-                                separator = " and ";
-                        }
-                        sql += ";";
 
-                        /*
-                         * We only test if there is an even number of equal rows
-                         */
-                        DataSource testDS = dsf.getDataSourceFromSQL(sql);
-                        testDS.open();
-                        assertEquals((testDS.getRowCount() / 2), (testDS.getRowCount() / 2.0), 0);
-                        testDS.close();
+                String[] fieldNames = d.getFieldNames();
+                Value[] row = d.getRow(0);
+                String sql = "select * from " + d.getName() + " where ";
+                String separator = "";
+                for (int j = 0; j < row.length; j++) {
+                        sql += separator + " \"" + fieldNames[j] + "\"";
+                        if (row[j].isNull()) {
+                                sql += " is "
+                                        + row[j].getStringValue(ValueWriter.internalValueWriter);
+                        } else {
+                                sql += "="
+                                        + row[j].getStringValue(ValueWriter.internalValueWriter);
+                        }
+                        separator = " and ";
                 }
+                sql += ";";
+
+                /*
+                 * We only test if there is an even number of equal rows
+                 */
+                DataSource testDS = dsf.getDataSourceFromSQL(sql);
+                testDS.open();
+                assertEquals((testDS.getRowCount() / 2), (testDS.getRowCount() / 2.0), 0);
+                testDS.close();
+
                 originalDS.close();
                 d.close();
         }
@@ -998,7 +992,7 @@ public class SQLTest extends TestBase {
                 DataSource dataSource2 = dsf.getDataSource(resourceName);
                 dataSource1.open();
                 dataSource2.open();
-                assertTrue(super.equals(super.getDataSourceContents(dataSource1), super.getDataSourceContents(dataSource2)));
+                assertTrue(equals(super.getDataSourceContents(dataSource1), super.getDataSourceContents(dataSource2)));
                 dataSource1.close();
                 dataSource2.close();
         }
@@ -1080,7 +1074,7 @@ public class SQLTest extends TestBase {
         @Test
         public void testSortDoesNotIncludeField() throws Exception {
                 dsf.getSourceManager().register("test",
-                        new File(TestResourceHandler.OTHERRESOURCES , "test.csv"));
+                        new File(TestResourceHandler.OTHERRESOURCES, "test.csv"));
                 DataSource ds = dsf.getDataSourceFromSQL("SELECT gis from test order by id;");
                 ds.open();
                 assertEquals(ds.getMetadata().getFieldCount(), 1);
@@ -1243,7 +1237,7 @@ public class SQLTest extends TestBase {
         @Test
         public void testUpdateInSubquery() throws Exception {
                 dsf.getSourceManager().register("communes",
-                        new File(TestResourceHandler.TESTRESOURCES , "ile_de_nantes.shp"));
+                        new File(TestResourceHandler.TESTRESOURCES, "ile_de_nantes.shp"));
 
                 String subQuery = "select a.gid from communes b, landcover2000 a where st_intersects(a.the_geom, b.the_geom)";
 
