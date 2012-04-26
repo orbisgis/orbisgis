@@ -142,7 +142,7 @@ public class DataSourceFactory {
          */
         public DataSourceFactory(String[] sourceContextPaths) {
                 initialize(System.getProperty("user.home") + File.separator + ".gdms",
-                        ".", sourceContextPaths);
+                        ".", null);
         }
 
         /**
@@ -159,7 +159,7 @@ public class DataSourceFactory {
          * @param sourceContextPaths  an array of source contexts for additional source types.
          */
         public DataSourceFactory(String sourceInfoDir, String[] sourceContextPaths) {
-                initialize(sourceInfoDir, ".", sourceContextPaths);
+                initialize(sourceInfoDir, ".", null);
         }
 
         /**
@@ -178,30 +178,7 @@ public class DataSourceFactory {
          * @param plugInDir the directory where plugIn jar files are stored 
          */
         public DataSourceFactory(String sourceInfoDir, String tempDir, String plugInDir) {
-                initialize(sourceInfoDir, tempDir, null);
-                plugInManager = new PlugInManager(new File(plugInDir), this);
-        }
-
-        /**
-         * Creates a new {@code DataSourceFactory}.
-         * @param sourceInfoDir the directory where the sources are stored
-         * @param tempDir the directory where temporary sources are stored
-         * @param sourceContextPaths an array of source contexts for additional source types.
-         */
-        public DataSourceFactory(String sourceInfoDir, String tempDir, String[] sourceContextPaths) {
-                initialize(sourceInfoDir, tempDir, sourceContextPaths);
-        }
-
-        /**
-         * Creates a new {@code DataSourceFactory}.
-         * @param sourceInfoDir the directory where the sources are stored
-         * @param tempDir the directory where temporary sources are stored
-         * @param sourceContextPaths an array of source contexts for additional source types.
-         * @param plugInDir the directory where plugIn jar files are stored 
-         */
-        public DataSourceFactory(String sourceInfoDir, String tempDir, String[] sourceContextPaths, String plugInDir) {
-                initialize(sourceInfoDir, tempDir, sourceContextPaths);
-                plugInManager = new PlugInManager(new File(plugInDir), this);
+                initialize(sourceInfoDir, tempDir, plugInDir);
         }
 
         /**
@@ -768,10 +745,6 @@ public class DataSourceFactory {
         }
 
         public final SQLEngine getSqlEngine() {
-                // this is called by the super constructor, there is no problem of synchronisation.
-                if (sqlEngine == null) {
-                        sqlEngine = new SQLEngine(this);
-                }
                 return sqlEngine;
         }
 
@@ -842,11 +815,10 @@ public class DataSourceFactory {
          * @param sourceInfoDir 
          * @param tempDir
          *            temporary directory to write data
-         * @param sourceContextPaths 
          * @throws InitializationException
          *             If the initialization fails
          */
-        private void initialize(String sourceInfoDir, String tempDir, String[] sourceContextPaths) {
+        private void initialize(String sourceInfoDir, String tempDir, String pluginDir) {
                 LOG.trace("DataSourceFactory initializing");
 
                 I18N.addI18n(I18NLocale, "gdms", this.getClass());
@@ -865,21 +837,23 @@ public class DataSourceFactory {
                 } catch (ClassNotFoundException e) {
                         throw new InitializationException(e);
                 }
+                
+                sqlEngine = new SQLEngine(this);
 
                 crsFactory = new CRSFactory();
 
+                sourceManager = new DefaultSourceManager(this, sourceInfoDir);
                 try {
-                        sourceManager = new DefaultSourceManager(this, sourceInfoDir);
-                        if (sourceContextPaths != null) {
-                                for (int i = 0; i < sourceContextPaths.length; i++) {
-                                        sourceManager.addSourceContextPath(sourceContextPaths[i]);
-                                }
-                        }
                         sourceManager.init();
 
                 } catch (IOException e) {
                         throw new InitializationException(e);
                 }
+                
+                if (pluginDir != null) {
+                        plugInManager = new PlugInManager(new File(pluginDir), this);
+                }
+                
         }
 
         /**
