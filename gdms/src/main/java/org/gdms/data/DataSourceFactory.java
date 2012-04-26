@@ -47,6 +47,7 @@ package org.gdms.data;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -132,7 +133,9 @@ public class DataSourceFactory {
         static {
                 defaultProperties = new Properties();
                 try {
-                        defaultProperties.load(DataSourceFactory.class.getResourceAsStream("flags.properties"));
+                        final InputStream flags = DataSourceFactory.class.getResourceAsStream("flags.properties");
+                        defaultProperties.load(flags);
+                        flags.close();
                 } catch (IOException ex) {
                         LOG.warn("Failed to load the default config flags, falling back to the internal"
                                 + " default values (not good).", ex);
@@ -1089,5 +1092,9 @@ public class DataSourceFactory {
 
         public Properties getProperties() {
                 return properties;
+        }
+
+        public static Properties getDefaultProperties() {
+                return defaultProperties;
         }
 }

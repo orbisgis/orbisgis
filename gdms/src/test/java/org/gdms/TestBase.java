@@ -179,11 +179,11 @@ public abstract class TestBase {
         @After
         public void tearDown() throws Exception {
                 if (dsf != null) {
+                        sm.removeAll();
                         dsf.freeResources();
 
-                        if (!currentWorkspace.equals(TESTRESOURCES)) {
-                                FileUtils.deleteDir(currentWorkspace);
-                        }
+                        FileUtils.deleteDir(dsf.getResultDir().getParentFile());
+
                 }
         }
 
@@ -321,6 +321,4 @@ public abstract class TestBase {
         public static Set<DBTestSource> getDBTestSources() {
                 return DBS;
         }
-        
-        
 }

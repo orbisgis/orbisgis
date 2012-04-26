@@ -51,14 +51,9 @@ import org.gdms.sql.engine.step.treeparsing.TreeParsingStep
 import org.gdms.sql.engine.step.validate.ValidationStep
 
 object Engine {
-  private lazy val defaultProperties = {
-    val a = new Properties
-    a.load(classOf[DataSourceFactory].getResourceAsStream("flags.properties"));
-    a
-  }
   
   @throws(classOf[ParseException])
-  def parse(sql: String): Array[SQLStatement] = parse(sql, defaultProperties) toArray
+  def parse(sql: String): Array[SQLStatement] = parse(sql, DataSourceFactory.getDefaultProperties) toArray
   
   @throws(classOf[ParseException])
   def parse(sql: String, p: Properties) = {
