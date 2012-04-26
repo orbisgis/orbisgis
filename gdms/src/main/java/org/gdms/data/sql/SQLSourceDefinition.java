@@ -71,9 +71,7 @@ import org.gdms.driver.sql.SqlStatementDriver;
 import org.gdms.source.SourceManager;
 import org.gdms.source.directory.DefinitionType;
 import org.gdms.source.sqldirectory.SqlDefinitionType;
-import org.gdms.sql.engine.ParseException;
-import org.gdms.sql.engine.SQLEngine;
-import org.gdms.sql.engine.SqlStatement;
+import org.gdms.sql.engine.SQLStatement;
 
 /**
  * Represents the result of a SQL query
@@ -81,8 +79,7 @@ import org.gdms.sql.engine.SqlStatement;
  */
 public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
 
-        private SqlStatement statement;
-        private String tempSQL;
+        private SQLStatement statement;
         private File file = null;
         private Schema schema;
         private DefaultMetadata metadata;
@@ -92,22 +89,10 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
          * Creates a new SQLSourceDefinition from a SQL statement
          * @param instruction a statement
          */
-        public SQLSourceDefinition(SqlStatement instruction) {
+        public SQLSourceDefinition(SQLStatement instruction) {
                 LOG.trace("Constructor");
                 this.statement = instruction;
                 schema = new DefaultSchema("SQL" + instruction.hashCode());
-                metadata = new DefaultMetadata();
-                schema.addTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME, metadata);
-        }
-
-        /**
-         * Creates a new SQLSourceDefinition from a SQL script
-         * @param sql a script
-         */
-        private SQLSourceDefinition(String sql) {
-                LOG.trace("Constructor");
-                this.tempSQL = sql;
-                schema = new DefaultSchema("SQL" + sql.hashCode());
                 metadata = new DefaultMetadata();
                 schema.addTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME, metadata);
         }
@@ -134,7 +119,8 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
                 if (!pm.isCancelled()) {
                         SqlStatementDriver d = new SqlStatementDriver(statement, getDataSourceFactory());
                         def = new MemoryDataSourceAdapter(getSource(tableName), d);
-                        statement.prepare(getDataSourceFactory());
+                        statement.setDataSourceFactory(getDataSourceFactory());
+                        statement.prepare();
                         metadata.addAll(statement.getResultMetadata());
                         statement.cleanUp();
                         LOG.trace("Built temp MemoryDataSourceAdapter with SQL Query results");
@@ -182,9 +168,7 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
          */
         public static DataSourceDefinition createFromXML(
                 SqlDefinitionType definitionType) {
-                SQLSourceDefinition sqlSourceDefinition = new SQLSourceDefinition(
-                        definitionType.getSql());
-                return sqlSourceDefinition;
+                throw new UnsupportedOperationException();
         }
 
         @Override
@@ -213,7 +197,7 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
          * @return
          */
         public String getSQL() {
-                return statement == null ? tempSQL : statement.getSQL();
+                return statement.getSQL();
         }
 
         @Override
@@ -238,19 +222,6 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
         }
 
         @Override
-        public void initialize() throws DriverException {
-                if (statement == null) {
-                        SQLEngine engine = getDataSourceFactory().getSqlEngine();
-                        try {
-                                statement = engine.parse(tempSQL)[0];
-                        } catch (ParseException ex) {
-                                throw new DriverException(ex);
-                        }
-                }
-                LOG.trace("Initializing source");
-        }
-
-        @Override
         public boolean equals(Object obj) {
                 if (obj instanceof SQLSourceDefinition) {
                         SQLSourceDefinition dsd = (SQLSourceDefinition) obj;
@@ -272,7 +243,7 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
 
         @Override
         public int hashCode() {
-                return 751 + (statement == null ? tempSQL.hashCode() : statement.hashCode());
+                return 751 + statement.hashCode();
         }
 
         /**

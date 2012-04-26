@@ -156,7 +156,6 @@ public abstract class TestBase {
                 final File res = new File(workspace, "/result/");
                 res.mkdirs();
                 dsf.setResultDir(res);
-                dsf.getSqlEngine().getProperties().put("output.explain", "true");
                 sm = dsf.getSourceManager();
                 sm.removeAll();
         }
@@ -173,7 +172,6 @@ public abstract class TestBase {
                 final File res = new File(currentWorkspace, "/result/");
                 res.mkdirs();
                 dsf.setResultDir(res);
-                dsf.getSqlEngine().getProperties().put("output.explain", "true");
                 sm = dsf.getSourceManager();
                 sm.removeAll();
         }

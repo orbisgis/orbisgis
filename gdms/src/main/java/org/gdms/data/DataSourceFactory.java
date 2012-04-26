@@ -49,6 +49,7 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.jproj.CRSFactory;
@@ -79,21 +80,22 @@ import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.plugins.PlugInManager;
 import org.gdms.source.DefaultSourceManager;
 import org.gdms.source.SourceManager;
+import org.gdms.sql.engine.Engine;
 import org.gdms.sql.engine.ParseException;
-import org.gdms.sql.engine.SQLEngine;
-import org.gdms.sql.engine.SqlStatement;
+import org.gdms.sql.engine.SQLStatement;
+import org.gdms.sql.engine.SemanticException;
 import org.gdms.sql.function.FunctionManager;
 
 /**
  * Factory of DataSource implementations. It has method to register
  * DataSourceDefinitions and to create DataSource from this associations.
- * 
+ *
  * It's also possible to execute SQL statements with the executeSQL method.
- * 
+ *
  * After using the DataSourceFactory it's strongly recommended to call
  * freeResources method.
- * 
- * 
+ *
+ *
  */
 public class DataSourceFactory {
 
@@ -124,7 +126,18 @@ public class DataSourceFactory {
         private static final Logger LOG = Logger.getLogger(DataSourceFactory.class);
         protected FunctionManager functionManager = new FunctionManager();
         protected final List<DataSourceFactoryListener> listeners = new ArrayList<DataSourceFactoryListener>();
-        protected SQLEngine sqlEngine;
+        private Properties properties = new Properties(defaultProperties);
+        private static final Properties defaultProperties;
+
+        static {
+                defaultProperties = new Properties();
+                try {
+                        defaultProperties.load(DataSourceFactory.class.getResourceAsStream("flags.properties"));
+                } catch (IOException ex) {
+                        LOG.warn("Failed to load the default config flags, falling back to the internal"
+                                + " default values (not good).", ex);
+                }
+        }
 
         /**
          * Creates a new {@code DataSourceFactory} with a <tt>sourceInfoDir</tt>
@@ -138,6 +151,7 @@ public class DataSourceFactory {
         /**
          * Creates a new {@code DataSourceFactory} with a <tt>sourceInfoDir</tt>
          * set to a sub-folder '.gdms' in the user's home.
+         *
          * @param sourceContextPaths an array of source contexts for additional source types.
          */
         public DataSourceFactory(String[] sourceContextPaths) {
@@ -147,6 +161,7 @@ public class DataSourceFactory {
 
         /**
          * Creates a new {@code DataSourceFactory}.
+         *
          * @param sourceInfoDir the directory where the sources are stored
          */
         public DataSourceFactory(String sourceInfoDir) {
@@ -155,8 +170,9 @@ public class DataSourceFactory {
 
         /**
          * Creates a new {@code DataSourceFactory}.
+         *
          * @param sourceInfoDir the directory where the sources are stored
-         * @param sourceContextPaths  an array of source contexts for additional source types.
+         * @param sourceContextPaths an array of source contexts for additional source types.
          */
         public DataSourceFactory(String sourceInfoDir, String[] sourceContextPaths) {
                 initialize(sourceInfoDir, ".", null);
@@ -164,6 +180,7 @@ public class DataSourceFactory {
 
         /**
          * Creates a new {@code DataSourceFactory}.
+         *
          * @param sourceInfoDir the directory where the sources are stored
          * @param tempDir the directory where temporary sources are stored
          */
@@ -173,9 +190,10 @@ public class DataSourceFactory {
 
         /**
          * Creates a new {@code DataSourceFactory}.
+         *
          * @param sourceInfoDir the directory where the sources are stored
          * @param tempDir the directory where temporary sources are stored
-         * @param plugInDir the directory where plugIn jar files are stored 
+         * @param plugInDir the directory where plugIn jar files are stored
          */
         public DataSourceFactory(String sourceInfoDir, String tempDir, String plugInDir) {
                 initialize(sourceInfoDir, tempDir, plugInDir);
@@ -188,7 +206,7 @@ public class DataSourceFactory {
          *
          * @return the DataSourceDefinition of this created source
          * @throws DriverException
-         *             if the source creation fails
+         * if the source creation fails
          */
         public DataSourceDefinition createDataSource(DataSourceCreation dsc)
                 throws DriverException {
@@ -236,9 +254,9 @@ public class DataSourceFactory {
          * specified in the mode parameter
          *
          * @param ds
-         *            DataSource
+         * DataSource
          * @param mode
-         *            opening mode
+         * opening mode
          * @return DataSource
          */
         private DataSource getModedDataSource(DataSource ds, int mode) {
@@ -278,7 +296,7 @@ public class DataSourceFactory {
          * @return a DataSource for this Driver
          *
          * @throws DriverLoadException
-         *             If there isn't a suitable driver for such a file
+         * If there isn't a suitable driver for such a file
          * @throws DriverException
          */
         public DataSource getDataSource(MemoryDriver object, String tableName) throws DriverException {
@@ -289,12 +307,12 @@ public class DataSourceFactory {
          * Gets a DataSource instance to access the specified MemoryDriver
          *
          * @param object the MemoryDriver to load
-         * @param tableName 
+         * @param tableName
          * @param mode
-         *            To enable undo/redo operations UNDOABLE. NORMAL otherwise
+         * To enable undo/redo operations UNDOABLE. NORMAL otherwise
          * @return a DataSource for this Driver
          * @throws DriverLoadException
-         *             If there isn't a suitable driver for such a file
+         * If there isn't a suitable driver for such a file
          * @throws DriverException
          */
         public DataSource getDataSource(MemoryDriver object, String tableName, int mode)
@@ -311,14 +329,14 @@ public class DataSourceFactory {
          * Gets a DataSource instance to access the MAIN table of the file
          *
          * @param file
-         *            file to access
+         * file to access
          *
          * @return
          *
          * @throws DriverLoadException
-         *             If there isn't a suitable driver for such a file
+         * If there isn't a suitable driver for such a file
          * @throws DataSourceCreationException
-         *             If the instance creation fails
+         * If the instance creation fails
          * @throws DriverException
          */
         public DataSource getDataSource(File file) throws DataSourceCreationException, DriverException {
@@ -329,15 +347,15 @@ public class DataSourceFactory {
          * Gets a DataSource instance to access the MAIN table of the file
          *
          * @param file
-         *            file to access
+         * file to access
          * @param mode
-         *            To enable undo/redo operations UNDOABLE. NORMAL otherwise
+         * To enable undo/redo operations UNDOABLE. NORMAL otherwise
          * @return
          *
          * @throws DriverLoadException
-         *             If there isn't a suitable driver for such a file
+         * If there isn't a suitable driver for such a file
          * @throws DataSourceCreationException
-         *             If the instance creation fails
+         * If the instance creation fails
          * @throws DriverException
          */
         public DataSource getDataSource(File file, int mode)
@@ -357,8 +375,7 @@ public class DataSourceFactory {
                         new NullProgressMonitor());
         }
 
-        protected final DataSource getDataSource(DataSourceDefinition def, int mode,
-                ProgressMonitor pm) throws DataSourceCreationException {
+        protected final DataSource getDataSource(DataSourceDefinition def, int mode, ProgressMonitor pm) throws DataSourceCreationException {
                 try {
                         String name = sourceManager.nameAndRegister(def);
                         return getDataSource(name, mode, pm);
@@ -373,14 +390,14 @@ public class DataSourceFactory {
          * Gets a DataSource instance to access the database source
          *
          * @param dbSource
-         *            source to access
+         * source to access
          *
          * @return
          *
          * @throws DriverLoadException
-         *             If there isn't a suitable driver for such a file
+         * If there isn't a suitable driver for such a file
          * @throws DataSourceCreationException
-         *             If the instance creation fails
+         * If the instance creation fails
          * @throws DriverException
          */
         public DataSource getDataSource(DBSource dbSource)
@@ -393,15 +410,15 @@ public class DataSourceFactory {
          * Gets a DataSource instance to access the database source
          *
          * @param dbSource
-         *            source to access
+         * source to access
          * @param mode
-         *            To enable undo/redo operations UNDOABLE. NORMAL otherwise
+         * To enable undo/redo operations UNDOABLE. NORMAL otherwise
          * @return
          *
          * @throws DriverLoadException
-         *             If there isn't a suitable driver for such a file
+         * If there isn't a suitable driver for such a file
          * @throws DataSourceCreationException
-         *             If the instance creation fails
+         * If the instance creation fails
          * @throws DriverException
          */
         public DataSource getDataSource(DBSource dbSource, int mode)
@@ -414,13 +431,13 @@ public class DataSourceFactory {
          * Gets a DataSource instance to access the wms source
          *
          * @param wmsSource
-         *            source to access
+         * source to access
          * @param mode
-         *            To enable undo/redo operations UNDOABLE. NORMAL otherwise
+         * To enable undo/redo operations UNDOABLE. NORMAL otherwise
          * @return
          *
          * @throws DataSourceCreationException
-         *             If the instance creation fails
+         * If the instance creation fails
          * @throws DriverException
          */
         public DataSource getDataSource(WMSSource wmsSource, int mode)
@@ -434,11 +451,11 @@ public class DataSourceFactory {
          * {@link #DEFAULT} mode
          *
          * @param systemSource
-         *            source to access
+         * source to access
          * @return
          *
          * @throws DataSourceCreationException
-         *             If the instance creation fails
+         * If the instance creation fails
          * @throws DriverException
          */
         public DataSource getDataSource(SystemSource systemSource)
@@ -451,13 +468,13 @@ public class DataSourceFactory {
          * Gets a DataSource instance to access the system table source
          *
          * @param systemSource
-         *            source to access
+         * source to access
          * @param mode
-         *            To enable undo/redo operations UNDOABLE. NORMAL otherwise
+         * To enable undo/redo operations UNDOABLE. NORMAL otherwise
          * @return
          *
          * @throws DataSourceCreationException
-         *             If the instance creation fails
+         * If the instance creation fails
          * @throws DriverException
          */
         public DataSource getDataSource(SystemSource systemSource, int mode)
@@ -471,11 +488,11 @@ public class DataSourceFactory {
          * {@link #DEFAULT} mode
          *
          * @param wmsSource
-         *            source to access
+         * source to access
          * @return
          *
          * @throws DataSourceCreationException
-         *             If the instance creation fails
+         * If the instance creation fails
          * @throws DriverException
          */
         public DataSource getDataSource(WMSSource wmsSource)
@@ -489,16 +506,16 @@ public class DataSourceFactory {
          * name
          *
          * @param tableName
-         *            source name
+         * source name
          *
          * @return DataSource
          *
          * @throws DriverLoadException
-         *             If the driver loading fails
+         * If the driver loading fails
          * @throws NoSuchTableException
-         *             If the 'tableName' data source does not exists
+         * If the 'tableName' data source does not exists
          * @throws DataSourceCreationException
-         *             If the DataSource could not be created
+         * If the DataSource could not be created
          */
         public DataSource getDataSource(String tableName)
                 throws NoSuchTableException, DataSourceCreationException {
@@ -510,26 +527,25 @@ public class DataSourceFactory {
          * name
          *
          * @param tableName
-         *            source name
+         * source name
          * @param mode
-         *            Any combination of DEFAULT, EDITABLE, NORMAL, STATUS_CHECK
+         * Any combination of DEFAULT, EDITABLE, NORMAL, STATUS_CHECK
          *
          * @return DataSource
          *
          * @throws DriverLoadException
-         *             If the driver loading fails
+         * If the driver loading fails
          * @throws NoSuchTableException
-         *             If the 'tableName' data source does not exists
+         * If the 'tableName' data source does not exists
          * @throws DataSourceCreationException
-         *             If the DataSource could not be created
+         * If the DataSource could not be created
          */
         public DataSource getDataSource(String tableName, int mode)
                 throws NoSuchTableException, DataSourceCreationException {
                 return getDataSource(tableName, mode, new NullProgressMonitor());
         }
 
-        private DataSource getDataSource(String tableName, int mode,
-                ProgressMonitor pm) throws NoSuchTableException,
+        private DataSource getDataSource(String tableName, int mode, ProgressMonitor pm) throws NoSuchTableException,
                 DataSourceCreationException {
                 LOG.trace("Getting datasource " + tableName + " in mode " + mode);
                 if (pm == null) {
@@ -549,7 +565,7 @@ public class DataSourceFactory {
          * Frees all resources used during execution
          *
          * @throws DataSourceFinalizationException
-         *             If cannot free resources
+         * If cannot free resources
          */
         public void freeResources() throws DataSourceFinalizationException {
 
@@ -572,6 +588,7 @@ public class DataSourceFactory {
 
         /**
          * Adds a DataSourceFactoryListener to this DataSourceFactory
+         *
          * @param e a DataSourceFactoryListener
          * @return true if the add succeeded
          */
@@ -607,23 +624,20 @@ public class DataSourceFactory {
          * Executes a SQL statement
          *
          * @param sql
-         *            sql statement
+         * sql statement
          * @param pm
          *
          * @param mode
          * @throws ParseException
-         *             If the sql is not well formed
+         * If the sql is not well formed
          * @throws DriverException
-         *             If there is a problem accessing the sources
+         * If there is a problem accessing the sources
          */
         public final void executeSQL(String sql, ProgressMonitor pm, int mode) throws ParseException, DriverException {
                 LOG.trace("Execute SQL Statement" + '\n' + sql);
-                if (!sql.trim().endsWith(";")) {
-                        sql += ";";
-                }
+                
+                Engine.execute(sql, this, properties);
                 fireInstructionExecuted(sql);
-                SQLEngine engine = getSqlEngine();
-                engine.execute(sql);
         }
 
         public final void fireInstructionExecuted(String sql) {
@@ -636,17 +650,17 @@ public class DataSourceFactory {
          * Gets a DataSource instance to access the result of the instruction
          *
          * @param instruction
-         *            Instruction to evaluate.
+         * Instruction to evaluate.
          * @param mode
-         *            The DataSource mode {@link #EDITABLE} {@link #STATUS_CHECK}
+         * The DataSource mode {@link #EDITABLE} {@link #STATUS_CHECK}
          *            {@link #NORMAL} {@link #DEFAULT}
          * @param pm
-         *            To monitor progress and cancel
+         * To monitor progress and cancel
          *
          * @return
          * @throws DataSourceCreationException
          */
-        public final DataSource getDataSource(SqlStatement instruction, int mode, ProgressMonitor pm) throws DataSourceCreationException {
+        public final DataSource getDataSource(SQLStatement instruction, int mode, ProgressMonitor pm) throws DataSourceCreationException {
                 return getDataSource(new SQLSourceDefinition(instruction), mode, pm);
         }
 
@@ -657,9 +671,9 @@ public class DataSourceFactory {
          * @return a DataSource mapped to the result of the query
          *
          * @throws DriverLoadException
-         *             If there isn't a suitable driver for such a file
+         * If there isn't a suitable driver for such a file
          * @throws DataSourceCreationException
-         *             If the instance creation fails
+         * If the instance creation fails
          * @throws DriverException
          * @throws ParseException
          * @throws NoSuchTableException
@@ -673,13 +687,13 @@ public class DataSourceFactory {
          *
          * @param sql the SQL query to execute
          * @param pm
-         *            Instance that monitors the process. Can be null
+         * Instance that monitors the process. Can be null
          * @return
          *
          * @throws DriverLoadException
-         *             If there isn't a suitable driver for such a file
+         * If there isn't a suitable driver for such a file
          * @throws DataSourceCreationException
-         *             If the instance creation fails
+         * If the instance creation fails
          * @throws DriverException
          * @throws ParseException
          */
@@ -693,11 +707,11 @@ public class DataSourceFactory {
          * @param sql the SQL query to execute
          * @return a DataSource mapped to the result of the query
          * @param mode
-         *            To enable undo/redo operations UNDOABLE. NORMAL otherwise
+         * To enable undo/redo operations UNDOABLE. NORMAL otherwise
          * @throws DriverLoadException
-         *             If there isn't a suitable driver for such a file
+         * If there isn't a suitable driver for such a file
          * @throws DataSourceCreationException
-         *             If the instance creation fails
+         * If the instance creation fails
          * @throws DriverException
          * @throws ParseException
          */
@@ -710,16 +724,16 @@ public class DataSourceFactory {
          *
          * @param sql the SQL query to execute
          * @param mode
-         *            To enable undo/redo operations UNDOABLE. NORMAL otherwise
+         * To enable undo/redo operations UNDOABLE. NORMAL otherwise
          * @param pm
-         *            Instance that monitors the process. Can be null
+         * Instance that monitors the process. Can be null
          * @return The result of the instruction or null if the execution was
-         *         canceled
+         * canceled
          *
          * @throws DriverLoadException
-         *             If there isn't a suitable driver for such a file
+         * If there isn't a suitable driver for such a file
          * @throws DataSourceCreationException
-         *             If the instance creation fails
+         * If the instance creation fails
          * @throws DriverException
          * @throws ParseException
          */
@@ -728,8 +742,12 @@ public class DataSourceFactory {
                 if (pm == null) {
                         pm = new NullProgressMonitor();
                 }
-                SqlStatement[] statement = getSqlEngine().parse(sql);
-                return getDataSource(statement[0], mode, pm);
+                
+                SQLStatement[] s = Engine.parse(sql, properties);
+                if (s.length > 1) {
+                        throw new ParseException("Cannot create a DataSource from multiple SQL instructions!");
+                }
+                return getDataSource(s[0], mode, pm);
         }
 
         public final FunctionManager getFunctionManager() {
@@ -738,14 +756,11 @@ public class DataSourceFactory {
 
         /**
          * Gets all listeners associated with this Factory.
+         *
          * @return a (possibly empty) list of listeners
          */
         public final List<DataSourceFactoryListener> getListeners() {
                 return listeners;
-        }
-
-        public final SQLEngine getSqlEngine() {
-                return sqlEngine;
         }
 
         /**
@@ -755,9 +770,11 @@ public class DataSourceFactory {
          * @throws ParseException
          */
         public final String nameAndRegister(String sql) throws ParseException, DriverException {
-                SQLEngine engine = getSqlEngine();
-                SqlStatement[] instruction = engine.parse(sql);
-                return getSourceManager().nameAndRegister(new SQLSourceDefinition(instruction[0]));
+                SQLStatement[] s = Engine.parse(sql, properties);
+                if (s.length > 1) {
+                        throw new ParseException("Cannot create a DataSource from multiple SQL instructions!");
+                }
+                return getSourceManager().nameAndRegister(new SQLSourceDefinition(s[0]));
         }
 
         /**
@@ -768,13 +785,16 @@ public class DataSourceFactory {
          * @throws ParseException
          */
         public final void register(String name, String sql) throws ParseException, DriverException {
-                SQLEngine engine = getSqlEngine();
-                SqlStatement[] instruction = engine.parse(sql);
-                getSourceManager().register(name, new SQLSourceDefinition(instruction[0]));
+                SQLStatement[] s = Engine.parse(sql, properties);
+                if (s.length > 1) {
+                        throw new ParseException("Cannot create a DataSource from multiple SQL instructions!");
+                }
+                getSourceManager().register(name, new SQLSourceDefinition(s[0]));
         }
 
         /**
          * Removes a DataSourceFactoryListener from this DataSourceFactory
+         *
          * @param o a DataSourceFactoryListener
          * @return true if the removal succeeded
          */
@@ -800,9 +820,9 @@ public class DataSourceFactory {
 
         /**
          * Sets the directory of the plug-in directory.
-         * 
+         *
          * This must be called *before* loadPlugIns().
-         * 
+         *
          * @param plugInDir a valid path to the plug-in directory
          */
         public void setPlugInDirectory(String plugInDir) {
@@ -812,11 +832,11 @@ public class DataSourceFactory {
         /**
          * Initializes the system
          *
-         * @param sourceInfoDir 
+         * @param sourceInfoDir
          * @param tempDir
-         *            temporary directory to write data
+         * temporary directory to write data
          * @throws InitializationException
-         *             If the initialization fails
+         * If the initialization fails
          */
         private void initialize(String sourceInfoDir, String tempDir, String pluginDir) {
                 LOG.trace("DataSourceFactory initializing");
@@ -837,8 +857,6 @@ public class DataSourceFactory {
                 } catch (ClassNotFoundException e) {
                         throw new InitializationException(e);
                 }
-                
-                sqlEngine = new SQLEngine(this);
 
                 crsFactory = new CRSFactory();
 
@@ -849,11 +867,11 @@ public class DataSourceFactory {
                 } catch (IOException e) {
                         throw new InitializationException(e);
                 }
-                
+
                 if (pluginDir != null) {
                         plugInManager = new PlugInManager(new File(pluginDir), this);
                 }
-                
+
         }
 
         /**
@@ -867,6 +885,7 @@ public class DataSourceFactory {
 
         /**
          * Sets the temporary directory used by this DataSourceFactory to store files
+         *
          * @param tempDir
          */
         public void setTempDir(String tempDir) {
@@ -911,6 +930,7 @@ public class DataSourceFactory {
 
         /**
          * Gets the WarningListener associated wit this DataSourceFactory
+         *
          * @return
          */
         public WarningListener getWarningListener() {
@@ -919,6 +939,7 @@ public class DataSourceFactory {
 
         /**
          * Sets the WarningListener associated with this DataSourceFactory
+         *
          * @param listener
          */
         public void setWarninglistener(WarningListener listener) {
@@ -927,8 +948,8 @@ public class DataSourceFactory {
 
         /**
          * Gets a unique valid identifier for a source.
+         *
          * @return a unique String identifier
-         * @see SourceManager.getIUD()
          */
         public String getUID() {
                 return sourceManager.getUID();
@@ -936,6 +957,7 @@ public class DataSourceFactory {
 
         /**
          * Gets the SourceManager associated with this DataSourceFactory
+         *
          * @return
          */
         public SourceManager getSourceManager() {
@@ -988,6 +1010,7 @@ public class DataSourceFactory {
 
         /**
          * Gets the Temp directory
+         *
          * @return a File object for the temp directory
          */
         public File getTempDir() {
@@ -996,6 +1019,7 @@ public class DataSourceFactory {
 
         /**
          * Gets the IndexManager associated with this DataSourceFactory
+         *
          * @return
          */
         public IndexManager getIndexManager() {
@@ -1016,6 +1040,7 @@ public class DataSourceFactory {
 
         /**
          * Checks if a source exists
+         *
          * @param sourceName the name of the source
          * @return true if the source is found, false otherwise
          */
@@ -1025,6 +1050,7 @@ public class DataSourceFactory {
 
         /**
          * Removes a source
+         *
          * @param sourceName the name of the source
          */
         public void remove(String sourceName) {
@@ -1036,6 +1062,7 @@ public class DataSourceFactory {
          *
          * This Schema does not contains any {@code Metadata}, but has a sub-schema for
          * each set of Source that belongs to the same driver.
+         *
          * @return the global GDMS schema for this DataSourceFactory
          */
         public Schema getSchema() {
@@ -1044,6 +1071,7 @@ public class DataSourceFactory {
 
         /**
          * Gets the plugin manager for this DataSourceFactory.
+         *
          * @return the plugin manager
          */
         public PlugInManager getPlugInManager() {
@@ -1052,9 +1080,14 @@ public class DataSourceFactory {
 
         /**
          * Gets the CRS Factory for this instance of Gdms.
-         * @return  the CRS factory
+         *
+         * @return the CRS factory
          */
         public CRSFactory getCrsFactory() {
                 return crsFactory;
+        }
+
+        public Properties getProperties() {
+                return properties;
         }
 }

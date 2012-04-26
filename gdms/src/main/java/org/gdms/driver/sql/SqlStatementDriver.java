@@ -58,7 +58,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.MemoryDriver;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.SourceManager;
-import org.gdms.sql.engine.SqlStatement;
+import org.gdms.sql.engine.SQLStatement;
 
 /**
  *
@@ -66,13 +66,13 @@ import org.gdms.sql.engine.SqlStatement;
  */
 public class SqlStatementDriver extends AbstractDataSet implements MemoryDriver {
 
-        private SqlStatement sql;
+        private SQLStatement sql;
         private DataSourceFactory dsf;
         private DefaultSchema schema;
         private DataSet set;
         private DefaultMetadata metadata = new DefaultMetadata();
 
-        public SqlStatementDriver(SqlStatement sql, DataSourceFactory dsf) throws DriverException {
+        public SqlStatementDriver(SQLStatement sql, DataSourceFactory dsf) throws DriverException {
                 this.sql = sql;
                 this.dsf = dsf;
                 schema = new DefaultSchema("sql");
@@ -81,7 +81,8 @@ public class SqlStatementDriver extends AbstractDataSet implements MemoryDriver 
 
         @Override
         public void open() throws DriverException {
-                sql.prepare(dsf);
+                sql.setDataSourceFactory(dsf);
+                sql.prepare();
                 set = sql.execute();
                 metadata.clear();
                 metadata.addAll(sql.getResultMetadata());

@@ -122,7 +122,7 @@ public class CustomQueriesTest extends TestBase {
         @Test
         public void testRegister() throws Exception {
                 dsf.getSourceManager().remove("ds");
-                String path = TestResourceHandler.TESTRESOURCES.getAbsolutePath() + "points.shp";
+                String path = TestResourceHandler.TESTRESOURCES.getAbsolutePath() + "/points.shp";
                 dsf.executeSQL("CALL register ('" + path + "', 'myshape');");
                 DataSource ret = dsf.getDataSource("myshape");
                 assertTrue(ret != null);

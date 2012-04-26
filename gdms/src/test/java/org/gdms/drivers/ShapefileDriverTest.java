@@ -98,7 +98,7 @@ public class ShapefileDriverTest extends TestBase {
         @Test
         public void testOpenShapeWithDifferentCase() throws Exception {
                 // should it fail if different case ? I say yes...
-                DataSource ds = dsf.getDataSource(new File(TestResourceHandler.TESTRESOURCES, "multipolygon2d.Shp"));
+                DataSource ds = dsf.getDataSource(new File(TestResourceHandler.OTHERRESOURCES, "multipolygon2d.Shp"));
                 try {
                         ds.open();
                         ds.close();

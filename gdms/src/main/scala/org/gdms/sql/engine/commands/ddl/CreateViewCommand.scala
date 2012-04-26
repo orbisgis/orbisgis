@@ -45,9 +45,8 @@
 package org.gdms.sql.engine.commands.ddl
 
 import org.gdms.data.sql.SQLSourceDefinition
-import org.gdms.sql.engine.ExecutionGraph
+import org.gdms.sql.engine.SQLStatement
 import org.gdms.sql.engine.SemanticException
-import org.gdms.sql.engine.SqlStatement
 import org.gdms.sql.engine.commands.Command
 import org.gdms.sql.engine.commands.OutputCommand
 import org.gdms.sql.engine.operations.Operation
@@ -63,7 +62,7 @@ class CreateViewCommand(table: String, op: Operation, orReplace: Boolean) extend
   }
 
   protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
-    val s = new SqlStatement(null, new ExecutionGraph(op))
+    val s = new SQLStatement(op)(dsf.getProperties)
     
     if (orReplace) {
       dsf.getSourceManager.remove(table)

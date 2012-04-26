@@ -168,7 +168,7 @@ public class SpatialEditionTest extends TestBase {
         @Test
         public void testManyDeleteIndexedEdition() throws Exception {
                 String dsName = "toto";
-                sm.register(dsName, getTempCopyOf(super.getAnySpatialResource()));
+                sm.register(dsName, getTempCopyOf(new File(TestResourceHandler.TESTRESOURCES, "hedgerow.shp")));
 
                 DataSource d = dsf.getDataSource(dsName);
                 d.open();
@@ -224,7 +224,7 @@ public class SpatialEditionTest extends TestBase {
         @Test
         public void testIndexedEdition() throws Exception {
                 String dsName = "toto";
-                sm.register(dsName, getTempCopyOf(super.getAnySpatialResource()));
+                sm.register(dsName, getTempCopyOf(new File(TestResourceHandler.TESTRESOURCES, "hedgerow.shp")));
 
                 DataSource d = dsf.getDataSource(dsName);
                 d.open();
@@ -261,7 +261,7 @@ public class SpatialEditionTest extends TestBase {
         @Test
         public void testAdd() throws Exception {
                 String dsName = "toto";
-                sm.register(dsName, getTempCopyOf(super.getAnySpatialResource()));
+                sm.register(dsName, getTempCopyOf(new File(TestResourceHandler.TESTRESOURCES, "hedgerow.shp")));
 
                 DataSource d = dsf.getDataSource(dsName);
                 d.open();
@@ -335,7 +335,7 @@ public class SpatialEditionTest extends TestBase {
 
         @Test
         public void testIsModified() throws Exception {
-                DataSource d = dsf.getDataSource(super.getAnySpatialResource());
+                DataSource d = dsf.getDataSource(new File(TestResourceHandler.TESTRESOURCES, "hedgerow.shp"));
 
                 d.open();
                 assertFalse(d.isModified());

@@ -42,7 +42,7 @@
  * or contact directly:
  * info@orbisgis.org
  */
-package org.gdms.sql.engine.step.parsing
+package org.gdms.sql.engine.step.treeparsing
 
 import org.antlr.runtime.tree.CommonTree
 import org.antlr.runtime.tree.Tree

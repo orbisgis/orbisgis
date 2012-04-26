@@ -59,7 +59,7 @@ import org.gdms.sql.engine.ParseException;
 import com.vividsolutions.jts.geom.Geometry;
 import org.gdms.TestBase;
 import org.gdms.data.types.Dimension3DConstraint;
-import org.gdms.sql.engine.SQLEngine;
+import org.gdms.sql.engine.Engine;
 
 import static org.junit.Assert.*;
 import static org.junit.Assume.*;
@@ -187,7 +187,6 @@ public class ExportTest extends AbstractDBTest {
 
         private void executeGDMSScript(String script) throws
                 DriverException, ParseException, SemanticException {
-                SQLEngine engine = new SQLEngine(dsf);
-                engine.execute(script);
+                Engine.execute(script, dsf);
         }
 }

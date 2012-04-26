@@ -42,43 +42,30 @@
  * or contact directly:
  * info@orbisgis.org
  */
-package org.gdms.sql.engine
+package org.gdms.sql.engine.step.treeparsing
 
-import org.gdms.sql.engine.GdmSQLPredef._
-import org.gdms.sql.engine.step.filters.FiltersStep
-import org.gdms.sql.engine.step.logicalJoin.LogicalJoinOptimStep
-import org.gdms.sql.engine.step.parsing.ParsingStep
-import org.gdms.sql.engine.step.validate.ValidationStep
 import java.util.Properties
 import org.antlr.runtime.tree.CommonTree
+import org.gdms.sql.engine.GdmSQLPredef._
+import org.gdms.sql.engine.AbstractEngineStep
+import org.gdms.sql.engine.operations.Operation
 
 /**
- * Main entry point for the Scala SQL engine.
- *
- * @author Antoine Gourlay
- * @since 0.1
+ * Step 1: parsing the AST returned from ANTLR into one or several operations.
  */
-object ExecutionGraphBuilder {
+case object TreeParsingStep extends AbstractEngineStep[CommonTree, Seq[Operation]]("AST Parsing") {
   
-  /**
-   * Buids an ExecutionGraph from an AST
-   *
-   * @param tree an AST
-   * @param p a set of properties (can be null)
-   * @return an abstract execution graph
-   */
-  def build(tree: CommonTree, p: Properties): Array[ExecutionGraph] = {
-    
-    implicit val pr = p
-    
-    val cs = tree >=: ParsingStep map
-    {_                       >=:
-     LogicalJoinOptimStep >=:
-     FiltersStep          >=:
-     ValidationStep
+  def doOperation(tree: CommonTree)(implicit p: Properties) = {
+    if (isPropertyTurnedOn(Flags.EXPLAIN)) {
+      LOG.info("Parsing tree: " + tree.toStringTree)
     }
     
-    // building ExecutionGraph objects
-    cs map (new ExecutionGraph(_, p)) toArray
+    val a = (0 until tree.getChildCount) map (tree.getChild) map (LogicPlanBuilder.buildOperationTree);
+    if (isPropertyTurnedOn(Flags.EXPLAIN)) {
+      LOG.info("Parsed logical execution tree.")
+      a foreach (LOG.debug)
+    }
+    
+    a
   }
 }

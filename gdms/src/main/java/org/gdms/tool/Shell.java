@@ -51,7 +51,7 @@ import java.io.IOException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.engine.ParseException;
-import org.gdms.sql.engine.SQLEngine;
+import org.gdms.sql.engine.Engine;
 
 /**
  * Main class for command-line invocation of gdms
@@ -69,8 +69,7 @@ public final class Shell {
 
         private static void execute(String scriptFileName) throws
                 IOException, ParseException, DriverException {
-                SQLEngine engine = new SQLEngine(dsf);
-                engine.execute(readScriptFile(scriptFileName));
+                Engine.execute(readScriptFile(scriptFileName), dsf);
         }
 
         private static String readScriptFile(String scriptFileName) throws IOException {

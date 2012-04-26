@@ -109,7 +109,7 @@ public class FilterDataSourceDecoratorTest extends TestBase {
 
         @Test
         public void testEditableListener() throws Exception {
-                sm.register("hedgerow", super.getAnySpatialResource());
+                sm.register("hedgerow", new File(TestResourceHandler.TESTRESOURCES, "hedgerow.shp"));
                 dsf.executeSQL("CREATE TABLE test AS SELECT * FROM hedgerow;");
                 DataSource original = dsf.getDataSource("test", DataSourceFactory.EDITABLE);
 
@@ -141,7 +141,7 @@ public class FilterDataSourceDecoratorTest extends TestBase {
         @Test
         public void testSpatialFilter() throws Exception {
 
-                sm.register("landcover2000", new File(TestResourceHandler.TESTRESOURCES, "landcover2000"));
+                sm.register("landcover2000", new File(TestResourceHandler.TESTRESOURCES, "landcover2000.shp"));
 
                 WKTReader wktReader = new WKTReader();
                 Geometry geomExtent = wktReader.read("POLYGON ((183456.16879270627 2428883.34989648 0, 183461.0194286128 2428262.4685004433 0, 184467.5263792192 2428233.364685004 0, 184477.22765103227 2428883.34989648 0, 183456.16879270627 2428883.34989648 0))");

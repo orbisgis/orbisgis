@@ -66,10 +66,10 @@ class ShowParamCommand(parameter: Option[String]) extends Command with OutputCom
   protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
     parameter match {
       case Some(p) => {
-          res.addValues(ValueFactory.createValue(p), ValueFactory.createValue(dsf.getSqlEngine.getProperties.getProperty(p)))
+          res.addValues(ValueFactory.createValue(p), ValueFactory.createValue(dsf.getProperties.getProperty(p)))
       }
       case None => {
-          dsf.getSqlEngine.getProperties.entrySet foreach {a => 
+          dsf.getProperties.entrySet foreach {a => 
             res.addValues(ValueFactory.createValue(a.getKey.asInstanceOf[String]), ValueFactory.createValue(a.getValue.asInstanceOf[String]))
           }
         }

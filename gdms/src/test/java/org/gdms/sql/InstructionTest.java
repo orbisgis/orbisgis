@@ -46,20 +46,18 @@ package org.gdms.sql;
 
 import org.junit.Before;
 import org.junit.Test;
-import java.io.File;
+import org.orbisgis.progress.NullProgressMonitor;
+
+import static org.junit.Assert.*;
 
 import org.gdms.TestBase;
-
 import org.gdms.data.AllTypesObjectDriver;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.sql.SQLSourceDefinition;
 import org.gdms.source.SourceManager;
-import org.gdms.sql.engine.SQLEngine;
-import org.gdms.sql.engine.SqlStatement;
-import org.orbisgis.progress.NullProgressMonitor;
-
-import static org.junit.Assert.*;
+import org.gdms.sql.engine.Engine;
+import org.gdms.sql.engine.SQLStatement;
 
 public class InstructionTest extends TestBase {
 
@@ -75,10 +73,11 @@ public class InstructionTest extends TestBase {
         @Test
         public void testGetScriptInstructionMetadata() throws Exception {
                 String script = "select * from alltypes; select * from alltypes;";
-                SQLEngine engine = new SQLEngine(dsf);
-                SqlStatement[] st = engine.parse(script);
-                st[0].prepare(dsf);
-                st[1].prepare(dsf);
+                SQLStatement[] st = Engine.parse(script, dsf.getProperties());
+                st[0].setDataSourceFactory(dsf);
+                st[1].setDataSourceFactory(dsf);
+                st[0].prepare();
+                st[1].prepare();
                 assertNotNull(st[0].getResultMetadata());
                 assertNotNull(st[1].getResultMetadata());
                 st[0].cleanUp();
@@ -88,16 +87,14 @@ public class InstructionTest extends TestBase {
         @Test
         public void testCommentsInTheMiddleOfTheScript() throws Exception {
                 String script = "/*description*/\nselect * from mytable;\n/*select * from mytable*/";
-                SQLEngine engine = new SQLEngine(dsf);
-                SqlStatement[] st = engine.parse(script);
+                SQLStatement[] st = Engine.parse(script, dsf.getProperties());
                 assertEquals(st.length, 1);
 
         }
 
         @Test
         public void testSQLSource() throws Exception {
-                SQLEngine engine = new SQLEngine(dsf);
-                SqlStatement[] st = engine.parse("select * from alltypes;");
+                SQLStatement[] st = Engine.parse("select * from alltypes;", dsf.getProperties());
                 DataSource ds = dsf.getDataSource(st[0], DataSourceFactory.DEFAULT,
                         null);
                 assertEquals((ds.getSource().getType() & SourceManager.SQL), SourceManager.SQL);
@@ -107,8 +104,7 @@ public class InstructionTest extends TestBase {
 
         @Test
         public void testCancelledInstructions() throws Exception {
-                SQLEngine engine = new SQLEngine(dsf);
-                SqlStatement[] st = engine.parse("select * from alltypes;");
+                SQLStatement[] st = Engine.parse("select * from alltypes;", dsf.getProperties());
                 DataSource ds = dsf.getDataSource(st[0], DataSourceFactory.DEFAULT,
                         cancelPM);
                 assertNull(ds);

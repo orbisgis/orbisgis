@@ -88,7 +88,7 @@ public class SourceManagementTest extends TestBase {
         private DBSource testDB;
         private WMSSource testWMS;
         private MemoryDataSetDriver obj;
-        private String sql = "select count(the_geom) from myfile;";
+        private String sql = "select count(*) from myfile;";
 
         @Test
         public void testRegisterTwice() throws Exception {

@@ -57,9 +57,9 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.source.SourceManager;
+import org.gdms.sql.engine.Engine;
 import org.gdms.sql.engine.ParseException;
-import org.gdms.sql.engine.SQLEngine;
-import org.gdms.sql.engine.SqlStatement;
+import org.gdms.sql.engine.SQLStatement;
 
 /**
  * This Decorator can filter a underlying DataSource with a SQL Expression.
@@ -160,15 +160,15 @@ public class FilterDataSourceDecorator extends AbstractDataSourceDecorator {
                 final String uID = sm.nameAndRegister(d, DriverManager.DEFAULT_SINGLE_TABLE_NAME);
                 
                 String rq = "SELECT oid FROM " + uID + " WHERE " + filter + ";";
-                SQLEngine p = getDataSourceFactory().getSqlEngine();
-                SqlStatement s = null;
+                SQLStatement s = null;
                 try {
-                        s = p.parse(rq)[0];
+                        s = Engine.parse(rq, getDataSourceFactory().getProperties())[0];
                 } catch (ParseException ex) {
                         throw new DriverException(ex);
                 }
                 
-                s.prepare(getDataSourceFactory());
+                s.setDataSourceFactory(getDataSourceFactory());
+                s.prepare();
                 DataSet dset = s.execute();
                 
                 for (int i = 0; i < dset.getRowCount(); i++) {

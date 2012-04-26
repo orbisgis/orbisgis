@@ -110,8 +110,8 @@ public class SQLTest extends TestBase {
 
         @Test
         public void testCaseInsensitiveness() throws Exception {
-                dsf.executeSQL("seLECt st_BuffER(the_geom, 20) From " + SHPTABLE);
-                dsf.executeSQL("CaLL REGisteR('memory.shp')");
+                dsf.executeSQL("seLECt st_BuffER(the_geom, 20) From " + SHPTABLE + ";");
+                dsf.executeSQL("CaLL REGisteR('memory.shp');");
         }
 
         @Test
@@ -223,7 +223,7 @@ public class SQLTest extends TestBase {
 
         @Test
         public void testRenameColumn() throws Exception {
-                dsf.executeSQL("create table diwall as select *  from hedgerow;");
+                dsf.executeSQL("create table diwall as select *  from landcover2000;");
                 dsf.executeSQL("alter table diwall rename column \"type\" to erwan;");
 
                 DataSource ds = dsf.getDataSource("diwall");
@@ -276,7 +276,7 @@ public class SQLTest extends TestBase {
 
         @Test
         public void testExceptList() throws Exception {
-                dsf.executeSQL("create table temp as select * except (\"type\", the_geom) from landcover2000");
+                dsf.executeSQL("create table temp as select * except (\"type\", the_geom) from landcover2000;");
                 DataSource dsOut = dsf.getDataSource("temp");
                 dsOut.open();
                 assertEquals(-1, dsOut.getFieldIndexByName("type"));
@@ -630,8 +630,8 @@ public class SQLTest extends TestBase {
         @Test
         public void testUnion() throws Exception {
                 String ds = sm.nameAndRegister(super.getAnyNonSpatialResource());
-                DataSource d = dsf.getDataSourceFromSQL("(select * from " + ds
-                        + ") union (select  * from " + ds + ");");
+                DataSource d = dsf.getDataSourceFromSQL("select * from " + ds
+                        + " union select  * from " + ds + ";");
 
                 d.open();
                 DataSource originalDS = dsf.getDataSource(ds);
@@ -642,7 +642,7 @@ public class SQLTest extends TestBase {
                         String sql = "select * from " + d.getName() + " where ";
                         String separator = "";
                         for (int j = 0; j < row.length; j++) {
-                                sql += separator + " " + fieldNames[j] + "";
+                                sql += separator + " \"" + fieldNames[j] + "\"";
                                 if (row[j].isNull()) {
                                         sql += " is "
                                                 + row[j].getStringValue(ValueWriter.internalValueWriter);
@@ -1055,7 +1055,7 @@ public class SQLTest extends TestBase {
         public void testDeepAggregatedFunction() throws Exception {
                 String resource = SHPTABLE;
                 String nfName = "runoff_win";
-                String sql = "select (max(" + nfName
+                String sql = "select max(" + nfName
                         + ") :: double + 3 from " + resource + " group by " + nfName + ";";
                 DataSource ds = dsf.getDataSourceFromSQL(sql);
                 ds.open();
@@ -1245,14 +1245,14 @@ public class SQLTest extends TestBase {
                 dsf.getSourceManager().register("communes",
                         new File(TestResourceHandler.TESTRESOURCES , "ile_de_nantes.shp"));
 
-                String subQuery = "select a.gid from communes b, landcover a where st_intersects(a.the_geom, b.the_geom)";
+                String subQuery = "select a.gid from communes b, landcover2000 a where st_intersects(a.the_geom, b.the_geom)";
 
                 DataSource dsSubQuery = dsf.getDataSourceFromSQL(subQuery + ";");
                 dsSubQuery.open();
                 long count = dsSubQuery.getRowCount();
                 dsSubQuery.close();
 
-                dsf.executeSQL("create table landcoverUpdated as select * from landcover;");
+                dsf.executeSQL("create table landcoverUpdated as select * from landcover2000;");
 
                 dsf.executeSQL("update landcoverUpdated SET gid = 9999 "
                         + "WHERE gid in (" + subQuery + ");", null);
@@ -1271,7 +1271,7 @@ public class SQLTest extends TestBase {
         @Test
         public void testSetResetShowProperty() throws Exception {
                 dsf.executeSQL("SET custom.myproperty TO 'some value';");
-                assertEquals("some value", dsf.getSqlEngine().getProperties().getProperty("custom.myproperty"));
+                assertEquals("some value", dsf.getProperties().getProperty("custom.myproperty"));
 
                 DataSource d = dsf.getDataSourceFromSQL("SHOW custom.myproperty;");
                 d.open();
@@ -1281,7 +1281,7 @@ public class SQLTest extends TestBase {
                 d.close();
 
                 dsf.executeSQL("RESET custom.myproperty;");
-                assertFalse(dsf.getSqlEngine().getProperties().containsKey("custom.myproperty"));
+                assertFalse(dsf.getProperties().containsKey("custom.myproperty"));
 
                 dsf.executeSQL("SET custom.myproperty TO 'some value';");
                 dsf.executeSQL("RESET ALL;");
@@ -1289,11 +1289,11 @@ public class SQLTest extends TestBase {
                 // put back explain to true (this is the right value for tests...
                 dsf.executeSQL("SET \"output.explain\" TO 'true';");
 
-                assertFalse(dsf.getSqlEngine().getProperties().containsKey("custom.myproperty"));
+                assertFalse(dsf.getProperties().containsKey("custom.myproperty"));
 
                 dsf.executeSQL("SET custom.myproperty TO 'some value';");
                 dsf.executeSQL("SET custom.myproperty TO DEFAULT;");
-                assertFalse(dsf.getSqlEngine().getProperties().containsKey("custom.myproperty"));
+                assertFalse(dsf.getProperties().containsKey("custom.myproperty"));
         }
 
         @Test

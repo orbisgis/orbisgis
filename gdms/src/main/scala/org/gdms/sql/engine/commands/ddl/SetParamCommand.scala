@@ -55,14 +55,14 @@ class SetParamCommand(parameter: Option[String], value: Option[String]) extends 
       case Some(p) => {
           value match {
             case Some(v) => {
-                dsf.getSqlEngine.getProperties.setProperty(p, v)
+                dsf.getProperties.setProperty(p, v)
               }
             case None => {
-                dsf.getSqlEngine.getProperties.remove(p)
+                dsf.getProperties.remove(p)
               }
           }
         }
-      case None => dsf.getSqlEngine.getProperties.clear
+      case None => dsf.getProperties.clear
     }
     
     null

@@ -47,7 +47,6 @@ package org.gdms.sql.engine.commands.ddl
 import org.gdms.sql.engine.GdmSQLPredef._
 import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.engine.commands._
-import org.gdms.sql.function.FunctionManager
 import org.orbisgis.progress.ProgressMonitor
 
 class CreateFunctionCommand(name: String, as: String, language: String, replace: Boolean) 

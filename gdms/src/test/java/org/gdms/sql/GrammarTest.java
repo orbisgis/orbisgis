@@ -48,14 +48,12 @@ import org.junit.Test;
 
 import static org.junit.Assert.fail;
 
-import org.gdms.data.DataSourceFactory;
+import org.gdms.sql.engine.Engine;
 import org.gdms.sql.engine.ParseException;
 import org.gdms.sql.engine.SemanticException;
 
 public class GrammarTest {
         
-        private static final DataSourceFactory nerverUsedDSF = new DataSourceFactory();
-
         @Test
         public void testScriptWithWrongCharacters() throws Exception {
                 notParse("<!\nselect * from mytable;");
@@ -391,13 +389,13 @@ public class GrammarTest {
 
         private void notParse(String sql) {
                 try {
-                        nerverUsedDSF.getSqlEngine().parse(sql);
+                        Engine.parse(sql);
                         fail();
                 } catch (Exception e) {
                 }
         }
 
         private void parse(String sql) throws ParseException, SemanticException {
-                nerverUsedDSF.getSqlEngine().parse(sql);
+                Engine.parse(sql);
         }
 }

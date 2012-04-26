@@ -48,35 +48,30 @@ import org.junit.Before;
 import org.junit.Test;
 import java.io.File;
 
-import org.apache.log4j.BasicConfigurator;
 import org.gdms.TestBase;
 import org.gdms.data.NoSuchTableException;
 
 import org.gdms.data.AllTypesObjectDriver;
-import org.gdms.data.DataSourceFactory;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
-import org.gdms.source.SourceManager;
-import org.gdms.sql.function.FunctionManager;
 import org.gdms.sql.engine.ParseException;
 import org.gdms.data.types.IncompatibleTypesException;
-import org.gdms.sql.engine.SQLEngine;
 import org.gdms.sql.engine.SemanticException;
-import org.gdms.sql.engine.SqlStatement;
+import org.gdms.sql.engine.SQLStatement;
 import org.gdms.sql.engine.UnknownFieldException;
 import org.gdms.sql.strategies.SumQuery;
 
 import static org.junit.Assert.*;
 
 import org.gdms.TestResourceHandler;
+import org.gdms.sql.engine.Engine;
 
 public class ProcessorTest extends TestBase {
 
         private Metadata allTypesMetadata;
-        private SQLEngine engine;
 
         @Before
         public void setUp() throws Exception {
@@ -91,13 +86,11 @@ public class ProcessorTest extends TestBase {
                 sm.register("hsqldb", omd);
 
                 dsf.getFunctionManager().addFunction(ZeroArgsFunction.class);
-
-                engine = dsf.getSqlEngine();
         }
 
         @Test
         public void testNormalWithoutFrom() throws Exception {
-                failWithParseException("select toto;");
+                failWithSemanticException("select toto;");
         }
 
         @Test
@@ -107,18 +100,21 @@ public class ProcessorTest extends TestBase {
 
         @Test
         public void testGetResultMetadataStar() throws Exception {
-                SqlStatement p = getValidatedStatement("select * from alltypes;");
-                p.prepare(dsf);
+                SQLStatement p = getValidatedStatement("select * from alltypes;");
+                p.setDataSourceFactory(dsf);
+                p.prepare();
                 Metadata m1 = p.getResultMetadata();
                 p.cleanUp();
                 compareMetadata(m1, allTypesMetadata);
                 p = getValidatedStatement("select t.* from alltypes t;");
-                p.prepare(dsf);
+                p.setDataSourceFactory(dsf);
+                p.prepare();
                 m1 = p.getResultMetadata();
                 p.cleanUp();
                 compareMetadata(m1, allTypesMetadata);
                 p = getValidatedStatement("select string as mystr, t.* from alltypes t;");
-                p.prepare(dsf);
+                p.setDataSourceFactory(dsf);
+                p.prepare();
                 m1 = p.getResultMetadata();
                 p.cleanUp();
                 DefaultMetadata m2 = new DefaultMetadata();
@@ -135,8 +131,9 @@ public class ProcessorTest extends TestBase {
 
         @Test
         public void testGetResultMetadataField() throws Exception {
-                SqlStatement p = getValidatedStatement("select gis from gis;");
-                p.prepare(dsf);
+                SQLStatement p = getValidatedStatement("select gis from gis;");
+                p.setDataSourceFactory(dsf);
+                p.prepare();
                 Metadata m1 = p.getResultMetadata();
                 p.cleanUp();
                 DefaultMetadata m2 = new DefaultMetadata();
@@ -192,21 +189,24 @@ public class ProcessorTest extends TestBase {
 
         private void checkMultiplySumAndSubstractionOperators(String field1,
                 String field2, int resultType) throws Exception, DriverException {
-                SqlStatement p = getValidatedStatement("select \"" + field1
+                SQLStatement p = getValidatedStatement("select \"" + field1
                         + "\" * \"" + field2 + "\" from alltypes;");
-                p.prepare(dsf);
+                p.setDataSourceFactory(dsf);
+                p.prepare();
                 Metadata m1 = p.getResultMetadata();
                 p.cleanUp();
                 assertEquals(m1.getFieldType(0).getTypeCode(), resultType);
                 p = getValidatedStatement("select \"" + field1 + "\" + \"" + field2
                         + "\" from alltypes;");
-                p.prepare(dsf);
+                p.setDataSourceFactory(dsf);
+                p.prepare();
                 m1 = p.getResultMetadata();
                 p.cleanUp();
                 assertEquals(m1.getFieldType(0).getTypeCode(), resultType);
                 p = getValidatedStatement("select \"" + field1 + "\" - \"" + field2
                         + "\" from alltypes;");
-                p.prepare(dsf);
+                p.setDataSourceFactory(dsf);
+                p.prepare();
                 m1 = p.getResultMetadata();
                 p.cleanUp();
                 assertEquals(m1.getFieldType(0).getTypeCode(), resultType);
@@ -214,13 +214,15 @@ public class ProcessorTest extends TestBase {
 
         @Test
         public void testDivisionOperators() throws Exception {
-                SqlStatement p = getValidatedStatement("select 3/0 from alltypes;");
-                p.prepare(dsf);
+                SQLStatement p = getValidatedStatement("select 3/0 from alltypes;");
+                p.setDataSourceFactory(dsf);
+                p.prepare();
                 Metadata m1 = p.getResultMetadata();
                 p.cleanUp();
                 assertEquals(m1.getFieldType(0).getTypeCode(), Type.INT);
                 p = getValidatedStatement("select 3.0/3 from alltypes;");
-                p.prepare(dsf);
+                p.setDataSourceFactory(dsf);
+                p.prepare();
                 m1 = p.getResultMetadata();
                 p.cleanUp();
                 assertEquals(m1.getFieldType(0).getTypeCode(), Type.DOUBLE);
@@ -328,8 +330,9 @@ public class ProcessorTest extends TestBase {
 
         private void failWithNoSuchTableException(String sql) throws Exception {
                 try {
-                        SqlStatement p = getValidatedStatement(sql);
-                        p.prepare(dsf);
+                        SQLStatement p = getValidatedStatement(sql);
+                        p.setDataSourceFactory(dsf);
+                        p.prepare();
                         fail();
                 } catch (NoSuchTableException e) {
                 }
@@ -337,9 +340,10 @@ public class ProcessorTest extends TestBase {
 
         @Test
         public void testProjectionAlias() throws Exception {
-                SqlStatement p = getValidatedStatement("select \"double\" as mydoublE, "
+                SQLStatement p = getValidatedStatement("select \"double\" as mydoublE, "
                         + "string as mySTR from alltypes;");
-                p.prepare(dsf);
+                p.setDataSourceFactory(dsf);
+                p.prepare();
                 Metadata m = p.getResultMetadata();
                 p.cleanUp();
                 assertFalse(m.getFieldName(0).equals("mydouble"));
@@ -371,7 +375,7 @@ public class ProcessorTest extends TestBase {
                 // non
                 failPreparedWithUnknownFieldException("select non.\"integer\" from alltypes;");
                 // ier
-                failPreparedWithUnknownFieldException("select alltypes.ier from alltypes;");
+                failPreparedWithSemanticException("select alltypes.ier from alltypes;");
                 failPreparedWithUnknownFieldException("select * from alltypes where non.\"integer\"=3;");
                 // idnteger
                 failPreparedWithUnknownFieldException("select idnteger from alltypes;");
@@ -663,8 +667,8 @@ public class ProcessorTest extends TestBase {
                 getFullyValidatedStatement("select avg(\"int\"), avg(\"double\") "
                         + "from alltypes group by \"boolean\";");
 
-                // non custom query without from
-                failWithParseException("select avg(id);");
+                // aggregate without from
+                failWithSemanticException("select avg(id);");
 
                 // aggregated in where
                 failPreparedWithSemanticException("select * from alltypes where avg(\"int\")=0;");
@@ -735,8 +739,9 @@ public class ProcessorTest extends TestBase {
 
         @Test
         public void testAggregatedFunctionDefaultName() throws Exception {
-                SqlStatement p = getValidatedStatement("select count(*) from alltypes;");
-                p.prepare(dsf);
+                SQLStatement p = getValidatedStatement("select count(*) from alltypes;");
+                p.setDataSourceFactory(dsf);
+                p.prepare();
                 Metadata m1 = p.getResultMetadata();
                 p.cleanUp();
                 // default name if the name of the aggregate function
@@ -770,13 +775,14 @@ public class ProcessorTest extends TestBase {
                 dsf.getSourceManager().delete("toto");
         }
 
-        private SqlStatement getValidatedStatement(String sql) throws Exception {
-                return engine.parse(sql)[0];
+        private SQLStatement getValidatedStatement(String sql) throws Exception {
+                return Engine.parse(sql, dsf.getProperties())[0];
         }
 
-        private SqlStatement getFullyValidatedStatement(String sql) throws Exception {
-                final SqlStatement st = engine.parse(sql)[0];
-                st.prepare(dsf);
+        private SQLStatement getFullyValidatedStatement(String sql) throws Exception {
+                final SQLStatement st = Engine.parse(sql, dsf.getProperties())[0];
+                st.setDataSourceFactory(dsf);
+                st.prepare();
                 return st;
         }
 }
