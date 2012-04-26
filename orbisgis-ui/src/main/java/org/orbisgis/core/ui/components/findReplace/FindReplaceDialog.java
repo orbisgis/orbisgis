@@ -42,12 +42,13 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rtextarea.SearchEngine;
+import org.fife.ui.rtextarea.SearchContext;
 import org.orbisgis.utils.I18N;
 
 /**
  *
  * @author ebocher
- * FindReplaceDialog is based on the  Fred Swartz job's.
+ * FindReplaceDialog is based on the Fred Swartz job's.
  * http://leepoint.net/notes-java/GUI/layouts/gridbag-example.html
  *
  */
@@ -85,6 +86,7 @@ public final class FindReplaceDialog extends JDialog implements ActionListener {
 
         /**
          * Create the main panel
+         *
          * @return
          */
         private JPanel createContentPane() {
@@ -123,11 +125,11 @@ public final class FindReplaceDialog extends JDialog implements ActionListener {
                 JPanel checkBoxPanel = new JPanel();
                 checkBoxPanel.setLayout(new GridLayout(3, 2));
                 matchCaseCB = new JCheckBox(I18N.getString("orbisgis.org.orbisgis.ui.findReplace.matchCase"));
-                matchCaseCB.setMnemonic('m');                
+                matchCaseCB.setMnemonic('m');
 
                 wholeWrdsCB = new JCheckBox(I18N.getString("orbisgis.org.orbisgis.ui.findReplace.wholeWords"));
                 wholeWrdsCB.setMnemonic('w');
-                
+
 
                 regexCB = new JCheckBox(I18N.getString("orbisgis.org.orbisgis.ui.findReplace.regularExpressions"));
                 regexCB.setMnemonic('x');
@@ -248,8 +250,13 @@ public final class FindReplaceDialog extends JDialog implements ActionListener {
                                 rSyntaxTextArea.markAll(text, matchCase, wholeWord, regex);
                         }
 
-                        boolean found = SearchEngine.find(rSyntaxTextArea, text, forward,
-                                matchCase, wholeWord, regex);
+                        SearchContext c = new SearchContext();
+                        c.setMatchCase(matchCase);
+                        c.setSearchFor(text);
+                        c.setWholeWord(wholeWord);
+                        c.setRegularExpression(regex);
+                        c.setSearchForward(forward);
+                        boolean found = SearchEngine.find(rSyntaxTextArea, c);
                         if (!found) {
                                 JOptionPane.showMessageDialog(this, I18N.getString("orbisgis.org.orbisgis.ui.findReplace.textNotFound"));
                         }
@@ -268,7 +275,14 @@ public final class FindReplaceDialog extends JDialog implements ActionListener {
                                 boolean matchCase = matchCaseCB.isSelected();
                                 boolean wholeWord = wholeWrdsCB.isSelected();
                                 boolean regex = regexCB.isSelected();
-                                boolean found = SearchEngine.replace(rSyntaxTextArea, text, textReplace, forward, matchCase, wholeWord, regex);
+                                SearchContext c = new SearchContext();
+                                c.setMatchCase(matchCase);
+                                c.setSearchFor(text);
+                                c.setReplaceWith(textReplace);
+                                c.setWholeWord(wholeWord);
+                                c.setRegularExpression(regex);
+                                c.setSearchForward(forward);
+                                boolean found = SearchEngine.find(rSyntaxTextArea, c);
                                 if (!found) {
                                         JOptionPane.showMessageDialog(this, I18N.getString("orbisgis.org.orbisgis.ui.findReplace.textNotFound"));
                                 }
@@ -286,8 +300,13 @@ public final class FindReplaceDialog extends JDialog implements ActionListener {
                                 boolean matchCase = matchCaseCB.isSelected();
                                 boolean wholeWord = wholeWrdsCB.isSelected();
                                 boolean regex = regexCB.isSelected();
-                                SearchEngine.replaceAll(rSyntaxTextArea, text, textReplace, matchCase, wholeWord, regex);
-                        }
+                                SearchContext c = new SearchContext();
+                                c.setMatchCase(matchCase);
+                                c.setSearchFor(text);
+                                c.setWholeWord(wholeWord);
+                                c.setRegularExpression(regex);
+                                c.setReplaceWith(textReplace);
+                                SearchEngine.find(rSyntaxTextArea, c);                        }
                 }
         }
 }
