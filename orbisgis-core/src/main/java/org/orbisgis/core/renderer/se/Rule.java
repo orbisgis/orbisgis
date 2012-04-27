@@ -17,10 +17,10 @@ import org.gdms.data.types.GeometryDimensionConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.driverManager.DriverLoadException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.common.Description;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.graphic.ExternalGraphic;
 import org.orbisgis.core.renderer.se.graphic.Graphic;
@@ -43,7 +43,7 @@ public final class Rule implements SymbolizerNode {
      */
     public static final String DEFAULT_NAME = "Default Rule";
     private String name = "";
-    private String description = "";
+    private Description description;
     private SymbolizerNode fts;
     private String where;
     private boolean fallbackRule = false;
@@ -123,7 +123,8 @@ public final class Rule implements SymbolizerNode {
                                             symb = new AreaSymbolizer();
                                             break;
                                         default:
-                                            throw new UnsupportedOperationException("Can't get the dimension of this type : " + TypeFactory.getTypeName(typeCode));
+                                            throw new UnsupportedOperationException("Can't get the dimension of this type : "
+                                                    + TypeFactory.getTypeName(typeCode));
                                     }
                                 }
                                 break;
@@ -171,6 +172,9 @@ public final class Rule implements SymbolizerNode {
         } else {
             this.name = Rule.DEFAULT_NAME;
         }
+        if(rt.getDescription() != null){
+            description = new Description(rt.getDescription());
+        }
 
         /*
          * Is a fallback rule ?
@@ -193,10 +197,8 @@ public final class Rule implements SymbolizerNode {
         }
 
         /*
-         * TODO  Replace with WhereClause !!
-        if (rt.getDomainConstraints() != null && rt.getDomainConstraints().getTimePeriod() != null){
-        this.setWhere(rt.getDomainConstraints().getTimePeriod());
-        }*/
+         * TODO  Replace with fes
+         */
         if (rt.getWhereClause() != null) {
             this.setWhere(rt.getWhereClause());
         }
@@ -243,8 +245,9 @@ public final class Rule implements SymbolizerNode {
         } else if (this.getWhere() != null && !this.getWhere().isEmpty()) {
             rt.setWhereClause(this.getWhere());
             // Temp HACK TODO !! Serialize Filters !!!!
-            //rt.setDomainConstraints(new DomainConstraintsType());
-            //rt.getDomainConstraints().setTimePeriod(this.getWhere());
+        }
+        if(description != null){
+            rt.setDescription(description.getJAXBType());
         }
 
         rt.setSymbolizer(this.symbolizer.getJAXBElement());
@@ -448,17 +451,19 @@ public final class Rule implements SymbolizerNode {
 
     /**
      * Get the description of this rule.
-     * @return 
+     * @return
+     * @see Description
      */
-    public String getDescription() {
+    public Description getDescription() {
         return description;
     }
 
     /**
      * Set the description associated to this rule.
-     * @param description 
+     * @param description
+     * @see Description
      */
-    public void setDescription(String description) {
+    public void setDescription(Description description) {
         this.description = description;
     }
 
@@ -478,6 +483,7 @@ public final class Rule implements SymbolizerNode {
         this.name = name;
     }
 
+    @Override
     public HashSet<String> dependsOnFeature() {
         return symbolizer.dependsOnFeature();
     }
