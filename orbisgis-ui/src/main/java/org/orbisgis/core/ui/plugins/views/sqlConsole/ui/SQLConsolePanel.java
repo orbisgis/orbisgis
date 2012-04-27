@@ -46,6 +46,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.Timer;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
 import javax.swing.text.BadLocationException;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
@@ -79,6 +81,10 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
         private Timer timer;
         private int lastSQLStatementToReformatStart;
         private int lastSQLStatementToReformatEnd;
+        private static final String MESSAGEBASE = "%d | %d | %s";
+        private int line = 0;
+        private int character = 0;
+        private String message = "";
         private SQLLanguageSupport lang;
         static CommentSpec[] COMMENT_SPECS = new CommentSpec[]{
                 new CommentSpec("/*", "*/"), new CommentSpec("--", "\n")};
@@ -143,6 +149,16 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
                         scriptPanel.addKeyListener(new SQLConsoleKeyListener(this,
                                 codeReformator, actionAndKeyListener));
 
+                        scriptPanel.addCaretListener(new CaretListener() {
+
+                                @Override
+                                public void caretUpdate(CaretEvent e) {
+                                        line = scriptPanel.getCaretLineNumber();
+                                        character = scriptPanel.getCaretOffsetFromLineStart();
+                                        setStatusMessage(message);
+                                }
+                        });
+
                         centerPanel = new RTextScrollPane(scriptPanel);
                 }
                 return centerPanel;
@@ -156,7 +172,7 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
                         toolBar.add(statusMessage);
                         toolBar.setFloatable(false);
 
-            timer = new Timer(4000, new ActionListener() {
+                        timer = new Timer(5000, new ActionListener() {
 
                                 @Override
                                 public void actionPerformed(ActionEvent e) {
@@ -170,13 +186,19 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
         }
 
         public void setStatusMessage(String message) {
-                if (message.isEmpty()) {
-                        statusMessage.setText(message);
-                        return;
-                } else {
+                this.message = message;
+                if (!message.isEmpty()) {
                         timer.restart();
-                        statusMessage.setText(message);
                 }
+                statusMessage.setText(String.format(MESSAGEBASE, line, character, message));
+        }
+
+        public void setCharacter(int character) {
+                this.character = character;
+        }
+
+        public void setLine(int line) {
+                this.line = line;
         }
 
         private JButton getBtFindReplace() {
