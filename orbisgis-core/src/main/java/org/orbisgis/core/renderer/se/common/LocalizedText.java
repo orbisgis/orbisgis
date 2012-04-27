@@ -9,7 +9,7 @@ import net.opengis.ows._2.LanguageStringType;
 import net.opengis.ows._2.ObjectFactory;
 
 /**
- *
+ * Basically a {@code String} associated to a {@code Locale} instance.
  * @author alexis
  */
 public class LocalizedText {
@@ -18,7 +18,8 @@ public class LocalizedText {
     private Locale locale;
 
     /**
-     * 
+     * Build a new instance of {@code LocalizedText} with the given text.
+     * {@code loc} is used to build a {@code Locale} instance.
      * @param text
      * @param loc
      * @throws IllegalArgumentException if {@code loc} can't be used safely to

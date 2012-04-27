@@ -12,7 +12,8 @@ import net.opengis.ows._2.LanguageStringType;
 import net.opengis.ows._2.ObjectFactory;
 
 /**
- *
+ * Keywords are list of {@code LocaliezdText}, associated with an optional
+ * type. They are used to describe some objects (Rule, Style...)/
  * @author alexis
  */
 public class Keywords {
@@ -21,10 +22,17 @@ public class Keywords {
     private String type;
     private String space;
 
+    /**
+     * Builds a new empty {@code Keywords} instance.
+     */
     public Keywords() {
         keywords = new ArrayList<LocalizedText>();
     }
 
+    /**
+     * Build a new {@code Keywords} instance from the given JAXB object.
+     * @param kt
+     */
     public Keywords(KeywordsType kt){
         keywords = new ArrayList<LocalizedText>();
         if(kt.getKeyword() != null){

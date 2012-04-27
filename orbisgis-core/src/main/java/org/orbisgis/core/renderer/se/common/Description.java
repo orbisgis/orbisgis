@@ -26,8 +26,8 @@ public class Description {
     private List<Keywords> keywords;
 
     /**
-        * Builds a new, empty, {@code Description}.
-        */
+     * Builds a new, empty, {@code Description}.
+     */
     public Description(){
         titles = new ArrayList<LocalizedText>();
         abstractTexts = new ArrayList<LocalizedText>();
@@ -35,10 +35,10 @@ public class Description {
     }
 
     /**
-        * Builds a new {@code Description} from the given
-        * {@code DescriptionType}.
-        * @param dt
-        */
+     * Builds a new {@code Description} from the given
+     * {@code DescriptionType}.
+     * @param dt
+     */
     public Description(DescriptionType dt){
         this();
         List<LanguageStringType> tlst = dt.getTitle();
@@ -61,14 +61,29 @@ public class Description {
         }
     }
 
+    /**
+     * Gets the list of localized abstracts registered in this {@code
+     * Description}.
+     * @return
+     */
     public List<LocalizedText> getAbstractTexts() {
         return abstractTexts;
     }
 
+    /**
+     * Gets the list of localized keywords registered in this {@code
+     * Description}.
+     * @return
+     */
     public List<Keywords> getKeywords() {
         return keywords;
     }
 
+    /**
+     * Gets the list of localized titles registered in this {@code
+     * Description}.
+     * @return
+     */
     public List<LocalizedText> getTitles() {
         return titles;
     }
