@@ -33,7 +33,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
 import javax.swing.ImageIcon;
-import org.gdms.data.SQLDataSourceFactory;
+import org.gdms.data.DataSourceFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -47,7 +47,7 @@ public class UIFactory {
         private static ImageIcon defaultIcon;
 	private static String okMessage;
 	private static Window mainFrame = null;
-	static final SQLDataSourceFactory dsf = new SQLDataSourceFactory();
+	static final DataSourceFactory dsf = new DataSourceFactory();
 
 	public static SIFDialog getSimpleDialog(UIPanel panel) {
 		return getSimpleDialog(panel, mainFrame);

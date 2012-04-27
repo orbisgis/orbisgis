@@ -33,7 +33,6 @@ import org.apache.log4j.*;
 import org.apache.log4j.varia.LevelRangeFilter;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.DataSourceFinalizationException;
-import org.gdms.data.SQLDataSourceFactory;
 import org.orbisgis.core.context.SourceContext.SourceContext;
 import org.orbisgis.core.workspace.CoreWorkspace;
 /**
@@ -57,7 +56,7 @@ public class MainContext {
         initConsoleLogger();      
         coreWorkspace = new CoreWorkspace();
         initFileLogger(coreWorkspace);
-        dataSourceFactory = new SQLDataSourceFactory(coreWorkspace.getSourceFolder(), coreWorkspace.getTempFolder(), coreWorkspace.getPluginFolder());
+        dataSourceFactory = new DataSourceFactory(coreWorkspace.getSourceFolder(), coreWorkspace.getTempFolder(), coreWorkspace.getPluginFolder());
         sourceContext = new SourceContext(dataSourceFactory.getSourceManager());
     }
     
