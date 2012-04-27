@@ -18,37 +18,14 @@ public class LocalizedText {
     private Locale locale;
 
     /**
-     * Build a new instance of {@code LocalizedText} with the given text.
-     * {@code loc} is used to build a {@code Locale} instance.
-     * @param text
-     * @param loc
-     * @throws IllegalArgumentException if {@code loc} can't be used safely to
-     * build a {@code Locale}.
+     * Builds a new instance of {@code LocalizedText} with the given {@code
+     * String} and {@code Locale}.
+     * @param string
+     * @param l
      */
-    public LocalizedText(String text, String loc){
-        content = text;
-        if(loc != null && validateLocale(loc)){
-            locale = new Locale(loc);
-        }
-    }
-
-    /**
-     * Do a pretty naive validation about the structure of the given {@code
-     * String}. It is absolutely not imperfect, but faster than retrieving all
-     * the available {@code Locale} instances available in the current runtime
-     * environment.
-     * @param loc
-     * @return
-     */
-    private boolean validateLocale(String loc){
-        String[] parts = loc.split("_");
-        if(parts.length == 1){
-            return parts[0].length() == 2;
-        } else if(parts.length == 2 || parts.length == 3){
-            return parts[0].length() == 2 && parts[1].length() == 2;
-        } else {
-            return false;
-        }
+    LocalizedText(String string, Locale l) {
+        content = string;
+        locale = l;
     }
 
     /**
@@ -93,6 +70,32 @@ public class LocalizedText {
         lst.setLang(locale != null ? getLocale().toString() : "");
         lst.setValue(getValue());
         return lst;
+    }
+
+    /**
+     * Two {@code LocalizedText} are equal if and only if their associated
+     * {@code Locale} and content are equal.
+     * @param obj
+     * Hopefully a {@code LocalizedText} instance.
+     * @return
+     */
+    @Override
+    public boolean equals(Object obj){
+            if(obj instanceof LocalizedText){
+                LocalizedText lt = (LocalizedText)obj;
+                boolean locs = locale == null ? lt.locale == null : locale.equals(lt.locale);
+                boolean conts = content == null ? lt.content == null : content.equals(lt.content);
+                return locs && conts;
+            }
+            return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 59 * hash + (this.content != null ? this.content.hashCode() : 0);
+        hash = 59 * hash + (this.locale != null ? this.locale.hashCode() : 0);
+        return hash;
     }
 
 }
