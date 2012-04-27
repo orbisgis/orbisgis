@@ -12,12 +12,16 @@ import net.opengis.ows._2.LanguageStringType;
 import net.opengis.ows._2.ObjectFactory;
 
 /**
- * Keywords are list of {@code LocaliezdText}, associated with an optional
- * type. They are used to describe some objects (Rule, Style...)/
+ * Keywords are list of {@code LocalizedText}, associated with an optional
+ * type. They are used to describe some objects (Rule, Style...).
  * @author alexis
  */
 public class Keywords {
 
+    /*
+     * We can't use a HashMap<Locale, String> here, as we have to be able to
+     * store multiple keywords with the same Locale instance.
+     */
     private List<LocalizedText> keywords;
     private String type;
     private String space;
