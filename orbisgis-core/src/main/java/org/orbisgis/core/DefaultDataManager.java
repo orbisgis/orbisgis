@@ -51,14 +51,14 @@ public class DefaultDataManager implements DataManager {
 
 	private static final Logger logger = Logger
 			.getLogger(DefaultDataManager.class);
-	private SQLDataSourceFactory dsf;
+	private DataSourceFactory dsf;
 
-	public DefaultDataManager(SQLDataSourceFactory dsf) {
+	public DefaultDataManager(DataSourceFactory dsf) {
 		this.dsf = dsf;
 	}
 
         @Override
-	public SQLDataSourceFactory getDataSourceFactory() {
+	public DataSourceFactory getDataSourceFactory() {
 		return dsf;
 	}
 
@@ -139,7 +139,7 @@ public class DefaultDataManager implements DataManager {
 
         @Override
 	public ILayer createLayer(String name, File file) throws LayerException {
-		SQLDataSourceFactory dsf = ((DataManager) Services
+		DataSourceFactory dsf = ((DataManager) Services
 				.getService(DataManager.class)).getDataSourceFactory();
 		dsf.getSourceManager().register(name, file);
 		try {
@@ -157,7 +157,7 @@ public class DefaultDataManager implements DataManager {
 
         @Override
 	public ILayer createLayer(File file) throws LayerException {
-		SQLDataSourceFactory dsf = ((DataManager) Services
+		DataSourceFactory dsf = ((DataManager) Services
 				.getService(DataManager.class)).getDataSourceFactory();
 		String name = dsf.getSourceManager().nameAndRegister(file);
 		try {

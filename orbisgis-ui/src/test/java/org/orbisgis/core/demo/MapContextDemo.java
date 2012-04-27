@@ -17,7 +17,7 @@ import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
 
 import com.vividsolutions.jts.geom.Envelope;
-import org.gdms.data.SQLDataSourceFactory;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.geometryUtils.GeometryConvert;
 
@@ -26,7 +26,7 @@ public class MapContextDemo {
         /**
          * A demo to play with a mapcontext
          */
-        static SQLDataSourceFactory dsf = new SQLDataSourceFactory();
+        static DataSourceFactory dsf = new DataSourceFactory();
 
         public static void main(String[] args) throws IllegalStateException,
                 LayerException, DriverException {

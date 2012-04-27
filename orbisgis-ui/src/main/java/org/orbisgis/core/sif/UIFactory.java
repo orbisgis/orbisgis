@@ -39,7 +39,7 @@ import java.awt.Window;
 import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
-import org.gdms.data.SQLDataSourceFactory;
+import org.gdms.data.DataSourceFactory;
 
 import org.orbisgis.utils.I18N;
 
@@ -51,7 +51,7 @@ public class UIFactory {
 	private static URL defaultIconURL;
 	private static String okMessage;
 	private static Window mainFrame = null;
-	static final SQLDataSourceFactory dsf = new SQLDataSourceFactory();
+	static final DataSourceFactory dsf = new DataSourceFactory();
 
 	public static SIFDialog getSimpleDialog(UIPanel panel) {
 		return getSimpleDialog(panel, mainFrame);

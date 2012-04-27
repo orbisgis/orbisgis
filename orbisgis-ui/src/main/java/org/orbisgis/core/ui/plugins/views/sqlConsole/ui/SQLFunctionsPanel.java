@@ -52,6 +52,9 @@ import javax.swing.ListSelectionModel;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
+import org.orbisgis.core.DataManager;
+import org.orbisgis.core.Services;
 import org.gdms.sql.function.FunctionManager;
 import org.orbisgis.core.ui.components.jlist.OGList;
 import org.orbisgis.core.ui.components.text.JButtonTextField;
@@ -74,9 +77,11 @@ public class SQLFunctionsPanel extends JPanel implements DragGestureListener,
         private final JLabel functionLabelCount;
         private final JLabel collapsed;
         private final JToolBar east;
+        private final FunctionManager functionManager;
 
         public SQLFunctionsPanel(JPanel panel) {
                 this.setLayout(new BorderLayout());
+                functionManager = Services.getService(DataManager.class).getDataSourceFactory().getFunctionManager();
                 functionListModel = new FunctionListModel();
                 txtFilter = new JButtonTextField();
                 txtFilter.getDocument().addDocumentListener(new DocumentListener() {
@@ -102,7 +107,7 @@ public class SQLFunctionsPanel extends JPanel implements DragGestureListener,
                         public String getToolTipText(MouseEvent evt) {
                                 int index = locationToIndex(evt.getPoint());
                                 FunctionElement item = (FunctionElement) getModel().getElementAt(index);
-                                String toolTip = FunctionManager.getFunction(item.getFunctionName()).getDescription();
+                                String toolTip = functionManager.getFunction(item.getFunctionName()).getDescription();
 
                                 // Return the tool tip text
                                 return toolTip;
@@ -179,7 +184,7 @@ public class SQLFunctionsPanel extends JPanel implements DragGestureListener,
                 String[] sources = new String[selectedValues.length];
                 for (int i = 0; i < sources.length; i++) {
                         FunctionElement functionElement = (FunctionElement) selectedValues[i];
-                        sources[i] = FunctionManager.getFunction(functionElement.getFunctionName()).getSqlOrder();
+                        sources[i] = functionManager.getFunction(functionElement.getFunctionName()).getSqlOrder();
                 }
                 return sources;
         }

@@ -19,7 +19,7 @@ import javax.xml.validation.Schema;
 import net.opengis.se._2_0.core.StyleType;
 
 
-import org.gdms.data.SQLDataSourceFactory;
+import org.gdms.data.DataSourceFactory;
 
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
@@ -44,7 +44,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  */
 public class FeatureTypeStyleTest {
 
-    private static SQLDataSourceFactory dsf = new SQLDataSourceFactory();
+    private static DataSourceFactory dsf = new DataSourceFactory();
 
     public static void registerDataManager() {
         // Installation of the service

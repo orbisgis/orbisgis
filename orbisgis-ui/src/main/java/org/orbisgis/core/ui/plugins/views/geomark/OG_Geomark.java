@@ -55,7 +55,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.NoSuchTableException;
-import org.gdms.data.SQLDataSourceFactory;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.driver.DataSet;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.ScalarArgument;
@@ -65,7 +65,7 @@ import org.gdms.sql.function.executor.ExecutorFunctionSignature;
 public class OG_Geomark extends AbstractExecutorFunction {
 
         @Override
-        public void evaluate(SQLDataSourceFactory dsf, DataSet[] tables,
+        public void evaluate(DataSourceFactory dsf, DataSet[] tables,
                 Value[] values, ProgressMonitor pm) throws FunctionException {
                 WorkbenchContext wbContext = Services.getService(WorkbenchContext.class);
                 final GeomarkPanel geomarkPanel = (GeomarkPanel) wbContext.getWorkbench().getFrame().getView("Geomark");

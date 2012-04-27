@@ -37,7 +37,7 @@
 package org.orbisgis.core.ui;
 
 
-import org.gdms.data.SQLDataSourceFactory;
+import org.gdms.data.DataSourceFactory;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.DefaultDataManager;
 import org.orbisgis.core.Services;
@@ -52,7 +52,7 @@ import org.orbisgis.progress.ProgressMonitor;
 public abstract class AbstractTest {
 
         public void setUp() throws Exception {
-                SQLDataSourceFactory dsf = new SQLDataSourceFactory(
+                DataSourceFactory dsf = new DataSourceFactory(
                         "src/test/resources/sources", "src/test/resources/temp");
 
                 Services.registerService(DataManager.class, "", new DefaultDataManager(

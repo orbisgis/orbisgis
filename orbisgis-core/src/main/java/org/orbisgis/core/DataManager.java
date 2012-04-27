@@ -39,7 +39,7 @@ package org.orbisgis.core;
 
 import java.io.File;
 import org.gdms.data.DataSource;
-import org.gdms.data.SQLDataSourceFactory;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.indexes.IndexManager;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.layerModel.ILayer;
@@ -52,7 +52,7 @@ public interface DataManager {
 	 * 
 	 * @return
 	 */
-	SQLDataSourceFactory getDataSourceFactory();
+	DataSourceFactory getDataSourceFactory();
 
 	/**
 	 * Gets the manager of all the registered data sources

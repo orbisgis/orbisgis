@@ -47,7 +47,7 @@ import java.util.HashSet;
 
 import org.apache.log4j.Logger;
 import org.gdms.data.InitializationException;
-import org.gdms.data.SQLDataSourceFactory;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.WarningListener;
 import org.gdms.plugins.GdmsPlugIn;
 import org.gdms.plugins.PlugInManagerListener;
@@ -119,7 +119,7 @@ public class OrbisgisUIServices {
 
                 IOGWorkspace ews = Services.getService(IOGWorkspace.class);
 
-                SQLDataSourceFactory dsf = new SQLDataSourceFactory(sourcesDir.getAbsolutePath(), ews.getTempFolder().getAbsolutePath(), Main.PLUGIN_DIRECTORY);
+                DataSourceFactory dsf = new DataSourceFactory(sourcesDir.getAbsolutePath(), ews.getTempFolder().getAbsolutePath(), Main.PLUGIN_DIRECTORY);
                 dsf.setResultDir(ews.getResultsFolder());
 
                 // Pipeline the warnings in gdms to the warning system in the

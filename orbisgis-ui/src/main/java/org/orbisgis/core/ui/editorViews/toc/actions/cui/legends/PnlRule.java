@@ -85,7 +85,7 @@ public class PnlRule extends JPanel implements IRulePanel {
                 gbc.gridy = 1;
                 gbc.insets = new Insets(5 , 5, 5, 5);
                 gbc.anchor = GridBagConstraints.LINE_START;
-                txtDescription = new JTextArea(rule.getDescription());
+                txtDescription = new JTextArea("");
                 txtDescription.setColumns(40);
                 txtDescription.setRows(6);
                 txtDescription.setLineWrap(true);
@@ -204,7 +204,7 @@ public class PnlRule extends JPanel implements IRulePanel {
          * to manage it.
          */
         public void setDescription(String s){
-                rule.setDescription(s);
+                rule.setDescription(null);
         }
 
         /**
