@@ -74,7 +74,7 @@ case object FunctionsStep extends AbstractEngineStep[(Operation, DataSourceFacto
   }
   
   def markFunctions(op: Operation, dsf: DataSourceFactory) {
-    op.allChildren foreach { 
+    (op :: op.allChildren) foreach { 
       case c @ CustomQueryScan(name, exp, _, _) => {
           val f = dsf.getFunctionManager.getFunction(name)
           f  match {

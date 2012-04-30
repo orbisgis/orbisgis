@@ -774,6 +774,11 @@ public class ProcessorTest extends TestBase {
 
                 dsf.getSourceManager().delete("toto");
         }
+        
+        @Test
+        public void regressionTestInitRootOperation() throws Exception {
+                getFullyValidatedStatement("UPDATE alltypes SET \"int\" = abs(\"int\");");
+        }
 
         private SQLStatement getValidatedStatement(String sql) throws Exception {
                 return Engine.parse(sql, dsf.getProperties())[0];
