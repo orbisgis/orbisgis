@@ -61,10 +61,11 @@ class SQLStatement(var op: Operation)(implicit p: Properties) {
   private var r: DataSet = _
   private var dsf: Option[DataSourceFactory] = None
   private var pm: Option[ProgressMonitor] = None
+  private var preparedButNotCleaned: Boolean = false
   private lazy val refs: Array[String] = { op.allChildren flatMap {_ match {
-            case s: Scan => s.table :: Nil
-            case _ => Nil
-          }    
+        case s: Scan => s.table :: Nil
+        case _ => Nil
+      }    
     } toArray   
   }
   
@@ -77,17 +78,20 @@ class SQLStatement(var op: Operation)(implicit p: Properties) {
   }
 
   def prepare() { 
-    if (dsf.isEmpty) {
-      throw new DriverException("The SQLCommand should be initialized with a DSF")
+    if (!preparedButNotCleaned) {
+      if (dsf.isEmpty) {
+        throw new DriverException("The SQLCommand should be initialized with a DSF")
+      }
+    
+      com = (op, dsf.get)   >=: 
+      FunctionsStep         >=: // resolve functions, process aggregates
+      PhysicalJoinOptimStep >=: // choose join methods (indexes)
+      BuilderStep               // build Command tree
+          
+      com.prepare(dsf.get)
+      r = com.getResult
+      preparedButNotCleaned = true
     }
-          
-    com = (op, dsf.get)   >=: 
-    FunctionsStep         >=: // resolve functions, process aggregates
-    PhysicalJoinOptimStep >=: // choose join methods (indexes)
-    BuilderStep               // build Command tree
-          
-    com.prepare(dsf.get)
-    r = com.getResult
   }
   
   @throws(classOf[DriverException])
@@ -101,11 +105,14 @@ class SQLStatement(var op: Operation)(implicit p: Properties) {
   }
   
   def cleanUp() {
-    com.cleanUp
+    if (preparedButNotCleaned) {
+      com.cleanUp
+      preparedButNotCleaned = false
       
-    // IMPORTANT: this lets the GC do its work
-    r = null
-    com = null
+      // IMPORTANT: this lets the GC do its work
+      r = null
+      com = null
+    }
   }
   
   /**

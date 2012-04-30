@@ -65,12 +65,18 @@ import org.gdms.sql.engine.SQLStatement;
  * @author Antoine Gourlay
  */
 public class SqlStatementDriver extends AbstractDataSet implements MemoryDriver {
+        // states of the driver
+        // see #close() for rational.
+        private static final int CLOSED = 0;
+        private static final int OPENED = 1;
+        private static final int CLOSING = 2;
 
         private SQLStatement sql;
         private DataSourceFactory dsf;
         private DefaultSchema schema;
         private DataSet set;
         private DefaultMetadata metadata = new DefaultMetadata();
+        private int openState = CLOSED;
 
         public SqlStatementDriver(SQLStatement sql, DataSourceFactory dsf) throws DriverException {
                 this.sql = sql;
@@ -81,16 +87,28 @@ public class SqlStatementDriver extends AbstractDataSet implements MemoryDriver 
 
         @Override
         public void open() throws DriverException {
-                sql.setDataSourceFactory(dsf);
-                sql.prepare();
-                set = sql.execute();
-                metadata.clear();
-                metadata.addAll(sql.getResultMetadata());
+                if (openState == CLOSED) {
+                        sql.setDataSourceFactory(dsf);
+                        sql.prepare();
+                        set = sql.execute();
+                        metadata.clear();
+                        metadata.addAll(sql.getResultMetadata());
+                        openState = OPENED;
+                }
         }
 
         @Override
         public void close() throws DriverException {
-                sql.cleanUp();
+                if (openState == OPENED) {
+                        // WARNING: do not remove!
+                        // When cleaning up, sources referenced by the SQL Statement can be
+                        // committed to, which causes a #sync() of the sources depending of it
+                        // including this one, which calls #open() then #close()...
+                        // ==> never-ending loop
+                        openState = CLOSING;
+                        sql.cleanUp();
+                        openState = CLOSED;
+                }
         }
 
         @Override

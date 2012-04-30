@@ -94,8 +94,8 @@ public class ExecuteScriptProcess implements BackgroundJob {
                         for (int i = 0; i < statements.length; i++) {
 
                                 SQLStatement st = statements[i];
-                                boolean spatial = false;
-                                logger.info("Running instruction " + (i+1) + " / " + statements.length + ".");
+                                boolean spatial;
+                                logger.info("Running instruction " + (i + 1) + " / " + statements.length + ".");
                                 try {
                                         st.setDataSourceFactory(dsf);
                                         st.setProgressMonitor(pm);
@@ -124,7 +124,6 @@ public class ExecuteScriptProcess implements BackgroundJob {
                                                                 break;
                                                         }
                                                 } else {
-                                                        try {
                                                         OutputManager om = Services.getService(OutputManager.class);
 
                                                         ds.open();
@@ -153,13 +152,10 @@ public class ExecuteScriptProcess implements BackgroundJob {
 
 
                                                         om.println(aux.toString());
-                                                        } finally {
-                                                                st.cleanUp();
-                                                        }
                                                 }
                                         } else {
                                                 try {
-                                                st.execute();
+                                                        st.execute();
                                                 } finally {
                                                         st.cleanUp();
                                                 }
@@ -174,7 +170,7 @@ public class ExecuteScriptProcess implements BackgroundJob {
                                                 + st.getSQL(), e);
                                         break;
                                 }
-                                
+
                                 // DO NOT REMOVE
                                 // lets the GC remove a statement while the following ones are executed,
                                 // since we have no use for it now.
