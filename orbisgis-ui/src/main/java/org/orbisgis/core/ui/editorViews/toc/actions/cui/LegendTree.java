@@ -24,7 +24,7 @@ import org.orbisgis.core.sif.multiInputPanel.StringType;
 import org.orbisgis.core.ui.components.sif.RadioButtonPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.LegendPicker;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.IRulePanel;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ISELegendPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.LegendTreeModel;
 import org.orbisgis.core.ui.editorViews.toc.wrapper.RuleWrapper;
 import org.orbisgis.core.ui.editorViews.toc.wrapper.StyleWrapper;
@@ -55,7 +55,7 @@ public class LegendTree extends JPanel {
                 //We create our tree
                 tree = new JTree();
                 //We don't want to display the root.
-                tree.setRootVisible(false);
+                tree.setRootVisible(true);
                 //We have a custom model to provide... Listeners on the TreeModel
                 //are added by the tree when calling setModel.
                 LegendTreeModel ltm = new LegendTreeModel(tree, style);
@@ -178,18 +178,20 @@ public class LegendTree extends JPanel {
         }
 
         /**
-         * Gets the {@code IRulePanel} that is associated to the currently
+         * Gets the {@code ISELegendPanel} that is associated to the currently
          * selected element in the tree.
          * @return
          */
-        public IRulePanel getSelectedPanel(){
+        public ISELegendPanel getSelectedPanel(){
                 TreePath tp = tree.getSelectionPath();
                 if(tp!=null){
                         Object last = tp.getLastPathComponent();
                         if(last instanceof ILegendPanel){
                                 return (ILegendPanel) last;
                         } else if(last instanceof RuleWrapper){
-                                return (IRulePanel)((RuleWrapper)last).getPanel();
+                                return (ISELegendPanel)((RuleWrapper)last).getPanel();
+                        } else if(last instanceof StyleWrapper){
+                                return (ISELegendPanel)((StyleWrapper)last).getPanel();
                         }
                 }
                 return null;
@@ -397,7 +399,9 @@ public class LegendTree extends JPanel {
                 public Component getTreeCellRendererComponent(
                                 JTree tree, Object value,  boolean selected,
                                 boolean expanded, boolean leaf, int row, boolean hasFocus) {
-                        if(value instanceof RuleWrapper){
+                        if(value instanceof StyleWrapper){
+                                return getComponent((StyleWrapper)value, selected);
+                        } else if(value instanceof RuleWrapper){
                                 return getComponent((RuleWrapper) value, selected);
                         } else if(value instanceof ILegendPanel){
                                 return getComponent((ILegendPanel) value, selected);
@@ -414,6 +418,17 @@ public class LegendTree extends JPanel {
 
                 private Component getComponent(RuleWrapper rw, boolean selected) {
                         String s = rw.getRule().getName();
+                        if(s == null || s.isEmpty()){
+                                s = "Unknown";
+                        }
+                        JLabel lab = new JLabel(s);
+                        lab.setForeground(selected ? SELECTED : DESELECTED);
+                        lab.setBackground(Color.blue);
+                        return lab;
+                }
+
+                private Component getComponent(StyleWrapper sw, boolean selected) {
+                        String s = sw.getStyle().getName();
                         if(s == null || s.isEmpty()){
                                 s = "Unknown";
                         }

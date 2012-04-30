@@ -36,11 +36,8 @@
  */
 package org.orbisgis.core.ui.editorViews.toc;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
-import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.ui.components.resourceTree.AbstractTreeModel;

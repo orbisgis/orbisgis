@@ -58,7 +58,7 @@ import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.sif.UIPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.IRulePanel;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ISELegendPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ISymbolEditor;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
 import org.orbisgis.core.ui.editorViews.toc.wrapper.RuleWrapper;
@@ -150,11 +150,17 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
                         lrw.add(rw);
                 }
                 styleWrapper = new StyleWrapper(style, lrw);
+                styleWrapper.getPanel().setId(getNewId());
+                pnlContainer.add(styleWrapper.getPanel().getComponent(), styleWrapper.getPanel().getId());
 		legendTree = new LegendTree(this);
 		this.add(legendTree, BorderLayout.WEST);
 		refreshLegendContainer();
 	}
 
+        /**
+         * Get a new unique ID used to retrieve panels in the CardLayout.
+         * @return
+         */
 	public static String getNewId() {
 		String name = "gdms" + System.currentTimeMillis();
 		while (name.equals(lastUID)) {
@@ -232,7 +238,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 	void refreshLegendContainer() {
                 //We need to retrieve the currently selected legend in the tree,
                 //then find its id, and finally use it to show the panel.
-                IRulePanel selected = legendTree.getSelectedPanel();
+                ISELegendPanel selected = legendTree.getSelectedPanel();
 		if (selected != null) {
 			cardLayout.show(pnlContainer, selected.getId());
 		} else {
@@ -240,12 +246,12 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		}
 	}
 
-	public void legendRemoved(IRulePanel panel) {
+	public void legendRemoved(ISELegendPanel panel) {
                 cardLayout.removeLayoutComponent(panel.getComponent());
 		refreshLegendContainer();
 	}
 
-	public void legendAdded(IRulePanel panel) {
+	public void legendAdded(ISELegendPanel panel) {
                 //We can cast safely as we KNOW we are already dealing with a LegendPanel.
 		panel.initialize(this);
                 panel.setId(getNewId());
@@ -253,8 +259,8 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		refreshLegendContainer();
 	}
 
-	private IRulePanel newInstance(IRulePanel panel) {
-		IRulePanel ret = panel.newInstance();
+	private ISELegendPanel newInstance(ISELegendPanel panel) {
+		ISELegendPanel ret = panel.newInstance();
 		ret.initialize(this);
 
 		return ret;

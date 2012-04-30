@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.PnlStyle;
 
 /**
  * A Symbolizer can be associated to legends through its {@code Rule}. However,
@@ -20,6 +21,7 @@ public class StyleWrapper {
 
         private Style style;
         private List<RuleWrapper> ruleWrappers;
+        private PnlStyle panel;
 
         public StyleWrapper(Style s, List<RuleWrapper> rw){
                 ruleWrappers = rw;
@@ -147,6 +149,22 @@ public class StyleWrapper {
                       ll.addAll(rw.validateInput());
                 }
                 return ll;
+        }
+
+        /**
+         * Get the panel that can be used to configure the {@code Rule}.
+         * @return
+         */
+        public PnlStyle getPanel(){
+                if(panel == null){
+                        createStylePanel();
+                }
+                return panel;
+        }
+
+        private void createStylePanel(){
+                panel = new PnlStyle();
+                panel.setStyle(style);
         }
 
 }

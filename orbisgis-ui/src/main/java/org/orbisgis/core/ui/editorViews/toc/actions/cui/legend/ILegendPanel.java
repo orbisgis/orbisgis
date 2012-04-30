@@ -43,7 +43,7 @@ import org.orbisgis.legend.Legend;
  * 
  * @author David Ortega
  */
-public interface ILegendPanel  extends IRulePanel {
+public interface ILegendPanel  extends ISELegendPanel {
 
 	/**
 	 * It will return the Legend created by all the variables in the panel.

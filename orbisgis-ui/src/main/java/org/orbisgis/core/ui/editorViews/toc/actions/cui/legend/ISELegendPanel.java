@@ -11,7 +11,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendContext;
  *
  * @author alexis
  */
-public interface IRulePanel {
+public interface ISELegendPanel {
 
 	/**
 	 * This function will return the Component of the object (normally a
@@ -36,7 +36,7 @@ public interface IRulePanel {
 	 *
 	 * @return
 	 */
-	IRulePanel newInstance();
+	ISELegendPanel newInstance();
 
         /**
          * Gets the identifier of this panel.

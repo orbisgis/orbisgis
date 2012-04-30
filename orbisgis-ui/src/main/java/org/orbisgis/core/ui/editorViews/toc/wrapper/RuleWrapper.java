@@ -11,7 +11,7 @@ import java.util.List;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.IRulePanel;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ISELegendPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.PnlRule;
 
 /**
@@ -193,7 +193,7 @@ public class RuleWrapper {
          * Get the panel that can be used to configure the {@code Rule}.
          * @return
          */
-        public IRulePanel getPanel(){
+        public ISELegendPanel getPanel(){
                 if(panel == null){
                         createRulePanel();
                 }

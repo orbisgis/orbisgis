@@ -14,14 +14,14 @@ import javax.swing.*;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendContext;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.IRulePanel;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ISELegendPanel;
 import org.orbisgis.utils.I18N;
 
 /**
  * Panel associated to {@code Rule} instances in the legend edition UI.
  * @author alexis
  */
-public class PnlRule extends JPanel implements IRulePanel {
+public class PnlRule extends JPanel implements ISELegendPanel {
 
 	private JButton btnCurrentScaleToMin;
 	private JButton btnCurrentScaleToMax;
@@ -177,7 +177,7 @@ public class PnlRule extends JPanel implements IRulePanel {
         }
 
         @Override
-        public IRulePanel newInstance() {
+        public ISELegendPanel newInstance() {
                 return new PnlRule();
         }
 
