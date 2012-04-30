@@ -5,7 +5,9 @@
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.legends;
 
 import java.awt.Component;
+import java.awt.GridLayout;
 import java.net.URL;
+import javax.swing.JPanel;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.orbisgis.core.sif.UIFactory;
@@ -43,6 +45,7 @@ public class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
         public void setLegend(Legend legend) {
                 if(legend instanceof UniqueSymbolArea){
                         uniqueArea = (UniqueSymbolArea) legend;
+                        initPreview();
                         this.initializeLegendFields();
                 } else {
                         throw new IllegalArgumentException("The given Legend is not"
@@ -118,5 +121,18 @@ public class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
                 UniqueSymbolArea ret = new UniqueSymbolArea();
                 ret.setFillColor(uniqueArea.getFillColor());
                 return ret;
+        }
+
+        private void initializeLegendFields(){
+                this.removeAll();
+                JPanel glob = new JPanel();
+                GridLayout grid = new GridLayout(3,1);
+                glob.setLayout(grid);
+                JPanel p1 = getLegendBlock(uniqueArea.getParametersLine(), "Line configuration");
+                JPanel p2 = getLegendBlock(uniqueArea.getParametersArea(), "Fill configuration");
+                glob.add(p1);
+                glob.add(p2);
+                glob.add(getPreview());
+                this.add(glob);
         }
 }

@@ -41,13 +41,12 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
         /**
          * Fill this {@code JPanel} with all the needed fields.
          */
-        protected void initializeLegendFields(){
-                this.removeAll();
+        public JPanel getLegendBlock(List<USParameter<?>> params, String title){
+                if(preview == null && getLegend() != null){
+                        initPreview();
+                }
                 JPanel glob = new JPanel();
                 glob.setLayout(new BoxLayout(glob, BoxLayout.Y_AXIS));
-                UniqueSymbol us = (UniqueSymbol) getLegend();
-                preview= new CanvasSE(us.getSymbolizer());
-                List<USParameter<?>> params = us.getParameters();
                 JPanel jp = new JPanel();
                 GridLayout grid = new GridLayout(params.size(),2);
                 grid.setVgap(5);
@@ -60,8 +59,29 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
                 }
                 glob.add(jp);
                 //We add a canvas to display a preview.
-                glob.add(preview);
-                this.add(glob);
+                glob.setBorder(BorderFactory.createTitledBorder(title));
+                return glob;
+        }
+
+        /**
+         * Rebuild the {@code CanvasSe} instance used to display a preview of
+         * the current symbol.
+         */
+        public void initPreview(){
+                if(getLegend() != null){
+                        UniqueSymbol us = (UniqueSymbol) getLegend();
+                        preview= new CanvasSE(us.getSymbolizer());
+                        preview.repaint();
+                }
+        }
+
+        /**
+         * Gets the {@code CanvasSe} instance used to display a preview of
+         * the current symbol.
+         * @return
+         */
+        public CanvasSE getPreview(){
+                return preview;
         }
 
         private JLabel buildText(USParameter param){
